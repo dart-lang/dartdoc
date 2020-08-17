@@ -169,31 +169,6 @@ void main() {
           endsWith('dartdoc version: ${dartdocMeta.version}\n'));
     });
 
-    test('Check for sample code in examples', () async {
-      var output = StringBuffer();
-      var args = <String>[
-        dartdocPath,
-        '--include',
-        'ex',
-        '--no-include-source',
-        '--output',
-        tempDir.path
-      ];
-
-      await subprocessLauncher.runStreamed(Platform.resolvedExecutable, args,
-          workingDirectory: _testPackagePath,
-          perLine: (s) => output.writeln(s));
-
-      // Examples are reported as unfound because we (purposefully)
-      // did not use --example-path-prefix above.
-      final sep = '.'; // We don't care what the path separator character is
-      final firstUnfoundExample = RegExp('warning: lib${sep}example.dart: '
-          '@example file not found.*test_package${sep}dog${sep}food.md');
-      if (!output.toString().contains(firstUnfoundExample)) {
-        fail('Should warn about unfound @example files');
-      }
-    });
-
     test('Validate JSON output', () async {
       var args = <String>[
         dartdocPath,

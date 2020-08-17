@@ -2,12 +2,11 @@ import 'dart:io';
 
 import 'package:args/args.dart';
 import 'package:crypto/crypto.dart' as crypto;
-import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/model_element_renderer.dart';
 import 'package:dartdoc/src/utils.dart';
 import 'package:dartdoc/src/warnings.dart';
-
+import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
 
 final _templatePattern = RegExp(
@@ -75,7 +74,8 @@ mixin CommentProcessable on Documentable, Warnable, Locatable, SourceCodeMixin {
       // Remember, periods are legal in library names.
       fullyQualifiedName.replaceFirst('${library.fullyQualifiedName}.', '');
 
-  ModelElementRenderer get _modelElementRenderer =>
+  @visibleForTesting
+  ModelElementRenderer get modelElementRenderer =>
       packageGraph.rendererFactory.modelElementRenderer;
 
   /// Replace &#123;@tool ...&#125&#123;@end-tool&#125; in API comments with the
@@ -205,15 +205,20 @@ mixin CommentProcessable on Documentable, Warnable, Locatable, SourceCodeMixin {
           replacement = replacement.replaceFirst('```', '```$lang');
         }
       } else {
-        // TODO(jcollins-g): move this to Package.warn system
         var filePath = element.source.fullName.substring(dirPath.length + 1);
 
-        logWarning(
-            'warning: ${filePath}: @example file not found, ${fragmentFile.path}');
+        warn(PackageWarning.missingExampleFile,
+            message: '${fragmentFile.path}; path listed at $filePath');
       }
       return replacement;
     });
   }
+
+  /// An argument parser used in [_getExampleArgs] to parse an `{@example}`
+  /// directive.
+  static final ArgParser _exampleArgParser = ArgParser()
+    ..addOption('lang')
+    ..addOption('region');
 
   /// Helper for [_injectExamples] used to process `@example` arguments.
   ///
@@ -221,10 +226,7 @@ mixin CommentProcessable on Documentable, Warnable, Locatable, SourceCodeMixin {
   /// 'src'. The computed file path, constructed from 'src' and 'region' will
   /// have key 'file'.
   Map<String, String> _getExampleArgs(String argsAsString) {
-    var parser = ArgParser();
-    parser.addOption('lang');
-    parser.addOption('region');
-    var results = _parseArgs(argsAsString, parser, 'example');
+    var results = _parseArgs(argsAsString, _exampleArgParser, 'example');
     if (results == null) {
       return null;
     }
@@ -264,6 +266,10 @@ mixin CommentProcessable on Documentable, Warnable, Locatable, SourceCodeMixin {
   static final _validYouTubeUrlPattern =
       RegExp('https://www\.youtube\.com/watch\\?v=([^&]+)\$');
 
+  /// An argument parser used in [_injectYouTube] to parse a `{@youtube}`
+  /// directive.
+  static final _youTubeArgParser = ArgParser();
+
   /// Replace &#123;@youtube ...&#125; in API comments with some HTML to embed
   /// a YouTube video.
   ///
@@ -289,8 +295,7 @@ mixin CommentProcessable on Documentable, Warnable, Locatable, SourceCodeMixin {
   /// found in the address bar of the browser when viewing a YouTube video.
   String _injectYouTube(String rawDocs) {
     return rawDocs.replaceAllMapped(_basicYouTubePattern, (basicMatch) {
-      var parser = ArgParser();
-      var args = _parseArgs(basicMatch[1], parser, 'youtube');
+      var args = _parseArgs(basicMatch[1], _youTubeArgParser, 'youtube');
       if (args == null) {
         // Already warned about an invalid parameter if this happens.
         return '';
@@ -310,6 +315,7 @@ mixin CommentProcessable on Documentable, Warnable, Locatable, SourceCodeMixin {
             message: 'A @youtube directive has an invalid width, '
                 '"${positionalArgs[0]}". The width must be a positive '
                 'integer.');
+        return '';
       }
 
       var height = int.tryParse(positionalArgs[1]);
@@ -318,6 +324,7 @@ mixin CommentProcessable on Documentable, Warnable, Locatable, SourceCodeMixin {
             message: 'A @youtube directive has an invalid height, '
                 '"${positionalArgs[1]}". The height must be a positive '
                 'integer.');
+        return '';
       }
 
       var url = _validYouTubeUrlPattern.firstMatch(positionalArgs[2]);
@@ -332,7 +339,7 @@ mixin CommentProcessable on Documentable, Warnable, Locatable, SourceCodeMixin {
       var youTubeId = url.group(url.groupCount);
       var aspectRatio = (height / width * 100).toStringAsFixed(2);
 
-      return _modelElementRenderer.renderYoutubeUrl(youTubeId, aspectRatio);
+      return modelElementRenderer.renderYoutubeUrl(youTubeId, aspectRatio);
     });
   }
 
@@ -343,6 +350,10 @@ mixin CommentProcessable on Documentable, Warnable, Locatable, SourceCodeMixin {
 
   /// Matches valid javascript identifiers.
   final _validIdPattern = RegExp(r'^[a-zA-Z_]\w*$');
+
+  /// An argument parser used in [_injectAnimations] to parse a `{@animation}`
+  /// directive.
+  static final _animationArgParser = ArgParser()..addOption('id');
 
   /// Replace &#123;@animation ...&#125; in API comments with some HTML to
   /// manage an MPEG 4 video as an animation.
@@ -382,9 +393,7 @@ mixin CommentProcessable on Documentable, Warnable, Locatable, SourceCodeMixin {
       // Make sure we have a set to keep track of used IDs for this href.
       package.usedAnimationIdsByHref[href] ??= {};
 
-      var parser = ArgParser();
-      parser.addOption('id');
-      var args = _parseArgs(basicMatch[1], parser, 'animation');
+      var args = _parseArgs(basicMatch[1], _animationArgParser, 'animation');
       if (args == null) {
         // Already warned about an invalid parameter if this happens.
         return '';
@@ -463,7 +472,7 @@ mixin CommentProcessable on Documentable, Warnable, Locatable, SourceCodeMixin {
                 'parameter)');
       }
 
-      return _modelElementRenderer.renderAnimation(
+      return modelElementRenderer.renderAnimation(
           uniqueId, width, height, movieUrl, overlayId);
     });
   }

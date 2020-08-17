@@ -420,6 +420,9 @@ class PackageGraph {
       case PackageWarning.missingConstantConstructor:
         warningMessage = 'constant constructor missing: ${message}';
         break;
+      case PackageWarning.missingExampleFile:
+        warningMessage = 'example file not found: ${message}';
+        break;
     }
 
     var messageParts = <String>[warningMessage];
