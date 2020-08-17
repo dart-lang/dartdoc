@@ -366,7 +366,7 @@ void main() {
       expect(
           dart_bear.allClasses.map((cls) => cls.name).contains('Bear'), isTrue);
       expect(p.packageMap['Dart'].publicLibraries, hasLength(3));
-    }, solo: true);
+    });
 
     test('generate docs with custom templates', () async {
       var templatesDir =
