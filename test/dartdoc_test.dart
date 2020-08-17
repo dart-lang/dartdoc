@@ -17,6 +17,35 @@ import 'package:test/test.dart';
 
 import 'src/utils.dart';
 
+final Directory _testPackageDir = Directory('testing/test_package');
+
+final _testPackageBadDir = Directory('testing/test_package_bad');
+final _testPackageMinimumDir = Directory('testing/test_package_minimum');
+final _testSkyEnginePackage = Directory('testing/sky_engine');
+final _testPackageWithNoReadme = Directory('testing/test_package_small');
+final _testPackageIncludeExclude =
+    Directory('testing/test_package_include_exclude');
+final _testPackageImportExportError =
+    Directory('testing/test_package_import_export_error');
+final _testPackageOptions = Directory('testing/test_package_options');
+final _testPackageOptionsImporter =
+    Directory('testing/test_package_options_importer');
+final _testPackageCustomTemplates =
+    Directory('testing/test_package_custom_templates');
+
+/// Convenience factory to build a [DartdocGeneratorOptionContext] and associate
+/// it with a [DartdocOptionSet] based on the current working directory and/or
+/// the '--input' flag.
+Future<DartdocGeneratorOptionContext> _generatorContextFromArgv(
+    List<String> argv) async {
+  var optionSet = await DartdocOptionSet.fromOptionGenerators('dartdoc', [
+    () => createDartdocOptions(pubPackageMetaProvider),
+    createGeneratorOptions,
+  ]);
+  optionSet.parseArguments(argv);
+  return DartdocGeneratorOptionContext(optionSet, null);
+}
+
 class DartdocLoggingOptionContext extends DartdocGeneratorOptionContext
     with LoggingContext {
   DartdocLoggingOptionContext(DartdocOptionSet optionSet, Directory dir)
@@ -28,7 +57,6 @@ void main() {
     Directory tempDir;
 
     setUpAll(() async {
-      tempDir = Directory.systemTemp.createTempSync('dartdoc.test.');
       var optionSet = await DartdocOptionSet.fromOptionGenerators(
           'dartdoc', [createLoggingOptions]);
       optionSet.parseArguments([]);
@@ -45,7 +73,7 @@ void main() {
 
     Future<Dartdoc> buildDartdoc(
         List<String> argv, Directory packageRoot, Directory tempDir) async {
-      var context = await generatorContextFromArgv(argv
+      var context = await _generatorContextFromArgv(argv
         ..addAll(['--input', packageRoot.path, '--output', tempDir.path]));
       return await Dartdoc.fromContext(
         context,
@@ -61,13 +89,9 @@ void main() {
 
       setUpAll(() async {
         tempDir = Directory.systemTemp.createTempSync('dartdoc.test.');
-        dartdoc = await buildDartdoc([], testPackageOptions, tempDir);
+        dartdoc = await buildDartdoc([], _testPackageOptions, tempDir);
         results = await dartdoc.generateDocsBase();
         p = results.packageGraph;
-      });
-
-      tearDownAll(() async {
-        tempDir.deleteSync(recursive: true);
       });
 
       test('generator parameters', () async {
@@ -126,14 +150,10 @@ void main() {
       setUpAll(() async {
         tempDir = Directory.systemTemp.createTempSync('dartdoc.test.');
         results = await (await buildDartdoc(
-                ['--link-to-remote'], testPackageOptionsImporter, tempDir))
+                ['--link-to-remote'], _testPackageOptionsImporter, tempDir))
             .generateDocsBase();
         testPackageOptions = results.packageGraph.packages
             .firstWhere((Package p) => p.name == 'test_package_options');
-      });
-
-      tearDownAll(() async {
-        tempDir.deleteSync(recursive: true);
       });
 
       test('linkToUrl', () async {
@@ -161,7 +181,7 @@ void main() {
 
     test('with broken reexport chain', () async {
       var dartdoc =
-          await buildDartdoc([], testPackageImportExportError, tempDir);
+          await buildDartdoc([], _testPackageImportExportError, tempDir);
       var results = await dartdoc.generateDocsBase();
       var p = results.packageGraph;
       var unresolvedExportWarnings = p
@@ -179,7 +199,7 @@ void main() {
     group('include/exclude parameters', () {
       test('with config file', () async {
         var dartdoc =
-            await buildDartdoc([], testPackageIncludeExclude, tempDir);
+            await buildDartdoc([], _testPackageIncludeExclude, tempDir);
         var results = await dartdoc.generateDocs();
         var p = results.packageGraph;
         expect(p.localPublicLibraries.map((l) => l.name),
@@ -188,7 +208,7 @@ void main() {
 
       test('with include command line argument', () async {
         var dartdoc = await buildDartdoc(['--include', 'another_included'],
-            testPackageIncludeExclude, tempDir);
+            _testPackageIncludeExclude, tempDir);
         var results = await dartdoc.generateDocs();
         var p = results.packageGraph;
         expect(p.localPublicLibraries.length, equals(1));
@@ -196,8 +216,8 @@ void main() {
       });
 
       test('with exclude command line argument', () async {
-        var dartdoc = await buildDartdoc(
-            ['--exclude', 'more_included'], testPackageIncludeExclude, tempDir);
+        var dartdoc = await buildDartdoc(['--exclude', 'more_included'],
+            _testPackageIncludeExclude, tempDir);
         var results = await dartdoc.generateDocs();
         var p = results.packageGraph;
         expect(p.localPublicLibraries.length, equals(1));
@@ -207,14 +227,14 @@ void main() {
     });
 
     test('package without version produces valid semver in docs', () async {
-      var dartdoc = await buildDartdoc([], testPackageMinimumDir, tempDir);
+      var dartdoc = await buildDartdoc([], _testPackageMinimumDir, tempDir);
       var results = await dartdoc.generateDocs();
       var p = results.packageGraph;
       expect(p.defaultPackage.version, equals('0.0.0-unknown'));
     });
 
     test('basic interlinking test', () async {
-      var dartdoc = await buildDartdoc([], testPackageDir, tempDir);
+      var dartdoc = await buildDartdoc([], _testPackageDir, tempDir);
       var results = await dartdoc.generateDocs();
       var p = results.packageGraph;
       var meta = p.publicPackages.firstWhere((p) => p.name == 'meta');
@@ -243,15 +263,11 @@ void main() {
 
       setUpAll(() async {
         tempDir = Directory.systemTemp.createTempSync('dartdoc.test.');
-        dartdoc = await buildDartdoc([], testPackageDir, tempDir);
+        dartdoc = await buildDartdoc([], _testPackageDir, tempDir);
         results = await dartdoc.generateDocs();
       });
 
-      tearDownAll(() async {
-        tempDir.deleteSync(recursive: true);
-      });
-
-      test('generate docs for ${path.basename(testPackageDir.path)} works',
+      test('generate docs for ${path.basename(_testPackageDir.path)} works',
           () async {
         expect(results.packageGraph, isNotNull);
         var packageGraph = results.packageGraph;
@@ -278,9 +294,9 @@ void main() {
       });
     });
 
-    test('generate docs for ${path.basename(testPackageBadDir.path)} fails',
+    test('generate docs for ${path.basename(_testPackageBadDir.path)} fails',
         () async {
-      var dartdoc = await buildDartdoc([], testPackageBadDir, tempDir);
+      var dartdoc = await buildDartdoc([], _testPackageBadDir, tempDir);
 
       try {
         await dartdoc.generateDocs();
@@ -293,7 +309,7 @@ void main() {
             'from analysis_options');
 
     test('generate docs for a package that does not have a readme', () async {
-      var dartdoc = await buildDartdoc([], testPackageWithNoReadme, tempDir);
+      var dartdoc = await buildDartdoc([], _testPackageWithNoReadme, tempDir);
 
       var results = await dartdoc.generateDocs();
       expect(results.packageGraph, isNotNull);
@@ -307,7 +323,7 @@ void main() {
 
     test('generate docs including a single library', () async {
       var dartdoc =
-          await buildDartdoc(['--include', 'fake'], testPackageDir, tempDir);
+          await buildDartdoc(['--include', 'fake'], _testPackageDir, tempDir);
 
       var results = await dartdoc.generateDocs();
       expect(results.packageGraph, isNotNull);
@@ -321,7 +337,7 @@ void main() {
 
     test('generate docs excluding a single library', () async {
       var dartdoc =
-          await buildDartdoc(['--exclude', 'fake'], testPackageDir, tempDir);
+          await buildDartdoc(['--exclude', 'fake'], _testPackageDir, tempDir);
 
       var results = await dartdoc.generateDocs();
       expect(results.packageGraph, isNotNull);
@@ -338,7 +354,7 @@ void main() {
     });
 
     test('generate docs for package with embedder yaml', () async {
-      var dartdoc = await buildDartdoc([], testSkyEnginePackage, tempDir);
+      var dartdoc = await buildDartdoc([], _testSkyEnginePackage, tempDir);
 
       var results = await dartdoc.generateDocs();
       expect(results.packageGraph, isNotNull);
@@ -370,9 +386,9 @@ void main() {
 
     test('generate docs with custom templates', () async {
       var templatesDir =
-          path.join(testPackageCustomTemplates.path, 'templates');
+          path.join(_testPackageCustomTemplates.path, 'templates');
       var dartdoc = await buildDartdoc(['--templates-dir', templatesDir],
-          testPackageCustomTemplates, tempDir);
+          _testPackageCustomTemplates, tempDir);
 
       var results = await dartdoc.generateDocs();
       expect(results.packageGraph, isNotNull);
@@ -390,7 +406,7 @@ void main() {
       var templatesDir = path.join(path.current, 'test/templates');
       try {
         await buildDartdoc(['--templates-dir', templatesDir],
-            testPackageCustomTemplates, tempDir);
+            _testPackageCustomTemplates, tempDir);
         fail('dartdoc should fail with missing required template');
       } catch (e) {
         expect(e is DartdocFailure, isTrue);
@@ -403,7 +419,7 @@ void main() {
       var badPath = path.join(tempDir.path, 'BAD');
       try {
         await buildDartdoc(
-            ['--templates-dir', badPath], testPackageCustomTemplates, tempDir);
+            ['--templates-dir', badPath], _testPackageCustomTemplates, tempDir);
         fail('dartdoc should fail with bad templatesDir path');
       } catch (e) {
         expect(e is DartdocFailure, isTrue);
@@ -412,7 +428,7 @@ void main() {
 
     test('generating markdown docs does not crash', () async {
       var dartdoc =
-          await buildDartdoc(['--format', 'md'], testPackageDir, tempDir);
+          await buildDartdoc(['--format', 'md'], _testPackageDir, tempDir);
       await dartdoc.generateDocsBase();
     });
 
@@ -420,7 +436,7 @@ void main() {
       // ignore: omit_local_variable_types
       final String prefix = 'foo.bar/baz';
       var dartdoc = await buildDartdoc(
-          ['--rel-canonical-prefix', prefix], testPackageDir, tempDir);
+          ['--rel-canonical-prefix', prefix], _testPackageDir, tempDir);
       await dartdoc.generateDocsBase();
 
       // Verify files at different levels have correct <link> content.
@@ -438,7 +454,7 @@ void main() {
 
     test('generate docs with bad output format', () async {
       try {
-        await buildDartdoc(['--format', 'bad'], testPackageDir, tempDir);
+        await buildDartdoc(['--format', 'bad'], _testPackageDir, tempDir);
         fail('dartdoc should fail with bad output format');
       } catch (e) {
         expect(e is DartdocFailure, isTrue);

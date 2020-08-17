@@ -12,7 +12,7 @@ import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 import 'package:yaml/yaml.dart';
 
-import 'src/utils.dart' as utils;
+final Directory _testPackageDir = Directory('testing/test_package');
 
 void main() {
   var toolMap;
@@ -36,7 +36,7 @@ void main() {
             '--snapshot-kind=app-jit',
             'bin/drill.dart'
           ],
-          workingDirectory: utils.testPackageDir.absolute.path);
+          workingDirectory: _testPackageDir.absolute.path);
     } on ProcessException catch (exception) {
       stderr.writeln('Unable to make snapshot of tool: $exception');
       expect(result?.exitCode, equals(0));
@@ -73,7 +73,7 @@ echo:
   windows: ['C:\\Windows\\System32\\cmd.exe', '/c', 'echo']
   description: 'Works on everything'
 ''';
-    var pathContext = path.Context(current: utils.testPackageDir.absolute.path);
+    var pathContext = path.Context(current: _testPackageDir.absolute.path);
     toolMap = ToolConfiguration.fromYamlMap(loadYaml(yamlMap), pathContext);
     // This shouldn't really happen, but if you didn't load the config from a
     // yaml map (which would fail on a missing executable), or a file is deleted

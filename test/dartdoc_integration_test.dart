@@ -12,6 +12,7 @@ import 'package:dartdoc/dartdoc.dart';
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
+import '../tool/subprocess_launcher.dart';
 import 'src/utils.dart';
 
 Uri get _currentFileUri =>

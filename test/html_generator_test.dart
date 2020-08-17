@@ -110,11 +110,12 @@ void main() {
       PackageGraph packageGraph;
       Directory tempOutput;
       FileWriter writer;
+      var testPackageDuplicateDir = Directory('testing/test_package_duplicate');
 
       setUp(() async {
         generator = await _initGeneratorForTest();
-        packageGraph = await utils
-            .bootBasicPackage(utils.testPackageDuplicateDir.path, []);
+        packageGraph =
+            await utils.bootBasicPackage(testPackageDuplicateDir.path, []);
         tempOutput = await Directory.systemTemp.createTemp('doc_test_temp');
         writer = DartdocFileWriter(tempOutput.path);
       });
