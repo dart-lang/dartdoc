@@ -14,7 +14,6 @@ import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:analyzer/src/context/builder.dart';
 import 'package:analyzer/src/dart/sdk/sdk.dart';
 import 'package:analyzer/src/generated/java_io.dart';
-import 'package:analyzer/src/context/source.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/generated/source_io.dart';
@@ -182,30 +181,30 @@ class PubPackageBuilder implements PackageBuilder {
     return null;
   }
 
-  Source _internalResolveUri(
-      List<UriResolver> resolvers, Source containingSource, Uri containedUri) {
-    print('  [resolvers: $resolvers]');
-    if (!containedUri.isAbsolute) {
-//      if (containingSource == null) {
-      throw StateError(
-          'Cannot resolve a relative URI without a containing source:'
-          ' $containedUri');
+//  Source _internalResolveUri(
+//      List<UriResolver> resolvers, Source containingSource, Uri containedUri) {
+//    print('  [resolvers: $resolvers]');
+//    if (!containedUri.isAbsolute) {
+////      if (containingSource == null) {
+//      throw StateError(
+//          'Cannot resolve a relative URI without a containing source:'
+//          ' $containedUri');
+////      }
+////      containedUri =
+////          utils.resolveRelativeUri(containingSource.uri, containedUri);
+//    }
+//
+//    var actualUri = containedUri;
+//
+//    for (var resolver in resolvers) {
+//      var result = resolver.resolveAbsolute(containedUri, actualUri);
+//      print('    [resolver: $resolver][result: $result]');
+//      if (result != null) {
+//        return result;
 //      }
-//      containedUri =
-//          utils.resolveRelativeUri(containingSource.uri, containedUri);
-    }
-
-    var actualUri = containedUri;
-
-    for (var resolver in resolvers) {
-      var result = resolver.resolveAbsolute(containedUri, actualUri);
-      print('    [resolver: $resolver][result: $result]');
-      if (result != null) {
-        return result;
-      }
-    }
-    return null;
-  }
+//    }
+//    return null;
+//  }
 
   Set<PackageMeta> _packageMetasForFiles(Iterable<String> files) {
     var metas = <PackageMeta>{};
