@@ -587,7 +587,7 @@ class _FakePackage extends Fake implements Package {
   final PackageMeta packageMeta;
 
   @override
-  final usedAnimationIdsByHref = <String, Set<String>>{};
+  final Map<String, Set<String>> usedAnimationIdsByHref = {};
 
   _FakePackage() : packageMeta = _FakePackageMeta();
 }

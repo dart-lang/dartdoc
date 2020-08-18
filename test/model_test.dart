@@ -6,6 +6,7 @@ library dartdoc.model_test;
 
 import 'dart:io';
 
+import 'package:async/async.dart';
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/category_renderer.dart';
@@ -18,6 +19,12 @@ import 'package:dartdoc/src/warnings.dart';
 import 'package:test/test.dart';
 
 import 'src/utils.dart' as utils;
+
+final _testPackageGraphMemo = AsyncMemoizer<PackageGraph>();
+Future<PackageGraph> get _testPackageGraph =>
+    _testPackageGraphMemo.runOnce(() => utils.bootBasicPackage(
+        'testing/test_package', ['css', 'code_in_comments'],
+        additionalArguments: ['--no-link-to-remote']));
 
 /// For testing sort behavior.
 class TestLibraryContainer extends LibraryContainer with Nameable {
@@ -67,7 +74,7 @@ void main() {
   setUpAll(() async {
     // Use model_special_cases_test.dart for tests that require
     // a different package graph.
-    packageGraph = await utils.testPackageGraph;
+    packageGraph = await _testPackageGraph;
     exLibrary = packageGraph.libraries.firstWhere((lib) => lib.name == 'ex');
     fakeLibrary =
         packageGraph.libraries.firstWhere((lib) => lib.name == 'fake');
