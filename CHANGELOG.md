@@ -1,3 +1,33 @@
+## 0.32.4
+
+* Fix paragraph spacing in enum values. (#2286)
+* Escape HTML in parameter default values (#2288)
+* Preserve newline following `{@endtemplate}`. (#2289)
+* Privatize some of the public interface (#2291, #2292, ##2293, #2307)
+  * Deprecate the public method `Canonicalization.scoreElementWithLibrary`.
+  * Deprecate the public getters `ScoredCandidate.reasons` and
+    `ScoredCandidate.element`, method `ScoredCandidate.alterScore`.
+  * Deprecate the setters `Category.package`, and `Category.config`, and the
+    public method `Category.fileType`.
+  * Deprecate the unused methods `Category.linkedName` and
+    `Category.categoryLabel`.
+  * Deprecate the setters `Class.mixins` and `Class.supertype` and method
+    `Class.isInheritedFrom`.
+  * Change `Library.fromLibraryResult` to be a factory constructor.
+  * Deprecate the public methods `Library.getDefinedElements`,
+    `Library.getLibraryName`, and getter
+    `Library.allOriginalModelElementNames`.
+  * Deprecate the public top-level fields in `io_utils.dart`:
+    `libraryNameRegexp`, `partOfRegexp`, `newLinePartOfRegexp`
+  * Deprecate the public top-level field in `categorization.dart`:
+    `categoryRegexp`
+  * Deprecate the public top-level fields in `model_element.dart`:
+    `needsPrecacheRegExp`, `htmlInjectRegExp`, `macroRegExp`
+  * Deprecate the public top-level field in `source_linker.dart`:
+    `uriTemplateRegexp`
+* Add more types to public APIs (#2285)
+* Remove dartdoc's dep on package:quiver (#2305)
+
 ## 0.32.3
 
 * Allow injected HTML in a macro which is output by a tool (#2274).
