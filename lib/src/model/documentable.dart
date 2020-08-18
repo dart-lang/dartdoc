@@ -2,10 +2,9 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'dart:io' show File;
-
+import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
-import 'package:dartdoc/src/package_meta.dart';
+import 'package:dartdoc/src/io_utils.dart';
 import 'package:path/path.dart' as p;
 
 import 'model.dart';
@@ -44,7 +43,10 @@ mixin MarkdownFileDocumentation implements Documentable, Canonicalization {
   DocumentLocation get documentedWhere;
 
   @override
-  String get documentation => documentationFile?.contents;
+  String get documentation => documentationFile == null
+      ? null
+      : packageGraph.resourceProvider
+          .readAsMalformedAllowedStringSync(documentationFile);
 
   Documentation __documentation;
 
@@ -59,7 +61,10 @@ mixin MarkdownFileDocumentation implements Documentable, Canonicalization {
 
   @override
   bool get hasDocumentation =>
-      documentationFile != null && documentationFile.contents.isNotEmpty;
+      documentationFile != null &&
+      packageGraph.resourceProvider
+          .readAsMalformedAllowedStringSync(documentationFile)
+          .isNotEmpty;
 
   @override
   bool get hasExtendedDocumentation =>

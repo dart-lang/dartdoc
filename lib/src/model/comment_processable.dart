@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:args/args.dart';
 import 'package:crypto/crypto.dart' as crypto;
 import 'package:dartdoc/src/model/model.dart';
@@ -198,8 +196,11 @@ mixin CommentProcessable on Documentable, Warnable, Locatable, SourceCodeMixin {
 
       var replacement = match[0]; // default to fully matched string.
 
-      var fragmentFile = File(path.join(dirPath, args['file']));
-      if (fragmentFile.existsSync()) {
+      var fragmentFile = packageGraph.resourceProvider.getFile(packageGraph
+          .resourceProvider.pathContext
+          .canonicalize(packageGraph.resourceProvider.pathContext
+              .join(dirPath, args['file'])));
+      if (fragmentFile.exists) {
         replacement = fragmentFile.readAsStringSync();
         if (lang.isNotEmpty) {
           replacement = replacement.replaceFirst('```', '```$lang');
@@ -234,7 +235,8 @@ mixin CommentProcessable on Documentable, Warnable, Locatable, SourceCodeMixin {
     // Extract PATH and fix the path separators.
     var src = results.rest.isEmpty
         ? ''
-        : results.rest.first.replaceAll('/', Platform.pathSeparator);
+        : results.rest.first.replaceAll(
+            '/', packageGraph.resourceProvider.pathContext.separator);
     var args = <String, String>{
       'src': src,
       'lang': results['lang'],

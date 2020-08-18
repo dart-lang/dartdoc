@@ -52,10 +52,10 @@ Future<DartdocGeneratorOptionContext> _generatorContextFromArgv(
   var optionSet = await DartdocOptionSet.fromOptionGenerators(
       'dartdoc',
       [
-        () => createDartdocOptions(pubPackageMetaProvider),
-        () => createGeneratorOptions(pubPackageMetaProvider.resourceProvider),
+        createDartdocOptions,
+        createGeneratorOptions,
       ],
-      pubPackageMetaProvider.resourceProvider);
+      pubPackageMetaProvider);
   optionSet.parseArguments(argv);
   return DartdocGeneratorOptionContext(
       optionSet, null, pubPackageMetaProvider.resourceProvider);
@@ -75,8 +75,8 @@ void main() {
 
     setUpAll(() async {
       //resourceProvider = MemoryResourceProvider();
-      var optionSet = await DartdocOptionSet.fromOptionGenerators('dartdoc',
-          [() => createLoggingOptions(resourceProvider)], resourceProvider);
+      var optionSet = await DartdocOptionSet.fromOptionGenerators(
+          'dartdoc', [createLoggingOptions], pubPackageMetaProvider);
       optionSet.parseArguments([]);
       startLogging(DartdocLoggingOptionContext(
           optionSet,
@@ -85,7 +85,7 @@ void main() {
     });
 
     setUp(() async {
-      tempDir = resourceProvider.getSystemTemp('dartdoc.test.')..create();
+      tempDir = resourceProvider.createSystemTemp('dartdoc.test.');
     });
 
     tearDown(() async {
@@ -110,7 +110,7 @@ void main() {
       Folder tempDir;
 
       setUpAll(() async {
-        tempDir = resourceProvider.getSystemTemp('dartdoc.test.')..create();
+        tempDir = resourceProvider.createSystemTemp('dartdoc.test.');
         dartdoc = await buildDartdoc([], _testPackageOptions, tempDir);
         results = await dartdoc.generateDocsBase();
         p = results.packageGraph;
@@ -171,7 +171,7 @@ void main() {
       Folder tempDir;
 
       setUpAll(() async {
-        tempDir = resourceProvider.getSystemTemp('dartdoc.test.')..create();
+        tempDir = resourceProvider.createSystemTemp('dartdoc.test.');
         results = await (await buildDartdoc(
                 ['--link-to-remote'], _testPackageOptionsImporter, tempDir))
             .generateDocsBase();
@@ -285,7 +285,7 @@ void main() {
       Folder tempDir;
 
       setUpAll(() async {
-        tempDir = resourceProvider.getSystemTemp('dartdoc.test.')..create();
+        tempDir = resourceProvider.createSystemTemp('dartdoc.test.');
         dartdoc = await buildDartdoc([], _testPackageDir, tempDir);
         results = await dartdoc.generateDocs();
       });

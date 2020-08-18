@@ -4,6 +4,7 @@ import 'dart:io' show stderr, stdout;
 
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:cli_util/cli_logging.dart' show Ansi;
+import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 // Copyright (c) 2017, the Dart project authors.  Please see the AUTHORS file
 // for details. All rights reserved. Use of this source code is governed by a
@@ -132,7 +133,8 @@ abstract class LoggingContext implements DartdocOptionContextBase {
 }
 
 Future<List<DartdocOption<Object>>> createLoggingOptions(
-    ResourceProvider resourceProvider) async {
+    PackageMetaProvider packageMetaProvider) async {
+  var resourceProvider = packageMetaProvider.resourceProvider;
   return [
     DartdocOptionArgOnly<bool>('json', false, resourceProvider,
         help: 'Prints out progress JSON maps. One entry per line.',

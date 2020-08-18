@@ -202,8 +202,7 @@ class PubPackageBuilder implements PackageBuilder {
   /// If [filePath] is not a library, returns null.
   Future<DartDocResolvedLibrary> processLibrary(String filePath) async {
     var name = filePath;
-    var directoryCurrentPath =
-        config.optionSet.resourceProvider.pathContext.current;
+    var directoryCurrentPath = config.resourceProvider.pathContext.current;
 
     if (name.startsWith(directoryCurrentPath)) {
       name = name.substring(directoryCurrentPath.length);
@@ -359,10 +358,8 @@ class PubPackageBuilder implements PackageBuilder {
   /// therein.
   Iterable<String> _includeExternalsFrom(Iterable<String> files) sync* {
     for (var file in files) {
-      var fileContext = DartdocOptionContext.fromContext(
-          config,
-          config.optionSet.resourceProvider.getFile(file),
-          config.optionSet.resourceProvider);
+      var fileContext = DartdocOptionContext.fromContext(config,
+          config.resourceProvider.getFile(file), config.resourceProvider);
       if (fileContext.includeExternal != null) {
         yield* fileContext.includeExternal;
       }

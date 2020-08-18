@@ -20,7 +20,7 @@ void main() {
   DartdocOptionSet optionSet;
 
   setUpAll(() {
-    tempDir = resourceProvider.getSystemTemp('warnings_test')..create();
+    tempDir = resourceProvider.createSystemTemp('warnings_test');
     testPackageOne = resourceProvider.getFolder(
         resourceProvider.pathContext.join(tempDir.path, 'test_package_one'))
       ..create();
@@ -55,9 +55,7 @@ dartdoc:
 
   setUp(() async {
     optionSet = await DartdocOptionSet.fromOptionGenerators(
-        'dartdoc',
-        [() => createDartdocOptions(pubPackageMetaProvider)],
-        pubPackageMetaProvider.resourceProvider);
+        'dartdoc', [createDartdocOptions], pubPackageMetaProvider);
   });
 
   test('Verify that options for enabling/disabling packages work', () {

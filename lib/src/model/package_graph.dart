@@ -238,7 +238,7 @@ class PackageGraph {
   /// Map of package name to Package.
   final Map<String, Package> packageMap = {};
 
-  ResourceProvider get resourceProvider => config.optionSet.resourceProvider;
+  ResourceProvider get resourceProvider => config.resourceProvider;
 
   final DartSdk sdk;
 

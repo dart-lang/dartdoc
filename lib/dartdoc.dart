@@ -111,7 +111,9 @@ class Dartdoc {
       StreamController(sync: true);
 
   Dartdoc._(this.config, this.generator, this.packageBuilder) {
-    outputDir = config.resourceProvider.getFolder(config.output)..create();
+    outputDir = config.resourceProvider
+        .getFolder(config.resourceProvider.pathContext.absolute(config.output))
+          ..create();
   }
 
   /// An asynchronous factory method that builds Dartdoc's file writers
@@ -229,8 +231,9 @@ class Dartdoc {
         throw DartdocFailure(
             'dartdoc encountered $errorCount errors while processing.');
       }
-      logInfo('Success! Docs generated into '
-          '${dartdocResults.packageGraph.resourceProvider.pathContext.absolute(dartdocResults.outDir.path)}');
+      var outDirPath = config.resourceProvider.pathContext
+          .absolute(dartdocResults.outDir.path);
+      logInfo('Success! Docs generated into $outDirPath');
       return dartdocResults;
     } finally {
       // TODO: necessary?

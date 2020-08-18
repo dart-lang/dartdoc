@@ -11,6 +11,7 @@ import 'dart:io' as io;
 
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
+import 'package:dartdoc/src/package_meta.dart';
 import 'package:path/path.dart' as path;
 
 Encoding utf8AllowMalformed = Utf8Codec(allowMalformed: true);
@@ -33,8 +34,8 @@ String resolveTildePath(String originalPath) {
   return path.join(homeDir, originalPath.substring(2));
 }
 
-extension X on ResourceProvider {
-  Folder getSystemTemp(String prefix) {
+extension ResourceProviderExtensions on ResourceProvider {
+  Folder createSystemTemp(String prefix) {
     if (this is PhysicalResourceProvider) {
       return getFolder(io.Directory.systemTemp.createTempSync(prefix).path);
     } else {
@@ -44,13 +45,14 @@ extension X on ResourceProvider {
 
   Folder get defaultSdkDir {
     if (this is PhysicalResourceProvider) {
-      var sdkDir = getFile(io.Platform.resolvedExecutable).parent.parent;
-      // TODO(srawlins)
-      //assert(
-      //    pathContext.equals(sdkDir.path, PubPackageMeta.sdkDirParent(sdkDir).path));
+      var sdkDir = getFile(pathContext.absolute(io.Platform.resolvedExecutable))
+          .parent
+          .parent;
+      assert(pathContext.equals(
+          sdkDir.path, PubPackageMeta.sdkDirParent(sdkDir, this).path));
       return sdkDir;
     } else {
-      return getFolder('TODO');
+      return getFolder('TODO(srawlins)');
     }
   }
 
@@ -58,7 +60,7 @@ extension X on ResourceProvider {
     if (this is PhysicalResourceProvider) {
       return io.Platform.resolvedExecutable;
     } else {
-      return '';
+      return 'TODO(srawlins)';
     }
   }
 
@@ -67,7 +69,7 @@ extension X on ResourceProvider {
       var mode = io.File(file.path).statSync().mode;
       return (0x1 & ((mode >> 6) | (mode >> 3) | mode)) != 0;
     } else {
-      // TODO
+      // TODO(srawlins)
       return false;
     }
   }

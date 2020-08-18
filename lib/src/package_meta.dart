@@ -4,13 +4,13 @@
 
 library dartdoc.package_meta;
 
+import 'dart:convert';
 import 'dart:io' show Platform, Process;
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:dartdoc/dartdoc.dart';
-import 'package:dartdoc/src/io_utils.dart';
 import 'package:path/path.dart' as p;
 import 'package:yaml/yaml.dart';
 
@@ -48,10 +48,6 @@ final PackageMetaProvider pubPackageMetaProvider = PackageMetaProvider(
 /// By using a different provider, these implementations can control how
 /// [PackageMeta] objects is built.
 class PackageMetaProvider {
-  //final PackageMeta Function(LibraryElement, String, ResourceProvider)
-  //    fromElement;
-  //final PackageMeta Function(String, ResourceProvider) fromFilename;
-  //final PackageMeta Function(Folder, ResourceProvider) fromDir;
   final ResourceProvider resourceProvider;
 
   final PackageMeta Function(LibraryElement, String, ResourceProvider)
@@ -87,15 +83,13 @@ abstract class PackageMeta {
   bool operator ==(Object other) {
     if (other is! PackageMeta) return false;
     PackageMeta otherMeta = other;
-    return resourceProvider.pathContext.equals(
-        resourceProvider.pathContext.absolute(dir.path),
-        resourceProvider.pathContext.absolute(otherMeta.dir.path));
+    return resourceProvider.pathContext.equals(dir.path, otherMeta.dir.path);
   }
 
   @override
   int get hashCode => pathContext.hash(pathContext.absolute(dir.path));
 
-  path.Context get pathContext => resourceProvider.pathContext;
+  p.Context get pathContext => resourceProvider.pathContext;
 
   /// Returns true if this represents a 'Dart' SDK.  A package can be part of
   /// Dart and Flutter at the same time, but if we are part of a Dart SDK
@@ -189,10 +183,8 @@ abstract class PubPackageMeta extends PackageMeta {
           _sdkDirParent[dirPathCanonical] = dir;
           break;
         }
-        if (dir.parent == null /*path.equals(dir.path, dir.parent.path)*/) {
-          break;
-        }
         dir = dir.parent;
+        if (dir == null) break;
       }
     }
     return _sdkDirParent[dirPathCanonical];
@@ -215,8 +207,6 @@ abstract class PubPackageMeta extends PackageMeta {
 
   static PubPackageMeta fromFilename(
       String filename, ResourceProvider resourceProvider) {
-    //print(
-    //    'parent of "$filename" is "${resourceProvider.getFile(filename).parent}"');
     return PubPackageMeta.fromDir(
         resourceProvider.getFile(filename).parent, resourceProvider);
   }
@@ -251,7 +241,7 @@ abstract class PubPackageMeta extends PackageMeta {
           // Allow a package to be at root (possible in a Windows setting with
           // drive letter mappings).
           if (dir.parent == null) break;
-          // or just... .parent?
+          // TODO(srawlins): or just... `.parent`?
           dir =
               resourceProvider.getFolder(pathContext.absolute(dir.parent.path));
         }
@@ -269,14 +259,10 @@ abstract class PubPackageMeta extends PackageMeta {
 
       /// Don't include examples or other non-SDK components as being the
       /// "Flutter SDK".
-      if (pathContext.isWithin(
-              flutterPackages,
-              pathContext.canonicalize(
-                  resourceProvider.pathContext.absolute(dir.path))) ||
-          pathContext.isWithin(
-              flutterBinCache,
-              pathContext.canonicalize(
-                  resourceProvider.pathContext.absolute(dir.path)))) {
+      var canonicalizedDir = pathContext
+          .canonicalize(resourceProvider.pathContext.absolute(dir.path));
+      if (pathContext.isWithin(flutterPackages, canonicalizedDir) ||
+          pathContext.isWithin(flutterBinCache, canonicalizedDir)) {
         return 'Flutter';
       }
     }
@@ -293,7 +279,7 @@ abstract class PubPackageMeta extends PackageMeta {
 }
 
 extension FileContents on File {
-  String get contents => readAsStringSync(encoding: utf8AllowMalformed);
+  //String get contents => readAsMalformedAllowedStringSync();
 }
 
 class _FilePackageMeta extends PubPackageMeta {
@@ -400,7 +386,7 @@ class _FilePackageMeta extends PubPackageMeta {
 
   @override
   File getReadmeContents() =>
-    _readme ??= _locate(dir, ['readme.md', 'readme.txt', 'readme']);
+      _readme ??= _locate(dir, ['readme.md', 'readme.txt', 'readme']);
 
   @override
   File getLicenseContents() =>

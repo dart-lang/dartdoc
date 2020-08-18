@@ -15,8 +15,7 @@ void main() {
     PackageMeta p;
 
     setUp(() {
-      var d = resourceProvider.getSystemTemp('test_package_not_valid')
-        ..create();
+      var d = resourceProvider.createSystemTemp('test_package_not_valid');
       p = pubPackageMetaProvider.fromDir(d);
     });
 
@@ -37,7 +36,9 @@ void main() {
     });
 
     test('readme with corrupt UTF-8 loads without throwing', () {
-      expect(p.getReadmeContents().contents,
+      expect(
+          resourceProvider
+              .readAsMalformedAllowedStringSync(p.getReadmeContents()),
           contains('Here is some messed up UTF-8.\nÃf'));
     });
   });
@@ -73,20 +74,26 @@ void main() {
     test('has a readme', () {
       expect(p.getReadmeContents(), isNotNull);
       expect(
-          p.getReadmeContents().contents,
+          resourceProvider
+              .readAsMalformedAllowedStringSync(p.getReadmeContents()),
           contains(
               'Use `dartdoc` to generate HTML documentaton for your Dart package.'));
     });
 
     test('has a license', () {
       expect(p.getLicenseContents(), isNotNull);
-      expect(p.getLicenseContents().contents,
+      expect(
+          resourceProvider
+              .readAsMalformedAllowedStringSync(p.getLicenseContents()),
           contains('Copyright 2014, the Dart project authors.'));
     });
 
     test('has a changelog', () {
       expect(p.getChangelogContents(), isNotNull);
-      expect(p.getChangelogContents().contents, contains('## 0.2.2'));
+      expect(
+          resourceProvider
+              .readAsMalformedAllowedStringSync(p.getChangelogContents()),
+          contains('## 0.2.2'));
     });
   });
 
@@ -120,7 +127,10 @@ void main() {
 
     test('has a readme', () {
       expect(p.getReadmeContents(), isNotNull);
-      expect(p.getReadmeContents().contents, startsWith('Welcome'));
+      expect(
+          resourceProvider
+              .readAsMalformedAllowedStringSync(p.getReadmeContents()),
+          startsWith('Welcome'));
     });
 
     test('does not have a license', () {

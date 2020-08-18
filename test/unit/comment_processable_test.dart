@@ -4,6 +4,7 @@
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
+import 'package:analyzer/file_system/memory_file_system.dart';
 import 'package:analyzer/src/generated/source.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -368,7 +369,7 @@ End text.'''));
     verify(processor.packageGraph.warnOnElement(
             processor, PackageWarning.missingExampleFile,
             message:
-                '${p.join(_projectRoot, '.', 'abc-r.md')}; path listed at a.dart'))
+                '${p.join(_projectRoot, 'abc-r.md')}; path listed at a.dart'))
         .called(1);
     // When the example path is invalid, the directive should be left in-place.
     expect(doc, equals('''
@@ -563,6 +564,7 @@ class _Processor extends __Processor with CommentProcessable {
         .thenReturn('<!-- render -->');
     when(modelElementRenderer.renderAnimation(any, any, any, any, any))
         .thenReturn('<!-- render -->');
+    when(packageGraph.resourceProvider).thenReturn(MemoryResourceProvider());
   }
 
   @override

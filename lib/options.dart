@@ -18,11 +18,13 @@ class DartdocProgramOptionContext extends DartdocGeneratorOptionContext
 }
 
 Future<List<DartdocOption<bool>>> createDartdocProgramOptions(
-    ResourceProvider resourceProvider) async {
+    PackageMetaProvider packageMetaProvider) async {
+  var resourceProvider = packageMetaProvider.resourceProvider;
   return [
     DartdocOptionArgOnly<bool>('generateDocs', true, resourceProvider,
         help:
-            'Generate docs into the output directory (or only display warnings if false).',
+            'Generate docs into the output directory (or only display warnings '
+            'if false).',
         negatable: true),
     DartdocOptionArgOnly<bool>('help', false, resourceProvider,
         abbr: 'h', help: 'Show command help.', negatable: false),
@@ -39,13 +41,13 @@ Future<DartdocProgramOptionContext> parseOptions(
   var optionSet = await DartdocOptionSet.fromOptionGenerators(
       'dartdoc',
       [
-        () => createDartdocOptions(packageMetaProvider),
-        () => createDartdocProgramOptions(packageMetaProvider.resourceProvider),
-        () => createLoggingOptions(packageMetaProvider.resourceProvider),
-        () => createGeneratorOptions(packageMetaProvider.resourceProvider),
+        createDartdocOptions,
+        createDartdocProgramOptions,
+        createLoggingOptions,
+        createGeneratorOptions,
         if (additionalOptions != null) additionalOptions,
       ],
-      packageMetaProvider.resourceProvider);
+      packageMetaProvider);
 
   try {
     optionSet.parseArguments(arguments);

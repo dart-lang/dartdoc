@@ -10,6 +10,7 @@ import 'dart:async' show Future;
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/model.dart' show PackageGraph;
+import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/warnings.dart';
 
 abstract class FileWriter {
@@ -56,7 +57,8 @@ mixin GeneratorContext on DartdocOptionContextBase {
 }
 
 Future<List<DartdocOption<Object>>> createGeneratorOptions(
-    ResourceProvider resourceProvider) async {
+    PackageMetaProvider packageMetaProvider) async {
+  var resourceProvider = packageMetaProvider.resourceProvider;
   return [
     DartdocOptionArgFile<List<String>>('footer', [], resourceProvider,
         isFile: true,

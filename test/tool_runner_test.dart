@@ -75,10 +75,10 @@ echo:
   windows: ['C:\\Windows\\System32\\cmd.exe', '/c', 'echo']
   description: 'Works on everything'
 ''';
-    var pathContext = path.Context(
-        current: pubPackageMetaProvider.resourceProvider.pathContext
-            .absolute(_testPackageDir.path));
-    toolMap = ToolConfiguration.fromYamlMap(loadYaml(yamlMap), pathContext,
+    toolMap = ToolConfiguration.fromYamlMap(
+        loadYaml(yamlMap),
+        pubPackageMetaProvider.resourceProvider.pathContext
+            .absolute(_testPackageDir.path),
         pubPackageMetaProvider.resourceProvider);
     // This shouldn't really happen, but if you didn't load the config from a
     // yaml map (which would fail on a missing executable), or a file is deleted
@@ -93,7 +93,7 @@ echo:
   tearDownAll(() {
     tempDir?.deleteSync(recursive: true);
     tracker?.dispose();
-    SnapshotCache.instance.dispose();
+    SnapshotCache.instance?.dispose();
     setupFile = null;
     tempDir = null;
   });

@@ -19,11 +19,10 @@ class ConvertedOption {
 
   ConvertedOption._(this.param1, this.param2, this.myContextPath);
 
-  static ConvertedOption fromYamlMap(YamlMap yamlMap, path.Context context,
+  static ConvertedOption fromYamlMap(YamlMap yamlMap, String canonicalYamlPath,
       ResourceProvider resourceProvider) {
     String p1;
     String p2;
-    var contextPath = context.current;
 
     for (var entry in yamlMap.entries) {
       switch (entry.key.toString()) {
@@ -35,7 +34,7 @@ class ConvertedOption {
           break;
       }
     }
-    return ConvertedOption._(p1, p2, contextPath);
+    return ConvertedOption._(p1, p2, canonicalYamlPath);
   }
 }
 
@@ -169,8 +168,7 @@ void main() {
         'fileOption', null, resourceProvider,
         isFile: true, mustExist: true));
 
-    // TODO: No need to create a temp in a memory resource provider.
-    tempDir = resourceProvider.getSystemTemp('options_test')..create();
+    tempDir = resourceProvider.createSystemTemp('options_test');
     firstDir = resourceProvider
         .getFolder(resourceProvider.pathContext.join(tempDir.path, 'firstDir'))
           ..create();
@@ -286,9 +284,7 @@ dartdoc:
       // Since this is an ArgSynth, it ignores the yaml option and resolves to the CWD
       expect(
           dartdocOptionSetSynthetic['nonCriticalFileOption'].valueAt(firstDir),
-          equals(resourceProvider.pathContext.canonicalize(resourceProvider
-              .pathContext
-              .join(resourceProvider.pathContext.current, 'stuff.zip'))));
+          equals(resourceProvider.pathContext.canonicalize('stuff.zip')));
     });
 
     test('ArgSynth defaults to synthetic', () {

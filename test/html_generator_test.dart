@@ -84,7 +84,7 @@ void main() {
     group('for a null package', () {
       setUp(() async {
         generator = await _initGeneratorForTest();
-        tempOutput = resourceProvider.getSystemTemp('doc_test_temp')..create();
+        tempOutput = resourceProvider.createSystemTemp('doc_test_temp');
         writer = DartdocFileWriter(tempOutput.path, resourceProvider);
         return generator.generate(null, writer);
       });
@@ -120,8 +120,7 @@ void main() {
         generator = await _initGeneratorForTest();
         packageGraph = await utils.bootBasicPackage(
             testPackageDuplicateDir.path, [], pubPackageMetaProvider);
-        tempOutput = await resourceProvider.getSystemTemp('doc_test_temp')
-          ..create();
+        tempOutput = await resourceProvider.createSystemTemp('doc_test_temp');
         writer = DartdocFileWriter(tempOutput.path, resourceProvider);
       });
 

@@ -27,11 +27,7 @@ final Folder testPackageToolError = _resourceProvider
 Future<DartdocOptionContext> contextFromArgv(
     List<String> argv, PackageMetaProvider packageMetaProvider) async {
   var optionSet = await DartdocOptionSet.fromOptionGenerators(
-      'dartdoc',
-      [
-        () => createDartdocOptions(packageMetaProvider),
-      ],
-      packageMetaProvider.resourceProvider);
+      'dartdoc', [createDartdocOptions], packageMetaProvider);
   optionSet.parseArguments(argv);
   return DartdocOptionContext(
       optionSet,

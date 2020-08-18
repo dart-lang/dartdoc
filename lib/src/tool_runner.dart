@@ -27,8 +27,8 @@ class ToolTempFileTracker {
   final Folder temporaryDirectory;
 
   ToolTempFileTracker._(this.resourceProvider)
-      : temporaryDirectory = resourceProvider.getSystemTemp('dartdoc_tools_')
-          ..create();
+      : temporaryDirectory =
+            resourceProvider.createSystemTemp('dartdoc_tools_');
 
   static ToolTempFileTracker _instance;
 
@@ -45,8 +45,7 @@ class ToolTempFileTracker {
     var tempFile = resourceProvider.getFile(resourceProvider.pathContext.join(
         resourceProvider.pathContext.absolute(temporaryDirectory.path),
         'input_$_temporaryFileCount'));
-    // TODO
-    //await tempFile.create();
+    await tempFile.writeAsStringSync('');
     return tempFile;
   }
 

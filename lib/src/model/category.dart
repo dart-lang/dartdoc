@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/category_renderer.dart';
@@ -177,7 +178,7 @@ class Category extends Nameable
   File get documentationFile {
     if (_documentationFile == null) {
       if (categoryDefinition?.documentationMarkdown != null) {
-        _documentationFile = _config.optionSet.resourceProvider
+        _documentationFile = _config.resourceProvider
             .getFile(categoryDefinition.documentationMarkdown);
       }
     }
