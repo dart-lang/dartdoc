@@ -9,7 +9,7 @@ import 'dart:io';
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/dartdoc.dart';
-import 'package:path/path.dart' as path;
+import 'package:path/path.dart' as p;
 import 'package:yaml/yaml.dart';
 
 import 'logging.dart';
@@ -19,7 +19,7 @@ Encoding utf8AllowMalformed = Utf8Codec(allowMalformed: true);
 
 Directory get defaultSdkDir {
   var sdkDir = File(Platform.resolvedExecutable).parent.parent;
-  assert(path.equals(sdkDir.path, PubPackageMeta.sdkDirParent(sdkDir).path));
+  assert(p.equals(sdkDir.path, PubPackageMeta.sdkDirParent(sdkDir).path));
   return sdkDir;
 }
 
@@ -74,11 +74,11 @@ abstract class PackageMeta {
   bool operator ==(Object other) {
     if (other is! PackageMeta) return false;
     PackageMeta otherMeta = other;
-    return path.equals(dir.absolute.path, otherMeta.dir.absolute.path);
+    return p.equals(dir.absolute.path, otherMeta.dir.absolute.path);
   }
 
   @override
-  int get hashCode => path.hash(dir.absolute.path);
+  int get hashCode => p.hash(dir.absolute.path);
 
   /// Returns true if this represents a 'Dart' SDK.  A package can be part of
   /// Dart and Flutter at the same time, but if we are part of a Dart SDK
@@ -107,11 +107,11 @@ abstract class PackageMeta {
 
   String get homepage;
 
-  FileContents getReadmeContents();
+  File getReadmeContents();
 
-  FileContents getLicenseContents();
+  File getLicenseContents();
 
-  FileContents getChangelogContents();
+  File getChangelogContents();
 
   /// Returns true if we are a valid package, valid enough to generate docs.
   bool get isValid => getInvalidReasons().isEmpty;
@@ -141,9 +141,9 @@ abstract class PubPackageMeta extends PackageMeta {
       if (Platform.isWindows) {
         for (var paths in __sdkDirFilePathsPosix) {
           var windowsPaths = <String>[];
-          for (var p in paths) {
-            windowsPaths.add(
-                path.joinAll(path.Context(style: path.Style.posix).split(p)));
+          for (var path in paths) {
+            windowsPaths
+                .add(p.joinAll(p.Context(style: p.Style.posix).split(path)));
           }
           __sdkDirFilePaths.add(windowsPaths);
         }
@@ -159,17 +159,17 @@ abstract class PubPackageMeta extends PackageMeta {
   static final Map<String, Directory> _sdkDirParent = {};
 
   static Directory sdkDirParent(Directory dir) {
-    var dirPathCanonical = path.canonicalize(dir.path);
+    var dirPathCanonical = p.canonicalize(dir.path);
     if (!_sdkDirParent.containsKey(dirPathCanonical)) {
       _sdkDirParent[dirPathCanonical] = null;
       while (dir.existsSync()) {
         if (_sdkDirFilePaths.every((List<String> l) {
-          return l.any((f) => File(path.join(dir.path, f)).existsSync());
+          return l.any((f) => File(p.join(dir.path, f)).existsSync());
         })) {
           _sdkDirParent[dirPathCanonical] = dir;
           break;
         }
-        if (path.equals(dir.path, dir.parent.path)) break;
+        if (p.equals(dir.path, dir.parent.path)) break;
         dir = dir.parent;
       }
     }
@@ -183,7 +183,7 @@ abstract class PubPackageMeta extends PackageMeta {
       return PubPackageMeta.fromDir(Directory(sdkDir));
     }
     return PubPackageMeta.fromDir(
-        File(path.canonicalize(libraryElement.source.fullName)).parent);
+        File(p.canonicalize(libraryElement.source.fullName)).parent);
   }
 
   static PubPackageMeta fromFilename(String filename) {
@@ -210,14 +210,14 @@ abstract class PubPackageMeta extends PackageMeta {
         packageMeta = _SdkMeta(parentSdkDir);
       } else {
         while (dir.existsSync()) {
-          var pubspec = File(path.join(dir.path, 'pubspec.yaml'));
+          var pubspec = File(p.join(dir.path, 'pubspec.yaml'));
           if (pubspec.existsSync()) {
             packageMeta = _FilePackageMeta(dir);
             break;
           }
           // Allow a package to be at root (possible in a Windows setting with
           // drive letter mappings).
-          if (path.equals(dir.path, dir.parent.path)) break;
+          if (p.equals(dir.path, dir.parent.path)) break;
           dir = dir.parent.absolute;
         }
       }
@@ -229,15 +229,13 @@ abstract class PubPackageMeta extends PackageMeta {
   @override
   String sdkType(String flutterRootPath) {
     if (flutterRootPath != null) {
-      var flutterPackages = path.join(flutterRootPath, 'packages');
-      var flutterBinCache = path.join(flutterRootPath, 'bin', 'cache');
+      var flutterPackages = p.join(flutterRootPath, 'packages');
+      var flutterBinCache = p.join(flutterRootPath, 'bin', 'cache');
 
       /// Don't include examples or other non-SDK components as being the
       /// "Flutter SDK".
-      if (path.isWithin(
-              flutterPackages, path.canonicalize(dir.absolute.path)) ||
-          path.isWithin(
-              flutterBinCache, path.canonicalize(dir.absolute.path))) {
+      if (p.isWithin(flutterPackages, p.canonicalize(dir.absolute.path)) ||
+          p.isWithin(flutterBinCache, p.canonicalize(dir.absolute.path))) {
         return 'Flutter';
       }
     }
@@ -253,29 +251,18 @@ abstract class PubPackageMeta extends PackageMeta {
   }
 }
 
-class FileContents {
-  final File file;
-
-  FileContents._(this.file);
-
-  factory FileContents(File file) => file == null ? null : FileContents._(file);
-
-  String get contents => file.readAsStringSync(encoding: utf8AllowMalformed);
-
-  bool get isMarkdown => file.path.toLowerCase().endsWith('.md');
-
-  @override
-  String toString() => file.path;
+extension FileContents on File {
+  String get contents => readAsStringSync(encoding: utf8AllowMalformed);
 }
 
 class _FilePackageMeta extends PubPackageMeta {
-  FileContents _readme;
-  FileContents _license;
-  FileContents _changelog;
+  File _readme;
+  File _license;
+  File _changelog;
   Map<dynamic, dynamic> _pubspec;
 
   _FilePackageMeta(Directory dir) : super(dir) {
-    var f = File(path.join(dir.path, 'pubspec.yaml'));
+    var f = File(p.join(dir.path, 'pubspec.yaml'));
     if (f.existsSync()) {
       _pubspec = loadYaml(f.readAsStringSync());
     } else {
@@ -299,13 +286,13 @@ class _FilePackageMeta extends PubPackageMeta {
       // possibly by calculating hosting directly from pubspec.yaml or importing
       // a pub library to do this.
       // People could have a pub cache at root with Windows drive mappings.
-      if (path.split(path.canonicalize(dir.path)).length >= 3) {
+      if (p.split(p.canonicalize(dir.path)).length >= 3) {
         var pubCacheRoot = dir.parent.parent.parent.path;
-        var hosted = path.canonicalize(dir.parent.parent.path);
-        var hostname = path.canonicalize(dir.parent.path);
-        if (path.basename(hosted) == 'hosted' &&
-            Directory(path.join(pubCacheRoot, '_temp')).existsSync()) {
-          _hostedAt = path.basename(hostname);
+        var hosted = p.canonicalize(dir.parent.parent.path);
+        var hostname = p.canonicalize(dir.parent.path);
+        if (p.basename(hosted) == 'hosted' &&
+            Directory(p.join(pubCacheRoot, '_temp')).existsSync()) {
+          _hostedAt = p.basename(hostname);
         }
       }
     }
@@ -317,7 +304,7 @@ class _FilePackageMeta extends PubPackageMeta {
 
   @override
   bool get needsPubGet =>
-      !(File(path.join(dir.path, '.dart_tool', 'package_config.json'))
+      !(File(p.join(dir.path, '.dart_tool', 'package_config.json'))
           .existsSync());
 
   @override
@@ -325,10 +312,10 @@ class _FilePackageMeta extends PubPackageMeta {
     String binPath;
     List<String> parameters;
     if (requiresFlutter) {
-      binPath = path.join(flutterRoot, 'bin', 'flutter');
+      binPath = p.join(flutterRoot, 'bin', 'flutter');
       parameters = ['pub', 'get'];
     } else {
-      binPath = path.join(path.dirname(Platform.resolvedExecutable), 'pub');
+      binPath = p.join(p.dirname(Platform.resolvedExecutable), 'pub');
       parameters = ['get'];
     }
     if (Platform.isWindows) binPath += '.bat';
@@ -367,27 +354,16 @@ class _FilePackageMeta extends PubPackageMeta {
       _pubspec['dependencies']?.containsKey('flutter') == true;
 
   @override
-  FileContents getReadmeContents() {
-    if (_readme != null) return _readme;
-    _readme = FileContents(_locate(dir, ['readme.md', 'readme.txt', 'readme']));
-    return _readme;
-  }
+  File getReadmeContents() =>
+      _readme ??= _locate(dir, ['readme.md', 'readme.txt', 'readme']);
 
   @override
-  FileContents getLicenseContents() {
-    if (_license != null) return _license;
-    _license =
-        FileContents(_locate(dir, ['license.md', 'license.txt', 'license']));
-    return _license;
-  }
+  File getLicenseContents() =>
+      _license ??= _locate(dir, ['license.md', 'license.txt', 'license']);
 
   @override
-  FileContents getChangelogContents() {
-    if (_changelog != null) return _changelog;
-    _changelog = FileContents(
-        _locate(dir, ['changelog.md', 'changelog.txt', 'changelog']));
-    return _changelog;
-  }
+  File getChangelogContents() => _changelog ??=
+      _locate(dir, ['changelog.md', 'changelog.txt', 'changelog']);
 
   /// Returns a list of reasons this package is invalid, or an
   /// empty list if no reasons found.
@@ -408,7 +384,7 @@ File _locate(Directory dir, List<String> fileNames) {
 
   for (var name in fileNames) {
     for (var f in files) {
-      var baseName = path.basename(f.path).toLowerCase();
+      var baseName = p.basename(f.path).toLowerCase();
       if (baseName == name) return f;
       if (baseName.startsWith(name)) return f;
     }
@@ -421,7 +397,7 @@ class _SdkMeta extends PubPackageMeta {
   String sdkReadmePath;
 
   _SdkMeta(Directory dir) : super(dir) {
-    sdkReadmePath = path.join(dir.path, 'lib', 'api_readme.md');
+    sdkReadmePath = p.join(dir.path, 'lib', 'api_readme.md');
   }
 
   @override
@@ -440,7 +416,7 @@ class _SdkMeta extends PubPackageMeta {
 
   @override
   String get version {
-    var versionFile = File(path.join(dir.path, 'version'));
+    var versionFile = File(p.join(dir.path, 'version'));
     if (versionFile.existsSync()) return versionFile.readAsStringSync().trim();
     return 'unknown';
   }
@@ -457,21 +433,21 @@ class _SdkMeta extends PubPackageMeta {
   bool get requiresFlutter => false;
 
   @override
-  FileContents getReadmeContents() {
-    var f = File(path.join(dir.path, 'lib', 'api_readme.md'));
+  File getReadmeContents() {
+    var f = File(p.join(dir.path, 'lib', 'api_readme.md'));
     if (!f.existsSync()) {
-      f = File(path.join(dir.path, 'api_readme.md'));
+      f = File(p.join(dir.path, 'api_readme.md'));
     }
-    return f.existsSync() ? FileContents(f) : null;
+    return f.existsSync() ? f : null;
   }
 
   @override
   List<String> getInvalidReasons() => [];
 
   @override
-  FileContents getLicenseContents() => null;
+  File getLicenseContents() => null;
 
   // TODO: The changelog doesn't seem to be available in the sdk.
   @override
-  FileContents getChangelogContents() => null;
+  File getChangelogContents() => null;
 }

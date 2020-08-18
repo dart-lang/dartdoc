@@ -2,9 +2,11 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'dart:io' show File;
+
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/package_meta.dart';
-import 'package:path/path.dart' as path;
+import 'package:path/path.dart' as p;
 
 import 'model.dart';
 
@@ -69,10 +71,10 @@ mixin MarkdownFileDocumentation implements Documentable, Canonicalization {
   @override
   String get oneLineDoc => __documentation.asOneLiner;
 
-  FileContents get documentationFile;
+  File get documentationFile;
 
   @override
-  String get location => path.toUri(documentationFile.file.path).toString();
+  String get location => p.toUri(documentationFile.path).toString();
 
   @override
   Set<String> get locationPieces => <String>{location};
