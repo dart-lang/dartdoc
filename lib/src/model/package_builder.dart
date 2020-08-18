@@ -188,9 +188,9 @@ class PubPackageBuilder implements PackageBuilder {
             filePath = 'c:' + filePath.substring(2);
           }
           print('[processLibrary][filePath2: $filePath]');
-          var resource = resourceProvider.getFile(filePath);
-          var fileSource = resource.createSource();
-          var uri = sourceFactory.restoreUri(fileSource);
+          resource = resourceProvider.getFile(filePath);
+          fileSource = resource.createSource();
+          uri = sourceFactory.restoreUri(fileSource);
 //        var uriSource = sourceFactory.forUri2(uri);
           uriSource = _internalResolveUri(sourceFactory.resolvers, null, uri);
         }
