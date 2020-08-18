@@ -180,7 +180,7 @@ class PubPackageBuilder implements PackageBuilder {
         var uriSource = sourceFactory.forUri2(uri);
         print(
           '  [resource: $resource]'
-          '[uri: $uri][uriSource.fullName: ${uriSource.fullName}]'
+          '[uri: $uri][uriSource.fullName: ${uriSource?.fullName}]'
           '[flag: ${uriSource?.fullName == filePath}]',
         );
       }
