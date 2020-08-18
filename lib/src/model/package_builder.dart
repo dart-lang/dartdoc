@@ -14,6 +14,7 @@ import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:analyzer/src/context/builder.dart';
 import 'package:analyzer/src/dart/sdk/sdk.dart';
 import 'package:analyzer/src/generated/java_io.dart';
+import 'package:analyzer/src/context/source.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/generated/source_io.dart';
@@ -172,12 +173,13 @@ class PubPackageBuilder implements PackageBuilder {
       {
         var driver = (analysisContext as DriverBasedAnalysisContext).driver;
         var resourceProvider = driver.resourceProvider;
-        var sourceFactory = driver.sourceFactory;
+        var sourceFactory = driver.sourceFactory as SourceFactoryImpl;
 
         var resource = resourceProvider.getFile(filePath);
         var fileSource = resource.createSource();
         var uri = sourceFactory.restoreUri(fileSource);
-        var uriSource = sourceFactory.forUri2(uri);
+//        var uriSource = sourceFactory.forUri2(uri);
+        var uriSource = _internalResolveUri(sourceFactory.resolvers, null, uri);
         print(
           '  [resource: $resource]'
           '[uri: $uri][uriSource.fullName: ${uriSource?.fullName}]'
@@ -190,6 +192,30 @@ class PubPackageBuilder implements PackageBuilder {
       final libraryElement = library.element;
       var restoredUri = libraryElement.source.uri.toString();
       return DartDocResolvedLibrary(library, restoredUri);
+    }
+    return null;
+  }
+
+  Source _internalResolveUri(List<UriResolver> resolvers, Source containingSource, Uri containedUri) {
+    print('  [resolvers: $resolvers]');
+    if (!containedUri.isAbsolute) {
+//      if (containingSource == null) {
+        throw StateError(
+            "Cannot resolve a relative URI without a containing source: "
+                "$containedUri");
+//      }
+//      containedUri =
+//          utils.resolveRelativeUri(containingSource.uri, containedUri);
+    }
+
+    Uri actualUri = containedUri;
+
+    for (UriResolver resolver in resolvers) {
+      Source result = resolver.resolveAbsolute(containedUri, actualUri);
+      print('    [resolver: $resolver][result: $result]');
+      if (result != null) {
+        return result;
+      }
     }
     return null;
   }
