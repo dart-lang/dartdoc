@@ -139,6 +139,10 @@ class PubPackageBuilder implements PackageBuilder {
   /// Parse a single library at [filePath] using the current analysis driver.
   /// If [filePath] is not a library, returns null.
   Future<DartDocResolvedLibrary> processLibrary(String filePath) async {
+    if (filePath.startsWith('c:')) {
+      filePath = 'C:' + filePath.substring(2);
+    }
+
 //    var name = filePath;
 //
 //    if (name.startsWith(directoryCurrentPath)) {
