@@ -139,10 +139,6 @@ class PubPackageBuilder implements PackageBuilder {
   /// Parse a single library at [filePath] using the current analysis driver.
   /// If [filePath] is not a library, returns null.
   Future<DartDocResolvedLibrary> processLibrary(String filePath) async {
-    if (filePath.startsWith('c:')) {
-      filePath = 'C:' + filePath.substring(2);
-    }
-
 //    var name = filePath;
 //
 //    if (name.startsWith(directoryCurrentPath)) {
@@ -164,7 +160,7 @@ class PubPackageBuilder implements PackageBuilder {
     if (sourceKind != SourceKind.PART) {
       // Loading libraryElements from part files works, but is painfully slow
       // and creates many duplicates.
-      print('[processLibrary][filePath: $filePath]');
+      print('[processLibrary][filePath1: $filePath]');
       {
         var file = session.getFile(filePath);
         print(
@@ -184,6 +180,21 @@ class PubPackageBuilder implements PackageBuilder {
         var uri = sourceFactory.restoreUri(fileSource);
 //        var uriSource = sourceFactory.forUri2(uri);
         var uriSource = _internalResolveUri(sourceFactory.resolvers, null, uri);
+
+        if (uriSource == null) {
+          if (filePath.startsWith('c:')) {
+            filePath = 'C:' + filePath.substring(2);
+          } else if (filePath.startsWith('C:')) {
+            filePath = 'c:' + filePath.substring(2);
+          }
+          print('[processLibrary][filePath2: $filePath]');
+          var resource = resourceProvider.getFile(filePath);
+          var fileSource = resource.createSource();
+          var uri = sourceFactory.restoreUri(fileSource);
+//        var uriSource = sourceFactory.forUri2(uri);
+          uriSource = _internalResolveUri(sourceFactory.resolvers, null, uri);
+        }
+
         print(
           '  [resource: $resource]'
           '[uri: $uri][uriSource.fullName: ${uriSource?.fullName}]'
@@ -200,13 +211,14 @@ class PubPackageBuilder implements PackageBuilder {
     return null;
   }
 
-  Source _internalResolveUri(List<UriResolver> resolvers, Source containingSource, Uri containedUri) {
+  Source _internalResolveUri(
+      List<UriResolver> resolvers, Source containingSource, Uri containedUri) {
     print('  [resolvers: $resolvers]');
     if (!containedUri.isAbsolute) {
 //      if (containingSource == null) {
-        throw StateError(
-            'Cannot resolve a relative URI without a containing source:'
-                ' $containedUri');
+      throw StateError(
+          'Cannot resolve a relative URI without a containing source:'
+          ' $containedUri');
 //      }
 //      containedUri =
 //          utils.resolveRelativeUri(containingSource.uri, containedUri);
