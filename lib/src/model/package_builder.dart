@@ -137,14 +137,17 @@ class PubPackageBuilder implements PackageBuilder {
   /// Parse a single library at [filePath] using the current analysis driver.
   /// If [filePath] is not a library, returns null.
   Future<DartDocResolvedLibrary> processLibrary(String filePath) async {
-    var name = filePath;
+//    var name = filePath;
+//
+//    if (name.startsWith(directoryCurrentPath)) {
+//      name = name.substring(directoryCurrentPath.length);
+//      if (name.startsWith(Platform.pathSeparator)) name = name.substring(1);
+//    }
+//    var javaFile = JavaFile(filePath).getAbsoluteFile();
+//    Source source = FileBasedSource(javaFile);
 
-    if (name.startsWith(directoryCurrentPath)) {
-      name = name.substring(directoryCurrentPath.length);
-      if (name.startsWith(Platform.pathSeparator)) name = name.substring(1);
-    }
     var javaFile = JavaFile(filePath).getAbsoluteFile();
-    Source source = FileBasedSource(javaFile);
+    filePath = javaFile.getPath();
 
     var analysisContext = contextCollection.contextFor(config.inputDir);
     var session = analysisContext.currentSession;
@@ -155,7 +158,18 @@ class PubPackageBuilder implements PackageBuilder {
     if (sourceKind != SourceKind.PART) {
       // Loading libraryElements from part files works, but is painfully slow
       // and creates many duplicates.
-      final library = await session.getResolvedLibrary(source.fullName);
+      print('[processLibrary][filePath: $filePath]');
+      {
+        var file = session.getFile(filePath);
+        print(
+          '  [file.uri: ${file.uri}]'
+          '[file.state: ${file.state}]'
+          '[file.isPart: ${file.isPart}]',
+        );
+      }
+
+      final library = await session.getResolvedLibrary(filePath);
+//      final library = await session.getResolvedLibrary(source.fullName);
       final libraryElement = library.element;
       var restoredUri = libraryElement.source.uri.toString();
       return DartDocResolvedLibrary(library, restoredUri);
