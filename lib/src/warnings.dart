@@ -380,7 +380,7 @@ class PackageWarningOptions {
 }
 
 class PackageWarningCounter {
-  final countedWarnings = <Element, Set<Tuple2<PackageWarning, String>>>{};
+  final Map<Element, Set<Tuple2<PackageWarning, String>>> countedWarnings = {};
   final _items = <Jsonable>[];
   final _displayedWarningCounts = <PackageWarning, int>{};
   final PackageGraph packageGraph;

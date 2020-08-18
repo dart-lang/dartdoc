@@ -77,11 +77,20 @@ Iterable<String> _doList(
 /// * dart.dartdoc => dart_dartdoc.html
 /// * dart:core => dart_core.html
 String getFileNameFor(String name) =>
-    '${name.replaceAll(libraryNameRegexp, '-')}.html';
+    '${name.replaceAll(_libraryNameRegExp, '-')}.html';
 
-final libraryNameRegexp = RegExp('[.:]');
-final partOfRegexp = RegExp('part of ');
-final newLinePartOfRegexp = RegExp('\npart of ');
+final _libraryNameRegExp = RegExp('[.:]');
+@Deprecated('Public variable intended to be private; will be removed as early '
+    'as Dartdoc 1.0.0')
+RegExp get libraryNameRegexp => _libraryNameRegExp;
+
+@Deprecated('Public variable intended to be private; will be removed as early '
+    'as Dartdoc 1.0.0')
+final RegExp partOfRegexp = RegExp('part of ');
+
+@Deprecated('Public variable intended to be private; will be removed as early '
+    'as Dartdoc 1.0.0')
+final RegExp newLinePartOfRegexp = RegExp('\npart of ');
 
 /// Best used with Future<void>.
 class MultiFutureTracker<T> {

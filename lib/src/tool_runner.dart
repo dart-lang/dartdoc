@@ -163,8 +163,9 @@ class ToolRunner {
     // or $VAR form.
     var envWithInput = {
       'INPUT': tmpFile.absolute.path,
-      'TOOL_COMMAND': toolDefinition.command[0]
-    }..addAll(environment);
+      'TOOL_COMMAND': toolDefinition.command[0],
+      ...environment,
+    };
     if (toolDefinition is DartToolDefinition) {
       // Put the original command path into the environment, because when it
       // runs as a snapshot, Platform.script (inside the tool script) refers to

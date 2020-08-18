@@ -338,8 +338,8 @@ class PubPackageBuilder implements PackageBuilder {
             // Only add the file if it does not contain 'part of'
             var contents = File(lib).readAsStringSync();
 
-            if (contents.contains(newLinePartOfRegexp) ||
-                contents.startsWith(partOfRegexp)) {
+            if (contents.startsWith('part of ') ||
+                contents.contains('\npart of ')) {
               // NOOP: it's a part file
             } else {
               yield lib;
