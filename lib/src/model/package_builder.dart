@@ -201,17 +201,17 @@ class PubPackageBuilder implements PackageBuilder {
     if (!containedUri.isAbsolute) {
 //      if (containingSource == null) {
         throw StateError(
-            "Cannot resolve a relative URI without a containing source: "
-                "$containedUri");
+            'Cannot resolve a relative URI without a containing source:'
+                ' $containedUri');
 //      }
 //      containedUri =
 //          utils.resolveRelativeUri(containingSource.uri, containedUri);
     }
 
-    Uri actualUri = containedUri;
+    var actualUri = containedUri;
 
-    for (UriResolver resolver in resolvers) {
-      Source result = resolver.resolveAbsolute(containedUri, actualUri);
+    for (var resolver in resolvers) {
+      var result = resolver.resolveAbsolute(containedUri, actualUri);
       print('    [resolver: $resolver][result: $result]');
       if (result != null) {
         return result;
