@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
+import 'package:analyzer/src/dart/analysis/driver_based_analysis_context.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart' as file_system;
@@ -165,6 +166,22 @@ class PubPackageBuilder implements PackageBuilder {
           '  [file.uri: ${file.uri}]'
           '[file.state: ${file.state}]'
           '[file.isPart: ${file.isPart}]',
+        );
+      }
+
+      {
+        var driver = (analysisContext as DriverBasedAnalysisContext).driver;
+        var resourceProvider = driver.resourceProvider;
+        var sourceFactory = driver.sourceFactory;
+
+        var resource = resourceProvider.getFile(filePath);
+        var fileSource = resource.createSource();
+        var uri = sourceFactory.restoreUri(fileSource);
+        var uriSource = sourceFactory.forUri2(uri);
+        print(
+          '  [resource: $resource]'
+          '[uri: $uri][uriSource.fullName: ${uriSource.fullName}]'
+          '[flag: ${uriSource?.fullName == filePath}]',
         );
       }
 
