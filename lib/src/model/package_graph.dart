@@ -6,6 +6,7 @@ import 'dart:async';
 
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/generated/source_io.dart';
@@ -236,6 +237,8 @@ class PackageGraph {
 
   /// Map of package name to Package.
   final Map<String, Package> packageMap = {};
+
+  ResourceProvider get resourceProvider => config.optionSet.resourceProvider;
 
   final DartSdk sdk;
 

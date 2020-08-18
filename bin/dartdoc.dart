@@ -17,7 +17,7 @@ Future<void> main(List<String> arguments) async {
     // There was an error while parsing options.
     return;
   }
-  final packageBuilder = PubPackageBuilder(config);
+  final packageBuilder = PubPackageBuilder(config, pubPackageMetaProvider);
   final dartdoc = config.generateDocs
       ? await Dartdoc.fromContext(config, packageBuilder)
       : await Dartdoc.withEmptyGenerator(config, packageBuilder);

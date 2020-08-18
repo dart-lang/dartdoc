@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'dart:io';
-
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -179,7 +177,8 @@ class Category extends Nameable
   File get documentationFile {
     if (_documentationFile == null) {
       if (categoryDefinition?.documentationMarkdown != null) {
-        _documentationFile = File(categoryDefinition.documentationMarkdown);
+        _documentationFile = _config.optionSet.resourceProvider
+            .getFile(categoryDefinition.documentationMarkdown);
       }
     }
     return _documentationFile;

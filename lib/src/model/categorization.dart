@@ -4,7 +4,7 @@
 
 import 'package:dartdoc/src/model/model.dart';
 
-final RegExp _categoryRegExp = RegExp(
+final _categoryRegExp = RegExp(
     r'[ ]*{@(api|category|subCategory|image|samples) (.+?)}[ ]*\n?',
     multiLine: true);
 

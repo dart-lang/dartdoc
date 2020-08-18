@@ -2,9 +2,10 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'dart:io';
+//import 'dart:io';
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -27,7 +28,8 @@ Future<List<DartdocOption<Object>>> createPackageWarningOptions(
   PackageMetaProvider packageMetaProvider,
 ) async {
   return [
-    DartdocOptionArgOnly<bool>('allowNonLocalWarnings', false,
+    DartdocOptionArgOnly<bool>(
+        'allowNonLocalWarnings', false, packageMetaProvider.resourceProvider,
         negatable: true,
         help: 'Show warnings from packages we are not documenting locally.'),
 
@@ -35,21 +37,26 @@ Future<List<DartdocOption<Object>>> createPackageWarningOptions(
     // for individual packages are command-line only.  This will allow
     // meta-packages like Flutter to control whether warnings are displayed for
     // packages they don't control.
-    DartdocOptionArgOnly<List<String>>('allowWarningsInPackages', null,
+    DartdocOptionArgOnly<List<String>>(
+        'allowWarningsInPackages', null, packageMetaProvider.resourceProvider,
         help:
             'Package names to display warnings for (ignore all others if set).'),
-    DartdocOptionArgOnly<List<String>>('allowErrorsInPackages', null,
+    DartdocOptionArgOnly<List<String>>(
+        'allowErrorsInPackages', null, packageMetaProvider.resourceProvider,
         help: 'Package names to display errors for (ignore all others if set)'),
-    DartdocOptionArgOnly<List<String>>('ignoreWarningsInPackages', null,
+    DartdocOptionArgOnly<List<String>>(
+        'ignoreWarningsInPackages', null, packageMetaProvider.resourceProvider,
         help:
             'Package names to ignore warnings for.  Takes priority over allow-warnings-in-packages'),
-    DartdocOptionArgOnly<List<String>>('ignoreErrorsInPackages', null,
+    DartdocOptionArgOnly<List<String>>(
+        'ignoreErrorsInPackages', null, packageMetaProvider.resourceProvider,
         help:
             'Package names to ignore errors for. Takes priority over allow-errors-in-packages'),
     // Options for globally enabling/disabling warnings and errors across
     // packages.  Loaded from dartdoc_options.yaml, but command line arguments
     // will override.
-    DartdocOptionArgFile<List<String>>('errors', null,
+    DartdocOptionArgFile<List<String>>(
+        'errors', null, packageMetaProvider.resourceProvider,
         help:
             'Additional warning names to force as errors.  Specify an empty list to force defaults (overriding dartdoc_options.yaml)\nDefaults:\n' +
                 (packageWarningDefinitions.values
@@ -59,7 +66,8 @@ Future<List<DartdocOption<Object>>> createPackageWarningOptions(
                           ..sort())
                     .map((d) => '   ${d.warningName}: ${d.shortHelp}')
                     .join('\n')),
-    DartdocOptionArgFile<List<String>>('ignore', null,
+    DartdocOptionArgFile<List<String>>(
+        'ignore', null, packageMetaProvider.resourceProvider,
         help:
             'Additional warning names to ignore.  Specify an empty list to force defaults (overriding dartdoc_options.yaml).\nDefaults:\n' +
                 (packageWarningDefinitions.values
@@ -69,7 +77,8 @@ Future<List<DartdocOption<Object>>> createPackageWarningOptions(
                           ..sort())
                     .map((d) => '   ${d.warningName}: ${d.shortHelp}')
                     .join('\n')),
-    DartdocOptionArgFile<List<String>>('warnings', null,
+    DartdocOptionArgFile<List<String>>(
+        'warnings', null, packageMetaProvider.resourceProvider,
         help:
             'Additional warning names to show as warnings (instead of error or ignore, if not warning by default).\nDefaults:\n' +
                 (packageWarningDefinitions.values
@@ -82,8 +91,9 @@ Future<List<DartdocOption<Object>>> createPackageWarningOptions(
     // Synthetic option uses a factory to build a PackageWarningOptions from all the above flags.
     DartdocOptionSyntheticOnly<PackageWarningOptions>(
       'packageWarningOptions',
-      (DartdocSyntheticOption<PackageWarningOptions> option, Directory dir) =>
+      (DartdocSyntheticOption<PackageWarningOptions> option, Folder dir) =>
           PackageWarningOptions.fromOptions(option, dir, packageMetaProvider),
+      packageMetaProvider.resourceProvider,
     ),
   ];
 }
@@ -317,10 +327,9 @@ class PackageWarningOptions {
     }
   }
 
-  /// [packageMeta] parameter is for testing.
   static PackageWarningOptions fromOptions(
     DartdocSyntheticOption<PackageWarningOptions> option,
-    Directory dir,
+    Folder dir,
     PackageMetaProvider packageMetaProvider,
   ) {
     // First, initialize defaults.

@@ -5,10 +5,10 @@
 library dartdoc.tool_runner;
 
 import 'dart:async';
-import 'dart:io';
+import 'dart:io' show Process, ProcessException;
 
+import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/io_utils.dart';
-import 'package:path/path.dart' as path;
 import 'dartdoc_options.dart';
 
 typedef ToolErrorCallback = void Function(String message);
@@ -23,31 +23,37 @@ final MultiFutureTracker<void> _toolTracker = MultiFutureTracker(4);
 ///
 /// This will remove any temporary files created by the tool runner.
 class ToolTempFileTracker {
-  final Directory temporaryDirectory;
+  final ResourceProvider resourceProvider;
+  final Folder temporaryDirectory;
 
-  ToolTempFileTracker._()
-      : temporaryDirectory =
-            Directory.systemTemp.createTempSync('dartdoc_tools_');
+  ToolTempFileTracker._(this.resourceProvider)
+      : temporaryDirectory = resourceProvider.getSystemTemp('dartdoc_tools_')
+          ..create();
 
   static ToolTempFileTracker _instance;
 
-  static ToolTempFileTracker get instance =>
-      _instance ??= ToolTempFileTracker._();
+  static ToolTempFileTracker get instance => _instance;
+
+  static ToolTempFileTracker createInstance(
+          ResourceProvider resourceProvider) =>
+      _instance ??= ToolTempFileTracker._(resourceProvider);
 
   int _temporaryFileCount = 0;
 
   Future<File> createTemporaryFile() async {
     _temporaryFileCount++;
-    var tempFile = File(path.join(
-        temporaryDirectory.absolute.path, 'input_$_temporaryFileCount'));
-    await tempFile.create(recursive: true);
+    var tempFile = resourceProvider.getFile(resourceProvider.pathContext.join(
+        resourceProvider.pathContext.absolute(temporaryDirectory.path),
+        'input_$_temporaryFileCount'));
+    // TODO
+    //await tempFile.create();
     return tempFile;
   }
 
   /// Call once no more files are to be created.
   Future<void> dispose() async {
-    if (temporaryDirectory.existsSync()) {
-      return temporaryDirectory.delete(recursive: true);
+    if (temporaryDirectory.exists) {
+      return temporaryDirectory.delete();
     }
   }
 }
@@ -73,7 +79,7 @@ class ToolRunner {
     String commandPath;
 
     if (isDartSetup) {
-      commandPath = Platform.resolvedExecutable;
+      commandPath = toolConfiguration.resourceProvider.resolvedExecutable;
     } else {
       commandPath = args.removeAt(0);
     }
@@ -95,8 +101,8 @@ class ToolRunner {
           await Process.run(commandPath, args, environment: environment);
       if (result.exitCode != 0) {
         toolErrorCallback('Tool "$name" returned non-zero exit code '
-            '(${result.exitCode}) when run as '
-            '"${commandString()}" from ${Directory.current}\n'
+            '(${result.exitCode}) when run as "${commandString()}" from '
+            '${toolConfiguration.resourceProvider.pathContext.current}\n'
             'Input to $name was:\n'
             '$content\n'
             'Stderr output was:\n${result.stderr}\n');
@@ -155,14 +161,17 @@ class ToolRunner {
     // file before running the tool synchronously.
 
     // Write the content to a temp file.
-    var tmpFile = await ToolTempFileTracker.instance.createTemporaryFile();
-    await tmpFile.writeAsString(content);
+    var tmpFile = await ToolTempFileTracker.createInstance(
+            toolConfiguration.resourceProvider)
+        .createTemporaryFile();
+    tmpFile.writeAsStringSync(content);
 
     // Substitute the temp filename for the "$INPUT" token, and all of the other
     // environment variables. Variables are allowed to either be in $(VAR) form,
     // or $VAR form.
     var envWithInput = {
-      'INPUT': tmpFile.absolute.path,
+      'INPUT':
+          toolConfiguration.resourceProvider.pathContext.absolute(tmpFile.path),
       'TOOL_COMMAND': toolDefinition.command[0],
       ...environment,
     };
@@ -174,7 +183,10 @@ class ToolRunner {
       // find out where their script was coming from as an absolute path on the
       // filesystem.
       envWithInput['DART_SNAPSHOT_CACHE'] =
-          SnapshotCache.instance.snapshotCache.absolute.path;
+          toolConfiguration.resourceProvider.pathContext.absolute(
+              SnapshotCache.createInstance(toolConfiguration.resourceProvider)
+                  .snapshotCache
+                  .path);
       if (toolDefinition.setupCommand != null) {
         envWithInput['DART_SETUP_COMMAND'] = toolDefinition.setupCommand[0];
       }

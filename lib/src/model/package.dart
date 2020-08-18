@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'dart:io';
-
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -332,7 +330,9 @@ class Package extends LibraryContainer
   @override
   DartdocOptionContext get config {
     _config ??= DartdocOptionContext.fromContext(
-        packageGraph.config, Directory(packagePath));
+        packageGraph.config,
+        packageGraph.config.optionSet.resourceProvider.getFolder(packagePath),
+        packageGraph.config.optionSet.resourceProvider);
     return _config;
   }
 

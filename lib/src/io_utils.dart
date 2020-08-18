@@ -6,9 +6,14 @@
 library dartdoc.io_utils;
 
 import 'dart:async';
-import 'dart:io';
+import 'dart:convert';
+import 'dart:io' as io;
 
+import 'package:analyzer/file_system/file_system.dart';
+import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:path/path.dart' as path;
+
+Encoding utf8AllowMalformed = Utf8Codec(allowMalformed: true);
 
 /// Return a resolved path including the home directory in place of tilde
 /// references.
@@ -19,13 +24,70 @@ String resolveTildePath(String originalPath) {
 
   String homeDir;
 
-  if (Platform.isWindows) {
-    homeDir = path.absolute(Platform.environment['USERPROFILE']);
+  if (io.Platform.isWindows) {
+    homeDir = path.absolute(io.Platform.environment['USERPROFILE']);
   } else {
-    homeDir = path.absolute(Platform.environment['HOME']);
+    homeDir = path.absolute(io.Platform.environment['HOME']);
   }
 
   return path.join(homeDir, originalPath.substring(2));
+}
+
+extension X on ResourceProvider {
+  Folder getSystemTemp(String prefix) {
+    if (this is PhysicalResourceProvider) {
+      return getFolder(io.Directory.systemTemp.createTempSync(prefix).path);
+    } else {
+      return getFolder(pathContext.join('/tmp', prefix))..create();
+    }
+  }
+
+  Folder get defaultSdkDir {
+    if (this is PhysicalResourceProvider) {
+      var sdkDir = getFile(io.Platform.resolvedExecutable).parent.parent;
+      // TODO(srawlins)
+      //assert(
+      //    pathContext.equals(sdkDir.path, PubPackageMeta.sdkDirParent(sdkDir).path));
+      return sdkDir;
+    } else {
+      return getFolder('TODO');
+    }
+  }
+
+  String get resolvedExecutable {
+    if (this is PhysicalResourceProvider) {
+      return io.Platform.resolvedExecutable;
+    } else {
+      return '';
+    }
+  }
+
+  bool isExecutable(File file) {
+    if (this is PhysicalResourceProvider) {
+      var mode = io.File(file.path).statSync().mode;
+      return (0x1 & ((mode >> 6) | (mode >> 3) | mode)) != 0;
+    } else {
+      // TODO
+      return false;
+    }
+  }
+
+  bool isNotFound(File file) {
+    if (this is PhysicalResourceProvider) {
+      return io.File(file.path).statSync().type ==
+          io.FileSystemEntityType.notFound;
+    } else {
+      return !file.exists;
+    }
+  }
+
+  String readAsMalformedAllowedStringSync(File file) {
+    if (this is PhysicalResourceProvider) {
+      return io.File(file.path).readAsStringSync(encoding: utf8AllowMalformed);
+    } else {
+      return file.readAsStringSync();
+    }
+  }
 }
 
 /// Lists the contents of [dir].
@@ -37,8 +99,8 @@ String resolveTildePath(String originalPath) {
 /// The returned paths are guaranteed to begin with [dir].
 Iterable<String> listDir(String dir,
     {bool recursive = false,
-    Iterable<FileSystemEntity> Function(Directory dir) listDir}) {
-  listDir ??= (Directory dir) => dir.listSync();
+    Iterable<io.FileSystemEntity> Function(io.Directory dir) listDir}) {
+  listDir ??= (io.Directory dir) => dir.listSync();
 
   return _doList(dir, <String>{}, recursive, listDir);
 }
@@ -47,21 +109,21 @@ Iterable<String> _doList(
     String dir,
     Set<String> listedDirectories,
     bool recurse,
-    Iterable<FileSystemEntity> Function(Directory dir) listDir) sync* {
+    Iterable<io.FileSystemEntity> Function(io.Directory dir) listDir) sync* {
   // Avoid recursive symlinks.
-  var resolvedPath = Directory(dir).resolveSymbolicLinksSync();
+  var resolvedPath = io.Directory(dir).resolveSymbolicLinksSync();
   if (!listedDirectories.contains(resolvedPath)) {
     listedDirectories = Set<String>.from(listedDirectories);
     listedDirectories.add(resolvedPath);
 
-    for (var entity in listDir(Directory(dir))) {
+    for (var entity in listDir(io.Directory(dir))) {
       // Skip hidden files and directories
       if (path.basename(entity.path).startsWith('.')) {
         continue;
       }
 
       yield entity.path;
-      if (entity is Directory) {
+      if (entity is io.Directory) {
         if (recurse) {
           yield* _doList(entity.path, listedDirectories, recurse, listDir);
         }

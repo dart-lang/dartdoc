@@ -8,6 +8,7 @@ import 'dart:io';
 
 import 'package:async/async.dart';
 import 'package:dartdoc/dartdoc.dart';
+import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/category_renderer.dart';
 import 'package:dartdoc/src/render/enum_field_renderer.dart';
@@ -23,7 +24,9 @@ import 'src/utils.dart' as utils;
 final _testPackageGraphMemo = AsyncMemoizer<PackageGraph>();
 Future<PackageGraph> get _testPackageGraph =>
     _testPackageGraphMemo.runOnce(() => utils.bootBasicPackage(
-        'testing/test_package', ['css', 'code_in_comments'],
+        'testing/test_package',
+        ['css', 'code_in_comments'],
+        pubPackageMetaProvider,
         additionalArguments: ['--no-link-to-remote']));
 
 /// For testing sort behavior.
@@ -56,7 +59,7 @@ class TestLibraryContainerSdk extends TestLibraryContainer {
 }
 
 void main() {
-  var sdkDir = defaultSdkDir;
+  var sdkDir = pubPackageMetaProvider.resourceProvider.defaultSdkDir;
 
   if (sdkDir == null) {
     print('Warning: unable to locate the Dart SDK.');

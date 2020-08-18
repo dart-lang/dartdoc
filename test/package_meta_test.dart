@@ -4,18 +4,19 @@
 
 library dartdoc.package_utils_test;
 
-import 'dart:io';
-
+import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/package_meta.dart';
-import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
 void main() {
+  var resourceProvider = pubPackageMetaProvider.resourceProvider;
+
   group('PackageMeta for a directory without a pubspec', () {
     PackageMeta p;
 
     setUp(() {
-      var d = Directory.systemTemp.createTempSync('test_package_not_valid');
+      var d = resourceProvider.getSystemTemp('test_package_not_valid')
+        ..create();
       p = pubPackageMetaProvider.fromDir(d);
     });
 
@@ -25,8 +26,15 @@ void main() {
   });
 
   group('PackageMeta for the test package', () {
-    var p = pubPackageMetaProvider.fromDir(Directory(
-        path.join(Directory.current.path, 'testing', 'test_package')));
+    PackageMeta p;
+
+    setUp(() {
+      p = pubPackageMetaProvider.fromDir(resourceProvider.getFolder(
+          resourceProvider.pathContext.join(
+              resourceProvider.pathContext.current,
+              'testing',
+              'test_package')));
+    });
 
     test('readme with corrupt UTF-8 loads without throwing', () {
       expect(p.getReadmeContents().contents,
@@ -35,7 +43,8 @@ void main() {
   });
 
   group('PackageMeta.fromDir for this package', () {
-    var p = pubPackageMetaProvider.fromDir(Directory.current);
+    var p = pubPackageMetaProvider.fromDir(
+        resourceProvider.getFolder(resourceProvider.pathContext.current));
 
     test('has a name', () {
       expect(p.name, 'dartdoc');
@@ -82,7 +91,7 @@ void main() {
   });
 
   group('PackageMeta.fromSdk', () {
-    var p = pubPackageMetaProvider.fromDir(defaultSdkDir);
+    var p = pubPackageMetaProvider.fromDir(resourceProvider.defaultSdkDir);
 
     test('has a name', () {
       expect(p.name, 'Dart');

@@ -2,9 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'dart:io' show Directory;
-
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/src/generated/source.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -573,11 +572,11 @@ class _Processor extends __Processor with CommentProcessable {
           message: message, referredFrom: referredFrom);
 }
 
-class _FakeDirectory extends Fake implements Directory {
+class _FakeFolder extends Fake implements Folder {
   @override
   final String path;
 
-  _FakeDirectory() : path = _projectRoot;
+  _FakeFolder() : path = _projectRoot;
 }
 
 class _MockModelElementRenderer extends Mock implements ModelElementRenderer {}
@@ -594,9 +593,9 @@ class _FakePackage extends Fake implements Package {
 
 class _FakePackageMeta extends Fake implements PackageMeta {
   @override
-  final Directory dir;
+  final Folder dir;
 
-  _FakePackageMeta() : dir = _FakeDirectory();
+  _FakePackageMeta() : dir = _FakeFolder();
 }
 
 class _FakeElement extends Fake implements Element {

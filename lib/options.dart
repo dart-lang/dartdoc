@@ -1,29 +1,32 @@
 import 'dart:async';
-import 'dart:io';
+import 'dart:io' show stderr, exitCode;
 
+import 'package:analyzer/file_system/file_system.dart';
 import 'package:args/args.dart';
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/logging.dart';
 
 class DartdocProgramOptionContext extends DartdocGeneratorOptionContext
     with LoggingContext {
-  DartdocProgramOptionContext(DartdocOptionSet optionSet, Directory dir)
-      : super(optionSet, dir);
+  DartdocProgramOptionContext(
+      DartdocOptionSet optionSet, Folder dir, ResourceProvider resourceProvider)
+      : super(optionSet, dir, resourceProvider);
 
   bool get generateDocs => optionSet['generateDocs'].valueAt(context);
   bool get help => optionSet['help'].valueAt(context);
   bool get version => optionSet['version'].valueAt(context);
 }
 
-Future<List<DartdocOption<bool>>> createDartdocProgramOptions() async {
+Future<List<DartdocOption<bool>>> createDartdocProgramOptions(
+    ResourceProvider resourceProvider) async {
   return [
-    DartdocOptionArgOnly<bool>('generateDocs', true,
+    DartdocOptionArgOnly<bool>('generateDocs', true, resourceProvider,
         help:
             'Generate docs into the output directory (or only display warnings if false).',
         negatable: true),
-    DartdocOptionArgOnly<bool>('help', false,
+    DartdocOptionArgOnly<bool>('help', false, resourceProvider,
         abbr: 'h', help: 'Show command help.', negatable: false),
-    DartdocOptionArgOnly<bool>('version', false,
+    DartdocOptionArgOnly<bool>('version', false, resourceProvider,
         help: 'Display the version for $programName.', negatable: false),
   ];
 }
@@ -33,13 +36,16 @@ Future<DartdocProgramOptionContext> parseOptions(
   List<String> arguments, {
   OptionGenerator additionalOptions,
 }) async {
-  var optionSet = await DartdocOptionSet.fromOptionGenerators('dartdoc', [
-    () => createDartdocOptions(packageMetaProvider),
-    createDartdocProgramOptions,
-    createLoggingOptions,
-    createGeneratorOptions,
-    if (additionalOptions != null) additionalOptions,
-  ]);
+  var optionSet = await DartdocOptionSet.fromOptionGenerators(
+      'dartdoc',
+      [
+        () => createDartdocOptions(packageMetaProvider),
+        () => createDartdocProgramOptions(packageMetaProvider.resourceProvider),
+        () => createLoggingOptions(packageMetaProvider.resourceProvider),
+        () => createGeneratorOptions(packageMetaProvider.resourceProvider),
+        if (additionalOptions != null) additionalOptions,
+      ],
+      packageMetaProvider.resourceProvider);
 
   try {
     optionSet.parseArguments(arguments);
@@ -51,12 +57,12 @@ Future<DartdocProgramOptionContext> parseOptions(
     exitCode = 64;
     return null;
   }
-  if (optionSet['help'].valueAt(Directory.current)) {
+  if (optionSet['help'].valueAtCurrent()) {
     _printHelp(optionSet.argParser);
     exitCode = 0;
     return null;
   }
-  if (optionSet['version'].valueAt(Directory.current)) {
+  if (optionSet['version'].valueAtCurrent()) {
     _printVersion(optionSet.argParser);
     exitCode = 0;
     return null;
@@ -64,7 +70,8 @@ Future<DartdocProgramOptionContext> parseOptions(
 
   DartdocProgramOptionContext config;
   try {
-    config = DartdocProgramOptionContext(optionSet, null);
+    config = DartdocProgramOptionContext(
+        optionSet, null, packageMetaProvider.resourceProvider);
   } on DartdocOptionError catch (e) {
     stderr.writeln(' fatal error: ${e.message}');
     stderr.writeln('');

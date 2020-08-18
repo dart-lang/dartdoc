@@ -6,6 +6,7 @@ library dartdoc.model_test;
 
 import 'dart:io';
 
+import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/tool_runner.dart';
 import 'package:path/path.dart' as path;
@@ -36,7 +37,8 @@ void main() {
             '--snapshot-kind=app-jit',
             'bin/drill.dart'
           ],
-          workingDirectory: _testPackageDir.absolute.path);
+          workingDirectory: pubPackageMetaProvider.resourceProvider.pathContext
+              .absolute(_testPackageDir.path));
     } on ProcessException catch (exception) {
       stderr.writeln('Unable to make snapshot of tool: $exception');
       expect(result?.exitCode, equals(0));
@@ -73,8 +75,11 @@ echo:
   windows: ['C:\\Windows\\System32\\cmd.exe', '/c', 'echo']
   description: 'Works on everything'
 ''';
-    var pathContext = path.Context(current: _testPackageDir.absolute.path);
-    toolMap = ToolConfiguration.fromYamlMap(loadYaml(yamlMap), pathContext);
+    var pathContext = path.Context(
+        current: pubPackageMetaProvider.resourceProvider.pathContext
+            .absolute(_testPackageDir.path));
+    toolMap = ToolConfiguration.fromYamlMap(loadYaml(yamlMap), pathContext,
+        pubPackageMetaProvider.resourceProvider);
     // This shouldn't really happen, but if you didn't load the config from a
     // yaml map (which would fail on a missing executable), or a file is deleted
     // during execution,it might, so we test it.
