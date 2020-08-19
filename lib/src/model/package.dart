@@ -125,7 +125,7 @@ class Package extends LibraryContainer
   // plain text or markdown.
   bool get hasDocumentationFile => documentationFile != null;
 
-  FileContents get documentationFile => packageMeta.getReadmeContents();
+  File get documentationFile => packageMeta.getReadmeContents();
 
   @override
   String get oneLineDoc => '';

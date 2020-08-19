@@ -7,7 +7,6 @@ import 'dart:io';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/model.dart';
-import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/render/category_renderer.dart';
 import 'package:dartdoc/src/warnings.dart';
 
@@ -174,14 +173,13 @@ class Category extends Nameable
   @override
   String get kind => 'Topic';
 
-  FileContents _documentationFile;
+  File _documentationFile;
 
   @override
-  FileContents get documentationFile {
+  File get documentationFile {
     if (_documentationFile == null) {
       if (categoryDefinition?.documentationMarkdown != null) {
-        _documentationFile =
-            FileContents(File(categoryDefinition.documentationMarkdown));
+        _documentationFile = File(categoryDefinition.documentationMarkdown);
       }
     }
     return _documentationFile;
