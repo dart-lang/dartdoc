@@ -2,18 +2,12 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-/// Make it possible to load resources, independent of how the Dart app is run.
-///
-///     Future<String> getTemplateFile(String templatePath) {
-///       return loadAsString('package:dartdoc/templates/$templatePath');
-///     }
-///
+/// Make it possible to load resources from the dartdoc code repository.
 library dartdoc.resource_loader;
 
-import 'dart:async' show Future;
 import 'dart:convert' show utf8;
-
-import 'package:resource/resource.dart' as resource;
+import 'dart:io' show File;
+import 'dart:isolate' show Isolate;
 
 /// Loads a `package:` resource as a String.
 Future<String> loadAsString(String path) async {
@@ -28,6 +22,19 @@ Future<List<int>> loadAsBytes(String path) async {
     throw ArgumentError('path must begin with package:');
   }
 
-  var uri = Uri.parse(path);
-  return await resource.ResourceLoader.defaultLoader.readAsBytes(uri);
+  var uri = await _resolveUri(Uri.parse(path));
+  return File.fromUri(uri).readAsBytes();
+}
+
+/// Helper function for resolving to a non-relative, non-package URI.
+Future<Uri> _resolveUri(Uri uri) {
+  if (uri.scheme == 'package') {
+    return Isolate.resolvePackageUri(uri).then((resolvedUri) {
+      if (resolvedUri == null) {
+        throw ArgumentError.value(uri, 'uri', 'Unknown package');
+      }
+      return resolvedUri;
+    });
+  }
+  return Future<Uri>.value(Uri.base.resolveUri(uri));
 }
