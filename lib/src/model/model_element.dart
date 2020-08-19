@@ -422,6 +422,9 @@ abstract class ModelElement extends Canonicalization
         annotationElement =
             (annotationElement as PropertyAccessorElement).variable;
       }
+      if (annotationElement is Member) {
+        annotationElement = (annotationElement as Member).declaration;
+      }
 
       // Some annotations are intended to be invisible (such as `@pragma`).
       if (!_shouldDisplayAnnotation(annotationElement)) continue;
@@ -438,22 +441,19 @@ abstract class ModelElement extends Canonicalization
   }
 
   bool _shouldDisplayAnnotation(Element annotationElement) {
-    ClassElement annotationClassElement;
     if (annotationElement is ClassElement) {
-      annotationClassElement = annotationElement;
+      var annotationClass =
+          packageGraph.findCanonicalModelElementFor(annotationElement) as Class;
+      if (annotationClass == null && annotationElement != null) {
+        annotationClass =
+            ModelElement.fromElement(annotationElement, packageGraph) as Class;
+      }
+
+      return annotationClass == null ||
+          packageGraph.isAnnotationVisible(annotationClass);
     }
-    // `annotationElement` can be null if the element can't be resolved.
-    var annotationClass = packageGraph
-        .findCanonicalModelElementFor(annotationClassElement) as Class;
-    if (annotationClass == null &&
-        annotationElement != null &&
-        annotationClassElement != null) {
-      annotationClass =
-          ModelElement.fromElement(annotationClassElement, packageGraph)
-              as Class;
-    }
-    return annotationClass == null ||
-        packageGraph.isAnnotationVisible(annotationClass);
+    // We cannot resolve it, which does not prevent it from being displayed.
+    return true;
   }
 
   bool _isPublic;
