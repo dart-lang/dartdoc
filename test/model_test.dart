@@ -3671,7 +3671,10 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           fakeLibrary.functions.firstWhere((f) => f.name == 'paintImage1');
       var params =
           ParameterRendererHtml().renderLinkedParams(method.parameters);
-      expect(params, contains('@required'));
+      expect(
+          params,
+          contains(
+              '@<a href="${HTMLBASE_PLACEHOLDER}fake/required-constant.html">required</a>'));
     });
 
     test('param exported in library', () {
@@ -3685,8 +3688,9 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .renderLinkedParams(methodWithTypedefParam.parameters);
       expect(
           params,
-          equals(
-              '<span class="parameter" id="methodWithTypedefParam-param-p"><span class="type-annotation"><a href="${HTMLBASE_PLACEHOLDER}ex/processMessage.html">processMessage</a></span> <span class="parameter-name">p</span></span><wbr>'));
+          equals('<span class="parameter" id="methodWithTypedefParam-param-p">'
+              '<span class="type-annotation"><a href="${HTMLBASE_PLACEHOLDER}ex/processMessage.html">processMessage</a></span> '
+              '<span class="parameter-name">p</span></span><wbr>'));
     });
   });
 
@@ -3765,20 +3769,34 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           forAnnotation.annotations.first,
           equals(
-              '@<a href="${HTMLBASE_PLACEHOLDER}ex/ForAnnotation-class.html">ForAnnotation</a>(&#39;my value&#39;)'));
+              '@<a href="${HTMLBASE_PLACEHOLDER}ex/ForAnnotation-class.html">ForAnnotation</a>'
+              '(&#39;my value&#39;)'));
     });
 
     test('methods has the right annotation', () {
       var m = dog.instanceMethods.singleWhere((m) => m.name == 'getClassA');
       expect(m.hasAnnotations, isTrue);
-      expect(m.annotations.first, equals('@deprecated'));
+      expect(
+          m.annotations.first,
+          equals(
+              '@<a href="${HTMLBASE_PLACEHOLDER}ex/deprecated-constant.html">deprecated</a>'));
     });
 
-    test('method annotations have the right link and are escaped', () {
+    test('constructor annotations have the right link and are escaped', () {
       expect(
           ctr.annotations[0],
           equals(
-              '@<a href="${HTMLBASE_PLACEHOLDER}ex/Deprecated-class.html">Deprecated</a>(&quot;Internal use&quot;)'));
+              '@<a href="${HTMLBASE_PLACEHOLDER}ex/Deprecated-class.html">Deprecated</a>'
+              '(&quot;Internal use&quot;)'));
+    });
+
+    test('const annotations have the right link and are escaped', () {
+      var createDog2 =
+          dog.staticMethods.firstWhere((c) => c.name == 'createDog2');
+      expect(
+          createDog2.annotations[0],
+          equals(
+              '@<a href="${HTMLBASE_PLACEHOLDER}ex/deprecated-constant.html">deprecated</a>'));
     });
   });
 

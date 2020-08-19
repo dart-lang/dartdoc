@@ -447,6 +447,11 @@ class Dog implements Cat, E {
     return Dog.deprecatedCreate(s);
   }
 
+  @deprecated
+  static Dog createDog2(String s) {
+    return Dog.deprecatedCreate(s);
+  }
+
   @override
   void abstractMethod() {}
 }
