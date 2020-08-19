@@ -6,7 +6,6 @@ analyzer:
   errors:
     unused_import: warning
     unused_shown_name: warning
-    todo: ignore
   exclude:
     - 'doc/**'
     - 'lib/src/third_party/pkg/**'
