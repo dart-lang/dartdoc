@@ -399,6 +399,10 @@ abstract class ModelElement extends Canonicalization
   List<String> get annotations => annotationsFromMetadata(element.metadata);
 
   /// Returns linked annotations from a given metadata set, with escaping.
+  // TODO(srawlins): Attempt to revive constructor arguments in an annotation,
+  // akin to source_gen's Reviver, in order to link to inner components. For
+  // example, in `@Foo(const Bar(), baz: <Baz>[Baz.one, Baz.two])`, link to
+  // `Foo`, `Bar`, `Baz`, `Baz.one`, and `Baz.two`.
   List<String> annotationsFromMetadata(List<ElementAnnotation> md) {
     var annotationStrings = <String>[];
     if (md == null) return annotationStrings;
@@ -406,37 +410,50 @@ abstract class ModelElement extends Canonicalization
       var annotation = (const HtmlEscape()).convert(a.toSource());
       var annotationElement = a.element;
 
-      ClassElement annotationClassElement;
-      if (annotationElement is ExecutableElement) {
+      if (annotationElement is ConstructorElement) {
+        // TODO(srawlins): I think we should actually link to the constructor,
+        // which may have details about parameters. For example, given the
+        // annotation `@Immutable('text')`, the constructor documents what the
+        // parameter is, and the class only references `immutable`. It's a
+        // lose-lose cycle of mis-direction.
         annotationElement =
-            (annotationElement as ExecutableElement).returnType.element;
+            (annotationElement as ConstructorElement).returnType.element;
+      } else if (annotationElement is PropertyAccessorElement) {
+        annotationElement =
+            (annotationElement as PropertyAccessorElement).variable;
       }
-      if (annotationElement is ClassElement) {
-        annotationClassElement = annotationElement;
-      }
+
+      // Some annotations are intended to be invisible (such as `@pragma`).
+      if (!_shouldDisplayAnnotation(annotationElement)) continue;
+
       var annotationModelElement =
           packageGraph.findCanonicalModelElementFor(annotationElement);
-      // annotationElement can be null if the element can't be resolved.
-      var annotationClass = packageGraph
-          .findCanonicalModelElementFor(annotationClassElement) as Class;
-      if (annotationClass == null &&
-          annotationElement != null &&
-          annotationClassElement != null) {
-        annotationClass =
-            ModelElement.fromElement(annotationClassElement, packageGraph)
-                as Class;
+      if (annotationModelElement != null) {
+        annotation = annotation.replaceFirst(
+            annotationModelElement.name, annotationModelElement.linkedName);
       }
-      // Some annotations are intended to be invisible (@pragma)
-      if (annotationClass == null ||
-          !packageGraph.invisibleAnnotations.contains(annotationClass)) {
-        if (annotationModelElement != null) {
-          annotation = annotation.replaceFirst(
-              annotationModelElement.name, annotationModelElement.linkedName);
-        }
-        annotationStrings.add(annotation);
-      }
+      annotationStrings.add(annotation);
     }
     return annotationStrings;
+  }
+
+  bool _shouldDisplayAnnotation(Element annotationElement) {
+    ClassElement annotationClassElement;
+    if (annotationElement is ClassElement) {
+      annotationClassElement = annotationElement;
+    }
+    // `annotationElement` can be null if the element can't be resolved.
+    var annotationClass = packageGraph
+        .findCanonicalModelElementFor(annotationClassElement) as Class;
+    if (annotationClass == null &&
+        annotationElement != null &&
+        annotationClassElement != null) {
+      annotationClass =
+          ModelElement.fromElement(annotationClassElement, packageGraph)
+              as Class;
+    }
+    return annotationClass == null ||
+        packageGraph.isAnnotationVisible(annotationClass);
   }
 
   bool _isPublic;
@@ -506,14 +523,13 @@ abstract class ModelElement extends Canonicalization
           .where((s) => s.isNotEmpty));
 
   Set<String> get features {
-    var allFeatures = <String>{};
-    allFeatures.addAll(annotations);
+    var allFeatures = <String>{...annotations};
 
     // Replace the @override annotation with a feature that explicitly
     // indicates whether an override has occurred.
     allFeatures.remove('@override');
 
-    // Drop the plain "deprecated" annotation, that's indicated via
+    // Drop the plain "deprecated" annotation; that's indicated via
     // strikethroughs. Custom @Deprecated() will still appear.
     allFeatures.remove('@deprecated');
     // const and static are not needed here because const/static elements get

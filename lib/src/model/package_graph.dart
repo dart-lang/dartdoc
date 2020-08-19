@@ -641,13 +641,11 @@ class PackageGraph {
 
   /// Returns the set of [Class] objects that are similar to pragma
   /// in that we should never count them as documentable annotations.
-  Set<Class> get invisibleAnnotations {
-    if (_invisibleAnnotations == null) {
-      _invisibleAnnotations = {};
-      _invisibleAnnotations.add(specialClasses[SpecialClass.pragma]);
-    }
-    return _invisibleAnnotations;
-  }
+  Set<Class> get invisibleAnnotations =>
+      _invisibleAnnotations ??= {specialClasses[SpecialClass.pragma]};
+
+  bool isAnnotationVisible(Class class_) =>
+      !invisibleAnnotations.contains(class_);
 
   @override
   String toString() {
