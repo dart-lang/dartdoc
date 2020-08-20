@@ -22,27 +22,26 @@ import 'src/utils.dart';
 final _resourceProvider = pubPackageMetaProvider.resourceProvider;
 final _pathContext = _resourceProvider.pathContext;
 
-final _testPackageDir =
-    _resourceProvider.getFolder(_pathContext.absolute('testing/test_package'));
+Folder _getFolder(String p) => _resourceProvider
+    .getFolder(_pathContext.absolute(_pathContext.canonicalize(p)));
 
-final Folder _testPackageBadDir = _resourceProvider
-    .getFolder(_pathContext.absolute('testing/test_package_bad'));
-final Folder _testPackageMinimumDir = _resourceProvider
-    .getFolder(_pathContext.absolute('testing/test_package_minimum'));
-final Folder _testSkyEnginePackage =
-    _resourceProvider.getFolder(_pathContext.absolute('testing/sky_engine'));
-final Folder _testPackageWithNoReadme = _resourceProvider
-    .getFolder(_pathContext.absolute('testing/test_package_small'));
-final Folder _testPackageIncludeExclude = _resourceProvider
-    .getFolder(_pathContext.absolute('testing/test_package_include_exclude'));
-final Folder _testPackageImportExportError = _resourceProvider.getFolder(
-    _pathContext.absolute('testing/test_package_import_export_error'));
-final Folder _testPackageOptions = _resourceProvider
-    .getFolder(_pathContext.absolute('testing/test_package_options'));
-final Folder _testPackageOptionsImporter = _resourceProvider
-    .getFolder(_pathContext.absolute('testing/test_package_options_importer'));
-final _testPackageCustomTemplates = _resourceProvider
-    .getFolder(_pathContext.absolute('testing/test_package_custom_templates'));
+final _testPackageDir = _getFolder('testing/test_package');
+
+final Folder _testPackageBadDir = _getFolder('testing/test_package_bad');
+final Folder _testPackageMinimumDir =
+    _getFolder('testing/test_package_minimum');
+final Folder _testSkyEnginePackage = _getFolder('testing/sky_engine');
+final Folder _testPackageWithNoReadme =
+    _getFolder('testing/test_package_small');
+final Folder _testPackageIncludeExclude =
+    _getFolder('testing/test_package_include_exclude');
+final Folder _testPackageImportExportError =
+    _getFolder('testing/test_package_import_export_error');
+final Folder _testPackageOptions = _getFolder('testing/test_package_options');
+final Folder _testPackageOptionsImporter =
+    _getFolder('testing/test_package_options_importer');
+final _testPackageCustomTemplates =
+    _getFolder('testing/test_package_custom_templates');
 
 /// Convenience factory to build a [DartdocGeneratorOptionContext] and associate
 /// it with a [DartdocOptionSet] based on the current working directory and/or
