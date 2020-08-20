@@ -19,8 +19,8 @@ const int kTestPackagePublicLibraries = 17;
 final _resourceProvider = pubPackageMetaProvider.resourceProvider;
 final _pathContext = _resourceProvider.pathContext;
 
-final Folder testPackageToolError = _resourceProvider
-    .getFolder(_pathContext.absolute('testing/test_package_tool_error'));
+final Folder testPackageToolError = _resourceProvider.getFolder(_pathContext
+    .absolute(_pathContext.normalize('testing/test_package_tool_error')));
 
 /// Convenience factory to build a [DartdocOptionContext] and associate it with a
 /// [DartdocOptionSet] based on the current working directory.
