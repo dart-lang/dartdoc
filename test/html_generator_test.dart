@@ -77,6 +77,7 @@ void main() {
   group('HtmlGenerator', () {
     Generator generator;
     var resourceProvider = pubPackageMetaProvider.resourceProvider;
+    var pathContext = resourceProvider.pathContext;
     Folder tempOutput;
     FileWriter writer;
 
@@ -96,15 +97,14 @@ void main() {
       });
 
       test('resources are put into the right place', () {
-        var output = resourceProvider.getFolder(resourceProvider.pathContext
-            .join(tempOutput.path, 'static-assets'));
+        var output = resourceProvider
+            .getFolder(pathContext.join(tempOutput.path, 'static-assets'));
         expect(output, doesExist);
 
         for (var resource in resource_names.map((r) =>
             path.relative(Uri.parse(r).path, from: 'dartdoc/resources'))) {
           expect(
-              resourceProvider.getFile(
-                  resourceProvider.pathContext.join(output.path, resource)),
+              resourceProvider.getFile(pathContext.join(output.path, resource)),
               doesExist);
         }
       });
@@ -112,9 +112,9 @@ void main() {
 
     group('for a package that causes duplicate files', () {
       PackageGraph packageGraph;
-      var testPackageDuplicateDir = resourceProvider.getFolder(resourceProvider
-          .pathContext
-          .absolute('testing/test_package_duplicate'));
+      var testPackageDuplicateDir = resourceProvider.getFolder(
+          pathContext.absolute(
+              pathContext.canonicalize('testing/test_package_duplicate')));
 
       setUp(() async {
         generator = await _initGeneratorForTest();
