@@ -40,8 +40,8 @@ Future<PackageGraph> bootBasicPackage(String dirPath,
     List<String> excludeLibraries, PackageMetaProvider packageMetaProvider,
     {List<String> additionalArguments}) async {
   var resourceProvider = packageMetaProvider.resourceProvider;
-  var dir = resourceProvider
-      .getFolder(resourceProvider.pathContext.absolute(dirPath));
+  var dir = resourceProvider.getFolder(resourceProvider.pathContext
+      .absolute(resourceProvider.pathContext.normalize(dirPath)));
   additionalArguments ??= <String>[];
   return PubPackageBuilder(
           await contextFromArgv([
