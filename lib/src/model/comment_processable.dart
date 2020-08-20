@@ -72,6 +72,8 @@ mixin CommentProcessable on Documentable, Warnable, Locatable, SourceCodeMixin {
       // Remember, periods are legal in library names.
       fullyQualifiedName.replaceFirst('${library.fullyQualifiedName}.', '');
 
+  path.Context get pathContext => packageGraph.resourceProvider.pathContext;
+
   @visibleForTesting
   ModelElementRenderer get modelElementRenderer =>
       packageGraph.rendererFactory.modelElementRenderer;
@@ -196,10 +198,8 @@ mixin CommentProcessable on Documentable, Warnable, Locatable, SourceCodeMixin {
 
       var replacement = match[0]; // default to fully matched string.
 
-      var fragmentFile = packageGraph.resourceProvider.getFile(packageGraph
-          .resourceProvider.pathContext
-          .canonicalize(packageGraph.resourceProvider.pathContext
-              .join(dirPath, args['file'])));
+      var fragmentFile = packageGraph.resourceProvider.getFile(
+          pathContext.canonicalize(pathContext.join(dirPath, args['file'])));
       if (fragmentFile.exists) {
         replacement = fragmentFile.readAsStringSync();
         if (lang.isNotEmpty) {
@@ -235,8 +235,7 @@ mixin CommentProcessable on Documentable, Warnable, Locatable, SourceCodeMixin {
     // Extract PATH and fix the path separators.
     var src = results.rest.isEmpty
         ? ''
-        : results.rest.first.replaceAll(
-            '/', packageGraph.resourceProvider.pathContext.separator);
+        : results.rest.first.replaceAll('/', pathContext.separator);
     var args = <String, String>{
       'src': src,
       'lang': results['lang'],

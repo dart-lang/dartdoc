@@ -278,10 +278,6 @@ abstract class PubPackageMeta extends PackageMeta {
   }
 }
 
-extension FileContents on File {
-  //String get contents => readAsMalformedAllowedStringSync();
-}
-
 class _FilePackageMeta extends PubPackageMeta {
   File _readme;
   File _license;

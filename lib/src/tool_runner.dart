@@ -9,6 +9,7 @@ import 'dart:io' show Process, ProcessException;
 
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/io_utils.dart';
+import 'package:path/path.dart' as p;
 import 'dartdoc_options.dart';
 
 typedef ToolErrorCallback = void Function(String message);
@@ -42,6 +43,7 @@ class ToolTempFileTracker {
 
   Future<File> createTemporaryFile() async {
     _temporaryFileCount++;
+    // TODO(srawlins): Assume [temporaryDirectory]'s path is always absolute.
     var tempFile = resourceProvider.getFile(resourceProvider.pathContext.join(
         resourceProvider.pathContext.absolute(temporaryDirectory.path),
         'input_$_temporaryFileCount'));
@@ -101,7 +103,7 @@ class ToolRunner {
       if (result.exitCode != 0) {
         toolErrorCallback('Tool "$name" returned non-zero exit code '
             '(${result.exitCode}) when run as "${commandString()}" from '
-            '${toolConfiguration.resourceProvider.pathContext.current}\n'
+            '${pathContext.current}\n'
             'Input to $name was:\n'
             '$content\n'
             'Stderr output was:\n${result.stderr}\n');
@@ -169,8 +171,7 @@ class ToolRunner {
     // environment variables. Variables are allowed to either be in $(VAR) form,
     // or $VAR form.
     var envWithInput = {
-      'INPUT':
-          toolConfiguration.resourceProvider.pathContext.absolute(tmpFile.path),
+      'INPUT': pathContext.absolute(tmpFile.path),
       'TOOL_COMMAND': toolDefinition.command[0],
       ...environment,
     };
@@ -181,11 +182,10 @@ class ToolRunner {
       // script writer can use this instead of Platform.script if they want to
       // find out where their script was coming from as an absolute path on the
       // filesystem.
-      envWithInput['DART_SNAPSHOT_CACHE'] =
-          toolConfiguration.resourceProvider.pathContext.absolute(
-              SnapshotCache.createInstance(toolConfiguration.resourceProvider)
-                  .snapshotCache
-                  .path);
+      envWithInput['DART_SNAPSHOT_CACHE'] = pathContext.absolute(
+          SnapshotCache.createInstance(toolConfiguration.resourceProvider)
+              .snapshotCache
+              .path);
       if (toolDefinition.setupCommand != null) {
         envWithInput['DART_SETUP_COMMAND'] = toolDefinition.setupCommand[0];
       }
@@ -227,4 +227,6 @@ class ToolRunner {
           envWithInput, toolErrorCallback);
     }
   }
+
+  p.Context get pathContext => toolConfiguration.resourceProvider.pathContext;
 }

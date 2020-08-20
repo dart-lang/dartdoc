@@ -26,28 +26,29 @@ final Folder testPackageToolError = _resourceProvider
 /// [DartdocOptionSet] based on the current working directory.
 Future<DartdocOptionContext> contextFromArgv(
     List<String> argv, PackageMetaProvider packageMetaProvider) async {
+  var resourceProvider = packageMetaProvider.resourceProvider;
   var optionSet = await DartdocOptionSet.fromOptionGenerators(
       'dartdoc', [createDartdocOptions], packageMetaProvider);
   optionSet.parseArguments(argv);
   return DartdocOptionContext(
       optionSet,
-      packageMetaProvider.resourceProvider
-          .getFolder(packageMetaProvider.resourceProvider.pathContext.current),
+      resourceProvider.getFolder(resourceProvider.pathContext.current),
       pubPackageMetaProvider.resourceProvider);
 }
 
 Future<PackageGraph> bootBasicPackage(String dirPath,
     List<String> excludeLibraries, PackageMetaProvider packageMetaProvider,
     {List<String> additionalArguments}) async {
-  var dir = packageMetaProvider.resourceProvider.getFolder(
-      packageMetaProvider.resourceProvider.pathContext.absolute(dirPath));
+  var resourceProvider = packageMetaProvider.resourceProvider;
+  var dir = resourceProvider
+      .getFolder(resourceProvider.pathContext.absolute(dirPath));
   additionalArguments ??= <String>[];
   return PubPackageBuilder(
           await contextFromArgv([
             '--input',
             dir.path,
             '--sdk-dir',
-            pubPackageMetaProvider.resourceProvider.defaultSdkDir.path,
+            resourceProvider.defaultSdkDir.path,
             '--exclude',
             excludeLibraries.join(','),
             '--allow-tools',

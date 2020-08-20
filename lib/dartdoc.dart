@@ -236,8 +236,6 @@ class Dartdoc {
       logInfo('Success! Docs generated into $outDirPath');
       return dartdocResults;
     } finally {
-      // TODO: necessary?
-      //SnapshotCache.createInstance(config.resourceProvider);
       // Clear out any cached tool snapshots and temporary directories.
       // ignore: unawaited_futures
       SnapshotCache.instance?.dispose();
@@ -298,36 +296,44 @@ class Dartdoc {
     var staticAssets = path.joinAll([normalOrigin, 'static-assets', '']);
     var indexJson = path.joinAll([normalOrigin, 'index.json']);
     var foundIndexJson = false;
-    // TODO: recursive
-    for (var f in config.resourceProvider.getFolder(normalOrigin).getChildren(
-        /*recursive: true*/)) {
-      if (f is Folder) {
-        continue;
-      }
-      var fullPath = path.normalize(f.path);
-      if (fullPath.startsWith(staticAssets)) {
-        continue;
-      }
-      if (fullPath == indexJson) {
-        foundIndexJson = true;
-        _onCheckProgress.add(fullPath);
-        continue;
-      }
-      if (visited.contains(fullPath)) continue;
-      var relativeFullPath = path.relative(fullPath, from: normalOrigin);
-      if (!writtenFiles.contains(relativeFullPath)) {
-        // This isn't a file we wrote (this time); don't claim we did.
-        _warn(packageGraph, PackageWarning.unknownFile, fullPath, normalOrigin);
-      } else {
-        // Error messages are orphaned by design and do not appear in the search
-        // index.
-        if (<String>['__404error.html', 'categories.json'].contains(fullPath)) {
-          _warn(packageGraph, PackageWarning.orphanedFile, fullPath,
-              normalOrigin);
+
+    void checkDirectory(Folder dir) {
+      for (var f in dir.getChildren()) {
+        //if (path.basename(f.path) == '.' || path.basename(f.path) == '..') {
+        //  continue;
+        // }
+        if (f is Folder) {
+          checkDirectory(f);
         }
+        var fullPath = path.normalize(f.path);
+        if (fullPath.startsWith(staticAssets)) {
+          continue;
+        }
+        if (fullPath == indexJson) {
+          foundIndexJson = true;
+          _onCheckProgress.add(fullPath);
+          continue;
+        }
+        if (visited.contains(fullPath)) continue;
+        var relativeFullPath = path.relative(fullPath, from: normalOrigin);
+        if (!writtenFiles.contains(relativeFullPath)) {
+          // This isn't a file we wrote (this time); don't claim we did.
+          _warn(
+              packageGraph, PackageWarning.unknownFile, fullPath, normalOrigin);
+        } else {
+          // Error messages are orphaned by design and do not appear in the search
+          // index.
+          if (<String>['__404error.html', 'categories.json']
+              .contains(fullPath)) {
+            _warn(packageGraph, PackageWarning.orphanedFile, fullPath,
+                normalOrigin);
+          }
+        }
+        _onCheckProgress.add(fullPath);
       }
-      _onCheckProgress.add(fullPath);
     }
+
+    checkDirectory(config.resourceProvider.getFolder(normalOrigin));
 
     if (!foundIndexJson) {
       _warn(packageGraph, PackageWarning.brokenLink, indexJson, normalOrigin);
