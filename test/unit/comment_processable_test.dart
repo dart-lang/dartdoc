@@ -367,10 +367,10 @@ End text.'''));
 ///
 /// End text.
 ''');
-    verify(processor.packageGraph.warnOnElement(
-            processor, PackageWarning.missingExampleFile,
-            message: '${p.canonicalize(p.join(_projectRoot, 'abc-r.md'))}; '
-                'path listed at a.dart'))
+    verify(processor.packageGraph
+            .warnOnElement(processor, PackageWarning.missingExampleFile,
+                message: '${p.canonicalize(p.join(_projectRoot, 'abc-r.md'))}; '
+                    'path listed at a.dart'))
         .called(1);
     // When the example path is invalid, the directive should be left in-place.
     expect(doc, equals('''
