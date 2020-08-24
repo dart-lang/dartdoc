@@ -52,7 +52,8 @@ extension ResourceProviderExtensions on ResourceProvider {
           sdkDir.path, PubPackageMeta.sdkDirParent(sdkDir, this).path));
       return sdkDir;
     } else {
-      return getFolder('TODO(srawlins)');
+      // TODO(srawlins): Return what is needed for tests.
+      return null;
     }
   }
 
@@ -60,7 +61,8 @@ extension ResourceProviderExtensions on ResourceProvider {
     if (this is PhysicalResourceProvider) {
       return io.Platform.resolvedExecutable;
     } else {
-      return 'TODO(srawlins)';
+      // TODO(srawlins): Return what is needed for tests.
+      return null;
     }
   }
 

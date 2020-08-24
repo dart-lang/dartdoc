@@ -299,9 +299,6 @@ class Dartdoc {
 
     void checkDirectory(Folder dir) {
       for (var f in dir.getChildren()) {
-        //if (path.basename(f.path) == '.' || path.basename(f.path) == '..') {
-        //  continue;
-        // }
         if (f is Folder) {
           checkDirectory(f);
         }
