@@ -1603,6 +1603,11 @@ Future<List<DartdocOption<Object>>> createDartdocOptions(
           (option.root['topLevelPackageMeta'].valueAt(dir) as PackageMeta)
               .requiresFlutter) {
         String flutterRoot = option.root['flutterRoot'].valueAt(dir);
+        if (flutterRoot == null) {
+          // For now, return null. An error is reported in
+          // [PackageBuilder.buildPackageGraph].
+          return null;
+        }
         return p.join(flutterRoot, 'bin', 'cache', 'dart-sdk');
       }
       return defaultSdkDir.absolute.path;
