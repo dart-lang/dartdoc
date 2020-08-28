@@ -658,8 +658,13 @@ abstract class ModelElement extends Canonicalization
         documentationFrom.map((e) => e.documentationLocal).join('<p>'));
   }
 
-  Library get definingLibrary =>
-      packageGraph.findButDoNotCreateLibraryFor(element);
+  Library get definingLibrary {
+    var library = packageGraph.findButDoNotCreateLibraryFor(element);
+    if (library == null) {
+      warn(PackageWarning.noDefiningLibraryFound);
+    }
+    return library;
+  }
 
   Library _canonicalLibrary;
 
@@ -700,6 +705,9 @@ abstract class ModelElement extends Canonicalization
   }
 
   Library _searchForCanonicalLibrary() {
+    if (definingLibrary == null) {
+      return null;
+    }
     var thisAndExported = definingLibrary.exportedInLibraries;
 
     if (thisAndExported == null) {
@@ -1023,7 +1031,7 @@ abstract class ModelElement extends Canonicalization
   PackageGraph get packageGraph => _packageGraph;
 
   @override
-  Package get package => library.package;
+  Package get package => library?.package;
 
   bool get isPublicAndPackageDocumented =>
       isPublic && library.packageGraph.packageDocumentedFor(this);

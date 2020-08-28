@@ -135,11 +135,20 @@ final Map<PackageWarning, PackageWarningDefinition> packageWarningDefinitions =
   PackageWarning.ignoredCanonicalFor: PackageWarningDefinition(
       PackageWarning.ignoredCanonicalFor,
       'ignored-canonical-for',
-      'A @canonicalFor tag refers to a library which this symbol can not be canonical for'),
+      'A @canonicalFor tag refers to a library which this symbol can not be '
+          'canonical for'),
   PackageWarning.noCanonicalFound: PackageWarningDefinition(
       PackageWarning.noCanonicalFound,
       'no-canonical-found',
-      'A symbol is part of the public interface for this package, but no library documented with this package documents it so dartdoc can not link to it'),
+      'A symbol is part of the public interface for this package, but no '
+          'library documented with this package documents it so dartdoc can '
+          'not link to it'),
+  PackageWarning.noDefiningLibraryFound: PackageWarningDefinition(
+      PackageWarning.noDefiningLibraryFound,
+      'no-defining-library-found',
+      'The defining library for an element could not be found; the library may '
+          'be imported or exported with a non-standard URI',
+      defaultWarningMode: PackageWarningMode.error),
   PackageWarning.notImplemented: PackageWarningDefinition(
       PackageWarning.notImplemented,
       'not-implemented',
@@ -245,6 +254,7 @@ enum PackageWarning {
   ambiguousReexport,
   ignoredCanonicalFor,
   noCanonicalFound,
+  noDefiningLibraryFound,
   notImplemented,
   noLibraryLevelDocs,
   packageOrderGivesMissingPackageName,
@@ -441,9 +451,7 @@ class PackageWarningCounter {
     PackageWarningOptionContext config =
         element?.config ?? packageGraph.defaultPackage.config;
     var warningMode = config.packageWarningOptions.getMode(kind);
-    if (!config.allowNonLocalWarnings &&
-        element != null &&
-        !element.package.isLocal) {
+    if (!config.allowNonLocalWarnings && !(element?.package?.isLocal ?? true)) {
       warningMode = PackageWarningMode.ignore;
     }
     if (warningMode == PackageWarningMode.warn) {
