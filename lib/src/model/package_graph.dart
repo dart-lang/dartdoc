@@ -347,6 +347,11 @@ class PackageGraph {
         warningMessage =
             'ambiguous reexport of ${warnableName}, canonicalization candidates: ${message}';
         break;
+      case PackageWarning.noDefiningLibraryFound:
+        warningMessage =
+            'could not find the defining library for ${warnableName}; the '
+            'library may be imported or exported with a non-standard URI';
+        break;
       case PackageWarning.noLibraryLevelDocs:
         warningMessage =
             '${warnable.fullyQualifiedName} has no library level documentation comments';
