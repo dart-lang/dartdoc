@@ -209,7 +209,7 @@ void main() {
               'Map<span class="signature">&lt;<wbr><span class="type-parameter">T?</span>, <span class="type-parameter">String?</span>&gt;</span>'));
       expect(aComplexSetterOnlyType.linkedReturnType, equals(
           // TODO(jcollins-g): fix wrong span class for setter-only return type (#2226)
-          '<span class="parameter" id="aComplexSetterOnlyType=-param-value"><span class="type-annotation">List<span class="signature">&lt;<wbr><span class="type-parameter">Map<span class="signature">&lt;<wbr><span class="type-parameter">T?</span>, <span class="type-parameter">String?</span>&gt;</span>?</span>&gt;</span></span></span><wbr>'));
+          '<span class="parameter" id="aComplexSetterOnlyType=-param-value"><span class="type-annotation">List<span class="signature">&lt;<wbr><span class="type-parameter">Map<span class="signature">&lt;<wbr><span class="type-parameter">T?</span>, <span class="type-parameter">String?</span>&gt;</span>?</span>&gt;</span></span></span>'));
     });
 
     test('simple nullable elements are detected and rendered correctly', () {
@@ -231,7 +231,7 @@ void main() {
       expect(
           methodWithNullables.linkedParams,
           equals(
-              '<span class="parameter" id="methodWithNullables-param-foo"><span class="type-annotation">String?</span> <span class="parameter-name">foo</span></span><wbr>'));
+              '<span class="parameter" id="methodWithNullables-param-foo"><span class="type-annotation">String?</span> <span class="parameter-name">foo</span></span>'));
       expect(methodWithNullables.linkedReturnType, equals('int?'));
       expect(
           initialized.linkedReturnType,
@@ -240,7 +240,7 @@ void main() {
       expect(
           operatorStar.linkedParams,
           equals(
-              '<span class="parameter" id="*-param-nullableOther"><span class="type-annotation"><a href="%%__HTMLBASE_dartdoc_internal__%%nullable_elements/NullableMembers-class.html">NullableMembers</a>?</span> <span class="parameter-name">nullableOther</span></span><wbr>'));
+              '<span class="parameter" id="*-param-nullableOther"><span class="type-annotation"><a href="%%__HTMLBASE_dartdoc_internal__%%nullable_elements/NullableMembers-class.html">NullableMembers</a>?</span> <span class="parameter-name">nullableOther</span></span>'));
     });
   },
       skip: (!_nullSafetyExperimentAllowed.allows(_platformVersion) &&
