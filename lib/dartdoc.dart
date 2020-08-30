@@ -301,12 +301,13 @@ class Dartdoc {
       for (var f in dir.getChildren()) {
         if (f is Folder) {
           checkDirectory(f);
+          continue;
         }
         var fullPath = path.normalize(f.path);
         if (fullPath.startsWith(staticAssets)) {
           continue;
         }
-        if (fullPath == indexJson) {
+        if (path.equals(fullPath, indexJson)) {
           foundIndexJson = true;
           _onCheckProgress.add(fullPath);
           continue;
