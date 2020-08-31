@@ -403,7 +403,7 @@ abstract class ModelElement extends Canonicalization
   // akin to source_gen's Reviver, in order to link to inner components. For
   // example, in `@Foo(const Bar(), baz: <Baz>[Baz.one, Baz.two])`, link to
   // `Foo`, `Bar`, `Baz`, `Baz.one`, and `Baz.two`.
-  List<String> annotationsFromMetadata(List<ElementAnnotation> md) {
+  List<String> annotationsFromMetadata(Iterable<ElementAnnotation> md) {
     var annotationStrings = <String>[];
     if (md == null) return annotationStrings;
     for (var a in md) {
@@ -522,21 +522,26 @@ abstract class ModelElement extends Canonicalization
           .split(locationSplitter)
           .where((s) => s.isNotEmpty));
 
-  Set<String> get features {
-    var allFeatures = <String>{...annotations};
-
+  static final Set<String> _specialFeatures = {
     // Replace the @override annotation with a feature that explicitly
     // indicates whether an override has occurred.
-    allFeatures.remove('@override');
-
+    'override',
     // Drop the plain "deprecated" annotation; that's indicated via
     // strikethroughs. Custom @Deprecated() will still appear.
-    allFeatures.remove('@deprecated');
-    // const and static are not needed here because const/static elements get
-    // their own sections in the doc.
-    if (isFinal) allFeatures.add('final');
-    if (isLate) allFeatures.add('late');
-    return allFeatures;
+    'deprecated'
+  };
+
+  Set<String> get features {
+    return {
+      ...annotationsFromMetadata(element.metadata
+          .where((e) => !_specialFeatures.contains(e.element?.name))),
+      // 'const' and 'static' are not needed here because 'const' and 'static'
+      // elements get their own sections in the doc.
+      if (isFinal)
+        'final',
+      if (isLate)
+        'late',
+    };
   }
 
   String get featuresAsString {
