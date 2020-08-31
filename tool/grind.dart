@@ -5,6 +5,7 @@
 import 'dart:async';
 import 'dart:io' hide ProcessException;
 
+import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:grinder/grinder.dart';
@@ -823,7 +824,9 @@ Future<String> _buildPubPackageDocs(
   var pubPackageDir = Directory.systemTemp.createTempSync(pubPackageName);
   await copyPath(pubPackageDirOrig.path, pubPackageDir.path);
 
-  if (packageMetaProvider.fromDir(pubPackageDir).requiresFlutter) {
+  if (packageMetaProvider
+      .fromDir(PhysicalResourceProvider.INSTANCE.getFolder(pubPackageDir.path))
+      .requiresFlutter) {
     var flutterRepo =
         await FlutterRepo.fromExistingFlutterRepo(await cleanFlutterRepo);
     await launcher.runStreamed(flutterRepo.cachePub, ['get'],
@@ -1033,7 +1036,9 @@ Future<void> testDart2(Iterable<File> tests) async {
                 <String>[...parameters, dartFile.path]));
   }
 
-  return CoverageSubprocessLauncher.generateCoverageToFile(File('lcov.info'));
+  return CoverageSubprocessLauncher.generateCoverageToFile(
+      PhysicalResourceProvider.INSTANCE.getFile('lcov.info'),
+      PhysicalResourceProvider.INSTANCE);
 }
 
 @Task('Generate docs for dartdoc without link-to-remote')

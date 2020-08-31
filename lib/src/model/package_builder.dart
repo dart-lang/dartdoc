@@ -21,14 +21,14 @@ import 'package:analyzer/src/generated/java_io.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/generated/source_io.dart';
+import 'package:dartdoc/src/quiver.dart' as quiver;
 import 'package:analyzer/src/source/package_map_resolver.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart'
-    show PackageMeta, pubPackageMetaProvider;
-import 'package:dartdoc/src/quiver.dart' as quiver;
+    show PackageMeta, PackageMetaProvider;
 import 'package:dartdoc/src/render/renderer_factory.dart';
 import 'package:dartdoc/src/special_elements.dart';
 import 'package:package_config/discovery.dart' as package_config;
@@ -43,8 +43,9 @@ abstract class PackageBuilder {
 /// A package builder that understands pub package format.
 class PubPackageBuilder implements PackageBuilder {
   final DartdocOptionContext config;
+  final PackageMetaProvider packageMetaProvider;
 
-  PubPackageBuilder(this.config);
+  PubPackageBuilder(this.config, this.packageMetaProvider);
 
   @override
   Future<PackageGraph> buildPackageGraph() async {
@@ -67,7 +68,7 @@ class PubPackageBuilder implements PackageBuilder {
       sdk,
       hasEmbedderSdkFiles,
       rendererFactory,
-      pubPackageMetaProvider,
+      packageMetaProvider,
     );
     await getLibraries(newGraph);
     await newGraph.initializePackageGraph();
@@ -201,6 +202,7 @@ class PubPackageBuilder implements PackageBuilder {
   /// If [filePath] is not a library, returns null.
   Future<DartDocResolvedLibrary> processLibrary(String filePath) async {
     var name = filePath;
+    var directoryCurrentPath = config.resourceProvider.pathContext.current;
 
     if (name.startsWith(directoryCurrentPath)) {
       name = name.substring(directoryCurrentPath.length);
@@ -243,7 +245,7 @@ class PubPackageBuilder implements PackageBuilder {
   Set<PackageMeta> _packageMetasForFiles(Iterable<String> files) {
     var metas = <PackageMeta>{};
     for (var filename in files) {
-      metas.add(pubPackageMetaProvider.fromFilename(filename));
+      metas.add(packageMetaProvider.fromFilename(filename));
     }
     return metas;
   }
@@ -356,7 +358,8 @@ class PubPackageBuilder implements PackageBuilder {
   /// therein.
   Iterable<String> _includeExternalsFrom(Iterable<String> files) sync* {
     for (var file in files) {
-      var fileContext = DartdocOptionContext.fromContext(config, File(file));
+      var fileContext = DartdocOptionContext.fromContext(config,
+          config.resourceProvider.getFile(file), config.resourceProvider);
       if (fileContext.includeExternal != null) {
         yield* fileContext.includeExternal;
       }

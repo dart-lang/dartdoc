@@ -12,7 +12,9 @@ import 'dart:io';
 
 import 'package:async/async.dart';
 import 'package:dartdoc/dartdoc.dart';
+import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/special_elements.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
@@ -25,7 +27,8 @@ final Version _platformVersion = Version.parse(_platformVersionString);
 final _testPackageGraphExperimentsMemo = AsyncMemoizer<PackageGraph>();
 Future<PackageGraph> get _testPackageGraphExperiments =>
     _testPackageGraphExperimentsMemo.runOnce(() => utils.bootBasicPackage(
-            'testing/test_package_experiments', [], additionalArguments: [
+        'testing/test_package_experiments', [], pubPackageMetaProvider,
+        additionalArguments: [
           '--enable-experiment',
           'non-nullable',
           '--no-link-to-remote'
@@ -34,11 +37,10 @@ Future<PackageGraph> get _testPackageGraphExperiments =>
 final _testPackageGraphGinormousMemo = AsyncMemoizer<PackageGraph>();
 Future<PackageGraph> get _testPackageGraphGinormous =>
     _testPackageGraphGinormousMemo.runOnce(() => utils.bootBasicPackage(
-            'testing/test_package', [
-          'css',
-          'code_in_commnets',
-          'excluded'
-        ], additionalArguments: [
+        'testing/test_package',
+        ['css', 'code_in_commnets', 'excluded'],
+        pubPackageMetaProvider,
+        additionalArguments: [
           '--auto-include-dependencies',
           '--no-link-to-remote'
         ]));
@@ -46,7 +48,7 @@ Future<PackageGraph> get _testPackageGraphGinormous =>
 final _testPackageGraphSmallMemo = AsyncMemoizer<PackageGraph>();
 Future<PackageGraph> get _testPackageGraphSmall =>
     _testPackageGraphSmallMemo.runOnce(() => utils.bootBasicPackage(
-        'testing/test_package_small', [],
+        'testing/test_package_small', [], pubPackageMetaProvider,
         additionalArguments: ['--no-link-to-remote']));
 
 final _testPackageGraphSdkMemo = AsyncMemoizer<PackageGraph>();
@@ -55,12 +57,16 @@ Future<PackageGraph> get _testPackageGraphSdk =>
 
 Future<PackageGraph> _bootSdkPackage() async {
   return PubPackageBuilder(
-          await utils.contextFromArgv(['--input', defaultSdkDir.path]))
+          await utils.contextFromArgv([
+            '--input',
+            pubPackageMetaProvider.resourceProvider.defaultSdkDir.path
+          ], pubPackageMetaProvider),
+          pubPackageMetaProvider)
       .buildPackageGraph();
 }
 
 void main() {
-  var sdkDir = defaultSdkDir;
+  var sdkDir = pubPackageMetaProvider.resourceProvider.defaultSdkDir;
 
   if (sdkDir == null) {
     print('Warning: unable to locate the Dart SDK.');
@@ -256,7 +262,9 @@ void main() {
 
     setUpAll(() async {
       injectionPackageGraph = await utils.bootBasicPackage(
-          'testing/test_package', ['css', 'code_in_comments', 'excluded'],
+          'testing/test_package',
+          ['css', 'code_in_comments', 'excluded'],
+          pubPackageMetaProvider,
           additionalArguments: ['--inject-html']);
 
       injectionExLibrary =

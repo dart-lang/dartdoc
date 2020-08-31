@@ -2,9 +2,9 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'dart:io' show Directory;
-
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/file_system/file_system.dart';
+import 'package:analyzer/file_system/memory_file_system.dart';
 import 'package:analyzer/src/generated/source.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -320,10 +320,10 @@ End text.'''));
 ///
 /// End text.
 ''');
-    verify(processor.packageGraph.warnOnElement(
-            processor, PackageWarning.missingExampleFile,
-            message:
-                '${p.join(_projectRoot, 'abc.md')}; path listed at a.dart'))
+    verify(processor.packageGraph
+            .warnOnElement(processor, PackageWarning.missingExampleFile,
+                message: '${p.canonicalize(p.join(_projectRoot, 'abc.md'))}; '
+                    'path listed at a.dart'))
         .called(1);
     // When the example path is invalid, the directive should be left in-place.
     expect(doc, equals('''
@@ -346,7 +346,8 @@ End text.'''));
     verify(processor.packageGraph.warnOnElement(
             processor, PackageWarning.missingExampleFile,
             message:
-                '${p.join(_projectRoot, 'abc', 'def', 'ghi.md')}; path listed at a.dart'))
+                '${p.canonicalize(p.join(_projectRoot, 'abc', 'def', 'ghi.md'))}; '
+                'path listed at a.dart'))
         .called(1);
     // When the example path is invalid, the directive should be left in-place.
     expect(doc, equals('''
@@ -366,10 +367,10 @@ End text.'''));
 ///
 /// End text.
 ''');
-    verify(processor.packageGraph.warnOnElement(
-            processor, PackageWarning.missingExampleFile,
-            message:
-                '${p.join(_projectRoot, '.', 'abc-r.md')}; path listed at a.dart'))
+    verify(processor.packageGraph
+            .warnOnElement(processor, PackageWarning.missingExampleFile,
+                message: '${p.canonicalize(p.join(_projectRoot, 'abc-r.md'))}; '
+                    'path listed at a.dart'))
         .called(1);
     // When the example path is invalid, the directive should be left in-place.
     expect(doc, equals('''
@@ -564,6 +565,7 @@ class _Processor extends __Processor with CommentProcessable {
         .thenReturn('<!-- render -->');
     when(modelElementRenderer.renderAnimation(any, any, any, any, any))
         .thenReturn('<!-- render -->');
+    when(packageGraph.resourceProvider).thenReturn(MemoryResourceProvider());
   }
 
   @override
@@ -573,11 +575,11 @@ class _Processor extends __Processor with CommentProcessable {
           message: message, referredFrom: referredFrom);
 }
 
-class _FakeDirectory extends Fake implements Directory {
+class _FakeFolder extends Fake implements Folder {
   @override
   final String path;
 
-  _FakeDirectory() : path = _projectRoot;
+  _FakeFolder() : path = _projectRoot;
 }
 
 class _MockModelElementRenderer extends Mock implements ModelElementRenderer {}
@@ -594,9 +596,9 @@ class _FakePackage extends Fake implements Package {
 
 class _FakePackageMeta extends Fake implements PackageMeta {
   @override
-  final Directory dir;
+  final Folder dir;
 
-  _FakePackageMeta() : dir = _FakeDirectory();
+  _FakePackageMeta() : dir = _FakeFolder();
 }
 
 class _FakeElement extends Fake implements Element {

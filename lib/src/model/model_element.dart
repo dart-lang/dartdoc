@@ -508,8 +508,8 @@ abstract class ModelElement extends Canonicalization
 
   @override
   DartdocOptionContext get config {
-    _config ??=
-        DartdocOptionContext.fromContextElement(packageGraph.config, element);
+    _config ??= DartdocOptionContext.fromContextElement(
+        packageGraph.config, element, packageGraph.resourceProvider);
     return _config;
   }
 

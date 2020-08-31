@@ -4,18 +4,18 @@
 
 library dartdoc.package_utils_test;
 
-import 'dart:io';
-
+import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/package_meta.dart';
-import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
 void main() {
+  var resourceProvider = pubPackageMetaProvider.resourceProvider;
+
   group('PackageMeta for a directory without a pubspec', () {
     PackageMeta p;
 
     setUp(() {
-      var d = Directory.systemTemp.createTempSync('test_package_not_valid');
+      var d = resourceProvider.createSystemTemp('test_package_not_valid');
       p = pubPackageMetaProvider.fromDir(d);
     });
 
@@ -25,17 +25,27 @@ void main() {
   });
 
   group('PackageMeta for the test package', () {
-    var p = pubPackageMetaProvider.fromDir(Directory(
-        path.join(Directory.current.path, 'testing', 'test_package')));
+    PackageMeta p;
+
+    setUp(() {
+      p = pubPackageMetaProvider.fromDir(resourceProvider.getFolder(
+          resourceProvider.pathContext.join(
+              resourceProvider.pathContext.current,
+              'testing',
+              'test_package')));
+    });
 
     test('readme with corrupt UTF-8 loads without throwing', () {
-      expect(p.getReadmeContents().contents,
+      expect(
+          resourceProvider
+              .readAsMalformedAllowedStringSync(p.getReadmeContents()),
           contains('Here is some messed up UTF-8.\nÃf'));
     });
   });
 
   group('PackageMeta.fromDir for this package', () {
-    var p = pubPackageMetaProvider.fromDir(Directory.current);
+    var p = pubPackageMetaProvider.fromDir(
+        resourceProvider.getFolder(resourceProvider.pathContext.current));
 
     test('has a name', () {
       expect(p.name, 'dartdoc');
@@ -64,25 +74,31 @@ void main() {
     test('has a readme', () {
       expect(p.getReadmeContents(), isNotNull);
       expect(
-          p.getReadmeContents().contents,
+          resourceProvider
+              .readAsMalformedAllowedStringSync(p.getReadmeContents()),
           contains(
               'Use `dartdoc` to generate HTML documentaton for your Dart package.'));
     });
 
     test('has a license', () {
       expect(p.getLicenseContents(), isNotNull);
-      expect(p.getLicenseContents().contents,
+      expect(
+          resourceProvider
+              .readAsMalformedAllowedStringSync(p.getLicenseContents()),
           contains('Copyright 2014, the Dart project authors.'));
     });
 
     test('has a changelog', () {
       expect(p.getChangelogContents(), isNotNull);
-      expect(p.getChangelogContents().contents, contains('## 0.2.2'));
+      expect(
+          resourceProvider
+              .readAsMalformedAllowedStringSync(p.getChangelogContents()),
+          contains('## 0.2.2'));
     });
   });
 
   group('PackageMeta.fromSdk', () {
-    var p = pubPackageMetaProvider.fromDir(defaultSdkDir);
+    var p = pubPackageMetaProvider.fromDir(resourceProvider.defaultSdkDir);
 
     test('has a name', () {
       expect(p.name, 'Dart');
@@ -111,7 +127,10 @@ void main() {
 
     test('has a readme', () {
       expect(p.getReadmeContents(), isNotNull);
-      expect(p.getReadmeContents().contents, startsWith('Welcome'));
+      expect(
+          resourceProvider
+              .readAsMalformedAllowedStringSync(p.getReadmeContents()),
+          startsWith('Welcome'));
     });
 
     test('does not have a license', () {

@@ -10,8 +10,9 @@ library dartdoc;
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
+import 'dart:io' show exitCode, stderr;
 
+import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/generator/empty_generator.dart';
 import 'package:dartdoc/src/generator/generator.dart';
@@ -41,17 +42,19 @@ const String dartdocVersion = packageVersion;
 /// Helper class that consolidates option contexts for instantiating generators.
 class DartdocGeneratorOptionContext extends DartdocOptionContext
     with GeneratorContext {
-  DartdocGeneratorOptionContext(DartdocOptionSet optionSet, Directory dir)
-      : super(optionSet, dir);
+  DartdocGeneratorOptionContext(
+      DartdocOptionSet optionSet, Folder dir, ResourceProvider resourceProvider)
+      : super(optionSet, dir, resourceProvider);
 }
 
 class DartdocFileWriter implements FileWriter {
   final String outputDir;
+  ResourceProvider resourceProvider;
   final Map<String, Warnable> _fileElementMap = {};
   @override
   final Set<String> writtenFiles = {};
 
-  DartdocFileWriter(this.outputDir);
+  DartdocFileWriter(this.outputDir, this.resourceProvider);
 
   @override
   void write(String filePath, Object content,
@@ -73,10 +76,11 @@ class DartdocFileWriter implements FileWriter {
     }
     _fileElementMap[outFile] = element;
 
-    var file = File(path.join(outputDir, outFile));
+    var file = resourceProvider
+        .getFile(resourceProvider.pathContext.join(outputDir, outFile));
     var parent = file.parent;
-    if (!parent.existsSync()) {
-      parent.createSync(recursive: true);
+    if (!parent.exists) {
+      parent.create();
     }
 
     if (content is String) {
@@ -100,14 +104,16 @@ class Dartdoc {
   final PackageBuilder packageBuilder;
   final DartdocOptionContext config;
   final Set<String> writtenFiles = {};
-  Directory outputDir;
+  Folder outputDir;
 
   // Fires when the self checks make progress.
   final StreamController<String> _onCheckProgress =
       StreamController(sync: true);
 
   Dartdoc._(this.config, this.generator, this.packageBuilder) {
-    outputDir = Directory(config.output)..createSync(recursive: true);
+    outputDir = config.resourceProvider
+        .getFolder(config.resourceProvider.pathContext.absolute(config.output))
+          ..create();
   }
 
   /// An asynchronous factory method that builds Dartdoc's file writers
@@ -182,9 +188,9 @@ class Dartdoc {
     final generator = this.generator;
     if (generator != null) {
       // Create the out directory.
-      if (!outputDir.existsSync()) outputDir.createSync(recursive: true);
+      if (!outputDir.exists) outputDir.create();
 
-      var writer = DartdocFileWriter(outputDir.path);
+      var writer = DartdocFileWriter(outputDir.path, config.resourceProvider);
       await generator.generate(packageGraph, writer);
 
       writtenFiles.addAll(writer.writtenFiles);
@@ -225,15 +231,16 @@ class Dartdoc {
         throw DartdocFailure(
             'dartdoc encountered $errorCount errors while processing.');
       }
-      logInfo(
-          'Success! Docs generated into ${dartdocResults.outDir.absolute.path}');
+      var outDirPath = config.resourceProvider.pathContext
+          .absolute(dartdocResults.outDir.path);
+      logInfo('Success! Docs generated into $outDirPath');
       return dartdocResults;
     } finally {
       // Clear out any cached tool snapshots and temporary directories.
       // ignore: unawaited_futures
-      SnapshotCache.instance.dispose();
+      SnapshotCache.instance?.dispose();
       // ignore: unawaited_futures
-      ToolTempFileTracker.instance.dispose();
+      ToolTempFileTracker.instance?.dispose();
     }
   }
 
@@ -289,34 +296,42 @@ class Dartdoc {
     var staticAssets = path.joinAll([normalOrigin, 'static-assets', '']);
     var indexJson = path.joinAll([normalOrigin, 'index.json']);
     var foundIndexJson = false;
-    for (var f in Directory(normalOrigin).listSync(recursive: true)) {
-      if (f is Directory) {
-        continue;
-      }
-      var fullPath = path.normalize(f.path);
-      if (fullPath.startsWith(staticAssets)) {
-        continue;
-      }
-      if (fullPath == indexJson) {
-        foundIndexJson = true;
-        _onCheckProgress.add(fullPath);
-        continue;
-      }
-      if (visited.contains(fullPath)) continue;
-      var relativeFullPath = path.relative(fullPath, from: normalOrigin);
-      if (!writtenFiles.contains(relativeFullPath)) {
-        // This isn't a file we wrote (this time); don't claim we did.
-        _warn(packageGraph, PackageWarning.unknownFile, fullPath, normalOrigin);
-      } else {
-        // Error messages are orphaned by design and do not appear in the search
-        // index.
-        if (<String>['__404error.html', 'categories.json'].contains(fullPath)) {
-          _warn(packageGraph, PackageWarning.orphanedFile, fullPath,
-              normalOrigin);
+
+    void checkDirectory(Folder dir) {
+      for (var f in dir.getChildren()) {
+        if (f is Folder) {
+          checkDirectory(f);
+          continue;
         }
+        var fullPath = path.normalize(f.path);
+        if (fullPath.startsWith(staticAssets)) {
+          continue;
+        }
+        if (path.equals(fullPath, indexJson)) {
+          foundIndexJson = true;
+          _onCheckProgress.add(fullPath);
+          continue;
+        }
+        if (visited.contains(fullPath)) continue;
+        var relativeFullPath = path.relative(fullPath, from: normalOrigin);
+        if (!writtenFiles.contains(relativeFullPath)) {
+          // This isn't a file we wrote (this time); don't claim we did.
+          _warn(
+              packageGraph, PackageWarning.unknownFile, fullPath, normalOrigin);
+        } else {
+          // Error messages are orphaned by design and do not appear in the search
+          // index.
+          if (<String>['__404error.html', 'categories.json']
+              .contains(fullPath)) {
+            _warn(packageGraph, PackageWarning.orphanedFile, fullPath,
+                normalOrigin);
+          }
+        }
+        _onCheckProgress.add(fullPath);
       }
-      _onCheckProgress.add(fullPath);
     }
+
+    checkDirectory(config.resourceProvider.getFolder(normalOrigin));
 
     if (!foundIndexJson) {
       _warn(packageGraph, PackageWarning.brokenLink, indexJson, normalOrigin);
@@ -327,8 +342,8 @@ class Dartdoc {
   // This is extracted to save memory during the check; be careful not to hang
   // on to anything referencing the full file and doc tree.
   Tuple2<Iterable<String>, String> _getStringLinksAndHref(String fullPath) {
-    var file = File('$fullPath');
-    if (!file.existsSync()) {
+    var file = config.resourceProvider.getFile('$fullPath');
+    if (!file.exists) {
       return null;
     }
     // TODO(srawlins): It is possible that instantiating an HtmlParser using
@@ -353,8 +368,8 @@ class Dartdoc {
       PackageGraph packageGraph, String origin, Set<String> visited) {
     var fullPath = path.joinAll([origin, 'index.json']);
     var indexPath = path.joinAll([origin, 'index.html']);
-    var file = File('$fullPath');
-    if (!file.existsSync()) {
+    var file = config.resourceProvider.getFile('$fullPath');
+    if (!file.exists) {
       return null;
     }
     var decoder = JsonDecoder();
@@ -519,7 +534,7 @@ class DartdocFailure {
 class DartdocResults {
   final PackageMeta packageMeta;
   final PackageGraph packageGraph;
-  final Directory outDir;
+  final Folder outDir;
 
   DartdocResults(this.packageMeta, this.packageGraph, this.outDir);
 }

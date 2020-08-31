@@ -4,14 +4,14 @@
 
 library dartdoc.html_generator_test;
 
-import 'dart:io' show File, FileSystemEntity, Directory;
-
+import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/generator/generator_frontend.dart';
 import 'package:dartdoc/src/generator/html_generator.dart';
 import 'package:dartdoc/src/generator/html_resources.g.dart';
 import 'package:dartdoc/src/generator/templates.dart';
 import 'package:dartdoc/src/model/package_graph.dart';
+import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
@@ -75,54 +75,58 @@ void main() {
   });
 
   group('HtmlGenerator', () {
+    Generator generator;
+    var resourceProvider = pubPackageMetaProvider.resourceProvider;
+    var pathContext = resourceProvider.pathContext;
+    Folder tempOutput;
+    FileWriter writer;
+
     // TODO: Run the HtmlGenerator and validate important constraints.
     group('for a null package', () {
-      Generator generator;
-      Directory tempOutput;
-      FileWriter writer;
-
       setUp(() async {
         generator = await _initGeneratorForTest();
-        tempOutput = Directory.systemTemp.createTempSync('doc_test_temp');
-        writer = DartdocFileWriter(tempOutput.path);
+        tempOutput = resourceProvider.createSystemTemp('doc_test_temp');
+        writer = DartdocFileWriter(tempOutput.path, resourceProvider);
         return generator.generate(null, writer);
       });
 
       tearDown(() {
         if (tempOutput != null) {
-          tempOutput.deleteSync(recursive: true);
+          tempOutput.delete();
         }
       });
 
       test('resources are put into the right place', () {
-        var output = Directory(path.join(tempOutput.path, 'static-assets'));
+        var output = resourceProvider
+            .getFolder(pathContext.join(tempOutput.path, 'static-assets'));
         expect(output, doesExist);
 
         for (var resource in resource_names.map((r) =>
             path.relative(Uri.parse(r).path, from: 'dartdoc/resources'))) {
-          expect(File(path.join(output.path, resource)), doesExist);
+          expect(
+              resourceProvider.getFile(pathContext.join(output.path, resource)),
+              doesExist);
         }
       });
     });
 
     group('for a package that causes duplicate files', () {
-      Generator generator;
       PackageGraph packageGraph;
-      Directory tempOutput;
-      FileWriter writer;
-      var testPackageDuplicateDir = Directory('testing/test_package_duplicate');
+      var testPackageDuplicateDir = resourceProvider.getFolder(
+          pathContext.absolute(
+              pathContext.canonicalize('testing/test_package_duplicate')));
 
       setUp(() async {
         generator = await _initGeneratorForTest();
-        packageGraph =
-            await utils.bootBasicPackage(testPackageDuplicateDir.path, []);
-        tempOutput = await Directory.systemTemp.createTemp('doc_test_temp');
-        writer = DartdocFileWriter(tempOutput.path);
+        packageGraph = await utils.bootBasicPackage(
+            testPackageDuplicateDir.path, [], pubPackageMetaProvider);
+        tempOutput = await resourceProvider.createSystemTemp('doc_test_temp');
+        writer = DartdocFileWriter(tempOutput.path, resourceProvider);
       });
 
       tearDown(() {
         if (tempOutput != null) {
-          tempOutput.deleteSync(recursive: true);
+          tempOutput.delete();
         }
       });
 
@@ -145,14 +149,13 @@ const Matcher doesExist = _DoesExist();
 class _DoesExist extends Matcher {
   const _DoesExist();
   @override
-  bool matches(dynamic item, Map matchState) =>
-      (item as FileSystemEntity).existsSync();
+  bool matches(dynamic item, Map matchState) => (item as Resource).exists;
   @override
   Description describe(Description description) => description.add('exists');
   @override
   Description describeMismatch(dynamic item, Description mismatchDescription,
       Map matchState, bool verbose) {
-    if (item is! File && item is! Directory) {
+    if (item is! File && item is! Folder) {
       return mismatchDescription
           .addDescriptionOf(item)
           .add('is not a file or directory');

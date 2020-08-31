@@ -8,6 +8,7 @@
 ///
 library dartdoc.experiment_options;
 
+import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/src/dart/analysis/experiments.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 
@@ -19,10 +20,12 @@ abstract class DartdocExperimentOptionContext
 
 // TODO(jcollins-g): Implement YAML parsing for these flags and generation
 // of [DartdocExperimentOptionContext], once a YAML file is available.
-Future<List<DartdocOption<Object>>> createExperimentOptions() async {
+Future<List<DartdocOption<Object>>> createExperimentOptions(
+    ResourceProvider resourceProvider) async {
   return [
     // TODO(jcollins-g): Consider loading experiment values from dartdoc_options.yaml?
-    DartdocOptionArgOnly<List<String>>('enable-experiment', [],
+    DartdocOptionArgOnly<List<String>>(
+        'enable-experiment', [], resourceProvider,
         help: 'Enable or disable listed experiments.\n' +
             ExperimentStatus.knownFeatures.values
                 .where((e) => e.documentation != null)

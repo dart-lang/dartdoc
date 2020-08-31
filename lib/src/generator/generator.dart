@@ -6,10 +6,11 @@
 library dartdoc.generator;
 
 import 'dart:async' show Future;
-import 'dart:io' show Directory;
 
+import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/model.dart' show PackageGraph;
+import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/warnings.dart';
 
 abstract class FileWriter {
@@ -55,9 +56,11 @@ mixin GeneratorContext on DartdocOptionContextBase {
   bool get useBaseHref => optionSet['useBaseHref'].valueAt(context);
 }
 
-Future<List<DartdocOption<Object>>> createGeneratorOptions() async {
+Future<List<DartdocOption<Object>>> createGeneratorOptions(
+    PackageMetaProvider packageMetaProvider) async {
+  var resourceProvider = packageMetaProvider.resourceProvider;
   return [
-    DartdocOptionArgFile<List<String>>('footer', [],
+    DartdocOptionArgFile<List<String>>('footer', [], resourceProvider,
         isFile: true,
         help:
             'Paths to files with content to add to page footers, but possibly '
@@ -66,7 +69,7 @@ Future<List<DartdocOption<Object>>> createGeneratorOptions() async {
             'to dedicated footer elements, use --footer-text instead.',
         mustExist: true,
         splitCommas: true),
-    DartdocOptionArgFile<List<String>>('footerText', [],
+    DartdocOptionArgFile<List<String>>('footerText', [], resourceProvider,
         isFile: true,
         help: 'Paths to files with content to add to page footers (next to the '
             'package name and version).',
@@ -74,30 +77,31 @@ Future<List<DartdocOption<Object>>> createGeneratorOptions() async {
         splitCommas: true),
     DartdocOptionSyntheticOnly<bool>(
       'addSdkFooter',
-      (DartdocSyntheticOption<bool> option, Directory dir) {
+      (DartdocSyntheticOption<bool> option, Folder dir) {
         return option.root['topLevelPackageMeta'].valueAt(dir).isSdk;
       },
+      resourceProvider,
       help: 'Whether the SDK footer text should be added (synthetic)',
     ),
-    DartdocOptionArgFile<List<String>>('header', [],
+    DartdocOptionArgFile<List<String>>('header', [], resourceProvider,
         isFile: true,
         help: 'Paths to files with content to add to page headers.',
         splitCommas: true),
-    DartdocOptionArgOnly<bool>('prettyIndexJson', false,
+    DartdocOptionArgOnly<bool>('prettyIndexJson', false, resourceProvider,
         help:
             'Generates `index.json` with indentation and newlines. The file is '
             'larger, but it\'s also easier to diff.',
         negatable: false),
-    DartdocOptionArgFile<String>('favicon', null,
+    DartdocOptionArgFile<String>('favicon', null, resourceProvider,
         isFile: true,
         help: 'A path to a favicon for the generated docs.',
         mustExist: true),
-    DartdocOptionArgOnly<String>('relCanonicalPrefix', null,
+    DartdocOptionArgOnly<String>('relCanonicalPrefix', null, resourceProvider,
         help:
             'If provided, add a rel="canonical" prefixed with provided value. '
             'Consider using if building many versions of the docs for public '
             'SEO; learn more at https://goo.gl/gktN6F.'),
-    DartdocOptionArgOnly<String>('templatesDir', null,
+    DartdocOptionArgOnly<String>('templatesDir', null, resourceProvider,
         isDir: true,
         mustExist: true,
         hide: true,

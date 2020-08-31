@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:args/args.dart';
 import 'package:crypto/crypto.dart' as crypto;
 import 'package:dartdoc/src/model/model.dart';
@@ -73,6 +71,8 @@ mixin CommentProcessable on Documentable, Warnable, Locatable, SourceCodeMixin {
   String get _fullyQualifiedNameWithoutLibrary =>
       // Remember, periods are legal in library names.
       fullyQualifiedName.replaceFirst('${library.fullyQualifiedName}.', '');
+
+  path.Context get pathContext => packageGraph.resourceProvider.pathContext;
 
   @visibleForTesting
   ModelElementRenderer get modelElementRenderer =>
@@ -198,8 +198,9 @@ mixin CommentProcessable on Documentable, Warnable, Locatable, SourceCodeMixin {
 
       var replacement = match[0]; // default to fully matched string.
 
-      var fragmentFile = File(path.join(dirPath, args['file']));
-      if (fragmentFile.existsSync()) {
+      var fragmentFile = packageGraph.resourceProvider.getFile(
+          pathContext.canonicalize(pathContext.join(dirPath, args['file'])));
+      if (fragmentFile.exists) {
         replacement = fragmentFile.readAsStringSync();
         if (lang.isNotEmpty) {
           replacement = replacement.replaceFirst('```', '```$lang');
@@ -234,7 +235,7 @@ mixin CommentProcessable on Documentable, Warnable, Locatable, SourceCodeMixin {
     // Extract PATH and fix the path separators.
     var src = results.rest.isEmpty
         ? ''
-        : results.rest.first.replaceAll('/', Platform.pathSeparator);
+        : results.rest.first.replaceAll('/', pathContext.separator);
     var args = <String, String>{
       'src': src,
       'lang': results['lang'],
