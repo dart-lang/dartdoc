@@ -12,15 +12,15 @@ import 'package:dartdoc/dartdoc.dart';
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
-import '../tool/subprocess_launcher.dart';
-import 'src/utils.dart';
+import '../../tool/subprocess_launcher.dart';
+import '../src/utils.dart';
 
 Uri get _currentFileUri =>
     (reflect(main) as ClosureMirror).function.location.sourceUri;
 String get _testPackagePath =>
-    path.fromUri(_currentFileUri.resolve('../testing/test_package'));
-String get _testPackageFlutterPluginPath => path
-    .fromUri(_currentFileUri.resolve('../testing/test_package_flutter_plugin'));
+    path.fromUri(_currentFileUri.resolve('../../testing/test_package'));
+String get _testPackageFlutterPluginPath => path.fromUri(
+    _currentFileUri.resolve('../../testing/test_package_flutter_plugin'));
 
 void main() {
   group('Invoking command-line dartdoc', () {
@@ -210,8 +210,8 @@ void main() {
     }, timeout: Timeout.factor(2));
 
     test('--footer-text excludes version', () async {
-      var _testPackagePath = path
-          .fromUri(_currentFileUri.resolve('../testing/test_package_options'));
+      var _testPackagePath = path.fromUri(
+          _currentFileUri.resolve('../../testing/test_package_options'));
 
       var args = <String>[dartdocPath, '--output', tempDir.path];
 

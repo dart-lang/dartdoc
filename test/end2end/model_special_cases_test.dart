@@ -19,7 +19,7 @@ import 'package:dartdoc/src/special_elements.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
-import 'src/utils.dart' as utils;
+import '../src/utils.dart' as utils;
 
 final String _platformVersionString = Platform.version.split(' ').first;
 final Version _platformVersion = Version.parse(_platformVersionString);
