@@ -19,7 +19,7 @@ import 'package:dartdoc/src/special_elements.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:test/test.dart';
 
-import 'src/utils.dart' as utils;
+import '../src/utils.dart' as utils;
 
 final _testPackageGraphMemo = AsyncMemoizer<PackageGraph>();
 Future<PackageGraph> get _testPackageGraph =>

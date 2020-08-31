@@ -16,7 +16,7 @@ import 'package:dartdoc/src/warnings.dart';
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
-import 'src/utils.dart' as utils;
+import '../src/utils.dart' as utils;
 
 // Init a generator without a GeneratorContext and with the default file writer.
 Future<Generator> _initGeneratorForTest() async {
