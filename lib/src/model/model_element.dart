@@ -537,10 +537,8 @@ abstract class ModelElement extends Canonicalization
           .where((e) => !_specialFeatures.contains(e.element?.name))),
       // 'const' and 'static' are not needed here because 'const' and 'static'
       // elements get their own sections in the doc.
-      if (isFinal)
-        'final',
-      if (isLate)
-        'late',
+      if (isFinal) 'final',
+      if (isLate) 'late',
     };
   }
 
