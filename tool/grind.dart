@@ -431,9 +431,11 @@ Future<String> createComparisonDartdoc() async {
   return dartdocClean.path;
 }
 
-/// Helper function to create a clean version of dartdoc (based on the current
-/// directory, assumed to be a git repository), configured to use the head
-/// version of the Dart SDK for analyzer, front-end, and kernel.
+/// Creates a clean version of dartdoc (based on the current directory, assumed
+/// to be a git repository), configured to use packages from the Dart SDK.
+///
+/// This copy of dartdoc depends on the HEAD versions of various packages
+/// developed within the SDK, such as 'analyzer' and 'meta'.
 Future<String> createSdkDartdoc() async {
   var launcher = SubprocessLauncher('create-sdk-dartdoc');
   var dartdocSdk = Directory.systemTemp.createTempSync('dartdoc-sdk');
@@ -471,6 +473,8 @@ dependency_overrides:
     path: '${sdkClone.path}/pkg/analyzer'
   _fe_analyzer_shared:
     path: '${sdkClone.path}/pkg/_fe_analyzer_shared'
+  meta:
+    path: '${sdkClone.path}/pkg/meta'
 ''', mode: FileMode.append);
   await launcher.runStreamed(sdkBin('pub'), ['get'],
       workingDirectory: dartdocSdk.path);
