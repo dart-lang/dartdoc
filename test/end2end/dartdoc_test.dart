@@ -73,7 +73,6 @@ void main() {
     Folder tempDir;
 
     setUpAll(() async {
-      //resourceProvider = MemoryResourceProvider();
       var optionSet = await DartdocOptionSet.fromOptionGenerators(
           'dartdoc', [createLoggingOptions], pubPackageMetaProvider);
       optionSet.parseArguments([]);

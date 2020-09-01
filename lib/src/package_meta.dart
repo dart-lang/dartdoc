@@ -286,13 +286,9 @@ class _FilePackageMeta extends PubPackageMeta {
 
   _FilePackageMeta(Folder dir, ResourceProvider resourceProvider)
       : super(dir, resourceProvider) {
-    var f = resourceProvider
-        .getFile(resourceProvider.pathContext.join(dir.path, 'pubspec.yaml'));
-    if (f.exists) {
-      _pubspec = loadYaml(f.readAsStringSync());
-    } else {
-      _pubspec = <dynamic, dynamic>{};
-    }
+    var pubspec = dir.getChildAssumingFile('pubspec.yaml');
+    assert(pubspec.exists);
+    _pubspec = loadYaml(pubspec.readAsStringSync());
   }
 
   bool _setHostedAt = false;

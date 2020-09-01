@@ -284,15 +284,6 @@ class ConstantCat implements Cat {
 }
 
 /// implements [Cat], [E]
-///
-/// {@example dog/food}
-/// {@example dog/food.txt region=meat}
-///
-/// {@example test.dart region=template lang=html}
-///
-/// {@example test.dart region=}
-///
-/// {@example test.dart region= lang=}
 class Dog implements Cat, E {
   String name;
 

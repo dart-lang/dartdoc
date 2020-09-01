@@ -208,6 +208,8 @@ mixin CommentProcessable on Documentable, Warnable, Locatable, SourceCodeMixin {
       } else {
         var filePath = element.source.fullName.substring(dirPath.length + 1);
 
+        // TODO(srawlins): If a file exists at the location without the
+        // appended 'md' extension, note this.
         warn(PackageWarning.missingExampleFile,
             message: '${fragmentFile.path}; path listed at $filePath');
       }
