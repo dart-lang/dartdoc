@@ -11,6 +11,8 @@ import 'dart:io' as io;
 
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
+import 'package:analyzer/src/generated/sdk.dart';
+import 'package:analyzer/src/test_utilities/mock_sdk.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:path/path.dart' as path;
 
@@ -52,8 +54,8 @@ extension ResourceProviderExtensions on ResourceProvider {
           sdkDir.path, PubPackageMeta.sdkDirParent(sdkDir, this).path));
       return sdkDir;
     } else {
-      // TODO(srawlins): Return what is needed for tests.
-      return null;
+      x ??= MockSdk(resourceProvider: this);
+      return getFolder('/sdk');
     }
   }
 
@@ -94,47 +96,7 @@ extension ResourceProviderExtensions on ResourceProvider {
   }
 }
 
-/// Lists the contents of [dir].
-///
-/// If [recursive] is `true`, lists subdirectory contents (defaults to `false`).
-///
-/// Excludes files and directories beginning with `.`
-///
-/// The returned paths are guaranteed to begin with [dir].
-Iterable<String> listDir(String dir,
-    {bool recursive = false,
-    Iterable<io.FileSystemEntity> Function(io.Directory dir) listDir}) {
-  listDir ??= (io.Directory dir) => dir.listSync();
-
-  return _doList(dir, <String>{}, recursive, listDir);
-}
-
-Iterable<String> _doList(
-    String dir,
-    Set<String> listedDirectories,
-    bool recurse,
-    Iterable<io.FileSystemEntity> Function(io.Directory dir) listDir) sync* {
-  // Avoid recursive symlinks.
-  var resolvedPath = io.Directory(dir).resolveSymbolicLinksSync();
-  if (!listedDirectories.contains(resolvedPath)) {
-    listedDirectories = Set<String>.from(listedDirectories);
-    listedDirectories.add(resolvedPath);
-
-    for (var entity in listDir(io.Directory(dir))) {
-      // Skip hidden files and directories
-      if (path.basename(entity.path).startsWith('.')) {
-        continue;
-      }
-
-      yield entity.path;
-      if (entity is io.Directory) {
-        if (recurse) {
-          yield* _doList(entity.path, listedDirectories, recurse, listDir);
-        }
-      }
-    }
-  }
-}
+DartSdk x;
 
 /// Converts `.` and `:` into `-`, adding a ".html" extension.
 ///
