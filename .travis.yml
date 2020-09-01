@@ -16,6 +16,9 @@ matrix:
   allow_failures:
     # See https://github.com/dart-lang/dartdoc/issues/2302.
     - env: DARTDOC_BOT=flutter
+    # Some packages at HEAD require 2.10.0-dev.
+    - env: DARTDOC_BOT=sdk-analyzer
+      dart: stable
 
 env:
   jobs:
