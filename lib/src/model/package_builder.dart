@@ -31,6 +31,7 @@ import 'package:dartdoc/src/package_meta.dart'
     show PackageMeta, PackageMetaProvider;
 import 'package:dartdoc/src/render/renderer_factory.dart';
 import 'package:dartdoc/src/special_elements.dart';
+import 'package:meta/meta.dart';
 import 'package:package_config/package_config.dart' show findPackageConfig;
 import 'package:path/path.dart' as path;
 
@@ -63,9 +64,7 @@ class PubPackageBuilder implements PackageBuilder {
 
     var rendererFactory = RendererFactory.forFormat(config.format);
 
-    file_system.Folder cwd =
-        PhysicalResourceProvider.INSTANCE.getResource(config.inputDir);
-    _packageMap = await _calculatePackageMap(cwd);
+    await _calculatePackageMap();
 
     var newGraph = PackageGraph.UninitializedPackageGraph(
       config,
@@ -97,24 +96,24 @@ class PubPackageBuilder implements PackageBuilder {
     return _embedderSdk;
   }
 
-  static Future<Map<String, List<file_system.Folder>>> _calculatePackageMap(
-      file_system.Folder dir) async {
-    var map = <String, List<file_system.Folder>>{};
-    var info = await findPackageConfig(Directory(dir.path));
-    if (info == null) return map;
+  Future<void> _calculatePackageMap() async {
+    assert(_packageMap == null);
+    _packageMap = <String, List<file_system.Folder>>{};
+    file_system.Folder cwd =
+        PhysicalResourceProvider.INSTANCE.getResource(config.inputDir);
+    var info = await findPackageConfig(Directory(cwd.path));
+    if (info == null) return;
 
     for (var package in info.packages) {
       var packagePath = path.normalize(path.fromUri(package.packageUriRoot));
       var resource = PhysicalResourceProvider.INSTANCE.getResource(packagePath);
       if (resource is file_system.Folder) {
-        map[package.name] = [resource];
+        _packageMap[package.name] = [resource];
       }
     }
-
-    return map;
   }
 
-  Map<String, List<file_system.Folder>> _packageMap;
+  /*late final*/ Map<String, List<file_system.Folder>> _packageMap;
 
   DartUriResolver _embedderResolver;
 
@@ -290,9 +289,9 @@ class PubPackageBuilder implements PackageBuilder {
         if (meta.isSdk) {
           files.addAll(getSdkFilesToDocument());
         } else {
-          files.addAll(
-              await findFilesToDocumentInPackage(meta.dir.path, false, false)
-                  .toList());
+          files.addAll(await findFilesToDocumentInPackage(meta.dir.path,
+                  autoIncludeDependencies: false, filterExcludes: false)
+              .toList());
         }
       }
     } while (!lastPass.containsAll(current));
@@ -300,16 +299,13 @@ class PubPackageBuilder implements PackageBuilder {
 
   /// Given a package name, explore the directory and pull out all top level
   /// library files in the "lib" directory to document.
-  Stream<String> findFilesToDocumentInPackage(
-      String basePackageDir, bool autoIncludeDependencies,
-      [bool filterExcludes = true]) async* {
-    var sep = path.separator;
-
+  Stream<String> findFilesToDocumentInPackage(String basePackageDir,
+      {@required bool autoIncludeDependencies,
+      bool filterExcludes = true}) async* {
     var packageDirs = {basePackageDir};
 
     if (autoIncludeDependencies) {
-      var info = await findPackageConfig(
-          Directory(basePackageDir) /*, recurse: false*/);
+      var info = await findPackageConfig(Directory(basePackageDir));
       for (var package in info.packages) {
         if (!filterExcludes || !config.exclude.contains(package.name)) {
           packageDirs.add(path.dirname(info[package.name].packageUriRoot.path));
@@ -317,6 +313,7 @@ class PubPackageBuilder implements PackageBuilder {
       }
     }
 
+    var sep = path.separator;
     for (var packageDir in packageDirs) {
       var packageLibDir = path.join(packageDir, 'lib');
       var packageLibSrcDir = path.join(packageLibDir, 'src');
@@ -328,15 +325,15 @@ class PubPackageBuilder implements PackageBuilder {
         if (lib.endsWith('.dart') &&
             (!lib.contains('${sep}packages${sep}') ||
                 packageDir.contains('${sep}packages${sep}'))) {
-          // Only include libraries within the lib dir that are not in lib/src
+          // Only include libraries within the lib dir that are not in 'lib/src'.
           if (path.isWithin(packageLibDir, lib) &&
               !path.isWithin(packageLibSrcDir, lib)) {
-            // Only add the file if it does not contain 'part of'
+            // Only add the file if it does not contain 'part of'.
             var contents = File(lib).readAsStringSync();
 
             if (contents.startsWith('part of ') ||
                 contents.contains('\npart of ')) {
-              // NOOP: it's a part file
+              // NOOP: it's a part file.
             } else {
               yield lib;
             }
@@ -365,30 +362,31 @@ class PubPackageBuilder implements PackageBuilder {
     if (config.topLevelPackageMeta.isSdk) {
       files = getSdkFilesToDocument();
     } else {
-      files = await findFilesToDocumentInPackage(
-              config.inputDir, config.autoIncludeDependencies)
+      files = await findFilesToDocumentInPackage(config.inputDir,
+              autoIncludeDependencies: config.autoIncludeDependencies)
           .toList();
     }
     files = quiver.concat([files, _includeExternalsFrom(files)]);
     return {
       ...files.map((s) => File(s).absolute.path),
-      ...getEmbedderSdkFiles()
+      ...getEmbedderSdkFiles(),
     };
   }
 
-  Iterable<String> getEmbedderSdkFiles() sync* {
-    if (embedderSdk != null &&
-        embedderSdk.urlMappings.isNotEmpty &&
-        !config.topLevelPackageMeta.isSdk) {
-      for (var dartUri in embedderSdk.urlMappings.keys) {
-        var source = embedderSdk.mapDartUri(dartUri);
-        yield (File(source.fullName)).absolute.path;
-      }
-    }
+  Iterable<String> getEmbedderSdkFiles() {
+    return [
+      for (var dartUri in _embedderSdkUris)
+        File(embedderSdk.mapDartUri(dartUri).fullName).absolute.path
+    ];
   }
 
-  bool get hasEmbedderSdkFiles =>
-      embedderSdk != null && getEmbedderSdkFiles().isNotEmpty;
+  bool get hasEmbedderSdkFiles => _embedderSdkUris.isNotEmpty;
+
+  Iterable<String> get _embedderSdkUris {
+    if (config.topLevelPackageMeta.isSdk) return [];
+
+    return embedderSdk?.urlMappings?.keys ?? [];
+  }
 
   Future<void> getLibraries(PackageGraph uninitializedPackageGraph) async {
     DartSdk findSpecialsSdk = sdk;
