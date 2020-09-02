@@ -313,6 +313,7 @@ abstract class ModelElement extends Canonicalization
       return resolveMultiplyInheritedElement(
           e, library, packageGraph, enclosingContainer);
     }
+    assert(e is! MultiplyDefinedElement);
     if (e is LibraryElement) {
       return Library(e, packageGraph);
     }

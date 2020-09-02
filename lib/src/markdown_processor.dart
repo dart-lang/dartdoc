@@ -438,9 +438,9 @@ class _MarkdownCommentReference {
       // Squelch ambiguous doc reference warnings for parameters, because we
       // don't link those anyway.
       if (!results.every((r) => r is Parameter)) {
+        var elementNames = results.map((r) => "'${r.fullyQualifiedName}'");
         element.warn(PackageWarning.ambiguousDocReference,
-            message:
-                "[$codeRef] => ${results.map((r) => "'${r.fullyQualifiedName}'").join(", ")}");
+            message: '[$codeRef] => ${elementNames.join(', ')}');
       }
       result = results.first;
     }
@@ -683,17 +683,51 @@ class _MarkdownCommentReference {
 
   void _findAnalyzerReferences() {
     var refElement = _getRefElementFromCommentRefs(commentRefs, codeRef);
-    if (refElement != null) {
-      var refModelElement = ModelElement.fromElement(
-          _getRefElementFromCommentRefs(commentRefs, codeRef),
+    if (refElement == null) return;
+
+    ModelElement refModelElement;
+    if (refElement is MultiplyDefinedElement) {
+      var elementNames = refElement.conflictingElements
+          .map((e) => "'${_fullyQualifiedElementName(e)}'");
+      element.warn(PackageWarning.ambiguousDocReference,
+          message: '[$codeRef] => [${elementNames.join(', ')}]');
+      refModelElement = ModelElement.fromElement(
+          // Continue; just use the first conflicting element.
+          refElement.conflictingElements.first,
           element.packageGraph);
-      if (refModelElement is Accessor) {
-        refModelElement = (refModelElement as Accessor).enclosingCombo;
-      }
+    } else {
       refModelElement =
-          refModelElement.canonicalModelElement ?? refModelElement;
-      results.add(refModelElement);
+          ModelElement.fromElement(refElement, element.packageGraph);
     }
+    if (refModelElement is Accessor) {
+      refModelElement = (refModelElement as Accessor).enclosingCombo;
+    }
+    refModelElement = refModelElement.canonicalModelElement ?? refModelElement;
+    results.add(refModelElement);
+  }
+
+  /// Generates a fully-qualified name, similar to that of
+  /// [ModelElement.fullyQualifiedName], for an Element.
+  static String _fullyQualifiedElementName(Element element) {
+    var enclosingElement = element.enclosingElement;
+
+    var enclosingName = enclosingElement == null
+        ? null
+        : _fullyQualifiedElementName(enclosingElement);
+    var name = element.name;
+    if (name == null) {
+      if (element is ExtensionElement) {
+        name = '<unnamed extension>';
+      } else if (element is LibraryElement) {
+        name = '<unnamed library>';
+      } else if (element is CompilationUnitElement) {
+        return enclosingName;
+      } else {
+        name = '<unnamed ${element.runtimeType}>';
+      }
+    }
+
+    return enclosingName == null ? name : '$enclosingName.$name';
   }
 
   // Add a result, but make it canonical.
