@@ -32,6 +32,7 @@ import 'package:dartdoc/src/package_meta.dart'
 import 'package:dartdoc/src/render/renderer_factory.dart';
 import 'package:dartdoc/src/special_elements.dart';
 import 'package:meta/meta.dart';
+import 'package:package_config/discovery.dart' as package_config;
 import 'package:package_config/package_config.dart' show findPackageConfig;
 import 'package:path/path.dart' as path;
 
@@ -103,6 +104,10 @@ class PubPackageBuilder implements PackageBuilder {
         PhysicalResourceProvider.INSTANCE.getResource(config.inputDir);
     var info = await findPackageConfig(Directory(cwd.path));
     if (info == null) return;
+    var info2 = package_config.findPackagesFromFile(cwd.toUri());
+    var oldFirst = info2.packages.first;
+    print(
+        'OLD: "${oldFirst}": uri: "${info2.asMap()[oldFirst]}"; packagePath: "${path.normalize(path.fromUri(info2.asMap()[oldFirst]))}"');
 
     for (var package in info.packages) {
       var packagePath = path.normalize(path.fromUri(package.packageUriRoot));
@@ -306,6 +311,13 @@ class PubPackageBuilder implements PackageBuilder {
 
     if (autoIncludeDependencies) {
       var info = await findPackageConfig(Directory(basePackageDir));
+
+      var info2 = package_config
+          .findPackagesFromFile(
+              Uri.file(path.join(basePackageDir, 'pubspec.yaml')))
+          .asMap();
+      var oldFirst = info2.keys.first;
+      print('oldFirst: $oldFirst; toFilePath: ${info2[oldFirst].toFilePath()}');
       for (var package in info.packages) {
         if (!filterExcludes || !config.exclude.contains(package.name)) {
           packageDirs.add(path.dirname(info[package.name].packageUriRoot.path));
