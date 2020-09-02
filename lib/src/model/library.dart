@@ -545,7 +545,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
       hidePackage = package.packageGraph.packageMeta;
     }
     // restoreUri must not result in another file URI.
-    assert(!name.startsWith('file:'));
+    assert(!name.startsWith('file:'), '"$name" must not start with "file:"');
 
     var defaultPackagePrefix = 'package:$hidePackage/';
     if (name.startsWith(defaultPackagePrefix)) {
