@@ -321,10 +321,12 @@ class PubPackageBuilder implements PackageBuilder {
       var oldFirst = info2.keys.first;
       print('oldFirst: $oldFirst; toFilePath: ${info2[oldFirst].toFilePath()}');
       print(
-          'newFirst: ${info.packages.first}, ${info[info.packages.first.name].packageUriRoot.path}');
+          'newFirst: ${info.packages.first}, ${info[info.packages.first.name].packageUriRoot.path}; '
+          'FROMURI: ${path.fromUri(info[info.packages.first.name].packageUriRoot)}');
       for (var package in info.packages) {
         if (!filterExcludes || !config.exclude.contains(package.name)) {
-          packageDirs.add(path.dirname(info[package.name].packageUriRoot.path));
+          packageDirs.add(
+              path.dirname(path.fromUri(info[package.name].packageUriRoot)));
         }
       }
     }
