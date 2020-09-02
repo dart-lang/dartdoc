@@ -17,7 +17,7 @@ import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
 void main() {
-  ResourceProvider resourceProvider;
+  MemoryResourceProvider resourceProvider;
   Folder projectRoot;
   String libFooPath;
   _Processor processor;
@@ -28,8 +28,8 @@ void main() {
 
   setUp(() async {
     resourceProvider = MemoryResourceProvider();
-    projectRoot = resourceProvider
-        .getFolder(resourceProvider.pathContext.join('/', 'project'));
+    projectRoot =
+        resourceProvider.getFolder(resourceProvider.convertPath('/project'));
     projectRoot.create();
     resourceProvider
         .getFile(
