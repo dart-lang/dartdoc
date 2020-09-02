@@ -104,12 +104,6 @@ class PubPackageBuilder implements PackageBuilder {
         PhysicalResourceProvider.INSTANCE.getResource(config.inputDir);
     var info = await findPackageConfig(Directory(cwd.path));
     if (info == null) return;
-    var info2 = package_config.findPackagesFromFile(cwd.toUri());
-    var oldFirst = info2.packages.first;
-    print(
-        'OLD: "${oldFirst}": uri: "${info2.asMap()[oldFirst]}"; packagePath: "${path.normalize(path.fromUri(info2.asMap()[oldFirst]))}"');
-    print(
-        'NEW: ${info.packages.first}: packageUriRoot: ${info.packages.first.packageUriRoot}');
 
     for (var package in info.packages) {
       var packagePath = path.normalize(path.fromUri(package.packageUriRoot));
@@ -313,16 +307,6 @@ class PubPackageBuilder implements PackageBuilder {
 
     if (autoIncludeDependencies) {
       var info = await findPackageConfig(Directory(basePackageDir));
-
-      var info2 = package_config
-          .findPackagesFromFile(
-              Uri.file(path.join(basePackageDir, 'pubspec.yaml')))
-          .asMap();
-      var oldFirst = info2.keys.first;
-      print('oldFirst: $oldFirst; toFilePath: ${info2[oldFirst].toFilePath()}');
-      print(
-          'newFirst: ${info.packages.first}, ${info[info.packages.first.name].packageUriRoot.path}; '
-          'FROMURI: ${path.fromUri(info[info.packages.first.name].packageUriRoot)}');
       for (var package in info.packages) {
         if (!filterExcludes || !config.exclude.contains(package.name)) {
           packageDirs.add(
