@@ -398,8 +398,8 @@ End text.'''));
   });
 
   test('processes @example with a region', () async {
-    var examplePath =
-        resourceProvider.pathContext.join(projectRoot.path, 'abc-r.md');
+    var examplePath = resourceProvider.pathContext.canonicalize(
+        resourceProvider.pathContext.join(projectRoot.path, 'abc-r.md'));
     resourceProvider.getFile(examplePath).writeAsStringSync('Markdown text.');
     processor.element = _FakeElement(source: _FakeSource(fullName: libFooPath));
     var doc = await processor.processComment('''
@@ -417,8 +417,8 @@ Markdown text.'''));
 
   test('adds language to processed @example with an extension and no lang',
       () async {
-    var examplePath =
-        resourceProvider.pathContext.join(projectRoot.path, 'abc.html.md');
+    var examplePath = resourceProvider.pathContext.canonicalize(
+        resourceProvider.pathContext.join(projectRoot.path, 'abc.html.md'));
     resourceProvider.getFile(examplePath).writeAsStringSync('''
 ```
 Code snippet
@@ -447,8 +447,8 @@ End text.'''));
 
   test('adds language to processed @example with a lang and an extension',
       () async {
-    var examplePath =
-        resourceProvider.pathContext.join(projectRoot.path, 'abc.html.md');
+    var examplePath = resourceProvider.pathContext.canonicalize(
+        resourceProvider.pathContext.join(projectRoot.path, 'abc.html.md'));
     resourceProvider.getFile(examplePath).writeAsStringSync('''
 ```
 Code snippet
@@ -473,8 +473,8 @@ Code snippet
 
   test('adds language to processed @example with a lang and no extension',
       () async {
-    var examplePath =
-        resourceProvider.pathContext.join(projectRoot.path, 'abc.md');
+    var examplePath = resourceProvider.pathContext.canonicalize(
+        resourceProvider.pathContext.join(projectRoot.path, 'abc.md'));
     resourceProvider.getFile(examplePath).writeAsStringSync('''
 ```
 Code snippet
