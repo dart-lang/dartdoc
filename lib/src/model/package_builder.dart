@@ -108,6 +108,8 @@ class PubPackageBuilder implements PackageBuilder {
     var oldFirst = info2.packages.first;
     print(
         'OLD: "${oldFirst}": uri: "${info2.asMap()[oldFirst]}"; packagePath: "${path.normalize(path.fromUri(info2.asMap()[oldFirst]))}"');
+    print(
+        'NEW: ${info.packages.first}: packageUriRoot: ${info.packages.first.packageUriRoot}');
 
     for (var package in info.packages) {
       var packagePath = path.normalize(path.fromUri(package.packageUriRoot));
@@ -318,6 +320,8 @@ class PubPackageBuilder implements PackageBuilder {
           .asMap();
       var oldFirst = info2.keys.first;
       print('oldFirst: $oldFirst; toFilePath: ${info2[oldFirst].toFilePath()}');
+      print(
+          'newFirst: ${info.packages.first}, ${info[info.packages.first.name].packageUriRoot.path}');
       for (var package in info.packages) {
         if (!filterExcludes || !config.exclude.contains(package.name)) {
           packageDirs.add(path.dirname(info[package.name].packageUriRoot.path));
