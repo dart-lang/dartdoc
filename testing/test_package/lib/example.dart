@@ -259,6 +259,9 @@ class B extends Apple with Cat {
   void abstractMethod() {}
 }
 
+/// Reference to nullable type: [Apple?] and null-checked variable [myNumber!].
+class RefsWithQsAndBangs {}
+
 // Do NOT add a doc comment to C. Testing blank comments.
 
 abstract class Cat {

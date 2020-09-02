@@ -119,19 +119,44 @@ const validHtmlTags = [
 final RegExp nonHTML =
     RegExp("</?(?!(${validHtmlTags.join("|")})[> ])\\w+[> ]");
 
-// Type parameters and other things to ignore at the end of doc references.
-final RegExp trailingIgnoreStuff = RegExp(r'(<.*>|\(.*\))$');
+/// Things to ignore at the end of a doc reference.
+///
+/// This is intended to catch type parameters/arguments, and function call
+/// parentheses.
+final _trailingIgnorePattern = RegExp(r'(<.*>|\(.*\)|\?|!)$');
 
-// Things to ignore at the beginning of doc references
-final RegExp leadingIgnoreStuff =
+@Deprecated('Public variable intended to be private; will be removed as early '
+    'as Dartdoc 1.0.0')
+RegExp get trailingIgnoreStuff => _trailingIgnorePattern;
+
+/// Things to ignore at the beginning of a doc reference.
+///
+/// This is intended to catch various keywords that a developer may include in
+/// front of a variable name.
+// TODO(srawlins): I cannot find any tests asserting we can resolve such
+// references.
+final _leadingIgnorePattern =
     RegExp(r'^(const|final|var)[\s]+', multiLine: true);
 
-// If found, this may be intended as a reference to a constructor.
-final RegExp isConstructor = RegExp(r'(^new[\s]+|\(\)$)', multiLine: true);
+@Deprecated('Public variable intended to be private; will be removed as early '
+    'as Dartdoc 1.0.0')
+RegExp get leadingIgnoreStuff => _leadingIgnorePattern;
 
-// This is probably not really intended as a doc reference, so don't try or
-// warn about them.
-// Covers anything with leading digits/symbols, empty string, weird punctuation, spaces.
+/// If found, this pattern may indicate a reference to a constructor.
+final _constructorIndicationPattern =
+    RegExp(r'(^new[\s]+|\(\)$)', multiLine: true);
+
+@Deprecated('Public variable intended to be private; will be removed as early '
+    'as Dartdoc 1.0.0')
+RegExp get isConstructor => _constructorIndicationPattern;
+
+/// A pattern indicating that text which looks like a doc reference is not
+/// intended to be.
+///
+/// This covers anything with leading digits/symbols, empty strings, weird
+/// punctuation, spaces.
+///
+/// The idea is to catch such cases and not produce warnings about the contents.
 final RegExp notARealDocReference = RegExp(r'''(^[^\w]|^[\d]|[,"'/]|^$)''');
 
 final RegExp operatorPrefix = RegExp(r'^operator[ ]*');
@@ -194,7 +219,7 @@ ModelElement _getPreferredClass(ModelElement modelElement) {
 /// Returns null if element is a parameter.
 MatchingLinkResult _getMatchingLinkElement(
     String codeRef, Warnable element, List<ModelCommentReference> commentRefs) {
-  if (!codeRef.contains(isConstructor) &&
+  if (!codeRef.contains(_constructorIndicationPattern) &&
       codeRef.contains(notARealDocReference)) {
     // Don't waste our time on things we won't ever find.
     return MatchingLinkResult(null, warn: false);
@@ -314,7 +339,7 @@ class _MarkdownCommentReference {
     assert(element != null);
     assert(element.packageGraph.allLibrariesAdded);
 
-    codeRefChomped = codeRef.replaceAll(isConstructor, '');
+    codeRefChomped = codeRef.replaceAll(_constructorIndicationPattern, '');
     library =
         element is ModelElement ? (element as ModelElement).library : null;
     packageGraph = library.packageGraph;
@@ -342,7 +367,7 @@ class _MarkdownCommentReference {
   String get _impliedDefaultConstructor {
     if (!__impliedDefaultConstructorIsSet) {
       __impliedDefaultConstructorIsSet = true;
-      if (codeRef.contains(isConstructor) ||
+      if (codeRef.contains(_constructorIndicationPattern) ||
           (codeRefChompedParts.length >= 2 &&
               codeRefChompedParts[codeRefChompedParts.length - 1] ==
                   codeRefChompedParts[codeRefChompedParts.length - 2])) {
@@ -362,15 +387,16 @@ class _MarkdownCommentReference {
   /// are more than one, but does not warn otherwise.
   ModelElement computeReferredElement() {
     results = {};
-    // TODO(jcollins-g): A complex package winds up spending a lot of cycles in here.  Optimize.
+    // TODO(jcollins-g): A complex package winds up spending a lot of cycles in
+    // here.  Optimize.
     for (var findMethod in [
       // This might be an operator.  Strip the operator prefix and try again.
       _findWithoutOperatorPrefix,
       // Oh, and someone might have thrown on a 'const' or 'final' in front.
       _findWithoutLeadingIgnoreStuff,
       // Maybe this ModelElement has parameters, and this is one of them.
-      // We don't link these, but this keeps us from emitting warnings.  Be sure to
-      // get members of parameters too.
+      // We don't link these, but this keeps us from emitting warnings.  Be sure
+      // to get members of parameters too.
       _findParameters,
       // Maybe this ModelElement has type parameters, and this is one of them.
       _findTypeParameters,
@@ -378,19 +404,23 @@ class _MarkdownCommentReference {
       _findWithinTryClasses,
       // This could be a reference to a renamed library.
       _findReferenceFromPrefixes,
-      // We now need the ref element cache to keep from repeatedly searching [Package.allModelElements].
-      // But if not, look for a fully qualified match.  (That only makes sense
-      // if the codeRef might be qualified, and contains periods.)
+      // We now need the ref element cache to keep from repeatedly searching
+      // [Package.allModelElements].  But if not, look for a fully qualified
+      // match.  (That only makes sense if the code reference might be
+      // qualified, and contains periods.)
       _findWithinRefElementCache,
-      // Only look for partially qualified matches if we didn't find a fully qualified one.
+      // Only look for partially qualified matches if we didn't find a fully
+      // qualified one.
       _findPartiallyQualifiedMatches,
-      // Only look for partially qualified matches if we didn't find a fully qualified one.
+      // Only look for partially qualified matches if we didn't find a fully
+      // qualified one.
       _findGlobalWithinRefElementCache,
-      // This could conceivably be a reference to an enum member.  They don't show up in allModelElements.
+      // This could conceivably be a reference to an enum member.  They don't
+      // show up in [allModelElements].
       _findEnumReferences,
       // Oh, and someone might have some type parameters or other garbage.
-      // After finding within classes because sometimes parentheses are used
-      // to imply constructors.
+      // After finding within classes because sometimes parentheses are used to
+      // imply constructors.
       _findWithoutTrailingIgnoreStuff,
       // Use the analyzer to resolve a comment reference.
       _findAnalyzerReferences,
@@ -514,8 +544,8 @@ class _MarkdownCommentReference {
   }
 
   void _findWithoutLeadingIgnoreStuff() {
-    if (codeRef.contains(leadingIgnoreStuff)) {
-      var newCodeRef = codeRef.replaceFirst(leadingIgnoreStuff, '');
+    if (codeRef.contains(_leadingIgnorePattern)) {
+      var newCodeRef = codeRef.replaceFirst(_leadingIgnorePattern, '');
       results.add(_MarkdownCommentReference(
               newCodeRef, element, commentRefs, preferredClass)
           .computeReferredElement());
@@ -523,8 +553,8 @@ class _MarkdownCommentReference {
   }
 
   void _findWithoutTrailingIgnoreStuff() {
-    if (codeRef.contains(trailingIgnoreStuff)) {
-      var newCodeRef = codeRef.replaceFirst(trailingIgnoreStuff, '');
+    if (codeRef.contains(_trailingIgnorePattern)) {
+      var newCodeRef = codeRef.replaceFirst(_trailingIgnorePattern, '');
       results.add(_MarkdownCommentReference(
               newCodeRef, element, commentRefs, preferredClass)
           .computeReferredElement());
