@@ -369,8 +369,8 @@ End text.'''));
   });
 
   test('processes @example with file', () async {
-    var examplePath =
-        resourceProvider.pathContext.join(projectRoot.path, 'abc.md');
+    var examplePath = resourceProvider.pathContext.canonicalize(
+        resourceProvider.pathContext.join(projectRoot.path, 'abc.md'));
     resourceProvider.getFile(examplePath).writeAsStringSync('''
 ```
 Code snippet
