@@ -32,7 +32,6 @@ import 'package:dartdoc/src/package_meta.dart'
 import 'package:dartdoc/src/render/renderer_factory.dart';
 import 'package:dartdoc/src/special_elements.dart';
 import 'package:meta/meta.dart';
-import 'package:package_config/discovery.dart' as package_config;
 import 'package:package_config/package_config.dart' show findPackageConfig;
 import 'package:path/path.dart' as path;
 
