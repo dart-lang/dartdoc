@@ -1322,6 +1322,20 @@ void main() {
               '<a href="${HTMLBASE_PLACEHOLDER}ex/Apple/Apple.fromString.html">new Apple.fromString</a>'));
     });
 
+    test('references to nullable type and null-checked variable', () {
+      var RefsWithQsAndBangs =
+          exLibrary.classes.firstWhere((c) => c.name == 'RefsWithQsAndBangs');
+      var comment = RefsWithQsAndBangs.documentationAsHtml;
+      expect(
+          comment,
+          contains(
+              'nullable type: <a href="${HTMLBASE_PLACEHOLDER}ex/Apple-class.html">Apple?</a>'));
+      expect(
+          comment,
+          contains(
+              'null-checked variable <a href="${HTMLBASE_PLACEHOLDER}ex/myNumber.html">myNumber!</a>'));
+    });
+
     test('reference to class from another library', () {
       var comment = superAwesomeClass.documentationAsHtml;
       expect(
@@ -1627,7 +1641,7 @@ void main() {
     });
 
     test('correctly finds all the classes', () {
-      expect(classes, hasLength(34));
+      expect(classes, hasLength(35));
     });
 
     test('abstract', () {
