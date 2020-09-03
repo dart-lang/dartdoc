@@ -548,6 +548,9 @@ class ClassWithUnusualProperties extends ImplicitProperties {
   /// This property has some docs, too.
   final Set finalProperty = Set();
 
+  /// This property has docs.
+  abstract Set abstractProperty;
+
   Map implicitReadWrite;
 
   /// Hey there, more things not to warn about: [f], [x], or [q].

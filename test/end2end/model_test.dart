@@ -1657,7 +1657,7 @@ void main() {
       expect(Cat.fullkind, 'abstract class');
     });
 
-    test('class title has  no abstract keyword', () {
+    test('class title has no abstract keyword', () {
       expect(Dog.fullkind, 'class');
     });
 
@@ -3028,6 +3028,12 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           withGenericSub.inheritedFields.where((p) => p.name == 'prop').length,
           equals(1));
+    });
+
+    test('has abstract kind', () {
+      Field abstractField = UnusualProperties.allModelElements
+          .firstWhere((e) => e.name == 'abstractProperty');
+      expect(abstractField.fullkind, 'abstract property');
     });
   });
 
