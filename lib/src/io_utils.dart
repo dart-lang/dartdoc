@@ -11,6 +11,8 @@ import 'dart:io' as io;
 
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
+import 'package:analyzer/src/generated/sdk.dart';
+import 'package:analyzer/src/test_utilities/mock_sdk.dart';
 import 'package:path/path.dart' as path;
 
 Encoding utf8AllowMalformed = Utf8Codec(allowMalformed: true);
@@ -31,6 +33,14 @@ String resolveTildePath(String originalPath) {
   }
 
   return path.join(homeDir, originalPath.substring(2));
+}
+
+bool isSdkLibraryDocumented(SdkLibrary library) {
+  if (library is MockSdkLibrary) {
+    // Not implemented in [MockSdkLibrary].
+    return true;
+  }
+  return library.isDocumented;
 }
 
 extension ResourceProviderExtensions on ResourceProvider {

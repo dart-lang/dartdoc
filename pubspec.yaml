@@ -44,7 +44,3 @@ dev_dependencies:
 
 executables:
   dartdoc: null
-
-dependency_overrides:
-  analyzer:
-    path: '/Users/srawlins/code/dart-sdk/sdk/pkg/analyzer'

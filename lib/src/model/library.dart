@@ -10,6 +10,7 @@ import 'package:analyzer/dart/element/visitor.dart';
 import 'package:analyzer/source/line_info.dart';
 import 'package:analyzer/src/dart/element/inheritance_manager3.dart';
 import 'package:analyzer/src/generated/sdk.dart';
+import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart' show PackageMeta;
 import 'package:dartdoc/src/quiver.dart' as quiver;
@@ -212,7 +213,8 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   @override
   bool get isPublic {
     if (!super.isPublic) return false;
-    if (sdkLib != null && (sdkLib.isInternal || !sdkLib.isDocumented)) {
+    if (sdkLib != null &&
+        (sdkLib.isInternal || !isSdkLibraryDocumented(sdkLib))) {
       return false;
     }
     if (config.isLibraryExcluded(name) ||

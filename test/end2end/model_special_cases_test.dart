@@ -49,15 +49,6 @@ Future<PackageGraph> get _testPackageGraphGinormous =>
           '--no-link-to-remote'
         ]));
 
-final _testPackageGraphSmallMemo = AsyncMemoizer<PackageGraph>();
-Future<PackageGraph> get _testPackageGraphSmall =>
-    _testPackageGraphSmallMemo.runOnce(() => utils.bootBasicPackage(
-        'testing/test_package_small',
-        [],
-        pubPackageMetaProvider,
-        PhysicalPackageConfigProvider(),
-        additionalArguments: ['--no-link-to-remote']));
-
 final _testPackageGraphSdkMemo = AsyncMemoizer<PackageGraph>();
 Future<PackageGraph> get _testPackageGraphSdk =>
     _testPackageGraphSdkMemo.runOnce(_bootSdkPackage);
@@ -429,31 +420,16 @@ void main() {
       expect(SubForDocComments.categories.first.isDocumented, isFalse);
       expect(SubForDocComments.displayedCategories, isEmpty);
     });
-
-    test('Verify that packages without categories get handled', () async {
-      var packageGraphSmall = await _testPackageGraphSmall;
-      expect(packageGraphSmall.localPackages.length, equals(1));
-      expect(packageGraphSmall.localPackages.first.hasCategories, isFalse);
-      var packageCategories = packageGraphSmall.localPackages.first.categories;
-      expect(packageCategories.length, equals(0));
-    }, timeout: Timeout.factor(2));
   });
 
   group('Package', () {
-    PackageGraph ginormousPackageGraph, sdkAsPackageGraph;
+    PackageGraph sdkAsPackageGraph;
 
     setUpAll(() async {
-      ginormousPackageGraph = await _testPackageGraphGinormous;
       sdkAsPackageGraph = await _testPackageGraphSdk;
     });
 
     group('test package', () {
-      test('multiple packages, sorted default', () {
-        expect(ginormousPackageGraph.localPackages, hasLength(5));
-        expect(ginormousPackageGraph.localPackages.first.name,
-            equals('test_package'));
-      });
-
       test('sdk name', () {
         expect(sdkAsPackageGraph.defaultPackage.name, equals('Dart'));
         expect(sdkAsPackageGraph.defaultPackage.kind, equals('SDK'));
@@ -472,16 +448,6 @@ void main() {
       test('sdk description', () {
         expect(sdkAsPackageGraph.defaultPackage.documentation,
             startsWith('Welcome'));
-      });
-    });
-
-    group('test small package', () {
-      test('does not have documentation', () async {
-        var packageGraphSmall = await _testPackageGraphSmall;
-        expect(packageGraphSmall.defaultPackage.hasDocumentation, isFalse);
-        expect(packageGraphSmall.defaultPackage.hasDocumentationFile, isFalse);
-        expect(packageGraphSmall.defaultPackage.documentationFile, isNull);
-        expect(packageGraphSmall.defaultPackage.documentation, isNull);
       });
     });
 

@@ -9,6 +9,7 @@ import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/src/context/builder.dart';
+import 'package:analyzer/src/context/packages.dart';
 import 'package:analyzer/src/dart/analysis/byte_store.dart';
 import 'package:analyzer/src/dart/analysis/driver.dart';
 import 'package:analyzer/src/dart/analysis/file_state.dart';
@@ -19,11 +20,11 @@ import 'package:analyzer/src/generated/java_io.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/generated/source_io.dart';
-import 'package:dartdoc/src/quiver.dart' as quiver;
 import 'package:analyzer/src/source/package_map_resolver.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/quiver.dart' as quiver;
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart'
     show PackageMeta, PackageMetaProvider;
@@ -126,14 +127,12 @@ class PubPackageBuilder implements PackageBuilder {
   }
 
   SourceFactory get sourceFactory {
-    var resolvers = <UriResolver>[];
     final UriResolver packageResolver =
         PackageMapUriResolver(resourceProvider, _packageMap);
     UriResolver sdkResolver;
     if (embedderSdk == null || embedderSdk.urlMappings.isEmpty) {
       // The embedder uri resolver has no mappings. Use the default Dart SDK
       // uri resolver.
-      print('using sdk: ${sdk.runtimeType}');
       sdkResolver = DartUriResolver(sdk);
     } else {
       // The embedder uri resolver has mappings, use it instead of the default
@@ -145,14 +144,15 @@ class PubPackageBuilder implements PackageBuilder {
     /// never resolve to embedded SDK files, and the resolvers list must still
     /// contain a DartUriResolver.  This hack won't be necessary once analyzer
     /// has a clean public API.
-    resolvers.add(PackageWithoutSdkResolver(packageResolver, sdkResolver));
-    resolvers.add(sdkResolver);
-    resolvers.add(ResourceUriResolver(resourceProvider));
+    var resolvers = [
+      PackageWithoutSdkResolver(packageResolver, sdkResolver),
+      sdkResolver,
+      ResourceUriResolver(resourceProvider),
+    ];
 
     assert(
         resolvers.any((UriResolver resolver) => resolver is DartUriResolver));
-    var sourceFactory = SourceFactory(resolvers);
-    return sourceFactory;
+    return SourceFactory(resolvers);
   }
 
   AnalysisDriver _driver;
@@ -170,14 +170,16 @@ class PubPackageBuilder implements PackageBuilder {
       //                   many AnalysisDrivers
       // TODO(jcollins-g): make use of DartProject isApi()
       _driver = AnalysisDriver(
-          scheduler,
-          log,
-          resourceProvider,
-          MemoryByteStore(),
-          FileContentOverlay(),
-          null,
-          sourceFactory,
-          options);
+        scheduler,
+        log,
+        resourceProvider,
+        MemoryByteStore(),
+        FileContentOverlay(),
+        null,
+        sourceFactory,
+        options,
+        packages: Packages.empty,
+      );
       driver.results.listen((_) => logProgress(''));
       driver.exceptions.listen((_) {});
       scheduler.start();

@@ -215,8 +215,6 @@ abstract class PubPackageMeta extends PackageMeta {
 
   static PubPackageMeta fromFilename(
       String filename, ResourceProvider resourceProvider) {
-    print(
-        'checking parent of "$filename"; "${resourceProvider.getFile(filename).parent.path}"');
     return PubPackageMeta.fromDir(
         resourceProvider.getFile(filename).parent, resourceProvider);
   }
