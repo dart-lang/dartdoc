@@ -1336,6 +1336,17 @@ void main() {
               'null-checked variable <a href="${HTMLBASE_PLACEHOLDER}ex/myNumber.html">myNumber!</a>'));
     });
 
+    test('reference to constructor named the same as a field', () {
+      var FieldAndCtorWithSameName = exLibrary.classes
+          .firstWhere((c) => c.name == 'FieldAndCtorWithSameName');
+      var comment = FieldAndCtorWithSameName.documentationAsHtml;
+      expect(
+          comment,
+          contains('Reference to '
+              '<a href="${HTMLBASE_PLACEHOLDER}ex/FieldAndCtorWithSameName/FieldAndCtorWithSameName.named.html">'
+              'FieldAndCtorWithSameName.named()</a>'));
+    });
+
     test('reference to class from another library', () {
       var comment = superAwesomeClass.documentationAsHtml;
       expect(
@@ -1641,7 +1652,7 @@ void main() {
     });
 
     test('correctly finds all the classes', () {
-      expect(classes, hasLength(35));
+      expect(classes, hasLength(36));
     });
 
     test('abstract', () {
