@@ -262,6 +262,13 @@ class B extends Apple with Cat {
 /// Reference to nullable type: [Apple?] and null-checked variable [myNumber!].
 class RefsWithQsAndBangs {}
 
+/// Reference to [FieldAndCtorWithSameName.named()].
+class FieldAndCtorWithSameName {
+  FieldAndCtorWithSameName.named();
+
+  int named;
+}
+
 // Do NOT add a doc comment to C. Testing blank comments.
 
 abstract class Cat {

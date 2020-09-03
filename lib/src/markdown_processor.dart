@@ -446,15 +446,22 @@ class _MarkdownCommentReference {
         // If a result is accessible in this library, prefer that.
         _reducePreferResultsAccessibleInSameLibrary,
         // This may refer to an element with the same name in multiple libraries
-        // in an external package, e.g. Matrix4 in vector_math and vector_math_64.
-        // Disambiguate by attempting to figure out which of them our package
-        // is actually using by checking the import/export graph.
+        // in an external package, e.g. Matrix4 in vector_math and
+        // vector_math_64.  Disambiguate by attempting to figure out which of
+        // them our package is actually using by checking the import/export
+        // graph.
         _reducePreferLibrariesInLocalImportExportGraph,
-        // If a result's fully qualified name has pieces of the comment reference,
-        // prefer that.
+        // If a result's fully qualified name has pieces of the comment
+        // reference, prefer that.
         _reducePreferReferencesIncludingFullyQualifiedName,
-        // Prefer the Dart analyzer's resolution of comment references.  We can't
-        // start from this because of the differences in Dartdoc canonicalization.
+        // If the reference is indicated to be a constructor, prefer
+        // constructors.  This is not as generic as it sounds; very few naming
+        // conflicts are allowed, but an instance field is allowed to have the
+        // same name as a named constructor.
+        _reducePreferConstructorViaIndicators,
+        // Prefer the Dart analyzer's resolution of comment references.  We
+        // can't start from this because of the differences in Dartdoc
+        // canonicalization.
         _reducePreferAnalyzerResolution,
       ]) {
         reduceMethod();
@@ -494,6 +501,13 @@ class _MarkdownCommentReference {
     var refElement = _getRefElementFromCommentRefs(commentRefs, codeRef);
     if (results.any((me) => me.element == refElement)) {
       results.removeWhere((me) => me.element != refElement);
+    }
+  }
+
+  void _reducePreferConstructorViaIndicators() {
+    if (codeRef.contains(_constructorIndicationPattern) &&
+        codeRefChompedParts.length >= 2) {
+      results.removeWhere((r) => r is! Constructor);
     }
   }
 
