@@ -60,13 +60,18 @@ class Class extends Container
     packageGraph.specialClasses.addSpecial(this);
   }
 
-  Constructor _defaultConstructor;
+  Constructor _unnamedConstructor;
 
-  Constructor get defaultConstructor {
-    _defaultConstructor ??= constructors
-        .firstWhere((c) => c.isDefaultConstructor, orElse: () => null);
-    return _defaultConstructor;
+  Constructor get unnamedConstructor {
+    _unnamedConstructor ??= constructors
+        .firstWhere((c) => c.isUnnamedConstructor, orElse: () => null);
+    return _unnamedConstructor;
   }
+
+  @Deprecated(
+      'Renamed to `unnamedConstructor`; this getter with the old name will be '
+      'removed as early as Dartdoc 1.0.0')
+  Constructor get defaultConstructor => unnamedConstructor;
 
   @override
   Iterable<Method> get instanceMethods =>

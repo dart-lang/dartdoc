@@ -345,37 +345,41 @@ class _MarkdownCommentReference {
     packageGraph = library.packageGraph;
   }
 
-  String __impliedDefaultConstructor;
-  bool __impliedDefaultConstructorIsSet = false;
+  String __impliedUnnamedConstructor;
 
-  /// Returns the name of the implied default constructor if there is one, or
+  /// [_impliedUnnamedConstructor] is memoized in [__impliedUnnamedConstructor],
+  /// but even after it is initialized, it may be null. This bool represents the
+  /// initializiation state.
+  bool __impliedUnnamedConstructorIsSet = false;
+
+  /// Returns the name of the implied unnamed constructor if there is one, or
   /// null if not.
   ///
-  /// Default constructors are a special case in dartdoc.  If we look up a name
+  /// Unnamed constructors are a special case in dartdoc.  If we look up a name
   /// within a class of that class itself, the first thing we find is the
-  /// default constructor.  But we determine whether that's what they actually
+  /// unnamed constructor.  But we determine whether that's what they actually
   /// intended (vs. the enclosing class) by context -- whether they seem
   /// to be calling it with () or have a 'new' in front of it, or
   /// whether the name is repeated.
   ///
   /// Similarly, referencing a class by itself might actually refer to its
-  /// constructor based on these same heuristics.
+  /// unnamed constructor based on these same heuristics.
   ///
-  /// With the name of the implied default constructor, other methods can
+  /// With the name of the implied unnamed constructor, other methods can
   /// determine whether or not the constructor and/or class we resolved to
   /// is actually matching the user's intent.
-  String get _impliedDefaultConstructor {
-    if (!__impliedDefaultConstructorIsSet) {
-      __impliedDefaultConstructorIsSet = true;
+  String get _impliedUnnamedConstructor {
+    if (!__impliedUnnamedConstructorIsSet) {
+      __impliedUnnamedConstructorIsSet = true;
       if (codeRef.contains(_constructorIndicationPattern) ||
           (codeRefChompedParts.length >= 2 &&
               codeRefChompedParts[codeRefChompedParts.length - 1] ==
                   codeRefChompedParts[codeRefChompedParts.length - 2])) {
         // If the last two parts of the code reference are equal, this is probably a default constructor.
-        __impliedDefaultConstructor = codeRefChompedParts.last;
+        __impliedUnnamedConstructor = codeRefChompedParts.last;
       }
     }
-    return __impliedDefaultConstructor;
+    return __impliedUnnamedConstructor;
   }
 
   /// Calculate reference to a ModelElement.
@@ -593,18 +597,24 @@ class _MarkdownCommentReference {
     }
   }
 
-  /// Transform members of [toConvert] that are classes to their default constructor,
-  /// if a constructor is implied.  If not, do the reverse conversion for default
-  /// constructors.
+  /// Returns the unnamed constructor for class [toConvert] or the class for
+  /// constructor [toConvert], or just [toConvert], based on hueristics.
+  ///
+  /// * If an unnamed constructor is implied in the comment reference, and
+  ///   [toConvert] is a class with the same name, the class's unnamed
+  ///   constructor is returned.
+  /// * Otherwise, if [toConvert] is an unnamed constructor, its enclosing
+  ///   class is returned.
+  /// * Othwerwise, [toConvert] is returned.
   ModelElement _convertConstructors(ModelElement toConvert) {
-    if (_impliedDefaultConstructor != null) {
-      if (toConvert is Class && toConvert.name == _impliedDefaultConstructor) {
-        return toConvert.defaultConstructor;
+    if (_impliedUnnamedConstructor != null) {
+      if (toConvert is Class && toConvert.name == _impliedUnnamedConstructor) {
+        return toConvert.unnamedConstructor;
       }
       return toConvert;
     } else {
       if (toConvert is Constructor &&
-          (toConvert.enclosingElement as Class).defaultConstructor ==
+          (toConvert.enclosingElement as Class).unnamedConstructor ==
               toConvert) {
         return toConvert.enclosingElement;
       }
