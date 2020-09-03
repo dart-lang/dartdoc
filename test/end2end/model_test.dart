@@ -3353,7 +3353,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .firstWhere((c) => c.name == 'ReferToADefaultConstructor');
       withSyntheticConstructor = exLibrary.classes
           .firstWhere((c) => c.name == 'WithSyntheticConstructor');
-      syntheticConstructor = withSyntheticConstructor.defaultConstructor;
+      syntheticConstructor = withSyntheticConstructor.unnamedConstructor;
     });
 
     test('calculates comment references to classes vs. constructors correctly',
