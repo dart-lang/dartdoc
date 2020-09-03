@@ -335,14 +335,14 @@ class PropertyTemplateData extends TemplateData<Field> {
 
   @override
   String get title =>
-      '${property.name} $_type - ${container.name} ${containerDesc} - '
+      '${property.name} ${property.kind} - ${container.name} ${containerDesc} - '
       '${library.name} library - Dart API';
   @override
   String get layoutTitle =>
-      _layoutTitle(property.name, _type, property.isDeprecated);
+      _layoutTitle(property.name, property.fullkind, property.isDeprecated);
   @override
   String get metaDescription =>
-      'API docs for the ${property.name} $_type from the '
+      'API docs for the ${property.name} ${property.kind} from the '
       '${container.name} ${containerDesc}, for the Dart programming language.';
   @override
   List<Documentable> get navLinks => [packageGraph.defaultPackage, library];
@@ -350,8 +350,6 @@ class PropertyTemplateData extends TemplateData<Field> {
   List<Documentable> get navLinksWithGenerics => [container];
   @override
   String get htmlBase => '../../';
-
-  String get _type => property.isConst ? 'constant' : 'property';
 }
 
 class TypedefTemplateData extends TemplateData<Typedef> {

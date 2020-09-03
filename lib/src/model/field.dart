@@ -115,6 +115,11 @@ class Field extends ModelElement
     return allAnnotations;
   }
 
+  String get fullkind {
+    if (field.isAbstract) return 'abstract $kind';
+    return kind;
+  }
+
   @override
   Set<String> get features {
     var allFeatures = super.features..addAll(comboFeatures);
