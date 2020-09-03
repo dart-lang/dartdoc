@@ -10,19 +10,53 @@ import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/render/model_element_renderer.dart';
+import 'package:dartdoc/src/render/renderer_factory.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:path/path.dart' as p;
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
-final _projectRoot = p.join('/', 'project');
-final _aLibPath = p.join(_projectRoot, 'a.dart');
-
 void main() {
+  MemoryResourceProvider resourceProvider;
+  Folder projectRoot;
+  String libFooPath;
   _Processor processor;
-  setUp(() {
-    processor = _Processor(_FakeDartdocOptionContext());
-    processor.href = _aLibPath;
+  String youtubeRender;
+
+  void verifyNoWarnings() => verifyNever(processor.packageGraph
+      .warnOnElement(processor, any, message: anyNamed('message')));
+
+  setUp(() async {
+    resourceProvider = MemoryResourceProvider();
+    projectRoot =
+        resourceProvider.getFolder(resourceProvider.convertPath('/project'));
+    projectRoot.create();
+    resourceProvider
+        .getFile(
+            resourceProvider.pathContext.join(projectRoot.path, 'pubspec.yaml'))
+        .writeAsStringSync('''
+name: foo
+''');
+    var packageMetaProvider = PackageMetaProvider(
+      PubPackageMeta.fromElement,
+      PubPackageMeta.fromFilename,
+      PubPackageMeta.fromDir,
+      resourceProvider,
+    );
+    var optionSet = await DartdocOptionSet.fromOptionGenerators(
+        'dartdoc', [createDartdocOptions], packageMetaProvider);
+    optionSet.parseArguments([]);
+    processor = _Processor(
+        DartdocOptionContext(optionSet, projectRoot, resourceProvider),
+        projectRoot,
+        resourceProvider);
+    when(processor.packageGraph.resourceProvider).thenReturn(resourceProvider);
+
+    libFooPath =
+        resourceProvider.pathContext.join(projectRoot.path, 'foo.dart');
+    processor.href = libFooPath;
+    youtubeRender = processor.modelElementRenderer
+        .renderYoutubeUrl('oHg5SJYRHA0', '200.00');
   });
 
   test('removes triple slashes', () async {
@@ -30,6 +64,8 @@ void main() {
 /// Text.
 /// More text.
 ''');
+
+    verifyNoWarnings();
     expect(doc, equals('''
 Text.
 More text.'''));
@@ -40,6 +76,8 @@ More text.'''));
 ///  Text.
 ///    More text.
 ''');
+
+    verifyNoWarnings();
     // TODO(srawlins): Actually, the three spaces before 'More' is perhaps not
     // the best fit. Should it only be two, to match the indent from the first
     // line's "Text"?
@@ -54,6 +92,8 @@ Text.
 ///
 /// More text.
 ''');
+
+    verifyNoWarnings();
     expect(doc, equals('''
 Text.
 
@@ -61,7 +101,7 @@ More text.'''));
   });
 
   test('processes @animation', () async {
-    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
+    processor.element = _FakeElement(source: _FakeSource(fullName: libFooPath));
     var doc = await processor.processComment('''
 /// Text.
 ///
@@ -69,16 +109,24 @@ More text.'''));
 ///
 /// End text.
 ''');
+
+    verifyNoWarnings();
+    var rendered = processor.modelElementRenderer.renderAnimation(
+        'barHerderAnimation',
+        100,
+        200,
+        Uri.parse('http://host/path/to/video.mp4'),
+        'barHerderAnimation_play_button_');
     expect(doc, equals('''
 Text.
 
-<!-- render -->
+$rendered
 
 End text.'''));
   });
 
   test('warns when @animation has fewer than 3 arguments', () async {
-    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
+    processor.element = _FakeElement(source: _FakeSource(fullName: libFooPath));
     await processor.processComment('''
 /// Text.
 ///
@@ -96,7 +144,7 @@ End text.'''));
   });
 
   test('warns when @animation has more than 4 arguments', () async {
-    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
+    processor.element = _FakeElement(source: _FakeSource(fullName: libFooPath));
     await processor.processComment('''
 /// Text.
 ///
@@ -115,7 +163,7 @@ End text.'''));
   });
 
   test('warns when @animation has more than 4 arguments', () async {
-    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
+    processor.element = _FakeElement(source: _FakeSource(fullName: libFooPath));
     await processor.processComment('''
 /// Text.
 ///
@@ -134,7 +182,7 @@ End text.'''));
   });
 
   test('warns when @animation has a non-unique identifier', () async {
-    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
+    processor.element = _FakeElement(source: _FakeSource(fullName: libFooPath));
     await processor.processComment('''
 /// Text.
 ///
@@ -151,7 +199,7 @@ End text.'''));
   });
 
   test('warns when @animation has an invalid identifier', () async {
-    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
+    processor.element = _FakeElement(source: _FakeSource(fullName: libFooPath));
     await processor.processComment('''
 /// Text.
 ///
@@ -168,7 +216,7 @@ End text.'''));
   });
 
   test('warns when @animation has a malformed width', () async {
-    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
+    processor.element = _FakeElement(source: _FakeSource(fullName: libFooPath));
     await processor.processComment('''
 /// Text.
 ///
@@ -184,7 +232,7 @@ End text.'''));
   });
 
   test('warns when @animation has a malformed height', () async {
-    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
+    processor.element = _FakeElement(source: _FakeSource(fullName: libFooPath));
     await processor.processComment('''
 /// Text.
 ///
@@ -200,7 +248,7 @@ End text.'''));
   });
 
   test('warns when @animation has an unknown parameter', () async {
-    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
+    processor.element = _FakeElement(source: _FakeSource(fullName: libFooPath));
     await processor.processComment('''
 /// Text.
 ///
@@ -217,7 +265,7 @@ End text.'''));
   });
 
   test('warns when @animation uses the deprecated syntax', () async {
-    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
+    processor.element = _FakeElement(source: _FakeSource(fullName: libFooPath));
     await processor.processComment('''
 /// Text.
 ///
@@ -244,6 +292,8 @@ End text.'''));
 ///
 /// End text.
 ''');
+
+    verifyNoWarnings();
     expect(doc, equals('''
 Text.
 
@@ -261,6 +311,8 @@ End text.'''));
 ///
 /// End text.
 ''');
+
+    verifyNoWarnings();
     expect(doc, equals('''
 {@macro abc}
 
@@ -276,6 +328,8 @@ End text.'''));
 /// Template text.
 /// {@endtemplate}
 ''');
+
+    verifyNoWarnings();
     expect(doc, equals('''
 Text.
 
@@ -292,6 +346,8 @@ Text.
 /// {@endtemplate}
 /// End text.
 ''');
+
+    verifyNoWarnings();
     expect(doc, equals('''
 Text.
 
@@ -306,13 +362,21 @@ End text.'''));
 /// Template text.
 /// {@endtemplate}
 ''');
+
     expect(doc, equals('''
 {@macro abc}'''));
     verify(processor.packageGraph.addMacro('abc', 'Template text.')).called(1);
   });
 
-  test('processes @example with file-not-found', () async {
-    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
+  test('processes @example with file', () async {
+    var examplePath = resourceProvider.pathContext.canonicalize(
+        resourceProvider.pathContext.join(projectRoot.path, 'abc.md'));
+    resourceProvider.getFile(examplePath).writeAsStringSync('''
+```
+Code snippet
+```
+''');
+    processor.element = _FakeElement(source: _FakeSource(fullName: libFooPath));
     var doc = await processor.processComment('''
 /// Text.
 ///
@@ -320,72 +384,186 @@ End text.'''));
 ///
 /// End text.
 ''');
-    verify(processor.packageGraph
-            .warnOnElement(processor, PackageWarning.missingExampleFile,
-                message: '${p.canonicalize(p.join(_projectRoot, 'abc.md'))}; '
-                    'path listed at a.dart'))
-        .called(1);
-    // When the example path is invalid, the directive should be left in-place.
+
+    verifyNoWarnings();
     expect(doc, equals('''
 Text.
 
-{@example abc}
+```
+Code snippet
+```
 
-End text.'''));
-  });
-
-  test('processes @example with directories', () async {
-    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
-    var doc = await processor.processComment('''
-/// Text.
-///
-/// {@example abc/def/ghi}
-///
-/// End text.
-''');
-    verify(processor.packageGraph.warnOnElement(
-            processor, PackageWarning.missingExampleFile,
-            message:
-                '${p.canonicalize(p.join(_projectRoot, 'abc', 'def', 'ghi.md'))}; '
-                'path listed at a.dart'))
-        .called(1);
-    // When the example path is invalid, the directive should be left in-place.
-    expect(doc, equals('''
-Text.
-
-{@example abc/def/ghi}
 
 End text.'''));
   });
 
   test('processes @example with a region', () async {
-    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
+    var examplePath = resourceProvider.pathContext.canonicalize(
+        resourceProvider.pathContext.join(projectRoot.path, 'abc-r.md'));
+    resourceProvider.getFile(examplePath).writeAsStringSync('Markdown text.');
+    processor.element = _FakeElement(source: _FakeSource(fullName: libFooPath));
     var doc = await processor.processComment('''
 /// Text.
 ///
 /// {@example region=r abc}
-///
-/// End text.
 ''');
-    verify(processor.packageGraph
-            .warnOnElement(processor, PackageWarning.missingExampleFile,
-                message: '${p.canonicalize(p.join(_projectRoot, 'abc-r.md'))}; '
-                    'path listed at a.dart'))
-        .called(1);
-    // When the example path is invalid, the directive should be left in-place.
+
+    verifyNoWarnings();
     expect(doc, equals('''
 Text.
 
-{@example region=r abc}
+Markdown text.'''));
+  });
+
+  test('adds language to processed @example with an extension and no lang',
+      () async {
+    var examplePath = resourceProvider.pathContext.canonicalize(
+        resourceProvider.pathContext.join(projectRoot.path, 'abc.html.md'));
+    resourceProvider.getFile(examplePath).writeAsStringSync('''
+```
+Code snippet
+```
+''');
+    processor.element = _FakeElement(source: _FakeSource(fullName: libFooPath));
+    var doc = await processor.processComment('''
+/// Text.
+///
+/// {@example abc.html}
+///
+/// End text.
+''');
+
+    verifyNoWarnings();
+    expect(doc, equals('''
+Text.
+
+```html
+Code snippet
+```
+
 
 End text.'''));
   });
 
-  // TODO(srawlins): Test @example `lang=` and successful file resolution when
-  // we abstract the file system.
+  test('adds language to processed @example with a lang and an extension',
+      () async {
+    var examplePath = resourceProvider.pathContext.canonicalize(
+        resourceProvider.pathContext.join(projectRoot.path, 'abc.html.md'));
+    resourceProvider.getFile(examplePath).writeAsStringSync('''
+```
+Code snippet
+```
+''');
+    processor.element = _FakeElement(source: _FakeSource(fullName: libFooPath));
+    var doc = await processor.processComment('''
+/// Text.
+///
+/// {@example abc.html lang=html}
+''');
+
+    verifyNoWarnings();
+    expect(doc, equals('''
+Text.
+
+```html
+Code snippet
+```
+'''));
+  });
+
+  test('adds language to processed @example with a lang and no extension',
+      () async {
+    var examplePath = resourceProvider.pathContext.canonicalize(
+        resourceProvider.pathContext.join(projectRoot.path, 'abc.md'));
+    resourceProvider.getFile(examplePath).writeAsStringSync('''
+```
+Code snippet
+```
+''');
+    processor.element = _FakeElement(source: _FakeSource(fullName: libFooPath));
+    var doc = await processor.processComment('''
+/// Text.
+///
+/// {@example abc lang=html}
+''');
+
+    verifyNoWarnings();
+    expect(doc, equals('''
+Text.
+
+```html
+Code snippet
+```
+'''));
+  });
+
+  test('processes @example with file, not found', () async {
+    processor.element = _FakeElement(source: _FakeSource(fullName: libFooPath));
+    var doc = await processor.processComment('''
+/// {@example abc}
+''');
+
+    verify(processor.packageGraph.warnOnElement(
+            processor, PackageWarning.missingExampleFile,
+            message: '${p.canonicalize(p.join(projectRoot.path, 'abc.md'))}; '
+                'path listed at foo.dart'))
+        .called(1);
+    // When the example path is invalid, the directive should be left in-place.
+    expect(doc, equals('{@example abc}'));
+  });
+
+  test('processes @example with directories, not found', () async {
+    processor.element = _FakeElement(source: _FakeSource(fullName: libFooPath));
+    var doc = await processor.processComment('''
+/// {@example abc/def/ghi}
+''');
+
+    verify(processor.packageGraph.warnOnElement(
+            processor, PackageWarning.missingExampleFile,
+            message:
+                '${p.canonicalize(p.join(projectRoot.path, 'abc', 'def', 'ghi.md'))}; '
+                'path listed at foo.dart'))
+        .called(1);
+    // When the example path is invalid, the directive should be left in-place.
+    expect(doc, equals('{@example abc/def/ghi}'));
+  });
+
+  test('processes @example with a region, not found', () async {
+    processor.element = _FakeElement(source: _FakeSource(fullName: libFooPath));
+    var doc = await processor.processComment('''
+/// {@example region=r abc}
+''');
+
+    verify(processor.packageGraph.warnOnElement(
+            processor, PackageWarning.missingExampleFile,
+            message: '${p.canonicalize(p.join(projectRoot.path, 'abc-r.md'))}; '
+                'path listed at foo.dart'))
+        .called(1);
+    // When the example path is invalid, the directive should be left in-place.
+    expect(doc, equals('{@example region=r abc}'));
+  });
+
+  test('leaves @inject-html unprocessed when disabled', () async {
+    processor.element = _FakeElement(source: _FakeSource(fullName: libFooPath));
+    var doc = await processor.processComment('''
+/// Text.
+///
+/// {@inject-html}
+///
+/// End text.
+''');
+
+    verifyNoWarnings();
+    expect(doc, equals('''
+Text.
+
+{@inject-html}
+
+End text.'''));
+  });
 
   test('processes @youtube', () async {
-    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
+    processor.element = _FakeElement(source: _FakeSource(fullName: libFooPath));
     var doc = await processor.processComment('''
 /// Text.
 ///
@@ -393,42 +571,48 @@ End text.'''));
 ///
 /// End text.
 ''');
+
+    verifyNoWarnings();
     expect(doc, equals('''
 Text.
 
-<!-- render -->
+$youtubeRender
 
 End text.'''));
   });
 
   test('processes leading @youtube', () async {
-    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
+    processor.element = _FakeElement(source: _FakeSource(fullName: libFooPath));
     var doc = await processor.processComment('''
 /// {@youtube 100 200 https://www.youtube.com/watch?v=oHg5SJYRHA0}
 ///
 /// End text.
 ''');
+
+    verifyNoWarnings();
     expect(doc, equals('''
-<!-- render -->
+$youtubeRender
 
 End text.'''));
   });
 
   test('processes trailing @youtube', () async {
-    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
+    processor.element = _FakeElement(source: _FakeSource(fullName: libFooPath));
     var doc = await processor.processComment('''
 /// Text.
 ///
 /// {@youtube 100 200 https://www.youtube.com/watch?v=oHg5SJYRHA0}
 ''');
+
+    verifyNoWarnings();
     expect(doc, equals('''
 Text.
 
-<!-- render -->'''));
+$youtubeRender'''));
   });
 
   test('warns when @youtube has less than 3 arguments', () async {
-    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
+    processor.element = _FakeElement(source: _FakeSource(fullName: libFooPath));
     await processor.processComment(
         '/// {@youtube 100 https://www.youtube.com/watch?v=oHg5SJYRHA0}');
     verify(processor.packageGraph.warnOnElement(
@@ -441,7 +625,7 @@ Text.
   });
 
   test('warns when @youtube has more than 3 arguments', () async {
-    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
+    processor.element = _FakeElement(source: _FakeSource(fullName: libFooPath));
     await processor.processComment(
         '/// {@youtube 100 200 300 https://www.youtube.com/watch?v=oHg5SJYRHA0}');
     verify(processor.packageGraph.warnOnElement(
@@ -454,7 +638,7 @@ Text.
   });
 
   test('warns when @youtube has a malformed width', () async {
-    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
+    processor.element = _FakeElement(source: _FakeSource(fullName: libFooPath));
     await processor.processComment(
         '/// {@youtube 100px 200 https://www.youtube.com/watch?v=oHg5SJYRHA0}');
     verify(processor.packageGraph
@@ -465,7 +649,7 @@ Text.
   });
 
   test('warns when @youtube has a negative width', () async {
-    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
+    processor.element = _FakeElement(source: _FakeSource(fullName: libFooPath));
     await processor.processComment(
         '/// {@youtube -100 200 https://www.youtube.com/watch?v=oHg5SJYRHA0}');
     verify(processor.packageGraph.warnOnElement(
@@ -477,7 +661,7 @@ Text.
   });
 
   test('warns when @youtube has a malformed height', () async {
-    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
+    processor.element = _FakeElement(source: _FakeSource(fullName: libFooPath));
     await processor.processComment(
         '/// {@youtube 100 200px https://www.youtube.com/watch?v=oHg5SJYRHA0}');
     verify(processor.packageGraph
@@ -488,7 +672,7 @@ Text.
   });
 
   test('warns when @youtube has a negative height', () async {
-    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
+    processor.element = _FakeElement(source: _FakeSource(fullName: libFooPath));
     await processor.processComment(
         '/// {@youtube 100 -200 https://www.youtube.com/watch?v=oHg5SJYRHA0}');
     verify(processor.packageGraph.warnOnElement(
@@ -500,7 +684,7 @@ Text.
   });
 
   test('warns when @youtube has an invalid URL', () async {
-    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
+    processor.element = _FakeElement(source: _FakeSource(fullName: libFooPath));
     await processor.processComment(
         '/// {@youtube 100 200 https://www.not-youtube.com/watch?v=oHg5SJYRHA0}');
     verify(processor.packageGraph.warnOnElement(
@@ -513,7 +697,7 @@ Text.
   });
 
   test('warns when @youtube has a URL with extra query parameters', () async {
-    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
+    processor.element = _FakeElement(source: _FakeSource(fullName: libFooPath));
     await processor.processComment(
         '/// {@youtube 100 200 https://www.not-youtube.com/watch?v=oHg5SJYRHA0&a=1}');
     verify(processor.packageGraph.warnOnElement(
@@ -525,7 +709,8 @@ Text.
         .called(1);
   });
 
-  // TODO(srawlins): More unit tests: @inject-html, @tool.
+  // TODO(srawlins): More unit tests: @example with `config.examplePathPrefix`,
+  // @inject-html, @tool.
 }
 
 /// In order to mix in [CommentProcessable], we must first implement
@@ -536,7 +721,7 @@ abstract class __Processor extends Fake
 /// A simple comment processor for testing [CommentProcessable].
 class _Processor extends __Processor with CommentProcessable {
   @override
-  final _FakeDartdocOptionContext config;
+  final DartdocOptionContext config;
 
   @override
   final _FakePackage package;
@@ -545,7 +730,7 @@ class _Processor extends __Processor with CommentProcessable {
   final _MockPackageGraph packageGraph;
 
   @override
-  final _MockModelElementRenderer modelElementRenderer;
+  final ModelElementRenderer modelElementRenderer;
 
   @override
   String href;
@@ -553,19 +738,15 @@ class _Processor extends __Processor with CommentProcessable {
   @override
   Element element;
 
-  _Processor(this.config)
-      : package = _FakePackage(),
+  _Processor(this.config, Folder dir, ResourceProvider resourceProvider)
+      : package = _FakePackage(PubPackageMeta.fromDir(dir, resourceProvider)),
         packageGraph = _MockPackageGraph(),
-        modelElementRenderer = _MockModelElementRenderer() {
+        modelElementRenderer =
+            RendererFactory.forFormat('html').modelElementRenderer {
     throwOnMissingStub(packageGraph);
     when(packageGraph.addMacro(any, any)).thenReturn(null);
     when(packageGraph.warnOnElement(this, any, message: anyNamed('message')))
         .thenReturn(null);
-    when(modelElementRenderer.renderYoutubeUrl(any, any))
-        .thenReturn('<!-- render -->');
-    when(modelElementRenderer.renderAnimation(any, any, any, any, any))
-        .thenReturn('<!-- render -->');
-    when(packageGraph.resourceProvider).thenReturn(MemoryResourceProvider());
   }
 
   @override
@@ -575,15 +756,6 @@ class _Processor extends __Processor with CommentProcessable {
           message: message, referredFrom: referredFrom);
 }
 
-class _FakeFolder extends Fake implements Folder {
-  @override
-  final String path;
-
-  _FakeFolder() : path = _projectRoot;
-}
-
-class _MockModelElementRenderer extends Mock implements ModelElementRenderer {}
-
 class _FakePackage extends Fake implements Package {
   @override
   final PackageMeta packageMeta;
@@ -591,14 +763,7 @@ class _FakePackage extends Fake implements Package {
   @override
   final Map<String, Set<String>> usedAnimationIdsByHref = {};
 
-  _FakePackage() : packageMeta = _FakePackageMeta();
-}
-
-class _FakePackageMeta extends Fake implements PackageMeta {
-  @override
-  final Folder dir;
-
-  _FakePackageMeta() : dir = _FakeFolder();
+  _FakePackage(this.packageMeta);
 }
 
 class _FakeElement extends Fake implements Element {
@@ -613,19 +778,6 @@ class _FakeSource extends Fake implements Source {
   final String fullName;
 
   _FakeSource({this.fullName});
-}
-
-class _FakeDartdocOptionContext extends Fake implements DartdocOptionContext {
-  @override
-  final bool allowTools;
-
-  @override
-  final bool injectHtml;
-
-  @override
-  final String examplePathPrefix = null;
-
-  _FakeDartdocOptionContext({this.allowTools = false, this.injectHtml = false});
 }
 
 class _MockPackageGraph extends Mock implements PackageGraph {}
