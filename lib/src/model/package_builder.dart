@@ -24,12 +24,12 @@ import 'package:analyzer/src/source/package_map_resolver.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart'
     show PackageMeta, PackageMetaProvider;
 import 'package:dartdoc/src/render/renderer_factory.dart';
 import 'package:dartdoc/src/special_elements.dart';
 import 'package:meta/meta.dart';
-import 'package:package_config/package_config.dart' show findPackageConfigUri;
 import 'package:path/path.dart' as path;
 
 /// Everything you need to instantiate a PackageGraph object for documenting.
@@ -42,8 +42,10 @@ abstract class PackageBuilder {
 class PubPackageBuilder implements PackageBuilder {
   final DartdocOptionContext config;
   final PackageMetaProvider packageMetaProvider;
+  final PackageConfigProvider packageConfigProvider;
 
-  PubPackageBuilder(this.config, this.packageMetaProvider);
+  PubPackageBuilder(
+      this.config, this.packageMetaProvider, this.packageConfigProvider);
 
   @override
   Future<PackageGraph> buildPackageGraph() async {
@@ -75,11 +77,13 @@ class PubPackageBuilder implements PackageBuilder {
     return newGraph;
   }
 
-  FolderBasedDartSdk _sdk;
+  /*late final*/ DartSdk _sdk;
 
-  FolderBasedDartSdk get sdk {
-    _sdk ??= FolderBasedDartSdk(packageMetaProvider.resourceProvider,
-        packageMetaProvider.resourceProvider.getFolder(config.sdkDir));
+  DartSdk get sdk {
+    _sdk ??= packageMetaProvider.defaultSdk ??
+        FolderBasedDartSdk(
+            resourceProvider, resourceProvider.getFolder(config.sdkDir));
+
     return _sdk;
   }
 
@@ -87,17 +91,20 @@ class PubPackageBuilder implements PackageBuilder {
 
   EmbedderSdk get embedderSdk {
     if (_embedderSdk == null && !config.topLevelPackageMeta.isSdk) {
-      _embedderSdk = EmbedderSdk(packageMetaProvider.resourceProvider,
-          EmbedderYamlLocator(_packageMap).embedderYamls);
+      _embedderSdk = EmbedderSdk(
+          resourceProvider, EmbedderYamlLocator(_packageMap).embedderYamls);
     }
     return _embedderSdk;
   }
+
+  ResourceProvider get resourceProvider => packageMetaProvider.resourceProvider;
 
   Future<void> _calculatePackageMap() async {
     assert(_packageMap == null);
     _packageMap = <String, List<Folder>>{};
     Folder cwd = resourceProvider.getResource(config.inputDir);
-    var info = await findPackageConfigUri(Uri.file(cwd.path));
+    var info =
+        await packageConfigProvider.findPackageConfigUri(Uri.file(cwd.path));
     if (info == null) return;
 
     for (var package in info.packages) {
@@ -120,12 +127,13 @@ class PubPackageBuilder implements PackageBuilder {
 
   SourceFactory get sourceFactory {
     var resolvers = <UriResolver>[];
-    final UriResolver packageResolver = PackageMapUriResolver(
-        packageMetaProvider.resourceProvider, _packageMap);
+    final UriResolver packageResolver =
+        PackageMapUriResolver(resourceProvider, _packageMap);
     UriResolver sdkResolver;
     if (embedderSdk == null || embedderSdk.urlMappings.isEmpty) {
       // The embedder uri resolver has no mappings. Use the default Dart SDK
       // uri resolver.
+      print('using sdk: ${sdk.runtimeType}');
       sdkResolver = DartUriResolver(sdk);
     } else {
       // The embedder uri resolver has mappings, use it instead of the default
@@ -139,7 +147,7 @@ class PubPackageBuilder implements PackageBuilder {
     /// has a clean public API.
     resolvers.add(PackageWithoutSdkResolver(packageResolver, sdkResolver));
     resolvers.add(sdkResolver);
-    resolvers.add(ResourceUriResolver(packageMetaProvider.resourceProvider));
+    resolvers.add(ResourceUriResolver(resourceProvider));
 
     assert(
         resolvers.any((UriResolver resolver) => resolver is DartUriResolver));
@@ -164,7 +172,7 @@ class PubPackageBuilder implements PackageBuilder {
       _driver = AnalysisDriver(
           scheduler,
           log,
-          packageMetaProvider.resourceProvider,
+          resourceProvider,
           MemoryByteStore(),
           FileContentOverlay(),
           null,
@@ -195,8 +203,7 @@ class PubPackageBuilder implements PackageBuilder {
 
     if (name.startsWith(directoryCurrentPath)) {
       name = name.substring(directoryCurrentPath.length);
-      if (name.startsWith(
-          packageMetaProvider.resourceProvider.pathContext.separator)) {
+      if (name.startsWith(resourceProvider.pathContext.separator)) {
         name = name.substring(1);
       }
     }
@@ -295,8 +302,6 @@ class PubPackageBuilder implements PackageBuilder {
     } while (!lastPass.containsAll(current));
   }
 
-  ResourceProvider get resourceProvider => packageMetaProvider.resourceProvider;
-
   /// Given a package name, explore the directory and pull out all top level
   /// library files in the "lib" directory to document.
   Stream<String> findFilesToDocumentInPackage(String basePackageDir,
@@ -305,7 +310,8 @@ class PubPackageBuilder implements PackageBuilder {
     var packageDirs = {basePackageDir};
 
     if (autoIncludeDependencies) {
-      var info = await findPackageConfigUri(Uri.file(basePackageDir));
+      var info = await packageConfigProvider
+          .findPackageConfigUri(Uri.file(basePackageDir));
       for (var package in info.packages) {
         if (!filterExcludes || !config.exclude.contains(package.name)) {
           packageDirs.add(
@@ -436,7 +442,7 @@ class PubPackageBuilder implements PackageBuilder {
       findSpecialsSdk = embedderSdk;
     }
     var files = await _getFiles();
-    var specialFiles = specialLibraryFiles(findSpecialsSdk).toSet();
+    var specialFiles = specialLibraryFiles(findSpecialsSdk);
 
     /// Returns true if this library element should be included according
     /// to the configuration.

@@ -97,7 +97,8 @@ void main() {
 
       return await Dartdoc.fromContext(
         context,
-        PubPackageBuilder(context, pubPackageMetaProvider),
+        PubPackageBuilder(
+            context, pubPackageMetaProvider, PhysicalPackageConfigProvider()),
       );
     }
 

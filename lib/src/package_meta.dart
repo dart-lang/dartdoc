@@ -10,6 +10,7 @@ import 'dart:io' show Platform, Process;
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
+import 'package:analyzer/src/generated/sdk.dart';
 import 'package:dartdoc/dartdoc.dart';
 import 'package:path/path.dart' as p;
 import 'package:yaml/yaml.dart';
@@ -33,11 +34,15 @@ final List<List<String>> __sdkDirFilePathsPosix = [
 ];
 
 final PackageMetaProvider pubPackageMetaProvider = PackageMetaProvider(
-  PubPackageMeta.fromElement,
-  PubPackageMeta.fromFilename,
-  PubPackageMeta.fromDir,
-  PhysicalResourceProvider.INSTANCE,
-);
+    PubPackageMeta.fromElement,
+    PubPackageMeta.fromFilename,
+    PubPackageMeta.fromDir,
+    PhysicalResourceProvider.INSTANCE,
+    PhysicalResourceProvider.INSTANCE
+        .getFile(PhysicalResourceProvider.INSTANCE.pathContext
+            .absolute(Platform.resolvedExecutable))
+        .parent
+        .parent);
 
 /// Sets the supported way of constructing [PackageMeta] objects.
 ///
@@ -49,6 +54,8 @@ final PackageMetaProvider pubPackageMetaProvider = PackageMetaProvider(
 /// [PackageMeta] objects is built.
 class PackageMetaProvider {
   final ResourceProvider resourceProvider;
+  final Folder defaultSdkDir;
+  final DartSdk defaultSdk;
 
   final PackageMeta Function(LibraryElement, String, ResourceProvider)
       _fromElement;
@@ -61,7 +68,8 @@ class PackageMetaProvider {
   PackageMeta fromDir(Folder dir) => _fromDir(dir, resourceProvider);
 
   PackageMetaProvider(this._fromElement, this._fromFilename, this._fromDir,
-      this.resourceProvider);
+      this.resourceProvider, this.defaultSdkDir,
+      {this.defaultSdk});
 }
 
 /// Describes a single package in the context of `dartdoc`.
@@ -166,19 +174,19 @@ abstract class PubPackageMeta extends PackageMeta {
     return __sdkDirFilePaths;
   }
 
-  /// Returns the directory of the SDK if the given directory is inside a Dart
-  /// SDK.  Returns null if the directory isn't a subdirectory of the SDK.
   static final _sdkDirParent = <String, Folder>{};
 
+  /// Returns the directory of the SDK if the given directory is inside a Dart
+  /// SDK.  Returns null if the directory isn't a subdirectory of the SDK.
   static Folder sdkDirParent(Folder dir, ResourceProvider resourceProvider) {
-    var dirPathCanonical = p.canonicalize(dir.path);
+    var pathContext = resourceProvider.pathContext;
+    var dirPathCanonical = pathContext.canonicalize(dir.path);
     if (!_sdkDirParent.containsKey(dirPathCanonical)) {
       _sdkDirParent[dirPathCanonical] = null;
       while (dir.exists) {
         if (_sdkDirFilePaths.every((List<String> l) {
-          return l.any((f) => resourceProvider
-              .getFile(resourceProvider.pathContext.join(dir.path, f))
-              .exists);
+          return l.any((f) =>
+              resourceProvider.getFile(pathContext.join(dir.path, f)).exists);
         })) {
           _sdkDirParent[dirPathCanonical] = dir;
           break;
@@ -207,6 +215,8 @@ abstract class PubPackageMeta extends PackageMeta {
 
   static PubPackageMeta fromFilename(
       String filename, ResourceProvider resourceProvider) {
+    print(
+        'checking parent of "$filename"; "${resourceProvider.getFile(filename).parent.path}"');
     return PubPackageMeta.fromDir(
         resourceProvider.getFile(filename).parent, resourceProvider);
   }

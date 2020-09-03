@@ -8,7 +8,7 @@ import 'dart:async';
 
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/dartdoc.dart';
-import 'package:dartdoc/src/io_utils.dart';
+import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 
 /// The number of public libraries in testing/test_package, minus 2 for
@@ -36,8 +36,11 @@ Future<DartdocOptionContext> contextFromArgv(
       pubPackageMetaProvider.resourceProvider);
 }
 
-Future<PackageGraph> bootBasicPackage(String dirPath,
-    List<String> excludeLibraries, PackageMetaProvider packageMetaProvider,
+Future<PackageGraph> bootBasicPackage(
+    String dirPath,
+    List<String> excludeLibraries,
+    PackageMetaProvider packageMetaProvider,
+    PackageConfigProvider packageConfigProvider,
     {List<String> additionalArguments = const []}) async {
   var resourceProvider = packageMetaProvider.resourceProvider;
   var dir = resourceProvider.getFolder(resourceProvider.pathContext
@@ -47,12 +50,13 @@ Future<PackageGraph> bootBasicPackage(String dirPath,
             '--input',
             dir.path,
             '--sdk-dir',
-            resourceProvider.defaultSdkDir.path,
+            packageMetaProvider.defaultSdkDir.path,
             '--exclude',
             excludeLibraries.join(','),
             '--allow-tools',
             ...additionalArguments,
           ], packageMetaProvider),
-          packageMetaProvider)
+          packageMetaProvider,
+          packageConfigProvider)
       .buildPackageGraph();
 }

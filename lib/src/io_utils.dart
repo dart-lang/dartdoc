@@ -11,9 +11,6 @@ import 'dart:io' as io;
 
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
-import 'package:analyzer/src/generated/sdk.dart';
-import 'package:analyzer/src/test_utilities/mock_sdk.dart';
-import 'package:dartdoc/src/package_meta.dart';
 import 'package:path/path.dart' as path;
 
 Encoding utf8AllowMalformed = Utf8Codec(allowMalformed: true);
@@ -42,20 +39,6 @@ extension ResourceProviderExtensions on ResourceProvider {
       return getFolder(io.Directory.systemTemp.createTempSync(prefix).path);
     } else {
       return getFolder(pathContext.join('/tmp', prefix))..create();
-    }
-  }
-
-  Folder get defaultSdkDir {
-    if (this is PhysicalResourceProvider) {
-      var sdkDir = getFile(pathContext.absolute(io.Platform.resolvedExecutable))
-          .parent
-          .parent;
-      assert(pathContext.equals(
-          sdkDir.path, PubPackageMeta.sdkDirParent(sdkDir, this).path));
-      return sdkDir;
-    } else {
-      x ??= MockSdk(resourceProvider: this);
-      return getFolder('/sdk');
     }
   }
 
@@ -95,8 +78,6 @@ extension ResourceProviderExtensions on ResourceProvider {
     }
   }
 }
-
-DartSdk x;
 
 /// Converts `.` and `:` into `-`, adding a ".html" extension.
 ///

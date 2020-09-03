@@ -1683,7 +1683,7 @@ Future<List<DartdocOption<Object>>> createDartdocOptions(
         return resourceProvider.pathContext
             .join(flutterRoot, 'bin', 'cache', 'dart-sdk');
       }
-      return resourceProvider.defaultSdkDir.path;
+      return packageMetaProvider.defaultSdkDir.path;
     }, packageMetaProvider.resourceProvider,
         help: 'Path to the SDK directory.', isDir: true, mustExist: true),
     DartdocOptionArgFile<bool>(

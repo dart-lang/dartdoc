@@ -6,8 +6,10 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/memory_file_system.dart';
 import 'package:analyzer/src/generated/source.dart';
+import 'package:analyzer/src/test_utilities/mock_sdk.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/render/model_element_renderer.dart';
 import 'package:dartdoc/src/render/renderer_factory.dart';
@@ -18,33 +20,46 @@ import 'package:test/test.dart';
 import 'src/utils.dart' as utils;
 
 void main() {
-  ResourceProvider resourceProvider;
+  MemoryResourceProvider resourceProvider;
   Folder projectRoot;
-  String libFooPath;
   PackageGraph packageGraph;
   //_Processor processor;
 
   setUp(() async {
     resourceProvider = MemoryResourceProvider();
-    projectRoot = resourceProvider
-        .getFolder(resourceProvider.pathContext.join('/', 'project'));
+    var pathContext = resourceProvider.pathContext;
+    projectRoot =
+        resourceProvider.getFolder(resourceProvider.convertPath('/project'));
     projectRoot.create();
     resourceProvider
-        .getFile(
-            resourceProvider.pathContext.join(projectRoot.path, 'pubspec.yaml'))
+        .getFile(pathContext.join(projectRoot.path, 'pubspec.yaml'))
         .writeAsStringSync('''
 name: foo
 ''');
     resourceProvider
-        .getFile(resourceProvider.pathContext
-            .join(projectRoot.path, '.dart_tool', 'package_config.json'))
+        .getFile(pathContext.join(
+            projectRoot.path, '.dart_tool', 'package_config.json'))
         .writeAsStringSync('');
+    var mockSdk = MockSdk(resourceProvider: resourceProvider);
+    var sdkFolder = resourceProvider.getFolder(sdkRoot);
     var packageMetaProvider = PackageMetaProvider(
       PubPackageMeta.fromElement,
       PubPackageMeta.fromFilename,
       PubPackageMeta.fromDir,
       resourceProvider,
+      sdkFolder,
+      defaultSdk: mockSdk,
     );
+    resourceProvider.getFolder(sdkFolder.path).create();
+    resourceProvider
+        .getFile(pathContext.join(sdkFolder.path, 'bin/dart'))
+        .writeAsStringSync('');
+    resourceProvider
+        .getFile(pathContext.join(sdkFolder.path, 'bin/pub'))
+        .writeAsStringSync('');
+    resourceProvider
+        .getFile(pathContext.join(sdkFolder.path, 'lib/core/core.dart'))
+        .writeAsStringSync('');
     var optionSet = await DartdocOptionSet.fromOptionGenerators(
         'dartdoc', [createDartdocOptions], packageMetaProvider);
     optionSet.parseArguments([]);
@@ -57,8 +72,11 @@ name: foo
     libFooPath =
         resourceProvider.pathContext.join(projectRoot.path, 'foo.dart');
     processor.href = libFooPath;*/
+    var packageConfigProvider = FakePackageConfigProvider();
+    packageConfigProvider.addPackageToConfigFor(
+        Uri.file(projectRoot.path), 'foo', Uri.file('${projectRoot.path}/'));
     packageGraph = await utils.bootBasicPackage(
-        projectRoot.path, [], packageMetaProvider,
+        projectRoot.path, [], packageMetaProvider, packageConfigProvider,
         additionalArguments: [
           '--auto-include-dependencies',
           '--no-link-to-remote'
