@@ -9,7 +9,6 @@ import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:grinder/grinder.dart';
-import 'package:io/io.dart';
 import 'package:path/path.dart' as path;
 import 'package:yaml/yaml.dart' as yaml;
 
@@ -130,6 +129,7 @@ Directory get testPackageDocsDir =>
     _testPackageDocsDir ??= createTempSync('test_package');
 
 Directory _testPackageExperimentsDocsDir;
+
 Directory get testPackageExperimentsDocsDir =>
     _testPackageExperimentsDocsDir ??=
         createTempSync('test_package_experiments');
@@ -761,7 +761,7 @@ class FlutterRepo {
   static Future<FlutterRepo> copyFromExistingFlutterRepo(
       FlutterRepo origRepo, String flutterPath, Map<String, String> env,
       [String label]) async {
-    await copyPath(origRepo.flutterPath, flutterPath);
+    copy(Directory(origRepo.flutterPath), Directory(flutterPath));
     var flutterRepo = FlutterRepo._(flutterPath, env, label);
     return flutterRepo;
   }
@@ -826,7 +826,7 @@ Future<String> _buildPubPackageDocs(
   var pubPackageDirOrig =
       cache.listSync().firstWhere((e) => e.path.contains(pubPackageName));
   var pubPackageDir = Directory.systemTemp.createTempSync(pubPackageName);
-  await copyPath(pubPackageDirOrig.path, pubPackageDir.path);
+  copy(pubPackageDirOrig, pubPackageDir);
 
   if (packageMetaProvider
       .fromDir(PhysicalResourceProvider.INSTANCE.getFolder(pubPackageDir.path))
