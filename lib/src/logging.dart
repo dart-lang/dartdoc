@@ -1,3 +1,7 @@
+// Copyright (c) 2017, the Dart project authors.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io' show stderr, stdout;
@@ -6,10 +10,6 @@ import 'package:analyzer/file_system/file_system.dart';
 import 'package:cli_util/cli_logging.dart' show Ansi;
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
-// Copyright (c) 2017, the Dart project authors.  Please see the AUTHORS file
-// for details. All rights reserved. Use of this source code is governed by a
-// BSD-style license that can be found in the LICENSE file.
-
 import 'package:logging/logging.dart';
 
 final _logger = Logger('dartdoc');
@@ -128,7 +128,9 @@ void startLogging(LoggingContext config) {
 
 abstract class LoggingContext implements DartdocOptionContextBase {
   bool get json => optionSet['json'].valueAt(context);
+
   bool get showProgress => optionSet['showProgress'].valueAt(context);
+
   bool get quiet => optionSet['quiet'].valueAt(context);
 }
 
