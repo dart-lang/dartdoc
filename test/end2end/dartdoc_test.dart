@@ -31,8 +31,6 @@ final Folder _testPackageBadDir = _getFolder('testing/test_package_bad');
 final Folder _testPackageMinimumDir =
     _getFolder('testing/test_package_minimum');
 final Folder _testSkyEnginePackage = _getFolder('testing/sky_engine');
-final Folder _testPackageWithNoReadme =
-    _getFolder('testing/test_package_small');
 final Folder _testPackageIncludeExclude =
     _getFolder('testing/test_package_include_exclude');
 final Folder _testPackageImportExportError =
@@ -331,19 +329,6 @@ void main() {
     },
         skip: 'Blocked on getting analysis errors with correct interpretation'
             'from analysis_options');
-
-    test('generate docs for a package that does not have a readme', () async {
-      var dartdoc = await buildDartdoc([], _testPackageWithNoReadme, tempDir);
-
-      var results = await dartdoc.generateDocs();
-      expect(results.packageGraph, isNotNull);
-
-      var p = results.packageGraph;
-      expect(p.defaultPackage.name, 'test_package_small');
-      expect(p.defaultPackage.hasHomepage, isFalse);
-      expect(p.defaultPackage.hasDocumentationFile, isFalse);
-      expect(p.localPublicLibraries, hasLength(1));
-    });
 
     test('generate docs including a single library', () async {
       var dartdoc =

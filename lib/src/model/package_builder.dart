@@ -104,8 +104,8 @@ class PubPackageBuilder implements PackageBuilder {
     assert(_packageMap == null);
     _packageMap = <String, List<Folder>>{};
     Folder cwd = resourceProvider.getResource(config.inputDir);
-    var info =
-        await packageConfigProvider.findPackageConfigUri(Uri.file(cwd.path));
+    var info = await packageConfigProvider
+        .findPackageConfig(resourceProvider.getFolder(cwd.path));
     if (info == null) return;
 
     for (var package in info.packages) {
@@ -313,7 +313,7 @@ class PubPackageBuilder implements PackageBuilder {
 
     if (autoIncludeDependencies) {
       var info = await packageConfigProvider
-          .findPackageConfigUri(Uri.file(basePackageDir));
+          .findPackageConfig(resourceProvider.getFolder(basePackageDir));
       for (var package in info.packages) {
         if (!filterExcludes || !config.exclude.contains(package.name)) {
           packageDirs.add(

@@ -53,7 +53,7 @@ name: $packageName
         .writeAsStringSync('');
     resourceProvider.getFolder(pathContext.join(projectRoot, 'lib')).create();
     packageConfigProvider.addPackageToConfigFor(
-        Uri.file(projectRoot), packageName, Uri.file('$projectRoot/'));
+        projectRoot, packageName, Uri.file('$projectRoot/'));
   }
 
   setUp(() async {
@@ -130,6 +130,22 @@ int x;
     expect(packageGraph.defaultPackage.hasDocumentationFile, isFalse);
     expect(packageGraph.defaultPackage.documentationFile, isNull);
     expect(packageGraph.defaultPackage.documentation, isNull);
+  });
+
+  test('package with no README has no homepage', () async {
+    writePackage();
+    resourceProvider
+        .getFile(
+            resourceProvider.pathContext.join(projectRoot, 'lib', 'a.dart'))
+        .writeAsStringSync('''
+/// Documentation comment.
+int x;
+''');
+    packageGraph = await utils.bootBasicPackage(
+        projectRoot, [], packageMetaProvider, packageConfigProvider);
+
+    expect(packageGraph.defaultPackage.hasHomepage, isFalse);
+    expect(packageGraph.localPublicLibraries, hasLength(1));
   });
 
   test('package with no doc comments has no categories', () async {

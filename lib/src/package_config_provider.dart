@@ -3,31 +3,32 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io' as io;
 
+import 'package:analyzer/file_system/file_system.dart';
 import 'package:package_config/package_config.dart' as package_config;
 
 abstract class PackageConfigProvider {
-  Future<package_config.PackageConfig> findPackageConfigUri(Uri location);
+  Future<package_config.PackageConfig> findPackageConfig(Folder dir);
 }
 
 class PhysicalPackageConfigProvider implements PackageConfigProvider {
   @override
-  Future<package_config.PackageConfig> findPackageConfigUri(Uri location) =>
-      package_config.findPackageConfigUri(location);
+  Future<package_config.PackageConfig> findPackageConfig(Folder dir) =>
+      package_config.findPackageConfig(io.Directory(dir.path));
 }
 
 class FakePackageConfigProvider implements PackageConfigProvider {
   /// A mapping of package config search locations to configured packages.
-  final _packageConfigData = <Uri, List<package_config.Package>>{};
+  final _packageConfigData = <String, List<package_config.Package>>{};
 
-  void addPackageToConfigFor(Uri location, String name, Uri root) {
+  void addPackageToConfigFor(String location, String name, Uri root) {
     _packageConfigData.putIfAbsent(location, () => []);
     _packageConfigData[location].add(package_config.Package(name, root));
   }
 
   @override
-  Future<package_config.PackageConfig> findPackageConfigUri(
-      Uri location) async {
-    return package_config.PackageConfig(_packageConfigData[location]);
+  Future<package_config.PackageConfig> findPackageConfig(Folder dir) async {
+    return package_config.PackageConfig(_packageConfigData[dir.path]);
   }
 }
