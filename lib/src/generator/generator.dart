@@ -7,7 +7,6 @@ library dartdoc.generator;
 
 import 'dart:async' show Future;
 
-import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/model.dart' show PackageGraph;
 import 'package:dartdoc/src/package_meta.dart';
@@ -37,9 +36,6 @@ mixin GeneratorContext on DartdocOptionContextBase {
   List<String> get footer => optionSet['footer'].valueAt(context);
 
   List<String> get footerText => optionSet['footerText'].valueAt(context);
-
-  // Synthetic. TODO(jcollins-g): Eliminate special case for SDK and use config file.
-  bool get addSdkFooter => optionSet['addSdkFooter'].valueAt(context);
 
   List<String> get header => optionSet['header'].valueAt(context);
 
@@ -75,14 +71,6 @@ Future<List<DartdocOption<Object>>> createGeneratorOptions(
             'package name and version).',
         mustExist: true,
         splitCommas: true),
-    DartdocOptionSyntheticOnly<bool>(
-      'addSdkFooter',
-      (DartdocSyntheticOption<bool> option, Folder dir) {
-        return option.root['topLevelPackageMeta'].valueAt(dir).isSdk;
-      },
-      resourceProvider,
-      help: 'Whether the SDK footer text should be added (synthetic)',
-    ),
     DartdocOptionArgFile<List<String>>('header', [], resourceProvider,
         isFile: true,
         help: 'Paths to files with content to add to page headers.',

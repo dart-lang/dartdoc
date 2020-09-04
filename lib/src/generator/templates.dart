@@ -6,7 +6,6 @@ library dartdoc.templates;
 
 import 'dart:async' show Future;
 import 'dart:io' show File, Directory;
-import 'dart:isolate';
 
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/generator/resource_loader.dart' as loader;
@@ -101,6 +100,7 @@ Future<Map<String, String>> _loadPartials(
 
 abstract class _TemplatesLoader {
   Future<Map<String, String>> loadPartials();
+
   Future<String> loadTemplate(String name);
 }
 
@@ -196,11 +196,6 @@ class Templates {
     var templatesDir = context.templatesDir;
     var format = context.format;
     var footerTextPaths = context.footerText;
-    if (context.addSdkFooter) {
-      var sdkFooter = await Isolate.resolvePackageUri(
-          Uri.parse('package:dartdoc/resources/sdk_footer_text.$format'));
-      footerTextPaths.add(path.canonicalize(sdkFooter.toFilePath()));
-    }
 
     if (templatesDir != null) {
       return fromDirectory(Directory(templatesDir), format,
