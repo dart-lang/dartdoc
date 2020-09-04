@@ -21,7 +21,7 @@ class GeneratorFrontEnd implements Generator {
   Future<void> generate(PackageGraph packageGraph, FileWriter writer) async {
     var indexElements = <Indexable>[];
     _generateDocs(packageGraph, writer, indexElements);
-    await _generatorBackend.generateAdditionalFiles(writer, packageGraph);
+    _generatorBackend.generateAdditionalFiles(writer, packageGraph);
 
     var categories = indexElements
         .whereType<Categorization>()

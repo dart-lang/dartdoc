@@ -20,6 +20,7 @@ linter:
     - annotate_overrides
     - avoid_init_to_null
     - avoid_types_as_parameter_names
+    - await_only_futures
     - directives_ordering
     - no_adjacent_strings_in_list
     - package_api_docs
@@ -28,4 +29,4 @@ linter:
     - slash_for_doc_comments
     - type_annotate_public_apis
     - unawaited_futures
-#    - unnecessary_brace_in_string_interps
+#   - unnecessary_brace_in_string_interps

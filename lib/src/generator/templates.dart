@@ -101,6 +101,7 @@ Future<Map<String, String>> _loadPartials(
 
 abstract class _TemplatesLoader {
   Future<Map<String, String>> loadPartials();
+
   Future<String> loadTemplate(String name);
 }
 

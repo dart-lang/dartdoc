@@ -10,6 +10,7 @@ import 'dart:io' show Process, ProcessException;
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:path/path.dart' as p;
+
 import 'dartdoc_options.dart';
 
 typedef ToolErrorCallback = void Function(String message);
@@ -41,13 +42,13 @@ class ToolTempFileTracker {
 
   int _temporaryFileCount = 0;
 
-  Future<File> createTemporaryFile() async {
+  File createTemporaryFile() {
     _temporaryFileCount++;
     // TODO(srawlins): Assume [temporaryDirectory]'s path is always absolute.
     var tempFile = resourceProvider.getFile(resourceProvider.pathContext.join(
         resourceProvider.pathContext.absolute(temporaryDirectory.path),
         'input_$_temporaryFileCount'));
-    await tempFile.writeAsStringSync('');
+    tempFile.writeAsStringSync('');
     return tempFile;
   }
 
@@ -162,9 +163,9 @@ class ToolRunner {
     // file before running the tool synchronously.
 
     // Write the content to a temp file.
-    var tmpFile = await ToolTempFileTracker.createInstance(
-            toolConfiguration.resourceProvider)
-        .createTemporaryFile();
+    var tmpFile =
+        ToolTempFileTracker.createInstance(toolConfiguration.resourceProvider)
+            .createTemporaryFile();
     tmpFile.writeAsStringSync(content);
 
     // Substitute the temp filename for the "$INPUT" token, and all of the other
@@ -203,7 +204,7 @@ class ToolRunner {
     }
 
     if (toolDefinition.setupCommand != null && !toolDefinition.setupComplete) {
-      await _runSetup(tool, toolDefinition, envWithInput, toolErrorCallback);
+      _runSetup(tool, toolDefinition, envWithInput, toolErrorCallback);
     }
 
     argsWithInput = toolArgs + argsWithInput;
