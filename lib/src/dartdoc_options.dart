@@ -15,7 +15,7 @@
 library dartdoc.dartdoc_options;
 
 import 'dart:async';
-import 'dart:io' show Platform;
+import 'dart:io' show Platform, stdout;
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
@@ -38,6 +38,8 @@ const Map<String, String> _kMapStringVal = <String, String>{};
 const int _kIntVal = 0;
 const double _kDoubleVal = 0.0;
 const bool _kBoolVal = true;
+
+int get _usageLineLength => stdout.hasTerminal ? stdout.terminalColumns : null;
 
 typedef ConvertYamlToType<T> = T Function(YamlMap, String, ResourceProvider);
 
@@ -555,7 +557,7 @@ abstract class DartdocOption<T> {
   Map<String, _YamlFileData> get _yamlAtCanonicalPathCache =>
       root.__yamlAtCanonicalPathCache;
 
-  final ArgParser __argParser = ArgParser(usageLineLength: 80);
+  final ArgParser __argParser = ArgParser(usageLineLength: _usageLineLength);
 
   ArgParser get argParser => root.__argParser;
 
@@ -1546,7 +1548,7 @@ Future<List<DartdocOption<Object>>> createDartdocOptions(
           'dart.html',
           'dart.indexed_db',
           'dart.io',
-          'dart.lisolate',
+          'dart.isolate',
           'dart.js',
           'dart.js_util',
           'dart.math',
