@@ -23,35 +23,52 @@ void main() {
   FakePackageConfigProvider packageConfigProvider;
   PackageGraph packageGraph;
 
+  /// Dartdoc has a few indicator files it uses to verify that a directory
+  /// represents a Dart SDK. These include "bin/dart" and "bin/pub".
+  void writeSdkBinFiles(Folder root) {
+    var sdkBinFolder = root.getChildAssumingFolder('bin');
+    sdkBinFolder.getChildAssumingFile('dart').writeAsStringSync('');
+    sdkBinFolder.getChildAssumingFile('pub').writeAsStringSync('');
+  }
+
   void writeSdk() {
     mockSdk = MockSdk(resourceProvider: resourceProvider);
-    sdkFolder = resourceProvider.getFolder(sdkRoot);
-    var pathContext = resourceProvider.pathContext;
-    resourceProvider.getFolder(sdkRoot).create();
-    resourceProvider
-        .getFile(pathContext.join(sdkRoot, 'bin', 'dart'))
-        .writeAsStringSync('');
-    resourceProvider
-        .getFile(pathContext.join(sdkRoot, 'bin', 'pub'))
-        .writeAsStringSync('');
+    // The [MockSdk] only works in non-canonicalized paths, which include
+    // "C:\sdk", on Windows. Howerver, dartdoc works almost exclusively with
+    // canonical paths ("c:\sdk"). Copy all MockSdk files to the canonicalized
+    // path.
+    for (var l in mockSdk.sdkLibraries) {
+      var p = l.path;
+      resourceProvider
+          .getFile(resourceProvider.pathContext.canonicalize(p))
+          .writeAsStringSync(resourceProvider.getFile(p).readAsStringSync());
+    }
+    sdkFolder = resourceProvider.getFolder(resourceProvider.pathContext
+        .canonicalize(resourceProvider.convertPath(sdkRoot)))
+      ..create();
+    sdkFolder.getChildAssumingFile('version').writeAsStringSync('2.9.0');
+
+    writeSdkBinFiles(sdkFolder);
+    writeSdkBinFiles(
+        resourceProvider.getFolder(resourceProvider.convertPath(sdkRoot)));
   }
 
   void writePackage() {
     var pathContext = resourceProvider.pathContext;
-    var projectFolder = resourceProvider
-        .getFolder(resourceProvider.convertPath('/projects/$packageName'));
+    var projectsFolder = resourceProvider.getFolder(
+        pathContext.canonicalize(resourceProvider.convertPath('/projects')));
+    var projectFolder = projectsFolder.getChildAssumingFolder(packageName)
+      ..create;
     projectRoot = projectFolder.path;
-    projectFolder.create();
-    resourceProvider
-        .getFile(pathContext.join(projectRoot, 'pubspec.yaml'))
-        .writeAsStringSync('''
+    projectFolder.getChildAssumingFile('pubspec.yaml').writeAsStringSync('''
 name: $packageName
+version: 0.0.1
 ''');
-    resourceProvider
-        .getFile(
-            pathContext.join(projectRoot, '.dart_tool', 'package_config.json'))
+    projectFolder
+        .getChildAssumingFolder('.dart_tool')
+        .getChildAssumingFile('package_config.json')
         .writeAsStringSync('');
-    resourceProvider.getFolder(pathContext.join(projectRoot, 'lib')).create();
+    projectFolder.getChildAssumingFolder('lib').create();
     packageConfigProvider.addPackageToConfigFor(
         projectRoot, packageName, Uri.file('$projectRoot/'));
   }

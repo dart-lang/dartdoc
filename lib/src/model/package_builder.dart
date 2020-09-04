@@ -169,17 +169,9 @@ class PubPackageBuilder implements PackageBuilder {
       // TODO(jcollins-g): Make use of currently not existing API for managing
       //                   many AnalysisDrivers
       // TODO(jcollins-g): make use of DartProject isApi()
-      _driver = AnalysisDriver(
-        scheduler,
-        log,
-        resourceProvider,
-        MemoryByteStore(),
-        FileContentOverlay(),
-        null,
-        sourceFactory,
-        options,
-        packages: Packages.empty,
-      );
+      _driver = AnalysisDriver(scheduler, log, resourceProvider,
+          MemoryByteStore(), FileContentOverlay(), null, sourceFactory, options,
+          packages: Packages.empty);
       driver.results.listen((_) => logProgress(''));
       driver.exceptions.listen((_) {});
       scheduler.start();
@@ -439,7 +431,7 @@ class PubPackageBuilder implements PackageBuilder {
   }
 
   Future<void> getLibraries(PackageGraph uninitializedPackageGraph) async {
-    DartSdk findSpecialsSdk = sdk;
+    var findSpecialsSdk = sdk;
     if (embedderSdk != null && embedderSdk.urlMappings.isNotEmpty) {
       findSpecialsSdk = embedderSdk;
     }

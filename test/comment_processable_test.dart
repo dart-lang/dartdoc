@@ -38,13 +38,12 @@ void main() {
         .writeAsStringSync('''
 name: foo
 ''');
-    //var sdk = MockSdk(resourceProvider: resourceProvider);
     var packageMetaProvider = PackageMetaProvider(
       PubPackageMeta.fromElement,
       PubPackageMeta.fromFilename,
       PubPackageMeta.fromDir,
       resourceProvider,
-      resourceProvider.getFolder(sdkRoot),
+      resourceProvider.getFolder(resourceProvider.convertPath(sdkRoot)),
     );
     var optionSet = await DartdocOptionSet.fromOptionGenerators(
         'dartdoc', [createDartdocOptions], packageMetaProvider);

@@ -8,6 +8,10 @@ import 'dart:io' as io;
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:package_config/package_config.dart' as package_config;
 
+/// A provider of PackageConfig-finding methods.
+///
+/// This provides an abstraction around package_config, which can only work
+/// with the physical file system.
 abstract class PackageConfigProvider {
   Future<package_config.PackageConfig> findPackageConfig(Folder dir);
 }

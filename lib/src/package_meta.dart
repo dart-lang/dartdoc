@@ -99,9 +99,10 @@ abstract class PackageMeta {
 
   p.Context get pathContext => resourceProvider.pathContext;
 
-  /// Returns true if this represents a 'Dart' SDK.  A package can be part of
-  /// Dart and Flutter at the same time, but if we are part of a Dart SDK
-  /// sdkType should never return null.
+  /// Returns true if this represents a 'Dart' SDK.
+  ///
+  /// A package can be part of Dart and Flutter at the same time, but if we are
+  /// part of a Dart SDK, [sdkType] should never return null.
   bool get isSdk;
 
   /// Returns 'Dart' or 'Flutter' (preferentially, 'Flutter' when the answer is
@@ -160,11 +161,10 @@ abstract class PubPackageMeta extends PackageMeta {
       __sdkDirFilePaths = [];
       if (Platform.isWindows) {
         for (var paths in __sdkDirFilePathsPosix) {
-          var windowsPaths = <String>[];
-          for (var path in paths) {
-            windowsPaths
-                .add(p.joinAll(p.Context(style: p.Style.posix).split(path)));
-          }
+          var windowsPaths = [
+            for (var path in paths)
+              p.joinAll(p.Context(style: p.Style.posix).split(path)),
+          ];
           __sdkDirFilePaths.add(windowsPaths);
         }
       } else {
@@ -176,8 +176,8 @@ abstract class PubPackageMeta extends PackageMeta {
 
   static final _sdkDirParent = <String, Folder>{};
 
-  /// Returns the directory of the SDK if the given directory is inside a Dart
-  /// SDK.  Returns null if the directory isn't a subdirectory of the SDK.
+  /// If [dir] is inside a Dart SDK, returns the directory of the SDK, and `null`
+  /// otherwise.
   static Folder sdkDirParent(Folder dir, ResourceProvider resourceProvider) {
     var pathContext = resourceProvider.pathContext;
     var dirPathCanonical = pathContext.canonicalize(dir.path);
