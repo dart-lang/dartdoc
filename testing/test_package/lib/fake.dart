@@ -1160,3 +1160,13 @@ extension ExtensionOnNull on Null {
 extension ExtensionOnTypeParameter<T> on T {
   T aFunctionReturningT(T other) => other;
 }
+
+class Super1 {}
+
+class _Super2 implements Super1 {}
+
+class Super3 implements _Super2 {}
+
+class Super4 implements Super1 {}
+
+class Super5 implements Super4 {}
