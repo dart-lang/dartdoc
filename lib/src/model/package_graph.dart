@@ -341,18 +341,18 @@ class PackageGraph {
         //                   messages and warn for non-public canonicalization
         //                   errors.
         warningMessage =
-            'no canonical library found for ${warnableName}, not linking';
+            'no canonical library found for $warnableName, not linking';
         break;
       case PackageWarning.ambiguousReexport:
         // Fix these warnings by adding the original library exporting the
         // symbol with --include, by using --auto-include-dependencies,
         // or by using --exclude to hide one of the libraries involved
         warningMessage =
-            'ambiguous reexport of ${warnableName}, canonicalization candidates: ${message}';
+            'ambiguous reexport of $warnableName, canonicalization candidates: $message';
         break;
       case PackageWarning.noDefiningLibraryFound:
         warningMessage =
-            'could not find the defining library for ${warnableName}; the '
+            'could not find the defining library for $warnableName; the '
             'library may be imported or exported with a non-standard URI';
         break;
       case PackageWarning.noLibraryLevelDocs:
@@ -360,76 +360,79 @@ class PackageGraph {
             '${warnable.fullyQualifiedName} has no library level documentation comments';
         break;
       case PackageWarning.ambiguousDocReference:
-        warningMessage = 'ambiguous doc reference ${message}';
+        warningMessage = 'ambiguous doc reference $message';
         break;
       case PackageWarning.ignoredCanonicalFor:
         warningMessage =
-            "library says it is {@canonicalFor ${message}} but ${message} can't be canonical there";
+            "library says it is {@canonicalFor $message} but $message can't be canonical there";
         break;
       case PackageWarning.packageOrderGivesMissingPackageName:
         warningMessage =
-            "--package-order gives invalid package name: '${message}'";
+            "--package-order gives invalid package name: '$message'";
         break;
       case PackageWarning.reexportedPrivateApiAcrossPackages:
         warningMessage =
-            'private API of ${message} is reexported by libraries in other packages: ';
+            'private API of $message is reexported by libraries in other packages: ';
         break;
       case PackageWarning.notImplemented:
         warningMessage = message;
         break;
       case PackageWarning.unresolvedDocReference:
-        warningMessage = 'unresolved doc reference [${message}]';
+        warningMessage = 'unresolved doc reference [$message]';
         referredFromPrefix = 'in documentation inherited from';
         break;
+      case PackageWarning.unknownDirective:
+        warningMessage = 'undefined directive [$message]';
+        break;
       case PackageWarning.unknownMacro:
-        warningMessage = 'undefined macro [${message}]';
+        warningMessage = 'undefined macro [$message]';
         break;
       case PackageWarning.unknownHtmlFragment:
-        warningMessage = 'undefined HTML fragment identifier [${message}]';
+        warningMessage = 'undefined HTML fragment identifier [$message]';
         break;
       case PackageWarning.brokenLink:
-        warningMessage = 'dartdoc generated a broken link to: ${message}';
+        warningMessage = 'dartdoc generated a broken link to: $message';
         warnablePrefix = 'to element';
         referredFromPrefix = 'linked to from';
         break;
       case PackageWarning.orphanedFile:
-        warningMessage = 'dartdoc generated a file orphan: ${message}';
+        warningMessage = 'dartdoc generated a file orphan: $message';
         break;
       case PackageWarning.unknownFile:
         warningMessage =
-            'dartdoc detected an unknown file in the doc tree: ${message}';
+            'dartdoc detected an unknown file in the doc tree: $message';
         break;
       case PackageWarning.missingFromSearchIndex:
         warningMessage =
-            'dartdoc generated a file not in the search index: ${message}';
+            'dartdoc generated a file not in the search index: $message';
         break;
       case PackageWarning.typeAsHtml:
         // The message for this warning can contain many punctuation and other symbols,
         // so bracket with a triple quote for defense.
-        warningMessage = 'generic type handled as HTML: """${message}"""';
+        warningMessage = 'generic type handled as HTML: """$message"""';
         break;
       case PackageWarning.invalidParameter:
-        warningMessage = 'invalid parameter to dartdoc directive: ${message}';
+        warningMessage = 'invalid parameter to dartdoc directive: $message';
         break;
       case PackageWarning.toolError:
-        warningMessage = 'tool execution failed: ${message}';
+        warningMessage = 'tool execution failed: $message';
         break;
       case PackageWarning.deprecated:
-        warningMessage = 'deprecated dartdoc usage: ${message}';
+        warningMessage = 'deprecated dartdoc usage: $message';
         break;
       case PackageWarning.unresolvedExport:
-        warningMessage = 'unresolved export uri: ${message}';
+        warningMessage = 'unresolved export uri: $message';
         break;
       case PackageWarning.duplicateFile:
-        warningMessage = 'failed to write file at: ${message}';
+        warningMessage = 'failed to write file at: $message';
         warnablePrefix = 'for symbol';
         referredFromPrefix = 'conflicting with file already generated by';
         break;
       case PackageWarning.missingConstantConstructor:
-        warningMessage = 'constant constructor missing: ${message}';
+        warningMessage = 'constant constructor missing: $message';
         break;
       case PackageWarning.missingExampleFile:
-        warningMessage = 'example file not found: ${message}';
+        warningMessage = 'example file not found: $message';
         break;
     }
 
