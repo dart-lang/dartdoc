@@ -382,7 +382,7 @@ class PackageGraph {
         referredFromPrefix = 'in documentation inherited from';
         break;
       case PackageWarning.unknownDirective:
-        warningMessage = 'undefined directive [$message]';
+        warningMessage = 'undefined directive: $message';
         break;
       case PackageWarning.unknownMacro:
         warningMessage = 'undefined macro [$message]';
