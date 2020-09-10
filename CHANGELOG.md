@@ -1,3 +1,30 @@
+## 0.33.0
+
+* Remove a use of resource loading (#2337)
+* Remove some unused dependencies (#2334)
+* Use the terminal width for the line length (#2333)
+* Disambiguate between named constructor and field (#2331)
+* Rename some fields which erroneously reference "default" constructors.
+  (#2330)
+* Support abstract fields (#2329)
+* Allow ? and ! to trail in doc comment references (#2328)
+* Use first element in a MultiplyDefinedElement (#2326)
+* Update all (approximately) i/o operations to use ResourceProvider (#2315):
+  * **Breaking change**: Many classes have a new ResourceProvider
+    resourceProvider field: DartdocFileWriter, SnapshotCache,
+    DartToolDefinition, ToolConfiguration, DartdocOption, PackageMetaProvider,
+    PackageMeta, ToolTempFileTracker.
+  * **Breaking change**: Each of SnapshotCache and ToolTempFileTracker has a
+    static instance field which took no arguments; now that they need a
+    ResourceProvider, it was unwieldy to pass a ResourceProvider to get the
+    instance each time, so a new method, createInstance creates the instance.
+* Remove wbr tags around block-displayed elements (#2320)
+* Warn when the defining library cannot be found (#2319)
+* Improve error when `FLUTTER_ROOT` is missing. (#2316)
+* Remove dependency on deprecated resource package. (#2314)
+* Link const annotations to their docs (#2313)
+* **Breaking change**: Remove FileContents class. (#2312)
+
 ## 0.32.4
 
 * Fix paragraph spacing in enum values. (#2286)
