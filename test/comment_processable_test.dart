@@ -28,8 +28,8 @@ void main() {
 
   setUp(() async {
     resourceProvider = MemoryResourceProvider();
-    projectRoot =
-        resourceProvider.getFolder(resourceProvider.convertPath('/project'));
+    projectRoot = resourceProvider.getFolder(resourceProvider.pathContext
+        .canonicalize(resourceProvider.convertPath('/project')));
     projectRoot.create();
     resourceProvider
         .getFile(
