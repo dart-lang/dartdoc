@@ -490,6 +490,6 @@ class _SdkMeta extends PubPackageMeta {
 }
 
 @visibleForTesting
-clearPackageMetaCache() {
+void clearPackageMetaCache() {
   _packageMetaCache.clear();
 }
