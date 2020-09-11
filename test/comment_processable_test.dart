@@ -6,6 +6,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/memory_file_system.dart';
 import 'package:analyzer/src/generated/source.dart';
+import 'package:analyzer/src/test_utilities/mock_sdk.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
@@ -42,6 +43,7 @@ name: foo
       PubPackageMeta.fromFilename,
       PubPackageMeta.fromDir,
       resourceProvider,
+      resourceProvider.getFolder(resourceProvider.convertPath(sdkRoot)),
     );
     var optionSet = await DartdocOptionSet.fromOptionGenerators(
         'dartdoc', [createDartdocOptions], packageMetaProvider);

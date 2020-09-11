@@ -33,6 +33,7 @@ export 'package:dartdoc/src/dartdoc_options.dart';
 export 'package:dartdoc/src/element_type.dart';
 export 'package:dartdoc/src/generator/generator.dart';
 export 'package:dartdoc/src/model/model.dart';
+export 'package:dartdoc/src/package_config_provider.dart';
 export 'package:dartdoc/src/package_meta.dart';
 
 const String programName = 'dartdoc';

@@ -98,7 +98,8 @@ void main() {
   });
 
   group('PackageMeta.fromSdk', () {
-    var p = pubPackageMetaProvider.fromDir(resourceProvider.defaultSdkDir);
+    var p =
+        pubPackageMetaProvider.fromDir(pubPackageMetaProvider.defaultSdkDir);
 
     test('has a name', () {
       expect(p.name, 'Dart');

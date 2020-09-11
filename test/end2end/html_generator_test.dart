@@ -12,6 +12,7 @@ import 'package:dartdoc/src/generator/html_resources.g.dart';
 import 'package:dartdoc/src/generator/templates.dart';
 import 'package:dartdoc/src/model/package_graph.dart';
 import 'package:dartdoc/src/io_utils.dart';
+import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
@@ -119,7 +120,10 @@ void main() {
       setUp(() async {
         generator = await _initGeneratorForTest();
         packageGraph = await utils.bootBasicPackage(
-            testPackageDuplicateDir.path, [], pubPackageMetaProvider);
+            testPackageDuplicateDir.path,
+            [],
+            pubPackageMetaProvider,
+            PhysicalPackageConfigProvider());
         tempOutput = await resourceProvider.createSystemTemp('doc_test_temp');
         writer = DartdocFileWriter(tempOutput.path, resourceProvider);
       });

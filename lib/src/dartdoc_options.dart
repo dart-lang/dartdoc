@@ -671,8 +671,8 @@ abstract class DartdocOption<T> {
   String get _directoryCurrentPath => resourceProvider.pathContext.current;
 
   /// Calls [valueAt] on the directory this element is defined in.
-  T valueAtElement(Element element) => valueAt(resourceProvider.getFolder(
-      resourceProvider.pathContext.canonicalize(
+  T valueAtElement(Element element) =>
+      valueAt(resourceProvider.getFolder(resourceProvider.pathContext.normalize(
           resourceProvider.pathContext.basename(element.source.fullName))));
 
   /// Adds a DartdocOption to the children of this DartdocOption.
@@ -1685,7 +1685,7 @@ Future<List<DartdocOption<Object>>> createDartdocOptions(
         return resourceProvider.pathContext
             .join(flutterRoot, 'bin', 'cache', 'dart-sdk');
       }
-      return resourceProvider.defaultSdkDir.path;
+      return packageMetaProvider.defaultSdkDir.path;
     }, packageMetaProvider.resourceProvider,
         help: 'Path to the SDK directory.', isDir: true, mustExist: true),
     DartdocOptionArgFile<bool>(

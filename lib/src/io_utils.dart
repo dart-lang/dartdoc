@@ -11,7 +11,8 @@ import 'dart:io' as io;
 
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
-import 'package:dartdoc/src/package_meta.dart';
+import 'package:analyzer/src/generated/sdk.dart';
+import 'package:analyzer/src/test_utilities/mock_sdk.dart';
 import 'package:path/path.dart' as path;
 
 Encoding utf8AllowMalformed = Utf8Codec(allowMalformed: true);
@@ -34,26 +35,20 @@ String resolveTildePath(String originalPath) {
   return path.join(homeDir, originalPath.substring(2));
 }
 
+bool isSdkLibraryDocumented(SdkLibrary library) {
+  if (library is MockSdkLibrary) {
+    // Not implemented in [MockSdkLibrary].
+    return true;
+  }
+  return library.isDocumented;
+}
+
 extension ResourceProviderExtensions on ResourceProvider {
   Folder createSystemTemp(String prefix) {
     if (this is PhysicalResourceProvider) {
       return getFolder(io.Directory.systemTemp.createTempSync(prefix).path);
     } else {
       return getFolder(pathContext.join('/tmp', prefix))..create();
-    }
-  }
-
-  Folder get defaultSdkDir {
-    if (this is PhysicalResourceProvider) {
-      var sdkDir = getFile(pathContext.absolute(io.Platform.resolvedExecutable))
-          .parent
-          .parent;
-      assert(pathContext.equals(
-          sdkDir.path, PubPackageMeta.sdkDirParent(sdkDir, this).path));
-      return sdkDir;
-    } else {
-      // TODO(srawlins): Return what is needed for tests.
-      return null;
     }
   }
 
@@ -90,48 +85,6 @@ extension ResourceProviderExtensions on ResourceProvider {
       return io.File(file.path).readAsStringSync(encoding: utf8AllowMalformed);
     } else {
       return file.readAsStringSync();
-    }
-  }
-}
-
-/// Lists the contents of [dir].
-///
-/// If [recursive] is `true`, lists subdirectory contents (defaults to `false`).
-///
-/// Excludes files and directories beginning with `.`
-///
-/// The returned paths are guaranteed to begin with [dir].
-Iterable<String> listDir(String dir,
-    {bool recursive = false,
-    Iterable<io.FileSystemEntity> Function(io.Directory dir) listDir}) {
-  listDir ??= (io.Directory dir) => dir.listSync();
-
-  return _doList(dir, <String>{}, recursive, listDir);
-}
-
-Iterable<String> _doList(
-    String dir,
-    Set<String> listedDirectories,
-    bool recurse,
-    Iterable<io.FileSystemEntity> Function(io.Directory dir) listDir) sync* {
-  // Avoid recursive symlinks.
-  var resolvedPath = io.Directory(dir).resolveSymbolicLinksSync();
-  if (!listedDirectories.contains(resolvedPath)) {
-    listedDirectories = Set<String>.from(listedDirectories);
-    listedDirectories.add(resolvedPath);
-
-    for (var entity in listDir(io.Directory(dir))) {
-      // Skip hidden files and directories
-      if (path.basename(entity.path).startsWith('.')) {
-        continue;
-      }
-
-      yield entity.path;
-      if (entity is io.Directory) {
-        if (recurse) {
-          yield* _doList(entity.path, listedDirectories, recurse, listDir);
-        }
-      }
     }
   }
 }

@@ -12,8 +12,8 @@ import 'dart:io';
 
 import 'package:async/async.dart';
 import 'package:dartdoc/dartdoc.dart';
-import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/special_elements.dart';
 import 'package:pub_semver/pub_semver.dart';
@@ -27,7 +27,10 @@ final Version _platformVersion = Version.parse(_platformVersionString);
 final _testPackageGraphExperimentsMemo = AsyncMemoizer<PackageGraph>();
 Future<PackageGraph> get _testPackageGraphExperiments =>
     _testPackageGraphExperimentsMemo.runOnce(() => utils.bootBasicPackage(
-        'testing/test_package_experiments', [], pubPackageMetaProvider,
+        'testing/test_package_experiments',
+        [],
+        pubPackageMetaProvider,
+        PhysicalPackageConfigProvider(),
         additionalArguments: [
           '--enable-experiment',
           'non-nullable',
@@ -40,16 +43,11 @@ Future<PackageGraph> get _testPackageGraphGinormous =>
         'testing/test_package',
         ['css', 'code_in_commnets', 'excluded'],
         pubPackageMetaProvider,
+        PhysicalPackageConfigProvider(),
         additionalArguments: [
           '--auto-include-dependencies',
           '--no-link-to-remote'
         ]));
-
-final _testPackageGraphSmallMemo = AsyncMemoizer<PackageGraph>();
-Future<PackageGraph> get _testPackageGraphSmall =>
-    _testPackageGraphSmallMemo.runOnce(() => utils.bootBasicPackage(
-        'testing/test_package_small', [], pubPackageMetaProvider,
-        additionalArguments: ['--no-link-to-remote']));
 
 final _testPackageGraphSdkMemo = AsyncMemoizer<PackageGraph>();
 Future<PackageGraph> get _testPackageGraphSdk =>
@@ -57,16 +55,16 @@ Future<PackageGraph> get _testPackageGraphSdk =>
 
 Future<PackageGraph> _bootSdkPackage() async {
   return PubPackageBuilder(
-          await utils.contextFromArgv([
-            '--input',
-            pubPackageMetaProvider.resourceProvider.defaultSdkDir.path
-          ], pubPackageMetaProvider),
-          pubPackageMetaProvider)
+          await utils.contextFromArgv(
+              ['--input', pubPackageMetaProvider.defaultSdkDir.path],
+              pubPackageMetaProvider),
+          pubPackageMetaProvider,
+          PhysicalPackageConfigProvider())
       .buildPackageGraph();
 }
 
 void main() {
-  var sdkDir = pubPackageMetaProvider.resourceProvider.defaultSdkDir;
+  var sdkDir = pubPackageMetaProvider.defaultSdkDir;
 
   if (sdkDir == null) {
     print('Warning: unable to locate the Dart SDK.');
@@ -265,6 +263,7 @@ void main() {
           'testing/test_package',
           ['css', 'code_in_comments', 'excluded'],
           pubPackageMetaProvider,
+          PhysicalPackageConfigProvider(),
           additionalArguments: ['--inject-html']);
 
       injectionExLibrary =
@@ -421,31 +420,16 @@ void main() {
       expect(SubForDocComments.categories.first.isDocumented, isFalse);
       expect(SubForDocComments.displayedCategories, isEmpty);
     });
-
-    test('Verify that packages without categories get handled', () async {
-      var packageGraphSmall = await _testPackageGraphSmall;
-      expect(packageGraphSmall.localPackages.length, equals(1));
-      expect(packageGraphSmall.localPackages.first.hasCategories, isFalse);
-      var packageCategories = packageGraphSmall.localPackages.first.categories;
-      expect(packageCategories.length, equals(0));
-    }, timeout: Timeout.factor(2));
   });
 
   group('Package', () {
-    PackageGraph ginormousPackageGraph, sdkAsPackageGraph;
+    PackageGraph sdkAsPackageGraph;
 
     setUpAll(() async {
-      ginormousPackageGraph = await _testPackageGraphGinormous;
       sdkAsPackageGraph = await _testPackageGraphSdk;
     });
 
     group('test package', () {
-      test('multiple packages, sorted default', () {
-        expect(ginormousPackageGraph.localPackages, hasLength(5));
-        expect(ginormousPackageGraph.localPackages.first.name,
-            equals('test_package'));
-      });
-
       test('sdk name', () {
         expect(sdkAsPackageGraph.defaultPackage.name, equals('Dart'));
         expect(sdkAsPackageGraph.defaultPackage.kind, equals('SDK'));
@@ -464,16 +448,6 @@ void main() {
       test('sdk description', () {
         expect(sdkAsPackageGraph.defaultPackage.documentation,
             startsWith('Welcome'));
-      });
-    });
-
-    group('test small package', () {
-      test('does not have documentation', () async {
-        var packageGraphSmall = await _testPackageGraphSmall;
-        expect(packageGraphSmall.defaultPackage.hasDocumentation, isFalse);
-        expect(packageGraphSmall.defaultPackage.hasDocumentationFile, isFalse);
-        expect(packageGraphSmall.defaultPackage.documentationFile, isNull);
-        expect(packageGraphSmall.defaultPackage.documentation, isNull);
       });
     });
 

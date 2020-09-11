@@ -8,7 +8,6 @@ import 'dart:io';
 
 import 'package:async/async.dart';
 import 'package:dartdoc/dartdoc.dart';
-import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/category_renderer.dart';
 import 'package:dartdoc/src/render/enum_field_renderer.dart';
@@ -27,6 +26,7 @@ Future<PackageGraph> get _testPackageGraph =>
         'testing/test_package',
         ['css', 'code_in_comments'],
         pubPackageMetaProvider,
+        PhysicalPackageConfigProvider(),
         additionalArguments: ['--no-link-to-remote']));
 
 /// For testing sort behavior.
@@ -59,7 +59,7 @@ class TestLibraryContainerSdk extends TestLibraryContainer {
 }
 
 void main() {
-  var sdkDir = pubPackageMetaProvider.resourceProvider.defaultSdkDir;
+  var sdkDir = pubPackageMetaProvider.defaultSdkDir;
 
   if (sdkDir == null) {
     print('Warning: unable to locate the Dart SDK.');
