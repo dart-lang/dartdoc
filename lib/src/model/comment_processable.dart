@@ -55,9 +55,11 @@ mixin CommentProcessable on Documentable, Warnable, Locatable, SourceCodeMixin {
   }
 
   String processCommentDirectives(String docs) {
+    // The vast, vast majority of doc comments have no directives.
     if (!docs.contains('{@')) {
       return docs;
     }
+    _checkForUnknownDirectives(docs);
     docs = _injectExamples(docs);
     docs = _injectYouTube(docs);
     docs = _injectAnimations(docs);
@@ -77,6 +79,58 @@ mixin CommentProcessable on Documentable, Warnable, Locatable, SourceCodeMixin {
   @visibleForTesting
   ModelElementRenderer get modelElementRenderer =>
       packageGraph.rendererFactory.modelElementRenderer;
+
+  static const _allDirectiveNames = [
+    'animation',
+    'end-inject-html',
+    'end-tool',
+    'endtemplate',
+    'example',
+    'macro',
+    'inject-html',
+    'template',
+    'tool',
+    'youtube',
+
+    // Categorization directives, parsed elsewhere:
+    'api',
+    'canonicalFor',
+    'category',
+    'image',
+    'samples',
+    'subCategory',
+
+    // Common Dart annotations which may decorate named parameters:
+    'deprecated',
+    'required',
+  ];
+
+  static final _nameBreak = RegExp('[\\s}]');
+
+  // TODO(srawlins): Implement more checks; see
+  // https://github.com/dart-lang/dartdoc/issues/1814.
+  void _checkForUnknownDirectives(String docs) {
+    var index = 0;
+    while (true) {
+      var nameStartIndex = docs.indexOf('{@', index);
+      if (nameStartIndex == -1) return;
+      var nameEndIndex = docs.indexOf(_nameBreak, nameStartIndex + 2);
+      if (nameEndIndex == -1) return;
+      var name = docs.substring(nameStartIndex + 2, nameEndIndex);
+      if (!_allDirectiveNames.contains(name)) {
+        if (_allDirectiveNames.contains(name.toLowerCase())) {
+          warn(PackageWarning.unknownDirective,
+              message: "'$name' (use lowercase)");
+        } else {
+          warn(PackageWarning.unknownDirective, message: "'$name'");
+        }
+      }
+      // TODO(srawlins): Replace all `replaceAllMapped` usage within this file,
+      // running regex after regex over [docs], with simple calls here. This has
+      // interactivity / order-of-operations consequences, so take care.
+      index = nameEndIndex;
+    }
+  }
 
   /// Replace &#123;@tool ...&#125&#123;@end-tool&#125; in API comments with the
   /// output of an external tool.

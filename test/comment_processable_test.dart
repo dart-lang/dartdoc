@@ -28,8 +28,8 @@ void main() {
 
   setUp(() async {
     resourceProvider = MemoryResourceProvider();
-    projectRoot =
-        resourceProvider.getFolder(resourceProvider.convertPath('/project'));
+    projectRoot = resourceProvider.getFolder(resourceProvider.pathContext
+        .canonicalize(resourceProvider.convertPath('/project')));
     projectRoot.create();
     resourceProvider
         .getFile(
@@ -98,6 +98,32 @@ Text.
 Text.
 
 More text.'''));
+  });
+
+  test('warns when an unknown directive is parsed', () async {
+    processor.element = _FakeElement(source: _FakeSource(fullName: libFooPath));
+    await processor.processComment('''
+/// Text.
+///
+/// {@marco name}
+''');
+    verify(processor.packageGraph.warnOnElement(
+            processor, PackageWarning.unknownDirective,
+            message: "'marco'"))
+        .called(1);
+  });
+
+  test('warns when a directive with wrong case is parsed', () async {
+    processor.element = _FakeElement(source: _FakeSource(fullName: libFooPath));
+    await processor.processComment('''
+/// Text.
+///
+/// {@youTube url}
+''');
+    verify(processor.packageGraph.warnOnElement(
+            processor, PackageWarning.unknownDirective,
+            message: "'youTube' (use lowercase)"))
+        .called(1);
   });
 
   test('processes @animation', () async {
@@ -369,9 +395,7 @@ End text.'''));
   });
 
   test('processes @example with file', () async {
-    var examplePath = resourceProvider.pathContext.canonicalize(
-        resourceProvider.pathContext.join(projectRoot.path, 'abc.md'));
-    resourceProvider.getFile(examplePath).writeAsStringSync('''
+    projectRoot.getChildAssumingFile('abc.md').writeAsStringSync('''
 ```
 Code snippet
 ```
@@ -398,9 +422,9 @@ End text.'''));
   });
 
   test('processes @example with a region', () async {
-    var examplePath = resourceProvider.pathContext.canonicalize(
-        resourceProvider.pathContext.join(projectRoot.path, 'abc-r.md'));
-    resourceProvider.getFile(examplePath).writeAsStringSync('Markdown text.');
+    projectRoot
+        .getChildAssumingFile('abc-r.md')
+        .writeAsStringSync('Markdown text.');
     processor.element = _FakeElement(source: _FakeSource(fullName: libFooPath));
     var doc = await processor.processComment('''
 /// Text.
@@ -417,9 +441,7 @@ Markdown text.'''));
 
   test('adds language to processed @example with an extension and no lang',
       () async {
-    var examplePath = resourceProvider.pathContext.canonicalize(
-        resourceProvider.pathContext.join(projectRoot.path, 'abc.html.md'));
-    resourceProvider.getFile(examplePath).writeAsStringSync('''
+    projectRoot.getChildAssumingFile('abc.html.md').writeAsStringSync('''
 ```
 Code snippet
 ```
@@ -447,9 +469,7 @@ End text.'''));
 
   test('adds language to processed @example with a lang and an extension',
       () async {
-    var examplePath = resourceProvider.pathContext.canonicalize(
-        resourceProvider.pathContext.join(projectRoot.path, 'abc.html.md'));
-    resourceProvider.getFile(examplePath).writeAsStringSync('''
+    projectRoot.getChildAssumingFile('abc.html.md').writeAsStringSync('''
 ```
 Code snippet
 ```
@@ -473,9 +493,7 @@ Code snippet
 
   test('adds language to processed @example with a lang and no extension',
       () async {
-    var examplePath = resourceProvider.pathContext.canonicalize(
-        resourceProvider.pathContext.join(projectRoot.path, 'abc.md'));
-    resourceProvider.getFile(examplePath).writeAsStringSync('''
+    projectRoot.getChildAssumingFile('abc.md').writeAsStringSync('''
 ```
 Code snippet
 ```

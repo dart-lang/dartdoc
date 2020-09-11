@@ -177,6 +177,10 @@ final Map<PackageWarning, PackageWarningDefinition> packageWarningDefinitions =
       'A comment reference could not be found in parameters, enclosing class, enclosing library, or at the top level of any documented library with the package'),
   PackageWarning.brokenLink: PackageWarningDefinition(PackageWarning.brokenLink,
       'broken-link', 'Dartdoc generated a link to a non-existent file'),
+  PackageWarning.unknownDirective: PackageWarningDefinition(
+      PackageWarning.unknownDirective,
+      'unknown-directive',
+      'A comment contains an unknown directive'),
   PackageWarning.unknownMacro: PackageWarningDefinition(
       PackageWarning.unknownMacro,
       'unknown-macro',
@@ -266,6 +270,7 @@ enum PackageWarning {
   packageOrderGivesMissingPackageName,
   reexportedPrivateApiAcrossPackages,
   unresolvedDocReference,
+  unknownDirective,
   unknownMacro,
   unknownHtmlFragment,
   brokenLink,
