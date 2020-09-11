@@ -24,9 +24,9 @@ final _testPackageGraphMemo = AsyncMemoizer<PackageGraph>();
 Future<PackageGraph> get _testPackageGraph =>
     _testPackageGraphMemo.runOnce(() => utils.bootBasicPackage(
         'testing/test_package',
-        ['css', 'code_in_comments'],
         pubPackageMetaProvider,
         PhysicalPackageConfigProvider(),
+        excludeLibraries: ['css', 'code_in_comments'],
         additionalArguments: ['--no-link-to-remote']));
 
 /// For testing sort behavior.
@@ -70,7 +70,6 @@ void main() {
   Library exLibrary;
   Library fakeLibrary;
   Library twoExportsLib;
-  Library interceptorsLib;
   Library baseClassLib;
   Library dartAsync;
 
@@ -85,8 +84,6 @@ void main() {
         packageGraph.libraries.firstWhere((lib) => lib.name == 'dart:async');
     twoExportsLib =
         packageGraph.libraries.firstWhere((lib) => lib.name == 'two_exports');
-    interceptorsLib = packageGraph.libraries
-        .firstWhere((lib) => lib.name == 'dart:_interceptors');
     baseClassLib =
         packageGraph.libraries.firstWhere((lib) => lib.name == 'base_class');
   });
@@ -471,75 +468,6 @@ void main() {
             'theFirst',
             'woot'
           ]));
-    });
-  });
-
-  group('Package', () {
-    group('test package', () {
-      test('name', () {
-        expect(packageGraph.defaultPackage.name, 'test_package');
-      });
-
-      test('libraries', () {
-        expect(packageGraph.localPublicLibraries,
-            hasLength(utils.kTestPackagePublicLibraries));
-        expect(interceptorsLib.isPublic, isFalse);
-      });
-
-      test('homepage', () {
-        expect(packageGraph.defaultPackage.hasHomepage, true);
-        expect(packageGraph.defaultPackage.homepage,
-            equals('http://github.com/dart-lang'));
-      });
-
-      test('packages', () {
-        expect(packageGraph.localPackages, hasLength(1));
-
-        var package = packageGraph.localPackages.first;
-        expect(package.name, 'test_package');
-        expect(package.publicLibraries,
-            hasLength(utils.kTestPackagePublicLibraries));
-      });
-
-      test('is documented in library', () {
-        expect(exLibrary.isDocumented, isTrue);
-      });
-
-      test('has documentation', () {
-        expect(packageGraph.defaultPackage.hasDocumentationFile, isTrue);
-        expect(packageGraph.defaultPackage.hasDocumentation, isTrue);
-      });
-
-      test('documentation exists', () {
-        expect(
-            packageGraph.defaultPackage.documentation
-                .startsWith('# Best Package'),
-            isTrue);
-      });
-
-      test('documentation can be rendered as HTML', () {
-        expect(packageGraph.defaultPackage.documentationAsHtml,
-            contains('<h1 id="best-package">Best Package</h1>'));
-      });
-
-      test('has anonymous libraries', () {
-        expect(
-            packageGraph.libraries
-                .where((lib) => lib.name == 'anonymous_library'),
-            hasLength(1));
-        expect(
-            packageGraph.libraries
-                .where((lib) => lib.name == 'another_anonymous_lib'),
-            hasLength(1));
-      });
-    });
-
-    group('SDK-specific cases', () {
-      test('Verify pragma is hidden in docs', () {
-        var HasPragma = fakeLibrary.allClasses
-            .firstWhere((Class c) => c.name == 'HasPragma');
-        expect(HasPragma.annotations, isEmpty);
-      });
     });
   });
 
