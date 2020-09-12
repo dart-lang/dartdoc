@@ -27,27 +27,30 @@ final Version _platformVersion = Version.parse(_platformVersionString);
 final _testPackageGraphExperimentsMemo = AsyncMemoizer<PackageGraph>();
 Future<PackageGraph> get _testPackageGraphExperiments =>
     _testPackageGraphExperimentsMemo.runOnce(() => utils.bootBasicPackage(
-        'testing/test_package_experiments',
-        [],
-        pubPackageMetaProvider,
-        PhysicalPackageConfigProvider(),
-        additionalArguments: [
-          '--enable-experiment',
-          'non-nullable',
-          '--no-link-to-remote'
-        ]));
+            'testing/test_package_experiments',
+            pubPackageMetaProvider,
+            PhysicalPackageConfigProvider(),
+            additionalArguments: [
+              '--enable-experiment',
+              'non-nullable',
+              '--no-link-to-remote'
+            ]));
 
 final _testPackageGraphGinormousMemo = AsyncMemoizer<PackageGraph>();
 Future<PackageGraph> get _testPackageGraphGinormous =>
     _testPackageGraphGinormousMemo.runOnce(() => utils.bootBasicPackage(
-        'testing/test_package',
-        ['css', 'code_in_commnets', 'excluded'],
-        pubPackageMetaProvider,
-        PhysicalPackageConfigProvider(),
-        additionalArguments: [
-          '--auto-include-dependencies',
-          '--no-link-to-remote'
-        ]));
+            'testing/test_package',
+            pubPackageMetaProvider,
+            PhysicalPackageConfigProvider(),
+            excludeLibraries: [
+              'css',
+              'code_in_commnets',
+              'excluded'
+            ],
+            additionalArguments: [
+              '--auto-include-dependencies',
+              '--no-link-to-remote'
+            ]));
 
 final _testPackageGraphSdkMemo = AsyncMemoizer<PackageGraph>();
 Future<PackageGraph> get _testPackageGraphSdk =>
@@ -261,9 +264,9 @@ void main() {
     setUpAll(() async {
       injectionPackageGraph = await utils.bootBasicPackage(
           'testing/test_package',
-          ['css', 'code_in_comments', 'excluded'],
           pubPackageMetaProvider,
           PhysicalPackageConfigProvider(),
+          excludeLibraries: ['css', 'code_in_comments', 'excluded'],
           additionalArguments: ['--inject-html']);
 
       injectionExLibrary =
@@ -429,79 +432,30 @@ void main() {
       sdkAsPackageGraph = await _testPackageGraphSdk;
     });
 
-    group('test package', () {
-      test('sdk name', () {
-        expect(sdkAsPackageGraph.defaultPackage.name, equals('Dart'));
-        expect(sdkAsPackageGraph.defaultPackage.kind, equals('SDK'));
-      });
-
-      test('sdk homepage', () {
-        expect(sdkAsPackageGraph.defaultPackage.hasHomepage, isTrue);
-        expect(sdkAsPackageGraph.defaultPackage.homepage,
-            equals('https://github.com/dart-lang/sdk'));
-      });
-
-      test('sdk version', () {
-        expect(sdkAsPackageGraph.defaultPackage.version, isNotNull);
-      });
-
-      test('sdk description', () {
-        expect(sdkAsPackageGraph.defaultPackage.documentation,
-            startsWith('Welcome'));
-      });
-    });
-
-    group('SDK-specific cases', () {
-      test('Verify Interceptor is hidden from inheritance in docs', () {
-        var htmlLibrary = sdkAsPackageGraph.libraries
-            .singleWhere((l) => l.name == 'dart:html');
-        var EventTarget =
-            htmlLibrary.allClasses.singleWhere((c) => c.name == 'EventTarget');
-        var hashCode = EventTarget.publicInstanceFields
-            .singleWhere((f) => f.name == 'hashCode');
-        var objectModelElement =
-            sdkAsPackageGraph.specialClasses[SpecialClass.object];
-        // If this fails, EventTarget might have been changed to no longer
-        // inherit from Interceptor.  If that's true, adjust test case to
-        // another class that does.
-        expect(
-            hashCode.inheritance.any((c) => c.name == 'Interceptor'), isTrue);
-        // If EventTarget really does start implementing hashCode, this will
-        // fail.
-        expect(hashCode.href,
-            equals('${HTMLBASE_PLACEHOLDER}dart-core/Object/hashCode.html'));
-        expect(
-            hashCode.canonicalEnclosingContainer, equals(objectModelElement));
-        expect(
-            EventTarget.publicSuperChainReversed
-                .any((et) => et.name == 'Interceptor'),
-            isFalse);
-      });
-
-      test('Verify pragma is hidden in SDK docs', () {
-        var pragmaModelElement =
-            sdkAsPackageGraph.specialClasses[SpecialClass.pragma];
-        expect(pragmaModelElement.name, equals('pragma'));
-      });
-    });
-  });
-
-  group('Library', () {
-    Library dartAsyncLib;
-
-    setUpAll(() async {
-      dartAsyncLib = (await _testPackageGraphSdk)
-          .libraries
-          .firstWhere((l) => l.name == 'dart:async');
-      // Make sure the first library is dart:async
-      expect(dartAsyncLib.name, 'dart:async');
-    });
-
-    test('sdk library have formatted names', () {
-      expect(dartAsyncLib.name, 'dart:async');
-      expect(dartAsyncLib.dirName, 'dart-async');
-      expect(dartAsyncLib.href,
-          '${HTMLBASE_PLACEHOLDER}dart-async/dart-async-library.html');
+    // Analyzer's MockSdk's html library doesn't conform to the expectations
+    // of this test.
+    test('Verify Interceptor is hidden from inheritance in docs', () {
+      var htmlLibrary =
+          sdkAsPackageGraph.libraries.singleWhere((l) => l.name == 'dart:html');
+      var EventTarget =
+          htmlLibrary.allClasses.singleWhere((c) => c.name == 'EventTarget');
+      var hashCode = EventTarget.publicInstanceFields
+          .singleWhere((f) => f.name == 'hashCode');
+      var objectModelElement =
+          sdkAsPackageGraph.specialClasses[SpecialClass.object];
+      // If this fails, EventTarget might have been changed to no longer
+      // inherit from Interceptor.  If that's true, adjust test case to
+      // another class that does.
+      expect(hashCode.inheritance.any((c) => c.name == 'Interceptor'), isTrue);
+      // If EventTarget really does start implementing hashCode, this will
+      // fail.
+      expect(hashCode.href,
+          equals('${HTMLBASE_PLACEHOLDER}dart-core/Object/hashCode.html'));
+      expect(hashCode.canonicalEnclosingContainer, equals(objectModelElement));
+      expect(
+          EventTarget.publicSuperChainReversed
+              .any((et) => et.name == 'Interceptor'),
+          isFalse);
     });
   });
 }

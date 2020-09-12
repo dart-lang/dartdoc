@@ -33,6 +33,8 @@ class FakePackageConfigProvider implements PackageConfigProvider {
 
   @override
   Future<package_config.PackageConfig> findPackageConfig(Folder dir) async {
+    assert(_packageConfigData[dir.path] != null,
+        'Package config data at ${dir.path} should not be null');
     return package_config.PackageConfig(_packageConfigData[dir.path]);
   }
 }

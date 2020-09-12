@@ -12,6 +12,7 @@ import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:dartdoc/dartdoc.dart';
+import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:yaml/yaml.dart';
 
@@ -486,4 +487,9 @@ class _SdkMeta extends PubPackageMeta {
   // TODO: The changelog doesn't seem to be available in the sdk.
   @override
   File getChangelogContents() => null;
+}
+
+@visibleForTesting
+void clearPackageMetaCache() {
+  _packageMetaCache.clear();
 }

@@ -121,7 +121,6 @@ void main() {
         generator = await _initGeneratorForTest();
         packageGraph = await utils.bootBasicPackage(
             testPackageDuplicateDir.path,
-            [],
             pubPackageMetaProvider,
             PhysicalPackageConfigProvider());
         tempOutput = await resourceProvider.createSystemTemp('doc_test_temp');

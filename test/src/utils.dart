@@ -7,6 +7,8 @@ library test_utils;
 import 'dart:async';
 
 import 'package:analyzer/file_system/file_system.dart';
+import 'package:analyzer/file_system/memory_file_system.dart';
+import 'package:analyzer/src/test_utilities/mock_sdk.dart';
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
@@ -38,10 +40,10 @@ Future<DartdocOptionContext> contextFromArgv(
 
 Future<PackageGraph> bootBasicPackage(
     String dirPath,
-    List<String> excludeLibraries,
     PackageMetaProvider packageMetaProvider,
     PackageConfigProvider packageConfigProvider,
-    {List<String> additionalArguments = const []}) async {
+    {List<String> excludeLibraries = const [],
+    List<String> additionalArguments = const []}) async {
   var resourceProvider = packageMetaProvider.resourceProvider;
   var dir = resourceProvider.getFolder(resourceProvider.pathContext
       .absolute(resourceProvider.pathContext.normalize(dirPath)));
@@ -59,4 +61,77 @@ Future<PackageGraph> bootBasicPackage(
           packageMetaProvider,
           packageConfigProvider)
       .buildPackageGraph();
+}
+
+/// Writes [mockSdk] to disk at both its original path, and its canonicalized
+/// path (they may be different on Windows).
+///
+/// Included is a "version" file and an "api_readme.md" file.
+Folder writeMockSdkFiles(MockSdk mockSdk) {
+  var resourceProvider = mockSdk.resourceProvider;
+  var pathContext = resourceProvider.pathContext;
+
+  // The [MockSdk] only works in non-canonicalized paths, which include
+  // "C:\sdk", on Windows. However, dartdoc works almost exclusively with
+  // canonical paths ("c:\sdk"). Copy all MockSdk files to the canonicalized
+  // path.
+  for (var l in mockSdk.sdkLibraries) {
+    var p = l.path;
+    resourceProvider
+        .getFile(pathContext.canonicalize(p))
+        .writeAsStringSync(resourceProvider.getFile(p).readAsStringSync());
+  }
+  var sdkFolder = resourceProvider.getFolder(
+      pathContext.canonicalize(resourceProvider.convertPath(sdkRoot)))
+    ..create();
+  sdkFolder.getChildAssumingFile('version').writeAsStringSync('2.9.0');
+  sdkFolder.getChildAssumingFile('api_readme.md').writeAsStringSync(
+      'Welcome to the [Dart](https://dart.dev/) API reference documentation');
+
+  _writeMockSdkBinFiles(sdkFolder);
+  _writeMockSdkBinFiles(
+      resourceProvider.getFolder(resourceProvider.convertPath(sdkRoot)));
+
+  return sdkFolder;
+}
+
+/// Dartdoc has a few indicator files it uses to verify that a directory
+/// represents a Dart SDK. These include "bin/dart" and "bin/pub".
+void _writeMockSdkBinFiles(Folder root) {
+  var sdkBinFolder = root.getChildAssumingFolder('bin');
+  sdkBinFolder.getChildAssumingFile('dart').writeAsStringSync('');
+  sdkBinFolder.getChildAssumingFile('pub').writeAsStringSync('');
+}
+
+/// Writes a package named [packageName], with [resourceProvider], to the
+/// "/projects" directory.
+///
+/// The package is added to [packageConfigProvider]. A standard pubspec is
+/// written if one is not provided via [pubspecContent].
+Folder writePackage(String packageName, MemoryResourceProvider resourceProvider,
+    FakePackageConfigProvider packageConfigProvider,
+    {String pubspecContent}) {
+  pubspecContent ??= '''
+name: $packageName
+version: 0.0.1
+homepage: https://github.com/dart-lang
+''';
+  var pathContext = resourceProvider.pathContext;
+  var projectsFolder = resourceProvider.getFolder(
+      pathContext.canonicalize(resourceProvider.convertPath('/projects')));
+  var projectFolder = projectsFolder.getChildAssumingFolder(packageName)
+    ..create;
+  var projectRoot = projectFolder.path;
+  projectFolder
+      .getChildAssumingFile('pubspec.yaml')
+      .writeAsStringSync(pubspecContent);
+  projectFolder
+      .getChildAssumingFolder('.dart_tool')
+      .getChildAssumingFile('package_config.json')
+      .writeAsStringSync('');
+  projectFolder.getChildAssumingFolder('lib').create();
+  packageConfigProvider.addPackageToConfigFor(
+      projectRoot, packageName, Uri.file('$projectRoot/'));
+
+  return projectFolder;
 }
