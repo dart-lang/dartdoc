@@ -193,7 +193,7 @@ class PubPackageBuilder implements PackageBuilder {
   /// If [filePath] is not a library, returns null.
   Future<DartDocResolvedLibrary> processLibrary(String filePath) async {
     var name = filePath;
-    var directoryCurrentPath = config.resourceProvider.pathContext.current;
+    var directoryCurrentPath = resourceProvider.pathContext.current;
 
     if (name.startsWith(directoryCurrentPath)) {
       name = name.substring(directoryCurrentPath.length);
@@ -235,20 +235,15 @@ class PubPackageBuilder implements PackageBuilder {
     return null;
   }
 
-  Set<PackageMeta> _packageMetasForFiles(Iterable<String> files) {
-    var metas = <PackageMeta>{};
-    for (var filename in files) {
-      metas.add(packageMetaProvider.fromFilename(filename));
-    }
-    return metas;
-  }
+  Set<PackageMeta> _packageMetasForFiles(Iterable<String> files) => {
+        for (var filename in files) packageMetaProvider.fromFilename(filename),
+      };
 
-  /// Parse libraries with the analyzer and invoke a callback with the
+  /// Parses libraries with the analyzer and invokes [libraryAdder] with each
   /// result.
   ///
-  /// Uses the [libraries] parameter to prevent calling
-  /// the callback more than once with the same [LibraryElement].
-  /// Adds [LibraryElement]s found to that parameter.
+  /// Uses [libraries] to prevent calling the callback more than once with the
+  /// same [LibraryElement]. Adds each [LibraryElement] found to [libraries].
   Future<void> _parseLibraries(
       void Function(DartDocResolvedLibrary) libraryAdder,
       Set<LibraryElement> libraries,
@@ -257,17 +252,20 @@ class PubPackageBuilder implements PackageBuilder {
     isLibraryIncluded ??= (_) => true;
     var lastPass = <PackageMeta>{};
     Set<PackageMeta> current;
+    var knownParts = <String>{};
     do {
       lastPass = _packageMetasForFiles(files);
 
       // Be careful here not to accidentally stack up multiple
-      // DartDocResolvedLibrarys, as those eat our heap.
-      for (var f in files) {
+      // [DartDocResolvedLibrary]s, as those eat our heap.
+      for (var f in files.difference(knownParts)) {
         logProgress(f);
         var r = await processLibrary(f);
-        if (r != null &&
-            !libraries.contains(r.element) &&
-            isLibraryIncluded(r.element)) {
+        if (r == null) {
+          knownParts.add(f);
+          continue;
+        }
+        if (!libraries.contains(r.element) && isLibraryIncluded(r.element)) {
           logDebug('parsing ${f}...');
           libraryAdder(r);
           libraries.add(r.element);
@@ -278,7 +276,7 @@ class PubPackageBuilder implements PackageBuilder {
       await driver.discoverAvailableFiles();
       files.addAll(driver.knownFiles);
       files.addAll(_includeExternalsFrom(driver.knownFiles));
-      current = _packageMetasForFiles(files);
+      current = _packageMetasForFiles(files.difference(knownParts));
       // To get canonicalization correct for non-locally documented packages
       // (so we can generate the right hyperlinks), it's vital that we
       // add all libraries in dependent packages.  So if the analyzer

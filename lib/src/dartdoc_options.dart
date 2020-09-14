@@ -1435,7 +1435,13 @@ class DartdocOptionContext extends DartdocOptionContextBase
   String get examplePathPrefix =>
       optionSet['examplePathPrefix'].valueAt(context);
 
-  List<String> get exclude => optionSet['exclude'].valueAt(context);
+  /// A memoized calculation of exclusions.
+  // TODO(srawlins): This memoization saved a lot of time in unit testing, but
+  // is the first value in this class to be memoized. Memoize others?
+  /*late final*/ List<String> _exclude;
+
+  List<String> get exclude =>
+      _exclude ??= optionSet['exclude'].valueAt(context);
 
   List<String> get excludePackages =>
       optionSet['excludePackages'].valueAt(context);
