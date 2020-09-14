@@ -283,14 +283,6 @@ void main() {
     });
 
     test('can inject HTML', () {
-      expect(
-          injectSimpleHtml.documentation,
-          contains(
-              '\n<dartdoc-html>bad2bbdd4a5cf9efb3212afff4449904756851aa</dartdoc-html>\n'));
-      expect(injectSimpleHtml.documentation,
-          isNot(contains('\n{@inject-html}\n')));
-      expect(injectSimpleHtml.documentation,
-          isNot(contains('\n{@end-inject-html}\n')));
       expect(injectSimpleHtml.documentationAsHtml,
           contains('   <div style="opacity: 0.5;">[HtmlInjection]</div>'));
     });
