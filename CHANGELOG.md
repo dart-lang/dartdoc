@@ -1,3 +1,27 @@
+## 0.34.0
+
+* PackageConfigProvider, MockSdk, etc for improved unit testing (#2332)
+  * The new PackageConfigProvider class abstracts over PackageConfig from
+    `package_config`. PhysicalPackageConfigProvider uses the real one;
+    MemoryPackageConfigProvider is used in tests.
+  * The new `isSdkLibraryDocumented` abstracts over SdkLibrary's
+    `isDocumented`, because it throws unimplemented for `MockSdkLibrary`.
+  * Remove `ResourceProviderExtensions.defaultSdkDir`. Now this is a property
+    of PackageMetaProvider.
+  * **Breaking change**: Move `io_utils` `listDir` to be a private method in
+    PackageBuilder.
+  * **Breaking change**: Add parameter to PubPackageBuilder constructor for a
+    PackageConfigProvider.
+  * **Breaking change**: Add two parameters to the PackageMetaProvider
+    constructor, one for the default SDK directory, and one for the DartSdk.
+  * Deprecate package.dart's `substituteNameVersion`.
+  * Shorten doc comments here and there to 80 columns.
+  * Move any tests which use `testing/test_package_small` to be unit tests;
+    delete the package in `testing/`.
+  * Move some tests for properties of package which use the ginormous testing
+    package to unit tests
+* Add a warning when an unknown directive is parsed in a comment. (#2340)
+
 ## 0.33.0
 
 * Remove a use of resource loading (#2337)
