@@ -599,8 +599,9 @@ Code snippet
 
     var abcPath = resourceProvider.pathContext.canonicalize(
         resourceProvider.pathContext.join(projectRoot.path, 'abc.md'));
+    var libPathInWarning = resourceProvider.pathContext.join('lib', 'a.dart');
     expect(libraryModel,
-        hasMissingExampleWarning('$abcPath; path listed at lib/a.dart'));
+        hasMissingExampleWarning('$abcPath; path listed at $libPathInWarning'));
     // When the example path is invalid, the directive should be left in-place.
     expect(doc, equals('{@example abc}'));
   });
@@ -612,8 +613,9 @@ Code snippet
     var abcPath = resourceProvider.pathContext.canonicalize(resourceProvider
         .pathContext
         .join(projectRoot.path, 'abc', 'def', 'ghi.md'));
+    var libPathInWarning = resourceProvider.pathContext.join('lib', 'a.dart');
     expect(libraryModel,
-        hasMissingExampleWarning('$abcPath; path listed at lib/a.dart'));
+        hasMissingExampleWarning('$abcPath; path listed at $libPathInWarning'));
     // When the example path is invalid, the directive should be left in-place.
     expect(doc, equals('{@example abc/def/ghi}'));
   });
@@ -624,8 +626,9 @@ Code snippet
 ''');
     var abcPath = resourceProvider.pathContext.canonicalize(
         resourceProvider.pathContext.join(projectRoot.path, 'abc-r.md'));
+    var libPathInWarning = resourceProvider.pathContext.join('lib', 'a.dart');
     expect(libraryModel,
-        hasMissingExampleWarning('$abcPath; path listed at lib/a.dart'));
+        hasMissingExampleWarning('$abcPath; path listed at $libPathInWarning'));
     // When the example path is invalid, the directive should be left in-place.
     expect(doc, equals('{@example region=r abc}'));
   });
