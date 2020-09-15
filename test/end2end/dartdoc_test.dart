@@ -28,16 +28,12 @@ Folder _getFolder(String p) => _resourceProvider
 final _testPackageDir = _getFolder('testing/test_package');
 
 final Folder _testPackageBadDir = _getFolder('testing/test_package_bad');
-final Folder _testPackageMinimumDir =
-    _getFolder('testing/test_package_minimum');
 final Folder _testSkyEnginePackage = _getFolder('testing/sky_engine');
 final Folder _testPackageIncludeExclude =
     _getFolder('testing/test_package_include_exclude');
 final Folder _testPackageImportExportError =
     _getFolder('testing/test_package_import_export_error');
 final Folder _testPackageOptions = _getFolder('testing/test_package_options');
-final Folder _testPackageOptionsImporter =
-    _getFolder('testing/test_package_options_importer');
 final _testPackageCustomTemplates =
     _getFolder('testing/test_package_custom_templates');
 
@@ -162,43 +158,6 @@ void main() {
           contains('Tool "drill" returned non-zero exit code'));
     });
 
-    group('Option handling with cross-linking', () {
-      DartdocResults results;
-      Package testPackageOptions;
-      Folder tempDir;
-
-      setUpAll(() async {
-        tempDir = resourceProvider.createSystemTemp('dartdoc.test.');
-        results = await (await buildDartdoc(
-                ['--link-to-remote'], _testPackageOptionsImporter, tempDir))
-            .generateDocsBase();
-        testPackageOptions = results.packageGraph.packages
-            .firstWhere((Package p) => p.name == 'test_package_options');
-      });
-
-      test('linkToUrl', () async {
-        var main = testPackageOptions.allLibraries
-            .firstWhere((Library l) => l.name == 'main');
-        var UseAnExampleHere = main.allClasses
-            .firstWhere((Class c) => c.name == 'UseAnExampleHere');
-        expect(testPackageOptions.documentedWhere,
-            equals(DocumentLocation.remote));
-        expect(
-            UseAnExampleHere.href,
-            equals(
-                'https://nonexistingsuperpackage.topdomain/test_package_options/0.0.1/main/UseAnExampleHere-class.html'));
-      });
-
-      test('includeExternal works via remote', () async {
-        var unusualLibrary = testPackageOptions.allLibraries
-            .firstWhere((Library l) => l.name == 'unusualLibrary');
-        expect(
-            unusualLibrary.allClasses
-                .firstWhere((Class c) => c.name == 'Something'),
-            isNotNull);
-      });
-    });
-
     test('with broken reexport chain', () async {
       var dartdoc =
           await buildDartdoc([], _testPackageImportExportError, tempDir);
@@ -244,13 +203,6 @@ void main() {
         expect(
             p.localPublicLibraries.first.name, equals('explicitly_included'));
       });
-    });
-
-    test('package without version produces valid semver in docs', () async {
-      var dartdoc = await buildDartdoc([], _testPackageMinimumDir, tempDir);
-      var results = await dartdoc.generateDocs();
-      var p = results.packageGraph;
-      expect(p.defaultPackage.version, equals('0.0.0-unknown'));
     });
 
     test('basic interlinking test', () async {
@@ -327,40 +279,8 @@ void main() {
         expect(e is DartdocFailure, isTrue);
       }
     },
-        skip: 'Blocked on getting analysis errors with correct interpretation'
+        skip: 'Blocked on getting analysis errors with correct interpretation '
             'from analysis_options');
-
-    test('generate docs including a single library', () async {
-      var dartdoc =
-          await buildDartdoc(['--include', 'fake'], _testPackageDir, tempDir);
-
-      var results = await dartdoc.generateDocs();
-      expect(results.packageGraph, isNotNull);
-
-      var p = results.packageGraph;
-      expect(p.defaultPackage.name, 'test_package');
-      expect(p.defaultPackage.hasDocumentationFile, isTrue);
-      expect(p.localPublicLibraries, hasLength(1));
-      expect(p.localPublicLibraries.map((lib) => lib.name), contains('fake'));
-    });
-
-    test('generate docs excluding a single library', () async {
-      var dartdoc =
-          await buildDartdoc(['--exclude', 'fake'], _testPackageDir, tempDir);
-
-      var results = await dartdoc.generateDocs();
-      expect(results.packageGraph, isNotNull);
-
-      var p = results.packageGraph;
-      expect(p.defaultPackage.name, 'test_package');
-      expect(p.defaultPackage.hasDocumentationFile, isTrue);
-      // Plus 1 here because we're excluding only two libraries (the specified
-      // one and the <nodoc> 'excluded' library) instead of three.
-      expect(
-          p.localPublicLibraries, hasLength(kTestPackagePublicLibraries + 1));
-      expect(p.localPublicLibraries.map((lib) => lib.name).contains('fake'),
-          isFalse);
-    });
 
     test('generate docs for package with embedder yaml', () async {
       var dartdoc = await buildDartdoc([], _testSkyEnginePackage, tempDir);
@@ -443,8 +363,7 @@ void main() {
     });
 
     test('rel canonical prefix does not include base href', () async {
-      // ignore: omit_local_variable_types
-      final String prefix = 'foo.bar/baz';
+      final prefix = 'foo.bar/baz';
       var dartdoc = await buildDartdoc(
           ['--rel-canonical-prefix', prefix], _testPackageDir, tempDir);
       await dartdoc.generateDocsBase();

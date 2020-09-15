@@ -308,7 +308,7 @@ class _FilePackageMeta extends PubPackageMeta {
     if (!_setHostedAt) {
       _setHostedAt = true;
       // Search for 'hosted/host.domain' as the immediate parent directories,
-      // and verify that a directory _temp exists alongside hosted.  Those
+      // and verify that a directory "_temp" exists alongside "hosted".  Those
       // seem to be the only guaranteed things to exist if we're from a pub
       // cache.
       //
@@ -317,14 +317,16 @@ class _FilePackageMeta extends PubPackageMeta {
       // a pub library to do this.
       // People could have a pub cache at root with Windows drive mappings.
       if (pathContext.split(pathContext.canonicalize(dir.path)).length >= 3) {
-        var pubCacheRoot = dir.parent.parent.parent.path;
-        var hosted = pathContext.canonicalize(dir.parent.parent.path);
-        var hostname = pathContext.canonicalize(dir.parent.path);
-        if (pathContext.basename(hosted) == 'hosted' &&
-            resourceProvider
-                .getFolder(pathContext.join(pubCacheRoot, '_temp'))
-                .exists) {
-          _hostedAt = pathContext.basename(hostname);
+        var pubCacheRoot = dir.parent.parent.parent?.path;
+        if (pubCacheRoot != null) {
+          var hosted = pathContext.canonicalize(dir.parent.parent.path);
+          var hostname = pathContext.canonicalize(dir.parent.path);
+          if (pathContext.basename(hosted) == 'hosted' &&
+              resourceProvider
+                  .getFolder(pathContext.join(pubCacheRoot, '_temp'))
+                  .exists) {
+            _hostedAt = pathContext.basename(hostname);
+          }
         }
       }
     }
