@@ -854,5 +854,18 @@ class _HasWarning extends Matcher {
   }
 
   @override
-  Description describe(Description description) => description.add('Hide');
+  Description describe(Description description) =>
+      description.add('Library to be warned with $kind and message:\n$message');
+
+  @override
+  Description describeMismatch(dynamic actual, Description mismatchDescription,
+      Map<Object, Object> matchState, bool verbose) {
+    if (actual is ModelElement) {
+      var warnings = actual
+          .packageGraph.packageWarningCounter.countedWarnings[actual.element];
+      return mismatchDescription.add('has warnings: $warnings');
+    } else {
+      return mismatchDescription.add('is a ${actual.runtimeType}');
+    }
+  }
 }
