@@ -155,7 +155,7 @@ void main() {
       expect(
           output.toString(),
           contains(RegExp(
-              'Top level package requires Flutter but FLUTTER_ROOT environment variable not set| requires the Flutter SDK, version solving failed')));
+              'Top level package requires Flutter but FLUTTER_ROOT environment variable not set|test_package_flutter_plugin requires the Flutter SDK, version solving failed')));
       expect(output.toString(), isNot(contains('asynchronous gap')));
     });
 
