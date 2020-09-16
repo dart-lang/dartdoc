@@ -301,26 +301,6 @@ void main() {
     });
   });
 
-  group('HTML Injection when not allowed', () {
-    Class htmlInjection;
-    Method injectSimpleHtml;
-
-    setUpAll(() {
-      htmlInjection =
-          exLibrary.classes.firstWhere((c) => c.name == 'HtmlInjection');
-      injectSimpleHtml = htmlInjection.instanceMethods
-          .firstWhere((m) => m.name == 'injectSimpleHtml');
-    });
-    test("doesn't inject HTML if --inject-html option is not present", () {
-      expect(
-          injectSimpleHtml.documentation,
-          isNot(contains(
-              '\n<dartdoc-html>bad2bbdd4a5cf9efb3212afff4449904756851aa</dartdoc-html>\n')));
-      expect(injectSimpleHtml.documentation, isNot(contains('<dartdoc-html>')));
-      expect(injectSimpleHtml.documentationAsHtml, contains('{@inject-html}'));
-    });
-  });
-
   group('Missing and Remote', () {
     test(
         'Verify that SDK libraries are not canonical when documenting a package',
@@ -724,71 +704,17 @@ void main() {
   });
 
   group('Animation', () {
-    Class dog;
-    Method withAnimation;
-    Method withNamedAnimation;
-    Method withQuoteNamedAnimation;
-    Method withDeprecatedAnimation;
     Method withAnimationInOneLineDoc;
     Method withAnimationInline;
-    Method withAnimationOutOfOrder;
-    Enum enumWithAnimation;
-    EnumField enumValue1;
-    EnumField enumValue2;
 
     setUpAll(() {
-      enumWithAnimation =
-          exLibrary.enums.firstWhere((c) => c.name == 'EnumWithAnimation');
-      enumValue1 = enumWithAnimation.constantFields
-          .firstWhere((m) => m.name == 'value1');
-      enumValue2 = enumWithAnimation.constantFields
-          .firstWhere((m) => m.name == 'value2');
-      dog = exLibrary.classes.firstWhere((c) => c.name == 'Dog');
-      withAnimation =
-          dog.instanceMethods.firstWhere((m) => m.name == 'withAnimation');
-      withNamedAnimation =
-          dog.instanceMethods.firstWhere((m) => m.name == 'withNamedAnimation');
-      withQuoteNamedAnimation = dog.instanceMethods
-          .firstWhere((m) => m.name == 'withQuotedNamedAnimation');
-      withDeprecatedAnimation = dog.instanceMethods
-          .firstWhere((m) => m.name == 'withDeprecatedAnimation');
+      var dog = exLibrary.classes.firstWhere((c) => c.name == 'Dog');
       withAnimationInOneLineDoc = dog.instanceMethods
           .firstWhere((m) => m.name == 'withAnimationInOneLineDoc');
       withAnimationInline = dog.instanceMethods
           .firstWhere((m) => m.name == 'withAnimationInline');
-      withAnimationOutOfOrder = dog.instanceMethods
-          .firstWhere((m) => m.name == 'withAnimationOutOfOrder');
     });
 
-    test('renders an unnamed animation within the method documentation', () {
-      expect(withAnimation.documentation, contains('<video id="animation_1"'));
-    });
-    test('renders a named animation within the method documentation', () {
-      expect(withNamedAnimation.documentation,
-          contains('<video id="namedAnimation"'));
-    });
-    test('renders a quoted, named animation within the method documentation',
-        () {
-      expect(withQuoteNamedAnimation.documentation,
-          contains('<video id="quotedNamedAnimation"'));
-      expect(withQuoteNamedAnimation.documentation,
-          contains('<video id="quotedNamedAnimation2"'));
-    });
-    test('renders a deprecated-form animation within the method documentation',
-        () {
-      expect(withDeprecatedAnimation.documentation,
-          contains('<video id="deprecatedAnimation"'));
-      expect(
-          packageGraph.packageWarningCounter.hasWarning(
-              withDeprecatedAnimation,
-              PackageWarning.deprecated,
-              'Deprecated form of @animation directive, '
-              '"{@animation deprecatedAnimation 100 100 http://host/path/to/video.mp4}"\n'
-              'Animation directives are now of the form "{@animation '
-              'WIDTH HEIGHT URL [id=ID]}" (id is an optional '
-              'parameter)'),
-          isTrue);
-    });
     test("Doesn't place animations in one line doc", () {
       expect(withAnimationInOneLineDoc.oneLineDoc, isNot(contains('<video')));
       expect(withAnimationInOneLineDoc.documentation, contains('<video'));
@@ -797,24 +723,6 @@ void main() {
       // Make sure it doesn't have a double-space before the continued line,
       // which would indicate to Markdown to indent the line.
       expect(withAnimationInline.documentation, isNot(contains('  works')));
-    });
-    test('Out of order arguments work.', () {
-      expect(withAnimationOutOfOrder.documentation,
-          contains('<video id="outOfOrder"'));
-    });
-    test('Enum field animation identifiers are unique.', () {
-      expect(
-          enumValue1.documentationAsHtml, contains('<video id="animation_1"'));
-      expect(
-          enumValue1.documentationAsHtml, contains('<video id="animation_2"'));
-      expect(enumValue2.documentationAsHtml,
-          isNot(contains('<video id="animation_1"')));
-      expect(enumValue2.documentationAsHtml,
-          isNot(contains('<video id="animation_2"')));
-      expect(
-          enumValue2.documentationAsHtml, contains('<video id="animation_3"'));
-      expect(
-          enumValue2.documentationAsHtml, contains('<video id="animation_4"'));
     });
   });
 
@@ -1644,7 +1552,7 @@ void main() {
 
     test('get methods', () {
       expect(Dog.publicInstanceMethods.where((m) => !m.isInherited),
-          hasLength(21));
+          hasLength(16));
     });
 
     test('get operators', () {
@@ -1712,16 +1620,11 @@ void main() {
             'testGenericMethod',
             'testMethod',
             'toString',
-            'withAnimation',
             'withAnimationInline',
-            'withAnimationOutOfOrder',
             'withAnimationInOneLineDoc',
-            'withDeprecatedAnimation',
             'withMacro',
             'withMacro2',
-            'withNamedAnimation',
             'withPrivateMacro',
-            'withQuotedNamedAnimation',
             'withUndefinedMacro',
             'withYouTubeInline',
             'withYouTubeInOneLineDoc',
