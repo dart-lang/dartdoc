@@ -454,8 +454,7 @@ class _OptionValueWithContext<T> {
   ///
   /// [path] is the path where this value came from (not required to be
   /// canonical).
-  _OptionValueWithContext(this.value, String path, {String definingFile}) {
-    this.definingFile = definingFile;
+  _OptionValueWithContext(this.value, String path, {this.definingFile}) {
     canonicalDirectoryPath = p.canonicalize(path);
     pathContext = p.Context(current: canonicalDirectoryPath);
   }
@@ -690,8 +689,7 @@ abstract class DartdocOption<T> {
   void _onAdd() {}
 
   /// Adds a list of dartdoc options to the children of this DartdocOption.
-  void addAll(Iterable<DartdocOption<Object>> options) =>
-      options.forEach((o) => add(o));
+  void addAll(Iterable<DartdocOption<Object>> options) => options.forEach(add);
 
   /// Get the immediate child of this node named [name].
   DartdocOption<dynamic> operator [](String name) {
@@ -856,7 +854,7 @@ typedef OptionGenerator = Future<List<DartdocOption<Object>>> Function(
 
 /// A [DartdocOption] that only contains other [DartdocOption]s and is not an
 /// option itself.
-class DartdocOptionSet extends DartdocOption<Null> {
+class DartdocOptionSet extends DartdocOption<void> {
   DartdocOptionSet(String name, ResourceProvider resourceProvider)
       : super(name, null, null, false, false, false, null, resourceProvider);
 
@@ -880,7 +878,7 @@ class DartdocOptionSet extends DartdocOption<Null> {
 
   /// [DartdocOptionSet] always has the null value.
   @override
-  Null valueAt(Folder dir) => null;
+  void valueAt(Folder dir) => null;
 
   /// Since we have no value, [_onMissing] does nothing.
   @override

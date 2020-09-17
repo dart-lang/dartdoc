@@ -178,9 +178,10 @@ void main() {
     secondDir = resourceProvider
         .getFolder(resourceProvider.pathContext.join(tempDir.path, 'secondDir'))
           ..create();
-    resourceProvider.getFile(
-        resourceProvider.pathContext.join(secondDir.path, 'existing.dart'))
-      ..writeAsStringSync('');
+    resourceProvider
+        .getFile(
+            resourceProvider.pathContext.join(secondDir.path, 'existing.dart'))
+        .writeAsStringSync('');
 
     secondDirFirstSub = resourceProvider.getFolder(
         resourceProvider.pathContext.join(secondDir.path, 'firstSub'))

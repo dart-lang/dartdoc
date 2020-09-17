@@ -40,11 +40,6 @@ class Accessor extends ModelElement implements EnclosedElement {
   }
 
   @override
-  List<ModelElement> get computeDocumentationFrom {
-    return super.computeDocumentationFrom;
-  }
-
-  @override
   String computeDocumentationComment() {
     if (isSynthetic) {
       var docComment =
