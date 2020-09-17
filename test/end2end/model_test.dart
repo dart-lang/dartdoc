@@ -3581,10 +3581,16 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .toList();
     });
 
-    test('private classes do not break the inheritance chain', () {
+    test('private classes do not break the implementor chain', () {
       var Super1 = fakeLibrary.classes.firstWhere((c) => c.name == 'Super1');
-      var publicImplementors = Super1.publicImplementors.toList();
-      expect(publicImplementors, hasLength(2));
+      var publicImplementors = Super1.publicImplementors.map((i) => i.name);
+      expect(publicImplementors, hasLength(3));
+      // A direct implementor.
+      expect(publicImplementors, contains('Super4'));
+      // An implementor through _Super2.
+      expect(publicImplementors, contains('Super3'));
+      // An implementor through _Super5 and _Super2.
+      expect(publicImplementors, contains('Super6'));
     });
 
     test('the first class is Apple', () {
