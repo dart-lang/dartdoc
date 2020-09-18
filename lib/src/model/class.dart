@@ -166,14 +166,35 @@ class Class extends Container
     return '${package.baseHref}$filePath';
   }
 
-  /// Returns all the implementors of this class.
+  /// Returns all the "immediate" public implementors of this class.
+  ///
+  /// If this class has a private implementor, then that is counted as a proxy
+  /// for any public implementors of that private class.
   Iterable<Class> get publicImplementors {
-    return model_utils.filterNonPublic(
-        model_utils.findCanonicalFor(packageGraph.implementors[href] ?? []));
+    var result = <Class>{};
+    var seen = <Class>{};
+
+    // Recursively adds [implementor] if public, or the impelentors of
+    // [implementor] if not.
+    void addToResult(Class implementor) {
+      if (seen.contains(implementor)) return;
+      seen.add(implementor);
+      if (implementor.isPublic) {
+        result.add(implementor);
+      } else {
+        model_utils
+            .findCanonicalFor(packageGraph.implementors[implementor] ?? [])
+            .forEach(addToResult);
+      }
+    }
+
+    model_utils
+        .findCanonicalFor(packageGraph.implementors[this] ?? [])
+        .forEach(addToResult);
+    return result;
   }
 
-  /*lazy final*/
-  List<Method> _inheritedMethods;
+  /*lazy final*/ List<Method> _inheritedMethods;
 
   Iterable<Method> get inheritedMethods {
     if (_inheritedMethods == null) {
@@ -201,8 +222,7 @@ class Class extends Container
 
   bool get hasPublicInheritedMethods => publicInheritedMethods.isNotEmpty;
 
-  /*lazy final*/
-  List<Operator> _inheritedOperators;
+  /*lazy final*/ List<Operator> _inheritedOperators;
 
   Iterable<Operator> get inheritedOperators {
     if (_inheritedOperators == null) {

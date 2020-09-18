@@ -1328,12 +1328,12 @@ void main() {
       expect(GenericMixin.characterLocation, isNotNull);
     });
 
-    test(('Verify mixin member is available in findRefElementCache'), () {
+    test('Verify mixin member is available in findRefElementCache', () {
       expect(packageGraph.findRefElementCache['GenericMixin.mixinMember'],
           isNotEmpty);
     });
 
-    test(('Verify inheritance/mixin structure and type inference'), () {
+    test('Verify inheritance/mixin structure and type inference', () {
       expect(
           TypeInferenceMixedIn.mixins
               .map<String>((DefinedElementType t) => t.element.name),
@@ -1356,7 +1356,7 @@ void main() {
           orderedEquals(['int']));
     });
 
-    test(('Verify non-overridden members have right canonical classes'), () {
+    test('Verify non-overridden members have right canonical classes', () {
       var member = TypeInferenceMixedIn.instanceFields
           .firstWhere((f) => f.name == 'member');
       var modifierMember = TypeInferenceMixedIn.instanceFields
@@ -1368,7 +1368,7 @@ void main() {
       expect(mixinMember.canonicalEnclosingContainer, equals(GenericMixin));
     });
 
-    test(('Verify overrides & documentation inheritance work as intended'), () {
+    test('Verify overrides & documentation inheritance work as intended', () {
       expect(overrideByEverything.canonicalEnclosingContainer,
           equals(TypeInferenceMixedIn));
       expect(overrideByGenericMixin.canonicalEnclosingContainer,
@@ -1398,8 +1398,7 @@ void main() {
               .getter));
     });
 
-    test(('Verify that documentation for mixin applications contains links'),
-        () {
+    test('Verify that documentation for mixin applications contains links', () {
       expect(
           overrideByModifierClass.oneLineDoc,
           contains(
@@ -3580,6 +3579,18 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .firstWhere((c) => c.name == 'Cat')
           .publicImplementors
           .toList();
+    });
+
+    test('private classes do not break the implementor chain', () {
+      var Super1 = fakeLibrary.classes.firstWhere((c) => c.name == 'Super1');
+      var publicImplementors = Super1.publicImplementors.map((i) => i.name);
+      expect(publicImplementors, hasLength(3));
+      // A direct implementor.
+      expect(publicImplementors, contains('Super4'));
+      // An implementor through _Super2.
+      expect(publicImplementors, contains('Super3'));
+      // An implementor through _Super5 and _Super2.
+      expect(publicImplementors, contains('Super6'));
     });
 
     test('the first class is Apple', () {

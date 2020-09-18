@@ -151,7 +151,7 @@ class PackageGraph {
   /// is true.
   bool allExtensionsAdded = false;
 
-  Map<String, List<Class>> get implementors {
+  Map<Class, List<Class>> get implementors {
     assert(allImplementorsAdded);
     return _implementors;
   }
@@ -201,8 +201,8 @@ class PackageGraph {
   final Map<Tuple2<Element, Library>, Set<ModelElement>>
       allInheritableElements = {};
 
-  /// Map of Class.href to a list of classes implementing that class
-  final Map<String, List<Class>> _implementors = {};
+  /// A mapping of the list of classes which implement each class.
+  final Map<Class, List<Class>> _implementors = {};
 
   /// A list of extensions that exist in the package graph.
   final List<Extension> _extensions = [];
@@ -576,26 +576,26 @@ class PackageGraph {
     return hrefMap;
   }
 
-  void _addToImplementors(Class c) {
+  void _addToImplementors(Class class_) {
     assert(!allImplementorsAdded);
-    _implementors.putIfAbsent(c.href, () => []);
-    void _checkAndAddClass(Class key, Class implClass) {
-      _implementors.putIfAbsent(key.href, () => []);
-      var list = _implementors[key.href];
+    _implementors.putIfAbsent(class_, () => []);
+    void checkAndAddClass(Class key) {
+      _implementors.putIfAbsent(key, () => []);
+      var list = _implementors[key];
 
-      if (!list.any((l) => l.element == c.element)) {
-        list.add(implClass);
+      if (!list.any((l) => l.element == class_.element)) {
+        list.add(class_);
       }
     }
 
-    for (var type in c.mixins) {
-      _checkAndAddClass(type.element, c);
+    for (var type in class_.mixins) {
+      checkAndAddClass(type.element);
     }
-    if (c.supertype != null) {
-      _checkAndAddClass(c.supertype.element, c);
+    if (class_.supertype != null) {
+      checkAndAddClass(class_.supertype.element);
     }
-    for (var type in c.interfaces) {
-      _checkAndAddClass(type.element, c);
+    for (var type in class_.interfaces) {
+      checkAndAddClass(type.element);
     }
   }
 
