@@ -17,4 +17,25 @@ void main() {
       expect(getFileNameFor('dartdoc.generator'), 'dartdoc-generator.html');
     });
   });
+
+  group('MultiFutureTracker', () {
+    test('basic sequential processing works with no deadlock', () async {
+      var completed = <int>{};
+      var tracker = MultiFutureTracker(1);
+      await tracker.addFutureFromClosure(() async => completed.add(1));
+      await tracker.addFutureFromClosure(() async => completed.add(2));
+      await tracker.addFutureFromClosure(() async => completed.add(3));
+      expect(completed.length, equals(3));
+    });
+
+    test('basic parallel processing works with no deadlock', () async {
+      var completed = <int>{};
+      var tracker = MultiFutureTracker(10);
+      for (var i = 0; i < 100; i++) {
+        await tracker.addFutureFromClosure(() async => completed.add(i));
+      }
+      await tracker.wait();
+      expect(completed.length, equals(100));
+    });
+  });
 }
