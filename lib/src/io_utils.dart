@@ -126,6 +126,7 @@ class MultiFutureTracker<T> {
     var completer = Completer<T>.sync();
     void onValue(T value, Future<T> future) {
       if (!completer.isCompleted) {
+        print('completing future');
         futures.remove(future);
         completer.complete(value);
       }
@@ -142,12 +143,14 @@ class MultiFutureTracker<T> {
       future.then((v) => onValue(v, future),
           onError: (error, stack) => onError(error, stack, future));
     }
+    print('blocking on a future');
     return completer.future;
   }
 
   /// Wait until fewer or equal to this many Futures are outstanding.
   Future<void> _waitUntil(int max) async {
     while (_trackedFutures.length > max) {
+      print('trackedFutures length: ${_trackedFutures.length}');
       await _completeAndRemoveOneOf(_trackedFutures);
     }
   }
@@ -156,8 +159,10 @@ class MultiFutureTracker<T> {
   /// once the queue is sufficiently empty.  The returned future completes
   /// when the generated [Future] has been added to the queue.
   Future<void> addFutureFromClosure(Future<T> Function() closure) async {
+    print('awaiting until ${parallel - 1} futures');
     await _waitUntil(parallel - 1);
     Future<void> future = closure();
+    print('adding future');
     _trackedFutures.add(future);
     // ignore: unawaited_futures
   }
