@@ -205,7 +205,7 @@ void updateThirdParty() async {
   for (var patchFileName in Directory(_pkgDir.path)
       .listSync()
       .map((e) => path.basename(e.path))
-      .where((String filename) => _mustache4dartPatches.hasMatch(filename))
+      .where(_mustache4dartPatches.hasMatch)
       .toList()
         ..sort()) {
     run('patch',
