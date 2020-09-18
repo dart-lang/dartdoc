@@ -122,6 +122,7 @@ void main() {
 
     test('help prints command line args', () async {
       var outputLines = <String>[];
+      print ('dartdocPath: $dartdocPath');
       await subprocessLauncher.runStreamed(
           Platform.resolvedExecutable, [dartdocPath, '--help'],
           perLine: outputLines.add);

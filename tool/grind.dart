@@ -278,7 +278,7 @@ void dartfmt() async {
 void presubmit() => null;
 
 @Task('Run long tests, self-test dartdoc, and run the publish test')
-@Depends(presubmit, test, testDartdoc)
+@Depends(presubmit, longTest, testDartdoc)
 void buildbot() => null;
 
 @Task('Generate docs for the Dart SDK')
