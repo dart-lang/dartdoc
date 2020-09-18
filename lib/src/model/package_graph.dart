@@ -201,7 +201,7 @@ class PackageGraph {
   final Map<Tuple2<Element, Library>, Set<ModelElement>>
       allInheritableElements = {};
 
-  /// Map of Class.href to a list of classes implementing that class
+  /// A mapping of the list of classes which implement each class.
   final Map<Class, List<Class>> _implementors = {};
 
   /// A list of extensions that exist in the package graph.
