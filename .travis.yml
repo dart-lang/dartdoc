@@ -2,7 +2,7 @@ language: dart
 sudo: false
 dart:
   - stable
-  - dev
+  - raw
 
 os:
   - linux
@@ -12,7 +12,7 @@ matrix:
   include:
     - env: DARTDOC_BOT=main
       os: osx
-      dart: dev
+      dart: raw
   allow_failures:
     # See https://github.com/dart-lang/dartdoc/issues/2302.
     - env: DARTDOC_BOT=flutter
