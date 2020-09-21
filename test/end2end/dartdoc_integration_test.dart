@@ -19,8 +19,8 @@ Uri get _currentFileUri =>
     (reflect(main) as ClosureMirror).function.location.sourceUri;
 String get _testPackagePath =>
     path.fromUri(_currentFileUri.resolve('../../testing/test_package'));
-String get _testPackageFlutterPluginPath => path.fromUri(
-    _currentFileUri.resolve('../../testing/test_package_flutter_plugin'));
+String get _testPackageFlutterPluginPath => path.fromUri(_currentFileUri
+    .resolve('../../testing/flutter_packages/test_package_flutter_plugin'));
 
 void main() {
   group('Invoking command-line dartdoc', () {
@@ -122,6 +122,7 @@ void main() {
 
     test('help prints command line args', () async {
       var outputLines = <String>[];
+      print('dartdocPath: $dartdocPath');
       await subprocessLauncher.runStreamed(
           Platform.resolvedExecutable, [dartdocPath, '--help'],
           perLine: outputLines.add);

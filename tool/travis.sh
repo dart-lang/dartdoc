@@ -11,7 +11,9 @@ set -ex
 export PATH="$PATH":"~/.pub-cache/bin"
 DART_VERSION=`dart --version 2>&1 | awk '{print $4}'`
 # Do not run coverage on non-dev builds or non-Linux platforms.
-if ! echo "${DART_VERSION}" | grep -q dev || ! uname | grep -q Linux ; then
+# Disable coverage on dev builds and switch to stable until
+# dart-lang/sdk#43487 is fixed.
+if ! echo "${DART_VERSION}" | grep -q stable || ! uname | grep -q Linux ; then
   unset COVERAGE_TOKEN
 fi
 

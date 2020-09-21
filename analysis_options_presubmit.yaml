@@ -15,7 +15,7 @@ analyzer:
     - 'lib/templates/*.html'
     - 'pub.dartlang.org/**'
     - 'testing/**'
-    - 'testing/test_package_flutter_plugin/**'
+    - 'testing/flutter_packages/test_package_flutter_plugin/**'
     - 'testing/test_package_export_error/**'
 linter:
   rules:

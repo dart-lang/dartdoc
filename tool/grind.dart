@@ -120,8 +120,8 @@ Directory get testPackage =>
 Directory get testPackageExperiments =>
     Directory(path.joinAll(['testing', 'test_package_experiments']));
 
-Directory get pluginPackage =>
-    Directory(path.joinAll(['testing', 'test_package_flutter_plugin']));
+Directory get pluginPackage => Directory(path
+    .joinAll(['testing', 'flutter_packages', 'test_package_flutter_plugin']));
 
 Directory _testPackageDocsDir;
 
@@ -278,7 +278,7 @@ void dartfmt() async {
 void presubmit() => null;
 
 @Task('Run long tests, self-test dartdoc, and run the publish test')
-@Depends(presubmit, test, testDartdoc)
+@Depends(presubmit, longTest, testDartdoc)
 void buildbot() => null;
 
 @Task('Generate docs for the Dart SDK')

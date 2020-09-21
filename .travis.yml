@@ -3,7 +3,6 @@ sudo: false
 dart:
   - stable
   - dev
-
 os:
   - linux
 
@@ -13,9 +12,13 @@ matrix:
     - env: DARTDOC_BOT=main
       os: osx
       dart: dev
-  allow_failures:
-    # See https://github.com/dart-lang/dartdoc/issues/2302.
+  exclude:
     - env: DARTDOC_BOT=flutter
+      # Do not try to run flutter against the "stable" sdk,
+      # it is unlikely to work and produces uninteresting
+      # results.
+      dart: stable
+  allow_failures:
     # Some packages at HEAD require 2.10.0-dev.
     - env: DARTDOC_BOT=sdk-analyzer
       dart: stable
