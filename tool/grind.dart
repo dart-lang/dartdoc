@@ -120,8 +120,8 @@ Directory get testPackage =>
 Directory get testPackageExperiments =>
     Directory(path.joinAll(['testing', 'test_package_experiments']));
 
-Directory get pluginPackage =>
-    Directory(path.joinAll(['testing', 'test_package_flutter_plugin']));
+Directory get pluginPackage => Directory(path
+    .joinAll(['testing', 'flutter_packages', 'test_package_flutter_plugin']));
 
 Directory _testPackageDocsDir;
 
