@@ -19,25 +19,51 @@ void main() {
   });
 
   group('MultiFutureTracker', () {
+    /// A special test designed to check shared [MultiFutureTracker]
+    /// behavior when exceptions occur after a delay in the passed closures to
+    /// [MultiFutureTracker.addFutureFromClosure].
+    test('no deadlock when delayed exceptions fire in closures', () async {
+      var sharedTracker = MultiFutureTracker(2);
+      var t =
+          Future.delayed(Duration(milliseconds: 10), () => throw Exception());
+      await sharedTracker.addFutureFromClosure(() => t);
+      expect(t, throwsA(const TypeMatcher<Exception>()));
+      var u =
+          Future.delayed(Duration(milliseconds: 10), () => throw Exception());
+      await sharedTracker.addFutureFromClosure(() => u);
+      expect(u, throwsA(const TypeMatcher<Exception>()));
+      var v =
+          Future.delayed(Duration(milliseconds: 10), () => throw Exception());
+      await sharedTracker.addFutureFromClosure(() => v);
+      expect(v, throwsA(const TypeMatcher<Exception>()));
+
+      /// We deadlock here if the exception is not handled properly.
+      await sharedTracker.wait();
+    });
+
     test('basic sequential processing works with no deadlock', () async {
       var completed = <int>{};
       var tracker = MultiFutureTracker(1);
       await tracker.addFutureFromClosure(() async => completed.add(1));
       await tracker.addFutureFromClosure(() async => completed.add(2));
       await tracker.addFutureFromClosure(() async => completed.add(3));
+      await tracker.wait();
       expect(completed.length, equals(3));
     });
 
-    test('basic sequential processing works with no deadlock on exceptions',
-        () async {
+    test('basic sequential processing works on exceptions', () async {
       var completed = <int>{};
       var tracker = MultiFutureTracker(1);
-      await tracker.addFutureFromClosure(() async => completed.add(1));
-      await tracker.addFutureFromClosure(() async => throw Exception);
+      await tracker.addFutureFromClosure(() async => completed.add(0));
+      await tracker.addFutureFromClosure(() async => throw Exception());
+      await tracker.addFutureFromClosure(() async => throw Exception());
       await tracker.addFutureFromClosure(() async => completed.add(3));
+      await tracker.wait();
       expect(completed.length, equals(2));
     });
 
+    /// Verify that if there are more exceptions than the maximum number
+    /// of in-flight [Future]s that there is no deadlock.
     test('basic parallel processing works with no deadlock', () async {
       var completed = <int>{};
       var tracker = MultiFutureTracker(10);
@@ -48,19 +74,20 @@ void main() {
       expect(completed.length, equals(100));
     });
 
-    test('basic parallel processing works with no deadlock on exceptions',
-        () async {
+    test('basic parallel processing works on exceptions', () async {
       var completed = <int>{};
       var tracker = MultiFutureTracker(10);
       for (var i = 0; i < 50; i++) {
         await tracker.addFutureFromClosure(() async => completed.add(i));
       }
-      await tracker.addFutureFromClosure(() async => throw Exception);
-      for (var i = 51; i < 100; i++) {
+      for (var i = 50; i < 65; i++) {
+        await tracker.addFutureFromClosure(() async => throw Exception());
+      }
+      for (var i = 65; i < 100; i++) {
         await tracker.addFutureFromClosure(() async => completed.add(i));
       }
       await tracker.wait();
-      expect(completed.length, equals(99));
+      expect(completed.length, equals(85));
     });
   });
 }
