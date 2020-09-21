@@ -28,6 +28,16 @@ void main() {
       expect(completed.length, equals(3));
     });
 
+    test('basic sequential processing works with no deadlock on exceptions',
+        () async {
+      var completed = <int>{};
+      var tracker = MultiFutureTracker(1);
+      await tracker.addFutureFromClosure(() async => completed.add(1));
+      await tracker.addFutureFromClosure(() async => throw Exception);
+      await tracker.addFutureFromClosure(() async => completed.add(3));
+      expect(completed.length, equals(2));
+    });
+
     test('basic parallel processing works with no deadlock', () async {
       var completed = <int>{};
       var tracker = MultiFutureTracker(10);
@@ -36,6 +46,21 @@ void main() {
       }
       await tracker.wait();
       expect(completed.length, equals(100));
+    });
+
+    test('basic parallel processing works with no deadlock on exceptions',
+        () async {
+      var completed = <int>{};
+      var tracker = MultiFutureTracker(10);
+      for (var i = 0; i < 50; i++) {
+        await tracker.addFutureFromClosure(() async => completed.add(i));
+      }
+      await tracker.addFutureFromClosure(() async => throw Exception);
+      for (var i = 51; i < 100; i++) {
+        await tracker.addFutureFromClosure(() async => completed.add(i));
+      }
+      await tracker.wait();
+      expect(completed.length, equals(99));
     });
   });
 }

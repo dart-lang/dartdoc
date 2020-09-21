@@ -120,53 +120,25 @@ class MultiFutureTracker<T> {
 
   MultiFutureTracker(this.parallel);
 
-  /// Modified Future.any() that will remove the completed future from
-  /// a given set.
-  static Future<T> _completeAndRemoveOneOf<T>(Set<Future<T>> futures) {
-    var completer = Completer<T>.sync();
-    void onValue(T value, Future<T> future) {
-      if (!completer.isCompleted) {
-        print('completing future');
-        futures.remove(future);
-        completer.complete(value);
-      }
-    }
-
-    void onError(Object error, StackTrace stack, Future<T> future) {
-      if (!completer.isCompleted) {
-        futures.remove(future);
-        completer.completeError(error, stack);
-      }
-    }
-
-    for (var future in futures) {
-      future.then((v) => onValue(v, future),
-          onError: (error, stack) => onError(error, stack, future));
-    }
-    print('returning a future');
-    return completer.future;
-  }
-
   /// Wait until fewer or equal to this many Futures are outstanding.
   Future<void> _waitUntil(int max) async {
-    print('awaiting until ${max} futures');
     while (_trackedFutures.length > max) {
-      print('trackedFutures length: ${_trackedFutures.length}');
-      await _completeAndRemoveOneOf(_trackedFutures);
+      await Future.any(_trackedFutures);
     }
-    print(
-        'waiting complete.  trackedFutures length: ${_trackedFutures.length}');
   }
 
   /// Generates a [Future] from the given closure and adds it to the queue,
   /// once the queue is sufficiently empty.  The returned future completes
   /// when the generated [Future] has been added to the queue.
   Future<void> addFutureFromClosure(Future<T> Function() closure) async {
-    await _waitUntil(parallel - 1);
+    while (_trackedFutures.length > parallel - 1) {
+      await Future.any(_trackedFutures);
+    }
     Future<void> future = closure();
-    print('adding future');
     _trackedFutures.add(future);
     // ignore: unawaited_futures
+    future.then((f) => _trackedFutures.remove(future),
+        onError: (s, e) => _trackedFutures.remove(future));
   }
 
   /// Wait until all futures added so far have completed.
