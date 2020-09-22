@@ -5,7 +5,6 @@
 /// The models used to represent Dart code.
 library dartdoc.models;
 
-import 'dart:async';
 import 'dart:collection' show UnmodifiableListView;
 import 'dart:convert';
 

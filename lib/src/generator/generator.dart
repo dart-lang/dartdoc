@@ -5,8 +5,6 @@
 /// A library containing an abstract documentation generator.
 library dartdoc.generator;
 
-import 'dart:async' show Future;
-
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/model.dart' show PackageGraph;
 import 'package:dartdoc/src/package_meta.dart';

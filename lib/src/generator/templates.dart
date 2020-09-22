@@ -4,7 +4,6 @@
 
 library dartdoc.templates;
 
-import 'dart:async' show Future;
 import 'dart:io' show File, Directory;
 
 import 'package:dartdoc/dartdoc.dart';

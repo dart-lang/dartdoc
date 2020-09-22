@@ -4,8 +4,6 @@
 
 library test_utils;
 
-import 'dart:async';
-
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/memory_file_system.dart';
 import 'package:analyzer/src/test_utilities/mock_sdk.dart';
