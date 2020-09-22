@@ -1,7 +1,5 @@
 library dartdoc.empty_generator;
 
-import 'dart:async';
-
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/generator/generator.dart';
 import 'package:dartdoc/src/logging.dart';

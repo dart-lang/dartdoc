@@ -4,8 +4,6 @@
 
 library dartdoc.html_generator;
 
-import 'dart:async' show Future;
-
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/generator/dartdoc_generator_backend.dart';
 import 'package:dartdoc/src/generator/generator.dart';

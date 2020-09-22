@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:io' show stderr, exitCode;
 
 import 'package:analyzer/file_system/file_system.dart';
