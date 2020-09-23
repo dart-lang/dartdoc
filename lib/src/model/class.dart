@@ -166,14 +166,9 @@ class Class extends Container
     return '${package.baseHref}$filePath';
   }
 
-  /// Similar to [href], but returns a path even when [canonicalModelElement] is
-  /// `null`.
-  String get hrefAllowingNonCanonical {
-    if (canonicalModelElement == null) {
-      return '${package.baseHref}$filePath';
-    }
-    return href;
-  }
+  /// Returns the [Class] with the library in which [element] is defined.
+  Class get definingClass =>
+      ModelElement.from(element, definingLibrary, packageGraph);
 
   /// Returns all the "immediate" public implementors of this class.
   ///

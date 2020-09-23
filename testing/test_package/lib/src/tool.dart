@@ -9,7 +9,7 @@ abstract class PrivateLibraryToolUser {
   void invokeToolPrivateLibrary();
 }
 
-abstract class GenericSuperProperty<T>
+abstract class GenericSuperProperty<T> {}
 
 abstract class GenericSuperValue<T> extends GenericSuperProperty<T> {}
 

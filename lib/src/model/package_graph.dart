@@ -204,9 +204,8 @@ class PackageGraph {
 
   /// A mapping of the list of classes which implement each class.
   final Map<Class, List<Class>> _implementors = LinkedHashMap(
-      equals: (Class a, Class b) =>
-          a.hrefAllowingNonCanonical == b.hrefAllowingNonCanonical,
-      hashCode: (Class class_) => class_.hrefAllowingNonCanonical.hashCode);
+      equals: (Class a, Class b) => a.definingClass == b.definingClass,
+      hashCode: (Class class_) => class_.definingClass.hashCode);
 
   /// A list of extensions that exist in the package graph.
   final List<Extension> _extensions = [];
