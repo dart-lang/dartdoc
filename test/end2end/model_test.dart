@@ -3582,7 +3582,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('private classes do not break the implementor chain', () {
-      var Super1 = fakeLibrary.classes.firstWhere((c) => c.name == 'Super1');
+      var Super1 = fakeLibrary.classes.singleWhere((c) => c.name == 'Super1');
       var publicImplementors = Super1.publicImplementors.map((i) => i.name);
       expect(publicImplementors, hasLength(3));
       // A direct implementor.
@@ -3591,6 +3591,33 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(publicImplementors, contains('Super3'));
       // An implementor through _Super5 and _Super2.
       expect(publicImplementors, contains('Super6'));
+    });
+
+    test(
+        'private classes in internal libraries do not break the implementor chain',
+        () {
+      var GenericSuperProperty = fakeLibrary.classes
+          .singleWhere((c) => c.name == 'GenericSuperProperty');
+      var publicImplementors =
+          GenericSuperProperty.publicImplementors.map((i) => i.name);
+      expect(publicImplementors, hasLength(1));
+      // A direct implementor.
+      expect(publicImplementors, contains('GenericSuperValue'));
+
+      var GenericSuperValue =
+          fakeLibrary.classes.singleWhere((c) => c.name == 'GenericSuperValue');
+      publicImplementors =
+          GenericSuperValue.publicImplementors.map((i) => i.name);
+      expect(publicImplementors, hasLength(1));
+      // A direct implementor.
+      expect(publicImplementors, contains('GenericSuperNum'));
+
+      var GenericSuperNum =
+          fakeLibrary.classes.singleWhere((c) => c.name == 'GenericSuperNum');
+      publicImplementors =
+          GenericSuperNum.publicImplementors.map((i) => i.name);
+      expect(publicImplementors, hasLength(1));
+      expect(publicImplementors, contains('GenericSuperInt'));
     });
 
     test('the first class is Apple', () {
