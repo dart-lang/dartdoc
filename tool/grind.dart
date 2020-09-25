@@ -490,7 +490,8 @@ dependency_overrides:
 Future<void> testWithAnalyzerSdk() async {
   var launcher = SubprocessLauncher('test-with-analyzer-sdk');
   // Do not override meta on branches outside of stable.
-  var sdkDartdoc = await createSdkDartdoc(RegExp('[.]\w+').hasMatch(Platform.version));
+  var sdkDartdoc =
+      await createSdkDartdoc(RegExp('[.]\w+').hasMatch(Platform.version));
   var defaultGrindParameter =
       Platform.environment['DARTDOC_GRIND_STEP'] ?? 'test';
   await launcher.runStreamed(
