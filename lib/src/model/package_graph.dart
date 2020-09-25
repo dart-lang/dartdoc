@@ -72,8 +72,9 @@ class PackageGraph {
     await Future.wait(precacheLocalDocs());
     _localDocumentationBuilt = true;
 
-    // Traverse all can all model elements to insure that interceptor and other special
+    // Scan all model elements to insure that interceptor and other special
     // objects are found.
+    // Emit warnings for any local package that has no libraries.
     // After the allModelElements traversal to be sure that all packages
     // are picked up.
     for (var package in documentedPackages) {
