@@ -72,7 +72,7 @@ class PackageGraph {
     await Future.wait(precacheLocalDocs());
     _localDocumentationBuilt = true;
 
-    // Scan all model elements to insure that interceptor and other special
+    // Traverse all can all model elements to insure that interceptor and other special
     // objects are found.
     // After the allModelElements traversal to be sure that all packages
     // are picked up.
@@ -81,6 +81,9 @@ class PackageGraph {
       for (var library in package.libraries) {
         library.allClasses.forEach(_addToImplementors);
         _extensions.addAll(library.extensions);
+      }
+      if (package.isLocal && !package.hasPublicLibraries) {
+        package.warn(PackageWarning.noDocumentableLibrariesInPackage);
       }
     }
     for (var l in _implementors.values) {
@@ -358,6 +361,10 @@ class PackageGraph {
       case PackageWarning.noLibraryLevelDocs:
         warningMessage =
             '${warnable.fullyQualifiedName} has no library level documentation comments';
+        break;
+      case PackageWarning.noDocumentableLibrariesInPackage:
+        warningMessage =
+            '${warnable.fullyQualifiedName} has no documentable libraries';
         break;
       case PackageWarning.ambiguousDocReference:
         warningMessage = 'ambiguous doc reference $message';

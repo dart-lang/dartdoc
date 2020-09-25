@@ -186,10 +186,6 @@ class Package extends LibraryContainer
       if (isLocal) {
         if (isPublic) {
           _documentedWhere = DocumentLocation.local;
-        } else {
-          // Possible if excludes result in a "documented" package not having
-          // any actual documentation.
-          _documentedWhere = DocumentLocation.missing;
         }
       } else {
         if (config.linkToRemote && config.linkToUrl.isNotEmpty && isPublic) {
