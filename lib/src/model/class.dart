@@ -166,6 +166,10 @@ class Class extends Container
     return '${package.baseHref}$filePath';
   }
 
+  /// Returns the [Class] with the library in which [element] is defined.
+  Class get definingClass =>
+      ModelElement.from(element, definingLibrary, packageGraph);
+
   /// Returns all the "immediate" public implementors of this class.
   ///
   /// If this class has a private implementor, then that is counted as a proxy

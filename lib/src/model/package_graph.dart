@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:collection';
 
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
@@ -79,7 +80,7 @@ class PackageGraph {
     for (var package in documentedPackages) {
       package.libraries.sort((a, b) => compareNatural(a.name, b.name));
       for (var library in package.libraries) {
-        library.allClasses.forEach(_addToImplementors);
+        _addToImplementors(library.allClasses);
         _extensions.addAll(library.extensions);
       }
     }
@@ -202,7 +203,9 @@ class PackageGraph {
       allInheritableElements = {};
 
   /// A mapping of the list of classes which implement each class.
-  final Map<Class, List<Class>> _implementors = {};
+  final Map<Class, List<Class>> _implementors = LinkedHashMap(
+      equals: (Class a, Class b) => a.definingClass == b.definingClass,
+      hashCode: (Class class_) => class_.definingClass.hashCode);
 
   /// A list of extensions that exist in the package graph.
   final List<Extension> _extensions = [];
@@ -576,26 +579,46 @@ class PackageGraph {
     return hrefMap;
   }
 
-  void _addToImplementors(Class class_) {
+  void _addToImplementors(Iterable<Class> classes) {
     assert(!allImplementorsAdded);
-    _implementors.putIfAbsent(class_, () => []);
-    void checkAndAddClass(Class key) {
-      _implementors.putIfAbsent(key, () => []);
-      var list = _implementors[key];
 
-      if (!list.any((l) => l.element == class_.element)) {
-        list.add(class_);
+    // Private classes may not be included in [classes], but may still be
+    // necessary links in the implementation chain. They are added here as they
+    // are found, then processed after [classes].
+    var privates = <Class>[];
+
+    void checkAndAddClass(Class implemented, Class implementor) {
+      if (!implemented.isPublic) {
+        privates.add(implemented);
+      }
+      implemented = implemented.canonicalModelElement ?? implemented;
+      _implementors.putIfAbsent(implemented, () => []);
+      var list = _implementors[implemented];
+      // TODO(srawlins): This would be more efficient if we created a
+      // SplayTreeSet keyed off of `.element`.
+      if (!list.any((l) => l.element == implementor.element)) {
+        list.add(implementor);
       }
     }
 
-    for (var type in class_.mixins) {
-      checkAndAddClass(type.element);
+    void addImplementor(Class class_) {
+      for (var type in class_.mixins) {
+        checkAndAddClass(type.element, class_);
+      }
+      if (class_.supertype != null) {
+        checkAndAddClass(class_.supertype.element, class_);
+      }
+      for (var type in class_.interfaces) {
+        checkAndAddClass(type.element, class_);
+      }
     }
-    if (class_.supertype != null) {
-      checkAndAddClass(class_.supertype.element);
-    }
-    for (var type in class_.interfaces) {
-      checkAndAddClass(type.element);
+
+    classes.forEach(addImplementor);
+
+    // [privates] may grow while processing; use a for loop, rather than a
+    // for-each loop, to avoid concurrent modification errors.
+    for (var i = 0; i < privates.length; i++) {
+      addImplementor(privates[i]);
     }
   }
 
