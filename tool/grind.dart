@@ -435,8 +435,9 @@ Future<String> createComparisonDartdoc() async {
 /// to be a git repository), configured to use packages from the Dart SDK.
 ///
 /// This copy of dartdoc depends on the HEAD versions of various packages
-/// developed within the SDK, such as 'analyzer' and 'meta'.
-Future<String> createSdkDartdoc() async {
+/// developed within the SDK, such as 'analyzer' and '_fe_analyzer_shared'.
+/// 'meta' is overridden if [overrideMeta] is true.
+Future<String> createSdkDartdoc(bool overrideMeta) async {
   var launcher = SubprocessLauncher('create-sdk-dartdoc');
   var dartdocSdk = Directory.systemTemp.createTempSync('dartdoc-sdk');
   await launcher
@@ -473,9 +474,13 @@ dependency_overrides:
     path: '${sdkClone.path}/pkg/analyzer'
   _fe_analyzer_shared:
     path: '${sdkClone.path}/pkg/_fe_analyzer_shared'
+''', mode: FileMode.append);
+  if (overrideMeta) {
+    dartdocPubspec.writeAsStringSync('''
   meta:
     path: '${sdkClone.path}/pkg/meta'
 ''', mode: FileMode.append);
+  }
   await launcher.runStreamed(sdkBin('pub'), ['get'],
       workingDirectory: dartdocSdk.path);
   return dartdocSdk.path;
@@ -484,7 +489,8 @@ dependency_overrides:
 @Task('Run grind tasks with the analyzer SDK.')
 Future<void> testWithAnalyzerSdk() async {
   var launcher = SubprocessLauncher('test-with-analyzer-sdk');
-  var sdkDartdoc = await createSdkDartdoc();
+  // Do not override meta on branches outside of stable.
+  var sdkDartdoc = await createSdkDartdoc(RegExp('[.]\w+').hasMatch(Platform.version));
   var defaultGrindParameter =
       Platform.environment['DARTDOC_GRIND_STEP'] ?? 'test';
   await launcher.runStreamed(
