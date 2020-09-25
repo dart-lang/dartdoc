@@ -222,7 +222,7 @@ class Dartdoc {
 
       var dartdocResults = await generateDocsBase();
       if (dartdocResults.packageGraph.localPublicLibraries.isEmpty) {
-         logWarning('dartdoc could not find any libraries to document');
+        logWarning('dartdoc could not find any libraries to document');
       }
 
       final errorCount =

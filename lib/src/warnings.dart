@@ -160,15 +160,15 @@ final Map<PackageWarning, PackageWarningDefinition> packageWarningDefinitions =
       'not-implemented',
       'The code makes use of a feature that is not yet implemented in dartdoc'),
   PackageWarning.noDocumentableLibrariesInPackage: PackageWarningDefinition(
-      PackageWarning.noDocumentableLibrariesInPackage,
-      'no-documentable-libraries',
-      'The package is to be documented but has no Dart libraries to document',
-      longHelp: [
-        'Dartdoc could not find any public libraries to document in @@name@@, ',
-        'but documentation was requested.  This might be expected for an ',
-        'asset only package, in which case, disable this warning in your ',
-        'dartdoc_options.yaml file.',
-      ],
+    PackageWarning.noDocumentableLibrariesInPackage,
+    'no-documentable-libraries',
+    'The package is to be documented but has no Dart libraries to document',
+    longHelp: [
+      'Dartdoc could not find any public libraries to document in @@name@@, ',
+      'but documentation was requested.  This might be expected for an ',
+      'asset only package, in which case, disable this warning in your ',
+      'dartdoc_options.yaml file.',
+    ],
   ),
   PackageWarning.noLibraryLevelDocs: PackageWarningDefinition(
       PackageWarning.noLibraryLevelDocs,

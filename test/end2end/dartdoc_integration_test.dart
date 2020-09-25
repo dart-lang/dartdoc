@@ -21,8 +21,8 @@ String get _testPackagePath =>
     path.fromUri(_currentFileUri.resolve('../../testing/test_package'));
 String get _testPackageFlutterPluginPath => path.fromUri(_currentFileUri
     .resolve('../../testing/flutter_packages/test_package_flutter_plugin'));
-String get _testPackageMinimumPath => path.fromUri(_currentFileUri
-    .resolve('../../testing/test_package_minimum'));
+String get _testPackageMinimumPath =>
+    path.fromUri(_currentFileUri.resolve('../../testing/test_package_minimum'));
 
 void main() {
   group('Invoking command-line dartdoc', () {
@@ -48,14 +48,17 @@ void main() {
     });
 
     test('running on an empty package does not crash and generates a warning',
-      () async {
+        () async {
       var outputDir =
           await Directory.systemTemp.createTemp('dartdoc.testEmpty.');
       var outputLines = <String>[];
       await subprocessLauncher.runStreamed(Platform.resolvedExecutable,
           [dartdocPath, '--output', outputDir.path],
           perLine: outputLines.add, workingDirectory: _testPackageMinimumPath);
-      expect(outputLines, contains(matches('package:test_package_minimum has no documentable libraries')));
+      expect(
+          outputLines,
+          contains(matches(
+              'package:test_package_minimum has no documentable libraries')));
     }, timeout: Timeout.factor(2));
 
     test('running --no-generate-docs is quiet and does not generate docs',
