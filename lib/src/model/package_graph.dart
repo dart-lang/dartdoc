@@ -75,6 +75,7 @@ class PackageGraph {
 
     // Scan all model elements to insure that interceptor and other special
     // objects are found.
+    // Emit warnings for any local package that has no libraries.
     // After the allModelElements traversal to be sure that all packages
     // are picked up.
     for (var package in documentedPackages) {
@@ -82,6 +83,9 @@ class PackageGraph {
       for (var library in package.libraries) {
         _addToImplementors(library.allClasses);
         _extensions.addAll(library.extensions);
+      }
+      if (package.isLocal && !package.hasPublicLibraries) {
+        package.warn(PackageWarning.noDocumentableLibrariesInPackage);
       }
     }
     for (var l in _implementors.values) {
@@ -361,6 +365,10 @@ class PackageGraph {
       case PackageWarning.noLibraryLevelDocs:
         warningMessage =
             '${warnable.fullyQualifiedName} has no library level documentation comments';
+        break;
+      case PackageWarning.noDocumentableLibrariesInPackage:
+        warningMessage =
+            '${warnable.fullyQualifiedName} has no documentable libraries';
         break;
       case PackageWarning.ambiguousDocReference:
         warningMessage = 'ambiguous doc reference $message';
