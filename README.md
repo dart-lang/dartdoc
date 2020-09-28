@@ -480,7 +480,6 @@ Some examples of likely triage priorities:
   * Non-default warnings that are misleading or wrong, few or on edge cases
   * Enhancements whose importance is uncertain
   * Generation performance problem, limited impact or not widespread
- 
 
 ## License
 
