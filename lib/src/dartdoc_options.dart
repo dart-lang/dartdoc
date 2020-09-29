@@ -433,12 +433,15 @@ class _YamlFileData {
   _YamlFileData(this.data, this.canonicalDirectoryPath);
 }
 
+/// An enum to specify the multiple different kinds of data an option might
+/// represent.
 enum OptionDataIs {
-  other,  // Make no assumptions about the option data.
-  file,   // Option data references filenames.
-  dir,    // Option data references directory names.
-  glob,   // Option data references globs that may cover many filenames or
-          // directory names.
+  other, // Make no assumptions about the option data; it may be of any type
+  // or semantic.
+  file, // Option data references a filename or filenames with strings.
+  dir, // Option data references a directory name or names with strings.
+  glob, // Option data references globs with strings that may cover many
+  // filenames and/or directories.
 }
 
 /// Some DartdocOption subclasses need to keep track of where they
@@ -534,6 +537,7 @@ abstract class DartdocOption<T> {
       assert(_isString || _isListString || _isMapString);
     }
     if (mustExist) {
+      // Globs by definition don't have to exist.
       assert(isDir || isFile);
     }
   }
@@ -618,7 +622,7 @@ abstract class DartdocOption<T> {
   /// For a [List<String>] or [String] value, if [isDir] or [isFile] is set,
   /// resolve paths in value relative to canonicalPath.
   T _handlePathsInContext(_OptionValueWithContext<Object> valueWithContext) {
-    if (valueWithContext?.value == null || !(isDir || isFile)) {
+    if (valueWithContext?.value == null || !(isDir || isFile || isGlob)) {
       return valueWithContext?.value;
     }
     _validatePaths(valueWithContext);
@@ -781,8 +785,7 @@ class DartdocOptionArgSynth<T> extends DartdocOption<T>
       OptionDataIs optionIs = OptionDataIs.other,
       bool negatable = false,
       bool splitCommas})
-      : super(name, null, help, optionIs, mustExist, null,
-            resourceProvider) {
+      : super(name, null, help, optionIs, mustExist, null, resourceProvider) {
     _hide = hide;
     _negatable = negatable;
     _splitCommas = splitCommas;
@@ -831,8 +834,7 @@ class DartdocOptionSyntheticOnly<T> extends DartdocOption<T>
       {bool mustExist = false,
       String help = '',
       OptionDataIs optionIs = OptionDataIs.other})
-      : super(
-            name, null, help, optionIs, mustExist, null, resourceProvider);
+      : super(name, null, help, optionIs, mustExist, null, resourceProvider);
 }
 
 abstract class DartdocSyntheticOption<T> implements DartdocOption<T> {
@@ -867,7 +869,8 @@ typedef OptionGenerator = Future<List<DartdocOption<Object>>> Function(
 /// option itself.
 class DartdocOptionSet extends DartdocOption<void> {
   DartdocOptionSet(String name, ResourceProvider resourceProvider)
-      : super(name, null, null, OptionDataIs.other, false, null, resourceProvider);
+      : super(name, null, null, OptionDataIs.other, false, null,
+            resourceProvider);
 
   /// Asynchronous factory that is the main entry point to initialize Dartdoc
   /// options for use.
@@ -1019,8 +1022,8 @@ class DartdocOptionFileOnly<T> extends DartdocOption<T>
       OptionDataIs optionIs = OptionDataIs.other,
       bool parentDirOverridesChild = false,
       ConvertYamlToType<T> convertYamlToType})
-      : super(name, defaultsTo, help, optionIs, mustExist,
-            convertYamlToType, resourceProvider) {
+      : super(name, defaultsTo, help, optionIs, mustExist, convertYamlToType,
+            resourceProvider) {
     _parentDirOverridesChild = parentDirOverridesChild;
   }
 
@@ -1268,8 +1271,10 @@ abstract class _DartdocArgOption<T> implements DartdocOption<T> {
 
     T retval;
     // Unlike in _DartdocFileOption, we throw here on inputs being invalid
-    // rather than silently proceeding.  TODO(jcollins-g): throw on input
-    // formatting for files too?
+    // rather than silently proceeding.  This is because the user presumably
+    // typed something wrong on the command line and can therefore fix it.
+    // dartdoc_option.yaml files from other packages may not be fully in the
+    // user's control.
     if (_isBool || _isListString || _isString) {
       retval = _argResults[argName];
     } else if (_isInt) {
@@ -1613,7 +1618,9 @@ Future<List<DartdocOption<Object>>> createDartdocOptions(
             'HTML into dartdoc output.'),
     DartdocOptionArgOnly<String>(
         'input', resourceProvider.pathContext.current, resourceProvider,
-        optionIs: OptionDataIs.dir, help: 'Path to source directory', mustExist: true),
+        optionIs: OptionDataIs.dir,
+        help: 'Path to source directory',
+        mustExist: true),
     DartdocOptionSyntheticOnly<String>('inputDir',
         (DartdocSyntheticOption<String> option, Folder dir) {
       if (option.parent['sdkDocs'].valueAt(dir)) {
@@ -1622,7 +1629,7 @@ Future<List<DartdocOption<Object>>> createDartdocOptions(
       return option.parent['input'].valueAt(dir);
     }, resourceProvider,
         help: 'Path to source directory (with override if --sdk-docs)',
-        optionIs:  OptionDataIs.dir,
+        optionIs: OptionDataIs.dir,
         mustExist: true),
     DartdocOptionSet('linkTo', resourceProvider)
       ..addAll([
@@ -1699,7 +1706,9 @@ Future<List<DartdocOption<Object>>> createDartdocOptions(
       }
       return packageMetaProvider.defaultSdkDir.path;
     }, packageMetaProvider.resourceProvider,
-        help: 'Path to the SDK directory.', optionIs: OptionDataIs.dir, mustExist: true),
+        help: 'Path to the SDK directory.',
+        optionIs: OptionDataIs.dir,
+        mustExist: true),
     DartdocOptionArgFile<bool>(
         'showUndocumentedCategories', false, resourceProvider,
         help: "Label categories that aren't documented", negatable: true),

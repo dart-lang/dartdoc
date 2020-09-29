@@ -167,6 +167,12 @@ void main() {
     dartdocOptionSetAll.add(DartdocOptionArgFile<String>(
         'fileOption', null, resourceProvider,
         optionIs: OptionDataIs.file, mustExist: true));
+    dartdocOptionSetAll.add(DartdocOptionArgFile<List<String>>(
+      'globOption',
+      [],
+      resourceProvider,
+      optionIs: OptionDataIs.glob,
+    ));
 
     tempDir = resourceProvider.createSystemTemp('options_test');
     firstDir = resourceProvider
@@ -222,6 +228,7 @@ dartdoc:
   dirOption: 'firstSub'
   fileOptionList: ['existing.dart', 'thing/that/does/not/exist']
   mySpecialInteger: 11
+  globOption: ['q*.html', 'e*.dart']
   fileOption: "not existing"
         ''');
     dartdocOptionsTwoFirstSub.writeAsStringSync('''
@@ -229,6 +236,7 @@ dartdoc:
   categoryOrder: ['options_two_first_sub']
   parentOverride: 'child'
   nonCriticalDirOption: 'not_existing'
+  globOption: ['**/*.dart']
     ''');
   });
 
@@ -372,6 +380,42 @@ dartdoc:
       dartdocOptionSetAll.parseArguments(['--my-special-integer', '91']);
       expect(dartdocOptionSetAll['mySpecialInteger'].valueAt(secondDir),
           equals(91));
+    });
+
+    group('glob options', () {
+      test('work via the command line', () {
+        dartdocOptionSetAll.parseArguments(['--glob-option', 'foo/**']);
+        expect(
+            dartdocOptionSetAll['globOption'].valueAtCurrent(),
+            equals([
+              resourceProvider.pathContext
+                  .join(resourceProvider.pathContext.current, 'foo/**')
+            ]));
+      });
+
+      test('work via files', () {
+        dartdocOptionSetAll.parseArguments([]);
+        expect(
+            dartdocOptionSetAll['globOption'].valueAt(secondDir),
+            equals([
+              resourceProvider.pathContext.join(secondDir.path, 'q*.html'),
+              resourceProvider.pathContext.join(secondDir.path, 'e*.dart')
+            ]));
+        // No child override, should be the same as parent
+        expect(
+            dartdocOptionSetAll['globOption'].valueAt(secondDirSecondSub),
+            equals([
+              resourceProvider.pathContext.join(secondDir.path, 'q*.html'),
+              resourceProvider.pathContext.join(secondDir.path, 'e*.dart')
+            ]));
+        // Child directory overrides
+        expect(
+            dartdocOptionSetAll['globOption'].valueAt(secondDirFirstSub),
+            equals([
+              resourceProvider.pathContext
+                  .join(secondDirFirstSub.path, '**/*.dart')
+            ]));
+      });
     });
   });
 
