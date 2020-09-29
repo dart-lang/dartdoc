@@ -433,6 +433,14 @@ class _YamlFileData {
   _YamlFileData(this.data, this.canonicalDirectoryPath);
 }
 
+enum OptionDataIs {
+  other,  // Make no assumptions about the option data.
+  file,   // Option data references filenames.
+  dir,    // Option data references directory names.
+  glob,   // Option data references globs that may cover many filenames or
+          // directory names.
+}
+
 /// Some DartdocOption subclasses need to keep track of where they
 /// got the value from; this class contains those intermediate results
 /// so that error messages can be more useful.
@@ -503,10 +511,15 @@ abstract class DartdocOption<T> {
   final String name;
 
   /// Set to true if this option represents the name of a directory.
-  final bool isDir;
+  bool get isDir => optionIs == OptionDataIs.dir;
 
   /// Set to true if this option represents the name of a file.
-  final bool isFile;
+  bool get isFile => optionIs == OptionDataIs.file;
+
+  /// Set to true if this option represents a glob.
+  bool get isGlob => optionIs == OptionDataIs.glob;
+
+  final OptionDataIs optionIs;
 
   /// Set to true if DartdocOption subclasses should validate that the
   /// directory or file exists.  Does not imply validation of [defaultsTo],
@@ -515,10 +528,11 @@ abstract class DartdocOption<T> {
 
   final ResourceProvider resourceProvider;
 
-  DartdocOption(this.name, this.defaultsTo, this.help, this.isDir, this.isFile,
+  DartdocOption(this.name, this.defaultsTo, this.help, this.optionIs,
       this.mustExist, this._convertYamlToType, this.resourceProvider) {
-    assert(!(isDir && isFile));
-    if (isDir || isFile) assert(_isString || _isListString || _isMapString);
+    if (isDir || isFile || isGlob) {
+      assert(_isString || _isListString || _isMapString);
+    }
     if (mustExist) {
       assert(isDir || isFile);
     }
@@ -715,11 +729,10 @@ class DartdocOptionFileSynth<T> extends DartdocOption<T>
       String name, this._compute, ResourceProvider resourceprovider,
       {bool mustExist = false,
       String help = '',
-      bool isDir = false,
-      bool isFile = false,
+      OptionDataIs optionIs = OptionDataIs.other,
       bool parentDirOverridesChild,
       ConvertYamlToType<T> convertYamlToType})
-      : super(name, null, help, isDir, isFile, mustExist, convertYamlToType,
+      : super(name, null, help, optionIs, mustExist, convertYamlToType,
             resourceprovider) {
     _parentDirOverridesChild = parentDirOverridesChild;
   }
@@ -765,11 +778,10 @@ class DartdocOptionArgSynth<T> extends DartdocOption<T>
       bool mustExist = false,
       String help = '',
       bool hide = false,
-      bool isDir = false,
-      bool isFile = false,
+      OptionDataIs optionIs = OptionDataIs.other,
       bool negatable = false,
       bool splitCommas})
-      : super(name, null, help, isDir, isFile, mustExist, null,
+      : super(name, null, help, optionIs, mustExist, null,
             resourceProvider) {
     _hide = hide;
     _negatable = negatable;
@@ -818,10 +830,9 @@ class DartdocOptionSyntheticOnly<T> extends DartdocOption<T>
       String name, this._compute, ResourceProvider resourceProvider,
       {bool mustExist = false,
       String help = '',
-      bool isDir = false,
-      bool isFile = false})
+      OptionDataIs optionIs = OptionDataIs.other})
       : super(
-            name, null, help, isDir, isFile, mustExist, null, resourceProvider);
+            name, null, help, optionIs, mustExist, null, resourceProvider);
 }
 
 abstract class DartdocSyntheticOption<T> implements DartdocOption<T> {
@@ -856,7 +867,7 @@ typedef OptionGenerator = Future<List<DartdocOption<Object>>> Function(
 /// option itself.
 class DartdocOptionSet extends DartdocOption<void> {
   DartdocOptionSet(String name, ResourceProvider resourceProvider)
-      : super(name, null, null, false, false, false, null, resourceProvider);
+      : super(name, null, null, OptionDataIs.other, false, null, resourceProvider);
 
   /// Asynchronous factory that is the main entry point to initialize Dartdoc
   /// options for use.
@@ -908,11 +919,10 @@ class DartdocOptionArgOnly<T> extends DartdocOption<T>
       bool mustExist = false,
       String help = '',
       bool hide = false,
-      bool isDir = false,
-      bool isFile = false,
+      OptionDataIs optionIs = OptionDataIs.other,
       bool negatable = false,
       bool splitCommas})
-      : super(name, defaultsTo, help, isDir, isFile, mustExist, null,
+      : super(name, defaultsTo, help, optionIs, mustExist, null,
             resourceProvider) {
     _hide = hide;
     _negatable = negatable;
@@ -949,12 +959,11 @@ class DartdocOptionArgFile<T> extends DartdocOption<T>
       bool mustExist = false,
       String help = '',
       bool hide = false,
-      bool isDir = false,
-      bool isFile = false,
+      OptionDataIs optionIs = OptionDataIs.other,
       bool negatable = false,
       bool parentDirOverridesChild = false,
       bool splitCommas})
-      : super(name, defaultsTo, help, isDir, isFile, mustExist, null,
+      : super(name, defaultsTo, help, optionIs, mustExist, null,
             resourceProvider) {
     _abbr = abbr;
     _hide = hide;
@@ -1007,11 +1016,10 @@ class DartdocOptionFileOnly<T> extends DartdocOption<T>
       String name, T defaultsTo, ResourceProvider resourceProvider,
       {bool mustExist = false,
       String help = '',
-      bool isDir = false,
-      bool isFile = false,
+      OptionDataIs optionIs = OptionDataIs.other,
       bool parentDirOverridesChild = false,
       ConvertYamlToType<T> convertYamlToType})
-      : super(name, defaultsTo, help, isDir, isFile, mustExist,
+      : super(name, defaultsTo, help, optionIs, mustExist,
             convertYamlToType, resourceProvider) {
     _parentDirOverridesChild = parentDirOverridesChild;
   }
@@ -1566,7 +1574,7 @@ Future<List<DartdocOption<Object>>> createDartdocOptions(
     }, resourceProvider,
         help: 'Remove text from libraries with the following names.'),
     DartdocOptionArgFile<String>('examplePathPrefix', null, resourceProvider,
-        isDir: true,
+        optionIs: OptionDataIs.dir,
         help: 'Prefix for @example paths.\n(defaults to the project root)',
         mustExist: true),
     DartdocOptionArgFile<List<String>>('exclude', [], resourceProvider,
@@ -1580,7 +1588,7 @@ Future<List<DartdocOption<Object>>> createDartdocOptions(
         (DartdocSyntheticOption<String> option, Folder dir) =>
             resolveTildePath(Platform.environment['FLUTTER_ROOT']),
         resourceProvider,
-        isDir: true,
+        optionIs: OptionDataIs.dir,
         help: 'Root of the Flutter SDK, specified from environment.',
         mustExist: true),
     DartdocOptionArgOnly<bool>('hideSdkText', false, resourceProvider,
@@ -1592,7 +1600,7 @@ Future<List<DartdocOption<Object>>> createDartdocOptions(
         help: 'Library names to generate docs for.', splitCommas: true),
     DartdocOptionArgFile<List<String>>(
         'includeExternal', null, resourceProvider,
-        isFile: true,
+        optionIs: OptionDataIs.file,
         help:
             'Additional (external) dart files to include; use "dir/fileName", '
             'as in lib/material.dart.',
@@ -1605,7 +1613,7 @@ Future<List<DartdocOption<Object>>> createDartdocOptions(
             'HTML into dartdoc output.'),
     DartdocOptionArgOnly<String>(
         'input', resourceProvider.pathContext.current, resourceProvider,
-        isDir: true, help: 'Path to source directory', mustExist: true),
+        optionIs: OptionDataIs.dir, help: 'Path to source directory', mustExist: true),
     DartdocOptionSyntheticOnly<String>('inputDir',
         (DartdocSyntheticOption<String> option, Folder dir) {
       if (option.parent['sdkDocs'].valueAt(dir)) {
@@ -1614,7 +1622,7 @@ Future<List<DartdocOption<Object>>> createDartdocOptions(
       return option.parent['input'].valueAt(dir);
     }, resourceProvider,
         help: 'Path to source directory (with override if --sdk-docs)',
-        isDir: true,
+        optionIs:  OptionDataIs.dir,
         mustExist: true),
     DartdocOptionSet('linkTo', resourceProvider)
       ..addAll([
@@ -1656,7 +1664,7 @@ Future<List<DartdocOption<Object>>> createDartdocOptions(
       ]),
     DartdocOptionArgOnly<String>('output',
         resourceProvider.pathContext.join('doc', 'api'), resourceProvider,
-        isDir: true, help: 'Path to output directory.'),
+        optionIs: OptionDataIs.dir, help: 'Path to output directory.'),
     DartdocOptionSyntheticOnly<PackageMeta>(
       'packageMeta',
       (DartdocSyntheticOption<PackageMeta> option, Folder dir) {
@@ -1691,7 +1699,7 @@ Future<List<DartdocOption<Object>>> createDartdocOptions(
       }
       return packageMetaProvider.defaultSdkDir.path;
     }, packageMetaProvider.resourceProvider,
-        help: 'Path to the SDK directory.', isDir: true, mustExist: true),
+        help: 'Path to the SDK directory.', optionIs: OptionDataIs.dir, mustExist: true),
     DartdocOptionArgFile<bool>(
         'showUndocumentedCategories', false, resourceProvider,
         help: "Label categories that aren't documented", negatable: true),
