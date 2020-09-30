@@ -55,7 +55,7 @@ Future<List<DartdocOption<Object>>> createGeneratorOptions(
   var resourceProvider = packageMetaProvider.resourceProvider;
   return [
     DartdocOptionArgFile<List<String>>('footer', [], resourceProvider,
-        isFile: true,
+        optionIs: OptionKind.file,
         help:
             'Paths to files with content to add to page footers, but possibly '
             'outside of dedicated footer elements for the generator (e.g. '
@@ -64,13 +64,13 @@ Future<List<DartdocOption<Object>>> createGeneratorOptions(
         mustExist: true,
         splitCommas: true),
     DartdocOptionArgFile<List<String>>('footerText', [], resourceProvider,
-        isFile: true,
+        optionIs: OptionKind.file,
         help: 'Paths to files with content to add to page footers (next to the '
             'package name and version).',
         mustExist: true,
         splitCommas: true),
     DartdocOptionArgFile<List<String>>('header', [], resourceProvider,
-        isFile: true,
+        optionIs: OptionKind.file,
         help: 'Paths to files with content to add to page headers.',
         splitCommas: true),
     DartdocOptionArgOnly<bool>('prettyIndexJson', false, resourceProvider,
@@ -79,7 +79,7 @@ Future<List<DartdocOption<Object>>> createGeneratorOptions(
             'larger, but it\'s also easier to diff.',
         negatable: false),
     DartdocOptionArgFile<String>('favicon', null, resourceProvider,
-        isFile: true,
+        optionIs: OptionKind.file,
         help: 'A path to a favicon for the generated docs.',
         mustExist: true),
     DartdocOptionArgOnly<String>('relCanonicalPrefix', null, resourceProvider,
@@ -88,7 +88,7 @@ Future<List<DartdocOption<Object>>> createGeneratorOptions(
             'Consider using if building many versions of the docs for public '
             'SEO; learn more at https://goo.gl/gktN6F.'),
     DartdocOptionArgOnly<String>('templatesDir', null, resourceProvider,
-        isDir: true,
+        optionIs: OptionKind.dir,
         mustExist: true,
         hide: true,
         help:
