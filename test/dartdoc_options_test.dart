@@ -73,7 +73,7 @@ void main() {
         DartdocOptionSyntheticOnly<List<String>>('vegetableLoaderChecked',
             (DartdocSyntheticOption<List<String>> option, Folder dir) {
       return option.root['vegetableLoader'].valueAt(dir);
-    }, resourceProvider, optionIs: OptionDataIs.file, mustExist: true));
+    }, resourceProvider, optionIs: OptionKind.file, mustExist: true));
     dartdocOptionSetSynthetic.add(DartdocOptionFileSynth<double>('double',
         (DartdocSyntheticOption<double> option, Folder dir) {
       return 3.7 + 4.1;
@@ -82,7 +82,7 @@ void main() {
         DartdocOptionArgSynth<String>('nonCriticalFileOption',
             (DartdocSyntheticOption<String> option, Folder dir) {
       return option.root['vegetableLoader'].valueAt(dir).first;
-    }, resourceProvider, optionIs: OptionDataIs.file));
+    }, resourceProvider, optionIs: OptionKind.file));
 
     dartdocOptionSetFiles = DartdocOptionSet('dartdoc', resourceProvider);
     dartdocOptionSetFiles.add(DartdocOptionFileOnly<List<String>>(
@@ -95,24 +95,24 @@ void main() {
         'mapOption', {'hello': 'world'}, resourceProvider));
     dartdocOptionSetFiles.add(DartdocOptionFileOnly<List<String>>(
         'fileOptionList', [], resourceProvider,
-        optionIs: OptionDataIs.file, mustExist: true));
+        optionIs: OptionKind.file, mustExist: true));
     dartdocOptionSetFiles.add(DartdocOptionFileOnly<String>(
         'fileOption', null, resourceProvider,
-        optionIs: OptionDataIs.file, mustExist: true));
+        optionIs: OptionKind.file, mustExist: true));
     dartdocOptionSetFiles.add(DartdocOptionFileOnly<String>(
         'parentOverride', 'oops', resourceProvider,
         parentDirOverridesChild: true));
     dartdocOptionSetFiles.add(DartdocOptionFileOnly<String>(
         'nonCriticalFileOption', null, resourceProvider,
-        optionIs: OptionDataIs.file));
+        optionIs: OptionKind.file));
     dartdocOptionSetFiles.add(DartdocOptionSet('nestedOption', resourceProvider)
       ..addAll([DartdocOptionFileOnly<bool>('flag', false, resourceProvider)]));
     dartdocOptionSetFiles.add(DartdocOptionFileOnly<String>(
         'dirOption', null, resourceProvider,
-        optionIs: OptionDataIs.dir, mustExist: true));
+        optionIs: OptionKind.dir, mustExist: true));
     dartdocOptionSetFiles.add(DartdocOptionFileOnly<String>(
         'nonCriticalDirOption', null, resourceProvider,
-        optionIs: OptionDataIs.dir));
+        optionIs: OptionKind.dir));
     dartdocOptionSetFiles.add(DartdocOptionFileOnly<ConvertedOption>(
       'convertThisMap',
       null,
@@ -142,13 +142,13 @@ void main() {
         splitCommas: true));
     dartdocOptionSetArgs.add(DartdocOptionArgOnly<List<String>>(
         'filesFlag', [], resourceProvider,
-        optionIs: OptionDataIs.file, mustExist: true));
+        optionIs: OptionKind.file, mustExist: true));
     dartdocOptionSetArgs.add(DartdocOptionArgOnly<String>(
         'singleFile', 'hello', resourceProvider,
-        optionIs: OptionDataIs.file, mustExist: true));
+        optionIs: OptionKind.file, mustExist: true));
     dartdocOptionSetArgs.add(DartdocOptionArgOnly<String>(
         'unimportantFile', 'whatever', resourceProvider,
-        optionIs: OptionDataIs.file));
+        optionIs: OptionKind.file));
 
     dartdocOptionSetAll = DartdocOptionSet('dartdoc', resourceProvider);
     dartdocOptionSetAll.add(DartdocOptionArgFile<List<String>>(
@@ -166,12 +166,12 @@ void main() {
         'notInAnyFile', 'so there', resourceProvider));
     dartdocOptionSetAll.add(DartdocOptionArgFile<String>(
         'fileOption', null, resourceProvider,
-        optionIs: OptionDataIs.file, mustExist: true));
+        optionIs: OptionKind.file, mustExist: true));
     dartdocOptionSetAll.add(DartdocOptionArgFile<List<String>>(
       'globOption',
       [],
       resourceProvider,
-      optionIs: OptionDataIs.glob,
+      optionIs: OptionKind.glob,
     ));
 
     tempDir = resourceProvider.createSystemTemp('options_test');
