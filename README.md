@@ -109,6 +109,7 @@ dartdoc:
   categoryOrder: ["First Category", "Second Category"]
   examplePathPrefix: 'subdir/with/examples'
   includeExternal: ['bin/unusually_located_library.dart']
+  nodoc: ['lib/sekret/*.dart']
   linkTo:
     url: "https://my.dartdocumentationsite.org/dev/%v%"
   showUndocumentedCategories: true
@@ -136,7 +137,7 @@ Unrecognized options will be ignored.  Supported options:
     directives.
   * **exclude**:  Specify a list of library names to avoid generating docs for,
     overriding any specified in include.  All libraries listed must be local to this package, unlike
-    the command line `--exclude`.
+    the command line `--exclude`.  See also `nodoc`.
   * **errors**:  Specify warnings to be treated as errors.  See the lists of valid warnings in the command
     line help for `--errors`, `--warnings`, and `--ignore`.
   * **favicon**:  A path to a favicon for the generated docs.
@@ -175,6 +176,11 @@ Unrecognized options will be ignored.  Supported options:
       * `%f%`:  Relative path of file to the repository root
       * `%r%`:  Revision
       * `%l%`:  Line number
+  * **nodoc**: Specify files (via globs) which should be treated as though they have the `@nodoc`
+    tag in the documentation comment of every defined element.  Unlike `exclude` this can specify
+    source files directly, and neither inheritance nor reexports will cause these elements to be
+    documented when included in other libraries.  For more fine-grained control, use `@nodoc` in
+    element documentation comments directly, or the `exclude` directive.
   * **warnings**:  Specify otherwise ignored or set-to-error warnings to simply warn.  See the lists
     of valid warnings in the command line help for `--errors`, `--warnings`, and `--ignore`.
 
