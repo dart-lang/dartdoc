@@ -856,6 +856,16 @@ void main() {
         docsAsHtml = doAwesomeStuff.documentationAsHtml;
       });
 
+      test('can virtually add nodoc via options file', () {
+        var NodocMeLibrary = packageGraph.defaultPackage.allLibraries
+            .firstWhere((l) => l.name == 'nodocme');
+        expect(NodocMeLibrary.hasNodoc, isTrue);
+        var NodocMeImplementation = fakeLibrary.allClasses
+            .firstWhere((c) => c.name == 'NodocMeImplementation');
+        expect(NodocMeImplementation.hasNodoc, isTrue);
+        expect(NodocMeImplementation.isPublic, isFalse);
+      });
+
       test('can handle renamed imports', () {
         var aFunctionUsingRenamedLib = fakeLibrary.functions
             .firstWhere((f) => f.name == 'aFunctionUsingRenamedLib');
