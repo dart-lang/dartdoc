@@ -7,3 +7,5 @@ library nodocme;
 /// I should not appear in documentation.
 class NodocMeImplementation {}
 
+class MeNeitherEvenWithoutADocComment {}
+

@@ -849,13 +849,7 @@ void main() {
       });
     });
 
-    group('doc references', () {
-      String docsAsHtml;
-
-      setUpAll(() {
-        docsAsHtml = doAwesomeStuff.documentationAsHtml;
-      });
-
+    group('Comment processing', () {
       test('can virtually add nodoc via options file', () {
         var NodocMeLibrary = packageGraph.defaultPackage.allLibraries
             .firstWhere((l) => l.name == 'nodocme');
@@ -864,6 +858,18 @@ void main() {
             .firstWhere((c) => c.name == 'NodocMeImplementation');
         expect(NodocMeImplementation.hasNodoc, isTrue);
         expect(NodocMeImplementation.isPublic, isFalse);
+        var MeNeitherEvenWithoutADocComment = fakeLibrary.allClasses
+            .firstWhere((c) => c.name == 'MeNeitherEvenWithoutADocComment');
+        expect(MeNeitherEvenWithoutADocComment.hasNodoc, isTrue);
+        expect(MeNeitherEvenWithoutADocComment.isPublic, isFalse);
+      });
+    });
+
+    group('doc references', () {
+      String docsAsHtml;
+
+      setUpAll(() {
+        docsAsHtml = doAwesomeStuff.documentationAsHtml;
       });
 
       test('can handle renamed imports', () {

@@ -472,11 +472,7 @@ abstract class ModelElement extends Canonicalization
           !(enclosingElement as Extension).isPublic) {
         _isPublic = false;
       } else {
-        if (documentationComment == null) {
-          _isPublic = utils.hasPublicName(element);
-        } else {
-          _isPublic = utils.hasPublicName(element) && !hasNodoc;
-        }
+        _isPublic = utils.hasPublicName(element) && !hasNodoc;
       }
     }
     return _isPublic;
