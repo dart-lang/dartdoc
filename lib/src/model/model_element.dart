@@ -16,7 +16,7 @@ import 'package:analyzer/src/dart/element/member.dart'
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/element_type.dart';
-import 'package:dartdoc/src/model/comment_processable.dart';
+import 'package:dartdoc/src/model/documentation_comment.dart';
 import 'package:dartdoc/src/model/feature_set.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as utils;
@@ -135,7 +135,7 @@ abstract class ModelElement extends Canonicalization
         SourceCodeMixin,
         Indexable,
         FeatureSet,
-        CommentProcessable
+        DocumentationComment
     implements Comparable<ModelElement>, Documentable {
   final Element _element;
 
@@ -472,13 +472,10 @@ abstract class ModelElement extends Canonicalization
           !(enclosingElement as Extension).isPublic) {
         _isPublic = false;
       } else {
-        var docComment = documentationComment;
-        if (docComment == null) {
+        if (documentationComment == null) {
           _isPublic = utils.hasPublicName(element);
         } else {
-          _isPublic = utils.hasPublicName(element) &&
-              !(docComment.contains('@nodoc') ||
-                  docComment.contains('<nodoc>'));
+          _isPublic = utils.hasPublicName(element) && !hasNodoc;
         }
       }
     }
@@ -821,7 +818,7 @@ abstract class ModelElement extends Canonicalization
   /// does not exist.
   String get extendedDocLink {
     if (hasExtendedDocumentation) {
-      return _modelElementRenderer.renderExtendedDocLink(this);
+      return modelElementRenderer.renderExtendedDocLink(this);
     }
     return '';
   }
@@ -843,6 +840,7 @@ abstract class ModelElement extends Canonicalization
   }
 
   String _fullyQualifiedNameWithoutLibrary;
+  @override
   String get fullyQualifiedNameWithoutLibrary {
     // Remember, periods are legal in library names.
     _fullyQualifiedNameWithoutLibrary ??=
@@ -850,6 +848,7 @@ abstract class ModelElement extends Canonicalization
     return _fullyQualifiedNameWithoutLibrary;
   }
 
+  @override
   String get sourceFileName => element.source.fullName;
 
   CharacterLocation _characterLocation;
@@ -956,7 +955,9 @@ abstract class ModelElement extends Canonicalization
     return _linkedName;
   }
 
-  ModelElementRenderer get _modelElementRenderer =>
+  @visibleForTesting
+  @override
+  ModelElementRenderer get modelElementRenderer =>
       packageGraph.rendererFactory.modelElementRenderer;
 
   ParameterRenderer get _parameterRenderer =>
@@ -1067,6 +1068,9 @@ abstract class ModelElement extends Canonicalization
     return _allParameters;
   }
 
+  @override
+  path.Context get pathContext => packageGraph.resourceProvider.pathContext;
+
   List<Parameter> get parameters {
     if (!canHaveParameters) {
       throw StateError('$element cannot have parameters');
@@ -1112,21 +1116,8 @@ abstract class ModelElement extends Canonicalization
         extendedDebug: extendedDebug);
   }
 
+  @override
   String computeDocumentationComment() => element.documentationComment;
-
-  /// The documentation comment on the Element may be null, so memoization
-  /// cannot rely on the null-ness of [_documentationComment], it must be
-  /// more explicit.
-  bool _documentationCommentComputed = false;
-  String _documentationComment;
-
-  String get documentationComment {
-    if (_documentationCommentComputed == false) {
-      _documentationComment = computeDocumentationComment();
-      _documentationCommentComputed = true;
-    }
-    return _documentationComment;
-  }
 
   /// Unconditionally precache local documentation.
   ///
@@ -1191,7 +1182,7 @@ abstract class ModelElement extends Canonicalization
       return htmlEscape.convert(name);
     }
 
-    return _modelElementRenderer.renderLinkedName(this);
+    return modelElementRenderer.renderLinkedName(this);
   }
 
   /// Replace &lt;<dartdoc-html>[digest]</dartdoc-html>&gt; in API comments with

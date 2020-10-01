@@ -156,7 +156,8 @@ mixin GetterSetterCombo on ModelElement {
   String get getterSetterDocumentationComment {
     var buffer = StringBuffer();
 
-    if (hasPublicGetter && !getter.isSynthetic) {
+    // Check for synthetic before public, always, or stack overflow.
+    if (hasGetter && !getter.isSynthetic && getter.isPublic) {
       assert(getter.documentationFrom.length == 1);
       // We have to check against dropTextFrom here since documentationFrom
       // doesn't yield the real elements for GetterSetterCombos.
@@ -167,7 +168,7 @@ mixin GetterSetterCombo on ModelElement {
       }
     }
 
-    if (hasPublicSetter && !setter.isSynthetic) {
+    if (hasSetter && !setter.isSynthetic && setter.isPublic) {
       assert(setter.documentationFrom.length == 1);
       if (!config.dropTextFrom
           .contains(setter.documentationFrom.first.element.library.name)) {

@@ -4,7 +4,6 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/model_element_renderer.dart';
 import 'package:dartdoc/src/utils.dart';
 import 'package:dartdoc/src/warnings.dart';
-import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
 
 final _templatePattern = RegExp(
@@ -27,8 +26,33 @@ final _examplePattern = RegExp(r'{@example\s+([^}]+)}');
 ///
 /// [processCommentWithoutTools] and [processComment] are the primary
 /// entrypoints.
-mixin CommentProcessable on Documentable, Warnable, Locatable, SourceCodeMixin {
-  /// Process [documentationComment], performing various actions based on
+mixin DocumentationComment
+    on Documentable, Warnable, Locatable, SourceCodeMixin {
+  /// The documentation comment on the Element may be null, so memoization
+  /// cannot rely on the null-ness of [_documentationComment], it must be
+  /// more explicit.
+  bool _documentationCommentComputed = false;
+  String _documentationComment;
+
+  String get documentationComment {
+    if (_documentationCommentComputed == false) {
+      _documentationComment = computeDocumentationComment();
+      _documentationCommentComputed = true;
+    }
+    return _documentationComment;
+  }
+
+  /// Implement to derive the raw documentation comment string from the
+  /// analyzer.
+  String computeDocumentationComment();
+
+  /// Returns true if the raw documentation comment has a nodoc indication.
+  bool get hasNodoc =>
+      documentationComment != null &&
+      (documentationComment.contains('@nodoc') ||
+          documentationComment.contains('<nodoc>'));
+
+  /// Process a [documentationComment], performing various actions based on
   /// `{@}`-style directives, except `{@tool}`, returning the processed result.
   String processCommentWithoutTools(String documentationComment) {
     var docs = stripComments(documentationComment);
@@ -68,17 +92,13 @@ mixin CommentProcessable on Documentable, Warnable, Locatable, SourceCodeMixin {
     return docs;
   }
 
-  String get _sourceFileName => element.source.fullName;
+  String get sourceFileName;
 
-  String get _fullyQualifiedNameWithoutLibrary =>
-      // Remember, periods are legal in library names.
-      fullyQualifiedName.replaceFirst('${library.fullyQualifiedName}.', '');
+  String get fullyQualifiedNameWithoutLibrary;
 
-  path.Context get pathContext => packageGraph.resourceProvider.pathContext;
+  path.Context get pathContext;
 
-  @visibleForTesting
-  ModelElementRenderer get modelElementRenderer =>
-      packageGraph.rendererFactory.modelElementRenderer;
+  ModelElementRenderer get modelElementRenderer;
 
   static const _allDirectiveNames = [
     'animation',
@@ -209,13 +229,13 @@ mixin CommentProcessable on Documentable, Warnable, Locatable, SourceCodeMixin {
             'SOURCE_LINE': characterLocation?.lineNumber.toString(),
             'SOURCE_COLUMN': characterLocation?.columnNumber.toString(),
             'SOURCE_PATH':
-                (_sourceFileName == null || package?.packagePath == null)
+                (sourceFileName == null || package?.packagePath == null)
                     ? null
-                    : path.relative(_sourceFileName, from: package.packagePath),
+                    : path.relative(sourceFileName, from: package.packagePath),
             'PACKAGE_PATH': package?.packagePath,
             'PACKAGE_NAME': package?.name,
             'LIBRARY_NAME': library?.fullyQualifiedName,
-            'ELEMENT_NAME': _fullyQualifiedNameWithoutLibrary,
+            'ELEMENT_NAME': fullyQualifiedNameWithoutLibrary,
             'INVOCATION_INDEX': invocationIndex.toString(),
             'PACKAGE_INVOCATION_INDEX':
                 (package.toolInvocationIndex++).toString(),
