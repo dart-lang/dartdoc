@@ -7,7 +7,7 @@ export 'canonicalization.dart';
 export 'categorization.dart';
 export 'category.dart';
 export 'class.dart';
-export 'comment_processable.dart';
+export 'documentation_comment.dart';
 export 'constructor.dart';
 export 'container.dart';
 export 'container_member.dart';
