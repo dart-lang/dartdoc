@@ -965,7 +965,8 @@ class PackageGraph {
       // for nodoc's semantics.
       List<String> globs = config.optionSet['nodoc'].valueAt(file.parent);
       _configSetsNodocFor[fullName] = globs.any((g) =>
-          Glob(g).matches(resourceProvider.pathContext.canonicalize(fullName)));
+          Glob(resourceProvider.pathContext.canonicalize(g))
+              .matches(resourceProvider.pathContext.canonicalize(fullName)));
     }
     return _configSetsNodocFor[fullName];
   }
