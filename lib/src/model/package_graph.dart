@@ -964,8 +964,8 @@ class PackageGraph {
       // might not be where the element was defined, which is what's important
       // for nodoc's semantics.
       List<String> globs = config.optionSet['nodoc'].valueAt(file.parent);
-      _configSetsNodocFor[fullName] =
-          globs.any((g) => Glob(g).matches(fullName));
+      _configSetsNodocFor[fullName] = globs.any((g) =>
+          Glob(g).matches(resourceProvider.pathContext.canonicalize(fullName)));
     }
     return _configSetsNodocFor[fullName];
   }
