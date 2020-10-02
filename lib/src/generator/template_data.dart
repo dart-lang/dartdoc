@@ -21,7 +21,7 @@ abstract class TemplateData<T extends Documentable> {
   String get metaDescription;
 
   List<Documentable> get navLinks;
-  List<Documentable> get navLinksWithGenerics => [];
+  List<Container> get navLinksWithGenerics => [];
   Documentable get parent {
     if (navLinksWithGenerics.isEmpty) {
       return navLinks.isNotEmpty ? navLinks.last : null;
@@ -32,6 +32,8 @@ abstract class TemplateData<T extends Documentable> {
   bool get includeVersion => false;
 
   bool get hasHomepage => false;
+
+  String get homepage => null;
 
   String get htmlBase;
   T get self;
@@ -73,6 +75,7 @@ class PackageTemplateData extends TemplateData<Package> {
 
   @override
   bool get hasHomepage => package.hasHomepage;
+  @override
   String get homepage => package.homepage;
 
   /// empty for packages because they are at the root – not needed
@@ -235,7 +238,7 @@ class ConstructorTemplateData extends TemplateData<Constructor> {
   @override
   List<Documentable> get navLinks => [packageGraph.defaultPackage, library];
   @override
-  List<Documentable> get navLinksWithGenerics => [clazz];
+  List<Container> get navLinksWithGenerics => [clazz];
   @override
   @override
   String get htmlBase => '../../';
@@ -313,7 +316,7 @@ class MethodTemplateData extends TemplateData<Method> {
   @override
   List<Documentable> get navLinks => [packageGraph.defaultPackage, library];
   @override
-  List<Documentable> get navLinksWithGenerics => [container];
+  List<Container> get navLinksWithGenerics => [container];
   @override
   String get htmlBase => '../../';
 }
@@ -347,7 +350,7 @@ class PropertyTemplateData extends TemplateData<Field> {
   @override
   List<Documentable> get navLinks => [packageGraph.defaultPackage, library];
   @override
-  List<Documentable> get navLinksWithGenerics => [container];
+  List<Container> get navLinksWithGenerics => [container];
   @override
   String get htmlBase => '../../';
 }
