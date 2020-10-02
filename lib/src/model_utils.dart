@@ -11,8 +11,41 @@ import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/src/dart/ast/utilities.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:path/path.dart' as path;
+import 'package:glob/glob.dart';
+
+final _driveLetterMatcher = RegExp(r'^\w:\\');
 
 final Map<String, String> _fileContents = <String, String>{};
+
+/// This will handle matching globs, including on Windows.
+///
+/// Assumes that globs and resource provider are from the same drive, which
+/// will be the case for globs relative to dartdoc_options.yaml.
+///
+/// On windows, globs are assumed to use Windows paths in combination with
+/// globs, e.g. `C:\foo\bar\*.txt`.
+bool matchGlobs(List<String> globs, String fullName, {bool isWindows}) {
+  isWindows ??= Platform.isWindows;
+  var filteredGlobs = <String>[];
+
+  if (isWindows) {
+    assert(_driveLetterMatcher.hasMatch(fullName),
+        'can not find drive letter in $fullName');
+    // TODO(jcollins-g): handle globs referencing different drives?
+    fullName = fullName.replaceFirst(_driveLetterMatcher, r'\');
+    for (var glob in globs) {
+      // `C:\` => `\` for rejoining via posix.
+      glob = glob.replaceFirst(_driveLetterMatcher, r'/');
+      filteredGlobs.add(path.posix.joinAll(path.windows.split(glob)));
+    }
+  } else {
+    filteredGlobs.addAll(globs);
+  }
+
+  return filteredGlobs.any((g) =>
+      Glob(g, context: isWindows ? path.windows : null).matches(fullName));
+}
 
 /// Returns the [AstNode] for a given [Element].
 ///

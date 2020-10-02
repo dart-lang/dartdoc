@@ -22,7 +22,7 @@ import 'package:dartdoc/src/render/renderer_factory.dart';
 import 'package:dartdoc/src/special_elements.dart';
 import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/warnings.dart';
-import 'package:glob/glob.dart';
+import 'package:dartdoc/src/model_utils.dart' show matchGlobs;
 
 class PackageGraph {
   PackageGraph.UninitializedPackageGraph(
@@ -964,9 +964,7 @@ class PackageGraph {
       // might not be where the element was defined, which is what's important
       // for nodoc's semantics.
       List<String> globs = config.optionSet['nodoc'].valueAt(file.parent);
-      _configSetsNodocFor[fullName] = globs.any((g) =>
-          Glob(resourceProvider.pathContext.canonicalize(g))
-              .matches(resourceProvider.pathContext.canonicalize(fullName)));
+      _configSetsNodocFor[fullName] = matchGlobs(globs, fullName);
     }
     return _configSetsNodocFor[fullName];
   }
