@@ -951,18 +951,19 @@ class PackageGraph {
         allLocalModelElements.where((e) => e.isCanonical).toList();
   }
 
+  /// Glob lookups can be expensive.  Cache per filename.
   final _configSetsNodocFor = HashMap<String, bool>();
 
   /// Given an element's location, look up the nodoc configuration data and
   /// determine whether to unconditionally treat the element as "nodoc".
-  /// Cached by filename to reduce repetitive lookups into the config data.
   bool configSetsNodocFor(String fullName) {
     if (!_configSetsNodocFor.containsKey(fullName)) {
       var file = resourceProvider.getFile(fullName);
       // Direct lookup instead of generating a custom context will save some
       // cycles.  We can't use the element's [DartdocOptionContext] because that
       // might not be where the element was defined, which is what's important
-      // for nodoc's semantics.
+      // for nodoc's semantics.  Looking up the defining element just to pull
+      // a context is again, slow.
       List<String> globs = config.optionSet['nodoc'].valueAt(file.parent);
       _configSetsNodocFor[fullName] = matchGlobs(globs, fullName);
     }

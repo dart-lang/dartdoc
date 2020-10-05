@@ -18,6 +18,10 @@ void main() {
     test('basic Windows', () {
       expect(matchGlobs([r'C:\a\b\*'], r'c:\a\b\d', isWindows: true), isTrue);
     });
+
+    test('Windows does not pass for different drive letters', () {
+      expect(matchGlobs([r'C:\a\b\*'], r'D:\a\b\d', isWindows: true), isFalse);
+    });
   });
 
   group('model_utils stripIndentFromSource', () {

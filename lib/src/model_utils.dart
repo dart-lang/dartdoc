@@ -10,6 +10,7 @@ import 'dart:io';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/src/dart/ast/utilities.dart';
+import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:path/path.dart' as path;
 import 'package:glob/glob.dart';
@@ -23,18 +24,27 @@ final Map<String, String> _fileContents = <String, String>{};
 /// Assumes that globs and resource provider are from the same drive, which
 /// will be the case for globs relative to dartdoc_options.yaml.
 ///
-/// On windows, globs are assumed to use Windows paths in combination with
-/// globs, e.g. `C:\foo\bar\*.txt`.
+/// On windows, globs are assumed to use absolute Windows paths with drive
+/// letters in combination with globs, e.g. `C:\foo\bar\*.txt`.  `fullName`
+/// also is assumed to have a drive letter.
 bool matchGlobs(List<String> globs, String fullName, {bool isWindows}) {
   isWindows ??= Platform.isWindows;
   var filteredGlobs = <String>[];
 
   if (isWindows) {
-    assert(_driveLetterMatcher.hasMatch(fullName),
-        'can not find drive letter in $fullName');
-    // TODO(jcollins-g): handle globs referencing different drives?
+    // TODO(jcollins-g): port this special casing to the glob package.
+    var fullNameDriveLetter = _driveLetterMatcher.stringMatch(fullName);
+    if (fullNameDriveLetter == null) {
+      throw DartdocFailure(
+          'Unable to recognize drive letter on Windows in:  $fullName');
+    }
+    // Build a matcher from the [fullName]'s drive letter to filter the globs.
+    var driveGlob = RegExp(fullNameDriveLetter.replaceFirst(r'\', r'\\'),
+        caseSensitive: false);
     fullName = fullName.replaceFirst(_driveLetterMatcher, r'\');
     for (var glob in globs) {
+      // Globs don't match if they aren't for the same drive.
+      if (!driveGlob.hasMatch(glob)) continue;
       // `C:\` => `\` for rejoining via posix.
       glob = glob.replaceFirst(_driveLetterMatcher, r'/');
       filteredGlobs.add(path.posix.joinAll(path.windows.split(glob)));
