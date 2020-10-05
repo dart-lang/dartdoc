@@ -8,6 +8,22 @@ import 'package:dartdoc/src/model_utils.dart';
 import 'package:test/test.dart';
 
 void main() {
+  group('match glob', () {
+    test('basic POSIX', () {
+      expect(
+          matchGlobs(['/a/b/*', '/b/c/*'], '/b/c/d', isWindows: false), isTrue);
+      expect(matchGlobs(['/q/r/s'], '/foo', isWindows: false), isFalse);
+    });
+
+    test('basic Windows', () {
+      expect(matchGlobs([r'C:\a\b\*'], r'c:\a\b\d', isWindows: true), isTrue);
+    });
+
+    test('Windows does not pass for different drive letters', () {
+      expect(matchGlobs([r'C:\a\b\*'], r'D:\a\b\d', isWindows: true), isFalse);
+    });
+  });
+
   group('model_utils stripIndentFromSource', () {
     test('no indent', () {
       expect(stripIndentFromSource('void foo() {\n  print(1);\n}\n'),

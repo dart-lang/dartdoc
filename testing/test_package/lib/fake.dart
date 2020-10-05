@@ -60,6 +60,9 @@ import 'mylibpub.dart' as renamedLib2;
 import 'two_exports.dart' show BaseClass;
 export 'src/notadotdartfile';
 
+// Verify that even though reexported, objects don't show in documentation.
+export 'package:test_package/src/nodocme.dart';
+
 // ignore: uri_does_not_exist
 export 'package:test_package_imported/categoryExporting.dart'
     show IAmAClassWithCategories;

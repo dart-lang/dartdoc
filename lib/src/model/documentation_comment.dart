@@ -47,10 +47,14 @@ mixin DocumentationComment
   String computeDocumentationComment();
 
   /// Returns true if the raw documentation comment has a nodoc indication.
-  bool get hasNodoc =>
-      documentationComment != null &&
-      (documentationComment.contains('@nodoc') ||
-          documentationComment.contains('<nodoc>'));
+  bool get hasNodoc {
+    if (documentationComment != null &&
+        (documentationComment.contains('@nodoc') ||
+            documentationComment.contains('<nodoc>'))) {
+      return true;
+    }
+    return packageGraph.configSetsNodocFor(element.source.fullName);
+  }
 
   /// Process a [documentationComment], performing various actions based on
   /// `{@}`-style directives, except `{@tool}`, returning the processed result.

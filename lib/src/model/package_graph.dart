@@ -22,6 +22,7 @@ import 'package:dartdoc/src/render/renderer_factory.dart';
 import 'package:dartdoc/src/special_elements.dart';
 import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/warnings.dart';
+import 'package:dartdoc/src/model_utils.dart' show matchGlobs;
 
 class PackageGraph {
   PackageGraph.UninitializedPackageGraph(
@@ -948,6 +949,25 @@ class PackageGraph {
   Iterable<ModelElement> get allCanonicalModelElements {
     return _allCanonicalModelElements ??=
         allLocalModelElements.where((e) => e.isCanonical).toList();
+  }
+
+  /// Glob lookups can be expensive.  Cache per filename.
+  final _configSetsNodocFor = HashMap<String, bool>();
+
+  /// Given an element's location, look up the nodoc configuration data and
+  /// determine whether to unconditionally treat the element as "nodoc".
+  bool configSetsNodocFor(String fullName) {
+    if (!_configSetsNodocFor.containsKey(fullName)) {
+      var file = resourceProvider.getFile(fullName);
+      // Direct lookup instead of generating a custom context will save some
+      // cycles.  We can't use the element's [DartdocOptionContext] because that
+      // might not be where the element was defined, which is what's important
+      // for nodoc's semantics.  Looking up the defining element just to pull
+      // a context is again, slow.
+      List<String> globs = config.optionSet['nodoc'].valueAt(file.parent);
+      _configSetsNodocFor[fullName] = matchGlobs(globs, fullName);
+    }
+    return _configSetsNodocFor[fullName];
   }
 
   String getMacro(String name) {
