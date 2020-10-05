@@ -61,6 +61,32 @@ Future<PackageGraph> bootBasicPackage(
       .buildPackageGraph();
 }
 
+/// Returns a [FakePackageConfigProvider] with an entry for the SDK directory.
+PackageConfigProvider getTestPackageConfigProvider(String sdkPath) {
+  var packageConfigProvider = FakePackageConfigProvider();
+  // To build the package graph, we always ask package_config for a
+  // [PackageConfig] for the SDK directory. Put a dummy entry in.
+  packageConfigProvider.addPackageToConfigFor(
+      sdkPath, 'analyzer', Uri.file('/sdk/pkg/analyzer/'));
+  return packageConfigProvider;
+}
+
+/// Returns a [PackageMetaProvider] using a [MemoryResourceProvider].
+PackageMetaProvider get testPackageMetaProvider {
+  var resourceProvider = MemoryResourceProvider();
+  var mockSdk = MockSdk(resourceProvider: resourceProvider);
+  var sdkFolder = writeMockSdkFiles(mockSdk);
+
+  return PackageMetaProvider(
+    PubPackageMeta.fromElement,
+    PubPackageMeta.fromFilename,
+    PubPackageMeta.fromDir,
+    resourceProvider,
+    sdkFolder,
+    defaultSdk: mockSdk,
+  );
+}
+
 /// Writes [mockSdk] to disk at both its original path, and its canonicalized
 /// path (they may be different on Windows).
 ///
