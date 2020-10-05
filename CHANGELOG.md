@@ -1,3 +1,23 @@
+## 0.35.0
+
+* Update Dart analyzer version to 0.40+ and update minimum Dart version
+  to 2.10. (#???? -- update after release PR is known)
+* Add a `nodoc` option in `dartdoc_options.yaml` to prevent all symbols
+  declared in a file from ever being documented, similar to using `@nodoc`
+  (#2369, #2368, #2266, #2355)
+* Some template interface refactors preparing for mustache changes to drop
+  use of dart:mirrors. (#2371, #2370)
+* Add an feature to allow declaring a `DartdocOption`'s value to be a glob.
+  (#2365)
+  * **Breaking change**: The `DartdocOption` constructor interface has changed
+    so it uses an enum instead of individual `isFile` and `isDir`.
+* Emit a warning rather than throwing a fatal error for a package with
+  no libraries. (#2360, #2327)
+* Fix several problems with implementation chain display when there are
+  intermediate private classes (#2358, #2290, #2094, #2354, #1623)
+* Fix a deadlock in `MultiFutureTracker`. (#2351)
+* Cache exclude values and known parts. (#2347)
+
 ## 0.34.0
 
 * PackageConfigProvider, MockSdk, etc for improved unit testing (#2332)
