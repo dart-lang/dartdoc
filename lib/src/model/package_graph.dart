@@ -140,8 +140,8 @@ class PackageGraph {
       Element element, Map<String, CompilationUnit> compilationUnitMap) {
     _modelNodes.putIfAbsent(
         element,
-        () =>
-            ModelNode(utils.getAstNode(element, compilationUnitMap), element));
+        () => ModelNode(utils.getAstNode(element, compilationUnitMap), element,
+            resourceProvider));
   }
 
   ModelNode getModelNodeFor(Element element) => _modelNodes[element];

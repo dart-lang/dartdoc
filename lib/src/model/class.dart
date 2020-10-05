@@ -19,7 +19,7 @@ import 'package:meta/meta.dart';
 /// **instance**: As with [Container], but also includes inherited children.
 /// **inherited**: Filtered getters giving only inherited children.
 class Class extends Container
-    with TypeParameters, Categorization, ExtensionTarget
+    with Categorization, ExtensionTarget
     implements EnclosedElement {
   // TODO(srawlins): To make final, remove public getter, setter, rename to be
   // public, and add `final` modifier.

@@ -5,10 +5,10 @@
 library dartdoc.model_utils;
 
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/src/dart/ast/utilities.dart';
 import 'package:dartdoc/src/model/model.dart';
 
@@ -50,10 +50,10 @@ Iterable<Class> findCanonicalFor(Iterable<Class> classes) {
       c.packageGraph.findCanonicalModelElementFor(c.element) as Class ?? c);
 }
 
-String getFileContentsFor(Element e) {
+String getFileContentsFor(Element e, ResourceProvider resourceProvider) {
   var location = e.source.fullName;
   if (!_fileContents.containsKey(location)) {
-    var contents = File(location).readAsStringSync();
+    var contents = resourceProvider.getFile(location).readAsStringSync();
     _fileContents.putIfAbsent(location, () => contents);
   }
   return _fileContents[location];
