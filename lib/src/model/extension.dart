@@ -10,7 +10,7 @@ import 'package:dartdoc/src/quiver.dart' as quiver;
 
 /// Extension methods
 class Extension extends Container
-    with TypeParameters, Categorization
+    with Categorization
     implements EnclosedElement {
   ElementType extendedType;
 

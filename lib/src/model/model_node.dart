@@ -4,6 +4,7 @@
 
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/model_utils.dart' as model_utils;
 
 /// A stripped down [CommentReference] containing only that information needed
@@ -22,11 +23,12 @@ class ModelCommentReference {
 class ModelNode {
   final List<ModelCommentReference> commentRefs;
   final Element element;
+  final ResourceProvider resourceProvider;
 
   final int _sourceOffset;
   final int _sourceEnd;
 
-  ModelNode(AstNode sourceNode, this.element)
+  ModelNode(AstNode sourceNode, this.element, this.resourceProvider)
       : _sourceOffset = sourceNode?.offset,
         _sourceEnd = sourceNode?.end,
         commentRefs = _commentRefsFor(sourceNode);
@@ -46,7 +48,8 @@ class ModelNode {
   String get sourceCode {
     if (_sourceCode == null) {
       if (_sourceOffset != null) {
-        var contents = model_utils.getFileContentsFor(element);
+        var contents =
+            model_utils.getFileContentsFor(element, resourceProvider);
         // Find the start of the line, so that we can line up all the indents.
         var i = _sourceOffset;
         while (i > 0) {

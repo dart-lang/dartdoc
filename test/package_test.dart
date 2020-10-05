@@ -4,7 +4,6 @@
 
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/memory_file_system.dart';
-import 'package:analyzer/src/test_utilities/mock_sdk.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/documentable.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
@@ -19,7 +18,6 @@ void main() {
   PackageMetaProvider packageMetaProvider;
   FakePackageConfigProvider packageConfigProvider;
   DartdocOptionSet optionSet;
-  MockSdk mockSdk;
   Folder sdkFolder;
 
   Folder projectRoot;
@@ -36,25 +34,13 @@ void main() {
   }
 
   setUp(() async {
-    resourceProvider = MemoryResourceProvider();
-    mockSdk = MockSdk(resourceProvider: resourceProvider);
-    sdkFolder = utils.writeMockSdkFiles(mockSdk);
+    packageMetaProvider = utils.testPackageMetaProvider;
+    resourceProvider = packageMetaProvider.resourceProvider;
+    sdkFolder = packageMetaProvider.defaultSdkDir;
 
-    packageMetaProvider = PackageMetaProvider(
-      PubPackageMeta.fromElement,
-      PubPackageMeta.fromFilename,
-      PubPackageMeta.fromDir,
-      resourceProvider,
-      sdkFolder,
-      defaultSdk: mockSdk,
-    );
     optionSet = await DartdocOptionSet.fromOptionGenerators(
         'dartdoc', [createDartdocOptions], packageMetaProvider);
-    packageConfigProvider = FakePackageConfigProvider();
-    // To build the package graph, we always ask package_config for a
-    // [PackageConfig] for the SDK directory. Put a dummy entry in.
-    packageConfigProvider.addPackageToConfigFor(
-        sdkFolder.path, 'analyzer', Uri.file('/sdk/pkg/analyzer/'));
+    packageConfigProvider = utils.getTestPackageConfigProvider(sdkFolder.path);
   });
 
   tearDown(() {

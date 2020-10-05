@@ -88,7 +88,7 @@ class Category extends Nameable
     } else if (c is Extension) {
       _extensions.add(c);
     } else {
-      throw UnimplementedError('Unrecognized element');
+      throw UnimplementedError('Unrecognized element: $c (${c.runtimeType})');
     }
   }
 
@@ -147,8 +147,6 @@ class Category extends Nameable
   @override
   String get href => isCanonical ? '${package.baseHref}$filePath' : null;
 
-  @Deprecated(
-      'Public field is unused; will be removed as early as Dartdoc 1.0.0')
   String get categoryLabel => _categoryRenderer.renderCategoryLabel(this);
 
   @Deprecated(
