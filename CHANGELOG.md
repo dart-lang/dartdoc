@@ -1,7 +1,7 @@
 ## 0.35.0
 
 * Update Dart analyzer version to 0.40+ and update minimum Dart version
-  to 2.10. (#???? -- update after release PR is known)
+  to 2.10. (#2372)
 * Add a `nodoc` option in `dartdoc_options.yaml` to prevent all symbols
   declared in a file from ever being documented, similar to using `@nodoc`
   (#2369, #2368, #2266, #2355)
