@@ -383,13 +383,20 @@ dartdoc:
     });
 
     group('glob options', () {
+      String canonicalize(String path) =>
+          resourceProvider.pathContext.canonicalize(path);
+
       test('work via the command line', () {
-        dartdocOptionSetAll.parseArguments(['--glob-option', 'foo/**']);
+        dartdocOptionSetAll
+            .parseArguments(['--glob-option', path.join('foo', '**')]);
         expect(
             dartdocOptionSetAll['globOption'].valueAtCurrent(),
             equals([
-              resourceProvider.pathContext
-                  .join(resourceProvider.pathContext.current, 'foo/**')
+              resourceProvider.pathContext.joinAll([
+                canonicalize(resourceProvider.pathContext.current),
+                'foo',
+                '**'
+              ])
             ]));
       });
 
@@ -398,22 +405,26 @@ dartdoc:
         expect(
             dartdocOptionSetAll['globOption'].valueAt(secondDir),
             equals([
-              resourceProvider.pathContext.join(secondDir.path, 'q*.html'),
-              resourceProvider.pathContext.join(secondDir.path, 'e*.dart')
+              canonicalize(
+                  resourceProvider.pathContext.join(secondDir.path, 'q*.html')),
+              canonicalize(
+                  resourceProvider.pathContext.join(secondDir.path, 'e*.dart')),
             ]));
         // No child override, should be the same as parent
         expect(
             dartdocOptionSetAll['globOption'].valueAt(secondDirSecondSub),
             equals([
-              resourceProvider.pathContext.join(secondDir.path, 'q*.html'),
-              resourceProvider.pathContext.join(secondDir.path, 'e*.dart')
+              canonicalize(
+                  resourceProvider.pathContext.join(secondDir.path, 'q*.html')),
+              canonicalize(
+                  resourceProvider.pathContext.join(secondDir.path, 'e*.dart')),
             ]));
         // Child directory overrides
         expect(
             dartdocOptionSetAll['globOption'].valueAt(secondDirFirstSub),
             equals([
-              resourceProvider.pathContext
-                  .join(secondDirFirstSub.path, '**/*.dart')
+              resourceProvider.pathContext.joinAll(
+                  [canonicalize(secondDirFirstSub.path), '**', '*.dart'])
             ]));
       });
     });

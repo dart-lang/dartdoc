@@ -1489,6 +1489,8 @@ class DartdocOptionContext extends DartdocOptionContextBase
   // ignore: unused_element
   String get _linkToHosted => optionSet['linkTo']['hosted'].valueAt(context);
 
+  List<String> get nodoc => optionSet['nodoc'].valueAt(context);
+
   String get output => optionSet['output'].valueAt(context);
 
   PackageMeta get packageMeta => optionSet['packageMeta'].valueAt(context);
@@ -1669,6 +1671,11 @@ Future<List<DartdocOption<Object>>> createDartdocOptions(
             help: 'Allow links to be generated for packages outside this one.',
             negatable: true),
       ]),
+    DartdocOptionFileOnly<List<String>>('nodoc', [], resourceProvider,
+        optionIs: OptionKind.glob,
+        help: 'Dart symbols declared in these '
+            'files will be treated as though they have the @nodoc flag added to '
+            'their documentation comment.'),
     DartdocOptionArgOnly<String>('output',
         resourceProvider.pathContext.join('doc', 'api'), resourceProvider,
         optionIs: OptionKind.dir, help: 'Path to output directory.'),
