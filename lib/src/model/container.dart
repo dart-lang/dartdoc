@@ -27,7 +27,7 @@ import 'package:meta/meta.dart';
 /// **has** : boolean getters indicating whether the underlying getters are
 /// empty.  Mostly for the templating system.
 /// **all** : Referring to all children.
-abstract class Container extends ModelElement {
+abstract class Container extends ModelElement with TypeParameters {
   Container(Element element, Library library, PackageGraph packageGraph)
       : super(element, library, packageGraph, null);
 
