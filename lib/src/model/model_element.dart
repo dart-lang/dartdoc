@@ -382,9 +382,12 @@ abstract class ModelElement extends Canonicalization
     throw 'Unknown type ${e.runtimeType}';
   }
 
-  /// Stub for mustache4dart, or it will search enclosing elements to find
-  /// names for members.
+  // Stub for mustache, which would otherwise search enclosing elements to find
+  // names for members.
   bool get hasCategoryNames => false;
+
+  // Stub for mustache.
+  Iterable<Category> get displayedCategories => [];
 
   Set<Library> get exportedInLibraries {
     return library.packageGraph.libraryElementReexportedBy[element.library];

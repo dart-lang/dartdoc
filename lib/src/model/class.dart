@@ -77,7 +77,7 @@ class Class extends Container
   Iterable<Method> get instanceMethods =>
       quiver.concat([super.instanceMethods, inheritedMethods]);
 
-  // Whether all instance methods are inherited, used in mustache templates.
+  @override
   bool get publicInheritedInstanceMethods =>
       instanceMethods.every((f) => f.isInherited);
 
@@ -131,11 +131,12 @@ class Class extends Container
     return kind;
   }
 
-  // Whether any constructors are public, used in mustache templates.
+  @override
   bool get hasPublicConstructors => publicConstructorsSorted.isNotEmpty;
 
   List<Constructor> _publicConstructorsSorted;
 
+  @override
   List<Constructor> get publicConstructorsSorted =>
       _publicConstructorsSorted ??= publicConstructors.toList()..sort(byName);
 
@@ -247,6 +248,7 @@ class Class extends Container
     return _inheritedOperators;
   }
 
+  @override
   Iterable<Operator> get publicInheritedInstanceOperators =>
       model_utils.filterNonPublic(inheritedOperators);
 
@@ -524,6 +526,7 @@ class Class extends Container
   Iterable<Field> get instanceFields =>
       _instanceFields ??= allFields.where((f) => !f.isStatic);
 
+  @override
   bool get publicInheritedInstanceFields =>
       publicInstanceFields.every((f) => f.isInherited);
 
