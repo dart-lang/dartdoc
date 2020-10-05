@@ -21,9 +21,6 @@ final Map<String, String> _fileContents = <String, String>{};
 
 /// This will handle matching globs, including on Windows.
 ///
-/// Assumes that globs and resource provider are from the same drive, which
-/// will be the case for globs relative to dartdoc_options.yaml.
-///
 /// On windows, globs are assumed to use absolute Windows paths with drive
 /// letters in combination with globs, e.g. `C:\foo\bar\*.txt`.  `fullName`
 /// also is assumed to have a drive letter.
