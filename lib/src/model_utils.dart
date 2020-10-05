@@ -5,6 +5,7 @@
 library dartdoc.model_utils;
 
 import 'dart:convert';
+import 'dart:io' show Platform;
 
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
