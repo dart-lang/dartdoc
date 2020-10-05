@@ -177,7 +177,6 @@ class Templates {
   final Template classTemplate;
   final Template extensionTemplate;
   final Template enumTemplate;
-  final Template constantTemplate;
   final Template constructorTemplate;
   final Template errorTemplate;
   final Template functionTemplate;
@@ -186,7 +185,6 @@ class Templates {
   final Template methodTemplate;
   final Template mixinTemplate;
   final Template propertyTemplate;
-  final Template topLevelConstantTemplate;
   final Template topLevelPropertyTemplate;
   final Template typeDefTemplate;
 
@@ -260,8 +258,6 @@ class Templates {
     var constructorTemplate = await _loadTemplate('constructor');
     var errorTemplate = await _loadTemplate('404error');
     var propertyTemplate = await _loadTemplate('property');
-    var constantTemplate = await _loadTemplate('constant');
-    var topLevelConstantTemplate = await _loadTemplate('top_level_constant');
     var topLevelPropertyTemplate = await _loadTemplate('top_level_property');
     var typeDefTemplate = await _loadTemplate('typedef');
     var mixinTemplate = await _loadTemplate('mixin');
@@ -278,8 +274,6 @@ class Templates {
         constructorTemplate,
         errorTemplate,
         propertyTemplate,
-        constantTemplate,
-        topLevelConstantTemplate,
         topLevelPropertyTemplate,
         typeDefTemplate,
         mixinTemplate);
@@ -297,8 +291,6 @@ class Templates {
       this.constructorTemplate,
       this.errorTemplate,
       this.propertyTemplate,
-      this.constantTemplate,
-      this.topLevelConstantTemplate,
       this.topLevelPropertyTemplate,
       this.typeDefTemplate,
       this.mixinTemplate);
