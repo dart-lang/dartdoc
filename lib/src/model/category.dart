@@ -149,8 +149,6 @@ class Category extends Nameable
 
   String get categoryLabel => _categoryRenderer.renderCategoryLabel(this);
 
-  @Deprecated(
-      'Public field is unused; will be removed as early as Dartdoc 1.0.0')
   String get linkedName => _categoryRenderer.renderLinkedName(this);
 
   int _categoryIndex;

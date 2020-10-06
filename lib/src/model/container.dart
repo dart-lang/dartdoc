@@ -54,6 +54,25 @@ abstract class Container extends ModelElement with TypeParameters {
       .where((m) => !m.isStatic && !m.isOperator)
       .toList(growable: false);
 
+  /// Whether any constructors are public.
+  ///
+  /// This is only used in mustache templates.
+  bool get hasPublicConstructors => false;
+
+  Iterable<Constructor> get publicConstructorsSorted => [];
+
+  /// Whether all instance fields are inherited.
+  ///
+  /// This is only used in mustache templates.
+  bool get publicInheritedInstanceFields => false;
+
+  /// Whether all instance methods are inherited.
+  ///
+  /// This is only used in mustache templates.
+  bool get publicInheritedInstanceMethods => false;
+
+  Iterable<Operator> get publicInheritedInstanceOperators => [];
+
   @nonVirtual
   bool get hasPublicInstanceMethods =>
       model_utils.filterNonPublic(instanceMethods).isNotEmpty;
