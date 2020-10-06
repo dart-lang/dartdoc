@@ -102,9 +102,7 @@ void main() {
     expect(templates.functionTemplate, isNotNull);
     expect(templates.constructorTemplate, isNotNull);
     expect(templates.methodTemplate, isNotNull);
-    expect(templates.constantTemplate, isNotNull);
     expect(templates.propertyTemplate, isNotNull);
-    expect(templates.topLevelConstantTemplate, isNotNull);
     expect(templates.topLevelPropertyTemplate, isNotNull);
   });
 }
