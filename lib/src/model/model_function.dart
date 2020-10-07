@@ -13,12 +13,13 @@ class ModelFunction extends ModelFunctionTyped with Categorization {
       : super(element, library, packageGraph);
 
   @override
-  bool get isStatic {
-    return (element as FunctionElement).isStatic;
-  }
+  bool get isStatic => element.isStatic;
 
   @override
   String get name => element.name ?? '';
+
+  @override
+  FunctionElement get element => super.element;
 }
 
 /// A [ModelElement] for a [FunctionTypedElement] that is part of an
