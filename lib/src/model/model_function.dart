@@ -14,14 +14,11 @@ class ModelFunction extends ModelFunctionTyped with Categorization {
 
   @override
   bool get isStatic {
-    return _func.isStatic;
+    return (element as FunctionElement).isStatic;
   }
 
   @override
   String get name => element.name ?? '';
-
-  @override
-  FunctionElement get _func => (element as FunctionElement);
 }
 
 /// A [ModelElement] for a [FunctionTypedElement] that is part of an
@@ -39,19 +36,15 @@ class ModelFunctionTyped extends ModelElement
     with TypeParameters
     implements EnclosedElement {
   @override
-  List<TypeParameter> typeParameters = [];
+  final List<TypeParameter> typeParameters;
 
   ModelFunctionTyped(
       FunctionTypedElement element, Library library, PackageGraph packageGraph)
-      : super(element, library, packageGraph, null) {
-    _calcTypeParameters();
-  }
-
-  void _calcTypeParameters() {
-    typeParameters = _func.typeParameters.map((f) {
-      return ModelElement.from(f, library, packageGraph) as TypeParameter;
-    }).toList();
-  }
+      : typeParameters = <TypeParameter>[
+          for (var p in element.typeParameters)
+            ModelElement.from(p, library, packageGraph),
+        ],
+        super(element, library, packageGraph, null);
 
   @override
   ModelElement get enclosingElement => library;
@@ -79,6 +72,4 @@ class ModelFunctionTyped extends ModelElement
 
   @override
   DefinedElementType get modelType => super.modelType;
-
-  FunctionTypedElement get _func => (element as FunctionTypedElement);
 }
