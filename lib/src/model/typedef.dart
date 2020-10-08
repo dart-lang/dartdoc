@@ -44,13 +44,11 @@ class Typedef extends ModelElement
   }
 
   // Food for mustache.
-  @override
   bool get isInherited => false;
 
   @override
   String get kind => 'typedef';
 
-  @override
   String get linkedReturnType => modelType.createLinkedReturnTypeName();
 
   @override
