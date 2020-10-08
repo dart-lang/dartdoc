@@ -10,33 +10,31 @@ Welcome my friends to a custom template
 
 
   <div id="dartdoc-main-content" class="col-xs-12 col-sm-9 col-md-8 main-content">
-    {{#packageGraph.defaultPackage}}
+    {{#defaultPackage}}
       {{>documentation}}
-    {{/packageGraph.defaultPackage}}
+    {{/defaultPackage}}
 
-    {{#packageGraph}}
-      {{#localPackages}}
-        <section class="summary">
-          {{#isFirstPackage}}
-            <h2>Libraries</h2>
-          {{/isFirstPackage}}
-          {{^isFirstPackage}}
-            <h2>{{name}}</h2>
-          {{/isFirstPackage}}
-          <dl>
-          {{#defaultCategory.publicLibraries}}
+    {{#localPackages}}
+      <section class="summary">
+        {{#isFirstPackage}}
+          <h2>Libraries</h2>
+        {{/isFirstPackage}}
+        {{^isFirstPackage}}
+          <h2>{{name}}</h2>
+        {{/isFirstPackage}}
+        <dl>
+        {{#defaultCategory.publicLibraries}}
+          {{>library}}
+        {{/defaultCategory.publicLibraries}}
+        {{#categoriesWithPublicLibraries}}
+          <h3>{{name}}</h3>
+          {{#publicLibraries}}
             {{>library}}
-          {{/defaultCategory.publicLibraries}}
-          {{#categoriesWithPublicLibraries}}
-            <h3>{{name}}</h3>
-            {{#publicLibraries}}
-              {{>library}}
-            {{/publicLibraries}}
-          {{/categoriesWithPublicLibraries}}
-          </dl>
-        </section>
-      {{/localPackages}}
-    {{/packageGraph}}
+          {{/publicLibraries}}
+        {{/categoriesWithPublicLibraries}}
+        </dl>
+      </section>
+    {{/localPackages}}
 
   </div> <!-- /.main-content -->
 
