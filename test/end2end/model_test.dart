@@ -610,10 +610,11 @@ void main() {
   });
 
   group('Macros', () {
-    Class dog;
+    Class dog, ClassTemplateMember, AbstractClassTemplateMember;
     Enum MacrosFromAccessors;
     Method withMacro, withMacro2, withPrivateMacro, withUndefinedMacro;
     EnumField macroReferencedHere;
+    Field templateMember, templateMemberInherited;
 
     setUpAll(() {
       dog = exLibrary.classes.firstWhere((c) => c.name == 'Dog');
@@ -628,11 +629,21 @@ void main() {
           fakeLibrary.enums.firstWhere((e) => e.name == 'MacrosFromAccessors');
       macroReferencedHere = MacrosFromAccessors.publicConstantFields
           .firstWhere((e) => e.name == 'macroReferencedHere');
+      AbstractClassTemplateMember = exLibrary.classes.firstWhere((c) => c.name == 'AbstractClassTemplateMember');
+      ClassTemplateMember = exLibrary.classes.firstWhere((c) => c.name == 'ClassTemplateMember');
+      templateMember = AbstractClassTemplateMember.allFields.firstWhere((f) => f.name == 'templateMember');
+      templateMemberInherited = ClassTemplateMember.allFields.firstWhere((f) => f.name == 'templateMember');
+    });
+
+    test('does not leave behind template crumbs on inheritance', () {
+      expect(templateMember.oneLineDoc, equals('I had better not have a template directive in my one liner.'));
+      expect(templateMemberInherited.oneLineDoc, equals('I had better not have a template directive in my one liner.'));
     });
 
     test('renders a macro defined within a enum', () {
       expect(macroReferencedHere.documentationAsHtml,
           contains('This is a macro defined in an Enum accessor.'));
+      [1,2,3].whereType();
     });
 
     test("renders a macro within the same comment where it's defined", () {

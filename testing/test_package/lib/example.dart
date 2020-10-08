@@ -666,3 +666,22 @@ class ToolPrintingMacroWhichInjectsHtml {
   /// {@end-tool}
   int b;
 }
+
+/// Verify that documentation in inherited objects also has correct one-liners.
+///
+/// {@tool drill}
+/// Here is some text for a tool, which can change how templates are evaluated.
+/// {@end-tool}
+class ClassTemplateMember extends AbstractClassTemplateMember {
+}
+
+abstract class AbstractClassTemplateMember {
+  /// {@template example:templateMemberTest}
+  /// I had better not have a template directive in my one liner.
+  ///
+  /// Even if it has links to [Dog] or other classes.
+  ///
+  /// And if I do, a test should fail.
+  /// {@endtemplate}
+  final String templateMember;
+}
