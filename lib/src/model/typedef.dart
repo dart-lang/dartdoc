@@ -54,7 +54,9 @@ class Typedef extends ModelElement
   String get linkedReturnType => modelType.createLinkedReturnTypeName();
 
   @override
-  FunctionTypeElementType get modelType => super.modelType;
+  // TODO(jcollins-g): change to FunctionTypeElementType after analyzer 0.41
+  // ignore: unnecessary_overrides
+  ElementType get modelType => super.modelType;
 
   FunctionTypeAliasElement get _typedef =>
       (element as FunctionTypeAliasElement);
