@@ -38,7 +38,7 @@ abstract class ElementType extends Privacy {
       var element = ModelElement.fromElement(f.element, packageGraph);
       assert(f is ParameterizedType || f is TypeParameterType);
       var isGenericTypeAlias =
-          f.element.enclosingElement is GenericTypeAliasElement;
+          f.element.enclosingElement is GenericTypeAliasElement || f.element is GenericTypeAliasElement;
       if (f is FunctionType) {
         assert(f is ParameterizedType);
         if (isGenericTypeAlias) {
