@@ -9,7 +9,7 @@ import 'package:dartdoc/src/render/typedef_renderer.dart';
 
 class Typedef extends ModelElement
     with TypeParameters, Categorization
-    implements EnclosedElement, ModelFunctionTyped {
+    implements EnclosedElement {
   Typedef(FunctionTypeAliasElement element, Library library,
       PackageGraph packageGraph)
       : super(element, library, packageGraph, null);
@@ -44,17 +44,17 @@ class Typedef extends ModelElement
   }
 
   // Food for mustache.
-  @override
   bool get isInherited => false;
 
   @override
   String get kind => 'typedef';
 
-  @override
   String get linkedReturnType => modelType.createLinkedReturnTypeName();
 
   @override
-  DefinedElementType get modelType => super.modelType;
+  // TODO(jcollins-g): change to FunctionTypeElementType after analyzer 0.41
+  // ignore: unnecessary_overrides
+  ElementType get modelType => super.modelType;
 
   FunctionTypeAliasElement get _typedef =>
       (element as FunctionTypeAliasElement);

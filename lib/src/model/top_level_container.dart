@@ -68,6 +68,5 @@ abstract class TopLevelContainer implements Nameable {
   Iterable<TopLevelVariable> get publicProperties =>
       model_utils.filterNonPublic(properties);
 
-  Iterable<ModelFunctionTyped> get publicTypedefs =>
-      model_utils.filterNonPublic(typedefs);
+  Iterable<Typedef> get publicTypedefs => model_utils.filterNonPublic(typedefs);
 }
