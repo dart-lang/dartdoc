@@ -11,7 +11,7 @@ import 'package:test_package_imported/main.dart';
 export 'dart:core' show deprecated, Deprecated;
 import 'package:meta/meta.dart' show protected, factory;
 
-export 'fake.dart' show Cool;
+export 'fake.dart' show Cool, ClassTemplateOneLiner;
 export 'src/mylib.dart' show Helper;
 
 const String COLOR = 'red';
@@ -665,23 +665,4 @@ class ToolPrintingMacroWhichInjectsHtml {
   /// Text for tool.
   /// {@end-tool}
   int b;
-}
-
-/// Verify that documentation in inherited objects also has correct one-liners.
-///
-/// {@tool drill}
-/// Here is some text for a tool, which can change how templates are evaluated.
-/// {@end-tool}
-class ClassTemplateMember extends AbstractClassTemplateMember {
-}
-
-abstract class AbstractClassTemplateMember {
-  /// {@template example:templateMemberTest}
-  /// I had better not have a template directive in my one liner.
-  ///
-  /// Even if it has links to [Dog] or other classes.
-  ///
-  /// And if I do, a test should fail.
-  /// {@endtemplate}
-  final String templateMember;
 }

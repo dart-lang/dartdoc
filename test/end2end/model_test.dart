@@ -610,11 +610,10 @@ void main() {
   });
 
   group('Macros', () {
-    Class dog, ClassTemplateMember, AbstractClassTemplateMember;
+    Class dog, ClassTemplateOneLiner;
     Enum MacrosFromAccessors;
     Method withMacro, withMacro2, withPrivateMacro, withUndefinedMacro;
     EnumField macroReferencedHere;
-    Field templateMember, templateMemberInherited;
 
     setUpAll(() {
       dog = exLibrary.classes.firstWhere((c) => c.name == 'Dog');
@@ -629,21 +628,22 @@ void main() {
           fakeLibrary.enums.firstWhere((e) => e.name == 'MacrosFromAccessors');
       macroReferencedHere = MacrosFromAccessors.publicConstantFields
           .firstWhere((e) => e.name == 'macroReferencedHere');
-      AbstractClassTemplateMember = exLibrary.classes.firstWhere((c) => c.name == 'AbstractClassTemplateMember');
-      ClassTemplateMember = exLibrary.classes.firstWhere((c) => c.name == 'ClassTemplateMember');
-      templateMember = AbstractClassTemplateMember.allFields.firstWhere((f) => f.name == 'templateMember');
-      templateMemberInherited = ClassTemplateMember.allFields.firstWhere((f) => f.name == 'templateMember');
+      ClassTemplateOneLiner = exLibrary.allClasses
+          .firstWhere((c) => c.name == 'ClassTemplateOneLiner');
     });
 
-    test('does not leave behind template crumbs on inheritance', () {
-      expect(templateMember.oneLineDoc, equals('I had better not have a template directive in my one liner.'));
-      expect(templateMemberInherited.oneLineDoc, equals('I had better not have a template directive in my one liner.'));
+    test('via reexport does not leave behind template crumbs', () {
+      expect(ClassTemplateOneLiner.isCanonical, isFalse);
+      expect(
+          ClassTemplateOneLiner.oneLineDoc,
+          equals(
+              'I had better not have a template directive in my one liner.'));
     });
 
     test('renders a macro defined within a enum', () {
       expect(macroReferencedHere.documentationAsHtml,
           contains('This is a macro defined in an Enum accessor.'));
-      [1,2,3].whereType();
+      [1, 2, 3].whereType();
     });
 
     test("renders a macro within the same comment where it's defined", () {
@@ -1514,7 +1514,7 @@ void main() {
     });
 
     test('correctly finds all the classes', () {
-      expect(classes, hasLength(36));
+      expect(classes, hasLength(37));
     });
 
     test('abstract', () {
