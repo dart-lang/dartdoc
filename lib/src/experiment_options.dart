@@ -25,7 +25,7 @@ Future<List<DartdocOption<Object>>> createExperimentOptions(
   return [
     // TODO(jcollins-g): Consider loading experiment values from dartdoc_options.yaml?
     DartdocOptionArgOnly<List<String>>(
-        'enable-experiment', [], resourceProvider,
+        'enable-experiment', ['non-nullable'], resourceProvider,
         help: 'Enable or disable listed experiments.\n' +
             ExperimentStatus.knownFeatures.values
                 .where((e) => e.documentation != null)
