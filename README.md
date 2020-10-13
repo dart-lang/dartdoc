@@ -15,8 +15,8 @@ For issues/details related to hosted Dart API docs, see
 
 ## Installing dartdoc
 
-- download the [Dart SDK](https://dart.dev/get-dart)
-- add the SDK's `bin` directory to your `PATH`
+Run `pub global activate dartdoc` to install the latest version of dartdoc compatible with your
+SDK.
 
 ## Generating docs
 
