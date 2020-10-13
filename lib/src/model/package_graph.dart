@@ -125,10 +125,20 @@ class PackageGraph {
 
     for (var m in allModelElements) {
       // Skip if there is a canonicalModelElement somewhere else we can run this
-      // for.  Not the same as allCanonicalModelElements since we need to run
+      // for and we won't need a one line document that is precached.
+      // Not the same as allCanonicalModelElements since we need to run
       // for any ModelElement that might not have a canonical ModelElement,
       // too.
-      if (m.canonicalModelElement != null && !m.isCanonical) continue;
+      if (m.canonicalModelElement !=
+                  null // A canonical element exists somewhere
+              &&
+              !m.isCanonical // This element is not canonical
+              &&
+              !m.enclosingElement
+                  .isCanonical // The enclosingElement won't need a oneLineDoc from this
+          ) {
+        continue;
+      }
       yield* precacheOneElement(m);
     }
   }

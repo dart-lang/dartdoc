@@ -610,7 +610,7 @@ void main() {
   });
 
   group('Macros', () {
-    Class dog;
+    Class dog, ClassTemplateOneLiner;
     Enum MacrosFromAccessors;
     Method withMacro, withMacro2, withPrivateMacro, withUndefinedMacro;
     EnumField macroReferencedHere;
@@ -628,6 +628,16 @@ void main() {
           fakeLibrary.enums.firstWhere((e) => e.name == 'MacrosFromAccessors');
       macroReferencedHere = MacrosFromAccessors.publicConstantFields
           .firstWhere((e) => e.name == 'macroReferencedHere');
+      ClassTemplateOneLiner = exLibrary.allClasses
+          .firstWhere((c) => c.name == 'ClassTemplateOneLiner');
+    });
+
+    test('via reexport does not leave behind template crumbs', () {
+      expect(ClassTemplateOneLiner.isCanonical, isFalse);
+      expect(
+          ClassTemplateOneLiner.oneLineDoc,
+          equals(
+              'I had better not have a template directive in my one liner.'));
     });
 
     test('renders a macro defined within a enum', () {
@@ -1503,7 +1513,7 @@ void main() {
     });
 
     test('correctly finds all the classes', () {
-      expect(classes, hasLength(36));
+      expect(classes, hasLength(37));
     });
 
     test('abstract', () {
