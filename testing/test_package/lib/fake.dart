@@ -73,6 +73,8 @@ export 'src/tool.dart';
 // ignore: uri_does_not_exist
 export 'package:test_package/fake.dart';
 
+export 'src/reexport_this.dart';
+
 /// Does not render with emoji 3ffe:2a00:100:7031::1
 const int hasMarkdownInDoc = 1;
 

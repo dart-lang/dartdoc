@@ -11,7 +11,7 @@ import 'package:test_package_imported/main.dart';
 export 'dart:core' show deprecated, Deprecated;
 import 'package:meta/meta.dart' show protected, factory;
 
-export 'fake.dart' show Cool;
+export 'fake.dart' show Cool, ClassTemplateOneLiner;
 export 'src/mylib.dart' show Helper;
 
 const String COLOR = 'red';
