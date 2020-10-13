@@ -267,20 +267,6 @@ class PackageGraph {
   bool allLibrariesAdded = false;
   bool _localDocumentationBuilt = false;
 
-  Set<String> _allRootDirs;
-
-  /// Returns true if there's at least one library documented in the package
-  /// that has the same package path as the library for the given element.
-  ///
-  /// Usable as a cross-check for dartdoc's canonicalization to generate
-  /// warnings for ModelElement.isPublicAndPackageDocumented.
-  bool packageDocumentedFor(ModelElement element) {
-    _allRootDirs ??= {
-      ...(publicLibraries.map((l) => l.packageMeta?.resolvedDir))
-    };
-    return _allRootDirs.contains(element.library.packageMeta?.resolvedDir);
-  }
-
   PackageWarningCounter get packageWarningCounter => _packageWarningCounter;
 
   final Set<Tuple3<Element, PackageWarning, String>> _warnAlreadySeen = {};

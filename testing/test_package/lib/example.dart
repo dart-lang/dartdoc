@@ -8,6 +8,7 @@ import 'dart:math';
 import 'src/mylib.dart' show Helper;
 import 'package:test_package_imported/main.dart';
 
+export 'package:args/args.dart' show ArgParser;
 export 'dart:core' show deprecated, Deprecated;
 import 'package:meta/meta.dart' show protected, factory;
 

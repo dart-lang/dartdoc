@@ -206,10 +206,11 @@ void main() {
     });
 
     test('basic interlinking test', () async {
-      var dartdoc = await buildDartdoc([], _testPackageDir, tempDir);
+      var dartdoc = await buildDartdoc(['--exclude-packages=args'], _testPackageDir, tempDir);
       var results = await dartdoc.generateDocs();
       var p = results.packageGraph;
       var meta = p.publicPackages.firstWhere((p) => p.name == 'meta');
+      var args = p.publicPackages.firstWhere((p) => p.name == 'args');
       var useSomethingInAnotherPackage = p.publicLibraries
           .firstWhere((l) => l.name == 'fake')
           .properties
@@ -219,6 +220,7 @@ void main() {
           .properties
           .firstWhere((p) => p.name == 'useSomethingInTheSdk');
       expect(meta.documentedWhere, equals(DocumentLocation.remote));
+      expect(args.documentedWhere, equals(DocumentLocation.missing));
       expect(
           useSomethingInAnotherPackage.modelType.linkedName,
           matches(
