@@ -206,7 +206,8 @@ void main() {
     });
 
     test('basic interlinking test', () async {
-      var dartdoc = await buildDartdoc(['--exclude-packages=args'], _testPackageDir, tempDir);
+      var dartdoc = await buildDartdoc(
+          ['--exclude-packages=args'], _testPackageDir, tempDir);
       var results = await dartdoc.generateDocs();
       var p = results.packageGraph;
       var meta = p.publicPackages.firstWhere((p) => p.name == 'meta');
