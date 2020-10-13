@@ -643,7 +643,6 @@ void main() {
     test('renders a macro defined within a enum', () {
       expect(macroReferencedHere.documentationAsHtml,
           contains('This is a macro defined in an Enum accessor.'));
-      [1, 2, 3].whereType();
     });
 
     test("renders a macro within the same comment where it's defined", () {
