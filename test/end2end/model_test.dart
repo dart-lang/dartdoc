@@ -1513,7 +1513,7 @@ void main() {
     });
 
     test('correctly finds all the classes', () {
-      expect(classes, hasLength(37));
+      expect(classes, hasLength(38));
     });
 
     test('abstract', () {

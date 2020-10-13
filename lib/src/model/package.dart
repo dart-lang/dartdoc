@@ -188,7 +188,10 @@ class Package extends LibraryContainer
           _documentedWhere = DocumentLocation.local;
         }
       } else {
-        if (config.linkToRemote && config.linkToUrl.isNotEmpty && isPublic) {
+        if (config.linkToRemote &&
+            config.linkToUrl.isNotEmpty &&
+            isPublic &&
+            !packageGraph.config.isPackageExcluded(name)) {
           _documentedWhere = DocumentLocation.remote;
         } else {
           _documentedWhere = DocumentLocation.missing;

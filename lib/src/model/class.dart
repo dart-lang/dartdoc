@@ -179,12 +179,12 @@ class Class extends Container
     var result = <Class>{};
     var seen = <Class>{};
 
-    // Recursively adds [implementor] if public, or the impelentors of
+    // Recursively adds [implementor] if public, or the implementors of
     // [implementor] if not.
     void addToResult(Class implementor) {
       if (seen.contains(implementor)) return;
       seen.add(implementor);
-      if (implementor.isPublic) {
+      if (implementor.isPublicAndPackageDocumented) {
         result.add(implementor);
       } else {
         model_utils

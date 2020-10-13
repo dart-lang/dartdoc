@@ -1036,8 +1036,7 @@ abstract class ModelElement extends Canonicalization
   @override
   Package get package => library?.package;
 
-  bool get isPublicAndPackageDocumented =>
-      isPublic && library.packageGraph.packageDocumentedFor(this);
+  bool get isPublicAndPackageDocumented => isPublic && package.isDocumented;
 
   List<Parameter> _allParameters;
 
