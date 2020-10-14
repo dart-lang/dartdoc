@@ -785,9 +785,8 @@ class _MarkdownCommentReference {
   }
 
   // Add a result, but make it canonical.
-  void _addCanonicalResult(ModelElement modelElement, Container tryClass) {
-    results.add(packageGraph.findCanonicalModelElementFor(modelElement.element,
-        preferredClass: tryClass));
+  void _addCanonicalResult(ModelElement modelElement, Container _) {
+    results.add(modelElement.canonicalModelElement);
   }
 
   /// _getResultsForClass assumes codeRefChomped might be a member of tryClass (inherited or not)

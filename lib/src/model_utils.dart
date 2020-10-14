@@ -73,6 +73,10 @@ AstNode getAstNode(
   return null;
 }
 
+Iterable<T> filterHasCanonical<T extends ModelElement>(Iterable<T> maybeHasCanonicalItems) {
+  return maybeHasCanonicalItems.where((me) => me.canonicalModelElement != null);
+}
+
 /// Remove elements that aren't documented.
 Iterable<T> filterNonDocumented<T extends Documentable>(
     Iterable<T> maybeDocumentedItems) {

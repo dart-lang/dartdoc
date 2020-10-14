@@ -190,7 +190,7 @@ class PackageGraph {
       assert(packageGraph.allLibrariesAdded);
       _findRefElementCache = {};
       for (final modelElement
-          in utils.filterNonDocumented(packageGraph.allLocalModelElements)) {
+          in utils.filterHasCanonical(packageGraph.allModelElements)) {
         _findRefElementCache.putIfAbsent(
             modelElement.fullyQualifiedNameWithoutLibrary, () => {});
         _findRefElementCache.putIfAbsent(
