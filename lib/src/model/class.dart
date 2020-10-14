@@ -401,8 +401,7 @@ class Class extends Container
       var accessorMap = <String, List<PropertyAccessorElement>>{};
       for (var accessorElement in inheritedAccessorElements) {
         var name = accessorElement.name.replaceFirst('=', '');
-        accessorMap.putIfAbsent(name, () => []);
-        accessorMap[name].add(accessorElement);
+        accessorMap.putIfAbsent(name, () => []).add(accessorElement);
       }
 
       // For half-inherited fields, the analyzer only links the non-inherited

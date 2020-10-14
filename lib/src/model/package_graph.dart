@@ -184,11 +184,11 @@ class PackageGraph {
     return _extensions;
   }
 
-  Map<String, Set<ModelElement>> _findRefElementCache;
-  Map<String, Set<ModelElement>> get findRefElementCache {
+  HashMap<String, Set<ModelElement>> _findRefElementCache;
+  HashMap<String, Set<ModelElement>> get findRefElementCache {
     if (_findRefElementCache == null) {
       assert(packageGraph.allLibrariesAdded);
-      _findRefElementCache = {};
+      _findRefElementCache = HashMap<String, Set<ModelElement>>();
       for (final modelElement
           in utils.filterHasCanonical(packageGraph.allModelElements)) {
         _findRefElementCache.putIfAbsent(
@@ -210,15 +210,13 @@ class PackageGraph {
   PackageWarningCounter _packageWarningCounter;
 
   /// All ModelElements constructed for this package; a superset of [allModelElements].
-  final Map<Tuple3<Element, Library, Container>, ModelElement>
-      allConstructedModelElements = {};
+  final allConstructedModelElements = HashMap<Tuple3<Element, Library, Container>, ModelElement>();
 
   /// Anything that might be inheritable, place here for later lookup.
-  final Map<Tuple2<Element, Library>, Set<ModelElement>>
-      allInheritableElements = {};
+  final allInheritableElements = HashMap<Tuple2<Element, Library>, Set<ModelElement>>();
 
   /// A mapping of the list of classes which implement each class.
-  final Map<Class, List<Class>> _implementors = LinkedHashMap(
+  final _implementors = LinkedHashMap<Class, List<Class>>(
       equals: (Class a, Class b) => a.definingClass == b.definingClass,
       hashCode: (Class class_) => class_.definingClass.hashCode);
 
@@ -544,8 +542,7 @@ class PackageGraph {
           referredFrom: <Locatable>[topLevelLibrary]);
       return;
     }
-    _libraryElementReexportedBy.putIfAbsent(libraryElement, () => {});
-    _libraryElementReexportedBy[libraryElement].add(topLevelLibrary);
+    _libraryElementReexportedBy.putIfAbsent(libraryElement, () => {}).add(topLevelLibrary);
     for (var exportedElement in libraryElement.exports) {
       _tagReexportsFor(
           topLevelLibrary, exportedElement.exportedLibrary, exportedElement);

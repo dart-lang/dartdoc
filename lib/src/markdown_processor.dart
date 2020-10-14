@@ -648,7 +648,7 @@ class _MarkdownCommentReference {
         prefixToLibrary[codeRefChompedParts.first]?.forEach((l) => l
             .modelElementsNameMap[lookup]
             ?.map(_convertConstructors)
-            ?.forEach((m) => _addCanonicalResult(m, _getPreferredClass(m))));
+            ?.forEach((m) => _addCanonicalResult(m)));
       }
     }
   }
@@ -661,7 +661,7 @@ class _MarkdownCommentReference {
             (modelElement is Library &&
                 codeRefChomped == modelElement.fullyQualifiedName)) {
           _addCanonicalResult(
-              _convertConstructors(modelElement), preferredClass);
+              _convertConstructors(modelElement));
         }
       }
     }
@@ -671,7 +671,7 @@ class _MarkdownCommentReference {
     // Only look for partially qualified matches if we didn't find a fully qualified one.
     if (library.modelElementsNameMap.containsKey(codeRefChomped)) {
       for (final modelElement in library.modelElementsNameMap[codeRefChomped]) {
-        _addCanonicalResult(_convertConstructors(modelElement), preferredClass);
+        _addCanonicalResult(_convertConstructors(modelElement));
       }
     }
   }
@@ -684,15 +684,8 @@ class _MarkdownCommentReference {
         packageGraph.findRefElementCache.containsKey(codeRefChomped)) {
       for (var modelElement
           in packageGraph.findRefElementCache[codeRefChomped]) {
-        // For fully qualified matches, the original preferredClass passed
-        // might make no sense.  Instead, use the enclosing class from the
-        // element in [packageGraph.findRefElementCache], because that element's
-        // enclosing class will be preferred from [codeRefChomped]'s perspective.
         _addCanonicalResult(
-            _convertConstructors(modelElement),
-            modelElement.enclosingElement is Class
-                ? modelElement.enclosingElement
-                : null);
+            _convertConstructors(modelElement));
       }
     }
   }
@@ -785,7 +778,7 @@ class _MarkdownCommentReference {
   }
 
   // Add a result, but make it canonical.
-  void _addCanonicalResult(ModelElement modelElement, Container _) {
+  void _addCanonicalResult(ModelElement modelElement) {
     results.add(modelElement.canonicalModelElement);
   }
 
@@ -803,7 +796,7 @@ class _MarkdownCommentReference {
     } else {
       // People like to use 'this' in docrefs too.
       if (codeRef == 'this') {
-        _addCanonicalResult(tryClass, null);
+        _addCanonicalResult(tryClass);
       } else {
         // TODO(jcollins-g): get rid of reimplementation of identifier resolution
         //                   or integrate into ModelElement in a simpler way.
@@ -815,7 +808,7 @@ class _MarkdownCommentReference {
         //                   Fortunately superChains are short, but optimize this if it matters.
         superChain.addAll(tryClass.superChain.map((t) => t.element));
         for (final c in superChain) {
-          _getResultsForSuperChainElement(c, tryClass);
+          _getResultsForSuperChainElement(c);
           if (results.isNotEmpty) break;
         }
       }
@@ -824,12 +817,12 @@ class _MarkdownCommentReference {
 
   /// Get any possible results for this class in the superChain.   Returns
   /// true if we found something.
-  void _getResultsForSuperChainElement(Class c, Class tryClass) {
+  void _getResultsForSuperChainElement(Class c) {
     var membersToCheck = (c.allModelElementsByNamePart[codeRefChomped] ?? [])
         .map(_convertConstructors);
     for (var modelElement in membersToCheck) {
       // [thing], a member of this class
-      _addCanonicalResult(modelElement, tryClass);
+      _addCanonicalResult(modelElement);
     }
     if (codeRefChompedParts.length < 2 ||
         codeRefChompedParts[codeRefChompedParts.length - 2] == c.name) {
@@ -837,7 +830,7 @@ class _MarkdownCommentReference {
           (c.allModelElementsByNamePart[codeRefChompedParts.last] ??
                   <ModelElement>[])
               .map(_convertConstructors);
-      membersToCheck.forEach((m) => _addCanonicalResult(m, tryClass));
+      membersToCheck.forEach((m) => _addCanonicalResult(m));
     }
     results.remove(null);
     if (results.isNotEmpty) return;

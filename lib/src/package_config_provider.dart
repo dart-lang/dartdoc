@@ -27,8 +27,7 @@ class FakePackageConfigProvider implements PackageConfigProvider {
   final _packageConfigData = <String, List<package_config.Package>>{};
 
   void addPackageToConfigFor(String location, String name, Uri root) {
-    _packageConfigData.putIfAbsent(location, () => []);
-    _packageConfigData[location].add(package_config.Package(name, root));
+    _packageConfigData.putIfAbsent(location, () => []).add(package_config.Package(name, root));
   }
 
   @override
