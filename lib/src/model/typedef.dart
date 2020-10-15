@@ -24,8 +24,8 @@ class Typedef extends ModelElement
   String get genericParameters => _renderer.renderGenericParameters(this);
 
   List<TypeParameterElement> get genericTypeParameters {
-    if (element is GenericTypeAliasElement) {
-      return (element as GenericTypeAliasElement).function.typeParameters;
+    if (element is FunctionTypeAliasElement) {
+      return (element as FunctionTypeAliasElement).function.typeParameters;
     }
     return Iterable<TypeParameterElement>.empty();
   }
