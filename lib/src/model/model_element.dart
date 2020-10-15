@@ -331,7 +331,7 @@ abstract class ModelElement extends Canonicalization
     if (e is FunctionElement) {
       return ModelFunction(e, library, packageGraph);
     } else if (e is GenericFunctionTypeElement) {
-      assert(e.enclosingElement is GenericTypeAliasElement);
+      assert(e.enclosingElement is FunctionTypeAliasElement);
       assert(e.enclosingElement.name != '');
       return ModelFunctionTypedef(e, library, packageGraph);
     }

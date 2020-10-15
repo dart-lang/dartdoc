@@ -40,8 +40,8 @@ abstract class ElementType extends Privacy {
       // TODO(jcollins-g): Remove reference to f.element.enclosingElement after
       // analyzer 0.41.
       var isGenericTypeAlias =
-          f.element.enclosingElement is GenericTypeAliasElement ||
-              f.element is GenericTypeAliasElement;
+          f.element.enclosingElement is FunctionTypeAliasElement ||
+              f.element is FunctionTypeAliasElement;
       if (f is FunctionType) {
         assert(f is ParameterizedType);
         if (isGenericTypeAlias) {
