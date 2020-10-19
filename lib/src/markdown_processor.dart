@@ -459,6 +459,10 @@ class _MarkdownCommentReference {
         // conflicts are allowed, but an instance field is allowed to have the
         // same name as a named constructor.
         _reducePreferConstructorViaIndicators,
+        // Prefer Fields/TopLevelVariables to accessors.
+        // TODO(jcollins-g): Remove after fixing dart-lang/dartdoc#2396 or
+        // exclude Accessors from all lookup tables.
+        _reducePreferCombos,
         // Prefer the Dart analyzer's resolution of comment references.  We
         // can't start from this because of the differences in Dartdoc
         // canonicalization.
@@ -545,6 +549,14 @@ class _MarkdownCommentReference {
     if (results.any((r) => r.library?.packageName == library.packageName)) {
       results.removeWhere((r) => r.library?.packageName != library.packageName);
     }
+  }
+
+  void _reducePreferCombos() {
+    var accessors = results.whereType<Accessor>().toList();
+    accessors.forEach((a) {
+      results.remove(a);
+      results.add(a.enclosingCombo);
+    });
   }
 
   void _findTypeParameters() {
