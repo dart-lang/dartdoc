@@ -285,7 +285,8 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
       for (var i in element.imports) {
         // Ignore invalid imports.
         if (i.prefix?.name != null && i.importedLibrary != null) {
-          _prefixToLibrary.putIfAbsent(i.prefix?.name, () => {})
+          _prefixToLibrary
+              .putIfAbsent(i.prefix?.name, () => {})
               .add(ModelElement.from(i.importedLibrary, library, packageGraph));
         }
       }
@@ -597,8 +598,10 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
         // [definingLibrary] may be null if [element] has been imported or
         // exported with a non-normalized URI, like "src//a.dart".
         if (modelElement.definingLibrary == null) return;
-        _modelElementsNameMap.putIfAbsent(
-            modelElement.fullyQualifiedNameWithoutLibrary, () => {}).add(modelElement);
+        _modelElementsNameMap
+            .putIfAbsent(
+                modelElement.fullyQualifiedNameWithoutLibrary, () => {})
+            .add(modelElement);
       });
     }
     return _modelElementsNameMap;
@@ -640,7 +643,9 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
       ]);
       _modelElementsMap = HashMap<Element, Set<ModelElement>>();
       results.forEach((modelElement) {
-        _modelElementsMap.putIfAbsent(modelElement.element, () => {}).add(modelElement);
+        _modelElementsMap
+            .putIfAbsent(modelElement.element, () => {})
+            .add(modelElement);
       });
       _modelElementsMap.putIfAbsent(element, () => {}).add(this);
     }

@@ -210,10 +210,12 @@ class PackageGraph {
   PackageWarningCounter _packageWarningCounter;
 
   /// All ModelElements constructed for this package; a superset of [allModelElements].
-  final allConstructedModelElements = HashMap<Tuple3<Element, Library, Container>, ModelElement>();
+  final allConstructedModelElements =
+      HashMap<Tuple3<Element, Library, Container>, ModelElement>();
 
   /// Anything that might be inheritable, place here for later lookup.
-  final allInheritableElements = HashMap<Tuple2<Element, Library>, Set<ModelElement>>();
+  final allInheritableElements =
+      HashMap<Tuple2<Element, Library>, Set<ModelElement>>();
 
   /// A mapping of the list of classes which implement each class.
   final _implementors = LinkedHashMap<Class, List<Class>>(
@@ -542,7 +544,9 @@ class PackageGraph {
           referredFrom: <Locatable>[topLevelLibrary]);
       return;
     }
-    _libraryElementReexportedBy.putIfAbsent(libraryElement, () => {}).add(topLevelLibrary);
+    _libraryElementReexportedBy
+        .putIfAbsent(libraryElement, () => {})
+        .add(topLevelLibrary);
     for (var exportedElement in libraryElement.exports) {
       _tagReexportsFor(
           topLevelLibrary, exportedElement.exportedLibrary, exportedElement);

@@ -73,7 +73,8 @@ AstNode getAstNode(
   return null;
 }
 
-Iterable<T> filterHasCanonical<T extends ModelElement>(Iterable<T> maybeHasCanonicalItems) {
+Iterable<T> filterHasCanonical<T extends ModelElement>(
+    Iterable<T> maybeHasCanonicalItems) {
   return maybeHasCanonicalItems.where((me) => me.canonicalModelElement != null);
 }
 

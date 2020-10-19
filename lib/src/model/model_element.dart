@@ -299,7 +299,9 @@ abstract class ModelElement extends Canonicalization
       library.packageGraph.allConstructedModelElements[key] = newModelElement;
       if (newModelElement is Inheritable) {
         var iKey = Tuple2<Element, Library>(e, library);
-        library.packageGraph.allInheritableElements.putIfAbsent(iKey, () => {}).add(newModelElement);
+        library.packageGraph.allInheritableElements
+            .putIfAbsent(iKey, () => {})
+            .add(newModelElement);
       }
     }
   }

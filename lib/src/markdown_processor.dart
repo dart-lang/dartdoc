@@ -672,8 +672,7 @@ class _MarkdownCommentReference {
         if (codeRefChomped == modelElement.fullyQualifiedNameWithoutLibrary ||
             (modelElement is Library &&
                 codeRefChomped == modelElement.fullyQualifiedName)) {
-          _addCanonicalResult(
-              _convertConstructors(modelElement));
+          _addCanonicalResult(_convertConstructors(modelElement));
         }
       }
     }
@@ -696,8 +695,7 @@ class _MarkdownCommentReference {
         packageGraph.findRefElementCache.containsKey(codeRefChomped)) {
       for (var modelElement
           in packageGraph.findRefElementCache[codeRefChomped]) {
-        _addCanonicalResult(
-            _convertConstructors(modelElement));
+        _addCanonicalResult(_convertConstructors(modelElement));
       }
     }
   }
