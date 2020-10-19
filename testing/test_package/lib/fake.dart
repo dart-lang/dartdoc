@@ -858,6 +858,7 @@ class ExtraSpecialList<E> extends SpecialList {}
 /// {@subCategory Things and Such}
 /// {@image https://flutter.io/images/catalog-widget-placeholder.png}
 /// {@samples https://flutter.io}
+///
 class BaseForDocComments {
   /// Takes a [value] and returns a String.
   ///
@@ -898,6 +899,10 @@ class BaseForDocComments {
   /// Reference containing a type parameter [ExtraSpecialList<Object>]
   ///
   /// Reference to something that doesn't exist containing a type parameter [ThisIsNotHereNoWay<MyType>]
+  ///
+  /// Reference to an inherited member: [ClassWithUnusualProperties.forInheriting]
+  ///
+  /// Reference to an inherited member in another library via class name: [ExtendedBaseReexported.action]
   ///
   /// Link to a nonexistent file (erroneously expects base href): [link](SubForDocComments/localMethod.html)
   ///
