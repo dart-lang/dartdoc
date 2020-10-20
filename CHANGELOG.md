@@ -1,3 +1,23 @@
+## 0.36.0
+
+* Fix problem with linking to non-canonical elements via documentation
+  references. (#2397, #2389)
+* Allow for markdown 3.0.0. (#2394)
+* **Breaking change** Behavior of `--exclude-packages` is changed so that
+  packages so excluded will never be treated as "remote".  This version is now
+  incompatible with old workarounds for #1431 (and those workarounds are no
+  longer needed). Also removes `PackageGraph.packageDocumentedFor`.
+  (#2387, #2382, #1431)
+* Enable NNBD support by default in dartdoc.  If a package is non-nullable,
+  it will now be documented that way (with null safety tags).  No change in
+  behavior for packages that have not been migrated. (#2384)
+* **Breaking change** Adjust interfaces for mustache and remove constant
+  templates, including removing `TemplateData.packageGraph`. (#2375, #2373,
+  #2379)
+* Internal type changes for upcoming analyzer 0.41 (#2380, #2392)
+* **Breaking change** Remove typeParameters setter for ModelFunctionTyped and
+  change Typedef inheritance (#2376)
+
 ## 0.35.0
 
 * Update Dart analyzer version to 0.40+ and update minimum Dart version
@@ -162,7 +182,7 @@
 
 ## 0.30.1
 * A more complete fix for the broken search box. (#2125, #2124)
-* Fix the "--rel-canonical-prefix" flag post `base href`. (#2126, #2122) 
+* Fix the "--rel-canonical-prefix" flag post `base href`. (#2126, #2122)
 * Tool change: `grind serve-pub-package` can now serve packages depending
   on flutter for debugging purposes (#2130)
 * More internal changes preparing for markdown output (#2138, #2140, #2132,
