@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'dart:collection';
+
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
@@ -283,8 +285,8 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
       for (var i in element.imports) {
         // Ignore invalid imports.
         if (i.prefix?.name != null && i.importedLibrary != null) {
-          _prefixToLibrary.putIfAbsent(i.prefix?.name, () => {});
-          _prefixToLibrary[i.prefix?.name]
+          _prefixToLibrary
+              .putIfAbsent(i.prefix?.name, () => {})
               .add(ModelElement.from(i.importedLibrary, library, packageGraph));
         }
       }
@@ -585,29 +587,29 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   static String getLibraryName(LibraryElement element) =>
       _getLibraryName(element);
 
-  /*late final*/ Map<String, Set<ModelElement>> _modelElementsNameMap;
+  /*late final*/ HashMap<String, Set<ModelElement>> _modelElementsNameMap;
 
   /// Map of [fullyQualifiedNameWithoutLibrary] to all matching [ModelElement]s
   /// in this library.  Used for code reference lookups.
-  Map<String, Set<ModelElement>> get modelElementsNameMap {
+  HashMap<String, Set<ModelElement>> get modelElementsNameMap {
     if (_modelElementsNameMap == null) {
-      _modelElementsNameMap = <String, Set<ModelElement>>{};
+      _modelElementsNameMap = HashMap<String, Set<ModelElement>>();
       allModelElements.forEach((ModelElement modelElement) {
         // [definingLibrary] may be null if [element] has been imported or
         // exported with a non-normalized URI, like "src//a.dart".
         if (modelElement.definingLibrary == null) return;
-        _modelElementsNameMap.putIfAbsent(
-            modelElement.fullyQualifiedNameWithoutLibrary, () => {});
-        _modelElementsNameMap[modelElement.fullyQualifiedNameWithoutLibrary]
+        _modelElementsNameMap
+            .putIfAbsent(
+                modelElement.fullyQualifiedNameWithoutLibrary, () => {})
             .add(modelElement);
       });
     }
     return _modelElementsNameMap;
   }
 
-  /*late final*/ Map<Element, Set<ModelElement>> _modelElementsMap;
+  /*late final*/ HashMap<Element, Set<ModelElement>> _modelElementsMap;
 
-  Map<Element, Set<ModelElement>> get modelElementsMap {
+  HashMap<Element, Set<ModelElement>> get modelElementsMap {
     if (_modelElementsMap == null) {
       var results = quiver.concat(<Iterable<ModelElement>>[
         library.constants,
@@ -639,13 +641,13 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
           ]);
         }),
       ]);
-      _modelElementsMap = <Element, Set<ModelElement>>{};
+      _modelElementsMap = HashMap<Element, Set<ModelElement>>();
       results.forEach((modelElement) {
-        _modelElementsMap.putIfAbsent(modelElement.element, () => {});
-        _modelElementsMap[modelElement.element].add(modelElement);
+        _modelElementsMap
+            .putIfAbsent(modelElement.element, () => {})
+            .add(modelElement);
       });
-      _modelElementsMap.putIfAbsent(element, () => {});
-      _modelElementsMap[element].add(this);
+      _modelElementsMap.putIfAbsent(element, () => {}).add(this);
     }
     return _modelElementsMap;
   }

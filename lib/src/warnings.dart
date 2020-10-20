@@ -482,8 +482,7 @@ class PackageWarningCounter {
       errorCount += 1;
     }
     var warningData = Tuple2<PackageWarning, String>(kind, message);
-    countedWarnings.putIfAbsent(element?.element, () => {});
-    countedWarnings[element?.element].add(warningData);
+    countedWarnings.putIfAbsent(element?.element, () => {}).add(warningData);
     _writeWarning(kind, warningMode, config.verboseWarnings,
         element?.fullyQualifiedName, fullMessage);
   }

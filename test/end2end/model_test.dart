@@ -15,6 +15,7 @@ import 'package:dartdoc/src/render/model_element_renderer.dart';
 import 'package:dartdoc/src/render/parameter_renderer.dart';
 import 'package:dartdoc/src/render/typedef_renderer.dart';
 import 'package:dartdoc/src/special_elements.dart';
+import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:test/test.dart';
 
@@ -880,6 +881,24 @@ void main() {
 
       setUpAll(() {
         docsAsHtml = doAwesomeStuff.documentationAsHtml;
+      });
+
+      test('Verify links to inherited members inside class', () {
+        expect(
+            docsAsHtml,
+            contains(
+                '<a href="${HTMLBASE_PLACEHOLDER}fake/ImplicitProperties/forInheriting.html">ClassWithUnusualProperties.forInheriting</a>'));
+        expect(
+            docsAsHtml,
+            contains(
+                '<a href="%%__HTMLBASE_dartdoc_internal__%%reexport_two/BaseReexported/action.html">ExtendedBaseReexported.action</a></p>'));
+        var doAwesomeStuffWarnings = packageGraph.packageWarningCounter
+                .countedWarnings[doAwesomeStuff.element] ??
+            [];
+        expect(
+            doAwesomeStuffWarnings,
+            isNot(anyElement((Tuple2<PackageWarning, String> e) =>
+                e.item1 == PackageWarning.ambiguousDocReference)));
       });
 
       test('can handle renamed imports', () {

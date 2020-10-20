@@ -299,8 +299,9 @@ abstract class ModelElement extends Canonicalization
       library.packageGraph.allConstructedModelElements[key] = newModelElement;
       if (newModelElement is Inheritable) {
         var iKey = Tuple2<Element, Library>(e, library);
-        library.packageGraph.allInheritableElements.putIfAbsent(iKey, () => {});
-        library.packageGraph.allInheritableElements[iKey].add(newModelElement);
+        library.packageGraph.allInheritableElements
+            .putIfAbsent(iKey, () => {})
+            .add(newModelElement);
       }
     }
   }
@@ -557,10 +558,9 @@ abstract class ModelElement extends Canonicalization
         preferredClass: preferredClass);
   }
 
+  ModelElement _canonicalModelElement;
   // Returns the canonical ModelElement for this ModelElement, or null
   // if there isn't one.
-  ModelElement _canonicalModelElement;
-
   ModelElement get canonicalModelElement =>
       _canonicalModelElement ??= buildCanonicalModelElement();
 
