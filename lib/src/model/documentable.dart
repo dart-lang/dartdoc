@@ -27,6 +27,10 @@ abstract class Documentable extends Nameable {
   bool get isDocumented;
 
   DartdocOptionContext get config;
+
+  String get href;
+
+  String get kind;
 }
 
 /// For a given package, indicate with this enum whether it should be documented

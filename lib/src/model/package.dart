@@ -90,6 +90,7 @@ class Package extends LibraryContainer
 
   String get homepage => packageMeta.homepage;
 
+  @override
   String get kind => (isSdk) ? 'SDK' : 'package';
 
   @override
