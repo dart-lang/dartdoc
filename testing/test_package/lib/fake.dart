@@ -603,6 +603,10 @@ class HtmlEscapableProperties extends HtmlEscapableImplicitProperties {
 
   /// A simple property.
   List<int> simpleProperty = List<int>();
+
+  /// A long multiple variable declaration.
+  List<int> iAmALongLongLongLongLongLongLongLongLongName,
+      ensureWholeDeclarationIsVisible;
 }
 
 /// This is a very long line spread

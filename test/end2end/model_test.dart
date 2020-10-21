@@ -3761,6 +3761,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     Field implicitGetterExplicitSetter, explicitGetterImplicitSetter;
     Field explicitGetterSetter, explicitGetterSetterForInheriting;
     Field finalProperty, simpleProperty, forInheriting;
+    Field ensureWholeDeclarationIsVisible;
 
     setUpAll(() {
       EscapableProperties = fakeLibrary.classes
@@ -3779,6 +3780,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .firstWhere((e) => e.name == 'forInheriting');
       explicitGetterSetterForInheriting = EscapableProperties.allModelElements
           .firstWhere((e) => e.name == 'explicitGetterSetterForInheriting');
+      ensureWholeDeclarationIsVisible = EscapableProperties.allModelElements
+          .firstWhere((e) => e.name == 'ensureWholeDeclarationIsVisible');
     });
 
     test('Normal property fields are escaped', () {
@@ -3824,6 +3827,11 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(implicitGetterExplicitSetter.setter.sourceCode.trim(),
           endsWith('\{\}'));
       expect(explicitGetterSetter.setter.sourceCode.trim(), endsWith('\{\}'));
+    });
+
+    test('Whole declaration is visible when declaration spans many lines', () {
+      expect(ensureWholeDeclarationIsVisible.sourceCode,
+          contains('List&lt;int&gt; '));
     });
   });
 
