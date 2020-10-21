@@ -48,9 +48,9 @@ class ModelNode {
       if (_sourceNode?.offset != null) {
         var sourceNode = _sourceNode;
 
-        // Get a node higher up the syntax tree that includes the semicolon.
-        // In this case, it is either a [FieldDeclaration] or
-        // [TopLevelVariableDeclaration]. (#2401)
+        /// Get a node higher up the syntax tree that includes the semicolon.
+        /// In this case, it is either a [FieldDeclaration] or
+        /// [TopLevelVariableDeclaration]. (#2401)
         if (sourceNode is VariableDeclaration) {
           sourceNode = sourceNode.parent.parent;
           assert(sourceNode is FieldDeclaration ||
