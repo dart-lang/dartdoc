@@ -1746,6 +1746,7 @@ void main() {
   group('Extension', () {
     Extension arm, leg, ext, fancyList, uphill;
     Extension documentOnceReexportOne, documentOnceReexportTwo;
+    Extension staticFieldExtension;
     Library reexportOneLib, reexportTwoLib;
     Class apple,
         anotherExtended,
@@ -1784,6 +1785,7 @@ void main() {
           .firstWhere((e) => e.name == 'SimpleStringExtension')
           .instanceMethods
           .firstWhere((m) => m.name == 'doStuff');
+      staticFieldExtension = exLibrary.extensions.firstWhere((e) => e.name == 'StaticFieldExtension');
       extensions = exLibrary.publicExtensions.toList();
       baseTest = fakeLibrary.classes.firstWhere((e) => e.name == 'BaseTest');
       bigAnotherExtended =
@@ -1796,6 +1798,11 @@ void main() {
       megaTron = fakeLibrary.classes.firstWhere((e) => e.name == 'Megatron');
       superMegaTron =
           fakeLibrary.classes.firstWhere((e) => e.name == 'SuperMegaTron');
+    });
+
+    test('static fields inside extensions do not crash', () {
+      expect(staticFieldExtension.staticFields.length, equals(1));
+      expect(staticFieldExtension.staticFields.first.name, equals('aStatic'));
     });
 
     test('basic canonicalization for extensions', () {
@@ -1980,11 +1987,11 @@ void main() {
     });
 
     test('correctly finds all the extensions', () {
-      expect(exLibrary.extensions, hasLength(8));
+      expect(exLibrary.extensions, hasLength(9));
     });
 
     test('correctly finds all the public extensions', () {
-      expect(extensions, hasLength(6));
+      expect(extensions, hasLength(7));
     });
   });
 

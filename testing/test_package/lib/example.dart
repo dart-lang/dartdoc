@@ -648,6 +648,10 @@ extension on Object {
   void bar() {}
 }
 
+extension StaticFieldExtension on Object {
+  static int aStatic;
+}
+
 /// This class has nothing to do with [_Shhh], [FancyList], or [AnExtension.call],
 /// but should not crash because we referenced them.
 /// We should be able to find [DocumentThisExtensionOnce], too.
