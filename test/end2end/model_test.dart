@@ -1785,7 +1785,8 @@ void main() {
           .firstWhere((e) => e.name == 'SimpleStringExtension')
           .instanceMethods
           .firstWhere((m) => m.name == 'doStuff');
-      staticFieldExtension = exLibrary.extensions.firstWhere((e) => e.name == 'StaticFieldExtension');
+      staticFieldExtension = exLibrary.extensions
+          .firstWhere((e) => e.name == 'StaticFieldExtension');
       extensions = exLibrary.publicExtensions.toList();
       baseTest = fakeLibrary.classes.firstWhere((e) => e.name == 'BaseTest');
       bigAnotherExtended =
