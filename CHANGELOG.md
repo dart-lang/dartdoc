@@ -1,3 +1,8 @@
+## 0.36.1
+
+* Fix NPE in `Accessor.computeDocumentationComment` when encountering
+  static fields in extension methods (#2402, #2404)
+
 ## 0.36.0
 
 * Fix problem with linking to non-canonical elements via documentation
