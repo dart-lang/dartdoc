@@ -25,12 +25,10 @@ class ModelNode {
   final Element element;
   final ResourceProvider resourceProvider;
 
-  final int _sourceOffset;
-  final int _sourceEnd;
+  final AstNode _sourceNode;
 
   ModelNode(AstNode sourceNode, this.element, this.resourceProvider)
-      : _sourceOffset = sourceNode?.offset,
-        _sourceEnd = sourceNode?.end,
+      : _sourceNode = sourceNode,
         commentRefs = _commentRefsFor(sourceNode);
 
   static List<ModelCommentReference> _commentRefsFor(AstNode node) {
@@ -47,11 +45,25 @@ class ModelNode {
 
   String get sourceCode {
     if (_sourceCode == null) {
-      if (_sourceOffset != null) {
+      if (_sourceNode?.offset != null) {
+        var sourceNode = _sourceNode;
+
+        // Get a node higher up the syntax tree that includes the semicolon.
+        // In this case, it is either a [FieldDeclaration] or
+        // [TopLevelVariableDeclaration]. (#2401)
+        if (sourceNode is VariableDeclaration) {
+          sourceNode = sourceNode.parent.parent;
+          assert(sourceNode is FieldDeclaration ||
+              sourceNode is TopLevelVariableDeclaration);
+        }
+
+        var sourceEnd = sourceNode.end;
+        var sourceOffset = sourceNode.offset;
+
         var contents =
             model_utils.getFileContentsFor(element, resourceProvider);
         // Find the start of the line, so that we can line up all the indents.
-        var i = _sourceOffset;
+        var i = sourceOffset;
         while (i > 0) {
           i -= 1;
           if (contents[i] == '\n' || contents[i] == '\r') {
@@ -61,17 +73,11 @@ class ModelNode {
         }
 
         // Trim the common indent from the source snippet.
-        var start = _sourceOffset - (_sourceOffset - i);
-        var source = contents.substring(start, _sourceEnd);
+        var start = sourceOffset - (sourceOffset - i);
+        var source = contents.substring(start, sourceEnd);
 
         source = model_utils.stripIndentFromSource(source);
         source = model_utils.stripDartdocCommentsFromSource(source);
-
-        // The calculated source code end for field elements doesn't include
-        // the semicolon for field elements, so it has to be added manually
-        if (element is FieldElement) {
-          source += ';';
-        }
 
         _sourceCode = source.trim();
       } else {
