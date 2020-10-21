@@ -564,6 +564,47 @@ class ClassWithUnusualProperties extends ImplicitProperties {
   }
 }
 
+class HtmlEscapableImplicitProperties {
+  /// Docs for implicitGetterExplicitSetter from HtmlEscapableImplicitProperties.
+  List<int> implicitGetterExplicitSetter;
+
+  /// Docs for explicitGetterImplicitSetter from HtmlEscapableImplicitProperties.
+  List<int> explicitGetterImplicitSetter;
+
+  /// A simple property to inherit.
+  List<int> forInheriting;
+
+  /// Explicit getter for inheriting.
+  List<int> get explicitGetterSetterForInheriting => [1, 2];
+
+  /// Explicit setter for inheriting.
+  set explicitGetterSetterForInheriting(List<int> foo) {}
+}
+
+class HtmlEscapableProperties extends HtmlEscapableImplicitProperties {
+  @override
+
+  /// Docs for setter of implicitGetterExplicitSetter.
+  set implicitGetterExplicitSetter(List<int> x) {}
+
+  @override
+
+  /// Getter doc for explicitGetterImplicitSetter
+  List<int> get explicitGetterImplicitSetter => List<int>();
+
+  /// Getter doc for explicitGetterSetter.
+  List<int> get explicitGetterSetter => List<int>();
+
+  /// Setter doc for explicitGetterSetter.
+  set explicitGetterSetter(List<int> aList) {}
+
+  /// A final property.
+  final List<int> finalProperty = List<int>();
+
+  /// A simple property.
+  List<int> simpleProperty = List<int>();
+}
+
 /// This is a very long line spread
 /// across... wait for it... two physical lines.
 ///

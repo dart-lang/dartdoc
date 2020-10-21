@@ -3756,6 +3756,58 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
   });
 
+  group('Source Code HTML', () {
+    Class EscapableProperties;
+    Field implicitGetterExplicitSetter, explicitGetterImplicitSetter;
+    Field explicitGetterSetter, explicitGetterSetterForInheriting;
+    Field finalProperty, simpleProperty, forInheriting;
+
+    setUpAll(() {
+      EscapableProperties = fakeLibrary.classes
+          .firstWhere((c) => c.name == 'HtmlEscapableProperties');
+      implicitGetterExplicitSetter = EscapableProperties.allModelElements
+          .firstWhere((e) => e.name == 'implicitGetterExplicitSetter');
+      explicitGetterImplicitSetter = EscapableProperties.allModelElements
+          .firstWhere((e) => e.name == 'explicitGetterImplicitSetter');
+      explicitGetterSetter = EscapableProperties.allModelElements
+          .firstWhere((e) => e.name == 'explicitGetterSetter');
+      finalProperty = EscapableProperties.allModelElements
+          .firstWhere((e) => e.name == 'finalProperty');
+      simpleProperty = EscapableProperties.allModelElements
+          .firstWhere((e) => e.name == 'simpleProperty');
+      forInheriting = EscapableProperties.allModelElements
+          .firstWhere((e) => e.name == 'forInheriting');
+      explicitGetterSetterForInheriting = EscapableProperties.allModelElements
+          .firstWhere((e) => e.name == 'explicitGetterSetterForInheriting');
+    });
+
+    test('Normal property fields are escaped', () {
+      expect(finalProperty.sourceCode, contains('&lt;int&gt;'));
+      expect(simpleProperty.sourceCode, contains('&lt;int&gt;'));
+      expect(forInheriting.sourceCode, contains('&lt;int&gt;'));
+    });
+
+    test('Explicit accessors are escaped', () {
+      expect(explicitGetterSetter.getter.sourceCode, contains('&lt;int&gt;'));
+      expect(explicitGetterSetter.setter.sourceCode, contains('&lt;int&gt;'));
+    });
+
+    test('Implicit accessors are escaped', () {
+      expect(implicitGetterExplicitSetter.getter.sourceCode,
+          contains('&lt;int&gt;'));
+      expect(implicitGetterExplicitSetter.setter.sourceCode,
+          contains('&lt;int&gt;'));
+      expect(explicitGetterImplicitSetter.getter.sourceCode,
+          contains('&lt;int&gt;'));
+      expect(explicitGetterImplicitSetter.setter.sourceCode,
+          contains('&lt;int&gt;'));
+      expect(explicitGetterSetterForInheriting.getter.sourceCode,
+          contains('&lt;int&gt;'));
+      expect(explicitGetterSetterForInheriting.setter.sourceCode,
+          contains('&lt;int&gt;'));
+    });
+  });
+
   group('Sorting by name', () {
     // Order by uppercased lexical ordering for non-digits,
     // lexicographical ordering of embedded digit sequences.
