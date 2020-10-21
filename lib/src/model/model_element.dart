@@ -359,12 +359,14 @@ abstract class ModelElement extends Canonicalization
       }
     }
     if (e is PropertyAccessorElement) {
-      // TODO(jcollins-g): why test for ClassElement in enclosingElement?
+      // Accessors can be part of a [Container], or a part of a [Library].
       if (e.enclosingElement is ClassElement ||
+          e.enclosingElement is ExtensionElement ||
           e is MultiplyInheritedExecutableElement) {
         if (enclosingContainer == null) {
           return ContainerAccessor(e, library, packageGraph);
         } else {
+          assert(e.enclosingElement is! ExtensionElement);
           return ContainerAccessor.inherited(
               e, library, packageGraph, enclosingContainer,
               originalMember: originalMember);
