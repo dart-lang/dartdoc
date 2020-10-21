@@ -67,6 +67,12 @@ class ModelNode {
         source = model_utils.stripIndentFromSource(source);
         source = model_utils.stripDartdocCommentsFromSource(source);
 
+        // The calculated source code end for field elements doesn't include
+        // the semicolon for field elements, so it has to be added manually
+        if (element is FieldElement) {
+          source += ';';
+        }
+
         _sourceCode = source.trim();
       } else {
         _sourceCode = '';
