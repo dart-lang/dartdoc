@@ -28,12 +28,8 @@ class Accessor extends ModelElement implements EnclosedElement {
   GetterSetterCombo get definingCombo {
     if (_definingCombo == null) {
       var variable = (element as PropertyAccessorElement).variable;
-      var accessor = isGetter ? variable.getter : variable.setter;
-      var accessorLibrary = Library(accessor.library, packageGraph);
-      var definingAccessor =
-          ModelElement.from(accessor, accessorLibrary, packageGraph)
-              as Accessor;
-      _definingCombo = definingAccessor.enclosingCombo;
+      _definingCombo = ModelElement.fromElement(variable, packageGraph);
+      assert(_definingCombo != null, 'Unable to find defining combo');
     }
     return _definingCombo;
   }
