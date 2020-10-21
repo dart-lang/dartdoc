@@ -3806,6 +3806,25 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(explicitGetterSetterForInheriting.setter.sourceCode,
           contains('&lt;int&gt;'));
     });
+
+    test('Property fields are terminated with semicolon', () {
+      expect(finalProperty.sourceCode.trim(), endsWith('List&lt;int&gt;();'));
+      expect(simpleProperty.sourceCode.trim(), endsWith('List&lt;int&gt;();'));
+      expect(forInheriting.sourceCode.trim(), endsWith('forInheriting;'));
+    });
+
+    test('Arrow accessors are terminated with semicolon', () {
+      expect(explicitGetterImplicitSetter.getter.sourceCode.trim(),
+          endsWith('List&lt;int&gt;();'));
+      expect(explicitGetterSetter.getter.sourceCode.trim(),
+          endsWith('List&lt;int&gt;();'));
+    });
+
+    test('Traditional accessors are not terminated with semicolon', () {
+      expect(implicitGetterExplicitSetter.setter.sourceCode.trim(),
+          endsWith('\{\}'));
+      expect(explicitGetterSetter.setter.sourceCode.trim(), endsWith('\{\}'));
+    });
   });
 
   group('Sorting by name', () {
