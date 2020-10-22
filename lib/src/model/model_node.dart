@@ -46,19 +46,19 @@ class ModelNode {
   String get sourceCode {
     if (_sourceCode == null) {
       if (_sourceNode?.offset != null) {
-        var sourceNode = _sourceNode;
+        var enclosingSourceNode = _sourceNode;
 
         /// Get a node higher up the syntax tree that includes the semicolon.
         /// In this case, it is either a [FieldDeclaration] or
         /// [TopLevelVariableDeclaration]. (#2401)
-        if (sourceNode is VariableDeclaration) {
-          sourceNode = sourceNode.parent.parent;
-          assert(sourceNode is FieldDeclaration ||
-              sourceNode is TopLevelVariableDeclaration);
+        if (_sourceNode is VariableDeclaration) {
+          enclosingSourceNode = _sourceNode.parent.parent;
+          assert(enclosingSourceNode is FieldDeclaration ||
+              enclosingSourceNode is TopLevelVariableDeclaration);
         }
 
-        var sourceEnd = sourceNode.end;
-        var sourceOffset = sourceNode.offset;
+        var sourceEnd = enclosingSourceNode.end;
+        var sourceOffset = enclosingSourceNode.offset;
 
         var contents =
             model_utils.getFileContentsFor(element, resourceProvider);
