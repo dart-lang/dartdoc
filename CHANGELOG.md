@@ -1,3 +1,129 @@
+## 0.36.1
+
+* Fix NPE in `Accessor.computeDocumentationComment` when encountering
+  static fields in extension methods (#2402, #2404)
+
+## 0.36.0
+
+* Fix problem with linking to non-canonical elements via documentation
+  references. (#2397, #2389)
+* Allow for markdown 3.0.0. (#2394)
+* **Breaking change** Behavior of `--exclude-packages` is changed so that
+  packages so excluded will never be treated as "remote".  This version is now
+  incompatible with old workarounds for #1431 (and those workarounds are no
+  longer needed). Also removes `PackageGraph.packageDocumentedFor`.
+  (#2387, #2382, #1431)
+* Enable NNBD support by default in dartdoc.  If a package is non-nullable,
+  it will now be documented that way (with null safety tags).  No change in
+  behavior for packages that have not been migrated. (#2384)
+* **Breaking change** Adjust interfaces for mustache and remove constant
+  templates, including removing `TemplateData.packageGraph`. (#2375, #2373,
+  #2379)
+* Internal type changes for upcoming analyzer 0.41 (#2380, #2392)
+* **Breaking change** Remove typeParameters setter for ModelFunctionTyped and
+  change Typedef inheritance (#2376)
+
+## 0.35.0
+
+* Update Dart analyzer version to 0.40+ and update minimum Dart version
+  to 2.10. (#2372)
+* Add a `nodoc` option in `dartdoc_options.yaml` to prevent all symbols
+  declared in a file from ever being documented, similar to using `@nodoc`
+  (#2369, #2368, #2266, #2355)
+* Some template interface refactors preparing for mustache changes to drop
+  use of dart:mirrors. (#2371, #2370)
+* Add an feature to allow declaring a `DartdocOption`'s value to be a glob.
+  (#2365)
+  * **Breaking change**: The `DartdocOption` constructor interface has changed
+    so it uses an enum instead of individual `isFile` and `isDir`.
+* Emit a warning rather than throwing a fatal error for a package with
+  no libraries. (#2360, #2327)
+* Fix several problems with implementation chain display when there are
+  intermediate private classes (#2358, #2290, #2094, #2354, #1623)
+* Fix a deadlock in `MultiFutureTracker`. (#2351)
+* Cache exclude values and known parts. (#2347)
+
+## 0.34.0
+
+* PackageConfigProvider, MockSdk, etc for improved unit testing (#2332)
+  * The new PackageConfigProvider class abstracts over PackageConfig from
+    `package_config`. PhysicalPackageConfigProvider uses the real one;
+    MemoryPackageConfigProvider is used in tests.
+  * The new `isSdkLibraryDocumented` abstracts over SdkLibrary's
+    `isDocumented`, because it throws unimplemented for `MockSdkLibrary`.
+  * Remove `ResourceProviderExtensions.defaultSdkDir`. Now this is a property
+    of PackageMetaProvider.
+  * **Breaking change**: Move `io_utils` `listDir` to be a private method in
+    PackageBuilder.
+  * **Breaking change**: Add parameter to PubPackageBuilder constructor for a
+    PackageConfigProvider.
+  * **Breaking change**: Add two parameters to the PackageMetaProvider
+    constructor, one for the default SDK directory, and one for the DartSdk.
+  * Deprecate package.dart's `substituteNameVersion`.
+  * Shorten doc comments here and there to 80 columns.
+  * Move any tests which use `testing/test_package_small` to be unit tests;
+    delete the package in `testing/`.
+  * Move some tests for properties of package which use the ginormous testing
+    package to unit tests
+* Add a warning when an unknown directive is parsed in a comment. (#2340)
+
+## 0.33.0
+
+* Remove a use of resource loading (#2337)
+* Remove some unused dependencies (#2334)
+* Use the terminal width for the line length (#2333)
+* Disambiguate between named constructor and field (#2331)
+* Rename some fields which erroneously reference "default" constructors.
+  (#2330)
+* Support abstract fields (#2329)
+* Allow ? and ! to trail in doc comment references (#2328)
+* Use first element in a MultiplyDefinedElement (#2326)
+* Update all (approximately) i/o operations to use ResourceProvider (#2315):
+  * **Breaking change**: Many classes have a new ResourceProvider
+    resourceProvider field: DartdocFileWriter, SnapshotCache,
+    DartToolDefinition, ToolConfiguration, DartdocOption, PackageMetaProvider,
+    PackageMeta, ToolTempFileTracker.
+  * **Breaking change**: Each of SnapshotCache and ToolTempFileTracker has a
+    static instance field which took no arguments; now that they need a
+    ResourceProvider, it was unwieldy to pass a ResourceProvider to get the
+    instance each time, so a new method, createInstance creates the instance.
+* Remove wbr tags around block-displayed elements (#2320)
+* Warn when the defining library cannot be found (#2319)
+* Improve error when `FLUTTER_ROOT` is missing. (#2316)
+* Remove dependency on deprecated resource package. (#2314)
+* Link const annotations to their docs (#2313)
+* **Breaking change**: Remove FileContents class. (#2312)
+
+## 0.32.4
+
+* Fix paragraph spacing in enum values. (#2286)
+* Escape HTML in parameter default values (#2288)
+* Preserve newline following `{@endtemplate}`. (#2289)
+* Privatize some of the public interface (#2291, #2292, ##2293, #2307)
+  * Deprecate the public method `Canonicalization.scoreElementWithLibrary`.
+  * Deprecate the public getters `ScoredCandidate.reasons` and
+    `ScoredCandidate.element`, method `ScoredCandidate.alterScore`.
+  * Deprecate the setters `Category.package`, and `Category.config`, and the
+    public method `Category.fileType`.
+  * Deprecate the unused methods `Category.linkedName` and
+    `Category.categoryLabel`.
+  * Deprecate the setters `Class.mixins` and `Class.supertype` and method
+    `Class.isInheritedFrom`.
+  * Change `Library.fromLibraryResult` to be a factory constructor.
+  * Deprecate the public methods `Library.getDefinedElements`,
+    `Library.getLibraryName`, and getter
+    `Library.allOriginalModelElementNames`.
+  * Deprecate the public top-level fields in `io_utils.dart`:
+    `libraryNameRegexp`, `partOfRegexp`, `newLinePartOfRegexp`
+  * Deprecate the public top-level field in `categorization.dart`:
+    `categoryRegexp`
+  * Deprecate the public top-level fields in `model_element.dart`:
+    `needsPrecacheRegExp`, `htmlInjectRegExp`, `macroRegExp`
+  * Deprecate the public top-level field in `source_linker.dart`:
+    `uriTemplateRegexp`
+* Add more types to public APIs (#2285)
+* Remove dartdoc's dep on package:quiver (#2305)
+
 ## 0.32.3
 
 * Allow injected HTML in a macro which is output by a tool (#2274).
@@ -61,7 +187,7 @@
 
 ## 0.30.1
 * A more complete fix for the broken search box. (#2125, #2124)
-* Fix the "--rel-canonical-prefix" flag post `base href`. (#2126, #2122) 
+* Fix the "--rel-canonical-prefix" flag post `base href`. (#2126, #2122)
 * Tool change: `grind serve-pub-package` can now serve packages depending
   on flutter for debugging purposes (#2130)
 * More internal changes preparing for markdown output (#2138, #2140, #2132,

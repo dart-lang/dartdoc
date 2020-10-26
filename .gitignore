@@ -6,6 +6,7 @@
 .packages
 .pub
 .settings/
+.vscode/
 build/
 doc/
 lcov.info

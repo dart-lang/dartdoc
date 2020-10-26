@@ -6,9 +6,16 @@
 library dartdoc.io_utils;
 
 import 'dart:async';
-import 'dart:io';
+import 'dart:convert';
+import 'dart:io' as io;
 
+import 'package:analyzer/file_system/file_system.dart';
+import 'package:analyzer/file_system/physical_file_system.dart';
+import 'package:analyzer/src/generated/sdk.dart';
+import 'package:analyzer/src/test_utilities/mock_sdk.dart';
 import 'package:path/path.dart' as path;
+
+Encoding utf8AllowMalformed = Utf8Codec(allowMalformed: true);
 
 /// Return a resolved path including the home directory in place of tilde
 /// references.
@@ -19,53 +26,65 @@ String resolveTildePath(String originalPath) {
 
   String homeDir;
 
-  if (Platform.isWindows) {
-    homeDir = path.absolute(Platform.environment['USERPROFILE']);
+  if (io.Platform.isWindows) {
+    homeDir = path.absolute(io.Platform.environment['USERPROFILE']);
   } else {
-    homeDir = path.absolute(Platform.environment['HOME']);
+    homeDir = path.absolute(io.Platform.environment['HOME']);
   }
 
   return path.join(homeDir, originalPath.substring(2));
 }
 
-/// Lists the contents of [dir].
-///
-/// If [recursive] is `true`, lists subdirectory contents (defaults to `false`).
-///
-/// Excludes files and directories beginning with `.`
-///
-/// The returned paths are guaranteed to begin with [dir].
-Iterable<String> listDir(String dir,
-    {bool recursive = false,
-    Iterable<FileSystemEntity> Function(Directory dir) listDir}) {
-  listDir ??= (Directory dir) => dir.listSync();
-
-  return _doList(dir, <String>{}, recursive, listDir);
+bool isSdkLibraryDocumented(SdkLibrary library) {
+  if (library is MockSdkLibrary) {
+    // Not implemented in [MockSdkLibrary].
+    return true;
+  }
+  return library.isDocumented;
 }
 
-Iterable<String> _doList(
-    String dir,
-    Set<String> listedDirectories,
-    bool recurse,
-    Iterable<FileSystemEntity> Function(Directory dir) listDir) sync* {
-  // Avoid recursive symlinks.
-  var resolvedPath = Directory(dir).resolveSymbolicLinksSync();
-  if (!listedDirectories.contains(resolvedPath)) {
-    listedDirectories = Set<String>.from(listedDirectories);
-    listedDirectories.add(resolvedPath);
+extension ResourceProviderExtensions on ResourceProvider {
+  Folder createSystemTemp(String prefix) {
+    if (this is PhysicalResourceProvider) {
+      return getFolder(io.Directory.systemTemp.createTempSync(prefix).path);
+    } else {
+      return getFolder(pathContext.join('/tmp', prefix))..create();
+    }
+  }
 
-    for (var entity in listDir(Directory(dir))) {
-      // Skip hidden files and directories
-      if (path.basename(entity.path).startsWith('.')) {
-        continue;
-      }
+  String get resolvedExecutable {
+    if (this is PhysicalResourceProvider) {
+      return io.Platform.resolvedExecutable;
+    } else {
+      // TODO(srawlins): Return what is needed for tests.
+      return null;
+    }
+  }
 
-      yield entity.path;
-      if (entity is Directory) {
-        if (recurse) {
-          yield* _doList(entity.path, listedDirectories, recurse, listDir);
-        }
-      }
+  bool isExecutable(File file) {
+    if (this is PhysicalResourceProvider) {
+      var mode = io.File(file.path).statSync().mode;
+      return (0x1 & ((mode >> 6) | (mode >> 3) | mode)) != 0;
+    } else {
+      // TODO(srawlins)
+      return false;
+    }
+  }
+
+  bool isNotFound(File file) {
+    if (this is PhysicalResourceProvider) {
+      return io.File(file.path).statSync().type ==
+          io.FileSystemEntityType.notFound;
+    } else {
+      return !file.exists;
+    }
+  }
+
+  String readAsMalformedAllowedStringSync(File file) {
+    if (this is PhysicalResourceProvider) {
+      return io.File(file.path).readAsStringSync(encoding: utf8AllowMalformed);
+    } else {
+      return file.readAsStringSync();
     }
   }
 }
@@ -104,7 +123,12 @@ class MultiFutureTracker<T> {
   /// Wait until fewer or equal to this many Futures are outstanding.
   Future<void> _waitUntil(int max) async {
     while (_trackedFutures.length > max) {
-      await Future.any(_trackedFutures);
+      try {
+        await Future.any(_trackedFutures);
+        // The empty catch is OK because we're just counting future completions
+        // and we don't care about errors (the original caller of
+        // addFutureToClosure is responsible for those).
+      } catch (e) {} // ignore: empty_catches
     }
   }
 
@@ -112,13 +136,12 @@ class MultiFutureTracker<T> {
   /// once the queue is sufficiently empty.  The returned future completes
   /// when the generated [Future] has been added to the queue.
   Future<void> addFutureFromClosure(Future<T> Function() closure) async {
-    while (_trackedFutures.length > parallel - 1) {
-      await Future.any(_trackedFutures);
-    }
+    await _waitUntil(parallel - 1);
     Future<void> future = closure();
     _trackedFutures.add(future);
     // ignore: unawaited_futures
-    future.then((f) => _trackedFutures.remove(future));
+    future.then((f) => _trackedFutures.remove(future),
+        onError: (s, e) => _trackedFutures.remove(future));
   }
 
   /// Wait until all futures added so far have completed.

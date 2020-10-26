@@ -1,142 +1,109 @@
-// Copyright (c) 2015, the Dart project authors.  Please see the AUTHORS file
+// Copyright (c) 2020, the Dart project authors.  Please see the AUTHORS file
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-library dartdoc.html_generator_test;
-
-import 'dart:io' show File, FileSystemEntity, Directory;
-
+import 'package:analyzer/file_system/file_system.dart';
+import 'package:analyzer/file_system/memory_file_system.dart';
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/generator/generator_frontend.dart';
 import 'package:dartdoc/src/generator/html_generator.dart';
 import 'package:dartdoc/src/generator/html_resources.g.dart';
 import 'package:dartdoc/src/generator/templates.dart';
-import 'package:dartdoc/src/model/package_graph.dart';
+import 'package:dartdoc/src/package_config_provider.dart';
+import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/warnings.dart';
-import 'package:path/path.dart' as path;
+import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
 import 'src/utils.dart' as utils;
 
-// Init a generator without a GeneratorContext and with the default file writer.
-Future<Generator> _initGeneratorForTest() async {
-  var backend =
-      HtmlGeneratorBackend(null, await Templates.createDefault('html'));
-  return GeneratorFrontEnd(backend);
-}
-
 void main() {
-  group('Templates', () {
-    Templates templates;
+  MemoryResourceProvider resourceProvider;
+  p.Context pathContext;
 
-    setUp(() async {
-      templates = await Templates.createDefault('html');
-    });
+  PackageMetaProvider packageMetaProvider;
+  FakePackageConfigProvider packageConfigProvider;
 
-    test('index html', () {
-      expect(templates.indexTemplate, isNotNull);
-    });
+  Templates templates;
+  GeneratorFrontEnd generator;
+  DartdocFileWriter writer;
 
-    test('library', () {
-      expect(templates.libraryTemplate, isNotNull);
-    });
+  Folder projectRoot;
+  String projectPath;
 
-    test('class', () {
-      expect(templates.classTemplate, isNotNull);
-    });
+  setUp(() async {
+    packageMetaProvider = utils.testPackageMetaProvider;
+    resourceProvider = packageMetaProvider.resourceProvider;
+    pathContext = resourceProvider.pathContext;
+    packageConfigProvider = utils
+        .getTestPackageConfigProvider(packageMetaProvider.defaultSdkDir.path);
 
-    test('function', () {
-      expect(templates.functionTemplate, isNotNull);
-    });
+    templates = await Templates.createDefault('html');
+    generator = GeneratorFrontEnd(HtmlGeneratorBackend(null, templates));
 
-    test('constructor', () {
-      expect(templates.constructorTemplate, isNotNull);
-    });
-
-    test('method', () {
-      expect(templates.methodTemplate, isNotNull);
-    });
-
-    test('constant', () {
-      expect(templates.constantTemplate, isNotNull);
-    });
-
-    test('property', () {
-      expect(templates.propertyTemplate, isNotNull);
-    });
-
-    test('top level constant', () {
-      expect(templates.topLevelConstantTemplate, isNotNull);
-    });
-
-    test('top level property', () {
-      expect(templates.topLevelPropertyTemplate, isNotNull);
-    });
+    projectRoot = utils.writePackage(
+        'my_package', resourceProvider, packageConfigProvider);
+    projectPath = projectRoot.path;
+    var outputPath = projectRoot.getChildAssumingFolder('doc').path;
+    writer = DartdocFileWriter(outputPath, resourceProvider);
   });
 
-  group('HtmlGenerator', () {
-    // TODO: Run the HtmlGenerator and validate important constraints.
-    group('for a null package', () {
-      Generator generator;
-      Directory tempOutput;
-      FileWriter writer;
+  File getConvertedFile(String path) =>
+      resourceProvider.getFile(resourceProvider.convertPath(path));
 
-      setUp(() async {
-        generator = await _initGeneratorForTest();
-        tempOutput = Directory.systemTemp.createTempSync('doc_test_temp');
-        writer = DartdocFileWriter(tempOutput.path);
-        return generator.generate(null, writer);
-      });
+  tearDown(() {
+    projectRoot = null;
+    projectPath = null;
+    clearPackageMetaCache();
+  });
 
-      tearDown(() {
-        if (tempOutput != null) {
-          tempOutput.deleteSync(recursive: true);
-        }
-      });
+  test('a null package has some assets', () async {
+    await generator.generate(null, writer);
+    var outputPath = projectRoot.getChildAssumingFolder('doc').path;
+    var output = resourceProvider
+        .getFolder(pathContext.join(outputPath, 'static-assets'));
+    expect(output, doesExist);
 
-      test('resources are put into the right place', () {
-        var output = Directory(path.join(tempOutput.path, 'static-assets'));
-        expect(output, doesExist);
+    for (var resource in resource_names.map((r) =>
+        pathContext.relative(Uri.parse(r).path, from: 'dartdoc/resources'))) {
+      expect(resourceProvider.getFile(pathContext.join(output.path, resource)),
+          doesExist);
+    }
+  });
 
-        for (var resource in resource_names.map((r) =>
-            path.relative(Uri.parse(r).path, from: 'dartdoc/resources'))) {
-          expect(File(path.join(output.path, resource)), doesExist);
-        }
-      });
-    });
+  test('libraries with no duplicates are not warned about', () async {
+    getConvertedFile('$projectPath/lib/a.dart').writeAsStringSync('library a;');
+    getConvertedFile('$projectPath/lib/b.dart').writeAsStringSync('library b;');
+    var packageGraph = await utils.bootBasicPackage(
+        projectPath, packageMetaProvider, packageConfigProvider);
+    await generator.generate(packageGraph, writer);
 
-    group('for a package that causes duplicate files', () {
-      Generator generator;
-      PackageGraph packageGraph;
-      Directory tempOutput;
-      FileWriter writer;
-      var testPackageDuplicateDir = Directory('testing/test_package_duplicate');
+    expect(packageGraph.packageWarningCounter.errorCount, 0);
+  });
 
-      setUp(() async {
-        generator = await _initGeneratorForTest();
-        packageGraph =
-            await utils.bootBasicPackage(testPackageDuplicateDir.path, []);
-        tempOutput = await Directory.systemTemp.createTemp('doc_test_temp');
-        writer = DartdocFileWriter(tempOutput.path);
-      });
+  test('libraries with duplicate names are warned about', () async {
+    getConvertedFile('$projectPath/lib/a.dart').writeAsStringSync('library a;');
+    getConvertedFile('$projectPath/lib/b.dart').writeAsStringSync('library a;');
+    var packageGraph = await utils.bootBasicPackage(
+        projectPath, packageMetaProvider, packageConfigProvider);
+    await generator.generate(packageGraph, writer);
 
-      tearDown(() {
-        if (tempOutput != null) {
-          tempOutput.deleteSync(recursive: true);
-        }
-      });
+    var expectedPath = pathContext.join('a', 'a-library.html');
+    expect(
+        packageGraph.localPublicLibraries,
+        anyElement((l) => packageGraph.packageWarningCounter
+            .hasWarning(l, PackageWarning.duplicateFile, expectedPath)));
+  });
 
-      test('run generator and verify duplicate file error', () async {
-        await generator.generate(packageGraph, writer);
-        expect(generator, isNotNull);
-        expect(tempOutput, isNotNull);
-        var expectedPath = path.join('aDuplicate', 'aDuplicate-library.html');
-        expect(
-            packageGraph.localPublicLibraries,
-            anyElement((l) => packageGraph.packageWarningCounter
-                .hasWarning(l, PackageWarning.duplicateFile, expectedPath)));
-      }, timeout: Timeout.factor(4));
-    });
+  test('has HTML templates', () async {
+    expect(templates.indexTemplate, isNotNull);
+    expect(templates.libraryTemplate, isNotNull);
+    expect(templates.classTemplate, isNotNull);
+    expect(templates.functionTemplate, isNotNull);
+    expect(templates.constructorTemplate, isNotNull);
+    expect(templates.methodTemplate, isNotNull);
+    expect(templates.propertyTemplate, isNotNull);
+    expect(templates.topLevelPropertyTemplate, isNotNull);
   });
 }
 
@@ -145,14 +112,13 @@ const Matcher doesExist = _DoesExist();
 class _DoesExist extends Matcher {
   const _DoesExist();
   @override
-  bool matches(dynamic item, Map matchState) =>
-      (item as FileSystemEntity).existsSync();
+  bool matches(Object item, Map matchState) => (item as Resource).exists;
   @override
   Description describe(Description description) => description.add('exists');
   @override
-  Description describeMismatch(dynamic item, Description mismatchDescription,
+  Description describeMismatch(Object item, Description mismatchDescription,
       Map matchState, bool verbose) {
-    if (item is! File && item is! Directory) {
+    if (item is! File && item is! Folder) {
       return mismatchDescription
           .addDescriptionOf(item)
           .add('is not a file or directory');

@@ -5,10 +5,10 @@
 import 'dart:async';
 import 'dart:io' hide ProcessException;
 
+import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:grinder/grinder.dart';
-import 'package:io/io.dart';
 import 'package:path/path.dart' as path;
 import 'package:yaml/yaml.dart' as yaml;
 
@@ -120,8 +120,8 @@ Directory get testPackage =>
 Directory get testPackageExperiments =>
     Directory(path.joinAll(['testing', 'test_package_experiments']));
 
-Directory get pluginPackage =>
-    Directory(path.joinAll(['testing', 'test_package_flutter_plugin']));
+Directory get pluginPackage => Directory(path
+    .joinAll(['testing', 'flutter_packages', 'test_package_flutter_plugin']));
 
 Directory _testPackageDocsDir;
 
@@ -129,6 +129,7 @@ Directory get testPackageDocsDir =>
     _testPackageDocsDir ??= createTempSync('test_package');
 
 Directory _testPackageExperimentsDocsDir;
+
 Directory get testPackageExperimentsDocsDir =>
     _testPackageExperimentsDocsDir ??=
         createTempSync('test_package_experiments');
@@ -204,7 +205,7 @@ void updateThirdParty() async {
   for (var patchFileName in Directory(_pkgDir.path)
       .listSync()
       .map((e) => path.basename(e.path))
-      .where((String filename) => _mustache4dartPatches.hasMatch(filename))
+      .where(_mustache4dartPatches.hasMatch)
       .toList()
         ..sort()) {
     run('patch',
@@ -277,7 +278,7 @@ void dartfmt() async {
 void presubmit() => null;
 
 @Task('Run long tests, self-test dartdoc, and run the publish test')
-@Depends(presubmit, test, testDartdoc)
+@Depends(presubmit, longTest, testDartdoc)
 void buildbot() => null;
 
 @Task('Generate docs for the Dart SDK')
@@ -430,10 +431,13 @@ Future<String> createComparisonDartdoc() async {
   return dartdocClean.path;
 }
 
-/// Helper function to create a clean version of dartdoc (based on the current
-/// directory, assumed to be a git repository), configured to use the head
-/// version of the Dart SDK for analyzer, front-end, and kernel.
-Future<String> createSdkDartdoc() async {
+/// Creates a clean version of dartdoc (based on the current directory, assumed
+/// to be a git repository), configured to use packages from the Dart SDK.
+///
+/// This copy of dartdoc depends on the HEAD versions of various packages
+/// developed within the SDK, such as 'analyzer' and '_fe_analyzer_shared'.
+/// 'meta' is overridden if [overrideMeta] is true.
+Future<String> createSdkDartdoc(bool overrideMeta) async {
   var launcher = SubprocessLauncher('create-sdk-dartdoc');
   var dartdocSdk = Directory.systemTemp.createTempSync('dartdoc-sdk');
   await launcher
@@ -471,6 +475,12 @@ dependency_overrides:
   _fe_analyzer_shared:
     path: '${sdkClone.path}/pkg/_fe_analyzer_shared'
 ''', mode: FileMode.append);
+  if (overrideMeta) {
+    dartdocPubspec.writeAsStringSync('''
+  meta:
+    path: '${sdkClone.path}/pkg/meta'
+''', mode: FileMode.append);
+  }
   await launcher.runStreamed(sdkBin('pub'), ['get'],
       workingDirectory: dartdocSdk.path);
   return dartdocSdk.path;
@@ -479,7 +489,9 @@ dependency_overrides:
 @Task('Run grind tasks with the analyzer SDK.')
 Future<void> testWithAnalyzerSdk() async {
   var launcher = SubprocessLauncher('test-with-analyzer-sdk');
-  var sdkDartdoc = await createSdkDartdoc();
+  // Do not override meta on branches outside of stable.
+  var sdkDartdoc =
+      await createSdkDartdoc(RegExp('[.]\w+').hasMatch(Platform.version));
   var defaultGrindParameter =
       Platform.environment['DARTDOC_GRIND_STEP'] ?? 'test';
   await launcher.runStreamed(
@@ -756,7 +768,7 @@ class FlutterRepo {
   static Future<FlutterRepo> copyFromExistingFlutterRepo(
       FlutterRepo origRepo, String flutterPath, Map<String, String> env,
       [String label]) async {
-    await copyPath(origRepo.flutterPath, flutterPath);
+    copy(Directory(origRepo.flutterPath), Directory(flutterPath));
     var flutterRepo = FlutterRepo._(flutterPath, env, label);
     return flutterRepo;
   }
@@ -821,9 +833,11 @@ Future<String> _buildPubPackageDocs(
   var pubPackageDirOrig =
       cache.listSync().firstWhere((e) => e.path.contains(pubPackageName));
   var pubPackageDir = Directory.systemTemp.createTempSync(pubPackageName);
-  await copyPath(pubPackageDirOrig.path, pubPackageDir.path);
+  copy(pubPackageDirOrig, pubPackageDir);
 
-  if (packageMetaProvider.fromDir(pubPackageDir).requiresFlutter) {
+  if (packageMetaProvider
+      .fromDir(PhysicalResourceProvider.INSTANCE.getFolder(pubPackageDir.path))
+      .requiresFlutter) {
     var flutterRepo =
         await FlutterRepo.fromExistingFlutterRepo(await cleanFlutterRepo);
     await launcher.runStreamed(flutterRepo.cachePub, ['get'],
@@ -1033,7 +1047,9 @@ Future<void> testDart2(Iterable<File> tests) async {
                 <String>[...parameters, dartFile.path]));
   }
 
-  return CoverageSubprocessLauncher.generateCoverageToFile(File('lcov.info'));
+  return CoverageSubprocessLauncher.generateCoverageToFile(
+      PhysicalResourceProvider.INSTANCE.getFile('lcov.info'),
+      PhysicalResourceProvider.INSTANCE);
 }
 
 @Task('Generate docs for dartdoc without link-to-remote')
@@ -1090,8 +1106,6 @@ Future<WarningsCollection> _buildDartdocFlutterPluginDocs() async {
           [
             '--enable-asserts',
             path.join(Directory.current.path, 'bin', 'dartdoc.dart'),
-            '--exclude-packages',
-            'Dart', // TODO(jcollins-g): dart-lang/dartdoc#1431
             '--json',
             '--link-to-remote',
             '--output',

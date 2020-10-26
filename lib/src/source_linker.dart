@@ -5,6 +5,7 @@
 /// A library for getting external source code links for Dartdoc.
 library dartdoc.source_linker;
 
+import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:meta/meta.dart';
@@ -29,22 +30,23 @@ abstract class SourceLinkerOptionContext implements DartdocOptionContextBase {
       optionSet['linkToSource']['uriTemplate'].valueAt(context);
 }
 
-Future<List<DartdocOption<Object>>> createSourceLinkerOptions() async {
+Future<List<DartdocOption<Object>>> createSourceLinkerOptions(
+    ResourceProvider resourceProvider) async {
   return [
-    DartdocOptionSet('linkToSource')
+    DartdocOptionSet('linkToSource', resourceProvider)
       ..addAll([
-        DartdocOptionArgFile<List<String>>('excludes', [],
-            isDir: true,
+        DartdocOptionArgFile<List<String>>('excludes', [], resourceProvider,
+            optionIs: OptionKind.dir,
             help:
                 'A list of directories to exclude from linking to a source code repository.'),
         // TODO(jcollins-g): Use [DartdocOptionArgSynth], possibly in combination with a repository type and the root directory, and get revision number automatically
-        DartdocOptionArgOnly<String>('revision', null,
+        DartdocOptionArgOnly<String>('revision', null, resourceProvider,
             help: 'Revision number to insert into the URI.'),
-        DartdocOptionArgFile<String>('root', null,
-            isDir: true,
+        DartdocOptionArgFile<String>('root', null, resourceProvider,
+            optionIs: OptionKind.dir,
             help:
                 'Path to a local directory that is the root of the repository we link to.  All source code files under this directory will be linked.'),
-        DartdocOptionArgFile<String>('uriTemplate', null,
+        DartdocOptionArgFile<String>('uriTemplate', null, resourceProvider,
             help:
                 '''Substitute into this template to generate a uri for an element's source code.
              Dartdoc dynamically substitutes the following fields into the template:

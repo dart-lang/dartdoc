@@ -2,17 +2,19 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'dart:io';
-
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
+import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:path/path.dart' as path;
 import 'package:pub_semver/pub_semver.dart';
 
-final RegExp substituteNameVersion = RegExp(r'%([bnv])%');
+@Deprecated('Public variable intended to be private; will be removed as early '
+    'as Dartdoc 1.0.0')
+RegExp get substituteNameVersion => Package._substituteNameVersion;
 
 // All hrefs are emitted as relative paths from the output root. We are unable
 // to compute them from the page we are generating, and many properties computed
@@ -88,6 +90,7 @@ class Package extends LibraryContainer
 
   String get homepage => packageMeta.homepage;
 
+  @override
   String get kind => (isSdk) ? 'SDK' : 'package';
 
   @override
@@ -111,12 +114,18 @@ class Package extends LibraryContainer
 
   @override
   String get documentation {
-    return hasDocumentationFile ? documentationFile.contents : null;
+    return hasDocumentationFile
+        ? packageGraph.resourceProvider
+            .readAsMalformedAllowedStringSync(documentationFile)
+        : null;
   }
 
   @override
   bool get hasDocumentation =>
-      documentationFile != null && documentationFile.contents.isNotEmpty;
+      documentationFile != null &&
+      packageGraph.resourceProvider
+          .readAsMalformedAllowedStringSync(documentationFile)
+          .isNotEmpty;
 
   @override
   bool get hasExtendedDocumentation => documentation.isNotEmpty;
@@ -125,7 +134,7 @@ class Package extends LibraryContainer
   // plain text or markdown.
   bool get hasDocumentationFile => documentationFile != null;
 
-  FileContents get documentationFile => packageMeta.getReadmeContents();
+  File get documentationFile => packageMeta.getReadmeContents();
 
   @override
   String get oneLineDoc => '';
@@ -178,13 +187,12 @@ class Package extends LibraryContainer
       if (isLocal) {
         if (isPublic) {
           _documentedWhere = DocumentLocation.local;
-        } else {
-          // Possible if excludes result in a "documented" package not having
-          // any actual documentation.
-          _documentedWhere = DocumentLocation.missing;
         }
       } else {
-        if (config.linkToRemote && config.linkToUrl.isNotEmpty && isPublic) {
+        if (config.linkToRemote &&
+            config.linkToUrl.isNotEmpty &&
+            isPublic &&
+            !packageGraph.config.isPackageExcluded(name)) {
           _documentedWhere = DocumentLocation.remote;
         } else {
           _documentedWhere = DocumentLocation.missing;
@@ -218,50 +226,55 @@ class Package extends LibraryContainer
   String _baseHref;
 
   String get baseHref {
-    if (_baseHref == null) {
-      if (documentedWhere == DocumentLocation.remote) {
-        _baseHref =
-            config.linkToUrl.replaceAllMapped(substituteNameVersion, (m) {
-          switch (m.group(1)) {
-            // Return the prerelease tag of the release if a prerelease,
-            // or 'stable' otherwise. Mostly coded around
-            // the Dart SDK's use of dev/stable, but theoretically applicable
-            // elsewhere.
-            case 'b':
-              {
-                var version = Version.parse(packageMeta.version);
-                var tag = 'stable';
-                if (version.isPreRelease) {
-                  // version.preRelease is a List<dynamic> with a mix of
-                  // integers and strings.  Given this, handle
-                  // 2.8.0-dev.1.0, 2.9.0-1.0.dev, and similar
-                  // variations.
-                  tag = version.preRelease.whereType<String>().first;
-                  // Who knows about non-SDK packages, but assert that SDKs
-                  // must conform to the known format.
-                  assert(
-                      packageMeta.isSdk == false || int.tryParse(tag) == null,
-                      'Got an integer as string instead of the expected "dev" tag');
-                }
-                return tag;
-              }
-            case 'n':
-              return name;
-            // The full version string of the package.
-            case 'v':
-              return packageMeta.version;
-            default:
-              assert(false, 'Unsupported case: ${m.group(1)}');
-              return null;
-          }
-        });
-        if (!_baseHref.endsWith('/')) _baseHref = '${_baseHref}/';
-      } else {
-        _baseHref = config.useBaseHref ? '' : HTMLBASE_PLACEHOLDER;
-      }
+    if (_baseHref != null) {
+      return _baseHref;
     }
+
+    if (documentedWhere == DocumentLocation.remote) {
+      _baseHref = _remoteBaseHref;
+      if (!_baseHref.endsWith('/')) _baseHref = '${_baseHref}/';
+    } else {
+      _baseHref = config.useBaseHref ? '' : HTMLBASE_PLACEHOLDER;
+    }
+
     return _baseHref;
   }
+
+  String get _remoteBaseHref {
+    return config.linkToUrl.replaceAllMapped(_substituteNameVersion, (m) {
+      switch (m.group(1)) {
+        // Return the prerelease tag of the release if a prerelease, or 'stable'
+        // otherwise.  Mostly coded around the Dart SDK's use of dev/stable, but
+        // theoretically applicable elsewhere.
+        case 'b':
+          {
+            var version = Version.parse(packageMeta.version);
+            var tag = 'stable';
+            if (version.isPreRelease) {
+              // `version.preRelease` is a `List<dynamic>` with a mix of
+              // integers and strings.  Given this, handle
+              // "2.8.0-dev.1.0, 2.9.0-1.0.dev", and similar variations.
+              tag = version.preRelease.whereType<String>().first;
+              // Who knows about non-SDK packages, but SDKs must conform to the
+              // known format.
+              assert(packageMeta.isSdk == false || int.tryParse(tag) == null,
+                  'Got an integer as string instead of the expected "dev" tag');
+            }
+            return tag;
+          }
+        case 'n':
+          return name;
+        // The full version string of the package.
+        case 'v':
+          return packageMeta.version;
+        default:
+          assert(false, 'Unsupported case: ${m.group(1)}');
+          return null;
+      }
+    });
+  }
+
+  static final _substituteNameVersion = RegExp(r'%([bnv])%');
 
   @override
   String get href => '$baseHref$filePath';
@@ -332,7 +345,9 @@ class Package extends LibraryContainer
   @override
   DartdocOptionContext get config {
     _config ??= DartdocOptionContext.fromContext(
-        packageGraph.config, Directory(packagePath));
+        packageGraph.config,
+        packageGraph.resourceProvider.getFolder(packagePath),
+        packageGraph.resourceProvider);
     return _config;
   }
 

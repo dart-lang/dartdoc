@@ -5,14 +5,55 @@
 library dartdoc.model_utils;
 
 import 'dart:convert';
-import 'dart:io';
+import 'dart:io' show Platform;
 
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/src/dart/ast/utilities.dart';
+import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:path/path.dart' as path;
+import 'package:glob/glob.dart';
+
+final _driveLetterMatcher = RegExp(r'^\w:\\');
 
 final Map<String, String> _fileContents = <String, String>{};
+
+/// This will handle matching globs, including on Windows.
+///
+/// On windows, globs are assumed to use absolute Windows paths with drive
+/// letters in combination with globs, e.g. `C:\foo\bar\*.txt`.  `fullName`
+/// also is assumed to have a drive letter.
+bool matchGlobs(List<String> globs, String fullName, {bool isWindows}) {
+  isWindows ??= Platform.isWindows;
+  var filteredGlobs = <String>[];
+
+  if (isWindows) {
+    // TODO(jcollins-g): port this special casing to the glob package.
+    var fullNameDriveLetter = _driveLetterMatcher.stringMatch(fullName);
+    if (fullNameDriveLetter == null) {
+      throw DartdocFailure(
+          'Unable to recognize drive letter on Windows in:  $fullName');
+    }
+    // Build a matcher from the [fullName]'s drive letter to filter the globs.
+    var driveGlob = RegExp(fullNameDriveLetter.replaceFirst(r'\', r'\\'),
+        caseSensitive: false);
+    fullName = fullName.replaceFirst(_driveLetterMatcher, r'\');
+    for (var glob in globs) {
+      // Globs don't match if they aren't for the same drive.
+      if (!driveGlob.hasMatch(glob)) continue;
+      // `C:\` => `\` for rejoining via posix.
+      glob = glob.replaceFirst(_driveLetterMatcher, r'/');
+      filteredGlobs.add(path.posix.joinAll(path.windows.split(glob)));
+    }
+  } else {
+    filteredGlobs.addAll(globs);
+  }
+
+  return filteredGlobs.any((g) =>
+      Glob(g, context: isWindows ? path.windows : null).matches(fullName));
+}
 
 /// Returns the [AstNode] for a given [Element].
 ///
@@ -30,6 +71,11 @@ AstNode getAstNode(
     }
   }
   return null;
+}
+
+Iterable<T> filterHasCanonical<T extends ModelElement>(
+    Iterable<T> maybeHasCanonicalItems) {
+  return maybeHasCanonicalItems.where((me) => me.canonicalModelElement != null);
 }
 
 /// Remove elements that aren't documented.
@@ -50,10 +96,10 @@ Iterable<Class> findCanonicalFor(Iterable<Class> classes) {
       c.packageGraph.findCanonicalModelElementFor(c.element) as Class ?? c);
 }
 
-String getFileContentsFor(Element e) {
+String getFileContentsFor(Element e, ResourceProvider resourceProvider) {
   var location = e.source.fullName;
   if (!_fileContents.containsKey(location)) {
-    var contents = File(location).readAsStringSync();
+    var contents = resourceProvider.getFile(location).readAsStringSync();
     _fileContents.putIfAbsent(location, () => contents);
   }
   return _fileContents[location];

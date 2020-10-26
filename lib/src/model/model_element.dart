@@ -5,7 +5,6 @@
 /// The models used to represent Dart code.
 library dartdoc.models;
 
-import 'dart:async';
 import 'dart:collection' show UnmodifiableListView;
 import 'dart:convert';
 
@@ -17,7 +16,7 @@ import 'package:analyzer/src/dart/element/member.dart'
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/element_type.dart';
-import 'package:dartdoc/src/model/comment_processable.dart';
+import 'package:dartdoc/src/model/documentation_comment.dart';
 import 'package:dartdoc/src/model/feature_set.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as utils;
@@ -136,7 +135,7 @@ abstract class ModelElement extends Canonicalization
         SourceCodeMixin,
         Indexable,
         FeatureSet,
-        CommentProcessable
+        DocumentationComment
     implements Comparable<ModelElement>, Documentable {
   final Element _element;
 
@@ -300,8 +299,9 @@ abstract class ModelElement extends Canonicalization
       library.packageGraph.allConstructedModelElements[key] = newModelElement;
       if (newModelElement is Inheritable) {
         var iKey = Tuple2<Element, Library>(e, library);
-        library.packageGraph.allInheritableElements.putIfAbsent(iKey, () => {});
-        library.packageGraph.allInheritableElements[iKey].add(newModelElement);
+        library.packageGraph.allInheritableElements
+            .putIfAbsent(iKey, () => {})
+            .add(newModelElement);
       }
     }
   }
@@ -313,6 +313,7 @@ abstract class ModelElement extends Canonicalization
       return resolveMultiplyInheritedElement(
           e, library, packageGraph, enclosingContainer);
     }
+    assert(e is! MultiplyDefinedElement);
     if (e is LibraryElement) {
       return Library(e, packageGraph);
     }
@@ -331,7 +332,7 @@ abstract class ModelElement extends Canonicalization
     if (e is FunctionElement) {
       return ModelFunction(e, library, packageGraph);
     } else if (e is GenericFunctionTypeElement) {
-      assert(e.enclosingElement is GenericTypeAliasElement);
+      assert(e.enclosingElement is FunctionTypeAliasElement);
       assert(e.enclosingElement.name != '');
       return ModelFunctionTypedef(e, library, packageGraph);
     }
@@ -358,12 +359,14 @@ abstract class ModelElement extends Canonicalization
       }
     }
     if (e is PropertyAccessorElement) {
-      // TODO(jcollins-g): why test for ClassElement in enclosingElement?
+      // Accessors can be part of a [Container], or a part of a [Library].
       if (e.enclosingElement is ClassElement ||
+          e.enclosingElement is ExtensionElement ||
           e is MultiplyInheritedExecutableElement) {
         if (enclosingContainer == null) {
           return ContainerAccessor(e, library, packageGraph);
         } else {
+          assert(e.enclosingElement is! ExtensionElement);
           return ContainerAccessor.inherited(
               e, library, packageGraph, enclosingContainer,
               originalMember: originalMember);
@@ -382,9 +385,12 @@ abstract class ModelElement extends Canonicalization
     throw 'Unknown type ${e.runtimeType}';
   }
 
-  /// Stub for mustache4dart, or it will search enclosing elements to find
-  /// names for members.
+  // Stub for mustache, which would otherwise search enclosing elements to find
+  // names for members.
   bool get hasCategoryNames => false;
+
+  // Stub for mustache.
+  Iterable<Category> get displayedCategories => [];
 
   Set<Library> get exportedInLibraries {
     return library.packageGraph.libraryElementReexportedBy[element.library];
@@ -399,44 +405,61 @@ abstract class ModelElement extends Canonicalization
   List<String> get annotations => annotationsFromMetadata(element.metadata);
 
   /// Returns linked annotations from a given metadata set, with escaping.
-  List<String> annotationsFromMetadata(List<ElementAnnotation> md) {
+  // TODO(srawlins): Attempt to revive constructor arguments in an annotation,
+  // akin to source_gen's Reviver, in order to link to inner components. For
+  // example, in `@Foo(const Bar(), baz: <Baz>[Baz.one, Baz.two])`, link to
+  // `Foo`, `Bar`, `Baz`, `Baz.one`, and `Baz.two`.
+  List<String> annotationsFromMetadata(Iterable<ElementAnnotation> md) {
     var annotationStrings = <String>[];
     if (md == null) return annotationStrings;
     for (var a in md) {
       var annotation = (const HtmlEscape()).convert(a.toSource());
       var annotationElement = a.element;
 
-      ClassElement annotationClassElement;
-      if (annotationElement is ExecutableElement) {
+      if (annotationElement is ConstructorElement) {
+        // TODO(srawlins): I think we should actually link to the constructor,
+        // which may have details about parameters. For example, given the
+        // annotation `@Immutable('text')`, the constructor documents what the
+        // parameter is, and the class only references `immutable`. It's a
+        // lose-lose cycle of mis-direction.
         annotationElement =
-            (annotationElement as ExecutableElement).returnType.element;
+            (annotationElement as ConstructorElement).returnType.element;
+      } else if (annotationElement is PropertyAccessorElement) {
+        annotationElement =
+            (annotationElement as PropertyAccessorElement).variable;
       }
-      if (annotationElement is ClassElement) {
-        annotationClassElement = annotationElement;
+      if (annotationElement is Member) {
+        annotationElement = (annotationElement as Member).declaration;
       }
+
+      // Some annotations are intended to be invisible (such as `@pragma`).
+      if (!_shouldDisplayAnnotation(annotationElement)) continue;
+
       var annotationModelElement =
           packageGraph.findCanonicalModelElementFor(annotationElement);
-      // annotationElement can be null if the element can't be resolved.
-      var annotationClass = packageGraph
-          .findCanonicalModelElementFor(annotationClassElement) as Class;
-      if (annotationClass == null &&
-          annotationElement != null &&
-          annotationClassElement != null) {
-        annotationClass =
-            ModelElement.fromElement(annotationClassElement, packageGraph)
-                as Class;
+      if (annotationModelElement != null) {
+        annotation = annotation.replaceFirst(
+            annotationModelElement.name, annotationModelElement.linkedName);
       }
-      // Some annotations are intended to be invisible (@pragma)
-      if (annotationClass == null ||
-          !packageGraph.invisibleAnnotations.contains(annotationClass)) {
-        if (annotationModelElement != null) {
-          annotation = annotation.replaceFirst(
-              annotationModelElement.name, annotationModelElement.linkedName);
-        }
-        annotationStrings.add(annotation);
-      }
+      annotationStrings.add(annotation);
     }
     return annotationStrings;
+  }
+
+  bool _shouldDisplayAnnotation(Element annotationElement) {
+    if (annotationElement is ClassElement) {
+      var annotationClass =
+          packageGraph.findCanonicalModelElementFor(annotationElement) as Class;
+      if (annotationClass == null && annotationElement != null) {
+        annotationClass =
+            ModelElement.fromElement(annotationElement, packageGraph) as Class;
+      }
+
+      return annotationClass == null ||
+          packageGraph.isAnnotationVisible(annotationClass);
+    }
+    // We cannot resolve it, which does not prevent it from being displayed.
+    return true;
   }
 
   bool _isPublic;
@@ -455,14 +478,7 @@ abstract class ModelElement extends Canonicalization
           !(enclosingElement as Extension).isPublic) {
         _isPublic = false;
       } else {
-        var docComment = documentationComment;
-        if (docComment == null) {
-          _isPublic = utils.hasPublicName(element);
-        } else {
-          _isPublic = utils.hasPublicName(element) &&
-              !(docComment.contains('@nodoc') ||
-                  docComment.contains('<nodoc>'));
-        }
+        _isPublic = utils.hasPublicName(element) && !hasNodoc;
       }
     }
     return _isPublic;
@@ -491,8 +507,8 @@ abstract class ModelElement extends Canonicalization
 
   @override
   DartdocOptionContext get config {
-    _config ??=
-        DartdocOptionContext.fromContextElement(packageGraph.config, element);
+    _config ??= DartdocOptionContext.fromContextElement(
+        packageGraph.config, element, packageGraph.resourceProvider);
     return _config;
   }
 
@@ -505,22 +521,24 @@ abstract class ModelElement extends Canonicalization
           .split(locationSplitter)
           .where((s) => s.isNotEmpty));
 
-  Set<String> get features {
-    var allFeatures = <String>{};
-    allFeatures.addAll(annotations);
-
+  static final Set<String> _specialFeatures = {
     // Replace the @override annotation with a feature that explicitly
     // indicates whether an override has occurred.
-    allFeatures.remove('@override');
-
-    // Drop the plain "deprecated" annotation, that's indicated via
+    'override',
+    // Drop the plain "deprecated" annotation; that's indicated via
     // strikethroughs. Custom @Deprecated() will still appear.
-    allFeatures.remove('@deprecated');
-    // const and static are not needed here because const/static elements get
-    // their own sections in the doc.
-    if (isFinal) allFeatures.add('final');
-    if (isLate) allFeatures.add('late');
-    return allFeatures;
+    'deprecated'
+  };
+
+  Set<String> get features {
+    return {
+      ...annotationsFromMetadata(element.metadata
+          .where((e) => !_specialFeatures.contains(e.element?.name))),
+      // 'const' and 'static' are not needed here because 'const' and 'static'
+      // elements get their own sections in the doc.
+      if (isFinal) 'final',
+      if (isLate) 'late',
+    };
   }
 
   String get featuresAsString {
@@ -542,10 +560,9 @@ abstract class ModelElement extends Canonicalization
         preferredClass: preferredClass);
   }
 
+  ModelElement _canonicalModelElement;
   // Returns the canonical ModelElement for this ModelElement, or null
   // if there isn't one.
-  ModelElement _canonicalModelElement;
-
   ModelElement get canonicalModelElement =>
       _canonicalModelElement ??= buildCanonicalModelElement();
 
@@ -642,8 +659,13 @@ abstract class ModelElement extends Canonicalization
         documentationFrom.map((e) => e.documentationLocal).join('<p>'));
   }
 
-  Library get definingLibrary =>
-      packageGraph.findButDoNotCreateLibraryFor(element);
+  Library get definingLibrary {
+    var library = packageGraph.findButDoNotCreateLibraryFor(element);
+    if (library == null) {
+      warn(PackageWarning.noDefiningLibraryFound);
+    }
+    return library;
+  }
 
   Library _canonicalLibrary;
 
@@ -684,6 +706,9 @@ abstract class ModelElement extends Canonicalization
   }
 
   Library _searchForCanonicalLibrary() {
+    if (definingLibrary == null) {
+      return null;
+    }
     var thisAndExported = definingLibrary.exportedInLibraries;
 
     if (thisAndExported == null) {
@@ -794,7 +819,7 @@ abstract class ModelElement extends Canonicalization
   /// does not exist.
   String get extendedDocLink {
     if (hasExtendedDocumentation) {
-      return _modelElementRenderer.renderExtendedDocLink(this);
+      return modelElementRenderer.renderExtendedDocLink(this);
     }
     return '';
   }
@@ -816,6 +841,7 @@ abstract class ModelElement extends Canonicalization
   }
 
   String _fullyQualifiedNameWithoutLibrary;
+  @override
   String get fullyQualifiedNameWithoutLibrary {
     // Remember, periods are legal in library names.
     _fullyQualifiedNameWithoutLibrary ??=
@@ -823,6 +849,7 @@ abstract class ModelElement extends Canonicalization
     return _fullyQualifiedNameWithoutLibrary;
   }
 
+  @override
   String get sourceFileName => element.source.fullName;
 
   CharacterLocation _characterLocation;
@@ -929,7 +956,9 @@ abstract class ModelElement extends Canonicalization
     return _linkedName;
   }
 
-  ModelElementRenderer get _modelElementRenderer =>
+  @visibleForTesting
+  @override
+  ModelElementRenderer get modelElementRenderer =>
       packageGraph.rendererFactory.modelElementRenderer;
 
   ParameterRenderer get _parameterRenderer =>
@@ -1007,10 +1036,9 @@ abstract class ModelElement extends Canonicalization
   PackageGraph get packageGraph => _packageGraph;
 
   @override
-  Package get package => library.package;
+  Package get package => library?.package;
 
-  bool get isPublicAndPackageDocumented =>
-      isPublic && library.packageGraph.packageDocumentedFor(this);
+  bool get isPublicAndPackageDocumented => isPublic && package.isDocumented;
 
   List<Parameter> _allParameters;
 
@@ -1039,6 +1067,9 @@ abstract class ModelElement extends Canonicalization
     }
     return _allParameters;
   }
+
+  @override
+  path.Context get pathContext => packageGraph.resourceProvider.pathContext;
 
   List<Parameter> get parameters {
     if (!canHaveParameters) {
@@ -1085,21 +1116,8 @@ abstract class ModelElement extends Canonicalization
         extendedDebug: extendedDebug);
   }
 
+  @override
   String computeDocumentationComment() => element.documentationComment;
-
-  /// The documentation comment on the Element may be null, so memoization
-  /// cannot rely on the null-ness of [_documentationComment], it must be
-  /// more explicit.
-  bool _documentationCommentComputed = false;
-  String _documentationComment;
-
-  String get documentationComment {
-    if (_documentationCommentComputed == false) {
-      _documentationComment = computeDocumentationComment();
-      _documentationCommentComputed = true;
-    }
-    return _documentationComment;
-  }
 
   /// Unconditionally precache local documentation.
   ///
@@ -1164,7 +1182,7 @@ abstract class ModelElement extends Canonicalization
       return htmlEscape.convert(name);
     }
 
-    return _modelElementRenderer.renderLinkedName(this);
+    return modelElementRenderer.renderLinkedName(this);
   }
 
   /// Replace &lt;<dartdoc-html>[digest]</dartdoc-html>&gt; in API comments with

@@ -12,15 +12,17 @@ import 'package:dartdoc/dartdoc.dart';
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
-import '../tool/subprocess_launcher.dart';
-import 'src/utils.dart';
+import '../../tool/subprocess_launcher.dart';
+import '../src/utils.dart';
 
 Uri get _currentFileUri =>
     (reflect(main) as ClosureMirror).function.location.sourceUri;
 String get _testPackagePath =>
-    path.fromUri(_currentFileUri.resolve('../testing/test_package'));
-String get _testPackageFlutterPluginPath => path
-    .fromUri(_currentFileUri.resolve('../testing/test_package_flutter_plugin'));
+    path.fromUri(_currentFileUri.resolve('../../testing/test_package'));
+String get _testPackageFlutterPluginPath => path.fromUri(_currentFileUri
+    .resolve('../../testing/flutter_packages/test_package_flutter_plugin'));
+String get _testPackageMinimumPath =>
+    path.fromUri(_currentFileUri.resolve('../../testing/test_package_minimum'));
 
 void main() {
   group('Invoking command-line dartdoc', () {
@@ -44,6 +46,20 @@ void main() {
     tearDownAll(() async {
       await Future.wait(CoverageSubprocessLauncher.coverageResults);
     });
+
+    test('running on an empty package does not crash and generates a warning',
+        () async {
+      var outputDir =
+          await Directory.systemTemp.createTemp('dartdoc.testEmpty.');
+      var outputLines = <String>[];
+      await subprocessLauncher.runStreamed(Platform.resolvedExecutable,
+          [dartdocPath, '--output', outputDir.path],
+          perLine: outputLines.add, workingDirectory: _testPackageMinimumPath);
+      expect(
+          outputLines,
+          contains(matches(
+              'package:test_package_minimum has no documentable libraries')));
+    }, timeout: Timeout.factor(2));
 
     test('running --no-generate-docs is quiet and does not generate docs',
         () async {
@@ -122,6 +138,7 @@ void main() {
 
     test('help prints command line args', () async {
       var outputLines = <String>[];
+      print('dartdocPath: $dartdocPath');
       await subprocessLauncher.runStreamed(
           Platform.resolvedExecutable, [dartdocPath, '--help'],
           perLine: outputLines.add);
@@ -210,8 +227,8 @@ void main() {
     }, timeout: Timeout.factor(2));
 
     test('--footer-text excludes version', () async {
-      var _testPackagePath = path
-          .fromUri(_currentFileUri.resolve('../testing/test_package_options'));
+      var _testPackagePath = path.fromUri(
+          _currentFileUri.resolve('../../testing/test_package_options'));
 
       var args = <String>[dartdocPath, '--output', tempDir.path];
 

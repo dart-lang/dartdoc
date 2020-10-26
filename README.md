@@ -15,8 +15,8 @@ For issues/details related to hosted Dart API docs, see
 
 ## Installing dartdoc
 
-- download the [Dart SDK](https://dart.dev/get-dart)
-- add the SDK's `bin` directory to your `PATH`
+Run `pub global activate dartdoc` to install the latest version of dartdoc compatible with your
+SDK.
 
 ## Generating docs
 
@@ -109,6 +109,7 @@ dartdoc:
   categoryOrder: ["First Category", "Second Category"]
   examplePathPrefix: 'subdir/with/examples'
   includeExternal: ['bin/unusually_located_library.dart']
+  nodoc: ['lib/sekret/*.dart']
   linkTo:
     url: "https://my.dartdocumentationsite.org/dev/%v%"
   showUndocumentedCategories: true
@@ -136,7 +137,7 @@ Unrecognized options will be ignored.  Supported options:
     directives.
   * **exclude**:  Specify a list of library names to avoid generating docs for,
     overriding any specified in include.  All libraries listed must be local to this package, unlike
-    the command line `--exclude`.
+    the command line `--exclude`.  See also `nodoc`.
   * **errors**:  Specify warnings to be treated as errors.  See the lists of valid warnings in the command
     line help for `--errors`, `--warnings`, and `--ignore`.
   * **favicon**:  A path to a favicon for the generated docs.
@@ -175,6 +176,11 @@ Unrecognized options will be ignored.  Supported options:
       * `%f%`:  Relative path of file to the repository root
       * `%r%`:  Revision
       * `%l%`:  Line number
+  * **nodoc**: Specify files (via globs) which should be treated as though they have the `@nodoc`
+    tag in the documentation comment of every defined element.  Unlike `exclude` this can specify
+    source files directly, and neither inheritance nor reexports will cause these elements to be
+    documented when included in other libraries.  For more fine-grained control, use `@nodoc` in
+    element documentation comments directly, or the `exclude` directive.
   * **warnings**:  Specify otherwise ignored or set-to-error warnings to simply warn.  See the lists
     of valid warnings in the command line help for `--errors`, `--warnings`, and `--ignore`.
 
@@ -441,27 +447,36 @@ Some examples of likely triage priorities:
 * P0
   * Broken links, widespread
   * Uncaught exceptions, widespread
-  * Incorrect linkage, widespread
+  * Incorrect linkage outside of comment references, widespread
   * Very ugly or navigation impaired generated pages, widespread
+  * Generation errors for high priority users (Flutter, Pub, Fuchsia, Dart),
+    widespread and/or blocking critical teams
 
 * P1
   * Broken links, few or on edge cases
   * Uncaught exceptions, very rare or with simple workarounds
-  * Incorrect linkage, few or on edge cases
+  * Incorrect linkage outside of comment references, few or on edge cases
+  * Incorrect linkage in comment references, widespread or with high impact
   * Incorrect doc contents, widespread or with high impact
   * Minor display warts not significantly impeding navigation, widespread
   * Default-on warnings that are misleading or wrong, widespread
-  * Generation problems that should be detected but aren't warned, widespread
-  * Enhancements that have significant data around them indicating they are a big win
+  * Generation errors that should be detected but aren't warned, widespread
+  * Enhancements that have significant data around them indicating they are a
+    big win
   * User performance problem (e.g. page load, search), widespread
+  * Generation errors for high priority users (Flutter, Pub, Fuchsia, Dart),
+    not widespread or blocking critical teams
 
 * P2
   * Incorrect doc contents, not widespread
+  * Incorrect linkage in comment references, not widespread
   * Minor display warts not significantly impeding navigation, not widespread
-  * Generation problems that should be detected but aren't warned, not widespread
+  * Generation problems that should be detected but aren't warned, not
+    widespread
   * Default-on warnings that are misleading or wrong, few or on edge cases  
   * Non-default warnings that are misleading or wrong, widespread
-  * Enhancements considered important but without significant data indicating they are a big win
+  * Enhancements considered important but without significant data indicating
+    they are a big win
   * User performance problem (e.g. page load, search), not widespread
   * Generation performance problem, widespread
 
@@ -471,7 +486,6 @@ Some examples of likely triage priorities:
   * Non-default warnings that are misleading or wrong, few or on edge cases
   * Enhancements whose importance is uncertain
   * Generation performance problem, limited impact or not widespread
-
 
 ## License
 

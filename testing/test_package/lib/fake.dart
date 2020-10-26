@@ -60,6 +60,9 @@ import 'mylibpub.dart' as renamedLib2;
 import 'two_exports.dart' show BaseClass;
 export 'src/notadotdartfile';
 
+// Verify that even though reexported, objects don't show in documentation.
+export 'package:test_package/src/nodocme.dart';
+
 // ignore: uri_does_not_exist
 export 'package:test_package_imported/categoryExporting.dart'
     show IAmAClassWithCategories;
@@ -69,6 +72,8 @@ export 'src/tool.dart';
 // Explicitly export ourselves, because why not.
 // ignore: uri_does_not_exist
 export 'package:test_package/fake.dart';
+
+export 'src/reexport_this.dart';
 
 /// Does not render with emoji 3ffe:2a00:100:7031::1
 const int hasMarkdownInDoc = 1;
@@ -548,6 +553,9 @@ class ClassWithUnusualProperties extends ImplicitProperties {
   /// This property has some docs, too.
   final Set finalProperty = Set();
 
+  /// This property has docs.
+  abstract Set abstractProperty;
+
   Map implicitReadWrite;
 
   /// Hey there, more things not to warn about: [f], [x], or [q].
@@ -850,6 +858,7 @@ class ExtraSpecialList<E> extends SpecialList {}
 /// {@subCategory Things and Such}
 /// {@image https://flutter.io/images/catalog-widget-placeholder.png}
 /// {@samples https://flutter.io}
+///
 class BaseForDocComments {
   /// Takes a [value] and returns a String.
   ///
@@ -890,6 +899,10 @@ class BaseForDocComments {
   /// Reference containing a type parameter [ExtraSpecialList<Object>]
   ///
   /// Reference to something that doesn't exist containing a type parameter [ThisIsNotHereNoWay<MyType>]
+  ///
+  /// Reference to an inherited member: [ClassWithUnusualProperties.forInheriting]
+  ///
+  /// Reference to an inherited member in another library via class name: [ExtendedBaseReexported.action]
   ///
   /// Link to a nonexistent file (erroneously expects base href): [link](SubForDocComments/localMethod.html)
   ///
@@ -1157,3 +1170,15 @@ extension ExtensionOnNull on Null {
 extension ExtensionOnTypeParameter<T> on T {
   T aFunctionReturningT(T other) => other;
 }
+
+class Super1 {}
+
+class _Super2 implements Super1 {}
+
+class Super3 implements _Super2 {}
+
+class Super4 implements Super1 {}
+
+class _Super5 implements _Super2 {}
+
+class Super6 implements _Super5 {}

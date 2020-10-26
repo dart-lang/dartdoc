@@ -23,15 +23,25 @@ class Accessor extends ModelElement implements EnclosedElement {
 
   bool get isSynthetic => element.isSynthetic;
 
+  GetterSetterCombo _definingCombo;
+  // The [enclosingCombo] where this element was defined.
+  GetterSetterCombo get definingCombo {
+    if (_definingCombo == null) {
+      var variable = (element as PropertyAccessorElement).variable;
+      _definingCombo = ModelElement.fromElement(variable, packageGraph);
+      assert(_definingCombo != null, 'Unable to find defining combo');
+    }
+    return _definingCombo;
+  }
+
   String _sourceCode;
 
   @override
   String get sourceCode {
     if (_sourceCode == null) {
       if (isSynthetic) {
-        _sourceCode = packageGraph
-            .getModelNodeFor((element as PropertyAccessorElement).variable)
-            .sourceCode;
+        _sourceCode =
+            packageGraph.getModelNodeFor(definingCombo.element).sourceCode;
       } else {
         _sourceCode = super.sourceCode;
       }
@@ -40,26 +50,17 @@ class Accessor extends ModelElement implements EnclosedElement {
   }
 
   @override
-  List<ModelElement> get computeDocumentationFrom {
-    return super.computeDocumentationFrom;
-  }
-
-  @override
   String computeDocumentationComment() {
     if (isSynthetic) {
-      var docComment =
-          (element as PropertyAccessorElement).variable.documentationComment;
       // If we're a setter, only display something if we have something different than the getter.
       // TODO(jcollins-g): modify analyzer to do this itself?
       if (isGetter ||
-          // TODO(jcollins-g): @nodoc reading from comments is at the wrong abstraction level here.
-          (docComment != null &&
-              (docComment.contains('<nodoc>') ||
-                  docComment.contains('@nodoc'))) ||
+          definingCombo.hasNodoc ||
           (isSetter &&
-              enclosingCombo.hasGetter &&
-              enclosingCombo.getter.documentationComment != docComment)) {
-        return stripComments(docComment);
+              definingCombo.hasGetter &&
+              definingCombo.getter.documentationComment !=
+                  definingCombo.documentationComment)) {
+        return stripComments(definingCombo.documentationComment);
       } else {
         return '';
       }

@@ -1,45 +1,37 @@
 name: dartdoc
 # Run `grind build` after updating.
-version: 0.32.3
+version: 0.36.1
 description: A non-interactive HTML documentation generator for Dart source code.
 homepage: https://github.com/dart-lang/dartdoc
 environment:
-  sdk: '>=2.7.0 <3.0.0'
+  sdk: '>=2.10.0 <3.0.0'
 
 dependencies:
-  analyzer: ^0.39.16
+  analyzer: ^0.40.4
   args: '>=1.5.0 <2.0.0'
   collection: ^1.2.0
   cli_util: '>=0.1.4 <0.3.0'
   crypto: ^2.0.6
+  glob: '>=1.1.2 <2.0.0'
   html: '>=0.12.1 <0.15.0'
-  # We don't use http_parser directly; this dep exists to ensure that we get at
-  # least version 3.0.3 to work around an issue with 3.0.2.
-  http_parser: '>=3.0.3 <4.0.0'
   logging: ^0.11.3+1
-  process: ^3.0.5
-  markdown: ^2.1.5
+  markdown: '>=2.1.5 <4.0.0'
   meta: ^1.1.8
   mustache: ^1.1.0
   package_config: '>=0.1.5 <2.0.0'
   path: ^1.3.0
   pub_semver: ^1.3.7
-  resource: ^2.1.2
-  stack_trace: ^1.4.2
   yaml: ^2.1.0
 
 dev_dependencies:
   async: '>=2.0.8'
-  build: ^1.3.0
+  build: ^1.5.0
   build_runner: ^1.10.0
   build_version: ^2.0.1
   coverage: ^0.14.0
   dhttpd: ^3.0.0
-  glob: ^1.1.5
   grinder: ^0.8.2
-  io: ^0.3.0
   http: ^0.12.0
-  mockito: ^4.1.1
   pedantic: ^1.9.0
   test: ^1.3.0
 

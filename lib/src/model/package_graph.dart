@@ -3,9 +3,11 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:collection';
 
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/generated/source_io.dart';
@@ -20,6 +22,7 @@ import 'package:dartdoc/src/render/renderer_factory.dart';
 import 'package:dartdoc/src/special_elements.dart';
 import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/warnings.dart';
+import 'package:dartdoc/src/model_utils.dart' show matchGlobs;
 
 class PackageGraph {
   PackageGraph.UninitializedPackageGraph(
@@ -73,13 +76,17 @@ class PackageGraph {
 
     // Scan all model elements to insure that interceptor and other special
     // objects are found.
+    // Emit warnings for any local package that has no libraries.
     // After the allModelElements traversal to be sure that all packages
     // are picked up.
     for (var package in documentedPackages) {
       package.libraries.sort((a, b) => compareNatural(a.name, b.name));
       for (var library in package.libraries) {
-        library.allClasses.forEach(_addToImplementors);
+        _addToImplementors(library.allClasses);
         _extensions.addAll(library.extensions);
+      }
+      if (package.isLocal && !package.hasPublicLibraries) {
+        package.warn(PackageWarning.noDocumentableLibrariesInPackage);
       }
     }
     for (var l in _implementors.values) {
@@ -118,10 +125,20 @@ class PackageGraph {
 
     for (var m in allModelElements) {
       // Skip if there is a canonicalModelElement somewhere else we can run this
-      // for.  Not the same as allCanonicalModelElements since we need to run
+      // for and we won't need a one line document that is precached.
+      // Not the same as allCanonicalModelElements since we need to run
       // for any ModelElement that might not have a canonical ModelElement,
       // too.
-      if (m.canonicalModelElement != null && !m.isCanonical) continue;
+      if (m.canonicalModelElement !=
+                  null // A canonical element exists somewhere
+              &&
+              !m.isCanonical // This element is not canonical
+              &&
+              !m.enclosingElement
+                  .isCanonical // The enclosingElement won't need a oneLineDoc from this
+          ) {
+        continue;
+      }
       yield* precacheOneElement(m);
     }
   }
@@ -134,8 +151,8 @@ class PackageGraph {
       Element element, Map<String, CompilationUnit> compilationUnitMap) {
     _modelNodes.putIfAbsent(
         element,
-        () =>
-            ModelNode(utils.getAstNode(element, compilationUnitMap), element));
+        () => ModelNode(utils.getAstNode(element, compilationUnitMap), element,
+            resourceProvider));
   }
 
   ModelNode getModelNodeFor(Element element) => _modelNodes[element];
@@ -150,7 +167,7 @@ class PackageGraph {
   /// is true.
   bool allExtensionsAdded = false;
 
-  Map<String, List<Class>> get implementors {
+  Map<Class, List<Class>> get implementors {
     assert(allImplementorsAdded);
     return _implementors;
   }
@@ -167,13 +184,13 @@ class PackageGraph {
     return _extensions;
   }
 
-  Map<String, Set<ModelElement>> _findRefElementCache;
-  Map<String, Set<ModelElement>> get findRefElementCache {
+  HashMap<String, Set<ModelElement>> _findRefElementCache;
+  HashMap<String, Set<ModelElement>> get findRefElementCache {
     if (_findRefElementCache == null) {
       assert(packageGraph.allLibrariesAdded);
-      _findRefElementCache = {};
+      _findRefElementCache = HashMap<String, Set<ModelElement>>();
       for (final modelElement
-          in utils.filterNonDocumented(packageGraph.allLocalModelElements)) {
+          in utils.filterHasCanonical(packageGraph.allModelElements)) {
         _findRefElementCache.putIfAbsent(
             modelElement.fullyQualifiedNameWithoutLibrary, () => {});
         _findRefElementCache.putIfAbsent(
@@ -193,15 +210,17 @@ class PackageGraph {
   PackageWarningCounter _packageWarningCounter;
 
   /// All ModelElements constructed for this package; a superset of [allModelElements].
-  final Map<Tuple3<Element, Library, Container>, ModelElement>
-      allConstructedModelElements = {};
+  final allConstructedModelElements =
+      HashMap<Tuple3<Element, Library, Container>, ModelElement>();
 
   /// Anything that might be inheritable, place here for later lookup.
-  final Map<Tuple2<Element, Library>, Set<ModelElement>>
-      allInheritableElements = {};
+  final allInheritableElements =
+      HashMap<Tuple2<Element, Library>, Set<ModelElement>>();
 
-  /// Map of Class.href to a list of classes implementing that class
-  final Map<String, List<Class>> _implementors = {};
+  /// A mapping of the list of classes which implement each class.
+  final _implementors = LinkedHashMap<Class, List<Class>>(
+      equals: (Class a, Class b) => a.definingClass == b.definingClass,
+      hashCode: (Class class_) => class_.definingClass.hashCode);
 
   /// A list of extensions that exist in the package graph.
   final List<Extension> _extensions = [];
@@ -237,6 +256,8 @@ class PackageGraph {
   /// Map of package name to Package.
   final Map<String, Package> packageMap = {};
 
+  ResourceProvider get resourceProvider => config.resourceProvider;
+
   final DartSdk sdk;
 
   Map<Source, SdkLibrary> _sdkLibrarySources;
@@ -255,20 +276,6 @@ class PackageGraph {
   final Map<String, String> _htmlFragments = {};
   bool allLibrariesAdded = false;
   bool _localDocumentationBuilt = false;
-
-  Set<String> _allRootDirs;
-
-  /// Returns true if there's at least one library documented in the package
-  /// that has the same package path as the library for the given element.
-  ///
-  /// Usable as a cross-check for dartdoc's canonicalization to generate
-  /// warnings for ModelElement.isPublicAndPackageDocumented.
-  bool packageDocumentedFor(ModelElement element) {
-    _allRootDirs ??= {
-      ...(publicLibraries.map((l) => l.packageMeta?.resolvedDir))
-    };
-    return _allRootDirs.contains(element.library.packageMeta?.resolvedDir);
-  }
 
   PackageWarningCounter get packageWarningCounter => _packageWarningCounter;
 
@@ -338,90 +345,102 @@ class PackageGraph {
         //                   messages and warn for non-public canonicalization
         //                   errors.
         warningMessage =
-            'no canonical library found for ${warnableName}, not linking';
+            'no canonical library found for $warnableName, not linking';
         break;
       case PackageWarning.ambiguousReexport:
         // Fix these warnings by adding the original library exporting the
         // symbol with --include, by using --auto-include-dependencies,
         // or by using --exclude to hide one of the libraries involved
         warningMessage =
-            'ambiguous reexport of ${warnableName}, canonicalization candidates: ${message}';
+            'ambiguous reexport of $warnableName, canonicalization candidates: $message';
+        break;
+      case PackageWarning.noDefiningLibraryFound:
+        warningMessage =
+            'could not find the defining library for $warnableName; the '
+            'library may be imported or exported with a non-standard URI';
         break;
       case PackageWarning.noLibraryLevelDocs:
         warningMessage =
             '${warnable.fullyQualifiedName} has no library level documentation comments';
         break;
+      case PackageWarning.noDocumentableLibrariesInPackage:
+        warningMessage =
+            '${warnable.fullyQualifiedName} has no documentable libraries';
+        break;
       case PackageWarning.ambiguousDocReference:
-        warningMessage = 'ambiguous doc reference ${message}';
+        warningMessage = 'ambiguous doc reference $message';
         break;
       case PackageWarning.ignoredCanonicalFor:
         warningMessage =
-            "library says it is {@canonicalFor ${message}} but ${message} can't be canonical there";
+            "library says it is {@canonicalFor $message} but $message can't be canonical there";
         break;
       case PackageWarning.packageOrderGivesMissingPackageName:
         warningMessage =
-            "--package-order gives invalid package name: '${message}'";
+            "--package-order gives invalid package name: '$message'";
         break;
       case PackageWarning.reexportedPrivateApiAcrossPackages:
         warningMessage =
-            'private API of ${message} is reexported by libraries in other packages: ';
+            'private API of $message is reexported by libraries in other packages: ';
         break;
       case PackageWarning.notImplemented:
         warningMessage = message;
         break;
       case PackageWarning.unresolvedDocReference:
-        warningMessage = 'unresolved doc reference [${message}]';
+        warningMessage = 'unresolved doc reference [$message]';
         referredFromPrefix = 'in documentation inherited from';
         break;
+      case PackageWarning.unknownDirective:
+        warningMessage = 'undefined directive: $message';
+        break;
       case PackageWarning.unknownMacro:
-        warningMessage = 'undefined macro [${message}]';
+        warningMessage = 'undefined macro [$message]';
         break;
       case PackageWarning.unknownHtmlFragment:
-        warningMessage = 'undefined HTML fragment identifier [${message}]';
+        warningMessage = 'undefined HTML fragment identifier [$message]';
         break;
       case PackageWarning.brokenLink:
-        warningMessage = 'dartdoc generated a broken link to: ${message}';
+        warningMessage = 'dartdoc generated a broken link to: $message';
         warnablePrefix = 'to element';
         referredFromPrefix = 'linked to from';
         break;
       case PackageWarning.orphanedFile:
-        warningMessage = 'dartdoc generated a file orphan: ${message}';
+        warningMessage = 'dartdoc generated a file orphan: $message';
         break;
       case PackageWarning.unknownFile:
         warningMessage =
-            'dartdoc detected an unknown file in the doc tree: ${message}';
+            'dartdoc detected an unknown file in the doc tree: $message';
         break;
       case PackageWarning.missingFromSearchIndex:
         warningMessage =
-            'dartdoc generated a file not in the search index: ${message}';
+            'dartdoc generated a file not in the search index: $message';
         break;
       case PackageWarning.typeAsHtml:
         // The message for this warning can contain many punctuation and other symbols,
         // so bracket with a triple quote for defense.
-        warningMessage = 'generic type handled as HTML: """${message}"""';
+        warningMessage = 'generic type handled as HTML: """$message"""';
         break;
       case PackageWarning.invalidParameter:
-        warningMessage = 'invalid parameter to dartdoc directive: ${message}';
+        warningMessage = 'invalid parameter to dartdoc directive: $message';
         break;
       case PackageWarning.toolError:
-        warningMessage = 'tool execution failed: ${message}';
+        warningMessage = 'tool execution failed: $message';
         break;
       case PackageWarning.deprecated:
-        warningMessage = 'deprecated dartdoc usage: ${message}';
+        warningMessage = 'deprecated dartdoc usage: $message';
         break;
       case PackageWarning.unresolvedExport:
-        warningMessage = 'unresolved export uri: ${message}';
+        warningMessage = 'unresolved export uri: $message';
         break;
       case PackageWarning.duplicateFile:
-        warningMessage = 'failed to write file at: ${message}';
+        warningMessage = 'failed to write file at: $message';
         warnablePrefix = 'for symbol';
         referredFromPrefix = 'conflicting with file already generated by';
         break;
       case PackageWarning.missingConstantConstructor:
-        warningMessage = 'constant constructor missing: ${message}';
+        warningMessage = 'constant constructor missing: $message';
         break;
       case PackageWarning.missingExampleFile:
-        warningMessage = 'example file not found: ${message}';
+        warningMessage = 'example file not found: $message';
         break;
     }
 
@@ -511,8 +530,9 @@ class PackageGraph {
           referredFrom: <Locatable>[topLevelLibrary]);
       return;
     }
-    _libraryElementReexportedBy.putIfAbsent(libraryElement, () => {});
-    _libraryElementReexportedBy[libraryElement].add(topLevelLibrary);
+    _libraryElementReexportedBy
+        .putIfAbsent(libraryElement, () => {})
+        .add(topLevelLibrary);
     for (var exportedElement in libraryElement.exports) {
       _tagReexportsFor(
           topLevelLibrary, exportedElement.exportedLibrary, exportedElement);
@@ -565,26 +585,46 @@ class PackageGraph {
     return hrefMap;
   }
 
-  void _addToImplementors(Class c) {
+  void _addToImplementors(Iterable<Class> classes) {
     assert(!allImplementorsAdded);
-    _implementors.putIfAbsent(c.href, () => []);
-    void _checkAndAddClass(Class key, Class implClass) {
-      _implementors.putIfAbsent(key.href, () => []);
-      var list = _implementors[key.href];
 
-      if (!list.any((l) => l.element == c.element)) {
-        list.add(implClass);
+    // Private classes may not be included in [classes], but may still be
+    // necessary links in the implementation chain. They are added here as they
+    // are found, then processed after [classes].
+    var privates = <Class>[];
+
+    void checkAndAddClass(Class implemented, Class implementor) {
+      if (!implemented.isPublic) {
+        privates.add(implemented);
+      }
+      implemented = implemented.canonicalModelElement ?? implemented;
+      _implementors.putIfAbsent(implemented, () => []);
+      var list = _implementors[implemented];
+      // TODO(srawlins): This would be more efficient if we created a
+      // SplayTreeSet keyed off of `.element`.
+      if (!list.any((l) => l.element == implementor.element)) {
+        list.add(implementor);
       }
     }
 
-    for (var type in c.mixins) {
-      _checkAndAddClass(type.element, c);
+    void addImplementor(Class class_) {
+      for (var type in class_.mixins) {
+        checkAndAddClass(type.element, class_);
+      }
+      if (class_.supertype != null) {
+        checkAndAddClass(class_.supertype.element, class_);
+      }
+      for (var type in class_.interfaces) {
+        checkAndAddClass(type.element, class_);
+      }
     }
-    if (c.supertype != null) {
-      _checkAndAddClass(c.supertype.element, c);
-    }
-    for (var type in c.interfaces) {
-      _checkAndAddClass(type.element, c);
+
+    classes.forEach(addImplementor);
+
+    // [privates] may grow while processing; use a for loop, rather than a
+    // for-each loop, to avoid concurrent modification errors.
+    for (var i = 0; i < privates.length; i++) {
+      addImplementor(privates[i]);
     }
   }
 
@@ -641,13 +681,11 @@ class PackageGraph {
 
   /// Returns the set of [Class] objects that are similar to pragma
   /// in that we should never count them as documentable annotations.
-  Set<Class> get invisibleAnnotations {
-    if (_invisibleAnnotations == null) {
-      _invisibleAnnotations = {};
-      _invisibleAnnotations.add(specialClasses[SpecialClass.pragma]);
-    }
-    return _invisibleAnnotations;
-  }
+  Set<Class> get invisibleAnnotations =>
+      _invisibleAnnotations ??= {specialClasses[SpecialClass.pragma]};
+
+  bool isAnnotationVisible(Class class_) =>
+      !invisibleAnnotations.contains(class_);
 
   @override
   String toString() {
@@ -908,6 +946,25 @@ class PackageGraph {
   Iterable<ModelElement> get allCanonicalModelElements {
     return _allCanonicalModelElements ??=
         allLocalModelElements.where((e) => e.isCanonical).toList();
+  }
+
+  /// Glob lookups can be expensive.  Cache per filename.
+  final _configSetsNodocFor = HashMap<String, bool>();
+
+  /// Given an element's location, look up the nodoc configuration data and
+  /// determine whether to unconditionally treat the element as "nodoc".
+  bool configSetsNodocFor(String fullName) {
+    if (!_configSetsNodocFor.containsKey(fullName)) {
+      var file = resourceProvider.getFile(fullName);
+      // Direct lookup instead of generating a custom context will save some
+      // cycles.  We can't use the element's [DartdocOptionContext] because that
+      // might not be where the element was defined, which is what's important
+      // for nodoc's semantics.  Looking up the defining element just to pull
+      // a context is again, slow.
+      List<String> globs = config.optionSet['nodoc'].valueAt(file.parent);
+      _configSetsNodocFor[fullName] = matchGlobs(globs, fullName);
+    }
+    return _configSetsNodocFor[fullName];
   }
 
   String getMacro(String name) {

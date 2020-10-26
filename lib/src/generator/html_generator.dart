@@ -4,9 +4,6 @@
 
 library dartdoc.html_generator;
 
-import 'dart:async' show Future;
-import 'dart:io' show File;
-
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/generator/dartdoc_generator_backend.dart';
 import 'package:dartdoc/src/generator/generator.dart';
@@ -44,7 +41,8 @@ class HtmlGeneratorBackend extends DartdocGeneratorBackend {
     await _copyResources(writer);
     if (options.favicon != null) {
       // Allow overwrite of favicon.
-      var bytes = File(options.favicon).readAsBytesSync();
+      var bytes =
+          graph.resourceProvider.getFile(options.favicon).readAsBytesSync();
       writer.write(path.join('static-assets', 'favicon.png'), bytes,
           allowOverwrite: true);
     }

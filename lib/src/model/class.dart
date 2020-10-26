@@ -19,7 +19,7 @@ import 'package:meta/meta.dart';
 /// **instance**: As with [Container], but also includes inherited children.
 /// **inherited**: Filtered getters giving only inherited children.
 class Class extends Container
-    with TypeParameters, Categorization, ExtensionTarget
+    with Categorization, ExtensionTarget
     implements EnclosedElement {
   // TODO(srawlins): To make final, remove public getter, setter, rename to be
   // public, and add `final` modifier.
@@ -60,19 +60,24 @@ class Class extends Container
     packageGraph.specialClasses.addSpecial(this);
   }
 
-  Constructor _defaultConstructor;
+  Constructor _unnamedConstructor;
 
-  Constructor get defaultConstructor {
-    _defaultConstructor ??= constructors
-        .firstWhere((c) => c.isDefaultConstructor, orElse: () => null);
-    return _defaultConstructor;
+  Constructor get unnamedConstructor {
+    _unnamedConstructor ??= constructors
+        .firstWhere((c) => c.isUnnamedConstructor, orElse: () => null);
+    return _unnamedConstructor;
   }
+
+  @Deprecated(
+      'Renamed to `unnamedConstructor`; this getter with the old name will be '
+      'removed as early as Dartdoc 1.0.0')
+  Constructor get defaultConstructor => unnamedConstructor;
 
   @override
   Iterable<Method> get instanceMethods =>
       quiver.concat([super.instanceMethods, inheritedMethods]);
 
-  // Whether all instance methods are inherited, used in mustache templates.
+  @override
   bool get publicInheritedInstanceMethods =>
       instanceMethods.every((f) => f.isInherited);
 
@@ -126,11 +131,12 @@ class Class extends Container
     return kind;
   }
 
-  // Whether any constructors are public, used in mustache templates.
+  @override
   bool get hasPublicConstructors => publicConstructorsSorted.isNotEmpty;
 
   List<Constructor> _publicConstructorsSorted;
 
+  @override
   List<Constructor> get publicConstructorsSorted =>
       _publicConstructorsSorted ??= publicConstructors.toList()..sort(byName);
 
@@ -161,14 +167,39 @@ class Class extends Container
     return '${package.baseHref}$filePath';
   }
 
-  /// Returns all the implementors of this class.
+  /// Returns the [Class] with the library in which [element] is defined.
+  Class get definingClass =>
+      ModelElement.from(element, definingLibrary, packageGraph);
+
+  /// Returns all the "immediate" public implementors of this class.
+  ///
+  /// If this class has a private implementor, then that is counted as a proxy
+  /// for any public implementors of that private class.
   Iterable<Class> get publicImplementors {
-    return model_utils.filterNonPublic(
-        model_utils.findCanonicalFor(packageGraph.implementors[href] ?? []));
+    var result = <Class>{};
+    var seen = <Class>{};
+
+    // Recursively adds [implementor] if public, or the implementors of
+    // [implementor] if not.
+    void addToResult(Class implementor) {
+      if (seen.contains(implementor)) return;
+      seen.add(implementor);
+      if (implementor.isPublicAndPackageDocumented) {
+        result.add(implementor);
+      } else {
+        model_utils
+            .findCanonicalFor(packageGraph.implementors[implementor] ?? [])
+            .forEach(addToResult);
+      }
+    }
+
+    model_utils
+        .findCanonicalFor(packageGraph.implementors[this] ?? [])
+        .forEach(addToResult);
+    return result;
   }
 
-  /*lazy final*/
-  List<Method> _inheritedMethods;
+  /*lazy final*/ List<Method> _inheritedMethods;
 
   Iterable<Method> get inheritedMethods {
     if (_inheritedMethods == null) {
@@ -196,8 +227,7 @@ class Class extends Container
 
   bool get hasPublicInheritedMethods => publicInheritedMethods.isNotEmpty;
 
-  /*lazy final*/
-  List<Operator> _inheritedOperators;
+  /*lazy final*/ List<Operator> _inheritedOperators;
 
   Iterable<Operator> get inheritedOperators {
     if (_inheritedOperators == null) {
@@ -218,6 +248,7 @@ class Class extends Container
     return _inheritedOperators;
   }
 
+  @override
   Iterable<Operator> get publicInheritedInstanceOperators =>
       model_utils.filterNonPublic(inheritedOperators);
 
@@ -370,8 +401,7 @@ class Class extends Container
       var accessorMap = <String, List<PropertyAccessorElement>>{};
       for (var accessorElement in inheritedAccessorElements) {
         var name = accessorElement.name.replaceFirst('=', '');
-        accessorMap.putIfAbsent(name, () => []);
-        accessorMap[name].add(accessorElement);
+        accessorMap.putIfAbsent(name, () => []).add(accessorElement);
       }
 
       // For half-inherited fields, the analyzer only links the non-inherited
@@ -495,6 +525,7 @@ class Class extends Container
   Iterable<Field> get instanceFields =>
       _instanceFields ??= allFields.where((f) => !f.isStatic);
 
+  @override
   bool get publicInheritedInstanceFields =>
       publicInstanceFields.every((f) => f.isInherited);
 

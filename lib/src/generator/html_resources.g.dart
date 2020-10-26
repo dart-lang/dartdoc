@@ -10,8 +10,6 @@ const List<String> resource_names = [
   'package:dartdoc/resources/play_button.svg',
   'package:dartdoc/resources/readme.md',
   'package:dartdoc/resources/script.js',
-  'package:dartdoc/resources/sdk_footer_text.html',
-  'package:dartdoc/resources/sdk_footer_text.md',
   'package:dartdoc/resources/styles.css',
   'package:dartdoc/resources/typeahead.bundle.min.js'
 ];

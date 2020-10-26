@@ -105,15 +105,19 @@ class Field extends ModelElement
 
   @override
   List<String> get annotations {
-    var all_annotations = <String>[];
-    all_annotations.addAll(super.annotations);
+    var allAnnotations = [...super.annotations];
 
     if (element is PropertyInducingElement) {
       var pie = element as PropertyInducingElement;
-      all_annotations.addAll(annotationsFromMetadata(pie.getter?.metadata));
-      all_annotations.addAll(annotationsFromMetadata(pie.setter?.metadata));
+      allAnnotations.addAll(annotationsFromMetadata(pie.getter?.metadata));
+      allAnnotations.addAll(annotationsFromMetadata(pie.setter?.metadata));
     }
-    return all_annotations.toList(growable: false);
+    return allAnnotations;
+  }
+
+  String get fullkind {
+    if (field.isAbstract) return 'abstract $kind';
+    return kind;
   }
 
   @override

@@ -2,12 +2,10 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'dart:io';
-
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/model.dart';
-import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/render/category_renderer.dart';
 import 'package:dartdoc/src/warnings.dart';
 
@@ -90,7 +88,7 @@ class Category extends Nameable
     } else if (c is Extension) {
       _extensions.add(c);
     } else {
-      throw UnimplementedError('Unrecognized element');
+      throw UnimplementedError('Unrecognized element: $c (${c.runtimeType})');
     }
   }
 
@@ -149,12 +147,8 @@ class Category extends Nameable
   @override
   String get href => isCanonical ? '${package.baseHref}$filePath' : null;
 
-  @Deprecated(
-      'Public field is unused; will be removed as early as Dartdoc 1.0.0')
   String get categoryLabel => _categoryRenderer.renderCategoryLabel(this);
 
-  @Deprecated(
-      'Public field is unused; will be removed as early as Dartdoc 1.0.0')
   String get linkedName => _categoryRenderer.renderLinkedName(this);
 
   int _categoryIndex;
@@ -174,14 +168,14 @@ class Category extends Nameable
   @override
   String get kind => 'Topic';
 
-  FileContents _documentationFile;
+  File _documentationFile;
 
   @override
-  FileContents get documentationFile {
+  File get documentationFile {
     if (_documentationFile == null) {
       if (categoryDefinition?.documentationMarkdown != null) {
-        _documentationFile =
-            FileContents(File(categoryDefinition.documentationMarkdown));
+        _documentationFile = _config.resourceProvider
+            .getFile(categoryDefinition.documentationMarkdown);
       }
     }
     return _documentationFile;

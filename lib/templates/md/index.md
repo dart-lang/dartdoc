@@ -2,11 +2,10 @@
 
 # {{ title }}
 
-{{#packageGraph.defaultPackage}}
+{{#defaultPackage}}
 {{>documentation}}
-{{/packageGraph.defaultPackage}}
+{{/defaultPackage}}
 
-{{#packageGraph}}
 {{#localPackages}}
 {{#isFirstPackage}}
 ## Libraries
@@ -27,6 +26,5 @@
 {{/publicLibraries}}
 {{/categoriesWithPublicLibraries}}
 {{/localPackages}}
-{{/packageGraph}}
 
 {{>footer}}

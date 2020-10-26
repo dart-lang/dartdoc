@@ -1,12 +1,9 @@
-import 'dart:io';
-
 import 'package:args/args.dart';
 import 'package:crypto/crypto.dart' as crypto;
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/model_element_renderer.dart';
 import 'package:dartdoc/src/utils.dart';
 import 'package:dartdoc/src/warnings.dart';
-import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
 
 final _templatePattern = RegExp(
@@ -29,8 +26,37 @@ final _examplePattern = RegExp(r'{@example\s+([^}]+)}');
 ///
 /// [processCommentWithoutTools] and [processComment] are the primary
 /// entrypoints.
-mixin CommentProcessable on Documentable, Warnable, Locatable, SourceCodeMixin {
-  /// Process [documentationComment], performing various actions based on
+mixin DocumentationComment
+    on Documentable, Warnable, Locatable, SourceCodeMixin {
+  /// The documentation comment on the Element may be null, so memoization
+  /// cannot rely on the null-ness of [_documentationComment], it must be
+  /// more explicit.
+  bool _documentationCommentComputed = false;
+  String _documentationComment;
+
+  String get documentationComment {
+    if (_documentationCommentComputed == false) {
+      _documentationComment = computeDocumentationComment();
+      _documentationCommentComputed = true;
+    }
+    return _documentationComment;
+  }
+
+  /// Implement to derive the raw documentation comment string from the
+  /// analyzer.
+  String computeDocumentationComment();
+
+  /// Returns true if the raw documentation comment has a nodoc indication.
+  bool get hasNodoc {
+    if (documentationComment != null &&
+        (documentationComment.contains('@nodoc') ||
+            documentationComment.contains('<nodoc>'))) {
+      return true;
+    }
+    return packageGraph.configSetsNodocFor(element.source.fullName);
+  }
+
+  /// Process a [documentationComment], performing various actions based on
   /// `{@}`-style directives, except `{@tool}`, returning the processed result.
   String processCommentWithoutTools(String documentationComment) {
     var docs = stripComments(documentationComment);
@@ -57,9 +83,11 @@ mixin CommentProcessable on Documentable, Warnable, Locatable, SourceCodeMixin {
   }
 
   String processCommentDirectives(String docs) {
+    // The vast, vast majority of doc comments have no directives.
     if (!docs.contains('{@')) {
       return docs;
     }
+    _checkForUnknownDirectives(docs);
     docs = _injectExamples(docs);
     docs = _injectYouTube(docs);
     docs = _injectAnimations(docs);
@@ -68,15 +96,65 @@ mixin CommentProcessable on Documentable, Warnable, Locatable, SourceCodeMixin {
     return docs;
   }
 
-  String get _sourceFileName => element.source.fullName;
+  String get sourceFileName;
 
-  String get _fullyQualifiedNameWithoutLibrary =>
-      // Remember, periods are legal in library names.
-      fullyQualifiedName.replaceFirst('${library.fullyQualifiedName}.', '');
+  String get fullyQualifiedNameWithoutLibrary;
 
-  @visibleForTesting
-  ModelElementRenderer get modelElementRenderer =>
-      packageGraph.rendererFactory.modelElementRenderer;
+  path.Context get pathContext;
+
+  ModelElementRenderer get modelElementRenderer;
+
+  static const _allDirectiveNames = [
+    'animation',
+    'end-inject-html',
+    'end-tool',
+    'endtemplate',
+    'example',
+    'macro',
+    'inject-html',
+    'template',
+    'tool',
+    'youtube',
+
+    // Categorization directives, parsed elsewhere:
+    'api',
+    'canonicalFor',
+    'category',
+    'image',
+    'samples',
+    'subCategory',
+
+    // Common Dart annotations which may decorate named parameters:
+    'deprecated',
+    'required',
+  ];
+
+  static final _nameBreak = RegExp('[\\s}]');
+
+  // TODO(srawlins): Implement more checks; see
+  // https://github.com/dart-lang/dartdoc/issues/1814.
+  void _checkForUnknownDirectives(String docs) {
+    var index = 0;
+    while (true) {
+      var nameStartIndex = docs.indexOf('{@', index);
+      if (nameStartIndex == -1) return;
+      var nameEndIndex = docs.indexOf(_nameBreak, nameStartIndex + 2);
+      if (nameEndIndex == -1) return;
+      var name = docs.substring(nameStartIndex + 2, nameEndIndex);
+      if (!_allDirectiveNames.contains(name)) {
+        if (_allDirectiveNames.contains(name.toLowerCase())) {
+          warn(PackageWarning.unknownDirective,
+              message: "'$name' (use lowercase)");
+        } else {
+          warn(PackageWarning.unknownDirective, message: "'$name'");
+        }
+      }
+      // TODO(srawlins): Replace all `replaceAllMapped` usage within this file,
+      // running regex after regex over [docs], with simple calls here. This has
+      // interactivity / order-of-operations consequences, so take care.
+      index = nameEndIndex;
+    }
+  }
 
   /// Replace &#123;@tool ...&#125&#123;@end-tool&#125; in API comments with the
   /// output of an external tool.
@@ -155,13 +233,13 @@ mixin CommentProcessable on Documentable, Warnable, Locatable, SourceCodeMixin {
             'SOURCE_LINE': characterLocation?.lineNumber.toString(),
             'SOURCE_COLUMN': characterLocation?.columnNumber.toString(),
             'SOURCE_PATH':
-                (_sourceFileName == null || package?.packagePath == null)
+                (sourceFileName == null || package?.packagePath == null)
                     ? null
-                    : path.relative(_sourceFileName, from: package.packagePath),
+                    : path.relative(sourceFileName, from: package.packagePath),
             'PACKAGE_PATH': package?.packagePath,
             'PACKAGE_NAME': package?.name,
             'LIBRARY_NAME': library?.fullyQualifiedName,
-            'ELEMENT_NAME': _fullyQualifiedNameWithoutLibrary,
+            'ELEMENT_NAME': fullyQualifiedNameWithoutLibrary,
             'INVOCATION_INDEX': invocationIndex.toString(),
             'PACKAGE_INVOCATION_INDEX':
                 (package.toolInvocationIndex++).toString(),
@@ -198,8 +276,9 @@ mixin CommentProcessable on Documentable, Warnable, Locatable, SourceCodeMixin {
 
       var replacement = match[0]; // default to fully matched string.
 
-      var fragmentFile = File(path.join(dirPath, args['file']));
-      if (fragmentFile.existsSync()) {
+      var fragmentFile = packageGraph.resourceProvider.getFile(
+          pathContext.canonicalize(pathContext.join(dirPath, args['file'])));
+      if (fragmentFile.exists) {
         replacement = fragmentFile.readAsStringSync();
         if (lang.isNotEmpty) {
           replacement = replacement.replaceFirst('```', '```$lang');
@@ -207,6 +286,8 @@ mixin CommentProcessable on Documentable, Warnable, Locatable, SourceCodeMixin {
       } else {
         var filePath = element.source.fullName.substring(dirPath.length + 1);
 
+        // TODO(srawlins): If a file exists at the location without the
+        // appended 'md' extension, note this.
         warn(PackageWarning.missingExampleFile,
             message: '${fragmentFile.path}; path listed at $filePath');
       }
@@ -234,7 +315,7 @@ mixin CommentProcessable on Documentable, Warnable, Locatable, SourceCodeMixin {
     // Extract PATH and fix the path separators.
     var src = results.rest.isEmpty
         ? ''
-        : results.rest.first.replaceAll('/', Platform.pathSeparator);
+        : results.rest.first.replaceAll('/', pathContext.separator);
     var args = <String, String>{
       'src': src,
       'lang': results['lang'],

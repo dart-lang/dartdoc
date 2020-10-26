@@ -7,6 +7,7 @@ dartdoc:
     Unreal:
       markdown: "Unreal.md"
     Real Libraries:
+  nodoc: ["lib/src/nodoc*.dart"]
   tools:
     drill:
       command: ["bin/drill.dart"]

@@ -5,33 +5,39 @@
 /// Unit tests for lib/src/warnings.dart.
 library dartdoc.warnings_test;
 
-import 'dart:io';
-
+import 'package:analyzer/file_system/file_system.dart';
+import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
+import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/warnings.dart';
-import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
 void main() {
-  Directory tempDir, testPackageOne, testPackageTwo, testPackageThree;
+  ResourceProvider resourceProvider = PhysicalResourceProvider.INSTANCE;
+  Folder tempDir, testPackageOne, testPackageTwo, testPackageThree;
   File pubspecYamlOne, pubspecYamlTwo, pubspecYamlThree, dartdocYamlThree;
   DartdocOptionSet optionSet;
 
   setUpAll(() {
-    tempDir = Directory.systemTemp.createTempSync('warnings_test');
-    testPackageOne = Directory(path.join(tempDir.path, 'test_package_one'))
-      ..createSync();
-    testPackageTwo = Directory(path.join(tempDir.path, 'test_package_two'))
-      ..createSync();
-    testPackageThree = Directory(path.join(tempDir.path, 'test_package_three'))
-      ..createSync();
-    pubspecYamlOne = File(path.join(testPackageOne.path, 'pubspec.yaml'));
+    tempDir = resourceProvider.createSystemTemp('warnings_test');
+    testPackageOne = resourceProvider.getFolder(
+        resourceProvider.pathContext.join(tempDir.path, 'test_package_one'))
+      ..create();
+    testPackageTwo = resourceProvider.getFolder(
+        resourceProvider.pathContext.join(tempDir.path, 'test_package_two'))
+      ..create();
+    testPackageThree = resourceProvider.getFolder(
+        resourceProvider.pathContext.join(tempDir.path, 'test_package_three'))
+      ..create();
+    pubspecYamlOne = resourceProvider.getFile(
+        resourceProvider.pathContext.join(testPackageOne.path, 'pubspec.yaml'));
     pubspecYamlOne.writeAsStringSync('name: test_package_one');
-    pubspecYamlTwo = File(path.join(testPackageTwo.path, 'pubspec.yaml'));
+    pubspecYamlTwo = resourceProvider.getFile(
+        resourceProvider.pathContext.join(testPackageTwo.path, 'pubspec.yaml'));
     pubspecYamlTwo.writeAsStringSync('name: test_package_two');
-    dartdocYamlThree =
-        File(path.join(testPackageThree.path, 'dartdoc_options.yaml'));
+    dartdocYamlThree = resourceProvider.getFile(resourceProvider.pathContext
+        .join(testPackageThree.path, 'dartdoc_options.yaml'));
     dartdocYamlThree.writeAsStringSync('''
 dartdoc:
   warnings:
@@ -42,13 +48,14 @@ dartdoc:
   ignore:
     - ambiguous-reexport  
     ''');
-    pubspecYamlThree = File(path.join(testPackageThree.path, 'pubspec.yaml'));
+    pubspecYamlThree = resourceProvider.getFile(resourceProvider.pathContext
+        .join(testPackageThree.path, 'pubspec.yaml'));
     pubspecYamlThree.writeAsStringSync('name: test_package_three');
   });
 
   setUp(() async {
     optionSet = await DartdocOptionSet.fromOptionGenerators(
-        'dartdoc', [() => createDartdocOptions(pubPackageMetaProvider)]);
+        'dartdoc', [createDartdocOptions], pubPackageMetaProvider);
   });
 
   test('Verify that options for enabling/disabling packages work', () {

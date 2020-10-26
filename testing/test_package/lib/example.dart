@@ -8,10 +8,11 @@ import 'dart:math';
 import 'src/mylib.dart' show Helper;
 import 'package:test_package_imported/main.dart';
 
+export 'package:args/args.dart' show ArgParser;
 export 'dart:core' show deprecated, Deprecated;
 import 'package:meta/meta.dart' show protected, factory;
 
-export 'fake.dart' show Cool;
+export 'fake.dart' show Cool, ClassTemplateOneLiner;
 export 'src/mylib.dart' show Helper;
 
 const String COLOR = 'red';
@@ -259,6 +260,16 @@ class B extends Apple with Cat {
   void abstractMethod() {}
 }
 
+/// Reference to nullable type: [Apple?] and null-checked variable [myNumber!].
+class RefsWithQsAndBangs {}
+
+/// Reference to [FieldAndCtorWithSameName.named()].
+class FieldAndCtorWithSameName {
+  FieldAndCtorWithSameName.named();
+
+  int named;
+}
+
 // Do NOT add a doc comment to C. Testing blank comments.
 
 abstract class Cat {
@@ -284,15 +295,6 @@ class ConstantCat implements Cat {
 }
 
 /// implements [Cat], [E]
-///
-/// {@example dog/food}
-/// {@example dog/food.txt region=meat}
-///
-/// {@example test.dart region=template lang=html}
-///
-/// {@example test.dart region=}
-///
-/// {@example test.dart region= lang=}
 class Dog implements Cat, E {
   String name;
 
@@ -391,31 +393,6 @@ class Dog implements Cat, E {
   /// Tests to see that an inline {@youtube 100 100 https://www.youtube.com/watch?v=oHg5SJYRHA0} works as expected.
   void withYouTubeInline() {}
 
-  /// Animation method
-  ///
-  /// {@animation 100 100 http://host/path/to/video.mp4}
-  /// More docs
-  void withAnimation() {}
-
-  /// Animation method with name
-  ///
-  /// {@animation 100 100 http://host/path/to/video.mp4 id=namedAnimation}
-  /// More docs
-  void withNamedAnimation() {}
-
-  /// Animation method with quoted name
-  ///
-  /// {@animation 100 100 http://host/path/to/video.mp4 id="quotedNamedAnimation"}
-  /// {@animation 100 100 http://host/path/to/video.mp4 id='quotedNamedAnimation2'}
-  /// More docs
-  void withQuotedNamedAnimation() {}
-
-  /// Deprecated animation method format.
-  ///
-  /// {@animation deprecatedAnimation 100 100 http://host/path/to/video.mp4}
-  /// More docs
-  void withDeprecatedAnimation() {}
-
   /// Animation in one line doc {@animation 100 100 http://host/path/to/video.mp4}
   ///
   /// This tests to see that we do the right thing if the animation is in
@@ -426,13 +403,6 @@ class Dog implements Cat, E {
   ///
   /// Tests to see that an inline {@animation 100 100 http://host/path/to/video.mp4} works as expected.
   void withAnimationInline() {}
-
-  /// Animation with out-of-order id argument.
-  ///
-  /// Tests to see that out of order arguments work.
-  /// {@animation 100 100 id=outOfOrder http://host/path/to/video.mp4}
-  /// works as expected.
-  void withAnimationOutOfOrder() {}
 
   void testGeneric(Map<String, dynamic> args) {}
 
@@ -447,25 +417,13 @@ class Dog implements Cat, E {
     return Dog.deprecatedCreate(s);
   }
 
+  @deprecated
+  static Dog createDog2(String s) {
+    return Dog.deprecatedCreate(s);
+  }
+
   @override
   void abstractMethod() {}
-}
-
-/// Animation in an enum
-enum EnumWithAnimation {
-  /// Animation enum value1
-  ///
-  /// {@animation 100 100 http://host/path/to/video1.mp4}
-  /// {@animation 100 100 http://host/path/to/video2.mp4}
-  /// More docs
-  value1,
-
-  /// Animation enum value2
-  ///
-  /// {@animation 100 100 http://host/path/to/video1.mp4}
-  /// {@animation 100 100 http://host/path/to/video2.mp4}
-  /// More docs
-  value2,
 }
 
 abstract class E {}
@@ -688,6 +646,10 @@ extension _Shhh on Object {
 // Extension with no name
 extension on Object {
   void bar() {}
+}
+
+extension StaticFieldExtension on Object {
+  static int aStatic;
 }
 
 /// This class has nothing to do with [_Shhh], [FancyList], or [AnExtension.call],

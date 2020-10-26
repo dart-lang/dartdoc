@@ -60,7 +60,7 @@ abstract class TopLevelContainer implements Nameable {
   Iterable<Class> get publicExceptions =>
       model_utils.filterNonPublic(exceptions);
 
-  Iterable<ModelFunction> get publicFunctions =>
+  Iterable<ModelFunctionTyped> get publicFunctions =>
       model_utils.filterNonPublic(functions);
 
   Iterable<Mixin> get publicMixins => model_utils.filterNonPublic(mixins);

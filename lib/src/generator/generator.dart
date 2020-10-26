@@ -5,11 +5,9 @@
 /// A library containing an abstract documentation generator.
 library dartdoc.generator;
 
-import 'dart:async' show Future;
-import 'dart:io' show Directory;
-
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/model.dart' show PackageGraph;
+import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/warnings.dart';
 
 abstract class FileWriter {
@@ -37,9 +35,6 @@ mixin GeneratorContext on DartdocOptionContextBase {
 
   List<String> get footerText => optionSet['footerText'].valueAt(context);
 
-  // Synthetic. TODO(jcollins-g): Eliminate special case for SDK and use config file.
-  bool get addSdkFooter => optionSet['addSdkFooter'].valueAt(context);
-
   List<String> get header => optionSet['header'].valueAt(context);
 
   bool get prettyIndexJson => optionSet['prettyIndexJson'].valueAt(context);
@@ -55,10 +50,12 @@ mixin GeneratorContext on DartdocOptionContextBase {
   bool get useBaseHref => optionSet['useBaseHref'].valueAt(context);
 }
 
-Future<List<DartdocOption<Object>>> createGeneratorOptions() async {
+Future<List<DartdocOption<Object>>> createGeneratorOptions(
+    PackageMetaProvider packageMetaProvider) async {
+  var resourceProvider = packageMetaProvider.resourceProvider;
   return [
-    DartdocOptionArgFile<List<String>>('footer', [],
-        isFile: true,
+    DartdocOptionArgFile<List<String>>('footer', [], resourceProvider,
+        optionIs: OptionKind.file,
         help:
             'Paths to files with content to add to page footers, but possibly '
             'outside of dedicated footer elements for the generator (e.g. '
@@ -66,39 +63,32 @@ Future<List<DartdocOption<Object>>> createGeneratorOptions() async {
             'to dedicated footer elements, use --footer-text instead.',
         mustExist: true,
         splitCommas: true),
-    DartdocOptionArgFile<List<String>>('footerText', [],
-        isFile: true,
+    DartdocOptionArgFile<List<String>>('footerText', [], resourceProvider,
+        optionIs: OptionKind.file,
         help: 'Paths to files with content to add to page footers (next to the '
             'package name and version).',
         mustExist: true,
         splitCommas: true),
-    DartdocOptionSyntheticOnly<bool>(
-      'addSdkFooter',
-      (DartdocSyntheticOption<bool> option, Directory dir) {
-        return option.root['topLevelPackageMeta'].valueAt(dir).isSdk;
-      },
-      help: 'Whether the SDK footer text should be added (synthetic)',
-    ),
-    DartdocOptionArgFile<List<String>>('header', [],
-        isFile: true,
+    DartdocOptionArgFile<List<String>>('header', [], resourceProvider,
+        optionIs: OptionKind.file,
         help: 'Paths to files with content to add to page headers.',
         splitCommas: true),
-    DartdocOptionArgOnly<bool>('prettyIndexJson', false,
+    DartdocOptionArgOnly<bool>('prettyIndexJson', false, resourceProvider,
         help:
             'Generates `index.json` with indentation and newlines. The file is '
             'larger, but it\'s also easier to diff.',
         negatable: false),
-    DartdocOptionArgFile<String>('favicon', null,
-        isFile: true,
+    DartdocOptionArgFile<String>('favicon', null, resourceProvider,
+        optionIs: OptionKind.file,
         help: 'A path to a favicon for the generated docs.',
         mustExist: true),
-    DartdocOptionArgOnly<String>('relCanonicalPrefix', null,
+    DartdocOptionArgOnly<String>('relCanonicalPrefix', null, resourceProvider,
         help:
             'If provided, add a rel="canonical" prefixed with provided value. '
             'Consider using if building many versions of the docs for public '
             'SEO; learn more at https://goo.gl/gktN6F.'),
-    DartdocOptionArgOnly<String>('templatesDir', null,
-        isDir: true,
+    DartdocOptionArgOnly<String>('templatesDir', null, resourceProvider,
+        optionIs: OptionKind.dir,
         mustExist: true,
         hide: true,
         help:

@@ -27,7 +27,7 @@ import 'package:meta/meta.dart';
 /// **has** : boolean getters indicating whether the underlying getters are
 /// empty.  Mostly for the templating system.
 /// **all** : Referring to all children.
-abstract class Container extends ModelElement {
+abstract class Container extends ModelElement with TypeParameters {
   Container(Element element, Library library, PackageGraph packageGraph)
       : super(element, library, packageGraph, null);
 
@@ -53,6 +53,25 @@ abstract class Container extends ModelElement {
   Iterable<Method> get instanceMethods => declaredMethods
       .where((m) => !m.isStatic && !m.isOperator)
       .toList(growable: false);
+
+  /// Whether any constructors are public.
+  ///
+  /// This is only used in mustache templates.
+  bool get hasPublicConstructors => false;
+
+  Iterable<Constructor> get publicConstructorsSorted => [];
+
+  /// Whether all instance fields are inherited.
+  ///
+  /// This is only used in mustache templates.
+  bool get publicInheritedInstanceFields => false;
+
+  /// Whether all instance methods are inherited.
+  ///
+  /// This is only used in mustache templates.
+  bool get publicInheritedInstanceMethods => false;
+
+  Iterable<Operator> get publicInheritedInstanceOperators => [];
 
   @nonVirtual
   bool get hasPublicInstanceMethods =>

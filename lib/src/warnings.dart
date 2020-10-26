@@ -2,9 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'dart:io';
-
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -26,8 +25,9 @@ abstract class PackageWarningOptionContext implements DartdocOptionContextBase {
 Future<List<DartdocOption<Object>>> createPackageWarningOptions(
   PackageMetaProvider packageMetaProvider,
 ) async {
+  var resourceProvider = packageMetaProvider.resourceProvider;
   return [
-    DartdocOptionArgOnly<bool>('allowNonLocalWarnings', false,
+    DartdocOptionArgOnly<bool>('allowNonLocalWarnings', false, resourceProvider,
         negatable: true,
         help: 'Show warnings from packages we are not documenting locally.'),
 
@@ -35,43 +35,48 @@ Future<List<DartdocOption<Object>>> createPackageWarningOptions(
     // for individual packages are command-line only.  This will allow
     // meta-packages like Flutter to control whether warnings are displayed for
     // packages they don't control.
-    DartdocOptionArgOnly<List<String>>('allowWarningsInPackages', null,
+    DartdocOptionArgOnly<List<String>>(
+        'allowWarningsInPackages', null, resourceProvider,
         help:
             'Package names to display warnings for (ignore all others if set).'),
-    DartdocOptionArgOnly<List<String>>('allowErrorsInPackages', null,
+    DartdocOptionArgOnly<List<String>>(
+        'allowErrorsInPackages', null, resourceProvider,
         help: 'Package names to display errors for (ignore all others if set)'),
-    DartdocOptionArgOnly<List<String>>('ignoreWarningsInPackages', null,
-        help:
-            'Package names to ignore warnings for.  Takes priority over allow-warnings-in-packages'),
-    DartdocOptionArgOnly<List<String>>('ignoreErrorsInPackages', null,
-        help:
-            'Package names to ignore errors for. Takes priority over allow-errors-in-packages'),
+    DartdocOptionArgOnly<List<String>>(
+        'ignoreWarningsInPackages', null, resourceProvider,
+        help: 'Package names to ignore warnings for.  Takes priority over '
+            'allow-warnings-in-packages'),
+    DartdocOptionArgOnly<List<String>>(
+        'ignoreErrorsInPackages', null, resourceProvider,
+        help: 'Package names to ignore errors for. Takes priority over '
+            'allow-errors-in-packages'),
     // Options for globally enabling/disabling warnings and errors across
     // packages.  Loaded from dartdoc_options.yaml, but command line arguments
     // will override.
-    DartdocOptionArgFile<List<String>>('errors', null,
+    DartdocOptionArgFile<List<String>>('errors', null, resourceProvider,
+        help: 'Additional warning names to force as errors.  Specify an empty '
+                'list to force defaults (overriding dartdoc_options.yaml)\nDefaults:\n' +
+            (packageWarningDefinitions.values
+                    .where(
+                        (d) => d.defaultWarningMode == PackageWarningMode.error)
+                    .toList()
+                      ..sort())
+                .map((d) => '   ${d.warningName}: ${d.shortHelp}')
+                .join('\n')),
+    DartdocOptionArgFile<List<String>>('ignore', null, resourceProvider,
+        help: 'Additional warning names to ignore.  Specify an empty list to '
+                'force defaults (overriding dartdoc_options.yaml).\nDefaults:\n' +
+            (packageWarningDefinitions.values
+                    .where((d) =>
+                        d.defaultWarningMode == PackageWarningMode.ignore)
+                    .toList()
+                      ..sort())
+                .map((d) => '   ${d.warningName}: ${d.shortHelp}')
+                .join('\n')),
+    DartdocOptionArgFile<List<String>>('warnings', null, resourceProvider,
         help:
-            'Additional warning names to force as errors.  Specify an empty list to force defaults (overriding dartdoc_options.yaml)\nDefaults:\n' +
-                (packageWarningDefinitions.values
-                        .where((d) =>
-                            d.defaultWarningMode == PackageWarningMode.error)
-                        .toList()
-                          ..sort())
-                    .map((d) => '   ${d.warningName}: ${d.shortHelp}')
-                    .join('\n')),
-    DartdocOptionArgFile<List<String>>('ignore', null,
-        help:
-            'Additional warning names to ignore.  Specify an empty list to force defaults (overriding dartdoc_options.yaml).\nDefaults:\n' +
-                (packageWarningDefinitions.values
-                        .where((d) =>
-                            d.defaultWarningMode == PackageWarningMode.ignore)
-                        .toList()
-                          ..sort())
-                    .map((d) => '   ${d.warningName}: ${d.shortHelp}')
-                    .join('\n')),
-    DartdocOptionArgFile<List<String>>('warnings', null,
-        help:
-            'Additional warning names to show as warnings (instead of error or ignore, if not warning by default).\nDefaults:\n' +
+            'Additional warning names to show as warnings (instead of error or '
+                    'ignore, if not warning by default).\nDefaults:\n' +
                 (packageWarningDefinitions.values
                         .where((d) =>
                             d.defaultWarningMode == PackageWarningMode.warn)
@@ -82,8 +87,9 @@ Future<List<DartdocOption<Object>>> createPackageWarningOptions(
     // Synthetic option uses a factory to build a PackageWarningOptions from all the above flags.
     DartdocOptionSyntheticOnly<PackageWarningOptions>(
       'packageWarningOptions',
-      (DartdocSyntheticOption<PackageWarningOptions> option, Directory dir) =>
+      (DartdocSyntheticOption<PackageWarningOptions> option, Folder dir) =>
           PackageWarningOptions.fromOptions(option, dir, packageMetaProvider),
+      resourceProvider,
     ),
   ];
 }
@@ -135,15 +141,35 @@ final Map<PackageWarning, PackageWarningDefinition> packageWarningDefinitions =
   PackageWarning.ignoredCanonicalFor: PackageWarningDefinition(
       PackageWarning.ignoredCanonicalFor,
       'ignored-canonical-for',
-      'A @canonicalFor tag refers to a library which this symbol can not be canonical for'),
+      'A @canonicalFor tag refers to a library which this symbol can not be '
+          'canonical for'),
   PackageWarning.noCanonicalFound: PackageWarningDefinition(
       PackageWarning.noCanonicalFound,
       'no-canonical-found',
-      'A symbol is part of the public interface for this package, but no library documented with this package documents it so dartdoc can not link to it'),
+      'A symbol is part of the public interface for this package, but no '
+          'library documented with this package documents it so dartdoc can '
+          'not link to it'),
+  PackageWarning.noDefiningLibraryFound: PackageWarningDefinition(
+      PackageWarning.noDefiningLibraryFound,
+      'no-defining-library-found',
+      'The defining library for an element could not be found; the library may '
+          'be imported or exported with a non-standard URI',
+      defaultWarningMode: PackageWarningMode.error),
   PackageWarning.notImplemented: PackageWarningDefinition(
       PackageWarning.notImplemented,
       'not-implemented',
       'The code makes use of a feature that is not yet implemented in dartdoc'),
+  PackageWarning.noDocumentableLibrariesInPackage: PackageWarningDefinition(
+    PackageWarning.noDocumentableLibrariesInPackage,
+    'no-documentable-libraries',
+    'The package is to be documented but has no Dart libraries to document',
+    longHelp: [
+      'Dartdoc could not find any public libraries to document in @@name@@, ',
+      'but documentation was requested.  This might be expected for an ',
+      'asset only package, in which case, disable this warning in your ',
+      'dartdoc_options.yaml file.',
+    ],
+  ),
   PackageWarning.noLibraryLevelDocs: PackageWarningDefinition(
       PackageWarning.noLibraryLevelDocs,
       'no-library-level-docs',
@@ -162,6 +188,10 @@ final Map<PackageWarning, PackageWarningDefinition> packageWarningDefinitions =
       'A comment reference could not be found in parameters, enclosing class, enclosing library, or at the top level of any documented library with the package'),
   PackageWarning.brokenLink: PackageWarningDefinition(PackageWarning.brokenLink,
       'broken-link', 'Dartdoc generated a link to a non-existent file'),
+  PackageWarning.unknownDirective: PackageWarningDefinition(
+      PackageWarning.unknownDirective,
+      'unknown-directive',
+      'A comment contains an unknown directive'),
   PackageWarning.unknownMacro: PackageWarningDefinition(
       PackageWarning.unknownMacro,
       'unknown-macro',
@@ -245,11 +275,14 @@ enum PackageWarning {
   ambiguousReexport,
   ignoredCanonicalFor,
   noCanonicalFound,
+  noDefiningLibraryFound,
   notImplemented,
+  noDocumentableLibrariesInPackage,
   noLibraryLevelDocs,
   packageOrderGivesMissingPackageName,
   reexportedPrivateApiAcrossPackages,
   unresolvedDocReference,
+  unknownDirective,
   unknownMacro,
   unknownHtmlFragment,
   brokenLink,
@@ -307,10 +340,9 @@ class PackageWarningOptions {
     }
   }
 
-  /// [packageMeta] parameter is for testing.
   static PackageWarningOptions fromOptions(
     DartdocSyntheticOption<PackageWarningOptions> option,
-    Directory dir,
+    Folder dir,
     PackageMetaProvider packageMetaProvider,
   ) {
     // First, initialize defaults.
@@ -441,9 +473,7 @@ class PackageWarningCounter {
     PackageWarningOptionContext config =
         element?.config ?? packageGraph.defaultPackage.config;
     var warningMode = config.packageWarningOptions.getMode(kind);
-    if (!config.allowNonLocalWarnings &&
-        element != null &&
-        !element.package.isLocal) {
+    if (!config.allowNonLocalWarnings && !(element?.package?.isLocal ?? true)) {
       warningMode = PackageWarningMode.ignore;
     }
     if (warningMode == PackageWarningMode.warn) {
@@ -452,8 +482,7 @@ class PackageWarningCounter {
       errorCount += 1;
     }
     var warningData = Tuple2<PackageWarning, String>(kind, message);
-    countedWarnings.putIfAbsent(element?.element, () => {});
-    countedWarnings[element?.element].add(warningData);
+    countedWarnings.putIfAbsent(element?.element, () => {}).add(warningData);
     _writeWarning(kind, warningMode, config.verboseWarnings,
         element?.fullyQualifiedName, fullMessage);
   }

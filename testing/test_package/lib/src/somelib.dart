@@ -8,6 +8,13 @@ class YetAnotherClass {}
 
 class AUnicornClass {}
 
+class BaseReexported {
+  String action;
+}
+
+class ExtendedBaseReexported extends BaseReexported {
+}
+
 /// A private extension.
 extension _Unseen on Object {
   void doYouSeeMe() { }

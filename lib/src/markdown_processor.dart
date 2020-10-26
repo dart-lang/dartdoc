@@ -119,19 +119,44 @@ const validHtmlTags = [
 final RegExp nonHTML =
     RegExp("</?(?!(${validHtmlTags.join("|")})[> ])\\w+[> ]");
 
-// Type parameters and other things to ignore at the end of doc references.
-final RegExp trailingIgnoreStuff = RegExp(r'(<.*>|\(.*\))$');
+/// Things to ignore at the end of a doc reference.
+///
+/// This is intended to catch type parameters/arguments, and function call
+/// parentheses.
+final _trailingIgnorePattern = RegExp(r'(<.*>|\(.*\)|\?|!)$');
 
-// Things to ignore at the beginning of doc references
-final RegExp leadingIgnoreStuff =
+@Deprecated('Public variable intended to be private; will be removed as early '
+    'as Dartdoc 1.0.0')
+RegExp get trailingIgnoreStuff => _trailingIgnorePattern;
+
+/// Things to ignore at the beginning of a doc reference.
+///
+/// This is intended to catch various keywords that a developer may include in
+/// front of a variable name.
+// TODO(srawlins): I cannot find any tests asserting we can resolve such
+// references.
+final _leadingIgnorePattern =
     RegExp(r'^(const|final|var)[\s]+', multiLine: true);
 
-// If found, this may be intended as a reference to a constructor.
-final RegExp isConstructor = RegExp(r'(^new[\s]+|\(\)$)', multiLine: true);
+@Deprecated('Public variable intended to be private; will be removed as early '
+    'as Dartdoc 1.0.0')
+RegExp get leadingIgnoreStuff => _leadingIgnorePattern;
 
-// This is probably not really intended as a doc reference, so don't try or
-// warn about them.
-// Covers anything with leading digits/symbols, empty string, weird punctuation, spaces.
+/// If found, this pattern may indicate a reference to a constructor.
+final _constructorIndicationPattern =
+    RegExp(r'(^new[\s]+|\(\)$)', multiLine: true);
+
+@Deprecated('Public variable intended to be private; will be removed as early '
+    'as Dartdoc 1.0.0')
+RegExp get isConstructor => _constructorIndicationPattern;
+
+/// A pattern indicating that text which looks like a doc reference is not
+/// intended to be.
+///
+/// This covers anything with leading digits/symbols, empty strings, weird
+/// punctuation, spaces.
+///
+/// The idea is to catch such cases and not produce warnings about the contents.
 final RegExp notARealDocReference = RegExp(r'''(^[^\w]|^[\d]|[,"'/]|^$)''');
 
 final RegExp operatorPrefix = RegExp(r'^operator[ ]*');
@@ -194,7 +219,7 @@ ModelElement _getPreferredClass(ModelElement modelElement) {
 /// Returns null if element is a parameter.
 MatchingLinkResult _getMatchingLinkElement(
     String codeRef, Warnable element, List<ModelCommentReference> commentRefs) {
-  if (!codeRef.contains(isConstructor) &&
+  if (!codeRef.contains(_constructorIndicationPattern) &&
       codeRef.contains(notARealDocReference)) {
     // Don't waste our time on things we won't ever find.
     return MatchingLinkResult(null, warn: false);
@@ -314,43 +339,47 @@ class _MarkdownCommentReference {
     assert(element != null);
     assert(element.packageGraph.allLibrariesAdded);
 
-    codeRefChomped = codeRef.replaceAll(isConstructor, '');
+    codeRefChomped = codeRef.replaceAll(_constructorIndicationPattern, '');
     library =
         element is ModelElement ? (element as ModelElement).library : null;
     packageGraph = library.packageGraph;
   }
 
-  String __impliedDefaultConstructor;
-  bool __impliedDefaultConstructorIsSet = false;
+  String __impliedUnnamedConstructor;
 
-  /// Returns the name of the implied default constructor if there is one, or
+  /// [_impliedUnnamedConstructor] is memoized in [__impliedUnnamedConstructor],
+  /// but even after it is initialized, it may be null. This bool represents the
+  /// initializiation state.
+  bool __impliedUnnamedConstructorIsSet = false;
+
+  /// Returns the name of the implied unnamed constructor if there is one, or
   /// null if not.
   ///
-  /// Default constructors are a special case in dartdoc.  If we look up a name
+  /// Unnamed constructors are a special case in dartdoc.  If we look up a name
   /// within a class of that class itself, the first thing we find is the
-  /// default constructor.  But we determine whether that's what they actually
+  /// unnamed constructor.  But we determine whether that's what they actually
   /// intended (vs. the enclosing class) by context -- whether they seem
   /// to be calling it with () or have a 'new' in front of it, or
   /// whether the name is repeated.
   ///
   /// Similarly, referencing a class by itself might actually refer to its
-  /// constructor based on these same heuristics.
+  /// unnamed constructor based on these same heuristics.
   ///
-  /// With the name of the implied default constructor, other methods can
+  /// With the name of the implied unnamed constructor, other methods can
   /// determine whether or not the constructor and/or class we resolved to
   /// is actually matching the user's intent.
-  String get _impliedDefaultConstructor {
-    if (!__impliedDefaultConstructorIsSet) {
-      __impliedDefaultConstructorIsSet = true;
-      if (codeRef.contains(isConstructor) ||
+  String get _impliedUnnamedConstructor {
+    if (!__impliedUnnamedConstructorIsSet) {
+      __impliedUnnamedConstructorIsSet = true;
+      if (codeRef.contains(_constructorIndicationPattern) ||
           (codeRefChompedParts.length >= 2 &&
               codeRefChompedParts[codeRefChompedParts.length - 1] ==
                   codeRefChompedParts[codeRefChompedParts.length - 2])) {
         // If the last two parts of the code reference are equal, this is probably a default constructor.
-        __impliedDefaultConstructor = codeRefChompedParts.last;
+        __impliedUnnamedConstructor = codeRefChompedParts.last;
       }
     }
-    return __impliedDefaultConstructor;
+    return __impliedUnnamedConstructor;
   }
 
   /// Calculate reference to a ModelElement.
@@ -362,15 +391,16 @@ class _MarkdownCommentReference {
   /// are more than one, but does not warn otherwise.
   ModelElement computeReferredElement() {
     results = {};
-    // TODO(jcollins-g): A complex package winds up spending a lot of cycles in here.  Optimize.
+    // TODO(jcollins-g): A complex package winds up spending a lot of cycles in
+    // here.  Optimize.
     for (var findMethod in [
       // This might be an operator.  Strip the operator prefix and try again.
       _findWithoutOperatorPrefix,
       // Oh, and someone might have thrown on a 'const' or 'final' in front.
       _findWithoutLeadingIgnoreStuff,
       // Maybe this ModelElement has parameters, and this is one of them.
-      // We don't link these, but this keeps us from emitting warnings.  Be sure to
-      // get members of parameters too.
+      // We don't link these, but this keeps us from emitting warnings.  Be sure
+      // to get members of parameters too.
       _findParameters,
       // Maybe this ModelElement has type parameters, and this is one of them.
       _findTypeParameters,
@@ -378,19 +408,23 @@ class _MarkdownCommentReference {
       _findWithinTryClasses,
       // This could be a reference to a renamed library.
       _findReferenceFromPrefixes,
-      // We now need the ref element cache to keep from repeatedly searching [Package.allModelElements].
-      // But if not, look for a fully qualified match.  (That only makes sense
-      // if the codeRef might be qualified, and contains periods.)
+      // We now need the ref element cache to keep from repeatedly searching
+      // [Package.allModelElements].  But if not, look for a fully qualified
+      // match.  (That only makes sense if the code reference might be
+      // qualified, and contains periods.)
       _findWithinRefElementCache,
-      // Only look for partially qualified matches if we didn't find a fully qualified one.
+      // Only look for partially qualified matches if we didn't find a fully
+      // qualified one.
       _findPartiallyQualifiedMatches,
-      // Only look for partially qualified matches if we didn't find a fully qualified one.
+      // Only look for partially qualified matches if we didn't find a fully
+      // qualified one.
       _findGlobalWithinRefElementCache,
-      // This could conceivably be a reference to an enum member.  They don't show up in allModelElements.
+      // This could conceivably be a reference to an enum member.  They don't
+      // show up in [allModelElements].
       _findEnumReferences,
       // Oh, and someone might have some type parameters or other garbage.
-      // After finding within classes because sometimes parentheses are used
-      // to imply constructors.
+      // After finding within classes because sometimes parentheses are used to
+      // imply constructors.
       _findWithoutTrailingIgnoreStuff,
       // Use the analyzer to resolve a comment reference.
       _findAnalyzerReferences,
@@ -412,15 +446,26 @@ class _MarkdownCommentReference {
         // If a result is accessible in this library, prefer that.
         _reducePreferResultsAccessibleInSameLibrary,
         // This may refer to an element with the same name in multiple libraries
-        // in an external package, e.g. Matrix4 in vector_math and vector_math_64.
-        // Disambiguate by attempting to figure out which of them our package
-        // is actually using by checking the import/export graph.
+        // in an external package, e.g. Matrix4 in vector_math and
+        // vector_math_64.  Disambiguate by attempting to figure out which of
+        // them our package is actually using by checking the import/export
+        // graph.
         _reducePreferLibrariesInLocalImportExportGraph,
-        // If a result's fully qualified name has pieces of the comment reference,
-        // prefer that.
+        // If a result's fully qualified name has pieces of the comment
+        // reference, prefer that.
         _reducePreferReferencesIncludingFullyQualifiedName,
-        // Prefer the Dart analyzer's resolution of comment references.  We can't
-        // start from this because of the differences in Dartdoc canonicalization.
+        // If the reference is indicated to be a constructor, prefer
+        // constructors.  This is not as generic as it sounds; very few naming
+        // conflicts are allowed, but an instance field is allowed to have the
+        // same name as a named constructor.
+        _reducePreferConstructorViaIndicators,
+        // Prefer Fields/TopLevelVariables to accessors.
+        // TODO(jcollins-g): Remove after fixing dart-lang/dartdoc#2396 or
+        // exclude Accessors from all lookup tables.
+        _reducePreferCombos,
+        // Prefer the Dart analyzer's resolution of comment references.  We
+        // can't start from this because of the differences in Dartdoc
+        // canonicalization.
         _reducePreferAnalyzerResolution,
       ]) {
         reduceMethod();
@@ -438,9 +483,9 @@ class _MarkdownCommentReference {
       // Squelch ambiguous doc reference warnings for parameters, because we
       // don't link those anyway.
       if (!results.every((r) => r is Parameter)) {
+        var elementNames = results.map((r) => "'${r.fullyQualifiedName}'");
         element.warn(PackageWarning.ambiguousDocReference,
-            message:
-                "[$codeRef] => ${results.map((r) => "'${r.fullyQualifiedName}'").join(", ")}");
+            message: '[$codeRef] => ${elementNames.join(', ')}');
       }
       result = results.first;
     }
@@ -460,6 +505,13 @@ class _MarkdownCommentReference {
     var refElement = _getRefElementFromCommentRefs(commentRefs, codeRef);
     if (results.any((me) => me.element == refElement)) {
       results.removeWhere((me) => me.element != refElement);
+    }
+  }
+
+  void _reducePreferConstructorViaIndicators() {
+    if (codeRef.contains(_constructorIndicationPattern) &&
+        codeRefChompedParts.length >= 2) {
+      results.removeWhere((r) => r is! Constructor);
     }
   }
 
@@ -499,6 +551,14 @@ class _MarkdownCommentReference {
     }
   }
 
+  void _reducePreferCombos() {
+    var accessors = results.whereType<Accessor>().toList();
+    accessors.forEach((a) {
+      results.remove(a);
+      results.add(a.enclosingCombo);
+    });
+  }
+
   void _findTypeParameters() {
     if (element is TypeParameters) {
       results.addAll((element as TypeParameters).typeParameters.where((p) =>
@@ -514,8 +574,8 @@ class _MarkdownCommentReference {
   }
 
   void _findWithoutLeadingIgnoreStuff() {
-    if (codeRef.contains(leadingIgnoreStuff)) {
-      var newCodeRef = codeRef.replaceFirst(leadingIgnoreStuff, '');
+    if (codeRef.contains(_leadingIgnorePattern)) {
+      var newCodeRef = codeRef.replaceFirst(_leadingIgnorePattern, '');
       results.add(_MarkdownCommentReference(
               newCodeRef, element, commentRefs, preferredClass)
           .computeReferredElement());
@@ -523,8 +583,8 @@ class _MarkdownCommentReference {
   }
 
   void _findWithoutTrailingIgnoreStuff() {
-    if (codeRef.contains(trailingIgnoreStuff)) {
-      var newCodeRef = codeRef.replaceFirst(trailingIgnoreStuff, '');
+    if (codeRef.contains(_trailingIgnorePattern)) {
+      var newCodeRef = codeRef.replaceFirst(_trailingIgnorePattern, '');
       results.add(_MarkdownCommentReference(
               newCodeRef, element, commentRefs, preferredClass)
           .computeReferredElement());
@@ -563,18 +623,24 @@ class _MarkdownCommentReference {
     }
   }
 
-  /// Transform members of [toConvert] that are classes to their default constructor,
-  /// if a constructor is implied.  If not, do the reverse conversion for default
-  /// constructors.
+  /// Returns the unnamed constructor for class [toConvert] or the class for
+  /// constructor [toConvert], or just [toConvert], based on hueristics.
+  ///
+  /// * If an unnamed constructor is implied in the comment reference, and
+  ///   [toConvert] is a class with the same name, the class's unnamed
+  ///   constructor is returned.
+  /// * Otherwise, if [toConvert] is an unnamed constructor, its enclosing
+  ///   class is returned.
+  /// * Othwerwise, [toConvert] is returned.
   ModelElement _convertConstructors(ModelElement toConvert) {
-    if (_impliedDefaultConstructor != null) {
-      if (toConvert is Class && toConvert.name == _impliedDefaultConstructor) {
-        return toConvert.defaultConstructor;
+    if (_impliedUnnamedConstructor != null) {
+      if (toConvert is Class && toConvert.name == _impliedUnnamedConstructor) {
+        return toConvert.unnamedConstructor;
       }
       return toConvert;
     } else {
       if (toConvert is Constructor &&
-          (toConvert.enclosingElement as Class).defaultConstructor ==
+          (toConvert.enclosingElement as Class).unnamedConstructor ==
               toConvert) {
         return toConvert.enclosingElement;
       }
@@ -594,7 +660,7 @@ class _MarkdownCommentReference {
         prefixToLibrary[codeRefChompedParts.first]?.forEach((l) => l
             .modelElementsNameMap[lookup]
             ?.map(_convertConstructors)
-            ?.forEach((m) => _addCanonicalResult(m, _getPreferredClass(m))));
+            ?.forEach((m) => _addCanonicalResult(m)));
       }
     }
   }
@@ -606,8 +672,7 @@ class _MarkdownCommentReference {
         if (codeRefChomped == modelElement.fullyQualifiedNameWithoutLibrary ||
             (modelElement is Library &&
                 codeRefChomped == modelElement.fullyQualifiedName)) {
-          _addCanonicalResult(
-              _convertConstructors(modelElement), preferredClass);
+          _addCanonicalResult(_convertConstructors(modelElement));
         }
       }
     }
@@ -617,7 +682,7 @@ class _MarkdownCommentReference {
     // Only look for partially qualified matches if we didn't find a fully qualified one.
     if (library.modelElementsNameMap.containsKey(codeRefChomped)) {
       for (final modelElement in library.modelElementsNameMap[codeRefChomped]) {
-        _addCanonicalResult(_convertConstructors(modelElement), preferredClass);
+        _addCanonicalResult(_convertConstructors(modelElement));
       }
     }
   }
@@ -630,15 +695,7 @@ class _MarkdownCommentReference {
         packageGraph.findRefElementCache.containsKey(codeRefChomped)) {
       for (var modelElement
           in packageGraph.findRefElementCache[codeRefChomped]) {
-        // For fully qualified matches, the original preferredClass passed
-        // might make no sense.  Instead, use the enclosing class from the
-        // element in [packageGraph.findRefElementCache], because that element's
-        // enclosing class will be preferred from [codeRefChomped]'s perspective.
-        _addCanonicalResult(
-            _convertConstructors(modelElement),
-            modelElement.enclosingElement is Class
-                ? modelElement.enclosingElement
-                : null);
+        _addCanonicalResult(_convertConstructors(modelElement));
       }
     }
   }
@@ -683,23 +740,56 @@ class _MarkdownCommentReference {
 
   void _findAnalyzerReferences() {
     var refElement = _getRefElementFromCommentRefs(commentRefs, codeRef);
-    if (refElement != null) {
-      var refModelElement = ModelElement.fromElement(
-          _getRefElementFromCommentRefs(commentRefs, codeRef),
+    if (refElement == null) return;
+
+    ModelElement refModelElement;
+    if (refElement is MultiplyDefinedElement) {
+      var elementNames = refElement.conflictingElements
+          .map((e) => "'${_fullyQualifiedElementName(e)}'");
+      element.warn(PackageWarning.ambiguousDocReference,
+          message: '[$codeRef] => [${elementNames.join(', ')}]');
+      refModelElement = ModelElement.fromElement(
+          // Continue; just use the first conflicting element.
+          refElement.conflictingElements.first,
           element.packageGraph);
-      if (refModelElement is Accessor) {
-        refModelElement = (refModelElement as Accessor).enclosingCombo;
-      }
+    } else {
       refModelElement =
-          refModelElement.canonicalModelElement ?? refModelElement;
-      results.add(refModelElement);
+          ModelElement.fromElement(refElement, element.packageGraph);
     }
+    if (refModelElement is Accessor) {
+      refModelElement = (refModelElement as Accessor).enclosingCombo;
+    }
+    refModelElement = refModelElement.canonicalModelElement ?? refModelElement;
+    results.add(refModelElement);
+  }
+
+  /// Generates a fully-qualified name, similar to that of
+  /// [ModelElement.fullyQualifiedName], for an Element.
+  static String _fullyQualifiedElementName(Element element) {
+    var enclosingElement = element.enclosingElement;
+
+    var enclosingName = enclosingElement == null
+        ? null
+        : _fullyQualifiedElementName(enclosingElement);
+    var name = element.name;
+    if (name == null) {
+      if (element is ExtensionElement) {
+        name = '<unnamed extension>';
+      } else if (element is LibraryElement) {
+        name = '<unnamed library>';
+      } else if (element is CompilationUnitElement) {
+        return enclosingName;
+      } else {
+        name = '<unnamed ${element.runtimeType}>';
+      }
+    }
+
+    return enclosingName == null ? name : '$enclosingName.$name';
   }
 
   // Add a result, but make it canonical.
-  void _addCanonicalResult(ModelElement modelElement, Container tryClass) {
-    results.add(packageGraph.findCanonicalModelElementFor(modelElement.element,
-        preferredClass: tryClass));
+  void _addCanonicalResult(ModelElement modelElement) {
+    results.add(modelElement.canonicalModelElement);
   }
 
   /// _getResultsForClass assumes codeRefChomped might be a member of tryClass (inherited or not)
@@ -716,7 +806,7 @@ class _MarkdownCommentReference {
     } else {
       // People like to use 'this' in docrefs too.
       if (codeRef == 'this') {
-        _addCanonicalResult(tryClass, null);
+        _addCanonicalResult(tryClass);
       } else {
         // TODO(jcollins-g): get rid of reimplementation of identifier resolution
         //                   or integrate into ModelElement in a simpler way.
@@ -728,7 +818,7 @@ class _MarkdownCommentReference {
         //                   Fortunately superChains are short, but optimize this if it matters.
         superChain.addAll(tryClass.superChain.map((t) => t.element));
         for (final c in superChain) {
-          _getResultsForSuperChainElement(c, tryClass);
+          _getResultsForSuperChainElement(c);
           if (results.isNotEmpty) break;
         }
       }
@@ -737,12 +827,12 @@ class _MarkdownCommentReference {
 
   /// Get any possible results for this class in the superChain.   Returns
   /// true if we found something.
-  void _getResultsForSuperChainElement(Class c, Class tryClass) {
+  void _getResultsForSuperChainElement(Class c) {
     var membersToCheck = (c.allModelElementsByNamePart[codeRefChomped] ?? [])
         .map(_convertConstructors);
     for (var modelElement in membersToCheck) {
       // [thing], a member of this class
-      _addCanonicalResult(modelElement, tryClass);
+      _addCanonicalResult(modelElement);
     }
     if (codeRefChompedParts.length < 2 ||
         codeRefChompedParts[codeRefChompedParts.length - 2] == c.name) {
@@ -750,7 +840,7 @@ class _MarkdownCommentReference {
           (c.allModelElementsByNamePart[codeRefChompedParts.last] ??
                   <ModelElement>[])
               .map(_convertConstructors);
-      membersToCheck.forEach((m) => _addCanonicalResult(m, tryClass));
+      membersToCheck.forEach((m) => _addCanonicalResult(m));
     }
     results.remove(null);
     if (results.isNotEmpty) return;
