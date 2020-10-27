@@ -12,7 +12,6 @@ import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/src/context/builder.dart';
 import 'package:analyzer/src/dart/sdk/sdk.dart';
 import 'package:analyzer/src/generated/java_io.dart';
-import 'package:analyzer/src/context/source.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/generated/source_io.dart';
@@ -27,6 +26,14 @@ import 'package:dartdoc/src/render/renderer_factory.dart';
 import 'package:dartdoc/src/special_elements.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
+
+// TODO(jcollins-g): implement via analyzer api
+extension on AnalysisContextCollection {
+  Future<void> discoverAvailableFiles() {
+    return Future.wait(contexts.map((c) =>
+        (c as DriverBasedAnalysisContext).driver.discoverAvailableFiles()));
+  }
+}
 
 /// Everything you need to instantiate a PackageGraph object for documenting.
 abstract class PackageBuilder {
@@ -137,14 +144,6 @@ class PubPackageBuilder implements PackageBuilder {
   /// Parse a single library at [filePath] using the current analysis driver.
   /// If [filePath] is not a library, returns null.
   Future<DartDocResolvedLibrary> processLibrary(String filePath) async {
-//    var name = filePath;
-//
-//    if (name.startsWith(directoryCurrentPath)) {
-//      name = name.substring(directoryCurrentPath.length);
-//      if (name.startsWith(Platform.pathSeparator)) name = name.substring(1);
-//    }
-//    var javaFile = JavaFile(filePath).getAbsoluteFile();
-//    Source source = FileBasedSource(javaFile);
     var name = filePath;
     var directoryCurrentPath = resourceProvider.pathContext.current;
 
@@ -166,78 +165,10 @@ class PubPackageBuilder implements PackageBuilder {
     if (sourceKind != SourceKind.PART) {
       // Loading libraryElements from part files works, but is painfully slow
       // and creates many duplicates.
-      print('[processLibrary][filePath1: $filePath]');
-      {
-        var file = session.getFile(filePath);
-        print(
-          '  [file.uri: ${file.uri}]'
-          '[file.state: ${file.state}]'
-          '[file.isPart: ${file.isPart}]',
-        );
-      }
-
-      {
-        var driver = (analysisContext as DriverBasedAnalysisContext).driver;
-        var resourceProvider = driver.resourceProvider;
-        var sourceFactory = driver.sourceFactory as SourceFactoryImpl;
-
-        var resource = resourceProvider.getFile(filePath);
-        var fileSource = resource.createSource();
-        var uri = sourceFactory.restoreUri(fileSource);
-//        var uriSource = sourceFactory.forUri2(uri);
-        var uriSource = _internalResolveUri(sourceFactory.resolvers, null, uri);
-
-        if (uriSource == null) {
-          if (filePath.startsWith('c:')) {
-            filePath = 'C:' + filePath.substring(2);
-          } else if (filePath.startsWith('C:')) {
-            filePath = 'c:' + filePath.substring(2);
-          }
-          print('[processLibrary][filePath2: $filePath]');
-          resource = resourceProvider.getFile(filePath);
-          fileSource = resource.createSource();
-          uri = sourceFactory.restoreUri(fileSource);
-//        var uriSource = sourceFactory.forUri2(uri);
-          uriSource = _internalResolveUri(sourceFactory.resolvers, null, uri);
-        }
-
-        print(
-          '  [resource: $resource]'
-          '[uri: $uri][uriSource.fullName: ${uriSource?.fullName}]'
-          '[flag: ${uriSource?.fullName == filePath}]',
-        );
-      }
-
       final library = await session.getResolvedLibrary(filePath);
-//      final library = await session.getResolvedLibrary(source.fullName);
       final libraryElement = library.element;
       var restoredUri = libraryElement.source.uri.toString();
       return DartDocResolvedLibrary(library, restoredUri);
-    }
-    return null;
-  }
-
-  Source _internalResolveUri(
-      List<UriResolver> resolvers, Source containingSource, Uri containedUri) {
-    print('  [resolvers: $resolvers]');
-    if (!containedUri.isAbsolute) {
-//      if (containingSource == null) {
-      throw StateError(
-          'Cannot resolve a relative URI without a containing source:'
-          ' $containedUri');
-//      }
-//      containedUri =
-//          utils.resolveRelativeUri(containingSource.uri, containedUri);
-    }
-
-    var actualUri = containedUri;
-
-    for (var resolver in resolvers) {
-      var result = resolver.resolveAbsolute(containedUri, actualUri);
-      print('    [resolver: $resolver][result: $result]');
-      if (result != null) {
-        return result;
-      }
     }
     return null;
   }
@@ -299,6 +230,7 @@ class PubPackageBuilder implements PackageBuilder {
 
       files.addAll(_knownFiles);
       files.addAll(_includeExternalsFrom(_knownFiles));
+      await contextCollection.discoverAvailableFiles();
 
       current = _packageMetasForFiles(files.difference(knownParts));
       // To get canonicalization correct for non-locally documented packages
