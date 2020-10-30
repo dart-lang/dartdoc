@@ -113,13 +113,23 @@ class PubPackageBuilder implements PackageBuilder {
     if (info == null) return;
 
     var rpc = resourceProvider.pathContext;
-    packages = Packages(Map.fromEntries(info.packages.map(
-      (p) => MapEntry<String, Package>(p.name, Package(
-        name: p.name,
-        rootFolder: resourceProvider.getFolder(rpc.normalize(rpc.fromUri(p.root))),
-        languageVersion: p.languageVersion != null ? Version(p.languageVersion.major, p.languageVersion.minor, 0) : null,
-        libFolder: resourceProvider.getFolder(rpc.normalize(rpc.fromUri(p.packageUriRoot)),
-        ))))));
+    // This complicated expression transforms a list of [package_config.Package]
+    // into [analyzer.Packages].  It's a bit confusing because [info.packages]
+    // is actually the list of [package_config.Package] objects, rather than
+    // the [Packages] object we need.
+    packages = Packages(Map.fromEntries(info.packages.map((p) => MapEntry<
+            String, Package>(
+        p.name,
+        Package(
+            name: p.name,
+            rootFolder:
+                resourceProvider.getFolder(rpc.normalize(rpc.fromUri(p.root))),
+            languageVersion: p.languageVersion != null
+                ? Version(p.languageVersion.major, p.languageVersion.minor, 0)
+                : null,
+            libFolder: resourceProvider.getFolder(
+              rpc.normalize(rpc.fromUri(p.packageUriRoot)),
+            ))))));
 
     for (var package in info.packages) {
       var packagePath = rpc.normalize(rpc.fromUri(package.packageUriRoot));
@@ -169,7 +179,6 @@ class PubPackageBuilder implements PackageBuilder {
   }
 
   AnalysisDriver _driver;
-
   AnalysisDriver get driver {
     if (_driver == null) {
       var log = PerformanceLog(null);
@@ -178,9 +187,7 @@ class PubPackageBuilder implements PackageBuilder {
         ..hint = false
         // TODO(jcollins-g): pass in an ExperimentStatus instead?
         ..contextFeatures = FeatureSet.fromEnableFlags(config.enableExperiment);
-
-      // TODO(jcollins-g): Make use of currently not existing API for managing
-      //                   many AnalysisDrivers
+      // TODO(jcollins-g): make use of AnalysisContextCollection()
       // TODO(jcollins-g): make use of DartProject isApi()
       _driver = AnalysisDriver(scheduler, log, resourceProvider,
           MemoryByteStore(), FileContentOverlay(), null, sourceFactory, options,
