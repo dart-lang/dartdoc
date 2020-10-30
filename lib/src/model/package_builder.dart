@@ -23,7 +23,7 @@ import 'package:analyzer/src/generated/source_io.dart';
 import 'package:analyzer/src/source/package_map_resolver.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/logging.dart';
-import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/model/model.dart' hide Package;
 import 'package:dartdoc/src/quiver.dart' as quiver;
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart'
@@ -31,7 +31,9 @@ import 'package:dartdoc/src/package_meta.dart'
 import 'package:dartdoc/src/render/renderer_factory.dart';
 import 'package:dartdoc/src/special_elements.dart';
 import 'package:meta/meta.dart';
+// TODO(jcollins-g): do not directly import path, use ResourceProvider instead
 import 'package:path/path.dart' as path;
+import 'package:pub_semver/pub_semver.dart';
 
 /// Everything you need to instantiate a PackageGraph object for documenting.
 abstract class PackageBuilder {
@@ -100,6 +102,8 @@ class PubPackageBuilder implements PackageBuilder {
 
   ResourceProvider get resourceProvider => packageMetaProvider.resourceProvider;
 
+  /* late final */ Packages packages;
+
   Future<void> _calculatePackageMap() async {
     assert(_packageMap == null);
     _packageMap = <String, List<Folder>>{};
@@ -108,8 +112,17 @@ class PubPackageBuilder implements PackageBuilder {
         .findPackageConfig(resourceProvider.getFolder(cwd.path));
     if (info == null) return;
 
+    var rpc = resourceProvider.pathContext;
+    packages = Packages(Map.fromEntries(info.packages.map(
+      (p) => MapEntry<String, Package>(p.name, Package(
+        name: p.name,
+        rootFolder: resourceProvider.getFolder(rpc.normalize(rpc.fromUri(p.root))),
+        languageVersion: p.languageVersion != null ? Version(p.languageVersion.major, p.languageVersion.minor, 0) : null,
+        libFolder: resourceProvider.getFolder(rpc.normalize(rpc.fromUri(p.packageUriRoot)),
+        ))))));
+
     for (var package in info.packages) {
-      var packagePath = path.normalize(path.fromUri(package.packageUriRoot));
+      var packagePath = rpc.normalize(rpc.fromUri(package.packageUriRoot));
       var resource = resourceProvider.getResource(packagePath);
       if (resource is Folder) {
         _packageMap[package.name] = [resource];
@@ -171,7 +184,7 @@ class PubPackageBuilder implements PackageBuilder {
       // TODO(jcollins-g): make use of DartProject isApi()
       _driver = AnalysisDriver(scheduler, log, resourceProvider,
           MemoryByteStore(), FileContentOverlay(), null, sourceFactory, options,
-          packages: Packages.empty);
+          packages: packages);
       driver.results.listen((_) => logProgress(''));
       driver.exceptions.listen((_) {});
       scheduler.start();
