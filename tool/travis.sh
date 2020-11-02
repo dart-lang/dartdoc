@@ -14,8 +14,9 @@ DART_VERSION=`dart --version 2>&1 | awk '{print $4}'`
 if ! echo "${DART_VERSION}" | grep -q dev || ! uname | grep -q Linux ; then
   unset COVERAGE_TOKEN
 fi
-# workaround for dart-lang/dartdoc#2412
-unset COVERAGE_TOKEN
+if [ -n "${COVERAGE_TOKEN}" ] ; then
+  mkdir -p ~/.dart
+fi
 
 if [ "$DARTDOC_BOT" = "sdk-docs" ]; then
   # Build the SDK docs
