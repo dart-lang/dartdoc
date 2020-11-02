@@ -5,6 +5,7 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/src/dart/element/member.dart' show Member;
 import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/render/source_code_renderer.dart';
 import 'package:dartdoc/src/utils.dart';
 import 'package:dartdoc/src/warnings.dart';
 
@@ -23,6 +24,9 @@ class Accessor extends ModelElement implements EnclosedElement {
 
   bool get isSynthetic => element.isSynthetic;
 
+  SourceCodeRenderer get _sourceCodeRenderer =>
+      packageGraph.rendererFactory.sourceCodeRenderer;
+
   GetterSetterCombo _definingCombo;
   // The [enclosingCombo] where this element was defined.
   GetterSetterCombo get definingCombo {
@@ -40,8 +44,8 @@ class Accessor extends ModelElement implements EnclosedElement {
   String get sourceCode {
     if (_sourceCode == null) {
       if (isSynthetic) {
-        _sourceCode =
-            packageGraph.getModelNodeFor(definingCombo.element).sourceCode;
+        _sourceCode = _sourceCodeRenderer.renderSourceCode(
+            packageGraph.getModelNodeFor(definingCombo.element).sourceCode);
       } else {
         _sourceCode = super.sourceCode;
       }

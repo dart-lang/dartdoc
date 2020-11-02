@@ -6,6 +6,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/src/dart/element/element.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/render/source_code_renderer.dart';
 
 class Field extends ModelElement
     with GetterSetterCombo, ContainerMember, Inheritable
@@ -160,6 +161,9 @@ class Field extends ModelElement
   @override
   String get fileName => '${isConst ? '$name-constant' : name}.$fileType';
 
+  SourceCodeRenderer get _sourceCodeRenderer =>
+      packageGraph.rendererFactory.sourceCodeRenderer;
+
   String _sourceCode;
 
   @override
@@ -171,6 +175,7 @@ class Field extends ModelElement
       var setterSourceCode = setter?.sourceCode ?? '';
       var buffer = StringBuffer();
       if (fieldSourceCode.isNotEmpty) {
+        fieldSourceCode = _sourceCodeRenderer.renderSourceCode(fieldSourceCode);
         buffer.write(fieldSourceCode);
       }
       if (buffer.isNotEmpty) buffer.write('\n\n');
