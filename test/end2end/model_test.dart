@@ -491,6 +491,10 @@ void main() {
       expect(exLibrary.name, 'ex');
     });
 
+    test('does not have a null safety label if not null safe', () {
+      expect(exLibrary.isNullSafety, isFalse);
+    });
+
     test('has a line number and column', () {
       expect(exLibrary.characterLocation, isNotNull);
     });
