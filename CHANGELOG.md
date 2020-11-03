@@ -1,3 +1,8 @@
+## 0.36.2
+
+* Tag `Null safety` only where the code is actually null safe. (#2411, #2403)
+* Infrastructure and minor cleanups. (#2414, #2413, #2412)
+
 ## 0.36.1
 
 * Fix NPE in `Accessor.computeDocumentationComment` when encountering
