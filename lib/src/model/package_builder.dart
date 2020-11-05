@@ -5,6 +5,7 @@
 import 'dart:async';
 
 import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
+import 'package:analyzer/src/dart/analysis/analysis_context_collection.dart';
 import 'package:analyzer/src/dart/analysis/driver_based_analysis_context.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/element/element.dart';
@@ -127,8 +128,12 @@ class PubPackageBuilder implements PackageBuilder {
   AnalysisContextCollection _contextCollection;
 
   AnalysisContextCollection get contextCollection {
-    _contextCollection ??= AnalysisContextCollection(
+    _contextCollection ??= AnalysisContextCollectionImpl(
       includedPaths: [config.inputDir],
+      // TODO(jcollins-g): should we pass excluded directories here instead of
+      // handling it ourselves?
+      resourceProvider: resourceProvider,
+      sdkPath: config.sdkDir,
     );
     return _contextCollection;
   }
