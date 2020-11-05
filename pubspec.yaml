@@ -9,6 +9,7 @@ environment:
 dependencies:
   analyzer: ^0.40.4
   args: '>=1.5.0 <2.0.0'
+  charcode: ^1.1.2
   collection: ^1.2.0
   cli_util: '>=0.1.4 <0.3.0'
   crypto: ^2.0.6
