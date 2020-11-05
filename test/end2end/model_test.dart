@@ -491,6 +491,10 @@ void main() {
       expect(exLibrary.name, 'ex');
     });
 
+    test('does not have a null safety label if not null safe', () {
+      expect(exLibrary.isNullSafety, isFalse);
+    });
+
     test('has a line number and column', () {
       expect(exLibrary.characterLocation, isNotNull);
     });
@@ -3761,6 +3765,85 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           createDog2.annotations[0],
           equals(
               '@<a href="${HTMLBASE_PLACEHOLDER}ex/deprecated-constant.html">deprecated</a>'));
+    });
+  });
+
+  group('Source Code HTML', () {
+    Class EscapableProperties;
+    Field implicitGetterExplicitSetter, explicitGetterImplicitSetter;
+    Field explicitGetterSetter, explicitGetterSetterForInheriting;
+    Field finalProperty, simpleProperty, forInheriting;
+    Field ensureWholeDeclarationIsVisible;
+
+    setUpAll(() {
+      EscapableProperties = fakeLibrary.classes
+          .firstWhere((c) => c.name == 'HtmlEscapableProperties');
+      implicitGetterExplicitSetter = EscapableProperties.allModelElements
+          .firstWhere((e) => e.name == 'implicitGetterExplicitSetter');
+      explicitGetterImplicitSetter = EscapableProperties.allModelElements
+          .firstWhere((e) => e.name == 'explicitGetterImplicitSetter');
+      explicitGetterSetter = EscapableProperties.allModelElements
+          .firstWhere((e) => e.name == 'explicitGetterSetter');
+      finalProperty = EscapableProperties.allModelElements
+          .firstWhere((e) => e.name == 'finalProperty');
+      simpleProperty = EscapableProperties.allModelElements
+          .firstWhere((e) => e.name == 'simpleProperty');
+      forInheriting = EscapableProperties.allModelElements
+          .firstWhere((e) => e.name == 'forInheriting');
+      explicitGetterSetterForInheriting = EscapableProperties.allModelElements
+          .firstWhere((e) => e.name == 'explicitGetterSetterForInheriting');
+      ensureWholeDeclarationIsVisible = EscapableProperties.allModelElements
+          .firstWhere((e) => e.name == 'ensureWholeDeclarationIsVisible');
+    });
+
+    test('Normal property fields are escaped', () {
+      expect(finalProperty.sourceCode, contains('&lt;int&gt;'));
+      expect(simpleProperty.sourceCode, contains('&lt;int&gt;'));
+      expect(forInheriting.sourceCode, contains('&lt;int&gt;'));
+    });
+
+    test('Explicit accessors are escaped', () {
+      expect(explicitGetterSetter.getter.sourceCode, contains('&lt;int&gt;'));
+      expect(explicitGetterSetter.setter.sourceCode, contains('&lt;int&gt;'));
+    });
+
+    test('Implicit accessors are escaped', () {
+      expect(implicitGetterExplicitSetter.getter.sourceCode,
+          contains('&lt;int&gt;'));
+      expect(implicitGetterExplicitSetter.setter.sourceCode,
+          contains('&lt;int&gt;'));
+      expect(explicitGetterImplicitSetter.getter.sourceCode,
+          contains('&lt;int&gt;'));
+      expect(explicitGetterImplicitSetter.setter.sourceCode,
+          contains('&lt;int&gt;'));
+      expect(explicitGetterSetterForInheriting.getter.sourceCode,
+          contains('&lt;int&gt;'));
+      expect(explicitGetterSetterForInheriting.setter.sourceCode,
+          contains('&lt;int&gt;'));
+    });
+
+    test('Property fields are terminated with semicolon', () {
+      expect(finalProperty.sourceCode.trim(), endsWith('List&lt;int&gt;();'));
+      expect(simpleProperty.sourceCode.trim(), endsWith('List&lt;int&gt;();'));
+      expect(forInheriting.sourceCode.trim(), endsWith('forInheriting;'));
+    });
+
+    test('Arrow accessors are terminated with semicolon', () {
+      expect(explicitGetterImplicitSetter.getter.sourceCode.trim(),
+          endsWith('List&lt;int&gt;();'));
+      expect(explicitGetterSetter.getter.sourceCode.trim(),
+          endsWith('List&lt;int&gt;();'));
+    });
+
+    test('Traditional accessors are not terminated with semicolon', () {
+      expect(implicitGetterExplicitSetter.setter.sourceCode.trim(),
+          endsWith('\{\}'));
+      expect(explicitGetterSetter.setter.sourceCode.trim(), endsWith('\{\}'));
+    });
+
+    test('Whole declaration is visible when declaration spans many lines', () {
+      expect(ensureWholeDeclarationIsVisible.sourceCode,
+          contains('List&lt;int&gt; '));
     });
   });
 

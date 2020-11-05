@@ -4,7 +4,6 @@
 
 library dartdoc.tool_runner;
 
-import 'dart:async';
 import 'dart:io' show Process, ProcessException;
 
 import 'package:analyzer/file_system/file_system.dart';

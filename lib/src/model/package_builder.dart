@@ -17,7 +17,7 @@ import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/generated/source_io.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/logging.dart';
-import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/model/model.dart' hide Package;
 import 'package:dartdoc/src/quiver.dart' as quiver;
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart'
@@ -25,6 +25,7 @@ import 'package:dartdoc/src/package_meta.dart'
 import 'package:dartdoc/src/render/renderer_factory.dart';
 import 'package:dartdoc/src/special_elements.dart';
 import 'package:meta/meta.dart';
+// TODO(jcollins-g): do not directly import path, use ResourceProvider instead
 import 'package:path/path.dart' as path;
 
 // TODO(jcollins-g): implement via analyzer api
@@ -111,8 +112,9 @@ class PubPackageBuilder implements PackageBuilder {
         .findPackageConfig(resourceProvider.getFolder(cwd.path));
     if (info == null) return;
 
+    var rpc = resourceProvider.pathContext;
     for (var package in info.packages) {
-      var packagePath = path.normalize(path.fromUri(package.packageUriRoot));
+      var packagePath = rpc.normalize(rpc.fromUri(package.packageUriRoot));
       var resource = resourceProvider.getResource(packagePath);
       if (resource is Folder) {
         _packageMap[package.name] = [resource];

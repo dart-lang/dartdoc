@@ -5,7 +5,6 @@
 /// This is a helper library to make working with io easier.
 library dartdoc.io_utils;
 
-import 'dart:async';
 import 'dart:convert';
 import 'dart:io' as io;
 
