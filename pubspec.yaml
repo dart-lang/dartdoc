@@ -28,6 +28,7 @@ dev_dependencies:
   async: '>=2.0.8'
   build: ^1.5.0
   build_runner: ^1.10.0
+  build_test: ^1.3.0
   build_version: ^2.0.1
   coverage: ^0.14.0
   dhttpd: ^3.0.0
