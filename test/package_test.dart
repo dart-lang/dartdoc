@@ -434,7 +434,7 @@ name: $packageName
           projectPath, packageMetaProvider, packageConfigProvider);
 
       expect(packageGraph.defaultPackage.version, equals('0.0.0-unknown'));
-    });
+    }, timeout: Timeout.factor(100));
 
     test('package with no doc comments has no docs', () async {
       projectRoot = utils.writePackage(

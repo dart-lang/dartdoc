@@ -564,14 +564,18 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
   static String _getLibraryName(LibraryElement element) {
     var source = element.source;
-
-    if (source.uri.isScheme('dart')) {
-      return '${source.uri}';
-    }
-
     var name = element.name;
+    
     if (name != null && name.isNotEmpty) {
+      if (element.name.startsWith('dart.')) {
+        name = name.replaceFirst('dart.', 'dart:');
+      }
+
       return name;
+    } else {
+      if (source.uri.isScheme('dart')) {
+        return '${source.uri}';
+      }
     }
 
     name = path.basename(source.fullName);

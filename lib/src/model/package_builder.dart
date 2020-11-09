@@ -142,6 +142,7 @@ class PubPackageBuilder implements PackageBuilder {
   /// Filter can be String or RegExp (technically, anything valid for
   /// [String.contains])
   Iterable<String> getSdkFilesToDocument() sync* {
+    //print (sdk.sdkLibraries);
     for (var sdkLib in sdk.sdkLibraries) {
       var source = sdk.mapDartUri(sdkLib.shortName);
       yield source.fullName;
@@ -213,11 +214,11 @@ class PubPackageBuilder implements PackageBuilder {
       [bool Function(LibraryElement) isLibraryIncluded]) async {
     isLibraryIncluded ??= (_) => true;
     var lastPass = <PackageMeta>{};
-    Set<PackageMeta> current;
+    var current = <PackageMeta>{};
     var knownParts = <String>{};
     do {
-      lastPass = _packageMetasForFiles(files);
-
+      await contextCollection.discoverAvailableFiles();
+      lastPass = current;
       // Be careful here not to accidentally stack up multiple
       // [DartDocResolvedLibrary]s, as those eat our heap.
       for (var f in files.difference(knownParts)) {
@@ -237,9 +238,12 @@ class PubPackageBuilder implements PackageBuilder {
 
       files.addAll(_knownFiles);
       files.addAll(_includeExternalsFrom(_knownFiles));
-      await contextCollection.discoverAvailableFiles();
 
       current = _packageMetasForFiles(files.difference(knownParts));
+      //print ("lastPass:");
+      //print (lastPass.map((c) => "${c.name} : ${c.isSdk}"));
+      //print ("current:");
+      //print (current.map((c) => "${c.name} : ${c.isSdk}"));
       // To get canonicalization correct for non-locally documented packages
       // (so we can generate the right hyperlinks), it's vital that we
       // add all libraries in dependent packages.  So if the analyzer
@@ -247,6 +251,7 @@ class PubPackageBuilder implements PackageBuilder {
       // for that package.
       for (var meta in current.difference(lastPass)) {
         if (meta.isSdk) {
+          //print ('adding: ${getSdkFilesToDocument().toList()}');
           files.addAll(getSdkFilesToDocument());
         } else {
           files.addAll(await findFilesToDocumentInPackage(meta.dir.path,
