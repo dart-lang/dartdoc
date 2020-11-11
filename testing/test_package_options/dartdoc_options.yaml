@@ -4,7 +4,7 @@ dartdoc:
   footer: ['extras/footer-things.html']
   footerText: ['extras/footer.txt']
   header: ['extras/header.html']
-  includeExternal: ['bin/unusual_library.dart']
+  #includeExternal: ['bin/unusual_library.dart']
   linkTo:
     url: 'https://nonexistingsuperpackage.topdomain/%n%/%v%'
   showUndocumentedCategories: true
