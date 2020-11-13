@@ -52,7 +52,7 @@ bool matchGlobs(List<String> globs, String fullName, {bool isWindows}) {
   }
 
   return filteredGlobs.any((g) =>
-      Glob(g, context: isWindows ? path.windows : null).matches(fullName));
+      Glob(g, context: isWindows ? path.windows : path.posix).matches(fullName));
 }
 
 /// Returns the [AstNode] for a given [Element].
