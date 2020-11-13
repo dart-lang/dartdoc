@@ -122,12 +122,7 @@ class MultiFutureTracker<T> {
   /// Wait until fewer or equal to this many Futures are outstanding.
   Future<void> _waitUntil(int max) async {
     while (_trackedFutures.length > max) {
-      try {
-        await Future.any(_trackedFutures);
-        // The empty catch is OK because we're just counting future completions
-        // and we don't care about errors (the original caller of
-        // addFutureToClosure is responsible for those).
-      } catch (e) {} // ignore: empty_catches
+      await Future.any(_trackedFutures);
     }
   }
 
