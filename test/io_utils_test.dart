@@ -24,18 +24,31 @@ void main() {
     /// [MultiFutureTracker.addFutureFromClosure].
     test('no deadlock when delayed exceptions fire in closures', () async {
       var sharedTracker = MultiFutureTracker(2);
-      var t =
-          Future.delayed(Duration(milliseconds: 10), () => throw Exception());
-      await sharedTracker.addFutureFromClosure(() => t);
-      expect(t, throwsA(const TypeMatcher<Exception>()));
-      var u =
-          Future.delayed(Duration(milliseconds: 10), () => throw Exception());
-      await sharedTracker.addFutureFromClosure(() => u);
-      expect(u, throwsA(const TypeMatcher<Exception>()));
-      var v =
-          Future.delayed(Duration(milliseconds: 10), () => throw Exception());
-      await sharedTracker.addFutureFromClosure(() => v);
-      expect(v, throwsA(const TypeMatcher<Exception>()));
+      expect(() async {
+        var t =
+            Future.delayed(Duration(milliseconds: 10), () => throw Exception());
+        await sharedTracker.addFutureFromClosure(() => t);
+        return t;
+      }, throwsA(const TypeMatcher<Exception>()));
+      expect(() async {
+        var t =
+            Future.delayed(Duration(milliseconds: 10), () => throw Exception());
+        await sharedTracker.addFutureFromClosure(() => t);
+        return t;
+      }, throwsA(const TypeMatcher<Exception>()));
+      expect(() async {
+        var t =
+            Future.delayed(Duration(milliseconds: 10), () => throw Exception());
+        // ignore: empty_catches
+        await sharedTracker.addFutureFromClosure(() => t);
+        return t;
+      }, throwsA(const TypeMatcher<Exception>()));
+      expect(() async {
+        var t =
+            Future.delayed(Duration(milliseconds: 10), () => throw Exception());
+        await sharedTracker.addFutureFromClosure(() => t);
+        return t;
+      }, throwsA(const TypeMatcher<Exception>()));
 
       /// We deadlock here if the exception is not handled properly.
       await sharedTracker.wait();
@@ -55,8 +68,12 @@ void main() {
       var completed = <int>{};
       var tracker = MultiFutureTracker(1);
       await tracker.addFutureFromClosure(() async => completed.add(0));
-      await tracker.addFutureFromClosure(() async => throw Exception());
-      await tracker.addFutureFromClosure(() async => throw Exception());
+      await tracker
+          .addFutureFromClosure(() async => throw Exception())
+          .catchError((e) {});
+      await tracker
+          .addFutureFromClosure(() async => throw Exception())
+          .catchError((e) {});
       await tracker.addFutureFromClosure(() async => completed.add(3));
       await tracker.wait();
       expect(completed.length, equals(2));

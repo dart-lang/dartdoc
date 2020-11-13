@@ -129,13 +129,19 @@ class MultiFutureTracker<T> {
   /// Generates a [Future] from the given closure and adds it to the queue,
   /// once the queue is sufficiently empty.  The returned future completes
   /// when the generated [Future] has been added to the queue.
+  ///
+  /// If the closure does not handle its own exceptions, other calls to
+  /// [addFutureFromClosure] or [wait] may trigger an exception.
   Future<void> addFutureFromClosure(Future<T> Function() closure) async {
     await _waitUntil(parallel - 1);
     Future<void> future = closure();
     _trackedFutures.add(future);
     // ignore: unawaited_futures
-    future.then((f) => _trackedFutures.remove(future),
-        onError: (s, e) => _trackedFutures.remove(future));
+    future.then((f) {
+      _trackedFutures.remove(future);
+    }, onError: (s, e) {
+      _trackedFutures.remove(future);
+    });
   }
 
   /// Wait until all futures added so far have completed.
