@@ -45,7 +45,8 @@ class PackageGraph {
   void addLibraryToGraph(DartDocResolvedLibrary resolvedLibrary) {
     assert(!allLibrariesAdded);
     var libraryElement = resolvedLibrary.element;
-    var packageMeta = packageMetaProvider.fromElement(libraryElement, config.sdkDir);
+    var packageMeta =
+        packageMetaProvider.fromElement(libraryElement, config.sdkDir);
     var lib = Library.fromLibraryResult(
         resolvedLibrary, this, Package.fromPackageMeta(packageMeta, this));
     packageMap[packageMeta.name].libraries.add(lib);
@@ -206,8 +207,9 @@ class PackageGraph {
   // Keyed by [LibraryElement.Source.fullName] to resolve multiple URIs
   // referring to the same location to the same [Library].  This isn't how
   // Dart works internally, but Dartdoc pretends to avoid documenting or
-  // duplciating data structures for the same "library" more than once based
-  // on how it is referenced.
+  // duplicating data structures for the same "library" on disk based
+  // on how it is referenced.  We can't use [Source] as a key since because
+  // of differences in the [TimestampedData] timestamps.
   final allLibraries = <String, Library>{};
 
   /// Keep track of warnings
