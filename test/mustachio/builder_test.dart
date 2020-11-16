@@ -55,11 +55,19 @@ void main() {
         (Resolver resolver) => resolver.libraryFor(rendererAsset));
   }
 
-  Future<void> testMustachioBuilder(Map<String, String> sourceAssets,
-      {Map<String, Object> outputs}) async {
+  Future<void> testMustachioBuilder(String sourceLibraryContent,
+      {String libraryFrontMatter = _libraryFrontMatter,
+      Map<String, Object> outputs}) async {
+    sourceLibraryContent = '''
+$libraryFrontMatter
+$sourceLibraryContent
+''';
     await testBuilder(
       mustachioBuilder(BuilderOptions({})),
-      {..._annotationsAsset, ...sourceAssets},
+      {
+        ..._annotationsAsset,
+        'foo|lib/foo.dart': sourceLibraryContent,
+      },
       outputs: outputs,
       writer: writer,
     );
@@ -70,12 +78,9 @@ void main() {
   });
 
   test('builds a renderer for a class which extends Object', () async {
-    await testMustachioBuilder({
-      'foo|lib/foo.dart': '''
-$_libraryFrontMatter
+    await testMustachioBuilder('''
 class Foo {}
-''',
-    }, outputs: {
+''', outputs: {
       'foo|lib/foo.renderers.dart': _containsAllOf(
           // The requested 'renderFoo' function
           '''
@@ -109,17 +114,15 @@ class _Renderer_Object extends RendererBase<Object> {
   });
 
   test('builds renderers from multiple annotations', () async {
-    await testMustachioBuilder({
-      'foo|lib/foo.dart': '''
+    await testMustachioBuilder('''
+class Foo {}
+class Bar {}
+''', libraryFrontMatter: '''
 @Renderer(#renderFoo, Context<Foo>(), 'foo.html.mustache')
 @Renderer(#renderBar, Context<Bar>(), 'bar.html.mustache')
 library foo;
 import 'package:mustachio/annotations.dart';
-
-class Foo {}
-class Bar {}
-''',
-    });
+''');
     var renderersLibrary = await resolveGeneratedLibrary(writer);
 
     expect(renderersLibrary.getTopLevelFunction('renderFoo'), isNotNull);
@@ -130,13 +133,10 @@ class Bar {}
 
   test('builds a renderer for a class which is extended by a rendered class',
       () async {
-    await testMustachioBuilder({
-      'foo|lib/foo.dart': '''
-$_libraryFrontMatter
+    await testMustachioBuilder('''
 class FooBase {}
 class Foo extends FooBase {}
-''',
-    });
+''');
     var renderersLibrary = await resolveGeneratedLibrary(writer);
 
     expect(renderersLibrary.getTopLevelFunction('_render_FooBase'), isNotNull);
@@ -144,12 +144,9 @@ class Foo extends FooBase {}
   });
 
   test('builds a renderer for a generic type', () async {
-    await testMustachioBuilder({
-      'foo|lib/foo.dart': '''
-$_libraryFrontMatter
+    await testMustachioBuilder('''
 class Foo<T> {}
-''',
-    }, outputs: {
+''', outputs: {
       'foo|lib/foo.renderers.dart': _containsAllOf(
           // The requested 'renderFoo' function
           'String renderFoo<T>(Foo<T> context, List<MustachioNode> ast)',
@@ -159,15 +156,12 @@ class Foo<T> {}
   });
 
   test('builds a renderer for a type found in a getter', () async {
-    await testMustachioBuilder({
-      'foo|lib/foo.dart': '''
-$_libraryFrontMatter
+    await testMustachioBuilder('''
 abstract class Foo {
   Bar get bar;
 }
 class Bar {}
-'''
-    });
+''');
     var renderersLibrary = await resolveGeneratedLibrary(writer);
 
     expect(renderersLibrary.getTopLevelFunction('_render_Bar'), isNotNull);
@@ -175,16 +169,13 @@ class Bar {}
   });
 
   test('skips a type found in a static or private getter', () async {
-    await testMustachioBuilder({
-      'foo|lib/foo.dart': '''
-$_libraryFrontMatter
+    await testMustachioBuilder('''
 class Foo {
   static Bar get bar1 => Bar();
   Bar get _bar2 => Bar();
 }
 class Bar {}
-'''
-    });
+''');
     var renderersLibrary = await resolveGeneratedLibrary(writer);
 
     expect(renderersLibrary.getTopLevelFunction('_render_Bar'), isNull);
@@ -192,16 +183,13 @@ class Bar {}
   });
 
   test('skips a type found in a setter or method', () async {
-    await testMustachioBuilder({
-      'foo|lib/foo.dart': '''
-$_libraryFrontMatter
+    await testMustachioBuilder('''
 abstract class Foo {
   void set bar1(Bar b);
   Bar bar2(Bar b);
 }
 class Bar {}
-''',
-    });
+''');
     var renderersLibrary = await resolveGeneratedLibrary(writer);
 
     expect(renderersLibrary.getTopLevelFunction('_render_Bar'), isNull);
@@ -209,12 +197,9 @@ class Bar {}
   });
 
   test('builds a renderer for a generic, bounded type', () async {
-    await testMustachioBuilder({
-      'foo|lib/foo.dart': '''
-$_libraryFrontMatter
+    await testMustachioBuilder('''
 class Foo<T extends num> {}
-''',
-    });
+''');
     var renderersLibrary = await resolveGeneratedLibrary(writer);
 
     var fooRenderFunction = renderersLibrary.getTopLevelFunction('renderFoo');
