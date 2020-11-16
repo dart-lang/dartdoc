@@ -1,3 +1,5 @@
 name: sky_engine
 description: package with embedder yaml
 version: 0.0.1
+environment:
+  sdk: '>=2.0.0 <3.0.0'

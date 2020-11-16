@@ -1048,7 +1048,7 @@ Future<void> testDart2(Iterable<File> tests) async {
   }
 
   return CoverageSubprocessLauncher.generateCoverageToFile(
-      PhysicalResourceProvider.INSTANCE.getFile('lcov.info'),
+      PhysicalResourceProvider.INSTANCE.getFile(path.canonicalize('lcov.info')),
       PhysicalResourceProvider.INSTANCE);
 }
 
