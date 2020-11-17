@@ -223,7 +223,8 @@ class PubPackageBuilder implements PackageBuilder {
     do {
       lastPass = current;
       var newFiles = files.difference(knownParts);
-      newFiles.map((f) => contextCollection.addFileToCollection(config.inputDir, f));
+      newFiles.map(
+          (f) => contextCollection.addFileToCollection(config.inputDir, f));
       await contextCollection.discoverAvailableFiles();
 
       // Be careful here not to accidentally stack up multiple

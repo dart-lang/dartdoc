@@ -431,7 +431,27 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
   @override
   String get name {
-    _name ??= _getLibraryName(element);
+    if (_name == null) {
+      var source = element.source;
+
+      if (source.uri.isScheme('dart')) {
+        // There are inconsistencies in library naming + URIs for the dart
+        // internal libraries; rationalize them here.
+        if (source.uri.toString().contains('/')) {
+          _name = element.name.replaceFirst('dart.', 'dart:');
+        } else {
+          _name = source.uri.toString();
+        }
+      } else if (element.name != null && element.name.isNotEmpty) {
+        _name = element.name;
+      } else {
+        _name = path.basename(source.fullName);
+        if (_name.endsWith('.dart')) {
+          _name = _name.substring(0, _name.length - '.dart'.length);
+        }
+      }
+    }
+
     return _name;
   }
 
@@ -561,35 +581,6 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     assert(!name.startsWith('file:'));
     return name;
   }
-
-  static String _getLibraryName(LibraryElement element) {
-    var source = element.source;
-    var name = element.name;
-    
-    if (name != null && name.isNotEmpty) {
-      if (element.name.startsWith('dart.')) {
-        name = name.replaceFirst('dart.', 'dart:');
-      }
-
-      return name;
-    } else {
-      if (source.uri.isScheme('dart')) {
-        return '${source.uri}';
-      }
-    }
-
-    name = path.basename(source.fullName);
-    if (name.endsWith('.dart')) {
-      name = name.substring(0, name.length - '.dart'.length);
-    }
-    return name;
-  }
-
-  @Deprecated(
-      'Public method intended to be private; will be removed as early as '
-      'Dartdoc 1.0.0')
-  static String getLibraryName(LibraryElement element) =>
-      _getLibraryName(element);
 
   /*late final*/ HashMap<String, Set<ModelElement>> _modelElementsNameMap;
 
