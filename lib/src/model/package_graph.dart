@@ -888,8 +888,7 @@ class PackageGraph {
     if (libraryElement == null) {
       return null;
     }
-    var foundLibrary;
-    foundLibrary = findButDoNotCreateLibraryFor(libraryElement);
+    var foundLibrary = findButDoNotCreateLibraryFor(libraryElement);
     if (foundLibrary != null) return foundLibrary;
 
     foundLibrary = Library.fromLibraryResult(
