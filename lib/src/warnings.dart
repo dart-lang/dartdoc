@@ -258,15 +258,22 @@ final Map<PackageWarning, PackageWarningDefinition> packageWarningDefinitions =
 
 /// Something that package warnings can be called on.  Optionally associated
 /// with an analyzer [element].
-abstract class Warnable implements Canonicalization {
-  void warn(PackageWarning warning,
-      {String message, Iterable<Locatable> referredFrom});
-
+mixin Warnable implements Canonicalization {
   Element get element;
 
   Warnable get enclosingElement;
 
   Package get package;
+
+  void warn(PackageWarning kind,
+      {String message,
+      Iterable<Locatable> referredFrom,
+      Iterable<String> extendedDebug}) {
+    packageGraph.warnOnElement(this, kind,
+        message: message,
+        referredFrom: referredFrom,
+        extendedDebug: extendedDebug);
+  }
 }
 
 // The kinds of warnings that can be displayed when documenting a package.

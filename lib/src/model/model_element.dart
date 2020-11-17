@@ -508,7 +508,7 @@ abstract class ModelElement extends Canonicalization
   @override
   DartdocOptionContext get config {
     _config ??= DartdocOptionContext.fromContextElement(
-        packageGraph.config, element, packageGraph.resourceProvider);
+        packageGraph.config, library.element, packageGraph.resourceProvider);
     return _config;
   }
 
@@ -1103,17 +1103,6 @@ abstract class ModelElement extends Canonicalization
           .toList());
     }
     return _parameters;
-  }
-
-  @override
-  void warn(PackageWarning kind,
-      {String message,
-      Iterable<Locatable> referredFrom,
-      Iterable<String> extendedDebug}) {
-    packageGraph.warnOnElement(this, kind,
-        message: message,
-        referredFrom: referredFrom,
-        extendedDebug: extendedDebug);
   }
 
   @override

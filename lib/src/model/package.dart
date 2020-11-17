@@ -369,17 +369,6 @@ class Package extends LibraryContainer
 
   String get version => packageMeta.version ?? '0.0.0-unknown';
 
-  @override
-  void warn(PackageWarning kind,
-      {String message,
-      Iterable<Locatable> referredFrom,
-      Iterable<String> extendedDebug}) {
-    packageGraph.warnOnElement(this, kind,
-        message: message,
-        referredFrom: referredFrom,
-        extendedDebug: extendedDebug);
-  }
-
   final PackageMeta _packageMeta;
 
   PackageMeta get packageMeta => _packageMeta;
