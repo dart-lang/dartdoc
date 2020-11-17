@@ -122,25 +122,26 @@ class MultiFutureTracker<T> {
   /// Wait until fewer or equal to this many Futures are outstanding.
   Future<void> _waitUntil(int max) async {
     while (_trackedFutures.length > max) {
-      try {
-        await Future.any(_trackedFutures);
-        // The empty catch is OK because we're just counting future completions
-        // and we don't care about errors (the original caller of
-        // addFutureToClosure is responsible for those).
-      } catch (e) {} // ignore: empty_catches
+      await Future.any(_trackedFutures);
     }
   }
 
   /// Generates a [Future] from the given closure and adds it to the queue,
   /// once the queue is sufficiently empty.  The returned future completes
   /// when the generated [Future] has been added to the queue.
+  ///
+  /// If the closure does not handle its own exceptions, other calls to
+  /// [addFutureFromClosure] or [wait] may trigger an exception.
   Future<void> addFutureFromClosure(Future<T> Function() closure) async {
     await _waitUntil(parallel - 1);
     Future<void> future = closure();
     _trackedFutures.add(future);
     // ignore: unawaited_futures
-    future.then((f) => _trackedFutures.remove(future),
-        onError: (s, e) => _trackedFutures.remove(future));
+    future.then((f) {
+      _trackedFutures.remove(future);
+    }, onError: (s, e) {
+      _trackedFutures.remove(future);
+    });
   }
 
   /// Wait until all futures added so far have completed.
