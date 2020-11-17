@@ -39,12 +39,4 @@ abstract class RendererBase<T> {
   void partial(Partial node) {
     // TODO(srawlins): Implement.
   }
-
-  /// Resolves [key] into one or more field accesses, returning the result as a
-  /// String.
-  ///
-  /// [key] may have multiple dot-separate names, and [key] may not be a valid
-  /// property of _this_ context type, in which the [parent] renderer is
-  /// referenced.
-  String getFields(List<String> names);
 }
