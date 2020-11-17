@@ -1,3 +1,8 @@
+// GENERATED CODE. DO NOT EDIT.
+//
+// To change the contents of this library, make changes to the builder source
+// files in the tool/mustachio/ directory.
+
 // ignore_for_file: camel_case_types, unused_element
 import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/dartdoc.dart';
