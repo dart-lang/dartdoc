@@ -44,12 +44,13 @@ class PackageGraph {
   /// span packages.
   void addLibraryToGraph(DartDocResolvedLibrary resolvedLibrary) {
     assert(!allLibrariesAdded);
-    var element = resolvedLibrary.element;
-    var packageMeta = packageMetaProvider.fromElement(element, config.sdkDir);
+    var libraryElement = resolvedLibrary.element;
+    var packageMeta =
+        packageMetaProvider.fromElement(libraryElement, config.sdkDir);
     var lib = Library.fromLibraryResult(
         resolvedLibrary, this, Package.fromPackageMeta(packageMeta, this));
     packageMap[packageMeta.name].libraries.add(lib);
-    allLibraries[element] = lib;
+    allLibraries[libraryElement.source.fullName] = lib;
   }
 
   /// Call during initialization to add a library possibly containing
@@ -203,7 +204,13 @@ class PackageGraph {
   }
 
   // All library objects related to this package; a superset of _libraries.
-  final Map<LibraryElement, Library> allLibraries = {};
+  // Keyed by [LibraryElement.Source.fullName] to resolve multiple URIs
+  // referring to the same location to the same [Library].  This isn't how
+  // Dart works internally, but Dartdoc pretends to avoid documenting or
+  // duplicating data structures for the same "library" on disk based
+  // on how it is referenced.  We can't use [Source] as a key since because
+  // of differences in the [TimestampedData] timestamps.
+  final allLibraries = <String, Library>{};
 
   /// Keep track of warnings
   PackageWarningCounter _packageWarningCounter;
@@ -869,32 +876,28 @@ class PackageGraph {
   /// set of canonical Libraries).
   Library findButDoNotCreateLibraryFor(Element e) {
     // This is just a cache to avoid creating lots of libraries over and over.
-    if (allLibraries.containsKey(e.library)) {
-      return allLibraries[e.library];
-    }
-    return null;
+    return allLibraries[e.library?.source?.fullName];
   }
 
   /// This is used when we might need a Library object that isn't actually
   /// a documentation entry point (for elements that have no Library within the
   /// set of canonical Libraries).
   Library findOrCreateLibraryFor(DartDocResolvedLibrary resolvedLibrary) {
-    final elementLibrary = resolvedLibrary.library;
-    // This is just a cache to avoid creating lots of libraries over and over.
-    if (allLibraries.containsKey(elementLibrary)) {
-      return allLibraries[elementLibrary];
-    }
+    final libraryElement = resolvedLibrary.library;
     // can be null if e is for dynamic
-    if (elementLibrary == null) {
+    if (libraryElement == null) {
       return null;
     }
-    var foundLibrary = Library.fromLibraryResult(
+    var foundLibrary = findButDoNotCreateLibraryFor(libraryElement);
+    if (foundLibrary != null) return foundLibrary;
+
+    foundLibrary = Library.fromLibraryResult(
         resolvedLibrary,
         this,
         Package.fromPackageMeta(
-            packageMetaProvider.fromElement(elementLibrary, config.sdkDir),
+            packageMetaProvider.fromElement(libraryElement, config.sdkDir),
             packageGraph));
-    allLibraries[elementLibrary] = foundLibrary;
+    allLibraries[libraryElement.source.fullName] = foundLibrary;
     return foundLibrary;
   }
 

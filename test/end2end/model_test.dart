@@ -604,6 +604,13 @@ void main() {
           isTrue);
     });
 
+    test('can import other libraries with unusual URIs', () {
+      expect(
+          fakeLibrary.importedExportedLibraries
+              .where((l) => l.name == 'import_unusual'),
+          isNotEmpty);
+    });
+
     test('@canonicalFor directive works', () {
       expect(SomeOtherClass.canonicalLibrary, reexportOneLib);
       expect(SomeClass.canonicalLibrary, reexportTwoLib);

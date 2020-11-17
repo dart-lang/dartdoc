@@ -54,6 +54,7 @@ import 'dart:json' as invalidPrefix;
 import 'package:meta/meta.dart' show Required;
 import 'csspub.dart' as css;
 import 'csspub.dart' as renamedLib2;
+import 'package:test_package/src//import_unusual.dart';
 import 'example.dart';
 import 'mylibpub.dart' as renamedLib;
 import 'mylibpub.dart' as renamedLib2;
