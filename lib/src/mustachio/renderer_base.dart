@@ -22,8 +22,7 @@ abstract class RendererBase<T> {
       if (node is Text) {
         write(node.content);
       } else if (node is Variable) {
-        var content = getFields(node.key);
-        write(content);
+        // TODO(srawlins): Implement.
       } else if (node is Section) {
         section(node);
       } else if (node is Partial) {
