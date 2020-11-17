@@ -246,14 +246,12 @@ abstract class ModelElement extends Canonicalization
       {Container enclosingContainer}) {
     assert(packageGraph != null);
     assert(e != null);
-    if (!(library != null ||
+    assert(library != null ||
         e is ParameterElement ||
         e is TypeParameterElement ||
         e is GenericFunctionTypeElementImpl ||
         e.kind == ElementKind.DYNAMIC ||
-        e.kind == ElementKind.NEVER)) {
-      throw (AssertionError);
-    }
+        e.kind == ElementKind.NEVER);
 
     if (e.kind == ElementKind.DYNAMIC) {
       return Dynamic(e, packageGraph);

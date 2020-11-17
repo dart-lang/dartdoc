@@ -29,13 +29,8 @@ import 'package:meta/meta.dart';
 // TODO(jcollins-g): do not directly import path, use ResourceProvider instead
 import 'package:path/path.dart' as path;
 
-// TODO(jcollins-g): implement via analyzer api
+// TODO(jcollins-g): Implement via analyzer api or eliminate need for this.
 extension on AnalysisContextCollection {
-  Future<void> discoverAvailableFiles() {
-    return Future.wait(contexts.map((c) =>
-        (c as DriverBasedAnalysisContext).driver.discoverAvailableFiles()));
-  }
-
   void addFileToCollection(String inputDir, String filePath) {
     DriverBasedAnalysisContext context = contextFor(inputDir);
     context.driver.addFile(filePath);
@@ -225,14 +220,10 @@ class PubPackageBuilder implements PackageBuilder {
       var newFiles = files.difference(knownParts);
       newFiles.map(
           (f) => contextCollection.addFileToCollection(config.inputDir, f));
-      await contextCollection.discoverAvailableFiles();
 
       // Be careful here not to accidentally stack up multiple
       // [DartDocResolvedLibrary]s, as those eat our heap.
       for (var f in newFiles) {
-        //if (f.contains('unusual_library.dart')) {
-        //  throw(Exception());
-        //}
         logProgress(f);
         var r = await processLibrary(f);
         if (r == null) {
