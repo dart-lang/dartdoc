@@ -43,8 +43,20 @@ class RuntimeRenderersBuilder {
   RuntimeRenderersBuilder();
 
   String _buildTemplateRenderers(Set<RendererSpec> specs) {
+    // TODO(srawlins): There are some private renderer functions that are
+    // unused. Figure out if we can detect these statically, and then not
+    // generate them.
+    // TODO(srawlins): To really get the correct list of imports, we need to use
+    // the code_builder package.
     _buffer.writeln('''
-// ignore_for_file: camel_case_types
+// GENERATED CODE. DO NOT EDIT.
+//
+// To change the contents of this library, make changes to the builder source
+// files in the tool/mustachio/ directory.
+
+// ignore_for_file: camel_case_types, unused_element
+import 'package:dartdoc/src/generator/template_data.dart';
+import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/mustachio/renderer_base.dart';
 import 'package:dartdoc/src/mustachio/parser.dart';
 ''');

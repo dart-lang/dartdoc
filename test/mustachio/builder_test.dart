@@ -13,9 +13,7 @@ class Renderer {
 
   final Context context;
 
-  final String templateUri;
-
-  const Renderer(this.name, this.context, this.templateUri);
+  const Renderer(this.name, this.context);
 }
 
 class Context<T> {
@@ -25,7 +23,7 @@ class Context<T> {
 };
 
 const _libraryFrontMatter = '''
-@Renderer(#renderFoo, Context<Foo>(), 'foo.html.mustache')
+@Renderer(#renderFoo, Context<Foo>())
 library foo;
 import 'package:mustachio/annotations.dart';
 ''';
@@ -118,8 +116,8 @@ class _Renderer_Object extends RendererBase<Object> {
 class Foo {}
 class Bar {}
 ''', libraryFrontMatter: '''
-@Renderer(#renderFoo, Context<Foo>(), 'foo.html.mustache')
-@Renderer(#renderBar, Context<Bar>(), 'bar.html.mustache')
+@Renderer(#renderFoo, Context<Foo>())
+@Renderer(#renderBar, Context<Bar>())
 library foo;
 import 'package:mustachio/annotations.dart';
 ''');

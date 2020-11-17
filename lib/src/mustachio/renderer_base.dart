@@ -22,8 +22,7 @@ abstract class RendererBase<T> {
       if (node is Text) {
         write(node.content);
       } else if (node is Variable) {
-        var content = getFields(node.key);
-        write(content);
+        // TODO(srawlins): Implement.
       } else if (node is Section) {
         section(node);
       } else if (node is Partial) {
@@ -39,12 +38,4 @@ abstract class RendererBase<T> {
   void partial(Partial node) {
     // TODO(srawlins): Implement.
   }
-
-  /// Resolves [key] into one or more field accesses, returning the result as a
-  /// String.
-  ///
-  /// [key] may have multiple dot-separate names, and [key] may not be a valid
-  /// property of _this_ context type, in which the [parent] renderer is
-  /// referenced.
-  String getFields(List<String> names);
 }

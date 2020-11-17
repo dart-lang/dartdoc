@@ -80,10 +80,6 @@ class _RendererGatherer {
     var contextFieldType = contextField.type;
     assert(contextFieldType.typeArguments.length == 1);
     var contextType = contextFieldType.typeArguments.single;
-    var templateUriField = constantValue.getField('templateUri');
-    if (templateUriField.isNull) {
-      throw StateError('@Renderer templateUri must not be null');
-    }
 
     return RendererSpec(nameField.toSymbolValue(), contextType);
   }
