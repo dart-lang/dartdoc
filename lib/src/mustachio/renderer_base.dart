@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'package:meta/meta.dart';
 import 'parser.dart';
 
 /// The base class for a generated Mustache renderer.
@@ -38,4 +39,17 @@ abstract class RendererBase<T> {
   void partial(Partial node) {
     // TODO(srawlins): Implement.
   }
+}
+
+/// An individual property of objects of type [T], including functions for
+/// rendering various types of Mustache nodes.
+class Property<T> {
+  final Object /*?*/ Function(T) /*!*/ getValue;
+  final Map<String /*!*/, Property<Object> /*!*/ >
+      Function() /*?*/ getProperties;
+  final bool /*!*/ Function(T) /*?*/ getBool;
+  // TODO(srawlins): Add functions for rendering Iterable properties and other
+  // properties.
+
+  Property({@required this.getValue, this.getProperties, this.getBool});
 }

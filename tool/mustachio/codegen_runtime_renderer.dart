@@ -66,8 +66,6 @@ import 'package:dartdoc/src/mustachio/parser.dart';
     while (_typesToProcess.isNotEmpty) {
       var info = _typesToProcess.removeFirst();
 
-      _typeToRenderFunctionName[info._contextType] = info._functionName;
-      _typeToRendererClassName[info._contextType] = info._rendererClassName;
       _buildRenderer(info);
     }
 
@@ -106,11 +104,14 @@ import 'package:dartdoc/src/mustachio/parser.dart';
   /// Adds [type] to the [_typesToProcess] queue, if it is not already there.
   void _addTypeToProcess(InterfaceType type) {
     var typeName = type.element.name;
-    var rendererName = '_render_$typeName';
+    var renderFunctionName = '_render_$typeName';
     var typeToProcess = _typesToProcess
         .singleWhere((rs) => rs._contextType == type, orElse: () => null);
     if (typeToProcess == null) {
-      return _typesToProcess.add(_RendererInfo(type, rendererName));
+      var rendererInfo = _RendererInfo(type, renderFunctionName);
+      _typesToProcess.add(rendererInfo);
+      _typeToRenderFunctionName[type] = renderFunctionName;
+      _typeToRendererClassName[type] = rendererInfo._rendererClassName;
     }
   }
 
@@ -119,6 +120,8 @@ import 'package:dartdoc/src/mustachio/parser.dart';
   /// The function and the class are each written as Dart code to [_buffer].
   void _buildRenderer(_RendererInfo renderer) {
     var typeName = renderer._typeName;
+
+    // Write out the render function.
     _buffer.writeln('''
 String ${renderer._functionName}${renderer._typeParametersString}(
     $typeName context, List<MustachioNode> ast) {
@@ -128,12 +131,70 @@ String ${renderer._functionName}${renderer._typeParametersString}(
 }
 ''');
 
+    // Write out the renderer class.
     _buffer.write('''
 class ${renderer._rendererClassName}${renderer._typeParametersString}
     extends RendererBase<$typeName> {
-  ${renderer._rendererClassName}($typeName context) : super(context);
-}
 ''');
+    _writePropertyMap(renderer);
+    // Write out the constructor.
+    _buffer.writeln(
+        '  ${renderer._rendererClassName}($typeName context) : super(context);');
+    // Close the class.
+    _buffer.writeln('}');
+  }
+
+  /// Write out the property map for [renderer].
+  ///
+  /// For each valid property of the context type of [renderer], this maps the
+  /// property's name to the property's [Property] object.
+  void _writePropertyMap(_RendererInfo renderer) {
+    var type = renderer._contextType;
+    _buffer.writeln('static Map<String, Property<${renderer._typeName}>> '
+        'propertyMap${renderer._typeParametersString}() => {');
+    for (var property in [...type.accessors]
+      ..sort((a, b) => a.name.compareTo(b.name))) {
+      _writeProperty(renderer, property);
+    }
+    if (type.superclass != null) {
+      var superMapName =
+          '_Renderer_${type.superclass.element.name}.propertyMap';
+      if (type.superclass.typeArguments.isNotEmpty) {
+        var superTypeArguments = type.superclass.typeArguments
+            .map((e) => e.getDisplayString(withNullability: false))
+            .join(', ');
+        superMapName += '<$superTypeArguments>';
+      }
+      _buffer.writeln('    ...$superMapName(),');
+    }
+    _buffer.writeln('};');
+    _buffer.writeln('');
+  }
+
+  void _writeProperty(
+      _RendererInfo renderer, PropertyAccessorElement property) {
+    var typeName = renderer._typeName;
+
+    if (property.isPrivate || property.isStatic || property.isSetter) return;
+    _buffer.writeln("'${property.name}': Property(");
+    _buffer.writeln('getValue: ($typeName c) => c.${property.name},');
+
+    var getterType = property.type.returnType;
+    var getterName = property.name;
+
+    // Only add a `getProperties` function, which returns the
+    if (_typeToRendererClassName.containsKey(getterType)) {
+      var rendererClassName = _typeToRendererClassName[getterType];
+      _buffer.writeln('getProperties: $rendererClassName.propertyMap,');
+    }
+
+    if (getterType.isDartCoreBool) {
+      _buffer.writeln('getBool: ($typeName c) => c.$getterName == true,');
+    } else {
+      // TODO(srawlins): Check if type is Iterable, and add functions for such.
+      // TODO(srawlins): Otherwise, add functions for plain values.
+    }
+    _buffer.writeln('),');
   }
 }
 
