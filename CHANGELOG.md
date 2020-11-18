@@ -5,7 +5,7 @@
 * **Breaking change**: Correct null dereference exception on unusual
   import URIs through change to PackageGraph.allLibraries. (#2429, #2426)
 * Adding (as yet unused) code for `mustachio`, a builder for mustache
-  templates. (#2417, #2421, #2427, #2430).
+  templates. (#2417, #2421, #2427, #2430, #2434).
 * Corrected a problem with tests erroneously passing in the grinder on
   latest SDK. (#2422, #2423, #2424)
 
