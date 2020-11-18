@@ -321,10 +321,6 @@ class _Renderer_Object extends RendererBase<Object> {
           getValue: (Object c) => c.hashCode,
           getProperties: _Renderer_int.propertyMap,
         ),
-        'runtimeType': Property(
-          getValue: (Object c) => c.runtimeType,
-          getProperties: _Renderer_Type.propertyMap,
-        ),
       };
 
   _Renderer_Object(Object context) : super(context);
@@ -684,18 +680,4 @@ class _Renderer_num extends RendererBase<num> {
       };
 
   _Renderer_num(num context) : super(context);
-}
-
-String _render_Type(Type context, List<MustachioNode> ast) {
-  var renderer = _Renderer_Type(context);
-  renderer.renderBlock(ast);
-  return renderer.buffer.toString();
-}
-
-class _Renderer_Type extends RendererBase<Type> {
-  static Map<String, Property<Type>> propertyMap() => {
-        ..._Renderer_Object.propertyMap(),
-      };
-
-  _Renderer_Type(Type context) : super(context);
 }

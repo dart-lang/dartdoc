@@ -6,6 +6,7 @@ import 'dart:collection';
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
+import 'package:analyzer/dart/element/type_provider.dart';
 import 'package:dart_style/dart_style.dart';
 
 /// The specification of a renderer, as derived from a @Renderer annotation.
@@ -19,8 +20,10 @@ class RendererSpec {
 }
 
 /// Builds [specs] into a Dart library containing runtime renderers.
-String buildTemplateRenderers(Set<RendererSpec> specs) {
-  var raw = RuntimeRenderersBuilder()._buildTemplateRenderers(specs);
+String buildTemplateRenderers(
+    Set<RendererSpec> specs, TypeProvider typeProvider) {
+  var raw =
+      RuntimeRenderersBuilder(typeProvider)._buildTemplateRenderers(specs);
   return DartFormatter().format(raw.toString());
 }
 
@@ -40,7 +43,9 @@ class RuntimeRenderersBuilder {
   /// as a context type.
   final _typeToRendererClassName = <InterfaceType, String>{};
 
-  RuntimeRenderersBuilder();
+  final TypeProvider _typeProvider;
+
+  RuntimeRenderersBuilder(this._typeProvider);
 
   String _buildTemplateRenderers(Set<RendererSpec> specs) {
     // TODO(srawlins): There are some private renderer functions that are
@@ -103,6 +108,10 @@ import 'package:dartdoc/src/mustachio/parser.dart';
 
   /// Adds [type] to the [_typesToProcess] queue, if it is not already there.
   void _addTypeToProcess(InterfaceType type) {
+    if (type == _typeProvider.typeType) {
+      // The [Type] type is the first case of a type we don't want to traverse.
+      return;
+    }
     var typeName = type.element.name;
     var renderFunctionName = '_render_$typeName';
     var typeToProcess = _typesToProcess
@@ -173,13 +182,17 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
 
   void _writeProperty(
       _RendererInfo renderer, PropertyAccessorElement property) {
+    var getterType = property.type.returnType;
+    if (getterType == _typeProvider.typeType) {
+      // The [Type] type is the first case of a type we don't want to traverse.
+      return;
+    }
     var typeName = renderer._typeName;
 
     if (property.isPrivate || property.isStatic || property.isSetter) return;
     _buffer.writeln("'${property.name}': Property(");
     _buffer.writeln('getValue: ($typeName c) => c.${property.name},');
 
-    var getterType = property.type.returnType;
     var getterName = property.name;
 
     // Only add a `getProperties` function, which returns the property map for

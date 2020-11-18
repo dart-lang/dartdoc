@@ -26,7 +26,8 @@ class MustachioBuilder implements Builder {
     var contents = '';
 
     if (rendererGatherer._rendererSpecs.isNotEmpty) {
-      contents += buildTemplateRenderers(rendererGatherer._rendererSpecs);
+      contents += buildTemplateRenderers(
+          rendererGatherer._rendererSpecs, entryLib.typeProvider);
 
       await buildStep.writeAsString(renderersLibrary, contents);
     }
