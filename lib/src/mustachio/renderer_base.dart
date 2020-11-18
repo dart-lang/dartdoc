@@ -44,10 +44,17 @@ abstract class RendererBase<T> {
 /// An individual property of objects of type [T], including functions for
 /// rendering various types of Mustache nodes.
 class Property<T> {
-  final Object /*?*/ Function(T) /*!*/ getValue;
+  /// Gets the value of this property on the object [context].
+  final Object /*?*/ Function(T context) /*!*/ getValue;
+
+  /// Gets the property map of the type of this property.
   final Map<String /*!*/, Property<Object> /*!*/ >
       Function() /*?*/ getProperties;
-  final bool /*!*/ Function(T) /*?*/ getBool;
+
+  /// Gets the bool value (true or false, never null) of this property on the
+  /// object [context].
+  final bool /*!*/ Function(T context) /*?*/ getBool;
+
   // TODO(srawlins): Add functions for rendering Iterable properties and other
   // properties.
 

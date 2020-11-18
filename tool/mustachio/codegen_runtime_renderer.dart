@@ -182,7 +182,8 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
     var getterType = property.type.returnType;
     var getterName = property.name;
 
-    // Only add a `getProperties` function, which returns the
+    // Only add a `getProperties` function, which returns the property map for
+    // [getterType], if [getterType] is a renderable type.
     if (_typeToRendererClassName.containsKey(getterType)) {
       var rendererClassName = _typeToRendererClassName[getterType];
       _buffer.writeln('getProperties: $rendererClassName.propertyMap,');
