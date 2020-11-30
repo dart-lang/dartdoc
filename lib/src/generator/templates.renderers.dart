@@ -9,8 +9,9 @@ import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/mustachio/renderer_base.dart';
 import 'package:dartdoc/src/mustachio/parser.dart';
 
-String renderIndex(PackageTemplateData context, List<MustachioNode> ast) {
-  var renderer = _Renderer_PackageTemplateData(context);
+String renderIndex(PackageTemplateData context, List<MustachioNode> ast,
+    {RendererBase<Object> parent}) {
+  var renderer = _Renderer_PackageTemplateData(context, parent);
   renderer.renderBlock(ast);
   return renderer.buffer.toString();
 }
@@ -61,11 +62,23 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
         ..._Renderer_TemplateData.propertyMap<Package>(),
       };
 
-  _Renderer_PackageTemplateData(PackageTemplateData context) : super(context);
+  _Renderer_PackageTemplateData(
+      PackageTemplateData context, RendererBase<Object> parent)
+      : super(context, parent);
+
+  @override
+  Property<Object> getProperty(String key) {
+    if (propertyMap().containsKey(key)) {
+      return propertyMap()[key];
+    } else {
+      return null;
+    }
+  }
 }
 
-String _render_Package(Package context, List<MustachioNode> ast) {
-  var renderer = _Renderer_Package(context);
+String _render_Package(Package context, List<MustachioNode> ast,
+    {RendererBase<Object> parent}) {
+  var renderer = _Renderer_Package(context, parent);
   renderer.renderBlock(ast);
   return renderer.buffer.toString();
 }
@@ -261,12 +274,23 @@ class _Renderer_Package extends RendererBase<Package> {
         ..._Renderer_LibraryContainer.propertyMap(),
       };
 
-  _Renderer_Package(Package context) : super(context);
+  _Renderer_Package(Package context, RendererBase<Object> parent)
+      : super(context, parent);
+
+  @override
+  Property<Object> getProperty(String key) {
+    if (propertyMap().containsKey(key)) {
+      return propertyMap()[key];
+    } else {
+      return null;
+    }
+  }
 }
 
 String _render_LibraryContainer(
-    LibraryContainer context, List<MustachioNode> ast) {
-  var renderer = _Renderer_LibraryContainer(context);
+    LibraryContainer context, List<MustachioNode> ast,
+    {RendererBase<Object> parent}) {
+  var renderer = _Renderer_LibraryContainer(context, parent);
   renderer.renderBlock(ast);
   return renderer.buffer.toString();
 }
@@ -306,11 +330,23 @@ class _Renderer_LibraryContainer extends RendererBase<LibraryContainer> {
         ..._Renderer_Object.propertyMap(),
       };
 
-  _Renderer_LibraryContainer(LibraryContainer context) : super(context);
+  _Renderer_LibraryContainer(
+      LibraryContainer context, RendererBase<Object> parent)
+      : super(context, parent);
+
+  @override
+  Property<Object> getProperty(String key) {
+    if (propertyMap().containsKey(key)) {
+      return propertyMap()[key];
+    } else {
+      return null;
+    }
+  }
 }
 
-String _render_Object(Object context, List<MustachioNode> ast) {
-  var renderer = _Renderer_Object(context);
+String _render_Object(Object context, List<MustachioNode> ast,
+    {RendererBase<Object> parent}) {
+  var renderer = _Renderer_Object(context, parent);
   renderer.renderBlock(ast);
   return renderer.buffer.toString();
 }
@@ -323,11 +359,22 @@ class _Renderer_Object extends RendererBase<Object> {
         ),
       };
 
-  _Renderer_Object(Object context) : super(context);
+  _Renderer_Object(Object context, RendererBase<Object> parent)
+      : super(context, parent);
+
+  @override
+  Property<Object> getProperty(String key) {
+    if (propertyMap().containsKey(key)) {
+      return propertyMap()[key];
+    } else {
+      return null;
+    }
+  }
 }
 
-String _render_bool(bool context, List<MustachioNode> ast) {
-  var renderer = _Renderer_bool(context);
+String _render_bool(bool context, List<MustachioNode> ast,
+    {RendererBase<Object> parent}) {
+  var renderer = _Renderer_bool(context, parent);
   renderer.renderBlock(ast);
   return renderer.buffer.toString();
 }
@@ -341,11 +388,22 @@ class _Renderer_bool extends RendererBase<bool> {
         ..._Renderer_Object.propertyMap(),
       };
 
-  _Renderer_bool(bool context) : super(context);
+  _Renderer_bool(bool context, RendererBase<Object> parent)
+      : super(context, parent);
+
+  @override
+  Property<Object> getProperty(String key) {
+    if (propertyMap().containsKey(key)) {
+      return propertyMap()[key];
+    } else {
+      return null;
+    }
+  }
 }
 
-String _render_List<E>(List<E> context, List<MustachioNode> ast) {
-  var renderer = _Renderer_List(context);
+String _render_List<E>(List<E> context, List<MustachioNode> ast,
+    {RendererBase<Object> parent}) {
+  var renderer = _Renderer_List(context, parent);
   renderer.renderBlock(ast);
   return renderer.buffer.toString();
 }
@@ -362,11 +420,22 @@ class _Renderer_List<E> extends RendererBase<List<E>> {
         ..._Renderer_Object.propertyMap(),
       };
 
-  _Renderer_List(List<E> context) : super(context);
+  _Renderer_List(List<E> context, RendererBase<Object> parent)
+      : super(context, parent);
+
+  @override
+  Property<Object> getProperty(String key) {
+    if (propertyMap<E>().containsKey(key)) {
+      return propertyMap<E>()[key];
+    } else {
+      return null;
+    }
+  }
 }
 
-String _render_String(String context, List<MustachioNode> ast) {
-  var renderer = _Renderer_String(context);
+String _render_String(String context, List<MustachioNode> ast,
+    {RendererBase<Object> parent}) {
+  var renderer = _Renderer_String(context, parent);
   renderer.renderBlock(ast);
   return renderer.buffer.toString();
 }
@@ -400,12 +469,23 @@ class _Renderer_String extends RendererBase<String> {
         ..._Renderer_Object.propertyMap(),
       };
 
-  _Renderer_String(String context) : super(context);
+  _Renderer_String(String context, RendererBase<Object> parent)
+      : super(context, parent);
+
+  @override
+  Property<Object> getProperty(String key) {
+    if (propertyMap().containsKey(key)) {
+      return propertyMap()[key];
+    } else {
+      return null;
+    }
+  }
 }
 
 String _render_TemplateData<T extends Documentable>(
-    TemplateData<T> context, List<MustachioNode> ast) {
-  var renderer = _Renderer_TemplateData(context);
+    TemplateData<T> context, List<MustachioNode> ast,
+    {RendererBase<Object> parent}) {
+  var renderer = _Renderer_TemplateData(context, parent);
   renderer.renderBlock(ast);
   return renderer.buffer.toString();
 }
@@ -493,12 +573,22 @@ class _Renderer_TemplateData<T extends Documentable>
             ..._Renderer_Object.propertyMap(),
           };
 
-  _Renderer_TemplateData(TemplateData<T> context) : super(context);
+  _Renderer_TemplateData(TemplateData<T> context, RendererBase<Object> parent)
+      : super(context, parent);
+
+  @override
+  Property<Object> getProperty(String key) {
+    if (propertyMap<T>().containsKey(key)) {
+      return propertyMap<T>()[key];
+    } else {
+      return null;
+    }
+  }
 }
 
-String _render_TemplateOptions(
-    TemplateOptions context, List<MustachioNode> ast) {
-  var renderer = _Renderer_TemplateOptions(context);
+String _render_TemplateOptions(TemplateOptions context, List<MustachioNode> ast,
+    {RendererBase<Object> parent}) {
+  var renderer = _Renderer_TemplateOptions(context, parent);
   renderer.renderBlock(ast);
   return renderer.buffer.toString();
 }
@@ -521,11 +611,23 @@ class _Renderer_TemplateOptions extends RendererBase<TemplateOptions> {
         ..._Renderer_Object.propertyMap(),
       };
 
-  _Renderer_TemplateOptions(TemplateOptions context) : super(context);
+  _Renderer_TemplateOptions(
+      TemplateOptions context, RendererBase<Object> parent)
+      : super(context, parent);
+
+  @override
+  Property<Object> getProperty(String key) {
+    if (propertyMap().containsKey(key)) {
+      return propertyMap()[key];
+    } else {
+      return null;
+    }
+  }
 }
 
-String _render_Documentable(Documentable context, List<MustachioNode> ast) {
-  var renderer = _Renderer_Documentable(context);
+String _render_Documentable(Documentable context, List<MustachioNode> ast,
+    {RendererBase<Object> parent}) {
+  var renderer = _Renderer_Documentable(context, parent);
   renderer.renderBlock(ast);
   return renderer.buffer.toString();
 }
@@ -576,11 +678,22 @@ class _Renderer_Documentable extends RendererBase<Documentable> {
         ..._Renderer_Nameable.propertyMap(),
       };
 
-  _Renderer_Documentable(Documentable context) : super(context);
+  _Renderer_Documentable(Documentable context, RendererBase<Object> parent)
+      : super(context, parent);
+
+  @override
+  Property<Object> getProperty(String key) {
+    if (propertyMap().containsKey(key)) {
+      return propertyMap()[key];
+    } else {
+      return null;
+    }
+  }
 }
 
-String _render_Nameable(Nameable context, List<MustachioNode> ast) {
-  var renderer = _Renderer_Nameable(context);
+String _render_Nameable(Nameable context, List<MustachioNode> ast,
+    {RendererBase<Object> parent}) {
+  var renderer = _Renderer_Nameable(context, parent);
   renderer.renderBlock(ast);
   return renderer.buffer.toString();
 }
@@ -605,11 +718,22 @@ class _Renderer_Nameable extends RendererBase<Nameable> {
         ..._Renderer_Object.propertyMap(),
       };
 
-  _Renderer_Nameable(Nameable context) : super(context);
+  _Renderer_Nameable(Nameable context, RendererBase<Object> parent)
+      : super(context, parent);
+
+  @override
+  Property<Object> getProperty(String key) {
+    if (propertyMap().containsKey(key)) {
+      return propertyMap()[key];
+    } else {
+      return null;
+    }
+  }
 }
 
-String _render_int(int context, List<MustachioNode> ast) {
-  var renderer = _Renderer_int(context);
+String _render_int(int context, List<MustachioNode> ast,
+    {RendererBase<Object> parent}) {
+  var renderer = _Renderer_int(context, parent);
   renderer.renderBlock(ast);
   return renderer.buffer.toString();
 }
@@ -637,11 +761,22 @@ class _Renderer_int extends RendererBase<int> {
         ..._Renderer_num.propertyMap(),
       };
 
-  _Renderer_int(int context) : super(context);
+  _Renderer_int(int context, RendererBase<Object> parent)
+      : super(context, parent);
+
+  @override
+  Property<Object> getProperty(String key) {
+    if (propertyMap().containsKey(key)) {
+      return propertyMap()[key];
+    } else {
+      return null;
+    }
+  }
 }
 
-String _render_num(num context, List<MustachioNode> ast) {
-  var renderer = _Renderer_num(context);
+String _render_num(num context, List<MustachioNode> ast,
+    {RendererBase<Object> parent}) {
+  var renderer = _Renderer_num(context, parent);
   renderer.renderBlock(ast);
   return renderer.buffer.toString();
 }
@@ -679,5 +814,15 @@ class _Renderer_num extends RendererBase<num> {
         ..._Renderer_Object.propertyMap(),
       };
 
-  _Renderer_num(num context) : super(context);
+  _Renderer_num(num context, RendererBase<Object> parent)
+      : super(context, parent);
+
+  @override
+  Property<Object> getProperty(String key) {
+    if (propertyMap().containsKey(key)) {
+      return propertyMap()[key];
+    } else {
+      return null;
+    }
+  }
 }

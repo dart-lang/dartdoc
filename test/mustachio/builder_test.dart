@@ -2,9 +2,8 @@ import 'dart:convert';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
 import 'package:build_test/build_test.dart';
+import 'package:dartdoc/src/mustachio/builder.dart';
 import 'package:test/test.dart';
-
-import '../../tool/mustachio/builder.dart';
 
 const _annotationsAsset = {
   'mustachio|lib/annotations.dart': '''

@@ -1,0 +1,9 @@
+name: testing_mustachio
+version: 0.0.1
+dependencies:
+  dartdoc:
+    path: '../..'
+dev_dependencies:
+  build_runner: ^1.10.0
+environment:
+  sdk: '>=2.7.0 <3.0.0'

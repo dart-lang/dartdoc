@@ -1,0 +1,15 @@
+builders:
+  mustachio_builder:
+    import: "package:dartdoc/src/mustachio/builder.dart"
+    builder_factories: ["mustachioBuilder"]
+    build_extensions: {".dart": [".renderers.dart"]}
+    build_to: "source"
+
+targets:
+  $default:
+    builders:
+      testing_mustachio:mustachio_builder:
+        enabled: true
+        generate_for: ["lib/foo.dart"]
+        options:
+          rendererClassesArePublic: true
