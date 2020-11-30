@@ -68,7 +68,7 @@ class RuntimeRenderersBuilder {
 // To change the contents of this library, make changes to the builder source
 // files in the tool/mustachio/ directory.
 
-// ignore_for_file: camel_case_types, unused_element
+// ignore_for_file: camel_case_types, unnecessary_cast, unused_element, unused_import
 import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/mustachio/renderer_base.dart';
@@ -193,7 +193,8 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
       _writeProperty(renderer, property);
     }
     if (type.superclass != null) {
-      var superclassRendererName = _typeToRendererClassName[type.superclass];
+      var superclassRendererName =
+          _typeToRendererClassName[type.superclass.element.thisType];
       var superMapName = '$superclassRendererName.propertyMap';
       if (type.superclass.typeArguments.isNotEmpty) {
         var superTypeArguments = type.superclass.typeArguments

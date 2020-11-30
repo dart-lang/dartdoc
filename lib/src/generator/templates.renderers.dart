@@ -3,7 +3,7 @@
 // To change the contents of this library, make changes to the builder source
 // files in the tool/mustachio/ directory.
 
-// ignore_for_file: camel_case_types, unused_element
+// ignore_for_file: camel_case_types, unnecessary_cast, unused_element, unused_import
 import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/mustachio/renderer_base.dart';
@@ -61,7 +61,7 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
           getValue: (Object c) => (c as PackageTemplateData).title,
           getProperties: _Renderer_String.propertyMap,
         ),
-        ...null.propertyMap<Package>(),
+        ..._Renderer_TemplateData.propertyMap<Package>(),
       };
 
   _Renderer_PackageTemplateData(
