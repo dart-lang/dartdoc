@@ -217,7 +217,7 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
     var typeName = renderer._typeName;
 
     if (property.isPrivate || property.isStatic || property.isSetter) return;
-    _buffer.writeln("'${property.name}': Property/*<${renderer._typeName}>*/(");
+    _buffer.writeln("'${property.name}': Property(");
     _buffer
         .writeln('getValue: (Object c) => (c as $typeName).${property.name},');
 

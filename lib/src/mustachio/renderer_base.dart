@@ -103,7 +103,7 @@ class Property<T> {
   Property({@required this.getValue, this.getProperties, this.getBool});
 }
 
-/// An error indicating that resolution of a key failed.
+/// An error indicating that a renderer failed to resolve a key.
 class MustachioResolutionError extends Error {
   String message;
 
