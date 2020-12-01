@@ -10,7 +10,6 @@ import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/generated/source_io.dart';
-import 'package:collection/collection.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -80,7 +79,6 @@ class PackageGraph {
     // After the allModelElements traversal to be sure that all packages
     // are picked up.
     for (var package in documentedPackages) {
-      package.libraries.sort((a, b) => compareNatural(a.name, b.name));
       for (var library in package.libraries) {
         _addToImplementors(library.allClasses);
         _extensions.addAll(library.extensions);
@@ -88,9 +86,6 @@ class PackageGraph {
       if (package.isLocal && !package.hasPublicLibraries) {
         package.warn(PackageWarning.noDocumentableLibrariesInPackage);
       }
-    }
-    for (var l in _implementors.values) {
-      l.sort();
     }
     allImplementorsAdded = true;
     allExtensionsAdded = true;
@@ -614,7 +609,7 @@ class PackageGraph {
     }
 
     void addImplementor(Class class_) {
-      for (var type in class_.mixins) {
+      for (var type in class_.mixedInTypes) {
         checkAndAddClass(type.element, class_);
       }
       if (class_.supertype != null) {

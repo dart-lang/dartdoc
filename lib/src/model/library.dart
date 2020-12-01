@@ -200,8 +200,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     _extensions ??= _exportedAndLocalElements
         .whereType<ExtensionElement>()
         .map((e) => ModelElement.from(e, this, packageGraph) as Extension)
-        .toList(growable: false)
-          ..sort(byName);
+        .toList(growable: false);
     return _extensions;
   }
 
@@ -358,8 +357,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
         .whereType<ClassElement>()
         .where((element) => element.isEnum)
         .map((e) => ModelElement.from(e, this, packageGraph) as Enum)
-        .toList(growable: false)
-          ..sort(byName);
+        .toList(growable: false);
     return _enums;
   }
 
@@ -371,8 +369,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
         .whereType<ClassElement>()
         .where((ClassElement c) => c.isMixin)
         .map((e) => ModelElement.from(e, this, packageGraph) as Mixin)
-        .toList(growable: false)
-          ..sort(byName);
+        .toList(growable: false);
     return _mixins;
   }
 
@@ -398,8 +395,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     _functions ??=
         _exportedAndLocalElements.whereType<FunctionElement>().map((e) {
       return ModelElement.from(e, this, packageGraph) as ModelFunction;
-    }).toList(growable: false)
-          ..sort(byName);
+    }).toList(growable: false);
     return _functions;
   }
 
@@ -480,8 +476,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     _typedefs ??= _exportedAndLocalElements
         .whereType<FunctionTypeAliasElement>()
         .map((e) => ModelElement.from(e, this, packageGraph) as Typedef)
-        .toList(growable: false)
-          ..sort(byName);
+        .toList(growable: false);
     return _typedefs;
   }
 
@@ -494,8 +489,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
         .whereType<ClassElement>()
         .where((e) => !e.isMixin && !e.isEnum)
         .map((e) => ModelElement.from(e, this, packageGraph) as Class)
-        .toList(growable: false)
-          ..sort(byName);
+        .toList(growable: false);
     return _classes;
   }
 
@@ -528,7 +522,6 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
             getter: getter, setter: setter);
         _variables.add(me);
       }
-      _variables.sort(byName);
     }
     return _variables;
   }

@@ -42,18 +42,18 @@
         {{#hasPublicMixins}}
         <dt>Mixed in types</dt>
         <dd><ul class="comma-separated eNum-relationships">
-          {{#publicMixins}}
+          {{#publicMixinsSorted}}
           <li>{{{linkedName}}}</li>
-          {{/publicMixins}}
+          {{/publicMixinsSorted}}
         </ul></dd>
         {{/hasPublicMixins}}
 
         {{#hasPublicImplementors}}
         <dt>Implementers</dt>
         <dd><ul class="comma-separated eNum-relationships">
-          {{#publicImplementors}}
+          {{#publicImplementorsSorted}}
           <li>{{{linkedName}}}</li>
-          {{/publicImplementors}}
+          {{/publicImplementorsSorted}}
         </ul></dd>
         {{/hasPublicImplementors}}
 

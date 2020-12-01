@@ -48,21 +48,21 @@
         </dd>
         {{/hasPublicInterfaces}}
 
-        {{#hasPublicMixins}}
+        {{#hasPublicMixedInTypes}}
         <dt>Mixes-in</dt>
         <dd><ul class="comma-separated mixin-relationships">
-          {{#publicMixins}}
+          {{#publicMixedInTypes}}
           <li>{{{linkedName}}}</li>
-          {{/publicMixins}}
+          {{/publicMixedInTypes}}
         </ul></dd>
-        {{/hasPublicMixins}}
+        {{/hasPublicMixedInTypes}}
 
         {{#hasPublicImplementors}}
         <dt>Implemented by</dt>
         <dd><ul class="comma-separated mixin-relationships">
-          {{#publicImplementors}}
+          {{#publicImplementorsSorted}}
           <li>{{{linkedName}}}</li>
-          {{/publicImplementors}}
+          {{/publicImplementorsSorted}}
         </ul></dd>
         {{/hasPublicImplementors}}
 
@@ -83,7 +83,7 @@
       <h2>Constructors</h2>
 
       <dl class="constructor-summary-list">
-        {{#publicConstructors}}
+        {{#publicConstructorsSorted}}
         <dt id="{{htmlId}}" class="callable">
           <span class="name">{{{linkedName}}}</span><span class="signature">({{{ linkedParams }}})</span>
         </dt>
@@ -96,7 +96,7 @@
           <div class="constructor-modifier features">factory</div>
           {{/isFactory}}
         </dd>
-        {{/publicConstructors}}
+        {{/publicConstructorsSorted}}
       </dl>
     </section>
     {{/hasPublicConstructors}}
