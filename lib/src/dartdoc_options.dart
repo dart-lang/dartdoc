@@ -1119,10 +1119,10 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
   _OptionValueWithContext<Object> _valueAtFromFile(Folder dir) {
     var yamlFileData = _yamlAtDirectory(dir);
     var contextPath = yamlFileData.canonicalDirectoryPath;
-    dynamic yamlData = yamlFileData.data;
+    dynamic yamlData = yamlFileData.data ?? {};
     for (var key in keys) {
       if (!yamlData.containsKey(key)) return null;
-      yamlData = yamlData[key];
+      yamlData = yamlData[key] ?? {};
     }
 
     var returnData;
