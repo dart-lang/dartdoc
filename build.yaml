@@ -6,7 +6,7 @@ builders:
     build_to: "source"
     auto_apply: none
   mustachio_builder:
-    import: "lib/src/mustachio/builder.dart"
+    import: "tool/mustachio/builder.dart"
     builder_factories: ["mustachioBuilder"]
     build_extensions: {".dart": [".renderers.dart"]}
     build_to: "source"
@@ -15,13 +15,31 @@ targets:
   builder:
     sources:
       - tool/builder.dart
-      - lib/src/mustachio/builder.dart
-
-  $default:
+      - tool/mustachio/builder.dart
+  testing:
     sources:
       exclude:
         - tool/builder.dart
-        - lib/src/mustachio/builder.dart
+        - tool/mustachio/builder.dart
+    builders:
+      dartdoc|mustachio_builder:
+        enabled: true
+        generate_for:
+          - test/mustachio/foo.dart
+        options:
+          rendererClassesArePublic: true
+      build_test:test_bootstrap:
+        enabled: false
+      build_version:build_version:
+        enabled: false
+
+  $default:
+    dependencies:
+      - :testing
+    sources:
+      exclude:
+        - tool/builder.dart
+        - tool/mustachio/builder.dart
     builders:
       build_version:
         enabled: true

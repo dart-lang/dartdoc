@@ -8,7 +8,7 @@ import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/mustachio/renderer_base.dart';
 import 'package:dartdoc/src/mustachio/parser.dart';
-import 'package:dartdoc/src/generator/templates.dart';
+import 'templates.dart';
 
 String renderIndex(PackageTemplateData context, List<MustachioNode> ast,
     {RendererBase<Object> parent}) {

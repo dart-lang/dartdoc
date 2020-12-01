@@ -1,7 +1,7 @@
 import 'package:dartdoc/src/mustachio/parser.dart';
 import 'package:test/test.dart';
-import 'package:testing_mustachio/foo.dart';
-import 'package:testing_mustachio/foo.renderers.dart';
+import 'foo.dart';
+import 'foo.renderers.dart';
 
 void main() {
   test('property map contains all public getters', () {

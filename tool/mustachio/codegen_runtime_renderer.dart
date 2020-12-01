@@ -8,6 +8,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/dart/element/type_provider.dart';
 import 'package:dart_style/dart_style.dart';
+import 'package:path/path.dart' as p;
 
 /// The specification of a renderer, as derived from a @Renderer annotation.
 class RendererSpec {
@@ -73,7 +74,7 @@ import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/mustachio/renderer_base.dart';
 import 'package:dartdoc/src/mustachio/parser.dart';
-import '$_sourceUri';
+import '${p.basename(_sourceUri.path)}';
 ''');
 
     specs.forEach(_addTypesForRendererSpec);

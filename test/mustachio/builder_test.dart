@@ -2,8 +2,9 @@ import 'dart:convert';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
 import 'package:build_test/build_test.dart';
-import 'package:dartdoc/src/mustachio/builder.dart';
 import 'package:test/test.dart';
+
+import '../../tool/mustachio/builder.dart';
 
 const _annotationsAsset = {
   'mustachio|lib/annotations.dart': '''
@@ -89,7 +90,7 @@ class Bar {}
       expect(
           generatedContent,
           contains(
-              'String _render_FooBase(FooBase context, List<MustachioNode> ast)'));
+              'String _render_FooBase(FooBase context, List<MustachioNode> ast,'));
       // The renderer class for Foo
       expect(generatedContent,
           contains('class _Renderer_FooBase extends RendererBase<FooBase>'));
@@ -100,7 +101,7 @@ class Bar {}
       expect(
           generatedContent,
           contains(
-              'String _render_Object(Object context, List<MustachioNode> ast) {'));
+              'String _render_Object(Object context, List<MustachioNode> ast,'));
       // The renderer class for Object
       expect(generatedContent,
           contains('class _Renderer_Object extends RendererBase<Object> {'));
@@ -119,13 +120,13 @@ class Bar {}
 
     test('with a property map', () {
       expect(generatedContent,
-          contains('static Map<String, Property<Foo>> propertyMap() => {'));
+          contains('static Map<String, Property> propertyMap() => {'));
     });
 
     test('with a property map with a String property', () {
       expect(generatedContent, contains('''
         's1': Property(
-          getValue: (Foo c) => c.s1,
+          getValue: (Object c) => (c as Foo).s1,
           getProperties: _Renderer_String.propertyMap,
         ),
 '''));
@@ -138,9 +139,9 @@ class Bar {}
     test('with a property map with a bool property', () {
       expect(generatedContent, contains('''
         'b1': Property(
-          getValue: (Foo c) => c.b1,
+          getValue: (Object c) => (c as Foo).b1,
           getProperties: _Renderer_bool.propertyMap,
-          getBool: (Foo c) => c.b1 == true,
+          getBool: (Object c) => (c as Foo).b1 == true,
         ),
 '''));
     });
@@ -190,7 +191,7 @@ import 'package:mustachio/annotations.dart';
       expect(
           generatedContent,
           contains(
-              'String renderFoo<T>(Foo<T> context, List<MustachioNode> ast)'));
+              'String renderFoo<T>(Foo<T> context, List<MustachioNode> ast,'));
     });
 
     test('with a generic supertype type argument', () async {
