@@ -31,8 +31,10 @@ abstract class Container extends ModelElement with TypeParameters {
   Container(Element element, Library library, PackageGraph packageGraph)
       : super(element, library, packageGraph, null);
 
-  bool get isClass => element is ClassElement;
+  bool get isClass => element is ClassElement && !(element as ClassElement).isEnum && !(element as ClassElement).isMixin;
   bool get isExtension => element is ExtensionElement;
+  bool get isEnum => element is ClassElement && (element as ClassElement).isEnum;
+  bool get isMixin => element is ClassElement && (element as ClassElement).isMixin;
 
   @mustCallSuper
   Iterable<ModelElement> get allModelElements => quiver.concat([

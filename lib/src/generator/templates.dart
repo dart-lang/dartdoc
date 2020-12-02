@@ -187,6 +187,7 @@ class Templates {
   final Template functionTemplate;
   final Template indexTemplate;
   final Template libraryTemplate;
+  final Template sidebarLibraryTemplate;
   final Template methodTemplate;
   final Template mixinTemplate;
   final Template propertyTemplate;
@@ -254,6 +255,7 @@ class Templates {
 
     var indexTemplate = await _loadTemplate('index');
     var libraryTemplate = await _loadTemplate('library');
+    var sidebarLibraryTemplate = await _loadTemplate('_sidebar_for_library');
     var categoryTemplate = await _loadTemplate('category');
     var classTemplate = await _loadTemplate('class');
     var extensionTemplate = await _loadTemplate('extension');
@@ -271,6 +273,7 @@ class Templates {
         indexTemplate,
         categoryTemplate,
         libraryTemplate,
+        sidebarLibraryTemplate,
         classTemplate,
         extensionTemplate,
         enumTemplate,
@@ -288,6 +291,7 @@ class Templates {
       this.indexTemplate,
       this.categoryTemplate,
       this.libraryTemplate,
+      this.sidebarLibraryTemplate,
       this.classTemplate,
       this.extensionTemplate,
       this.enumTemplate,

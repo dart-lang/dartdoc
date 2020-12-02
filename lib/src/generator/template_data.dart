@@ -4,6 +4,8 @@
 
 import 'package:dartdoc/src/model/model.dart';
 
+typedef LibrarySidebar = String Function(Library, TemplateData);
+
 abstract class TemplateOptions {
   String get relCanonicalPrefix;
   String get toolVersion;
@@ -118,11 +120,13 @@ class CategoryTemplateData extends TemplateData<Category> {
 
 class LibraryTemplateData extends TemplateData<Library> {
   final Library library;
+  final LibrarySidebar _sidebarForLibrary;
 
   LibraryTemplateData(
-      TemplateOptions htmlOptions, PackageGraph packageGraph, this.library)
+      TemplateOptions htmlOptions, PackageGraph packageGraph, this.library, this._sidebarForLibrary)
       : super(htmlOptions, packageGraph);
 
+  String get sidebarForLibrary => _sidebarForLibrary(library, this);
   @override
   String get title => '${library.name} library - Dart API';
   @override
@@ -146,8 +150,8 @@ class MixinTemplateData extends ClassTemplateData<Mixin> {
   final Mixin mixin;
 
   MixinTemplateData(TemplateOptions htmlOptions, PackageGraph packageGraph,
-      Library library, this.mixin)
-      : super(htmlOptions, packageGraph, library, mixin);
+      Library library, this.mixin, LibrarySidebar _sidebarForLibrary)
+      : super(htmlOptions, packageGraph, library, mixin, _sidebarForLibrary);
 
   @override
   Mixin get self => mixin;
@@ -158,10 +162,15 @@ class ClassTemplateData<T extends Class> extends TemplateData<T> {
   final Class clazz;
   final Library library;
   Class _objectType;
+  final LibrarySidebar _sidebarForLibrary;
 
   ClassTemplateData(TemplateOptions htmlOptions, PackageGraph packageGraph,
-      this.library, this.clazz)
+      this.library, this.clazz, this._sidebarForLibrary)
       : super(htmlOptions, packageGraph);
+
+  String get sidebarForLibrary => _sidebarForLibrary(library, this);
+
+  Container get container => clazz;
 
   @override
   T get self => clazz;
@@ -199,10 +208,15 @@ class ClassTemplateData<T extends Class> extends TemplateData<T> {
 class ExtensionTemplateData<T extends Extension> extends TemplateData<T> {
   final T extension;
   final Library library;
+  final LibrarySidebar _sidebarForLibrary;
 
   ExtensionTemplateData(TemplateOptions htmlOptions, PackageGraph packageGraph,
-      this.library, this.extension)
+      this.library, this.extension, this._sidebarForLibrary)
       : super(htmlOptions, packageGraph);
+
+  String get sidebarForLibrary => _sidebarForLibrary(library, this);
+
+  Container get container => extension;
 
   @override
   T get self => extension;
@@ -232,6 +246,7 @@ class ConstructorTemplateData extends TemplateData<Constructor> {
       PackageGraph packageGraph, this.library, this.clazz, this.constructor)
       : super(htmlOptions, packageGraph);
 
+  Container get container => clazz;
   @override
   Constructor get self => constructor;
   @override
@@ -256,8 +271,8 @@ class ConstructorTemplateData extends TemplateData<Constructor> {
 
 class EnumTemplateData extends ClassTemplateData<Enum> {
   EnumTemplateData(TemplateOptions htmlOptions, PackageGraph packageGraph,
-      Library library, Enum eNum)
-      : super(htmlOptions, packageGraph, library, eNum);
+      Library library, Enum eNum, LibrarySidebar _sidebarForLibrary)
+      : super(htmlOptions, packageGraph, library, eNum, _sidebarForLibrary);
 
   Enum get eNum => clazz;
   @override
@@ -267,10 +282,13 @@ class EnumTemplateData extends ClassTemplateData<Enum> {
 class FunctionTemplateData extends TemplateData<ModelFunction> {
   final ModelFunction function;
   final Library library;
+  final LibrarySidebar _sidebarForLibrary;
 
   FunctionTemplateData(TemplateOptions htmlOptions, PackageGraph packageGraph,
-      this.library, this.function)
+      this.library, this.function, this._sidebarForLibrary)
       : super(htmlOptions, packageGraph);
+
+  String get sidebarForLibrary => _sidebarForLibrary(library, this);
 
   @override
   ModelFunction get self => function;
@@ -360,10 +378,13 @@ class PropertyTemplateData extends TemplateData<Field> {
 class TypedefTemplateData extends TemplateData<Typedef> {
   final Library library;
   final Typedef typeDef;
+  final LibrarySidebar _sidebarForLibrary;
 
   TypedefTemplateData(TemplateOptions htmlOptions, PackageGraph packageGraph,
-      this.library, this.typeDef)
+      this.library, this.typeDef, this._sidebarForLibrary)
       : super(htmlOptions, packageGraph);
+
+  String get sidebarForLibrary => _sidebarForLibrary(library, this);
 
   @override
   Typedef get self => typeDef;
@@ -387,10 +408,13 @@ class TypedefTemplateData extends TemplateData<Typedef> {
 class TopLevelPropertyTemplateData extends TemplateData<TopLevelVariable> {
   final Library library;
   final TopLevelVariable property;
+  final LibrarySidebar _sidebarForLibrary;
 
   TopLevelPropertyTemplateData(TemplateOptions htmlOptions,
-      PackageGraph packageGraph, this.library, this.property)
+      PackageGraph packageGraph, this.library, this.property, this._sidebarForLibrary)
       : super(htmlOptions, packageGraph);
+
+  String get sidebarForLibrary => _sidebarForLibrary(library, this);
 
   @override
   TopLevelVariable get self => property;

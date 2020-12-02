@@ -3,7 +3,7 @@
 <div id="dartdoc-sidebar-left" class="col-xs-6 col-sm-3 col-md-2 sidebar sidebar-offcanvas-left">
     {{>search_sidebar}}
     <h5>{{parent.name}} {{parent.kind}}</h5>
-    {{>sidebar_for_library}}
+    {{{sidebarForLibrary}}}
 </div>
 
 <div id="dartdoc-main-content" class="col-xs-12 col-sm-9 col-md-8 main-content">
@@ -99,7 +99,7 @@
 </div> <!-- /.main-content -->
 
 <div id="dartdoc-sidebar-right" class="col-xs-6 col-sm-6 col-md-2 sidebar sidebar-offcanvas-right">
-    {{>sidebar_for_extension}}
+    {{>sidebar_for_container}}
 </div><!--/.sidebar-offcanvas-->
 
 {{>footer}}
