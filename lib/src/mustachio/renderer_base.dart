@@ -10,12 +10,53 @@ abstract class RendererBase<T> {
   /// The context object which this renderer can render.
   final T context;
 
+  /// The renderer of the parent context, if any, otherwise `null`.
+  final RendererBase parent;
+
   /// The output buffer into which [context] is rendered, using a template.
   final buffer = StringBuffer();
 
-  RendererBase(this.context);
+  RendererBase(this.context, this.parent);
 
   void write(String text) => buffer.write(text);
+
+  /// Returns the [Property] on this renderer named [name].
+  ///
+  /// If no property named [name] exists for this renderer, `null` is returned.
+  Property getProperty(String key);
+
+  /// Resolves [names] into one or more field accesses, returning the result as
+  /// a String.
+  ///
+  /// [names] may have multiple dot-separate names, and [names] may not be a
+  /// valid property of _this_ context type, in which the [parent] renderer is
+  /// referenced.
+  String getFields(List<String> names) {
+    if (names.length == 1 && names.single == '.') {
+      return context.toString();
+    }
+    var property = getProperty(names.first);
+    if (property != null) {
+      var value = property.getValue(context);
+      for (var name in names.skip(1)) {
+        if (property.getProperties().containsKey(name)) {
+          property = property.getProperties()[name];
+          value = property.getValue(value);
+        } else {
+          throw MustachioResolutionError(
+              'Failed to resolve ${names.join('.')} as a property '
+              'on ${context.runtimeType}');
+        }
+      }
+      return value.toString();
+    } else if (parent != null) {
+      return parent.getFields(names);
+    } else {
+      throw MustachioResolutionError(
+          'Failed to resolve ${names.first} as a property '
+          'on any types in the current context');
+    }
+  }
 
   /// Renders a block of Mustache template, the [ast], into [buffer].
   void renderBlock(List<MustachioNode> ast) {
@@ -23,7 +64,8 @@ abstract class RendererBase<T> {
       if (node is Text) {
         write(node.content);
       } else if (node is Variable) {
-        // TODO(srawlins): Implement.
+        var content = getFields(node.key);
+        write(content);
       } else if (node is Section) {
         section(node);
       } else if (node is Partial) {
@@ -59,4 +101,11 @@ class Property<T> {
   // properties.
 
   Property({@required this.getValue, this.getProperties, this.getBool});
+}
+
+/// An error indicating that a renderer failed to resolve a key.
+class MustachioResolutionError extends Error {
+  String message;
+
+  MustachioResolutionError(this.message);
 }

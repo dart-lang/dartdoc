@@ -8,6 +8,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/dart/element/type_provider.dart';
 import 'package:dart_style/dart_style.dart';
+import 'package:path/path.dart' as p;
 
 /// The specification of a renderer, as derived from a @Renderer annotation.
 class RendererSpec {
@@ -21,9 +22,11 @@ class RendererSpec {
 
 /// Builds [specs] into a Dart library containing runtime renderers.
 String buildTemplateRenderers(
-    Set<RendererSpec> specs, TypeProvider typeProvider) {
-  var raw =
-      RuntimeRenderersBuilder(typeProvider)._buildTemplateRenderers(specs);
+    Set<RendererSpec> specs, Uri sourceUri, TypeProvider typeProvider,
+    {bool rendererClassesArePublic = false}) {
+  var raw = RuntimeRenderersBuilder(sourceUri, typeProvider,
+          rendererClassesArePublic: rendererClassesArePublic)
+      ._buildTemplateRenderers(specs);
   return DartFormatter().format(raw.toString());
 }
 
@@ -43,9 +46,16 @@ class RuntimeRenderersBuilder {
   /// as a context type.
   final _typeToRendererClassName = <InterfaceType, String>{};
 
+  final Uri _sourceUri;
+
   final TypeProvider _typeProvider;
 
-  RuntimeRenderersBuilder(this._typeProvider);
+  /// Whether renderer classes are public. This should only be true for testing.
+  final bool _rendererClassesArePublic;
+
+  RuntimeRenderersBuilder(this._sourceUri, this._typeProvider,
+      {bool rendererClassesArePublic = false})
+      : _rendererClassesArePublic = rendererClassesArePublic;
 
   String _buildTemplateRenderers(Set<RendererSpec> specs) {
     // TODO(srawlins): There are some private renderer functions that are
@@ -59,11 +69,12 @@ class RuntimeRenderersBuilder {
 // To change the contents of this library, make changes to the builder source
 // files in the tool/mustachio/ directory.
 
-// ignore_for_file: camel_case_types, unused_element
+// ignore_for_file: camel_case_types, unnecessary_cast, unused_element, unused_import
 import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/mustachio/renderer_base.dart';
 import 'package:dartdoc/src/mustachio/parser.dart';
+import '${p.basename(_sourceUri.path)}';
 ''');
 
     specs.forEach(_addTypesForRendererSpec);
@@ -79,7 +90,8 @@ import 'package:dartdoc/src/mustachio/parser.dart';
 
   void _addTypesForRendererSpec(RendererSpec spec) {
     var element = spec._contextType.element;
-    _typesToProcess.add(_RendererInfo(element.thisType, spec._name));
+    _typesToProcess.add(_RendererInfo(element.thisType, spec._name,
+        public: _rendererClassesArePublic));
     _typeToRenderFunctionName[element.thisType] = spec._name;
     _typeToRendererClassName[element.thisType] = element.name;
 
@@ -117,7 +129,8 @@ import 'package:dartdoc/src/mustachio/parser.dart';
     var typeToProcess = _typesToProcess
         .singleWhere((rs) => rs._contextType == type, orElse: () => null);
     if (typeToProcess == null) {
-      var rendererInfo = _RendererInfo(type, renderFunctionName);
+      var rendererInfo = _RendererInfo(type, renderFunctionName,
+          public: _rendererClassesArePublic);
       _typesToProcess.add(rendererInfo);
       _typeToRenderFunctionName[type] = renderFunctionName;
       _typeToRendererClassName[type] = rendererInfo._rendererClassName;
@@ -133,8 +146,9 @@ import 'package:dartdoc/src/mustachio/parser.dart';
     // Write out the render function.
     _buffer.writeln('''
 String ${renderer._functionName}${renderer._typeParametersString}(
-    $typeName context, List<MustachioNode> ast) {
-  var renderer = ${renderer._rendererClassName}(context);
+    $typeName context, List<MustachioNode> ast,
+    {RendererBase<Object> parent}) {
+  var renderer = ${renderer._rendererClassName}(context, parent);
   renderer.renderBlock(ast);
   return renderer.buffer.toString();
 }
@@ -147,8 +161,22 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
 ''');
     _writePropertyMap(renderer);
     // Write out the constructor.
-    _buffer.writeln(
-        '  ${renderer._rendererClassName}($typeName context) : super(context);');
+    _buffer.writeln('''
+  ${renderer._rendererClassName}($typeName context, RendererBase<Object> parent)
+      : super(context, parent);
+''');
+    var actionMapName = 'propertyMap${renderer._typeArgumentsString}';
+    // Write out `getProperty`.
+    _buffer.writeln('''
+  @override
+  Property<Object> getProperty(String key) {
+    if ($actionMapName().containsKey(key)) {
+      return $actionMapName()[key];
+    } else {
+      return null;
+    }
+  }
+''');
     // Close the class.
     _buffer.writeln('}');
   }
@@ -159,15 +187,16 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
   /// property's name to the property's [Property] object.
   void _writePropertyMap(_RendererInfo renderer) {
     var type = renderer._contextType;
-    _buffer.writeln('static Map<String, Property<${renderer._typeName}>> '
+    _buffer.writeln('static Map<String, Property> '
         'propertyMap${renderer._typeParametersString}() => {');
     for (var property in [...type.accessors]
       ..sort((a, b) => a.name.compareTo(b.name))) {
       _writeProperty(renderer, property);
     }
     if (type.superclass != null) {
-      var superMapName =
-          '_Renderer_${type.superclass.element.name}.propertyMap';
+      var superclassRendererName =
+          _typeToRendererClassName[type.superclass.element.thisType];
+      var superMapName = '$superclassRendererName.propertyMap';
       if (type.superclass.typeArguments.isNotEmpty) {
         var superTypeArguments = type.superclass.typeArguments
             .map((e) => e.getDisplayString(withNullability: false))
@@ -191,7 +220,8 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
 
     if (property.isPrivate || property.isStatic || property.isSetter) return;
     _buffer.writeln("'${property.name}': Property(");
-    _buffer.writeln('getValue: ($typeName c) => c.${property.name},');
+    _buffer
+        .writeln('getValue: (Object c) => (c as $typeName).${property.name},');
 
     var getterName = property.name;
 
@@ -203,7 +233,8 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
     }
 
     if (getterType.isDartCoreBool) {
-      _buffer.writeln('getBool: ($typeName c) => c.$getterName == true,');
+      _buffer.writeln(
+          'getBool: (Object c) => (c as $typeName).$getterName == true,');
     } else {
       // TODO(srawlins): Check if type is Iterable, and add functions for such.
       // TODO(srawlins): Otherwise, add functions for plain values.
@@ -227,18 +258,24 @@ class _RendererInfo {
   /// private otherwise.
   final String _functionName;
 
-  _RendererInfo(this._contextType, this._functionName);
+  factory _RendererInfo(InterfaceType contextType, String functionName,
+      {bool public = false}) {
+    var typeBaseName = contextType.element.name;
+    var rendererClassName =
+        public ? 'Renderer_$typeBaseName' : '_Renderer_$typeBaseName';
+
+    return _RendererInfo._(contextType, functionName, rendererClassName);
+  }
+
+  _RendererInfo._(
+      this._contextType, this._functionName, this._rendererClassName);
 
   String get _typeName => _contextType.getDisplayString(withNullability: false);
 
-  /// The name of the context type, without any type parameters, type arguments,
-  /// or nullability tokens.
-  String get _typeBaseName => _contextType.element.name;
-
-  String get _rendererClassName => '_Renderer_$_typeBaseName';
+  final String _rendererClassName;
 
   /// The type parameters of the context type, if any, as a String, including
-  /// the angled brackets.
+  /// the angled brackets, otherwise a blank String.
   String get _typeParametersString {
     var typeParamters = _contextType.element.typeParameters;
     if (typeParamters.isEmpty) {
@@ -248,6 +285,18 @@ class _RendererInfo {
         return tp.getDisplayString(withNullability: false);
       });
       return '<${parameterStrings.join(', ')}>';
+    }
+  }
+
+  /// The type arguments, if any, of [_contextType], as a String, including the
+  /// angled brackets, otherwise a blank String.
+  String get _typeArgumentsString {
+    if (_contextType.typeArguments.isEmpty) {
+      return '';
+    } else {
+      var typeArguments = _contextType.typeArguments
+          .map((t) => t.getDisplayString(withNullability: false));
+      return '<${typeArguments.join(', ')}>';
     }
   }
 }
