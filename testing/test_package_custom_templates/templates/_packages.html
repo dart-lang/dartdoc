@@ -3,23 +3,23 @@
     {{#isFirstPackage}}
       {{#hasDocumentedCategories}}
       <li class="section-title">Topics</li>
-        {{#documentedCategories}}
+        {{#documentedCategoriesSorted}}
         <li>{{{linkedName}}}</li>
-        {{/documentedCategories}}
+        {{/documentedCategoriesSorted}}
       {{/hasDocumentedCategories}}
       <li class="section-title">Libraries</li>
     {{/isFirstPackage}}
     {{^isFirstPackage}}
       <li class="section-title">{{name}}</li>
     {{/isFirstPackage}}
-    {{#defaultCategory.publicLibraries}}
+    {{#defaultCategory.publicLibrariesSorted}}
       <li>{{{linkedName}}}</li>
-    {{/defaultCategory.publicLibraries}}
+    {{/defaultCategory.publicLibrariesSorted}}
     {{#categoriesWithPublicLibraries}}
       <li class="section-subtitle">{{name}}</li>
-      {{#publicLibraries}}
+      {{#publicLibrariesSorted}}
         <li class="section-subitem">{{{linkedName}}}</li>
-      {{/publicLibraries}}
+      {{/publicLibrariesSorted}}
     {{/categoriesWithPublicLibraries}}
   {{/localPackages}}
 </ol>

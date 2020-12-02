@@ -15,82 +15,82 @@
 {{#library.hasPublicClasses}}
 ## Classes
 
-{{#library.publicClasses}}
+{{#library.publicClassesSorted}}
 {{>class}}
 
-{{/library.publicClasses}}
+{{/library.publicClassesSorted}}
 {{/library.hasPublicClasses}}
 
 {{#library.hasPublicMixins}}
 ## Mixins
 
-{{#library.publicMixins}}
+{{#library.publicMixinsSorted}}
 {{>mixin}}
 
-{{/library.publicMixins}}
+{{/library.publicMixinsSorted}}
 {{/library.hasPublicMixins}}
 
 {{#library.hasPublicExtensions}}
 ## Extensions
 
-{{#library.publicExtensions}}
+{{#library.publicExtensionsSorted}}
 {{>extension}}
 
-{{/library.publicExtensions}}
+{{/library.publicExtensionsSorted}}
 {{/library.hasPublicExtensions}}
 
 {{#library.hasPublicConstants}}
 ## Constants
 
-{{#library.publicConstants}}
+{{#library.publicConstantsSorted}}
 {{>constant}}
 
-{{/library.publicConstants}}
+{{/library.publicConstantsSorted}}
 {{/library.hasPublicConstants}}
 
 {{#library.hasPublicProperties}}
 ## Properties
 
-{{#library.publicProperties}}
+{{#library.publicPropertiesSorted}}
 {{>property}}
 
-{{/library.publicProperties}}
+{{/library.publicPropertiesSorted}}
 {{/library.hasPublicProperties}}
 
 {{#library.hasPublicFunctions}}
 ## Functions
 
-{{#library.publicFunctions}}
+{{#library.publicFunctionsSorted}}
 {{>callable}}
 
-{{/library.publicFunctions}}
+{{/library.publicFunctionsSorted}}
 {{/library.hasPublicFunctions}}
 
 {{#library.hasPublicEnums}}
 ## Enums
 
-{{#library.publicEnums}}
+{{#library.publicEnumsSorted}}
 {{>class}}
 
-{{/library.publicEnums}}
+{{/library.publicEnumsSorted}}
 {{/library.hasPublicEnums}}
 
 {{#library.hasPublicTypedefs}}
 ## Typedefs
 
-{{#library.publicTypedefs}}
+{{#library.publicTypedefsSorted}}
 {{>callable}}
 
-{{/library.publicTypedefs}}
+{{/library.publicTypedefsSorted}}
 {{/library.hasPublicTypedefs}}
 
 {{#library.hasPublicExceptions}}
 ## Exceptions / Errors
 
-{{#library.publicExceptions}}
+{{#library.publicExceptionsSorted}}
 {{>class}}
 
-{{/library.publicExceptions}}
+{{/library.publicExceptionsSorted}}
 {{/library.hasPublicExceptions}}
 
 {{>footer}}

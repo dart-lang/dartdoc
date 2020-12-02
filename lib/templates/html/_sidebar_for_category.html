@@ -1,64 +1,64 @@
 <ol>
   {{#self.hasPublicLibraries}}
   <li class="section-title"><a href="{{{self.href}}}#libraries">Libraries</a></li>
-  {{#self.publicLibraries}}
+  {{#self.publicLibrariesSorted}}
   <li>{{{ linkedName }}}</li>
-  {{/self.publicLibraries}}
+  {{/self.publicLibrariesSorted}}
   {{/self.hasPublicLibraries}}
 
   {{#self.hasPublicMixins}}
   <li class="section-title"><a href="{{{library.href}}}#mixins">Mixins</a></li>
-  {{#self.publicMixins}}
+  {{#self.publicMixinsSorted}}
   <li>{{{ linkedName }}}</li>
-  {{/self.publicMixins}}
+  {{/self.publicMixinsSorted}}
   {{/self.hasPublicMixins}}
 
   {{#self.hasPublicClasses}}
   <li class="section-title"><a href="{{{self.href}}}#classes">Classes</a></li>
-  {{#self.publicClasses}}
+  {{#self.publicClassesSorted}}
   <li>{{{ linkedName }}}</li>
-  {{/self.publicClasses}}
+  {{/self.publicClassesSorted}}
   {{/self.hasPublicClasses}}
 
   {{#self.hasPublicConstants}}
   <li class="section-title"><a href="{{{self.href}}}#constants">Constants</a></li>
-  {{#self.publicConstants}}
+  {{#self.publicConstantsSorted}}
   <li>{{{ linkedName }}}</li>
-  {{/self.publicConstants}}
+  {{/self.publicConstantsSorted}}
   {{/self.hasPublicConstants}}
 
   {{#self.hasPublicProperties}}
   <li class="section-title"><a href="{{{self.href}}}#properties">Properties</a></li>
-  {{#self.publicProperties}}
+  {{#self.publicPropertiesSorted}}
   <li>{{{ linkedName }}}</li>
-  {{/self.publicProperties}}
+  {{/self.publicPropertiesSorted}}
   {{/self.hasPublicProperties}}
 
   {{#self.hasPublicFunctions}}
   <li class="section-title"><a href="{{{self.href}}}#functions">Functions</a></li>
-  {{#self.publicFunctions}}
+  {{#self.publicFunctionsSorted}}
   <li>{{{ linkedName }}}</li>
-  {{/self.publicFunctions}}
+  {{/self.publicFunctionsSorted}}
   {{/self.hasPublicFunctions}}
 
   {{#self.hasPublicEnums}}
   <li class="section-title"><a href="{{{self.href}}}#enums">Enums</a></li>
-  {{#self.publicEnums}}
+  {{#self.publicEnumsSorted}}
   <li>{{{ linkedName }}}</li>
-  {{/self.publicEnums}}
+  {{/self.publicEnumsSorted}}
   {{/self.hasPublicEnums}}
 
   {{#self.hasPublicTypedefs}}
   <li class="section-title"><a href="{{{self.href}}}#typedefs">Typedefs</a></li>
-  {{#self.publicTypedefs}}
+  {{#self.publicTypedefsSorted}}
   <li>{{{ linkedName }}}</li>
-  {{/self.publicTypedefs}}
+  {{/self.publicTypedefsSorted}}
   {{/self.hasPublicTypedefs}}
 
   {{#self.hasPublicExceptions}}
   <li class="section-title"><a href="{{{self.href}}}#exceptions">Exceptions</a></li>
-  {{#self.publicExceptions}}
+  {{#self.publicExceptionsSorted}}
   <li>{{{ linkedName }}}</li>
-  {{/self.publicExceptions}}
+  {{/self.publicExceptionsSorted}}
   {{/self.hasPublicExceptions}}
 </ol>

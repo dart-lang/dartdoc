@@ -20,14 +20,14 @@
           <h2>{{name}}</h2>
         {{/isFirstPackage}}
         <dl>
-        {{#defaultCategory.publicLibraries}}
+        {{#defaultCategory.publicLibrariesSorted}}
           {{>library}}
-        {{/defaultCategory.publicLibraries}}
+        {{/defaultCategory.publicLibrariesSorted}}
         {{#categoriesWithPublicLibraries}}
           <h3>{{name}}</h3>
-          {{#publicLibraries}}
+          {{#publicLibrariesSorted}}
             {{>library}}
-          {{/publicLibraries}}
+          {{/publicLibrariesSorted}}
         {{/categoriesWithPublicLibraries}}
         </dl>
       </section>

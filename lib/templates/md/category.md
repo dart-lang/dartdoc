@@ -8,82 +8,82 @@
 {{#hasPublicLibraries}}
 ## Libraries
 
-{{#publicLibraries}}
+{{#publicLibrariesSorted}}
 {{>library}}
 
-{{/publicLibraries}}
+{{/publicLibrariesSorted}}
 {{/hasPublicLibraries}}
 
 {{#hasPublicClasses}}
 ## Classes
 
-{{#publicClasses}}
+{{#publicClassesSorted}}
 {{>class}}
 
-{{/publicClasses}}
+{{/publicClassesSorted}}
 {{/hasPublicClasses}}
 
 {{#hasPublicMixins}}
 ## Mixins
 
-{{#publicMixins}}
+{{#publicMixinsSorted}}
 {{>mixin}}
 
-{{/publicMixins}}
+{{/publicMixinsSorted}}
 {{/hasPublicMixins}}
 
 {{#hasPublicConstants}}
 ## Constants
 
-{{#publicConstants}}
+{{#publicConstantsSorted}}
 {{>constant}}
 
-{{/publicConstants}}
+{{/publicConstantsSorted}}
 {{/hasPublicConstants}}
 
 {{#hasPublicProperties}}
 ## Properties
 
-{{#publicProperties}}
+{{#publicPropertiesSorted}}
 {{>property}}
 
-{{/publicProperties}}
+{{/publicPropertiesSorted}}
 {{/hasPublicProperties}}
 
 {{#hasPublicFunctions}}
 ## Functions
 
-{{#publicFunctions}}
+{{#publicFunctionsSorted}}
 {{>callable}}
 
-{{/publicFunctions}}
+{{/publicFunctionsSorted}}
 {{/hasPublicFunctions}}
 
 {{#hasPublicEnums}}
 ## Enums
 
-{{#publicEnums}}
+{{#publicEnumsSorted}}
 {{>class}}
 
-{{/publicEnums}}
+{{/publicEnumsSorted}}
 {{/hasPublicEnums}}
 
 {{#hasPublicTypedefs}}
 ## Typedefs
 
-{{#publicTypedefs}}
+{{#publicTypedefsSorted}}
 {{>callable}}
 
-{{/publicTypedefs}}
+{{/publicTypedefsSorted}}
 {{/hasPublicTypedefs}}
 
 {{#hasPublicExceptions}}
 ## Exceptions / Errors
 
-{{#publicExceptions}}
+{{#publicExceptionsSorted}}
 {{>class}}
 
-{{/publicExceptions}}
+{{/publicExceptionsSorted}}
 {{/hasPublicExceptions}}
 {{/self}}
 

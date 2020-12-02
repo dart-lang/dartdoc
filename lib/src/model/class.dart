@@ -23,13 +23,13 @@ class Class extends Container
     implements EnclosedElement {
   // TODO(srawlins): To make final, remove public getter, setter, rename to be
   // public, and add `final` modifier.
-  List<DefinedElementType> _mixins;
+  List<DefinedElementType> _mixedInTypes;
 
-  List<DefinedElementType> get mixins => _mixins;
+  List<DefinedElementType> get mixedInTypes => _mixedInTypes;
 
   @Deprecated('Field intended to be final; setter will be removed as early as '
       'Dartdoc 1.0.0')
-  set mixins(List<DefinedElementType> value) => _mixins = value;
+  set mixedInTypes(List<DefinedElementType> value) => _mixedInTypes = value;
 
   // TODO(srawlins): To make final, remove public getter, setter, rename to be
   // public, and add `final` modifier.
@@ -44,7 +44,7 @@ class Class extends Container
   final List<DefinedElementType> _interfaces;
 
   Class(ClassElement element, Library library, PackageGraph packageGraph)
-      : _mixins = element.mixins
+      : _mixedInTypes = element.mixins
             .map<DefinedElementType>(
                 (f) => ElementType.from(f, library, packageGraph))
             .where((mixin) => mixin != null)
@@ -109,9 +109,15 @@ class Class extends Container
   Iterable<Constructor> get constructors => element.constructors
       .map((e) => ModelElement.from(e, library, packageGraph) as Constructor);
 
+  bool get hasPublicConstructors => publicConstructors.isNotEmpty;
+
   @visibleForTesting
   Iterable<Constructor> get publicConstructors =>
       model_utils.filterNonPublic(constructors);
+
+  List<Constructor> _publicConstructorsSorted;
+  Iterable<Constructor> get publicConstructorsSorted =>
+      _publicConstructorsSorted ??= publicConstructors.toList()..sort(byName);
 
   /// Returns the library that encloses this element.
   @override
@@ -131,24 +137,15 @@ class Class extends Container
     return kind;
   }
 
-  @override
-  bool get hasPublicConstructors => publicConstructorsSorted.isNotEmpty;
-
-  List<Constructor> _publicConstructorsSorted;
-
-  @override
-  List<Constructor> get publicConstructorsSorted =>
-      _publicConstructorsSorted ??= publicConstructors.toList()..sort(byName);
-
   bool get hasPublicImplementors => publicImplementors.isNotEmpty;
 
   bool get hasPublicInterfaces => publicInterfaces.isNotEmpty;
 
-  bool get hasPublicMixins => publicMixins.isNotEmpty;
+  bool get hasPublicMixedInTypes => publicMixedInTypes.isNotEmpty;
 
   @override
   bool get hasModifiers =>
-      hasPublicMixins ||
+      hasPublicMixedInTypes ||
       hasAnnotations ||
       hasPublicInterfaces ||
       hasPublicSuperChainReversed ||
@@ -198,6 +195,10 @@ class Class extends Container
         .forEach(addToResult);
     return result;
   }
+
+  List<Class> _publicImplementorsSorted;
+  Iterable<Class> get publicImplementorsSorted =>
+      _publicImplementorsSorted ??= publicImplementors.toList()..sort(byName);
 
   /*lazy final*/ List<Method> _inheritedMethods;
 
@@ -291,8 +292,8 @@ class Class extends Container
   @override
   String get kind => 'class';
 
-  Iterable<DefinedElementType> get publicMixins =>
-      model_utils.filterNonPublic(mixins);
+  Iterable<DefinedElementType> get publicMixedInTypes =>
+      model_utils.filterNonPublic(mixedInTypes);
 
   @override
   DefinedElementType get modelType => super.modelType;
@@ -310,7 +311,7 @@ class Class extends Container
       _inheritanceChain.add(this);
 
       /// Caching should make this recursion a little less painful.
-      for (var c in mixins.reversed.map((e) => (e.element as Class))) {
+      for (var c in mixedInTypes.reversed.map((e) => (e.element as Class))) {
         _inheritanceChain.addAll(c.inheritanceChain);
       }
 

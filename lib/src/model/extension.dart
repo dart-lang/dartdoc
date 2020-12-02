@@ -56,8 +56,7 @@ class Extension extends Container
   List<Method> get declaredMethods {
     _methods ??= _extension.methods.map((e) {
       return ModelElement.from(e, library, packageGraph) as Method;
-    }).toList(growable: false)
-      ..sort(byName);
+    }).toList(growable: false);
     return _methods;
   }
 
@@ -78,8 +77,7 @@ class Extension extends Container
       }
       return ModelElement.fromPropertyInducingElement(f, library, packageGraph,
           getter: getter, setter: setter) as Field;
-    }).toList(growable: false)
-      ..sort(byName);
+    }).toList(growable: false);
     return _declaredFields;
   }
 
