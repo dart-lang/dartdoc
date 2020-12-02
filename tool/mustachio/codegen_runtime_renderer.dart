@@ -7,6 +7,7 @@ import 'dart:collection';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/dart/element/type_provider.dart';
+import 'package:analyzer/dart/element/type_system.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:path/path.dart' as p;
 
@@ -21,10 +22,10 @@ class RendererSpec {
 }
 
 /// Builds [specs] into a Dart library containing runtime renderers.
-String buildTemplateRenderers(
-    Set<RendererSpec> specs, Uri sourceUri, TypeProvider typeProvider,
+String buildTemplateRenderers(Set<RendererSpec> specs, Uri sourceUri,
+    TypeProvider typeProvider, TypeSystem typeSystem,
     {bool rendererClassesArePublic = false}) {
-  var raw = RuntimeRenderersBuilder(sourceUri, typeProvider,
+  var raw = RuntimeRenderersBuilder(sourceUri, typeProvider, typeSystem,
           rendererClassesArePublic: rendererClassesArePublic)
       ._buildTemplateRenderers(specs);
   return DartFormatter().format(raw.toString());
@@ -49,11 +50,12 @@ class RuntimeRenderersBuilder {
   final Uri _sourceUri;
 
   final TypeProvider _typeProvider;
+  final TypeSystem _typeSystem;
 
   /// Whether renderer classes are public. This should only be true for testing.
   final bool _rendererClassesArePublic;
 
-  RuntimeRenderersBuilder(this._sourceUri, this._typeProvider,
+  RuntimeRenderersBuilder(this._sourceUri, this._typeProvider, this._typeSystem,
       {bool rendererClassesArePublic = false})
       : _rendererClassesArePublic = rendererClassesArePublic;
 
@@ -235,8 +237,25 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
     if (getterType.isDartCoreBool) {
       _buffer.writeln(
           'getBool: (Object c) => (c as $typeName).$getterName == true,');
+    } else if (_typeSystem.isAssignableTo(
+        getterType, _typeProvider.iterableDynamicType)) {
+      var iterableElement = _typeProvider.iterableElement;
+      var iterableType = getterType.asInstanceOf(iterableElement);
+      var innerType = iterableType.typeArguments.first;
+      var rendererName = _typeToRenderFunctionName[innerType];
+      _buffer.writeln(
+          '''                                                                                                                                                       
+isEmptyIterable: (Object c) => (c as $typeName).$getterName?.isEmpty ?? false,
+
+renderIterable: (Object c, RendererBase<$typeName> r, List<MustachioNode> ast) {
+  var buffer = StringBuffer();
+  for (var e in (c as $typeName).$getterName) {
+    buffer.write($rendererName(e, ast, parent: r));
+  }
+  return buffer.toString();
+},
+''');
     } else {
-      // TODO(srawlins): Check if type is Iterable, and add functions for such.
       // TODO(srawlins): Otherwise, add functions for plain values.
     }
     _buffer.writeln('),');

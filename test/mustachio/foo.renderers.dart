@@ -55,6 +55,16 @@ class Renderer_String extends RendererBase<String> {
   static Map<String, Property> propertyMap() => {
         'codeUnits': Property(
           getValue: (Object c) => (c as String).codeUnits,
+          isEmptyIterable: (Object c) =>
+              (c as String).codeUnits?.isEmpty ?? false,
+          renderIterable:
+              (Object c, RendererBase<String> r, List<WhiskersNode> ast) {
+            var buffer = StringBuffer();
+            for (var e in (c as String).codeUnits) {
+              buffer.write(_render_int(e, ast, parent: r));
+            }
+            return buffer.toString();
+          },
         ),
         'hashCode': Property(
           getValue: (Object c) => (c as String).hashCode,
@@ -76,6 +86,15 @@ class Renderer_String extends RendererBase<String> {
         ),
         'runes': Property(
           getValue: (Object c) => (c as String).runes,
+          isEmptyIterable: (Object c) => (c as String).runes?.isEmpty ?? false,
+          renderIterable:
+              (Object c, RendererBase<String> r, List<WhiskersNode> ast) {
+            var buffer = StringBuffer();
+            for (var e in (c as String).runes) {
+              buffer.write(_render_int(e, ast, parent: r));
+            }
+            return buffer.toString();
+          },
         ),
         ...Renderer_Object.propertyMap(),
       };

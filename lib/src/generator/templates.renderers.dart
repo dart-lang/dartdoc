@@ -48,6 +48,16 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
         ),
         'navLinks': Property(
           getValue: (Object c) => (c as PackageTemplateData).navLinks,
+          isEmptyIterable: (Object c) =>
+              (c as PackageTemplateData).navLinks?.isEmpty ?? false,
+          renderIterable: (Object c, RendererBase<PackageTemplateData> r,
+              List<WhiskersNode> ast) {
+            var buffer = StringBuffer();
+            for (var e in (c as PackageTemplateData).navLinks) {
+              buffer.write(_render_Documentable(e, ast, parent: r));
+            }
+            return buffer.toString();
+          },
         ),
         'package': Property(
           getValue: (Object c) => (c as PackageTemplateData).package,
@@ -89,6 +99,16 @@ class _Renderer_Package extends RendererBase<Package> {
   static Map<String, Property> propertyMap() => {
         'allLibraries': Property(
           getValue: (Object c) => (c as Package).allLibraries,
+          isEmptyIterable: (Object c) =>
+              (c as Package).allLibraries?.isEmpty ?? false,
+          renderIterable:
+              (Object c, RendererBase<Package> r, List<WhiskersNode> ast) {
+            var buffer = StringBuffer();
+            for (var e in (c as Package).allLibraries) {
+              buffer.write(null(e, ast, parent: r));
+            }
+            return buffer.toString();
+          },
         ),
         'baseHref': Property(
           getValue: (Object c) => (c as Package).baseHref,
@@ -99,15 +119,45 @@ class _Renderer_Package extends RendererBase<Package> {
         ),
         'categories': Property(
           getValue: (Object c) => (c as Package).categories,
+          isEmptyIterable: (Object c) =>
+              (c as Package).categories?.isEmpty ?? false,
+          renderIterable:
+              (Object c, RendererBase<Package> r, List<WhiskersNode> ast) {
+            var buffer = StringBuffer();
+            for (var e in (c as Package).categories) {
+              buffer.write(null(e, ast, parent: r));
+            }
+            return buffer.toString();
+          },
         ),
         'categoriesWithPublicLibraries': Property(
           getValue: (Object c) => (c as Package).categoriesWithPublicLibraries,
+          isEmptyIterable: (Object c) =>
+              (c as Package).categoriesWithPublicLibraries?.isEmpty ?? false,
+          renderIterable:
+              (Object c, RendererBase<Package> r, List<WhiskersNode> ast) {
+            var buffer = StringBuffer();
+            for (var e in (c as Package).categoriesWithPublicLibraries) {
+              buffer.write(_render_LibraryContainer(e, ast, parent: r));
+            }
+            return buffer.toString();
+          },
         ),
         'config': Property(
           getValue: (Object c) => (c as Package).config,
         ),
         'containerOrder': Property(
           getValue: (Object c) => (c as Package).containerOrder,
+          isEmptyIterable: (Object c) =>
+              (c as Package).containerOrder?.isEmpty ?? false,
+          renderIterable:
+              (Object c, RendererBase<Package> r, List<WhiskersNode> ast) {
+            var buffer = StringBuffer();
+            for (var e in (c as Package).containerOrder) {
+              buffer.write(_render_String(e, ast, parent: r));
+            }
+            return buffer.toString();
+          },
         ),
         'defaultCategory': Property(
           getValue: (Object c) => (c as Package).defaultCategory,
@@ -126,9 +176,29 @@ class _Renderer_Package extends RendererBase<Package> {
         ),
         'documentationFrom': Property(
           getValue: (Object c) => (c as Package).documentationFrom,
+          isEmptyIterable: (Object c) =>
+              (c as Package).documentationFrom?.isEmpty ?? false,
+          renderIterable:
+              (Object c, RendererBase<Package> r, List<WhiskersNode> ast) {
+            var buffer = StringBuffer();
+            for (var e in (c as Package).documentationFrom) {
+              buffer.write(null(e, ast, parent: r));
+            }
+            return buffer.toString();
+          },
         ),
         'documentedCategories': Property(
           getValue: (Object c) => (c as Package).documentedCategories,
+          isEmptyIterable: (Object c) =>
+              (c as Package).documentedCategories?.isEmpty ?? false,
+          renderIterable:
+              (Object c, RendererBase<Package> r, List<WhiskersNode> ast) {
+            var buffer = StringBuffer();
+            for (var e in (c as Package).documentedCategories) {
+              buffer.write(null(e, ast, parent: r));
+            }
+            return buffer.toString();
+          },
         ),
         'documentedCategoriesSorted': Property(
           getValue: (Object c) => (c as Package).documentedCategoriesSorted,
@@ -237,6 +307,16 @@ class _Renderer_Package extends RendererBase<Package> {
         ),
         'locationPieces': Property(
           getValue: (Object c) => (c as Package).locationPieces,
+          isEmptyIterable: (Object c) =>
+              (c as Package).locationPieces?.isEmpty ?? false,
+          renderIterable:
+              (Object c, RendererBase<Package> r, List<WhiskersNode> ast) {
+            var buffer = StringBuffer();
+            for (var e in (c as Package).locationPieces) {
+              buffer.write(_render_String(e, ast, parent: r));
+            }
+            return buffer.toString();
+          },
         ),
         'name': Property(
           getValue: (Object c) => (c as Package).name,
@@ -265,6 +345,16 @@ class _Renderer_Package extends RendererBase<Package> {
         ),
         'publicLibraries': Property(
           getValue: (Object c) => (c as Package).publicLibraries,
+          isEmptyIterable: (Object c) =>
+              (c as Package).publicLibraries?.isEmpty ?? false,
+          renderIterable:
+              (Object c, RendererBase<Package> r, List<WhiskersNode> ast) {
+            var buffer = StringBuffer();
+            for (var e in (c as Package).publicLibraries) {
+              buffer.write(null(e, ast, parent: r));
+            }
+            return buffer.toString();
+          },
         ),
         'toolInvocationIndex': Property(
           getValue: (Object c) => (c as Package).toolInvocationIndex,
@@ -305,6 +395,16 @@ class _Renderer_LibraryContainer extends RendererBase<LibraryContainer> {
   static Map<String, Property> propertyMap() => {
         'containerOrder': Property(
           getValue: (Object c) => (c as LibraryContainer).containerOrder,
+          isEmptyIterable: (Object c) =>
+              (c as LibraryContainer).containerOrder?.isEmpty ?? false,
+          renderIterable: (Object c, RendererBase<LibraryContainer> r,
+              List<WhiskersNode> ast) {
+            var buffer = StringBuffer();
+            for (var e in (c as LibraryContainer).containerOrder) {
+              buffer.write(_render_String(e, ast, parent: r));
+            }
+            return buffer.toString();
+          },
         ),
         'enclosingName': Property(
           getValue: (Object c) => (c as LibraryContainer).enclosingName,
@@ -323,12 +423,32 @@ class _Renderer_LibraryContainer extends RendererBase<LibraryContainer> {
         ),
         'libraries': Property(
           getValue: (Object c) => (c as LibraryContainer).libraries,
+          isEmptyIterable: (Object c) =>
+              (c as LibraryContainer).libraries?.isEmpty ?? false,
+          renderIterable: (Object c, RendererBase<LibraryContainer> r,
+              List<WhiskersNode> ast) {
+            var buffer = StringBuffer();
+            for (var e in (c as LibraryContainer).libraries) {
+              buffer.write(null(e, ast, parent: r));
+            }
+            return buffer.toString();
+          },
         ),
         'packageGraph': Property(
           getValue: (Object c) => (c as LibraryContainer).packageGraph,
         ),
         'publicLibraries': Property(
           getValue: (Object c) => (c as LibraryContainer).publicLibraries,
+          isEmptyIterable: (Object c) =>
+              (c as LibraryContainer).publicLibraries?.isEmpty ?? false,
+          renderIterable: (Object c, RendererBase<LibraryContainer> r,
+              List<WhiskersNode> ast) {
+            var buffer = StringBuffer();
+            for (var e in (c as LibraryContainer).publicLibraries) {
+              buffer.write(null(e, ast, parent: r));
+            }
+            return buffer.toString();
+          },
         ),
         'publicLibrariesSorted': Property(
           getValue: (Object c) => (c as LibraryContainer).publicLibrariesSorted,
@@ -426,6 +546,16 @@ class _Renderer_List<E> extends RendererBase<List<E>> {
         ),
         'reversed': Property(
           getValue: (Object c) => (c as List<E>).reversed,
+          isEmptyIterable: (Object c) =>
+              (c as List<E>).reversed?.isEmpty ?? false,
+          renderIterable:
+              (Object c, RendererBase<List<E>> r, List<WhiskersNode> ast) {
+            var buffer = StringBuffer();
+            for (var e in (c as List<E>).reversed) {
+              buffer.write(null(e, ast, parent: r));
+            }
+            return buffer.toString();
+          },
         ),
         ..._Renderer_Object.propertyMap(),
       };
@@ -454,6 +584,16 @@ class _Renderer_String extends RendererBase<String> {
   static Map<String, Property> propertyMap() => {
         'codeUnits': Property(
           getValue: (Object c) => (c as String).codeUnits,
+          isEmptyIterable: (Object c) =>
+              (c as String).codeUnits?.isEmpty ?? false,
+          renderIterable:
+              (Object c, RendererBase<String> r, List<WhiskersNode> ast) {
+            var buffer = StringBuffer();
+            for (var e in (c as String).codeUnits) {
+              buffer.write(_render_int(e, ast, parent: r));
+            }
+            return buffer.toString();
+          },
         ),
         'hashCode': Property(
           getValue: (Object c) => (c as String).hashCode,
@@ -475,6 +615,15 @@ class _Renderer_String extends RendererBase<String> {
         ),
         'runes': Property(
           getValue: (Object c) => (c as String).runes,
+          isEmptyIterable: (Object c) => (c as String).runes?.isEmpty ?? false,
+          renderIterable:
+              (Object c, RendererBase<String> r, List<WhiskersNode> ast) {
+            var buffer = StringBuffer();
+            for (var e in (c as String).runes) {
+              buffer.write(_render_int(e, ast, parent: r));
+            }
+            return buffer.toString();
+          },
         ),
         ..._Renderer_Object.propertyMap(),
       };
@@ -545,6 +694,16 @@ class _Renderer_TemplateData<T extends Documentable>
         ),
         'localPackages': Property(
           getValue: (Object c) => (c as TemplateData<T>).localPackages,
+          isEmptyIterable: (Object c) =>
+              (c as TemplateData<T>).localPackages?.isEmpty ?? false,
+          renderIterable: (Object c, RendererBase<TemplateData<T>> r,
+              List<WhiskersNode> ast) {
+            var buffer = StringBuffer();
+            for (var e in (c as TemplateData<T>).localPackages) {
+              buffer.write(_render_Package(e, ast, parent: r));
+            }
+            return buffer.toString();
+          },
         ),
         'metaDescription': Property(
           getValue: (Object c) => (c as TemplateData<T>).metaDescription,
@@ -552,9 +711,29 @@ class _Renderer_TemplateData<T extends Documentable>
         ),
         'navLinks': Property(
           getValue: (Object c) => (c as TemplateData<T>).navLinks,
+          isEmptyIterable: (Object c) =>
+              (c as TemplateData<T>).navLinks?.isEmpty ?? false,
+          renderIterable: (Object c, RendererBase<TemplateData<T>> r,
+              List<WhiskersNode> ast) {
+            var buffer = StringBuffer();
+            for (var e in (c as TemplateData<T>).navLinks) {
+              buffer.write(_render_Documentable(e, ast, parent: r));
+            }
+            return buffer.toString();
+          },
         ),
         'navLinksWithGenerics': Property(
           getValue: (Object c) => (c as TemplateData<T>).navLinksWithGenerics,
+          isEmptyIterable: (Object c) =>
+              (c as TemplateData<T>).navLinksWithGenerics?.isEmpty ?? false,
+          renderIterable: (Object c, RendererBase<TemplateData<T>> r,
+              List<WhiskersNode> ast) {
+            var buffer = StringBuffer();
+            for (var e in (c as TemplateData<T>).navLinksWithGenerics) {
+              buffer.write(null(e, ast, parent: r));
+            }
+            return buffer.toString();
+          },
         ),
         'parent': Property(
           getValue: (Object c) => (c as TemplateData<T>).parent,
@@ -725,6 +904,16 @@ class _Renderer_Nameable extends RendererBase<Nameable> {
         ),
         'namePieces': Property(
           getValue: (Object c) => (c as Nameable).namePieces,
+          isEmptyIterable: (Object c) =>
+              (c as Nameable).namePieces?.isEmpty ?? false,
+          renderIterable:
+              (Object c, RendererBase<Nameable> r, List<WhiskersNode> ast) {
+            var buffer = StringBuffer();
+            for (var e in (c as Nameable).namePieces) {
+              buffer.write(_render_String(e, ast, parent: r));
+            }
+            return buffer.toString();
+          },
         ),
         ..._Renderer_Object.propertyMap(),
       };
