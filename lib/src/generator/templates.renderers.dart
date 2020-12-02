@@ -131,7 +131,7 @@ class _Renderer_Package extends RendererBase<Package> {
           getValue: (Object c) => (c as Package).documentedCategories,
         ),
         'documentedCategoriesSorted': Property(
-          getValue: (Package c) => c.documentedCategoriesSorted,
+          getValue: (Object c) => (c as Package).documentedCategoriesSorted,
         ),
         'documentedWhere': Property(
           getValue: (Object c) => (c as Package).documentedWhere,
@@ -331,7 +331,7 @@ class _Renderer_LibraryContainer extends RendererBase<LibraryContainer> {
           getValue: (Object c) => (c as LibraryContainer).publicLibraries,
         ),
         'publicLibrariesSorted': Property(
-          getValue: (LibraryContainer c) => c.publicLibrariesSorted,
+          getValue: (Object c) => (c as LibraryContainer).publicLibrariesSorted,
         ),
         'sortKey': Property(
           getValue: (Object c) => (c as LibraryContainer).sortKey,
