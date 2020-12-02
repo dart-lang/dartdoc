@@ -10,7 +10,6 @@ import 'dart:collection';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
-import 'package:analyzer/src/dart/element/element.dart' show ClassElementImpl;
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/element_type_renderer.dart';
 
@@ -335,24 +334,15 @@ abstract class DefinedElementType extends ElementType {
   /// interfaces) is equivalent to or a subtype of [this] when
   /// instantiated to bounds.
   @override
-  bool isBoundSupertypeTo(ElementType t) =>
-      _isBoundSupertypeTo(t.instantiatedType, HashSet());
-
-  bool _isBoundSupertypeTo(DartType superType, HashSet<DartType> visited) {
-    // Only InterfaceTypes can have superTypes.
-    if (superType is! InterfaceType) return false;
-    ClassElement superClass = superType?.element;
-    if (visited.contains(superType)) return false;
-    visited.add(superType);
-    if (superClass == type.element &&
-        (superType == instantiatedType ||
-            library.typeSystem.isSubtypeOf(superType, instantiatedType))) {
-      return true;
-    }
-    var supertypes = <InterfaceType>[];
-    ClassElementImpl.collectAllSupertypes(supertypes, superType, null);
-    for (var toVisit in supertypes) {
-      if (_isBoundSupertypeTo(toVisit, visited)) return true;
+  bool isBoundSupertypeTo(ElementType t) {
+    var type = t.instantiatedType;
+    if (type is InterfaceType) {
+      var superTypes = type.allSupertypes;
+      for (var superType in superTypes) {
+        if (library.typeSystem.isSubtypeOf(superType, instantiatedType)) {
+          return true;
+        }
+      }
     }
     return false;
   }

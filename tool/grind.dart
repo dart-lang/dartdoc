@@ -942,6 +942,7 @@ final _generated_files_list = <String>[
   'src/generator/html_resources.g.dart',
   'src/generator/templates.renderers.dart',
   'src/version.dart',
+  '../test/mustachio/foo.dart',
 ].map((s) => path.joinAll(path.posix.split(s)));
 
 @Task('Verify generated files are up to date')
