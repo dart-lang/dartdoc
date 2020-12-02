@@ -19,6 +19,10 @@ abstract class LibraryContainer
   Iterable<Library> get publicLibraries =>
       model_utils.filterNonPublic(libraries);
 
+  List<Library> _publicLibrariesSorted;
+  Iterable<Library> get publicLibrariesSorted =>
+      _publicLibrariesSorted ??= publicLibraries.toList()..sort(byName);
+
   bool get hasPublicLibraries => publicLibraries.isNotEmpty;
 
   /// The name of the container or object that this LibraryContainer is a part

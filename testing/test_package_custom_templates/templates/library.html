@@ -20,9 +20,9 @@
       <h2>Classes</h2>
 
       <dl>
-        {{#library.publicClasses}}
+        {{#library.publicClassesSorted}}
         {{>class}}
-        {{/library.publicClasses}}
+        {{/library.publicClassesSorted}}
       </dl>
     </section>
     {{/library.hasPublicClasses}}
@@ -32,9 +32,9 @@
       <h2>Mixins</h2>
 
       <dl>
-        {{#library.publicMixins}}
+        {{#library.publicMixinsSorted}}
         {{>mixin}}
-        {{/library.publicMixins}}
+        {{/library.publicMixinsSorted}}
       </dl>
     </section>
     {{/library.hasPublicMixins}}
@@ -44,9 +44,9 @@
       <h2>Extensions</h2>
 
       <dl>
-        {{#library.publicExtensions}}
+        {{#library.publicExtensionsSorted}}
         {{>extension}}
-        {{/library.publicExtensions}}
+        {{/library.publicExtensionsSorted}}
       </dl>
     </section>
     {{/library.hasPublicExtensions}}
@@ -56,9 +56,9 @@
       <h2>Constants</h2>
 
       <dl class="properties">
-        {{#library.publicConstants}}
+        {{#library.publicConstantsSorted}}
         {{>constant}}
-        {{/library.publicConstants}}
+        {{/library.publicConstantsSorted}}
       </dl>
     </section>
     {{/library.hasPublicConstants}}
@@ -68,9 +68,9 @@
       <h2>Properties</h2>
 
       <dl class="properties">
-        {{#library.publicProperties}}
+        {{#library.publicPropertiesSorted}}
         {{>property}}
-        {{/library.publicProperties}}
+        {{/library.publicPropertiesSorted}}
       </dl>
     </section>
     {{/library.hasPublicProperties}}
@@ -80,9 +80,9 @@
       <h2>Functions</h2>
 
       <dl class="callables">
-        {{#library.publicFunctions}}
+        {{#library.publicFunctionsSorted}}
         {{>callable}}
-        {{/library.publicFunctions}}
+        {{/library.publicFunctionsSorted}}
       </dl>
     </section>
     {{/library.hasPublicFunctions}}
@@ -92,9 +92,9 @@
       <h2>Enums</h2>
 
       <dl>
-        {{#library.publicEnums}}
+        {{#library.publicEnumsSorted}}
         {{>class}}
-        {{/library.publicEnums}}
+        {{/library.publicEnumsSorted}}
       </dl>
     </section>
     {{/library.hasPublicEnums}}
@@ -104,9 +104,9 @@
       <h2>Typedefs</h2>
 
       <dl class="callables">
-        {{#library.publicTypedefs}}
+        {{#library.publicTypedefsSorted}}
         {{>callable}}
-        {{/library.publicTypedefs}}
+        {{/library.publicTypedefsSorted}}
       </dl>
     </section>
     {{/library.hasPublicTypedefs}}
@@ -116,9 +116,9 @@
       <h2>Exceptions / Errors</h2>
 
       <dl>
-        {{#library.publicExceptions}}
+        {{#library.publicExceptionsSorted}}
         {{>class}}
-        {{/library.publicExceptions}}
+        {{/library.publicExceptionsSorted}}
       </dl>
     </section>
     {{/library.hasPublicExceptions}}

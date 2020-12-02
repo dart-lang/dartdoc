@@ -38,20 +38,20 @@
 {{/publicInterfaces}}
 {{/hasPublicInterfaces}}
 
-{{#hasPublicMixins}}
+{{#hasPublicMixedInTypes}}
 **Mixed in types**
 
-{{#publicMixins}}
+{{#publicMixedInTypes}}
 - {{{linkedName}}}
-{{/publicMixins}}
-{{/hasPublicMixins}}
+{{/publicMixedInTypes}}
+{{/hasPublicMixedInTypes}}
 
 {{#hasPublicImplementors}}
 **Implementers**
 
-{{#publicImplementors}}
+{{#publicImplementorsSorted}}
 - {{{linkedName}}}
-{{/publicImplementors}}
+{{/publicImplementorsSorted}}
 {{/hasPublicImplementors}}
 
 {{#hasAnnotations}}

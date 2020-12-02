@@ -39,21 +39,21 @@
         </dd>
         {{/hasPublicInterfaces}}
 
-        {{#hasPublicMixins}}
+        {{#hasPublicMixedInTypes}}
         <dt>Mixed in types</dt>
         <dd><ul class="comma-separated clazz-relationships">
-          {{#publicMixins}}
+          {{#publicMixedInTypes}}
           <li>{{{linkedName}}}</li>
-          {{/publicMixins}}
+          {{/publicMixedInTypes}}
         </ul></dd>
-        {{/hasPublicMixins}}
+        {{/hasPublicMixedInTypes}}
 
         {{#hasPublicImplementors}}
         <dt>Implementers</dt>
         <dd><ul class="comma-separated clazz-relationships">
-          {{#publicImplementors}}
+          {{#publicImplementorsSorted}}
           <li>{{{linkedName}}}</li>
-          {{/publicImplementors}}
+          {{/publicImplementorsSorted}}
         </ul></dd>
         {{/hasPublicImplementors}}
 
