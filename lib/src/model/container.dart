@@ -31,11 +31,12 @@ abstract class Container extends ModelElement with TypeParameters {
   Container(Element element, Library library, PackageGraph packageGraph)
       : super(element, library, packageGraph, null);
 
+  // Is this a class that isn't an enum?
   bool get isClass =>
       element is ClassElement &&
-      !(element as ClassElement).isEnum &&
-      !(element as ClassElement).isMixin;
+      !(element as ClassElement).isEnum;
   bool get isExtension => element is ExtensionElement;
+  bool get isClassOrExtension => isClass || isExtension;
   bool get isEnum =>
       element is ClassElement && (element as ClassElement).isEnum;
   bool get isMixin =>
