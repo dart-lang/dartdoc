@@ -13,9 +13,7 @@ class Renderer {
 
   final Context context;
 
-  final String templateUri;
-
-  const Renderer(this.name, this.context, this.templateUri);
+  const Renderer(this.name, this.context);
 }
 
 class Context<T> {
@@ -25,23 +23,10 @@ class Context<T> {
 };
 
 const _libraryFrontMatter = '''
-@Renderer(#renderFoo, Context<Foo>(), 'foo.html.mustache')
+@Renderer(#renderFoo, Context<Foo>())
 library foo;
 import 'package:mustachio/annotations.dart';
 ''';
-
-TypeMatcher<List<int>> _containsAllOf(Object a,
-    [Object b, Object c, Object d]) {
-  if (d != null) {
-    return decodedMatches(
-        allOf(contains(a), contains(b), contains(c), contains(d)));
-  } else if (c != null) {
-    return decodedMatches(allOf(contains(a), contains(b), contains(c)));
-  } else {
-    return decodedMatches(
-        b != null ? allOf(contains(a), contains(b)) : allOf(contains(a)));
-  }
-}
 
 void main() {
   InMemoryAssetWriter writer;
@@ -77,39 +62,88 @@ $sourceLibraryContent
     writer = InMemoryAssetWriter();
   });
 
-  test('builds a renderer for a class which extends Object', () async {
-    await testMustachioBuilder('''
-class Foo {}
-''', outputs: {
-      'foo|lib/foo.renderers.dart': _containsAllOf(
-          // The requested 'renderFoo' function
-          '''
-String renderFoo(Foo context, List<MustachioNode> ast) {
-  var renderer = _Renderer_Foo(context);
-  renderer.renderBlock(ast);
-  return renderer.buffer.toString();
+  group('builds a renderer class', () {
+    LibraryElement renderersLibrary;
+    String generatedContent;
+
+    // Builders are fairly expensive (about 4 seconds per `testBuilder` call),
+    // so this [setUpAll] saves significant time over [setUp].
+    setUpAll(() async {
+      writer = InMemoryAssetWriter();
+      await testMustachioBuilder('''
+abstract class FooBase {
+  Bar get bar;
 }
-''',
-          // The renderer class for Foo
-          '''
-class _Renderer_Foo extends RendererBase<Foo> {
-  _Renderer_Foo(Foo context) : super(context);
+class Foo extends FooBase {
+  String s1 = "s1";
+  bool b1 = false;
 }
-''',
-          // The render function for Object
-          '''
-String _render_Object(Object context, List<MustachioNode> ast) {
-  var renderer = _Renderer_Object(context);
-  renderer.renderBlock(ast);
-  return renderer.buffer.toString();
-}
-''',
-          // The renderer class for Object
-          '''
-class _Renderer_Object extends RendererBase<Object> {
-  _Renderer_Object(Object context) : super(context);
-}
-''')
+class Bar {}
+''');
+      renderersLibrary = await resolveGeneratedLibrary(writer);
+      var rendererAsset = AssetId.parse('foo|lib/foo.renderers.dart');
+      generatedContent = utf8.decode(writer.assets[rendererAsset]);
+    });
+
+    test('for a class which implicitly extends Object', () {
+      // The render function for Foo
+      expect(
+          generatedContent,
+          contains(
+              'String _render_FooBase(FooBase context, List<MustachioNode> ast,'));
+      // The renderer class for Foo
+      expect(generatedContent,
+          contains('class _Renderer_FooBase extends RendererBase<FooBase>'));
+    });
+
+    test('for Object', () {
+      // The render function for Object
+      expect(
+          generatedContent,
+          contains(
+              'String _render_Object(Object context, List<MustachioNode> ast,'));
+      // The renderer class for Object
+      expect(generatedContent,
+          contains('class _Renderer_Object extends RendererBase<Object> {'));
+    });
+
+    test('for a class which is extended by a rendered class', () {
+      expect(
+          renderersLibrary.getTopLevelFunction('_render_FooBase'), isNotNull);
+      expect(renderersLibrary.getType('_Renderer_FooBase'), isNotNull);
+    });
+
+    test('for a type found in a getter', () {
+      expect(renderersLibrary.getTopLevelFunction('_render_Bar'), isNotNull);
+      expect(renderersLibrary.getType('_Renderer_Bar'), isNotNull);
+    });
+
+    test('with a property map', () {
+      expect(generatedContent,
+          contains('static Map<String, Property> propertyMap() => {'));
+    });
+
+    test('with a property map with a String property', () {
+      expect(generatedContent, contains('''
+        's1': Property(
+          getValue: (Object c) => (c as Foo).s1,
+          getProperties: _Renderer_String.propertyMap,
+        ),
+'''));
+    });
+
+    test('with a property map which references the superclass', () {
+      expect(generatedContent, contains('..._Renderer_FooBase.propertyMap(),'));
+    });
+
+    test('with a property map with a bool property', () {
+      expect(generatedContent, contains('''
+        'b1': Property(
+          getValue: (Object c) => (c as Foo).b1,
+          getProperties: _Renderer_bool.propertyMap,
+          getBool: (Object c) => (c as Foo).b1 == true,
+        ),
+'''));
     });
   });
 
@@ -118,8 +152,8 @@ class _Renderer_Object extends RendererBase<Object> {
 class Foo {}
 class Bar {}
 ''', libraryFrontMatter: '''
-@Renderer(#renderFoo, Context<Foo>(), 'foo.html.mustache')
-@Renderer(#renderBar, Context<Bar>(), 'bar.html.mustache')
+@Renderer(#renderFoo, Context<Foo>())
+@Renderer(#renderBar, Context<Bar>())
 library foo;
 import 'package:mustachio/annotations.dart';
 ''');
@@ -131,69 +165,53 @@ import 'package:mustachio/annotations.dart';
     expect(renderersLibrary.getType('_Renderer_Bar'), isNotNull);
   });
 
-  test('builds a renderer for a class which is extended by a rendered class',
-      () async {
-    await testMustachioBuilder('''
-class FooBase {}
-class Foo extends FooBase {}
+  group('builds a renderer class for a generic type', () {
+    String generatedContent;
+
+    // Builders are fairly expensive (about 4 seconds per `testBuilder` call),
+    // so this [setUpAll] saves significant time over [setUp].
+    setUpAll(() async {
+      writer = InMemoryAssetWriter();
+      await testMustachioBuilder('''
+class FooBase<T> {}
+class Foo<T> extends FooBase<T> {}
+class BarBase<T> {}
+class Bar<T> extends BarBase<int> {}
+''', libraryFrontMatter: '''
+@Renderer(#renderFoo, Context<Foo>())
+@Renderer(#renderBar, Context<Bar>())
+library foo;
+import 'package:mustachio/annotations.dart';
 ''');
-    var renderersLibrary = await resolveGeneratedLibrary(writer);
-
-    expect(renderersLibrary.getTopLevelFunction('_render_FooBase'), isNotNull);
-    expect(renderersLibrary.getType('_Renderer_FooBase'), isNotNull);
-  });
-
-  test('builds a renderer for a generic type', () async {
-    await testMustachioBuilder('''
-class Foo<T> {}
-''', outputs: {
-      'foo|lib/foo.renderers.dart': _containsAllOf(
-          // The requested 'renderFoo' function
-          'String renderFoo<T>(Foo<T> context, List<MustachioNode> ast)',
-          // The renderer class for Foo
-          'class _Renderer_Foo<T> extends RendererBase<Foo<T>>')
+      var rendererAsset = AssetId.parse('foo|lib/foo.renderers.dart');
+      generatedContent = utf8.decode(writer.assets[rendererAsset]);
     });
-  });
 
-  test('builds a renderer for a type found in a getter', () async {
-    await testMustachioBuilder('''
-abstract class Foo {
-  Bar get bar;
-}
-class Bar {}
-''');
-    var renderersLibrary = await resolveGeneratedLibrary(writer);
+    test('with a corresponding render function', () async {
+      expect(
+          generatedContent,
+          contains(
+              'String renderFoo<T>(Foo<T> context, List<MustachioNode> ast,'));
+    });
 
-    expect(renderersLibrary.getTopLevelFunction('_render_Bar'), isNotNull);
-    expect(renderersLibrary.getType('_Renderer_Bar'), isNotNull);
-  });
+    test('with a generic supertype type argument', () async {
+      expect(generatedContent,
+          contains('class _Renderer_Foo<T> extends RendererBase<Foo<T>>'));
+    });
 
-  test('skips a type found in a static or private getter', () async {
-    await testMustachioBuilder('''
-class Foo {
-  static Bar get bar1 => Bar();
-  Bar get _bar2 => Bar();
-}
-class Bar {}
-''');
-    var renderersLibrary = await resolveGeneratedLibrary(writer);
+    test(
+        'with a property map which references the superclass with a type '
+        'variable', () {
+      expect(
+          generatedContent, contains('..._Renderer_FooBase.propertyMap<T>(),'));
+    });
 
-    expect(renderersLibrary.getTopLevelFunction('_render_Bar'), isNull);
-    expect(renderersLibrary.getType('_Renderer_Bar'), isNull);
-  });
-
-  test('skips a type found in a setter or method', () async {
-    await testMustachioBuilder('''
-abstract class Foo {
-  void set bar1(Bar b);
-  Bar bar2(Bar b);
-}
-class Bar {}
-''');
-    var renderersLibrary = await resolveGeneratedLibrary(writer);
-
-    expect(renderersLibrary.getTopLevelFunction('_render_Bar'), isNull);
-    expect(renderersLibrary.getType('_Renderer_Bar'), isNull);
+    test(
+        'with a property map which references the superclass with an interface '
+        'type', () {
+      expect(generatedContent,
+          contains('..._Renderer_BarBase.propertyMap<int>(),'));
+    });
   });
 
   test('builds a renderer for a generic, bounded type', () async {
@@ -214,6 +232,47 @@ class Foo<T extends num> {}
 
     expect(renderersLibrary.getTopLevelFunction('_render_num'), isNotNull);
     expect(renderersLibrary.getType('_Renderer_num'), isNotNull);
+  });
+
+  group('does not generate a renderer', () {
+    LibraryElement renderersLibrary;
+
+    setUpAll(() async {
+      writer = InMemoryAssetWriter();
+      await testMustachioBuilder('''
+class Foo {
+  static Static get static1 => Bar();
+  Private get _private1 => Bar();
+  void set setter1(Setter s);
+  Method method1(Method m);
+}
+class Static {}
+class Private {}
+class Setter {}
+class Method {}
+''');
+      renderersLibrary = await resolveGeneratedLibrary(writer);
+    });
+
+    test('found in a static getter', () {
+      expect(renderersLibrary.getTopLevelFunction('_render_Static'), isNull);
+      expect(renderersLibrary.getType('_Renderer_Static'), isNull);
+    });
+
+    test('found in a private getter', () {
+      expect(renderersLibrary.getTopLevelFunction('_render_Private'), isNull);
+      expect(renderersLibrary.getType('_Renderer_Private'), isNull);
+    });
+
+    test('found in a setter', () {
+      expect(renderersLibrary.getTopLevelFunction('_render_Setter'), isNull);
+      expect(renderersLibrary.getType('_Renderer_Setter'), isNull);
+    });
+
+    test('found in a method', () {
+      expect(renderersLibrary.getTopLevelFunction('_render_Method'), isNull);
+      expect(renderersLibrary.getType('_Renderer_Method'), isNull);
+    });
   });
 }
 

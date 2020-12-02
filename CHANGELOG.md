@@ -1,3 +1,14 @@
+## 0.37.0
+* Change scope for the dartdoc warning configuration to the library
+  being documented rather than where the symbol was originally
+  defined. (#2432, #2428)
+* **Breaking change**: Correct null dereference exception on unusual
+  import URIs through change to PackageGraph.allLibraries. (#2429, #2426)
+* Adding (as yet unused) code for `mustachio`, a builder for mustache
+  templates. (#2417, #2421, #2427, #2430, #2434).
+* Corrected a problem with tests erroneously passing in the grinder on
+  latest SDK. (#2422, #2423, #2424)
+
 ## 0.36.2
 
 * Tag `Null safety` only where the code is actually null safe. (#2411, #2403)

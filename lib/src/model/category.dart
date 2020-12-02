@@ -182,17 +182,6 @@ class Category extends Nameable
   }
 
   @override
-  void warn(PackageWarning kind,
-      {String message,
-      Iterable<Locatable> referredFrom,
-      Iterable<String> extendedDebug}) {
-    packageGraph.warnOnElement(this, kind,
-        message: message,
-        referredFrom: referredFrom,
-        extendedDebug: extendedDebug);
-  }
-
-  @override
   Iterable<Class> get classes => _classes;
 
   @override

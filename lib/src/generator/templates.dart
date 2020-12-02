@@ -2,12 +2,17 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+// TODO(srawlins): Add Renderer annotations for more types as the mustachio
+// implementation matures.
+@Renderer(#renderIndex, Context<PackageTemplateData>())
 library dartdoc.templates;
 
 import 'dart:io' show File, Directory;
 
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/generator/resource_loader.dart' as loader;
+import 'package:dartdoc/src/generator/template_data.dart';
+import 'package:dartdoc/src/mustachio/annotations.dart';
 import 'package:mustache/mustache.dart';
 import 'package:path/path.dart' as path;
 

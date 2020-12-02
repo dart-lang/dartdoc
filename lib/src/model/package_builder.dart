@@ -56,8 +56,7 @@ class PubPackageBuilder implements PackageBuilder {
   @override
   Future<PackageGraph> buildPackageGraph() async {
     if (!config.sdkDocs) {
-      if (config.topLevelPackageMeta.needsPubGet &&
-          config.topLevelPackageMeta.requiresFlutter &&
+      if (config.topLevelPackageMeta.requiresFlutter &&
           config.flutterRoot == null) {
         throw DartdocOptionError(
             'Top level package requires Flutter but FLUTTER_ROOT environment variable not set');

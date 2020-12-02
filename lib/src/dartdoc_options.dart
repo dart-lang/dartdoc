@@ -1119,10 +1119,10 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
   _OptionValueWithContext<Object> _valueAtFromFile(Folder dir) {
     var yamlFileData = _yamlAtDirectory(dir);
     var contextPath = yamlFileData.canonicalDirectoryPath;
-    dynamic yamlData = yamlFileData.data;
+    dynamic yamlData = yamlFileData.data ?? {};
     for (var key in keys) {
       if (!yamlData.containsKey(key)) return null;
-      yamlData = yamlData[key];
+      yamlData = yamlData[key] ?? {};
     }
 
     var returnData;
@@ -1405,19 +1405,21 @@ class DartdocOptionContext extends DartdocOptionContextBase
   /// Build a DartdocOptionContext from an analyzer element (using its source
   /// location).
   factory DartdocOptionContext.fromElement(DartdocOptionSet optionSet,
-      Element element, ResourceProvider resourceProvider) {
-    return DartdocOptionContext(optionSet,
-        resourceProvider.getFile(element.source.fullName), resourceProvider);
+      LibraryElement libraryElement, ResourceProvider resourceProvider) {
+    return DartdocOptionContext(
+        optionSet,
+        resourceProvider.getFile(libraryElement.source.fullName),
+        resourceProvider);
   }
 
   /// Build a DartdocOptionContext from an existing [DartdocOptionContext] and a
   /// new analyzer [Element].
   factory DartdocOptionContext.fromContextElement(
       DartdocOptionContext optionContext,
-      Element element,
+      LibraryElement libraryElement,
       ResourceProvider resourceProvider) {
     return DartdocOptionContext.fromElement(
-        optionContext.optionSet, element, resourceProvider);
+        optionContext.optionSet, libraryElement, resourceProvider);
   }
 
   /// Build a DartdocOptionContext from an existing [DartdocOptionContext].

@@ -14,16 +14,16 @@
 ## {{name}}
 {{/isFirstPackage}}
 
-{{#defaultCategory.publicLibraries}}
+{{#defaultCategory.publicLibrariesSorted}}
 {{>library}}
-{{/defaultCategory.publicLibraries}}
+{{/defaultCategory.publicLibrariesSorted}}
 
 {{#categoriesWithPublicLibraries}}
 ### Category {{{categoryLabel}}}
 
-{{#publicLibraries}}
+{{#publicLibrariesSorted}}
 {{>library}}
-{{/publicLibraries}}
+{{/publicLibrariesSorted}}
 {{/categoriesWithPublicLibraries}}
 {{/localPackages}}
 

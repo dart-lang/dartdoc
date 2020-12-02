@@ -1391,11 +1391,11 @@ void main() {
 
     test('Verify inheritance/mixin structure and type inference', () {
       expect(
-          TypeInferenceMixedIn.mixins
+          TypeInferenceMixedIn.mixedInTypes
               .map<String>((DefinedElementType t) => t.element.name),
           orderedEquals(['GenericMixin']));
       expect(
-          TypeInferenceMixedIn.mixins.first.typeArguments
+          TypeInferenceMixedIn.mixedInTypes.first.typeArguments
               .map<String>((ElementType t) => t.name),
           orderedEquals(['int']));
 
@@ -1555,11 +1555,11 @@ void main() {
     });
 
     test('mixins', () {
-      expect(Apple.mixins, hasLength(0));
+      expect(Apple.mixedInTypes, hasLength(0));
     });
 
     test('mixins private', () {
-      expect(F.mixins, hasLength(1));
+      expect(F.mixedInTypes, hasLength(1));
     });
 
     test('interfaces', () {
@@ -1891,16 +1891,16 @@ void main() {
       school = getClass('School');
 
       expect(
-          implementor.potentiallyApplicableExtensions,
+          implementor.potentiallyApplicableExtensionsSorted,
           orderedEquals([
             extensionCheckCenter,
             extensionCheckImplementor2,
             extensionCheckLeft,
             extensionCheckRight
           ]));
-      expect(implementor2.potentiallyApplicableExtensions,
+      expect(implementor2.potentiallyApplicableExtensionsSorted,
           orderedEquals([extensionCheckImplementor2, extensionCheckLeft]));
-      expect(school.potentiallyApplicableExtensions,
+      expect(school.potentiallyApplicableExtensionsSorted,
           orderedEquals([onNewSchool, onOldSchool]));
     });
 
@@ -2095,7 +2095,7 @@ void main() {
     ModelFunction doAComplicatedThing;
 
     setUpAll(() {
-      f1 = exLibrary.functions.first;
+      f1 = exLibrary.publicFunctionsSorted.first;
       genericFunction =
           exLibrary.functions.firstWhere((f) => f.name == 'genericFunction');
       paramOfFutureOrNull = fakeLibrary.functions
@@ -3393,7 +3393,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           ATypeTakingClassMixedIn.linkedName,
           equals(
               '<a href="${HTMLBASE_PLACEHOLDER}fake/ATypeTakingClassMixedIn-class.html">ATypeTakingClassMixedIn</a>'));
-      var ATypeTakingClassVoid = ATypeTakingClassMixedIn.mixins
+      var ATypeTakingClassVoid = ATypeTakingClassMixedIn.mixedInTypes
           .firstWhere((c) => c.name == 'ATypeTakingClass');
       expect(
           ATypeTakingClassVoid.linkedName,

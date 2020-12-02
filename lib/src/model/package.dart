@@ -82,7 +82,6 @@ class Package extends LibraryContainer
   /// Holds all libraries added to this package.  May include non-documented
   /// libraries, but is not guaranteed to include a complete list of
   /// non-documented libraries unless they are all referenced by documented ones.
-  /// Not sorted.
   final Set<Library> allLibraries = {};
 
   bool get hasHomepage =>
@@ -338,6 +337,15 @@ class Package extends LibraryContainer
   Iterable<Category> get documentedCategories =>
       categories.where((c) => c.isDocumented);
 
+  Iterable<Category> get documentedCategoriesSorted {
+    // Category display order is configurable; leave the category order
+    // as defined if the order is specified.
+    if (config.categoryOrder.isEmpty) {
+      return documentedCategories;
+    }
+    return documentedCategories.toList()..sort(byName);
+  }
+
   bool get hasDocumentedCategories => documentedCategories.isNotEmpty;
 
   DartdocOptionContext _config;
@@ -368,17 +376,6 @@ class Package extends LibraryContainer
   }
 
   String get version => packageMeta.version ?? '0.0.0-unknown';
-
-  @override
-  void warn(PackageWarning kind,
-      {String message,
-      Iterable<Locatable> referredFrom,
-      Iterable<String> extendedDebug}) {
-    packageGraph.warnOnElement(this, kind,
-        message: message,
-        referredFrom: referredFrom,
-        extendedDebug: extendedDebug);
-  }
 
   final PackageMeta _packageMeta;
 

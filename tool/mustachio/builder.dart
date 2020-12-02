@@ -4,8 +4,15 @@ import 'package:build/build.dart';
 
 import 'codegen_runtime_renderer.dart';
 
+const rendererClassesArePublicOption = 'rendererClassesArePublic';
+
 /// A [Builder] which builds runtime Mustachio renderers.
 class MustachioBuilder implements Builder {
+  final bool _rendererClassesArePublic;
+
+  MustachioBuilder({bool rendererClassesArePublic = false})
+      : _rendererClassesArePublic = rendererClassesArePublic;
+
   @override
   final buildExtensions = const {
     '.dart': ['.renderers.dart']
@@ -26,7 +33,9 @@ class MustachioBuilder implements Builder {
     var contents = '';
 
     if (rendererGatherer._rendererSpecs.isNotEmpty) {
-      contents += buildTemplateRenderers(rendererGatherer._rendererSpecs);
+      contents += buildTemplateRenderers(rendererGatherer._rendererSpecs,
+          entryLib.source.uri, entryLib.typeProvider,
+          rendererClassesArePublic: _rendererClassesArePublic);
 
       await buildStep.writeAsString(renderersLibrary, contents);
     }
@@ -80,13 +89,11 @@ class _RendererGatherer {
     var contextFieldType = contextField.type;
     assert(contextFieldType.typeArguments.length == 1);
     var contextType = contextFieldType.typeArguments.single;
-    var templateUriField = constantValue.getField('templateUri');
-    if (templateUriField.isNull) {
-      throw StateError('@Renderer templateUri must not be null');
-    }
 
     return RendererSpec(nameField.toSymbolValue(), contextType);
   }
 }
 
-Builder mustachioBuilder(BuilderOptions options) => MustachioBuilder();
+Builder mustachioBuilder(BuilderOptions options) => MustachioBuilder(
+    rendererClassesArePublic:
+        options.config[rendererClassesArePublicOption] ?? false);

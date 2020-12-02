@@ -16,9 +16,9 @@
         <h2>Libraries</h2>
 
         <dl>
-          {{#publicLibraries}}
+          {{#publicLibrariesSorted}}
             {{>library}}
-          {{/publicLibraries}}
+          {{/publicLibrariesSorted}}
         </dl>
         </section>
       {{/hasPublicLibraries}}
@@ -28,9 +28,9 @@
         <h2>Classes</h2>
 
         <dl>
-          {{#publicClasses}}
+          {{#publicClassesSorted}}
             {{>class}}
-          {{/publicClasses}}
+          {{/publicClassesSorted}}
         </dl>
       </section>
       {{/hasPublicClasses}}
@@ -40,9 +40,9 @@
         <h2>Mixins</h2>
 
         <dl>
-          {{#publicMixins}}
+          {{#publicMixinsSorted}}
           {{>mixin}}
-          {{/publicMixins}}
+          {{/publicMixinsSorted}}
         </dl>
       </section>
       {{/hasPublicMixins}}
@@ -52,9 +52,9 @@
         <h2>Constants</h2>
 
         <dl class="properties">
-          {{#publicConstants}}
+          {{#publicConstantsSorted}}
             {{>constant}}
-          {{/publicConstants}}
+          {{/publicConstantsSorted}}
         </dl>
       </section>
       {{/hasPublicConstants}}
@@ -64,9 +64,9 @@
         <h2>Properties</h2>
 
         <dl class="properties">
-          {{#publicProperties}}
+          {{#publicPropertiesSorted}}
             {{>property}}
-          {{/publicProperties}}
+          {{/publicPropertiesSorted}}
         </dl>
       </section>
       {{/hasPublicProperties}}
@@ -76,9 +76,9 @@
         <h2>Functions</h2>
 
         <dl class="callables">
-          {{#publicFunctions}}
+          {{#publicFunctionsSorted}}
             {{>callable}}
-          {{/publicFunctions}}
+          {{/publicFunctionsSorted}}
         </dl>
       </section>
       {{/hasPublicFunctions}}
@@ -88,9 +88,9 @@
         <h2>Enums</h2>
 
         <dl>
-          {{#publicEnums}}
+          {{#publicEnumsSorted}}
             {{>class}}
-          {{/publicEnums}}
+          {{/publicEnumsSorted}}
         </dl>
       </section>
       {{/hasPublicEnums}}
@@ -100,9 +100,9 @@
         <h2>Typedefs</h2>
 
         <dl class="callables">
-          {{#publicTypedefs}}
+          {{#publicTypedefsSorted}}
             {{>callable}}
-          {{/publicTypedefs}}
+          {{/publicTypedefsSorted}}
         </dl>
       </section>
       {{/hasPublicTypedefs}}
@@ -112,9 +112,9 @@
         <h2>Exceptions / Errors</h2>
 
         <dl>
-          {{#publicExceptions}}
+          {{#publicExceptionsSorted}}
             {{>class}}
-          {{/publicExceptions}}
+          {{/publicExceptionsSorted}}
         </dl>
       </section>
       {{/hasPublicExceptions}}

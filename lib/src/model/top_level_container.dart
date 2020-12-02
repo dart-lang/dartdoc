@@ -49,24 +49,59 @@ abstract class TopLevelContainer implements Nameable {
 
   Iterable<Class> get publicClasses => model_utils.filterNonPublic(classes);
 
+  List<Class> _publicClassesSorted;
+  Iterable<Class> get publicClassesSorted =>
+      _publicClassesSorted ??= publicClasses.toList()..sort(byName);
+
   Iterable<Extension> get publicExtensions =>
       model_utils.filterNonPublic(extensions);
+
+  List<Extension> _publicExtensionsSorted;
+  Iterable<Extension> get publicExtensionsSorted =>
+      _publicExtensionsSorted ??= publicExtensions.toList()..sort(byName);
 
   Iterable<TopLevelVariable> get publicConstants =>
       model_utils.filterNonPublic(constants);
 
+  Iterable<TopLevelVariable> get publicConstantsSorted =>
+      publicConstants.toList()..sort(byName);
+
   Iterable<Enum> get publicEnums => model_utils.filterNonPublic(enums);
+
+  List<Enum> _publicEnumsSorted;
+  Iterable<Enum> get publicEnumsSorted =>
+      _publicEnumsSorted ??= publicEnums.toList()..sort(byName);
 
   Iterable<Class> get publicExceptions =>
       model_utils.filterNonPublic(exceptions);
 
+  List<Class> _publicExceptionsSorted;
+  Iterable<Class> get publicExceptionsSorted =>
+      _publicExceptionsSorted ??= publicExceptions.toList()..sort(byName);
+
   Iterable<ModelFunctionTyped> get publicFunctions =>
       model_utils.filterNonPublic(functions);
 
+  List<ModelFunctionTyped> _publicFunctionsSorted;
+  Iterable<ModelFunctionTyped> get publicFunctionsSorted =>
+      _publicFunctionsSorted ??= publicFunctions.toList()..sort(byName);
+
   Iterable<Mixin> get publicMixins => model_utils.filterNonPublic(mixins);
+
+  List<Mixin> _publicMixinsSorted;
+  Iterable<Mixin> get publicMixinsSorted =>
+      _publicMixinsSorted ??= publicMixins.toList()..sort(byName);
 
   Iterable<TopLevelVariable> get publicProperties =>
       model_utils.filterNonPublic(properties);
 
+  List<TopLevelVariable> _publicPropertiesSorted;
+  Iterable<TopLevelVariable> get publicPropertiesSorted =>
+      _publicPropertiesSorted ??= publicProperties.toList()..sort(byName);
+
   Iterable<Typedef> get publicTypedefs => model_utils.filterNonPublic(typedefs);
+
+  List<Typedef> _publicTypedefsSorted;
+  Iterable<Typedef> get publicTypedefsSorted =>
+      _publicTypedefsSorted ??= publicTypedefs.toList()..sort(byName);
 }
