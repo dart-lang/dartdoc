@@ -67,7 +67,8 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
   DartdocGeneratorBackend(
       DartdocGeneratorBackendOptions options, this.templates)
       : options = (options ?? DartdocGeneratorBackendOptions()),
-        sidebarForContainer = SidebarGenerator(templates.sidebarContainerTemplate),
+        sidebarForContainer =
+            SidebarGenerator(templates.sidebarContainerTemplate),
         sidebarForLibrary = SidebarGenerator(templates.sidebarLibraryTemplate);
 
   /// Helper method to bind template data and emit the content to the writer.
@@ -118,37 +119,45 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
   @override
   void generateLibrary(
       FileWriter writer, PackageGraph packageGraph, Library lib) {
-    TemplateData data = LibraryTemplateData(options, packageGraph, lib, sidebarForLibrary.getRenderFor);
+    TemplateData data = LibraryTemplateData(
+        options, packageGraph, lib, sidebarForLibrary.getRenderFor);
     render(writer, lib.filePath, templates.libraryTemplate, data);
   }
 
   @override
   void generateClass(
       FileWriter writer, PackageGraph packageGraph, Library lib, Class clazz) {
-    TemplateData data = ClassTemplateData(options, packageGraph, lib, clazz, sidebarForLibrary.getRenderFor, sidebarForContainer.getRenderFor);
+    TemplateData data = ClassTemplateData(options, packageGraph, lib, clazz,
+        sidebarForLibrary.getRenderFor, sidebarForContainer.getRenderFor);
     render(writer, clazz.filePath, templates.classTemplate, data);
   }
 
   @override
   void generateExtension(FileWriter writer, PackageGraph packageGraph,
       Library lib, Extension extension) {
-    TemplateData data =
-        ExtensionTemplateData(options, packageGraph, lib, extension, sidebarForLibrary.getRenderFor, sidebarForContainer.getRenderFor);
+    TemplateData data = ExtensionTemplateData(
+        options,
+        packageGraph,
+        lib,
+        extension,
+        sidebarForLibrary.getRenderFor,
+        sidebarForContainer.getRenderFor);
     render(writer, extension.filePath, templates.extensionTemplate, data);
   }
 
   @override
   void generateMixin(
       FileWriter writer, PackageGraph packageGraph, Library lib, Mixin mixin) {
-    TemplateData data = MixinTemplateData(options, packageGraph, lib, mixin, sidebarForLibrary.getRenderFor, sidebarForContainer.getRenderFor);
+    TemplateData data = MixinTemplateData(options, packageGraph, lib, mixin,
+        sidebarForLibrary.getRenderFor, sidebarForContainer.getRenderFor);
     render(writer, mixin.filePath, templates.mixinTemplate, data);
   }
 
   @override
   void generateConstructor(FileWriter writer, PackageGraph packageGraph,
       Library lib, Class clazz, Constructor constructor) {
-    TemplateData data =
-        ConstructorTemplateData(options, packageGraph, lib, clazz, constructor, sidebarForContainer.getRenderFor);
+    TemplateData data = ConstructorTemplateData(options, packageGraph, lib,
+        clazz, constructor, sidebarForContainer.getRenderFor);
 
     render(writer, constructor.filePath, templates.constructorTemplate, data);
   }
@@ -156,7 +165,8 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
   @override
   void generateEnum(
       FileWriter writer, PackageGraph packageGraph, Library lib, Enum eNum) {
-    TemplateData data = EnumTemplateData(options, packageGraph, lib, eNum, sidebarForLibrary.getRenderFor, sidebarForContainer.getRenderFor);
+    TemplateData data = EnumTemplateData(options, packageGraph, lib, eNum,
+        sidebarForLibrary.getRenderFor, sidebarForContainer.getRenderFor);
 
     render(writer, eNum.filePath, templates.enumTemplate, data);
   }
@@ -164,8 +174,8 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
   @override
   void generateFunction(FileWriter writer, PackageGraph packageGraph,
       Library lib, ModelFunction function) {
-    TemplateData data =
-        FunctionTemplateData(options, packageGraph, lib, function, sidebarForLibrary.getRenderFor);
+    TemplateData data = FunctionTemplateData(
+        options, packageGraph, lib, function, sidebarForLibrary.getRenderFor);
 
     render(writer, function.filePath, templates.functionTemplate, data);
   }
@@ -173,8 +183,8 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
   @override
   void generateMethod(FileWriter writer, PackageGraph packageGraph, Library lib,
       Container clazz, Method method) {
-    TemplateData data =
-        MethodTemplateData(options, packageGraph, lib, clazz, method, sidebarForContainer.getRenderFor);
+    TemplateData data = MethodTemplateData(options, packageGraph, lib, clazz,
+        method, sidebarForContainer.getRenderFor);
 
     render(writer, method.filePath, templates.methodTemplate, data);
   }
@@ -187,8 +197,8 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
   @override
   void generateProperty(FileWriter writer, PackageGraph packageGraph,
       Library lib, Container clazz, Field property) {
-    TemplateData data =
-        PropertyTemplateData(options, packageGraph, lib, clazz, property, sidebarForContainer.getRenderFor);
+    TemplateData data = PropertyTemplateData(options, packageGraph, lib, clazz,
+        property, sidebarForContainer.getRenderFor);
 
     render(writer, property.filePath, templates.propertyTemplate, data);
   }
@@ -196,8 +206,8 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
   @override
   void generateTopLevelProperty(FileWriter writer, PackageGraph packageGraph,
       Library lib, TopLevelVariable property) {
-    TemplateData data =
-        TopLevelPropertyTemplateData(options, packageGraph, lib, property, sidebarForLibrary.getRenderFor);
+    TemplateData data = TopLevelPropertyTemplateData(
+        options, packageGraph, lib, property, sidebarForLibrary.getRenderFor);
 
     render(writer, property.filePath, templates.topLevelPropertyTemplate, data);
   }
@@ -210,8 +220,8 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
   @override
   void generateTypeDef(FileWriter writer, PackageGraph packageGraph,
       Library lib, Typedef typeDef) {
-    TemplateData data =
-        TypedefTemplateData(options, packageGraph, lib, typeDef, sidebarForLibrary.getRenderFor);
+    TemplateData data = TypedefTemplateData(
+        options, packageGraph, lib, typeDef, sidebarForLibrary.getRenderFor);
 
     render(writer, typeDef.filePath, templates.typeDefTemplate, data);
   }

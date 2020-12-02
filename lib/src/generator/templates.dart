@@ -253,7 +253,8 @@ class Templates {
 
     var indexTemplate = await _loadTemplate('index');
     var libraryTemplate = await _loadTemplate('library');
-    var sidebarContainerTemplate = await _loadTemplate('_sidebar_for_container');
+    var sidebarContainerTemplate =
+        await _loadTemplate('_sidebar_for_container');
     var sidebarLibraryTemplate = await _loadTemplate('_sidebar_for_library');
     var categoryTemplate = await _loadTemplate('category');
     var classTemplate = await _loadTemplate('class');
