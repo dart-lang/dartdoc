@@ -62,10 +62,12 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
   final DartdocGeneratorBackendOptions options;
   final Templates templates;
   final SidebarGenerator<Library> sidebarForLibrary;
+  final SidebarGenerator<Container> sidebarForContainer;
 
   DartdocGeneratorBackend(
       DartdocGeneratorBackendOptions options, this.templates)
       : options = (options ?? DartdocGeneratorBackendOptions()),
+        sidebarForContainer = SidebarGenerator(templates.sidebarContainerTemplate),
         sidebarForLibrary = SidebarGenerator(templates.sidebarLibraryTemplate);
 
   /// Helper method to bind template data and emit the content to the writer.
@@ -123,7 +125,7 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
   @override
   void generateClass(
       FileWriter writer, PackageGraph packageGraph, Library lib, Class clazz) {
-    TemplateData data = ClassTemplateData(options, packageGraph, lib, clazz, sidebarForLibrary.getRenderFor);
+    TemplateData data = ClassTemplateData(options, packageGraph, lib, clazz, sidebarForLibrary.getRenderFor, sidebarForContainer.getRenderFor);
     render(writer, clazz.filePath, templates.classTemplate, data);
   }
 
@@ -131,14 +133,14 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
   void generateExtension(FileWriter writer, PackageGraph packageGraph,
       Library lib, Extension extension) {
     TemplateData data =
-        ExtensionTemplateData(options, packageGraph, lib, extension, sidebarForLibrary.getRenderFor);
+        ExtensionTemplateData(options, packageGraph, lib, extension, sidebarForLibrary.getRenderFor, sidebarForContainer.getRenderFor);
     render(writer, extension.filePath, templates.extensionTemplate, data);
   }
 
   @override
   void generateMixin(
       FileWriter writer, PackageGraph packageGraph, Library lib, Mixin mixin) {
-    TemplateData data = MixinTemplateData(options, packageGraph, lib, mixin, sidebarForLibrary.getRenderFor);
+    TemplateData data = MixinTemplateData(options, packageGraph, lib, mixin, sidebarForLibrary.getRenderFor, sidebarForContainer.getRenderFor);
     render(writer, mixin.filePath, templates.mixinTemplate, data);
   }
 
@@ -146,7 +148,7 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
   void generateConstructor(FileWriter writer, PackageGraph packageGraph,
       Library lib, Class clazz, Constructor constructor) {
     TemplateData data =
-        ConstructorTemplateData(options, packageGraph, lib, clazz, constructor);
+        ConstructorTemplateData(options, packageGraph, lib, clazz, constructor, sidebarForContainer.getRenderFor);
 
     render(writer, constructor.filePath, templates.constructorTemplate, data);
   }
@@ -154,7 +156,7 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
   @override
   void generateEnum(
       FileWriter writer, PackageGraph packageGraph, Library lib, Enum eNum) {
-    TemplateData data = EnumTemplateData(options, packageGraph, lib, eNum, sidebarForLibrary.getRenderFor);
+    TemplateData data = EnumTemplateData(options, packageGraph, lib, eNum, sidebarForLibrary.getRenderFor, sidebarForContainer.getRenderFor);
 
     render(writer, eNum.filePath, templates.enumTemplate, data);
   }
@@ -172,7 +174,7 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
   void generateMethod(FileWriter writer, PackageGraph packageGraph, Library lib,
       Container clazz, Method method) {
     TemplateData data =
-        MethodTemplateData(options, packageGraph, lib, clazz, method);
+        MethodTemplateData(options, packageGraph, lib, clazz, method, sidebarForContainer.getRenderFor);
 
     render(writer, method.filePath, templates.methodTemplate, data);
   }
@@ -186,7 +188,7 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
   void generateProperty(FileWriter writer, PackageGraph packageGraph,
       Library lib, Container clazz, Field property) {
     TemplateData data =
-        PropertyTemplateData(options, packageGraph, lib, clazz, property);
+        PropertyTemplateData(options, packageGraph, lib, clazz, property, sidebarForContainer.getRenderFor);
 
     render(writer, property.filePath, templates.propertyTemplate, data);
   }
