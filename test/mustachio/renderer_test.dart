@@ -25,9 +25,10 @@ void main() {
   test('property map contains valid Iterable Properties', () {
     var propertyMap = Renderer_Foo.propertyMap();
     expect(propertyMap['l1'].getValue, isNotNull);
+    expect(propertyMap['l1'].getProperties, isNotNull);
     expect(propertyMap['l1'].getBool, isNull);
-    expect(propertyMap['b1'].isEmptyIterable, isNotNull);
-    expect(propertyMap['b1'].renderIterable, isNotNull);
+    expect(propertyMap['l1'].isEmptyIterable, isNotNull);
+    expect(propertyMap['l1'].renderIterable, isNotNull);
   });
 
   test('property map contains valid non-bool, non-Iterable Properties', () {
@@ -35,6 +36,8 @@ void main() {
     expect(propertyMap['s1'].getValue, isNotNull);
     expect(propertyMap['s1'].getProperties, isNotNull);
     expect(propertyMap['s1'].getBool, isNull);
+    expect(propertyMap['s1'].isEmptyIterable, isNull);
+    expect(propertyMap['s1'].renderIterable, isNull);
   });
 
   test('Property returns a field value by name', () {
@@ -47,6 +50,24 @@ void main() {
     var propertyMap = Renderer_Foo.propertyMap();
     var foo = Foo()..b1 = true;
     expect(propertyMap['b1'].getBool(foo), isTrue);
+  });
+
+  test('isEmptyIterable returns true when an Iterable value is empty', () {
+    var propertyMap = Renderer_Foo.propertyMap();
+    var foo = Foo()..l1 = [];
+    expect(propertyMap['l1'].isEmptyIterable(foo), isTrue);
+  });
+
+  test('isEmptyIterable returns false when an Iterable value is not empty', () {
+    var propertyMap = Renderer_Foo.propertyMap();
+    var foo = Foo()..l1 = [1, 2, 3];
+    expect(propertyMap['l1'].isEmptyIterable(foo), isFalse);
+  });
+
+  test('isEmptyIterable returns true when an Iterable value is null', () {
+    var propertyMap = Renderer_Foo.propertyMap();
+    var foo = Foo()..l1 = null;
+    expect(propertyMap['l1'].isEmptyIterable(foo), isTrue);
   });
 
   test('Property returns false for a null bool field value', () {

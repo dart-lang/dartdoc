@@ -33,6 +33,8 @@ String buildTemplateRenderers(Set<RendererSpec> specs, Uri sourceUri,
 
 /// This class builds runtime Mustache renderers from a set of [RendererSpec]s.
 class RuntimeRenderersBuilder {
+  static const _contextTypeVariable = 'CT_';
+
   final _buffer = StringBuffer();
 
   /// A queue of types to process, in order to find all types for which we need
@@ -41,11 +43,11 @@ class RuntimeRenderersBuilder {
 
   /// Maps a type to the name of the render function which can render that type
   /// as a context type.
-  final _typeToRenderFunctionName = <InterfaceType, String>{};
+  final _typeToRenderFunctionName = <ClassElement, String>{};
 
   /// Maps a type to the name of the renderer class which can render that type
   /// as a context type.
-  final _typeToRendererClassName = <InterfaceType, String>{};
+  final _typeToRendererClassName = <ClassElement, String>{};
 
   final Uri _sourceUri;
 
@@ -94,8 +96,8 @@ import '${p.basename(_sourceUri.path)}';
     var element = spec._contextType.element;
     _typesToProcess.add(_RendererInfo(element.thisType, spec._name,
         public: _rendererClassesArePublic));
-    _typeToRenderFunctionName[element.thisType] = spec._name;
-    _typeToRendererClassName[element.thisType] = element.name;
+    _typeToRenderFunctionName[element] = spec._name;
+    _typeToRendererClassName[element] = element.name;
 
     spec._contextType.accessors.forEach(_addPropertyToProcess);
     var superclass = spec._contextType.superclass;
@@ -134,8 +136,8 @@ import '${p.basename(_sourceUri.path)}';
       var rendererInfo = _RendererInfo(type, renderFunctionName,
           public: _rendererClassesArePublic);
       _typesToProcess.add(rendererInfo);
-      _typeToRenderFunctionName[type] = renderFunctionName;
-      _typeToRendererClassName[type] = rendererInfo._rendererClassName;
+      _typeToRenderFunctionName[type.element] = renderFunctionName;
+      _typeToRendererClassName[type.element] = rendererInfo._rendererClassName;
     }
   }
 
@@ -194,9 +196,9 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
   /// property's name to the property's [Property] object.
   void _writePropertyMap(_RendererInfo renderer) {
     var type = renderer._contextType;
-    var generics =
-        renderer._typeParametersStringWith('X_ extends ${renderer._typeName}');
-    _buffer.writeln('static Map<String, Property<X_>> '
+    var generics = renderer._typeParametersStringWith(
+        '$_contextTypeVariable extends ${renderer._typeName}');
+    _buffer.writeln('static Map<String, Property<$_contextTypeVariable>> '
         'propertyMap$generics() => {');
     var interfaceTypedProperties = type.accessors
         .where((property) => property.type.returnType is InterfaceType);
@@ -206,12 +208,12 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
     }
     if (type.superclass != null) {
       var superclassRendererName =
-          _typeToRendererClassName[type.superclass.element.thisType];
+          _typeToRendererClassName[type.superclass.element];
       var superMapName = '$superclassRendererName.propertyMap';
       var generics = _asGenerics([
         ...type.superclass.typeArguments
             .map((e) => e.getDisplayString(withNullability: false)),
-        'X_'
+        _contextTypeVariable
       ]);
       _buffer.writeln('    ...$superMapName$generics(),');
     }
@@ -228,22 +230,22 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
     }
 
     if (property.isPrivate || property.isStatic || property.isSetter) return;
-    _buffer.writeln(
-        "'${property.name}': Property( // ${_typeToRendererClassName.keys}");
-    _buffer.writeln('getValue: (X_ c) => c.${property.name},');
+    _buffer.writeln("'${property.name}': Property(");
+    _buffer
+        .writeln('getValue: ($_contextTypeVariable c) => c.${property.name},');
 
     var getterName = property.name;
 
     // Only add a `getProperties` function, which returns the property map for
     // [getterType], if [getterType] is a renderable type.
-    if (_typeToRendererClassName.containsKey(getterType)) {
-      var rendererClassName =
-          _typeToRendererClassName[getterType.element.thisType];
+    if (_typeToRendererClassName.containsKey(getterType.element)) {
+      var rendererClassName = _typeToRendererClassName[getterType.element];
       _buffer.writeln('getProperties: $rendererClassName.propertyMap,');
     }
 
     if (getterType.isDartCoreBool) {
-      _buffer.writeln('getBool: (X_ c) => c.$getterName == true,');
+      _buffer.writeln(
+          'getBool: ($_contextTypeVariable c) => c.$getterName == true,');
     } else if (_typeSystem.isAssignableTo(
         getterType, _typeProvider.iterableDynamicType)) {
       var iterableElement = _typeProvider.iterableElement;
@@ -255,12 +257,13 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
       // TODO(srawlins): Find a solution for this. We can track all of the
       // concrete types substituted for `E` for example.
       if (innerType is! TypeParameterType) {
-        var rendererName = _typeToRenderFunctionName[innerType];
+        var rendererName = _typeToRenderFunctionName[innerType.element];
         _buffer.writeln(
             '''                                                                                                                                                       
-isEmptyIterable: (X_ c) => c.$getterName?.isEmpty ?? false,
+isEmptyIterable: ($_contextTypeVariable c) => c.$getterName?.isEmpty ?? true,
 
-renderIterable: (X_ c, RendererBase<X_> r, List<MustachioNode> ast) {
+renderIterable:
+    ($_contextTypeVariable c, RendererBase<$_contextTypeVariable> r, List<MustachioNode> ast) {
   var buffer = StringBuffer();
   for (var e in c.$getterName) {
     buffer.write($rendererName(e, ast, parent: r));

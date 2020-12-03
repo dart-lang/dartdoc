@@ -18,19 +18,18 @@ String renderFoo(Foo context, List<MustachioNode> ast,
 }
 
 class Renderer_Foo extends RendererBase<Foo> {
-  static Map<String, Property<X_>> propertyMap<X_ extends Foo>() => {
+  static Map<String, Property<CT_>> propertyMap<CT_ extends Foo>() => {
         'b1': Property(
-          // (Foo*, String, Object, bool, List<E>, int, num)
-          getValue: (X_ c) => c.b1,
+          getValue: (CT_ c) => c.b1,
           getProperties: Renderer_bool.propertyMap,
-          getBool: (X_ c) => c.b1 == true,
+          getBool: (CT_ c) => c.b1 == true,
         ),
         'l1': Property(
-          // (Foo*, String, Object, bool, List<E>, int, num)
-          getValue: (X_ c) => c.l1,
-          isEmptyIterable: (X_ c) => c.l1?.isEmpty ?? false,
-
-          renderIterable: (X_ c, RendererBase<X_> r, List<MustachioNode> ast) {
+          getValue: (CT_ c) => c.l1,
+          getProperties: Renderer_List.propertyMap,
+          isEmptyIterable: (CT_ c) => c.l1?.isEmpty ?? true,
+          renderIterable:
+              (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             var buffer = StringBuffer();
             for (var e in c.l1) {
               buffer.write(_render_int(e, ast, parent: r));
@@ -39,11 +38,10 @@ class Renderer_Foo extends RendererBase<Foo> {
           },
         ),
         's1': Property(
-          // (Foo*, String, Object, bool, List<E>, int, num)
-          getValue: (X_ c) => c.s1,
+          getValue: (CT_ c) => c.s1,
           getProperties: Renderer_String.propertyMap,
         ),
-        ...Renderer_Object.propertyMap<X_>(),
+        ...Renderer_Object.propertyMap<CT_>(),
       };
 
   Renderer_Foo(Foo context, RendererBase<Object> parent)
@@ -67,13 +65,13 @@ String _render_String(String context, List<MustachioNode> ast,
 }
 
 class Renderer_String extends RendererBase<String> {
-  static Map<String, Property<X_>> propertyMap<X_ extends String>() => {
+  static Map<String, Property<CT_>> propertyMap<CT_ extends String>() => {
         'codeUnits': Property(
-          // (Foo*, String, Object, bool, List<E>, int, num)
-          getValue: (X_ c) => c.codeUnits,
-          isEmptyIterable: (X_ c) => c.codeUnits?.isEmpty ?? false,
-
-          renderIterable: (X_ c, RendererBase<X_> r, List<MustachioNode> ast) {
+          getValue: (CT_ c) => c.codeUnits,
+          getProperties: Renderer_List.propertyMap,
+          isEmptyIterable: (CT_ c) => c.codeUnits?.isEmpty ?? true,
+          renderIterable:
+              (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             var buffer = StringBuffer();
             for (var e in c.codeUnits) {
               buffer.write(_render_int(e, ast, parent: r));
@@ -82,33 +80,28 @@ class Renderer_String extends RendererBase<String> {
           },
         ),
         'hashCode': Property(
-          // (Foo*, String, Object, bool, List<E>, int, num)
-          getValue: (X_ c) => c.hashCode,
+          getValue: (CT_ c) => c.hashCode,
           getProperties: Renderer_int.propertyMap,
         ),
         'isEmpty': Property(
-          // (Foo*, String, Object, bool, List<E>, int, num)
-          getValue: (X_ c) => c.isEmpty,
+          getValue: (CT_ c) => c.isEmpty,
           getProperties: Renderer_bool.propertyMap,
-          getBool: (X_ c) => c.isEmpty == true,
+          getBool: (CT_ c) => c.isEmpty == true,
         ),
         'isNotEmpty': Property(
-          // (Foo*, String, Object, bool, List<E>, int, num)
-          getValue: (X_ c) => c.isNotEmpty,
+          getValue: (CT_ c) => c.isNotEmpty,
           getProperties: Renderer_bool.propertyMap,
-          getBool: (X_ c) => c.isNotEmpty == true,
+          getBool: (CT_ c) => c.isNotEmpty == true,
         ),
         'length': Property(
-          // (Foo*, String, Object, bool, List<E>, int, num)
-          getValue: (X_ c) => c.length,
+          getValue: (CT_ c) => c.length,
           getProperties: Renderer_int.propertyMap,
         ),
         'runes': Property(
-          // (Foo*, String, Object, bool, List<E>, int, num)
-          getValue: (X_ c) => c.runes,
-          isEmptyIterable: (X_ c) => c.runes?.isEmpty ?? false,
-
-          renderIterable: (X_ c, RendererBase<X_> r, List<MustachioNode> ast) {
+          getValue: (CT_ c) => c.runes,
+          isEmptyIterable: (CT_ c) => c.runes?.isEmpty ?? true,
+          renderIterable:
+              (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             var buffer = StringBuffer();
             for (var e in c.runes) {
               buffer.write(_render_int(e, ast, parent: r));
@@ -116,7 +109,7 @@ class Renderer_String extends RendererBase<String> {
             return buffer.toString();
           },
         ),
-        ...Renderer_Object.propertyMap<X_>(),
+        ...Renderer_Object.propertyMap<CT_>(),
       };
 
   Renderer_String(String context, RendererBase<Object> parent)
@@ -140,10 +133,9 @@ String _render_Object(Object context, List<MustachioNode> ast,
 }
 
 class Renderer_Object extends RendererBase<Object> {
-  static Map<String, Property<X_>> propertyMap<X_ extends Object>() => {
+  static Map<String, Property<CT_>> propertyMap<CT_ extends Object>() => {
         'hashCode': Property(
-          // (Foo*, String, Object, bool, List<E>, int, num)
-          getValue: (X_ c) => c.hashCode,
+          getValue: (CT_ c) => c.hashCode,
           getProperties: Renderer_int.propertyMap,
         ),
       };
@@ -169,13 +161,12 @@ String _render_bool(bool context, List<MustachioNode> ast,
 }
 
 class Renderer_bool extends RendererBase<bool> {
-  static Map<String, Property<X_>> propertyMap<X_ extends bool>() => {
+  static Map<String, Property<CT_>> propertyMap<CT_ extends bool>() => {
         'hashCode': Property(
-          // (Foo*, String, Object, bool, List<E>, int, num)
-          getValue: (X_ c) => c.hashCode,
+          getValue: (CT_ c) => c.hashCode,
           getProperties: Renderer_int.propertyMap,
         ),
-        ...Renderer_Object.propertyMap<X_>(),
+        ...Renderer_Object.propertyMap<CT_>(),
       };
 
   Renderer_bool(bool context, RendererBase<Object> parent)
@@ -199,17 +190,15 @@ String _render_List<E>(List<E> context, List<MustachioNode> ast,
 }
 
 class Renderer_List<E> extends RendererBase<List<E>> {
-  static Map<String, Property<X_>> propertyMap<E, X_ extends List<E>>() => {
+  static Map<String, Property<CT_>> propertyMap<E, CT_ extends List<E>>() => {
         'length': Property(
-          // (Foo*, String, Object, bool, List<E>, int, num)
-          getValue: (X_ c) => c.length,
+          getValue: (CT_ c) => c.length,
           getProperties: Renderer_int.propertyMap,
         ),
         'reversed': Property(
-          // (Foo*, String, Object, bool, List<E>, int, num)
-          getValue: (X_ c) => c.reversed,
+          getValue: (CT_ c) => c.reversed,
         ),
-        ...Renderer_Object.propertyMap<X_>(),
+        ...Renderer_Object.propertyMap<CT_>(),
       };
 
   Renderer_List(List<E> context, RendererBase<Object> parent)
@@ -233,30 +222,26 @@ String _render_int(int context, List<MustachioNode> ast,
 }
 
 class Renderer_int extends RendererBase<int> {
-  static Map<String, Property<X_>> propertyMap<X_ extends int>() => {
+  static Map<String, Property<CT_>> propertyMap<CT_ extends int>() => {
         'bitLength': Property(
-          // (Foo*, String, Object, bool, List<E>, int, num)
-          getValue: (X_ c) => c.bitLength,
+          getValue: (CT_ c) => c.bitLength,
           getProperties: Renderer_int.propertyMap,
         ),
         'isEven': Property(
-          // (Foo*, String, Object, bool, List<E>, int, num)
-          getValue: (X_ c) => c.isEven,
+          getValue: (CT_ c) => c.isEven,
           getProperties: Renderer_bool.propertyMap,
-          getBool: (X_ c) => c.isEven == true,
+          getBool: (CT_ c) => c.isEven == true,
         ),
         'isOdd': Property(
-          // (Foo*, String, Object, bool, List<E>, int, num)
-          getValue: (X_ c) => c.isOdd,
+          getValue: (CT_ c) => c.isOdd,
           getProperties: Renderer_bool.propertyMap,
-          getBool: (X_ c) => c.isOdd == true,
+          getBool: (CT_ c) => c.isOdd == true,
         ),
         'sign': Property(
-          // (Foo*, String, Object, bool, List<E>, int, num)
-          getValue: (X_ c) => c.sign,
+          getValue: (CT_ c) => c.sign,
           getProperties: Renderer_int.propertyMap,
         ),
-        ...Renderer_num.propertyMap<X_>(),
+        ...Renderer_num.propertyMap<CT_>(),
       };
 
   Renderer_int(int context, RendererBase<Object> parent)
@@ -280,42 +265,36 @@ String _render_num(num context, List<MustachioNode> ast,
 }
 
 class Renderer_num extends RendererBase<num> {
-  static Map<String, Property<X_>> propertyMap<X_ extends num>() => {
+  static Map<String, Property<CT_>> propertyMap<CT_ extends num>() => {
         'hashCode': Property(
-          // (Foo*, String, Object, bool, List<E>, int, num)
-          getValue: (X_ c) => c.hashCode,
+          getValue: (CT_ c) => c.hashCode,
           getProperties: Renderer_int.propertyMap,
         ),
         'isFinite': Property(
-          // (Foo*, String, Object, bool, List<E>, int, num)
-          getValue: (X_ c) => c.isFinite,
+          getValue: (CT_ c) => c.isFinite,
           getProperties: Renderer_bool.propertyMap,
-          getBool: (X_ c) => c.isFinite == true,
+          getBool: (CT_ c) => c.isFinite == true,
         ),
         'isInfinite': Property(
-          // (Foo*, String, Object, bool, List<E>, int, num)
-          getValue: (X_ c) => c.isInfinite,
+          getValue: (CT_ c) => c.isInfinite,
           getProperties: Renderer_bool.propertyMap,
-          getBool: (X_ c) => c.isInfinite == true,
+          getBool: (CT_ c) => c.isInfinite == true,
         ),
         'isNaN': Property(
-          // (Foo*, String, Object, bool, List<E>, int, num)
-          getValue: (X_ c) => c.isNaN,
+          getValue: (CT_ c) => c.isNaN,
           getProperties: Renderer_bool.propertyMap,
-          getBool: (X_ c) => c.isNaN == true,
+          getBool: (CT_ c) => c.isNaN == true,
         ),
         'isNegative': Property(
-          // (Foo*, String, Object, bool, List<E>, int, num)
-          getValue: (X_ c) => c.isNegative,
+          getValue: (CT_ c) => c.isNegative,
           getProperties: Renderer_bool.propertyMap,
-          getBool: (X_ c) => c.isNegative == true,
+          getBool: (CT_ c) => c.isNegative == true,
         ),
         'sign': Property(
-          // (Foo*, String, Object, bool, List<E>, int, num)
-          getValue: (X_ c) => c.sign,
+          getValue: (CT_ c) => c.sign,
           getProperties: Renderer_num.propertyMap,
         ),
-        ...Renderer_Object.propertyMap<X_>(),
+        ...Renderer_Object.propertyMap<CT_>(),
       };
 
   Renderer_num(num context, RendererBase<Object> parent)

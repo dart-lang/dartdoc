@@ -77,6 +77,7 @@ abstract class FooBase {
 class Foo extends FooBase {
   String s1 = "s1";
   bool b1 = false;
+  List<int> l1 = [1, 2, 3];
 }
 class Bar {}
 ''');
@@ -119,29 +120,50 @@ class Bar {}
     });
 
     test('with a property map', () {
-      expect(generatedContent,
-          contains('static Map<String, Property> propertyMap() => {'));
+      expect(
+          generatedContent,
+          contains(
+              'static Map<String, Property<CT_>> propertyMap<CT_ extends Foo>() => {'));
     });
 
     test('with a property map with a String property', () {
       expect(generatedContent, contains('''
         's1': Property(
-          getValue: (Foo c) => c.s1,
+          getValue: (CT_ c) => c.s1,
           getProperties: _Renderer_String.propertyMap,
         ),
 '''));
     });
 
     test('with a property map which references the superclass', () {
-      expect(generatedContent, contains('..._Renderer_FooBase.propertyMap(),'));
+      expect(generatedContent,
+          contains('..._Renderer_FooBase.propertyMap<CT_>(),'));
     });
 
     test('with a property map with a bool property', () {
       expect(generatedContent, contains('''
         'b1': Property(
-          getValue: (Foo c) => c.b1,
+          getValue: (CT_ c) => c.b1,
           getProperties: _Renderer_bool.propertyMap,
-          getBool: (Foo c) => c.b1 == true,
+          getBool: (CT_ c) => c.b1 == true,
+        ),
+'''));
+    });
+
+    test('with a property map with an Iterable property', () {
+      expect(generatedContent, contains('''
+        'l1': Property(
+          getValue: (CT_ c) => c.l1,
+          getProperties: _Renderer_List.propertyMap,
+          isEmptyIterable: (CT_ c) => c.l1?.isEmpty ?? true,
+          renderIterable:
+              (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+            var buffer = StringBuffer();
+            for (var e in c.l1) {
+              buffer.write(_render_int(e, ast, parent: r));
+            }
+            return buffer.toString();
+          },
         ),
 '''));
     });
@@ -202,15 +224,15 @@ import 'package:mustachio/annotations.dart';
     test(
         'with a property map which references the superclass with a type '
         'variable', () {
-      expect(
-          generatedContent, contains('..._Renderer_FooBase.propertyMap<T>(),'));
+      expect(generatedContent,
+          contains('..._Renderer_FooBase.propertyMap<T, CT_>(),'));
     });
 
     test(
         'with a property map which references the superclass with an interface '
         'type', () {
       expect(generatedContent,
-          contains('..._Renderer_BarBase.propertyMap<int>(),'));
+          contains('..._Renderer_BarBase.propertyMap<int, CT_>(),'));
     });
   });
 
