@@ -66,7 +66,7 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
 
   DartdocGeneratorBackend(
       DartdocGeneratorBackendOptions options, this.templates)
-      : options = (options ?? DartdocGeneratorBackendOptions()),
+      : options = options ?? DartdocGeneratorBackendOptions(),
         sidebarForContainer =
             SidebarGenerator(templates.sidebarContainerTemplate),
         sidebarForLibrary = SidebarGenerator(templates.sidebarLibraryTemplate);
