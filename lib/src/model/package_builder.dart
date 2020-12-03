@@ -6,7 +6,6 @@ import 'dart:async';
 
 import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:analyzer/src/dart/analysis/analysis_context_collection.dart';
-import 'package:analyzer/src/dart/analysis/driver_based_analysis_context.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
@@ -28,14 +27,6 @@ import 'package:dartdoc/src/special_elements.dart';
 import 'package:meta/meta.dart';
 // TODO(jcollins-g): do not directly import path, use ResourceProvider instead
 import 'package:path/path.dart' as path;
-
-// TODO(jcollins-g): Implement via analyzer api or eliminate need for this.
-extension on AnalysisContextCollection {
-  void addFileToCollection(String inputDir, String filePath) {
-    DriverBasedAnalysisContext context = contextFor(inputDir);
-    context.driver.addFile(filePath);
-  }
-}
 
 /// Everything you need to instantiate a PackageGraph object for documenting.
 abstract class PackageBuilder {
@@ -217,8 +208,6 @@ class PubPackageBuilder implements PackageBuilder {
     do {
       lastPass = current;
       var newFiles = files.difference(knownParts);
-      newFiles.map(
-          (f) => contextCollection.addFileToCollection(config.inputDir, f));
 
       // Be careful here not to accidentally stack up multiple
       // [DartDocResolvedLibrary]s, as those eat our heap.
