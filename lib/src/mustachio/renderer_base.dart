@@ -23,7 +23,7 @@ abstract class RendererBase<T> {
   /// Returns the [Property] on this renderer named [name].
   ///
   /// If no property named [name] exists for this renderer, `null` is returned.
-  Property getProperty(String key);
+  Property<T> getProperty(String key);
 
   /// Resolves [names] into one or more field accesses, returning the result as
   /// a String.
@@ -97,10 +97,20 @@ class Property<T> {
   /// object [context].
   final bool /*!*/ Function(T context) /*?*/ getBool;
 
-  // TODO(srawlins): Add functions for rendering Iterable properties and other
-  // properties.
+  final bool /*!*/ Function(T) /*?*/ isEmptyIterable;
 
-  Property({@required this.getValue, this.getProperties, this.getBool});
+  final String /*!*/ Function(
+          T, RendererBase<T>, List<MustachioNode> /*!*/) /*?*/
+      renderIterable;
+
+  // TODO(srawlins): Add functions for rendering other properties.
+
+  Property(
+      {@required this.getValue,
+      this.getProperties,
+      this.getBool,
+      this.isEmptyIterable,
+      this.renderIterable});
 }
 
 /// An error indicating that a renderer failed to resolve a key.
