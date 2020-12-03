@@ -2,23 +2,19 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:analyzer/dart/analysis/features.dart';
+import 'dart:async';
+
+import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
+import 'package:analyzer/src/dart/analysis/analysis_context_collection.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/src/context/builder.dart';
-import 'package:analyzer/src/context/packages.dart';
-import 'package:analyzer/src/dart/analysis/byte_store.dart';
-import 'package:analyzer/src/dart/analysis/driver.dart';
-import 'package:analyzer/src/dart/analysis/file_state.dart';
-import 'package:analyzer/src/dart/analysis/performance_logger.dart';
 import 'package:analyzer/src/dart/sdk/sdk.dart';
-import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/generated/java_io.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/generated/source_io.dart';
-import 'package:analyzer/src/source/package_map_resolver.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart' hide Package;
@@ -31,7 +27,6 @@ import 'package:dartdoc/src/special_elements.dart';
 import 'package:meta/meta.dart';
 // TODO(jcollins-g): do not directly import path, use ResourceProvider instead
 import 'package:path/path.dart' as path;
-import 'package:pub_semver/pub_semver.dart';
 
 /// Everything you need to instantiate a PackageGraph object for documenting.
 abstract class PackageBuilder {
@@ -42,6 +37,7 @@ abstract class PackageBuilder {
 /// A package builder that understands pub package format.
 class PubPackageBuilder implements PackageBuilder {
   final DartdocOptionContext config;
+  final Set<String> _knownFiles = {};
   final PackageMetaProvider packageMetaProvider;
   final PackageConfigProvider packageConfigProvider;
 
@@ -99,8 +95,6 @@ class PubPackageBuilder implements PackageBuilder {
 
   ResourceProvider get resourceProvider => packageMetaProvider.resourceProvider;
 
-  /* late final */ Packages packages;
-
   Future<void> _calculatePackageMap() async {
     assert(_packageMap == null);
     _packageMap = <String, List<Folder>>{};
@@ -110,24 +104,6 @@ class PubPackageBuilder implements PackageBuilder {
     if (info == null) return;
 
     var rpc = resourceProvider.pathContext;
-    // This complicated expression transforms a list of [package_config.Package]
-    // into [analyzer.Packages].  It's a bit confusing because [info.packages]
-    // is actually the list of [package_config.Package] objects, rather than
-    // the [Packages] object we need.
-    packages = Packages(Map.fromEntries(info.packages.map((p) => MapEntry<
-            String, Package>(
-        p.name,
-        Package(
-            name: p.name,
-            rootFolder:
-                resourceProvider.getFolder(rpc.normalize(rpc.fromUri(p.root))),
-            languageVersion: p.languageVersion != null
-                ? Version(p.languageVersion.major, p.languageVersion.minor, 0)
-                : null,
-            libFolder: resourceProvider.getFolder(
-              rpc.normalize(rpc.fromUri(p.packageUriRoot)),
-            ))))));
-
     for (var package in info.packages) {
       var packagePath = rpc.normalize(rpc.fromUri(package.packageUriRoot));
       var resource = resourceProvider.getResource(packagePath);
@@ -139,61 +115,17 @@ class PubPackageBuilder implements PackageBuilder {
 
   /*late final*/ Map<String, List<Folder>> _packageMap;
 
-  DartUriResolver _embedderResolver;
+  AnalysisContextCollection _contextCollection;
 
-  DartUriResolver get embedderResolver {
-    _embedderResolver ??= DartUriResolver(embedderSdk);
-    return _embedderResolver;
-  }
-
-  SourceFactory get sourceFactory {
-    final UriResolver packageResolver =
-        PackageMapUriResolver(resourceProvider, _packageMap);
-    UriResolver sdkResolver;
-    if (embedderSdk == null || embedderSdk.urlMappings.isEmpty) {
-      // The embedder uri resolver has no mappings. Use the default Dart SDK
-      // uri resolver.
-      sdkResolver = DartUriResolver(sdk);
-    } else {
-      // The embedder uri resolver has mappings, use it instead of the default
-      // Dart SDK uri resolver.
-      sdkResolver = embedderResolver;
-    }
-
-    /// [AnalysisDriver] seems to require package resolvers that
-    /// never resolve to embedded SDK files, and the resolvers list must still
-    /// contain a DartUriResolver.  This hack won't be necessary once analyzer
-    /// has a clean public API.
-    var resolvers = [
-      PackageWithoutSdkResolver(packageResolver, sdkResolver),
-      sdkResolver,
-      ResourceUriResolver(resourceProvider),
-    ];
-
-    assert(
-        resolvers.any((UriResolver resolver) => resolver is DartUriResolver));
-    return SourceFactory(resolvers);
-  }
-
-  AnalysisDriver _driver;
-  AnalysisDriver get driver {
-    if (_driver == null) {
-      var log = PerformanceLog(null);
-      var scheduler = AnalysisDriverScheduler(log);
-      var options = AnalysisOptionsImpl()
-        ..hint = false
-        // TODO(jcollins-g): pass in an ExperimentStatus instead?
-        ..contextFeatures = FeatureSet.fromEnableFlags(config.enableExperiment);
-      // TODO(jcollins-g): make use of AnalysisContextCollection()
-      // TODO(jcollins-g): make use of DartProject isApi()
-      _driver = AnalysisDriver(scheduler, log, resourceProvider,
-          MemoryByteStore(), FileContentOverlay(), null, sourceFactory, options,
-          packages: packages);
-      driver.results.listen((_) => logProgress(''));
-      driver.exceptions.listen((_) {});
-      scheduler.start();
-    }
-    return _driver;
+  AnalysisContextCollection get contextCollection {
+    _contextCollection ??= AnalysisContextCollectionImpl(
+      includedPaths: [config.inputDir],
+      // TODO(jcollins-g): should we pass excluded directories here instead of
+      // handling it ourselves?
+      resourceProvider: resourceProvider,
+      sdkPath: config.sdkDir,
+    );
+    return _contextCollection;
   }
 
   /// Return an Iterable with the sdk files we should parse.
@@ -219,34 +151,20 @@ class PubPackageBuilder implements PackageBuilder {
       }
     }
     var javaFile = JavaFile(filePath).getAbsoluteFile();
-    Source source = FileBasedSource(javaFile);
+    filePath = javaFile.getPath();
 
-    // TODO(jcollins-g): remove the manual reversal using embedderSdk when we
-    // upgrade to analyzer-0.30 (where DartUriResolver implements
-    // restoreAbsolute)
-    var uri = embedderSdk?.fromFileUri(source.uri)?.uri;
-    if (uri != null) {
-      source = FileBasedSource(javaFile, uri);
-    } else {
-      uri = driver.sourceFactory.restoreUri(source);
-      if (uri != null) {
-        source = FileBasedSource(javaFile, uri);
-      }
-    }
-    var sourceKind = await driver.getSourceKind(filePath);
+    var analysisContext = contextCollection.contextFor(config.inputDir);
+    var session = analysisContext.currentSession;
+    var sourceKind = await session.getSourceKind(filePath);
+
     // Allow dart source files with inappropriate suffixes (#1897).  Those
     // do not show up as SourceKind.LIBRARY.
     if (sourceKind != SourceKind.PART) {
       // Loading libraryElements from part files works, but is painfully slow
       // and creates many duplicates.
-      final library =
-          await driver.currentSession.getResolvedLibrary(source.fullName);
+      final library = await session.getResolvedLibrary(filePath);
       final libraryElement = library.element;
       var restoredUri = libraryElement.source.uri.toString();
-      if (!restoredUri.startsWith('dart:')) {
-        restoredUri =
-            driver.sourceFactory.restoreUri(library.element.source).toString();
-      }
       return DartDocResolvedLibrary(library, restoredUri);
     }
     return null;
@@ -255,6 +173,23 @@ class PubPackageBuilder implements PackageBuilder {
   Set<PackageMeta> _packageMetasForFiles(Iterable<String> files) => {
         for (var filename in files) packageMetaProvider.fromFilename(filename),
       };
+
+  void _addKnownFiles(LibraryElement element) {
+    if (element != null) {
+      var path = element.source.fullName;
+      if (_knownFiles.add(path)) {
+        for (var import in element.imports) {
+          _addKnownFiles(import.importedLibrary);
+        }
+        for (var export in element.exports) {
+          _addKnownFiles(export.exportedLibrary);
+        }
+        for (var part in element.parts) {
+          _knownFiles.add(part.source.fullName);
+        }
+      }
+    }
+  }
 
   /// Parses libraries with the analyzer and invokes [libraryAdder] with each
   /// result.
@@ -268,10 +203,10 @@ class PubPackageBuilder implements PackageBuilder {
       [bool Function(LibraryElement) isLibraryIncluded]) async {
     isLibraryIncluded ??= (_) => true;
     var lastPass = <PackageMeta>{};
-    Set<PackageMeta> current;
+    var current = <PackageMeta>{};
     var knownParts = <String>{};
     do {
-      lastPass = _packageMetasForFiles(files);
+      lastPass = current;
 
       // Be careful here not to accidentally stack up multiple
       // [DartDocResolvedLibrary]s, as those eat our heap.
@@ -282,6 +217,7 @@ class PubPackageBuilder implements PackageBuilder {
           knownParts.add(f);
           continue;
         }
+        _addKnownFiles(r.element);
         if (!libraries.contains(r.element) && isLibraryIncluded(r.element)) {
           logDebug('parsing ${f}...');
           libraryAdder(r);
@@ -289,10 +225,9 @@ class PubPackageBuilder implements PackageBuilder {
         }
       }
 
-      // Be sure to give the analyzer enough time to find all the files.
-      await driver.discoverAvailableFiles();
-      files.addAll(driver.knownFiles);
-      files.addAll(_includeExternalsFrom(driver.knownFiles));
+      files.addAll(_knownFiles);
+      files.addAll(_includeExternalsFrom(_knownFiles));
+
       current = _packageMetasForFiles(files.difference(knownParts));
       // To get canonicalization correct for non-locally documented packages
       // (so we can generate the right hyperlinks), it's vital that we
@@ -504,47 +439,8 @@ class PubPackageBuilder implements PackageBuilder {
   }
 }
 
-/// This class resolves package URIs, but only if a given SdkResolver doesn't
-/// resolve them.
-///
-/// TODO(jcollins-g): remove this hackery when a clean public API to analyzer
-/// exists, and port dartdoc to it.
-class PackageWithoutSdkResolver extends UriResolver {
-  final UriResolver _packageResolver;
-  final UriResolver _sdkResolver;
-
-  PackageWithoutSdkResolver(this._packageResolver, this._sdkResolver);
-
-  @override
-  Source resolveAbsolute(Uri uri, [Uri actualUri]) {
-    if (_sdkResolver.resolveAbsolute(uri, actualUri) == null) {
-      return _packageResolver.resolveAbsolute(uri, actualUri);
-    }
-    return null;
-  }
-
-  @override
-  Uri restoreAbsolute(Source source) {
-    Uri resolved;
-    try {
-      resolved = _sdkResolver.restoreAbsolute(source);
-    } on ArgumentError {
-      // SDK resolvers really don't like being thrown package paths.
-    }
-    if (resolved == null) {
-      return _packageResolver.restoreAbsolute(source);
-    }
-    return null;
-  }
-}
-
 /// Contains the [ResolvedLibraryResult] and any additional information about
-/// the library coming from [AnalysisDriver].
-///
-/// Prefer to populate this class with more information rather than passing
-/// [AnalysisDriver] or [AnalysisSession] down to [PackageGraph]. The graph
-/// object is reachable by many DartDoc model objects and there's no guarantee
-/// that there's a valid [AnalysisDriver] in every environment dartdoc runs.
+/// the library.
 class DartDocResolvedLibrary {
   final ResolvedLibraryResult result;
   final String restoredUri;

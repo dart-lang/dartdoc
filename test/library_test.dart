@@ -41,5 +41,5 @@ void main() {
     expect(dartAsyncLib.dirName, 'dart-async');
     expect(dartAsyncLib.href,
         '${HTMLBASE_PLACEHOLDER}dart-async/dart-async-library.html');
-  });
+  }, onPlatform: {'windows': Skip('Test does not work on Windows (#2446)')});
 }

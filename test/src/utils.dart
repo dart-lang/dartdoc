@@ -180,8 +180,8 @@ two:lib/
 }
 ''');
   projectFolder.getChildAssumingFolder('lib').create();
-  packageConfigProvider.addPackageToConfigFor(
-      projectRoot, packageName, Uri.file('$projectRoot/'));
+  packageConfigProvider.addPackageToConfigFor(projectRoot, packageName,
+      Uri.file('${projectRoot}${resourceProvider.pathContext.separator}'));
 
   return projectFolder;
 }
