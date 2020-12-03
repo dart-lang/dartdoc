@@ -6,9 +6,10 @@ import 'foo.renderers.dart';
 void main() {
   test('property map contains all public getters', () {
     var propertyMap = Renderer_Foo.propertyMap();
-    expect(propertyMap.keys, hasLength(3));
+    expect(propertyMap.keys, hasLength(4));
     expect(propertyMap['b1'], isNotNull);
     expect(propertyMap['s1'], isNotNull);
+    expect(propertyMap['l1'], isNotNull);
     expect(propertyMap['hashCode'], isNotNull);
   });
 
@@ -17,9 +18,19 @@ void main() {
     expect(propertyMap['b1'].getValue, isNotNull);
     expect(propertyMap['b1'].getProperties, isNotNull);
     expect(propertyMap['b1'].getBool, isNotNull);
+    expect(propertyMap['b1'].isEmptyIterable, isNull);
+    expect(propertyMap['b1'].renderIterable, isNull);
   });
 
-  test('property map contains valid non-bool Properties', () {
+  test('property map contains valid Iterable Properties', () {
+    var propertyMap = Renderer_Foo.propertyMap();
+    expect(propertyMap['l1'].getValue, isNotNull);
+    expect(propertyMap['l1'].getBool, isNull);
+    expect(propertyMap['b1'].isEmptyIterable, isNotNull);
+    expect(propertyMap['b1'].renderIterable, isNotNull);
+  });
+
+  test('property map contains valid non-bool, non-Iterable Properties', () {
     var propertyMap = Renderer_Foo.propertyMap();
     expect(propertyMap['s1'].getValue, isNotNull);
     expect(propertyMap['s1'].getProperties, isNotNull);

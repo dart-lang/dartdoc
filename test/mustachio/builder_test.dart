@@ -126,7 +126,7 @@ class Bar {}
     test('with a property map with a String property', () {
       expect(generatedContent, contains('''
         's1': Property(
-          getValue: (Object c) => (c as Foo).s1,
+          getValue: (Foo c) => c.s1,
           getProperties: _Renderer_String.propertyMap,
         ),
 '''));
@@ -139,9 +139,9 @@ class Bar {}
     test('with a property map with a bool property', () {
       expect(generatedContent, contains('''
         'b1': Property(
-          getValue: (Object c) => (c as Foo).b1,
+          getValue: (Foo c) => c.b1,
           getProperties: _Renderer_bool.propertyMap,
-          getBool: (Object c) => (c as Foo).b1 == true,
+          getBool: (Foo c) => c.b1 == true,
         ),
 '''));
     });

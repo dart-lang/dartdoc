@@ -23,7 +23,7 @@ abstract class RendererBase<T> {
   /// Returns the [Property] on this renderer named [name].
   ///
   /// If no property named [name] exists for this renderer, `null` is returned.
-  Property getProperty(String key);
+  Property<T> getProperty(String key);
 
   /// Resolves [names] into one or more field accesses, returning the result as
   /// a String.

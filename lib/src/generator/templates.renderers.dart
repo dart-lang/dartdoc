@@ -18,70 +18,80 @@ String renderIndex(PackageTemplateData context, List<MustachioNode> ast,
 }
 
 class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
-  static Map<String, Property> propertyMap() => {
-        'hasHomepage': Property(
-          getValue: (Object c) => (c as PackageTemplateData).hasHomepage,
-          getProperties: _Renderer_bool.propertyMap,
-          getBool: (Object c) => (c as PackageTemplateData).hasHomepage == true,
-        ),
-        'homepage': Property(
-          getValue: (Object c) => (c as PackageTemplateData).homepage,
-          getProperties: _Renderer_String.propertyMap,
-        ),
-        'htmlBase': Property(
-          getValue: (Object c) => (c as PackageTemplateData).htmlBase,
-          getProperties: _Renderer_String.propertyMap,
-        ),
-        'includeVersion': Property(
-          getValue: (Object c) => (c as PackageTemplateData).includeVersion,
-          getProperties: _Renderer_bool.propertyMap,
-          getBool: (Object c) =>
-              (c as PackageTemplateData).includeVersion == true,
-        ),
-        'layoutTitle': Property(
-          getValue: (Object c) => (c as PackageTemplateData).layoutTitle,
-          getProperties: _Renderer_String.propertyMap,
-        ),
-        'metaDescription': Property(
-          getValue: (Object c) => (c as PackageTemplateData).metaDescription,
-          getProperties: _Renderer_String.propertyMap,
-        ),
-        'navLinks': Property(
-          getValue: (Object c) => (c as PackageTemplateData).navLinks,
-          isEmptyIterable: (Object c) =>
-              (c as PackageTemplateData).navLinks?.isEmpty ?? false,
-          renderIterable: (Object c, RendererBase<PackageTemplateData> r,
-              List<WhiskersNode> ast) {
-            var buffer = StringBuffer();
-            for (var e in (c as PackageTemplateData).navLinks) {
-              buffer.write(_render_Documentable(e, ast, parent: r));
-            }
-            return buffer.toString();
-          },
-        ),
-        'package': Property(
-          getValue: (Object c) => (c as PackageTemplateData).package,
-          getProperties: _Renderer_Package.propertyMap,
-        ),
-        'self': Property(
-          getValue: (Object c) => (c as PackageTemplateData).self,
-          getProperties: _Renderer_Package.propertyMap,
-        ),
-        'title': Property(
-          getValue: (Object c) => (c as PackageTemplateData).title,
-          getProperties: _Renderer_String.propertyMap,
-        ),
-        ..._Renderer_TemplateData.propertyMap<Package>(),
-      };
+  static Map<String, Property<X_>>
+      propertyMap<X_ extends PackageTemplateData>() => {
+            'hasHomepage': Property(
+              // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+              getValue: (X_ c) => c.hasHomepage,
+              getProperties: _Renderer_bool.propertyMap,
+              getBool: (X_ c) => c.hasHomepage == true,
+            ),
+            'homepage': Property(
+              // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+              getValue: (X_ c) => c.homepage,
+              getProperties: _Renderer_String.propertyMap,
+            ),
+            'htmlBase': Property(
+              // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+              getValue: (X_ c) => c.htmlBase,
+              getProperties: _Renderer_String.propertyMap,
+            ),
+            'includeVersion': Property(
+              // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+              getValue: (X_ c) => c.includeVersion,
+              getProperties: _Renderer_bool.propertyMap,
+              getBool: (X_ c) => c.includeVersion == true,
+            ),
+            'layoutTitle': Property(
+              // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+              getValue: (X_ c) => c.layoutTitle,
+              getProperties: _Renderer_String.propertyMap,
+            ),
+            'metaDescription': Property(
+              // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+              getValue: (X_ c) => c.metaDescription,
+              getProperties: _Renderer_String.propertyMap,
+            ),
+            'navLinks': Property(
+              // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+              getValue: (X_ c) => c.navLinks,
+              isEmptyIterable: (X_ c) => c.navLinks?.isEmpty ?? false,
+
+              renderIterable:
+                  (X_ c, RendererBase<X_> r, List<MustachioNode> ast) {
+                var buffer = StringBuffer();
+                for (var e in c.navLinks) {
+                  buffer.write(_render_Documentable(e, ast, parent: r));
+                }
+                return buffer.toString();
+              },
+            ),
+            'package': Property(
+              // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+              getValue: (X_ c) => c.package,
+              getProperties: _Renderer_Package.propertyMap,
+            ),
+            'self': Property(
+              // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+              getValue: (X_ c) => c.self,
+              getProperties: _Renderer_Package.propertyMap,
+            ),
+            'title': Property(
+              // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+              getValue: (X_ c) => c.title,
+              getProperties: _Renderer_String.propertyMap,
+            ),
+            ..._Renderer_TemplateData.propertyMap<Package, X_>(),
+          };
 
   _Renderer_PackageTemplateData(
       PackageTemplateData context, RendererBase<Object> parent)
       : super(context, parent);
 
   @override
-  Property<Object> getProperty(String key) {
-    if (propertyMap().containsKey(key)) {
-      return propertyMap()[key];
+  Property<PackageTemplateData> getProperty(String key) {
+    if (propertyMap<PackageTemplateData>().containsKey(key)) {
+      return propertyMap<PackageTemplateData>()[key];
     } else {
       return null;
     }
@@ -96,105 +106,113 @@ String _render_Package(Package context, List<MustachioNode> ast,
 }
 
 class _Renderer_Package extends RendererBase<Package> {
-  static Map<String, Property> propertyMap() => {
+  static Map<String, Property<X_>> propertyMap<X_ extends Package>() => {
         'allLibraries': Property(
-          getValue: (Object c) => (c as Package).allLibraries,
-          isEmptyIterable: (Object c) =>
-              (c as Package).allLibraries?.isEmpty ?? false,
-          renderIterable:
-              (Object c, RendererBase<Package> r, List<WhiskersNode> ast) {
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.allLibraries,
+          isEmptyIterable: (X_ c) => c.allLibraries?.isEmpty ?? false,
+
+          renderIterable: (X_ c, RendererBase<X_> r, List<MustachioNode> ast) {
             var buffer = StringBuffer();
-            for (var e in (c as Package).allLibraries) {
+            for (var e in c.allLibraries) {
               buffer.write(null(e, ast, parent: r));
             }
             return buffer.toString();
           },
         ),
         'baseHref': Property(
-          getValue: (Object c) => (c as Package).baseHref,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.baseHref,
           getProperties: _Renderer_String.propertyMap,
         ),
         'canonicalLibrary': Property(
-          getValue: (Object c) => (c as Package).canonicalLibrary,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.canonicalLibrary,
         ),
         'categories': Property(
-          getValue: (Object c) => (c as Package).categories,
-          isEmptyIterable: (Object c) =>
-              (c as Package).categories?.isEmpty ?? false,
-          renderIterable:
-              (Object c, RendererBase<Package> r, List<WhiskersNode> ast) {
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.categories,
+          isEmptyIterable: (X_ c) => c.categories?.isEmpty ?? false,
+
+          renderIterable: (X_ c, RendererBase<X_> r, List<MustachioNode> ast) {
             var buffer = StringBuffer();
-            for (var e in (c as Package).categories) {
+            for (var e in c.categories) {
               buffer.write(null(e, ast, parent: r));
             }
             return buffer.toString();
           },
         ),
         'categoriesWithPublicLibraries': Property(
-          getValue: (Object c) => (c as Package).categoriesWithPublicLibraries,
-          isEmptyIterable: (Object c) =>
-              (c as Package).categoriesWithPublicLibraries?.isEmpty ?? false,
-          renderIterable:
-              (Object c, RendererBase<Package> r, List<WhiskersNode> ast) {
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.categoriesWithPublicLibraries,
+          isEmptyIterable: (X_ c) =>
+              c.categoriesWithPublicLibraries?.isEmpty ?? false,
+
+          renderIterable: (X_ c, RendererBase<X_> r, List<MustachioNode> ast) {
             var buffer = StringBuffer();
-            for (var e in (c as Package).categoriesWithPublicLibraries) {
+            for (var e in c.categoriesWithPublicLibraries) {
               buffer.write(_render_LibraryContainer(e, ast, parent: r));
             }
             return buffer.toString();
           },
         ),
         'config': Property(
-          getValue: (Object c) => (c as Package).config,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.config,
         ),
         'containerOrder': Property(
-          getValue: (Object c) => (c as Package).containerOrder,
-          isEmptyIterable: (Object c) =>
-              (c as Package).containerOrder?.isEmpty ?? false,
-          renderIterable:
-              (Object c, RendererBase<Package> r, List<WhiskersNode> ast) {
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.containerOrder,
+          isEmptyIterable: (X_ c) => c.containerOrder?.isEmpty ?? false,
+
+          renderIterable: (X_ c, RendererBase<X_> r, List<MustachioNode> ast) {
             var buffer = StringBuffer();
-            for (var e in (c as Package).containerOrder) {
+            for (var e in c.containerOrder) {
               buffer.write(_render_String(e, ast, parent: r));
             }
             return buffer.toString();
           },
         ),
         'defaultCategory': Property(
-          getValue: (Object c) => (c as Package).defaultCategory,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.defaultCategory,
           getProperties: _Renderer_LibraryContainer.propertyMap,
         ),
         'documentation': Property(
-          getValue: (Object c) => (c as Package).documentation,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.documentation,
           getProperties: _Renderer_String.propertyMap,
         ),
         'documentationAsHtml': Property(
-          getValue: (Object c) => (c as Package).documentationAsHtml,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.documentationAsHtml,
           getProperties: _Renderer_String.propertyMap,
         ),
         'documentationFile': Property(
-          getValue: (Object c) => (c as Package).documentationFile,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.documentationFile,
         ),
         'documentationFrom': Property(
-          getValue: (Object c) => (c as Package).documentationFrom,
-          isEmptyIterable: (Object c) =>
-              (c as Package).documentationFrom?.isEmpty ?? false,
-          renderIterable:
-              (Object c, RendererBase<Package> r, List<WhiskersNode> ast) {
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.documentationFrom,
+          isEmptyIterable: (X_ c) => c.documentationFrom?.isEmpty ?? false,
+
+          renderIterable: (X_ c, RendererBase<X_> r, List<MustachioNode> ast) {
             var buffer = StringBuffer();
-            for (var e in (c as Package).documentationFrom) {
+            for (var e in c.documentationFrom) {
               buffer.write(null(e, ast, parent: r));
             }
             return buffer.toString();
           },
         ),
         'documentedCategories': Property(
-          getValue: (Object c) => (c as Package).documentedCategories,
-          isEmptyIterable: (Object c) =>
-              (c as Package).documentedCategories?.isEmpty ?? false,
-          renderIterable:
-              (Object c, RendererBase<Package> r, List<WhiskersNode> ast) {
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.documentedCategories,
+          isEmptyIterable: (X_ c) => c.documentedCategories?.isEmpty ?? false,
+
+          renderIterable: (X_ c, RendererBase<X_> r, List<MustachioNode> ast) {
             var buffer = StringBuffer();
-            for (var e in (c as Package).documentedCategories) {
+            for (var e in c.documentedCategories) {
               buffer.write(null(e, ast, parent: r));
             }
             return buffer.toString();
@@ -204,179 +222,211 @@ class _Renderer_Package extends RendererBase<Package> {
           getValue: (Object c) => (c as Package).documentedCategoriesSorted,
         ),
         'documentedWhere': Property(
-          getValue: (Object c) => (c as Package).documentedWhere,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.documentedWhere,
         ),
         'element': Property(
-          getValue: (Object c) => (c as Package).element,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.element,
         ),
         'enclosingElement': Property(
-          getValue: (Object c) => (c as Package).enclosingElement,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.enclosingElement,
         ),
         'enclosingName': Property(
-          getValue: (Object c) => (c as Package).enclosingName,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.enclosingName,
           getProperties: _Renderer_String.propertyMap,
         ),
         'filePath': Property(
-          getValue: (Object c) => (c as Package).filePath,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.filePath,
           getProperties: _Renderer_String.propertyMap,
         ),
         'fileType': Property(
-          getValue: (Object c) => (c as Package).fileType,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.fileType,
           getProperties: _Renderer_String.propertyMap,
         ),
         'fullyQualifiedName': Property(
-          getValue: (Object c) => (c as Package).fullyQualifiedName,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.fullyQualifiedName,
           getProperties: _Renderer_String.propertyMap,
         ),
         'hasCategories': Property(
-          getValue: (Object c) => (c as Package).hasCategories,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.hasCategories,
           getProperties: _Renderer_bool.propertyMap,
-          getBool: (Object c) => (c as Package).hasCategories == true,
+          getBool: (X_ c) => c.hasCategories == true,
         ),
         'hasDocumentation': Property(
-          getValue: (Object c) => (c as Package).hasDocumentation,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.hasDocumentation,
           getProperties: _Renderer_bool.propertyMap,
-          getBool: (Object c) => (c as Package).hasDocumentation == true,
+          getBool: (X_ c) => c.hasDocumentation == true,
         ),
         'hasDocumentationFile': Property(
-          getValue: (Object c) => (c as Package).hasDocumentationFile,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.hasDocumentationFile,
           getProperties: _Renderer_bool.propertyMap,
-          getBool: (Object c) => (c as Package).hasDocumentationFile == true,
+          getBool: (X_ c) => c.hasDocumentationFile == true,
         ),
         'hasDocumentedCategories': Property(
-          getValue: (Object c) => (c as Package).hasDocumentedCategories,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.hasDocumentedCategories,
           getProperties: _Renderer_bool.propertyMap,
-          getBool: (Object c) => (c as Package).hasDocumentedCategories == true,
+          getBool: (X_ c) => c.hasDocumentedCategories == true,
         ),
         'hasExtendedDocumentation': Property(
-          getValue: (Object c) => (c as Package).hasExtendedDocumentation,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.hasExtendedDocumentation,
           getProperties: _Renderer_bool.propertyMap,
-          getBool: (Object c) =>
-              (c as Package).hasExtendedDocumentation == true,
+          getBool: (X_ c) => c.hasExtendedDocumentation == true,
         ),
         'hasHomepage': Property(
-          getValue: (Object c) => (c as Package).hasHomepage,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.hasHomepage,
           getProperties: _Renderer_bool.propertyMap,
-          getBool: (Object c) => (c as Package).hasHomepage == true,
+          getBool: (X_ c) => c.hasHomepage == true,
         ),
         'homepage': Property(
-          getValue: (Object c) => (c as Package).homepage,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.homepage,
           getProperties: _Renderer_String.propertyMap,
         ),
         'href': Property(
-          getValue: (Object c) => (c as Package).href,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.href,
           getProperties: _Renderer_String.propertyMap,
         ),
         'isCanonical': Property(
-          getValue: (Object c) => (c as Package).isCanonical,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.isCanonical,
           getProperties: _Renderer_bool.propertyMap,
-          getBool: (Object c) => (c as Package).isCanonical == true,
+          getBool: (X_ c) => c.isCanonical == true,
         ),
         'isDocumented': Property(
-          getValue: (Object c) => (c as Package).isDocumented,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.isDocumented,
           getProperties: _Renderer_bool.propertyMap,
-          getBool: (Object c) => (c as Package).isDocumented == true,
+          getBool: (X_ c) => c.isDocumented == true,
         ),
         'isFirstPackage': Property(
-          getValue: (Object c) => (c as Package).isFirstPackage,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.isFirstPackage,
           getProperties: _Renderer_bool.propertyMap,
-          getBool: (Object c) => (c as Package).isFirstPackage == true,
+          getBool: (X_ c) => c.isFirstPackage == true,
         ),
         'isLocal': Property(
-          getValue: (Object c) => (c as Package).isLocal,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.isLocal,
           getProperties: _Renderer_bool.propertyMap,
-          getBool: (Object c) => (c as Package).isLocal == true,
+          getBool: (X_ c) => c.isLocal == true,
         ),
         'isPublic': Property(
-          getValue: (Object c) => (c as Package).isPublic,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.isPublic,
           getProperties: _Renderer_bool.propertyMap,
-          getBool: (Object c) => (c as Package).isPublic == true,
+          getBool: (X_ c) => c.isPublic == true,
         ),
         'isSdk': Property(
-          getValue: (Object c) => (c as Package).isSdk,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.isSdk,
           getProperties: _Renderer_bool.propertyMap,
-          getBool: (Object c) => (c as Package).isSdk == true,
+          getBool: (X_ c) => c.isSdk == true,
         ),
         'kind': Property(
-          getValue: (Object c) => (c as Package).kind,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.kind,
           getProperties: _Renderer_String.propertyMap,
         ),
         'location': Property(
-          getValue: (Object c) => (c as Package).location,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.location,
           getProperties: _Renderer_String.propertyMap,
         ),
         'locationPieces': Property(
-          getValue: (Object c) => (c as Package).locationPieces,
-          isEmptyIterable: (Object c) =>
-              (c as Package).locationPieces?.isEmpty ?? false,
-          renderIterable:
-              (Object c, RendererBase<Package> r, List<WhiskersNode> ast) {
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.locationPieces,
+          isEmptyIterable: (X_ c) => c.locationPieces?.isEmpty ?? false,
+
+          renderIterable: (X_ c, RendererBase<X_> r, List<MustachioNode> ast) {
             var buffer = StringBuffer();
-            for (var e in (c as Package).locationPieces) {
+            for (var e in c.locationPieces) {
               buffer.write(_render_String(e, ast, parent: r));
             }
             return buffer.toString();
           },
         ),
         'name': Property(
-          getValue: (Object c) => (c as Package).name,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.name,
           getProperties: _Renderer_String.propertyMap,
         ),
         'nameToCategory': Property(
-          getValue: (Object c) => (c as Package).nameToCategory,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.nameToCategory,
         ),
         'oneLineDoc': Property(
-          getValue: (Object c) => (c as Package).oneLineDoc,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.oneLineDoc,
           getProperties: _Renderer_String.propertyMap,
         ),
         'package': Property(
-          getValue: (Object c) => (c as Package).package,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.package,
           getProperties: _Renderer_Package.propertyMap,
         ),
         'packageGraph': Property(
-          getValue: (Object c) => (c as Package).packageGraph,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.packageGraph,
         ),
         'packageMeta': Property(
-          getValue: (Object c) => (c as Package).packageMeta,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.packageMeta,
         ),
         'packagePath': Property(
-          getValue: (Object c) => (c as Package).packagePath,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.packagePath,
           getProperties: _Renderer_String.propertyMap,
         ),
         'publicLibraries': Property(
-          getValue: (Object c) => (c as Package).publicLibraries,
-          isEmptyIterable: (Object c) =>
-              (c as Package).publicLibraries?.isEmpty ?? false,
-          renderIterable:
-              (Object c, RendererBase<Package> r, List<WhiskersNode> ast) {
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.publicLibraries,
+          isEmptyIterable: (X_ c) => c.publicLibraries?.isEmpty ?? false,
+
+          renderIterable: (X_ c, RendererBase<X_> r, List<MustachioNode> ast) {
             var buffer = StringBuffer();
-            for (var e in (c as Package).publicLibraries) {
+            for (var e in c.publicLibraries) {
               buffer.write(null(e, ast, parent: r));
             }
             return buffer.toString();
           },
         ),
         'toolInvocationIndex': Property(
-          getValue: (Object c) => (c as Package).toolInvocationIndex,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.toolInvocationIndex,
           getProperties: _Renderer_int.propertyMap,
         ),
         'usedAnimationIdsByHref': Property(
-          getValue: (Object c) => (c as Package).usedAnimationIdsByHref,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.usedAnimationIdsByHref,
         ),
         'version': Property(
-          getValue: (Object c) => (c as Package).version,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.version,
           getProperties: _Renderer_String.propertyMap,
         ),
-        ..._Renderer_LibraryContainer.propertyMap(),
+        ..._Renderer_LibraryContainer.propertyMap<X_>(),
       };
 
   _Renderer_Package(Package context, RendererBase<Object> parent)
       : super(context, parent);
 
   @override
-  Property<Object> getProperty(String key) {
-    if (propertyMap().containsKey(key)) {
-      return propertyMap()[key];
+  Property<Package> getProperty(String key) {
+    if (propertyMap<Package>().containsKey(key)) {
+      return propertyMap<Package>()[key];
     } else {
       return null;
     }
@@ -392,59 +442,63 @@ String _render_LibraryContainer(
 }
 
 class _Renderer_LibraryContainer extends RendererBase<LibraryContainer> {
-  static Map<String, Property> propertyMap() => {
+  static Map<String, Property<X_>> propertyMap<X_ extends LibraryContainer>() =>
+      {
         'containerOrder': Property(
-          getValue: (Object c) => (c as LibraryContainer).containerOrder,
-          isEmptyIterable: (Object c) =>
-              (c as LibraryContainer).containerOrder?.isEmpty ?? false,
-          renderIterable: (Object c, RendererBase<LibraryContainer> r,
-              List<WhiskersNode> ast) {
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.containerOrder,
+          isEmptyIterable: (X_ c) => c.containerOrder?.isEmpty ?? false,
+
+          renderIterable: (X_ c, RendererBase<X_> r, List<MustachioNode> ast) {
             var buffer = StringBuffer();
-            for (var e in (c as LibraryContainer).containerOrder) {
+            for (var e in c.containerOrder) {
               buffer.write(_render_String(e, ast, parent: r));
             }
             return buffer.toString();
           },
         ),
         'enclosingName': Property(
-          getValue: (Object c) => (c as LibraryContainer).enclosingName,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.enclosingName,
           getProperties: _Renderer_String.propertyMap,
         ),
         'hasPublicLibraries': Property(
-          getValue: (Object c) => (c as LibraryContainer).hasPublicLibraries,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.hasPublicLibraries,
           getProperties: _Renderer_bool.propertyMap,
-          getBool: (Object c) =>
-              (c as LibraryContainer).hasPublicLibraries == true,
+          getBool: (X_ c) => c.hasPublicLibraries == true,
         ),
         'isSdk': Property(
-          getValue: (Object c) => (c as LibraryContainer).isSdk,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.isSdk,
           getProperties: _Renderer_bool.propertyMap,
-          getBool: (Object c) => (c as LibraryContainer).isSdk == true,
+          getBool: (X_ c) => c.isSdk == true,
         ),
         'libraries': Property(
-          getValue: (Object c) => (c as LibraryContainer).libraries,
-          isEmptyIterable: (Object c) =>
-              (c as LibraryContainer).libraries?.isEmpty ?? false,
-          renderIterable: (Object c, RendererBase<LibraryContainer> r,
-              List<WhiskersNode> ast) {
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.libraries,
+          isEmptyIterable: (X_ c) => c.libraries?.isEmpty ?? false,
+
+          renderIterable: (X_ c, RendererBase<X_> r, List<MustachioNode> ast) {
             var buffer = StringBuffer();
-            for (var e in (c as LibraryContainer).libraries) {
+            for (var e in c.libraries) {
               buffer.write(null(e, ast, parent: r));
             }
             return buffer.toString();
           },
         ),
         'packageGraph': Property(
-          getValue: (Object c) => (c as LibraryContainer).packageGraph,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.packageGraph,
         ),
         'publicLibraries': Property(
-          getValue: (Object c) => (c as LibraryContainer).publicLibraries,
-          isEmptyIterable: (Object c) =>
-              (c as LibraryContainer).publicLibraries?.isEmpty ?? false,
-          renderIterable: (Object c, RendererBase<LibraryContainer> r,
-              List<WhiskersNode> ast) {
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.publicLibraries,
+          isEmptyIterable: (X_ c) => c.publicLibraries?.isEmpty ?? false,
+
+          renderIterable: (X_ c, RendererBase<X_> r, List<MustachioNode> ast) {
             var buffer = StringBuffer();
-            for (var e in (c as LibraryContainer).publicLibraries) {
+            for (var e in c.publicLibraries) {
               buffer.write(null(e, ast, parent: r));
             }
             return buffer.toString();
@@ -454,10 +508,11 @@ class _Renderer_LibraryContainer extends RendererBase<LibraryContainer> {
           getValue: (Object c) => (c as LibraryContainer).publicLibrariesSorted,
         ),
         'sortKey': Property(
-          getValue: (Object c) => (c as LibraryContainer).sortKey,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.sortKey,
           getProperties: _Renderer_String.propertyMap,
         ),
-        ..._Renderer_Object.propertyMap(),
+        ..._Renderer_Object.propertyMap<X_>(),
       };
 
   _Renderer_LibraryContainer(
@@ -465,9 +520,9 @@ class _Renderer_LibraryContainer extends RendererBase<LibraryContainer> {
       : super(context, parent);
 
   @override
-  Property<Object> getProperty(String key) {
-    if (propertyMap().containsKey(key)) {
-      return propertyMap()[key];
+  Property<LibraryContainer> getProperty(String key) {
+    if (propertyMap<LibraryContainer>().containsKey(key)) {
+      return propertyMap<LibraryContainer>()[key];
     } else {
       return null;
     }
@@ -482,9 +537,10 @@ String _render_Object(Object context, List<MustachioNode> ast,
 }
 
 class _Renderer_Object extends RendererBase<Object> {
-  static Map<String, Property> propertyMap() => {
+  static Map<String, Property<X_>> propertyMap<X_ extends Object>() => {
         'hashCode': Property(
-          getValue: (Object c) => (c as Object).hashCode,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.hashCode,
           getProperties: _Renderer_int.propertyMap,
         ),
       };
@@ -494,8 +550,8 @@ class _Renderer_Object extends RendererBase<Object> {
 
   @override
   Property<Object> getProperty(String key) {
-    if (propertyMap().containsKey(key)) {
-      return propertyMap()[key];
+    if (propertyMap<Object>().containsKey(key)) {
+      return propertyMap<Object>()[key];
     } else {
       return null;
     }
@@ -510,21 +566,22 @@ String _render_bool(bool context, List<MustachioNode> ast,
 }
 
 class _Renderer_bool extends RendererBase<bool> {
-  static Map<String, Property> propertyMap() => {
+  static Map<String, Property<X_>> propertyMap<X_ extends bool>() => {
         'hashCode': Property(
-          getValue: (Object c) => (c as bool).hashCode,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.hashCode,
           getProperties: _Renderer_int.propertyMap,
         ),
-        ..._Renderer_Object.propertyMap(),
+        ..._Renderer_Object.propertyMap<X_>(),
       };
 
   _Renderer_bool(bool context, RendererBase<Object> parent)
       : super(context, parent);
 
   @override
-  Property<Object> getProperty(String key) {
-    if (propertyMap().containsKey(key)) {
-      return propertyMap()[key];
+  Property<bool> getProperty(String key) {
+    if (propertyMap<bool>().containsKey(key)) {
+      return propertyMap<bool>()[key];
     } else {
       return null;
     }
@@ -539,34 +596,26 @@ String _render_List<E>(List<E> context, List<MustachioNode> ast,
 }
 
 class _Renderer_List<E> extends RendererBase<List<E>> {
-  static Map<String, Property> propertyMap<E>() => {
+  static Map<String, Property<X_>> propertyMap<E, X_ extends List<E>>() => {
         'length': Property(
-          getValue: (Object c) => (c as List<E>).length,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.length,
           getProperties: _Renderer_int.propertyMap,
         ),
         'reversed': Property(
-          getValue: (Object c) => (c as List<E>).reversed,
-          isEmptyIterable: (Object c) =>
-              (c as List<E>).reversed?.isEmpty ?? false,
-          renderIterable:
-              (Object c, RendererBase<List<E>> r, List<WhiskersNode> ast) {
-            var buffer = StringBuffer();
-            for (var e in (c as List<E>).reversed) {
-              buffer.write(null(e, ast, parent: r));
-            }
-            return buffer.toString();
-          },
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.reversed,
         ),
-        ..._Renderer_Object.propertyMap(),
+        ..._Renderer_Object.propertyMap<X_>(),
       };
 
   _Renderer_List(List<E> context, RendererBase<Object> parent)
       : super(context, parent);
 
   @override
-  Property<Object> getProperty(String key) {
-    if (propertyMap<E>().containsKey(key)) {
-      return propertyMap<E>()[key];
+  Property<List<E>> getProperty(String key) {
+    if (propertyMap<E, List<E>>().containsKey(key)) {
+      return propertyMap<E, List<E>>()[key];
     } else {
       return null;
     }
@@ -581,60 +630,65 @@ String _render_String(String context, List<MustachioNode> ast,
 }
 
 class _Renderer_String extends RendererBase<String> {
-  static Map<String, Property> propertyMap() => {
+  static Map<String, Property<X_>> propertyMap<X_ extends String>() => {
         'codeUnits': Property(
-          getValue: (Object c) => (c as String).codeUnits,
-          isEmptyIterable: (Object c) =>
-              (c as String).codeUnits?.isEmpty ?? false,
-          renderIterable:
-              (Object c, RendererBase<String> r, List<WhiskersNode> ast) {
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.codeUnits,
+          isEmptyIterable: (X_ c) => c.codeUnits?.isEmpty ?? false,
+
+          renderIterable: (X_ c, RendererBase<X_> r, List<MustachioNode> ast) {
             var buffer = StringBuffer();
-            for (var e in (c as String).codeUnits) {
+            for (var e in c.codeUnits) {
               buffer.write(_render_int(e, ast, parent: r));
             }
             return buffer.toString();
           },
         ),
         'hashCode': Property(
-          getValue: (Object c) => (c as String).hashCode,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.hashCode,
           getProperties: _Renderer_int.propertyMap,
         ),
         'isEmpty': Property(
-          getValue: (Object c) => (c as String).isEmpty,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.isEmpty,
           getProperties: _Renderer_bool.propertyMap,
-          getBool: (Object c) => (c as String).isEmpty == true,
+          getBool: (X_ c) => c.isEmpty == true,
         ),
         'isNotEmpty': Property(
-          getValue: (Object c) => (c as String).isNotEmpty,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.isNotEmpty,
           getProperties: _Renderer_bool.propertyMap,
-          getBool: (Object c) => (c as String).isNotEmpty == true,
+          getBool: (X_ c) => c.isNotEmpty == true,
         ),
         'length': Property(
-          getValue: (Object c) => (c as String).length,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.length,
           getProperties: _Renderer_int.propertyMap,
         ),
         'runes': Property(
-          getValue: (Object c) => (c as String).runes,
-          isEmptyIterable: (Object c) => (c as String).runes?.isEmpty ?? false,
-          renderIterable:
-              (Object c, RendererBase<String> r, List<WhiskersNode> ast) {
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.runes,
+          isEmptyIterable: (X_ c) => c.runes?.isEmpty ?? false,
+
+          renderIterable: (X_ c, RendererBase<X_> r, List<MustachioNode> ast) {
             var buffer = StringBuffer();
-            for (var e in (c as String).runes) {
+            for (var e in c.runes) {
               buffer.write(_render_int(e, ast, parent: r));
             }
             return buffer.toString();
           },
         ),
-        ..._Renderer_Object.propertyMap(),
+        ..._Renderer_Object.propertyMap<X_>(),
       };
 
   _Renderer_String(String context, RendererBase<Object> parent)
       : super(context, parent);
 
   @override
-  Property<Object> getProperty(String key) {
-    if (propertyMap().containsKey(key)) {
-      return propertyMap()[key];
+  Property<String> getProperty(String key) {
+    if (propertyMap<String>().containsKey(key)) {
+      return propertyMap<String>()[key];
     } else {
       return null;
     }
@@ -651,124 +705,137 @@ String _render_TemplateData<T extends Documentable>(
 
 class _Renderer_TemplateData<T extends Documentable>
     extends RendererBase<TemplateData<T>> {
-  static Map<String, Property> propertyMap<T extends Documentable>() => {
+  static Map<String, Property<X_>> propertyMap<T extends Documentable,
+          X_ extends TemplateData<T>>() =>
+      {
         'bareHref': Property(
-          getValue: (Object c) => (c as TemplateData<T>).bareHref,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.bareHref,
           getProperties: _Renderer_String.propertyMap,
         ),
         'defaultPackage': Property(
-          getValue: (Object c) => (c as TemplateData<T>).defaultPackage,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.defaultPackage,
           getProperties: _Renderer_Package.propertyMap,
         ),
         'hasFooterVersion': Property(
-          getValue: (Object c) => (c as TemplateData<T>).hasFooterVersion,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.hasFooterVersion,
           getProperties: _Renderer_bool.propertyMap,
-          getBool: (Object c) =>
-              (c as TemplateData<T>).hasFooterVersion == true,
+          getBool: (X_ c) => c.hasFooterVersion == true,
         ),
         'hasHomepage': Property(
-          getValue: (Object c) => (c as TemplateData<T>).hasHomepage,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.hasHomepage,
           getProperties: _Renderer_bool.propertyMap,
-          getBool: (Object c) => (c as TemplateData<T>).hasHomepage == true,
+          getBool: (X_ c) => c.hasHomepage == true,
         ),
         'homepage': Property(
-          getValue: (Object c) => (c as TemplateData<T>).homepage,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.homepage,
           getProperties: _Renderer_String.propertyMap,
         ),
         'htmlBase': Property(
-          getValue: (Object c) => (c as TemplateData<T>).htmlBase,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.htmlBase,
           getProperties: _Renderer_String.propertyMap,
         ),
         'htmlOptions': Property(
-          getValue: (Object c) => (c as TemplateData<T>).htmlOptions,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.htmlOptions,
           getProperties: _Renderer_TemplateOptions.propertyMap,
         ),
         'includeVersion': Property(
-          getValue: (Object c) => (c as TemplateData<T>).includeVersion,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.includeVersion,
           getProperties: _Renderer_bool.propertyMap,
-          getBool: (Object c) => (c as TemplateData<T>).includeVersion == true,
+          getBool: (X_ c) => c.includeVersion == true,
         ),
         'layoutTitle': Property(
-          getValue: (Object c) => (c as TemplateData<T>).layoutTitle,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.layoutTitle,
           getProperties: _Renderer_String.propertyMap,
         ),
         'localPackages': Property(
-          getValue: (Object c) => (c as TemplateData<T>).localPackages,
-          isEmptyIterable: (Object c) =>
-              (c as TemplateData<T>).localPackages?.isEmpty ?? false,
-          renderIterable: (Object c, RendererBase<TemplateData<T>> r,
-              List<WhiskersNode> ast) {
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.localPackages,
+          isEmptyIterable: (X_ c) => c.localPackages?.isEmpty ?? false,
+
+          renderIterable: (X_ c, RendererBase<X_> r, List<MustachioNode> ast) {
             var buffer = StringBuffer();
-            for (var e in (c as TemplateData<T>).localPackages) {
+            for (var e in c.localPackages) {
               buffer.write(_render_Package(e, ast, parent: r));
             }
             return buffer.toString();
           },
         ),
         'metaDescription': Property(
-          getValue: (Object c) => (c as TemplateData<T>).metaDescription,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.metaDescription,
           getProperties: _Renderer_String.propertyMap,
         ),
         'navLinks': Property(
-          getValue: (Object c) => (c as TemplateData<T>).navLinks,
-          isEmptyIterable: (Object c) =>
-              (c as TemplateData<T>).navLinks?.isEmpty ?? false,
-          renderIterable: (Object c, RendererBase<TemplateData<T>> r,
-              List<WhiskersNode> ast) {
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.navLinks,
+          isEmptyIterable: (X_ c) => c.navLinks?.isEmpty ?? false,
+
+          renderIterable: (X_ c, RendererBase<X_> r, List<MustachioNode> ast) {
             var buffer = StringBuffer();
-            for (var e in (c as TemplateData<T>).navLinks) {
+            for (var e in c.navLinks) {
               buffer.write(_render_Documentable(e, ast, parent: r));
             }
             return buffer.toString();
           },
         ),
         'navLinksWithGenerics': Property(
-          getValue: (Object c) => (c as TemplateData<T>).navLinksWithGenerics,
-          isEmptyIterable: (Object c) =>
-              (c as TemplateData<T>).navLinksWithGenerics?.isEmpty ?? false,
-          renderIterable: (Object c, RendererBase<TemplateData<T>> r,
-              List<WhiskersNode> ast) {
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.navLinksWithGenerics,
+          isEmptyIterable: (X_ c) => c.navLinksWithGenerics?.isEmpty ?? false,
+
+          renderIterable: (X_ c, RendererBase<X_> r, List<MustachioNode> ast) {
             var buffer = StringBuffer();
-            for (var e in (c as TemplateData<T>).navLinksWithGenerics) {
+            for (var e in c.navLinksWithGenerics) {
               buffer.write(null(e, ast, parent: r));
             }
             return buffer.toString();
           },
         ),
         'parent': Property(
-          getValue: (Object c) => (c as TemplateData<T>).parent,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.parent,
           getProperties: _Renderer_Documentable.propertyMap,
         ),
         'relCanonicalPrefix': Property(
-          getValue: (Object c) => (c as TemplateData<T>).relCanonicalPrefix,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.relCanonicalPrefix,
           getProperties: _Renderer_String.propertyMap,
         ),
-        'self': Property(
-          getValue: (Object c) => (c as TemplateData<T>).self,
-        ),
         'title': Property(
-          getValue: (Object c) => (c as TemplateData<T>).title,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.title,
           getProperties: _Renderer_String.propertyMap,
         ),
         'useBaseHref': Property(
-          getValue: (Object c) => (c as TemplateData<T>).useBaseHref,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.useBaseHref,
           getProperties: _Renderer_bool.propertyMap,
-          getBool: (Object c) => (c as TemplateData<T>).useBaseHref == true,
+          getBool: (X_ c) => c.useBaseHref == true,
         ),
         'version': Property(
-          getValue: (Object c) => (c as TemplateData<T>).version,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.version,
           getProperties: _Renderer_String.propertyMap,
         ),
-        ..._Renderer_Object.propertyMap(),
+        ..._Renderer_Object.propertyMap<X_>(),
       };
 
   _Renderer_TemplateData(TemplateData<T> context, RendererBase<Object> parent)
       : super(context, parent);
 
   @override
-  Property<Object> getProperty(String key) {
-    if (propertyMap<T>().containsKey(key)) {
-      return propertyMap<T>()[key];
+  Property<TemplateData<T>> getProperty(String key) {
+    if (propertyMap<T, TemplateData<T>>().containsKey(key)) {
+      return propertyMap<T, TemplateData<T>>()[key];
     } else {
       return null;
     }
@@ -783,21 +850,25 @@ String _render_TemplateOptions(TemplateOptions context, List<MustachioNode> ast,
 }
 
 class _Renderer_TemplateOptions extends RendererBase<TemplateOptions> {
-  static Map<String, Property> propertyMap() => {
+  static Map<String, Property<X_>> propertyMap<X_ extends TemplateOptions>() =>
+      {
         'relCanonicalPrefix': Property(
-          getValue: (Object c) => (c as TemplateOptions).relCanonicalPrefix,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.relCanonicalPrefix,
           getProperties: _Renderer_String.propertyMap,
         ),
         'toolVersion': Property(
-          getValue: (Object c) => (c as TemplateOptions).toolVersion,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.toolVersion,
           getProperties: _Renderer_String.propertyMap,
         ),
         'useBaseHref': Property(
-          getValue: (Object c) => (c as TemplateOptions).useBaseHref,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.useBaseHref,
           getProperties: _Renderer_bool.propertyMap,
-          getBool: (Object c) => (c as TemplateOptions).useBaseHref == true,
+          getBool: (X_ c) => c.useBaseHref == true,
         ),
-        ..._Renderer_Object.propertyMap(),
+        ..._Renderer_Object.propertyMap<X_>(),
       };
 
   _Renderer_TemplateOptions(
@@ -805,9 +876,9 @@ class _Renderer_TemplateOptions extends RendererBase<TemplateOptions> {
       : super(context, parent);
 
   @override
-  Property<Object> getProperty(String key) {
-    if (propertyMap().containsKey(key)) {
-      return propertyMap()[key];
+  Property<TemplateOptions> getProperty(String key) {
+    if (propertyMap<TemplateOptions>().containsKey(key)) {
+      return propertyMap<TemplateOptions>()[key];
     } else {
       return null;
     }
@@ -822,59 +893,68 @@ String _render_Documentable(Documentable context, List<MustachioNode> ast,
 }
 
 class _Renderer_Documentable extends RendererBase<Documentable> {
-  static Map<String, Property> propertyMap() => {
+  static Map<String, Property<X_>> propertyMap<X_ extends Documentable>() => {
         'config': Property(
-          getValue: (Object c) => (c as Documentable).config,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.config,
         ),
         'documentation': Property(
-          getValue: (Object c) => (c as Documentable).documentation,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.documentation,
           getProperties: _Renderer_String.propertyMap,
         ),
         'documentationAsHtml': Property(
-          getValue: (Object c) => (c as Documentable).documentationAsHtml,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.documentationAsHtml,
           getProperties: _Renderer_String.propertyMap,
         ),
         'hasDocumentation': Property(
-          getValue: (Object c) => (c as Documentable).hasDocumentation,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.hasDocumentation,
           getProperties: _Renderer_bool.propertyMap,
-          getBool: (Object c) => (c as Documentable).hasDocumentation == true,
+          getBool: (X_ c) => c.hasDocumentation == true,
         ),
         'hasExtendedDocumentation': Property(
-          getValue: (Object c) => (c as Documentable).hasExtendedDocumentation,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.hasExtendedDocumentation,
           getProperties: _Renderer_bool.propertyMap,
-          getBool: (Object c) =>
-              (c as Documentable).hasExtendedDocumentation == true,
+          getBool: (X_ c) => c.hasExtendedDocumentation == true,
         ),
         'href': Property(
-          getValue: (Object c) => (c as Documentable).href,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.href,
           getProperties: _Renderer_String.propertyMap,
         ),
         'isDocumented': Property(
-          getValue: (Object c) => (c as Documentable).isDocumented,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.isDocumented,
           getProperties: _Renderer_bool.propertyMap,
-          getBool: (Object c) => (c as Documentable).isDocumented == true,
+          getBool: (X_ c) => c.isDocumented == true,
         ),
         'kind': Property(
-          getValue: (Object c) => (c as Documentable).kind,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.kind,
           getProperties: _Renderer_String.propertyMap,
         ),
         'oneLineDoc': Property(
-          getValue: (Object c) => (c as Documentable).oneLineDoc,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.oneLineDoc,
           getProperties: _Renderer_String.propertyMap,
         ),
         'packageGraph': Property(
-          getValue: (Object c) => (c as Documentable).packageGraph,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.packageGraph,
         ),
-        ..._Renderer_Nameable.propertyMap(),
+        ..._Renderer_Nameable.propertyMap<X_>(),
       };
 
   _Renderer_Documentable(Documentable context, RendererBase<Object> parent)
       : super(context, parent);
 
   @override
-  Property<Object> getProperty(String key) {
-    if (propertyMap().containsKey(key)) {
-      return propertyMap()[key];
+  Property<Documentable> getProperty(String key) {
+    if (propertyMap<Documentable>().containsKey(key)) {
+      return propertyMap<Documentable>()[key];
     } else {
       return null;
     }
@@ -889,42 +969,45 @@ String _render_Nameable(Nameable context, List<MustachioNode> ast,
 }
 
 class _Renderer_Nameable extends RendererBase<Nameable> {
-  static Map<String, Property> propertyMap() => {
+  static Map<String, Property<X_>> propertyMap<X_ extends Nameable>() => {
         'fullyQualifiedName': Property(
-          getValue: (Object c) => (c as Nameable).fullyQualifiedName,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.fullyQualifiedName,
           getProperties: _Renderer_String.propertyMap,
         ),
         'name': Property(
-          getValue: (Object c) => (c as Nameable).name,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.name,
           getProperties: _Renderer_String.propertyMap,
         ),
         'namePart': Property(
-          getValue: (Object c) => (c as Nameable).namePart,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.namePart,
           getProperties: _Renderer_String.propertyMap,
         ),
         'namePieces': Property(
-          getValue: (Object c) => (c as Nameable).namePieces,
-          isEmptyIterable: (Object c) =>
-              (c as Nameable).namePieces?.isEmpty ?? false,
-          renderIterable:
-              (Object c, RendererBase<Nameable> r, List<WhiskersNode> ast) {
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.namePieces,
+          isEmptyIterable: (X_ c) => c.namePieces?.isEmpty ?? false,
+
+          renderIterable: (X_ c, RendererBase<X_> r, List<MustachioNode> ast) {
             var buffer = StringBuffer();
-            for (var e in (c as Nameable).namePieces) {
+            for (var e in c.namePieces) {
               buffer.write(_render_String(e, ast, parent: r));
             }
             return buffer.toString();
           },
         ),
-        ..._Renderer_Object.propertyMap(),
+        ..._Renderer_Object.propertyMap<X_>(),
       };
 
   _Renderer_Nameable(Nameable context, RendererBase<Object> parent)
       : super(context, parent);
 
   @override
-  Property<Object> getProperty(String key) {
-    if (propertyMap().containsKey(key)) {
-      return propertyMap()[key];
+  Property<Nameable> getProperty(String key) {
+    if (propertyMap<Nameable>().containsKey(key)) {
+      return propertyMap<Nameable>()[key];
     } else {
       return null;
     }
@@ -939,35 +1022,39 @@ String _render_int(int context, List<MustachioNode> ast,
 }
 
 class _Renderer_int extends RendererBase<int> {
-  static Map<String, Property> propertyMap() => {
+  static Map<String, Property<X_>> propertyMap<X_ extends int>() => {
         'bitLength': Property(
-          getValue: (Object c) => (c as int).bitLength,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.bitLength,
           getProperties: _Renderer_int.propertyMap,
         ),
         'isEven': Property(
-          getValue: (Object c) => (c as int).isEven,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.isEven,
           getProperties: _Renderer_bool.propertyMap,
-          getBool: (Object c) => (c as int).isEven == true,
+          getBool: (X_ c) => c.isEven == true,
         ),
         'isOdd': Property(
-          getValue: (Object c) => (c as int).isOdd,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.isOdd,
           getProperties: _Renderer_bool.propertyMap,
-          getBool: (Object c) => (c as int).isOdd == true,
+          getBool: (X_ c) => c.isOdd == true,
         ),
         'sign': Property(
-          getValue: (Object c) => (c as int).sign,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.sign,
           getProperties: _Renderer_int.propertyMap,
         ),
-        ..._Renderer_num.propertyMap(),
+        ..._Renderer_num.propertyMap<X_>(),
       };
 
   _Renderer_int(int context, RendererBase<Object> parent)
       : super(context, parent);
 
   @override
-  Property<Object> getProperty(String key) {
-    if (propertyMap().containsKey(key)) {
-      return propertyMap()[key];
+  Property<int> getProperty(String key) {
+    if (propertyMap<int>().containsKey(key)) {
+      return propertyMap<int>()[key];
     } else {
       return null;
     }
@@ -982,45 +1069,51 @@ String _render_num(num context, List<MustachioNode> ast,
 }
 
 class _Renderer_num extends RendererBase<num> {
-  static Map<String, Property> propertyMap() => {
+  static Map<String, Property<X_>> propertyMap<X_ extends num>() => {
         'hashCode': Property(
-          getValue: (Object c) => (c as num).hashCode,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.hashCode,
           getProperties: _Renderer_int.propertyMap,
         ),
         'isFinite': Property(
-          getValue: (Object c) => (c as num).isFinite,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.isFinite,
           getProperties: _Renderer_bool.propertyMap,
-          getBool: (Object c) => (c as num).isFinite == true,
+          getBool: (X_ c) => c.isFinite == true,
         ),
         'isInfinite': Property(
-          getValue: (Object c) => (c as num).isInfinite,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.isInfinite,
           getProperties: _Renderer_bool.propertyMap,
-          getBool: (Object c) => (c as num).isInfinite == true,
+          getBool: (X_ c) => c.isInfinite == true,
         ),
         'isNaN': Property(
-          getValue: (Object c) => (c as num).isNaN,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.isNaN,
           getProperties: _Renderer_bool.propertyMap,
-          getBool: (Object c) => (c as num).isNaN == true,
+          getBool: (X_ c) => c.isNaN == true,
         ),
         'isNegative': Property(
-          getValue: (Object c) => (c as num).isNegative,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.isNegative,
           getProperties: _Renderer_bool.propertyMap,
-          getBool: (Object c) => (c as num).isNegative == true,
+          getBool: (X_ c) => c.isNegative == true,
         ),
         'sign': Property(
-          getValue: (Object c) => (c as num).sign,
+          // (PackageTemplateData*, Package*, LibraryContainer*, Object, bool, ..., int, num)
+          getValue: (X_ c) => c.sign,
           getProperties: _Renderer_num.propertyMap,
         ),
-        ..._Renderer_Object.propertyMap(),
+        ..._Renderer_Object.propertyMap<X_>(),
       };
 
   _Renderer_num(num context, RendererBase<Object> parent)
       : super(context, parent);
 
   @override
-  Property<Object> getProperty(String key) {
-    if (propertyMap().containsKey(key)) {
-      return propertyMap()[key];
+  Property<num> getProperty(String key) {
+    if (propertyMap<num>().containsKey(key)) {
+      return propertyMap<num>()[key];
     } else {
       return null;
     }

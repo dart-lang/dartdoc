@@ -167,13 +167,18 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
   ${renderer._rendererClassName}($typeName context, RendererBase<Object> parent)
       : super(context, parent);
 ''');
-    var actionMapName = 'propertyMap${renderer._typeArgumentsString}';
+    var propertyMapTypeArguments = _asGenerics([
+      ...renderer._contextType.typeArguments
+          .map((t) => t.getDisplayString(withNullability: false)),
+      typeName
+    ]);
+    var propertyMapName = 'propertyMap$propertyMapTypeArguments';
     // Write out `getProperty`.
     _buffer.writeln('''
   @override
-  Property<Object> getProperty(String key) {
-    if ($actionMapName().containsKey(key)) {
-      return $actionMapName()[key];
+  Property<$typeName> getProperty(String key) {
+    if ($propertyMapName().containsKey(key)) {
+      return $propertyMapName()[key];
     } else {
       return null;
     }
@@ -189,9 +194,13 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
   /// property's name to the property's [Property] object.
   void _writePropertyMap(_RendererInfo renderer) {
     var type = renderer._contextType;
-    _buffer.writeln('static Map<String, Property> '
-        'propertyMap${renderer._typeParametersString}() => {');
-    for (var property in [...type.accessors]
+    var generics =
+        renderer._typeParametersStringWith('X_ extends ${renderer._typeName}');
+    _buffer.writeln('static Map<String, Property<X_>> '
+        'propertyMap$generics() => {');
+    var interfaceTypedProperties = type.accessors
+        .where((property) => property.type.returnType is InterfaceType);
+    for (var property in [...interfaceTypedProperties]
       ..sort((a, b) => a.name.compareTo(b.name))) {
       _writeProperty(renderer, property);
     }
@@ -199,13 +208,12 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
       var superclassRendererName =
           _typeToRendererClassName[type.superclass.element.thisType];
       var superMapName = '$superclassRendererName.propertyMap';
-      if (type.superclass.typeArguments.isNotEmpty) {
-        var superTypeArguments = type.superclass.typeArguments
-            .map((e) => e.getDisplayString(withNullability: false))
-            .join(', ');
-        superMapName += '<$superTypeArguments>';
-      }
-      _buffer.writeln('    ...$superMapName(),');
+      var generics = _asGenerics([
+        ...type.superclass.typeArguments
+            .map((e) => e.getDisplayString(withNullability: false)),
+        'X_'
+      ]);
+      _buffer.writeln('    ...$superMapName$generics(),');
     }
     _buffer.writeln('};');
     _buffer.writeln('');
@@ -213,48 +221,54 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
 
   void _writeProperty(
       _RendererInfo renderer, PropertyAccessorElement property) {
-    var getterType = property.type.returnType;
+    var getterType = property.type.returnType as InterfaceType;
     if (getterType == _typeProvider.typeType) {
       // The [Type] type is the first case of a type we don't want to traverse.
       return;
     }
-    var typeName = renderer._typeName;
 
     if (property.isPrivate || property.isStatic || property.isSetter) return;
-    _buffer.writeln("'${property.name}': Property(");
-    _buffer
-        .writeln('getValue: (Object c) => (c as $typeName).${property.name},');
+    _buffer.writeln(
+        "'${property.name}': Property( // ${_typeToRendererClassName.keys}");
+    _buffer.writeln('getValue: (X_ c) => c.${property.name},');
 
     var getterName = property.name;
 
     // Only add a `getProperties` function, which returns the property map for
     // [getterType], if [getterType] is a renderable type.
     if (_typeToRendererClassName.containsKey(getterType)) {
-      var rendererClassName = _typeToRendererClassName[getterType];
+      var rendererClassName =
+          _typeToRendererClassName[getterType.element.thisType];
       _buffer.writeln('getProperties: $rendererClassName.propertyMap,');
     }
 
     if (getterType.isDartCoreBool) {
-      _buffer.writeln(
-          'getBool: (Object c) => (c as $typeName).$getterName == true,');
+      _buffer.writeln('getBool: (X_ c) => c.$getterName == true,');
     } else if (_typeSystem.isAssignableTo(
         getterType, _typeProvider.iterableDynamicType)) {
       var iterableElement = _typeProvider.iterableElement;
       var iterableType = getterType.asInstanceOf(iterableElement);
       var innerType = iterableType.typeArguments.first;
-      var rendererName = _typeToRenderFunctionName[innerType];
-      _buffer.writeln(
-          '''                                                                                                                                                       
-isEmptyIterable: (Object c) => (c as $typeName).$getterName?.isEmpty ?? false,
+      // Don't add Iterable functions for a generic type, for example
+      // `List<E>.reversed` has inner type `E`, which we don't have a specific
+      // renderer for.
+      // TODO(srawlins): Find a solution for this. We can track all of the
+      // concrete types substituted for `E` for example.
+      if (innerType is! TypeParameterType) {
+        var rendererName = _typeToRenderFunctionName[innerType];
+        _buffer.writeln(
+            '''                                                                                                                                                       
+isEmptyIterable: (X_ c) => c.$getterName?.isEmpty ?? false,
 
-renderIterable: (Object c, RendererBase<$typeName> r, List<MustachioNode> ast) {
+renderIterable: (X_ c, RendererBase<X_> r, List<MustachioNode> ast) {
   var buffer = StringBuffer();
-  for (var e in (c as $typeName).$getterName) {
+  for (var e in c.$getterName) {
     buffer.write($rendererName(e, ast, parent: r));
   }
   return buffer.toString();
 },
 ''');
+      }
     } else {
       // TODO(srawlins): Otherwise, add functions for plain values.
     }
@@ -296,15 +310,16 @@ class _RendererInfo {
   /// The type parameters of the context type, if any, as a String, including
   /// the angled brackets, otherwise a blank String.
   String get _typeParametersString {
-    var typeParamters = _contextType.element.typeParameters;
-    if (typeParamters.isEmpty) {
-      return '';
-    } else {
-      var parameterStrings = typeParamters.map((tp) {
-        return tp.getDisplayString(withNullability: false);
-      });
-      return '<${parameterStrings.join(', ')}>';
-    }
+    return _asGenerics(_contextType.element.typeParameters
+        .map((tp) => tp.getDisplayString(withNullability: false)));
+  }
+
+  String _typeParametersStringWith(String extra) {
+    return _asGenerics([
+      ..._contextType.element.typeParameters
+          .map((tp) => tp.getDisplayString(withNullability: false)),
+      extra
+    ]);
   }
 
   /// The type arguments, if any, of [_contextType], as a String, including the
@@ -319,3 +334,6 @@ class _RendererInfo {
     }
   }
 }
+
+String _asGenerics(Iterable<String> values) =>
+    values.isEmpty ? '' : '<${values.join(', ')}>';
