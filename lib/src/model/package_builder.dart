@@ -207,11 +207,10 @@ class PubPackageBuilder implements PackageBuilder {
     var knownParts = <String>{};
     do {
       lastPass = current;
-      var newFiles = files.difference(knownParts);
 
       // Be careful here not to accidentally stack up multiple
       // [DartDocResolvedLibrary]s, as those eat our heap.
-      for (var f in newFiles) {
+      for (var f in files.difference(knownParts)) {
         logProgress(f);
         var r = await processLibrary(f);
         if (r == null) {
