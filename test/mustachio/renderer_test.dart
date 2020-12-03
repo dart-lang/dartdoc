@@ -89,4 +89,11 @@ void main() {
     var foo = Foo()..b1 = true;
     expect(renderFoo(foo, ast), equals('Text true'));
   });
+
+  test('Renderer renders an Iterable variable node', () {
+    var parser = MustachioParser('Text {{l1}}');
+    var ast = parser.parse();
+    var foo = Foo()..l1 = [1, 2, 3];
+    expect(renderFoo(foo, ast), equals('Text [1, 2, 3]'));
+  });
 }

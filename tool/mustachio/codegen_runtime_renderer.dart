@@ -169,11 +169,7 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
   ${renderer._rendererClassName}($typeName context, RendererBase<Object> parent)
       : super(context, parent);
 ''');
-    var propertyMapTypeArguments = _asGenerics([
-      ...renderer._contextType.typeArguments
-          .map((t) => t.getDisplayString(withNullability: false)),
-      typeName
-    ]);
+    var propertyMapTypeArguments = renderer._typeArgumentsStringWith(typeName);
     var propertyMapName = 'propertyMap$propertyMapTypeArguments';
     // Write out `getProperty`.
     _buffer.writeln('''
@@ -258,8 +254,7 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
       // concrete types substituted for `E` for example.
       if (innerType is! TypeParameterType) {
         var rendererName = _typeToRenderFunctionName[innerType.element];
-        _buffer.writeln(
-            '''                                                                                                                                                       
+        _buffer.writeln('''
 isEmptyIterable: ($_contextTypeVariable c) => c.$getterName?.isEmpty ?? true,
 
 renderIterable:
@@ -317,26 +312,28 @@ class _RendererInfo {
         .map((tp) => tp.getDisplayString(withNullability: false)));
   }
 
+  /// Returns the type parameters of the context type, and [extra], as they
+  /// appear in a list of generics.
   String _typeParametersStringWith(String extra) {
     return _asGenerics([
       ..._contextType.element.typeParameters
           .map((tp) => tp.getDisplayString(withNullability: false)),
-      extra
+      extra,
     ]);
   }
 
-  /// The type arguments, if any, of [_contextType], as a String, including the
-  /// angled brackets, otherwise a blank String.
-  String get _typeArgumentsString {
-    if (_contextType.typeArguments.isEmpty) {
-      return '';
-    } else {
-      var typeArguments = _contextType.typeArguments
-          .map((t) => t.getDisplayString(withNullability: false));
-      return '<${typeArguments.join(', ')}>';
-    }
+  /// Returns the type parameters of the context type, and [extra], as they
+  /// appear in a list of generics.
+  String _typeArgumentsStringWith(String extra) {
+    return _asGenerics([
+      ..._contextType.typeArguments
+          .map((tp) => tp.getDisplayString(withNullability: false)),
+      extra,
+    ]);
   }
 }
 
+/// Returns [values] as they appear in a list of generics, with angled brackets,
+/// and an empty string when [values] is empty.
 String _asGenerics(Iterable<String> values) =>
     values.isEmpty ? '' : '<${values.join(', ')}>';
