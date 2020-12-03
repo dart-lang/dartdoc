@@ -36,11 +36,8 @@ const _partials_html = <String>[
   'documentation',
   'name_summary',
   'search_sidebar',
-  'sidebar_for_class',
   'sidebar_for_category',
   'sidebar_for_container',
-  'sidebar_for_enum',
-  'sidebar_for_extension',
   'source_code',
   'source_link',
   'sidebar_for_library',
@@ -190,6 +187,8 @@ class Templates {
   final Template methodTemplate;
   final Template mixinTemplate;
   final Template propertyTemplate;
+  final Template sidebarContainerTemplate;
+  final Template sidebarLibraryTemplate;
   final Template topLevelPropertyTemplate;
   final Template typeDefTemplate;
 
@@ -254,6 +253,9 @@ class Templates {
 
     var indexTemplate = await _loadTemplate('index');
     var libraryTemplate = await _loadTemplate('library');
+    var sidebarContainerTemplate =
+        await _loadTemplate('_sidebar_for_container');
+    var sidebarLibraryTemplate = await _loadTemplate('_sidebar_for_library');
     var categoryTemplate = await _loadTemplate('category');
     var classTemplate = await _loadTemplate('class');
     var extensionTemplate = await _loadTemplate('extension');
@@ -271,6 +273,8 @@ class Templates {
         indexTemplate,
         categoryTemplate,
         libraryTemplate,
+        sidebarContainerTemplate,
+        sidebarLibraryTemplate,
         classTemplate,
         extensionTemplate,
         enumTemplate,
@@ -288,6 +292,8 @@ class Templates {
       this.indexTemplate,
       this.categoryTemplate,
       this.libraryTemplate,
+      this.sidebarContainerTemplate,
+      this.sidebarLibraryTemplate,
       this.classTemplate,
       this.extensionTemplate,
       this.enumTemplate,
