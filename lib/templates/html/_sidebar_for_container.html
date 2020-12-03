@@ -1,17 +1,17 @@
 <ol>
     {{#container}}
 
-    {{#isClass}}
-    {{#hasPublicConstructors}}
-    <li class="section-title"><a href="{{{href}}}#constructors">Constructors</a></li>
-    {{#publicConstructorsSorted}}
-    <li><a{{#isDeprecated}} class="deprecated"{{/isDeprecated}} href="{{{href}}}">{{shortName}}</a></li>
-    {{/publicConstructorsSorted}}
-    {{/hasPublicConstructors}}
+    {{#isEnum}}
+    {{#hasPublicConstantFields}}
+    <li class="section-title"><a href="{{{href}}}#constants">Constants</a></li>
+    {{#publicConstantFieldsSorted}}
+    <li>{{{linkedName}}}</li>
+    {{/publicConstantFieldsSorted}}
+    {{/hasPublicConstantFields}}
 
     {{#hasPublicInstanceFields}}
     <li class="section-title{{ #publicInheritedInstanceFields }} inherited{{ /publicInheritedInstanceFields }}">
-        <a href="{{{href}}}#instance-properties">Properties</a>
+      <a href="{{{href}}}#instance-properties">Properties</a>
     </li>
     {{#publicInstanceFieldsSorted}}
     <li{{ #isInherited }} class="inherited"{{ /isInherited}}>{{{ linkedName }}}</li>
@@ -31,30 +31,18 @@
     <li{{ #isInherited }} class="inherited"{{ /isInherited}}>{{{ linkedName }}}</li>
     {{/publicInstanceOperatorsSorted}}
     {{/hasPublicInstanceOperators}}
+    {{/isEnum}}
 
-    {{#hasPublicVariableStaticFields}}
-    <li class="section-title"><a href="{{{href}}}#static-properties">Static properties</a></li>
-    {{#publicVariableStaticFieldsSorted}}
-    <li>{{{ linkedName }}}</li>
-    {{/publicVariableStaticFieldsSorted}}
-    {{/hasPublicVariableStaticFields}}
-
-    {{#hasPublicStaticMethods}}
-    <li class="section-title"><a href="{{{href}}}#static-methods">Static methods</a></li>
-    {{#publicStaticMethodsSorted}}
-    <li>{{{ linkedName }}}</li>
-    {{/publicStaticMethodsSorted}}
-    {{/hasPublicStaticMethods}}
-
-    {{#hasPublicConstantFields}}
-    <li class="section-title"><a href="{{{href}}}#constants">Constants</a></li>
-    {{#publicConstantFieldsSorted}}
-    <li>{{{linkedName}}}</li>
-    {{/publicConstantFieldsSorted}}
-    {{/hasPublicConstantFields}}
+    {{#isClass}}
+    {{#hasPublicConstructors}}
+    <li class="section-title"><a href="{{{href}}}#constructors">Constructors</a></li>
+    {{#publicConstructorsSorted}}
+    <li><a{{#isDeprecated}} class="deprecated"{{/isDeprecated}} href="{{{href}}}">{{shortName}}</a></li>
+    {{/publicConstructorsSorted}}
+    {{/hasPublicConstructors}}
     {{/isClass}}
 
-    {{#isExtension}}
+    {{#isClassOrExtension}}
     {{#hasPublicInstanceFields}}
     <li class="section-title"> <a href="{{{href}}}#instance-properties">Properties</a>
     </li>
@@ -97,7 +85,6 @@
     <li>{{{linkedName}}}</li>
     {{/publicConstantFieldsSorted}}
     {{/hasPublicConstantFields}}
-    {{/isExtension}}
-
+    {{/isClassOrExtension}}
     {{/container}}
 </ol>

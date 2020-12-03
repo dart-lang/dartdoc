@@ -31,8 +31,18 @@ abstract class Container extends ModelElement with TypeParameters {
   Container(Element element, Library library, PackageGraph packageGraph)
       : super(element, library, packageGraph, null);
 
-  bool get isClass => element is ClassElement;
+  /// Is this a class (but not an enum)?
+  bool get isClass =>
+      element is ClassElement && !(element as ClassElement).isEnum;
   bool get isExtension => element is ExtensionElement;
+
+  /// For templates, classes and extensions have much in common despite
+  /// differing underlying implementations in the analyzer.
+  bool get isClassOrExtension => isClass || isExtension;
+  bool get isEnum =>
+      element is ClassElement && (element as ClassElement).isEnum;
+  bool get isMixin =>
+      element is ClassElement && (element as ClassElement).isMixin;
 
   @mustCallSuper
   Iterable<ModelElement> get allModelElements => quiver.concat([
