@@ -93,7 +93,7 @@ void main() {
         packageGraph.localPublicLibraries,
         anyElement((l) => packageGraph.packageWarningCounter
             .hasWarning(l, PackageWarning.duplicateFile, expectedPath)));
-  });
+  }, onPlatform: {'windows': Skip('Test does not work on Windows (#2446)')});
 
   test('has HTML templates', () async {
     expect(templates.indexTemplate, isNotNull);
@@ -104,7 +104,7 @@ void main() {
     expect(templates.methodTemplate, isNotNull);
     expect(templates.propertyTemplate, isNotNull);
     expect(templates.topLevelPropertyTemplate, isNotNull);
-  });
+  }, onPlatform: {'windows': Skip('Test does not work on Windows (#2446)')});
 }
 
 const Matcher doesExist = _DoesExist();
