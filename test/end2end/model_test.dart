@@ -1315,8 +1315,13 @@ void main() {
   group('Class edge cases', () {
     test('Overrides from intermediate abstract classes are picked up correctly', () {
       var IntermediateAbstractSubclass = fakeLibrary.allClasses.firstWhere((c) => c.name == 'IntermediateAbstractSubclass');
-      var operatorEquals = IntermediateAbstractSubclass.inheritedOperators.firstWhere((m) => m.name == 'operator ==');
+      var operatorEquals = IntermediateAbstractSubclass.inheritedOperators.firstWhere((o) => o.name == 'operator ==');
       expect(operatorEquals.definingEnclosingContainer.name, equals('IntermediateAbstract'));
+
+      var dartCore = packageGraph.libraries.firstWhere((l) => l.name == 'dart:core');
+      var intClass = dartCore.allClasses.firstWhere((c) => c.name == 'int');
+      var operatorEqualsInt = intClass.inheritedOperators.firstWhere((o) => o.name == 'operator ==');
+      expect(operatorEqualsInt.definingEnclosingContainer.name, equals('num'));
     });
 
     test('Factories from unrelated classes are linked correctly', () {
