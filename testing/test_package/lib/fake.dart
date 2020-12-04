@@ -1230,15 +1230,11 @@ class _Super5 implements _Super2 {}
 class Super6 implements _Super5 {}
 
 
-class IntermediateAbstractBase {
-  void concreteMethod() {}
-}
-
-abstract class IntermediateAbstract extends IntermediateAbstractBase {
+abstract class IntermediateAbstract extends Object {
   /// This is an override.
   @override
-  void concreteMethod() {}
+  bool operator==(Object other) {}
 }
 
-/// This should inherit [concreteMethod] from [IntermediateAbstract].
+/// This should inherit [==] from [IntermediateAbstract].
 class IntermediateAbstractSubclass extends IntermediateAbstract {}
