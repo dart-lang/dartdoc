@@ -1313,6 +1313,12 @@ void main() {
   });
 
   group('Class edge cases', () {
+    test('Overrides from intermediate abstract classes are picked up correctly', () {
+      var IntermediateAbstractSubclass = fakeLibrary.allClasses.firstWhere((c) => c.name == 'IntermediateAbstractSubclass');
+      var concreteMethod = IntermediateAbstractSubclass.inheritedMethods.firstWhere((m) => m.name == 'concreteMethod');
+      expect(concreteMethod.definingEnclosingContainer.name, equals('IntermediateAbstract'));
+    });
+
     test('Factories from unrelated classes are linked correctly', () {
       var A = packageGraph.localPublicLibraries
           .firstWhere((l) => l.name == 'unrelated_factories')

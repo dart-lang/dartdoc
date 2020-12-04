@@ -1228,3 +1228,17 @@ class Super4 implements Super1 {}
 class _Super5 implements _Super2 {}
 
 class Super6 implements _Super5 {}
+
+
+class IntermediateAbstractBase {
+  void concreteMethod() {}
+}
+
+abstract class IntermediateAbstract extends IntermediateAbstractBase {
+  /// This is an override.
+  @override
+  void concreteMethod() {}
+}
+
+/// This should inherit [concreteMethod] from [IntermediateAbstract].
+class IntermediateAbstractSubclass extends IntermediateAbstract {}
