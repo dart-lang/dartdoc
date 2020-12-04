@@ -1313,14 +1313,24 @@ void main() {
   });
 
   group('Class edge cases', () {
-    test('Overrides from intermediate abstract classes are picked up correctly', () {
-      var IntermediateAbstractSubclass = fakeLibrary.allClasses.firstWhere((c) => c.name == 'IntermediateAbstractSubclass');
-      var operatorEquals = IntermediateAbstractSubclass.inheritedOperators.firstWhere((o) => o.name == 'operator ==');
-      expect(operatorEquals.definingEnclosingContainer.name, equals('IntermediateAbstract'));
+    test('Overrides from intermediate abstract classes are picked up correctly',
+        () {
+      var IntermediateAbstractSubclass = fakeLibrary.allClasses
+          .firstWhere((c) => c.name == 'IntermediateAbstractSubclass');
+      var operatorEquals = IntermediateAbstractSubclass.inheritedOperators
+          .firstWhere((o) => o.name == 'operator ==');
+      expect(operatorEquals.definingEnclosingContainer.name,
+          equals('IntermediateAbstract'));
+    });
 
-      var dartCore = packageGraph.libraries.firstWhere((l) => l.name == 'dart:core');
+    test(
+        'Overrides from intermediate abstract classes that have external implementations via the SDK are picked up correctly',
+        () {
+      var dartCore =
+          packageGraph.libraries.firstWhere((l) => l.name == 'dart:core');
       var intClass = dartCore.allClasses.firstWhere((c) => c.name == 'int');
-      var operatorEqualsInt = intClass.inheritedOperators.firstWhere((o) => o.name == 'operator ==');
+      var operatorEqualsInt = intClass.inheritedOperators
+          .firstWhere((o) => o.name == 'operator ==');
       expect(operatorEqualsInt.definingEnclosingContainer.name, equals('num'));
     });
 
