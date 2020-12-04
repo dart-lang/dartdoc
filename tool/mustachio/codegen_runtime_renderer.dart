@@ -268,7 +268,22 @@ renderIterable:
 ''');
       }
     } else {
-      // TODO(srawlins): Otherwise, add functions for plain values.
+      // Don't add Iterable functions for a generic type, for example
+      // `List<E>.first` has type `E`, which we don't have a specific
+      // renderer for.
+      // TODO(srawlins): Find a solution for this. We can track all of the
+      // concrete types substituted for `E` for example.
+      if (getterName is! TypeParameterType) {
+        var rendererName = _typeToRenderFunctionName[getterType.element];
+        _buffer.writeln('''
+isNullValue: ($_contextTypeVariable c) => c.$getterName == null,
+
+renderValue:
+    ($_contextTypeVariable c, RendererBase<$_contextTypeVariable> r, List<MustachioNode> ast) {
+  return $rendererName(c.$getterName, ast, parent: r);
+},
+''');
+      }
     }
     _buffer.writeln('),');
   }

@@ -40,6 +40,10 @@ class Renderer_Foo extends RendererBase<Foo> {
         's1': Property(
           getValue: (CT_ c) => c.s1,
           getProperties: Renderer_String.propertyMap,
+          isNullValue: (CT_ c) => c.s1 == null,
+          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+            return _render_String(c.s1, ast, parent: r);
+          },
         ),
         ...Renderer_Object.propertyMap<CT_>(),
       };
@@ -82,6 +86,10 @@ class Renderer_String extends RendererBase<String> {
         'hashCode': Property(
           getValue: (CT_ c) => c.hashCode,
           getProperties: Renderer_int.propertyMap,
+          isNullValue: (CT_ c) => c.hashCode == null,
+          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+            return _render_int(c.hashCode, ast, parent: r);
+          },
         ),
         'isEmpty': Property(
           getValue: (CT_ c) => c.isEmpty,
@@ -96,6 +104,10 @@ class Renderer_String extends RendererBase<String> {
         'length': Property(
           getValue: (CT_ c) => c.length,
           getProperties: Renderer_int.propertyMap,
+          isNullValue: (CT_ c) => c.length == null,
+          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+            return _render_int(c.length, ast, parent: r);
+          },
         ),
         'runes': Property(
           getValue: (CT_ c) => c.runes,
@@ -137,6 +149,10 @@ class Renderer_Object extends RendererBase<Object> {
         'hashCode': Property(
           getValue: (CT_ c) => c.hashCode,
           getProperties: Renderer_int.propertyMap,
+          isNullValue: (CT_ c) => c.hashCode == null,
+          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+            return _render_int(c.hashCode, ast, parent: r);
+          },
         ),
       };
 
@@ -165,6 +181,10 @@ class Renderer_bool extends RendererBase<bool> {
         'hashCode': Property(
           getValue: (CT_ c) => c.hashCode,
           getProperties: Renderer_int.propertyMap,
+          isNullValue: (CT_ c) => c.hashCode == null,
+          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+            return _render_int(c.hashCode, ast, parent: r);
+          },
         ),
         ...Renderer_Object.propertyMap<CT_>(),
       };
@@ -194,6 +214,10 @@ class Renderer_List<E> extends RendererBase<List<E>> {
         'length': Property(
           getValue: (CT_ c) => c.length,
           getProperties: Renderer_int.propertyMap,
+          isNullValue: (CT_ c) => c.length == null,
+          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+            return _render_int(c.length, ast, parent: r);
+          },
         ),
         'reversed': Property(
           getValue: (CT_ c) => c.reversed,
@@ -226,6 +250,10 @@ class Renderer_int extends RendererBase<int> {
         'bitLength': Property(
           getValue: (CT_ c) => c.bitLength,
           getProperties: Renderer_int.propertyMap,
+          isNullValue: (CT_ c) => c.bitLength == null,
+          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+            return _render_int(c.bitLength, ast, parent: r);
+          },
         ),
         'isEven': Property(
           getValue: (CT_ c) => c.isEven,
@@ -240,6 +268,10 @@ class Renderer_int extends RendererBase<int> {
         'sign': Property(
           getValue: (CT_ c) => c.sign,
           getProperties: Renderer_int.propertyMap,
+          isNullValue: (CT_ c) => c.sign == null,
+          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+            return _render_int(c.sign, ast, parent: r);
+          },
         ),
         ...Renderer_num.propertyMap<CT_>(),
       };
@@ -269,6 +301,10 @@ class Renderer_num extends RendererBase<num> {
         'hashCode': Property(
           getValue: (CT_ c) => c.hashCode,
           getProperties: Renderer_int.propertyMap,
+          isNullValue: (CT_ c) => c.hashCode == null,
+          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+            return _render_int(c.hashCode, ast, parent: r);
+          },
         ),
         'isFinite': Property(
           getValue: (CT_ c) => c.isFinite,
@@ -293,6 +329,10 @@ class Renderer_num extends RendererBase<num> {
         'sign': Property(
           getValue: (CT_ c) => c.sign,
           getProperties: Renderer_num.propertyMap,
+          isNullValue: (CT_ c) => c.sign == null,
+          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+            return _render_num(c.sign, ast, parent: r);
+          },
         ),
         ...Renderer_Object.propertyMap<CT_>(),
       };

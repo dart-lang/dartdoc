@@ -126,15 +126,6 @@ class Bar {}
               'static Map<String, Property<CT_>> propertyMap<CT_ extends Foo>() => {'));
     });
 
-    test('with a property map with a String property', () {
-      expect(generatedContent, contains('''
-        's1': Property(
-          getValue: (CT_ c) => c.s1,
-          getProperties: _Renderer_String.propertyMap,
-        ),
-'''));
-    });
-
     test('with a property map which references the superclass', () {
       expect(generatedContent,
           contains('..._Renderer_FooBase.propertyMap<CT_>(),'));
@@ -163,6 +154,19 @@ class Bar {}
               buffer.write(_render_int(e, ast, parent: r));
             }
             return buffer.toString();
+          },
+        ),
+'''));
+    });
+
+    test('with a property map with a non-bool, non-Iterable property', () {
+      expect(generatedContent, contains('''
+        's1': Property(
+          getValue: (CT_ c) => c.s1,
+          getProperties: _Renderer_String.propertyMap,
+          isNullValue: (CT_ c) => c.s1 == null,
+          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+            return _render_String(c.s1, ast, parent: r);
           },
         ),
 '''));

@@ -216,6 +216,17 @@ void main() {
     expect(section.children, isEmpty);
   });
 
+  test('parses section with variable tag inside', () {
+    var parser = MustachioParser('Text {{#key}}{{two}}{{/key}}');
+    var ast = parser.parse();
+    expect(ast, hasLength(2));
+    _expectText(ast[0], equals('Text '));
+    var section = ast[1] as Section;
+    _expectSection(section, equals(['key']));
+    expect(section.children, hasLength(1));
+    _expectVariable(section.children.single, equals(['two']));
+  });
+
   test('parses section with empty key as text', () {
     var parser = MustachioParser('Text {{#}}{{/key}}');
     var ast = parser.parse();
