@@ -1230,7 +1230,7 @@ class _Super5 implements _Super2 {}
 class Super6 implements _Super5 {}
 
 
-abstract class IntermediateAbstract extends Object {
+abstract class IntermediateAbstract implements Object {
   /// This is an override.
   @override
   bool operator==(Object other) {}
