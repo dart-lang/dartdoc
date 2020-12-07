@@ -75,7 +75,44 @@ abstract class RendererBase<T> {
   }
 
   void section(Section node) {
-    // TODO(srawlins): Implement.
+    var key = node.key.first;
+    var property = getProperty(key);
+    if (property == null) {
+      if (parent == null) {
+        throw MustachioResolutionError(
+            'Failed to resolve $key as a property on any types in the current '
+            'context');
+      } else {
+        return parent.section(node);
+      }
+    }
+
+    if (property.getBool != null) {
+      var boolResult = property.getBool(context);
+      if ((boolResult && !node.invert) || (!boolResult && node.invert)) {
+        renderBlock(node.children);
+      }
+      return;
+    }
+
+    if (property.renderIterable != null) {
+      // An inverted section is rendered with the current context.
+      if (node.invert && property.isEmptyIterable(context)) {
+        renderBlock(node.children);
+      }
+      if (!node.invert && !property.isEmptyIterable(context)) {
+        write(property.renderIterable(context, this, node.children));
+      }
+      return;
+    }
+
+    // If this section is not a conditional or repeated section, it is a value
+    // section, regardless of type.
+    if (node.invert && property.isNullValue(context)) {
+      renderBlock(node.children);
+    } else if (!node.invert && !property.isNullValue(context)) {
+      write(property.renderValue(context, this, node.children));
+    }
   }
 
   void partial(Partial node) {
@@ -103,6 +140,11 @@ class Property<T> {
           T, RendererBase<T>, List<MustachioNode> /*!*/) /*?*/
       renderIterable;
 
+  final bool /*!*/ Function(T) /*?*/ isNullValue;
+
+  final String /*!*/ Function(
+      T, RendererBase<T>, List<MustachioNode> /*!*/) /*?*/ renderValue;
+
   // TODO(srawlins): Add functions for rendering other properties.
 
   Property(
@@ -110,7 +152,9 @@ class Property<T> {
       this.getProperties,
       this.getBool,
       this.isEmptyIterable,
-      this.renderIterable});
+      this.renderIterable,
+      this.isNullValue,
+      this.renderValue});
 }
 
 /// An error indicating that a renderer failed to resolve a key.

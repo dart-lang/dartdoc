@@ -82,6 +82,7 @@ class MustachioParser {
           addTextNode(textStartIndex, textEndIndex);
           children.add(result.node);
           textStartIndex = _index;
+          continue;
         }
       }
       _index++;
