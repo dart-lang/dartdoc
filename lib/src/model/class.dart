@@ -376,12 +376,39 @@ class Class extends Container
       var cmap = inheritance.getInheritedConcreteMap2(element);
       var imap = inheritance.getInheritedMap2(element);
 
+      var inheritanceChainElements;
+
       var combinedMap = <String, ExecutableElement>{};
       for (var nameObj in cmap.keys) {
         combinedMap[nameObj.name] = cmap[nameObj];
       }
       for (var nameObj in imap.keys) {
-        combinedMap[nameObj.name] ??= imap[nameObj];
+        if (combinedMap[nameObj.name] != null) {
+          // Elements in the inheritance chain starting from [this.element]
+          // down to, but not including, [Object].
+          inheritanceChainElements ??=
+              inheritanceChain.map((c) => c.element).toList();
+          // [packageGraph.specialClasses] is not available yet.
+          bool _isDartCoreObject(ClassElement e) =>
+              e.name == 'Object' && e.library.name == 'dart.core';
+          assert(inheritanceChainElements
+                  .contains(imap[nameObj].enclosingElement) ||
+              _isDartCoreObject(imap[nameObj].enclosingElement));
+
+          // If the concrete object from [InheritanceManager3.getInheritedConcreteMap2]
+          // is farther from this class in the inheritance chain than the one
+          // provided by InheritedMap2, prefer InheritedMap2.  This
+          // correctly accounts for intermediate abstract classes that have
+          // method/field implementations.
+          if (inheritanceChainElements
+                  .indexOf(combinedMap[nameObj.name].enclosingElement) <
+              inheritanceChainElements
+                  .indexOf(imap[nameObj].enclosingElement)) {
+            combinedMap[nameObj.name] = imap[nameObj];
+          }
+        } else {
+          combinedMap[nameObj.name] = imap[nameObj];
+        }
       }
 
       __inheritedElements = combinedMap.values.toList();
