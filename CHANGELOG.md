@@ -1,3 +1,20 @@
+## 0.38.0
+* Correctly handle intermediate abstract classes containing external
+  implementations. (#2449, #2251)
+* More implementation added for Mustachio. (#2448, #2447, #2442)
+* Change analyzer minor version, updating to 0.41. (#2445)
+* **Breaking change**: Refactor sidebar handling to improve performance.
+  Sidebar templates are now required to exist in custom sets, though
+  you do not have to use them.  See referred PR.  (#2444)
+* **Breaking change**: Complete extraction of sorted methods used by
+  templates.  This moves sorting of elements closer to the presentation
+  layer but requires renaming references in custom templates.  See
+  `sed` script example in referred PR.  (#2438)
+* Fix missing null checks for YAML data. (#2441, #2378)
+* Give the correct exception for missing `FLUTTER_ROOT` even where `pub get`
+  has already run.  (#2440, #2407)
+* Internal change, prefer analyzer's InterfaceType.allSupertypes. (#2439)
+
 ## 0.37.0
 * Change scope for the dartdoc warning configuration to the library
   being documented rather than where the symbol was originally
