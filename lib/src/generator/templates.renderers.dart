@@ -3373,9 +3373,6 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
             return buffer.toString();
           },
         ),
-        'modelElementRenderer': Property(
-          getValue: (CT_ c) => c.modelElementRenderer,
-        ),
         'modelNode': Property(
           getValue: (CT_ c) => c.modelNode,
         ),

@@ -116,6 +116,7 @@ import '${p.basename(_sourceUri.path)}';
   /// return type.
   void _addPropertyToProcess(PropertyAccessorElement property) {
     if (property.isPrivate || property.isStatic || property.isSetter) return;
+    if (property.hasProtected || property.hasVisibleForTesting) return;
     var type = property.type.returnType;
 
     if (_typeSystem.isAssignableTo(type, _typeProvider.iterableDynamicType)) {
@@ -243,6 +244,7 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
     }
 
     if (property.isPrivate || property.isStatic || property.isSetter) return;
+    if (property.hasProtected || property.hasVisibleForTesting) return;
     _buffer.writeln("'${property.name}': Property(");
     _buffer
         .writeln('getValue: ($_contextTypeVariable c) => c.${property.name},');
