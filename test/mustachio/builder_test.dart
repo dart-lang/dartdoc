@@ -135,7 +135,18 @@ class Bar {}
       expect(generatedContent, contains('''
         'b1': Property(
           getValue: (CT_ c) => c.b1,
-          getProperties: _Renderer_bool.propertyMap,
+          renderVariable:
+              (CT_ c, Property<CT_> self, List<String> remainingNames) {
+            if (remainingNames.isEmpty) return self.getValue(c).toString();
+            var name = remainingNames.first;
+            if (_Renderer_bool.propertyMap().containsKey(name)) {
+              var nextProperty = _Renderer_bool.propertyMap()[name];
+              return nextProperty.renderVariable(
+                  self.getValue(c), nextProperty, [...remainingNames.skip(1)]);
+            } else {
+              throw MustachioResolutionError();
+            }
+          },
           getBool: (CT_ c) => c.b1 == true,
         ),
 '''));
@@ -145,7 +156,18 @@ class Bar {}
       expect(generatedContent, contains('''
         'l1': Property(
           getValue: (CT_ c) => c.l1,
-          getProperties: _Renderer_List.propertyMap,
+          renderVariable:
+              (CT_ c, Property<CT_> self, List<String> remainingNames) {
+            if (remainingNames.isEmpty) return self.getValue(c).toString();
+            var name = remainingNames.first;
+            if (_Renderer_List.propertyMap().containsKey(name)) {
+              var nextProperty = _Renderer_List.propertyMap()[name];
+              return nextProperty.renderVariable(
+                  self.getValue(c), nextProperty, [...remainingNames.skip(1)]);
+            } else {
+              throw MustachioResolutionError();
+            }
+          },
           isEmptyIterable: (CT_ c) => c.l1?.isEmpty ?? true,
           renderIterable:
               (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
@@ -163,7 +185,18 @@ class Bar {}
       expect(generatedContent, contains('''
         's1': Property(
           getValue: (CT_ c) => c.s1,
-          getProperties: _Renderer_String.propertyMap,
+          renderVariable:
+              (CT_ c, Property<CT_> self, List<String> remainingNames) {
+            if (remainingNames.isEmpty) return self.getValue(c).toString();
+            var name = remainingNames.first;
+            if (_Renderer_String.propertyMap().containsKey(name)) {
+              var nextProperty = _Renderer_String.propertyMap()[name];
+              return nextProperty.renderVariable(
+                  self.getValue(c), nextProperty, [...remainingNames.skip(1)]);
+            } else {
+              throw MustachioResolutionError();
+            }
+          },
           isNullValue: (CT_ c) => c.s1 == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return _render_String(c.s1, ast, parent: r);
