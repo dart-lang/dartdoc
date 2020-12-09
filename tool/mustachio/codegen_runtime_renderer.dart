@@ -94,10 +94,11 @@ import '${p.basename(_sourceUri.path)}';
 
   void _addTypesForRendererSpec(RendererSpec spec) {
     var element = spec._contextType.element;
-    _typesToProcess.add(_RendererInfo(element.thisType, spec._name,
-        public: _rendererClassesArePublic));
+    var rendererInfo = _RendererInfo(element.thisType, spec._name,
+        public: _rendererClassesArePublic);
+    _typesToProcess.add(rendererInfo);
     _typeToRenderFunctionName[element] = spec._name;
-    _typeToRendererClassName[element] = element.name;
+    _typeToRendererClassName[element] = rendererInfo._rendererClassName;
 
     spec._contextType.accessors.forEach(_addPropertyToProcess);
     var superclass = spec._contextType.superclass;
@@ -116,6 +117,22 @@ import '${p.basename(_sourceUri.path)}';
   void _addPropertyToProcess(PropertyAccessorElement property) {
     if (property.isPrivate || property.isStatic || property.isSetter) return;
     var type = property.type.returnType;
+
+    if (_typeSystem.isAssignableTo(type, _typeProvider.iterableDynamicType)) {
+      var iterableElement = _typeProvider.iterableElement;
+      var iterableType = type.asInstanceOf(iterableElement);
+      var innerType = iterableType.typeArguments.first;
+      // Don't add Iterable functions for a generic type, for example
+      // `List<E>.reversed` has inner type `E`, which we don't have a specific
+      // renderer for.
+      // TODO(srawlins): Find a solution for this. We can track all of the
+      // concrete types substituted for `E` for example.
+      while (innerType != null && innerType is InterfaceType) {
+        _addTypeToProcess((innerType as InterfaceType).element.thisType);
+        innerType = (innerType as InterfaceType).superclass;
+      }
+    }
+
     while (type != null && type is InterfaceType) {
       _addTypeToProcess((type as InterfaceType).element.thisType);
       type = (type as InterfaceType).superclass;
@@ -236,7 +253,20 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
     // [getterType], if [getterType] is a renderable type.
     if (_typeToRendererClassName.containsKey(getterType.element)) {
       var rendererClassName = _typeToRendererClassName[getterType.element];
-      _buffer.writeln('getProperties: $rendererClassName.propertyMap,');
+      _buffer.writeln('''
+renderVariable:
+    ($_contextTypeVariable c, Property<$_contextTypeVariable> self, List<String> remainingNames) {
+  if (remainingNames.isEmpty) return self.getValue(c).toString();
+  var name = remainingNames.first;
+  if ($rendererClassName.propertyMap().containsKey(name)) {
+    var nextProperty = $rendererClassName.propertyMap()[name];
+    return nextProperty.renderVariable(
+        self.getValue(c), nextProperty, [...remainingNames.skip(1)]);
+  } else {
+    throw MustachioResolutionError();
+  }
+},
+''');
     }
 
     if (getterType.isDartCoreBool) {
@@ -254,7 +284,13 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
       // concrete types substituted for `E` for example.
       if (innerType is! TypeParameterType) {
         var rendererName = _typeToRenderFunctionName[innerType.element];
-        _buffer.writeln('''
+        if (rendererName == null) {
+          // We currently don't create renderers for all accessors of all
+          // accessors of all ...
+          // TODO(srawlins): Do that, ensuring that the renderer count doesn't
+          // explode.
+        } else {
+          _buffer.writeln('''
 isEmptyIterable: ($_contextTypeVariable c) => c.$getterName?.isEmpty ?? true,
 
 renderIterable:
@@ -266,6 +302,7 @@ renderIterable:
   return buffer.toString();
 },
 ''');
+        }
       }
     } else {
       // Don't add Iterable functions for a generic type, for example
@@ -275,7 +312,13 @@ renderIterable:
       // concrete types substituted for `E` for example.
       if (getterName is! TypeParameterType) {
         var rendererName = _typeToRenderFunctionName[getterType.element];
-        _buffer.writeln('''
+        if (rendererName == null) {
+          // We currently don't create renderers for all accessors of all
+          // accessors of all ...
+          // TODO(srawlins): Do that, ensuring that the renderer count doesn't
+          // explode.
+        } else {
+          _buffer.writeln('''
 isNullValue: ($_contextTypeVariable c) => c.$getterName == null,
 
 renderValue:
@@ -283,6 +326,7 @@ renderValue:
   return $rendererName(c.$getterName, ast, parent: r);
 },
 ''');
+        }
       }
     }
     _buffer.writeln('),');

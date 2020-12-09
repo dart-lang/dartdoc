@@ -17,7 +17,7 @@ void main() {
   test('property map contains valid bool Properties', () {
     var propertyMap = Renderer_Foo.propertyMap();
     expect(propertyMap['b1'].getValue, isNotNull);
-    expect(propertyMap['b1'].getProperties, isNotNull);
+    expect(propertyMap['b1'].renderVariable, isNotNull);
     expect(propertyMap['b1'].getBool, isNotNull);
     expect(propertyMap['b1'].isEmptyIterable, isNull);
     expect(propertyMap['b1'].renderIterable, isNull);
@@ -28,7 +28,7 @@ void main() {
   test('property map contains valid Iterable Properties', () {
     var propertyMap = Renderer_Foo.propertyMap();
     expect(propertyMap['l1'].getValue, isNotNull);
-    expect(propertyMap['l1'].getProperties, isNotNull);
+    expect(propertyMap['l1'].renderVariable, isNotNull);
     expect(propertyMap['l1'].getBool, isNull);
     expect(propertyMap['l1'].isEmptyIterable, isNotNull);
     expect(propertyMap['l1'].renderIterable, isNotNull);
@@ -39,7 +39,7 @@ void main() {
   test('property map contains valid non-bool, non-Iterable Properties', () {
     var propertyMap = Renderer_Foo.propertyMap();
     expect(propertyMap['s1'].getValue, isNotNull);
-    expect(propertyMap['s1'].getProperties, isNotNull);
+    expect(propertyMap['s1'].renderVariable, isNotNull);
     expect(propertyMap['s1'].getBool, isNull);
     expect(propertyMap['s1'].isEmptyIterable, isNull);
     expect(propertyMap['s1'].renderIterable, isNull);
@@ -198,6 +198,61 @@ void main() {
     var ast = parser.parse();
     var foo = Foo()..s1 = null;
     expect(renderFoo(foo, ast), equals('Text Section'));
+  });
+
+  test('Renderer resolves variable inside a value section', () {
+    var parser = MustachioParser('Text {{#foo}}{{s1}}{{/foo}}');
+    var ast = parser.parse();
+    var bar = Bar()..foo = (Foo()..s1 = 'hello');
+    expect(renderBar(bar, ast), equals('Text hello'));
+  });
+
+  test('Renderer resolves variable from outer context inside a value section',
+      () {
+    var parser = MustachioParser('Text {{#foo}}{{s2}}{{/foo}}');
+    var ast = parser.parse();
+    var bar = Bar()
+      ..foo = (Foo()..s1 = 'hello')
+      ..s2 = 'goodbye';
+    expect(renderBar(bar, ast), equals('Text goodbye'));
+  });
+
+  test('Renderer resolves variable with key with multiple names', () {
+    var parser = MustachioParser('Text {{foo.s1}}');
+    var ast = parser.parse();
+    var bar = Bar()
+      ..foo = (Foo()..s1 = 'hello')
+      ..s2 = 'goodbye';
+    expect(renderBar(bar, ast), equals('Text hello'));
+  });
+
+  test('Renderer resolves outer variable with key with two names', () {
+    var parser = MustachioParser('Text {{#foo}}{{foo.s1}}{{/foo}}');
+    var ast = parser.parse();
+    var bar = Bar()
+      ..foo = (Foo()..s1 = 'hello')
+      ..s2 = 'goodbye';
+    expect(renderBar(bar, ast), equals('Text hello'));
+  });
+
+  test('Renderer resolves outer variable with key with three names', () {
+    var parser = MustachioParser('Text {{#foo}}{{foo.s1.length}}{{/foo}}');
+    var ast = parser.parse();
+    var bar = Bar()
+      ..foo = (Foo()..s1 = 'hello')
+      ..s2 = 'goodbye';
+    expect(renderBar(bar, ast), equals('Text 5'));
+  });
+
+  test('Renderer resolves outer variable with key with more than three names',
+      () {
+    var parser =
+        MustachioParser('Text {{#foo}}{{foo.s1.length.isEven}}{{/foo}}');
+    var ast = parser.parse();
+    var bar = Bar()
+      ..foo = (Foo()..s1 = 'hello')
+      ..s2 = 'goodbye';
+    expect(renderBar(bar, ast), equals('Text false'));
   });
 
   test('Renderer throws when it cannot resolve a variable key', () {

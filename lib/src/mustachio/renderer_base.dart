@@ -37,24 +37,21 @@ abstract class RendererBase<T> {
     }
     var property = getProperty(names.first);
     if (property != null) {
-      var value = property.getValue(context);
-      for (var name in names.skip(1)) {
-        if (property.getProperties().containsKey(name)) {
-          property = property.getProperties()[name];
-          value = property.getValue(value);
-        } else {
-          throw MustachioResolutionError(
-              'Failed to resolve ${names.join('.')} as a property '
-              'on ${context.runtimeType}');
-        }
+      try {
+        return property.renderVariable(context, property, [...names.skip(1)]);
+      } on MustachioResolutionError {
+        // The error thrown by [Property.renderVariable] does not have all of
+        // the names required for a decent error. We throw a new error here.
+        throw MustachioResolutionError(
+            'Failed to resolve $names as a property chain on any types in the '
+            'current context');
       }
-      return value.toString();
     } else if (parent != null) {
       return parent.getFields(names);
     } else {
       throw MustachioResolutionError(
-          'Failed to resolve ${names.first} as a property '
-          'on any types in the current context');
+          'Failed to resolve ${names.first} as a property on any types in the '
+          'current context');
     }
   }
 
@@ -126,9 +123,8 @@ class Property<T> {
   /// Gets the value of this property on the object [context].
   final Object /*?*/ Function(T context) /*!*/ getValue;
 
-  /// Gets the property map of the type of this property.
-  final Map<String /*!*/, Property<Object> /*!*/ >
-      Function() /*?*/ getProperties;
+  final String /*!*/ Function(
+      T, Property<T>, List<String> /*!*/) /*?*/ renderVariable;
 
   /// Gets the bool value (true or false, never null) of this property on the
   /// object [context].
@@ -145,11 +141,9 @@ class Property<T> {
   final String /*!*/ Function(
       T, RendererBase<T>, List<MustachioNode> /*!*/) /*?*/ renderValue;
 
-  // TODO(srawlins): Add functions for rendering other properties.
-
   Property(
       {@required this.getValue,
-      this.getProperties,
+      this.renderVariable,
       this.getBool,
       this.isEmptyIterable,
       this.renderIterable,
@@ -161,5 +155,5 @@ class Property<T> {
 class MustachioResolutionError extends Error {
   String message;
 
-  MustachioResolutionError(this.message);
+  MustachioResolutionError([this.message]);
 }
