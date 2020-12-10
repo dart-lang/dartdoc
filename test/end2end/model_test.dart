@@ -3601,6 +3601,12 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(intCheckOptional.isNamed, isTrue);
     });
 
+    test('uses = instead of : to set default value', () {
+      final rendered =
+          ParameterRendererHtml().renderLinkedParams([intCheckOptional]);
+      expect(rendered.contains('</span> = <span'), isTrue);
+    });
+
     test('linkedName', () {
       expect(intCheckOptional.modelType.linkedName, 'int');
     });

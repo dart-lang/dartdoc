@@ -208,11 +208,7 @@ abstract class ParameterRenderer {
     }
 
     if (param.hasDefaultValue) {
-      if (param.isNamed) {
-        buf.write(': ');
-      } else {
-        buf.write(' = ');
-      }
+      buf.write(' = ');
       buf.write(defaultValue(param.defaultValue));
     }
     return buf.toString();
