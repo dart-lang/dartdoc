@@ -117,6 +117,22 @@ abstract class RendererBase<T> {
   }
 }
 
+abstract class SimpleRendererBase<T> extends RendererBase<T> {
+  static const _needsVisibleToMustachio =
+      'This type something needs @visibleToMustachio';
+
+  SimpleRendererBase(T context, RendererBase<Object> parent)
+      : super(context, parent);
+
+  @override
+  Property<T> getProperty(String key) =>
+      throw UnsupportedError(_needsVisibleToMustachio);
+
+  @override
+  String getFields(List<String> keyParts) =>
+      throw UnsupportedError(_needsVisibleToMustachio);
+}
+
 /// An individual property of objects of type [T], including functions for
 /// rendering various types of Mustache nodes.
 class Property<T> {

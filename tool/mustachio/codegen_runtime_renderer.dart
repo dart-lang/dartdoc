@@ -9,6 +9,7 @@ import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/dart/element/type_provider.dart';
 import 'package:analyzer/dart/element/type_system.dart';
 import 'package:dart_style/dart_style.dart';
+import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 
 /// The specification of a renderer, as derived from a @Renderer annotation.
@@ -86,7 +87,13 @@ import '${p.basename(_sourceUri.path)}';
     while (_typesToProcess.isNotEmpty) {
       var info = _typesToProcess.removeFirst();
 
-      _buildRenderer(info);
+      if (info.isFullRenderer) {
+        _typeToRenderFunctionName[info._contextType.element] =
+            info._functionName;
+        _typeToRendererClassName[info._contextType.element] =
+            info._rendererClassName;
+        _buildRenderer(info);
+      }
     }
 
     return _buffer.toString();
@@ -103,7 +110,7 @@ import '${p.basename(_sourceUri.path)}';
     spec._contextType.accessors.forEach(_addPropertyToProcess);
     var superclass = spec._contextType.superclass;
     while (superclass != null) {
-      _addTypeToProcess(superclass.element.thisType);
+      _addTypeToProcess(superclass.element.thisType, isFullRenderer: true);
       superclass.accessors.forEach(_addPropertyToProcess);
       superclass = superclass.superclass;
     }
@@ -118,6 +125,7 @@ import '${p.basename(_sourceUri.path)}';
     if (property.isPrivate || property.isStatic || property.isSetter) return;
     if (property.hasProtected || property.hasVisibleForTesting) return;
     var type = property.type.returnType;
+    var isFullRenderer = _hasVisibleToMustache(type.element);
 
     if (_typeSystem.isAssignableTo(type, _typeProvider.iterableDynamicType)) {
       var iterableElement = _typeProvider.iterableElement;
@@ -129,19 +137,21 @@ import '${p.basename(_sourceUri.path)}';
       // TODO(srawlins): Find a solution for this. We can track all of the
       // concrete types substituted for `E` for example.
       while (innerType != null && innerType is InterfaceType) {
-        _addTypeToProcess((innerType as InterfaceType).element.thisType);
+        _addTypeToProcess((innerType as InterfaceType).element.thisType,
+            isFullRenderer: true);
         innerType = (innerType as InterfaceType).superclass;
       }
     }
 
     while (type != null && type is InterfaceType) {
-      _addTypeToProcess((type as InterfaceType).element.thisType);
+      _addTypeToProcess((type as InterfaceType).element.thisType,
+          isFullRenderer: isFullRenderer);
       type = (type as InterfaceType).superclass;
     }
   }
 
   /// Adds [type] to the [_typesToProcess] queue, if it is not already there.
-  void _addTypeToProcess(InterfaceType type) {
+  void _addTypeToProcess(InterfaceType type, {@required isFullRenderer}) {
     if (type == _typeProvider.typeType) {
       // The [Type] type is the first case of a type we don't want to traverse.
       return;
@@ -152,11 +162,28 @@ import '${p.basename(_sourceUri.path)}';
         .singleWhere((rs) => rs._contextType == type, orElse: () => null);
     if (typeToProcess == null) {
       var rendererInfo = _RendererInfo(type, renderFunctionName,
-          public: _rendererClassesArePublic);
+          public: _rendererClassesArePublic, isFullRenderer: isFullRenderer);
       _typesToProcess.add(rendererInfo);
       _typeToRenderFunctionName[type.element] = renderFunctionName;
       _typeToRendererClassName[type.element] = rendererInfo._rendererClassName;
+    } else {
+      if (isFullRenderer && !typeToProcess.isFullRenderer) {
+        // This is the only case in which we update a type-to-render.
+        typeToProcess.isFullRenderer = true;
+      }
     }
+  }
+
+  /// Returns whether [element] or any of its supertypes are annotated with
+  /// `visibleToMustache`.
+  bool _hasVisibleToMustache(ClassElement element) {
+    if (element.metadata.any((m) => m.element?.name == 'visibleToMustache')) {
+      return true;
+    }
+    if (element.supertype == null) {
+      return false;
+    }
+    return _hasVisibleToMustache(element.supertype.element);
   }
 
   /// Builds both the render function and the renderer class for [renderer].
@@ -177,11 +204,16 @@ String ${renderer._functionName}${renderer._typeParametersString}(
 ''');
 
     // Write out the renderer class.
+    var rendererBaseClass = renderer.isFullRenderer
+        ? 'RendererBase<$typeName>'
+        : 'SimpleRendererBase<$typeName>';
     _buffer.write('''
 class ${renderer._rendererClassName}${renderer._typeParametersString}
-    extends RendererBase<$typeName> {
+    extends $rendererBaseClass {
 ''');
-    _writePropertyMap(renderer);
+    if (renderer.isFullRenderer) {
+      _writePropertyMap(renderer);
+    }
     // Write out the constructor.
     _buffer.writeln('''
   ${renderer._rendererClassName}($typeName context, RendererBase<Object> parent)
@@ -189,8 +221,9 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
 ''');
     var propertyMapTypeArguments = renderer._typeArgumentsStringWith(typeName);
     var propertyMapName = 'propertyMap$propertyMapTypeArguments';
-    // Write out `getProperty`.
-    _buffer.writeln('''
+    if (renderer.isFullRenderer) {
+      // Write out `getProperty`.
+      _buffer.writeln('''
   @override
   Property<$typeName> getProperty(String key) {
     if ($propertyMapName().containsKey(key)) {
@@ -200,6 +233,7 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
     }
   }
 ''');
+    }
     // Close the class.
     _buffer.writeln('}');
   }
@@ -350,17 +384,25 @@ class _RendererInfo {
   /// private otherwise.
   final String _functionName;
 
+  /// Whether the renderer should be a full renderer.
+  ///
+  /// It may be initially determined that we only need an abbreviated, then
+  /// later determined that we need a full renderer, so this field is not final.
+  bool isFullRenderer;
+
   factory _RendererInfo(InterfaceType contextType, String functionName,
-      {bool public = false}) {
+      {bool public = false, bool isFullRenderer = true}) {
     var typeBaseName = contextType.element.name;
     var rendererClassName =
         public ? 'Renderer_$typeBaseName' : '_Renderer_$typeBaseName';
 
-    return _RendererInfo._(contextType, functionName, rendererClassName);
+    return _RendererInfo._(contextType, functionName, rendererClassName,
+        isFullRenderer: isFullRenderer);
   }
 
   _RendererInfo._(
-      this._contextType, this._functionName, this._rendererClassName);
+      this._contextType, this._functionName, this._rendererClassName,
+      {@required this.isFullRenderer});
 
   String get _typeName => _contextType.getDisplayString(withNullability: false);
 
