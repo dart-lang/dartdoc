@@ -117,7 +117,7 @@ import '${p.basename(_sourceUri.path)}';
   /// is a "valid" property.
   ///
   /// A "valid" property is a public, instance getter with an interface type
-  /// return type. Getters annotated with @internal, @protected,
+  /// return type. Getters annotated with @internal, @protected, or
   /// @visibleForTesting are not valid.
   void _addPropertyToProcess(PropertyAccessorElement property) {
     if (property.isPrivate || property.isStatic || property.isSetter) return;
