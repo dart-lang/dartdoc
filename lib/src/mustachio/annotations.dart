@@ -17,3 +17,11 @@ class Renderer {
 class Context<T> {
   const Context();
 }
+
+class _VisibleToMustache {
+  const _VisibleToMustache();
+}
+
+/// An annotation used to denote a class which should have a "full renderer." A
+/// full renderer gives Mustachio access to the class's fields (getters).
+const visibleToMustache = _VisibleToMustache();

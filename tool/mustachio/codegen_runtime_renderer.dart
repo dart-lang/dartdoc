@@ -88,10 +88,6 @@ import '${p.basename(_sourceUri.path)}';
       var info = _typesToProcess.removeFirst();
 
       if (info.isFullRenderer) {
-        _typeToRenderFunctionName[info._contextType.element] =
-            info._functionName;
-        _typeToRendererClassName[info._contextType.element] =
-            info._rendererClassName;
         _buildRenderer(info);
       }
     }
@@ -101,18 +97,19 @@ import '${p.basename(_sourceUri.path)}';
 
   void _addTypesForRendererSpec(RendererSpec spec) {
     var element = spec._contextType.element;
-    var rendererInfo = _RendererInfo(element.thisType, spec._name,
-        public: _rendererClassesArePublic);
+    var rendererInfo =
+        _RendererInfo(element, spec._name, public: _rendererClassesArePublic);
     _typesToProcess.add(rendererInfo);
     _typeToRenderFunctionName[element] = spec._name;
     _typeToRendererClassName[element] = rendererInfo._rendererClassName;
 
     spec._contextType.accessors.forEach(_addPropertyToProcess);
-    var superclass = spec._contextType.superclass;
+    var superclass = spec._contextType.element.supertype;
     while (superclass != null) {
-      _addTypeToProcess(superclass.element.thisType, isFullRenderer: true);
+      // Any type specified with a renderer spec (`@Renderer`) is full.
+      _addTypeToProcess(superclass.element, isFullRenderer: true);
       superclass.accessors.forEach(_addPropertyToProcess);
-      superclass = superclass.superclass;
+      superclass = superclass.element.supertype;
     }
   }
 
@@ -120,7 +117,8 @@ import '${p.basename(_sourceUri.path)}';
   /// is a "valid" property.
   ///
   /// A "valid" property is a public, instance getter with an interface type
-  /// return type.
+  /// return type. Getters annotated with @internal, @protected,
+  /// @visibleForTesting are not valid.
   void _addPropertyToProcess(PropertyAccessorElement property) {
     if (property.isPrivate || property.isStatic || property.isSetter) return;
     if (property.hasProtected || property.hasVisibleForTesting) return;
@@ -136,40 +134,41 @@ import '${p.basename(_sourceUri.path)}';
       // renderer for.
       // TODO(srawlins): Find a solution for this. We can track all of the
       // concrete types substituted for `E` for example.
+      var isFullRenderer = _hasVisibleToMustache(innerType.element);
       while (innerType != null && innerType is InterfaceType) {
-        _addTypeToProcess((innerType as InterfaceType).element.thisType,
-            isFullRenderer: true);
+        _addTypeToProcess((innerType as InterfaceType).element,
+            isFullRenderer: isFullRenderer);
         innerType = (innerType as InterfaceType).superclass;
       }
     }
 
     while (type != null && type is InterfaceType) {
-      _addTypeToProcess((type as InterfaceType).element.thisType,
+      _addTypeToProcess((type as InterfaceType).element,
           isFullRenderer: isFullRenderer);
       type = (type as InterfaceType).superclass;
     }
   }
 
   /// Adds [type] to the [_typesToProcess] queue, if it is not already there.
-  void _addTypeToProcess(InterfaceType type, {@required isFullRenderer}) {
-    if (type == _typeProvider.typeType) {
-      // The [Type] type is the first case of a type we don't want to traverse.
-      return;
-    }
-    var typeName = type.element.name;
+  void _addTypeToProcess(ClassElement element, {@required isFullRenderer}) {
+    var typeName = element.name;
     var renderFunctionName = '_render_$typeName';
     var typeToProcess = _typesToProcess
-        .singleWhere((rs) => rs._contextType == type, orElse: () => null);
+        .singleWhere((rs) => rs._contextClass == element, orElse: () => null);
     if (typeToProcess == null) {
-      var rendererInfo = _RendererInfo(type, renderFunctionName,
+      var rendererInfo = _RendererInfo(element, renderFunctionName,
           public: _rendererClassesArePublic, isFullRenderer: isFullRenderer);
       _typesToProcess.add(rendererInfo);
-      _typeToRenderFunctionName[type.element] = renderFunctionName;
-      _typeToRendererClassName[type.element] = rendererInfo._rendererClassName;
+      if (isFullRenderer) {
+        _typeToRenderFunctionName[element] = renderFunctionName;
+        _typeToRendererClassName[element] = rendererInfo._rendererClassName;
+      }
     } else {
       if (isFullRenderer && !typeToProcess.isFullRenderer) {
         // This is the only case in which we update a type-to-render.
         typeToProcess.isFullRenderer = true;
+        _typeToRenderFunctionName[element] = renderFunctionName;
+        _typeToRendererClassName[element] = typeToProcess._rendererClassName;
       }
     }
   }
@@ -191,11 +190,12 @@ import '${p.basename(_sourceUri.path)}';
   /// The function and the class are each written as Dart code to [_buffer].
   void _buildRenderer(_RendererInfo renderer) {
     var typeName = renderer._typeName;
+    var typeWithVariables = '$typeName${renderer._typeVariablesString}';
 
     // Write out the render function.
     _buffer.writeln('''
 String ${renderer._functionName}${renderer._typeParametersString}(
-    $typeName context, List<MustachioNode> ast,
+    $typeWithVariables context, List<MustachioNode> ast,
     {RendererBase<Object> parent}) {
   var renderer = ${renderer._rendererClassName}(context, parent);
   renderer.renderBlock(ast);
@@ -204,28 +204,22 @@ String ${renderer._functionName}${renderer._typeParametersString}(
 ''');
 
     // Write out the renderer class.
-    var rendererBaseClass = renderer.isFullRenderer
-        ? 'RendererBase<$typeName>'
-        : 'SimpleRendererBase<$typeName>';
     _buffer.write('''
 class ${renderer._rendererClassName}${renderer._typeParametersString}
-    extends $rendererBaseClass {
+    extends RendererBase<$typeWithVariables> {
 ''');
-    if (renderer.isFullRenderer) {
-      _writePropertyMap(renderer);
-    }
+    _writePropertyMap(renderer);
     // Write out the constructor.
     _buffer.writeln('''
-  ${renderer._rendererClassName}($typeName context, RendererBase<Object> parent)
+  ${renderer._rendererClassName}($typeWithVariables context, RendererBase<Object> parent)
       : super(context, parent);
 ''');
     var propertyMapTypeArguments = renderer._typeArgumentsStringWith(typeName);
     var propertyMapName = 'propertyMap$propertyMapTypeArguments';
-    if (renderer.isFullRenderer) {
-      // Write out `getProperty`.
-      _buffer.writeln('''
+    // Write out `getProperty`.
+    _buffer.writeln('''
   @override
-  Property<$typeName> getProperty(String key) {
+  Property<$typeWithVariables> getProperty(String key) {
     if ($propertyMapName().containsKey(key)) {
       return $propertyMapName()[key];
     } else {
@@ -233,7 +227,6 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
     }
   }
 ''');
-    }
     // Close the class.
     _buffer.writeln('}');
   }
@@ -243,27 +236,29 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
   /// For each valid property of the context type of [renderer], this maps the
   /// property's name to the property's [Property] object.
   void _writePropertyMap(_RendererInfo renderer) {
-    var type = renderer._contextType;
+    var contextClass = renderer._contextClass;
     var generics = renderer._typeParametersStringWith(
         '$_contextTypeVariable extends ${renderer._typeName}');
     _buffer.writeln('static Map<String, Property<$_contextTypeVariable>> '
         'propertyMap$generics() => {');
-    var interfaceTypedProperties = type.accessors
+    var interfaceTypedProperties = contextClass.accessors
         .where((property) => property.type.returnType is InterfaceType);
     for (var property in [...interfaceTypedProperties]
       ..sort((a, b) => a.name.compareTo(b.name))) {
       _writeProperty(renderer, property);
     }
-    if (type.superclass != null) {
+    if (contextClass.supertype != null) {
       var superclassRendererName =
-          _typeToRendererClassName[type.superclass.element];
-      var superMapName = '$superclassRendererName.propertyMap';
-      var generics = _asGenerics([
-        ...type.superclass.typeArguments
-            .map((e) => e.getDisplayString(withNullability: false)),
-        _contextTypeVariable
-      ]);
-      _buffer.writeln('    ...$superMapName$generics(),');
+          _typeToRendererClassName[contextClass.supertype.element];
+      if (superclassRendererName != null) {
+        var superMapName = '$superclassRendererName.propertyMap';
+        var generics = _asGenerics([
+          ...contextClass.supertype.typeArguments
+              .map((e) => e.getDisplayString(withNullability: false)),
+          _contextTypeVariable
+        ]);
+        _buffer.writeln('    ...$superMapName$generics(),');
+      }
     }
     _buffer.writeln('};');
     _buffer.writeln('');
@@ -299,7 +294,18 @@ renderVariable:
     return nextProperty.renderVariable(
         self.getValue(c), nextProperty, [...remainingNames.skip(1)]);
   } else {
-    throw MustachioResolutionError();
+    throw PartialMustachioResolutionError(name, $_contextTypeVariable);
+  }
+},
+''');
+    } else {
+      _buffer.writeln('''
+renderVariable:
+    ($_contextTypeVariable c, Property<$_contextTypeVariable> self, List<String> remainingNames) {
+  if (remainingNames.isEmpty) {
+    return self.getValue(c).toString();
+  } else {
+    throw MustachioResolutionError('Failed to resolve simple renderer use @visibleToMustache');
   }
 },
 ''');
@@ -319,14 +325,9 @@ renderVariable:
       // TODO(srawlins): Find a solution for this. We can track all of the
       // concrete types substituted for `E` for example.
       if (innerType is! TypeParameterType) {
-        var rendererName = _typeToRenderFunctionName[innerType.element];
-        if (rendererName == null) {
-          // We currently don't create renderers for all accessors of all
-          // accessors of all ...
-          // TODO(srawlins): Do that, ensuring that the renderer count doesn't
-          // explode.
-        } else {
-          _buffer.writeln('''
+        var rendererName =
+            _typeToRenderFunctionName[innerType.element] ?? 'renderSimple';
+        _buffer.writeln('''
 isEmptyIterable: ($_contextTypeVariable c) => c.$getterName?.isEmpty ?? true,
 
 renderIterable:
@@ -338,7 +339,6 @@ renderIterable:
   return buffer.toString();
 },
 ''');
-        }
       }
     } else {
       // Don't add Iterable functions for a generic type, for example
@@ -347,14 +347,9 @@ renderIterable:
       // TODO(srawlins): Find a solution for this. We can track all of the
       // concrete types substituted for `E` for example.
       if (getterName is! TypeParameterType) {
-        var rendererName = _typeToRenderFunctionName[getterType.element];
-        if (rendererName == null) {
-          // We currently don't create renderers for all accessors of all
-          // accessors of all ...
-          // TODO(srawlins): Do that, ensuring that the renderer count doesn't
-          // explode.
-        } else {
-          _buffer.writeln('''
+        var rendererName =
+            _typeToRenderFunctionName[getterType.element] ?? 'renderSimple';
+        _buffer.writeln('''
 isNullValue: ($_contextTypeVariable c) => c.$getterName == null,
 
 renderValue:
@@ -362,7 +357,6 @@ renderValue:
   return $rendererName(c.$getterName, ast, parent: r);
 },
 ''');
-        }
       }
     }
     _buffer.writeln('),');
@@ -376,7 +370,7 @@ renderValue:
 /// functions and the renderer class), and also to refer from one renderer to
 /// another.
 class _RendererInfo {
-  final InterfaceType _contextType;
+  final ClassElement _contextClass;
 
   /// The name of the top level render function.
   ///
@@ -386,50 +380,60 @@ class _RendererInfo {
 
   /// Whether the renderer should be a full renderer.
   ///
+  /// If a render spec is not specified with @Renderer, then a class needs to be
+  /// annotated with @visibleToRender in order to get a full renderer.
+  /// Otherwise, the [SimpleRenderer] will be used.
+  ///
   /// It may be initially determined that we only need an abbreviated, then
   /// later determined that we need a full renderer, so this field is not final.
   bool isFullRenderer;
 
-  factory _RendererInfo(InterfaceType contextType, String functionName,
+  factory _RendererInfo(ClassElement contextClass, String functionName,
       {bool public = false, bool isFullRenderer = true}) {
-    var typeBaseName = contextType.element.name;
+    var typeBaseName = contextClass.name;
     var rendererClassName =
         public ? 'Renderer_$typeBaseName' : '_Renderer_$typeBaseName';
 
-    return _RendererInfo._(contextType, functionName, rendererClassName,
+    return _RendererInfo._(contextClass, functionName, rendererClassName,
         isFullRenderer: isFullRenderer);
   }
 
   _RendererInfo._(
-      this._contextType, this._functionName, this._rendererClassName,
+      this._contextClass, this._functionName, this._rendererClassName,
       {@required this.isFullRenderer});
 
-  String get _typeName => _contextType.getDisplayString(withNullability: false);
+  String get _typeName => _contextClass.name;
 
   final String _rendererClassName;
 
   /// The type parameters of the context type, if any, as a String, including
-  /// the angled brackets, otherwise a blank String.
+  /// bounds and the angled brackets, otherwise a blank String.
   String get _typeParametersString {
-    return _asGenerics(_contextType.element.typeParameters
+    return _asGenerics(_contextClass.typeParameters
         .map((tp) => tp.getDisplayString(withNullability: false)));
+  }
+
+  /// The type variables of the context type, if any, as a String, including
+  /// the angled brackets, otherwise a blank String.
+  String get _typeVariablesString {
+    return _asGenerics(_contextClass.typeParameters.map((tp) => tp.name));
   }
 
   /// Returns the type parameters of the context type, and [extra], as they
   /// appear in a list of generics.
   String _typeParametersStringWith(String extra) {
     return _asGenerics([
-      ..._contextType.element.typeParameters
+      ..._contextClass.typeParameters
           .map((tp) => tp.getDisplayString(withNullability: false)),
       extra,
     ]);
   }
 
-  /// Returns the type parameters of the context type, and [extra], as they
+  /// Returns the type arguments of the context type, and [extra], as they
   /// appear in a list of generics.
   String _typeArgumentsStringWith(String extra) {
     return _asGenerics([
-      ..._contextType.typeArguments
+      ..._contextClass.thisType.typeArguments
           .map((tp) => tp.getDisplayString(withNullability: false)),
       extra,
     ]);
