@@ -734,13 +734,13 @@ ul.subnav li:last-of-type {
 .sidebar ol li {
   text-overflow: ellipsis;
   overflow: hidden;
-  padding: 3px 0;
+  padding: 3px 0 3px 3px;
 }
 
 .sidebar h5 {
   color: #727272;
   font-size: 18px;
-  margin: 0 0 25px 0;
+  margin: 0 0 22px 0;
   padding-top: 0;
 }
 
@@ -765,7 +765,7 @@ ul.subnav li:last-of-type {
 }
 
 .sidebar ol li:first-child {
-  padding-top: 0;
+  padding-top: 3px;
   margin-top: 0;
 }
 
