@@ -13,7 +13,9 @@ class Renderer {
 
   final Context context;
 
-  const Renderer(this.name, this.context);
+  final Set<Type> visibleTypes;
+
+  const Renderer(this.name, this.context, {this.visibleTypes = const {}});
 }
 
 class Context<T> {
@@ -23,8 +25,7 @@ class Context<T> {
 };
 
 const _libraryFrontMatter = '''
-@Renderer(#renderFoo, Context<Foo>())
-@Renderer(#renderBar, Context<Bar>())
+@Renderer(#renderFoo, Context<Foo>(), visibleTypes: {Bar})
 library foo;
 import 'package:mustachio/annotations.dart';
 ''';
@@ -116,7 +117,7 @@ class Bar {}
     });
 
     test('for a type found in a getter', () {
-      expect(renderersLibrary.getTopLevelFunction('renderBar'), isNotNull);
+      expect(renderersLibrary.getTopLevelFunction('_render_Bar'), isNotNull);
       expect(renderersLibrary.getType('_Renderer_Bar'), isNotNull);
     });
 

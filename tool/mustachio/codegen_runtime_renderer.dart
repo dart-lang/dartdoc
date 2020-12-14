@@ -19,14 +19,22 @@ class RendererSpec {
 
   final InterfaceType _contextType;
 
-  RendererSpec(this._name, this._contextType);
+  final Set<DartType> _visibleTypes;
+
+  RendererSpec(this._name, this._contextType, this._visibleTypes);
 }
 
 /// Builds [specs] into a Dart library containing runtime renderers.
 String buildTemplateRenderers(Set<RendererSpec> specs, Uri sourceUri,
     TypeProvider typeProvider, TypeSystem typeSystem,
     {bool rendererClassesArePublic = false}) {
-  var raw = RuntimeRenderersBuilder(sourceUri, typeProvider, typeSystem,
+  var allVisibleTypes = specs
+      .map((spec) => spec._visibleTypes)
+      .reduce((value, element) => value.union(element))
+      .map((type) => type.element)
+      .toSet();
+  var raw = RuntimeRenderersBuilder(
+          sourceUri, typeProvider, typeSystem, allVisibleTypes,
           rendererClassesArePublic: rendererClassesArePublic)
       ._buildTemplateRenderers(specs);
   return DartFormatter().format(raw.toString());
@@ -55,10 +63,13 @@ class RuntimeRenderersBuilder {
   final TypeProvider _typeProvider;
   final TypeSystem _typeSystem;
 
+  final Set<Element> _allVisibleElements;
+
   /// Whether renderer classes are public. This should only be true for testing.
   final bool _rendererClassesArePublic;
 
   RuntimeRenderersBuilder(this._sourceUri, this._typeProvider, this._typeSystem,
+      this._allVisibleElements,
       {bool rendererClassesArePublic = false})
       : _rendererClassesArePublic = rendererClassesArePublic;
 
@@ -123,7 +134,7 @@ import '${p.basename(_sourceUri.path)}';
     if (property.isPrivate || property.isStatic || property.isSetter) return;
     if (property.hasProtected || property.hasVisibleForTesting) return;
     var type = property.type.returnType;
-    var isFullRenderer = _hasVisibleToMustache(type.element);
+    var isFullRenderer = _isVisibleToMustache(type.element);
 
     if (_typeSystem.isAssignableTo(type, _typeProvider.iterableDynamicType)) {
       var iterableElement = _typeProvider.iterableElement;
@@ -134,7 +145,7 @@ import '${p.basename(_sourceUri.path)}';
       // renderer for.
       // TODO(srawlins): Find a solution for this. We can track all of the
       // concrete types substituted for `E` for example.
-      var isFullRenderer = _hasVisibleToMustache(innerType.element);
+      var isFullRenderer = _isVisibleToMustache(innerType.element);
       while (innerType != null && innerType is InterfaceType) {
         _addTypeToProcess((innerType as InterfaceType).element,
             isFullRenderer: isFullRenderer);
@@ -173,16 +184,15 @@ import '${p.basename(_sourceUri.path)}';
     }
   }
 
-  /// Returns whether [element] or any of its supertypes are annotated with
-  /// `visibleToMustache`.
-  bool _hasVisibleToMustache(ClassElement element) {
-    if (element.metadata.any((m) => m.element?.name == 'visibleToMustache')) {
+  /// Returns whether [element] or any of its supertypes are "visible" to Mustache.
+  bool _isVisibleToMustache(ClassElement element) {
+    if (_allVisibleElements.contains(element)) {
       return true;
     }
     if (element.supertype == null) {
       return false;
     }
-    return _hasVisibleToMustache(element.supertype.element);
+    return _isVisibleToMustache(element.supertype.element);
   }
 
   /// Builds both the render function and the renderer class for [renderer].
