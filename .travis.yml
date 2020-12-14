@@ -18,6 +18,8 @@ matrix:
       # it is unlikely to work and produces uninteresting
       # results.
       dart: stable
+    - env: DARTDOC_BOT=sdk-analyzer
+      dart: stable
 
 env:
   jobs:
