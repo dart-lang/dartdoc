@@ -245,7 +245,7 @@ a:hover {
 }
 
 pre.prettyprint {
-  font-family: 'Source Code Pro', Menlo, monospace;
+  font-family: 'Roboto Mono', Menlo, monospace;
   color: black;
   border-radius: 0;
   font-size: 15px;
@@ -273,7 +273,7 @@ pre {
 }
 
 code {
-  font-family: 'Source Code Pro', Menlo, monospace;
+  font-family: 'Roboto Mono', Menlo, monospace;
   /* overriding bootstrap */
   color: inherit;
   padding: 0.2em 0.4em;
