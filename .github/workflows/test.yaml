@@ -68,4 +68,3 @@ jobs:
         run: pub run grinder buildbot
         env:
           DARTDOC_BOT: ${{ matrix.job }}
-          COVERAGE_TOKEN: ${{ secrets.COVERAGE_TOKEN }}
