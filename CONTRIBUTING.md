@@ -16,8 +16,7 @@ If you want to contribute, check out the [issue tracker][] and see if there's an
 issue that you're passionate about. If you want to add a new feature that's not
 yet in the issue tracker, start by opening an issue. Thanks!
 
-[![Build Status](https://travis-ci.org/dart-lang/dartdoc.svg)](https://travis-ci.org/dart-lang/dartdoc)
-[![Build status](https://ci.appveyor.com/api/projects/status/s6sh69et2ga00dlu?svg=true)](https://ci.appveyor.com/project/devoncarew/dartdoc)
+[![Build Status](https://github.com/dart-lang/dartdoc/workflows/Test/badge.svg)](https://github.com/dart-lang/dartdoc/actions?query=workflow%3ATest)
 
 ## Making Changes
 
@@ -32,7 +31,7 @@ yet in the issue tracker, start by opening an issue. Thanks!
 ## Testing
 
 dartdoc has a number of grinder utility methods that can be used to check for behavior changes
-or try out your change on arbitrary packages. 
+or try out your change on arbitrary packages.
 
 ```bash
 # Serve the latest version of the given package locally on port 9000.

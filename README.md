@@ -1,7 +1,6 @@
 # dartdoc
 
-[![Build Status](https://travis-ci.org/dart-lang/dartdoc.svg?branch=master)](https://travis-ci.org/dart-lang/dartdoc)
-[![Appveyor Build Status](https://ci.appveyor.com/api/projects/status/s6sh69et2ga00dlu?svg=true)](https://ci.appveyor.com/project/devoncarew/dartdoc)
+[![Build Status](https://github.com/dart-lang/dartdoc/workflows/Test/badge.svg)](https://github.com/dart-lang/dartdoc/actions?query=workflow%3ATest)
 [![Coverage Status](https://coveralls.io/repos/github/dart-lang/dartdoc/badge.svg?branch=master)](https://coveralls.io/github/dart-lang/dartdoc?branch=master)
 
 
@@ -93,13 +92,13 @@ authoring doc comments for Dart with `dartdoc`.
 ### dartdoc_options.yaml
 
 Creating a file named dartdoc_options.yaml at the top of your package can change how Dartdoc
-generates docs.  
+generates docs.
 
 An example (not necessarily recommended settings):
 
 ```yaml
 dartdoc:
-  categories: 
+  categories:
     "First Category":
       markdown: doc/First.md
       name: Awesome
@@ -171,7 +170,7 @@ Unrecognized options will be ignored.  Supported options:
     * **uriTemplate**: A template to substitute revision and file path information.  If revision
       is present in the template but not specified, or if root is not specified, dartdoc will
       throw an exception.  To hard-code a revision, don't specify it with `%r%`.
-      
+
       The following strings will be substituted in to complete the URL:
       * `%f%`:  Relative path of file to the repository root
       * `%r%`:  Revision
@@ -200,7 +199,7 @@ dartdoc_options.yaml**, as above.
 
 ```dart
 /// Here is my library.
-/// 
+///
 /// {@category Amazing}
 library my_library;
 ```
@@ -325,7 +324,7 @@ The `macos`, `linux`, and `windows` tags are used to describe the commands to be
 run on each of those platforms, and the `setup_macos`, `setup_linux`, and
 `setup_windows` tags define setup commands for their respective platforms.
 
-The `description` is just a short description of the tool for use as help text. 
+The `description` is just a short description of the tool for use as help text.
 
 Only tools which are configured in the `dartdoc_options.yaml` file are able to
 be invoked.
@@ -473,7 +472,7 @@ Some examples of likely triage priorities:
   * Minor display warts not significantly impeding navigation, not widespread
   * Generation problems that should be detected but aren't warned, not
     widespread
-  * Default-on warnings that are misleading or wrong, few or on edge cases  
+  * Default-on warnings that are misleading or wrong, few or on edge cases
   * Non-default warnings that are misleading or wrong, widespread
   * Enhancements considered important but without significant data indicating
     they are a big win
