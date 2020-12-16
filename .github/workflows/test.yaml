@@ -12,10 +12,6 @@ on:
 env:
   PUB_ENVIRONMENT: bot.github
 
-defaults:
-  run:
-    shell: bash
-
 jobs:
   test:
     runs-on: ${{ matrix.os }}
@@ -57,8 +53,16 @@ jobs:
         run: |
           dart pub get
           ./tool/install_travis.sh
+        shell: bash
       - name: ${{ matrix.job }}
+        if: runner.os != 'Windows'
         run: ./tool/travis.sh
+        env:
+          DARTDOC_BOT: ${{ matrix.job }}
+          COVERAGE_TOKEN: ${{ secrets.COVERAGE_TOKEN }}
+      - name: ${{ matrix.job }}
+        if: runner.os == 'Windows' && matrix.job == 'main'
+        run: pub run grinder buildbot
         env:
           DARTDOC_BOT: ${{ matrix.job }}
           COVERAGE_TOKEN: ${{ secrets.COVERAGE_TOKEN }}
