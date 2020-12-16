@@ -38,6 +38,9 @@ jobs:
             job: sdk-analyzer
 
     steps:
+      - name: Configure git
+        if: runner.os == 'Windows'
+        run: git config --global core.autocrlf input
       - uses: actions/checkout@v2
       - name: Cache pub and grinder files
         uses: actions/cache@v2
