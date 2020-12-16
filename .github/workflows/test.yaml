@@ -12,6 +12,10 @@ on:
 env:
   PUB_ENVIRONMENT: bot.github
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   test:
     runs-on: ${{ matrix.os }}
