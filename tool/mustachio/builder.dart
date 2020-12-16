@@ -90,7 +90,15 @@ class _RendererGatherer {
     assert(contextFieldType.typeArguments.length == 1);
     var contextType = contextFieldType.typeArguments.single;
 
-    return RendererSpec(nameField.toSymbolValue(), contextType);
+    var visibleTypesField = constantValue.getField('visibleTypes');
+    if (visibleTypesField.isNull) {
+      throw StateError('@Renderer visibleTypes must not be null');
+    }
+    var visibleTypes = {
+      ...visibleTypesField.toSetValue().map((object) => object.toTypeValue())
+    };
+
+    return RendererSpec(nameField.toSymbolValue(), contextType, visibleTypes);
   }
 }
 

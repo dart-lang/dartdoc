@@ -7,7 +7,14 @@ class Renderer {
   /// The type of the context type, specified as the [Context] type argument.
   final Context context;
 
-  const Renderer(this.name, this.context);
+  /// A set of types which are "visible" to Mustache. Mustache rendering has
+  /// access to all of a type's public getters if it is visible to Mustache.
+  ///
+  /// Note that all subtypes and supertypes of a "visible" type are also visible
+  /// to Mustache.
+  final Set<Type> visibleTypes;
+
+  const Renderer(this.name, this.context, {this.visibleTypes = const {}});
 }
 
 /// A container for a type, [T], which is the type of a context object,

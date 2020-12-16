@@ -20,6 +20,9 @@ abstract class RendererBase<T> {
 
   void write(String text) => buffer.write(text);
 
+  String get contextChainString =>
+      parent == null ? '$T' : '${parent.contextChainString} > $T';
+
   /// Returns the [Property] on this renderer named [name].
   ///
   /// If no property named [name] exists for this renderer, `null` is returned.
@@ -39,19 +42,21 @@ abstract class RendererBase<T> {
     if (property != null) {
       try {
         return property.renderVariable(context, property, [...names.skip(1)]);
-      } on MustachioResolutionError {
+      } on PartialMustachioResolutionError catch (e) {
         // The error thrown by [Property.renderVariable] does not have all of
         // the names required for a decent error. We throw a new error here.
         throw MustachioResolutionError(
-            'Failed to resolve $names as a property chain on any types in the '
-            'current context');
+            "Failed to resolve '${e.name}' on ${e.contextType} while resolving "
+            '${names.skip(1)} as a property chain on any types in the context '
+            "chain: $contextChainString, after first resolving '${names.first}'"
+            'to a property on $T');
       }
     } else if (parent != null) {
       return parent.getFields(names);
     } else {
       throw MustachioResolutionError(
           'Failed to resolve ${names.first} as a property on any types in the '
-          'current context');
+          'context chain: $contextChainString');
     }
   }
 
@@ -117,6 +122,33 @@ abstract class RendererBase<T> {
   }
 }
 
+String renderSimple(Object context, List<MustachioNode> ast,
+    {RendererBase parent}) {
+  var renderer = SimpleRenderer(context, parent);
+  renderer.renderBlock(ast);
+  return renderer.buffer.toString();
+}
+
+class SimpleRenderer extends RendererBase<Object> {
+  SimpleRenderer(Object context, RendererBase<Object> parent)
+      : super(context, parent);
+
+  @override
+  Property<Object> getProperty(String key) => null;
+
+  @override
+  String getFields(List<String> keyParts) {
+    if (keyParts.length == 1 && keyParts.single == '.') {
+      return context.toString();
+    }
+    if (parent != null) {
+      return parent.getFields(keyParts);
+    } else {
+      return 'null';
+    }
+  }
+}
+
 /// An individual property of objects of type [T], including functions for
 /// rendering various types of Mustache nodes.
 class Property<T> {
@@ -156,4 +188,17 @@ class MustachioResolutionError extends Error {
   String message;
 
   MustachioResolutionError([this.message]);
+
+  @override
+  String toString() => 'MustachioResolutionError: $message';
+}
+
+/// An error indicating that a renderer failed to resolve a follow-on name in a
+/// multi-name key.
+class PartialMustachioResolutionError extends Error {
+  String name;
+
+  Type contextType;
+
+  PartialMustachioResolutionError(this.name, this.contextType);
 }

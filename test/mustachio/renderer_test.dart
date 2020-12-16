@@ -7,10 +7,11 @@ import 'foo.renderers.dart';
 void main() {
   test('property map contains all public getters', () {
     var propertyMap = Renderer_Foo.propertyMap();
-    expect(propertyMap.keys, hasLength(4));
+    expect(propertyMap.keys, hasLength(5));
     expect(propertyMap['b1'], isNotNull);
     expect(propertyMap['s1'], isNotNull);
     expect(propertyMap['l1'], isNotNull);
+    expect(propertyMap['baz'], isNotNull);
     expect(propertyMap['hashCode'], isNotNull);
   });
 
@@ -173,10 +174,10 @@ void main() {
   });
 
   test('Renderer renders a value section node', () {
-    var parser = MustachioParser('Text {{#s1}}"{{.}}" ({{length}}){{/s1}}');
+    var parser = MustachioParser('Text {{#foo}}Foo: {{s1}}{{/foo}}');
     var ast = parser.parse();
-    var foo = Foo()..s1 = 'hello';
-    expect(renderFoo(foo, ast), equals('Text "hello" (5)'));
+    var bar = Bar()..foo = (Foo()..s1 = 'hello');
+    expect(renderBar(bar, ast), equals('Text Foo: hello'));
   });
 
   test('Renderer renders a null value section node as blank', () {
@@ -236,23 +237,20 @@ void main() {
   });
 
   test('Renderer resolves outer variable with key with three names', () {
-    var parser = MustachioParser('Text {{#foo}}{{foo.s1.length}}{{/foo}}');
+    var parser = MustachioParser('Text {{#bar}}{{bar.foo.s1}}{{/bar}}');
     var ast = parser.parse();
-    var bar = Bar()
-      ..foo = (Foo()..s1 = 'hello')
-      ..s2 = 'goodbye';
-    expect(renderBar(bar, ast), equals('Text 5'));
+    var baz = Baz()..bar = (Bar()..foo = (Foo()..s1 = 'hello'));
+    expect(renderBaz(baz, ast), equals('Text hello'));
   });
 
   test('Renderer resolves outer variable with key with more than three names',
       () {
     var parser =
-        MustachioParser('Text {{#foo}}{{foo.s1.length.isEven}}{{/foo}}');
+        MustachioParser('Text {{#bar}}{{bar.foo.baz.bar.foo.s1}}{{/bar}}');
     var ast = parser.parse();
-    var bar = Bar()
-      ..foo = (Foo()..s1 = 'hello')
-      ..s2 = 'goodbye';
-    expect(renderBar(bar, ast), equals('Text false'));
+    var baz = Baz()..bar = (Bar()..foo = (Foo()..s1 = 'hello'));
+    baz.bar.foo.baz = baz;
+    expect(renderBaz(baz, ast), equals('Text hello'));
   });
 
   test('Renderer throws when it cannot resolve a variable key', () {

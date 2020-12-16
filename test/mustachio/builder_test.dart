@@ -13,7 +13,9 @@ class Renderer {
 
   final Context context;
 
-  const Renderer(this.name, this.context);
+  final Set<Type> visibleTypes;
+
+  const Renderer(this.name, this.context, {this.visibleTypes = const {}});
 }
 
 class Context<T> {
@@ -23,7 +25,7 @@ class Context<T> {
 };
 
 const _libraryFrontMatter = '''
-@Renderer(#renderFoo, Context<Foo>())
+@Renderer(#renderFoo, Context<Foo>(), visibleTypes: {Bar})
 library foo;
 import 'package:mustachio/annotations.dart';
 ''';
@@ -137,14 +139,11 @@ class Bar {}
           getValue: (CT_ c) => c.b1,
           renderVariable:
               (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) return self.getValue(c).toString();
-            var name = remainingNames.first;
-            if (_Renderer_bool.propertyMap().containsKey(name)) {
-              var nextProperty = _Renderer_bool.propertyMap()[name];
-              return nextProperty.renderVariable(
-                  self.getValue(c), nextProperty, [...remainingNames.skip(1)]);
+            if (remainingNames.isEmpty) {
+              return self.getValue(c).toString();
             } else {
-              throw MustachioResolutionError();
+              throw MustachioResolutionError(
+                  \'Failed to resolve simple renderer use @visibleToMustache\');
             }
           },
           getBool: (CT_ c) => c.b1 == true,
@@ -158,14 +157,11 @@ class Bar {}
           getValue: (CT_ c) => c.l1,
           renderVariable:
               (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) return self.getValue(c).toString();
-            var name = remainingNames.first;
-            if (_Renderer_List.propertyMap().containsKey(name)) {
-              var nextProperty = _Renderer_List.propertyMap()[name];
-              return nextProperty.renderVariable(
-                  self.getValue(c), nextProperty, [...remainingNames.skip(1)]);
+            if (remainingNames.isEmpty) {
+              return self.getValue(c).toString();
             } else {
-              throw MustachioResolutionError();
+              throw MustachioResolutionError(
+                  'Failed to resolve simple renderer use @visibleToMustache');
             }
           },
           isEmptyIterable: (CT_ c) => c.l1?.isEmpty ?? true,
@@ -173,7 +169,7 @@ class Bar {}
               (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             var buffer = StringBuffer();
             for (var e in c.l1) {
-              buffer.write(_render_int(e, ast, parent: r));
+              buffer.write(renderSimple(e, ast, parent: r));
             }
             return buffer.toString();
           },
@@ -187,19 +183,16 @@ class Bar {}
           getValue: (CT_ c) => c.s1,
           renderVariable:
               (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) return self.getValue(c).toString();
-            var name = remainingNames.first;
-            if (_Renderer_String.propertyMap().containsKey(name)) {
-              var nextProperty = _Renderer_String.propertyMap()[name];
-              return nextProperty.renderVariable(
-                  self.getValue(c), nextProperty, [...remainingNames.skip(1)]);
+            if (remainingNames.isEmpty) {
+              return self.getValue(c).toString();
             } else {
-              throw MustachioResolutionError();
+              throw MustachioResolutionError(
+                  'Failed to resolve simple renderer use @visibleToMustache');
             }
           },
           isNullValue: (CT_ c) => c.s1 == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            return _render_String(c.s1, ast, parent: r);
+            return renderSimple(c.s1, ast, parent: r);
           },
         ),
 '''));
@@ -276,6 +269,7 @@ import 'package:mustachio/annotations.dart';
   test('builds a renderer for a generic, bounded type', () async {
     await testMustachioBuilder('''
 class Foo<T extends num> {}
+class Bar {}
 ''');
     var renderersLibrary = await resolveGeneratedLibrary(writer);
 
@@ -288,9 +282,6 @@ class Foo<T extends num> {}
     expect(fooRendererClass.typeParameters, hasLength(1));
     var cBound = fooRenderFunction.typeParameters.single.bound;
     expect(cBound.getDisplayString(withNullability: false), equals('num'));
-
-    expect(renderersLibrary.getTopLevelFunction('_render_num'), isNotNull);
-    expect(renderersLibrary.getType('_Renderer_num'), isNotNull);
   });
 
   group('does not generate a renderer', () {
@@ -305,6 +296,7 @@ class Foo {
   void set setter1(Setter s);
   Method method1(Method m);
 }
+class Bar {}
 class Static {}
 class Private {}
 class Setter {}
@@ -331,6 +323,11 @@ class Method {}
     test('found in a method', () {
       expect(renderersLibrary.getTopLevelFunction('_render_Method'), isNull);
       expect(renderersLibrary.getType('_Renderer_Method'), isNull);
+    });
+
+    test('for types not @visibleToMustache', () {
+      expect(renderersLibrary.getTopLevelFunction('_render_String'), isNull);
+      expect(renderersLibrary.getType('_Renderer_String'), isNull);
     });
   });
 }
