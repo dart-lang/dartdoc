@@ -6,7 +6,10 @@ import 'foo.dart';
 import 'foo.renderers.dart';
 
 void main() {
-  ResourceProvider resourceProvider;
+  MemoryResourceProvider resourceProvider;
+
+  File getFile(String path) =>
+      resourceProvider.getFile(resourceProvider.convertPath(path));
 
   setUp(() {
     resourceProvider = MemoryResourceProvider();
@@ -104,112 +107,112 @@ void main() {
   });
 
   test('Renderer renders a non-bool variable node', () {
-    var fooTemplate = resourceProvider.getFile('/project/foo.mustache')
+    var fooTemplate = getFile('/project/foo.mustache')
       ..writeAsStringSync('Text {{s1}}');
     var foo = Foo()..s1 = 'hello';
     expect(renderFoo(foo, fooTemplate), equals('Text hello'));
   });
 
   test('Renderer renders a bool variable node', () {
-    var fooTemplate = resourceProvider.getFile('/project/foo.mustache')
+    var fooTemplate = getFile('/project/foo.mustache')
       ..writeAsStringSync('Text {{b1}}');
     var foo = Foo()..b1 = true;
     expect(renderFoo(foo, fooTemplate), equals('Text true'));
   });
 
   test('Renderer renders an Iterable variable node', () {
-    var fooTemplate = resourceProvider.getFile('/project/foo.mustache')
+    var fooTemplate = getFile('/project/foo.mustache')
       ..writeAsStringSync('Text {{l1}}');
     var foo = Foo()..l1 = [1, 2, 3];
     expect(renderFoo(foo, fooTemplate), equals('Text [1, 2, 3]'));
   });
 
   test('Renderer renders a conditional section node', () {
-    var fooTemplate = resourceProvider.getFile('/project/foo.mustache')
+    var fooTemplate = getFile('/project/foo.mustache')
       ..writeAsStringSync('Text {{#b1}}Section{{/b1}}');
     var foo = Foo()..b1 = true;
     expect(renderFoo(foo, fooTemplate), equals('Text Section'));
   });
 
   test('Renderer renders a false conditional section node as blank', () {
-    var fooTemplate = resourceProvider.getFile('/project/foo.mustache')
+    var fooTemplate = getFile('/project/foo.mustache')
       ..writeAsStringSync('Text {{#b1}}Section{{/b1}}');
     var foo = Foo()..b1 = false;
     expect(renderFoo(foo, fooTemplate), equals('Text '));
   });
 
   test('Renderer renders an inverted conditional section node as empty', () {
-    var fooTemplate = resourceProvider.getFile('/project/foo.mustache')
+    var fooTemplate = getFile('/project/foo.mustache')
       ..writeAsStringSync('Text {{^b1}}Section{{/b1}}');
     var foo = Foo()..b1 = true;
     expect(renderFoo(foo, fooTemplate), equals('Text '));
   });
 
   test('Renderer renders an inverted false conditional section node', () {
-    var fooTemplate = resourceProvider.getFile('/project/foo.mustache')
+    var fooTemplate = getFile('/project/foo.mustache')
       ..writeAsStringSync('Text {{^b1}}Section{{/b1}}');
     var foo = Foo()..b1 = false;
     expect(renderFoo(foo, fooTemplate), equals('Text Section'));
   });
 
   test('Renderer renders a repeated section node', () {
-    var fooTemplate = resourceProvider.getFile('/project/foo.mustache')
+    var fooTemplate = getFile('/project/foo.mustache')
       ..writeAsStringSync('Text {{#l1}}Num {{.}}, {{/l1}}');
     var foo = Foo()..l1 = [1, 2, 3];
     expect(renderFoo(foo, fooTemplate), equals('Text Num 1, Num 2, Num 3, '));
   });
 
   test('Renderer renders an empty repeated section node as blank', () {
-    var fooTemplate = resourceProvider.getFile('/project/foo.mustache')
+    var fooTemplate = getFile('/project/foo.mustache')
       ..writeAsStringSync('Text {{#l1}}Num {{.}}, {{/l1}}');
     var foo = Foo()..l1 = [];
     expect(renderFoo(foo, fooTemplate), equals('Text '));
   });
 
   test('Renderer renders an empty inverted repeated section node', () {
-    var fooTemplate = resourceProvider.getFile('/project/foo.mustache')
+    var fooTemplate = getFile('/project/foo.mustache')
       ..writeAsStringSync('Text {{^l1}}Empty{{/l1}}');
     var foo = Foo()..l1 = [];
     expect(renderFoo(foo, fooTemplate), equals('Text Empty'));
   });
 
   test('Renderer renders an inverted repeated section node as blank', () {
-    var fooTemplate = resourceProvider.getFile('/project/foo.mustache')
+    var fooTemplate = getFile('/project/foo.mustache')
       ..writeAsStringSync('Text {{^l1}}Empty{{/l1}}');
     var foo = Foo()..l1 = [1, 2, 3];
     expect(renderFoo(foo, fooTemplate), equals('Text '));
   });
 
   test('Renderer renders a value section node', () {
-    var fooTemplate = resourceProvider.getFile('/project/foo.mustache')
+    var fooTemplate = getFile('/project/foo.mustache')
       ..writeAsStringSync('Text {{#foo}}Foo: {{s1}}{{/foo}}');
     var bar = Bar()..foo = (Foo()..s1 = 'hello');
     expect(renderBar(bar, fooTemplate), equals('Text Foo: hello'));
   });
 
   test('Renderer renders a null value section node as blank', () {
-    var fooTemplate = resourceProvider.getFile('/project/foo.mustache')
+    var fooTemplate = getFile('/project/foo.mustache')
       ..writeAsStringSync('Text {{#s1}}"{{.}}" ({{length}}){{/s1}}');
     var foo = Foo()..s1 = null;
     expect(renderFoo(foo, fooTemplate), equals('Text '));
   });
 
   test('Renderer renders an inverted value section node as blank', () {
-    var fooTemplate = resourceProvider.getFile('/project/foo.mustache')
+    var fooTemplate = getFile('/project/foo.mustache')
       ..writeAsStringSync('Text {{^s1}}Section{{/s1}}');
     var foo = Foo()..s1 = 'hello';
     expect(renderFoo(foo, fooTemplate), equals('Text '));
   });
 
   test('Renderer renders an inverted null value section node', () {
-    var fooTemplate = resourceProvider.getFile('/project/foo.mustache')
+    var fooTemplate = getFile('/project/foo.mustache')
       ..writeAsStringSync('Text {{^s1}}Section{{/s1}}');
     var foo = Foo()..s1 = null;
     expect(renderFoo(foo, fooTemplate), equals('Text Section'));
   });
 
   test('Renderer resolves variable inside a value section', () {
-    var fooTemplate = resourceProvider.getFile('/project/foo.mustache')
+    var fooTemplate = getFile('/project/foo.mustache')
       ..writeAsStringSync('Text {{#foo}}{{s1}}{{/foo}}');
     var bar = Bar()..foo = (Foo()..s1 = 'hello');
     expect(renderBar(bar, fooTemplate), equals('Text hello'));
@@ -217,7 +220,7 @@ void main() {
 
   test('Renderer resolves variable from outer context inside a value section',
       () {
-    var fooTemplate = resourceProvider.getFile('/project/foo.mustache')
+    var fooTemplate = getFile('/project/foo.mustache')
       ..writeAsStringSync('Text {{#foo}}{{s2}}{{/foo}}');
     var bar = Bar()
       ..foo = (Foo()..s1 = 'hello')
@@ -226,7 +229,7 @@ void main() {
   });
 
   test('Renderer resolves variable with key with multiple names', () {
-    var fooTemplate = resourceProvider.getFile('/project/foo.mustache')
+    var fooTemplate = getFile('/project/foo.mustache')
       ..writeAsStringSync('Text {{foo.s1}}');
     var bar = Bar()
       ..foo = (Foo()..s1 = 'hello')
@@ -235,7 +238,7 @@ void main() {
   });
 
   test('Renderer resolves outer variable with key with two names', () {
-    var fooTemplate = resourceProvider.getFile('/project/foo.mustache')
+    var fooTemplate = getFile('/project/foo.mustache')
       ..writeAsStringSync('Text {{#foo}}{{foo.s1}}{{/foo}}');
     var bar = Bar()
       ..foo = (Foo()..s1 = 'hello')
@@ -244,7 +247,7 @@ void main() {
   });
 
   test('Renderer resolves outer variable with key with three names', () {
-    var fooTemplate = resourceProvider.getFile('/project/foo.mustache')
+    var fooTemplate = getFile('/project/foo.mustache')
       ..writeAsStringSync('Text {{#bar}}{{bar.foo.s1}}{{/bar}}');
     var baz = Baz()..bar = (Bar()..foo = (Foo()..s1 = 'hello'));
     expect(renderBaz(baz, fooTemplate), equals('Text hello'));
@@ -252,7 +255,7 @@ void main() {
 
   test('Renderer resolves outer variable with key with more than three names',
       () {
-    var bazTemplate = resourceProvider.getFile('/project/baz.mustache')
+    var bazTemplate = getFile('/project/baz.mustache')
       ..writeAsStringSync('Text {{#bar}}{{bar.foo.baz.bar.foo.s1}}{{/bar}}');
     var baz = Baz()..bar = (Bar()..foo = (Foo()..s1 = 'hello'));
     baz.bar.foo.baz = baz;
@@ -260,41 +263,33 @@ void main() {
   });
 
   test('Renderer renders a partial in the same directory', () {
-    var barTemplate = resourceProvider.getFile('/project/bar.mustache')
+    var barTemplate = getFile('/project/bar.mustache')
       ..writeAsStringSync('Text {{#foo}}{{>foo.mustache}}{{/foo}}');
-    resourceProvider
-        .getFile('/project/foo.mustache')
-        .writeAsStringSync('Partial {{s1}}');
+    getFile('/project/foo.mustache').writeAsStringSync('Partial {{s1}}');
     var bar = Bar()..foo = (Foo()..s1 = 'hello');
     expect(renderBar(bar, barTemplate), equals('Text Partial hello'));
   });
 
   test('Renderer renders a partial in a different directory', () {
-    var barTemplate = resourceProvider.getFile('/project/src/bar.mustache')
+    var barTemplate = getFile('/project/src/bar.mustache')
       ..writeAsStringSync('Text {{#foo}}{{>../foo.mustache}}{{/foo}}');
-    resourceProvider
-        .getFile('/project/foo.mustache')
-        .writeAsStringSync('Partial {{s1}}');
+    getFile('/project/foo.mustache').writeAsStringSync('Partial {{s1}}');
     var bar = Bar()..foo = (Foo()..s1 = 'hello');
     expect(renderBar(bar, barTemplate), equals('Text Partial hello'));
   });
 
   test('Renderer renders a partial in an absolute directory', () {
-    var barTemplate = resourceProvider.getFile('/project/src/bar.mustache')
+    var barTemplate = getFile('/project/src/bar.mustache')
       ..writeAsStringSync('Text {{#foo}}{{>/project/foo.mustache}}{{/foo}}');
-    resourceProvider
-        .getFile('/project/foo.mustache')
-        .writeAsStringSync('Partial {{s1}}');
+    getFile('/project/foo.mustache').writeAsStringSync('Partial {{s1}}');
     var bar = Bar()..foo = (Foo()..s1 = 'hello');
     expect(renderBar(bar, barTemplate), equals('Text Partial hello'));
   });
 
   test('Renderer renders a partial with context chain', () {
-    var barTemplate = resourceProvider.getFile('/project/bar.mustache')
+    var barTemplate = getFile('/project/bar.mustache')
       ..writeAsStringSync('Text {{#foo}}{{>foo.mustache}}{{/foo}}');
-    resourceProvider
-        .getFile('/project/foo.mustache')
-        .writeAsStringSync('Partial {{s2}}');
+    getFile('/project/foo.mustache').writeAsStringSync('Partial {{s2}}');
     var bar = Bar()
       ..foo = (Foo()..s1 = 'hello')
       ..s2 = 'goodbye';
@@ -302,11 +297,10 @@ void main() {
   });
 
   test('Renderer renders a partial with a heterogeneous context chain', () {
-    var barTemplate = resourceProvider.getFile('/project/bar.mustache')
+    var barTemplate = getFile('/project/bar.mustache')
       ..writeAsStringSync('Line 1 {{#foo}}{{>baz.mustache}}{{/foo}}\n'
           'Line 2 {{>baz.mustache}}');
-    resourceProvider
-        .getFile('/project/baz.mustache')
+    getFile('/project/baz.mustache')
         .writeAsStringSync('Partial {{#l1}}Section {{.}}{{/l1}}');
     var baz = Baz();
     var bar = Bar()
@@ -329,7 +323,7 @@ void main() {
   });
 
   test('Renderer throws when it cannot resolve a variable key', () {
-    var fooTemplate = resourceProvider.getFile('/project/foo.mustache')
+    var fooTemplate = getFile('/project/foo.mustache')
       ..writeAsStringSync('Text {{s2}}');
     var foo = Foo();
     expect(
@@ -342,7 +336,7 @@ void main() {
   });
 
   test('Renderer throws when it cannot resolve a section key', () {
-    var fooTemplate = resourceProvider.getFile('/project/foo.mustache')
+    var fooTemplate = getFile('/project/foo.mustache')
       ..writeAsStringSync('Text {{#s2}}Section{{/s2}}');
     var foo = Foo();
     expect(
@@ -355,7 +349,7 @@ void main() {
   });
 
   test('Renderer throws when it cannot resolve a multi-name variable key', () {
-    var barTemplate = resourceProvider.getFile('/project/bar.mustache')
+    var barTemplate = getFile('/project/bar.mustache')
       ..writeAsStringSync('Text {{foo.x}}');
     var bar = Bar()..foo = Foo();
     expect(
@@ -369,7 +363,7 @@ void main() {
   });
 
   test('Renderer throws when it cannot resolve a multi-name section key', () {
-    var barTemplate = resourceProvider.getFile('/project/bar.mustache')
+    var barTemplate = getFile('/project/bar.mustache')
       ..writeAsStringSync('Text {{foo.x}}');
     var bar = Bar()..foo = Foo();
     expect(
@@ -384,7 +378,7 @@ void main() {
 
   test('Renderer throws when it cannot resolve a key with a SimpleRenderer',
       () {
-    var fooTemplate = resourceProvider.getFile('/project/foo.mustache')
+    var fooTemplate = getFile('/project/foo.mustache')
       ..writeAsStringSync('Text {{s1.length}}');
     var foo = Foo();
     expect(
@@ -396,7 +390,7 @@ void main() {
   });
 
   test('Renderer throws when it cannot read a template', () {
-    var barTemplate = resourceProvider.getFile('/project/src/bar.mustache');
+    var barTemplate = getFile('/project/src/bar.mustache');
     expect(
         () => renderBar(Bar(), barTemplate),
         throwsA(const TypeMatcher<MustachioResolutionError>().having(
@@ -407,7 +401,7 @@ void main() {
   });
 
   test('Renderer throws when it cannot read a partial', () {
-    var barTemplate = resourceProvider.getFile('/project/src/bar.mustache')
+    var barTemplate = getFile('/project/src/bar.mustache')
       ..writeAsStringSync('Text {{#foo}}{{>missing.mustache}}{{/foo}}');
     var bar = Bar()..foo = (Foo()..s1 = 'hello');
     expect(
