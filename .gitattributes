@@ -1,4 +1,5 @@
-*.dart eol=lf
+*.dart text eol=lf
+*.yaml text eol=lf
 
 # Don't collapse in github code reviews by default.
 lib/src/version.dart linguist-generated=false
