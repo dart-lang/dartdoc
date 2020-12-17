@@ -279,8 +279,9 @@ void main() {
   });
 
   test('Renderer renders a partial in an absolute directory', () {
+    var partialPath = resourceProvider.convertPath('/project/foo.mustache');
     var barTemplate = getFile('/project/src/bar.mustache')
-      ..writeAsStringSync('Text {{#foo}}{{>/project/foo.mustache}}{{/foo}}');
+      ..writeAsStringSync('Text {{#foo}}{{>$partialPath}}{{/foo}}');
     getFile('/project/foo.mustache').writeAsStringSync('Partial {{s1}}');
     var bar = Bar()..foo = (Foo()..s1 = 'hello');
     expect(renderBar(bar, barTemplate), equals('Text Partial hello'));
@@ -390,18 +391,22 @@ void main() {
   });
 
   test('Renderer throws when it cannot read a template', () {
-    var barTemplate = getFile('/project/src/bar.mustache');
+    var templatePath =
+        resourceProvider.convertPath('/project/src/bar.mustache');
+    var barTemplate = getFile(templatePath);
     expect(
         () => renderBar(Bar(), barTemplate),
         throwsA(const TypeMatcher<MustachioResolutionError>().having(
             (e) => e.message,
             'message',
             contains('FileSystemException when reading template '
-                '"/project/src/bar.mustache"'))));
+                '"$templatePath"'))));
   });
 
   test('Renderer throws when it cannot read a partial', () {
-    var barTemplate = getFile('/project/src/bar.mustache')
+    var templatePath =
+        resourceProvider.convertPath('/project/src/bar.mustache');
+    var barTemplate = getFile(templatePath)
       ..writeAsStringSync('Text {{#foo}}{{>missing.mustache}}{{/foo}}');
     var bar = Bar()..foo = (Foo()..s1 = 'hello');
     expect(
@@ -411,6 +416,6 @@ void main() {
             'message',
             contains(
                 'FileSystemException when reading partial "missing.mustache" '
-                'found in template "/project/src/bar.mustache"'))));
+                'found in template "$templatePath"'))));
   });
 }
