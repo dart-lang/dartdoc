@@ -143,7 +143,7 @@ class Bar {}
               return self.getValue(c).toString();
             } else {
               throw MustachioResolutionError(
-                  \'Failed to resolve simple renderer use @visibleToMustache\');
+                  _simpleResolveErrorMessage(remainingNames, 'bool'));
             }
           },
           getBool: (CT_ c) => c.b1 == true,
@@ -161,7 +161,7 @@ class Bar {}
               return self.getValue(c).toString();
             } else {
               throw MustachioResolutionError(
-                  'Failed to resolve simple renderer use @visibleToMustache');
+                  _simpleResolveErrorMessage(remainingNames, 'List<int>'));
             }
           },
           isEmptyIterable: (CT_ c) => c.l1?.isEmpty ?? true,
@@ -169,7 +169,7 @@ class Bar {}
               (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             var buffer = StringBuffer();
             for (var e in c.l1) {
-              buffer.write(renderSimple(e, ast, parent: r));
+              buffer.write(renderSimple(e, ast, r.template, parent: r));
             }
             return buffer.toString();
           },
@@ -187,12 +187,12 @@ class Bar {}
               return self.getValue(c).toString();
             } else {
               throw MustachioResolutionError(
-                  'Failed to resolve simple renderer use @visibleToMustache');
+                  _simpleResolveErrorMessage(remainingNames, 'String'));
             }
           },
           isNullValue: (CT_ c) => c.s1 == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            return renderSimple(c.s1, ast, parent: r);
+            return renderSimple(c.s1, ast, r.template, parent: r);
           },
         ),
 '''));
@@ -239,11 +239,16 @@ import 'package:mustachio/annotations.dart';
       generatedContent = utf8.decode(writer.assets[rendererAsset]);
     });
 
+    test('with a corresponding public API function', () async {
+      expect(generatedContent,
+          contains('String renderFoo<T>(Foo<T> context, File file)'));
+    });
+
     test('with a corresponding render function', () async {
       expect(
           generatedContent,
           contains(
-              'String renderFoo<T>(Foo<T> context, List<MustachioNode> ast,'));
+              'String _render_Foo<T>(Foo<T> context, List<MustachioNode> ast, File file,'));
     });
 
     test('with a generic supertype type argument', () async {

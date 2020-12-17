@@ -4,15 +4,32 @@
 // files in the tool/mustachio/ directory.
 
 // ignore_for_file: camel_case_types, unnecessary_cast, unused_element, unused_import
+import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/mustachio/renderer_base.dart';
 import 'package:dartdoc/src/mustachio/parser.dart';
 import 'templates.dart';
 
-String renderIndex(PackageTemplateData context, List<MustachioNode> ast,
+String _simpleResolveErrorMessage(List<String> key, String type) =>
+    'Failed to resolve $key property chain on $type using a simple renderer; '
+    'expose the properties of $type by adding it to the @Renderer '
+    "annotation's 'visibleTypes' list";
+
+String renderIndex(PackageTemplateData context, File file) {
+  try {
+    var parser = MustachioParser(file.readAsStringSync());
+    return _render_PackageTemplateData(context, parser.parse(), file);
+  } on FileSystemException catch (e) {
+    throw MustachioResolutionError(
+        'FileSystemException when reading template "${file.path}": ${e.message}');
+  }
+}
+
+String _render_PackageTemplateData(
+    PackageTemplateData context, List<MustachioNode> ast, File file,
     {RendererBase<Object> parent}) {
-  var renderer = _Renderer_PackageTemplateData(context, parent);
+  var renderer = _Renderer_PackageTemplateData(context, parent, file);
   renderer.renderBlock(ast);
   return renderer.buffer.toString();
 }
@@ -29,7 +46,7 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
               return self.getValue(c).toString();
             } else {
               throw MustachioResolutionError(
-                  'Failed to resolve simple renderer use @visibleToMustache');
+                  _simpleResolveErrorMessage(remainingNames, 'bool*'));
             }
           },
           getBool: (CT_ c) => c.hasHomepage == true,
@@ -42,12 +59,12 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
               return self.getValue(c).toString();
             } else {
               throw MustachioResolutionError(
-                  'Failed to resolve simple renderer use @visibleToMustache');
+                  _simpleResolveErrorMessage(remainingNames, 'String*'));
             }
           },
           isNullValue: (CT_ c) => c.homepage == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            return renderSimple(c.homepage, ast, parent: r);
+            return renderSimple(c.homepage, ast, r.template, parent: r);
           },
         ),
         'htmlBase': Property(
@@ -58,12 +75,12 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
               return self.getValue(c).toString();
             } else {
               throw MustachioResolutionError(
-                  'Failed to resolve simple renderer use @visibleToMustache');
+                  _simpleResolveErrorMessage(remainingNames, 'String*'));
             }
           },
           isNullValue: (CT_ c) => c.htmlBase == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            return renderSimple(c.htmlBase, ast, parent: r);
+            return renderSimple(c.htmlBase, ast, r.template, parent: r);
           },
         ),
         'includeVersion': Property(
@@ -74,7 +91,7 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
               return self.getValue(c).toString();
             } else {
               throw MustachioResolutionError(
-                  'Failed to resolve simple renderer use @visibleToMustache');
+                  _simpleResolveErrorMessage(remainingNames, 'bool*'));
             }
           },
           getBool: (CT_ c) => c.includeVersion == true,
@@ -87,12 +104,12 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
               return self.getValue(c).toString();
             } else {
               throw MustachioResolutionError(
-                  'Failed to resolve simple renderer use @visibleToMustache');
+                  _simpleResolveErrorMessage(remainingNames, 'String*'));
             }
           },
           isNullValue: (CT_ c) => c.layoutTitle == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            return renderSimple(c.layoutTitle, ast, parent: r);
+            return renderSimple(c.layoutTitle, ast, r.template, parent: r);
           },
         ),
         'metaDescription': Property(
@@ -103,12 +120,12 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
               return self.getValue(c).toString();
             } else {
               throw MustachioResolutionError(
-                  'Failed to resolve simple renderer use @visibleToMustache');
+                  _simpleResolveErrorMessage(remainingNames, 'String*'));
             }
           },
           isNullValue: (CT_ c) => c.metaDescription == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            return renderSimple(c.metaDescription, ast, parent: r);
+            return renderSimple(c.metaDescription, ast, r.template, parent: r);
           },
         ),
         'navLinks': Property(
@@ -118,8 +135,8 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
             if (remainingNames.isEmpty) {
               return self.getValue(c).toString();
             } else {
-              throw MustachioResolutionError(
-                  'Failed to resolve simple renderer use @visibleToMustache');
+              throw MustachioResolutionError(_simpleResolveErrorMessage(
+                  remainingNames, 'List<Documentable*>*'));
             }
           },
           isEmptyIterable: (CT_ c) => c.navLinks?.isEmpty ?? true,
@@ -127,7 +144,7 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
               (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             var buffer = StringBuffer();
             for (var e in c.navLinks) {
-              buffer.write(renderSimple(e, ast, parent: r));
+              buffer.write(renderSimple(e, ast, r.template, parent: r));
             }
             return buffer.toString();
           },
@@ -140,12 +157,12 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
               return self.getValue(c).toString();
             } else {
               throw MustachioResolutionError(
-                  'Failed to resolve simple renderer use @visibleToMustache');
+                  _simpleResolveErrorMessage(remainingNames, 'Package*'));
             }
           },
           isNullValue: (CT_ c) => c.package == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            return renderSimple(c.package, ast, parent: r);
+            return renderSimple(c.package, ast, r.template, parent: r);
           },
         ),
         'self': Property(
@@ -156,12 +173,12 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
               return self.getValue(c).toString();
             } else {
               throw MustachioResolutionError(
-                  'Failed to resolve simple renderer use @visibleToMustache');
+                  _simpleResolveErrorMessage(remainingNames, 'Package*'));
             }
           },
           isNullValue: (CT_ c) => c.self == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            return renderSimple(c.self, ast, parent: r);
+            return renderSimple(c.self, ast, r.template, parent: r);
           },
         ),
         'title': Property(
@@ -172,20 +189,20 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
               return self.getValue(c).toString();
             } else {
               throw MustachioResolutionError(
-                  'Failed to resolve simple renderer use @visibleToMustache');
+                  _simpleResolveErrorMessage(remainingNames, 'String*'));
             }
           },
           isNullValue: (CT_ c) => c.title == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            return renderSimple(c.title, ast, parent: r);
+            return renderSimple(c.title, ast, r.template, parent: r);
           },
         ),
         ..._Renderer_TemplateData.propertyMap<Package, CT_>(),
       };
 
   _Renderer_PackageTemplateData(
-      PackageTemplateData context, RendererBase<Object> parent)
-      : super(context, parent);
+      PackageTemplateData context, RendererBase<Object> parent, File file)
+      : super(context, parent, file);
 
   @override
   Property<PackageTemplateData> getProperty(String key) {
@@ -197,9 +214,9 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
   }
 }
 
-String _render_Object(Object context, List<MustachioNode> ast,
+String _render_Object(Object context, List<MustachioNode> ast, File file,
     {RendererBase<Object> parent}) {
-  var renderer = _Renderer_Object(context, parent);
+  var renderer = _Renderer_Object(context, parent, file);
   renderer.renderBlock(ast);
   return renderer.buffer.toString();
 }
@@ -214,18 +231,18 @@ class _Renderer_Object extends RendererBase<Object> {
               return self.getValue(c).toString();
             } else {
               throw MustachioResolutionError(
-                  'Failed to resolve simple renderer use @visibleToMustache');
+                  _simpleResolveErrorMessage(remainingNames, 'int'));
             }
           },
           isNullValue: (CT_ c) => c.hashCode == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            return renderSimple(c.hashCode, ast, parent: r);
+            return renderSimple(c.hashCode, ast, r.template, parent: r);
           },
         ),
       };
 
-  _Renderer_Object(Object context, RendererBase<Object> parent)
-      : super(context, parent);
+  _Renderer_Object(Object context, RendererBase<Object> parent, File file)
+      : super(context, parent, file);
 
   @override
   Property<Object> getProperty(String key) {
@@ -238,9 +255,9 @@ class _Renderer_Object extends RendererBase<Object> {
 }
 
 String _render_TemplateData<T extends Documentable>(
-    TemplateData<T> context, List<MustachioNode> ast,
+    TemplateData<T> context, List<MustachioNode> ast, File file,
     {RendererBase<Object> parent}) {
-  var renderer = _Renderer_TemplateData(context, parent);
+  var renderer = _Renderer_TemplateData(context, parent, file);
   renderer.renderBlock(ast);
   return renderer.buffer.toString();
 }
@@ -258,12 +275,12 @@ class _Renderer_TemplateData<T extends Documentable>
               return self.getValue(c).toString();
             } else {
               throw MustachioResolutionError(
-                  'Failed to resolve simple renderer use @visibleToMustache');
+                  _simpleResolveErrorMessage(remainingNames, 'String*'));
             }
           },
           isNullValue: (CT_ c) => c.bareHref == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            return renderSimple(c.bareHref, ast, parent: r);
+            return renderSimple(c.bareHref, ast, r.template, parent: r);
           },
         ),
         'defaultPackage': Property(
@@ -274,12 +291,12 @@ class _Renderer_TemplateData<T extends Documentable>
               return self.getValue(c).toString();
             } else {
               throw MustachioResolutionError(
-                  'Failed to resolve simple renderer use @visibleToMustache');
+                  _simpleResolveErrorMessage(remainingNames, 'Package*'));
             }
           },
           isNullValue: (CT_ c) => c.defaultPackage == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            return renderSimple(c.defaultPackage, ast, parent: r);
+            return renderSimple(c.defaultPackage, ast, r.template, parent: r);
           },
         ),
         'hasFooterVersion': Property(
@@ -290,7 +307,7 @@ class _Renderer_TemplateData<T extends Documentable>
               return self.getValue(c).toString();
             } else {
               throw MustachioResolutionError(
-                  'Failed to resolve simple renderer use @visibleToMustache');
+                  _simpleResolveErrorMessage(remainingNames, 'bool*'));
             }
           },
           getBool: (CT_ c) => c.hasFooterVersion == true,
@@ -303,7 +320,7 @@ class _Renderer_TemplateData<T extends Documentable>
               return self.getValue(c).toString();
             } else {
               throw MustachioResolutionError(
-                  'Failed to resolve simple renderer use @visibleToMustache');
+                  _simpleResolveErrorMessage(remainingNames, 'bool*'));
             }
           },
           getBool: (CT_ c) => c.hasHomepage == true,
@@ -316,12 +333,12 @@ class _Renderer_TemplateData<T extends Documentable>
               return self.getValue(c).toString();
             } else {
               throw MustachioResolutionError(
-                  'Failed to resolve simple renderer use @visibleToMustache');
+                  _simpleResolveErrorMessage(remainingNames, 'String*'));
             }
           },
           isNullValue: (CT_ c) => c.homepage == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            return renderSimple(c.homepage, ast, parent: r);
+            return renderSimple(c.homepage, ast, r.template, parent: r);
           },
         ),
         'htmlBase': Property(
@@ -332,12 +349,12 @@ class _Renderer_TemplateData<T extends Documentable>
               return self.getValue(c).toString();
             } else {
               throw MustachioResolutionError(
-                  'Failed to resolve simple renderer use @visibleToMustache');
+                  _simpleResolveErrorMessage(remainingNames, 'String*'));
             }
           },
           isNullValue: (CT_ c) => c.htmlBase == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            return renderSimple(c.htmlBase, ast, parent: r);
+            return renderSimple(c.htmlBase, ast, r.template, parent: r);
           },
         ),
         'htmlOptions': Property(
@@ -347,13 +364,13 @@ class _Renderer_TemplateData<T extends Documentable>
             if (remainingNames.isEmpty) {
               return self.getValue(c).toString();
             } else {
-              throw MustachioResolutionError(
-                  'Failed to resolve simple renderer use @visibleToMustache');
+              throw MustachioResolutionError(_simpleResolveErrorMessage(
+                  remainingNames, 'TemplateOptions*'));
             }
           },
           isNullValue: (CT_ c) => c.htmlOptions == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            return renderSimple(c.htmlOptions, ast, parent: r);
+            return renderSimple(c.htmlOptions, ast, r.template, parent: r);
           },
         ),
         'includeVersion': Property(
@@ -364,7 +381,7 @@ class _Renderer_TemplateData<T extends Documentable>
               return self.getValue(c).toString();
             } else {
               throw MustachioResolutionError(
-                  'Failed to resolve simple renderer use @visibleToMustache');
+                  _simpleResolveErrorMessage(remainingNames, 'bool*'));
             }
           },
           getBool: (CT_ c) => c.includeVersion == true,
@@ -377,12 +394,12 @@ class _Renderer_TemplateData<T extends Documentable>
               return self.getValue(c).toString();
             } else {
               throw MustachioResolutionError(
-                  'Failed to resolve simple renderer use @visibleToMustache');
+                  _simpleResolveErrorMessage(remainingNames, 'String*'));
             }
           },
           isNullValue: (CT_ c) => c.layoutTitle == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            return renderSimple(c.layoutTitle, ast, parent: r);
+            return renderSimple(c.layoutTitle, ast, r.template, parent: r);
           },
         ),
         'localPackages': Property(
@@ -392,8 +409,8 @@ class _Renderer_TemplateData<T extends Documentable>
             if (remainingNames.isEmpty) {
               return self.getValue(c).toString();
             } else {
-              throw MustachioResolutionError(
-                  'Failed to resolve simple renderer use @visibleToMustache');
+              throw MustachioResolutionError(_simpleResolveErrorMessage(
+                  remainingNames, 'List<Package*>*'));
             }
           },
           isEmptyIterable: (CT_ c) => c.localPackages?.isEmpty ?? true,
@@ -401,7 +418,7 @@ class _Renderer_TemplateData<T extends Documentable>
               (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             var buffer = StringBuffer();
             for (var e in c.localPackages) {
-              buffer.write(renderSimple(e, ast, parent: r));
+              buffer.write(renderSimple(e, ast, r.template, parent: r));
             }
             return buffer.toString();
           },
@@ -414,12 +431,12 @@ class _Renderer_TemplateData<T extends Documentable>
               return self.getValue(c).toString();
             } else {
               throw MustachioResolutionError(
-                  'Failed to resolve simple renderer use @visibleToMustache');
+                  _simpleResolveErrorMessage(remainingNames, 'String*'));
             }
           },
           isNullValue: (CT_ c) => c.metaDescription == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            return renderSimple(c.metaDescription, ast, parent: r);
+            return renderSimple(c.metaDescription, ast, r.template, parent: r);
           },
         ),
         'navLinks': Property(
@@ -429,8 +446,8 @@ class _Renderer_TemplateData<T extends Documentable>
             if (remainingNames.isEmpty) {
               return self.getValue(c).toString();
             } else {
-              throw MustachioResolutionError(
-                  'Failed to resolve simple renderer use @visibleToMustache');
+              throw MustachioResolutionError(_simpleResolveErrorMessage(
+                  remainingNames, 'List<Documentable*>*'));
             }
           },
           isEmptyIterable: (CT_ c) => c.navLinks?.isEmpty ?? true,
@@ -438,7 +455,7 @@ class _Renderer_TemplateData<T extends Documentable>
               (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             var buffer = StringBuffer();
             for (var e in c.navLinks) {
-              buffer.write(renderSimple(e, ast, parent: r));
+              buffer.write(renderSimple(e, ast, r.template, parent: r));
             }
             return buffer.toString();
           },
@@ -450,8 +467,8 @@ class _Renderer_TemplateData<T extends Documentable>
             if (remainingNames.isEmpty) {
               return self.getValue(c).toString();
             } else {
-              throw MustachioResolutionError(
-                  'Failed to resolve simple renderer use @visibleToMustache');
+              throw MustachioResolutionError(_simpleResolveErrorMessage(
+                  remainingNames, 'List<Container*>*'));
             }
           },
           isEmptyIterable: (CT_ c) => c.navLinksWithGenerics?.isEmpty ?? true,
@@ -459,7 +476,7 @@ class _Renderer_TemplateData<T extends Documentable>
               (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             var buffer = StringBuffer();
             for (var e in c.navLinksWithGenerics) {
-              buffer.write(renderSimple(e, ast, parent: r));
+              buffer.write(renderSimple(e, ast, r.template, parent: r));
             }
             return buffer.toString();
           },
@@ -472,12 +489,12 @@ class _Renderer_TemplateData<T extends Documentable>
               return self.getValue(c).toString();
             } else {
               throw MustachioResolutionError(
-                  'Failed to resolve simple renderer use @visibleToMustache');
+                  _simpleResolveErrorMessage(remainingNames, 'Documentable*'));
             }
           },
           isNullValue: (CT_ c) => c.parent == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            return renderSimple(c.parent, ast, parent: r);
+            return renderSimple(c.parent, ast, r.template, parent: r);
           },
         ),
         'relCanonicalPrefix': Property(
@@ -488,12 +505,13 @@ class _Renderer_TemplateData<T extends Documentable>
               return self.getValue(c).toString();
             } else {
               throw MustachioResolutionError(
-                  'Failed to resolve simple renderer use @visibleToMustache');
+                  _simpleResolveErrorMessage(remainingNames, 'String*'));
             }
           },
           isNullValue: (CT_ c) => c.relCanonicalPrefix == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            return renderSimple(c.relCanonicalPrefix, ast, parent: r);
+            return renderSimple(c.relCanonicalPrefix, ast, r.template,
+                parent: r);
           },
         ),
         'title': Property(
@@ -504,12 +522,12 @@ class _Renderer_TemplateData<T extends Documentable>
               return self.getValue(c).toString();
             } else {
               throw MustachioResolutionError(
-                  'Failed to resolve simple renderer use @visibleToMustache');
+                  _simpleResolveErrorMessage(remainingNames, 'String*'));
             }
           },
           isNullValue: (CT_ c) => c.title == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            return renderSimple(c.title, ast, parent: r);
+            return renderSimple(c.title, ast, r.template, parent: r);
           },
         ),
         'useBaseHref': Property(
@@ -520,7 +538,7 @@ class _Renderer_TemplateData<T extends Documentable>
               return self.getValue(c).toString();
             } else {
               throw MustachioResolutionError(
-                  'Failed to resolve simple renderer use @visibleToMustache');
+                  _simpleResolveErrorMessage(remainingNames, 'bool*'));
             }
           },
           getBool: (CT_ c) => c.useBaseHref == true,
@@ -533,19 +551,20 @@ class _Renderer_TemplateData<T extends Documentable>
               return self.getValue(c).toString();
             } else {
               throw MustachioResolutionError(
-                  'Failed to resolve simple renderer use @visibleToMustache');
+                  _simpleResolveErrorMessage(remainingNames, 'String*'));
             }
           },
           isNullValue: (CT_ c) => c.version == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            return renderSimple(c.version, ast, parent: r);
+            return renderSimple(c.version, ast, r.template, parent: r);
           },
         ),
         ..._Renderer_Object.propertyMap<CT_>(),
       };
 
-  _Renderer_TemplateData(TemplateData<T> context, RendererBase<Object> parent)
-      : super(context, parent);
+  _Renderer_TemplateData(
+      TemplateData<T> context, RendererBase<Object> parent, File file)
+      : super(context, parent, file);
 
   @override
   Property<TemplateData<T>> getProperty(String key) {

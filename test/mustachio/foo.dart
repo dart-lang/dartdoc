@@ -15,6 +15,8 @@ class Foo {
 class Bar {
   Foo foo;
   String s2;
+  Baz baz;
+  bool l1;
 }
 
 class Baz {
