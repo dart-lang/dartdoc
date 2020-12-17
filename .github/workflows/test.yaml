@@ -42,13 +42,6 @@ jobs:
         if: runner.os == 'Windows'
         run: git config --global core.autocrlf input
       - uses: actions/checkout@v2
-      - name: Cache pub and grinder files
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.pub-cache/hosted
-            ~/.dartdoc_grinder
-          key: "os:${{ matrix.os }};dartdoc-cache"
       - uses: dart-lang/setup-dart@v0.1
         with:
           channel: ${{ matrix.sdk }}
