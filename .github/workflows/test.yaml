@@ -46,18 +46,20 @@ jobs:
         with:
           channel: ${{ matrix.sdk }}
       - name: Install dependencies
-        run: |
-          dart pub get
-          ./tool/install_travis.sh
-        shell: bash
+        run: dart pub get
       - name: ${{ matrix.job }}
         if: runner.os != 'Windows'
         run: ./tool/travis.sh
         env:
           DARTDOC_BOT: ${{ matrix.job }}
-          COVERAGE_TOKEN: ${{ secrets.COVERAGE_TOKEN }}
+          COVERAGE_TOKEN: true # this needs to be set to enable coverage
       - name: ${{ matrix.job }}
         if: runner.os == 'Windows' && matrix.job == 'main'
         run: pub run grinder buildbot
         env:
           DARTDOC_BOT: ${{ matrix.job }}
+      - name: Upload coverage
+        uses: coverallsapp/github-action@v1.1.2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: lcov.info
