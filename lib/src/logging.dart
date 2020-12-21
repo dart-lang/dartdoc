@@ -16,12 +16,12 @@ final _logger = Logger('dartdoc');
 /// A custom [Level] for tracking file writes and verification.
 ///
 /// Has a value of `501` – one more than [Level.FINE].
-final Level progressLevel = Level('PROGRESS', 501);
+const Level progressLevel = Level('PROGRESS', 501);
 
 /// A custom [Level] for errant print statements.
 ///
 /// Has a value of `1201` – one more than [Level.SHOUT].
-final Level printLevel = Level('PRINT', 1201);
+const Level printLevel = Level('PRINT', 1201);
 
 void logWarning(Object message) {
   _logger.log(Level.WARNING, message);
@@ -82,7 +82,7 @@ void startLogging(LoggingContext config) {
     var writingProgress = false;
     var ansi = Ansi(Ansi.terminalSupportsAnsi);
     var spinnerIndex = 0;
-    final spinner = ['-', r'\', '|', '/'];
+    const spinner = ['-', r'\', '|', '/'];
 
     Logger.root.onRecord.listen((record) {
       if (record.level == progressLevel) {
