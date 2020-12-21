@@ -140,12 +140,12 @@ bool hasPublicName(Element e) => !hasPrivateName(e);
 
 /// Strip leading dartdoc comments from the given source code.
 String stripDartdocCommentsFromSource(String source) {
-  var remainer = source.trimLeft();
+  var remainder = source.trimLeft();
   var sanitizer = const HtmlEscape();
-  var lineComments = remainer.startsWith('///') ||
-      remainer.startsWith(sanitizer.convert('///'));
-  var blockComments = remainer.startsWith('/**') ||
-      remainer.startsWith(sanitizer.convert('/**'));
+  var lineComments = remainder.startsWith('///') ||
+      remainder.startsWith(sanitizer.convert('///'));
+  var blockComments = remainder.startsWith('/**') ||
+      remainder.startsWith(sanitizer.convert('/**'));
 
   return source.split('\n').where((String line) {
     if (lineComments) {
@@ -171,8 +171,8 @@ String stripDartdocCommentsFromSource(String source) {
 
 /// Strip the common indent from the given source fragment.
 String stripIndentFromSource(String source) {
-  var remainer = source.trimLeft();
-  var indent = source.substring(0, source.length - remainer.length);
+  var remainder = source.trimLeft();
+  var indent = source.substring(0, source.length - remainder.length);
   return source.split('\n').map((line) {
     line = line.trimRight();
     return line.startsWith(indent) ? line.substring(indent.length) : line;

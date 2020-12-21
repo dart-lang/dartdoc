@@ -374,7 +374,7 @@ as well as available in the process environment.
 
 ### Injecting HTML
 
-It happens rarely, but sometimes what you really need is to inject some raw HTML
+It rarely happens, but sometimes what you really need is to inject some raw HTML
 into the dartdoc output, without it being subject to Markdown processing
 beforehand. This can be useful when the output of an external tool is HTML, for
 instance. This is where the `{@inject-html}...{@end-inject-html}` tags come in.
@@ -411,7 +411,7 @@ all the used libraries, even from other packages, to the list of the documented 
 The source linking feature in dartdoc is a little tricky to use, since pub packages do not actually
 include enough information to link back to source code and that's the context in which documentation
 is generated for the pub site.  This means that for now, it must be manually specified in
-dartdoc_options.yaml what revision to use.  It is currently recommended practice to
+dartdoc_options.yaml what revision to use.  It is currently a recommended practice to
 specify a revision in dartdoc_options.yaml that points to the same revision as your public package.
 If you're using a documentation staging system outside of Dart's pub site, override the template and
 revision on the command line with the head revision number.  You can use the branch name,

@@ -349,7 +349,7 @@ class _MarkdownCommentReference {
 
   /// [_impliedUnnamedConstructor] is memoized in [__impliedUnnamedConstructor],
   /// but even after it is initialized, it may be null. This bool represents the
-  /// initializiation state.
+  /// initialization state.
   bool __impliedUnnamedConstructorIsSet = false;
 
   /// Returns the name of the implied unnamed constructor if there is one, or
@@ -624,14 +624,14 @@ class _MarkdownCommentReference {
   }
 
   /// Returns the unnamed constructor for class [toConvert] or the class for
-  /// constructor [toConvert], or just [toConvert], based on hueristics.
+  /// constructor [toConvert], or just [toConvert], based on heuristics.
   ///
   /// * If an unnamed constructor is implied in the comment reference, and
   ///   [toConvert] is a class with the same name, the class's unnamed
   ///   constructor is returned.
   /// * Otherwise, if [toConvert] is an unnamed constructor, its enclosing
   ///   class is returned.
-  /// * Othwerwise, [toConvert] is returned.
+  /// * Otherwise, [toConvert] is returned.
   ModelElement _convertConstructors(ModelElement toConvert) {
     if (_impliedUnnamedConstructor != null) {
       if (toConvert is Class && toConvert.name == _impliedUnnamedConstructor) {

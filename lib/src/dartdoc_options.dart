@@ -730,14 +730,14 @@ class DartdocOptionFileSynth<T> extends DartdocOption<T>
   final T Function(DartdocSyntheticOption<T>, Folder) _compute;
 
   DartdocOptionFileSynth(
-      String name, this._compute, ResourceProvider resourceprovider,
+      String name, this._compute, ResourceProvider resourceProvider,
       {bool mustExist = false,
       String help = '',
       OptionKind optionIs = OptionKind.other,
       bool parentDirOverridesChild,
       ConvertYamlToType<T> convertYamlToType})
       : super(name, null, help, optionIs, mustExist, convertYamlToType,
-            resourceprovider) {
+            resourceProvider) {
     _parentDirOverridesChild = parentDirOverridesChild;
   }
 
