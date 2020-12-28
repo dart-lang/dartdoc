@@ -37,7 +37,7 @@
     {{/hasPublicInstanceMethods}}
 
     {{#hasPublicInstanceOperators}}
-    <li class="section-title{{ #publicInheritedInstanceOperators }} inherited{{ /publicInheritedInstanceOperators}}"><a href="{{{href}}}#operators">Operators</a></li>
+    <li class="section-title{{ #publicInheritedInstanceOperators }} inherited{{ /publicInheritedInstanceOperators }}"><a href="{{{href}}}#operators">Operators</a></li>
     {{#publicInstanceOperatorsSorted}}
     <li{{ #isInherited }} class="inherited"{{ /isInherited}}>{{{ linkedName }}}</li>
     {{/publicInstanceOperatorsSorted}}

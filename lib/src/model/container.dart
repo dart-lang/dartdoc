@@ -75,7 +75,10 @@ abstract class Container extends ModelElement with TypeParameters {
   /// This is only used in mustache templates.
   bool get publicInheritedInstanceMethods => false;
 
-  Iterable<Operator> get publicInheritedInstanceOperators => [];
+  /// Whether all instance operators are inherited.
+  ///
+  /// This is only used in mustache templates.
+  bool get publicInheritedInstanceOperators => false;
 
   @nonVirtual
   bool get hasPublicInstanceMethods =>
