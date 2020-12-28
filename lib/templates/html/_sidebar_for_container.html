@@ -1,6 +1,15 @@
 <ol>
     {{#container}}
 
+    {{#isClass}}
+    {{#hasPublicConstructors}}
+    <li class="section-title"><a href="{{{href}}}#constructors">Constructors</a></li>
+    {{#publicConstructorsSorted}}
+    <li><a{{#isDeprecated}} class="deprecated"{{/isDeprecated}} href="{{{href}}}">{{shortName}}</a></li>
+    {{/publicConstructorsSorted}}
+    {{/hasPublicConstructors}}
+    {{/isClass}}
+
     {{#isEnum}}
     {{#hasPublicConstantFields}}
     <li class="section-title"><a href="{{{href}}}#constants">Constants</a></li>
@@ -8,7 +17,9 @@
     <li>{{{linkedName}}}</li>
     {{/publicConstantFieldsSorted}}
     {{/hasPublicConstantFields}}
+    {{/isEnum}}
 
+    {{#isClassOrEnum}}
     {{#hasPublicInstanceFields}}
     <li class="section-title{{ #publicInheritedInstanceFields }} inherited{{ /publicInheritedInstanceFields }}">
       <a href="{{{href}}}#instance-properties">Properties</a>
@@ -31,18 +42,9 @@
     <li{{ #isInherited }} class="inherited"{{ /isInherited}}>{{{ linkedName }}}</li>
     {{/publicInstanceOperatorsSorted}}
     {{/hasPublicInstanceOperators}}
-    {{/isEnum}}
+    {{/isClassOrEnum}}
 
-    {{#isClass}}
-    {{#hasPublicConstructors}}
-    <li class="section-title"><a href="{{{href}}}#constructors">Constructors</a></li>
-    {{#publicConstructorsSorted}}
-    <li><a{{#isDeprecated}} class="deprecated"{{/isDeprecated}} href="{{{href}}}">{{shortName}}</a></li>
-    {{/publicConstructorsSorted}}
-    {{/hasPublicConstructors}}
-    {{/isClass}}
-
-    {{#isClassOrExtension}}
+    {{#isExtension}}
     {{#hasPublicInstanceFields}}
     <li class="section-title"> <a href="{{{href}}}#instance-properties">Properties</a>
     </li>
@@ -64,7 +66,9 @@
     <li>{{{ linkedName }}}</li>
     {{/publicInstanceOperatorsSorted}}
     {{/hasPublicInstanceOperators}}
+    {{/isExtension}}
 
+    {{#isClassOrExtension}}
     {{#hasPublicVariableStaticFields}}
     <li class="section-title"><a href="{{{href}}}#static-properties">Static properties</a></li>
     {{#publicVariableStaticFieldsSorted}}

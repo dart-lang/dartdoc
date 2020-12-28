@@ -41,6 +41,7 @@ abstract class Container extends ModelElement with TypeParameters {
   bool get isClassOrExtension => isClass || isExtension;
   bool get isEnum =>
       element is ClassElement && (element as ClassElement).isEnum;
+  bool get isClassOrEnum => isClass || isEnum;
   bool get isMixin =>
       element is ClassElement && (element as ClassElement).isMixin;
 
