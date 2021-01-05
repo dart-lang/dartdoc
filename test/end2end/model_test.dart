@@ -963,11 +963,11 @@ void main() {
                 '<a href="${HTMLBASE_PLACEHOLDER}fake/SpecialList/operator_get.html">SpecialList.operator []</a> '));
       }, skip: 'https://github.com/dart-lang/dartdoc/issues/1285');
 
-      test('codifies a class from the SDK', () {
+      test('adds <code> tag to a class from the SDK', () {
         expect(docsAsHtml, contains('<code>String</code>'));
       });
 
-      test('codifies a reference to its parameter', () {
+      test('adds <code> tag to a reference to its parameter', () {
         expect(docsAsHtml, contains('<code>value</code>'));
       });
 
