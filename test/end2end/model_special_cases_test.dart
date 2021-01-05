@@ -3,7 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 /// This test library handles checks against the model for configurations
-/// that require different PacakgeGraph configurations.  Since those
+/// that require different PackageGraph configurations.  Since those
 /// take a long time to initialize, isolate them here to keep model_test
 /// fast.
 library dartdoc.model_special_cases_test;

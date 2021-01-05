@@ -17,7 +17,7 @@ class NeverType extends ModelElement {
   @override
   ModelElement get enclosingElement => throw UnsupportedError('');
 
-  /// And similiarly, even if someone references it directly it can have
+  /// And similarly, even if someone references it directly it can have
   /// no hyperlink.
   @override
   String get href => null;

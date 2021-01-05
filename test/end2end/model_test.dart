@@ -963,11 +963,11 @@ void main() {
                 '<a href="${HTMLBASE_PLACEHOLDER}fake/SpecialList/operator_get.html">SpecialList.operator []</a> '));
       }, skip: 'https://github.com/dart-lang/dartdoc/issues/1285');
 
-      test('codeifies a class from the SDK', () {
+      test('adds <code> tag to a class from the SDK', () {
         expect(docsAsHtml, contains('<code>String</code>'));
       });
 
-      test('codeifies a reference to its parameter', () {
+      test('adds <code> tag to a reference to its parameter', () {
         expect(docsAsHtml, contains('<code>value</code>'));
       });
 
@@ -2015,7 +2015,7 @@ void main() {
       expect(fancyList.publicInstanceFields, hasLength(1));
     });
 
-    test('get contants', () {
+    test('get constants', () {
       expect(fancyList.publicConstantFields, hasLength(0));
     });
 
@@ -2519,7 +2519,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(m1.enclosingElement.name, equals(classB.name));
     });
 
-    test('overriden method', () {
+    test('overridden method', () {
       expect(m1.overriddenElement.runtimeType.toString(), 'Method');
     });
 
@@ -2941,7 +2941,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test(
-        'property with setter and getter and comments with asterixes do not show asterixes',
+        'property with setter and getter and comments with asterisks do not show asterisks',
         () {
       expect(sFromApple.documentationAsHtml.contains('/**'), isFalse);
     });
@@ -3882,7 +3882,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
   });
 
   group('Sorting by name', () {
-    // Order by uppercased lexical ordering for non-digits,
+    // Order by uppercase lexical ordering for non-digits,
     // lexicographical ordering of embedded digit sequences.
     var names = [
       r'',
