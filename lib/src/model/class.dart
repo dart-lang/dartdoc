@@ -85,6 +85,10 @@ class Class extends Container
   Iterable<Operator> get instanceOperators =>
       quiver.concat([super.instanceOperators, inheritedOperators]);
 
+  @override
+  bool get publicInheritedInstanceOperators =>
+      publicInstanceOperators.every((f) => f.isInherited);
+
   List<ModelElement> _allModelElements;
 
   @override
@@ -248,10 +252,6 @@ class Class extends Container
     }
     return _inheritedOperators;
   }
-
-  @override
-  Iterable<Operator> get publicInheritedInstanceOperators =>
-      model_utils.filterNonPublic(inheritedOperators);
 
   Iterable<Field> get inheritedFields => allFields.where((f) => f.isInherited);
 

@@ -332,6 +332,8 @@ class Dog implements Cat, E {
   @override
   operator ==(other) => other is Dog && name == other.name;
 
+  Dog operator +(Dog other) => Dog()..name = name + other.name;
+
   foo() async => 42;
 
   @deprecated

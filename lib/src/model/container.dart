@@ -41,6 +41,7 @@ abstract class Container extends ModelElement with TypeParameters {
   bool get isClassOrExtension => isClass || isExtension;
   bool get isEnum =>
       element is ClassElement && (element as ClassElement).isEnum;
+  bool get isClassOrEnum => isClass || isEnum;
   bool get isMixin =>
       element is ClassElement && (element as ClassElement).isMixin;
 
@@ -65,16 +66,13 @@ abstract class Container extends ModelElement with TypeParameters {
       .toList(growable: false);
 
   /// Whether all instance fields are inherited.
-  ///
-  /// This is only used in mustache templates.
   bool get publicInheritedInstanceFields => false;
 
   /// Whether all instance methods are inherited.
-  ///
-  /// This is only used in mustache templates.
   bool get publicInheritedInstanceMethods => false;
 
-  Iterable<Operator> get publicInheritedInstanceOperators => [];
+  /// Whether all instance operators are inherited.
+  bool get publicInheritedInstanceOperators => false;
 
   @nonVirtual
   bool get hasPublicInstanceMethods =>
