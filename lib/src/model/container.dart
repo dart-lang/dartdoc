@@ -66,18 +66,12 @@ abstract class Container extends ModelElement with TypeParameters {
       .toList(growable: false);
 
   /// Whether all instance fields are inherited.
-  ///
-  /// This is only used in mustache templates.
   bool get publicInheritedInstanceFields => false;
 
   /// Whether all instance methods are inherited.
-  ///
-  /// This is only used in mustache templates.
   bool get publicInheritedInstanceMethods => false;
 
   /// Whether all instance operators are inherited.
-  ///
-  /// This is only used in mustache templates.
   bool get publicInheritedInstanceOperators => false;
 
   @nonVirtual
