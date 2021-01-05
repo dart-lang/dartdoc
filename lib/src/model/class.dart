@@ -87,7 +87,7 @@ class Class extends Container
 
   @override
   bool get publicInheritedInstanceOperators =>
-      instanceOperators.every((f) => f.isInherited);
+      publicInstanceOperators.every((f) => f.isInherited);
 
   List<ModelElement> _allModelElements;
 
