@@ -1632,8 +1632,17 @@ void main() {
     });
 
     test('get operators', () {
-      expect(Dog.publicInstanceOperators, hasLength(1));
+      expect(Dog.publicInstanceOperators, hasLength(2));
       expect(Dog.publicInstanceOperators.first.name, 'operator ==');
+      expect(Dog.publicInstanceOperators.last.name, 'operator +');
+    });
+
+    test('has non-inherited instance operators', () {
+      expect(Dog.publicInheritedInstanceOperators, isFalse);
+    });
+
+    test('has only inherited instance operators', () {
+      expect(Cat.publicInheritedInstanceOperators, isTrue);
     });
 
     test('inherited methods, including from Object ', () {
