@@ -478,6 +478,10 @@ h1 .category {
   margin: 0 8px 0 0;
 }
 
+a.feature:hover {
+  border-color: #13B9FD;
+}
+
 h1 .feature {
   vertical-align: middle;
 }

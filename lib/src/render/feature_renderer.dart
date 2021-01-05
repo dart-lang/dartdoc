@@ -10,6 +10,7 @@ abstract class FeatureRenderer {
 
 class FeatureRendererHtml extends FeatureRenderer {
   static final FeatureRendererHtml _instance = FeatureRendererHtml._();
+
   factory FeatureRendererHtml() {
     return _instance;
   }
@@ -18,27 +19,35 @@ class FeatureRendererHtml extends FeatureRenderer {
 
   @override
   String renderFeatureLabel(LanguageFeature feature) {
-    var spanClasses = <String>[];
-    spanClasses.add('feature');
-    spanClasses
-        .add('feature-${feature.name.split(' ').join('-').toLowerCase()}');
+    final classesText = [
+      'feature',
+      'feature-${feature.name.split(' ').join('-').toLowerCase()}'
+    ].join(' ');
 
-    var buf = StringBuffer();
-    buf.write(
-        '<span class="${spanClasses.join(' ')}" title="${feature.featureDescription}">${feature.name}</span>');
-    return buf.toString();
+    if (feature.featureUrl != null) {
+      return '<a href="${feature.featureUrl}" class="${classesText}"'
+          ' title="${feature.featureDescription}">${feature.name}</a>';
+    }
+
+    return '<span class="${classesText}" '
+        'title="${feature.featureDescription}">${feature.name}</span>';
   }
 }
 
 class FeatureRendererMd extends FeatureRenderer {
   static final FeatureRendererMd _instance = FeatureRendererMd._();
+
   factory FeatureRendererMd() {
     return _instance;
   }
 
   FeatureRendererMd._();
+
   @override
   String renderFeatureLabel(LanguageFeature feature) {
+    if (feature.featureUrl != null) {
+      return '*[\<${feature.name}\>](${feature.featureUrl})*';
+    }
     return '*\<${feature.name}\>*';
   }
 }

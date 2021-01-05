@@ -8,10 +8,15 @@ const Map<String, String> _featureDescriptions = {
   'Null safety': 'Supports the null safety language feature.',
 };
 
+const Map<String, String> _featureUrls = {
+  'Null safety': 'https://dart.dev/null-safety',
+};
+
 /// An abstraction for a language feature; used to render tags to notify
 /// the user that the documentation should be specially interpreted.
 class LanguageFeature {
   String get featureDescription => _featureDescriptions[name];
+  String get featureUrl => _featureUrls[name];
   String get featureLabel => _featureRenderer.renderFeatureLabel(this);
 
   final String name;
