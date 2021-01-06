@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'package:analyzer/file_system/file_system.dart';
 import 'package:meta/meta.dart';
 import 'parser.dart';
 
@@ -13,10 +14,12 @@ abstract class RendererBase<T> {
   /// The renderer of the parent context, if any, otherwise `null`.
   final RendererBase parent;
 
+  final File template;
+
   /// The output buffer into which [context] is rendered, using a template.
   final buffer = StringBuffer();
 
-  RendererBase(this.context, this.parent);
+  RendererBase(this.context, this.parent, this.template);
 
   void write(String text) => buffer.write(text);
 
@@ -48,7 +51,7 @@ abstract class RendererBase<T> {
         throw MustachioResolutionError(
             "Failed to resolve '${e.name}' on ${e.contextType} while resolving "
             '${names.skip(1)} as a property chain on any types in the context '
-            "chain: $contextChainString, after first resolving '${names.first}'"
+            "chain: $contextChainString, after first resolving '${names.first}' "
             'to a property on $T');
       }
     } else if (parent != null) {
@@ -118,20 +121,33 @@ abstract class RendererBase<T> {
   }
 
   void partial(Partial node) {
-    // TODO(srawlins): Implement.
+    var key = node.key;
+    var partialPath = template.provider.pathContext.isAbsolute(key)
+        ? key
+        : template.provider.pathContext.join(template.parent.path, key);
+    try {
+      var file = template.provider
+          .getFile(template.provider.pathContext.normalize(partialPath));
+      var parser = MustachioParser(file.readAsStringSync());
+      var ast = parser.parse();
+      renderBlock(ast);
+    } on FileSystemException catch (e) {
+      throw MustachioResolutionError(
+          'FileSystemException when reading partial "$key" found in template "${template.path}": ${e.message}');
+    }
   }
 }
 
-String renderSimple(Object context, List<MustachioNode> ast,
+String renderSimple(Object context, List<MustachioNode> ast, File template,
     {RendererBase parent}) {
-  var renderer = SimpleRenderer(context, parent);
+  var renderer = SimpleRenderer(context, parent, template);
   renderer.renderBlock(ast);
   return renderer.buffer.toString();
 }
 
 class SimpleRenderer extends RendererBase<Object> {
-  SimpleRenderer(Object context, RendererBase<Object> parent)
-      : super(context, parent);
+  SimpleRenderer(Object context, RendererBase<Object> parent, File template)
+      : super(context, parent, template);
 
   @override
   Property<Object> getProperty(String key) => null;

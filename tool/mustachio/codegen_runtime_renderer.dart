@@ -86,11 +86,17 @@ class RuntimeRenderersBuilder {
 // files in the tool/mustachio/ directory.
 
 // ignore_for_file: camel_case_types, unnecessary_cast, unused_element, unused_import
+import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/mustachio/renderer_base.dart';
 import 'package:dartdoc/src/mustachio/parser.dart';
 import '${p.basename(_sourceUri.path)}';
+
+String _simpleResolveErrorMessage(List<String> key, String type) =>
+    'Failed to resolve \$key property chain on \$type using a simple renderer; '
+    'expose the properties of \$type by adding it to the @Renderer '
+    "annotation's 'visibleTypes' list";
 ''');
 
     specs.forEach(_addTypesForRendererSpec);
@@ -106,12 +112,14 @@ import '${p.basename(_sourceUri.path)}';
     return _buffer.toString();
   }
 
+  /// Adds type specified in [spec] to the [_typesToProcess] queue, as well as
+  /// all supertypes, and the types of all valid getters, recursively.
   void _addTypesForRendererSpec(RendererSpec spec) {
     var element = spec._contextType.element;
-    var rendererInfo =
-        _RendererInfo(element, spec._name, public: _rendererClassesArePublic);
+    var rendererInfo = _RendererInfo(element,
+        public: _rendererClassesArePublic, publicApiFunctionName: spec._name);
     _typesToProcess.add(rendererInfo);
-    _typeToRenderFunctionName[element] = spec._name;
+    _typeToRenderFunctionName[element] = rendererInfo._renderFunctionName;
     _typeToRendererClassName[element] = rendererInfo._rendererClassName;
 
     spec._contextType.accessors.forEach(_addPropertyToProcess);
@@ -162,23 +170,21 @@ import '${p.basename(_sourceUri.path)}';
 
   /// Adds [type] to the [_typesToProcess] queue, if it is not already there.
   void _addTypeToProcess(ClassElement element, {@required isFullRenderer}) {
-    var typeName = element.name;
-    var renderFunctionName = '_render_$typeName';
     var typeToProcess = _typesToProcess
         .singleWhere((rs) => rs._contextClass == element, orElse: () => null);
     if (typeToProcess == null) {
-      var rendererInfo = _RendererInfo(element, renderFunctionName,
-          public: _rendererClassesArePublic, isFullRenderer: isFullRenderer);
+      var rendererInfo = _RendererInfo(element,
+          isFullRenderer: isFullRenderer, public: _rendererClassesArePublic);
       _typesToProcess.add(rendererInfo);
       if (isFullRenderer) {
-        _typeToRenderFunctionName[element] = renderFunctionName;
+        _typeToRenderFunctionName[element] = rendererInfo._renderFunctionName;
         _typeToRendererClassName[element] = rendererInfo._rendererClassName;
       }
     } else {
       if (isFullRenderer && !typeToProcess.isFullRenderer) {
         // This is the only case in which we update a type-to-render.
         typeToProcess.isFullRenderer = true;
-        _typeToRenderFunctionName[element] = renderFunctionName;
+        _typeToRenderFunctionName[element] = typeToProcess._renderFunctionName;
         _typeToRendererClassName[element] = typeToProcess._rendererClassName;
       }
     }
@@ -198,16 +204,35 @@ import '${p.basename(_sourceUri.path)}';
   /// Builds both the render function and the renderer class for [renderer].
   ///
   /// The function and the class are each written as Dart code to [_buffer].
+  ///
+  /// If [renderer] also specifies a `publicApiFunctionName`, then a public API
+  /// function (which renders a context object using a template file at a path,
+  /// rather than an AST) is also written.
   void _buildRenderer(_RendererInfo renderer) {
     var typeName = renderer._typeName;
     var typeWithVariables = '$typeName${renderer._typeVariablesString}';
 
+    if (renderer.publicApiFunctionName != null) {
+      _buffer.writeln('''
+String ${renderer.publicApiFunctionName}${renderer._typeParametersString}(
+    $typeWithVariables context, File file) {
+  try {
+    var parser = MustachioParser(file.readAsStringSync());
+    return ${renderer._renderFunctionName}(context, parser.parse(), file);
+  } on FileSystemException catch (e) {
+    throw MustachioResolutionError(
+        'FileSystemException when reading template "\${file.path}": \${e.message}');
+  }
+}
+''');
+    }
+
     // Write out the render function.
     _buffer.writeln('''
-String ${renderer._functionName}${renderer._typeParametersString}(
-    $typeWithVariables context, List<MustachioNode> ast,
+String ${renderer._renderFunctionName}${renderer._typeParametersString}(
+    $typeWithVariables context, List<MustachioNode> ast, File file,
     {RendererBase<Object> parent}) {
-  var renderer = ${renderer._rendererClassName}(context, parent);
+  var renderer = ${renderer._rendererClassName}(context, parent, file);
   renderer.renderBlock(ast);
   return renderer.buffer.toString();
 }
@@ -221,8 +246,9 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
     _writePropertyMap(renderer);
     // Write out the constructor.
     _buffer.writeln('''
-  ${renderer._rendererClassName}($typeWithVariables context, RendererBase<Object> parent)
-      : super(context, parent);
+  ${renderer._rendererClassName}(
+        $typeWithVariables context, RendererBase<Object> parent, File file)
+      : super(context, parent, file);
 ''');
     var propertyMapTypeArguments = renderer._typeArgumentsStringWith(typeName);
     var propertyMapName = 'propertyMap$propertyMapTypeArguments';
@@ -315,7 +341,8 @@ renderVariable:
   if (remainingNames.isEmpty) {
     return self.getValue(c).toString();
   } else {
-    throw MustachioResolutionError('Failed to resolve simple renderer use @visibleToMustache');
+    throw MustachioResolutionError(
+      _simpleResolveErrorMessage(remainingNames, '$getterType'));
   }
 },
 ''');
@@ -344,7 +371,7 @@ renderIterable:
     ($_contextTypeVariable c, RendererBase<$_contextTypeVariable> r, List<MustachioNode> ast) {
   var buffer = StringBuffer();
   for (var e in c.$getterName) {
-    buffer.write($rendererName(e, ast, parent: r));
+    buffer.write($rendererName(e, ast, r.template, parent: r));
   }
   return buffer.toString();
 },
@@ -364,7 +391,7 @@ isNullValue: ($_contextTypeVariable c) => c.$getterName == null,
 
 renderValue:
     ($_contextTypeVariable c, RendererBase<$_contextTypeVariable> r, List<MustachioNode> ast) {
-  return $rendererName(c.$getterName, ast, parent: r);
+  return $rendererName(c.$getterName, ast, r.template, parent: r);
 },
 ''');
       }
@@ -386,7 +413,7 @@ class _RendererInfo {
   ///
   /// This function is public when specified in a @Renderer annotation, and
   /// private otherwise.
-  final String _functionName;
+  final String _renderFunctionName;
 
   /// Whether the renderer should be a full renderer.
   ///
@@ -398,19 +425,26 @@ class _RendererInfo {
   /// later determined that we need a full renderer, so this field is not final.
   bool isFullRenderer;
 
-  factory _RendererInfo(ClassElement contextClass, String functionName,
-      {bool public = false, bool isFullRenderer = true}) {
+  /// The public API function name specified with @Renderer, or null.
+  String publicApiFunctionName;
+
+  factory _RendererInfo(ClassElement contextClass,
+      {bool public = false,
+      bool isFullRenderer = true,
+      String publicApiFunctionName}) {
     var typeBaseName = contextClass.name;
+    var renderFunctionName = '_render_$typeBaseName';
     var rendererClassName =
         public ? 'Renderer_$typeBaseName' : '_Renderer_$typeBaseName';
 
-    return _RendererInfo._(contextClass, functionName, rendererClassName,
-        isFullRenderer: isFullRenderer);
+    return _RendererInfo._(contextClass, renderFunctionName, rendererClassName,
+        isFullRenderer: isFullRenderer,
+        publicApiFunctionName: publicApiFunctionName);
   }
 
   _RendererInfo._(
-      this._contextClass, this._functionName, this._rendererClassName,
-      {@required this.isFullRenderer});
+      this._contextClass, this._renderFunctionName, this._rendererClassName,
+      {@required this.isFullRenderer, this.publicApiFunctionName});
 
   String get _typeName => _contextClass.name;
 
