@@ -185,6 +185,7 @@ abstract class ParameterRenderer {
         buf.write(renderLinkedParams(paramModelType.element.parameters,
             showMetadata: showMetadata, showNames: showNames));
         buf.write(')');
+        buf.write(paramModelType.nullabilitySuffix);
       }
       if (!paramModelType.isTypedef && paramModelType.type is FunctionType) {
         buf.write('(');
@@ -193,6 +194,7 @@ abstract class ParameterRenderer {
             showMetadata: showMetadata,
             showNames: showNames));
         buf.write(')');
+        buf.write(paramModelType.nullabilitySuffix);
       }
     } else if (param.modelType != null) {
       var linkedTypeName = paramModelType.linkedName;
