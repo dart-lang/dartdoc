@@ -14,8 +14,7 @@ For issues/details related to hosted Dart API docs, see
 
 ## Installing dartdoc
 
-Run `pub global activate dartdoc` to install the latest version of dartdoc compatible with your
-SDK.
+Run `pub global activate dartdoc` to install the latest version of dartdoc compatible with your SDK.
 
 ## Generating docs
 
