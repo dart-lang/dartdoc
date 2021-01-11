@@ -1,0 +1,70 @@
+name: Test
+
+on:
+  # Run CI on pushes to the main branch, and on PRs against main.
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  schedule:
+    - cron: 0 15 * * *
+
+env:
+  PUB_ENVIRONMENT: bot.github
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        sdk: [dev, stable]
+        job: [main, sdk-analyzer, flutter, packages, sdk-docs]
+        include:
+          - os: macos-latest
+            sdk: dev
+            job: main
+          - os: windows-latest
+            sdk: dev
+            job: main
+        exclude:
+            # Do not try to run flutter against the "stable" sdk,
+            # it is unlikely to work and produces uninteresting
+            # results.
+          - sdk: stable
+            job: flutter
+          - sdk: stable
+            job: sdk-analyzer
+
+    steps:
+      - name: Configure git
+        if: runner.os == 'Windows'
+        run: git config --global core.autocrlf input
+      - uses: actions/checkout@v2
+      - uses: dart-lang/setup-dart@v0.1
+        with:
+          channel: ${{ matrix.sdk }}
+      - name: Install dependencies
+        run: dart pub get
+      - name: ${{ matrix.job }}
+        if: runner.os != 'Windows'
+        run: ./tool/travis.sh
+        env:
+          DARTDOC_BOT: ${{ matrix.job }}
+          COVERAGE_TOKEN: true # this needs to be set to enable coverage
+      - name: ${{ matrix.job }}
+        if: runner.os == 'Windows' && matrix.job == 'main'
+        run: pub run grinder buildbot
+        env:
+          DARTDOC_BOT: ${{ matrix.job }}
+      - id: coverage
+        name: Upload coverage
+        if: runner.os == 'Linux' && matrix.job == 'main' && matrix.sdk == 'dev'
+        uses: coverallsapp/github-action@v1.1.2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: lcov.info
+      - name: Echo coveralls api result
+        if: runner.os == 'Linux' && matrix.job == 'main' && matrix.sdk == 'dev'
+        run: echo ${{ steps.coverage.outputs['coveralls-api-result'] }}

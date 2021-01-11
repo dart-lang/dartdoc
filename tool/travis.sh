@@ -45,7 +45,4 @@ elif [ "$DARTDOC_BOT" = "sdk-analyzer" ]; then
 else
   echo "Running main dartdoc bot"
   pub run grinder buildbot
-  if [ -n "$COVERAGE_TOKEN" ] ; then
-    coveralls-lcov --repo-token="${COVERAGE_TOKEN}" lcov.info
-  fi
 fi
