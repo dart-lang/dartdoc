@@ -58,9 +58,13 @@ jobs:
         run: pub run grinder buildbot
         env:
           DARTDOC_BOT: ${{ matrix.job }}
-      - name: Upload coverage
+      - id: coverage
+        name: Upload coverage
         if: runner.os == 'Linux' && matrix.job == 'main' && matrix.sdk == 'dev'
         uses: coverallsapp/github-action@v1.1.2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path-to-lcov: lcov.info
+      - name: Echo coveralls api result
+        if: runner.os == 'Linux' && matrix.job == 'main' && matrix.sdk == 'dev'
+        run: echo ${{ steps.coverage.outputs['coveralls-api-result'] }}
