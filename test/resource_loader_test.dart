@@ -4,7 +4,7 @@
 
 library dartdoc.resource_loader_test;
 
-import 'package:analyzer/file_system/memory_file_system.dart';
+import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:dartdoc/src/generator/resource_loader.dart';
 import 'package:test/test.dart';
 
@@ -13,7 +13,7 @@ void main() {
     ResourceLoader loader;
 
     setUp(() {
-      loader = ResourceLoader(MemoryResourceProvider());
+      loader = ResourceLoader(PhysicalResourceProvider());
     });
 
     test('load from packages', () async {
