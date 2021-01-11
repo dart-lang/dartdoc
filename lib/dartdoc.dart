@@ -50,7 +50,8 @@ class DartdocGeneratorOptionContext extends DartdocOptionContext
 
 class DartdocFileWriter implements FileWriter {
   final String outputDir;
-  ResourceProvider resourceProvider;
+  @override
+  final ResourceProvider resourceProvider;
   final Map<String, Warnable> _fileElementMap = {};
   @override
   final Set<String> writtenFiles = {};
