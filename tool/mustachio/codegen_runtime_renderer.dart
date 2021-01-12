@@ -215,10 +215,11 @@ String _simpleResolveErrorMessage(List<String> key, String type) =>
     if (renderer.publicApiFunctionName != null) {
       _buffer.writeln('''
 String ${renderer.publicApiFunctionName}${renderer._typeParametersString}(
-    $typeWithVariables context, File file) {
+    $typeWithVariables context, File file, {PartialResolver partialResolver}) {
   try {
     var parser = MustachioParser(file.readAsStringSync());
-    return ${renderer._renderFunctionName}(context, parser.parse(), file);
+    return ${renderer._renderFunctionName}(
+        context, parser.parse(), file, partialResolver: partialResolver);
   } on FileSystemException catch (e) {
     throw MustachioResolutionError(
         'FileSystemException when reading template "\${file.path}": \${e.message}');
@@ -231,8 +232,9 @@ String ${renderer.publicApiFunctionName}${renderer._typeParametersString}(
     _buffer.writeln('''
 String ${renderer._renderFunctionName}${renderer._typeParametersString}(
     $typeWithVariables context, List<MustachioNode> ast, File file,
-    {RendererBase<Object> parent}) {
-  var renderer = ${renderer._rendererClassName}(context, parent, file);
+    {RendererBase<Object> parent, PartialResolver partialResolver}) {
+  var renderer = ${renderer._rendererClassName}(
+      context, parent, file, partialResolver: partialResolver);
   renderer.renderBlock(ast);
   return renderer.buffer.toString();
 }
@@ -247,8 +249,9 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
     // Write out the constructor.
     _buffer.writeln('''
   ${renderer._rendererClassName}(
-        $typeWithVariables context, RendererBase<Object> parent, File file)
-      : super(context, parent, file);
+        $typeWithVariables context, RendererBase<Object> parent, File file,
+        {PartialResolver partialResolver})
+      : super(context, parent, file, partialResolver: partialResolver);
 ''');
     var propertyMapTypeArguments = renderer._typeArgumentsStringWith(typeName);
     var propertyMapName = 'propertyMap$propertyMapTypeArguments';
