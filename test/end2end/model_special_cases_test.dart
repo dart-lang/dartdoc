@@ -89,6 +89,7 @@ void main() {
         optOutOfNullSafety,
         nullableElements;
     Class b;
+    Class c;
 
     setUpAll(() async {
       lateFinalWithoutInitializer = (await _testPackageGraphExperiments)
@@ -105,6 +106,8 @@ void main() {
           .firstWhere((lib) => lib.name == 'nullable_elements');
       b = nullSafetyClassMemberDeclarations.allClasses
           .firstWhere((c) => c.name == 'B');
+      c = nullSafetyClassMemberDeclarations.allClasses
+          .firstWhere((c) => c.name == 'C');
     });
 
     test('isNullSafety is set correctly for libraries', () {
@@ -151,6 +154,24 @@ void main() {
               '<li><span class="parameter" id="m2-param-we"><span class="type-annotation">dynamic</span> <span class="parameter-name">we</span>, </span></li>\n'
               '<li><span class="parameter" id="m2-param-have">[<span class="type-annotation">String</span> <span class="parameter-name">have</span>, </span></li>\n'
               '<li><span class="parameter" id="m2-param-optionals"><span class="type-annotation">double</span> <span class="parameter-name">optionals</span>]</span></li>\n'
+              '</ol>'));
+    });
+
+    test('anonymous callback parameters are correctly marked as nullable', () {
+      var m3 = c.instanceMethods.firstWhere((m) => m.name == 'm3');
+      var listen = m3.allParameters.firstWhere((p) => p.name == 'listen');
+      var onDone = m3.allParameters.firstWhere((p) => p.name == 'onDone');
+      expect(listen.isRequiredPositional, isTrue);
+      expect(onDone.isNamed, isTrue);
+
+      expect(
+          m3.linkedParamsLines,
+          equals(
+              '<ol class="parameter-list"><li><span class="parameter" id="m3-param-listen"><span class="type-annotation">void</span> <span class="parameter-name">listen</span>(<ol class="parameter-list"><li><span class="parameter" id="param-t"><span class="type-annotation">int</span> <span class="parameter-name">t</span></span></li>\n'
+              '</ol>\n'
+              ')?, </span></li>\n'
+              '<li><span class="parameter" id="m3-param-onDone">{<span class="type-annotation">void</span> <span class="parameter-name">onDone</span>(<ol class="parameter-list"></ol>\n'
+              ')?}</span></li>\n'
               '</ol>'));
     });
 
