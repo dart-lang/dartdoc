@@ -1,3 +1,15 @@
+## 0.39.0
+* More implementation added for Mustachio. (#2452, #2458, #2467)
+* Use `=` to document values for named parameters. (#2453, #2087)
+* Add a link to the null safety feature indicator.  (#2455)
+* Fixed a problem where searching by URL failed in SDK docs.  (#2470)
+* Fix a regression where members were not being marked as inherited in
+  sidebars (#2473, #2472).
+* **Breaking change**: Removed bootstrap CSS files.  (#2460)
+* **Breaking change**: Removed the URI.js library. (#2471)
+* Update Highlight.js to 10.5.0, including better support for
+  highlighting non-nullable code. (#2474)
+
 ## 0.38.0
 * Correctly handle intermediate abstract classes containing external
   implementations. (#2449, #2251)
