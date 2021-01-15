@@ -241,7 +241,8 @@ import 'package:mustachio/annotations.dart';
 
     test('with a corresponding public API function', () async {
       expect(generatedContent,
-          contains('String renderFoo<T>(Foo<T> context, File file)'));
+          contains('String renderFoo<T>(Foo<T> context, File file,'));
+      expect(generatedContent, contains('{PartialResolver partialResolver})'));
     });
 
     test('with a corresponding render function', () async {

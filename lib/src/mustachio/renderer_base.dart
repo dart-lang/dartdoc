@@ -4,7 +4,15 @@
 
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:meta/meta.dart';
+import 'package:path/path.dart' as path;
 import 'parser.dart';
+
+/// The signature of a partial resolver function.
+typedef PartialResolver = String Function(String path);
+
+/// The signature of a generated render function.
+typedef Renderer<T> = String Function(T context, File file,
+    {PartialResolver partialResolver});
 
 /// The base class for a generated Mustache renderer.
 abstract class RendererBase<T> {
@@ -16,10 +24,23 @@ abstract class RendererBase<T> {
 
   final File template;
 
+  final PartialResolver partialResolver;
+
   /// The output buffer into which [context] is rendered, using a template.
   final buffer = StringBuffer();
 
-  RendererBase(this.context, this.parent, this.template);
+  RendererBase(this.context, this.parent, this.template,
+      {this.partialResolver});
+
+  path.Context get pathContext => template.provider.pathContext;
+
+  String _defaultResolver(String path) {
+    var partialPath = pathContext.isAbsolute(path)
+        ? path
+        : pathContext.join(template.parent.path, path);
+    var file = template.provider.getFile(pathContext.normalize(partialPath));
+    return file.readAsStringSync();
+  }
 
   void write(String text) => buffer.write(text);
 
@@ -122,18 +143,15 @@ abstract class RendererBase<T> {
 
   void partial(Partial node) {
     var key = node.key;
-    var partialPath = template.provider.pathContext.isAbsolute(key)
-        ? key
-        : template.provider.pathContext.join(template.parent.path, key);
     try {
-      var file = template.provider
-          .getFile(template.provider.pathContext.normalize(partialPath));
-      var parser = MustachioParser(file.readAsStringSync());
+      var partial = (partialResolver ?? _defaultResolver)(key);
+      var parser = MustachioParser(partial);
       var ast = parser.parse();
       renderBlock(ast);
     } on FileSystemException catch (e) {
       throw MustachioResolutionError(
-          'FileSystemException when reading partial "$key" found in template "${template.path}": ${e.message}');
+          'FileSystemException when reading partial "$key" found in template '
+          '"${template.path}": ${e.message}');
     }
   }
 }

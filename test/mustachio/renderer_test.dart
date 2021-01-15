@@ -323,6 +323,24 @@ void main() {
             'Line 2 Partial Section Instance of \'Bar\''));
   });
 
+  test('Renderer renders a partial using a custom partial renderer', () {
+    var barTemplate = getFile('/project/bar.mustache')
+      ..writeAsStringSync('Text {{#foo}}{{>_foo.mustache}}{{/foo}}');
+    getFile('/project/_foo.mustache').writeAsStringSync('Partial {{s1}}');
+    var bar = Bar()..foo = (Foo()..s1 = 'hello');
+    String partialResolver(String path) {
+      var partialPath = resourceProvider.pathContext.isAbsolute(path)
+          ? path
+          : resourceProvider.pathContext.join('/project', path);
+      var file = resourceProvider
+          .getFile(resourceProvider.pathContext.normalize('_$partialPath'));
+      return file.readAsStringSync();
+    }
+
+    expect(renderBar(bar, barTemplate, partialResolver: partialResolver),
+        equals('Text Partial hello'));
+  });
+
   test('Renderer throws when it cannot resolve a variable key', () {
     var fooTemplate = getFile('/project/foo.mustache')
       ..writeAsStringSync('Text {{s2}}');
