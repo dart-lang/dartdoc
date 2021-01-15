@@ -9,10 +9,9 @@ import 'package:dartdoc/src/generator/dartdoc_generator_backend.dart';
 import 'package:dartdoc/src/generator/generator.dart';
 import 'package:dartdoc/src/generator/generator_frontend.dart';
 import 'package:dartdoc/src/generator/html_resources.g.dart' as resources;
-import 'package:dartdoc/src/generator/resource_loader.dart' as resource_loader;
+import 'package:dartdoc/src/generator/resource_loader.dart';
 import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/src/generator/templates.dart';
-import 'package:path/path.dart' as path;
 
 Future<Generator> initHtmlGenerator(
     DartdocGeneratorOptionContext context) async {
@@ -43,21 +42,28 @@ class HtmlGeneratorBackend extends DartdocGeneratorBackend {
       // Allow overwrite of favicon.
       var bytes =
           graph.resourceProvider.getFile(options.favicon).readAsBytesSync();
-      writer.write(path.join('static-assets', 'favicon.png'), bytes,
+      writer.write(
+          graph.resourceProvider.pathContext
+              .join('static-assets', 'favicon.png'),
+          bytes,
           allowOverwrite: true);
     }
   }
 
   Future<void> _copyResources(FileWriter writer) async {
-    final prefix = 'package:dartdoc/resources/';
+    var resourceLoader = ResourceLoader(writer.resourceProvider);
     for (var resourcePath in resources.resource_names) {
-      if (!resourcePath.startsWith(prefix)) {
-        throw StateError('Resource paths must start with $prefix, '
-            'encountered $resourcePath');
+      if (!resourcePath.startsWith(_dartdocResourcePrefix)) {
+        throw StateError('Resource paths must start with '
+            '$_dartdocResourcePrefix, encountered $resourcePath');
       }
-      var destFileName = resourcePath.substring(prefix.length);
-      writer.write(path.join('static-assets', destFileName),
-          await resource_loader.loadAsBytes(resourcePath));
+      var destFileName = resourcePath.substring(_dartdocResourcePrefix.length);
+      var destFilePath = writer.resourceProvider.pathContext
+          .join('static-assets', destFileName);
+      writer.write(
+          destFilePath, await resourceLoader.loadAsBytes(resourcePath));
     }
   }
+
+  static const _dartdocResourcePrefix = 'package:dartdoc/resources/';
 }

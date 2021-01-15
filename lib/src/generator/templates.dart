@@ -7,12 +7,12 @@
 @Renderer(#renderIndex, Context<PackageTemplateData>())
 library dartdoc.templates;
 
-import 'dart:io' show File, Directory;
-
+import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/dartdoc.dart';
-import 'package:dartdoc/src/generator/resource_loader.dart' as loader;
+import 'package:dartdoc/src/generator/resource_loader.dart';
 import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/src/mustachio/annotations.dart';
+import 'package:meta/meta.dart';
 import 'package:mustache/mustache.dart';
 import 'package:path/path.dart' as path;
 
@@ -58,7 +58,6 @@ const _partials_md = <String>[
   'features',
   'feature_set',
   'footer',
-  'footer',
   'head',
   'library',
   'mixin',
@@ -77,16 +76,15 @@ Future<Map<String, String>> _loadPartials(
     List<String> headerPaths,
     List<String> footerPaths,
     List<String> footerTextPaths) async {
-  headerPaths ??= [];
-  footerPaths ??= [];
-  footerTextPaths ??= [];
-
   var partials = await templatesLoader.loadPartials();
 
   void replacePlaceholder(String key, String placeholder, List<String> paths) {
     var template = partials[key];
     if (template != null && paths != null && paths.isNotEmpty) {
-      var replacement = paths.map((p) => File(p).readAsStringSync()).join('\n');
+      var replacement = paths
+          .map((p) =>
+              templatesLoader.loader.provider.getFile(p).readAsStringSync())
+          .join('\n');
       template = template.replaceAll(placeholder, replacement);
       partials[key] = template;
     }
@@ -100,6 +98,8 @@ Future<Map<String, String>> _loadPartials(
 }
 
 abstract class _TemplatesLoader {
+  ResourceLoader get loader;
+
   Future<Map<String, String>> loadPartials();
 
   Future<String> loadTemplate(String name);
@@ -110,7 +110,10 @@ class _DefaultTemplatesLoader extends _TemplatesLoader {
   final String _format;
   final List<String> _partials;
 
-  factory _DefaultTemplatesLoader.create(String format) {
+  @override
+  final ResourceLoader loader;
+
+  factory _DefaultTemplatesLoader.create(String format, ResourceLoader loader) {
     List<String> partials;
     switch (format) {
       case 'html':
@@ -122,10 +125,10 @@ class _DefaultTemplatesLoader extends _TemplatesLoader {
       default:
         partials = [];
     }
-    return _DefaultTemplatesLoader(format, partials);
+    return _DefaultTemplatesLoader(format, partials, loader);
   }
 
-  _DefaultTemplatesLoader(this._format, this._partials);
+  _DefaultTemplatesLoader(this._format, this._partials, this.loader);
 
   @override
   Future<Map<String, String>> loadPartials() async {
@@ -144,33 +147,38 @@ class _DefaultTemplatesLoader extends _TemplatesLoader {
 
 /// Loads templates from a specified Directory.
 class _DirectoryTemplatesLoader extends _TemplatesLoader {
-  final Directory _directory;
+  final Folder _directory;
   final String _format;
 
-  _DirectoryTemplatesLoader(this._directory, this._format);
+  @override
+  final ResourceLoader loader;
+
+  _DirectoryTemplatesLoader(this._directory, this._format, this.loader);
+
+  path.Context get pathContext => _directory.provider.pathContext;
 
   @override
   Future<Map<String, String>> loadPartials() async {
     var partials = <String, String>{};
 
-    for (var file in _directory.listSync().whereType<File>()) {
-      var basename = path.basename(file.path);
+    for (var file in _directory.getChildren().whereType<File>()) {
+      var basename = pathContext.basename(file.path);
       if (basename.startsWith('_') && basename.endsWith('.$_format')) {
-        var content = file.readAsString();
+        var content = file.readAsStringSync();
         var partialName = basename.substring(1, basename.lastIndexOf('.'));
-        partials[partialName] = await content;
+        partials[partialName] = content;
       }
     }
     return partials;
   }
 
   @override
-  Future<String> loadTemplate(String name) {
-    var file = File(path.join(_directory.path, '$name.$_format'));
-    if (!file.existsSync()) {
+  Future<String> loadTemplate(String name) async {
+    var file = _directory.getChildAssumingFile('$name.$_format');
+    if (!file.exists) {
       throw DartdocFailure('Missing required template file: $name.$_format');
     }
-    return file.readAsString();
+    return file.readAsStringSync();
   }
 }
 
@@ -197,44 +205,51 @@ class Templates {
     var templatesDir = context.templatesDir;
     var format = context.format;
     var footerTextPaths = context.footerText;
+    var resourceLoader = ResourceLoader(context.resourceProvider);
 
     if (templatesDir != null) {
-      return fromDirectory(Directory(templatesDir), format,
+      return _fromDirectory(
+          context.resourceProvider.getFolder(templatesDir), format,
+          loader: resourceLoader,
           headerPaths: context.header,
           footerPaths: context.footer,
           footerTextPaths: footerTextPaths);
     } else {
       return createDefault(format,
+          loader: resourceLoader,
           headerPaths: context.header,
           footerPaths: context.footer,
           footerTextPaths: footerTextPaths);
     }
   }
 
+  @visibleForTesting
   static Future<Templates> createDefault(String format,
-      {List<String> headerPaths,
-      List<String> footerPaths,
-      List<String> footerTextPaths}) async {
-    return _create(_DefaultTemplatesLoader.create(format),
+      {@required ResourceLoader loader,
+      List<String> headerPaths = const <String>[],
+      List<String> footerPaths = const <String>[],
+      List<String> footerTextPaths = const <String>[]}) async {
+    return _create(_DefaultTemplatesLoader.create(format, loader),
         headerPaths: headerPaths,
         footerPaths: footerPaths,
         footerTextPaths: footerTextPaths);
   }
 
-  static Future<Templates> fromDirectory(Directory dir, String format,
-      {List<String> headerPaths,
-      List<String> footerPaths,
-      List<String> footerTextPaths}) async {
-    return _create(_DirectoryTemplatesLoader(dir, format),
+  static Future<Templates> _fromDirectory(Folder dir, String format,
+      {@required ResourceLoader loader,
+      @required List<String> headerPaths,
+      @required List<String> footerPaths,
+      @required List<String> footerTextPaths}) async {
+    return _create(_DirectoryTemplatesLoader(dir, format, loader),
         headerPaths: headerPaths,
         footerPaths: footerPaths,
         footerTextPaths: footerTextPaths);
   }
 
   static Future<Templates> _create(_TemplatesLoader templatesLoader,
-      {List<String> headerPaths,
-      List<String> footerPaths,
-      List<String> footerTextPaths}) async {
+      {@required List<String> headerPaths,
+      @required List<String> footerPaths,
+      @required List<String> footerTextPaths}) async {
     var partials = await _loadPartials(
         templatesLoader, headerPaths, footerPaths, footerTextPaths);
 

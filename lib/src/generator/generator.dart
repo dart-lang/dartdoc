@@ -5,12 +5,15 @@
 /// A library containing an abstract documentation generator.
 library dartdoc.generator;
 
+import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/model.dart' show PackageGraph;
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/warnings.dart';
 
 abstract class FileWriter {
+  ResourceProvider get resourceProvider;
+
   /// All filenames written by this generator.
   Set<String> get writtenFiles;
 

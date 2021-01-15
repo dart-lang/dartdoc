@@ -8,6 +8,7 @@ import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/generator/generator_frontend.dart';
 import 'package:dartdoc/src/generator/html_generator.dart';
 import 'package:dartdoc/src/generator/html_resources.g.dart';
+import 'package:dartdoc/src/generator/resource_loader.dart';
 import 'package:dartdoc/src/generator/templates.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
@@ -37,8 +38,66 @@ void main() {
     pathContext = resourceProvider.pathContext;
     packageConfigProvider = utils
         .getTestPackageConfigProvider(packageMetaProvider.defaultSdkDir.path);
+    var resourceLoader = ResourceLoader(resourceProvider);
+    for (var template in [
+      '_accessor_getter',
+      '_accessor_setter',
+      '_callable',
+      '_callable_multiline',
+      '_categorization',
+      '_class',
+      '_constant',
+      '_documentation',
+      '_extension',
+      '_features',
+      '_feature_set',
+      '_footer',
+      '_head',
+      '_library',
+      '_mixin',
+      '_name_summary',
+      '_packages',
+      '_property',
+      '_search_sidebar',
+      '_sidebar_for_category',
+      '_sidebar_for_container',
+      '_sidebar_for_library',
+      '_source_code',
+      '_source_link',
+      '404error',
+      'category',
+      'class',
+      'constructor',
+      'enum',
+      'extension',
+      'function',
+      'index',
+      'library',
+      'method',
+      'mixin',
+      'property',
+      'top_level_property',
+      'typedef',
+    ]) {
+      await resourceLoader.writeDartdocResource(
+          'templates/html/$template.html', 'CONTENT');
+    }
 
-    templates = await Templates.createDefault('html');
+    for (var resource in [
+      'favicon.png',
+      'github.css',
+      'highlight.pack.js',
+      'play_button.svg',
+      'readme.md',
+      'script.js',
+      'styles.css',
+      'typeahead.bundle.min.js',
+    ]) {
+      await resourceLoader.writeDartdocResource(
+          'resources/$resource', 'CONTENT');
+    }
+
+    templates = await Templates.createDefault('html', loader: resourceLoader);
     generator = GeneratorFrontEnd(HtmlGeneratorBackend(null, templates));
 
     projectRoot = utils.writePackage(
@@ -125,5 +184,14 @@ class _DoesExist extends Matcher {
     } else {
       return mismatchDescription.add(' does not exist');
     }
+  }
+}
+
+/// Extension methods just for tests.
+extension on ResourceLoader {
+  Future<void> writeDartdocResource(String path, String content) async {
+    var filePath =
+        (await resolveUri(Uri.parse('package:dartdoc/$path'))).toFilePath();
+    provider.getFile(filePath).writeAsStringSync(content);
   }
 }
