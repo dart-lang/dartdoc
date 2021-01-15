@@ -26,4 +26,6 @@ class C {
   List<int?> get testFieldNullableParameter => [];
 
   List<Map<String, num?>>? method1() => null;
+
+  void m3(void listen(int t)?, {void onDone()?});
 }
