@@ -11,8 +11,8 @@ void main() {
 
   /*late*/ p.Context pathContext;
 
-  File getFile(String path) =>
-      resourceProvider.getFile(resourceProvider.convertPath(path));
+  File getFile(String path) => resourceProvider
+      .getFile(pathContext.canonicalize(resourceProvider.convertPath(path)));
 
   setUp(() {
     resourceProvider = MemoryResourceProvider();
@@ -360,7 +360,7 @@ void main() {
       var partialPath = pathContext.isAbsolute(path)
           ? '_$path.mustache'
           : pathContext.join('/project', '_$path.mustache');
-      return resourceProvider.getFile(pathContext.canonicalize(partialPath));
+      return getFile(partialPath);
     }
 
     var barTemplateFile = getFile('/project/bar.mustache')
