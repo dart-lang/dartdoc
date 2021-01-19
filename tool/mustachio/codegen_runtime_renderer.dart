@@ -215,15 +215,8 @@ String _simpleResolveErrorMessage(List<String> key, String type) =>
     if (renderer.publicApiFunctionName != null) {
       _buffer.writeln('''
 String ${renderer.publicApiFunctionName}${renderer._typeParametersString}(
-    $typeWithVariables context, File file, {PartialResolver partialResolver}) {
-  try {
-    var parser = MustachioParser(file.readAsStringSync());
-    return ${renderer._renderFunctionName}(
-        context, parser.parse(), file, partialResolver: partialResolver);
-  } on FileSystemException catch (e) {
-    throw MustachioResolutionError(
-        'FileSystemException when reading template "\${file.path}": \${e.message}');
-  }
+    $typeWithVariables context, Template template) {
+  return ${renderer._renderFunctionName}(context, template.ast, template);
 }
 ''');
     }
@@ -231,10 +224,9 @@ String ${renderer.publicApiFunctionName}${renderer._typeParametersString}(
     // Write out the render function.
     _buffer.writeln('''
 String ${renderer._renderFunctionName}${renderer._typeParametersString}(
-    $typeWithVariables context, List<MustachioNode> ast, File file,
-    {RendererBase<Object> parent, PartialResolver partialResolver}) {
-  var renderer = ${renderer._rendererClassName}(
-      context, parent, file, partialResolver: partialResolver);
+    $typeWithVariables context, List<MustachioNode> ast, Template template,
+    {RendererBase<Object> parent}) {
+  var renderer = ${renderer._rendererClassName}(context, parent, template);
   renderer.renderBlock(ast);
   return renderer.buffer.toString();
 }
@@ -249,9 +241,8 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
     // Write out the constructor.
     _buffer.writeln('''
   ${renderer._rendererClassName}(
-        $typeWithVariables context, RendererBase<Object> parent, File file,
-        {PartialResolver partialResolver})
-      : super(context, parent, file, partialResolver: partialResolver);
+        $typeWithVariables context, RendererBase<Object> parent, Template template)
+      : super(context, parent, template);
 ''');
     var propertyMapTypeArguments = renderer._typeArgumentsStringWith(typeName);
     var propertyMapName = 'propertyMap$propertyMapTypeArguments';

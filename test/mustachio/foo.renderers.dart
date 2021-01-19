@@ -16,21 +16,13 @@ String _simpleResolveErrorMessage(List<String> key, String type) =>
     'expose the properties of $type by adding it to the @Renderer '
     "annotation's 'visibleTypes' list";
 
-String renderFoo(Foo context, File file, {PartialResolver partialResolver}) {
-  try {
-    var parser = MustachioParser(file.readAsStringSync());
-    return _render_Foo(context, parser.parse(), file,
-        partialResolver: partialResolver);
-  } on FileSystemException catch (e) {
-    throw MustachioResolutionError(
-        'FileSystemException when reading template "${file.path}": ${e.message}');
-  }
+String renderFoo(Foo context, Template template) {
+  return _render_Foo(context, template.ast, template);
 }
 
-String _render_Foo(Foo context, List<MustachioNode> ast, File file,
-    {RendererBase<Object> parent, PartialResolver partialResolver}) {
-  var renderer =
-      Renderer_Foo(context, parent, file, partialResolver: partialResolver);
+String _render_Foo(Foo context, List<MustachioNode> ast, Template template,
+    {RendererBase<Object> parent}) {
+  var renderer = Renderer_Foo(context, parent, template);
   renderer.renderBlock(ast);
   return renderer.buffer.toString();
 }
@@ -109,9 +101,8 @@ class Renderer_Foo extends RendererBase<Foo> {
         ...Renderer_Object.propertyMap<CT_>(),
       };
 
-  Renderer_Foo(Foo context, RendererBase<Object> parent, File file,
-      {PartialResolver partialResolver})
-      : super(context, parent, file, partialResolver: partialResolver);
+  Renderer_Foo(Foo context, RendererBase<Object> parent, Template template)
+      : super(context, parent, template);
 
   @override
   Property<Foo> getProperty(String key) {
@@ -123,10 +114,10 @@ class Renderer_Foo extends RendererBase<Foo> {
   }
 }
 
-String _render_Object(Object context, List<MustachioNode> ast, File file,
-    {RendererBase<Object> parent, PartialResolver partialResolver}) {
-  var renderer =
-      Renderer_Object(context, parent, file, partialResolver: partialResolver);
+String _render_Object(
+    Object context, List<MustachioNode> ast, Template template,
+    {RendererBase<Object> parent}) {
+  var renderer = Renderer_Object(context, parent, template);
   renderer.renderBlock(ast);
   return renderer.buffer.toString();
 }
@@ -151,9 +142,9 @@ class Renderer_Object extends RendererBase<Object> {
         ),
       };
 
-  Renderer_Object(Object context, RendererBase<Object> parent, File file,
-      {PartialResolver partialResolver})
-      : super(context, parent, file, partialResolver: partialResolver);
+  Renderer_Object(
+      Object context, RendererBase<Object> parent, Template template)
+      : super(context, parent, template);
 
   @override
   Property<Object> getProperty(String key) {
@@ -165,21 +156,13 @@ class Renderer_Object extends RendererBase<Object> {
   }
 }
 
-String renderBar(Bar context, File file, {PartialResolver partialResolver}) {
-  try {
-    var parser = MustachioParser(file.readAsStringSync());
-    return _render_Bar(context, parser.parse(), file,
-        partialResolver: partialResolver);
-  } on FileSystemException catch (e) {
-    throw MustachioResolutionError(
-        'FileSystemException when reading template "${file.path}": ${e.message}');
-  }
+String renderBar(Bar context, Template template) {
+  return _render_Bar(context, template.ast, template);
 }
 
-String _render_Bar(Bar context, List<MustachioNode> ast, File file,
-    {RendererBase<Object> parent, PartialResolver partialResolver}) {
-  var renderer =
-      Renderer_Bar(context, parent, file, partialResolver: partialResolver);
+String _render_Bar(Bar context, List<MustachioNode> ast, Template template,
+    {RendererBase<Object> parent}) {
+  var renderer = Renderer_Bar(context, parent, template);
   renderer.renderBlock(ast);
   return renderer.buffer.toString();
 }
@@ -256,9 +239,8 @@ class Renderer_Bar extends RendererBase<Bar> {
         ...Renderer_Object.propertyMap<CT_>(),
       };
 
-  Renderer_Bar(Bar context, RendererBase<Object> parent, File file,
-      {PartialResolver partialResolver})
-      : super(context, parent, file, partialResolver: partialResolver);
+  Renderer_Bar(Bar context, RendererBase<Object> parent, Template template)
+      : super(context, parent, template);
 
   @override
   Property<Bar> getProperty(String key) {
@@ -270,21 +252,13 @@ class Renderer_Bar extends RendererBase<Bar> {
   }
 }
 
-String renderBaz(Baz context, File file, {PartialResolver partialResolver}) {
-  try {
-    var parser = MustachioParser(file.readAsStringSync());
-    return _render_Baz(context, parser.parse(), file,
-        partialResolver: partialResolver);
-  } on FileSystemException catch (e) {
-    throw MustachioResolutionError(
-        'FileSystemException when reading template "${file.path}": ${e.message}');
-  }
+String renderBaz(Baz context, Template template) {
+  return _render_Baz(context, template.ast, template);
 }
 
-String _render_Baz(Baz context, List<MustachioNode> ast, File file,
-    {RendererBase<Object> parent, PartialResolver partialResolver}) {
-  var renderer =
-      Renderer_Baz(context, parent, file, partialResolver: partialResolver);
+String _render_Baz(Baz context, List<MustachioNode> ast, Template template,
+    {RendererBase<Object> parent}) {
+  var renderer = Renderer_Baz(context, parent, template);
   renderer.renderBlock(ast);
   return renderer.buffer.toString();
 }
@@ -313,9 +287,8 @@ class Renderer_Baz extends RendererBase<Baz> {
         ...Renderer_Object.propertyMap<CT_>(),
       };
 
-  Renderer_Baz(Baz context, RendererBase<Object> parent, File file,
-      {PartialResolver partialResolver})
-      : super(context, parent, file, partialResolver: partialResolver);
+  Renderer_Baz(Baz context, RendererBase<Object> parent, Template template)
+      : super(context, parent, template);
 
   @override
   Property<Baz> getProperty(String key) {

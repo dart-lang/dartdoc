@@ -92,8 +92,8 @@ class Bar {}
       // The render function for Foo
       expect(
           generatedContent,
-          contains(
-              'String _render_FooBase(FooBase context, List<MustachioNode> ast,'));
+          contains('String _render_FooBase(\n'
+              '    FooBase context, List<MustachioNode> ast, Template template,'));
       // The renderer class for Foo
       expect(generatedContent,
           contains('class _Renderer_FooBase extends RendererBase<FooBase>'));
@@ -103,8 +103,8 @@ class Bar {}
       // The render function for Object
       expect(
           generatedContent,
-          contains(
-              'String _render_Object(Object context, List<MustachioNode> ast,'));
+          contains('String _render_Object(\n'
+              '    Object context, List<MustachioNode> ast, Template template,'));
       // The renderer class for Object
       expect(generatedContent,
           contains('class _Renderer_Object extends RendererBase<Object> {'));
@@ -241,15 +241,14 @@ import 'package:mustachio/annotations.dart';
 
     test('with a corresponding public API function', () async {
       expect(generatedContent,
-          contains('String renderFoo<T>(Foo<T> context, File file,'));
-      expect(generatedContent, contains('{PartialResolver partialResolver})'));
+          contains('String renderFoo<T>(Foo<T> context, Template template)'));
     });
 
     test('with a corresponding render function', () async {
       expect(
           generatedContent,
-          contains(
-              'String _render_Foo<T>(Foo<T> context, List<MustachioNode> ast, File file,'));
+          contains('String _render_Foo<T>(\n'
+              '    Foo<T> context, List<MustachioNode> ast, Template template,'));
     });
 
     test('with a generic supertype type argument', () async {
