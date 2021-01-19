@@ -41,7 +41,7 @@ class Class extends Container
       'Dartdoc 1.0.0')
   set supertype(DefinedElementType value) => _supertype = value;
 
-  final List<DefinedElementType> _interfaces;
+  final List<DefinedElementType> _directInterfaces;
 
   Class(ClassElement element, Library library, PackageGraph packageGraph)
       : _mixedInTypes = element.mixins
@@ -52,7 +52,7 @@ class Class extends Container
         _supertype = element.supertype?.element?.supertype == null
             ? null
             : ElementType.from(element.supertype, library, packageGraph),
-        _interfaces = element.interfaces
+        _directInterfaces = element.interfaces
             .map<DefinedElementType>(
                 (f) => ElementType.from(f, library, packageGraph))
             .toList(growable: false),
@@ -258,10 +258,32 @@ class Class extends Container
   Iterable<Field> get publicInheritedFields =>
       model_utils.filterNonPublic(inheritedFields);
 
-  List<DefinedElementType> get interfaces => _interfaces;
+  /// Interfaces directly implemented by this class.
+  List<DefinedElementType> get interfaces => _directInterfaces;
 
-  Iterable<DefinedElementType> get publicInterfaces =>
-      model_utils.filterNonPublic(interfaces);
+  /// The public interfaces may include substitutions for intermediate
+  /// private interfaces, and so unlike other public* methods, is not
+  /// a strict subset of [interfaces].
+  Iterable<DefinedElementType> get publicInterfaces sync* {
+    for (var i in _directInterfaces) {
+      if (i.element.canonicalModelElement == null) {
+        continue;
+      }
+      yield i;
+      if (i.element is Class) {
+        var hiddenClass = i.element as Class;
+        if (hiddenClass.publicSuperChain.isNotEmpty) {
+          yield hiddenClass.publicSuperChain.first;
+        }
+        yield* hiddenClass.publicInterfaces;
+      } else {
+        // FIXME(jcollins-g): Not sure what to do here if we have a non-class
+        // interface.
+        assert(false, 'Can not handle intermediate non-public interfaces created by non-classes');
+        continue;
+      }
+    }
+  }
 
   bool get isAbstract => element.isAbstract;
 
