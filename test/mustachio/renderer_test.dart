@@ -360,7 +360,7 @@ void main() {
       var partialPath = pathContext.isAbsolute(path)
           ? '_$path.mustache'
           : pathContext.join('/project', '_$path.mustache');
-      return resourceProvider.getFile(pathContext.normalize(partialPath));
+      return resourceProvider.getFile(pathContext.canonicalize(partialPath));
     }
 
     var barTemplateFile = getFile('/project/bar.mustache')
