@@ -307,10 +307,10 @@ void main() {
   });
 
   test('Renderer renders a partial in an absolute directory', () async {
-    var partialPath = resourceProvider.convertPath('/project/foo.mustache');
+    var fooTemplateFile = getFile('/project/foo.mustache');
+    fooTemplateFile.writeAsStringSync('Partial {{s1}}');
     var barTemplateFile = getFile('/project/src/bar.mustache')
-      ..writeAsStringSync('Text {{#foo}}{{>$partialPath}}{{/foo}}');
-    getFile('/project/foo.mustache').writeAsStringSync('Partial {{s1}}');
+      ..writeAsStringSync('Text {{#foo}}{{>${fooTemplateFile.path}}}{{/foo}}');
     var barTemplate = await Template.parse(barTemplateFile);
     var bar = Bar()..foo = (Foo()..s1 = 'hello');
     expect(renderBar(bar, barTemplate), equals('Text Partial hello'));
@@ -448,22 +448,17 @@ void main() {
   });
 
   test('Template parser throws when it cannot read a template', () async {
-    var templatePath =
-        resourceProvider.convertPath('/project/src/bar.mustache');
-    var barTemplateFile = getFile(templatePath);
-
+    var barTemplateFile = getFile('/project/src/bar.mustache');
     expect(
         () async => await Template.parse(barTemplateFile),
         throwsA(const TypeMatcher<FileSystemException>().having(
             (e) => e.message,
             'message',
-            contains('"$templatePath" does not exist.'))));
+            contains('"${barTemplateFile.path}" does not exist.'))));
   });
 
   test('Template parser throws when it cannot read a partial', () async {
-    var templatePath =
-        resourceProvider.convertPath('/project/src/bar.mustache');
-    var barTemplateFile = getFile(templatePath)
+    var barTemplateFile = getFile('/project/src/bar.mustache')
       ..writeAsStringSync('Text {{#foo}}{{>missing.mustache}}{{/foo}}');
     expect(
         () async => await Template.parse(barTemplateFile),
@@ -472,6 +467,6 @@ void main() {
             'message',
             contains(
                 'FileSystemException when reading partial "missing.mustache" '
-                'found in template "$templatePath"'))));
+                'found in template "${barTemplateFile.path}"'))));
   });
 }
