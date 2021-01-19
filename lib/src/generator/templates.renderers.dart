@@ -16,23 +16,14 @@ String _simpleResolveErrorMessage(List<String> key, String type) =>
     'expose the properties of $type by adding it to the @Renderer '
     "annotation's 'visibleTypes' list";
 
-String renderIndex(PackageTemplateData context, File file,
-    {PartialResolver partialResolver}) {
-  try {
-    var parser = MustachioParser(file.readAsStringSync());
-    return _render_PackageTemplateData(context, parser.parse(), file,
-        partialResolver: partialResolver);
-  } on FileSystemException catch (e) {
-    throw MustachioResolutionError(
-        'FileSystemException when reading template "${file.path}": ${e.message}');
-  }
+String renderIndex(PackageTemplateData context, Template template) {
+  return _render_PackageTemplateData(context, template.ast, template);
 }
 
 String _render_PackageTemplateData(
-    PackageTemplateData context, List<MustachioNode> ast, File file,
-    {RendererBase<Object> parent, PartialResolver partialResolver}) {
-  var renderer = _Renderer_PackageTemplateData(context, parent, file,
-      partialResolver: partialResolver);
+    PackageTemplateData context, List<MustachioNode> ast, Template template,
+    {RendererBase<Object> parent}) {
+  var renderer = _Renderer_PackageTemplateData(context, parent, template);
   renderer.renderBlock(ast);
   return renderer.buffer.toString();
 }
@@ -203,10 +194,9 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
         ..._Renderer_TemplateData.propertyMap<Package, CT_>(),
       };
 
-  _Renderer_PackageTemplateData(
-      PackageTemplateData context, RendererBase<Object> parent, File file,
-      {PartialResolver partialResolver})
-      : super(context, parent, file, partialResolver: partialResolver);
+  _Renderer_PackageTemplateData(PackageTemplateData context,
+      RendererBase<Object> parent, Template template)
+      : super(context, parent, template);
 
   @override
   Property<PackageTemplateData> getProperty(String key) {
@@ -218,10 +208,10 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
   }
 }
 
-String _render_Object(Object context, List<MustachioNode> ast, File file,
-    {RendererBase<Object> parent, PartialResolver partialResolver}) {
-  var renderer =
-      _Renderer_Object(context, parent, file, partialResolver: partialResolver);
+String _render_Object(
+    Object context, List<MustachioNode> ast, Template template,
+    {RendererBase<Object> parent}) {
+  var renderer = _Renderer_Object(context, parent, template);
   renderer.renderBlock(ast);
   return renderer.buffer.toString();
 }
@@ -246,9 +236,9 @@ class _Renderer_Object extends RendererBase<Object> {
         ),
       };
 
-  _Renderer_Object(Object context, RendererBase<Object> parent, File file,
-      {PartialResolver partialResolver})
-      : super(context, parent, file, partialResolver: partialResolver);
+  _Renderer_Object(
+      Object context, RendererBase<Object> parent, Template template)
+      : super(context, parent, template);
 
   @override
   Property<Object> getProperty(String key) {
@@ -261,10 +251,9 @@ class _Renderer_Object extends RendererBase<Object> {
 }
 
 String _render_TemplateData<T extends Documentable>(
-    TemplateData<T> context, List<MustachioNode> ast, File file,
-    {RendererBase<Object> parent, PartialResolver partialResolver}) {
-  var renderer = _Renderer_TemplateData(context, parent, file,
-      partialResolver: partialResolver);
+    TemplateData<T> context, List<MustachioNode> ast, Template template,
+    {RendererBase<Object> parent}) {
+  var renderer = _Renderer_TemplateData(context, parent, template);
   renderer.renderBlock(ast);
   return renderer.buffer.toString();
 }
@@ -570,9 +559,8 @@ class _Renderer_TemplateData<T extends Documentable>
       };
 
   _Renderer_TemplateData(
-      TemplateData<T> context, RendererBase<Object> parent, File file,
-      {PartialResolver partialResolver})
-      : super(context, parent, file, partialResolver: partialResolver);
+      TemplateData<T> context, RendererBase<Object> parent, Template template)
+      : super(context, parent, template);
 
   @override
   Property<TemplateData<T>> getProperty(String key) {
