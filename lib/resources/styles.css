@@ -914,6 +914,7 @@ button {
   background: none 0 0 / auto repeat scroll padding-box border-box rgb(255, 255, 255);
   border-color: transparent;
   color: #999;
+  border-width: 0;
 }
 
 .navbar-right .tt-menu {
@@ -971,10 +972,6 @@ button {
 .search-from-lib {
   font-style: italic;
   color: gray;
-}
-
-#search-box {
-  background-color: #ffffff;
 }
 
 .search-body {
