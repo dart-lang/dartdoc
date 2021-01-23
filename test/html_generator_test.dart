@@ -91,7 +91,6 @@ void main() {
       'readme.md',
       'script.js',
       'styles.css',
-      'typeahead.bundle.min.js',
     ]) {
       await resourceLoader.writeDartdocResource(
           'resources/$resource', 'CONTENT');

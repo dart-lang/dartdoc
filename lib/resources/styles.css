@@ -889,6 +889,17 @@ button {
   border-radius: 2px;
 }
 
+.tt-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.tt-input {
+  position: relative;
+  vertical-align: top;
+  background-color: transparent;
+}
+
 .tt-query {
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
      -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
@@ -896,7 +907,13 @@ button {
 }
 
 .tt-hint {
-  color: #999
+  position: absolute;
+  top: 0;
+  left: 0;
+  box-shadow: none;
+  background: none;
+  border-color: transparent;
+  color: #999;
 }
 
 .navbar-right .tt-menu {
@@ -908,6 +925,10 @@ button {
 }
 
 .tt-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 100;
   font-size: 14px;
   margin: 0;
   padding: 8px 0;
