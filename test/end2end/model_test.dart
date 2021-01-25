@@ -3410,7 +3410,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           ImplementsFutureVoid.linkedName,
           equals(
               '<a href="${HTMLBASE_PLACEHOLDER}fake/ImplementsFutureVoid-class.html">ImplementsFutureVoid</a>'));
-      var FutureVoid = ImplementsFutureVoid.publicInterfaces
+      var FutureVoid = ImplementsFutureVoid.interfaces
           .firstWhere((c) => c.name == 'Future');
       expect(
           FutureVoid.linkedName,

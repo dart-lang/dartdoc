@@ -266,10 +266,21 @@ class Class extends Container
   /// a strict subset of [interfaces].
   Iterable<DefinedElementType> get publicInterfaces sync* {
     for (var i in _directInterfaces) {
-      if (i.element.canonicalModelElement == null) {
+      /// Do not recurse if we can find an element here.
+      if (i.element.canonicalModelElement != null) {
+        yield i;
         continue;
       }
-      yield i;
+      // Public types used to be unconditionally exposed here.  However,
+      // if the packages are [DocumentLocation.missing] we generally treat types
+      // defined in them as actually defined in a documented package.
+      // That translates to them being defined here, but in 'src/' or similar,
+      // and so, are now always hidden.
+
+      // This type is not backed by a canonical Class; search
+      // the superchain and publicInterfaces of this interface to pretend
+      // as though the hidden class didn't exist and this class was declared
+      // directly referencing the canonical classes further up the chain.
       if (i.element is Class) {
         var hiddenClass = i.element as Class;
         if (hiddenClass.publicSuperChain.isNotEmpty) {
@@ -277,9 +288,10 @@ class Class extends Container
         }
         yield* hiddenClass.publicInterfaces;
       } else {
-        // FIXME(jcollins-g): Not sure what to do here if we have a non-class
-        // interface.
-        assert(false, 'Can not handle intermediate non-public interfaces created by non-classes');
+        assert(false, 'Can not handle intermediate non-public interfaces '
+          'created by ModelElements that are not classes or mixins:  '
+          '${fullyQualifiedName} contains an interface {$i}, '
+          'defined by ${i.element}');
         continue;
       }
     }
