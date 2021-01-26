@@ -38,7 +38,6 @@ void main() {
     pathContext = resourceProvider.pathContext;
     packageConfigProvider = utils
         .getTestPackageConfigProvider(packageMetaProvider.defaultSdkDir.path);
-    var resourceLoader = ResourceLoader(resourceProvider);
     for (var template in [
       '_accessor_getter',
       '_accessor_setter',
@@ -79,7 +78,7 @@ void main() {
       'top_level_property',
       'typedef',
     ]) {
-      await resourceLoader.writeDartdocResource(
+      await resourceProvider.writeDartdocResource(
           'templates/html/$template.html', 'CONTENT');
     }
 
@@ -93,11 +92,12 @@ void main() {
       'styles.css',
       'typeahead.bundle.min.js',
     ]) {
-      await resourceLoader.writeDartdocResource(
+      await resourceProvider.writeDartdocResource(
           'resources/$resource', 'CONTENT');
     }
 
-    templates = await Templates.createDefault('html', loader: resourceLoader);
+    templates = await Templates.createDefault('html',
+        resourceProvider: resourceProvider);
     generator =
         GeneratorFrontEnd(HtmlGeneratorBackend(null, templates, pathContext));
 
@@ -189,10 +189,9 @@ class _DoesExist extends Matcher {
 }
 
 /// Extension methods just for tests.
-extension on ResourceLoader {
+extension on ResourceProvider {
   Future<void> writeDartdocResource(String path, String content) async {
-    var filePath =
-        (await resolveUri(Uri.parse('package:dartdoc/$path'))).toFilePath();
-    provider.getFile(filePath).writeAsStringSync(content);
+    var fileUri = await resolveResourceUri(Uri.parse('package:dartdoc/$path'));
+    getFile(fileUri.toFilePath()).writeAsStringSync(content);
   }
 }

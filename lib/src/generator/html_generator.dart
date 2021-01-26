@@ -53,7 +53,6 @@ class HtmlGeneratorBackend extends DartdocGeneratorBackend {
   }
 
   Future<void> _copyResources(FileWriter writer) async {
-    var resourceLoader = ResourceLoader(writer.resourceProvider);
     for (var resourcePath in resources.resource_names) {
       if (!resourcePath.startsWith(_dartdocResourcePrefix)) {
         throw StateError('Resource paths must start with '
@@ -62,8 +61,8 @@ class HtmlGeneratorBackend extends DartdocGeneratorBackend {
       var destFileName = resourcePath.substring(_dartdocResourcePrefix.length);
       var destFilePath = writer.resourceProvider.pathContext
           .join('static-assets', destFileName);
-      writer.write(
-          destFilePath, await resourceLoader.loadAsBytes(resourcePath));
+      writer.write(destFilePath,
+          await writer.resourceProvider.loadResourceAsBytes(resourcePath));
     }
   }
 
