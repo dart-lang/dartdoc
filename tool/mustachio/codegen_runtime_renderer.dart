@@ -101,10 +101,13 @@ String _simpleResolveErrorMessage(List<String> key, String type) =>
 
     specs.forEach(_addTypesForRendererSpec);
 
+    var builtRenderers = <ClassElement>{};
+
     while (_typesToProcess.isNotEmpty) {
       var info = _typesToProcess.removeFirst();
 
-      if (info.isFullRenderer) {
+      if (info.isFullRenderer && !builtRenderers.contains(info._contextClass)) {
+        builtRenderers.add(info._contextClass);
         _buildRenderer(info);
       }
     }
@@ -142,6 +145,18 @@ String _simpleResolveErrorMessage(List<String> key, String type) =>
     if (property.isPrivate || property.isStatic || property.isSetter) return;
     if (property.hasProtected || property.hasVisibleForTesting) return;
     var type = property.type.returnType;
+    if (type is TypeParameterType) {
+      if ((type as TypeParameterType).bound == null ||
+          (type as TypeParameterType).bound.isDynamic) {
+        // Don't add functions for a generic type, for example
+        // `List<E>.first` has type `E`, which we don't have a specific
+        // renderer for.
+        // TODO(srawlins): Find a solution for this. We can track all of the
+        // concrete types substituted for `E` for example.
+        return;
+      }
+      type = (type as TypeParameterType).bound;
+    }
     var isFullRenderer = _isVisibleToMustache(type.element);
 
     if (_typeSystem.isAssignableTo(type, _typeProvider.iterableDynamicType)) {
@@ -170,9 +185,8 @@ String _simpleResolveErrorMessage(List<String> key, String type) =>
 
   /// Adds [type] to the [_typesToProcess] queue, if it is not already there.
   void _addTypeToProcess(ClassElement element, {@required isFullRenderer}) {
-    var typeToProcess = _typesToProcess
-        .singleWhere((rs) => rs._contextClass == element, orElse: () => null);
-    if (typeToProcess == null) {
+    var types = _typesToProcess.where((rs) => rs._contextClass == element);
+    if (types.isEmpty) {
       var rendererInfo = _RendererInfo(element,
           isFullRenderer: isFullRenderer, public: _rendererClassesArePublic);
       _typesToProcess.add(rendererInfo);
@@ -181,11 +195,14 @@ String _simpleResolveErrorMessage(List<String> key, String type) =>
         _typeToRendererClassName[element] = rendererInfo._rendererClassName;
       }
     } else {
-      if (isFullRenderer && !typeToProcess.isFullRenderer) {
-        // This is the only case in which we update a type-to-render.
-        typeToProcess.isFullRenderer = true;
-        _typeToRenderFunctionName[element] = typeToProcess._renderFunctionName;
-        _typeToRendererClassName[element] = typeToProcess._rendererClassName;
+      for (var typeToProcess in types) {
+        if (isFullRenderer && !typeToProcess.isFullRenderer) {
+          // This is the only case in which we update a type-to-render.
+          typeToProcess.isFullRenderer = true;
+          _typeToRenderFunctionName[element] =
+              typeToProcess._renderFunctionName;
+          _typeToRendererClassName[element] = typeToProcess._rendererClassName;
+        }
       }
     }
   }
