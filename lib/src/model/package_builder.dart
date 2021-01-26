@@ -415,19 +415,22 @@ class PubPackageBuilder implements PackageBuilder {
         foundLibraries, specialFiles.difference(files));
   }
 
+  path.Context get _pathContext => resourceProvider.pathContext;
+
   /// If [dir] contains both a `lib` directory and a `pubspec.yaml` file treat
   /// it like a package and only return the `lib` dir.
   ///
   /// This ensures that packages don't have non-`lib` content documented.
   static Iterable<Resource> _packageDirList(Folder dir) sync* {
     var resources = dir.getChildren();
+    var pathContext = dir.provider.pathContext;
 
     var pubspec = resources.firstWhere(
-        (e) => e is File && _pathContext.basename(e.path) == 'pubspec.yaml',
+        (e) => e is File && pathContext.basename(e.path) == 'pubspec.yaml',
         orElse: () => null);
 
     var libDir = resources.firstWhere(
-        (e) => e is Folder && _pathContext.basename(e.path) == 'lib',
+        (e) => e is Folder && pathContext.basename(e.path) == 'lib',
         orElse: () => null);
 
     if (pubspec != null && libDir != null) {
@@ -436,8 +439,6 @@ class PubPackageBuilder implements PackageBuilder {
       yield* resources;
     }
   }
-
-  path.Context get _pathContext => resourceProvider.pathContext;
 }
 
 /// Contains the [ResolvedLibraryResult] and any additional information about
