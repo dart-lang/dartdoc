@@ -2,12 +2,12 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// TODO(srawlins): Add Renderer annotations for more types as the mustachio
-// implementation matures.
-@Renderer(#renderCategory, Context<CategoryTemplateData>())
+@Renderer(#renderCategory, Context<CategoryTemplateData>(),
+    visibleTypes: _visibleTypes)
 @Renderer(#renderClass, Context<ClassTemplateData>())
 @Renderer(#renderConstructor, Context<ConstructorTemplateData>())
 @Renderer(#renderEnum, Context<EnumTemplateData>())
+@Renderer(#renderError, Context<PackageTemplateData>())
 @Renderer(#renderExtension, Context<ExtensionTemplateData>())
 @Renderer(#renderFunction, Context<FunctionTemplateData>())
 @Renderer(#renderIndex, Context<PackageTemplateData>())
@@ -15,6 +15,10 @@
 @Renderer(#renderMethod, Context<MethodTemplateData>())
 @Renderer(#renderMixin, Context<MixinTemplateData>())
 @Renderer(#renderProperty, Context<PropertyTemplateData>())
+@Renderer(#renderSidebarForContainer,
+    Context<TemplateDataWithContainer<Documentable>>())
+@Renderer(
+    #renderSidebarForLibrary, Context<TemplateDataWithLibrary<Documentable>>())
 @Renderer(#renderTopLevelProperty, Context<TopLevelPropertyTemplateData>())
 @Renderer(#renderTypedef, Context<TypedefTemplateData>())
 library dartdoc.templates;
@@ -24,10 +28,33 @@ import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/options.dart';
 import 'package:dartdoc/src/generator/resource_loader.dart';
 import 'package:dartdoc/src/generator/template_data.dart';
+import 'package:dartdoc/src/model/feature_set.dart';
+import 'package:dartdoc/src/model/language_feature.dart';
 import 'package:dartdoc/src/mustachio/annotations.dart';
+import 'package:dartdoc/src/mustachio/renderer_base.dart';
 import 'package:meta/meta.dart';
-import 'package:mustache/mustache.dart';
 import 'package:path/path.dart' as path show Context;
+
+const _visibleTypes = {
+  CallableElementTypeMixin,
+  Category,
+  Class,
+  Constructor,
+  DefinedElementType,
+  Documentable,
+  Enum,
+  Extension,
+  FeatureSet,
+  LanguageFeature,
+  Library,
+  Method,
+  ModelElement,
+  Package,
+  // For getters like `isNotEmpty`; perhaps a smell, but currently in use.
+  String,
+  TopLevelVariable,
+  TypeParameter,
+};
 
 // resource_loader and the Resource API doesn't support viewing resources like
 // a directory listing, so we have to explicitly list the partials.
@@ -93,7 +120,7 @@ abstract class _TemplatesLoader {
 
   Future<Map<String, String>> loadPartials();
 
-  Future<String> loadTemplate(String name);
+  Future<Template> loadTemplate(String name);
 }
 
 /// Loads default templates included in the Dartdoc program.
@@ -133,9 +160,14 @@ class _DefaultTemplatesLoader extends _TemplatesLoader {
   }
 
   @override
-  Future<String> loadTemplate(String name) =>
-      resourceProvider.loadResourceAsString(
-          'package:dartdoc/templates/$_format/$name.$_format');
+  Future<Template> loadTemplate(String name) async {
+    var templateFile = await resourceProvider
+        .getResourceFile('package:dartdoc/templates/$_format/$name.$_format');
+    return Template.parse(templateFile,
+        partialResolver: (String partialName) =>
+            resourceProvider.getResourceFile(
+                'package:dartdoc/templates/$_format/_$partialName.$_format'));
+  }
 }
 
 /// Loads templates from a specified Directory.
@@ -167,12 +199,14 @@ class _DirectoryTemplatesLoader extends _TemplatesLoader {
   }
 
   @override
-  Future<String> loadTemplate(String name) async {
-    var file = _directory.getChildAssumingFile('$name.$_format');
-    if (!file.exists) {
+  Future<Template> loadTemplate(String name) async {
+    var templateFile = _directory.getChildAssumingFile('$name.$_format');
+    if (!templateFile.exists) {
       throw DartdocFailure('Missing required template file: $name.$_format');
     }
-    return file.readAsStringSync();
+    return Template.parse(templateFile,
+        partialResolver: (String partialName) async =>
+            _directory.getChildAssumingFile('_$partialName.$_format'));
   }
 }
 
@@ -220,19 +254,8 @@ class Templates {
   }
 
   static Future<Templates> _create(_TemplatesLoader templatesLoader) async {
-    var partials = await templatesLoader.loadPartials();
-
-    Template _partial(String name) {
-      var partial = partials[name];
-      if (partial == null || partial.isEmpty) {
-        throw StateError('Did not find partial "$name"');
-      }
-      return Template(partial);
-    }
-
     Future<Template> _loadTemplate(String templatePath) async {
-      var templateContents = await templatesLoader.loadTemplate(templatePath);
-      return Template(templateContents, partialResolver: _partial);
+      return templatesLoader.loadTemplate(templatePath);
     }
 
     var indexTemplate = await _loadTemplate('index');
