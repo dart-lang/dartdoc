@@ -146,8 +146,8 @@ String _simpleResolveErrorMessage(List<String> key, String type) =>
     if (property.hasProtected || property.hasVisibleForTesting) return;
     var type = property.type.returnType;
     if (type is TypeParameterType) {
-      if ((type as TypeParameterType).bound == null ||
-          (type as TypeParameterType).bound.isDynamic) {
+      var bound = (type as TypeParameterType).bound;
+      if (bound == null || bound.isDynamic) {
         // Don't add functions for a generic type, for example
         // `List<E>.first` has type `E`, which we don't have a specific
         // renderer for.
@@ -155,7 +155,7 @@ String _simpleResolveErrorMessage(List<String> key, String type) =>
         // concrete types substituted for `E` for example.
         return;
       }
-      type = (type as TypeParameterType).bound;
+      type = bound;
     }
     var isFullRenderer = _isVisibleToMustache(type.element);
 
