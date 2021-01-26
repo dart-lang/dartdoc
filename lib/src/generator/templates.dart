@@ -14,7 +14,7 @@ import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/src/mustachio/annotations.dart';
 import 'package:meta/meta.dart';
 import 'package:mustache/mustache.dart';
-import 'package:path/path.dart' as path;
+import 'package:path/path.dart' as path show Context;
 
 // resource_loader and the Resource API doesn't support viewing resources like
 // a directory listing, so we have to explicitly list the partials.

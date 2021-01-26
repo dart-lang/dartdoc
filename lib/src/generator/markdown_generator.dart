@@ -10,20 +10,22 @@ import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/src/generator/templates.dart';
 import 'package:dartdoc/src/model/package.dart';
 import 'package:dartdoc/src/model/package_graph.dart';
+import 'package:path/path.dart' as path show Context;
 
 Future<Generator> initMarkdownGenerator(
     DartdocGeneratorOptionContext context) async {
   var templates = await Templates.fromContext(context);
   var options = DartdocGeneratorBackendOptions.fromContext(context);
-  var backend = MarkdownGeneratorBackend(options, templates);
+  var backend = MarkdownGeneratorBackend(
+      options, templates, context.resourceProvider.pathContext);
   return GeneratorFrontEnd(backend);
 }
 
 /// Generator backend for markdown output.
 class MarkdownGeneratorBackend extends DartdocGeneratorBackend {
-  MarkdownGeneratorBackend(
-      DartdocGeneratorBackendOptions options, Templates templates)
-      : super(options, templates);
+  MarkdownGeneratorBackend(DartdocGeneratorBackendOptions options,
+      Templates templates, path.Context pathContext)
+      : super(options, templates, pathContext);
 
   @override
   void generatePackage(FileWriter writer, PackageGraph graph, Package package) {

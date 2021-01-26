@@ -37,8 +37,8 @@ void expectFileContains(String path, List<Pattern> items) {
 }
 
 /// The pub cache inherited by grinder.
-final String defaultPubCache =
-    Platform.environment['PUB_CACHE'] ?? resolveTildePath('~/.pub-cache');
+final String defaultPubCache = Platform.environment['PUB_CACHE'] ??
+    path.context.resolveTildePath('~/.pub-cache');
 
 /// Run no more than the number of processors available in parallel.
 final MultiFutureTracker testFutures =
@@ -107,8 +107,8 @@ Directory _sdkDocsDir;
 
 Directory get sdkDocsDir => _sdkDocsDir ??= createTempSync('sdkdocs');
 
-Directory cleanFlutterDir = Directory(
-    path.join(resolveTildePath('~/.dartdoc_grinder'), 'cleanFlutter'));
+Directory cleanFlutterDir = Directory(path.join(
+    path.context.resolveTildePath('~/.dartdoc_grinder'), 'cleanFlutter'));
 
 Directory _flutterDir;
 

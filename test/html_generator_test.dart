@@ -98,7 +98,8 @@ void main() {
     }
 
     templates = await Templates.createDefault('html', loader: resourceLoader);
-    generator = GeneratorFrontEnd(HtmlGeneratorBackend(null, templates));
+    generator =
+        GeneratorFrontEnd(HtmlGeneratorBackend(null, templates, pathContext));
 
     projectRoot = utils.writePackage(
         'my_package', resourceProvider, packageConfigProvider);
