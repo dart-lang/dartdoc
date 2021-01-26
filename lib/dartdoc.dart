@@ -206,8 +206,8 @@ class Dartdoc {
     if (warnings == 0 && errors == 0) {
       logInfo('no issues found');
     } else {
-      logWarning("found ${warnings} ${pluralize('warning', warnings)} "
-          "and ${errors} ${pluralize('error', errors)}");
+      logWarning("Found ${warnings} ${pluralize('warning', warnings)} "
+          "and ${errors} ${pluralize('error', errors)}.");
     }
 
     seconds = _stopwatch.elapsedMilliseconds / 1000.0;
@@ -229,8 +229,7 @@ class Dartdoc {
       final errorCount =
           dartdocResults.packageGraph.packageWarningCounter.errorCount;
       if (errorCount > 0) {
-        throw DartdocFailure(
-            'dartdoc encountered $errorCount errors while processing.');
+        throw DartdocFailure('encountered $errorCount errors');
       }
       var outDirPath = config.resourceProvider.pathContext
           .absolute(dartdocResults.outDir.path);
@@ -504,9 +503,6 @@ class Dartdoc {
       (e, chain) {
         if (e is DartdocFailure) {
           stderr.writeln('\ndartdoc failed: ${e}.');
-          if (config.verboseWarnings) {
-            stderr.writeln(chain);
-          }
           exitCode = 1;
         } else {
           stderr.writeln('\ndartdoc failed: ${e}\n${chain}');
