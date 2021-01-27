@@ -289,6 +289,7 @@ class DartToolDefinition extends ToolDefinition {
     var needsSnapshot = snapshot.needsSnapshot;
     if (needsSnapshot) {
       args.insertAll(0, [
+        '--verbosity=error',
         '--snapshot=${_resourceProvider.pathContext.absolute(snapshotFile.path)}',
         '--snapshot_kind=app-jit'
       ]);
