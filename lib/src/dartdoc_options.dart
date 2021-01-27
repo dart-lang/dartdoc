@@ -289,6 +289,11 @@ class DartToolDefinition extends ToolDefinition {
     var needsSnapshot = snapshot.needsSnapshot;
     if (needsSnapshot) {
       args.insertAll(0, [
+        // TODO(jcollins-g): remove ignore and verbosity resets once
+        // https://dart-review.googlesource.com/c/sdk/+/181421 is safely
+        // in the rearview mirror in dev/Flutter.
+        '--ignore-unrecognized-flags',
+        '--verbosity=error',
         '--snapshot=${_resourceProvider.pathContext.absolute(snapshotFile.path)}',
         '--snapshot_kind=app-jit'
       ]);
