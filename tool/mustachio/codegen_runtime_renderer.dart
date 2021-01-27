@@ -106,9 +106,11 @@ String _simpleResolveErrorMessage(List<String> key, String type) =>
     while (_typesToProcess.isNotEmpty) {
       var info = _typesToProcess.removeFirst();
 
-      if (info.isFullRenderer && !builtRenderers.contains(info._contextClass)) {
+      if (info.isFullRenderer) {
+        var buildOnlyPublicFunction =
+            builtRenderers.contains(info._contextClass);
+        _buildRenderer(info, buildOnlyPublicFunction: buildOnlyPublicFunction);
         builtRenderers.add(info._contextClass);
-        _buildRenderer(info);
       }
     }
 
@@ -218,14 +220,19 @@ String _simpleResolveErrorMessage(List<String> key, String type) =>
     return _isVisibleToMustache(element.supertype.element);
   }
 
-  /// Builds both the render function and the renderer class for [renderer].
+  /// Builds render functions and the renderer class for [renderer].
   ///
   /// The function and the class are each written as Dart code to [_buffer].
   ///
   /// If [renderer] also specifies a `publicApiFunctionName`, then a public API
   /// function (which renders a context object using a template file at a path,
   /// rather than an AST) is also written.
-  void _buildRenderer(_RendererInfo renderer) {
+  ///
+  /// If [buildOnlyPublicFunction] is true, then the private render function and
+  /// renderer classes are not built, having been built for a different
+  /// [_RendererInfo].
+  void _buildRenderer(_RendererInfo renderer,
+      {@required bool buildOnlyPublicFunction}) {
     var typeName = renderer._typeName;
     var typeWithVariables = '$typeName${renderer._typeVariablesString}';
 
@@ -237,6 +244,8 @@ String ${renderer.publicApiFunctionName}${renderer._typeParametersString}(
 }
 ''');
     }
+
+    if (buildOnlyPublicFunction) return;
 
     // Write out the render function.
     _buffer.writeln('''
