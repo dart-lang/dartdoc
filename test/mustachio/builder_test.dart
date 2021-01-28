@@ -25,7 +25,7 @@ class Context<T> {
 };
 
 const _libraryFrontMatter = '''
-@Renderer(#renderFoo, Context<Foo>(), visibleTypes: {Bar})
+@Renderer(#renderFoo, Context<Foo>(), visibleTypes: {Bar, Baz})
 library foo;
 import 'package:mustachio/annotations.dart';
 ''';
@@ -73,15 +73,19 @@ $sourceLibraryContent
     setUpAll(() async {
       writer = InMemoryAssetWriter();
       await testMustachioBuilder('''
-abstract class FooBase {
+abstract class FooBase2<T> {
+  T get generic;
+}
+abstract class FooBase<T extends Baz> extends FooBase2<T> {
   Bar get bar;
 }
-class Foo extends FooBase {
+abstract class Foo extends FooBase {
   String s1 = "s1";
   bool b1 = false;
   List<int> l1 = [1, 2, 3];
 }
 class Bar {}
+class Baz {}
 ''');
       renderersLibrary = await resolveGeneratedLibrary(writer);
       var rendererAsset = AssetId.parse('foo|lib/foo.renderers.dart');
@@ -92,19 +96,21 @@ class Bar {}
       // The render function for Foo
       expect(
           generatedContent,
-          contains(
-              'String _render_FooBase(FooBase context, List<MustachioNode> ast,'));
+          contains('String _render_FooBase<T extends Baz>(\n'
+              '    FooBase<T> context, List<MustachioNode> ast, Template template,'));
       // The renderer class for Foo
-      expect(generatedContent,
-          contains('class _Renderer_FooBase extends RendererBase<FooBase>'));
+      expect(
+          generatedContent,
+          contains(
+              'class _Renderer_FooBase<T extends Baz> extends RendererBase<FooBase<T>>'));
     });
 
     test('for Object', () {
       // The render function for Object
       expect(
           generatedContent,
-          contains(
-              'String _render_Object(Object context, List<MustachioNode> ast,'));
+          contains('String _render_Object(\n'
+              '    Object context, List<MustachioNode> ast, Template template,'));
       // The renderer class for Object
       expect(generatedContent,
           contains('class _Renderer_Object extends RendererBase<Object> {'));
@@ -121,6 +127,11 @@ class Bar {}
       expect(renderersLibrary.getType('_Renderer_Bar'), isNotNull);
     });
 
+    test('for a generic, bounded type found in a getter', () {
+      expect(renderersLibrary.getTopLevelFunction('_render_Baz'), isNotNull);
+      expect(renderersLibrary.getType('_Renderer_Baz'), isNotNull);
+    });
+
     test('with a property map', () {
       expect(
           generatedContent,
@@ -130,7 +141,7 @@ class Bar {}
 
     test('with a property map which references the superclass', () {
       expect(generatedContent,
-          contains('..._Renderer_FooBase.propertyMap<CT_>(),'));
+          contains('..._Renderer_FooBase.propertyMap<Baz, CT_>(),'));
     });
 
     test('with a property map with a bool property', () {
@@ -203,6 +214,7 @@ class Bar {}
     await testMustachioBuilder('''
 class Foo {}
 class Bar {}
+class Baz {}
 ''', libraryFrontMatter: '''
 @Renderer(#renderFoo, Context<Foo>())
 @Renderer(#renderBar, Context<Bar>())
@@ -229,6 +241,7 @@ class FooBase<T> {}
 class Foo<T> extends FooBase<T> {}
 class BarBase<T> {}
 class Bar<T> extends BarBase<int> {}
+class Baz {}
 ''', libraryFrontMatter: '''
 @Renderer(#renderFoo, Context<Foo>())
 @Renderer(#renderBar, Context<Bar>())
@@ -241,15 +254,14 @@ import 'package:mustachio/annotations.dart';
 
     test('with a corresponding public API function', () async {
       expect(generatedContent,
-          contains('String renderFoo<T>(Foo<T> context, File file,'));
-      expect(generatedContent, contains('{PartialResolver partialResolver})'));
+          contains('String renderFoo<T>(Foo<T> context, Template template)'));
     });
 
     test('with a corresponding render function', () async {
       expect(
           generatedContent,
-          contains(
-              'String _render_Foo<T>(Foo<T> context, List<MustachioNode> ast, File file,'));
+          contains('String _render_Foo<T>(\n'
+              '    Foo<T> context, List<MustachioNode> ast, Template template,'));
     });
 
     test('with a generic supertype type argument', () async {
@@ -276,6 +288,7 @@ import 'package:mustachio/annotations.dart';
     await testMustachioBuilder('''
 class Foo<T extends num> {}
 class Bar {}
+class Baz {}
 ''');
     var renderersLibrary = await resolveGeneratedLibrary(writer);
 
@@ -296,13 +309,14 @@ class Bar {}
     setUpAll(() async {
       writer = InMemoryAssetWriter();
       await testMustachioBuilder('''
-class Foo {
+abstract class Foo<T> {
   static Static get static1 => Bar();
   Private get _private1 => Bar();
   void set setter1(Setter s);
   Method method1(Method m);
 }
 class Bar {}
+class Baz {}
 class Static {}
 class Private {}
 class Setter {}

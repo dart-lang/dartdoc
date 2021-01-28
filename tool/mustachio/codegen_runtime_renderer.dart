@@ -101,11 +101,16 @@ String _simpleResolveErrorMessage(List<String> key, String type) =>
 
     specs.forEach(_addTypesForRendererSpec);
 
+    var builtRenderers = <ClassElement>{};
+
     while (_typesToProcess.isNotEmpty) {
       var info = _typesToProcess.removeFirst();
 
       if (info.isFullRenderer) {
-        _buildRenderer(info);
+        var buildOnlyPublicFunction =
+            builtRenderers.contains(info._contextClass);
+        _buildRenderer(info, buildOnlyPublicFunction: buildOnlyPublicFunction);
+        builtRenderers.add(info._contextClass);
       }
     }
 
@@ -142,6 +147,18 @@ String _simpleResolveErrorMessage(List<String> key, String type) =>
     if (property.isPrivate || property.isStatic || property.isSetter) return;
     if (property.hasProtected || property.hasVisibleForTesting) return;
     var type = property.type.returnType;
+    if (type is TypeParameterType) {
+      var bound = (type as TypeParameterType).bound;
+      if (bound == null || bound.isDynamic) {
+        // Don't add functions for a generic type, for example
+        // `List<E>.first` has type `E`, which we don't have a specific
+        // renderer for.
+        // TODO(srawlins): Find a solution for this. We can track all of the
+        // concrete types substituted for `E` for example.
+        return;
+      }
+      type = bound;
+    }
     var isFullRenderer = _isVisibleToMustache(type.element);
 
     if (_typeSystem.isAssignableTo(type, _typeProvider.iterableDynamicType)) {
@@ -170,9 +187,8 @@ String _simpleResolveErrorMessage(List<String> key, String type) =>
 
   /// Adds [type] to the [_typesToProcess] queue, if it is not already there.
   void _addTypeToProcess(ClassElement element, {@required isFullRenderer}) {
-    var typeToProcess = _typesToProcess
-        .singleWhere((rs) => rs._contextClass == element, orElse: () => null);
-    if (typeToProcess == null) {
+    var types = _typesToProcess.where((rs) => rs._contextClass == element);
+    if (types.isEmpty) {
       var rendererInfo = _RendererInfo(element,
           isFullRenderer: isFullRenderer, public: _rendererClassesArePublic);
       _typesToProcess.add(rendererInfo);
@@ -181,11 +197,14 @@ String _simpleResolveErrorMessage(List<String> key, String type) =>
         _typeToRendererClassName[element] = rendererInfo._rendererClassName;
       }
     } else {
-      if (isFullRenderer && !typeToProcess.isFullRenderer) {
-        // This is the only case in which we update a type-to-render.
-        typeToProcess.isFullRenderer = true;
-        _typeToRenderFunctionName[element] = typeToProcess._renderFunctionName;
-        _typeToRendererClassName[element] = typeToProcess._rendererClassName;
+      for (var typeToProcess in types) {
+        if (isFullRenderer && !typeToProcess.isFullRenderer) {
+          // This is the only case in which we update a type-to-render.
+          typeToProcess.isFullRenderer = true;
+          _typeToRenderFunctionName[element] =
+              typeToProcess._renderFunctionName;
+          _typeToRendererClassName[element] = typeToProcess._rendererClassName;
+        }
       }
     }
   }
@@ -201,40 +220,39 @@ String _simpleResolveErrorMessage(List<String> key, String type) =>
     return _isVisibleToMustache(element.supertype.element);
   }
 
-  /// Builds both the render function and the renderer class for [renderer].
+  /// Builds render functions and the renderer class for [renderer].
   ///
   /// The function and the class are each written as Dart code to [_buffer].
   ///
   /// If [renderer] also specifies a `publicApiFunctionName`, then a public API
   /// function (which renders a context object using a template file at a path,
   /// rather than an AST) is also written.
-  void _buildRenderer(_RendererInfo renderer) {
+  ///
+  /// If [buildOnlyPublicFunction] is true, then the private render function and
+  /// renderer classes are not built, having been built for a different
+  /// [_RendererInfo].
+  void _buildRenderer(_RendererInfo renderer,
+      {@required bool buildOnlyPublicFunction}) {
     var typeName = renderer._typeName;
     var typeWithVariables = '$typeName${renderer._typeVariablesString}';
 
     if (renderer.publicApiFunctionName != null) {
       _buffer.writeln('''
 String ${renderer.publicApiFunctionName}${renderer._typeParametersString}(
-    $typeWithVariables context, File file, {PartialResolver partialResolver}) {
-  try {
-    var parser = MustachioParser(file.readAsStringSync());
-    return ${renderer._renderFunctionName}(
-        context, parser.parse(), file, partialResolver: partialResolver);
-  } on FileSystemException catch (e) {
-    throw MustachioResolutionError(
-        'FileSystemException when reading template "\${file.path}": \${e.message}');
-  }
+    $typeWithVariables context, Template template) {
+  return ${renderer._renderFunctionName}(context, template.ast, template);
 }
 ''');
     }
 
+    if (buildOnlyPublicFunction) return;
+
     // Write out the render function.
     _buffer.writeln('''
 String ${renderer._renderFunctionName}${renderer._typeParametersString}(
-    $typeWithVariables context, List<MustachioNode> ast, File file,
-    {RendererBase<Object> parent, PartialResolver partialResolver}) {
-  var renderer = ${renderer._rendererClassName}(
-      context, parent, file, partialResolver: partialResolver);
+    $typeWithVariables context, List<MustachioNode> ast, Template template,
+    {RendererBase<Object> parent}) {
+  var renderer = ${renderer._rendererClassName}(context, parent, template);
   renderer.renderBlock(ast);
   return renderer.buffer.toString();
 }
@@ -249,9 +267,8 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
     // Write out the constructor.
     _buffer.writeln('''
   ${renderer._rendererClassName}(
-        $typeWithVariables context, RendererBase<Object> parent, File file,
-        {PartialResolver partialResolver})
-      : super(context, parent, file, partialResolver: partialResolver);
+        $typeWithVariables context, RendererBase<Object> parent, Template template)
+      : super(context, parent, template);
 ''');
     var propertyMapTypeArguments = renderer._typeArgumentsStringWith(typeName);
     var propertyMapName = 'propertyMap$propertyMapTypeArguments';

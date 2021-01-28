@@ -25,8 +25,7 @@ import 'package:dartdoc/src/package_meta.dart'
 import 'package:dartdoc/src/render/renderer_factory.dart';
 import 'package:dartdoc/src/special_elements.dart';
 import 'package:meta/meta.dart';
-// TODO(jcollins-g): do not directly import path, use ResourceProvider instead
-import 'package:path/path.dart' as path;
+import 'package:path/path.dart' as path show Context;
 
 /// Everything you need to instantiate a PackageGraph object for documenting.
 abstract class PackageBuilder {
@@ -258,16 +257,16 @@ class PubPackageBuilder implements PackageBuilder {
           .findPackageConfig(resourceProvider.getFolder(basePackageDir));
       for (var package in info.packages) {
         if (!filterExcludes || !config.exclude.contains(package.name)) {
-          packageDirs.add(
-              path.dirname(path.fromUri(info[package.name].packageUriRoot)));
+          packageDirs.add(_pathContext.dirname(
+              _pathContext.fromUri(info[package.name].packageUriRoot)));
         }
       }
     }
 
-    var sep = path.separator;
+    var sep = _pathContext.separator;
     for (var packageDir in packageDirs) {
-      var packageLibDir = path.join(packageDir, 'lib');
-      var packageLibSrcDir = path.join(packageLibDir, 'src');
+      var packageLibDir = _pathContext.join(packageDir, 'lib');
+      var packageLibSrcDir = _pathContext.join(packageLibDir, 'src');
       // To avoid analyzing package files twice, only files with paths not
       // containing '/packages' will be added. The only exception is if the file
       // to analyze already has a '/package' in its path.
@@ -277,8 +276,8 @@ class PubPackageBuilder implements PackageBuilder {
             (!lib.contains('${sep}packages${sep}') ||
                 packageDir.contains('${sep}packages${sep}'))) {
           // Only include libraries within the lib dir that are not in 'lib/src'.
-          if (path.isWithin(packageLibDir, lib) &&
-              !path.isWithin(packageLibSrcDir, lib)) {
+          if (_pathContext.isWithin(packageLibDir, lib) &&
+              !_pathContext.isWithin(packageLibSrcDir, lib)) {
             // Only add the file if it does not contain 'part of'.
             var contents = resourceProvider.getFile(lib).readAsStringSync();
 
@@ -320,7 +319,7 @@ class PubPackageBuilder implements PackageBuilder {
 
       for (var resource in listDir(resourceProvider.getFolder(dir))) {
         // Skip hidden files and directories
-        if (path.basename(resource.path).startsWith('.')) {
+        if (_pathContext.basename(resource.path).startsWith('.')) {
           continue;
         }
 
@@ -416,19 +415,22 @@ class PubPackageBuilder implements PackageBuilder {
         foundLibraries, specialFiles.difference(files));
   }
 
+  path.Context get _pathContext => resourceProvider.pathContext;
+
   /// If [dir] contains both a `lib` directory and a `pubspec.yaml` file treat
   /// it like a package and only return the `lib` dir.
   ///
   /// This ensures that packages don't have non-`lib` content documented.
   static Iterable<Resource> _packageDirList(Folder dir) sync* {
     var resources = dir.getChildren();
+    var pathContext = dir.provider.pathContext;
 
     var pubspec = resources.firstWhere(
-        (e) => e is File && path.basename(e.path) == 'pubspec.yaml',
+        (e) => e is File && pathContext.basename(e.path) == 'pubspec.yaml',
         orElse: () => null);
 
     var libDir = resources.firstWhere(
-        (e) => e is Folder && path.basename(e.path) == 'lib',
+        (e) => e is Folder && pathContext.basename(e.path) == 'lib',
         orElse: () => null);
 
     if (pubspec != null && libDir != null) {

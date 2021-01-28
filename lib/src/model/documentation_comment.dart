@@ -4,7 +4,7 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/model_element_renderer.dart';
 import 'package:dartdoc/src/utils.dart';
 import 'package:dartdoc/src/warnings.dart';
-import 'package:path/path.dart' as path;
+import 'package:path/path.dart' as path show Context;
 
 final _templatePattern = RegExp(
     r'[ ]*{@template\s+(.+?)}([\s\S]+?){@endtemplate}[ ]*(\n?)',
@@ -235,7 +235,8 @@ mixin DocumentationComment
             'SOURCE_PATH':
                 (sourceFileName == null || package?.packagePath == null)
                     ? null
-                    : path.relative(sourceFileName, from: package.packagePath),
+                    : pathContext.relative(sourceFileName,
+                        from: package.packagePath),
             'PACKAGE_PATH': package?.packagePath,
             'PACKAGE_NAME': package?.name,
             'LIBRARY_NAME': library?.fullyQualifiedName,
@@ -271,8 +272,8 @@ mixin DocumentationComment
         // Already warned about an invalid parameter if this happens.
         return '';
       }
-      var lang =
-          args['lang'] ?? path.extension(args['src']).replaceFirst('.', '');
+      var lang = args['lang'] ??
+          pathContext.extension(args['src']).replaceFirst('.', '');
 
       var replacement = match[0]; // default to fully matched string.
 
@@ -327,14 +328,14 @@ mixin DocumentationComment
     var file = src + fragExtension;
     var region = args['region'] ?? '';
     if (region.isNotEmpty) {
-      var dir = path.dirname(src);
-      var basename = path.basenameWithoutExtension(src);
-      var ext = path.extension(src);
-      file = path.join(dir, '$basename-$region$ext$fragExtension');
+      var dir = pathContext.dirname(src);
+      var basename = pathContext.basenameWithoutExtension(src);
+      var ext = pathContext.extension(src);
+      file = pathContext.join(dir, '$basename-$region$ext$fragExtension');
     }
     args['file'] = config.examplePathPrefix == null
         ? file
-        : path.join(config.examplePathPrefix, file);
+        : pathContext.join(config.examplePathPrefix, file);
     return args;
   }
 

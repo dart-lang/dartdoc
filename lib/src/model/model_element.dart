@@ -27,7 +27,7 @@ import 'package:dartdoc/src/source_linker.dart';
 import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:meta/meta.dart';
-import 'package:path/path.dart' as path;
+import 'package:path/path.dart' as path show Context;
 
 /// Items mapped less than zero will sort before custom annotations.
 /// Items mapped above zero are sorted after custom annotations.
@@ -808,11 +808,13 @@ abstract class ModelElement extends Canonicalization
 
   @override
   String get location {
-    // Call nothing from here that can emit warnings or you'll cause stack overflows.
+    // Call nothing from here that can emit warnings or you'll cause stack
+    // overflows.
+    var sourceUri = pathContext.toUri(sourceFileName);
     if (characterLocation != null) {
-      return '(${path.toUri(sourceFileName)}:${characterLocation.toString()})';
+      return '($sourceUri:${characterLocation.toString()})';
     }
-    return '(${path.toUri(sourceFileName)})';
+    return '($sourceUri)';
   }
 
   /// Returns a link to extended documentation, or the empty string if that

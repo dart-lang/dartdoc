@@ -12,20 +12,22 @@ import 'package:dartdoc/src/generator/html_resources.g.dart' as resources;
 import 'package:dartdoc/src/generator/resource_loader.dart';
 import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/src/generator/templates.dart';
+import 'package:path/path.dart' as path show Context;
 
 Future<Generator> initHtmlGenerator(
     DartdocGeneratorOptionContext context) async {
   var templates = await Templates.fromContext(context);
   var options = DartdocGeneratorBackendOptions.fromContext(context);
-  var backend = HtmlGeneratorBackend(options, templates);
+  var backend = HtmlGeneratorBackend(
+      options, templates, context.resourceProvider.pathContext);
   return GeneratorFrontEnd(backend);
 }
 
 /// Generator backend for html output.
 class HtmlGeneratorBackend extends DartdocGeneratorBackend {
-  HtmlGeneratorBackend(
-      DartdocGeneratorBackendOptions options, Templates templates)
-      : super(options, templates);
+  HtmlGeneratorBackend(DartdocGeneratorBackendOptions options,
+      Templates templates, path.Context pathContext)
+      : super(options, templates, pathContext);
 
   @override
   void generatePackage(FileWriter writer, PackageGraph graph, Package package) {
@@ -51,7 +53,6 @@ class HtmlGeneratorBackend extends DartdocGeneratorBackend {
   }
 
   Future<void> _copyResources(FileWriter writer) async {
-    var resourceLoader = ResourceLoader(writer.resourceProvider);
     for (var resourcePath in resources.resource_names) {
       if (!resourcePath.startsWith(_dartdocResourcePrefix)) {
         throw StateError('Resource paths must start with '
@@ -60,8 +61,8 @@ class HtmlGeneratorBackend extends DartdocGeneratorBackend {
       var destFileName = resourcePath.substring(_dartdocResourcePrefix.length);
       var destFilePath = writer.resourceProvider.pathContext
           .join('static-assets', destFileName);
-      writer.write(
-          destFilePath, await resourceLoader.loadAsBytes(resourcePath));
+      writer.write(destFilePath,
+          await writer.resourceProvider.loadResourceAsBytes(resourcePath));
     }
   }
 

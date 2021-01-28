@@ -289,6 +289,11 @@ class DartToolDefinition extends ToolDefinition {
     var needsSnapshot = snapshot.needsSnapshot;
     if (needsSnapshot) {
       args.insertAll(0, [
+        // TODO(jcollins-g): remove ignore and verbosity resets once
+        // https://dart-review.googlesource.com/c/sdk/+/181421 is safely
+        // in the rearview mirror in dev/Flutter.
+        '--ignore-unrecognized-flags',
+        '--verbosity=error',
         '--snapshot=${_resourceProvider.pathContext.absolute(snapshotFile.path)}',
         '--snapshot_kind=app-jit'
       ]);
@@ -476,15 +481,15 @@ class _OptionValueWithContext<T> {
   T get resolvedValue {
     if (value is List<String>) {
       return (value as List<String>)
-          .map((v) => pathContext.canonicalize(resolveTildePath(v)))
+          .map((v) => pathContext.canonicalizeWithTilde(v))
           .cast<String>()
           .toList() as T;
     } else if (value is String) {
-      return pathContext.canonicalize(resolveTildePath(value as String)) as T;
+      return pathContext.canonicalizeWithTilde(value as String) as T;
     } else if (value is Map<String, String>) {
       return (value as Map<String, String>)
           .map<String, String>((String key, String value) {
-        return MapEntry(key, pathContext.canonicalize(resolveTildePath(value)));
+        return MapEntry(key, pathContext.canonicalizeWithTilde(value));
       }) as T;
     } else {
       throw UnsupportedError('Type $T is not supported for resolvedValue');
@@ -1594,8 +1599,9 @@ Future<List<DartdocOption<Object>>> createDartdocOptions(
     // to set the flutter root.
     DartdocOptionSyntheticOnly<String>(
         'flutterRoot',
-        (DartdocSyntheticOption<String> option, Folder dir) =>
-            resolveTildePath(Platform.environment['FLUTTER_ROOT']),
+        (DartdocSyntheticOption<String> option, Folder dir) => resourceProvider
+            .pathContext
+            .resolveTildePath(Platform.environment['FLUTTER_ROOT']),
         resourceProvider,
         optionIs: OptionKind.dir,
         help: 'Root of the Flutter SDK, specified from environment.',
