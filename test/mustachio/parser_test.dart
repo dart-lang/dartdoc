@@ -227,6 +227,35 @@ void main() {
     _expectVariable(section.children.single, equals(['two']));
   });
 
+  test('parses section with multi-name key', () {
+    var parser =
+        MustachioParser('Text {{#one.two.three}}Text{{/one.two.three}}');
+    var ast = parser.parse();
+    expect(ast, hasLength(2));
+    _expectText(ast[0], equals('Text '));
+    var sectionOne = ast[1] as Section;
+    _expectSection(sectionOne, equals(['one']));
+    expect(sectionOne.children, hasLength(1));
+    var sectionTwo = sectionOne.children[0] as Section;
+    _expectSection(sectionTwo, equals(['two']));
+    var sectionThree = sectionTwo.children[0] as Section;
+    _expectSection(sectionThree, equals(['three']));
+    _expectText(sectionThree.children[0], equals('Text'));
+  });
+
+  test('parses inverse section with multi-name key', () {
+    var parser = MustachioParser('Text {{^one.two}}Text{{/one.two}}');
+    var ast = parser.parse();
+    expect(ast, hasLength(2));
+    _expectText(ast[0], equals('Text '));
+    var sectionOne = ast[1] as Section;
+    _expectSection(sectionOne, equals(['one']));
+    expect(sectionOne.children, hasLength(1));
+    var sectionTwo = sectionOne.children[0] as Section;
+    _expectSection(sectionTwo, equals(['two']), invert: true);
+    _expectText(sectionTwo.children[0], equals('Text'));
+  });
+
   test('parses section with empty key as text', () {
     var parser = MustachioParser('Text {{#}}{{/key}}');
     var ast = parser.parse();

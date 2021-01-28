@@ -175,6 +175,15 @@ void main() {
     expect(renderFoo(foo, fooTemplate), equals('Text Num 1, Num 2, Num 3, '));
   });
 
+  test('Renderer renders a repeated section node with a multi-name key',
+      () async {
+    var barTemplateFile = getFile('/project/bar.mustache')
+      ..writeAsStringSync('Text {{#foo.l1}}Num {{.}}, {{/foo.l1}}');
+    var barTemplate = await Template.parse(barTemplateFile);
+    var bar = Bar()..foo = (Foo()..l1 = [1, 2, 3]);
+    expect(renderBar(bar, barTemplate), equals('Text Num 1, Num 2, Num 3, '));
+  });
+
   test('Renderer renders an empty repeated section node as blank', () async {
     var fooTemplateFile = getFile('/project/foo.mustache')
       ..writeAsStringSync('Text {{#l1}}Num {{.}}, {{/l1}}');
@@ -200,11 +209,11 @@ void main() {
   });
 
   test('Renderer renders a value section node', () async {
-    var fooTemplateFile = getFile('/project/foo.mustache')
+    var barTemplateFile = getFile('/project/bar.mustache')
       ..writeAsStringSync('Text {{#foo}}Foo: {{s1}}{{/foo}}');
-    var fooTemplate = await Template.parse(fooTemplateFile);
+    var barTemplate = await Template.parse(barTemplateFile);
     var bar = Bar()..foo = (Foo()..s1 = 'hello');
-    expect(renderBar(bar, fooTemplate), equals('Text Foo: hello'));
+    expect(renderBar(bar, barTemplate), equals('Text Foo: hello'));
   });
 
   test('Renderer renders a null value section node as blank', () async {
@@ -241,41 +250,41 @@ void main() {
 
   test('Renderer resolves variable from outer context inside a value section',
       () async {
-    var fooTemplateFile = getFile('/project/foo.mustache')
+    var barTemplateFile = getFile('/project/foo.mustache')
       ..writeAsStringSync('Text {{#foo}}{{s2}}{{/foo}}');
-    var fooTemplate = await Template.parse(fooTemplateFile);
+    var barTemplate = await Template.parse(barTemplateFile);
     var bar = Bar()
       ..foo = (Foo()..s1 = 'hello')
       ..s2 = 'goodbye';
-    expect(renderBar(bar, fooTemplate), equals('Text goodbye'));
+    expect(renderBar(bar, barTemplate), equals('Text goodbye'));
   });
 
   test('Renderer resolves variable with key with multiple names', () async {
-    var fooTemplateFile = getFile('/project/foo.mustache')
+    var barTemplateFile = getFile('/project/foo.mustache')
       ..writeAsStringSync('Text {{foo.s1}}');
-    var fooTemplate = await Template.parse(fooTemplateFile);
+    var barTemplate = await Template.parse(barTemplateFile);
     var bar = Bar()
       ..foo = (Foo()..s1 = 'hello')
       ..s2 = 'goodbye';
-    expect(renderBar(bar, fooTemplate), equals('Text hello'));
+    expect(renderBar(bar, barTemplate), equals('Text hello'));
   });
 
   test('Renderer resolves outer variable with key with two names', () async {
-    var fooTemplateFile = getFile('/project/foo.mustache')
+    var barTemplateFile = getFile('/project/foo.mustache')
       ..writeAsStringSync('Text {{#foo}}{{foo.s1}}{{/foo}}');
-    var fooTemplate = await Template.parse(fooTemplateFile);
+    var barTemplate = await Template.parse(barTemplateFile);
     var bar = Bar()
       ..foo = (Foo()..s1 = 'hello')
       ..s2 = 'goodbye';
-    expect(renderBar(bar, fooTemplate), equals('Text hello'));
+    expect(renderBar(bar, barTemplate), equals('Text hello'));
   });
 
   test('Renderer resolves outer variable with key with three names', () async {
-    var fooTemplateFile = getFile('/project/foo.mustache')
+    var bazTemplateFile = getFile('/project/foo.mustache')
       ..writeAsStringSync('Text {{#bar}}{{bar.foo.s1}}{{/bar}}');
-    var fooTemplate = await Template.parse(fooTemplateFile);
+    var bazTemplate = await Template.parse(bazTemplateFile);
     var baz = Baz()..bar = (Bar()..foo = (Foo()..s1 = 'hello'));
-    expect(renderBaz(baz, fooTemplate), equals('Text hello'));
+    expect(renderBaz(baz, bazTemplate), equals('Text hello'));
   });
 
   test('Renderer resolves outer variable with key with more than three names',
