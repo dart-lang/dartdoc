@@ -83,7 +83,7 @@ Future<Map<String, String>> _loadPartials(
     if (template != null && paths != null && paths.isNotEmpty) {
       var replacement = paths
           .map((p) =>
-              templatesLoader.loader.provider.getFile(p).readAsStringSync())
+              templatesLoader.resourceProvider.getFile(p).readAsStringSync())
           .join('\n');
       template = template.replaceAll(placeholder, replacement);
       partials[key] = template;
@@ -98,7 +98,7 @@ Future<Map<String, String>> _loadPartials(
 }
 
 abstract class _TemplatesLoader {
-  ResourceLoader get loader;
+  ResourceProvider get resourceProvider;
 
   Future<Map<String, String>> loadPartials();
 
@@ -111,9 +111,10 @@ class _DefaultTemplatesLoader extends _TemplatesLoader {
   final List<String> _partials;
 
   @override
-  final ResourceLoader loader;
+  final ResourceProvider resourceProvider;
 
-  factory _DefaultTemplatesLoader.create(String format, ResourceLoader loader) {
+  factory _DefaultTemplatesLoader.create(
+      String format, ResourceProvider resourceProvider) {
     List<String> partials;
     switch (format) {
       case 'html':
@@ -125,24 +126,25 @@ class _DefaultTemplatesLoader extends _TemplatesLoader {
       default:
         partials = [];
     }
-    return _DefaultTemplatesLoader(format, partials, loader);
+    return _DefaultTemplatesLoader(format, partials, resourceProvider);
   }
 
-  _DefaultTemplatesLoader(this._format, this._partials, this.loader);
+  _DefaultTemplatesLoader(this._format, this._partials, this.resourceProvider);
 
   @override
   Future<Map<String, String>> loadPartials() async {
     var templates = <String, String>{};
     for (var name in _partials) {
       var uri = 'package:dartdoc/templates/$_format/_$name.$_format';
-      templates[name] = await loader.loadAsString(uri);
+      templates[name] = await resourceProvider.loadResourceAsString(uri);
     }
     return templates;
   }
 
   @override
   Future<String> loadTemplate(String name) =>
-      loader.loadAsString('package:dartdoc/templates/$_format/$name.$_format');
+      resourceProvider.loadResourceAsString(
+          'package:dartdoc/templates/$_format/$name.$_format');
 }
 
 /// Loads templates from a specified Directory.
@@ -151,9 +153,10 @@ class _DirectoryTemplatesLoader extends _TemplatesLoader {
   final String _format;
 
   @override
-  final ResourceLoader loader;
+  final ResourceProvider resourceProvider;
 
-  _DirectoryTemplatesLoader(this._directory, this._format, this.loader);
+  _DirectoryTemplatesLoader(
+      this._directory, this._format, this.resourceProvider);
 
   path.Context get pathContext => _directory.provider.pathContext;
 
@@ -205,18 +208,17 @@ class Templates {
     var templatesDir = context.templatesDir;
     var format = context.format;
     var footerTextPaths = context.footerText;
-    var resourceLoader = ResourceLoader(context.resourceProvider);
 
     if (templatesDir != null) {
       return _fromDirectory(
           context.resourceProvider.getFolder(templatesDir), format,
-          loader: resourceLoader,
+          resourceProvider: context.resourceProvider,
           headerPaths: context.header,
           footerPaths: context.footer,
           footerTextPaths: footerTextPaths);
     } else {
       return createDefault(format,
-          loader: resourceLoader,
+          resourceProvider: context.resourceProvider,
           headerPaths: context.header,
           footerPaths: context.footer,
           footerTextPaths: footerTextPaths);
@@ -225,22 +227,22 @@ class Templates {
 
   @visibleForTesting
   static Future<Templates> createDefault(String format,
-      {@required ResourceLoader loader,
+      {@required ResourceProvider resourceProvider,
       List<String> headerPaths = const <String>[],
       List<String> footerPaths = const <String>[],
       List<String> footerTextPaths = const <String>[]}) async {
-    return _create(_DefaultTemplatesLoader.create(format, loader),
+    return _create(_DefaultTemplatesLoader.create(format, resourceProvider),
         headerPaths: headerPaths,
         footerPaths: footerPaths,
         footerTextPaths: footerTextPaths);
   }
 
   static Future<Templates> _fromDirectory(Folder dir, String format,
-      {@required ResourceLoader loader,
+      {@required ResourceProvider resourceProvider,
       @required List<String> headerPaths,
       @required List<String> footerPaths,
       @required List<String> footerTextPaths}) async {
-    return _create(_DirectoryTemplatesLoader(dir, format, loader),
+    return _create(_DirectoryTemplatesLoader(dir, format, resourceProvider),
         headerPaths: headerPaths,
         footerPaths: footerPaths,
         footerTextPaths: footerTextPaths);

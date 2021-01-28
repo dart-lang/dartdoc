@@ -4,26 +4,28 @@
 
 library dartdoc.resource_loader_test;
 
+import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:dartdoc/src/generator/resource_loader.dart';
 import 'package:test/test.dart';
 
 void main() {
   group('Resource Loader', () {
-    ResourceLoader loader;
+    ResourceProvider resourceProvider;
 
     setUp(() {
-      loader = ResourceLoader(PhysicalResourceProvider());
+      resourceProvider = PhysicalResourceProvider();
     });
 
     test('load from packages', () async {
-      var contents = await loader
-          .loadAsString('package:dartdoc/templates/html/index.html');
+      var contents = await resourceProvider
+          .loadResourceAsString('package:dartdoc/templates/html/index.html');
       expect(contents, isNotNull);
     });
 
     test('throws if non-package', () async {
-      expect(loader.loadAsString('wefoij:something'), throwsArgumentError);
+      expect(resourceProvider.loadResourceAsString('wefoij:something'),
+          throwsArgumentError);
     });
   });
 }

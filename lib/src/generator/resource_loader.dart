@@ -10,31 +10,27 @@ import 'dart:isolate' show Isolate;
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:meta/meta.dart';
 
-class ResourceLoader {
-  final ResourceProvider provider;
-
-  ResourceLoader(this.provider);
-
+extension ResourceLoader on ResourceProvider {
   /// Loads a `package:` resource as a String.
-  Future<String> loadAsString(String path) async {
-    var bytes = await loadAsBytes(path);
+  Future<String> loadResourceAsString(String path) async {
+    var bytes = await loadResourceAsBytes(path);
 
     return utf8.decode(bytes);
   }
 
   /// Loads a `package:` resource as an [List<int>].
-  Future<List<int>> loadAsBytes(String path) async {
+  Future<List<int>> loadResourceAsBytes(String path) async {
     if (!path.startsWith('package:')) {
       throw ArgumentError('path must begin with package:');
     }
 
-    var uri = await resolveUri(Uri.parse(path));
-    return provider.getFile(uri.toFilePath()).readAsBytesSync();
+    var uri = await resolveResourceUri(Uri.parse(path));
+    return getFile(uri.toFilePath()).readAsBytesSync();
   }
 
   /// Helper function for resolving to a non-relative, non-package URI.
   @visibleForTesting
-  Future<Uri> resolveUri(Uri uri) {
+  Future<Uri> resolveResourceUri(Uri uri) {
     if (uri.scheme == 'package') {
       return Isolate.resolvePackageUri(uri).then((resolvedUri) {
         if (resolvedUri == null) {
