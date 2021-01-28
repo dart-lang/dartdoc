@@ -12,27 +12,9 @@ import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/test_utilities/mock_sdk.dart';
-import 'package:path/path.dart' as path;
+import 'package:path/path.dart' as path show Context;
 
 Encoding utf8AllowMalformed = Utf8Codec(allowMalformed: true);
-
-/// Return a resolved path including the home directory in place of tilde
-/// references.
-String resolveTildePath(String originalPath) {
-  if (originalPath == null || !originalPath.startsWith('~/')) {
-    return originalPath;
-  }
-
-  String homeDir;
-
-  if (io.Platform.isWindows) {
-    homeDir = path.absolute(io.Platform.environment['USERPROFILE']);
-  } else {
-    homeDir = path.absolute(io.Platform.environment['HOME']);
-  }
-
-  return path.join(homeDir, originalPath.substring(2));
-}
 
 bool isSdkLibraryDocumented(SdkLibrary library) {
   if (library is MockSdkLibrary) {
@@ -40,6 +22,31 @@ bool isSdkLibraryDocumented(SdkLibrary library) {
     return true;
   }
   return library.isDocumented;
+}
+
+extension PathExtensions on path.Context {
+  /// Returns a canonicalized path including the home directory in place of
+  /// tilde references.
+  String canonicalizeWithTilde(String originalPath) =>
+      canonicalize(resolveTildePath(originalPath));
+
+  /// Return a resolved path including the home directory in place of tilde
+  /// references.
+  String resolveTildePath(String originalPath) {
+    if (originalPath == null || !originalPath.startsWith('~/')) {
+      return originalPath;
+    }
+
+    String homeDir;
+
+    if (io.Platform.isWindows) {
+      homeDir = absolute(io.Platform.environment['USERPROFILE']);
+    } else {
+      homeDir = absolute(io.Platform.environment['HOME']);
+    }
+
+    return join(homeDir, originalPath.substring(2));
+  }
 }
 
 extension ResourceProviderExtensions on ResourceProvider {

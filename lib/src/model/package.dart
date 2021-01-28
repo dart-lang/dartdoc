@@ -9,7 +9,7 @@ import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/warnings.dart';
-import 'package:path/path.dart' as path;
+import 'package:path/path.dart' as path show Context;
 import 'package:pub_semver/pub_semver.dart';
 
 @Deprecated('Public variable intended to be private; will be removed as early '
@@ -168,7 +168,7 @@ class Package extends LibraryContainer
                 // assembled from multiple locations?
                 packageGraph.hasEmbedderSdk &&
                     packageMeta.isSdk &&
-                    libraries.any((l) => path.isWithin(
+                    libraries.any((l) => _pathContext.isWithin(
                         packageGraph.packageMeta.dir.path,
                         (l.element.source.fullName))) ||
                 // autoIncludeDependencies means everything is local.
@@ -279,7 +279,7 @@ class Package extends LibraryContainer
   String get href => '$baseHref$filePath';
 
   @override
-  String get location => path.toUri(packageMeta.resolvedDir).toString();
+  String get location => _pathContext.toUri(packageMeta.resolvedDir).toString();
 
   @override
   String get name => _name;
@@ -371,7 +371,7 @@ class Package extends LibraryContainer
   String _packagePath;
 
   String get packagePath {
-    _packagePath ??= path.canonicalize(packageMeta.dir.path);
+    _packagePath ??= _pathContext.canonicalize(packageMeta.dir.path);
     return _packagePath;
   }
 
@@ -386,4 +386,6 @@ class Package extends LibraryContainer
 
   @override
   List<String> get containerOrder => config.packageOrder;
+
+  path.Context get _pathContext => _packageGraph.resourceProvider.pathContext;
 }

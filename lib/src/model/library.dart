@@ -17,7 +17,6 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart' show PackageMeta;
 import 'package:dartdoc/src/quiver.dart' as quiver;
 import 'package:dartdoc/src/warnings.dart';
-import 'package:path/path.dart' as path;
 
 /// Find all hashable children of a given element that are defined in the
 /// [LibraryElement] given at initialization.
@@ -441,7 +440,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
       } else if (element.name != null && element.name.isNotEmpty) {
         _name = element.name;
       } else {
-        _name = path.basename(source.fullName);
+        _name = pathContext.basename(source.fullName);
         if (_name.endsWith('.dart')) {
           _name = _name.substring(0, _name.length - '.dart'.length);
         }

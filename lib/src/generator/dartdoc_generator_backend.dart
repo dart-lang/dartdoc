@@ -12,7 +12,7 @@ import 'package:dartdoc/src/model/package.dart';
 import 'package:dartdoc/src/model/package_graph.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:mustache/mustache.dart';
-import 'package:path/path.dart' as path;
+import 'package:path/path.dart' as path show Context;
 
 /// Configuration options for the Dartdoc's default backend.
 class DartdocGeneratorBackendOptions implements TemplateOptions {
@@ -63,9 +63,10 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
   final Templates templates;
   final SidebarGenerator<Library> sidebarForLibrary;
   final SidebarGenerator<Container> sidebarForContainer;
+  final path.Context _pathContext;
 
   DartdocGeneratorBackend(
-      DartdocGeneratorBackendOptions options, this.templates)
+      DartdocGeneratorBackendOptions options, this.templates, this._pathContext)
       : options = options ?? DartdocGeneratorBackendOptions(),
         sidebarForContainer =
             SidebarGenerator(templates.sidebarContainerTemplate),
@@ -90,7 +91,7 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
     if (!options.useBaseHref) {
       json = json.replaceAll(HTMLBASE_PLACEHOLDER, '');
     }
-    writer.write(path.join('categories.json'), '${json}\n');
+    writer.write(_pathContext.join('categories.json'), '${json}\n');
   }
 
   @override
@@ -100,7 +101,7 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
     if (!options.useBaseHref) {
       json = json.replaceAll(HTMLBASE_PLACEHOLDER, '');
     }
-    writer.write(path.join('index.json'), '${json}\n');
+    writer.write(_pathContext.join('index.json'), '${json}\n');
   }
 
   @override
