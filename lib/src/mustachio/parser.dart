@@ -178,16 +178,35 @@ class MustachioParser {
   /// [_index] should be at the character immediately following the `#`
   /// character which opens a possible section tag.
   _TagParseResult _parseSection({@required invert}) {
-    var result = _parseKey();
-    if (result.type == _KeyParseResultType.notKey) {
+    var parsedKey = _parseKey();
+    if (parsedKey.type == _KeyParseResultType.notKey) {
       return _TagParseResult.notTag;
-    } else if (result == _KeyParseResult.endOfFile) {
+    } else if (parsedKey == _KeyParseResult.endOfFile) {
       return _TagParseResult.endOfFile;
     }
 
-    var children = _parseBlock(sectionKey: result.joinedNames);
+    var children = _parseBlock(sectionKey: parsedKey.joinedNames);
 
-    return _TagParseResult.ok(Section(result.names, children, invert: invert));
+    if (parsedKey.names.length > 1) {
+      // Desugar section with dots into nested sections.
+      //
+      // Given a multi-name section like
+      // `{{#one.two.three}}...{/one.two.three}}`, "one" must be a non-Iterable,
+      // non-bool value. "two" must also be a non-Iterable, non-bool value.
+      // "three" may be any kind of value, resulting in a repeated section,
+      // optional section, or value section. The [children], the parsed AST
+      // inside the section, are the children of the [three] section. The
+      // [three] section is the singular child node of the [two] section, and
+      // the [two] section is the singular child of the [one] section.
+      var section = Section([parsedKey.names.last], children, invert: invert);
+      for (var sectionKey in parsedKey.names.reversed.skip(1)) {
+        section = Section([sectionKey], [section], invert: false);
+      }
+      return _TagParseResult.ok(section);
+    }
+
+    return _TagParseResult.ok(
+        Section(parsedKey.names, children, invert: invert));
   }
 
   /// Tries to parse an end tag at [_index].
@@ -195,14 +214,14 @@ class MustachioParser {
   /// [_index] should be at the character immediately following the `/`
   /// character which opens a possible end tag.
   _TagParseResult _parseEndSection() {
-    var result = _parseKey();
-    if (result.type == _KeyParseResultType.notKey) {
+    var parsedKey = _parseKey();
+    if (parsedKey.type == _KeyParseResultType.notKey) {
       return _TagParseResult.notTag;
-    } else if (result == _KeyParseResult.endOfFile) {
+    } else if (parsedKey == _KeyParseResult.endOfFile) {
       return _TagParseResult.endOfFile;
     }
 
-    return _TagParseResult.endTag(result.joinedNames);
+    return _TagParseResult.endTag(parsedKey.joinedNames);
   }
 
   /// Tries to parse a variable tag at [_index].
@@ -216,14 +235,14 @@ class MustachioParser {
       _index++;
       _walkPastWhitespace();
     }
-    var result = _parseKey(escape: escape);
-    if (result.type == _KeyParseResultType.notKey) {
+    var parsedKey = _parseKey(escape: escape);
+    if (parsedKey.type == _KeyParseResultType.notKey) {
       return _TagParseResult.notTag;
-    } else if (result == _KeyParseResult.endOfFile) {
+    } else if (parsedKey == _KeyParseResult.endOfFile) {
       return _TagParseResult.endOfFile;
     }
 
-    return _TagParseResult.ok(Variable(result.names, escape: escape));
+    return _TagParseResult.ok(Variable(parsedKey.names, escape: escape));
   }
 
   /// Tries to parse a key at [_index].
