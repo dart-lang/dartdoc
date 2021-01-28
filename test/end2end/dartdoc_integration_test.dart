@@ -71,7 +71,7 @@ void main() {
           perLine: outputLines.add, workingDirectory: _testPackagePath);
       expect(outputLines, isNot(contains(matches('^parsing'))));
       expect(outputLines, contains(matches('^  warning:')));
-      expect(outputLines.last, matches(r'^found \d+ warnings and \d+ errors'));
+      expect(outputLines.last, matches(r'^Found \d+ warnings and \d+ errors'));
       expect(outputDir.listSync(), isEmpty);
     }, timeout: Timeout.factor(2));
 
@@ -84,7 +84,7 @@ void main() {
           perLine: outputLines.add, workingDirectory: _testPackagePath);
       expect(outputLines, isNot(contains(matches('^parsing'))));
       expect(outputLines, contains(matches('^  warning:')));
-      expect(outputLines.last, matches(r'^found \d+ warnings and \d+ errors'));
+      expect(outputLines.last, matches(r'^Found \d+ warnings and \d+ errors'));
       expect(outputDir.listSync(), isNotEmpty);
     }, timeout: Timeout.factor(2));
 
