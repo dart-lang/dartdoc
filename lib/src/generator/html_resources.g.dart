@@ -7,6 +7,5 @@ const List<String> resource_names = [
   'package:dartdoc/resources/play_button.svg',
   'package:dartdoc/resources/readme.md',
   'package:dartdoc/resources/script.js',
-  'package:dartdoc/resources/styles.css',
-  'package:dartdoc/resources/typeahead.bundle.min.js'
+  'package:dartdoc/resources/styles.css'
 ];
