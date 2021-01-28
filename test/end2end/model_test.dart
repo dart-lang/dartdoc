@@ -1313,6 +1313,30 @@ void main() {
   });
 
   group('Class edge cases', () {
+    // This is distinct from inheritance in the language and the analyzer
+    // implementation.
+    test(
+        'Implementor chain is correctly rewritten through intermediate private classes',
+        () {
+      var implementorsLibrary = packageGraph.publicLibraries
+          .firstWhere((l) => l.name == 'implementors');
+      var ImplementerOfDeclaredPrivateClasses = implementorsLibrary.classes
+          .firstWhere((c) => c.name == 'ImplementerOfDeclaredPrivateClasses');
+      var ImplementerOfThings = implementorsLibrary.classes
+          .firstWhere((c) => c.name == 'ImplementerOfThings');
+      var ImplementBase = implementorsLibrary.classes
+          .firstWhere((c) => c.name == 'ImplementBase');
+
+      expect(ImplementerOfThings.publicInterfaces.first.element,
+          equals(ImplementBase));
+      expect(ImplementerOfDeclaredPrivateClasses.publicInterfaces.first.element,
+          equals(ImplementBase));
+
+      expect(ImplementBase.publicImplementors,
+          contains(ImplementerOfDeclaredPrivateClasses));
+      expect(ImplementBase.publicImplementors, contains(ImplementerOfThings));
+    });
+
     test('Overrides from intermediate abstract classes are picked up correctly',
         () {
       var IntermediateAbstractSubclass = fakeLibrary.allClasses
@@ -3410,8 +3434,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           ImplementsFutureVoid.linkedName,
           equals(
               '<a href="${HTMLBASE_PLACEHOLDER}fake/ImplementsFutureVoid-class.html">ImplementsFutureVoid</a>'));
-      var FutureVoid = ImplementsFutureVoid.interfaces
-          .firstWhere((c) => c.name == 'Future');
+      var FutureVoid =
+          ImplementsFutureVoid.interfaces.firstWhere((c) => c.name == 'Future');
       expect(
           FutureVoid.linkedName,
           equals(

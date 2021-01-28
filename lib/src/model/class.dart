@@ -288,10 +288,12 @@ class Class extends Container
         }
         yield* hiddenClass.publicInterfaces;
       } else {
-        assert(false, 'Can not handle intermediate non-public interfaces '
-          'created by ModelElements that are not classes or mixins:  '
-          '${fullyQualifiedName} contains an interface {$i}, '
-          'defined by ${i.element}');
+        assert(
+            false,
+            'Can not handle intermediate non-public interfaces '
+            'created by ModelElements that are not classes or mixins:  '
+            '${fullyQualifiedName} contains an interface {$i}, '
+            'defined by ${i.element}');
         continue;
       }
     }

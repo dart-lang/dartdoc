@@ -14,7 +14,7 @@ import 'package:dartdoc/src/package_meta.dart';
 /// The number of public libraries in testing/test_package, minus 2 for
 /// the excluded libraries listed in the initializers for _testPackageGraphMemo
 /// and minus 1 for the <nodoc> tag in the 'excluded' library.
-const int kTestPackagePublicLibraries = 17;
+const int kTestPackagePublicLibraries = 18;
 
 final _resourceProvider = pubPackageMetaProvider.resourceProvider;
 final _pathContext = _resourceProvider.pathContext;
