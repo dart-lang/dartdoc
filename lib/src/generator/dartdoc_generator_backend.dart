@@ -228,5 +228,6 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
   }
 
   @override
-  Future<void> generateAdditionalFiles(FileWriter writer, PackageGraph graph) async {}
+  Future<void> generateAdditionalFiles(
+      FileWriter writer, PackageGraph graph) async {}
 }
