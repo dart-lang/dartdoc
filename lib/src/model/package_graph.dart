@@ -24,12 +24,12 @@ import 'package:dartdoc/src/model_utils.dart' show matchGlobs;
 
 class PackageGraph {
   PackageGraph.uninitialized(
-      this.config,
-      this.sdk,
-      this.hasEmbedderSdk,
-      this.rendererFactory,
-      this.packageMetaProvider,
-      ) : packageMeta = config.topLevelPackageMeta {
+    this.config,
+    this.sdk,
+    this.hasEmbedderSdk,
+    this.rendererFactory,
+    this.packageMetaProvider,
+  ) : packageMeta = config.topLevelPackageMeta {
     _packageWarningCounter = PackageWarningCounter(this);
     // Make sure the default package exists, even if it has no libraries.
     // This can happen for packages that only contain embedder SDKs.
