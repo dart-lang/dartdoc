@@ -336,6 +336,20 @@ void main() {
     expect(renderBar(bar, barTemplate), equals('Text Partial goodbye'));
   });
 
+  test('Renderer renders a partial which refers to other partials', () async {
+    var barTemplateFile = getFile('/project/bar.mustache')
+      ..writeAsStringSync('Text, {{#foo}}{{>foo.mustache}}{{/foo}}');
+    getFile('/project/foo.mustache')
+        .writeAsStringSync('p1, {{#l1}}{{>foo_l1.mustache}}{{/l1}}');
+    getFile('/project/foo_l1.mustache').writeAsStringSync('p2 {{.}}, ');
+    var barTemplate = await Template.parse(barTemplateFile);
+    var bar = Bar()
+      ..foo = (Foo()
+        ..s1 = 'hello'
+        ..l1 = [1, 2, 3]);
+    expect(renderBar(bar, barTemplate), equals('Text, p1, p2 1, p2 2, p2 3, '));
+  });
+
   test('Renderer renders a partial with a heterogeneous context chain',
       () async {
     var barTemplateFile = getFile('/project/bar.mustache')
