@@ -38,7 +38,8 @@ class HtmlGeneratorBackend extends DartdocGeneratorBackend {
   }
 
   @override
-  Future<void> generateAdditionalFiles(FileWriter writer, PackageGraph graph) async {
+  Future<void> generateAdditionalFiles(
+      FileWriter writer, PackageGraph graph) async {
     await _copyResources(writer);
     if (options.favicon != null) {
       // Allow overwrite of favicon.
