@@ -69,7 +69,7 @@ class ToolRunner {
 
   final ToolConfiguration toolConfiguration;
 
-  void _runSetup(
+  Future<void> _runSetup(
       String name,
       ToolDefinition tool,
       Map<String, String> environment,
@@ -202,7 +202,7 @@ class ToolRunner {
     }
 
     if (toolDefinition.setupCommand != null && !toolDefinition.setupComplete) {
-      _runSetup(tool, toolDefinition, envWithInput, toolErrorCallback);
+      await _runSetup(tool, toolDefinition, envWithInput, toolErrorCallback);
     }
 
     argsWithInput = toolArgs + argsWithInput;
