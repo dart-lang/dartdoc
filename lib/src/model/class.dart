@@ -376,7 +376,7 @@ class Class extends Container
       var cmap = inheritance.getInheritedConcreteMap2(element);
       var imap = inheritance.getInheritedMap2(element);
 
-      var inheritanceChainElements;
+      List<ClassElement> inheritanceChainElements;
 
       var combinedMap = <String, ExecutableElement>{};
       for (var nameObj in cmap.keys) {
@@ -566,4 +566,7 @@ class Class extends Container
       name == o.name &&
       o.library.name == library.name &&
       o.library.package.name == library.package.name;
+
+  @override
+  int get hashCode => quiver.hash3(name, library.name, library.package.name);
 }

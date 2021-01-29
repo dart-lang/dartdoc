@@ -60,7 +60,7 @@ class PubPackageBuilder implements PackageBuilder {
 
     await _calculatePackageMap();
 
-    var newGraph = PackageGraph.UninitializedPackageGraph(
+    var newGraph = PackageGraph.uninitialized(
       config,
       sdk,
       hasEmbedderSdkFiles,

@@ -23,6 +23,22 @@ import 'package:dartdoc/src/warnings.dart';
 import 'package:dartdoc/src/model_utils.dart' show matchGlobs;
 
 class PackageGraph {
+  PackageGraph.uninitialized(
+      this.config,
+      this.sdk,
+      this.hasEmbedderSdk,
+      this.rendererFactory,
+      this.packageMetaProvider,
+      ) : packageMeta = config.topLevelPackageMeta {
+    _packageWarningCounter = PackageWarningCounter(this);
+    // Make sure the default package exists, even if it has no libraries.
+    // This can happen for packages that only contain embedder SDKs.
+    Package.fromPackageMeta(packageMeta, this);
+  }
+
+  @Deprecated('Use with [PackageGraph.uninitialized] instead')
+
+  // ignore: non_constant_identifier_names
   PackageGraph.UninitializedPackageGraph(
     this.config,
     this.sdk,
@@ -221,7 +237,7 @@ class PackageGraph {
   /// A mapping of the list of classes which implement each class.
   final _implementors = LinkedHashMap<Class, List<Class>>(
       equals: (Class a, Class b) => a.definingClass == b.definingClass,
-      hashCode: (Class class_) => class_.definingClass.hashCode);
+      hashCode: (Class clazz) => clazz.definingClass.hashCode);
 
   /// A list of extensions that exist in the package graph.
   final List<Extension> _extensions = [];
@@ -608,15 +624,15 @@ class PackageGraph {
       }
     }
 
-    void addImplementor(Class class_) {
-      for (var type in class_.mixedInTypes) {
-        checkAndAddClass(type.element, class_);
+    void addImplementor(Class clazz) {
+      for (var type in clazz.mixedInTypes) {
+        checkAndAddClass(type.element, clazz);
       }
-      if (class_.supertype != null) {
-        checkAndAddClass(class_.supertype.element, class_);
+      if (clazz.supertype != null) {
+        checkAndAddClass(clazz.supertype.element, clazz);
       }
-      for (var type in class_.interfaces) {
-        checkAndAddClass(type.element, class_);
+      for (var type in clazz.interfaces) {
+        checkAndAddClass(type.element, clazz);
       }
     }
 
@@ -685,8 +701,8 @@ class PackageGraph {
   Set<Class> get invisibleAnnotations =>
       _invisibleAnnotations ??= {specialClasses[SpecialClass.pragma]};
 
-  bool isAnnotationVisible(Class class_) =>
-      !invisibleAnnotations.contains(class_);
+  bool isAnnotationVisible(Class clazz) =>
+      !invisibleAnnotations.contains(clazz);
 
   @override
   String toString() {

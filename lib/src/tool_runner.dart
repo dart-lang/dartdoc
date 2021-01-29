@@ -46,7 +46,7 @@ class ToolTempFileTracker {
     var tempFile = resourceProvider.getFile(resourceProvider.pathContext.join(
         resourceProvider.pathContext.absolute(temporaryDirectory.path),
         'input_$_temporaryFileCount'));
-    await tempFile.writeAsStringSync('');
+    tempFile.writeAsStringSync('');
     return tempFile;
   }
 
@@ -202,7 +202,7 @@ class ToolRunner {
     }
 
     if (toolDefinition.setupCommand != null && !toolDefinition.setupComplete) {
-      await _runSetup(tool, toolDefinition, envWithInput, toolErrorCallback);
+      _runSetup(tool, toolDefinition, envWithInput, toolErrorCallback);
     }
 
     argsWithInput = toolArgs + argsWithInput;
