@@ -136,12 +136,18 @@ abstract class RendererBase<T> {
   /// The renderer of the parent context, if any, otherwise `null`.
   final RendererBase parent;
 
-  final Template template;
+  /// The current template being rendered.
+  ///
+  /// When rendering a partial, the [context] object, and hence the
+  /// [RendererBase] does not change, only this current template.
+  Template _template;
 
   /// The output buffer into which [context] is rendered, using a template.
   final buffer = StringBuffer();
 
-  RendererBase(this.context, this.parent, this.template);
+  RendererBase(this.context, this.parent, this._template);
+
+  Template get template => _template;
 
   void write(String text) => buffer.write(text);
 
@@ -245,7 +251,11 @@ abstract class RendererBase<T> {
   void partial(Partial node) {
     var key = node.key;
     var partialFile = template.partials[key];
-    renderBlock(template.partialTemplates[partialFile].ast);
+    var partialTemplate = template.partialTemplates[partialFile];
+    var outerTemplate = _template;
+    _template = partialTemplate;
+    renderBlock(partialTemplate.ast);
+    _template = outerTemplate;
   }
 }
 

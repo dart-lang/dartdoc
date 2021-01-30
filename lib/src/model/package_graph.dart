@@ -634,6 +634,9 @@ class PackageGraph {
       for (var type in clazz.interfaces) {
         checkAndAddClass(type.element, clazz);
       }
+      for (var type in class_.publicInterfaces) {
+        checkAndAddClass(type.element, class_);
+      }
     }
 
     classes.forEach(addImplementor);
