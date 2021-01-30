@@ -37,20 +37,15 @@ class PackageGraph {
   }
 
   @Deprecated('Use with [PackageGraph.uninitialized] instead')
-
   // ignore: non_constant_identifier_names
-  PackageGraph.UninitializedPackageGraph(
-    this.config,
-    this.sdk,
-    this.hasEmbedderSdk,
-    this.rendererFactory,
-    this.packageMetaProvider,
-  ) : packageMeta = config.topLevelPackageMeta {
-    _packageWarningCounter = PackageWarningCounter(this);
-    // Make sure the default package exists, even if it has no libraries.
-    // This can happen for packages that only contain embedder SDKs.
-    Package.fromPackageMeta(packageMeta, this);
-  }
+  factory PackageGraph.UninitializedPackageGraph(
+          DartdocOptionContext config,
+          DartSdk sdk,
+          bool hasEmbedderSdk,
+          RendererFactory rendererFactory,
+          PackageMetaProvider packageMetaProvider) =>
+      PackageGraph.uninitialized(
+          config, sdk, hasEmbedderSdk, rendererFactory, packageMetaProvider);
 
   /// Call during initialization to add a library to this [PackageGraph].
   ///
@@ -634,8 +629,8 @@ class PackageGraph {
       for (var type in clazz.interfaces) {
         checkAndAddClass(type.element, clazz);
       }
-      for (var type in class_.publicInterfaces) {
-        checkAndAddClass(type.element, class_);
+      for (var type in clazz.publicInterfaces) {
+        checkAndAddClass(type.element, clazz);
       }
     }
 
