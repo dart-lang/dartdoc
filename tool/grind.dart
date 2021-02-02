@@ -600,6 +600,7 @@ Future<void> startTestPackageDocsServer() async {
   log('launching dhttpd on port 8002 for SDK');
   var launcher = SubprocessLauncher('serve-test-package-docs');
   await launcher.runStreamed(sdkBin('pub'), [
+    'global',
     'run',
     'dhttpd',
     '--port',
@@ -620,7 +621,7 @@ Future<void> _serveDocsFrom(String servePath, int port, String context) async {
     _serveReady = true;
   }
   await launcher.runStreamed(
-      sdkBin('pub'), ['run', 'dhttpd', '--port', '$port', '--path', servePath]);
+      sdkBin('pub'), ['global', 'run', 'dhttpd', '--port', '$port', '--path', servePath]);
 }
 
 @Task('Serve generated SDK docs locally with dhttpd on port 8000')
@@ -629,6 +630,7 @@ Future<void> serveSdkDocs() async {
   log('launching dhttpd on port 8000 for SDK');
   var launcher = SubprocessLauncher('serve-sdk-docs');
   await launcher.runStreamed(sdkBin('pub'), [
+    'global',
     'run',
     'dhttpd',
     '--port',
@@ -670,6 +672,7 @@ Future<void> compareFlutterWarnings() async {
     var launcher = SubprocessLauncher('serve-flutter-docs');
     await launcher.runStreamed(sdkBin('pub'), ['get']);
     Future original = launcher.runStreamed(sdkBin('pub'), [
+      'global',
       'run',
       'dhttpd',
       '--port',
@@ -678,6 +681,7 @@ Future<void> compareFlutterWarnings() async {
       path.join(originalDartdocFlutter.absolute.path, 'dev', 'docs', 'doc'),
     ]);
     Future current = launcher.runStreamed(sdkBin('pub'), [
+      'global',
       'run',
       'dhttpd',
       '--port',
@@ -696,6 +700,7 @@ Future<void> serveFlutterDocs() async {
   var launcher = SubprocessLauncher('serve-flutter-docs');
   await launcher.runStreamed(sdkBin('pub'), ['get']);
   await launcher.runStreamed(sdkBin('pub'), [
+    'global',
     'run',
     'dhttpd',
     '--port',

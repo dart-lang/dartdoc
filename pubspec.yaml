@@ -8,7 +8,7 @@ environment:
 
 dependencies:
   analyzer: ^0.41.1
-  args: '>=2.0.0-nullsafety.0'
+  args: '<=2.0.0-nullsafety.0'
   charcode: ^1.1.2
   collection: ^1.15.0-nullsafety.4
   cli_util: '>=0.1.4 <0.3.0'
@@ -16,23 +16,22 @@ dependencies:
   glob: '>=1.1.2 <2.0.0'
   html: '>=0.12.1 <0.15.0'
   logging: ^0.11.3+1
-  markdown: '>=2.1.5 <4.0.0'
+  markdown: '>=2.1.5 <=4.0.0-nullsafety.0'
   meta: ^1.2.4
   mustache: ^1.1.0
   package_config: '>=0.1.5 <2.0.0'
   path: ^1.3.0
-  pub_semver: ^1.3.7
+  pub_semver: ^2.0.0-nullsafety.0
   yaml: ^3.0.0-nullsafety.0
 
 dev_dependencies:
   async: '>=2.0.8'
-  build: ^1.5.0
-  build_runner: ^1.10.0
-  build_test: ^1.3.0
-  build_version: ^2.0.1
-  coverage: ^0.14.0
-  dart_style: ^1.3.9
-  dhttpd: ^3.0.0
+  #build: ^1.5.0
+  #build_runner: ^1.10.0
+  #build_test: ^1.3.0
+  #build_version: ^2.0.1
+  #coverage: ^0.15.0
+  #dart_style: ^1.3.9
   grinder: ^0.8.2
   http: ^0.12.0
   pedantic: ^1.9.0
