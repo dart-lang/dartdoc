@@ -921,7 +921,7 @@ Future<void> checkChangelogHasVersion() async {
 
 String _getPackageVersion() {
   var pubspec = File('pubspec.yaml');
-  var yamlDoc;
+  dynamic yamlDoc;
   if (pubspec.existsSync()) {
     yamlDoc = yaml.loadYaml(pubspec.readAsStringSync());
   }
@@ -940,8 +940,8 @@ Future<void> build() async {
 
   // TODO(jcollins-g): port to build system?
   var version = _getPackageVersion();
-  var dartdoc_options = File('dartdoc_options.yaml');
-  await dartdoc_options.writeAsString('''dartdoc:
+  var dartdocOptions = File('dartdoc_options.yaml');
+  await dartdocOptions.writeAsString('''dartdoc:
   linkToSource:
     root: '.'
     uriTemplate: 'https://github.com/dart-lang/dartdoc/blob/v${version}/%f%#L%l%'
@@ -949,7 +949,7 @@ Future<void> build() async {
 }
 
 /// Paths in this list are relative to lib/.
-final _generated_files_list = <String>[
+final _generatedFilesList = <String>[
   '../dartdoc_options.yaml',
   'src/generator/html_resources.g.dart',
   'src/generator/templates.renderers.dart',
@@ -964,7 +964,7 @@ Future<void> checkBuild() async {
 
   // Load original file contents into memory before running the builder;
   // it modifies them in place.
-  for (var relPath in _generated_files_list) {
+  for (var relPath in _generatedFilesList) {
     var origPath = path.joinAll(['lib', relPath]);
     var oldVersion = File(origPath);
     if (oldVersion.existsSync()) {
@@ -973,7 +973,7 @@ Future<void> checkBuild() async {
   }
 
   await build();
-  for (var relPath in _generated_files_list) {
+  for (var relPath in _generatedFilesList) {
     var newVersion = File(path.join('lib', relPath));
     if (!await newVersion.exists()) {
       log('${newVersion.path} does not exist\n');

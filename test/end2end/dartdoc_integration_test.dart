@@ -153,9 +153,9 @@ void main() {
     test('Validate missing FLUTTER_ROOT exception is clean', () async {
       var output = StringBuffer();
       var args = <String>[dartdocPath];
-      var dart_tool =
+      var dartTool =
           Directory(path.join(_testPackageFlutterPluginPath, '.dart_tool'));
-      if (dart_tool.existsSync()) dart_tool.deleteSync(recursive: true);
+      if (dartTool.existsSync()) dartTool.deleteSync(recursive: true);
       Future run = subprocessLauncher.runStreamed(
           Platform.resolvedExecutable, args,
           environment: Map.from(Platform.environment)..remove('FLUTTER_ROOT'),

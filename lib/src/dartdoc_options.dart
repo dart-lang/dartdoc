@@ -335,7 +335,7 @@ class ToolConfiguration {
     for (var entry in yamlMap.entries) {
       var name = entry.key.toString();
       var toolMap = entry.value;
-      var description;
+      String description;
       List<String> command;
       List<String> setupCommand;
       if (toolMap is Map) {
@@ -1130,7 +1130,7 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
       yamlData = yamlData[key] ?? {};
     }
 
-    var returnData;
+    dynamic returnData;
     if (_isListString) {
       if (yamlData is YamlList) {
         returnData = <String>[];

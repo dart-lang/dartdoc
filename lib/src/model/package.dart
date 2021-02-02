@@ -9,6 +9,7 @@ import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/warnings.dart';
+import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path show Context;
 import 'package:pub_semver/pub_semver.dart';
 
@@ -25,7 +26,13 @@ RegExp get substituteNameVersion => Package._substituteNameVersion;
 // TODO: Find an approach that doesn't require doing this.
 // Unlikely to be mistaken for an identifier, html tag, or something else that
 // might reasonably exist normally.
-final String HTMLBASE_PLACEHOLDER = '\%\%__HTMLBASE_dartdoc_internal__\%\%';
+@internal
+const String htmlBasePlaceholder = '\%\%__HTMLBASE_dartdoc_internal__\%\%';
+
+@Deprecated('Public variable intended to be private; will be removed as early '
+    'as Dartdoc 1.0.0')
+// ignore: non_constant_identifier_names
+const String HTMLBASE_PLACEHOLDER = htmlBasePlaceholder;
 
 /// A [LibraryContainer] that contains [Library] objects related to a particular
 /// package.
@@ -233,7 +240,7 @@ class Package extends LibraryContainer
       _baseHref = _remoteBaseHref;
       if (!_baseHref.endsWith('/')) _baseHref = '${_baseHref}/';
     } else {
-      _baseHref = config.useBaseHref ? '' : HTMLBASE_PLACEHOLDER;
+      _baseHref = config.useBaseHref ? '' : htmlBasePlaceholder;
     }
 
     return _baseHref;

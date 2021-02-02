@@ -46,7 +46,7 @@ class ToolTempFileTracker {
     var tempFile = resourceProvider.getFile(resourceProvider.pathContext.join(
         resourceProvider.pathContext.absolute(temporaryDirectory.path),
         'input_$_temporaryFileCount'));
-    await tempFile.writeAsStringSync('');
+    tempFile.writeAsStringSync('');
     return tempFile;
   }
 
@@ -69,7 +69,7 @@ class ToolRunner {
 
   final ToolConfiguration toolConfiguration;
 
-  void _runSetup(
+  Future<void> _runSetup(
       String name,
       ToolDefinition tool,
       Map<String, String> environment,

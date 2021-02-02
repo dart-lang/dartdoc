@@ -163,7 +163,7 @@ final RegExp operatorPrefix = RegExp(r'^operator[ ]*');
 
 final HtmlEscape htmlEscape = const HtmlEscape(HtmlEscapeMode.element);
 
-final List<md.InlineSyntax> _markdown_syntaxes = [
+final List<md.InlineSyntax> _markdownSyntaxes = [
   _InlineCodeSyntax(),
   _AutolinkWithoutScheme(),
   md.InlineHtmlSyntax(),
@@ -171,7 +171,7 @@ final List<md.InlineSyntax> _markdown_syntaxes = [
   md.AutolinkExtensionSyntax(),
 ];
 
-final List<md.BlockSyntax> _markdown_block_syntaxes = [
+final List<md.BlockSyntax> _markdownBlockSyntaxes = [
   const md.FencedCodeBlockSyntax(),
   const md.HeaderWithIdSyntax(),
   const md.SetextHeaderWithIdSyntax(),
@@ -179,7 +179,7 @@ final List<md.BlockSyntax> _markdown_block_syntaxes = [
 ];
 
 // Remove these schemas from the display text for hyperlinks.
-final RegExp _hide_schemes = RegExp('^(http|https)://');
+final RegExp _hideSchemes = RegExp('^(http|https)://');
 
 class MatchingLinkResult {
   final ModelElement element;
@@ -951,8 +951,8 @@ class MarkdownDocument extends md.Document {
     }
 
     return MarkdownDocument(
-        inlineSyntaxes: _markdown_syntaxes,
-        blockSyntaxes: _markdown_block_syntaxes,
+        inlineSyntaxes: _markdownSyntaxes,
+        blockSyntaxes: _markdownBlockSyntaxes,
         linkResolver: linkResolver);
   }
 
@@ -1020,7 +1020,7 @@ class _AutolinkWithoutScheme extends md.AutolinkSyntax {
   @override
   bool onMatch(md.InlineParser parser, Match match) {
     var url = match[1];
-    var text = htmlEscape.convert(url).replaceFirst(_hide_schemes, '');
+    var text = htmlEscape.convert(url).replaceFirst(_hideSchemes, '');
     var anchor = md.Element.text('a', text);
     anchor.attributes['href'] = url;
     parser.addNode(anchor);

@@ -392,8 +392,8 @@ class Dartdoc {
       }
     }
     // Missing from search index
-    var missing_from_search = visited.difference(found);
-    for (var s in missing_from_search) {
+    var missingFromSearch = visited.difference(found);
+    for (var s in missingFromSearch) {
       _warn(packageGraph, PackageWarning.missingFromSearchIndex, s,
           path.normalize(origin),
           referredFrom: fullPath);
