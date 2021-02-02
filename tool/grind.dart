@@ -477,6 +477,8 @@ dependency_overrides:
   crypto: ^3.0.0-nullsafety.0
   glob: ^2.0.0-nullsafety.0
   package_config: ^2.0.0-nullsafety.0
+  pub_semver: ^2.0.0-nullsafety.0
+  yaml: ^3.0.0-nullsafety.0
   analyzer:
     path: '${sdkClone.path}/pkg/analyzer'
   _fe_analyzer_shared:
