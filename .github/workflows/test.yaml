@@ -20,8 +20,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         sdk: [dev, stable]
-        # Add sdk-analyzer once #2500 is addressed
-        job: [main, flutter, packages, sdk-docs]
+        job: [main, flutter, sdk-analyzer, packages, sdk-docs]
         include:
           - os: macos-latest
             sdk: dev
