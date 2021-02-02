@@ -595,14 +595,4 @@ class Class extends Container
 
   @override
   Iterable<Field> get constantFields => allFields.where((f) => f.isConst);
-
-  @override
-  bool operator ==(Object o) =>
-      o is Class &&
-      name == o.name &&
-      o.library.name == library.name &&
-      o.library.package.name == library.package.name;
-
-  @override
-  int get hashCode => quiver.hash3(name, library.name, library.package.name);
 }
