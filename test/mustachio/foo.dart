@@ -1,3 +1,5 @@
+// @dart=2.9
+
 @Renderer(#renderFoo, Context<Foo>())
 @Renderer(#renderBar, Context<Bar>())
 @Renderer(#renderBaz, Context<Baz>())

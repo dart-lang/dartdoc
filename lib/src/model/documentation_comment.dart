@@ -1,3 +1,5 @@
+// @dart=2.9
+
 import 'package:args/args.dart';
 import 'package:crypto/crypto.dart' as crypto;
 import 'package:dartdoc/src/model/model.dart';

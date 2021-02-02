@@ -1,3 +1,5 @@
+// @dart=2.9
+
 library dartdoc.empty_generator;
 
 import 'package:dartdoc/src/dartdoc_options.dart';

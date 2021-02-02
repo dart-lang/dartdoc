@@ -1,3 +1,5 @@
+// @dart=2.9
+
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/memory_file_system.dart';
 import 'package:dartdoc/src/mustachio/renderer_base.dart';

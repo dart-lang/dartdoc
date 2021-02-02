@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+// @dart=2.9
+
 /// This test library handles checks against the model for configurations
 /// that require different PackageGraph configurations.  Since those
 /// take a long time to initialize, isolate them here to keep model_test

@@ -1,5 +1,7 @@
 // WARNING: This file is auto-generated. Do not taunt.
 
+// @dart=2.9
+
 const List<String> resource_names = [
   'package:dartdoc/resources/favicon.png',
   'package:dartdoc/resources/github.css',

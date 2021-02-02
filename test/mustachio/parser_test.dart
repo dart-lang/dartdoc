@@ -1,3 +1,5 @@
+// @dart=2.9
+
 import 'package:dartdoc/src/mustachio/parser.dart';
 import 'package:test/test.dart';
 

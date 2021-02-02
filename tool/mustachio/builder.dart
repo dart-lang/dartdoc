@@ -1,3 +1,5 @@
+// @dart=2.9
+
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/src/dart/element/member.dart';
 import 'package:build/build.dart';

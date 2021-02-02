@@ -1,5 +1,8 @@
 /// Specifies information for generating a Mustache renderer for a [context]
 /// object, using a Mustache template at [templateUri]
+
+// @dart=2.9
+
 class Renderer {
   /// The name of the render function to generate.
   final Symbol name;
