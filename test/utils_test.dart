@@ -8,14 +8,14 @@ import 'package:dartdoc/src/utils.dart';
 import 'package:test/test.dart';
 
 void main() {
-  var comment;
-  var documentation;
+  String comment;
+  String documentation;
 
   // For readability, the multiline strings below have a left margin. This
   // is the length of that left margin.
   var multilineStringMargin = ' ' * 6;
 
-  String trimMargin(s) => s
+  String trimMargin(String s) => s
       // Trim the left margin of the first line.
       .replaceFirst('$multilineStringMargin  ', '')
       // Trim the left margin of every following line.

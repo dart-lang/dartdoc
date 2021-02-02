@@ -264,11 +264,11 @@ void main() {
       expect(
           invokeTool.documentationAsHtml,
           contains(
-              '<a href="${HTMLBASE_PLACEHOLDER}ex/ToolUser-class.html">ToolUser</a>'));
+              '<a href="${htmlBasePlaceholder}ex/ToolUser-class.html">ToolUser</a>'));
       expect(
           invokeTool.documentationAsHtml,
           contains(
-              '<a href="${HTMLBASE_PLACEHOLDER}ex/Dog-class.html">Dog</a>'));
+              '<a href="${htmlBasePlaceholder}ex/Dog-class.html">Dog</a>'));
     });
     test(r'can invoke a tool with no $INPUT or args', () {
       expect(invokeToolNoInput.documentation, contains('Args: []'));
@@ -278,7 +278,7 @@ void main() {
       expect(
           invokeToolNoInput.documentationAsHtml,
           isNot(contains(
-              '<a href="${HTMLBASE_PLACEHOLDER}ex/Dog-class.html">Dog</a>')));
+              '<a href="${htmlBasePlaceholder}ex/Dog-class.html">Dog</a>')));
     });
     test('can invoke a tool multiple times in one comment block', () {
       var envLine = RegExp(r'^Env: \{', multiLine: true);
@@ -367,28 +367,28 @@ void main() {
       expect(
           renderer.renderCategoryLabel(category),
           '<span class="category superb cp-0 linked" title="This is part of the Superb Topic.">'
-          '<a href="${HTMLBASE_PLACEHOLDER}topics/Superb-topic.html">Superb</a></span>');
+          '<a href="${htmlBasePlaceholder}topics/Superb-topic.html">Superb</a></span>');
     });
 
     test('CategoryRendererHtml renders linkedName', () {
       var category = packageGraph.publicPackages.first.categories.first;
       var renderer = CategoryRendererHtml();
       expect(renderer.renderLinkedName(category),
-          '<a href="${HTMLBASE_PLACEHOLDER}topics/Superb-topic.html">Superb</a>');
+          '<a href="${htmlBasePlaceholder}topics/Superb-topic.html">Superb</a>');
     });
 
     test('CategoryRendererMd renders category label', () {
       var category = packageGraph.publicPackages.first.categories.first;
       var renderer = CategoryRendererMd();
       expect(renderer.renderCategoryLabel(category),
-          '[Superb](${HTMLBASE_PLACEHOLDER}topics/Superb-topic.html)');
+          '[Superb](${htmlBasePlaceholder}topics/Superb-topic.html)');
     });
 
     test('CategoryRendererMd renders linkedName', () {
       var category = packageGraph.publicPackages.first.categories.first;
       var renderer = CategoryRendererMd();
       expect(renderer.renderLinkedName(category),
-          '[Superb](${HTMLBASE_PLACEHOLDER}topics/Superb-topic.html)');
+          '[Superb](${htmlBasePlaceholder}topics/Superb-topic.html)');
     });
   });
 
@@ -852,14 +852,14 @@ void main() {
       test('Verify links inside of table headers', () {
         expect(
             docsAsHtml.contains(
-                '<th><a href="${HTMLBASE_PLACEHOLDER}fake/Annotation-class.html">Annotation</a></th>'),
+                '<th><a href="${htmlBasePlaceholder}fake/Annotation-class.html">Annotation</a></th>'),
             isTrue);
       });
 
       test('Verify links inside of table body', () {
         expect(
             docsAsHtml.contains(
-                '<tbody><tr><td><a href="${HTMLBASE_PLACEHOLDER}fake/DocumentWithATable/foo-constant.html">foo</a></td>'),
+                '<tbody><tr><td><a href="${htmlBasePlaceholder}fake/DocumentWithATable/foo-constant.html">foo</a></td>'),
             isTrue);
       });
 
@@ -898,7 +898,7 @@ void main() {
         expect(
             docsAsHtml,
             contains(
-                '<a href="${HTMLBASE_PLACEHOLDER}fake/ImplicitProperties/forInheriting.html">ClassWithUnusualProperties.forInheriting</a>'));
+                '<a href="${htmlBasePlaceholder}fake/ImplicitProperties/forInheriting.html">ClassWithUnusualProperties.forInheriting</a>'));
         expect(
             docsAsHtml,
             contains(
@@ -918,49 +918,49 @@ void main() {
         expect(
             aFunctionUsingRenamedLib.documentationAsHtml,
             contains(
-                'Link to library: <a href="${HTMLBASE_PLACEHOLDER}mylibpub/mylibpub-library.html">renamedLib</a>'));
+                'Link to library: <a href="${htmlBasePlaceholder}mylibpub/mylibpub-library.html">renamedLib</a>'));
         expect(
             aFunctionUsingRenamedLib.documentationAsHtml,
             contains(
-                'Link to constructor (implied): <a href="${HTMLBASE_PLACEHOLDER}mylibpub/YetAnotherHelper/YetAnotherHelper.html">new renamedLib.YetAnotherHelper()</a>'));
+                'Link to constructor (implied): <a href="${htmlBasePlaceholder}mylibpub/YetAnotherHelper/YetAnotherHelper.html">new renamedLib.YetAnotherHelper()</a>'));
         expect(
             aFunctionUsingRenamedLib.documentationAsHtml,
             contains(
-                'Link to constructor (implied, no new): <a href="${HTMLBASE_PLACEHOLDER}mylibpub/YetAnotherHelper/YetAnotherHelper.html">renamedLib.YetAnotherHelper()</a>'));
+                'Link to constructor (implied, no new): <a href="${htmlBasePlaceholder}mylibpub/YetAnotherHelper/YetAnotherHelper.html">renamedLib.YetAnotherHelper()</a>'));
         expect(
             aFunctionUsingRenamedLib.documentationAsHtml,
             contains(
-                'Link to class: <a href="${HTMLBASE_PLACEHOLDER}mylibpub/YetAnotherHelper-class.html">renamedLib.YetAnotherHelper</a>'));
+                'Link to class: <a href="${htmlBasePlaceholder}mylibpub/YetAnotherHelper-class.html">renamedLib.YetAnotherHelper</a>'));
         expect(
             aFunctionUsingRenamedLib.documentationAsHtml,
             contains(
-                'Link to constructor (direct): <a href="${HTMLBASE_PLACEHOLDER}mylibpub/YetAnotherHelper/YetAnotherHelper.html">renamedLib.YetAnotherHelper.YetAnotherHelper</a>'));
+                'Link to constructor (direct): <a href="${htmlBasePlaceholder}mylibpub/YetAnotherHelper/YetAnotherHelper.html">renamedLib.YetAnotherHelper.YetAnotherHelper</a>'));
         expect(
             aFunctionUsingRenamedLib.documentationAsHtml,
             contains(
-                'Link to class member: <a href="${HTMLBASE_PLACEHOLDER}mylibpub/YetAnotherHelper/getMoreContents.html">renamedLib.YetAnotherHelper.getMoreContents</a>'));
+                'Link to class member: <a href="${htmlBasePlaceholder}mylibpub/YetAnotherHelper/getMoreContents.html">renamedLib.YetAnotherHelper.getMoreContents</a>'));
         expect(
             aFunctionUsingRenamedLib.documentationAsHtml,
             contains(
-                'Link to function: <a href="${HTMLBASE_PLACEHOLDER}mylibpub/helperFunction.html">renamedLib.helperFunction</a>'));
+                'Link to function: <a href="${htmlBasePlaceholder}mylibpub/helperFunction.html">renamedLib.helperFunction</a>'));
         expect(
             aFunctionUsingRenamedLib.documentationAsHtml,
             contains(
-                'Link to overlapping prefix: <a href="${HTMLBASE_PLACEHOLDER}csspub/theOnlyThingInTheLibrary.html">renamedLib2.theOnlyThingInTheLibrary</a>'));
+                'Link to overlapping prefix: <a href="${htmlBasePlaceholder}csspub/theOnlyThingInTheLibrary.html">renamedLib2.theOnlyThingInTheLibrary</a>'));
       });
 
       test('operator [] reference within a class works', () {
         expect(
             docsAsHtml,
             contains(
-                '<a href="${HTMLBASE_PLACEHOLDER}fake/BaseForDocComments/operator_get.html">operator []</a> '));
+                '<a href="${htmlBasePlaceholder}fake/BaseForDocComments/operator_get.html">operator []</a> '));
       });
 
       test('operator [] reference outside of a class works', () {
         expect(
             docsAsHtml,
             contains(
-                '<a href="${HTMLBASE_PLACEHOLDER}fake/SpecialList/operator_get.html">SpecialList.operator []</a> '));
+                '<a href="${htmlBasePlaceholder}fake/SpecialList/operator_get.html">SpecialList.operator []</a> '));
       }, skip: 'https://github.com/dart-lang/dartdoc/issues/1285');
 
       test('adds <code> tag to a class from the SDK', () {
@@ -975,7 +975,7 @@ void main() {
         expect(
             docsAsHtml,
             contains(
-                '<a href="${HTMLBASE_PLACEHOLDER}fake/BaseForDocComments-class.html">BaseForDocComments</a>'));
+                '<a href="${htmlBasePlaceholder}fake/BaseForDocComments-class.html">BaseForDocComments</a>'));
       });
 
       test(
@@ -984,7 +984,7 @@ void main() {
         expect(
             docsAsHtml,
             contains(
-                '<a href="${HTMLBASE_PLACEHOLDER}anonymous_library/doesStuff.html">doesStuff</a>'));
+                '<a href="${htmlBasePlaceholder}anonymous_library/doesStuff.html">doesStuff</a>'));
       });
 
       test(
@@ -995,11 +995,11 @@ void main() {
         expect(
             helperClass.documentationAsHtml,
             contains(
-                '<a href="${HTMLBASE_PLACEHOLDER}ex/Apple-class.html">Apple</a>'));
+                '<a href="${htmlBasePlaceholder}ex/Apple-class.html">Apple</a>'));
         expect(
             helperClass.documentationAsHtml,
             contains(
-                '<a href="${HTMLBASE_PLACEHOLDER}ex/B-class.html">ex.B</a>'));
+                '<a href="${htmlBasePlaceholder}ex/B-class.html">ex.B</a>'));
       });
 
       test('link to override method in implementer from base class', () {
@@ -1008,7 +1008,7 @@ void main() {
         expect(
             helperClass.documentationAsHtml,
             contains(
-                '<a href="${HTMLBASE_PLACEHOLDER}override_class/BoxConstraints/debugAssertIsValid.html">BoxConstraints.debugAssertIsValid</a>'));
+                '<a href="${htmlBasePlaceholder}override_class/BoxConstraints/debugAssertIsValid.html">BoxConstraints.debugAssertIsValid</a>'));
       });
 
       test(
@@ -1017,7 +1017,7 @@ void main() {
         expect(
             docsAsHtml,
             contains(
-                '<a href="${HTMLBASE_PLACEHOLDER}two_exports/BaseClass-class.html">BaseClass</a>'));
+                '<a href="${htmlBasePlaceholder}two_exports/BaseClass-class.html">BaseClass</a>'));
       });
 
       test(
@@ -1026,35 +1026,35 @@ void main() {
         expect(
             docsAsHtml,
             contains(
-                '<a href="${HTMLBASE_PLACEHOLDER}fake/NAME_WITH_TWO_UNDERSCORES-constant.html">NAME_WITH_TWO_UNDERSCORES</a>'));
+                '<a href="${htmlBasePlaceholder}fake/NAME_WITH_TWO_UNDERSCORES-constant.html">NAME_WITH_TWO_UNDERSCORES</a>'));
       });
 
       test('links to a method in this class', () {
         expect(
             docsAsHtml,
             contains(
-                '<a href="${HTMLBASE_PLACEHOLDER}fake/BaseForDocComments/anotherMethod.html">anotherMethod</a>'));
+                '<a href="${htmlBasePlaceholder}fake/BaseForDocComments/anotherMethod.html">anotherMethod</a>'));
       });
 
       test('links to a top-level function in this library', () {
         expect(
             docsAsHtml,
             contains(
-                '<a class="deprecated" href="${HTMLBASE_PLACEHOLDER}fake/topLevelFunction.html">topLevelFunction</a>'));
+                '<a class="deprecated" href="${htmlBasePlaceholder}fake/topLevelFunction.html">topLevelFunction</a>'));
       });
 
       test('links to top-level function from an imported library', () {
         expect(
             docsAsHtml,
             contains(
-                '<a href="${HTMLBASE_PLACEHOLDER}ex/function1.html">function1</a>'));
+                '<a href="${htmlBasePlaceholder}ex/function1.html">function1</a>'));
       });
 
       test('links to a class from an imported lib', () {
         expect(
             docsAsHtml,
             contains(
-                '<a href="${HTMLBASE_PLACEHOLDER}ex/Apple-class.html">Apple</a>'));
+                '<a href="${htmlBasePlaceholder}ex/Apple-class.html">Apple</a>'));
       });
 
       test(
@@ -1063,14 +1063,14 @@ void main() {
         expect(
             docsAsHtml,
             contains(
-                '<a href="${HTMLBASE_PLACEHOLDER}fake/incorrectDocReference-constant.html">incorrectDocReference</a>'));
+                '<a href="${htmlBasePlaceholder}fake/incorrectDocReference-constant.html">incorrectDocReference</a>'));
       });
 
       test('links to a top-level const from an imported lib', () {
         expect(
             docsAsHtml,
             contains(
-                '<a href="${HTMLBASE_PLACEHOLDER}ex/incorrectDocReferenceFromEx-constant.html">incorrectDocReferenceFromEx</a>'));
+                '<a href="${htmlBasePlaceholder}ex/incorrectDocReferenceFromEx-constant.html">incorrectDocReferenceFromEx</a>'));
       });
 
       test('links to a top-level variable with a prefix from an imported lib',
@@ -1078,21 +1078,21 @@ void main() {
         expect(
             docsAsHtml,
             contains(
-                '<a href="${HTMLBASE_PLACEHOLDER}csspub/theOnlyThingInTheLibrary.html">css.theOnlyThingInTheLibrary</a>'));
+                '<a href="${htmlBasePlaceholder}csspub/theOnlyThingInTheLibrary.html">css.theOnlyThingInTheLibrary</a>'));
       });
 
       test('links to a name with a single underscore', () {
         expect(
             docsAsHtml,
             contains(
-                '<a href="${HTMLBASE_PLACEHOLDER}fake/NAME_SINGLEUNDERSCORE-constant.html">NAME_SINGLEUNDERSCORE</a>'));
+                '<a href="${htmlBasePlaceholder}fake/NAME_SINGLEUNDERSCORE-constant.html">NAME_SINGLEUNDERSCORE</a>'));
       });
 
       test('correctly escapes type parameters in links', () {
         expect(
             docsAsHtml,
             contains(
-                '<a href="${HTMLBASE_PLACEHOLDER}fake/ExtraSpecialList-class.html">ExtraSpecialList&lt;Object&gt;</a>'));
+                '<a href="${htmlBasePlaceholder}fake/ExtraSpecialList-class.html">ExtraSpecialList&lt;Object&gt;</a>'));
       });
 
       test('correctly escapes type parameters in broken links', () {
@@ -1121,7 +1121,7 @@ void main() {
       expect(
           short.documentationAsHtml,
           contains(
-              '<a href="${HTMLBASE_PLACEHOLDER}fake/NAME_WITH_TWO_UNDERSCORES-constant.html">NAME_WITH_TWO_UNDERSCORES</a>'));
+              '<a href="${htmlBasePlaceholder}fake/NAME_WITH_TWO_UNDERSCORES-constant.html">NAME_WITH_TWO_UNDERSCORES</a>'));
     });
 
     test('still has brackets inside code blocks', () {
@@ -1172,7 +1172,7 @@ void main() {
     test('single ref to class', () {
       expect(
           B.documentationAsHtml.contains(
-              '<p>Extends class <a href="${HTMLBASE_PLACEHOLDER}ex/Apple-class.html">Apple</a>, use <a href="${HTMLBASE_PLACEHOLDER}ex/Apple/Apple.html">new Apple</a> or <a href="${HTMLBASE_PLACEHOLDER}ex/Apple/Apple.fromString.html">new Apple.fromString</a></p>'),
+              '<p>Extends class <a href="${htmlBasePlaceholder}ex/Apple-class.html">Apple</a>, use <a href="${htmlBasePlaceholder}ex/Apple/Apple.html">new Apple</a> or <a href="${htmlBasePlaceholder}ex/Apple/Apple.fromString.html">new Apple.fromString</a></p>'),
           isTrue);
     });
 
@@ -1191,11 +1191,11 @@ void main() {
       expect(
           resolved,
           contains(
-              '<a href="${HTMLBASE_PLACEHOLDER}two_exports/BaseClass-class.html">BaseClass</a>'));
+              '<a href="${htmlBasePlaceholder}two_exports/BaseClass-class.html">BaseClass</a>'));
       expect(
           resolved,
           contains(
-              'Linking over to <a href="${HTMLBASE_PLACEHOLDER}ex/Apple-class.html">Apple</a>'));
+              'Linking over to <a href="${htmlBasePlaceholder}ex/Apple-class.html">Apple</a>'));
     });
 
     test('references to class and constructors', () {
@@ -1203,15 +1203,15 @@ void main() {
       expect(
           comment,
           contains(
-              'Extends class <a href="${HTMLBASE_PLACEHOLDER}ex/Apple-class.html">Apple</a>'));
+              'Extends class <a href="${htmlBasePlaceholder}ex/Apple-class.html">Apple</a>'));
       expect(
           comment,
           contains(
-              'use <a href="${HTMLBASE_PLACEHOLDER}ex/Apple/Apple.html">new Apple</a>'));
+              'use <a href="${htmlBasePlaceholder}ex/Apple/Apple.html">new Apple</a>'));
       expect(
           comment,
           contains(
-              '<a href="${HTMLBASE_PLACEHOLDER}ex/Apple/Apple.fromString.html">new Apple.fromString</a>'));
+              '<a href="${htmlBasePlaceholder}ex/Apple/Apple.fromString.html">new Apple.fromString</a>'));
     });
 
     test('references to nullable type and null-checked variable', () {
@@ -1221,11 +1221,11 @@ void main() {
       expect(
           comment,
           contains(
-              'nullable type: <a href="${HTMLBASE_PLACEHOLDER}ex/Apple-class.html">Apple?</a>'));
+              'nullable type: <a href="${htmlBasePlaceholder}ex/Apple-class.html">Apple?</a>'));
       expect(
           comment,
           contains(
-              'null-checked variable <a href="${HTMLBASE_PLACEHOLDER}ex/myNumber.html">myNumber!</a>'));
+              'null-checked variable <a href="${htmlBasePlaceholder}ex/myNumber.html">myNumber!</a>'));
     });
 
     test('reference to constructor named the same as a field', () {
@@ -1235,7 +1235,7 @@ void main() {
       expect(
           comment,
           contains('Reference to '
-              '<a href="${HTMLBASE_PLACEHOLDER}ex/FieldAndCtorWithSameName/FieldAndCtorWithSameName.named.html">'
+              '<a href="${htmlBasePlaceholder}ex/FieldAndCtorWithSameName/FieldAndCtorWithSameName.named.html">'
               'FieldAndCtorWithSameName.named()</a>'));
     });
 
@@ -1244,7 +1244,7 @@ void main() {
       expect(
           comment,
           contains(
-              '<a href="${HTMLBASE_PLACEHOLDER}ex/Apple-class.html">Apple</a>'));
+              '<a href="${htmlBasePlaceholder}ex/Apple-class.html">Apple</a>'));
     });
 
     test('reference to method', () {
@@ -1252,7 +1252,7 @@ void main() {
       expect(
           comment,
           equals(
-              '<p>link to method from class <a href="${HTMLBASE_PLACEHOLDER}ex/Apple/m.html">Apple.m</a></p>'));
+              '<p>link to method from class <a href="${htmlBasePlaceholder}ex/Apple/m.html">Apple.m</a></p>'));
     });
 
     test(
@@ -1265,11 +1265,11 @@ void main() {
       expect(
           notAMethodFromPrivateClass.documentationAsHtml,
           contains(
-              '<a href="${HTMLBASE_PLACEHOLDER}fake/InheritingClassOne/aMethod.html">fake.InheritingClassOne.aMethod</a>'));
+              '<a href="${htmlBasePlaceholder}fake/InheritingClassOne/aMethod.html">fake.InheritingClassOne.aMethod</a>'));
       expect(
           notAMethodFromPrivateClass.documentationAsHtml,
           contains(
-              '<a href="${HTMLBASE_PLACEHOLDER}fake/InheritingClassTwo/aMethod.html">fake.InheritingClassTwo.aMethod</a>'));
+              '<a href="${htmlBasePlaceholder}fake/InheritingClassTwo/aMethod.html">fake.InheritingClassTwo.aMethod</a>'));
     });
 
     test('legacy code blocks render correctly', () {
@@ -1503,35 +1503,35 @@ void main() {
       expect(
           overrideByModifierClass.oneLineDoc,
           contains(
-              '<a href="${HTMLBASE_PLACEHOLDER}fake/ModifierClass-class.html">ModifierClass</a>'));
+              '<a href="${htmlBasePlaceholder}fake/ModifierClass-class.html">ModifierClass</a>'));
       expect(
           overrideByModifierClass.canonicalModelElement.documentationAsHtml,
           contains(
-              '<a href="${HTMLBASE_PLACEHOLDER}fake/ModifierClass-class.html">ModifierClass</a>'));
+              '<a href="${htmlBasePlaceholder}fake/ModifierClass-class.html">ModifierClass</a>'));
       expect(
           overrideByGenericMixin.oneLineDoc,
           contains(
-              '<a href="${HTMLBASE_PLACEHOLDER}fake/GenericMixin-mixin.html">GenericMixin</a>'));
+              '<a href="${htmlBasePlaceholder}fake/GenericMixin-mixin.html">GenericMixin</a>'));
       expect(
           overrideByGenericMixin.canonicalModelElement.documentationAsHtml,
           contains(
-              '<a href="${HTMLBASE_PLACEHOLDER}fake/GenericMixin-mixin.html">GenericMixin</a>'));
+              '<a href="${htmlBasePlaceholder}fake/GenericMixin-mixin.html">GenericMixin</a>'));
       expect(
           overrideByBoth.oneLineDoc,
           contains(
-              '<a href="${HTMLBASE_PLACEHOLDER}fake/ModifierClass-class.html">ModifierClass</a>'));
+              '<a href="${htmlBasePlaceholder}fake/ModifierClass-class.html">ModifierClass</a>'));
       expect(
           overrideByBoth.oneLineDoc,
           contains(
-              '<a href="${HTMLBASE_PLACEHOLDER}fake/GenericMixin-mixin.html">GenericMixin</a>'));
+              '<a href="${htmlBasePlaceholder}fake/GenericMixin-mixin.html">GenericMixin</a>'));
       expect(
           overrideByBoth.canonicalModelElement.documentationAsHtml,
           contains(
-              '<a href="${HTMLBASE_PLACEHOLDER}fake/ModifierClass-class.html">ModifierClass</a>'));
+              '<a href="${htmlBasePlaceholder}fake/ModifierClass-class.html">ModifierClass</a>'));
       expect(
           overrideByBoth.canonicalModelElement.documentationAsHtml,
           contains(
-              '<a href="${HTMLBASE_PLACEHOLDER}fake/GenericMixin-mixin.html">GenericMixin</a>'));
+              '<a href="${htmlBasePlaceholder}fake/GenericMixin-mixin.html">GenericMixin</a>'));
     });
   });
 
@@ -1690,11 +1690,11 @@ void main() {
 
     test('exported class should have hrefs from the current library', () {
       expect(
-          Dep.href, equals('${HTMLBASE_PLACEHOLDER}ex/Deprecated-class.html'));
+          Dep.href, equals('${htmlBasePlaceholder}ex/Deprecated-class.html'));
       expect(Dep.instanceMethods.firstWhere((m) => m.name == 'toString').href,
-          equals('${HTMLBASE_PLACEHOLDER}ex/Deprecated/toString.html'));
+          equals('${htmlBasePlaceholder}ex/Deprecated/toString.html'));
       expect(Dep.instanceFields.firstWhere((m) => m.name == 'expires').href,
-          equals('${HTMLBASE_PLACEHOLDER}ex/Deprecated/expires.html'));
+          equals('${htmlBasePlaceholder}ex/Deprecated/expires.html'));
     });
 
     test('exported class should have linkedReturnType for the current library',
@@ -1705,7 +1705,7 @@ void main() {
       expect(
           returnCool.linkedReturnType,
           equals(
-              '<a href="${HTMLBASE_PLACEHOLDER}fake/Cool-class.html">Cool</a>'));
+              '<a href="${htmlBasePlaceholder}fake/Cool-class.html">Cool</a>'));
     });
 
     test('F has a single instance method', () {
@@ -1988,15 +1988,15 @@ void main() {
       expect(
           extensionReferencer.documentationAsHtml,
           contains(
-              '<a href="${HTMLBASE_PLACEHOLDER}ex/FancyList.html">FancyList</a>'));
+              '<a href="${htmlBasePlaceholder}ex/FancyList.html">FancyList</a>'));
       expect(
           extensionReferencer.documentationAsHtml,
           contains(
-              '<a href="${HTMLBASE_PLACEHOLDER}ex/AnExtension/call.html">AnExtension.call</a>'));
+              '<a href="${htmlBasePlaceholder}ex/AnExtension/call.html">AnExtension.call</a>'));
       expect(
           extensionReferencer.documentationAsHtml,
           contains(
-              '<a href="${HTMLBASE_PLACEHOLDER}reexport_two/DocumentThisExtensionOnce.html">DocumentThisExtensionOnce</a>'));
+              '<a href="${htmlBasePlaceholder}reexport_two/DocumentThisExtensionOnce.html">DocumentThisExtensionOnce</a>'));
     });
 
     test('has a fully qualified name', () {
@@ -2013,7 +2013,7 @@ void main() {
 
     test('member method has href', () {
       s = ext.instanceMethods.firstWhere((m) => m.name == 's');
-      expect(s.href, '${HTMLBASE_PLACEHOLDER}ex/AppleExtension/s.html');
+      expect(s.href, '${htmlBasePlaceholder}ex/AppleExtension/s.html');
     });
 
     test('has extended type', () {
@@ -2284,7 +2284,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           params,
           '<span class="parameter" id="addCallback-param-callback">'
-          '<span class="type-annotation"><a href="${HTMLBASE_PLACEHOLDER}fake/VoidCallback.html">VoidCallback</a></span> '
+          '<span class="type-annotation"><a href="${htmlBasePlaceholder}fake/VoidCallback.html">VoidCallback</a></span> '
           '<span class="parameter-name">callback</span></span>');
 
       function =
@@ -2293,7 +2293,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           params,
           '<span class="parameter" id="addCallback2-param-callback">'
-          '<span class="type-annotation"><a href="${HTMLBASE_PLACEHOLDER}fake/Callback2.html">Callback2</a></span> '
+          '<span class="type-annotation"><a href="${htmlBasePlaceholder}fake/Callback2.html">Callback2</a></span> '
           '<span class="parameter-name">callback</span></span>');
     });
 
@@ -2333,7 +2333,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           explicitSetter.linkedReturnType,
           '<span class="parameter" id="explicitSetter=-param-f"><span class="type-annotation">dynamic</span> <span class="parameter-name">Function</span>(<span class="parameter" id="param-bar"><span class="type-annotation">int</span>, </span>'
-          '<span class="parameter" id="param-baz"><span class="type-annotation"><a href="${HTMLBASE_PLACEHOLDER}fake/Cool-class.html">Cool</a></span>, </span>'
+          '<span class="parameter" id="param-baz"><span class="type-annotation"><a href="${htmlBasePlaceholder}fake/Cool-class.html">Cool</a></span>, </span>'
           '<span class="parameter" id="param-macTruck"><span class="type-annotation">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span></span>)</span>');
     });
 
@@ -2341,14 +2341,14 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       var aField = TemplatedInterface.instanceFields
           .singleWhere((f) => f.name == 'aField');
       expect(aField.linkedReturnType,
-          '<a href="${HTMLBASE_PLACEHOLDER}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">Stream<span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span></span>&gt;</span>');
+          '<a href="${htmlBasePlaceholder}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">Stream<span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span></span>&gt;</span>');
     });
 
     test('parameterized type from inherited field is correctly displayed', () {
       var aInheritedField = TemplatedInterface.inheritedFields
           .singleWhere((f) => f.name == 'aInheritedField');
       expect(aInheritedField.linkedReturnType,
-          '<a href="${HTMLBASE_PLACEHOLDER}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
+          '<a href="${htmlBasePlaceholder}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
     });
 
     test(
@@ -2358,7 +2358,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .singleWhere((f) => f.name == 'aGetter')
           .getter;
       expect(aGetter.linkedReturnType,
-          '<a href="${HTMLBASE_PLACEHOLDER}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">Map<span class="signature">&lt;<wbr><span class="type-parameter">A</span>, <span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">String</span>&gt;</span></span>&gt;</span></span>&gt;</span>');
+          '<a href="${htmlBasePlaceholder}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">Map<span class="signature">&lt;<wbr><span class="type-parameter">A</span>, <span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">String</span>&gt;</span></span>&gt;</span></span>&gt;</span>');
     });
 
     test(
@@ -2368,7 +2368,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .singleWhere((f) => f.name == 'aInheritedGetter')
           .getter;
       expect(aInheritedGetter.linkedReturnType,
-          '<a href="${HTMLBASE_PLACEHOLDER}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
+          '<a href="${htmlBasePlaceholder}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
     });
 
     test(
@@ -2378,11 +2378,11 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .singleWhere((f) => f.name == 'aInheritedSetter')
           .setter;
       expect(aInheritedSetter.allParameters.first.modelType.linkedName,
-          '<a href="${HTMLBASE_PLACEHOLDER}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
+          '<a href="${htmlBasePlaceholder}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
       // TODO(jcollins-g): really, these shouldn't be called "parameters" in
       // the span class.
       expect(aInheritedSetter.enclosingCombo.linkedReturnType,
-          '<span class="parameter" id="aInheritedSetter=-param-thingToSet"><span class="type-annotation"><a href="${HTMLBASE_PLACEHOLDER}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span></span></span>');
+          '<span class="parameter" id="aInheritedSetter=-param-thingToSet"><span class="type-annotation"><a href="${htmlBasePlaceholder}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span></span></span>');
     });
 
     test(
@@ -2391,7 +2391,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       var aMethodInterface = TemplatedInterface.instanceMethods
           .singleWhere((m) => m.name == 'aMethodInterface');
       expect(aMethodInterface.linkedReturnType,
-          '<a href="${HTMLBASE_PLACEHOLDER}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
+          '<a href="${htmlBasePlaceholder}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
     });
 
     test(
@@ -2400,7 +2400,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       var aInheritedMethod = TemplatedInterface.instanceMethods
           .singleWhere((m) => m.name == 'aInheritedMethod');
       expect(aInheritedMethod.linkedReturnType,
-          '<a href="${HTMLBASE_PLACEHOLDER}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
+          '<a href="${htmlBasePlaceholder}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
     });
 
     test(
@@ -2409,7 +2409,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       var aTypedefReturningMethodInterface = TemplatedInterface.instanceMethods
           .singleWhere((m) => m.name == 'aTypedefReturningMethodInterface');
       expect(aTypedefReturningMethodInterface.linkedReturnType,
-          '<a href="${HTMLBASE_PLACEHOLDER}ex/ParameterizedTypedef.html">ParameterizedTypedef</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">String</span>&gt;</span></span>&gt;</span>');
+          '<a href="${htmlBasePlaceholder}ex/ParameterizedTypedef.html">ParameterizedTypedef</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">String</span>&gt;</span></span>&gt;</span>');
     });
 
     test(
@@ -2418,7 +2418,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       var aInheritedTypedefReturningMethod = TemplatedInterface.instanceMethods
           .singleWhere((m) => m.name == 'aInheritedTypedefReturningMethod');
       expect(aInheritedTypedefReturningMethod.linkedReturnType,
-          '<a href="${HTMLBASE_PLACEHOLDER}ex/ParameterizedTypedef.html">ParameterizedTypedef</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
+          '<a href="${htmlBasePlaceholder}ex/ParameterizedTypedef.html">ParameterizedTypedef</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
     });
 
     test('parameterized types for inherited operator is correctly displayed',
@@ -2426,11 +2426,11 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       var aInheritedAdditionOperator = TemplatedInterface.inheritedOperators
           .singleWhere((m) => m.name == 'operator +');
       expect(aInheritedAdditionOperator.linkedReturnType,
-          '<a href="${HTMLBASE_PLACEHOLDER}ex/ParameterizedClass-class.html">ParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
+          '<a href="${htmlBasePlaceholder}ex/ParameterizedClass-class.html">ParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
       expect(
           ParameterRendererHtml()
               .renderLinkedParams(aInheritedAdditionOperator.parameters),
-          '<span class="parameter" id="+-param-other"><span class="type-annotation"><a href="${HTMLBASE_PLACEHOLDER}ex/ParameterizedClass-class.html">ParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span></span> <span class="parameter-name">other</span></span>');
+          '<span class="parameter" id="+-param-other"><span class="type-annotation"><a href="${htmlBasePlaceholder}ex/ParameterizedClass-class.html">ParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span></span> <span class="parameter-name">other</span></span>');
     });
 
     test('', () {});
@@ -2536,7 +2536,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
         'an inherited method from the core SDK has a href relative to the package class',
         () {
       expect(inheritedClear.href,
-          equals('${HTMLBASE_PLACEHOLDER}ex/CatString/clear.html'));
+          equals('${htmlBasePlaceholder}ex/CatString/clear.html'));
     });
 
     test(
@@ -2545,7 +2545,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           inheritedClear.linkedName,
           equals(
-              '<a href="${HTMLBASE_PLACEHOLDER}ex/CatString/clear.html">clear</a>'));
+              '<a href="${htmlBasePlaceholder}ex/CatString/clear.html">clear</a>'));
     });
 
     test('has enclosing element', () {
@@ -2651,7 +2651,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           plus.href,
           equals(
-              '${HTMLBASE_PLACEHOLDER}ex/SpecializedDuration/operator_plus.html'));
+              '${htmlBasePlaceholder}ex/SpecializedDuration/operator_plus.html'));
     });
 
     test('if inherited and superclass not in package, link to enclosed class',
@@ -2659,7 +2659,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           plus.linkedName,
           equals(
-              '<a href="${HTMLBASE_PLACEHOLDER}ex/SpecializedDuration/operator_plus.html">operator +</a>'));
+              '<a href="${htmlBasePlaceholder}ex/SpecializedDuration/operator_plus.html">operator +</a>'));
     });
   });
 
@@ -2896,7 +2896,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           lengthX.extendedDocLink,
           equals(
-              '<a href="${HTMLBASE_PLACEHOLDER}fake/WithGetterAndSetter/lengthX.html">[...]</a>'));
+              '<a href="${htmlBasePlaceholder}fake/WithGetterAndSetter/lengthX.html">[...]</a>'));
       expect(lengthX.documentation, contains('the fourth dimension'));
       expect(lengthX.documentation, isNot(contains('[...]')));
     });
@@ -2908,7 +2908,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('inherited property has a linked name to superclass in package', () {
       expect(mInB.linkedName,
-          equals('<a href="${HTMLBASE_PLACEHOLDER}ex/Apple/m.html">m</a>'));
+          equals('<a href="${htmlBasePlaceholder}ex/Apple/m.html">m</a>'));
     });
 
     test(
@@ -2917,7 +2917,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           isEmpty.linkedName,
           equals(
-              '<a href="${HTMLBASE_PLACEHOLDER}ex/CatString/isEmpty.html">isEmpty</a>'));
+              '<a href="${htmlBasePlaceholder}ex/CatString/isEmpty.html">isEmpty</a>'));
     });
 
     test('inherited property has the enclosing class', () {
@@ -3055,7 +3055,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           fieldWithTypedef.linkedReturnType,
           equals(
-              '<a href="${HTMLBASE_PLACEHOLDER}ex/ParameterizedTypedef.html">ParameterizedTypedef</a><span class="signature">&lt;<wbr><span class="type-parameter">bool</span>&gt;</span>'));
+              '<a href="${htmlBasePlaceholder}ex/ParameterizedTypedef.html">ParameterizedTypedef</a><span class="signature">&lt;<wbr><span class="type-parameter">bool</span>&gt;</span>'));
     });
   });
 
@@ -3128,7 +3128,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           complicatedReturn.linkedReturnType,
           equals(
-              '<a href="${HTMLBASE_PLACEHOLDER}fake/ATypeTakingClass-class.html">ATypeTakingClass</a><span class="signature">&lt;<wbr><span class="type-parameter">String Function<span class="signature">(<span class="parameter" id="param-"><span class="type-annotation">int</span></span>)</span></span>&gt;</span>'));
+              '<a href="${htmlBasePlaceholder}fake/ATypeTakingClass-class.html">ATypeTakingClass</a><span class="signature">&lt;<wbr><span class="type-parameter">String Function<span class="signature">(<span class="parameter" id="param-"><span class="type-annotation">int</span></span>)</span></span>&gt;</span>'));
     });
 
     test('@nodoc on simple property works', () {
@@ -3238,7 +3238,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('substrings of the constant values type are not linked (#1535)', () {
       expect(aName.constantValue,
-          'const <a href="${HTMLBASE_PLACEHOLDER}ex/ExtendedShortName/ExtendedShortName.html">ExtendedShortName</a>(&quot;hello there&quot;)');
+          'const <a href="${htmlBasePlaceholder}ex/ExtendedShortName/ExtendedShortName.html">ExtendedShortName</a>(&quot;hello there&quot;)');
     });
 
     test('constant field values are escaped', () {
@@ -3282,7 +3282,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('MY_CAT is linked', () {
       expect(cat.constantValue,
-          'const <a href="${HTMLBASE_PLACEHOLDER}ex/ConstantCat/ConstantCat.html">ConstantCat</a>(&#39;tabby&#39;)');
+          'const <a href="${htmlBasePlaceholder}ex/ConstantCat/ConstantCat.html">ConstantCat</a>(&#39;tabby&#39;)');
     });
 
     test('exported property', () {
@@ -3326,11 +3326,11 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           referToADefaultConstructor.documentationAsHtml,
           contains(
-              '<a href="${HTMLBASE_PLACEHOLDER}fake/ReferToADefaultConstructor-class.html">ReferToADefaultConstructor</a>'));
+              '<a href="${htmlBasePlaceholder}fake/ReferToADefaultConstructor-class.html">ReferToADefaultConstructor</a>'));
       expect(
           referToADefaultConstructor.documentationAsHtml,
           contains(
-              '<a href="${HTMLBASE_PLACEHOLDER}fake/ReferToADefaultConstructor/ReferToADefaultConstructor.html">ReferToADefaultConstructor.ReferToADefaultConstructor</a>'));
+              '<a href="${htmlBasePlaceholder}fake/ReferToADefaultConstructor/ReferToADefaultConstructor.html">ReferToADefaultConstructor.ReferToADefaultConstructor</a>'));
     });
 
     test('displays generic parameters correctly', () {
@@ -3420,7 +3420,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           ExtendsFutureVoid.linkedName,
           equals(
-              '<a href="${HTMLBASE_PLACEHOLDER}fake/ExtendsFutureVoid-class.html">ExtendsFutureVoid</a>'));
+              '<a href="${htmlBasePlaceholder}fake/ExtendsFutureVoid-class.html">ExtendsFutureVoid</a>'));
       var FutureVoid = ExtendsFutureVoid.publicSuperChain
           .firstWhere((c) => c.name == 'Future');
       expect(
@@ -3433,7 +3433,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           ImplementsFutureVoid.linkedName,
           equals(
-              '<a href="${HTMLBASE_PLACEHOLDER}fake/ImplementsFutureVoid-class.html">ImplementsFutureVoid</a>'));
+              '<a href="${htmlBasePlaceholder}fake/ImplementsFutureVoid-class.html">ImplementsFutureVoid</a>'));
       var FutureVoid =
           ImplementsFutureVoid.interfaces.firstWhere((c) => c.name == 'Future');
       expect(
@@ -3446,13 +3446,13 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           ATypeTakingClassMixedIn.linkedName,
           equals(
-              '<a href="${HTMLBASE_PLACEHOLDER}fake/ATypeTakingClassMixedIn-class.html">ATypeTakingClassMixedIn</a>'));
+              '<a href="${htmlBasePlaceholder}fake/ATypeTakingClassMixedIn-class.html">ATypeTakingClassMixedIn</a>'));
       var ATypeTakingClassVoid = ATypeTakingClassMixedIn.mixedInTypes
           .firstWhere((c) => c.name == 'ATypeTakingClass');
       expect(
           ATypeTakingClassVoid.linkedName,
           equals(
-              '<a href="${HTMLBASE_PLACEHOLDER}fake/ATypeTakingClass-class.html">ATypeTakingClass</a><span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span>'));
+              '<a href="${htmlBasePlaceholder}fake/ATypeTakingClass-class.html">ATypeTakingClass</a><span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span>'));
     });
   });
 
@@ -3495,7 +3495,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           ParameterRendererHtml().renderLinkedParams(theConstructor.parameters),
           equals(
-              '<span class="parameter" id="-param-x"><span class="type-annotation"><a href="${HTMLBASE_PLACEHOLDER}ex/ParameterizedTypedef.html">ParameterizedTypedef</a><span class="signature">&lt;<wbr><span class="type-parameter">double</span>&gt;</span></span> <span class="parameter-name">x</span></span>'));
+              '<span class="parameter" id="-param-x"><span class="type-annotation"><a href="${htmlBasePlaceholder}ex/ParameterizedTypedef.html">ParameterizedTypedef</a><span class="signature">&lt;<wbr><span class="type-parameter">double</span>&gt;</span></span> <span class="parameter-name">x</span></span>'));
     });
 
     test('anonymous nested functions inside typedefs are handled', () {
@@ -3670,7 +3670,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           params,
           contains(
-              '@<a href="${HTMLBASE_PLACEHOLDER}fake/required-constant.html">required</a>'));
+              '@<a href="${htmlBasePlaceholder}fake/required-constant.html">required</a>'));
     });
 
     test('param exported in library', () {
@@ -3685,7 +3685,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           params,
           equals('<span class="parameter" id="methodWithTypedefParam-param-p">'
-              '<span class="type-annotation"><a href="${HTMLBASE_PLACEHOLDER}ex/processMessage.html">processMessage</a></span> '
+              '<span class="type-annotation"><a href="${htmlBasePlaceholder}ex/processMessage.html">processMessage</a></span> '
               '<span class="parameter-name">p</span></span>'));
     });
   });
@@ -3804,7 +3804,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           forAnnotation.annotations.first,
           equals(
-              '@<a href="${HTMLBASE_PLACEHOLDER}ex/ForAnnotation-class.html">ForAnnotation</a>'
+              '@<a href="${htmlBasePlaceholder}ex/ForAnnotation-class.html">ForAnnotation</a>'
               '(&#39;my value&#39;)'));
     });
 
@@ -3814,14 +3814,14 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           m.annotations.first,
           equals(
-              '@<a href="${HTMLBASE_PLACEHOLDER}ex/deprecated-constant.html">deprecated</a>'));
+              '@<a href="${htmlBasePlaceholder}ex/deprecated-constant.html">deprecated</a>'));
     });
 
     test('constructor annotations have the right link and are escaped', () {
       expect(
           ctr.annotations[0],
           equals(
-              '@<a href="${HTMLBASE_PLACEHOLDER}ex/Deprecated-class.html">Deprecated</a>'
+              '@<a href="${htmlBasePlaceholder}ex/Deprecated-class.html">Deprecated</a>'
               '(&quot;Internal use&quot;)'));
     });
 
@@ -3831,7 +3831,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           createDog2.annotations[0],
           equals(
-              '@<a href="${HTMLBASE_PLACEHOLDER}ex/deprecated-constant.html">deprecated</a>'));
+              '@<a href="${htmlBasePlaceholder}ex/deprecated-constant.html">deprecated</a>'));
     });
   });
 
