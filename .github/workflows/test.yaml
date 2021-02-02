@@ -19,7 +19,8 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        sdk: [dev, stable]
+        # Add stable back in after 2.12 is published.
+        sdk: [dev]
         job: [main, flutter, sdk-analyzer, packages, sdk-docs]
         include:
           - os: macos-latest
