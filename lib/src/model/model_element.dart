@@ -336,7 +336,7 @@ abstract class ModelElement extends Canonicalization
       assert(e.enclosingElement.name != '');
       return ModelFunctionTypedef(e, library, packageGraph);
     }
-    if (e is FunctionTypeAliasElement) {
+    if (e is TypeAliasElement) {
       return Typedef(e, library, packageGraph);
     }
     if (e is ConstructorElement) {
@@ -1004,7 +1004,7 @@ abstract class ModelElement extends Canonicalization
         _modelType = ElementType.from(element.thisType, library, packageGraph);
       } else if (element is FunctionTypeAliasElement) {
         _modelType =
-            ElementType.from(element.function.type, library, packageGraph);
+            ElementType.from(element.aliasedType, library, packageGraph);
       } else if (element is FunctionTypedElement) {
         _modelType = ElementType.from(element.type, library, packageGraph);
       } else if (element is ParameterElement) {

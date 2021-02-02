@@ -40,3 +40,11 @@ dev_dependencies:
 
 executables:
   dartdoc: null
+
+dependency_overrides:
+  analyzer:
+    path: '/Users/jcollins/dart/sdk/sdk/pkg/analyzer'
+  _fe_analyzer_shared:
+    path: '/Users/jcollins/dart/sdk/sdk/pkg/_fe_analyzer_shared'
+  #meta:
+  #  path: '/Users/jcollins/dart/sdk/sdk/pkg/meta'

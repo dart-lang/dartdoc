@@ -10,7 +10,9 @@ import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/src/context/builder.dart';
+import 'package:analyzer/src/dart/analysis/session.dart';
 import 'package:analyzer/src/dart/sdk/sdk.dart';
+import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/generated/java_io.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source.dart';
@@ -155,7 +157,7 @@ class PubPackageBuilder implements PackageBuilder {
     var analysisContext = contextCollection.contextFor(config.inputDir);
     var session = analysisContext.currentSession;
     var sourceKind = await session.getSourceKind(filePath);
-
+    print('nonfunction_type_aliases for ${config.inputDir} : ${((session as AnalysisSessionImpl).getDriver().analysisOptions as AnalysisOptionsImpl).experimentStatus.nonfunction_type_aliases}');
     // Allow dart source files with inappropriate suffixes (#1897).  Those
     // do not show up as SourceKind.LIBRARY.
     if (sourceKind != SourceKind.PART) {

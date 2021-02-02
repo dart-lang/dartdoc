@@ -10,9 +10,12 @@ import 'package:dartdoc/src/render/typedef_renderer.dart';
 class Typedef extends ModelElement
     with TypeParameters, Categorization
     implements EnclosedElement {
-  Typedef(FunctionTypeAliasElement element, Library library,
+  Typedef(TypeAliasElement element, Library library,
       PackageGraph packageGraph)
       : super(element, library, packageGraph, null);
+
+  @override
+  TypeAliasElement get element => super.element;
 
   @override
   ModelElement get enclosingElement => library;
@@ -24,10 +27,7 @@ class Typedef extends ModelElement
   String get genericParameters => _renderer.renderGenericParameters(this);
 
   List<TypeParameterElement> get genericTypeParameters {
-    if (element is FunctionTypeAliasElement) {
-      return (element as FunctionTypeAliasElement).function.typeParameters;
-    }
-    return Iterable<TypeParameterElement>.empty();
+    return element.typeParameters;
   }
 
   @override
@@ -52,15 +52,10 @@ class Typedef extends ModelElement
   String get linkedReturnType => modelType.createLinkedReturnTypeName();
 
   @override
-  // TODO(jcollins-g): change to FunctionTypeElementType after analyzer 0.41
-  // ignore: unnecessary_overrides
-  ElementType get modelType => super.modelType;
-
-  FunctionTypeAliasElement get _typedef =>
-      (element as FunctionTypeAliasElement);
+  FunctionTypeElementType get modelType => super.modelType;
 
   @override
-  List<TypeParameter> get typeParameters => _typedef.typeParameters.map((f) {
+  List<TypeParameter> get typeParameters => element.typeParameters.map((f) {
         return ModelElement.from(f, library, packageGraph) as TypeParameter;
       }).toList();
 
