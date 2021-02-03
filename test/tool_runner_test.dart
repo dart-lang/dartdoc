@@ -16,7 +16,7 @@ import 'package:yaml/yaml.dart';
 final Directory _testPackageDir = Directory('testing/test_package');
 
 void main() {
-  var toolMap;
+  ToolConfiguration toolMap;
   Directory tempDir;
   File setupFile;
 

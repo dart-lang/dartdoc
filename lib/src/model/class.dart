@@ -412,7 +412,7 @@ class Class extends Container
       var cmap = inheritance.getInheritedConcreteMap2(element);
       var imap = inheritance.getInheritedMap2(element);
 
-      var inheritanceChainElements;
+      List<ClassElement> inheritanceChainElements;
 
       var combinedMap = <String, ExecutableElement>{};
       for (var nameObj in cmap.keys) {
@@ -595,11 +595,4 @@ class Class extends Container
 
   @override
   Iterable<Field> get constantFields => allFields.where((f) => f.isConst);
-
-  @override
-  bool operator ==(Object o) =>
-      o is Class &&
-      name == o.name &&
-      o.library.name == library.name &&
-      o.library.package.name == library.package.name;
 }

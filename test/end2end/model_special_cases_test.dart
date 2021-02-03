@@ -477,9 +477,9 @@ void main() {
     test('Verify Interceptor is hidden from inheritance in docs', () {
       var htmlLibrary =
           sdkAsPackageGraph.libraries.singleWhere((l) => l.name == 'dart:html');
-      var EventTarget =
+      var eventTarget =
           htmlLibrary.allClasses.singleWhere((c) => c.name == 'EventTarget');
-      var hashCode = EventTarget.publicInstanceFields
+      var hashCode = eventTarget.publicInstanceFields
           .singleWhere((f) => f.name == 'hashCode');
       var objectModelElement =
           sdkAsPackageGraph.specialClasses[SpecialClass.object];
@@ -490,10 +490,10 @@ void main() {
       // If EventTarget really does start implementing hashCode, this will
       // fail.
       expect(hashCode.href,
-          equals('${HTMLBASE_PLACEHOLDER}dart-core/Object/hashCode.html'));
+          equals('${htmlBasePlaceholder}dart-core/Object/hashCode.html'));
       expect(hashCode.canonicalEnclosingContainer, equals(objectModelElement));
       expect(
-          EventTarget.publicSuperChainReversed
+          eventTarget.publicSuperChainReversed
               .any((et) => et.name == 'Interceptor'),
           isFalse);
     });
