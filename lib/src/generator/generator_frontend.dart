@@ -329,5 +329,5 @@ abstract class GeneratorBackend {
       FileWriter writer, PackageGraph graph, Library library, Typedef typedef);
 
   /// Emit files not specific to a Dart language element.
-  void generateAdditionalFiles(FileWriter writer, PackageGraph graph);
+  Future<void> generateAdditionalFiles(FileWriter writer, PackageGraph graph);
 }

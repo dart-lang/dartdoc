@@ -77,7 +77,7 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
       TemplateData data) {
     var content = template.renderString(data);
     if (!options.useBaseHref) {
-      content = content.replaceAll(HTMLBASE_PLACEHOLDER, data.htmlBase);
+      content = content.replaceAll(htmlBasePlaceholder, data.htmlBase);
     }
     writer.write(filename, content,
         element: data.self is Warnable ? data.self : null);
@@ -89,7 +89,7 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
     var json = generator_util.generateCategoryJson(
         categories, options.prettyIndexJson);
     if (!options.useBaseHref) {
-      json = json.replaceAll(HTMLBASE_PLACEHOLDER, '');
+      json = json.replaceAll(htmlBasePlaceholder, '');
     }
     writer.write(_pathContext.join('categories.json'), '${json}\n');
   }
@@ -99,7 +99,7 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
     var json = generator_util.generateSearchIndexJson(
         indexedElements, options.prettyIndexJson);
     if (!options.useBaseHref) {
-      json = json.replaceAll(HTMLBASE_PLACEHOLDER, '');
+      json = json.replaceAll(htmlBasePlaceholder, '');
     }
     writer.write(_pathContext.join('index.json'), '${json}\n');
   }
@@ -228,5 +228,6 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
   }
 
   @override
-  void generateAdditionalFiles(FileWriter writer, PackageGraph graph) {}
+  Future<void> generateAdditionalFiles(
+      FileWriter writer, PackageGraph graph) async {}
 }
