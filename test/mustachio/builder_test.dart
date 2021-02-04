@@ -79,7 +79,10 @@ abstract class FooBase2<T> {
 abstract class FooBase<T extends Baz> extends FooBase2<T> {
   Bar get bar;
 }
-abstract class Foo extends FooBase {
+mixin Mix<E> on FooBase<Baz> {
+  String get field => 'Mix.field';
+}
+abstract class Foo extends FooBase with Mix<int> {
   String s1 = "s1";
   bool b1 = false;
   List<int> l1 = [1, 2, 3];
@@ -122,6 +125,11 @@ class Baz {}
       expect(renderersLibrary.getType('_Renderer_FooBase'), isNotNull);
     });
 
+    test('for a class which is mixed into a rendered class', () {
+      expect(renderersLibrary.getTopLevelFunction('_render_Mix'), isNotNull);
+      expect(renderersLibrary.getType('_Renderer_Mix'), isNotNull);
+    });
+
     test('for a type found in a getter', () {
       expect(renderersLibrary.getTopLevelFunction('_render_Bar'), isNotNull);
       expect(renderersLibrary.getType('_Renderer_Bar'), isNotNull);
@@ -142,6 +150,11 @@ class Baz {}
     test('with a property map which references the superclass', () {
       expect(generatedContent,
           contains('..._Renderer_FooBase.propertyMap<Baz, CT_>(),'));
+    });
+
+    test('with a property map which references a mixed in class', () {
+      expect(generatedContent,
+          contains('..._Renderer_Mix.propertyMap<int, CT_>(),'));
     });
 
     test('with a property map with a bool property', () {

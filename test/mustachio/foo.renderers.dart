@@ -5,10 +5,11 @@
 
 // ignore_for_file: camel_case_types, unnecessary_cast, unused_element, unused_import, non_constant_identifier_names
 import 'package:analyzer/file_system/file_system.dart';
-import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/dartdoc.dart';
+import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/src/mustachio/renderer_base.dart';
 import 'package:dartdoc/src/mustachio/parser.dart';
+import 'package:dartdoc/src/warnings.dart';
 import 'foo.dart';
 
 String _simpleResolveErrorMessage(List<String> key, String type) =>
