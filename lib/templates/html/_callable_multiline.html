@@ -7,5 +7,11 @@
   </ol>
 </div>
 {{/hasAnnotations}}
+{{#canHaveParameters}}
+
 <span class="returntype">{{{ linkedReturnType }}}</span>
 {{>name_summary}}{{{genericParameters}}}(<wbr>{{#hasParameters}}{{{linkedParamsLines}}}{{/hasParameters}})
+{{/canHaveParameters}}
+{{^canHaveParameters}}
+{{>name_summary}}{{{genericParameters}}} = <span class="returntype"> {{{linkedReturnType}}}</span>
+{{/canHaveParameters}}

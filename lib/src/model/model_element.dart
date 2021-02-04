@@ -9,6 +9,7 @@ import 'dart:collection' show UnmodifiableListView;
 import 'dart:convert';
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/type.dart' show FunctionType;
 import 'package:analyzer/source/line_info.dart';
 import 'package:analyzer/src/dart/element/element.dart';
 import 'package:analyzer/src/dart/element/member.dart'
@@ -337,6 +338,9 @@ abstract class ModelElement extends Canonicalization
       return ModelFunctionTypedef(e, library, packageGraph);
     }
     if (e is TypeAliasElement) {
+      if (e.aliasedType is FunctionType) {
+        return FunctionTypedef(e, library, packageGraph);
+      }
       return Typedef(e, library, packageGraph);
     }
     if (e is ConstructorElement) {
@@ -1002,7 +1006,7 @@ abstract class ModelElement extends Canonicalization
         }
       } else if (element is ClassElement) {
         _modelType = ElementType.from(element.thisType, library, packageGraph);
-      } else if (element is FunctionTypeAliasElement) {
+      } else if (element is TypeAliasElement) {
         _modelType =
             ElementType.from(element.aliasedType, library, packageGraph);
       } else if (element is FunctionTypedElement) {
