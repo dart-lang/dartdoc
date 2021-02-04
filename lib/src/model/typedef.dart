@@ -4,7 +4,6 @@
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
-import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/typedef_renderer.dart';
 
@@ -75,6 +74,9 @@ class FunctionTypedef extends Typedef {
     if (aliasedTypeElement is FunctionTypedElement) {
       return aliasedTypeElement.typeParameters;
     }
-    return aliasedType.typeFormals;
+    if (aliasedType.typeFormals.isNotEmpty == true) {
+      return aliasedType.typeFormals;
+    }
+    return super.genericTypeParameters;
   }
 }

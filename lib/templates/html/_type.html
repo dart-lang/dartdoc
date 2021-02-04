@@ -1,0 +1,11 @@
+<dt id="{{htmlId}}" class="{{ #isInherited }} inherited{{ /isInherited}}">
+  <span class="name{{#isDeprecated}} deprecated{{/isDeprecated}}">{{{linkedName}}}</span>{{{linkedGenericParameters}}}
+    = 
+    <span class="returntype parameter">{{{ linkedReturnType }}}</span>
+  </span>
+  {{>categorization}}
+</dt>
+<dd{{ #isInherited }} class="inherited"{{ /isInherited}}>
+  {{{ oneLineDoc }}} {{{ extendedDocLink }}}
+  {{>features}}
+</dd>

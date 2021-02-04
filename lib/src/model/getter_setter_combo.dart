@@ -193,7 +193,7 @@ mixin GetterSetterCombo on ModelElement {
   }
 
   @override
-  bool get canHaveParameters => hasSetter;
+  bool get isCallable => hasSetter;
 
   @override
   List<Parameter> get parameters => setter.parameters;

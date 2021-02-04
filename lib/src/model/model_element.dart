@@ -338,6 +338,9 @@ abstract class ModelElement extends Canonicalization
       return ModelFunctionTypedef(e, library, packageGraph);
     }
     if (e is TypeAliasElement) {
+      if (e.name == 'T5') {
+        print('hello');
+      }
       if (e.aliasedType is FunctionType) {
         return FunctionTypedef(e, library, packageGraph);
       }
@@ -550,8 +553,7 @@ abstract class ModelElement extends Canonicalization
     return allFeatures.join(', ');
   }
 
-  bool get canHaveParameters =>
-      element is ExecutableElement ||
+  bool get isCallable =>
       element is FunctionTypedElement ||
       element is FunctionTypeAliasElement;
 
@@ -1058,7 +1060,7 @@ abstract class ModelElement extends Canonicalization
           (this as GetterSetterCombo).setter != null) {
         newParameters.addAll((this as GetterSetterCombo).setter.parameters);
       } else {
-        if (canHaveParameters) newParameters.addAll(parameters);
+        if (isCallable) newParameters.addAll(parameters);
       }
       while (newParameters.isNotEmpty) {
         recursedParameters.addAll(newParameters);
@@ -1078,7 +1080,7 @@ abstract class ModelElement extends Canonicalization
   path.Context get pathContext => packageGraph.resourceProvider.pathContext;
 
   List<Parameter> get parameters {
-    if (!canHaveParameters) {
+    if (!isCallable) {
       throw StateError('$element cannot have parameters');
     }
 

@@ -1,6 +1,5 @@
-<dt id="{{htmlId}}" class="{{#canHaveParameters}}callable{{/canHaveParameters}}{{ #isInherited }} inherited{{ /isInherited}}">
-  <span class="name{{#isDeprecated}} deprecated{{/isDeprecated}}">{{{linkedName}}}</span>{{{linkedGenericParameters}}}{{#canHaveParameters}}<span class="signature">(<wbr>{{{ linkedParamsNoMetadata }}}){{/canHaveParameters}}
-    {{^canHaveParameters}} = {{/canHaveParameters}}
+<dt id="{{htmlId}}" class="callable{{ #isInherited }} inherited{{ /isInherited}}">
+  <span class="name{{#isDeprecated}} deprecated{{/isDeprecated}}">{{{linkedName}}}</span>{{{linkedGenericParameters}}}<span class="signature">(<wbr>{{{ linkedParamsNoMetadata }}})
     <span class="returntype parameter">&#8594; {{{ linkedReturnType }}}</span>
   </span>
   {{>categorization}}

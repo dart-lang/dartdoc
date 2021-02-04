@@ -41,6 +41,10 @@ const _partials_html = <String>[
   'source_code',
   'source_link',
   'sidebar_for_library',
+  'type',
+  'type_multiline',
+  'typedef',
+  'typedef_multiline',
   'accessor_getter',
   'accessor_setter',
 ];

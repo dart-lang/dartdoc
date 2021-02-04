@@ -2562,7 +2562,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('can have params', () {
-      expect(isGreaterThan.canHaveParameters, isTrue);
+      expect(isGreaterThan.isCallable, isTrue);
     });
 
     test('has parameters', () {
