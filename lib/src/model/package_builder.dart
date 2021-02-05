@@ -157,7 +157,7 @@ class PubPackageBuilder implements PackageBuilder {
     var analysisContext = contextCollection.contextFor(config.inputDir);
     var session = analysisContext.currentSession;
     var sourceKind = await session.getSourceKind(filePath);
-    print('nonfunction_type_aliases for ${config.inputDir} : ${((session as AnalysisSessionImpl).getDriver().analysisOptions as AnalysisOptionsImpl).experimentStatus.nonfunction_type_aliases}');
+   
     // Allow dart source files with inappropriate suffixes (#1897).  Those
     // do not show up as SourceKind.LIBRARY.
     if (sourceKind != SourceKind.PART) {

@@ -99,8 +99,7 @@ void main() {
       });
 
       test('basic non-function typedefs work', () {
-        throw Exception();
-        expect(T0.linkedReturnType, equals('something'));
+        expect(T0.linkedReturnType, equals('dynamic'));
       });
 
     }, skip: (!_generalizedTypedefsAllowed.allows(_platformVersion)));
