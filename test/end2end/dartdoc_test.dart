@@ -297,7 +297,7 @@ void main() {
       expect(p.defaultPackage.name, 'sky_engine');
       // ignore: deprecated_member_use_from_same_package
       expect(p.defaultPackage.hasDocumentationFile, isFalse);
-      expect(p.defaultPackage.documentationFile, isNotNull);
+      expect(p.defaultPackage.documentationFile, isNull);
       expect(p.libraries, hasLength(3));
       expect(p.libraries.map((lib) => lib.name).contains('dart:core'), isTrue);
       expect(p.libraries.map((lib) => lib.name).contains('dart:async'), isTrue);
