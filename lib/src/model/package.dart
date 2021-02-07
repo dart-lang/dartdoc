@@ -367,7 +367,7 @@ class Package extends LibraryContainer
           return -1;
         }
 
-        final bIndex = indexed[b.name] ?? 1;
+        final bIndex = indexed[b.name];
         if (bIndex == null) {
           return 1;
         }
