@@ -465,7 +465,7 @@ int x;
         // ignore: deprecated_member_use_from_same_package
         expect(packageGraph.defaultPackage.hasDocumentationFile, isFalse);
         expect(packageGraph.defaultPackage.documentationFile, isNull);
-        expect(packageGraph.defaultPackage.documentation, isEmpty);
+        expect(packageGraph.defaultPackage.documentation, isNull);
       });
 
       test('package with no homepage in the pubspec has no homepage', () async {
