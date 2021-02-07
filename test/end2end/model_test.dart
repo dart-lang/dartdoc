@@ -2903,6 +2903,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('has valid documentation', () {
       expect(mFromApple.hasDocumentation, isTrue);
+      expect(mFromApple.documentation, isNotNull);
       expect(mFromApple.documentation, 'The read-write field `m`.');
     });
 

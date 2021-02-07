@@ -120,27 +120,33 @@ class Package extends LibraryContainer
 
   @override
   String get documentation {
-    return hasDocumentationFile
+    final docFile = documentationFile;
+    return docFile != null
         ? packageGraph.resourceProvider
-            .readAsMalformedAllowedStringSync(documentationFile)
+            .readAsMalformedAllowedStringSync(docFile)
         : null;
   }
 
   @override
-  bool get hasDocumentation =>
-      documentationFile != null &&
-      packageGraph.resourceProvider
-          .readAsMalformedAllowedStringSync(documentationFile)
-          .isNotEmpty;
+  bool get hasDocumentation {
+    final docFile = documentationFile;
+    return docFile != null &&
+        packageGraph.resourceProvider
+            .readAsMalformedAllowedStringSync(docFile)
+            .isNotEmpty;
+  }
 
   @override
   bool get hasExtendedDocumentation => documentation.isNotEmpty;
 
   // TODO: Clients should use [documentationFile] so they can act differently on
   // plain text or markdown.
+  @Deprecated(
+      'Instead use [documentationFile] which will be `null` if this package does not have one.')
   bool get hasDocumentationFile => documentationFile != null;
 
-  File get documentationFile => packageMeta.getReadmeContents();
+  /// The package's documentation file if present, otherwise `null`.
+  File /*?*/ get documentationFile => packageMeta.getReadmeContents();
 
   @override
   String get oneLineDoc => '';

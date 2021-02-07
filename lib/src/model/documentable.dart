@@ -11,10 +11,12 @@ import 'model.dart';
 /// Bridges the gap between model elements and packages,
 /// both of which have documentation.
 abstract class Documentable extends Nameable {
-  String get documentation;
+  String /*?*/ get documentation;
 
   String get documentationAsHtml;
 
+  @Deprecated(
+      'Instead use [documentation], which will be `null` if it is not present.')
   bool get hasDocumentation;
 
   bool get hasExtendedDocumentation;
