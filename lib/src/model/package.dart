@@ -345,12 +345,34 @@ class Package extends LibraryContainer
       categories.where((c) => c.isDocumented);
 
   Iterable<Category> get documentedCategoriesSorted {
+    final categoryOrder = config.categoryOrder;
+
     // Category display order is configurable; leave the category order
     // as defined if the order is specified.
-    if (config.categoryOrder.isEmpty) {
-      return documentedCategories;
+    if (categoryOrder.isEmpty) {
+      return documentedCategories.toList(growable: false)..sort(byName);
     }
-    return documentedCategories.toList()..sort(byName);
+
+    final indexed = <String, int>{};
+
+    for (var i = 0; i < categoryOrder.length; i++) {
+      indexed[categoryOrder[i]] = i;
+    }
+
+    return documentedCategories.toList(growable: false)
+      ..sort((a, b) {
+        final aIndex = indexed[a.name];
+        if (aIndex == null) {
+          return -1;
+        }
+
+        final bIndex = indexed[b.name] ?? 1;
+        if (bIndex == null) {
+          return 1;
+        }
+
+        return aIndex.compareTo(bIndex);
+      });
   }
 
   bool get hasDocumentedCategories => documentedCategories.isNotEmpty;
