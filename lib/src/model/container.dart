@@ -29,7 +29,7 @@ import 'package:meta/meta.dart';
 /// **all** : Referring to all children.
 abstract class Container extends ModelElement with TypeParameters {
   Container(Element element, Library library, PackageGraph packageGraph)
-      : super(element, library, packageGraph, null);
+      : super(element, library, packageGraph);
 
   /// Is this a class (but not an enum)?
   bool get isClass =>

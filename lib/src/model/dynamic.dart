@@ -7,7 +7,7 @@ import 'package:dartdoc/src/model/model.dart';
 
 class Dynamic extends ModelElement {
   Dynamic(Element element, PackageGraph packageGraph)
-      : super(element, null, packageGraph, null);
+      : super(element, null, packageGraph);
 
   /// [dynamic] is not a real object, and so we can't document it, so there
   /// can be nothing canonical for it.
