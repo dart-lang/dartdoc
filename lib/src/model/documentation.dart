@@ -61,10 +61,10 @@ class Documentation {
 
   /// Returns a tuple of List<md.Node> and hasExtendedDocs
   Tuple2<List<md.Node>, bool> _parseDocumentation(bool processFullDocs) {
-    if (!_element.hasDocumentation) {
+    final text = _element.documentation;
+    if (text == null || text.isEmpty) {
       return Tuple2([], false);
     }
-    var text = _element.documentation;
     showWarningsForGenericsOutsideSquareBracketsBlocks(text, _element);
     var document =
         MarkdownDocument.withElementLinkResolver(_element, commentRefs);
