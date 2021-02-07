@@ -346,11 +346,12 @@ class Package extends LibraryContainer
 
   Iterable<Category> get documentedCategoriesSorted {
     final categoryOrder = config.categoryOrder;
+    final categories = documentedCategories.toList(growable: false);
 
     // Category display order is configurable; leave the category order
     // as defined if the order is specified.
     if (categoryOrder.isEmpty) {
-      return documentedCategories.toList(growable: false)..sort(byName);
+      return categories..sort(byName);
     }
 
     final indexed = <String, int>{};
@@ -359,7 +360,7 @@ class Package extends LibraryContainer
       indexed[categoryOrder[i]] = i;
     }
 
-    return documentedCategories.toList(growable: false)
+    return categories
       ..sort((a, b) {
         final aIndex = indexed[a.name];
         if (aIndex == null) {
