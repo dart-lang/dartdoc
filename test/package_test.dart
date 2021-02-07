@@ -146,7 +146,9 @@ int x;
         writeToJoinedPath(['README.md'], 'Readme text.');
         var packageGraph = await utils.bootBasicPackage(
             projectPath, packageMetaProvider, packageConfigProvider);
+        // ignore: deprecated_member_use_from_same_package
         expect(packageGraph.defaultPackage.hasDocumentationFile, true);
+        expect(packageGraph.defaultPackage.documentationFile, isNotNull);
         expect(packageGraph.defaultPackage.hasDocumentation, true);
       });
 
@@ -154,7 +156,9 @@ int x;
         writeToJoinedPath(['README'], 'Readme text.');
         var packageGraph = await utils.bootBasicPackage(
             projectPath, packageMetaProvider, packageConfigProvider);
+        // ignore: deprecated_member_use_from_same_package
         expect(packageGraph.defaultPackage.hasDocumentationFile, true);
+        expect(packageGraph.defaultPackage.documentationFile, isNotNull);
         expect(packageGraph.defaultPackage.hasDocumentation, true);
       });
 
@@ -458,9 +462,10 @@ int x;
             projectPath, packageMetaProvider, packageConfigProvider);
 
         expect(packageGraph.defaultPackage.hasDocumentation, isFalse);
+        // ignore: deprecated_member_use_from_same_package
         expect(packageGraph.defaultPackage.hasDocumentationFile, isFalse);
         expect(packageGraph.defaultPackage.documentationFile, isNull);
-        expect(packageGraph.defaultPackage.documentation, isNull);
+        expect(packageGraph.defaultPackage.documentation, isEmpty);
       });
 
       test('package with no homepage in the pubspec has no homepage', () async {
