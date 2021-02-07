@@ -53,10 +53,10 @@ class DocumentationRendererHtml extends DocumentationRenderer {
 }
 
 class DocumentationRenderResult {
-  static const empty = DocumentationRenderResult();
+  static const empty = DocumentationRenderResult(asHtml: '', asOneLiner: '');
 
   final String /*?*/ asHtml;
-  final String /*?*/ asOneLiner;
+  final String asOneLiner;
 
-  const DocumentationRenderResult({this.asHtml, this.asOneLiner});
+  const DocumentationRenderResult({this.asHtml, this.asOneLiner = ''});
 }
