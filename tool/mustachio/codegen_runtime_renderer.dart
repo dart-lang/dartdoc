@@ -93,11 +93,6 @@ import 'package:dartdoc/src/mustachio/renderer_base.dart';
 import 'package:dartdoc/src/mustachio/parser.dart';
 import 'package:dartdoc/src/warnings.dart';
 import '${p.basename(_sourceUri.path)}';
-
-String _simpleResolveErrorMessage(List<String> key, String type) =>
-    'Failed to resolve \$key property chain on \$type using a simple renderer; '
-    'expose the properties of \$type by adding it to the @Renderer '
-    "annotation's 'visibleTypes' list";
 ''');
 
     specs.forEach(_addTypesForRendererSpec);
@@ -390,26 +385,20 @@ renderVariable:
     ($_contextTypeVariable c, Property<$_contextTypeVariable> self, List<String> remainingNames) {
   if (remainingNames.isEmpty) return self.getValue(c).toString();
   var name = remainingNames.first;
-  if ($rendererClassName.propertyMap().containsKey(name)) {
-    var nextProperty = $rendererClassName.propertyMap()[name];
-    return nextProperty.renderVariable(
-        self.getValue(c), nextProperty, [...remainingNames.skip(1)]);
-  } else {
-    throw PartialMustachioResolutionError(name, $_contextTypeVariable);
-  }
+  var nextProperty = $rendererClassName.propertyMap().getValue(name);
+  return nextProperty.renderVariable(
+      self.getValue(c), nextProperty, [...remainingNames.skip(1)]);
 },
 ''');
     } else {
+      // [getterType] does not have a full renderer, so we just render a simple
+      // variable, with no opportunity to access fields on [getterType].
+      var getterTypeString =
+          getterType.getDisplayString(withNullability: false);
       _buffer.writeln('''
 renderVariable:
-    ($_contextTypeVariable c, Property<$_contextTypeVariable> self, List<String> remainingNames) {
-  if (remainingNames.isEmpty) {
-    return self.getValue(c).toString();
-  } else {
-    throw MustachioResolutionError(
-      _simpleResolveErrorMessage(remainingNames, '$getterType'));
-  }
-},
+    ($_contextTypeVariable c, Property<CT_> self, List<String> remainingNames) =>
+        self.renderSimpleVariable(c, remainingNames, '$getterTypeString'),
 ''');
     }
 

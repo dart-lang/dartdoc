@@ -12,11 +12,6 @@ import 'package:dartdoc/src/mustachio/parser.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'templates.dart';
 
-String _simpleResolveErrorMessage(List<String> key, String type) =>
-    'Failed to resolve $key property chain on $type using a simple renderer; '
-    'expose the properties of $type by adding it to the @Renderer '
-    "annotation's 'visibleTypes' list";
-
 String renderIndex(PackageTemplateData context, Template template) {
   return _render_PackageTemplateData(context, template.ast, template);
 }
@@ -36,27 +31,15 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
         'hasHomepage': Property(
           getValue: (CT_ c) => c.hasHomepage,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'bool*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'bool'),
           getBool: (CT_ c) => c.hasHomepage == true,
         ),
         'homepage': Property(
           getValue: (CT_ c) => c.homepage,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'String*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'String'),
           isNullValue: (CT_ c) => c.homepage == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.homepage, ast, r.template, parent: r);
@@ -65,14 +48,8 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
         'htmlBase': Property(
           getValue: (CT_ c) => c.htmlBase,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'String*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'String'),
           isNullValue: (CT_ c) => c.htmlBase == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.htmlBase, ast, r.template, parent: r);
@@ -81,27 +58,15 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
         'includeVersion': Property(
           getValue: (CT_ c) => c.includeVersion,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'bool*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'bool'),
           getBool: (CT_ c) => c.includeVersion == true,
         ),
         'layoutTitle': Property(
           getValue: (CT_ c) => c.layoutTitle,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'String*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'String'),
           isNullValue: (CT_ c) => c.layoutTitle == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.layoutTitle, ast, r.template, parent: r);
@@ -110,14 +75,8 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
         'metaDescription': Property(
           getValue: (CT_ c) => c.metaDescription,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'String*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'String'),
           isNullValue: (CT_ c) => c.metaDescription == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.metaDescription, ast, r.template, parent: r);
@@ -126,14 +85,9 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
         'navLinks': Property(
           getValue: (CT_ c) => c.navLinks,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(_simpleResolveErrorMessage(
-                  remainingNames, 'List<Documentable*>*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(
+                      c, remainingNames, 'List<Documentable>'),
           isEmptyIterable: (CT_ c) => c.navLinks?.isEmpty ?? true,
           renderIterable:
               (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
@@ -150,13 +104,9 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
               (CT_ c, Property<CT_> self, List<String> remainingNames) {
             if (remainingNames.isEmpty) return self.getValue(c).toString();
             var name = remainingNames.first;
-            if (_Renderer_Package.propertyMap().containsKey(name)) {
-              var nextProperty = _Renderer_Package.propertyMap()[name];
-              return nextProperty.renderVariable(
-                  self.getValue(c), nextProperty, [...remainingNames.skip(1)]);
-            } else {
-              throw PartialMustachioResolutionError(name, CT_);
-            }
+            var nextProperty = _Renderer_Package.propertyMap().getValue(name);
+            return nextProperty.renderVariable(
+                self.getValue(c), nextProperty, [...remainingNames.skip(1)]);
           },
           isNullValue: (CT_ c) => c.package == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
@@ -169,13 +119,9 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
               (CT_ c, Property<CT_> self, List<String> remainingNames) {
             if (remainingNames.isEmpty) return self.getValue(c).toString();
             var name = remainingNames.first;
-            if (_Renderer_Package.propertyMap().containsKey(name)) {
-              var nextProperty = _Renderer_Package.propertyMap()[name];
-              return nextProperty.renderVariable(
-                  self.getValue(c), nextProperty, [...remainingNames.skip(1)]);
-            } else {
-              throw PartialMustachioResolutionError(name, CT_);
-            }
+            var nextProperty = _Renderer_Package.propertyMap().getValue(name);
+            return nextProperty.renderVariable(
+                self.getValue(c), nextProperty, [...remainingNames.skip(1)]);
           },
           isNullValue: (CT_ c) => c.self == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
@@ -185,14 +131,8 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
         'title': Property(
           getValue: (CT_ c) => c.title,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'String*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'String'),
           isNullValue: (CT_ c) => c.title == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.title, ast, r.template, parent: r);
@@ -228,14 +168,8 @@ class _Renderer_Package extends RendererBase<Package> {
         'allLibraries': Property(
           getValue: (CT_ c) => c.allLibraries,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'Set<Library*>*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'Set<Library>'),
           isEmptyIterable: (CT_ c) => c.allLibraries?.isEmpty ?? true,
           renderIterable:
               (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
@@ -249,14 +183,8 @@ class _Renderer_Package extends RendererBase<Package> {
         'baseHref': Property(
           getValue: (CT_ c) => c.baseHref,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'String*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'String'),
           isNullValue: (CT_ c) => c.baseHref == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.baseHref, ast, r.template, parent: r);
@@ -265,14 +193,8 @@ class _Renderer_Package extends RendererBase<Package> {
         'canonicalLibrary': Property(
           getValue: (CT_ c) => c.canonicalLibrary,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'Library*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'Library'),
           isNullValue: (CT_ c) => c.canonicalLibrary == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.canonicalLibrary, ast, r.template, parent: r);
@@ -280,15 +202,9 @@ class _Renderer_Package extends RendererBase<Package> {
         ),
         'categories': Property(
           getValue: (CT_ c) => c.categories,
-          renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(_simpleResolveErrorMessage(
-                  remainingNames, 'List<Category*>*'));
-            }
-          },
+          renderVariable: (CT_ c, Property<CT_> self,
+                  List<String> remainingNames) =>
+              self.renderSimpleVariable(c, remainingNames, 'List<Category>'),
           isEmptyIterable: (CT_ c) => c.categories?.isEmpty ?? true,
           renderIterable:
               (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
@@ -302,14 +218,9 @@ class _Renderer_Package extends RendererBase<Package> {
         'categoriesWithPublicLibraries': Property(
           getValue: (CT_ c) => c.categoriesWithPublicLibraries,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(_simpleResolveErrorMessage(
-                  remainingNames, 'Iterable<LibraryContainer*>*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(
+                      c, remainingNames, 'Iterable<LibraryContainer>'),
           isEmptyIterable: (CT_ c) =>
               c.categoriesWithPublicLibraries?.isEmpty ?? true,
           renderIterable:
@@ -325,14 +236,9 @@ class _Renderer_Package extends RendererBase<Package> {
         'config': Property(
           getValue: (CT_ c) => c.config,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(_simpleResolveErrorMessage(
-                  remainingNames, 'DartdocOptionContext*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(
+                      c, remainingNames, 'DartdocOptionContext'),
           isNullValue: (CT_ c) => c.config == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.config, ast, r.template, parent: r);
@@ -341,14 +247,8 @@ class _Renderer_Package extends RendererBase<Package> {
         'containerOrder': Property(
           getValue: (CT_ c) => c.containerOrder,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'List<String*>*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'List<String>'),
           isEmptyIterable: (CT_ c) => c.containerOrder?.isEmpty ?? true,
           renderIterable:
               (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
@@ -365,13 +265,10 @@ class _Renderer_Package extends RendererBase<Package> {
               (CT_ c, Property<CT_> self, List<String> remainingNames) {
             if (remainingNames.isEmpty) return self.getValue(c).toString();
             var name = remainingNames.first;
-            if (_Renderer_LibraryContainer.propertyMap().containsKey(name)) {
-              var nextProperty = _Renderer_LibraryContainer.propertyMap()[name];
-              return nextProperty.renderVariable(
-                  self.getValue(c), nextProperty, [...remainingNames.skip(1)]);
-            } else {
-              throw PartialMustachioResolutionError(name, CT_);
-            }
+            var nextProperty =
+                _Renderer_LibraryContainer.propertyMap().getValue(name);
+            return nextProperty.renderVariable(
+                self.getValue(c), nextProperty, [...remainingNames.skip(1)]);
           },
           isNullValue: (CT_ c) => c.defaultCategory == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
@@ -382,14 +279,8 @@ class _Renderer_Package extends RendererBase<Package> {
         'documentation': Property(
           getValue: (CT_ c) => c.documentation,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'String*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'String'),
           isNullValue: (CT_ c) => c.documentation == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.documentation, ast, r.template, parent: r);
@@ -398,14 +289,8 @@ class _Renderer_Package extends RendererBase<Package> {
         'documentationAsHtml': Property(
           getValue: (CT_ c) => c.documentationAsHtml,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'String*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'String'),
           isNullValue: (CT_ c) => c.documentationAsHtml == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.documentationAsHtml, ast, r.template,
@@ -415,14 +300,8 @@ class _Renderer_Package extends RendererBase<Package> {
         'documentationFile': Property(
           getValue: (CT_ c) => c.documentationFile,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'File*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'File'),
           isNullValue: (CT_ c) => c.documentationFile == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.documentationFile, ast, r.template,
@@ -431,15 +310,9 @@ class _Renderer_Package extends RendererBase<Package> {
         ),
         'documentationFrom': Property(
           getValue: (CT_ c) => c.documentationFrom,
-          renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(_simpleResolveErrorMessage(
-                  remainingNames, 'List<Locatable*>*'));
-            }
-          },
+          renderVariable: (CT_ c, Property<CT_> self,
+                  List<String> remainingNames) =>
+              self.renderSimpleVariable(c, remainingNames, 'List<Locatable>'),
           isEmptyIterable: (CT_ c) => c.documentationFrom?.isEmpty ?? true,
           renderIterable:
               (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
@@ -453,14 +326,9 @@ class _Renderer_Package extends RendererBase<Package> {
         'documentedCategories': Property(
           getValue: (CT_ c) => c.documentedCategories,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(_simpleResolveErrorMessage(
-                  remainingNames, 'Iterable<Category*>*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(
+                      c, remainingNames, 'Iterable<Category>'),
           isEmptyIterable: (CT_ c) => c.documentedCategories?.isEmpty ?? true,
           renderIterable:
               (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
@@ -474,14 +342,9 @@ class _Renderer_Package extends RendererBase<Package> {
         'documentedCategoriesSorted': Property(
           getValue: (CT_ c) => c.documentedCategoriesSorted,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(_simpleResolveErrorMessage(
-                  remainingNames, 'Iterable<Category*>*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(
+                      c, remainingNames, 'Iterable<Category>'),
           isEmptyIterable: (CT_ c) =>
               c.documentedCategoriesSorted?.isEmpty ?? true,
           renderIterable:
@@ -495,15 +358,9 @@ class _Renderer_Package extends RendererBase<Package> {
         ),
         'documentedWhere': Property(
           getValue: (CT_ c) => c.documentedWhere,
-          renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(_simpleResolveErrorMessage(
-                  remainingNames, 'DocumentLocation*'));
-            }
-          },
+          renderVariable: (CT_ c, Property<CT_> self,
+                  List<String> remainingNames) =>
+              self.renderSimpleVariable(c, remainingNames, 'DocumentLocation'),
           isNullValue: (CT_ c) => c.documentedWhere == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.documentedWhere, ast, r.template, parent: r);
@@ -512,14 +369,8 @@ class _Renderer_Package extends RendererBase<Package> {
         'element': Property(
           getValue: (CT_ c) => c.element,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'Element*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'Element'),
           isNullValue: (CT_ c) => c.element == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.element, ast, r.template, parent: r);
@@ -531,13 +382,9 @@ class _Renderer_Package extends RendererBase<Package> {
               (CT_ c, Property<CT_> self, List<String> remainingNames) {
             if (remainingNames.isEmpty) return self.getValue(c).toString();
             var name = remainingNames.first;
-            if (_Renderer_Warnable.propertyMap().containsKey(name)) {
-              var nextProperty = _Renderer_Warnable.propertyMap()[name];
-              return nextProperty.renderVariable(
-                  self.getValue(c), nextProperty, [...remainingNames.skip(1)]);
-            } else {
-              throw PartialMustachioResolutionError(name, CT_);
-            }
+            var nextProperty = _Renderer_Warnable.propertyMap().getValue(name);
+            return nextProperty.renderVariable(
+                self.getValue(c), nextProperty, [...remainingNames.skip(1)]);
           },
           isNullValue: (CT_ c) => c.enclosingElement == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
@@ -548,14 +395,8 @@ class _Renderer_Package extends RendererBase<Package> {
         'enclosingName': Property(
           getValue: (CT_ c) => c.enclosingName,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'String*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'String'),
           isNullValue: (CT_ c) => c.enclosingName == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.enclosingName, ast, r.template, parent: r);
@@ -564,14 +405,8 @@ class _Renderer_Package extends RendererBase<Package> {
         'filePath': Property(
           getValue: (CT_ c) => c.filePath,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'String*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'String'),
           isNullValue: (CT_ c) => c.filePath == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.filePath, ast, r.template, parent: r);
@@ -580,14 +415,8 @@ class _Renderer_Package extends RendererBase<Package> {
         'fileType': Property(
           getValue: (CT_ c) => c.fileType,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'String*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'String'),
           isNullValue: (CT_ c) => c.fileType == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.fileType, ast, r.template, parent: r);
@@ -596,14 +425,8 @@ class _Renderer_Package extends RendererBase<Package> {
         'fullyQualifiedName': Property(
           getValue: (CT_ c) => c.fullyQualifiedName,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'String*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'String'),
           isNullValue: (CT_ c) => c.fullyQualifiedName == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.fullyQualifiedName, ast, r.template,
@@ -613,92 +436,50 @@ class _Renderer_Package extends RendererBase<Package> {
         'hasCategories': Property(
           getValue: (CT_ c) => c.hasCategories,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'bool*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'bool'),
           getBool: (CT_ c) => c.hasCategories == true,
         ),
         'hasDocumentation': Property(
           getValue: (CT_ c) => c.hasDocumentation,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'bool*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'bool'),
           getBool: (CT_ c) => c.hasDocumentation == true,
         ),
         'hasDocumentationFile': Property(
           getValue: (CT_ c) => c.hasDocumentationFile,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'bool*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'bool'),
           getBool: (CT_ c) => c.hasDocumentationFile == true,
         ),
         'hasDocumentedCategories': Property(
           getValue: (CT_ c) => c.hasDocumentedCategories,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'bool*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'bool'),
           getBool: (CT_ c) => c.hasDocumentedCategories == true,
         ),
         'hasExtendedDocumentation': Property(
           getValue: (CT_ c) => c.hasExtendedDocumentation,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'bool*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'bool'),
           getBool: (CT_ c) => c.hasExtendedDocumentation == true,
         ),
         'hasHomepage': Property(
           getValue: (CT_ c) => c.hasHomepage,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'bool*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'bool'),
           getBool: (CT_ c) => c.hasHomepage == true,
         ),
         'homepage': Property(
           getValue: (CT_ c) => c.homepage,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'String*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'String'),
           isNullValue: (CT_ c) => c.homepage == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.homepage, ast, r.template, parent: r);
@@ -707,14 +488,8 @@ class _Renderer_Package extends RendererBase<Package> {
         'href': Property(
           getValue: (CT_ c) => c.href,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'String*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'String'),
           isNullValue: (CT_ c) => c.href == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.href, ast, r.template, parent: r);
@@ -723,92 +498,50 @@ class _Renderer_Package extends RendererBase<Package> {
         'isCanonical': Property(
           getValue: (CT_ c) => c.isCanonical,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'bool*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'bool'),
           getBool: (CT_ c) => c.isCanonical == true,
         ),
         'isDocumented': Property(
           getValue: (CT_ c) => c.isDocumented,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'bool*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'bool'),
           getBool: (CT_ c) => c.isDocumented == true,
         ),
         'isFirstPackage': Property(
           getValue: (CT_ c) => c.isFirstPackage,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'bool*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'bool'),
           getBool: (CT_ c) => c.isFirstPackage == true,
         ),
         'isLocal': Property(
           getValue: (CT_ c) => c.isLocal,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'bool*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'bool'),
           getBool: (CT_ c) => c.isLocal == true,
         ),
         'isPublic': Property(
           getValue: (CT_ c) => c.isPublic,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'bool*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'bool'),
           getBool: (CT_ c) => c.isPublic == true,
         ),
         'isSdk': Property(
           getValue: (CT_ c) => c.isSdk,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'bool*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'bool'),
           getBool: (CT_ c) => c.isSdk == true,
         ),
         'kind': Property(
           getValue: (CT_ c) => c.kind,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'String*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'String'),
           isNullValue: (CT_ c) => c.kind == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.kind, ast, r.template, parent: r);
@@ -817,14 +550,8 @@ class _Renderer_Package extends RendererBase<Package> {
         'location': Property(
           getValue: (CT_ c) => c.location,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'String*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'String'),
           isNullValue: (CT_ c) => c.location == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.location, ast, r.template, parent: r);
@@ -833,14 +560,8 @@ class _Renderer_Package extends RendererBase<Package> {
         'locationPieces': Property(
           getValue: (CT_ c) => c.locationPieces,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'Set<String*>*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'Set<String>'),
           isEmptyIterable: (CT_ c) => c.locationPieces?.isEmpty ?? true,
           renderIterable:
               (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
@@ -854,14 +575,8 @@ class _Renderer_Package extends RendererBase<Package> {
         'name': Property(
           getValue: (CT_ c) => c.name,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'String*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'String'),
           isNullValue: (CT_ c) => c.name == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.name, ast, r.template, parent: r);
@@ -870,14 +585,9 @@ class _Renderer_Package extends RendererBase<Package> {
         'nameToCategory': Property(
           getValue: (CT_ c) => c.nameToCategory,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(_simpleResolveErrorMessage(
-                  remainingNames, 'Map<String*, Category*>*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(
+                      c, remainingNames, 'Map<String, Category>'),
           isNullValue: (CT_ c) => c.nameToCategory == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.nameToCategory, ast, r.template, parent: r);
@@ -886,14 +596,8 @@ class _Renderer_Package extends RendererBase<Package> {
         'oneLineDoc': Property(
           getValue: (CT_ c) => c.oneLineDoc,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'String*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'String'),
           isNullValue: (CT_ c) => c.oneLineDoc == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.oneLineDoc, ast, r.template, parent: r);
@@ -905,13 +609,9 @@ class _Renderer_Package extends RendererBase<Package> {
               (CT_ c, Property<CT_> self, List<String> remainingNames) {
             if (remainingNames.isEmpty) return self.getValue(c).toString();
             var name = remainingNames.first;
-            if (_Renderer_Package.propertyMap().containsKey(name)) {
-              var nextProperty = _Renderer_Package.propertyMap()[name];
-              return nextProperty.renderVariable(
-                  self.getValue(c), nextProperty, [...remainingNames.skip(1)]);
-            } else {
-              throw PartialMustachioResolutionError(name, CT_);
-            }
+            var nextProperty = _Renderer_Package.propertyMap().getValue(name);
+            return nextProperty.renderVariable(
+                self.getValue(c), nextProperty, [...remainingNames.skip(1)]);
           },
           isNullValue: (CT_ c) => c.package == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
@@ -921,14 +621,8 @@ class _Renderer_Package extends RendererBase<Package> {
         'packageGraph': Property(
           getValue: (CT_ c) => c.packageGraph,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'PackageGraph*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'PackageGraph'),
           isNullValue: (CT_ c) => c.packageGraph == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.packageGraph, ast, r.template, parent: r);
@@ -937,14 +631,8 @@ class _Renderer_Package extends RendererBase<Package> {
         'packageMeta': Property(
           getValue: (CT_ c) => c.packageMeta,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'PackageMeta*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'PackageMeta'),
           isNullValue: (CT_ c) => c.packageMeta == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.packageMeta, ast, r.template, parent: r);
@@ -953,14 +641,8 @@ class _Renderer_Package extends RendererBase<Package> {
         'packagePath': Property(
           getValue: (CT_ c) => c.packagePath,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'String*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'String'),
           isNullValue: (CT_ c) => c.packagePath == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.packagePath, ast, r.template, parent: r);
@@ -968,15 +650,9 @@ class _Renderer_Package extends RendererBase<Package> {
         ),
         'publicLibraries': Property(
           getValue: (CT_ c) => c.publicLibraries,
-          renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(_simpleResolveErrorMessage(
-                  remainingNames, 'Iterable<Library*>*'));
-            }
-          },
+          renderVariable: (CT_ c, Property<CT_> self,
+                  List<String> remainingNames) =>
+              self.renderSimpleVariable(c, remainingNames, 'Iterable<Library>'),
           isEmptyIterable: (CT_ c) => c.publicLibraries?.isEmpty ?? true,
           renderIterable:
               (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
@@ -990,14 +666,8 @@ class _Renderer_Package extends RendererBase<Package> {
         'toolInvocationIndex': Property(
           getValue: (CT_ c) => c.toolInvocationIndex,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'int*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'int'),
           isNullValue: (CT_ c) => c.toolInvocationIndex == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.toolInvocationIndex, ast, r.template,
@@ -1007,14 +677,9 @@ class _Renderer_Package extends RendererBase<Package> {
         'usedAnimationIdsByHref': Property(
           getValue: (CT_ c) => c.usedAnimationIdsByHref,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(_simpleResolveErrorMessage(
-                  remainingNames, 'Map<String*, Set<String*>*>*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(
+                      c, remainingNames, 'Map<String, Set<String>>'),
           isNullValue: (CT_ c) => c.usedAnimationIdsByHref == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.usedAnimationIdsByHref, ast, r.template,
@@ -1024,14 +689,8 @@ class _Renderer_Package extends RendererBase<Package> {
         'version': Property(
           getValue: (CT_ c) => c.version,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'String*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'String'),
           isNullValue: (CT_ c) => c.version == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.version, ast, r.template, parent: r);
@@ -1071,14 +730,8 @@ class _Renderer_Nameable extends RendererBase<Nameable> {
         'fullyQualifiedName': Property(
           getValue: (CT_ c) => c.fullyQualifiedName,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'String*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'String'),
           isNullValue: (CT_ c) => c.fullyQualifiedName == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.fullyQualifiedName, ast, r.template,
@@ -1088,14 +741,8 @@ class _Renderer_Nameable extends RendererBase<Nameable> {
         'name': Property(
           getValue: (CT_ c) => c.name,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'String*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'String'),
           isNullValue: (CT_ c) => c.name == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.name, ast, r.template, parent: r);
@@ -1104,14 +751,8 @@ class _Renderer_Nameable extends RendererBase<Nameable> {
         'namePart': Property(
           getValue: (CT_ c) => c.namePart,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'String*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'String'),
           isNullValue: (CT_ c) => c.namePart == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.namePart, ast, r.template, parent: r);
@@ -1120,14 +761,8 @@ class _Renderer_Nameable extends RendererBase<Nameable> {
         'namePieces': Property(
           getValue: (CT_ c) => c.namePieces,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'Set<String*>*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'Set<String>'),
           isEmptyIterable: (CT_ c) => c.namePieces?.isEmpty ?? true,
           renderIterable:
               (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
@@ -1167,15 +802,9 @@ class _Renderer_Locatable extends RendererBase<Locatable> {
   static Map<String, Property<CT_>> propertyMap<CT_ extends Locatable>() => {
         'documentationFrom': Property(
           getValue: (CT_ c) => c.documentationFrom,
-          renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(_simpleResolveErrorMessage(
-                  remainingNames, 'List<Locatable*>*'));
-            }
-          },
+          renderVariable: (CT_ c, Property<CT_> self,
+                  List<String> remainingNames) =>
+              self.renderSimpleVariable(c, remainingNames, 'List<Locatable>'),
           isEmptyIterable: (CT_ c) => c.documentationFrom?.isEmpty ?? true,
           renderIterable:
               (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
@@ -1189,27 +818,15 @@ class _Renderer_Locatable extends RendererBase<Locatable> {
         'documentationIsLocal': Property(
           getValue: (CT_ c) => c.documentationIsLocal,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'bool*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'bool'),
           getBool: (CT_ c) => c.documentationIsLocal == true,
         ),
         'fullyQualifiedName': Property(
           getValue: (CT_ c) => c.fullyQualifiedName,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'String*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'String'),
           isNullValue: (CT_ c) => c.fullyQualifiedName == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.fullyQualifiedName, ast, r.template,
@@ -1219,14 +836,8 @@ class _Renderer_Locatable extends RendererBase<Locatable> {
         'href': Property(
           getValue: (CT_ c) => c.href,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'String*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'String'),
           isNullValue: (CT_ c) => c.href == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.href, ast, r.template, parent: r);
@@ -1235,14 +846,8 @@ class _Renderer_Locatable extends RendererBase<Locatable> {
         'location': Property(
           getValue: (CT_ c) => c.location,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'String*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'String'),
           isNullValue: (CT_ c) => c.location == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.location, ast, r.template, parent: r);
@@ -1280,14 +885,8 @@ class _Renderer_Canonicalization extends RendererBase<Canonicalization> {
         'canonicalLibrary': Property(
           getValue: (CT_ c) => c.canonicalLibrary,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'Library*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'Library'),
           isNullValue: (CT_ c) => c.canonicalLibrary == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.canonicalLibrary, ast, r.template, parent: r);
@@ -1296,14 +895,9 @@ class _Renderer_Canonicalization extends RendererBase<Canonicalization> {
         'commentRefs': Property(
           getValue: (CT_ c) => c.commentRefs,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(_simpleResolveErrorMessage(
-                  remainingNames, 'List<ModelCommentReference*>*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(
+                      c, remainingNames, 'List<ModelCommentReference>'),
           isEmptyIterable: (CT_ c) => c.commentRefs?.isEmpty ?? true,
           renderIterable:
               (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
@@ -1317,27 +911,15 @@ class _Renderer_Canonicalization extends RendererBase<Canonicalization> {
         'isCanonical': Property(
           getValue: (CT_ c) => c.isCanonical,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'bool*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'bool'),
           getBool: (CT_ c) => c.isCanonical == true,
         ),
         'locationPieces': Property(
           getValue: (CT_ c) => c.locationPieces,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'Set<String*>*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'Set<String>'),
           isEmptyIterable: (CT_ c) => c.locationPieces?.isEmpty ?? true,
           renderIterable:
               (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
@@ -1378,14 +960,8 @@ class _Renderer_Warnable extends RendererBase<Warnable> {
         'element': Property(
           getValue: (CT_ c) => c.element,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'Element*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'Element'),
           isNullValue: (CT_ c) => c.element == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.element, ast, r.template, parent: r);
@@ -1397,13 +973,9 @@ class _Renderer_Warnable extends RendererBase<Warnable> {
               (CT_ c, Property<CT_> self, List<String> remainingNames) {
             if (remainingNames.isEmpty) return self.getValue(c).toString();
             var name = remainingNames.first;
-            if (_Renderer_Warnable.propertyMap().containsKey(name)) {
-              var nextProperty = _Renderer_Warnable.propertyMap()[name];
-              return nextProperty.renderVariable(
-                  self.getValue(c), nextProperty, [...remainingNames.skip(1)]);
-            } else {
-              throw PartialMustachioResolutionError(name, CT_);
-            }
+            var nextProperty = _Renderer_Warnable.propertyMap().getValue(name);
+            return nextProperty.renderVariable(
+                self.getValue(c), nextProperty, [...remainingNames.skip(1)]);
           },
           isNullValue: (CT_ c) => c.enclosingElement == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
@@ -1417,13 +989,9 @@ class _Renderer_Warnable extends RendererBase<Warnable> {
               (CT_ c, Property<CT_> self, List<String> remainingNames) {
             if (remainingNames.isEmpty) return self.getValue(c).toString();
             var name = remainingNames.first;
-            if (_Renderer_Package.propertyMap().containsKey(name)) {
-              var nextProperty = _Renderer_Package.propertyMap()[name];
-              return nextProperty.renderVariable(
-                  self.getValue(c), nextProperty, [...remainingNames.skip(1)]);
-            } else {
-              throw PartialMustachioResolutionError(name, CT_);
-            }
+            var nextProperty = _Renderer_Package.propertyMap().getValue(name);
+            return nextProperty.renderVariable(
+                self.getValue(c), nextProperty, [...remainingNames.skip(1)]);
           },
           isNullValue: (CT_ c) => c.package == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
@@ -1461,14 +1029,8 @@ class _Renderer_LibraryContainer extends RendererBase<LibraryContainer> {
         'containerOrder': Property(
           getValue: (CT_ c) => c.containerOrder,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'List<String*>*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'List<String>'),
           isEmptyIterable: (CT_ c) => c.containerOrder?.isEmpty ?? true,
           renderIterable:
               (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
@@ -1482,14 +1044,8 @@ class _Renderer_LibraryContainer extends RendererBase<LibraryContainer> {
         'enclosingName': Property(
           getValue: (CT_ c) => c.enclosingName,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'String*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'String'),
           isNullValue: (CT_ c) => c.enclosingName == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.enclosingName, ast, r.template, parent: r);
@@ -1498,40 +1054,22 @@ class _Renderer_LibraryContainer extends RendererBase<LibraryContainer> {
         'hasPublicLibraries': Property(
           getValue: (CT_ c) => c.hasPublicLibraries,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'bool*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'bool'),
           getBool: (CT_ c) => c.hasPublicLibraries == true,
         ),
         'isSdk': Property(
           getValue: (CT_ c) => c.isSdk,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'bool*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'bool'),
           getBool: (CT_ c) => c.isSdk == true,
         ),
         'libraries': Property(
           getValue: (CT_ c) => c.libraries,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(_simpleResolveErrorMessage(
-                  remainingNames, 'List<Library*>*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'List<Library>'),
           isEmptyIterable: (CT_ c) => c.libraries?.isEmpty ?? true,
           renderIterable:
               (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
@@ -1545,14 +1083,8 @@ class _Renderer_LibraryContainer extends RendererBase<LibraryContainer> {
         'packageGraph': Property(
           getValue: (CT_ c) => c.packageGraph,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'PackageGraph*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'PackageGraph'),
           isNullValue: (CT_ c) => c.packageGraph == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.packageGraph, ast, r.template, parent: r);
@@ -1560,15 +1092,9 @@ class _Renderer_LibraryContainer extends RendererBase<LibraryContainer> {
         ),
         'publicLibraries': Property(
           getValue: (CT_ c) => c.publicLibraries,
-          renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(_simpleResolveErrorMessage(
-                  remainingNames, 'Iterable<Library*>*'));
-            }
-          },
+          renderVariable: (CT_ c, Property<CT_> self,
+                  List<String> remainingNames) =>
+              self.renderSimpleVariable(c, remainingNames, 'Iterable<Library>'),
           isEmptyIterable: (CT_ c) => c.publicLibraries?.isEmpty ?? true,
           renderIterable:
               (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
@@ -1581,15 +1107,9 @@ class _Renderer_LibraryContainer extends RendererBase<LibraryContainer> {
         ),
         'publicLibrariesSorted': Property(
           getValue: (CT_ c) => c.publicLibrariesSorted,
-          renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(_simpleResolveErrorMessage(
-                  remainingNames, 'Iterable<Library*>*'));
-            }
-          },
+          renderVariable: (CT_ c, Property<CT_> self,
+                  List<String> remainingNames) =>
+              self.renderSimpleVariable(c, remainingNames, 'Iterable<Library>'),
           isEmptyIterable: (CT_ c) => c.publicLibrariesSorted?.isEmpty ?? true,
           renderIterable:
               (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
@@ -1603,14 +1123,8 @@ class _Renderer_LibraryContainer extends RendererBase<LibraryContainer> {
         'sortKey': Property(
           getValue: (CT_ c) => c.sortKey,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'String*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'String'),
           isNullValue: (CT_ c) => c.sortKey == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.sortKey, ast, r.template, parent: r);
@@ -1646,14 +1160,8 @@ class _Renderer_Object extends RendererBase<Object> {
         'hashCode': Property(
           getValue: (CT_ c) => c.hashCode,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'int'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'int'),
           isNullValue: (CT_ c) => c.hashCode == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.hashCode, ast, r.template, parent: r);
@@ -1691,14 +1199,8 @@ class _Renderer_TemplateData<T extends Documentable>
         'bareHref': Property(
           getValue: (CT_ c) => c.bareHref,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'String*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'String'),
           isNullValue: (CT_ c) => c.bareHref == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.bareHref, ast, r.template, parent: r);
@@ -1710,13 +1212,9 @@ class _Renderer_TemplateData<T extends Documentable>
               (CT_ c, Property<CT_> self, List<String> remainingNames) {
             if (remainingNames.isEmpty) return self.getValue(c).toString();
             var name = remainingNames.first;
-            if (_Renderer_Package.propertyMap().containsKey(name)) {
-              var nextProperty = _Renderer_Package.propertyMap()[name];
-              return nextProperty.renderVariable(
-                  self.getValue(c), nextProperty, [...remainingNames.skip(1)]);
-            } else {
-              throw PartialMustachioResolutionError(name, CT_);
-            }
+            var nextProperty = _Renderer_Package.propertyMap().getValue(name);
+            return nextProperty.renderVariable(
+                self.getValue(c), nextProperty, [...remainingNames.skip(1)]);
           },
           isNullValue: (CT_ c) => c.defaultPackage == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
@@ -1727,40 +1225,22 @@ class _Renderer_TemplateData<T extends Documentable>
         'hasFooterVersion': Property(
           getValue: (CT_ c) => c.hasFooterVersion,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'bool*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'bool'),
           getBool: (CT_ c) => c.hasFooterVersion == true,
         ),
         'hasHomepage': Property(
           getValue: (CT_ c) => c.hasHomepage,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'bool*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'bool'),
           getBool: (CT_ c) => c.hasHomepage == true,
         ),
         'homepage': Property(
           getValue: (CT_ c) => c.homepage,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'String*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'String'),
           isNullValue: (CT_ c) => c.homepage == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.homepage, ast, r.template, parent: r);
@@ -1769,14 +1249,8 @@ class _Renderer_TemplateData<T extends Documentable>
         'htmlBase': Property(
           getValue: (CT_ c) => c.htmlBase,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'String*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'String'),
           isNullValue: (CT_ c) => c.htmlBase == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.htmlBase, ast, r.template, parent: r);
@@ -1784,15 +1258,9 @@ class _Renderer_TemplateData<T extends Documentable>
         ),
         'htmlOptions': Property(
           getValue: (CT_ c) => c.htmlOptions,
-          renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(_simpleResolveErrorMessage(
-                  remainingNames, 'TemplateOptions*'));
-            }
-          },
+          renderVariable: (CT_ c, Property<CT_> self,
+                  List<String> remainingNames) =>
+              self.renderSimpleVariable(c, remainingNames, 'TemplateOptions'),
           isNullValue: (CT_ c) => c.htmlOptions == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.htmlOptions, ast, r.template, parent: r);
@@ -1801,27 +1269,15 @@ class _Renderer_TemplateData<T extends Documentable>
         'includeVersion': Property(
           getValue: (CT_ c) => c.includeVersion,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'bool*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'bool'),
           getBool: (CT_ c) => c.includeVersion == true,
         ),
         'layoutTitle': Property(
           getValue: (CT_ c) => c.layoutTitle,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'String*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'String'),
           isNullValue: (CT_ c) => c.layoutTitle == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.layoutTitle, ast, r.template, parent: r);
@@ -1830,14 +1286,8 @@ class _Renderer_TemplateData<T extends Documentable>
         'localPackages': Property(
           getValue: (CT_ c) => c.localPackages,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(_simpleResolveErrorMessage(
-                  remainingNames, 'List<Package*>*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'List<Package>'),
           isEmptyIterable: (CT_ c) => c.localPackages?.isEmpty ?? true,
           renderIterable:
               (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
@@ -1851,14 +1301,8 @@ class _Renderer_TemplateData<T extends Documentable>
         'metaDescription': Property(
           getValue: (CT_ c) => c.metaDescription,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'String*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'String'),
           isNullValue: (CT_ c) => c.metaDescription == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.metaDescription, ast, r.template, parent: r);
@@ -1867,14 +1311,9 @@ class _Renderer_TemplateData<T extends Documentable>
         'navLinks': Property(
           getValue: (CT_ c) => c.navLinks,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(_simpleResolveErrorMessage(
-                  remainingNames, 'List<Documentable*>*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(
+                      c, remainingNames, 'List<Documentable>'),
           isEmptyIterable: (CT_ c) => c.navLinks?.isEmpty ?? true,
           renderIterable:
               (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
@@ -1887,15 +1326,9 @@ class _Renderer_TemplateData<T extends Documentable>
         ),
         'navLinksWithGenerics': Property(
           getValue: (CT_ c) => c.navLinksWithGenerics,
-          renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(_simpleResolveErrorMessage(
-                  remainingNames, 'List<Container*>*'));
-            }
-          },
+          renderVariable: (CT_ c, Property<CT_> self,
+                  List<String> remainingNames) =>
+              self.renderSimpleVariable(c, remainingNames, 'List<Container>'),
           isEmptyIterable: (CT_ c) => c.navLinksWithGenerics?.isEmpty ?? true,
           renderIterable:
               (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
@@ -1909,14 +1342,8 @@ class _Renderer_TemplateData<T extends Documentable>
         'parent': Property(
           getValue: (CT_ c) => c.parent,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'Documentable*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'Documentable'),
           isNullValue: (CT_ c) => c.parent == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.parent, ast, r.template, parent: r);
@@ -1925,14 +1352,8 @@ class _Renderer_TemplateData<T extends Documentable>
         'relCanonicalPrefix': Property(
           getValue: (CT_ c) => c.relCanonicalPrefix,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'String*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'String'),
           isNullValue: (CT_ c) => c.relCanonicalPrefix == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.relCanonicalPrefix, ast, r.template,
@@ -1942,14 +1363,8 @@ class _Renderer_TemplateData<T extends Documentable>
         'title': Property(
           getValue: (CT_ c) => c.title,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'String*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'String'),
           isNullValue: (CT_ c) => c.title == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.title, ast, r.template, parent: r);
@@ -1958,27 +1373,15 @@ class _Renderer_TemplateData<T extends Documentable>
         'useBaseHref': Property(
           getValue: (CT_ c) => c.useBaseHref,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'bool*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'bool'),
           getBool: (CT_ c) => c.useBaseHref == true,
         ),
         'version': Property(
           getValue: (CT_ c) => c.version,
           renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) {
-              return self.getValue(c).toString();
-            } else {
-              throw MustachioResolutionError(
-                  _simpleResolveErrorMessage(remainingNames, 'String*'));
-            }
-          },
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'String'),
           isNullValue: (CT_ c) => c.version == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.version, ast, r.template, parent: r);
