@@ -171,14 +171,15 @@ abstract class RendererBase<T> {
     }
     var property = getProperty(names.first);
     if (property != null) {
+      var remainingNames = [...names.skip(1)];
       try {
-        return property.renderVariable(context, property, [...names.skip(1)]);
+        return property.renderVariable(context, property, remainingNames);
       } on PartialMustachioResolutionError catch (e) {
         // The error thrown by [Property.renderVariable] does not have all of
         // the names required for a decent error. We throw a new error here.
         throw MustachioResolutionError(
             "Failed to resolve '${e.name}' on ${e.contextType} while resolving "
-            '${names.skip(1)} as a property chain on any types in the context '
+            '$remainingNames as a property chain on any types in the context '
             "chain: $contextChainString, after first resolving '${names.first}' "
             'to a property on $T');
       }
@@ -318,6 +319,21 @@ class Property<T> {
       this.renderIterable,
       this.isNullValue,
       this.renderValue});
+
+  String /*!*/ renderSimpleVariable(
+      T c, List<String> /*!*/ remainingNames, String /*!*/ typeString) {
+    if (remainingNames.isEmpty) {
+      return getValue(c).toString();
+    } else {
+      throw MustachioResolutionError(
+          _simpleResolveErrorMessage(remainingNames, typeString));
+    }
+  }
+
+  static String _simpleResolveErrorMessage(List<String> key, String type) =>
+      'Failed to resolve $key property chain on $type using a simple renderer; '
+      'expose the properties of $type by adding it to the @Renderer '
+      "annotation's 'visibleTypes' list";
 }
 
 /// An error indicating that a renderer failed to resolve a key.
@@ -338,4 +354,14 @@ class PartialMustachioResolutionError extends Error {
   Type contextType;
 
   PartialMustachioResolutionError(this.name, this.contextType);
+}
+
+extension MapExtensions<T> on Map<String, Property<T>> {
+  Property<T> getValue(String name) {
+    if (containsKey(name)) {
+      return this[name];
+    } else {
+      throw PartialMustachioResolutionError(name, T);
+    }
+  }
 }
