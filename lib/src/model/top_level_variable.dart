@@ -17,7 +17,7 @@ class TopLevelVariable extends ModelElement
 
   TopLevelVariable(TopLevelVariableElement element, Library library,
       PackageGraph packageGraph, this.getter, this.setter)
-      : super(element, library, packageGraph, null) {
+      : super(element, library, packageGraph) {
     if (getter != null) {
       getter.enclosingCombo = this;
     }

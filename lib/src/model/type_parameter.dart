@@ -10,7 +10,7 @@ import 'package:dartdoc/src/render/type_parameters_renderer.dart';
 class TypeParameter extends ModelElement {
   TypeParameter(
       TypeParameterElement element, Library library, PackageGraph packageGraph)
-      : super(element, library, packageGraph, null);
+      : super(element, library, packageGraph);
 
   @override
   ModelElement get enclosingElement => (element.enclosingElement != null)
