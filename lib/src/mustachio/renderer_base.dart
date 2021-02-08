@@ -4,7 +4,6 @@
 
 import 'dart:collection';
 
-import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:meta/meta.dart';
 import 'parser.dart';
