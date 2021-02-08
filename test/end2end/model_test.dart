@@ -323,22 +323,23 @@ void main() {
       expect(packageGraph.localPackages.length, equals(1));
       expect(packageGraph.localPackages.first.hasCategories, isTrue);
       var packageCategories = packageGraph.localPackages.first.categories;
-      expect(packageCategories.length, equals(6));
+      expect(packageCategories.length, equals(7));
       expect(
           packageGraph.localPackages.first.categoriesWithPublicLibraries.length,
           equals(3));
       expect(
           packageCategories.map((c) => c.name).toList(),
           orderedEquals([
-            'Superb',
-            'Unreal',
             'Real Libraries',
+            'Unreal',
+            'AmazinglyExcellent',
+            'Superb',
             'Misc',
             'More Excellence',
             'NotSoExcellent'
           ]));
       expect(packageCategories.map((c) => c.libraries.length).toList(),
-          orderedEquals([0, 2, 3, 1, 0, 0]));
+          orderedEquals([3, 2, 0, 0, 1, 0, 0]));
     });
 
     test('Verify documented categories works for test_package', () {
