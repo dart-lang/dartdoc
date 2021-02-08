@@ -16,7 +16,7 @@ class Method extends ModelElement
   List<TypeParameter> typeParameters = [];
 
   Method(MethodElement element, Library library, PackageGraph packageGraph)
-      : super(element, library, packageGraph, null) {
+      : super(element, library, packageGraph) {
     _calcTypeParameters();
   }
 

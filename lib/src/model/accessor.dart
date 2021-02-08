@@ -14,7 +14,8 @@ class Accessor extends ModelElement implements EnclosedElement {
   GetterSetterCombo enclosingCombo;
 
   Accessor(PropertyAccessorElement element, Library library,
-      PackageGraph packageGraph, Member originalMember)
+      PackageGraph packageGraph,
+      [Member /*?*/ originalMember])
       : super(element, library, packageGraph, originalMember);
 
   String get linkedReturnType {
@@ -149,7 +150,7 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
 
   ContainerAccessor(PropertyAccessorElement element, Library library,
       PackageGraph packageGraph)
-      : super(element, library, packageGraph, null);
+      : super(element, library, packageGraph);
 
   ContainerAccessor.inherited(PropertyAccessorElement element, Library library,
       PackageGraph packageGraph, this._enclosingElement,

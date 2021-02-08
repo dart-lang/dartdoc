@@ -12,7 +12,7 @@ class Typedef extends ModelElement
     implements EnclosedElement {
   Typedef(FunctionTypeAliasElement element, Library library,
       PackageGraph packageGraph)
-      : super(element, library, packageGraph, null);
+      : super(element, library, packageGraph);
 
   @override
   ModelElement get enclosingElement => library;
