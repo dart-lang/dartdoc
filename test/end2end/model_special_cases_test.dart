@@ -32,7 +32,7 @@ Future<PackageGraph> get _testPackageGraphExperiments =>
             PhysicalPackageConfigProvider(),
             additionalArguments: [
               '--enable-experiment',
-              'non-nullable',
+              'non-nullable,nonfunction-type-aliases',
               '--no-link-to-remote'
             ]));
 
@@ -89,17 +89,36 @@ void main() {
   group('Experiments', () {
     group('generalized typedefs', () {
       Library generalizedTypedefs;
-      Typedef T0;
+      Typedef T0, T1, T2, T3, T4, T5, T6, T7;
 
       setUpAll(() async {
         generalizedTypedefs = (await _testPackageGraphExperiments)
         .libraries
         .firstWhere((l) => l.name == 'generalized_typedefs');
         T0 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T0');
+        T1 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T1');
+        T2 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T2');
+        T3 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T3');
+        T4 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T4');
+        T5 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T5');
+        T6 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T6');
+        T7 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T7');
       });
 
+      void expectTypedefs(Typedef t, String modelTypeToString, String genericParameters) {
+        expect(t.modelType.toString(), equals(modelTypeToString));
+        expect(t.genericParameters, equals(genericParameters));
+      }
+
       test('basic non-function typedefs work', () {
-        expect(T0.linkedReturnType, equals('dynamic'));
+        expectTypedefs(T0, 'void', '');
+        expectTypedefs(T1, 'Function', '');
+        expectTypedefs(T2, 'List<X>', '');
+        expectTypedefs(T3, '', '');
+        expectTypedefs(T4, '', '');
+        expectTypedefs(T5, '', '');
+        expectTypedefs(T6, '', '');
+        expectTypedefs(T7, '', '');
       });
 
     }, skip: (!_generalizedTypedefsAllowed.allows(_platformVersion)));

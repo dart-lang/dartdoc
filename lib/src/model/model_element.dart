@@ -338,9 +338,6 @@ abstract class ModelElement extends Canonicalization
       return ModelFunctionTypedef(e, library, packageGraph);
     }
     if (e is TypeAliasElement) {
-      if (e.name == 'T5') {
-        print('hello');
-      }
       if (e.aliasedType is FunctionType) {
         return FunctionTypedef(e, library, packageGraph);
       }
