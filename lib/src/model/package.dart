@@ -122,13 +122,12 @@ class Package extends LibraryContainer
 
   @override
   String get documentation {
-    if (_documentation != null) {
-      return _documentation;
-    }
-    final docFile = documentationFile;
-    if (docFile != null) {
-      _documentation = packageGraph.resourceProvider
-          .readAsMalformedAllowedStringSync(docFile);
+    if (_documentation == null) {
+      final docFile = documentationFile;
+      if (docFile != null) {
+        _documentation = packageGraph.resourceProvider
+            .readAsMalformedAllowedStringSync(docFile);
+      }
     }
     return _documentation;
   }
@@ -139,11 +138,14 @@ class Package extends LibraryContainer
   @override
   bool get hasExtendedDocumentation => hasDocumentation;
 
+  File /*?*/ _documentationFile;
+
   @Deprecated(
-      'Instead use [documentationFile] which will be `null` if this package does not have one.')
+      'Instead use [documentationFile] which will be `null` if this pFackage does not have one.')
   bool get hasDocumentationFile => documentationFile != null;
 
-  File /*?*/ get documentationFile => packageMeta.getReadmeContents();
+  File /*?*/ get documentationFile =>
+      _documentationFile ??= packageMeta.getReadmeContents();
 
   @override
   String get oneLineDoc => '';
