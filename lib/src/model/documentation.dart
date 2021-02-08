@@ -62,10 +62,10 @@ class Documentation {
   /// if [processFullDocs] is `true`. If more than one node is present,
   /// then [DocumentationParseResult.hasExtendedDocs] will be set to `true`.
   DocumentationParseResult _parseDocumentation(bool processFullDocs) {
-    if (!_element.hasDocumentation) {
+    final text = _element.documentation;
+    if (text == null || text.isEmpty) {
       return DocumentationParseResult.empty;
     }
-    var text = _element.documentation;
     showWarningsForGenericsOutsideSquareBracketsBlocks(text, _element);
     var document =
         MarkdownDocument.withElementLinkResolver(_element, commentRefs);
