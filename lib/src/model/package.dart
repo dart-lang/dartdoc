@@ -141,7 +141,7 @@ class Package extends LibraryContainer
   File /*?*/ _documentationFile;
 
   @Deprecated(
-      'Instead use [documentationFile] which will be `null` if this pFackage does not have one.')
+      'Instead use [documentationFile] which will be `null` if this package does not have one.')
   bool get hasDocumentationFile => documentationFile != null;
 
   File /*?*/ get documentationFile =>
