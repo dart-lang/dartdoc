@@ -289,6 +289,7 @@ class SimpleRenderer extends RendererBase<Object> {
 
 /// An individual property of objects of type [T], including functions for
 /// rendering various types of Mustache nodes.
+@immutable
 class Property<T> {
   /// Gets the value of this property on the object [context].
   final Object /*?*/ Function(T context) /*!*/ getValue;
@@ -338,7 +339,7 @@ class Property<T> {
 
 /// An error indicating that a renderer failed to resolve a key.
 class MustachioResolutionError extends Error {
-  String message;
+  final String message;
 
   MustachioResolutionError([this.message]);
 
@@ -349,9 +350,9 @@ class MustachioResolutionError extends Error {
 /// An error indicating that a renderer failed to resolve a follow-on name in a
 /// multi-name key.
 class PartialMustachioResolutionError extends Error {
-  String name;
+  final String name;
 
-  Type contextType;
+  final Type contextType;
 
   PartialMustachioResolutionError(this.name, this.contextType);
 }
