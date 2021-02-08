@@ -45,7 +45,7 @@ class ModelFunctionTyped extends ModelElement
           for (var p in element.typeParameters)
             ModelElement.from(p, library, packageGraph),
         ],
-        super(element, library, packageGraph, null);
+        super(element, library, packageGraph);
 
   @override
   ModelElement get enclosingElement => library;

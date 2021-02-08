@@ -120,17 +120,14 @@ mixin GetterSetterCombo on ModelElement {
     return _documentationFrom;
   }
 
-  bool get hasAccessorsWithDocs => (hasPublicGetter &&
-          !getter.isSynthetic &&
-          getter.documentation.isNotEmpty ||
-      hasPublicSetter &&
-          !setter.isSynthetic &&
-          setter.documentation.isNotEmpty);
+  bool get hasAccessorsWithDocs =>
+      (hasPublicGetter && !getter.isSynthetic && getter.hasDocumentation ||
+          hasPublicSetter && !setter.isSynthetic && setter.hasDocumentation);
 
   bool get getterSetterBothAvailable => (hasPublicGetter &&
-      getter.documentation.isNotEmpty &&
+      getter.hasDocumentation &&
       hasPublicSetter &&
-      setter.documentation.isNotEmpty);
+      setter.hasDocumentation);
 
   String _oneLineDoc;
 

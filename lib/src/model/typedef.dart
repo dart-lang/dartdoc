@@ -12,7 +12,7 @@ class Typedef extends ModelElement
     implements EnclosedElement {
   Typedef(TypeAliasElement element, Library library,
       PackageGraph packageGraph)
-      : super(element, library, packageGraph, null);
+      : super(element, library, packageGraph);
 
   DartType get aliasedType => element.aliasedType;
 

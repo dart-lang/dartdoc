@@ -141,8 +141,8 @@ abstract class ModelElement extends Canonicalization
   final Element _element;
 
   // TODO(jcollins-g): This really wants a "member that has a type" class.
-  final Member _originalMember;
-  final Library _library;
+  final Member /*?*/ _originalMember;
+  final Library /*?*/ _library;
 
   ElementType _modelType;
   String _rawDocs;
@@ -150,10 +150,8 @@ abstract class ModelElement extends Canonicalization
   UnmodifiableListView<Parameter> _parameters;
   String _linkedName;
 
-  // TODO(jcollins-g): make _originalMember optional after dart-lang/sdk#15101
-  // is fixed.
-  ModelElement(
-      this._element, this._library, this._packageGraph, this._originalMember);
+  ModelElement(this._element, this._library, this._packageGraph,
+      [this._originalMember]);
 
   /// Creates a [ModelElement] from [e].
   factory ModelElement.fromElement(Element e, PackageGraph p) {
@@ -376,7 +374,7 @@ abstract class ModelElement extends Canonicalization
               originalMember: originalMember);
         }
       } else {
-        return Accessor(e, library, packageGraph, null);
+        return Accessor(e, library, packageGraph);
       }
     }
     if (e is TypeParameterElement) {
@@ -882,8 +880,7 @@ abstract class ModelElement extends Canonicalization
   bool get hasAnnotations => annotations.isNotEmpty;
 
   @override
-  bool get hasDocumentation =>
-      documentation != null && documentation.isNotEmpty;
+  bool get hasDocumentation => documentation?.isNotEmpty == true;
 
   @override
   bool get hasExtendedDocumentation =>

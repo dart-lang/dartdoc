@@ -45,12 +45,6 @@ enum DocumentLocation {
 mixin MarkdownFileDocumentation implements Documentable, Canonicalization {
   DocumentLocation get documentedWhere;
 
-  @override
-  String get documentation => documentationFile == null
-      ? null
-      : packageGraph.resourceProvider
-          .readAsMalformedAllowedStringSync(documentationFile);
-
   Documentation __documentation;
 
   Documentation get _documentation {
@@ -63,11 +57,16 @@ mixin MarkdownFileDocumentation implements Documentable, Canonicalization {
   String get documentationAsHtml => _documentation.asHtml;
 
   @override
-  bool get hasDocumentation =>
-      documentationFile != null &&
-      packageGraph.resourceProvider
-          .readAsMalformedAllowedStringSync(documentationFile)
-          .isNotEmpty;
+  String get documentation {
+    final docFile = documentationFile;
+    return docFile == null
+        ? null
+        : packageGraph.resourceProvider
+            .readAsMalformedAllowedStringSync(docFile);
+  }
+
+  @override
+  bool get hasDocumentation => documentation?.isNotEmpty == true;
 
   @override
   bool get hasExtendedDocumentation =>

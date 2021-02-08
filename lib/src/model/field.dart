@@ -20,7 +20,7 @@ class Field extends ModelElement
 
   Field(FieldElement element, Library library, PackageGraph packageGraph,
       this.getter, this.setter)
-      : super(element, library, packageGraph, null) {
+      : super(element, library, packageGraph) {
     assert(getter != null || setter != null);
     if (getter != null) getter.enclosingCombo = this;
     if (setter != null) setter.enclosingCombo = this;

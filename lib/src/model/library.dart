@@ -66,7 +66,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
   Library._(LibraryElement element, PackageGraph packageGraph, this.package,
       this._restoredUri, this._exportedAndLocalElements)
-      : super(element, null, packageGraph, null);
+      : super(element, null, packageGraph);
 
   factory Library.fromLibraryResult(DartDocResolvedLibrary resolvedLibrary,
       PackageGraph packageGraph, Package package) {

@@ -4,7 +4,7 @@
 
 // TODO(srawlins): Add Renderer annotations for more types as the mustachio
 // implementation matures.
-@Renderer(#renderIndex, Context<PackageTemplateData>())
+@Renderer(#renderIndex, Context<PackageTemplateData>(), visibleTypes: {Package})
 library dartdoc.templates;
 
 import 'package:analyzer/file_system/file_system.dart';

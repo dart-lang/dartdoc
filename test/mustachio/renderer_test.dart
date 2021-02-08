@@ -435,7 +435,7 @@ void main() {
         throwsA(const TypeMatcher<MustachioResolutionError>().having(
             (e) => e.message,
             'message',
-            contains("Failed to resolve 'x' on Bar while resolving (x) as a "
+            contains("Failed to resolve 'x' on Foo while resolving [x] as a "
                 'property chain on any types in the context chain: Bar, after '
                 "first resolving 'foo' to a property on Bar"))));
   });
@@ -451,7 +451,7 @@ void main() {
         throwsA(const TypeMatcher<MustachioResolutionError>().having(
             (e) => e.message,
             'message',
-            contains("Failed to resolve 'x' on Bar while resolving (x) as a "
+            contains("Failed to resolve 'x' on Foo while resolving [x] as a "
                 'property chain on any types in the context chain: Bar, after '
                 "first resolving 'foo' to a property on Bar"))));
   });

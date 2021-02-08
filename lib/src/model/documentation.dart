@@ -5,7 +5,6 @@
 import 'package:dartdoc/src/markdown_processor.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/documentation_renderer.dart';
-import 'package:dartdoc/src/tuple.dart';
 import 'package:markdown/markdown.dart' as md;
 
 class Documentation {
@@ -47,24 +46,26 @@ class Documentation {
   void _renderDocumentation(bool processAllDocs) {
     var parseResult = _parseDocumentation(processAllDocs);
     if (_hasExtendedDocs != null) {
-      assert(_hasExtendedDocs == parseResult.item2);
+      assert(_hasExtendedDocs == parseResult.hasExtendedDocs);
     }
-    _hasExtendedDocs = parseResult.item2;
+    _hasExtendedDocs = parseResult.hasExtendedDocs;
 
-    var renderResult = _renderer.render(parseResult.item1, processAllDocs);
+    var renderResult = _renderer.render(parseResult.nodes, processAllDocs);
 
     if (processAllDocs) {
-      _asHtml = renderResult.item1;
+      _asHtml = renderResult.asHtml;
     }
-    _asOneLiner ??= renderResult.item2;
+    _asOneLiner ??= renderResult.asOneLiner;
   }
 
-  /// Returns a tuple of List<md.Node> and hasExtendedDocs
-  Tuple2<List<md.Node>, bool> _parseDocumentation(bool processFullDocs) {
-    if (!_element.hasDocumentation) {
-      return Tuple2([], false);
+  /// Parses the documentation, collecting the first [md.Node] or all of them
+  /// if [processFullDocs] is `true`. If more than one node is present,
+  /// then [DocumentationParseResult.hasExtendedDocs] will be set to `true`.
+  DocumentationParseResult _parseDocumentation(bool processFullDocs) {
+    final text = _element.documentation;
+    if (text == null || text.isEmpty) {
+      return DocumentationParseResult.empty;
     }
-    var text = _element.documentation;
     showWarningsForGenericsOutsideSquareBracketsBlocks(text, _element);
     var document =
         MarkdownDocument.withElementLinkResolver(_element, commentRefs);

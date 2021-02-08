@@ -85,18 +85,14 @@ class RuntimeRenderersBuilder {
 // To change the contents of this library, make changes to the builder source
 // files in the tool/mustachio/ directory.
 
-// ignore_for_file: camel_case_types, unnecessary_cast, unused_element, unused_import, non_constant_identifier_names
+// ignore_for_file: camel_case_types, unnecessary_cast, unused_element, unused_import, non_constant_identifier_names, deprecated_member_use_from_same_package
 import 'package:analyzer/file_system/file_system.dart';
-import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/dartdoc.dart';
+import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/src/mustachio/renderer_base.dart';
 import 'package:dartdoc/src/mustachio/parser.dart';
+import 'package:dartdoc/src/warnings.dart';
 import '${p.basename(_sourceUri.path)}';
-
-String _simpleResolveErrorMessage(List<String> key, String type) =>
-    'Failed to resolve \$key property chain on \$type using a simple renderer; '
-    'expose the properties of \$type by adding it to the @Renderer '
-    "annotation's 'visibleTypes' list";
 ''');
 
     specs.forEach(_addTypesForRendererSpec);
@@ -128,10 +124,18 @@ String _simpleResolveErrorMessage(List<String> key, String type) =>
     _typeToRendererClassName[element] = rendererInfo._rendererClassName;
 
     spec._contextType.accessors.forEach(_addPropertyToProcess);
+
+    for (var mixin in spec._contextType.element.mixins) {
+      _addTypeToProcess(mixin.element, isFullRenderer: true);
+    }
     var superclass = spec._contextType.element.supertype;
+
     while (superclass != null) {
       // Any type specified with a renderer spec (`@Renderer`) is full.
       _addTypeToProcess(superclass.element, isFullRenderer: true);
+      for (var mixin in superclass.element.mixins) {
+        _addTypeToProcess(mixin.element, isFullRenderer: true);
+      }
       superclass.accessors.forEach(_addPropertyToProcess);
       superclass = superclass.element.supertype;
     }
@@ -159,34 +163,50 @@ String _simpleResolveErrorMessage(List<String> key, String type) =>
       }
       type = bound;
     }
-    var isFullRenderer = _isVisibleToMustache(type.element);
 
-    if (_typeSystem.isAssignableTo(type, _typeProvider.iterableDynamicType)) {
-      var iterableElement = _typeProvider.iterableElement;
-      var iterableType = type.asInstanceOf(iterableElement);
-      var innerType = iterableType.typeArguments.first;
-      // Don't add Iterable functions for a generic type, for example
-      // `List<E>.reversed` has inner type `E`, which we don't have a specific
-      // renderer for.
-      // TODO(srawlins): Find a solution for this. We can track all of the
-      // concrete types substituted for `E` for example.
-      var isFullRenderer = _isVisibleToMustache(innerType.element);
-      while (innerType != null && innerType is InterfaceType) {
-        _addTypeToProcess((innerType as InterfaceType).element,
-            isFullRenderer: isFullRenderer);
-        innerType = (innerType as InterfaceType).superclass;
+    if (type is InterfaceType) {
+      if (_typeSystem.isAssignableTo(type, _typeProvider.iterableDynamicType)) {
+        var iterableElement = _typeProvider.iterableElement;
+        var iterableType = type.asInstanceOf(iterableElement);
+        var innerType = iterableType.typeArguments.first;
+        if (innerType is InterfaceType) {
+          // Don't add Iterable functions for a generic type, for example
+          // `List<E>.reversed` has inner type `E`, which we don't have a
+          // specific renderer for.
+          // TODO(srawlins): Find a solution for this. We can track all of the
+          // concrete types substituted for `E` for example.
+          var isFullRenderer = _isVisibleToMustache(innerType.element);
+          _addTypeHierarchyToProcess(innerType, isFullRenderer: isFullRenderer);
+        }
       }
-    }
 
-    while (type != null && type is InterfaceType) {
-      _addTypeToProcess((type as InterfaceType).element,
-          isFullRenderer: isFullRenderer);
-      type = (type as InterfaceType).superclass;
+      var isFullRenderer = _isVisibleToMustache(type.element);
+      _addTypeHierarchyToProcess(type, isFullRenderer: isFullRenderer);
+    }
+  }
+
+  /// Adds [type] to the queue of types to process, as well as its supertypes
+  /// (if a class), mixed in types, and superclass constraints (if a mixin).
+  void _addTypeHierarchyToProcess(InterfaceType type,
+      {@required bool isFullRenderer}) {
+    while (type != null) {
+      _addTypeToProcess(type.element, isFullRenderer: isFullRenderer);
+      for (var mixin in type.element.mixins) {
+        _addTypeToProcess(mixin.element, isFullRenderer: isFullRenderer);
+      }
+      if (type.element.isMixin) {
+        for (var constraint in type.element.superclassConstraints) {
+          _addTypeToProcess(constraint.element, isFullRenderer: isFullRenderer);
+        }
+      } else {
+        type = type.superclass;
+      }
     }
   }
 
   /// Adds [type] to the [_typesToProcess] queue, if it is not already there.
-  void _addTypeToProcess(ClassElement element, {@required isFullRenderer}) {
+  void _addTypeToProcess(ClassElement element,
+      {@required bool isFullRenderer}) {
     var types = _typesToProcess.where((rs) => rs._contextClass == element);
     if (types.isEmpty) {
       var rendererInfo = _RendererInfo(element,
@@ -316,6 +336,26 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
         _buffer.writeln('    ...$superMapName$generics(),');
       }
     }
+    if (contextClass.mixins != null) {
+      // Mixins are spread into the property map _after_ the super class, so
+      // that they override any values which need to be overridden. Superclass
+      // and mixins override from left to right, as do spreads:
+      // `class C extends E with M, N` first takes members from N, then M, then
+      // E. Similarly, `{...a, ...b, ...c}` will feature elements from `c` which
+      // override `b` and `a`.
+      for (var mixin in contextClass.mixins) {
+        var mixinRendererName = _typeToRendererClassName[mixin.element];
+        if (mixinRendererName != null) {
+          var mixinMapName = '$mixinRendererName.propertyMap';
+          var generics = _asGenerics([
+            ...mixin.typeArguments
+                .map((e) => e.getDisplayString(withNullability: false)),
+            _contextTypeVariable
+          ]);
+          _buffer.writeln('    ...$mixinMapName$generics(),');
+        }
+      }
+    }
     _buffer.writeln('};');
     _buffer.writeln('');
   }
@@ -345,26 +385,20 @@ renderVariable:
     ($_contextTypeVariable c, Property<$_contextTypeVariable> self, List<String> remainingNames) {
   if (remainingNames.isEmpty) return self.getValue(c).toString();
   var name = remainingNames.first;
-  if ($rendererClassName.propertyMap().containsKey(name)) {
-    var nextProperty = $rendererClassName.propertyMap()[name];
-    return nextProperty.renderVariable(
-        self.getValue(c), nextProperty, [...remainingNames.skip(1)]);
-  } else {
-    throw PartialMustachioResolutionError(name, $_contextTypeVariable);
-  }
+  var nextProperty = $rendererClassName.propertyMap().getValue(name);
+  return nextProperty.renderVariable(
+      self.getValue(c), nextProperty, [...remainingNames.skip(1)]);
 },
 ''');
     } else {
+      // [getterType] does not have a full renderer, so we just render a simple
+      // variable, with no opportunity to access fields on [getterType].
+      var getterTypeString =
+          getterType.getDisplayString(withNullability: false);
       _buffer.writeln('''
 renderVariable:
-    ($_contextTypeVariable c, Property<$_contextTypeVariable> self, List<String> remainingNames) {
-  if (remainingNames.isEmpty) {
-    return self.getValue(c).toString();
-  } else {
-    throw MustachioResolutionError(
-      _simpleResolveErrorMessage(remainingNames, '$getterType'));
-  }
-},
+    ($_contextTypeVariable c, Property<CT_> self, List<String> remainingNames) =>
+        self.renderSimpleVariable(c, remainingNames, '$getterTypeString'),
 ''');
     }
 

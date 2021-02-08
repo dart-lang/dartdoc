@@ -12,7 +12,7 @@ class Constructor extends ModelElement
     implements EnclosedElement {
   Constructor(
       ConstructorElement element, Library library, PackageGraph packageGraph)
-      : super(element, library, packageGraph, null);
+      : super(element, library, packageGraph);
 
   @override
   CharacterLocation get characterLocation {

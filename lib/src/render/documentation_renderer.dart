@@ -2,19 +2,18 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:dartdoc/src/tuple.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:markdown/markdown.dart' as md;
 
 abstract class DocumentationRenderer {
-  Tuple2<String, String> render(List<md.Node> nodes, bool processFullDocs);
+  DocumentationRenderResult render(List<md.Node> nodes, bool processFullDocs);
 }
 
 class DocumentationRendererHtml extends DocumentationRenderer {
   @override
-  Tuple2<String, String> render(List<md.Node> nodes, bool processFullDocs) {
+  DocumentationRenderResult render(List<md.Node> nodes, bool processFullDocs) {
     if (nodes.isEmpty) {
-      return Tuple2('', '');
+      return DocumentationRenderResult.empty;
     }
     var rawHtml = md.HtmlRenderer().render(nodes);
     var asHtmlDocument = parse(rawHtml);
@@ -49,6 +48,15 @@ class DocumentationRendererHtml extends DocumentationRenderer {
         ? ''
         : asHtmlDocument.body.children.first.innerHtml;
 
-    return Tuple2(asHtml, asOneLiner);
+    return DocumentationRenderResult(asHtml: asHtml, asOneLiner: asOneLiner);
   }
+}
+
+class DocumentationRenderResult {
+  static const empty = DocumentationRenderResult(asHtml: '', asOneLiner: '');
+
+  final String /*?*/ asHtml;
+  final String asOneLiner;
+
+  const DocumentationRenderResult({this.asHtml, this.asOneLiner = ''});
 }

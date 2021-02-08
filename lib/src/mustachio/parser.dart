@@ -177,7 +177,7 @@ class MustachioParser {
   ///
   /// [_index] should be at the character immediately following the `#`
   /// character which opens a possible section tag.
-  _TagParseResult _parseSection({@required invert}) {
+  _TagParseResult _parseSection({@required bool invert}) {
     var parsedKey = _parseKey();
     if (parsedKey.type == _KeyParseResultType.notKey) {
       return _TagParseResult.notTag;
@@ -407,6 +407,7 @@ enum _TagParseResultType {
 }
 
 /// The result of attempting to parse a Mustache tag.
+@immutable
 class _TagParseResult {
   final _TagParseResultType type;
 
@@ -432,15 +433,15 @@ class _TagParseResult {
 
   /// A [_TagParseResult] representing that EOF was reached, without parsing a
   /// tag.
-  static _TagParseResult endOfFile =
+  static final _TagParseResult endOfFile =
       _TagParseResult(_TagParseResultType.endOfFile, null, null);
 
   /// A [_TagParseResult] representing that a tag was not parsed.
-  static _TagParseResult notTag =
+  static final _TagParseResult notTag =
       _TagParseResult(_TagParseResultType.notTag, null, null);
 
   /// A [_TagParseResult] representing that a comment tag was parsed.
-  static _TagParseResult commentTag =
+  static final _TagParseResult commentTag =
       _TagParseResult(_TagParseResultType.commentTag, null, null);
 }
 
@@ -452,12 +453,13 @@ enum _KeyParseResultType {
 }
 
 /// The result of attempting to parse a Mustache key.
+@immutable
 class _KeyParseResult {
   final _KeyParseResultType type;
 
   final List<String> names;
 
-  _KeyParseResult._(this.type, this.names);
+  const _KeyParseResult._(this.type, this.names);
 
   factory _KeyParseResult(_KeyParseResultType type, String key) {
     if (key == '.') {
@@ -469,12 +471,12 @@ class _KeyParseResult {
 
   /// A [_KeyParseResult] representing that EOF was reached, without parsing a
   /// key.
-  static _KeyParseResult endOfFile =
-      _KeyParseResult._(_KeyParseResultType.endOfFile, null);
+  static const _KeyParseResult endOfFile =
+      _KeyParseResult._(_KeyParseResultType.endOfFile, []);
 
   /// A [_KeyParseResult] representing that a key was not parsed.
-  static _KeyParseResult notKey =
-      _KeyParseResult._(_KeyParseResultType.notKey, null);
+  static const _KeyParseResult notKey =
+      _KeyParseResult._(_KeyParseResultType.notKey, []);
 
   /// The reconstituted key, with periods separating names.
   String get joinedNames => names.join('.');
