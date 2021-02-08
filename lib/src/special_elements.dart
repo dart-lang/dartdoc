@@ -46,13 +46,15 @@ class _SpecialClassDefinition {
   /// If true, require this element to exist in the packageGraph when
   /// calling the [SpecialClasses] constructor.
   final bool required;
-  _SpecialClassDefinition(
+
+  const _SpecialClassDefinition(
       this.specialClass, this.name, this.libraryName, this.specialFileUri,
       {this.required = true, this.packageName = 'Dart'});
 
-  /// Get the filename for the Dart Library where this [specialClass] is
-  /// declared.
-  String getSpecialFilename(DartSdk sdk) =>
+  /// Get the filename for the Dart Library where this [ModelElement]
+  /// is declared, or `null` if its URI does not denote a library in
+  /// the specified SDK.
+  String /*?*/ getSpecialFilename(DartSdk sdk) =>
       sdk.mapDartUri(specialFileUri)?.fullName;
 
   bool matchesClass(Class modelClass) {
@@ -65,7 +67,7 @@ class _SpecialClassDefinition {
 /// All special classes we need to find here, indexed by class name.
 /// The index is a shortcut to reduce processing time for determining if
 /// a class might be "special".
-final Map<String, _SpecialClassDefinition> _specialClassDefinitions = {
+const Map<String, _SpecialClassDefinition> _specialClassDefinitions = {
   'Object': _SpecialClassDefinition(
       SpecialClass.object, 'Object', 'dart.core', 'dart:core'),
   'Interceptor': _SpecialClassDefinition(SpecialClass.interceptor,
