@@ -483,13 +483,15 @@ void main() {
   test('Template parser throws when it cannot read a partial', () async {
     var barTemplateFile = getFile('/project/src/bar.mustache')
       ..writeAsStringSync('Text {{#foo}}{{>missing.mustache}}{{/foo}}');
+    var missingTemplateFile = getFile('/project/src/missing.mustache');
     expect(
         () async => await Template.parse(barTemplateFile),
-        throwsA(const TypeMatcher<MustachioResolutionError>().having(
-            (e) => e.message,
-            'message',
-            contains(
-                'FileSystemException when reading partial "missing.mustache" '
-                'found in template "${barTemplateFile.path}"'))));
+        throwsA(const TypeMatcher<MustachioResolutionError>()
+            .having((e) => e.message, 'message', contains('''
+line 1, column 14 of ${barTemplateFile.path}: FileSystemException (File "${missingTemplateFile.path}" does not exist.) when reading partial:
+  ╷
+1 │ Text {{#foo}}{{>missing.mustache}}{{/foo}}
+  │              ^^^^^^^^^^^^^^^^^^^^^
+'''))));
   });
 }

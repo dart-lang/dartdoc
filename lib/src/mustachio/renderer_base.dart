@@ -89,7 +89,7 @@ class Template {
     // 2) In the case of a reference from a top-level template, user code has
     //    called [Template.parse], and the user is responsible for handling the
     //    exception.
-    var ast = MustachioParser(file.readAsStringSync()).parse();
+    var ast = MustachioParser(file.readAsStringSync(), file.path).parse();
     var nodeQueue = Queue.of(ast);
     var partials = <String, File>{};
 
@@ -115,9 +115,8 @@ class Template {
                 partialTemplates: {...partialTemplates});
             partialTemplates[partialFile] = partialTemplate;
           } on FileSystemException catch (e) {
-            throw MustachioResolutionError(
-                'FileSystemException when reading partial "$key" found in '
-                'template "${file.path}": ${e.message}');
+            throw MustachioResolutionError(node.span.message(
+                'FileSystemException (${e.message}) when reading partial:'));
           }
         }
       }
@@ -165,6 +164,8 @@ abstract class RendererBase<T> {
   /// [names] may have multiple dot-separate names, and [names] may not be a
   /// valid property of _this_ context type, in which the [parent] renderer is
   /// referenced.
+  // TODO(srawlins): Accept the [MustachioNode] here, so that the various errors
+  // can use the span.
   String getFields(List<String> names) {
     if (names.length == 1 && names.single == '.') {
       return context.toString();
@@ -213,6 +214,7 @@ abstract class RendererBase<T> {
     var property = getProperty(key);
     if (property == null) {
       if (parent == null) {
+        // TODO(srawlins): use the span of the key of [node] when implemented.
         throw MustachioResolutionError(
             'Failed to resolve $key as a property on any types in the current '
             'context');
