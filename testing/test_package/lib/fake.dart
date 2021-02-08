@@ -1022,6 +1022,7 @@ void paintImage2(String fooParam,
 ///
 /// This should refer to a class: [ReferToADefaultConstructor].
 /// This should refer to the constructor: [ReferToADefaultConstructor.ReferToADefaultConstructor].
+/// {@category AmazinglyExcellent}
 class ReferToADefaultConstructor {
   /// A default constructor.
   ReferToADefaultConstructor();

@@ -341,6 +341,21 @@ void main() {
           orderedEquals([0, 2, 3, 1, 0, 0]));
     });
 
+    test('Verify documented categories works for test_package', () {
+      var documentedCategories =
+          packageGraph.publicPackages.first.documentedCategories;
+      expect(documentedCategories.map((c) => c.name).toList(),
+          equals(['Unreal', 'AmazinglyExcellent', 'Superb']));
+    });
+
+    test('Verify documented categories respects categoryOrder for test_package',
+        () {
+      var documentedCategories =
+          packageGraph.publicPackages.first.documentedCategoriesSorted;
+      expect(documentedCategories.map((c) => c.name).toList(),
+          equals(['Unreal', 'Superb', 'AmazinglyExcellent']));
+    });
+
     test('Verify libraries with multiple categories show up in multiple places',
         () {
       var packageCategories = packageGraph.publicPackages.first.categories;

@@ -4,6 +4,7 @@
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
+import 'package:collection/collection.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -363,13 +364,15 @@ class Package extends LibraryContainer
     return categories
       ..sort((a, b) {
         final aIndex = indexed[a.name];
-        if (aIndex == null) {
-          return -1;
-        }
 
         final bIndex = indexed[b.name];
-        if (bIndex == null) {
+        if (aIndex == null) {
+          if (bIndex == null) {
+            return compareAsciiLowerCaseNatural(a.name, b.name);
+          }
           return 1;
+        } else if (bIndex == null) {
+          return -1;
         }
 
         return aIndex.compareTo(bIndex);
