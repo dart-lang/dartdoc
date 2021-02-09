@@ -20,7 +20,7 @@ class MustachioParser {
   /// The index of the character currently being parsed.
   int _index = 0;
 
-  MustachioParser(this.template, String url)
+  MustachioParser(this.template, Uri url)
       : _templateLength = template.length,
         _sourceFile = SourceFile.fromString(template, url: url);
 
