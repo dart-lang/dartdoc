@@ -4,6 +4,7 @@
 
 import 'package:charcode/charcode.dart';
 import 'package:meta/meta.dart';
+import 'package:source_span/source_span.dart';
 
 /// A [Mustache](https://mustache.github.io/mustache.5.html) parser for use by a
 /// generated Mustachio renderer.
@@ -14,10 +15,14 @@ class MustachioParser {
   /// The length of the template, in code units.
   final int _templateLength;
 
+  final SourceFile _sourceFile;
+
   /// The index of the character currently being parsed.
   int _index = 0;
 
-  MustachioParser(this.template) : _templateLength = template.length;
+  MustachioParser(this.template, Uri url)
+      : _templateLength = template.length,
+        _sourceFile = SourceFile.fromString(template, url: url);
 
   /// Parses [template] into a sequence of [MustachioNode]s.
   ///
@@ -46,7 +51,8 @@ class MustachioParser {
 
     void addTextNode(int startIndex, int endIndex) {
       if (endIndex > startIndex) {
-        children.add(Text(template.substring(startIndex, endIndex)));
+        children.add(Text(template.substring(startIndex, endIndex),
+            span: _sourceFile.span(startIndex, endIndex)));
       }
     }
 
@@ -96,6 +102,7 @@ class MustachioParser {
   /// [_index] should be at the character immediately following the open
   /// delimiter `{{`.
   _TagParseResult _parseTag() {
+    var tagStartIndex = _index - 2;
     _walkPastWhitespace();
     if (_atEnd) {
       return _TagParseResult.endOfFile;
@@ -103,21 +110,21 @@ class MustachioParser {
     var char = _thisChar;
     if (char == $hash) {
       _index++;
-      return _parseSection(invert: false);
+      return _parseSection(invert: false, tagStartIndex: tagStartIndex);
     } else if (char == $caret) {
       _index++;
-      return _parseSection(invert: true);
+      return _parseSection(invert: true, tagStartIndex: tagStartIndex);
     } else if (char == $slash) {
       _index++;
       return _parseEndSection();
     } else if (char == $gt) {
       _index++;
-      return _parsePartial();
+      return _parsePartial(tagStartIndex: tagStartIndex);
     } else if (char == $exclamation) {
       _index++;
       return _parseComment();
     } else {
-      return _parseVariable();
+      return _parseVariable(tagStartIndex: tagStartIndex);
     }
   }
 
@@ -144,7 +151,7 @@ class MustachioParser {
   ///
   /// [_index] should be at the character immediately following the `>`
   /// character which opens a possible partial tag.
-  _TagParseResult _parsePartial() {
+  _TagParseResult _parsePartial({@required int tagStartIndex}) {
     var startIndex = _index;
     int endIndex;
     while (true) {
@@ -170,14 +177,16 @@ class MustachioParser {
     _index += 2;
 
     var key = template.substring(startIndex, endIndex);
-    return _TagParseResult.ok(Partial(key));
+    return _TagParseResult.ok(
+        Partial(key, span: _sourceFile.span(tagStartIndex, _index)));
   }
 
   /// Tries to parse a section tag at [_index].
   ///
   /// [_index] should be at the character immediately following the `#`
   /// character which opens a possible section tag.
-  _TagParseResult _parseSection({@required bool invert}) {
+  _TagParseResult _parseSection(
+      {@required bool invert, @required int tagStartIndex}) {
     var parsedKey = _parseKey();
     if (parsedKey.type == _KeyParseResultType.notKey) {
       return _TagParseResult.notTag;
@@ -186,6 +195,7 @@ class MustachioParser {
     }
 
     var children = _parseBlock(sectionKey: parsedKey.joinedNames);
+    var span = _sourceFile.span(tagStartIndex, _index);
 
     if (parsedKey.names.length > 1) {
       // Desugar section with dots into nested sections.
@@ -198,15 +208,20 @@ class MustachioParser {
       // inside the section, are the children of the [three] section. The
       // [three] section is the singular child node of the [two] section, and
       // the [two] section is the singular child of the [one] section.
-      var section = Section([parsedKey.names.last], children, invert: invert);
+      var section =
+          Section([parsedKey.names.last], children, invert: invert, span: span);
       for (var sectionKey in parsedKey.names.reversed.skip(1)) {
-        section = Section([sectionKey], [section], invert: false);
+        section = Section([sectionKey], [section],
+            invert: false,
+            // TODO(srawlins): It may not make sense to use [span] here; we
+            // might want to do the work to find the span of [sectionKey].
+            span: span);
       }
       return _TagParseResult.ok(section);
     }
 
     return _TagParseResult.ok(
-        Section(parsedKey.names, children, invert: invert));
+        Section(parsedKey.names, children, invert: invert, span: span));
   }
 
   /// Tries to parse an end tag at [_index].
@@ -228,7 +243,7 @@ class MustachioParser {
   ///
   /// [_index] should be at the character immediately following the `{{`
   /// characters which open a possible variable tag.
-  _TagParseResult _parseVariable() {
+  _TagParseResult _parseVariable({@required int tagStartIndex}) {
     var escape = true;
     if (_thisChar == $lbrace) {
       escape = false;
@@ -242,7 +257,8 @@ class MustachioParser {
       return _TagParseResult.endOfFile;
     }
 
-    return _TagParseResult.ok(Variable(parsedKey.names, escape: escape));
+    return _TagParseResult.ok(Variable(parsedKey.names,
+        escape: escape, span: _sourceFile.span(tagStartIndex, _index)));
   }
 
   /// Tries to parse a key at [_index].
@@ -347,14 +363,19 @@ class MustachioParser {
 
 /// An interface for various types of node in a Mustache template.
 @sealed
-abstract class MustachioNode {}
+abstract class MustachioNode {
+  SourceSpan get span;
+}
 
 /// A Text node, representing literal text.
 @immutable
 class Text implements MustachioNode {
   final String content;
 
-  Text(this.content);
+  @override
+  final SourceSpan span;
+
+  Text(this.content, {@required this.span});
 
   @override
   String toString() => 'Text["$content"]';
@@ -367,7 +388,10 @@ class Variable implements MustachioNode {
 
   final bool escape;
 
-  Variable(this.key, {@required this.escape});
+  @override
+  final SourceSpan span;
+
+  Variable(this.key, {@required this.escape, @required this.span});
 
   @override
   String toString() => 'Variable[$key, escape=$escape]';
@@ -383,7 +407,11 @@ class Section implements MustachioNode {
 
   final List<MustachioNode> children;
 
-  Section(this.key, this.children, {@required this.invert});
+  @override
+  final SourceSpan span;
+
+  Section(this.key, this.children,
+      {@required this.invert, @required this.span});
 
   @override
   String toString() => 'Section[$key, invert=$invert]';
@@ -394,7 +422,10 @@ class Section implements MustachioNode {
 class Partial implements MustachioNode {
   final String key;
 
-  Partial(this.key);
+  @override
+  final SourceSpan span;
+
+  Partial(this.key, {@required this.span});
 }
 
 /// An enumeration of types of tag parse results.
