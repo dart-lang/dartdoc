@@ -164,9 +164,8 @@ abstract class RendererBase<T> {
   /// [names] may have multiple dot-separate names, and [names] may not be a
   /// valid property of _this_ context type, in which the [parent] renderer is
   /// referenced.
-  // TODO(srawlins): Accept the [MustachioNode] here, so that the various errors
-  // can use the span.
-  String getFields(List<String> names) {
+  String getFields(Variable node) {
+    var names = node.key;
     if (names.length == 1 && names.single == '.') {
       return context.toString();
     }
@@ -178,18 +177,18 @@ abstract class RendererBase<T> {
       } on PartialMustachioResolutionError catch (e) {
         // The error thrown by [Property.renderVariable] does not have all of
         // the names required for a decent error. We throw a new error here.
-        throw MustachioResolutionError(
+        throw MustachioResolutionError(node.keySpan.message(
             "Failed to resolve '${e.name}' on ${e.contextType} while resolving "
             '$remainingNames as a property chain on any types in the context '
             "chain: $contextChainString, after first resolving '${names.first}' "
-            'to a property on $T');
+            'to a property on $T'));
       }
     } else if (parent != null) {
-      return parent.getFields(names);
+      return parent.getFields(node);
     } else {
-      throw MustachioResolutionError(
-          'Failed to resolve ${names.first} as a property on any types in the '
-          'context chain: $contextChainString');
+      throw MustachioResolutionError(node.keySpan.message(
+          "Failed to resolve '${names.first}' as a property on any types in the "
+          'context chain: $contextChainString'));
     }
   }
 
@@ -199,7 +198,7 @@ abstract class RendererBase<T> {
       if (node is Text) {
         write(node.content);
       } else if (node is Variable) {
-        var content = getFields(node.key);
+        var content = getFields(node);
         write(content);
       } else if (node is Section) {
         section(node);
@@ -214,10 +213,9 @@ abstract class RendererBase<T> {
     var property = getProperty(key);
     if (property == null) {
       if (parent == null) {
-        // TODO(srawlins): use the span of the key of [node] when implemented.
-        throw MustachioResolutionError(
-            'Failed to resolve $key as a property on any types in the current '
-            'context');
+        throw MustachioResolutionError(node.keySpan.message(
+            "Failed to resolve '$key' as a property on any types in the current "
+            'context'));
       } else {
         return parent.section(node);
       }
@@ -277,12 +275,13 @@ class SimpleRenderer extends RendererBase<Object> {
   Property<Object> getProperty(String key) => null;
 
   @override
-  String getFields(List<String> keyParts) {
-    if (keyParts.length == 1 && keyParts.single == '.') {
+  String getFields(Variable node) {
+    var names = node.key;
+    if (names.length == 1 && names.single == '.') {
       return context.toString();
     }
     if (parent != null) {
-      return parent.getFields(keyParts);
+      return parent.getFields(node);
     } else {
       return 'null';
     }

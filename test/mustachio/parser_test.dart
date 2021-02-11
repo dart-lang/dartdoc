@@ -103,7 +103,8 @@ void main() {
     var ast = parser.parse();
     expect(ast, hasLength(2));
     _expectText(ast[0], equals('Text '), spanStart: 0, spanEnd: 5);
-    _expectVariable(ast[1], equals(['key']), spanStart: 5, spanEnd: 12);
+    _expectVariable(ast[1], equals(['key']),
+        spanStart: 5, spanEnd: 12, keySpanStart: 7, keySpanEnd: 10);
   });
 
   test('parses variable with whitespace', () {
@@ -111,7 +112,8 @@ void main() {
     var ast = parser.parse();
     expect(ast, hasLength(2));
     _expectText(ast[0], equals('Text '));
-    _expectVariable(ast[1], equals(['key']), spanStart: 5, spanEnd: 16);
+    _expectVariable(ast[1], equals(['key']),
+        spanStart: 5, spanEnd: 16, keySpanStart: 9, keySpanEnd: 12);
   });
 
   test('parses variable with newlines', () {
@@ -119,7 +121,8 @@ void main() {
     var ast = parser.parse();
     expect(ast, hasLength(2));
     _expectText(ast[0], equals('Text '));
-    _expectVariable(ast[1], equals(['key']), spanStart: 5, spanEnd: 20);
+    _expectVariable(ast[1], equals(['key']),
+        spanStart: 5, spanEnd: 20, keySpanStart: 11, keySpanEnd: 14);
   });
 
   test('parses variable with triple mustaches', () {
@@ -128,7 +131,11 @@ void main() {
     expect(ast, hasLength(2));
     _expectText(ast[0], equals('Text '));
     _expectVariable(ast[1], equals(['key']),
-        escape: false, spanStart: 5, spanEnd: 14);
+        escape: false,
+        spanStart: 5,
+        spanEnd: 14,
+        keySpanStart: 8,
+        keySpanEnd: 11);
   });
 
   test('parses variable with triple mustaches, whitespace', () {
@@ -137,7 +144,11 @@ void main() {
     expect(ast, hasLength(2));
     _expectText(ast[0], equals('Text '));
     _expectVariable(ast[1], equals(['key']),
-        escape: false, spanStart: 5, spanEnd: 18);
+        escape: false,
+        spanStart: 5,
+        spanEnd: 18,
+        keySpanStart: 10,
+        keySpanEnd: 13);
   });
 
   test('parses "." pseudo-variable', () {
@@ -145,7 +156,8 @@ void main() {
     var ast = parser.parse();
     expect(ast, hasLength(2));
     _expectText(ast[0], equals('Text '));
-    _expectVariable(ast[1], equals(['.']), spanStart: 5, spanEnd: 10);
+    _expectVariable(ast[1], equals(['.']),
+        spanStart: 5, spanEnd: 10, keySpanStart: 7, keySpanEnd: 8);
   });
 
   test('parses "." pseudo-variable with whitespace', () {
@@ -153,7 +165,8 @@ void main() {
     var ast = parser.parse();
     expect(ast, hasLength(2));
     _expectText(ast[0], equals('Text '));
-    _expectVariable(ast[1], equals(['.']), spanStart: 5, spanEnd: 12);
+    _expectVariable(ast[1], equals(['.']),
+        spanStart: 5, spanEnd: 12, keySpanStart: 8, keySpanEnd: 9);
   });
 
   test('parses variable with multiple names', () {
@@ -161,7 +174,8 @@ void main() {
     var ast = parser.parse();
     expect(ast, hasLength(2));
     _expectText(ast[0], equals('Text '));
-    _expectVariable(ast[1], equals(['a', 'b']), spanStart: 5, spanEnd: 12);
+    _expectVariable(ast[1], equals(['a', 'b']),
+        spanStart: 5, spanEnd: 12, keySpanStart: 7, keySpanEnd: 10);
   });
 
   test('parses variable with multiple names and whitespace', () {
@@ -169,7 +183,8 @@ void main() {
     var ast = parser.parse();
     expect(ast, hasLength(2));
     _expectText(ast[0], equals('Text '));
-    _expectVariable(ast[1], equals(['a', 'b']), spanStart: 5, spanEnd: 14);
+    _expectVariable(ast[1], equals(['a', 'b']),
+        spanStart: 5, spanEnd: 14, keySpanStart: 8, keySpanEnd: 11);
   });
 
   test('parses almost-variable with trailing "." as text', () {
@@ -208,7 +223,8 @@ void main() {
     expect(ast, hasLength(2));
     _expectText(ast[0], equals('Text '));
     var section = ast[1] as Section;
-    _expectSection(section, equals(['key']), spanStart: 5, spanEnd: 33);
+    _expectSection(section, equals(['key']),
+        spanStart: 5, spanEnd: 33, keySpanStart: 8, keySpanEnd: 11);
     expect(section.children, hasLength(1));
     _expectText(section.children.single, equals('Section text'),
         spanStart: 13, spanEnd: 25);
@@ -243,12 +259,15 @@ void main() {
     expect(ast, hasLength(2));
     _expectText(ast[0], equals('Text '));
     var sectionOne = ast[1] as Section;
-    _expectSection(sectionOne, equals(['one']), spanStart: 5, spanEnd: 45);
+    _expectSection(sectionOne, equals(['one']),
+        spanStart: 5, spanEnd: 45, keySpanStart: 8, keySpanEnd: 11);
     expect(sectionOne.children, hasLength(1));
     var sectionTwo = sectionOne.children[0] as Section;
-    _expectSection(sectionTwo, equals(['two']), spanStart: 5, spanEnd: 45);
+    _expectSection(sectionTwo, equals(['two']),
+        spanStart: 5, spanEnd: 45, keySpanStart: 12, keySpanEnd: 15);
     var sectionThree = sectionTwo.children[0] as Section;
-    _expectSection(sectionThree, equals(['three']));
+    _expectSection(sectionThree, equals(['three']),
+        spanStart: 5, spanEnd: 45, keySpanStart: 16, keySpanEnd: 21);
     _expectText(sectionThree.children[0], equals('Text'),
         spanStart: 23, spanEnd: 27);
   });
@@ -260,11 +279,16 @@ void main() {
     expect(ast, hasLength(2));
     _expectText(ast[0], equals('Text '));
     var sectionOne = ast[1] as Section;
-    _expectSection(sectionOne, equals(['one']), spanStart: 5, spanEnd: 33);
+    _expectSection(sectionOne, equals(['one']),
+        spanStart: 5, spanEnd: 33, keySpanStart: 8, keySpanEnd: 11);
     expect(sectionOne.children, hasLength(1));
     var sectionTwo = sectionOne.children[0] as Section;
     _expectSection(sectionTwo, equals(['two']),
-        invert: true, spanStart: 5, spanEnd: 33);
+        invert: true,
+        spanStart: 5,
+        spanEnd: 33,
+        keySpanStart: 12,
+        keySpanEnd: 15);
     _expectText(sectionTwo.children[0], equals('Text'));
   });
 
@@ -344,7 +368,11 @@ void main() {
     _expectText(ast[0], equals('Text '));
     var section = ast[1] as Section;
     _expectSection(section, equals(['key']),
-        invert: true, spanStart: 5, spanEnd: 25);
+        invert: true,
+        spanStart: 5,
+        spanEnd: 25,
+        keySpanStart: 8,
+        keySpanEnd: 11);
     expect(section.children, hasLength(1));
     _expectText(section.children[0], equals(' AA '));
   });
@@ -361,7 +389,8 @@ void main() {
     var ast = parser.parse();
     expect(ast, hasLength(2));
     _expectText(ast[0], equals('Text '));
-    _expectPartial(ast[1], equals('partial'), spanStart: 5, spanEnd: 19);
+    _expectPartial(ast[1], equals('partial'),
+        spanStart: 5, spanEnd: 19, keySpanStart: 9, keySpanEnd: 16);
   });
 
   test('parses partial with various chars', () {
@@ -371,7 +400,7 @@ void main() {
     expect(ast, hasLength(2));
     _expectText(ast[0], equals('Text '));
     _expectPartial(ast[1], equals('Text,punct.`!@#\$%^&*()-=+'),
-        spanStart: 5, spanEnd: 37);
+        spanStart: 5, spanEnd: 37, keySpanStart: 9, keySpanEnd: 34);
   });
 }
 
@@ -391,7 +420,11 @@ void _expectText(MustachioNode node, Object matcher,
 }
 
 void _expectVariable(MustachioNode node, Object matcher,
-    {bool escape = true, int spanStart, int spanEnd}) {
+    {bool escape = true,
+    int spanStart,
+    int spanEnd,
+    int keySpanStart,
+    int keySpanEnd}) {
   expect(
       node,
       isA<Variable>()
@@ -399,20 +432,29 @@ void _expectVariable(MustachioNode node, Object matcher,
           .having((e) => e.escape, 'escape', escape));
   if (spanStart != null) {
     var actualSpanStart = (node as Variable).span.start.offset;
-    expect(actualSpanStart, spanStart,
-        reason: 'Variable span start offset expected to be $spanStart but was '
-            '$actualSpanStart');
+    _expectSpanOffset('Variable', 'start', actualSpanStart, spanStart);
   }
   if (spanEnd != null) {
     var actualSpanEnd = (node as Variable).span.end.offset;
-    expect(actualSpanEnd, spanEnd,
-        reason: 'Variable span end offset expected to be $spanEnd but was '
-            '$actualSpanEnd');
+    _expectSpanOffset('Variable', 'end', actualSpanEnd, spanEnd);
+  }
+  if (keySpanStart != null) {
+    var actualKeySpanStart = (node as Variable).keySpan.start.offset;
+    _expectSpanOffset(
+        'Variable key', 'start', actualKeySpanStart, keySpanStart);
+  }
+  if (keySpanEnd != null) {
+    var actualKeySpanEnd = (node as Variable).keySpan.end.offset;
+    _expectSpanOffset('Variable key', 'end', actualKeySpanEnd, keySpanEnd);
   }
 }
 
 void _expectSection(MustachioNode node, Object matcher,
-    {bool invert = false, int spanStart, int spanEnd}) {
+    {bool invert = false,
+    int spanStart,
+    int spanEnd,
+    int keySpanStart,
+    int keySpanEnd}) {
   expect(
       node,
       isA<Section>()
@@ -420,31 +462,47 @@ void _expectSection(MustachioNode node, Object matcher,
           .having((e) => e.invert, 'invert', invert));
   if (spanStart != null) {
     var actualSpanStart = (node as Section).span.start.offset;
-    expect(actualSpanStart, spanStart,
-        reason: 'Section span start offset expected to be $spanStart but was '
-            '$actualSpanStart');
+    _expectSpanOffset('Section', 'start', actualSpanStart, spanStart);
   }
   if (spanEnd != null) {
     var actualSpanEnd = (node as Section).span.end.offset;
-    expect(actualSpanEnd, spanEnd,
-        reason: 'Section span end offset expected to be $spanEnd but was '
-            '$actualSpanEnd');
+    _expectSpanOffset('Section', 'end', actualSpanEnd, spanEnd);
+  }
+  if (keySpanStart != null) {
+    var actualKeySpanStart = (node as Section).keySpan.start.offset;
+    _expectSpanOffset('Section key', 'start', actualKeySpanStart, keySpanStart);
+  }
+  if (keySpanEnd != null) {
+    var actualKeySpanEnd = (node as Section).keySpan.end.offset;
+    _expectSpanOffset('Section key', 'end', actualKeySpanEnd, keySpanEnd);
   }
 }
 
 void _expectPartial(MustachioNode node, Object matcher,
-    {int spanStart, int spanEnd}) {
+    {int spanStart, int spanEnd, int keySpanStart, int keySpanEnd}) {
   expect(node, isA<Partial>().having((e) => e.key, 'key', matcher));
   if (spanStart != null) {
     var actualSpanStart = (node as Partial).span.start.offset;
-    expect(actualSpanStart, spanStart,
-        reason: 'Partial span start offset expected to be $spanStart but was '
-            '$actualSpanStart');
+    _expectSpanOffset('Partial', 'start', actualSpanStart, spanStart);
   }
   if (spanEnd != null) {
     var actualSpanEnd = (node as Partial).span.end.offset;
-    expect(actualSpanEnd, spanEnd,
-        reason: 'Partial span end offset expected to be $spanEnd but was '
-            '$actualSpanEnd');
+    _expectSpanOffset('Partial', 'end', actualSpanEnd, spanEnd);
   }
+  if (keySpanStart != null) {
+    var actualKeySpanStart = (node as Partial).keySpan.start.offset;
+    _expectSpanOffset('Partial key', 'start', actualKeySpanStart, keySpanStart);
+  }
+  if (keySpanEnd != null) {
+    var actualKeySpanEnd = (node as Partial).keySpan.end.offset;
+    _expectSpanOffset('Partial key', 'end', actualKeySpanEnd, keySpanEnd);
+  }
+}
+
+void _expectSpanOffset(
+    String nodeType, String offsetType, int actualOffset, int expectedOffset) {
+  expect(actualOffset, expectedOffset,
+      reason:
+          '$nodeType span $offsetType offset expected to be $expectedOffset '
+          'but was $actualOffset');
 }
