@@ -25,6 +25,7 @@ String _render_Foo(Foo context, List<MustachioNode> ast, Template template,
 
 class Renderer_Foo extends RendererBase<Foo> {
   static Map<String, Property<CT_>> propertyMap<CT_ extends Foo>() => {
+        ...Renderer_FooBase.propertyMap<Baz, CT_>(),
         'b1': Property(
           getValue: (CT_ c) => c.b1,
           renderVariable:
@@ -72,7 +73,6 @@ class Renderer_Foo extends RendererBase<Foo> {
             return renderSimple(c.s1, ast, r.template, parent: r);
           },
         ),
-        ...Renderer_Object.propertyMap<CT_>(),
       };
 
   Renderer_Foo(Foo context, RendererBase<Object> parent, Template template)
@@ -124,6 +124,45 @@ class Renderer_Object extends RendererBase<Object> {
   }
 }
 
+String _render_FooBase<T extends Object>(
+    FooBase<T> context, List<MustachioNode> ast, Template template,
+    {RendererBase<Object> parent}) {
+  var renderer = Renderer_FooBase(context, parent, template);
+  renderer.renderBlock(ast);
+  return renderer.buffer.toString();
+}
+
+class Renderer_FooBase<T extends Object> extends RendererBase<FooBase<T>> {
+  static Map<String, Property<CT_>>
+      propertyMap<T extends Object, CT_ extends FooBase>() => {
+            ...Renderer_Object.propertyMap<CT_>(),
+            'baz': Property(
+              getValue: (CT_ c) => c.baz,
+              renderVariable:
+                  (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                if (remainingNames.isEmpty) return self.getValue(c).toString();
+                var name = remainingNames.first;
+                var nextProperty = Renderer_Object.propertyMap().getValue(name);
+                return nextProperty.renderVariable(self.getValue(c),
+                    nextProperty, [...remainingNames.skip(1)]);
+              },
+            ),
+          };
+
+  Renderer_FooBase(
+      FooBase<T> context, RendererBase<Object> parent, Template template)
+      : super(context, parent, template);
+
+  @override
+  Property<FooBase<T>> getProperty(String key) {
+    if (propertyMap<T, FooBase>().containsKey(key)) {
+      return propertyMap<T, FooBase>()[key];
+    } else {
+      return null;
+    }
+  }
+}
+
 String renderBar(Bar context, Template template) {
   return _render_Bar(context, template.ast, template);
 }
@@ -137,6 +176,7 @@ String _render_Bar(Bar context, List<MustachioNode> ast, Template template,
 
 class Renderer_Bar extends RendererBase<Bar> {
   static Map<String, Property<CT_>> propertyMap<CT_ extends Bar>() => {
+        ...Renderer_Object.propertyMap<CT_>(),
         'baz': Property(
           getValue: (CT_ c) => c.baz,
           renderVariable:
@@ -184,7 +224,6 @@ class Renderer_Bar extends RendererBase<Bar> {
             return renderSimple(c.s2, ast, r.template, parent: r);
           },
         ),
-        ...Renderer_Object.propertyMap<CT_>(),
       };
 
   Renderer_Bar(Bar context, RendererBase<Object> parent, Template template)
@@ -213,6 +252,7 @@ String _render_Baz(Baz context, List<MustachioNode> ast, Template template,
 
 class Renderer_Baz extends RendererBase<Baz> {
   static Map<String, Property<CT_>> propertyMap<CT_ extends Baz>() => {
+        ...Renderer_Object.propertyMap<CT_>(),
         'bar': Property(
           getValue: (CT_ c) => c.bar,
           renderVariable:
@@ -228,7 +268,6 @@ class Renderer_Baz extends RendererBase<Baz> {
             return _render_Bar(c.bar, ast, r.template, parent: r);
           },
         ),
-        ...Renderer_Object.propertyMap<CT_>(),
       };
 
   Renderer_Baz(Baz context, RendererBase<Object> parent, Template template)

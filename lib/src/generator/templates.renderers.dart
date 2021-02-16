@@ -28,6 +28,7 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
   static Map<String, Property<CT_>> propertyMap<
           CT_ extends PackageTemplateData>() =>
       {
+        ..._Renderer_TemplateData.propertyMap<Package, CT_>(),
         'hasHomepage': Property(
           getValue: (CT_ c) => c.hasHomepage,
           renderVariable:
@@ -138,7 +139,6 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
             return renderSimple(c.title, ast, r.template, parent: r);
           },
         ),
-        ..._Renderer_TemplateData.propertyMap<Package, CT_>(),
       };
 
   _Renderer_PackageTemplateData(PackageTemplateData context,
@@ -165,6 +165,11 @@ String _render_Package(
 
 class _Renderer_Package extends RendererBase<Package> {
   static Map<String, Property<CT_>> propertyMap<CT_ extends Package>() => {
+        ..._Renderer_LibraryContainer.propertyMap<CT_>(),
+        ..._Renderer_Nameable.propertyMap<CT_>(),
+        ..._Renderer_Locatable.propertyMap<CT_>(),
+        ..._Renderer_Canonicalization.propertyMap<CT_>(),
+        ..._Renderer_Warnable.propertyMap<CT_>(),
         'allLibraries': Property(
           getValue: (CT_ c) => c.allLibraries,
           renderVariable:
@@ -696,11 +701,6 @@ class _Renderer_Package extends RendererBase<Package> {
             return renderSimple(c.version, ast, r.template, parent: r);
           },
         ),
-        ..._Renderer_LibraryContainer.propertyMap<CT_>(),
-        ..._Renderer_Nameable.propertyMap<CT_>(),
-        ..._Renderer_Locatable.propertyMap<CT_>(),
-        ..._Renderer_Canonicalization.propertyMap<CT_>(),
-        ..._Renderer_Warnable.propertyMap<CT_>(),
       };
 
   _Renderer_Package(
@@ -727,6 +727,7 @@ String _render_Nameable(
 
 class _Renderer_Nameable extends RendererBase<Nameable> {
   static Map<String, Property<CT_>> propertyMap<CT_ extends Nameable>() => {
+        ..._Renderer_Object.propertyMap<CT_>(),
         'fullyQualifiedName': Property(
           getValue: (CT_ c) => c.fullyQualifiedName,
           renderVariable:
@@ -773,7 +774,6 @@ class _Renderer_Nameable extends RendererBase<Nameable> {
             return buffer.toString();
           },
         ),
-        ..._Renderer_Object.propertyMap<CT_>(),
       };
 
   _Renderer_Nameable(
@@ -800,6 +800,7 @@ String _render_Locatable(
 
 class _Renderer_Locatable extends RendererBase<Locatable> {
   static Map<String, Property<CT_>> propertyMap<CT_ extends Locatable>() => {
+        ..._Renderer_Object.propertyMap<CT_>(),
         'documentationFrom': Property(
           getValue: (CT_ c) => c.documentationFrom,
           renderVariable: (CT_ c, Property<CT_> self,
@@ -853,7 +854,6 @@ class _Renderer_Locatable extends RendererBase<Locatable> {
             return renderSimple(c.location, ast, r.template, parent: r);
           },
         ),
-        ..._Renderer_Object.propertyMap<CT_>(),
       };
 
   _Renderer_Locatable(
@@ -882,6 +882,7 @@ class _Renderer_Canonicalization extends RendererBase<Canonicalization> {
   static Map<String, Property<CT_>> propertyMap<
           CT_ extends Canonicalization>() =>
       {
+        ..._Renderer_Object.propertyMap<CT_>(),
         'canonicalLibrary': Property(
           getValue: (CT_ c) => c.canonicalLibrary,
           renderVariable:
@@ -930,7 +931,6 @@ class _Renderer_Canonicalization extends RendererBase<Canonicalization> {
             return buffer.toString();
           },
         ),
-        ..._Renderer_Object.propertyMap<CT_>(),
       };
 
   _Renderer_Canonicalization(
@@ -1026,6 +1026,7 @@ class _Renderer_LibraryContainer extends RendererBase<LibraryContainer> {
   static Map<String, Property<CT_>> propertyMap<
           CT_ extends LibraryContainer>() =>
       {
+        ..._Renderer_Object.propertyMap<CT_>(),
         'containerOrder': Property(
           getValue: (CT_ c) => c.containerOrder,
           renderVariable:
@@ -1130,7 +1131,6 @@ class _Renderer_LibraryContainer extends RendererBase<LibraryContainer> {
             return renderSimple(c.sortKey, ast, r.template, parent: r);
           },
         ),
-        ..._Renderer_Object.propertyMap<CT_>(),
       };
 
   _Renderer_LibraryContainer(
@@ -1196,6 +1196,7 @@ class _Renderer_TemplateData<T extends Documentable>
   static Map<String, Property<CT_>> propertyMap<T extends Documentable,
           CT_ extends TemplateData>() =>
       {
+        ..._Renderer_Object.propertyMap<CT_>(),
         'bareHref': Property(
           getValue: (CT_ c) => c.bareHref,
           renderVariable:
@@ -1360,6 +1361,16 @@ class _Renderer_TemplateData<T extends Documentable>
                 parent: r);
           },
         ),
+        'self': Property(
+          getValue: (CT_ c) => c.self,
+          renderVariable:
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'Documentable'),
+          isNullValue: (CT_ c) => c.self == null,
+          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+            return renderSimple(c.self, ast, r.template, parent: r);
+          },
+        ),
         'title': Property(
           getValue: (CT_ c) => c.title,
           renderVariable:
@@ -1387,7 +1398,6 @@ class _Renderer_TemplateData<T extends Documentable>
             return renderSimple(c.version, ast, r.template, parent: r);
           },
         ),
-        ..._Renderer_Object.propertyMap<CT_>(),
       };
 
   _Renderer_TemplateData(

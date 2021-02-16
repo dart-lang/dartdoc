@@ -317,12 +317,6 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
         '$_contextTypeVariable extends ${renderer._typeName}');
     _buffer.writeln('static Map<String, Property<$_contextTypeVariable>> '
         'propertyMap$generics() => {');
-    var interfaceTypedProperties = contextClass.accessors
-        .where((property) => property.type.returnType is InterfaceType);
-    for (var property in [...interfaceTypedProperties]
-      ..sort((a, b) => a.name.compareTo(b.name))) {
-      _writeProperty(renderer, property);
-    }
     if (contextClass.supertype != null) {
       var superclassRendererName =
           _typeToRendererClassName[contextClass.supertype.element];
@@ -356,13 +350,24 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
         }
       }
     }
+    for (var property in [...contextClass.accessors]
+      ..sort((a, b) => a.name.compareTo(b.name))) {
+      var returnType = property.type.returnType;
+      if (returnType is InterfaceType) {
+        _writeProperty(renderer, property, returnType);
+      } else if (returnType is TypeParameterType &&
+          returnType.bound != null &&
+          !returnType.bound.isDynamic) {
+        _writeProperty(renderer, property, returnType.bound);
+      }
+    }
     _buffer.writeln('};');
     _buffer.writeln('');
   }
 
-  void _writeProperty(
-      _RendererInfo renderer, PropertyAccessorElement property) {
-    var getterType = property.type.returnType as InterfaceType;
+  void _writeProperty(_RendererInfo renderer, PropertyAccessorElement property,
+      InterfaceType getterType) {
+    //var getterType = property.type.returnType as InterfaceType;
     if (getterType == _typeProvider.typeType) {
       // The [Type] type is the first case of a type we don't want to traverse.
       return;
@@ -409,16 +414,18 @@ renderVariable:
         getterType, _typeProvider.iterableDynamicType)) {
       var iterableElement = _typeProvider.iterableElement;
       var iterableType = getterType.asInstanceOf(iterableElement);
-      var innerType = iterableType.typeArguments.first;
-      // Don't add Iterable functions for a generic type, for example
-      // `List<E>.reversed` has inner type `E`, which we don't have a specific
-      // renderer for.
-      // TODO(srawlins): Find a solution for this. We can track all of the
-      // concrete types substituted for `E` for example.
-      if (innerType is! TypeParameterType) {
-        var rendererName =
-            _typeToRenderFunctionName[innerType.element] ?? 'renderSimple';
-        _buffer.writeln('''
+      // Not sure why [iterableType] would be null... unresolved type?
+      if (iterableType != null) {
+        var innerType = iterableType.typeArguments.first;
+        // Don't add Iterable functions for a generic type, for example
+        // `List<E>.reversed` has inner type `E`, which we don't have a specific
+        // renderer for.
+        // TODO(srawlins): Find a solution for this. We can track all of the
+        // concrete types substituted for `E` for example.
+        if (innerType is! TypeParameterType) {
+          var rendererName =
+              _typeToRenderFunctionName[innerType.element] ?? 'renderSimple';
+          _buffer.writeln('''
 isEmptyIterable: ($_contextTypeVariable c) => c.$getterName?.isEmpty ?? true,
 
 renderIterable:
@@ -430,6 +437,7 @@ renderIterable:
   return buffer.toString();
 },
 ''');
+        }
       }
     } else {
       // Don't add Iterable functions for a generic type, for example
