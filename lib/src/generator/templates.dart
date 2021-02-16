@@ -4,7 +4,19 @@
 
 // TODO(srawlins): Add Renderer annotations for more types as the mustachio
 // implementation matures.
-@Renderer(#renderIndex, Context<PackageTemplateData>(), visibleTypes: {Package})
+@Renderer(#renderCategory, Context<CategoryTemplateData>())
+@Renderer(#renderClass, Context<ClassTemplateData>())
+@Renderer(#renderConstructor, Context<ConstructorTemplateData>())
+@Renderer(#renderEnum, Context<EnumTemplateData>())
+@Renderer(#renderExtension, Context<ExtensionTemplateData>())
+@Renderer(#renderFunction, Context<FunctionTemplateData>())
+@Renderer(#renderIndex, Context<PackageTemplateData>())
+@Renderer(#renderLibrary, Context<LibraryTemplateData>())
+@Renderer(#renderMethod, Context<MethodTemplateData>())
+@Renderer(#renderMixin, Context<MixinTemplateData>())
+@Renderer(#renderProperty, Context<PropertyTemplateData>())
+@Renderer(#renderTopLevelProperty, Context<TopLevelPropertyTemplateData>())
+@Renderer(#renderTypedef, Context<TypedefTemplateData>())
 library dartdoc.templates;
 
 import 'package:analyzer/file_system/file_system.dart';

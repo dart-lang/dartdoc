@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/options.dart';
 import 'package:dartdoc/src/generator/generator_frontend.dart';
@@ -11,6 +12,7 @@ import 'package:dartdoc/src/generator/templates.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model/package.dart';
 import 'package:dartdoc/src/model/package_graph.dart';
+import 'package:dartdoc/src/mustachio/renderer_base.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:mustache/mustache.dart';
 import 'package:path/path.dart' as path show Context;
@@ -90,11 +92,22 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
         sidebarForLibrary = SidebarGenerator(templates.sidebarLibraryTemplate);
 
   /// Helper method to bind template data and emit the content to the writer.
-  void render(FileWriter writer, String filename, Template template,
+  void render0(FileWriter writer, String filename, Template template,
       TemplateData data) {
     var content = template.renderString(data);
     if (!options.useBaseHref) {
       content = content.replaceAll(htmlBasePlaceholder, data.htmlBase);
+    }
+    writer.write(filename, content,
+        element: data.self is Warnable ? data.self : null);
+  }
+
+  /// Helper method to bind template data and emit the content to the writer.
+  void render<T extends TemplateData>(FileWriter writer, String filename,
+      RenderFunction<T> renderTemplate, T data) {
+    var content = renderTemplate(data, FILE);
+    if (!options.useBaseHref) {
+      content = content.replaceAll(HTMLBASE_PLACEHOLDER, data.htmlBase);
     }
     writer.write(filename, content,
         element: data.self is Warnable ? data.self : null);
@@ -128,7 +141,7 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
   @override
   void generatePackage(FileWriter writer, PackageGraph graph, Package package) {
     TemplateData data = PackageTemplateData(options, graph, package);
-    render(writer, package.filePath, templates.indexTemplate, data);
+    render0(writer, package.filePath, templates.indexTemplate, data);
   }
 
   @override
@@ -143,7 +156,7 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
       FileWriter writer, PackageGraph packageGraph, Library lib) {
     TemplateData data = LibraryTemplateData(
         options, packageGraph, lib, sidebarForLibrary.getRenderFor);
-    render(writer, lib.filePath, templates.libraryTemplate, data);
+    render0(writer, lib.filePath, templates.libraryTemplate, data);
   }
 
   @override
@@ -151,7 +164,7 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
       FileWriter writer, PackageGraph packageGraph, Library lib, Class clazz) {
     TemplateData data = ClassTemplateData(options, packageGraph, lib, clazz,
         sidebarForLibrary.getRenderFor, sidebarForContainer.getRenderFor);
-    render(writer, clazz.filePath, templates.classTemplate, data);
+    render0(writer, clazz.filePath, templates.classTemplate, data);
   }
 
   @override
@@ -164,7 +177,7 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
         extension,
         sidebarForLibrary.getRenderFor,
         sidebarForContainer.getRenderFor);
-    render(writer, extension.filePath, templates.extensionTemplate, data);
+    render0(writer, extension.filePath, templates.extensionTemplate, data);
   }
 
   @override
@@ -172,7 +185,7 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
       FileWriter writer, PackageGraph packageGraph, Library lib, Mixin mixin) {
     TemplateData data = MixinTemplateData(options, packageGraph, lib, mixin,
         sidebarForLibrary.getRenderFor, sidebarForContainer.getRenderFor);
-    render(writer, mixin.filePath, templates.mixinTemplate, data);
+    render0(writer, mixin.filePath, templates.mixinTemplate, data);
   }
 
   @override
@@ -181,7 +194,7 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
     TemplateData data = ConstructorTemplateData(options, packageGraph, lib,
         clazz, constructor, sidebarForContainer.getRenderFor);
 
-    render(writer, constructor.filePath, templates.constructorTemplate, data);
+    render0(writer, constructor.filePath, templates.constructorTemplate, data);
   }
 
   @override
@@ -190,7 +203,7 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
     TemplateData data = EnumTemplateData(options, packageGraph, lib, eNum,
         sidebarForLibrary.getRenderFor, sidebarForContainer.getRenderFor);
 
-    render(writer, eNum.filePath, templates.enumTemplate, data);
+    render0(writer, eNum.filePath, templates.enumTemplate, data);
   }
 
   @override
@@ -199,7 +212,7 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
     TemplateData data = FunctionTemplateData(
         options, packageGraph, lib, function, sidebarForLibrary.getRenderFor);
 
-    render(writer, function.filePath, templates.functionTemplate, data);
+    render0(writer, function.filePath, templates.functionTemplate, data);
   }
 
   @override
@@ -208,7 +221,7 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
     TemplateData data = MethodTemplateData(options, packageGraph, lib, clazz,
         method, sidebarForContainer.getRenderFor);
 
-    render(writer, method.filePath, templates.methodTemplate, data);
+    render0(writer, method.filePath, templates.methodTemplate, data);
   }
 
   @override
@@ -222,7 +235,7 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
     TemplateData data = PropertyTemplateData(options, packageGraph, lib, clazz,
         property, sidebarForContainer.getRenderFor);
 
-    render(writer, property.filePath, templates.propertyTemplate, data);
+    render0(writer, property.filePath, templates.propertyTemplate, data);
   }
 
   @override
@@ -231,7 +244,8 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
     TemplateData data = TopLevelPropertyTemplateData(
         options, packageGraph, lib, property, sidebarForLibrary.getRenderFor);
 
-    render(writer, property.filePath, templates.topLevelPropertyTemplate, data);
+    render0(
+        writer, property.filePath, templates.topLevelPropertyTemplate, data);
   }
 
   @override
@@ -245,7 +259,7 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
     TemplateData data = TypedefTemplateData(
         options, packageGraph, lib, typeDef, sidebarForLibrary.getRenderFor);
 
-    render(writer, typeDef.filePath, templates.typeDefTemplate, data);
+    render0(writer, typeDef.filePath, templates.typeDefTemplate, data);
   }
 
   @override

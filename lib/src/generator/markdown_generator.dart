@@ -32,6 +32,6 @@ class MarkdownGeneratorBackend extends DartdocGeneratorBackend {
     super.generatePackage(writer, graph, package);
     // We have to construct the data again. This only happens once per package.
     TemplateData data = PackageTemplateData(options, graph, package);
-    render(writer, '__404error.md', templates.errorTemplate, data);
+    render0(writer, '__404error.md', templates.errorTemplate, data);
   }
 }
