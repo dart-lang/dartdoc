@@ -367,7 +367,6 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
 
   void _writeProperty(_RendererInfo renderer, PropertyAccessorElement property,
       InterfaceType getterType) {
-    //var getterType = property.type.returnType as InterfaceType;
     if (getterType == _typeProvider.typeType) {
       // The [Type] type is the first case of a type we don't want to traverse.
       return;
