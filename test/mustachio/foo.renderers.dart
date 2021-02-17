@@ -108,6 +108,16 @@ class Renderer_Object extends RendererBase<Object> {
             return renderSimple(c.hashCode, ast, r.template, parent: r);
           },
         ),
+        'runtimeType': Property(
+          getValue: (CT_ c) => c.runtimeType,
+          renderVariable:
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'Type'),
+          isNullValue: (CT_ c) => c.runtimeType == null,
+          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+            return renderSimple(c.runtimeType, ast, r.template, parent: r);
+          },
+        ),
       };
 
   Renderer_Object(
