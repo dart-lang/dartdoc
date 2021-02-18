@@ -21,12 +21,13 @@ void main() {
 
   test('property map contains all public getters', () {
     var propertyMap = Renderer_Foo.propertyMap();
-    expect(propertyMap.keys, hasLength(5));
+    expect(propertyMap.keys, hasLength(6));
     expect(propertyMap['b1'], isNotNull);
     expect(propertyMap['s1'], isNotNull);
     expect(propertyMap['l1'], isNotNull);
     expect(propertyMap['baz'], isNotNull);
     expect(propertyMap['hashCode'], isNotNull);
+    expect(propertyMap['runtimeType'], isNotNull);
   });
 
   test('property map contains valid bool Properties', () {
