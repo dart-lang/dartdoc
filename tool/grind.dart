@@ -435,9 +435,9 @@ Future<String> createComparisonDartdoc() async {
 /// to be a git repository), configured to use packages from the Dart SDK.
 ///
 /// This copy of dartdoc depends on the HEAD versions of various packages
-/// developed within the SDK, such as 'analyzer' and '_fe_analyzer_shared'.
-/// 'meta' is overridden if [overrideMeta] is true.
-Future<String> createSdkDartdoc(bool overrideMeta) async {
+/// developed within the SDK, such as 'analyzer', '_fe_analyzer_shared',
+/// and 'meta'.
+Future<String> createSdkDartdoc() async {
   var launcher = SubprocessLauncher('create-sdk-dartdoc');
   var dartdocSdk = Directory.systemTemp.createTempSync('dartdoc-sdk');
   await launcher
@@ -470,24 +470,13 @@ Future<String> createSdkDartdoc(bool overrideMeta) async {
   dartdocPubspec.writeAsStringSync('''
 
 dependency_overrides:
-  args: ^2.0.0-nullsafety.0
-  cli_util: ^0.3.0-nullsafety.0
-  crypto: ^3.0.0-nullsafety.0
-  glob: ^2.0.0-nullsafety.0
-  package_config: ^2.0.0-nullsafety.0
-  pub_semver: ^2.0.0-nullsafety.0
-  yaml: ^3.0.0-nullsafety.0
   analyzer:
     path: '${sdkClone.path}/pkg/analyzer'
   _fe_analyzer_shared:
     path: '${sdkClone.path}/pkg/_fe_analyzer_shared'
-''', mode: FileMode.append);
-  if (overrideMeta) {
-    dartdocPubspec.writeAsStringSync('''
   meta:
     path: '${sdkClone.path}/pkg/meta'
 ''', mode: FileMode.append);
-  }
   await launcher.runStreamed(sdkBin('pub'), ['get'],
       workingDirectory: dartdocSdk.path);
   return dartdocSdk.path;
