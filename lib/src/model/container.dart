@@ -74,6 +74,10 @@ abstract class Container extends ModelElement with TypeParameters {
   /// Whether all instance operators are inherited.
   bool get publicInheritedInstanceOperators => false;
 
+  bool get hasPublicConstructors;
+
+  Iterable<Constructor> get publicConstructorsSorted;
+
   @nonVirtual
   bool get hasPublicInstanceMethods =>
       model_utils.filterNonPublic(instanceMethods).isNotEmpty;

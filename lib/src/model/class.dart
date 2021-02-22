@@ -113,6 +113,7 @@ class Class extends Container
   Iterable<Constructor> get constructors => element.constructors
       .map((e) => ModelElement.from(e, library, packageGraph) as Constructor);
 
+  @override
   bool get hasPublicConstructors => publicConstructors.isNotEmpty;
 
   @visibleForTesting
@@ -120,6 +121,8 @@ class Class extends Container
       model_utils.filterNonPublic(constructors);
 
   List<Constructor> _publicConstructorsSorted;
+
+  @override
   Iterable<Constructor> get publicConstructorsSorted =>
       _publicConstructorsSorted ??= publicConstructors.toList()..sort(byName);
 
