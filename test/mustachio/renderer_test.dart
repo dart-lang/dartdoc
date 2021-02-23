@@ -21,11 +21,12 @@ void main() {
 
   test('property map contains all public getters', () {
     var propertyMap = Renderer_Foo.propertyMap();
-    expect(propertyMap.keys, hasLength(6));
+    expect(propertyMap.keys, hasLength(7));
     expect(propertyMap['b1'], isNotNull);
     expect(propertyMap['s1'], isNotNull);
     expect(propertyMap['l1'], isNotNull);
     expect(propertyMap['baz'], isNotNull);
+    expect(propertyMap['p1'], isNotNull);
     expect(propertyMap['hashCode'], isNotNull);
     expect(propertyMap['runtimeType'], isNotNull);
   });
@@ -261,13 +262,21 @@ void main() {
   });
 
   test('Renderer resolves variable with key with multiple names', () async {
-    var barTemplateFile = getFile('/project/foo.mustache')
+    var barTemplateFile = getFile('/project/bar.mustache')
       ..writeAsStringSync('Text {{foo.s1}}');
     var barTemplate = await Template.parse(barTemplateFile);
     var bar = Bar()
       ..foo = (Foo()..s1 = 'hello')
       ..s2 = 'goodbye';
     expect(renderBar(bar, barTemplate), equals('Text hello'));
+  });
+
+  test('Renderer resolves variable with properties not in @Renderer', () async {
+    var fooTemplateFile = getFile('/project/foo.mustache')
+      ..writeAsStringSync('Text {{p1.p2.s}}');
+    var fooTemplate = await Template.parse(fooTemplateFile);
+    var foo = Foo()..p1 = (Property1()..p2 = (Property2()..s = 'hello'));
+    expect(renderFoo(foo, fooTemplate), equals('Text hello'));
   });
 
   test('Renderer resolves outer variable with key with two names', () async {

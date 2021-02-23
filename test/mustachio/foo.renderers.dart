@@ -63,6 +63,21 @@ class Renderer_Foo extends RendererBase<Foo> {
             return buffer.toString();
           },
         ),
+        'p1': Property(
+          getValue: (CT_ c) => c.p1,
+          renderVariable:
+              (CT_ c, Property<CT_> self, List<String> remainingNames) {
+            if (remainingNames.isEmpty) return self.getValue(c).toString();
+            var name = remainingNames.first;
+            var nextProperty = Renderer_Property1.propertyMap().getValue(name);
+            return nextProperty.renderVariable(
+                self.getValue(c), nextProperty, [...remainingNames.skip(1)]);
+          },
+          isNullValue: (CT_ c) => c.p1 == null,
+          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+            return _render_Property1(c.p1, ast, r.template, parent: r);
+          },
+        ),
         's1': Property(
           getValue: (CT_ c) => c.s1,
           renderVariable:
@@ -128,6 +143,85 @@ class Renderer_Object extends RendererBase<Object> {
   Property<Object> getProperty(String key) {
     if (propertyMap<Object>().containsKey(key)) {
       return propertyMap<Object>()[key];
+    } else {
+      return null;
+    }
+  }
+}
+
+String _render_Property1(
+    Property1 context, List<MustachioNode> ast, Template template,
+    {RendererBase<Object> parent}) {
+  var renderer = Renderer_Property1(context, parent, template);
+  renderer.renderBlock(ast);
+  return renderer.buffer.toString();
+}
+
+class Renderer_Property1 extends RendererBase<Property1> {
+  static Map<String, Property<CT_>> propertyMap<CT_ extends Property1>() => {
+        ...Renderer_Object.propertyMap<CT_>(),
+        'p2': Property(
+          getValue: (CT_ c) => c.p2,
+          renderVariable:
+              (CT_ c, Property<CT_> self, List<String> remainingNames) {
+            if (remainingNames.isEmpty) return self.getValue(c).toString();
+            var name = remainingNames.first;
+            var nextProperty = Renderer_Property2.propertyMap().getValue(name);
+            return nextProperty.renderVariable(
+                self.getValue(c), nextProperty, [...remainingNames.skip(1)]);
+          },
+          isNullValue: (CT_ c) => c.p2 == null,
+          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+            return _render_Property2(c.p2, ast, r.template, parent: r);
+          },
+        ),
+      };
+
+  Renderer_Property1(
+      Property1 context, RendererBase<Object> parent, Template template)
+      : super(context, parent, template);
+
+  @override
+  Property<Property1> getProperty(String key) {
+    if (propertyMap<Property1>().containsKey(key)) {
+      return propertyMap<Property1>()[key];
+    } else {
+      return null;
+    }
+  }
+}
+
+String _render_Property2(
+    Property2 context, List<MustachioNode> ast, Template template,
+    {RendererBase<Object> parent}) {
+  var renderer = Renderer_Property2(context, parent, template);
+  renderer.renderBlock(ast);
+  return renderer.buffer.toString();
+}
+
+class Renderer_Property2 extends RendererBase<Property2> {
+  static Map<String, Property<CT_>> propertyMap<CT_ extends Property2>() => {
+        ...Renderer_Object.propertyMap<CT_>(),
+        's': Property(
+          getValue: (CT_ c) => c.s,
+          renderVariable:
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'String'),
+          isNullValue: (CT_ c) => c.s == null,
+          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+            return renderSimple(c.s, ast, r.template, parent: r);
+          },
+        ),
+      };
+
+  Renderer_Property2(
+      Property2 context, RendererBase<Object> parent, Template template)
+      : super(context, parent, template);
+
+  @override
+  Property<Property2> getProperty(String key) {
+    if (propertyMap<Property2>().containsKey(key)) {
+      return propertyMap<Property2>()[key];
     } else {
       return null;
     }
