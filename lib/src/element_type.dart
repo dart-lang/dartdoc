@@ -288,13 +288,11 @@ abstract class DefinedElementType extends ElementType {
   Iterable<ElementType> _typeArguments;
 
   /// An unmodifiable list of this element type's parameters.
-  Iterable<ElementType> get typeArguments {
-    _typeArguments ??= (type as ParameterizedType)
-        .typeArguments
-        .map((f) => ElementType.from(f, library, packageGraph))
-        .toList(growable: false);
-    return _typeArguments;
-  }
+  Iterable<ElementType> get typeArguments =>
+      _typeArguments ??= (type as ParameterizedType)
+          .typeArguments
+          .map((f) => ElementType.from(f, library, packageGraph))
+          .toList(growable: false);
 
   DartType get _bound => type;
 
