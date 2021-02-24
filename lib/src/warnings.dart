@@ -2,13 +2,14 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'dart:collection';
+
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
-import 'package:dartdoc/src/tuple.dart';
 
 abstract class PackageWarningOptionContext implements DartdocOptionContextBase {
   bool get allowNonLocalWarnings =>
@@ -113,14 +114,15 @@ class PackageWarningDefinition implements Comparable<PackageWarningDefinition> {
 }
 
 /// Same as [packageWarningDefinitions], except keyed by the warning name.
-final Map<String, PackageWarningDefinition> packageWarningsByName =
-    Map.fromEntries(packageWarningDefinitions.values
-        .map((definition) => MapEntry(definition.warningName, definition)));
+final Map<String, PackageWarningDefinition> packageWarningsByName = {
+  for (final definition in packageWarningDefinitions.values)
+    definition.warningName: definition
+};
 
 /// Provides description text and command line flags for warnings.
 /// TODO(jcollins-g): Actually use this for command line flags.
-final Map<PackageWarning, PackageWarningDefinition> packageWarningDefinitions =
-    const {
+const Map<PackageWarning, PackageWarningDefinition> packageWarningDefinitions =
+    {
   PackageWarning.ambiguousDocReference: PackageWarningDefinition(
       PackageWarning.ambiguousDocReference,
       'ambiguous-doc-reference',
@@ -317,7 +319,7 @@ enum PackageWarningMode {
 /// In particular, this set should not include warnings around public/private
 /// or canonicalization problems, because those can break the isDocumented()
 /// check.
-final Set<PackageWarning> skipWarningIfNotDocumentedFor = {
+const Set<PackageWarning> skipWarningIfNotDocumentedFor = {
   PackageWarning.unresolvedDocReference,
   PackageWarning.typeAsHtml
 };
@@ -419,10 +421,25 @@ class PackageWarningOptions {
 }
 
 class PackageWarningCounter {
-  final Map<Element, Set<Tuple2<PackageWarning, String>>> countedWarnings = {};
+  final Map<Element, Map<PackageWarning, Set<String>>> _countedWarnings = {};
   final _items = <Jsonable>[];
   final _displayedWarningCounts = <PackageWarning, int>{};
   final PackageGraph packageGraph;
+
+  int _errorCount = 0;
+
+  /// The total amount of errors this package has experienced
+  int get errorCount => _errorCount;
+
+  int _warningCount = 0;
+
+  /// The total amount of warnings this package has experiences
+  int get warningCount => _warningCount;
+
+  /// An unmodifiable map view of all counted warnings related by their element,
+  /// warning type, and message.
+  UnmodifiableMapView<Element, Map<PackageWarning, Set<String>>>
+      get countedWarnings => UnmodifiableMapView(_countedWarnings);
 
   PackageWarningCounter(this.packageGraph);
 
@@ -462,11 +479,15 @@ class PackageWarningCounter {
     _items.clear();
   }
 
-  /// Returns true if we've already warned for this.
+  /// Whether this package had any warnings at all
+  bool get hasWarnings => _countedWarnings.isNotEmpty;
+
+  /// Gets if we've already warned for this [element], [kind], and [message]
   bool hasWarning(Warnable element, PackageWarning kind, String message) {
-    var warningData = Tuple2<PackageWarning, String>(kind, message);
-    if (countedWarnings.containsKey(element?.element)) {
-      return countedWarnings[element?.element].contains(warningData);
+    final warning = _countedWarnings[element?.element];
+    if (warning != null) {
+      final messages = warning[kind];
+      return messages != null && messages.contains(message);
     }
     return false;
   }
@@ -484,18 +505,17 @@ class PackageWarningCounter {
       warningMode = PackageWarningMode.ignore;
     }
     if (warningMode == PackageWarningMode.warn) {
-      warningCount += 1;
+      _warningCount += 1;
     } else if (warningMode == PackageWarningMode.error) {
-      errorCount += 1;
+      _errorCount += 1;
     }
-    var warningData = Tuple2<PackageWarning, String>(kind, message);
-    countedWarnings.putIfAbsent(element?.element, () => {}).add(warningData);
+    _countedWarnings
+        .putIfAbsent(element?.element, () => {})
+        .putIfAbsent(kind, () => {})
+        .add(message);
     _writeWarning(kind, warningMode, config.verboseWarnings,
         element?.fullyQualifiedName, fullMessage);
   }
-
-  int errorCount = 0;
-  int warningCount = 0;
 
   @override
   String toString() {
