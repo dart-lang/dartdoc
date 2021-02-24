@@ -428,12 +428,12 @@ class PackageWarningCounter {
 
   int _errorCount = 0;
 
-  /// The total amount of errors this package has experienced
+  /// The total amount of errors this package has experienced.
   int get errorCount => _errorCount;
 
   int _warningCount = 0;
 
-  /// The total amount of warnings this package has experiences
+  /// The total amount of warnings this package has experienced.
   int get warningCount => _warningCount;
 
   /// An unmodifiable map view of all counted warnings related by their element,
@@ -479,10 +479,11 @@ class PackageWarningCounter {
     _items.clear();
   }
 
-  /// Whether this package had any warnings at all
+  /// If this package has had any warnings counted.
   bool get hasWarnings => _countedWarnings.isNotEmpty;
 
-  /// Gets if we've already warned for this [element], [kind], and [message]
+  /// Returns `true` if we've already warned for this
+  /// combination of [element], [kind], and [message].
   bool hasWarning(Warnable element, PackageWarning kind, String message) {
     final warning = _countedWarnings[element?.element];
     if (warning != null) {
