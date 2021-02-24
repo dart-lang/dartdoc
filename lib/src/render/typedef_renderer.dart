@@ -4,30 +4,49 @@
 
 import 'package:dartdoc/src/model/typedef.dart';
 
+/// A renderer for a [Typedef].
 abstract class TypedefRenderer {
+  const TypedefRenderer();
+
+  /// Render the the generic type parameters of the specified [typedef].
   String renderGenericParameters(Typedef typedef);
 }
 
+/// A HTML renderer for a [Typedef].
 class TypedefRendererHtml extends TypedefRenderer {
+  const TypedefRendererHtml();
+
   @override
   String renderGenericParameters(Typedef typedef) {
-    if (typedef.genericTypeParameters.isEmpty) {
+    final genericTypeParameters = typedef.genericTypeParameters;
+    if (genericTypeParameters.isEmpty) {
       return '';
     }
-    var joined = typedef.genericTypeParameters
-        .map((t) => t.name)
-        .join('</span>, <span class="type-parameter">');
-    return '&lt;<wbr><span class="type-parameter">${joined}</span>&gt;';
+
+    final buffer = StringBuffer('&lt;<wbr><span class="type-parameter">');
+    buffer.writeAll(genericTypeParameters.map((t) => t.name),
+        '</span>, <span class="type-parameter">');
+    buffer.write('</span>&gt;');
+
+    return buffer.toString();
   }
 }
 
+/// A markdown renderer for a [Typedef].
 class TypedefRendererMd extends TypedefRenderer {
+  const TypedefRendererMd();
+
   @override
   String renderGenericParameters(Typedef typedef) {
-    if (typedef.genericTypeParameters.isEmpty) {
+    final genericTypeParameters = typedef.genericTypeParameters;
+    if (genericTypeParameters.isEmpty) {
       return '';
     }
-    var joined = typedef.genericTypeParameters.map((t) => t.name).join(', ');
-    return '&lt;{$joined}>';
+
+    final buffer = StringBuffer('&lt;{');
+    buffer.writeAll(genericTypeParameters.map((t) => t.name), ', ');
+    buffer.write('}>');
+
+    return buffer.toString();
   }
 }
