@@ -91,7 +91,7 @@ abstract class ElementType extends Privacy {
     return '';
   }
 
-  /// An unmodifiable list of this [ElementType]'s parameters.
+  /// An unmodifiable list of this element type's parameters.
   List<Parameter> get parameters => const <Parameter>[];
 
   DartType get instantiatedType;
@@ -186,7 +186,7 @@ class FunctionTypeElementType extends UndefinedElementType {
     return _nameWithGenerics;
   }
 
-  /// An unmodifiable list of this [FunctionTypeElementType]'s type parameters.
+  /// An unmodifiable list of this function element's type parameters.
   List<TypeParameter> get typeFormals => type.typeFormals
       .map((p) => ModelElement.from(p, library, packageGraph) as TypeParameter)
       .toList(growable: false);
@@ -286,11 +286,13 @@ abstract class DefinedElementType extends ElementType {
   String createLinkedReturnTypeName() => returnType.linkedName;
 
   Iterable<ElementType> _typeArguments;
+
+  /// An unmodifiable list of this element type's parameters.
   Iterable<ElementType> get typeArguments {
     _typeArguments ??= (type as ParameterizedType)
         .typeArguments
         .map((f) => ElementType.from(f, library, packageGraph))
-        .toList();
+        .toList(growable: false);
     return _typeArguments;
   }
 
