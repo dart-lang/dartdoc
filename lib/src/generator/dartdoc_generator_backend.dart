@@ -86,16 +86,17 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
   @override
   void generateCategoryJson(
       FileWriter writer, List<Categorization> categories) {
-    if (categories.isEmpty) {
-      writer.write(_pathContext.join('categories.json'), '\n');
-      return;
+    String json;
+    if (categories.isNotEmpty) {
+      json = generator_util.generateCategoryJson(
+          categories, options.prettyIndexJson);
+      if (!options.useBaseHref) {
+        json = json.replaceAll(htmlBasePlaceholder, '');
+      }
+    } else {
+      json = '';
     }
 
-    var json = generator_util.generateCategoryJson(
-        categories, options.prettyIndexJson);
-    if (!options.useBaseHref) {
-      json = json.replaceAll(htmlBasePlaceholder, '');
-    }
     writer.write(_pathContext.join('categories.json'), '${json}\n');
   }
 

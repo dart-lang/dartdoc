@@ -15,30 +15,29 @@ import 'package:dartdoc/src/model/model_element.dart';
 String generateCategoryJson(Iterable<Categorization> categories, bool pretty) {
   // ignore: omit_local_variable_types
   final List<Map<String, Object>> indexItems = categories
-      .map((Categorization cat) {
+      .map((Categorization categorization) {
         final data = <String, Object>{
-          'name': cat.name,
-          'qualifiedName': cat.fullyQualifiedName,
-          'href': cat.href,
-          'type': cat.kind,
+          'name': categorization.name,
+          'qualifiedName': categorization.fullyQualifiedName,
+          'href': categorization.href,
+          'type': categorization.kind,
         };
 
-        if (cat.hasCategoryNames) {
-          data['categories'] = cat.categoryNames;
+        if (categorization.hasCategoryNames) {
+          data['categories'] = categorization.categoryNames;
         }
-        if (cat.hasSubCategoryNames) {
-          data['subcategories'] = cat.subCategoryNames;
+        if (categorization.hasSubCategoryNames) {
+          data['subcategories'] = categorization.subCategoryNames;
         }
-        if (cat.hasImage) {
-          data['image'] = cat.image;
+        if (categorization.hasImage) {
+          data['image'] = categorization.image;
         }
-        if (cat.hasSamples) {
-          data['samples'] = cat.samples;
+        if (categorization.hasSamples) {
+          data['samples'] = categorization.samples;
         }
         return data;
       })
-      .sorted(_sortElements)
-      .toList(growable: false);
+      .sorted(_sortElementRepresentations);
 
   final encoder =
       pretty ? const JsonEncoder.withIndent(' ') : const JsonEncoder();
@@ -51,30 +50,29 @@ String generateCategoryJson(Iterable<Categorization> categories, bool pretty) {
 String generateSearchIndexJson(
     Iterable<Indexable> indexedElements, bool pretty) {
   final indexItems = indexedElements
-      .map((Indexable ind) {
+      .map((Indexable indexable) {
         final data = <String, Object>{
-          'name': ind.name,
-          'qualifiedName': ind.fullyQualifiedName,
-          'href': ind.href,
-          'type': ind.kind,
-          'overriddenDepth': ind.overriddenDepth,
+          'name': indexable.name,
+          'qualifiedName': indexable.fullyQualifiedName,
+          'href': indexable.href,
+          'type': indexable.kind,
+          'overriddenDepth': indexable.overriddenDepth,
         };
-        if (ind is ModelElement) {
-          data['packageName'] = ind.package.name;
+        if (indexable is ModelElement) {
+          data['packageName'] = indexable.package.name;
         }
-        if (ind is EnclosedElement) {
-          final ee = ind as EnclosedElement;
+        if (indexable is EnclosedElement) {
+          final ee = indexable as EnclosedElement;
           data['enclosedBy'] = {
             'name': ee.enclosingElement.name,
             'type': ee.enclosingElement.kind
           };
 
-          data['qualifiedName'] = ind.fullyQualifiedName;
+          data['qualifiedName'] = indexable.fullyQualifiedName;
         }
         return data;
       })
-      .sorted(_sortElements)
-      .toList(growable: false);
+      .sorted(_sortElementRepresentations);
 
   final encoder =
       pretty ? const JsonEncoder.withIndent(' ') : const JsonEncoder();
@@ -82,7 +80,7 @@ String generateSearchIndexJson(
   return encoder.convert(indexItems);
 }
 
-int _sortElements(Map<String, Object> a, Map<String, Object> b) {
+int _sortElementRepresentations(Map<String, Object> a, Map<String, Object> b) {
   final value = compareNatural(a['qualifiedName'], b['qualifiedName']);
   if (value == 0) {
     return compareNatural(a['type'], b['type']);
