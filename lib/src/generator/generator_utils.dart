@@ -13,31 +13,34 @@ import 'package:dartdoc/src/model/model_element.dart';
 /// Convenience function to generate category JSON since different generators
 /// will likely want the same content for this.
 String generateCategoryJson(Iterable<Categorization> categories, bool pretty) {
-  var encoder = pretty ? JsonEncoder.withIndent(' ') : JsonEncoder();
+  final encoder =
+      pretty ? const JsonEncoder.withIndent(' ') : const JsonEncoder();
   // ignore: omit_local_variable_types
-  final List<Map<String, Object>> indexItems =
-      categories.map((Categorization e) {
-    var data = <String, Object>{
-      'name': e.name,
-      'qualifiedName': e.fullyQualifiedName,
-      'href': e.href,
-      'type': e.kind,
-    };
+  final List<Map<String, Object>> indexItems = categories
+      .map((Categorization cat) {
+        final data = <String, Object>{
+          'name': cat.name,
+          'qualifiedName': cat.fullyQualifiedName,
+          'href': cat.href,
+          'type': cat.kind,
+        };
 
-    if (e.hasCategoryNames) data['categories'] = e.categoryNames;
-    if (e.hasSubCategoryNames) data['subcategories'] = e.subCategoryNames;
-    if (e.hasImage) data['image'] = e.image;
-    if (e.hasSamples) data['samples'] = e.samples;
-    return data;
-  }).toList();
-
-  indexItems.sort((a, b) {
-    var value = compareNatural(a['qualifiedName'], b['qualifiedName']);
-    if (value == 0) {
-      value = compareNatural(a['type'], b['type']);
-    }
-    return value;
-  });
+        if (cat.hasCategoryNames) {
+          data['categories'] = cat.categoryNames;
+        }
+        if (cat.hasSubCategoryNames) {
+          data['subcategories'] = cat.subCategoryNames;
+        }
+        if (cat.hasImage) {
+          data['image'] = cat.image;
+        }
+        if (cat.hasSamples) {
+          data['samples'] = cat.samples;
+        }
+        return data;
+      })
+      .sorted(_sortElements)
+      .toList(growable: false);
 
   return encoder.convert(indexItems);
 }
@@ -46,37 +49,41 @@ String generateCategoryJson(Iterable<Categorization> categories, bool pretty) {
 /// generators will likely want the same content for this.
 String generateSearchIndexJson(
     Iterable<Indexable> indexedElements, bool pretty) {
-  var encoder = pretty ? JsonEncoder.withIndent(' ') : JsonEncoder();
-  final indexItems = indexedElements.map((Indexable e) {
-    var data = <String, Object>{
-      'name': e.name,
-      'qualifiedName': e.fullyQualifiedName,
-      'href': e.href,
-      'type': e.kind,
-      'overriddenDepth': e.overriddenDepth,
-    };
-    if (e is ModelElement) {
-      data['packageName'] = e.package.name;
-    }
-    if (e is EnclosedElement) {
-      var ee = e as EnclosedElement;
-      data['enclosedBy'] = {
-        'name': ee.enclosingElement.name,
-        'type': ee.enclosingElement.kind
-      };
+  final encoder =
+      pretty ? const JsonEncoder.withIndent(' ') : const JsonEncoder();
+  final indexItems = indexedElements
+      .map((Indexable ind) {
+        final data = <String, Object>{
+          'name': ind.name,
+          'qualifiedName': ind.fullyQualifiedName,
+          'href': ind.href,
+          'type': ind.kind,
+          'overriddenDepth': ind.overriddenDepth,
+        };
+        if (ind is ModelElement) {
+          data['packageName'] = ind.package.name;
+        }
+        if (ind is EnclosedElement) {
+          final ee = ind as EnclosedElement;
+          data['enclosedBy'] = {
+            'name': ee.enclosingElement.name,
+            'type': ee.enclosingElement.kind
+          };
 
-      data['qualifiedName'] = e.fullyQualifiedName;
-    }
-    return data;
-  }).toList();
-
-  indexItems.sort((a, b) {
-    var value = compareNatural(a['qualifiedName'], b['qualifiedName']);
-    if (value == 0) {
-      value = compareNatural(a['type'], b['type']);
-    }
-    return value;
-  });
+          data['qualifiedName'] = ind.fullyQualifiedName;
+        }
+        return data;
+      })
+      .sorted(_sortElements)
+      .toList(growable: false);
 
   return encoder.convert(indexItems);
+}
+
+int _sortElements(Map<String, Object> a, Map<String, Object> b) {
+  final value = compareNatural(a['qualifiedName'], b['qualifiedName']);
+  if (value == 0) {
+    return compareNatural(a['type'], b['type']);
+  }
+  return value;
 }
