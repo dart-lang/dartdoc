@@ -101,7 +101,7 @@ class HtmlRenderFactory extends RendererFactory {
       TypeParametersRendererHtml();
 
   @override
-  TypedefRenderer get typedefRenderer => TypedefRendererHtml();
+  TypedefRenderer get typedefRenderer => const TypedefRendererHtml();
 
   @override
   FeatureRenderer get featureRenderer => FeatureRendererHtml();
@@ -154,7 +154,7 @@ class MdRenderFactory extends RendererFactory {
       TypeParametersRendererMd();
 
   @override
-  TypedefRenderer get typedefRenderer => TypedefRendererMd();
+  TypedefRenderer get typedefRenderer => const TypedefRendererMd();
 
   @override
   FeatureRenderer get featureRenderer => FeatureRendererMd();
