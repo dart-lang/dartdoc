@@ -15,10 +15,17 @@ const Map<String, String> _featureUrls = {
 /// An abstraction for a language feature; used to render tags to notify
 /// the user that the documentation should be specially interpreted.
 class LanguageFeature {
+  /// The description of this language feature.
   String get featureDescription => _featureDescriptions[name];
-  String get featureUrl => _featureUrls[name];
+
+  /// A URL containing more information about this feature or `null` if there
+  /// is none.
+  String /*?*/ get featureUrl => _featureUrls[name];
+
+  /// The rendered label for this language feature.
   String get featureLabel => _featureRenderer.renderFeatureLabel(this);
 
+  /// The name of this language feature.
   final String name;
 
   final FeatureRenderer _featureRenderer;
