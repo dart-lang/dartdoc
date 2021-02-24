@@ -63,7 +63,7 @@ class HtmlRenderFactory extends RendererFactory {
   TemplateRenderer get templateRenderer => HtmlTemplateRenderer();
 
   @override
-  CategoryRenderer get categoryRenderer => CategoryRendererHtml();
+  CategoryRenderer get categoryRenderer => const CategoryRendererHtml();
 
   @override
   DocumentationRenderer get documentationRenderer =>
@@ -115,7 +115,7 @@ class MdRenderFactory extends RendererFactory {
   TemplateRenderer get templateRenderer => MdTemplateRenderer();
 
   @override
-  CategoryRenderer get categoryRenderer => CategoryRendererMd();
+  CategoryRenderer get categoryRenderer => const CategoryRendererMd();
 
   // We render documentation as HTML for now.
   // TODO(jdkoren): explore using documentation directly in the output file.
