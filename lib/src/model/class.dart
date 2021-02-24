@@ -4,12 +4,10 @@
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
-import 'package:collection/collection.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/extension_target.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as model_utils;
-import 'package:dartdoc/src/quiver.dart' as quiver;
 import 'package:meta/meta.dart';
 
 /// A [Container] defined with a `class` declaration in Dart.

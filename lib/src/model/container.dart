@@ -5,7 +5,6 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as model_utils;
-import 'package:dartdoc/src/quiver.dart' as quiver;
 import 'package:meta/meta.dart';
 
 /// A [Container] represents a Dart construct that can contain methods,

@@ -15,7 +15,6 @@ import 'package:analyzer/src/generated/sdk.dart';
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart' show PackageMeta;
-import 'package:dartdoc/src/quiver.dart' as quiver;
 import 'package:dartdoc/src/warnings.dart';
 
 /// Find all hashable children of a given element that are defined in the

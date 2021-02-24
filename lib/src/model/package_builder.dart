@@ -18,7 +18,6 @@ import 'package:analyzer/src/generated/source_io.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart' hide Package;
-import 'package:dartdoc/src/quiver.dart' as quiver;
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart'
     show PackageMeta, PackageMetaProvider;
