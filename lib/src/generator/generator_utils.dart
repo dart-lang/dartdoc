@@ -14,30 +14,29 @@ import 'package:dartdoc/src/model/model_element.dart';
 /// will likely want the same content for this.
 String generateCategoryJson(Iterable<Categorization> categories, bool pretty) {
   // ignore: omit_local_variable_types
-  final List<Map<String, Object>> indexItems = categories
-      .map((Categorization categorization) {
-        final data = <String, Object>{
-          'name': categorization.name,
-          'qualifiedName': categorization.fullyQualifiedName,
-          'href': categorization.href,
-          'type': categorization.kind,
-        };
+  final List<Map<String, Object>> indexItems =
+      categories.map((Categorization categorization) {
+    final data = <String, Object>{
+      'name': categorization.name,
+      'qualifiedName': categorization.fullyQualifiedName,
+      'href': categorization.href,
+      'type': categorization.kind,
+    };
 
-        if (categorization.hasCategoryNames) {
-          data['categories'] = categorization.categoryNames;
-        }
-        if (categorization.hasSubCategoryNames) {
-          data['subcategories'] = categorization.subCategoryNames;
-        }
-        if (categorization.hasImage) {
-          data['image'] = categorization.image;
-        }
-        if (categorization.hasSamples) {
-          data['samples'] = categorization.samples;
-        }
-        return data;
-      })
-      .sorted(_sortElementRepresentations);
+    if (categorization.hasCategoryNames) {
+      data['categories'] = categorization.categoryNames;
+    }
+    if (categorization.hasSubCategoryNames) {
+      data['subcategories'] = categorization.subCategoryNames;
+    }
+    if (categorization.hasImage) {
+      data['image'] = categorization.image;
+    }
+    if (categorization.hasSamples) {
+      data['samples'] = categorization.samples;
+    }
+    return data;
+  }).sorted(_sortElementRepresentations);
 
   final encoder =
       pretty ? const JsonEncoder.withIndent(' ') : const JsonEncoder();
@@ -49,30 +48,28 @@ String generateCategoryJson(Iterable<Categorization> categories, bool pretty) {
 /// generators will likely want the same content for this.
 String generateSearchIndexJson(
     Iterable<Indexable> indexedElements, bool pretty) {
-  final indexItems = indexedElements
-      .map((Indexable indexable) {
-        final data = <String, Object>{
-          'name': indexable.name,
-          'qualifiedName': indexable.fullyQualifiedName,
-          'href': indexable.href,
-          'type': indexable.kind,
-          'overriddenDepth': indexable.overriddenDepth,
-        };
-        if (indexable is ModelElement) {
-          data['packageName'] = indexable.package.name;
-        }
-        if (indexable is EnclosedElement) {
-          final ee = indexable as EnclosedElement;
-          data['enclosedBy'] = {
-            'name': ee.enclosingElement.name,
-            'type': ee.enclosingElement.kind
-          };
+  final indexItems = indexedElements.map((Indexable indexable) {
+    final data = <String, Object>{
+      'name': indexable.name,
+      'qualifiedName': indexable.fullyQualifiedName,
+      'href': indexable.href,
+      'type': indexable.kind,
+      'overriddenDepth': indexable.overriddenDepth,
+    };
+    if (indexable is ModelElement) {
+      data['packageName'] = indexable.package.name;
+    }
+    if (indexable is EnclosedElement) {
+      final ee = indexable as EnclosedElement;
+      data['enclosedBy'] = {
+        'name': ee.enclosingElement.name,
+        'type': ee.enclosingElement.kind
+      };
 
-          data['qualifiedName'] = indexable.fullyQualifiedName;
-        }
-        return data;
-      })
-      .sorted(_sortElementRepresentations);
+      data['qualifiedName'] = indexable.fullyQualifiedName;
+    }
+    return data;
+  }).sorted(_sortElementRepresentations);
 
   final encoder =
       pretty ? const JsonEncoder.withIndent(' ') : const JsonEncoder();
