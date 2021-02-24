@@ -354,7 +354,7 @@ class PubPackageBuilder implements PackageBuilder {
               autoIncludeDependencies: config.autoIncludeDependencies)
           .toList();
     }
-    files = quiver.concat([files, _includeExternalsFrom(files)]);
+    files = [...files, ..._includeExternalsFrom(files)];
     return {
       ...files.map((s) => resourceProvider.pathContext
           .absolute(resourceProvider.getFile(s).path)),

@@ -46,15 +46,15 @@ abstract class Container extends ModelElement with TypeParameters {
       element is ClassElement && (element as ClassElement).isMixin;
 
   @mustCallSuper
-  Iterable<ModelElement> get allModelElements => quiver.concat([
-        instanceMethods,
-        instanceFields,
-        instanceOperators,
-        instanceAccessors,
-        staticFields,
-        staticAccessors,
-        staticMethods,
-      ]);
+  Iterable<ModelElement> get allModelElements => [
+        ...instanceMethods,
+        ...instanceFields,
+        ...instanceOperators,
+        ...instanceAccessors,
+        ...staticFields,
+        ...staticAccessors,
+        ...staticMethods,
+      ];
 
   /// All methods, including operators and statics, declared as part of this
   /// [Container].  [declaredMethods] must be the union of [instanceMethods],

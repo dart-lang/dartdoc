@@ -4,6 +4,7 @@
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
+import 'package:collection/collection.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/extension_target.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -75,7 +76,7 @@ class Class extends Container
 
   @override
   Iterable<Method> get instanceMethods =>
-      quiver.concat([super.instanceMethods, inheritedMethods]);
+      [...super.instanceMethods, ...inheritedMethods];
 
   @override
   bool get publicInheritedInstanceMethods =>
@@ -83,7 +84,7 @@ class Class extends Container
 
   @override
   Iterable<Operator> get instanceOperators =>
-      quiver.concat([super.instanceOperators, inheritedOperators]);
+      [...super.instanceOperators, ...inheritedOperators];
 
   @override
   bool get publicInheritedInstanceOperators =>
@@ -93,13 +94,8 @@ class Class extends Container
 
   @override
   List<ModelElement> get allModelElements {
-    _allModelElements ??= List.from(
-        quiver.concat<ModelElement>([
-          super.allModelElements,
-          constructors,
-          typeParameters,
-        ]),
-        growable: false);
+    _allModelElements ??= List.unmodifiable(
+        [...super.allModelElements, ...constructors, ...typeParameters]);
     return _allModelElements;
   }
 

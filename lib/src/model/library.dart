@@ -99,16 +99,16 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
   static Iterable<Element> _getDefinedElements(
       CompilationUnitElement compilationUnit) {
-    return quiver.concat([
-      compilationUnit.accessors,
-      compilationUnit.enums,
-      compilationUnit.extensions,
-      compilationUnit.functions,
-      compilationUnit.functionTypeAliases,
-      compilationUnit.mixins,
-      compilationUnit.topLevelVariables,
-      compilationUnit.types,
-    ]);
+    return [
+      ...compilationUnit.accessors,
+      ...compilationUnit.enums,
+      ...compilationUnit.extensions,
+      ...compilationUnit.functions,
+      ...compilationUnit.functionTypeAliases,
+      ...compilationUnit.mixins,
+      ...compilationUnit.topLevelVariables,
+      ...compilationUnit.types,
+    ];
   }
 
   @Deprecated(
@@ -598,36 +598,24 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
   HashMap<Element, Set<ModelElement>> get modelElementsMap {
     if (_modelElementsMap == null) {
-      var results = quiver.concat(<Iterable<ModelElement>>[
-        library.constants,
-        library.functions,
-        library.properties,
-        library.typedefs,
-        library.extensions.expand((e) {
-          return quiver.concat([
-            [e],
-            e.allModelElements
-          ]);
+      final results = [
+        ...library.constants,
+        ...library.functions,
+        ...library.properties,
+        ...library.typedefs,
+        ...library.extensions.expand((e) {
+          return [e, ...e.allModelElements];
         }),
-        library.allClasses.expand((c) {
-          return quiver.concat([
-            [c],
-            c.allModelElements
-          ]);
+        ...library.allClasses.expand((c) {
+          return [c, ...c.allModelElements];
         }),
-        library.enums.expand((e) {
-          return quiver.concat([
-            [e],
-            e.allModelElements
-          ]);
+        ...library.enums.expand((e) {
+          return [e, ...e.allModelElements];
         }),
-        library.mixins.expand((m) {
-          return quiver.concat([
-            [m],
-            m.allModelElements
-          ]);
+        ...library.mixins.expand((m) {
+          return [m, ...m.allModelElements];
         }),
-      ]);
+      ];
       _modelElementsMap = HashMap<Element, Set<ModelElement>>();
       results.forEach((modelElement) {
         _modelElementsMap

@@ -99,12 +99,8 @@ class Extension extends Container
   List<ModelElement> _allModelElements;
   @override
   List<ModelElement> get allModelElements {
-    _allModelElements ??= List.from(
-        quiver.concat<ModelElement>([
-          super.allModelElements,
-          typeParameters,
-        ]),
-        growable: false);
+    _allModelElements ??=
+        List.unmodifiable([...super.allModelElements, ...typeParameters]);
     return _allModelElements;
   }
 
