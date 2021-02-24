@@ -5,8 +5,6 @@
 /// The models used to represent Dart code.
 library dartdoc.element_type;
 
-import 'dart:collection';
-
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
@@ -93,7 +91,8 @@ abstract class ElementType extends Privacy {
     return '';
   }
 
-  List<Parameter> get parameters => [];
+  /// An unmodifiable list of this element type's parameters.
+  List<Parameter> get parameters => const <Parameter>[];
 
   DartType get instantiatedType;
 
@@ -163,12 +162,9 @@ class FunctionTypeElementType extends UndefinedElementType {
   FunctionType get type => super.type;
 
   @override
-  List<Parameter> get parameters {
-    var params = type.parameters;
-    return UnmodifiableListView<Parameter>(params
-        .map((p) => ModelElement.from(p, library, packageGraph) as Parameter)
-        .toList());
-  }
+  List<Parameter> get parameters => type.parameters
+      .map((p) => ModelElement.from(p, library, packageGraph) as Parameter)
+      .toList(growable: false);
 
   ElementType get returnType =>
       ElementType.from(type.returnType, library, packageGraph, this);
@@ -190,13 +186,10 @@ class FunctionTypeElementType extends UndefinedElementType {
     return _nameWithGenerics;
   }
 
-  List<TypeParameter> get typeFormals {
-    var typeFormals = type.typeFormals;
-    return UnmodifiableListView<TypeParameter>(typeFormals
-        .map(
-            (p) => ModelElement.from(p, library, packageGraph) as TypeParameter)
-        .toList());
-  }
+  /// An unmodifiable list of this function element's type parameters.
+  List<TypeParameter> get typeFormals => type.typeFormals
+      .map((p) => ModelElement.from(p, library, packageGraph) as TypeParameter)
+      .toList(growable: false);
 
   @override
   String get name => 'Function';
@@ -293,13 +286,13 @@ abstract class DefinedElementType extends ElementType {
   String createLinkedReturnTypeName() => returnType.linkedName;
 
   Iterable<ElementType> _typeArguments;
-  Iterable<ElementType> get typeArguments {
-    _typeArguments ??= (type as ParameterizedType)
-        .typeArguments
-        .map((f) => ElementType.from(f, library, packageGraph))
-        .toList();
-    return _typeArguments;
-  }
+
+  /// An unmodifiable list of this element type's parameters.
+  Iterable<ElementType> get typeArguments =>
+      _typeArguments ??= (type as ParameterizedType)
+          .typeArguments
+          .map((f) => ElementType.from(f, library, packageGraph))
+          .toList(growable: false);
 
   DartType get _bound => type;
 
