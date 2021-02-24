@@ -13,8 +13,6 @@ import 'package:dartdoc/src/model/model_element.dart';
 /// Convenience function to generate category JSON since different generators
 /// will likely want the same content for this.
 String generateCategoryJson(Iterable<Categorization> categories, bool pretty) {
-  final encoder =
-      pretty ? const JsonEncoder.withIndent(' ') : const JsonEncoder();
   // ignore: omit_local_variable_types
   final List<Map<String, Object>> indexItems = categories
       .map((Categorization cat) {
@@ -42,6 +40,9 @@ String generateCategoryJson(Iterable<Categorization> categories, bool pretty) {
       .sorted(_sortElements)
       .toList(growable: false);
 
+  final encoder =
+      pretty ? const JsonEncoder.withIndent(' ') : const JsonEncoder();
+
   return encoder.convert(indexItems);
 }
 
@@ -49,8 +50,6 @@ String generateCategoryJson(Iterable<Categorization> categories, bool pretty) {
 /// generators will likely want the same content for this.
 String generateSearchIndexJson(
     Iterable<Indexable> indexedElements, bool pretty) {
-  final encoder =
-      pretty ? const JsonEncoder.withIndent(' ') : const JsonEncoder();
   final indexItems = indexedElements
       .map((Indexable ind) {
         final data = <String, Object>{
@@ -76,6 +75,9 @@ String generateSearchIndexJson(
       })
       .sorted(_sortElements)
       .toList(growable: false);
+
+  final encoder =
+      pretty ? const JsonEncoder.withIndent(' ') : const JsonEncoder();
 
   return encoder.convert(indexItems);
 }
