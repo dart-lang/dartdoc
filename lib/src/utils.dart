@@ -31,7 +31,7 @@ Iterable<String> stripCommonWhitespace(String str) sync* {
 }
 
 String stripComments(String str) {
-  // TODO Once we migrate to null safety, prohibit null here
+  // TODO(parlough): Once we migrate to null safety, prohibit null here
   if (str == null) return null;
   if (str.isEmpty) return '';
   final buf = StringBuffer();
