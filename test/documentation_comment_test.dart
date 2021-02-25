@@ -32,8 +32,10 @@ void main() {
   Matcher hasMissingExampleWarning(String message) =>
       _HasWarning(PackageWarning.missingExampleFile, message);
 
-  void expectNoWarnings() =>
-      expect(packageGraph.packageWarningCounter.countedWarnings, isEmpty);
+  void expectNoWarnings() {
+    expect(packageGraph.packageWarningCounter.hasWarnings, isFalse);
+    expect(packageGraph.packageWarningCounter.countedWarnings, isEmpty);
+  }
 
   group('documentation_comment tests', () {
     setUp(() async {

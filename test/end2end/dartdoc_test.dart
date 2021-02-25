@@ -12,7 +12,6 @@ import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart';
-import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
@@ -147,10 +146,8 @@ void main() {
       var results = await dartdoc.generateDocsBase();
       var p = results.packageGraph;
       var unresolvedToolErrors = p.packageWarningCounter.countedWarnings.values
-          .expand<String>((Set<Tuple2<PackageWarning, String>> s) => s
-              .where((Tuple2<PackageWarning, String> t) =>
-                  t.item1 == PackageWarning.toolError)
-              .map<String>((Tuple2<PackageWarning, String> t) => t.item2));
+          .map((e) => e[PackageWarning.toolError] ?? {})
+          .expand((element) => element);
 
       expect(p.packageWarningCounter.errorCount, equals(1));
       expect(unresolvedToolErrors.length, equals(1));
@@ -165,10 +162,8 @@ void main() {
       var p = results.packageGraph;
       var unresolvedExportWarnings = p
           .packageWarningCounter.countedWarnings.values
-          .expand<String>((Set<Tuple2<PackageWarning, String>> s) => s
-              .where((Tuple2<PackageWarning, String> t) =>
-                  t.item1 == PackageWarning.unresolvedExport)
-              .map<String>((Tuple2<PackageWarning, String> t) => t.item2));
+          .map((e) => e[PackageWarning.unresolvedExport] ?? {})
+          .expand((element) => element);
 
       expect(unresolvedExportWarnings.length, equals(1));
       expect(unresolvedExportWarnings.first,

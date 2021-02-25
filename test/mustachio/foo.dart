@@ -1,4 +1,4 @@
-@Renderer(#renderFoo, Context<Foo>())
+@Renderer(#renderFoo, Context<Foo>(), visibleTypes: {Property1, Property2})
 @Renderer(#renderBar, Context<Bar>())
 @Renderer(#renderBaz, Context<Baz>())
 library dartdoc.testing.foo;
@@ -15,6 +15,7 @@ class Foo extends FooBase<Baz> {
   List<int> l1;
   @override
   Baz baz;
+  Property1 p1;
 }
 
 class Bar {
@@ -26,4 +27,12 @@ class Bar {
 
 class Baz {
   Bar bar;
+}
+
+class Property1 {
+  Property2 p2;
+}
+
+class Property2 {
+  String s;
 }
