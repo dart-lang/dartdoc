@@ -160,8 +160,8 @@ import '${p.basename(_sourceUri.path)}';
       return;
     }
 
-    var isFullRenderer = _isVisibleToMustache(type.element);
-    _addTypeHierarchyToProcess(type, isFullRenderer: isFullRenderer);
+    _addTypeHierarchyToProcess(type,
+        isFullRenderer: _isVisibleToMustache(type.element));
   }
 
   /// Returns an [InterfaceType] which may be relevant for generating a
