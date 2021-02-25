@@ -6,23 +6,24 @@ library dartdoc.utils;
 final RegExp leadingWhiteSpace = RegExp(r'^([ \t]*)[^ ]');
 
 Iterable<String> stripCommonWhitespace(String str) sync* {
-  var lines = str.split('\n');
-  int minimumSeen;
+  if (str.isEmpty) return;
+  final lines = str.split('\n');
+  int /*?*/ minimumSeen;
 
-  for (var line in lines) {
+  for (final line in lines) {
     if (line.isNotEmpty) {
-      Match m = leadingWhiteSpace.firstMatch(line);
-      if (m != null) {
-        if (minimumSeen == null || m.group(1).length < minimumSeen) {
-          minimumSeen = m.group(1).length;
+      final match = leadingWhiteSpace.firstMatch(line);
+      if (match != null) {
+        if (minimumSeen == null || match.group(1).length < minimumSeen) {
+          minimumSeen = match.group(1).length;
         }
       }
     }
   }
   minimumSeen ??= 0;
-  for (var line in lines) {
+  for (final line in lines) {
     if (line.length >= minimumSeen) {
-      yield '${line.substring(minimumSeen)}';
+      yield line.substring(minimumSeen);
     } else {
       yield '';
     }
@@ -30,21 +31,23 @@ Iterable<String> stripCommonWhitespace(String str) sync* {
 }
 
 String stripComments(String str) {
-  var cStyle = false;
+  // TODO(parlough): Once we migrate to null safety, prohibit null here
   if (str == null) return null;
-  var buf = StringBuffer();
+  if (str.isEmpty) return '';
+  final buf = StringBuffer();
 
   if (str.startsWith('///')) {
-    for (var line in stripCommonWhitespace(str)) {
+    for (final line in stripCommonWhitespace(str)) {
       if (line.startsWith('/// ')) {
-        buf.write('${line.substring(4)}\n');
+        buf.writeln(line.substring(4));
       } else if (line.startsWith('///')) {
-        buf.write('${line.substring(3)}\n');
+        buf.writeln(line.substring(3));
       } else {
-        buf.write('$line\n');
+        buf.writeln(line);
       }
     }
   } else {
+    var cStyle = false;
     if (str.startsWith('/**')) {
       str = str.substring(3);
       cStyle = true;
@@ -52,13 +55,13 @@ String stripComments(String str) {
     if (str.endsWith('*/')) {
       str = str.substring(0, str.length - 2);
     }
-    for (var line in stripCommonWhitespace(str)) {
+    for (final line in stripCommonWhitespace(str)) {
       if (cStyle && line.startsWith('* ')) {
-        buf.write('${line.substring(2)}\n');
+        buf.writeln(line.substring(2));
       } else if (cStyle && line.startsWith('*')) {
-        buf.write('${line.substring(1)}\n');
+        buf.writeln(line.substring(1));
       } else {
-        buf.write('$line\n');
+        buf.writeln(line);
       }
     }
   }
