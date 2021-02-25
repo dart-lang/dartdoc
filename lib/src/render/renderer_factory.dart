@@ -16,14 +16,19 @@ import 'package:dartdoc/src/render/type_parameters_renderer.dart';
 import 'package:dartdoc/src/render/typedef_renderer.dart';
 
 abstract class RendererFactory {
-  static RendererFactory forFormat(String format) {
+  const RendererFactory();
+
+  /// Retrieves the appropriate [RendererFactory] according to the
+  /// specified [format]. Currently supports `html` or `md` otherwise
+  /// throws an [ArgumentError].
+  factory RendererFactory.forFormat(String format) {
     switch (format) {
       case 'html':
-        return HtmlRenderFactory();
+        return const HtmlRenderFactory();
       case 'md':
-        return MdRenderFactory();
+        return const MdRenderFactory();
       default:
-        throw ArgumentError('Unsupported format: $format');
+        throw ArgumentError('Unsupported renderer format: $format');
     }
   }
 
@@ -59,6 +64,8 @@ abstract class RendererFactory {
 }
 
 class HtmlRenderFactory extends RendererFactory {
+  const HtmlRenderFactory();
+
   @override
   TemplateRenderer get templateRenderer => HtmlTemplateRenderer();
 
@@ -111,6 +118,8 @@ class HtmlRenderFactory extends RendererFactory {
 }
 
 class MdRenderFactory extends RendererFactory {
+  const MdRenderFactory();
+
   @override
   TemplateRenderer get templateRenderer => MdTemplateRenderer();
 
