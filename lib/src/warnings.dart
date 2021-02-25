@@ -499,10 +499,10 @@ class PackageWarningCounter {
 
   @override
   String toString() {
-    var errors = '$errorCount ${errorCount == 1 ? "error" : "errors"}';
-    var warnings =
+    final errors = '$errorCount ${errorCount == 1 ? "error" : "errors"}';
+    final warnings =
         '$warningCount ${warningCount == 1 ? "warning" : "warnings"}';
-    return [errors, warnings].join(', ');
+    return '$errors, $warnings';
   }
 }
 

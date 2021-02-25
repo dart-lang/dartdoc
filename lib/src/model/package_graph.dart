@@ -704,15 +704,17 @@ class PackageGraph {
 
   @override
   String toString() {
-    final divider = '=========================================================';
-    final buffer =
-        StringBuffer('PackageGraph built from ${defaultPackage.name}');
+    const divider = '=========================================================';
+    final buffer = StringBuffer('PackageGraph built from ');
+    buffer.writeln(defaultPackageName);
     buffer.writeln(divider);
     buffer.writeln();
     for (final name in packageMap.keys) {
       final package = packageMap[name];
-      buffer.writeln('Package $name documented at ${package.documentedWhere} '
-          'with libraries: ${package.allLibraries}');
+      buffer.write('Package $name documented at ${package.documentedWhere} '
+          'with libraries: ');
+      buffer.writeAll(package.allLibraries);
+      buffer.writeln();
     }
     buffer.writeln(divider);
     return buffer.toString();
