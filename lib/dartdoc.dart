@@ -321,8 +321,7 @@ class Dartdoc {
         } else {
           // Error messages are orphaned by design and do not appear in the search
           // index.
-          if (<String>['__404error.html', 'categories.json']
-              .contains(fullPath)) {
+          if (const {'__404error.html', 'categories.json'}.contains(fullPath)) {
             _warn(packageGraph, PackageWarning.orphanedFile, fullPath,
                 normalOrigin);
           }
@@ -342,7 +341,7 @@ class Dartdoc {
   // This is extracted to save memory during the check; be careful not to hang
   // on to anything referencing the full file and doc tree.
   Tuple2<Iterable<String>, String> _getStringLinksAndHref(String fullPath) {
-    var file = config.resourceProvider.getFile('$fullPath');
+    var file = config.resourceProvider.getFile(fullPath);
     if (!file.exists) {
       return null;
     }
@@ -368,7 +367,7 @@ class Dartdoc {
       PackageGraph packageGraph, String origin, Set<String> visited) {
     var fullPath = path.joinAll([origin, 'index.json']);
     var indexPath = path.joinAll([origin, 'index.html']);
-    var file = config.resourceProvider.getFile('$fullPath');
+    var file = config.resourceProvider.getFile(fullPath);
     if (!file.exists) {
       return null;
     }
