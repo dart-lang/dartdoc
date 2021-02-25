@@ -273,19 +273,19 @@ class Dartdoc {
       referredFromElements.removeWhere((e) => !e.isCanonical);
     }
     if (warnOnElements != null) {
-      if (warnOnElements.any((e) => e.isCanonical)) {
-        warnOnElement = warnOnElements.firstWhere((e) => e.isCanonical);
-      } else {
-        // If we don't have a canonical element, just pick one.
-        warnOnElement = warnOnElements.isEmpty ? null : warnOnElements.first;
-      }
+      warnOnElement = warnOnElements.firstWhere((e) => e.isCanonical,
+          orElse: () => warnOnElements.isEmpty ? null : warnOnElements.first);
     }
 
     if (referredFromElements.isEmpty && referredFrom == 'index.html') {
       referredFromElements.add(packageGraph.defaultPackage);
     }
-    var message = warnOn;
-    if (referredFrom == 'index.json') message = '$warnOn (from index.json)';
+    String message;
+    if (referredFrom == 'index.json') {
+      message = '$warnOn (from index.json)';
+    } else {
+      message = warnOn;
+    }
     packageGraph.warnOnElement(warnOnElement, kind,
         message: message, referredFrom: referredFromElements);
   }
@@ -403,10 +403,7 @@ class Dartdoc {
   void _doCheck(PackageGraph packageGraph, String origin, Set<String> visited,
       String pathToCheck,
       [String source, String fullPath]) {
-    if (fullPath == null) {
-      fullPath = path.joinAll([origin, pathToCheck]);
-      fullPath = path.normalize(fullPath);
-    }
+    fullPath ??= path.normalize(path.joinAll([origin, pathToCheck]));
 
     var stringLinksAndHref = _getStringLinksAndHref(fullPath);
     if (stringLinksAndHref == null) {
@@ -430,14 +427,9 @@ class Dartdoc {
     var toVisit = <Tuple2<String, String>>{};
 
     final ignoreHyperlinks = RegExp(r'^(https:|http:|mailto:|ftp:)');
-    for (var href in stringLinks) {
+    for (final href in stringLinks) {
       if (!href.startsWith(ignoreHyperlinks)) {
-        Uri uri;
-        try {
-          uri = Uri.parse(href);
-        } on FormatException {
-          // ignore
-        }
+        final uri = Uri.tryParse(href);
 
         if (uri == null || !uri.hasAuthority && !uri.hasFragment) {
           String full;
@@ -446,9 +438,10 @@ class Dartdoc {
           } else {
             full = '${path.dirname(pathToCheck)}/$href';
           }
-          var newPathToCheck = path.normalize(full);
-          var newFullPath = path.joinAll([origin, newPathToCheck]);
-          newFullPath = path.normalize(newFullPath);
+
+          final newPathToCheck = path.normalize(full);
+          final newFullPath =
+              path.normalize(path.joinAll([origin, newPathToCheck]));
           if (!visited.contains(newFullPath)) {
             toVisit.add(Tuple2(newPathToCheck, newFullPath));
             visited.add(newFullPath);
@@ -472,9 +465,8 @@ class Dartdoc {
     _hrefs = packageGraph.allHrefs;
 
     final visited = <String>{};
-    final start = 'index.html';
     logInfo('Validating docs...');
-    _doCheck(packageGraph, origin, visited, start);
+    _doCheck(packageGraph, origin, visited, 'index.html');
     _doOrphanCheck(packageGraph, origin, visited);
     _doSearchIndexCheck(packageGraph, origin, visited);
   }
