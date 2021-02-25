@@ -168,7 +168,7 @@ class ToolDefinition {
   String toString() {
     final commandString =
         '${this is DartToolDefinition ? '(Dart) ' : ''}"${command.join(' ')}"';
-    if (setupCommand == null || setupCommand.isEmpty) {
+    if (setupCommand == null) {
       return '$runtimeType: $commandString ($description)';
     } else {
       return '$runtimeType: $commandString, with setup command '
