@@ -4,41 +4,50 @@
 
 import 'package:dartdoc/src/model/category.dart';
 
+/// A renderer for a [Category].
 abstract class CategoryRenderer {
+  const CategoryRenderer();
+
+  /// Render the label of this [category].
   String renderCategoryLabel(Category category);
+
+  /// Render the name of this [category] with a link to its specified
+  /// [Category.href] if it is documented.
   String renderLinkedName(Category category);
 }
 
+/// A HTML renderer for a [Category].
 class CategoryRendererHtml extends CategoryRenderer {
-  static final CategoryRendererHtml _instance = CategoryRendererHtml._();
-
-  factory CategoryRendererHtml() {
-    return _instance;
-  }
-
-  CategoryRendererHtml._();
+  const CategoryRendererHtml();
 
   @override
   String renderCategoryLabel(Category category) {
-    var spanClasses = <String>[];
-    spanClasses.add('category');
-    spanClasses.add(category.name.split(' ').join('-').toLowerCase());
-    spanClasses.add('cp-${category.categoryIndex}');
-    if (category.isDocumented) {
-      spanClasses.add('linked');
-    }
-    var spanTitle = 'This is part of the ${category.name} ${category.kind}.';
+    final buffer = StringBuffer('<span class="category ');
+    final name = category.name;
+    buffer.writeAll(name.toLowerCase().split(' '), '-');
+    buffer.write(' cp-');
+    buffer.write(category.categoryIndex);
 
-    var buf = StringBuffer();
-    buf.write('<span class="${spanClasses.join(' ')}" title="$spanTitle">');
-    buf.write(renderLinkedName(category));
-    buf.write('</span>');
-    return buf.toString();
+    if (category.isDocumented) {
+      buffer.write(' linked');
+    }
+
+    buffer.write('"'); // Wrap up the class list and begin title
+    buffer.write(' title="This is part of the ');
+    buffer.write(name);
+    buffer.write(' ');
+    buffer.write(category.kind);
+    buffer.write('.">'); // Wrap up the title
+
+    buffer.write(renderLinkedName(category));
+    buffer.write('</span>');
+
+    return buffer.toString();
   }
 
   @override
   String renderLinkedName(Category category) {
-    var unbrokenName = category.name.replaceAll(' ', '&nbsp;');
+    final unbrokenName = category.name.replaceAll(' ', '&nbsp;');
     if (category.isDocumented) {
       return '<a href="${category.href}">$unbrokenName</a>';
     } else {
@@ -47,13 +56,16 @@ class CategoryRendererHtml extends CategoryRenderer {
   }
 }
 
+/// A markdown renderer for a [Category].
 class CategoryRendererMd extends CategoryRenderer {
+  const CategoryRendererMd();
+
   @override
   String renderCategoryLabel(Category category) => renderLinkedName(category);
 
   @override
   String renderLinkedName(Category category) {
-    var name = category.name;
+    final name = category.name;
     if (category.isDocumented) {
       return '[$name](${category.href})';
     }
