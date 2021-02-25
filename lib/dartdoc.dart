@@ -280,12 +280,8 @@ class Dartdoc {
     if (referredFromElements.isEmpty && referredFrom == 'index.html') {
       referredFromElements.add(packageGraph.defaultPackage);
     }
-    String message;
-    if (referredFrom == 'index.json') {
-      message = '$warnOn (from index.json)';
-    } else {
-      message = warnOn;
-    }
+    var message = warnOn;
+    if (referredFrom == 'index.json') message = '$warnOn (from index.json)';
     packageGraph.warnOnElement(warnOnElement, kind,
         message: message, referredFrom: referredFromElements);
   }
