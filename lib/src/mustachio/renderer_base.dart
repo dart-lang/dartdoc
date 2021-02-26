@@ -236,10 +236,7 @@ abstract class RendererBase<T> {
         // An inverted section is rendered with the current context.
         renderBlock(node.children);
       } else if (!node.invert && renderedIterable.isNotEmpty) {
-        var buffer = StringBuffer();
-        for (var renderedElement in renderedIterable) {
-          buffer.write(renderedElement);
-        }
+        var buffer = StringBuffer()..writeAll(renderedIterable);
         write(buffer.toString());
       }
       // Otherwise, render nothing.
