@@ -100,7 +100,7 @@ class CoverageSubprocessLauncher extends SubprocessLauncher {
       coverageResults.add(coverageResult.future);
       arguments = [
         '--disable-service-auth-codes',
-        '--enable-vm-service:0',
+        '--enable-vm-service=0',
         '--pause-isolates-on-exit',
         ...arguments
       ];
