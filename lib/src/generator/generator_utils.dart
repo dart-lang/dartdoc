@@ -13,31 +13,33 @@ import 'package:dartdoc/src/model/model_element.dart';
 /// Convenience function to generate category JSON since different generators
 /// will likely want the same content for this.
 String generateCategoryJson(Iterable<Categorization> categories, bool pretty) {
-  var encoder = pretty ? JsonEncoder.withIndent(' ') : JsonEncoder();
   // ignore: omit_local_variable_types
   final List<Map<String, Object>> indexItems =
-      categories.map((Categorization e) {
-    var data = <String, Object>{
-      'name': e.name,
-      'qualifiedName': e.fullyQualifiedName,
-      'href': e.href,
-      'type': e.kind,
+      categories.map((Categorization categorization) {
+    final data = <String, Object>{
+      'name': categorization.name,
+      'qualifiedName': categorization.fullyQualifiedName,
+      'href': categorization.href,
+      'type': categorization.kind,
     };
 
-    if (e.hasCategoryNames) data['categories'] = e.categoryNames;
-    if (e.hasSubCategoryNames) data['subcategories'] = e.subCategoryNames;
-    if (e.hasImage) data['image'] = e.image;
-    if (e.hasSamples) data['samples'] = e.samples;
-    return data;
-  }).toList();
-
-  indexItems.sort((a, b) {
-    var value = compareNatural(a['qualifiedName'], b['qualifiedName']);
-    if (value == 0) {
-      value = compareNatural(a['type'], b['type']);
+    if (categorization.hasCategoryNames) {
+      data['categories'] = categorization.categoryNames;
     }
-    return value;
-  });
+    if (categorization.hasSubCategoryNames) {
+      data['subcategories'] = categorization.subCategoryNames;
+    }
+    if (categorization.hasImage) {
+      data['image'] = categorization.image;
+    }
+    if (categorization.hasSamples) {
+      data['samples'] = categorization.samples;
+    }
+    return data;
+  }).sorted(_sortElementRepresentations);
+
+  final encoder =
+      pretty ? const JsonEncoder.withIndent(' ') : const JsonEncoder();
 
   return encoder.convert(indexItems);
 }
@@ -46,37 +48,39 @@ String generateCategoryJson(Iterable<Categorization> categories, bool pretty) {
 /// generators will likely want the same content for this.
 String generateSearchIndexJson(
     Iterable<Indexable> indexedElements, bool pretty) {
-  var encoder = pretty ? JsonEncoder.withIndent(' ') : JsonEncoder();
-  final indexItems = indexedElements.map((Indexable e) {
-    var data = <String, Object>{
-      'name': e.name,
-      'qualifiedName': e.fullyQualifiedName,
-      'href': e.href,
-      'type': e.kind,
-      'overriddenDepth': e.overriddenDepth,
+  final indexItems = indexedElements.map((Indexable indexable) {
+    final data = <String, Object>{
+      'name': indexable.name,
+      'qualifiedName': indexable.fullyQualifiedName,
+      'href': indexable.href,
+      'type': indexable.kind,
+      'overriddenDepth': indexable.overriddenDepth,
     };
-    if (e is ModelElement) {
-      data['packageName'] = e.package.name;
+    if (indexable is ModelElement) {
+      data['packageName'] = indexable.package.name;
     }
-    if (e is EnclosedElement) {
-      var ee = e as EnclosedElement;
+    if (indexable is EnclosedElement) {
+      final ee = indexable as EnclosedElement;
       data['enclosedBy'] = {
         'name': ee.enclosingElement.name,
         'type': ee.enclosingElement.kind
       };
 
-      data['qualifiedName'] = e.fullyQualifiedName;
+      data['qualifiedName'] = indexable.fullyQualifiedName;
     }
     return data;
-  }).toList();
+  }).sorted(_sortElementRepresentations);
 
-  indexItems.sort((a, b) {
-    var value = compareNatural(a['qualifiedName'], b['qualifiedName']);
-    if (value == 0) {
-      value = compareNatural(a['type'], b['type']);
-    }
-    return value;
-  });
+  final encoder =
+      pretty ? const JsonEncoder.withIndent(' ') : const JsonEncoder();
 
   return encoder.convert(indexItems);
+}
+
+int _sortElementRepresentations(Map<String, Object> a, Map<String, Object> b) {
+  final value = compareNatural(a['qualifiedName'], b['qualifiedName']);
+  if (value == 0) {
+    return compareNatural(a['type'], b['type']);
+  }
+  return value;
 }

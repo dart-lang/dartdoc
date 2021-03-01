@@ -16,14 +16,19 @@ import 'package:dartdoc/src/render/type_parameters_renderer.dart';
 import 'package:dartdoc/src/render/typedef_renderer.dart';
 
 abstract class RendererFactory {
-  static RendererFactory forFormat(String format) {
+  const RendererFactory();
+
+  /// Retrieves the appropriate [RendererFactory] according to the
+  /// specified [format]. Currently supports `html` or `md` otherwise
+  /// throws an [ArgumentError].
+  factory RendererFactory.forFormat(String format) {
     switch (format) {
       case 'html':
-        return HtmlRenderFactory();
+        return const HtmlRenderFactory();
       case 'md':
-        return MdRenderFactory();
+        return const MdRenderFactory();
       default:
-        throw ArgumentError('Unsupported format: $format');
+        throw ArgumentError('Unsupported renderer format: $format');
     }
   }
 
@@ -59,11 +64,13 @@ abstract class RendererFactory {
 }
 
 class HtmlRenderFactory extends RendererFactory {
+  const HtmlRenderFactory();
+
   @override
   TemplateRenderer get templateRenderer => HtmlTemplateRenderer();
 
   @override
-  CategoryRenderer get categoryRenderer => CategoryRendererHtml();
+  CategoryRenderer get categoryRenderer => const CategoryRendererHtml();
 
   @override
   DocumentationRenderer get documentationRenderer =>
@@ -101,21 +108,23 @@ class HtmlRenderFactory extends RendererFactory {
       TypeParametersRendererHtml();
 
   @override
-  TypedefRenderer get typedefRenderer => TypedefRendererHtml();
+  TypedefRenderer get typedefRenderer => const TypedefRendererHtml();
 
   @override
-  FeatureRenderer get featureRenderer => FeatureRendererHtml();
+  FeatureRenderer get featureRenderer => const FeatureRendererHtml();
 
   @override
   SourceCodeRenderer get sourceCodeRenderer => SourceCodeRendererHtml();
 }
 
 class MdRenderFactory extends RendererFactory {
+  const MdRenderFactory();
+
   @override
   TemplateRenderer get templateRenderer => MdTemplateRenderer();
 
   @override
-  CategoryRenderer get categoryRenderer => CategoryRendererMd();
+  CategoryRenderer get categoryRenderer => const CategoryRendererMd();
 
   // We render documentation as HTML for now.
   // TODO(jdkoren): explore using documentation directly in the output file.
@@ -154,10 +163,10 @@ class MdRenderFactory extends RendererFactory {
       TypeParametersRendererMd();
 
   @override
-  TypedefRenderer get typedefRenderer => TypedefRendererMd();
+  TypedefRenderer get typedefRenderer => const TypedefRendererMd();
 
   @override
-  FeatureRenderer get featureRenderer => FeatureRendererMd();
+  FeatureRenderer get featureRenderer => const FeatureRendererMd();
 
   @override
   SourceCodeRenderer get sourceCodeRenderer => SourceCodeRendererNoop();

@@ -123,7 +123,7 @@ Future<void> _printGenerationResult(
 
 Future<List<String>> _packageUrls(int page) {
   return http
-      .get('https://pub.dartlang.org/packages.json?page=${page}')
+      .get(Uri.parse('https://pub.dartlang.org/packages.json?page=${page}'))
       .then((response) {
     return List<String>.from(json.decode(response.body)['packages']);
   });
@@ -131,7 +131,7 @@ Future<List<String>> _packageUrls(int page) {
 
 Future<List<PackageInfo>> _getPackageInfos(List<String> packageUrls) {
   var futures = packageUrls.map((String p) {
-    return http.get(p).then((response) {
+    return http.get(Uri.parse(p)).then((response) {
       var decodedJson = json.decode(response.body);
       String name = decodedJson['name'];
       var versions = List<Version>.from(
@@ -151,7 +151,7 @@ Future<bool> _generateFor(PackageInfo package) async {
   _logBuffer = StringBuffer();
 
   // Get the package archive (tar zxvf foo.tar.gz).
-  var response = await http.get(package.archiveUrl);
+  var response = await http.get(Uri.parse(package.archiveUrl));
   if (response.statusCode != 200) throw response;
 
   var output = Directory('${_rootDir}/${package.name}');

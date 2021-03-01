@@ -254,10 +254,8 @@ class PackageGraph {
 
   Package _defaultPackage;
 
-  Package get defaultPackage {
-    _defaultPackage ??= Package.fromPackageMeta(packageMeta, this);
-    return _defaultPackage;
-  }
+  Package get defaultPackage =>
+      _defaultPackage ??= Package.fromPackageMeta(packageMeta, this);
 
   final bool hasEmbedderSdk;
 
@@ -572,10 +570,10 @@ class PackageGraph {
   /// on more than just [allLocalModelElements] to make the error messages
   /// comprehensive.
   Map<String, Set<ModelElement>> get allHrefs {
-    var hrefMap = <String, Set<ModelElement>>{};
+    final hrefMap = <String, Set<ModelElement>>{};
     // TODO(jcollins-g ): handle calculating hrefs causing new elements better
     //                    than toList().
-    for (var modelElement in allConstructedModelElements.values.toList()) {
+    for (final modelElement in allConstructedModelElements.values.toList()) {
       // Technically speaking we should be able to use canonical model elements
       // only here, but since the warnings that depend on this debug
       // canonicalization problems, don't limit ourselves in case an href is
@@ -583,16 +581,16 @@ class PackageGraph {
       if (modelElement is Dynamic) continue;
       // TODO: see [Accessor.enclosingCombo]
       if (modelElement is Accessor) continue;
-      if (modelElement.href == null) continue;
-      hrefMap.putIfAbsent(modelElement.href, () => {});
-      hrefMap[modelElement.href].add(modelElement);
+      final href = modelElement.href;
+      if (href == null) continue;
+
+      hrefMap.putIfAbsent(href, () => {}).add(modelElement);
     }
-    for (var package in packageMap.values) {
-      for (var library in package.libraries) {
-        if (library.href == null) continue;
-        hrefMap.putIfAbsent(library.href, () => {});
-        hrefMap[library.href].add(library);
-      }
+
+    for (final library in allLibraries.values) {
+      final href = library.href;
+      if (href == null) continue;
+      hrefMap.putIfAbsent(href, () => {}).add(library);
     }
     return hrefMap;
   }
@@ -704,15 +702,17 @@ class PackageGraph {
 
   @override
   String toString() {
-    final divider = '=========================================================';
-    final buffer =
-        StringBuffer('PackageGraph built from ${defaultPackage.name}');
+    const divider = '=========================================================';
+    final buffer = StringBuffer('PackageGraph built from ');
+    buffer.writeln(defaultPackageName);
     buffer.writeln(divider);
     buffer.writeln();
     for (final name in packageMap.keys) {
       final package = packageMap[name];
-      buffer.writeln('Package $name documented at ${package.documentedWhere} '
-          'with libraries: ${package.allLibraries}');
+      buffer.write('Package $name documented at ${package.documentedWhere} '
+          'with libraries: ');
+      buffer.writeAll(package.allLibraries);
+      buffer.writeln();
     }
     buffer.writeln(divider);
     return buffer.toString();

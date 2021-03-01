@@ -28,6 +28,7 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
   static Map<String, Property<CT_>> propertyMap<
           CT_ extends PackageTemplateData>() =>
       {
+        ..._Renderer_TemplateData.propertyMap<Package, CT_>(),
         'hasHomepage': Property(
           getValue: (CT_ c) => c.hasHomepage,
           renderVariable:
@@ -88,14 +89,10 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
               (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                   self.renderSimpleVariable(
                       c, remainingNames, 'List<Documentable>'),
-          isEmptyIterable: (CT_ c) => c.navLinks?.isEmpty ?? true,
           renderIterable:
               (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            var buffer = StringBuffer();
-            for (var e in c.navLinks) {
-              buffer.write(renderSimple(e, ast, r.template, parent: r));
-            }
-            return buffer.toString();
+            return c.navLinks
+                .map((e) => renderSimple(e, ast, r.template, parent: r));
           },
         ),
         'package': Property(
@@ -138,7 +135,6 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
             return renderSimple(c.title, ast, r.template, parent: r);
           },
         ),
-        ..._Renderer_TemplateData.propertyMap<Package, CT_>(),
       };
 
   _Renderer_PackageTemplateData(PackageTemplateData context,
@@ -165,19 +161,20 @@ String _render_Package(
 
 class _Renderer_Package extends RendererBase<Package> {
   static Map<String, Property<CT_>> propertyMap<CT_ extends Package>() => {
+        ..._Renderer_LibraryContainer.propertyMap<CT_>(),
+        ..._Renderer_Nameable.propertyMap<CT_>(),
+        ..._Renderer_Locatable.propertyMap<CT_>(),
+        ..._Renderer_Canonicalization.propertyMap<CT_>(),
+        ..._Renderer_Warnable.propertyMap<CT_>(),
         'allLibraries': Property(
           getValue: (CT_ c) => c.allLibraries,
           renderVariable:
               (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                   self.renderSimpleVariable(c, remainingNames, 'Set<Library>'),
-          isEmptyIterable: (CT_ c) => c.allLibraries?.isEmpty ?? true,
           renderIterable:
               (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            var buffer = StringBuffer();
-            for (var e in c.allLibraries) {
-              buffer.write(renderSimple(e, ast, r.template, parent: r));
-            }
-            return buffer.toString();
+            return c.allLibraries
+                .map((e) => renderSimple(e, ast, r.template, parent: r));
           },
         ),
         'baseHref': Property(
@@ -205,14 +202,10 @@ class _Renderer_Package extends RendererBase<Package> {
           renderVariable: (CT_ c, Property<CT_> self,
                   List<String> remainingNames) =>
               self.renderSimpleVariable(c, remainingNames, 'List<Category>'),
-          isEmptyIterable: (CT_ c) => c.categories?.isEmpty ?? true,
           renderIterable:
               (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            var buffer = StringBuffer();
-            for (var e in c.categories) {
-              buffer.write(renderSimple(e, ast, r.template, parent: r));
-            }
-            return buffer.toString();
+            return c.categories
+                .map((e) => renderSimple(e, ast, r.template, parent: r));
           },
         ),
         'categoriesWithPublicLibraries': Property(
@@ -221,16 +214,10 @@ class _Renderer_Package extends RendererBase<Package> {
               (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                   self.renderSimpleVariable(
                       c, remainingNames, 'Iterable<LibraryContainer>'),
-          isEmptyIterable: (CT_ c) =>
-              c.categoriesWithPublicLibraries?.isEmpty ?? true,
           renderIterable:
               (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            var buffer = StringBuffer();
-            for (var e in c.categoriesWithPublicLibraries) {
-              buffer.write(
-                  _render_LibraryContainer(e, ast, r.template, parent: r));
-            }
-            return buffer.toString();
+            return c.categoriesWithPublicLibraries.map(
+                (e) => _render_LibraryContainer(e, ast, r.template, parent: r));
           },
         ),
         'config': Property(
@@ -249,14 +236,10 @@ class _Renderer_Package extends RendererBase<Package> {
           renderVariable:
               (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                   self.renderSimpleVariable(c, remainingNames, 'List<String>'),
-          isEmptyIterable: (CT_ c) => c.containerOrder?.isEmpty ?? true,
           renderIterable:
               (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            var buffer = StringBuffer();
-            for (var e in c.containerOrder) {
-              buffer.write(renderSimple(e, ast, r.template, parent: r));
-            }
-            return buffer.toString();
+            return c.containerOrder
+                .map((e) => renderSimple(e, ast, r.template, parent: r));
           },
         ),
         'defaultCategory': Property(
@@ -313,14 +296,10 @@ class _Renderer_Package extends RendererBase<Package> {
           renderVariable: (CT_ c, Property<CT_> self,
                   List<String> remainingNames) =>
               self.renderSimpleVariable(c, remainingNames, 'List<Locatable>'),
-          isEmptyIterable: (CT_ c) => c.documentationFrom?.isEmpty ?? true,
           renderIterable:
               (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            var buffer = StringBuffer();
-            for (var e in c.documentationFrom) {
-              buffer.write(_render_Locatable(e, ast, r.template, parent: r));
-            }
-            return buffer.toString();
+            return c.documentationFrom
+                .map((e) => _render_Locatable(e, ast, r.template, parent: r));
           },
         ),
         'documentedCategories': Property(
@@ -329,14 +308,10 @@ class _Renderer_Package extends RendererBase<Package> {
               (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                   self.renderSimpleVariable(
                       c, remainingNames, 'Iterable<Category>'),
-          isEmptyIterable: (CT_ c) => c.documentedCategories?.isEmpty ?? true,
           renderIterable:
               (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            var buffer = StringBuffer();
-            for (var e in c.documentedCategories) {
-              buffer.write(renderSimple(e, ast, r.template, parent: r));
-            }
-            return buffer.toString();
+            return c.documentedCategories
+                .map((e) => renderSimple(e, ast, r.template, parent: r));
           },
         ),
         'documentedCategoriesSorted': Property(
@@ -345,15 +320,10 @@ class _Renderer_Package extends RendererBase<Package> {
               (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                   self.renderSimpleVariable(
                       c, remainingNames, 'Iterable<Category>'),
-          isEmptyIterable: (CT_ c) =>
-              c.documentedCategoriesSorted?.isEmpty ?? true,
           renderIterable:
               (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            var buffer = StringBuffer();
-            for (var e in c.documentedCategoriesSorted) {
-              buffer.write(renderSimple(e, ast, r.template, parent: r));
-            }
-            return buffer.toString();
+            return c.documentedCategoriesSorted
+                .map((e) => renderSimple(e, ast, r.template, parent: r));
           },
         ),
         'documentedWhere': Property(
@@ -562,14 +532,10 @@ class _Renderer_Package extends RendererBase<Package> {
           renderVariable:
               (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                   self.renderSimpleVariable(c, remainingNames, 'Set<String>'),
-          isEmptyIterable: (CT_ c) => c.locationPieces?.isEmpty ?? true,
           renderIterable:
               (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            var buffer = StringBuffer();
-            for (var e in c.locationPieces) {
-              buffer.write(renderSimple(e, ast, r.template, parent: r));
-            }
-            return buffer.toString();
+            return c.locationPieces
+                .map((e) => renderSimple(e, ast, r.template, parent: r));
           },
         ),
         'name': Property(
@@ -653,14 +619,10 @@ class _Renderer_Package extends RendererBase<Package> {
           renderVariable: (CT_ c, Property<CT_> self,
                   List<String> remainingNames) =>
               self.renderSimpleVariable(c, remainingNames, 'Iterable<Library>'),
-          isEmptyIterable: (CT_ c) => c.publicLibraries?.isEmpty ?? true,
           renderIterable:
               (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            var buffer = StringBuffer();
-            for (var e in c.publicLibraries) {
-              buffer.write(renderSimple(e, ast, r.template, parent: r));
-            }
-            return buffer.toString();
+            return c.publicLibraries
+                .map((e) => renderSimple(e, ast, r.template, parent: r));
           },
         ),
         'toolInvocationIndex': Property(
@@ -696,11 +658,6 @@ class _Renderer_Package extends RendererBase<Package> {
             return renderSimple(c.version, ast, r.template, parent: r);
           },
         ),
-        ..._Renderer_LibraryContainer.propertyMap<CT_>(),
-        ..._Renderer_Nameable.propertyMap<CT_>(),
-        ..._Renderer_Locatable.propertyMap<CT_>(),
-        ..._Renderer_Canonicalization.propertyMap<CT_>(),
-        ..._Renderer_Warnable.propertyMap<CT_>(),
       };
 
   _Renderer_Package(
@@ -717,79 +674,6 @@ class _Renderer_Package extends RendererBase<Package> {
   }
 }
 
-String _render_Nameable(
-    Nameable context, List<MustachioNode> ast, Template template,
-    {RendererBase<Object> parent}) {
-  var renderer = _Renderer_Nameable(context, parent, template);
-  renderer.renderBlock(ast);
-  return renderer.buffer.toString();
-}
-
-class _Renderer_Nameable extends RendererBase<Nameable> {
-  static Map<String, Property<CT_>> propertyMap<CT_ extends Nameable>() => {
-        'fullyQualifiedName': Property(
-          getValue: (CT_ c) => c.fullyQualifiedName,
-          renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                  self.renderSimpleVariable(c, remainingNames, 'String'),
-          isNullValue: (CT_ c) => c.fullyQualifiedName == null,
-          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            return renderSimple(c.fullyQualifiedName, ast, r.template,
-                parent: r);
-          },
-        ),
-        'name': Property(
-          getValue: (CT_ c) => c.name,
-          renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                  self.renderSimpleVariable(c, remainingNames, 'String'),
-          isNullValue: (CT_ c) => c.name == null,
-          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            return renderSimple(c.name, ast, r.template, parent: r);
-          },
-        ),
-        'namePart': Property(
-          getValue: (CT_ c) => c.namePart,
-          renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                  self.renderSimpleVariable(c, remainingNames, 'String'),
-          isNullValue: (CT_ c) => c.namePart == null,
-          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            return renderSimple(c.namePart, ast, r.template, parent: r);
-          },
-        ),
-        'namePieces': Property(
-          getValue: (CT_ c) => c.namePieces,
-          renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                  self.renderSimpleVariable(c, remainingNames, 'Set<String>'),
-          isEmptyIterable: (CT_ c) => c.namePieces?.isEmpty ?? true,
-          renderIterable:
-              (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            var buffer = StringBuffer();
-            for (var e in c.namePieces) {
-              buffer.write(renderSimple(e, ast, r.template, parent: r));
-            }
-            return buffer.toString();
-          },
-        ),
-        ..._Renderer_Object.propertyMap<CT_>(),
-      };
-
-  _Renderer_Nameable(
-      Nameable context, RendererBase<Object> parent, Template template)
-      : super(context, parent, template);
-
-  @override
-  Property<Nameable> getProperty(String key) {
-    if (propertyMap<Nameable>().containsKey(key)) {
-      return propertyMap<Nameable>()[key];
-    } else {
-      return null;
-    }
-  }
-}
-
 String _render_Locatable(
     Locatable context, List<MustachioNode> ast, Template template,
     {RendererBase<Object> parent}) {
@@ -800,19 +684,16 @@ String _render_Locatable(
 
 class _Renderer_Locatable extends RendererBase<Locatable> {
   static Map<String, Property<CT_>> propertyMap<CT_ extends Locatable>() => {
+        ..._Renderer_Object.propertyMap<CT_>(),
         'documentationFrom': Property(
           getValue: (CT_ c) => c.documentationFrom,
           renderVariable: (CT_ c, Property<CT_> self,
                   List<String> remainingNames) =>
               self.renderSimpleVariable(c, remainingNames, 'List<Locatable>'),
-          isEmptyIterable: (CT_ c) => c.documentationFrom?.isEmpty ?? true,
           renderIterable:
               (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            var buffer = StringBuffer();
-            for (var e in c.documentationFrom) {
-              buffer.write(_render_Locatable(e, ast, r.template, parent: r));
-            }
-            return buffer.toString();
+            return c.documentationFrom
+                .map((e) => _render_Locatable(e, ast, r.template, parent: r));
           },
         ),
         'documentationIsLocal': Property(
@@ -853,7 +734,6 @@ class _Renderer_Locatable extends RendererBase<Locatable> {
             return renderSimple(c.location, ast, r.template, parent: r);
           },
         ),
-        ..._Renderer_Object.propertyMap<CT_>(),
       };
 
   _Renderer_Locatable(
@@ -870,77 +750,117 @@ class _Renderer_Locatable extends RendererBase<Locatable> {
   }
 }
 
-String _render_Canonicalization(
-    Canonicalization context, List<MustachioNode> ast, Template template,
+String _render_LibraryContainer(
+    LibraryContainer context, List<MustachioNode> ast, Template template,
     {RendererBase<Object> parent}) {
-  var renderer = _Renderer_Canonicalization(context, parent, template);
+  var renderer = _Renderer_LibraryContainer(context, parent, template);
   renderer.renderBlock(ast);
   return renderer.buffer.toString();
 }
 
-class _Renderer_Canonicalization extends RendererBase<Canonicalization> {
+class _Renderer_LibraryContainer extends RendererBase<LibraryContainer> {
   static Map<String, Property<CT_>> propertyMap<
-          CT_ extends Canonicalization>() =>
+          CT_ extends LibraryContainer>() =>
       {
-        'canonicalLibrary': Property(
-          getValue: (CT_ c) => c.canonicalLibrary,
+        ..._Renderer_Object.propertyMap<CT_>(),
+        'containerOrder': Property(
+          getValue: (CT_ c) => c.containerOrder,
           renderVariable:
               (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                  self.renderSimpleVariable(c, remainingNames, 'Library'),
-          isNullValue: (CT_ c) => c.canonicalLibrary == null,
-          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            return renderSimple(c.canonicalLibrary, ast, r.template, parent: r);
-          },
-        ),
-        'commentRefs': Property(
-          getValue: (CT_ c) => c.commentRefs,
-          renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                  self.renderSimpleVariable(
-                      c, remainingNames, 'List<ModelCommentReference>'),
-          isEmptyIterable: (CT_ c) => c.commentRefs?.isEmpty ?? true,
+                  self.renderSimpleVariable(c, remainingNames, 'List<String>'),
           renderIterable:
               (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            var buffer = StringBuffer();
-            for (var e in c.commentRefs) {
-              buffer.write(renderSimple(e, ast, r.template, parent: r));
-            }
-            return buffer.toString();
+            return c.containerOrder
+                .map((e) => renderSimple(e, ast, r.template, parent: r));
           },
         ),
-        'isCanonical': Property(
-          getValue: (CT_ c) => c.isCanonical,
+        'enclosingName': Property(
+          getValue: (CT_ c) => c.enclosingName,
+          renderVariable:
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'String'),
+          isNullValue: (CT_ c) => c.enclosingName == null,
+          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+            return renderSimple(c.enclosingName, ast, r.template, parent: r);
+          },
+        ),
+        'hasPublicLibraries': Property(
+          getValue: (CT_ c) => c.hasPublicLibraries,
           renderVariable:
               (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                   self.renderSimpleVariable(c, remainingNames, 'bool'),
-          getBool: (CT_ c) => c.isCanonical == true,
+          getBool: (CT_ c) => c.hasPublicLibraries == true,
         ),
-        'locationPieces': Property(
-          getValue: (CT_ c) => c.locationPieces,
+        'isSdk': Property(
+          getValue: (CT_ c) => c.isSdk,
           renderVariable:
               (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                  self.renderSimpleVariable(c, remainingNames, 'Set<String>'),
-          isEmptyIterable: (CT_ c) => c.locationPieces?.isEmpty ?? true,
+                  self.renderSimpleVariable(c, remainingNames, 'bool'),
+          getBool: (CT_ c) => c.isSdk == true,
+        ),
+        'libraries': Property(
+          getValue: (CT_ c) => c.libraries,
+          renderVariable:
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'List<Library>'),
           renderIterable:
               (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            var buffer = StringBuffer();
-            for (var e in c.locationPieces) {
-              buffer.write(renderSimple(e, ast, r.template, parent: r));
-            }
-            return buffer.toString();
+            return c.libraries
+                .map((e) => renderSimple(e, ast, r.template, parent: r));
           },
         ),
-        ..._Renderer_Object.propertyMap<CT_>(),
+        'packageGraph': Property(
+          getValue: (CT_ c) => c.packageGraph,
+          renderVariable:
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'PackageGraph'),
+          isNullValue: (CT_ c) => c.packageGraph == null,
+          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+            return renderSimple(c.packageGraph, ast, r.template, parent: r);
+          },
+        ),
+        'publicLibraries': Property(
+          getValue: (CT_ c) => c.publicLibraries,
+          renderVariable: (CT_ c, Property<CT_> self,
+                  List<String> remainingNames) =>
+              self.renderSimpleVariable(c, remainingNames, 'Iterable<Library>'),
+          renderIterable:
+              (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+            return c.publicLibraries
+                .map((e) => renderSimple(e, ast, r.template, parent: r));
+          },
+        ),
+        'publicLibrariesSorted': Property(
+          getValue: (CT_ c) => c.publicLibrariesSorted,
+          renderVariable: (CT_ c, Property<CT_> self,
+                  List<String> remainingNames) =>
+              self.renderSimpleVariable(c, remainingNames, 'Iterable<Library>'),
+          renderIterable:
+              (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+            return c.publicLibrariesSorted
+                .map((e) => renderSimple(e, ast, r.template, parent: r));
+          },
+        ),
+        'sortKey': Property(
+          getValue: (CT_ c) => c.sortKey,
+          renderVariable:
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'String'),
+          isNullValue: (CT_ c) => c.sortKey == null,
+          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+            return renderSimple(c.sortKey, ast, r.template, parent: r);
+          },
+        ),
       };
 
-  _Renderer_Canonicalization(
-      Canonicalization context, RendererBase<Object> parent, Template template)
+  _Renderer_LibraryContainer(
+      LibraryContainer context, RendererBase<Object> parent, Template template)
       : super(context, parent, template);
 
   @override
-  Property<Canonicalization> getProperty(String key) {
-    if (propertyMap<Canonicalization>().containsKey(key)) {
-      return propertyMap<Canonicalization>()[key];
+  Property<LibraryContainer> getProperty(String key) {
+    if (propertyMap<LibraryContainer>().containsKey(key)) {
+      return propertyMap<LibraryContainer>()[key];
     } else {
       return null;
     }
@@ -1014,133 +934,138 @@ class _Renderer_Warnable extends RendererBase<Warnable> {
   }
 }
 
-String _render_LibraryContainer(
-    LibraryContainer context, List<MustachioNode> ast, Template template,
+String _render_Nameable(
+    Nameable context, List<MustachioNode> ast, Template template,
     {RendererBase<Object> parent}) {
-  var renderer = _Renderer_LibraryContainer(context, parent, template);
+  var renderer = _Renderer_Nameable(context, parent, template);
   renderer.renderBlock(ast);
   return renderer.buffer.toString();
 }
 
-class _Renderer_LibraryContainer extends RendererBase<LibraryContainer> {
-  static Map<String, Property<CT_>> propertyMap<
-          CT_ extends LibraryContainer>() =>
-      {
-        'containerOrder': Property(
-          getValue: (CT_ c) => c.containerOrder,
-          renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                  self.renderSimpleVariable(c, remainingNames, 'List<String>'),
-          isEmptyIterable: (CT_ c) => c.containerOrder?.isEmpty ?? true,
-          renderIterable:
-              (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            var buffer = StringBuffer();
-            for (var e in c.containerOrder) {
-              buffer.write(renderSimple(e, ast, r.template, parent: r));
-            }
-            return buffer.toString();
-          },
-        ),
-        'enclosingName': Property(
-          getValue: (CT_ c) => c.enclosingName,
-          renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                  self.renderSimpleVariable(c, remainingNames, 'String'),
-          isNullValue: (CT_ c) => c.enclosingName == null,
-          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            return renderSimple(c.enclosingName, ast, r.template, parent: r);
-          },
-        ),
-        'hasPublicLibraries': Property(
-          getValue: (CT_ c) => c.hasPublicLibraries,
-          renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                  self.renderSimpleVariable(c, remainingNames, 'bool'),
-          getBool: (CT_ c) => c.hasPublicLibraries == true,
-        ),
-        'isSdk': Property(
-          getValue: (CT_ c) => c.isSdk,
-          renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                  self.renderSimpleVariable(c, remainingNames, 'bool'),
-          getBool: (CT_ c) => c.isSdk == true,
-        ),
-        'libraries': Property(
-          getValue: (CT_ c) => c.libraries,
-          renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                  self.renderSimpleVariable(c, remainingNames, 'List<Library>'),
-          isEmptyIterable: (CT_ c) => c.libraries?.isEmpty ?? true,
-          renderIterable:
-              (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            var buffer = StringBuffer();
-            for (var e in c.libraries) {
-              buffer.write(renderSimple(e, ast, r.template, parent: r));
-            }
-            return buffer.toString();
-          },
-        ),
-        'packageGraph': Property(
-          getValue: (CT_ c) => c.packageGraph,
-          renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                  self.renderSimpleVariable(c, remainingNames, 'PackageGraph'),
-          isNullValue: (CT_ c) => c.packageGraph == null,
-          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            return renderSimple(c.packageGraph, ast, r.template, parent: r);
-          },
-        ),
-        'publicLibraries': Property(
-          getValue: (CT_ c) => c.publicLibraries,
-          renderVariable: (CT_ c, Property<CT_> self,
-                  List<String> remainingNames) =>
-              self.renderSimpleVariable(c, remainingNames, 'Iterable<Library>'),
-          isEmptyIterable: (CT_ c) => c.publicLibraries?.isEmpty ?? true,
-          renderIterable:
-              (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            var buffer = StringBuffer();
-            for (var e in c.publicLibraries) {
-              buffer.write(renderSimple(e, ast, r.template, parent: r));
-            }
-            return buffer.toString();
-          },
-        ),
-        'publicLibrariesSorted': Property(
-          getValue: (CT_ c) => c.publicLibrariesSorted,
-          renderVariable: (CT_ c, Property<CT_> self,
-                  List<String> remainingNames) =>
-              self.renderSimpleVariable(c, remainingNames, 'Iterable<Library>'),
-          isEmptyIterable: (CT_ c) => c.publicLibrariesSorted?.isEmpty ?? true,
-          renderIterable:
-              (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            var buffer = StringBuffer();
-            for (var e in c.publicLibrariesSorted) {
-              buffer.write(renderSimple(e, ast, r.template, parent: r));
-            }
-            return buffer.toString();
-          },
-        ),
-        'sortKey': Property(
-          getValue: (CT_ c) => c.sortKey,
-          renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                  self.renderSimpleVariable(c, remainingNames, 'String'),
-          isNullValue: (CT_ c) => c.sortKey == null,
-          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            return renderSimple(c.sortKey, ast, r.template, parent: r);
-          },
-        ),
+class _Renderer_Nameable extends RendererBase<Nameable> {
+  static Map<String, Property<CT_>> propertyMap<CT_ extends Nameable>() => {
         ..._Renderer_Object.propertyMap<CT_>(),
+        'fullyQualifiedName': Property(
+          getValue: (CT_ c) => c.fullyQualifiedName,
+          renderVariable:
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'String'),
+          isNullValue: (CT_ c) => c.fullyQualifiedName == null,
+          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+            return renderSimple(c.fullyQualifiedName, ast, r.template,
+                parent: r);
+          },
+        ),
+        'name': Property(
+          getValue: (CT_ c) => c.name,
+          renderVariable:
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'String'),
+          isNullValue: (CT_ c) => c.name == null,
+          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+            return renderSimple(c.name, ast, r.template, parent: r);
+          },
+        ),
+        'namePart': Property(
+          getValue: (CT_ c) => c.namePart,
+          renderVariable:
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'String'),
+          isNullValue: (CT_ c) => c.namePart == null,
+          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+            return renderSimple(c.namePart, ast, r.template, parent: r);
+          },
+        ),
+        'namePieces': Property(
+          getValue: (CT_ c) => c.namePieces,
+          renderVariable:
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'Set<String>'),
+          renderIterable:
+              (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+            return c.namePieces
+                .map((e) => renderSimple(e, ast, r.template, parent: r));
+          },
+        ),
       };
 
-  _Renderer_LibraryContainer(
-      LibraryContainer context, RendererBase<Object> parent, Template template)
+  _Renderer_Nameable(
+      Nameable context, RendererBase<Object> parent, Template template)
       : super(context, parent, template);
 
   @override
-  Property<LibraryContainer> getProperty(String key) {
-    if (propertyMap<LibraryContainer>().containsKey(key)) {
-      return propertyMap<LibraryContainer>()[key];
+  Property<Nameable> getProperty(String key) {
+    if (propertyMap<Nameable>().containsKey(key)) {
+      return propertyMap<Nameable>()[key];
+    } else {
+      return null;
+    }
+  }
+}
+
+String _render_Canonicalization(
+    Canonicalization context, List<MustachioNode> ast, Template template,
+    {RendererBase<Object> parent}) {
+  var renderer = _Renderer_Canonicalization(context, parent, template);
+  renderer.renderBlock(ast);
+  return renderer.buffer.toString();
+}
+
+class _Renderer_Canonicalization extends RendererBase<Canonicalization> {
+  static Map<String, Property<CT_>> propertyMap<
+          CT_ extends Canonicalization>() =>
+      {
+        ..._Renderer_Object.propertyMap<CT_>(),
+        'canonicalLibrary': Property(
+          getValue: (CT_ c) => c.canonicalLibrary,
+          renderVariable:
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'Library'),
+          isNullValue: (CT_ c) => c.canonicalLibrary == null,
+          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+            return renderSimple(c.canonicalLibrary, ast, r.template, parent: r);
+          },
+        ),
+        'commentRefs': Property(
+          getValue: (CT_ c) => c.commentRefs,
+          renderVariable:
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(
+                      c, remainingNames, 'List<ModelCommentReference>'),
+          renderIterable:
+              (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+            return c.commentRefs
+                .map((e) => renderSimple(e, ast, r.template, parent: r));
+          },
+        ),
+        'isCanonical': Property(
+          getValue: (CT_ c) => c.isCanonical,
+          renderVariable:
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'bool'),
+          getBool: (CT_ c) => c.isCanonical == true,
+        ),
+        'locationPieces': Property(
+          getValue: (CT_ c) => c.locationPieces,
+          renderVariable:
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'Set<String>'),
+          renderIterable:
+              (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+            return c.locationPieces
+                .map((e) => renderSimple(e, ast, r.template, parent: r));
+          },
+        ),
+      };
+
+  _Renderer_Canonicalization(
+      Canonicalization context, RendererBase<Object> parent, Template template)
+      : super(context, parent, template);
+
+  @override
+  Property<Canonicalization> getProperty(String key) {
+    if (propertyMap<Canonicalization>().containsKey(key)) {
+      return propertyMap<Canonicalization>()[key];
     } else {
       return null;
     }
@@ -1165,6 +1090,16 @@ class _Renderer_Object extends RendererBase<Object> {
           isNullValue: (CT_ c) => c.hashCode == null,
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.hashCode, ast, r.template, parent: r);
+          },
+        ),
+        'runtimeType': Property(
+          getValue: (CT_ c) => c.runtimeType,
+          renderVariable:
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'Type'),
+          isNullValue: (CT_ c) => c.runtimeType == null,
+          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+            return renderSimple(c.runtimeType, ast, r.template, parent: r);
           },
         ),
       };
@@ -1196,6 +1131,7 @@ class _Renderer_TemplateData<T extends Documentable>
   static Map<String, Property<CT_>> propertyMap<T extends Documentable,
           CT_ extends TemplateData>() =>
       {
+        ..._Renderer_Object.propertyMap<CT_>(),
         'bareHref': Property(
           getValue: (CT_ c) => c.bareHref,
           renderVariable:
@@ -1288,14 +1224,10 @@ class _Renderer_TemplateData<T extends Documentable>
           renderVariable:
               (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                   self.renderSimpleVariable(c, remainingNames, 'List<Package>'),
-          isEmptyIterable: (CT_ c) => c.localPackages?.isEmpty ?? true,
           renderIterable:
               (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            var buffer = StringBuffer();
-            for (var e in c.localPackages) {
-              buffer.write(_render_Package(e, ast, r.template, parent: r));
-            }
-            return buffer.toString();
+            return c.localPackages
+                .map((e) => _render_Package(e, ast, r.template, parent: r));
           },
         ),
         'metaDescription': Property(
@@ -1314,14 +1246,10 @@ class _Renderer_TemplateData<T extends Documentable>
               (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                   self.renderSimpleVariable(
                       c, remainingNames, 'List<Documentable>'),
-          isEmptyIterable: (CT_ c) => c.navLinks?.isEmpty ?? true,
           renderIterable:
               (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            var buffer = StringBuffer();
-            for (var e in c.navLinks) {
-              buffer.write(renderSimple(e, ast, r.template, parent: r));
-            }
-            return buffer.toString();
+            return c.navLinks
+                .map((e) => renderSimple(e, ast, r.template, parent: r));
           },
         ),
         'navLinksWithGenerics': Property(
@@ -1329,14 +1257,10 @@ class _Renderer_TemplateData<T extends Documentable>
           renderVariable: (CT_ c, Property<CT_> self,
                   List<String> remainingNames) =>
               self.renderSimpleVariable(c, remainingNames, 'List<Container>'),
-          isEmptyIterable: (CT_ c) => c.navLinksWithGenerics?.isEmpty ?? true,
           renderIterable:
               (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            var buffer = StringBuffer();
-            for (var e in c.navLinksWithGenerics) {
-              buffer.write(renderSimple(e, ast, r.template, parent: r));
-            }
-            return buffer.toString();
+            return c.navLinksWithGenerics
+                .map((e) => renderSimple(e, ast, r.template, parent: r));
           },
         ),
         'parent': Property(
@@ -1358,6 +1282,16 @@ class _Renderer_TemplateData<T extends Documentable>
           renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
             return renderSimple(c.relCanonicalPrefix, ast, r.template,
                 parent: r);
+          },
+        ),
+        'self': Property(
+          getValue: (CT_ c) => c.self,
+          renderVariable:
+              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                  self.renderSimpleVariable(c, remainingNames, 'Documentable'),
+          isNullValue: (CT_ c) => c.self == null,
+          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+            return renderSimple(c.self, ast, r.template, parent: r);
           },
         ),
         'title': Property(
@@ -1387,7 +1321,6 @@ class _Renderer_TemplateData<T extends Documentable>
             return renderSimple(c.version, ast, r.template, parent: r);
           },
         ),
-        ..._Renderer_Object.propertyMap<CT_>(),
       };
 
   _Renderer_TemplateData(

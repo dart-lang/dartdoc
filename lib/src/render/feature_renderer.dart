@@ -4,49 +4,59 @@
 
 import 'package:dartdoc/src/model/language_feature.dart';
 
+/// A renderer for a [LanguageFeature].
 abstract class FeatureRenderer {
+  const FeatureRenderer();
+
+  /// Render the label of this [feature].
   String renderFeatureLabel(LanguageFeature feature);
 }
 
+/// A HTML renderer for a [LanguageFeature].
 class FeatureRendererHtml extends FeatureRenderer {
-  static final FeatureRendererHtml _instance = FeatureRendererHtml._();
-
-  factory FeatureRendererHtml() {
-    return _instance;
-  }
-
-  FeatureRendererHtml._();
+  const FeatureRendererHtml();
 
   @override
   String renderFeatureLabel(LanguageFeature feature) {
-    final classesText = [
-      'feature',
-      'feature-${feature.name.split(' ').join('-').toLowerCase()}'
-    ].join(' ');
+    final buffer = StringBuffer();
+    final url = feature.featureUrl;
 
-    if (feature.featureUrl != null) {
-      return '<a href="${feature.featureUrl}" class="${classesText}"'
-          ' title="${feature.featureDescription}">${feature.name}</a>';
+    if (url != null) {
+      buffer.write('<a href="');
+      buffer.write(url);
+      buffer.write('"');
+    } else {
+      buffer.write('<span');
     }
 
-    return '<span class="${classesText}" '
-        'title="${feature.featureDescription}">${feature.name}</span>';
+    final name = feature.name;
+
+    buffer.write(' class="feature feature-');
+    buffer.writeAll(name.toLowerCase().split(' '), '-');
+    buffer.write('" title="');
+    buffer.write(feature.featureDescription);
+    buffer.write('">');
+    buffer.write(name);
+
+    if (url != null) {
+      buffer.write('</a>');
+    } else {
+      buffer.write('</span>');
+    }
+
+    return buffer.toString();
   }
 }
 
+/// A markdown renderer for a [LanguageFeature].
 class FeatureRendererMd extends FeatureRenderer {
-  static final FeatureRendererMd _instance = FeatureRendererMd._();
-
-  factory FeatureRendererMd() {
-    return _instance;
-  }
-
-  FeatureRendererMd._();
+  const FeatureRendererMd();
 
   @override
   String renderFeatureLabel(LanguageFeature feature) {
-    if (feature.featureUrl != null) {
-      return '*[\<${feature.name}\>](${feature.featureUrl})*';
+    final featureUrl = feature.featureUrl;
+    if (featureUrl != null) {
+      return '*[\<${feature.name}\>]($featureUrl)*';
     }
     return '*\<${feature.name}\>*';
   }

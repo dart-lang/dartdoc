@@ -5,7 +5,6 @@
 /// The models used to represent Dart code.
 library dartdoc.models;
 
-import 'dart:collection' show UnmodifiableListView;
 import 'dart:convert';
 
 import 'package:analyzer/dart/element/element.dart';
@@ -1100,9 +1099,9 @@ abstract class ModelElement extends Canonicalization
         params = (element as FunctionTypeAliasElement).function.parameters;
       }
 
-      _parameters = UnmodifiableListView<Parameter>(params
+      _parameters = UnmodifiableListView(params
           .map((p) => ModelElement.from(p, library, packageGraph) as Parameter)
-          .toList());
+          .toList(growable: false));
     }
     return _parameters;
   }

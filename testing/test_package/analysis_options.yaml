@@ -1,6 +1,0 @@
-analyzer:
-  enable-experiment:
-    - extension-methods
-  exclude: ['**']
-
-

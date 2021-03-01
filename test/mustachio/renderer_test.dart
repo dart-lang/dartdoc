@@ -21,12 +21,14 @@ void main() {
 
   test('property map contains all public getters', () {
     var propertyMap = Renderer_Foo.propertyMap();
-    expect(propertyMap.keys, hasLength(5));
+    expect(propertyMap.keys, hasLength(7));
     expect(propertyMap['b1'], isNotNull);
     expect(propertyMap['s1'], isNotNull);
     expect(propertyMap['l1'], isNotNull);
     expect(propertyMap['baz'], isNotNull);
+    expect(propertyMap['p1'], isNotNull);
     expect(propertyMap['hashCode'], isNotNull);
+    expect(propertyMap['runtimeType'], isNotNull);
   });
 
   test('property map contains valid bool Properties', () {
@@ -34,7 +36,6 @@ void main() {
     expect(propertyMap['b1'].getValue, isNotNull);
     expect(propertyMap['b1'].renderVariable, isNotNull);
     expect(propertyMap['b1'].getBool, isNotNull);
-    expect(propertyMap['b1'].isEmptyIterable, isNull);
     expect(propertyMap['b1'].renderIterable, isNull);
     expect(propertyMap['b1'].isNullValue, isNull);
     expect(propertyMap['b1'].renderValue, isNull);
@@ -45,7 +46,6 @@ void main() {
     expect(propertyMap['l1'].getValue, isNotNull);
     expect(propertyMap['l1'].renderVariable, isNotNull);
     expect(propertyMap['l1'].getBool, isNull);
-    expect(propertyMap['l1'].isEmptyIterable, isNotNull);
     expect(propertyMap['l1'].renderIterable, isNotNull);
     expect(propertyMap['l1'].isNullValue, isNull);
     expect(propertyMap['l1'].renderValue, isNull);
@@ -56,7 +56,6 @@ void main() {
     expect(propertyMap['s1'].getValue, isNotNull);
     expect(propertyMap['s1'].renderVariable, isNotNull);
     expect(propertyMap['s1'].getBool, isNull);
-    expect(propertyMap['s1'].isEmptyIterable, isNull);
     expect(propertyMap['s1'].renderIterable, isNull);
     expect(propertyMap['s1'].isNullValue, isNotNull);
     expect(propertyMap['s1'].renderValue, isNotNull);
@@ -72,24 +71,6 @@ void main() {
     var propertyMap = Renderer_Foo.propertyMap();
     var foo = Foo()..b1 = true;
     expect(propertyMap['b1'].getBool(foo), isTrue);
-  });
-
-  test('isEmptyIterable returns true when an Iterable value is empty', () {
-    var propertyMap = Renderer_Foo.propertyMap();
-    var foo = Foo()..l1 = [];
-    expect(propertyMap['l1'].isEmptyIterable(foo), isTrue);
-  });
-
-  test('isEmptyIterable returns false when an Iterable value is not empty', () {
-    var propertyMap = Renderer_Foo.propertyMap();
-    var foo = Foo()..l1 = [1, 2, 3];
-    expect(propertyMap['l1'].isEmptyIterable(foo), isFalse);
-  });
-
-  test('isEmptyIterable returns true when an Iterable value is null', () {
-    var propertyMap = Renderer_Foo.propertyMap();
-    var foo = Foo()..l1 = null;
-    expect(propertyMap['l1'].isEmptyIterable(foo), isTrue);
   });
 
   test('isNullValue returns true when a value is null', () {
@@ -260,13 +241,21 @@ void main() {
   });
 
   test('Renderer resolves variable with key with multiple names', () async {
-    var barTemplateFile = getFile('/project/foo.mustache')
+    var barTemplateFile = getFile('/project/bar.mustache')
       ..writeAsStringSync('Text {{foo.s1}}');
     var barTemplate = await Template.parse(barTemplateFile);
     var bar = Bar()
       ..foo = (Foo()..s1 = 'hello')
       ..s2 = 'goodbye';
     expect(renderBar(bar, barTemplate), equals('Text hello'));
+  });
+
+  test('Renderer resolves variable with properties not in @Renderer', () async {
+    var fooTemplateFile = getFile('/project/foo.mustache')
+      ..writeAsStringSync('Text {{p1.p2.s}}');
+    var fooTemplate = await Template.parse(fooTemplateFile);
+    var foo = Foo()..p1 = (Property1()..p2 = (Property2()..s = 'hello'));
+    expect(renderFoo(foo, fooTemplate), equals('Text hello'));
   });
 
   test('Renderer resolves outer variable with key with two names', () async {
@@ -396,6 +385,26 @@ void main() {
     expect(renderBar(bar, barTemplate), equals('Text Partial hello'));
   });
 
+  test('Parser removes whitespace preceding a tag on its own line', () async {
+    var fooTemplateFile = getFile('/project/foo.mustache')
+      ..writeAsStringSync('''
+<ol>
+  {{#l1}}
+  <li>Num {{.}}</li>
+  {{/l1}}
+</ol>
+''');
+    var fooTemplate = await Template.parse(fooTemplateFile);
+    var foo = Foo()..l1 = [1, 2, 3];
+    expect(renderFoo(foo, fooTemplate), equals('''
+<ol>
+  <li>Num 1</li>
+  <li>Num 2</li>
+  <li>Num 3</li>
+</ol>
+'''));
+  });
+
   test('Renderer throws when it cannot resolve a variable key', () async {
     var fooTemplateFile = getFile('/project/foo.mustache')
       ..writeAsStringSync('Text {{s2}}');
@@ -403,11 +412,13 @@ void main() {
     var foo = Foo();
     expect(
         () => renderFoo(foo, fooTemplate),
-        throwsA(const TypeMatcher<MustachioResolutionError>().having(
-            (e) => e.message,
-            'message',
-            contains('Failed to resolve s2 as a property on any types in the '
-                'context chain: Foo'))));
+        throwsA(const TypeMatcher<MustachioResolutionError>()
+            .having((e) => e.message, 'message', contains('''
+line 1, column 8 of ${fooTemplateFile.path}: Failed to resolve 's2' as a property on any types in the context chain: Foo
+  ╷
+1 │ Text {{s2}}
+  │        ^^
+'''))));
   });
 
   test('Renderer throws when it cannot resolve a section key', () async {
@@ -417,11 +428,13 @@ void main() {
     var foo = Foo();
     expect(
         () => renderFoo(foo, fooTemplate),
-        throwsA(const TypeMatcher<MustachioResolutionError>().having(
-            (e) => e.message,
-            'message',
-            contains('Failed to resolve s2 as a property on any types in the '
-                'current context'))));
+        throwsA(const TypeMatcher<MustachioResolutionError>()
+            .having((e) => e.message, 'message', contains('''
+line 1, column 9 of ${fooTemplateFile.path}: Failed to resolve 's2' as a property on any types in the current context
+  ╷
+1 │ Text {{#s2}}Section{{/s2}}
+  │         ^^
+'''))));
   });
 
   test('Renderer throws when it cannot resolve a multi-name variable key',
@@ -483,13 +496,15 @@ void main() {
   test('Template parser throws when it cannot read a partial', () async {
     var barTemplateFile = getFile('/project/src/bar.mustache')
       ..writeAsStringSync('Text {{#foo}}{{>missing.mustache}}{{/foo}}');
+    var missingTemplateFile = getFile('/project/src/missing.mustache');
     expect(
         () async => await Template.parse(barTemplateFile),
-        throwsA(const TypeMatcher<MustachioResolutionError>().having(
-            (e) => e.message,
-            'message',
-            contains(
-                'FileSystemException when reading partial "missing.mustache" '
-                'found in template "${barTemplateFile.path}"'))));
+        throwsA(const TypeMatcher<MustachioResolutionError>()
+            .having((e) => e.message, 'message', contains('''
+line 1, column 14 of ${barTemplateFile.path}: FileSystemException (File "${missingTemplateFile.path}" does not exist.) when reading partial:
+  ╷
+1 │ Text {{#foo}}{{>missing.mustache}}{{/foo}}
+  │              ^^^^^^^^^^^^^^^^^^^^^
+'''))));
   });
 }

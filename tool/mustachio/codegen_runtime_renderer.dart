@@ -150,47 +150,78 @@ import '${p.basename(_sourceUri.path)}';
   void _addPropertyToProcess(PropertyAccessorElement property) {
     if (property.isPrivate || property.isStatic || property.isSetter) return;
     if (property.hasProtected || property.hasVisibleForTesting) return;
-    var type = property.type.returnType;
-    if (type is TypeParameterType) {
-      var bound = (type as TypeParameterType).bound;
+    var type = _relevantTypeFrom(property.type.returnType);
+    if (type == null) return;
+
+    var types = _typesToProcess.where((rs) => rs._contextClass == type.element);
+    if (types.isNotEmpty) {
+      // [type] has already been added to [_typesToProcess], and all of its
+      // supertypes and properties have been visited.
+      return;
+    }
+
+    _addTypeHierarchyToProcess(type,
+        isFullRenderer: _isVisibleToMustache(type.element));
+  }
+
+  /// Returns an [InterfaceType] which may be relevant for generating a
+  /// renderer, given a [type]:
+  ///
+  /// * If [type] is assignable to [Iterable<T>], returns the relevant type from
+  ///   `T`.
+  /// * If [type] is a [TypeParameterType] with a bound other than `dynamic`,
+  ///   returns the relevant type from the bound.
+  /// * If [type] is an [InterfaceType] (not assignable to [Iterable]), returns
+  ///   [type].
+  /// * Otherwise, returns `null`, indicating there is no relevant type.
+  InterfaceType _relevantTypeFrom(DartType type) {
+    if (type is InterfaceType) {
+      if (_typeSystem.isAssignableTo(type, _typeProvider.iterableDynamicType)) {
+        var iterableElement = _typeProvider.iterableElement;
+        var iterableType = type.asInstanceOf(iterableElement);
+        var innerType = iterableType.typeArguments.first;
+
+        return _relevantTypeFrom(innerType);
+      } else {
+        return type;
+      }
+    } else if (type is TypeParameterType) {
+      var bound = type.bound;
       if (bound == null || bound.isDynamic) {
         // Don't add functions for a generic type, for example
         // `List<E>.first` has type `E`, which we don't have a specific
         // renderer for.
         // TODO(srawlins): Find a solution for this. We can track all of the
         // concrete types substituted for `E` for example.
-        return;
+        return null;
+      } else {
+        return _relevantTypeFrom(bound);
       }
-      type = bound;
-    }
-
-    if (type is InterfaceType) {
-      if (_typeSystem.isAssignableTo(type, _typeProvider.iterableDynamicType)) {
-        var iterableElement = _typeProvider.iterableElement;
-        var iterableType = type.asInstanceOf(iterableElement);
-        var innerType = iterableType.typeArguments.first;
-        if (innerType is InterfaceType) {
-          // Don't add Iterable functions for a generic type, for example
-          // `List<E>.reversed` has inner type `E`, which we don't have a
-          // specific renderer for.
-          // TODO(srawlins): Find a solution for this. We can track all of the
-          // concrete types substituted for `E` for example.
-          var isFullRenderer = _isVisibleToMustache(innerType.element);
-          _addTypeHierarchyToProcess(innerType, isFullRenderer: isFullRenderer);
-        }
-      }
-
-      var isFullRenderer = _isVisibleToMustache(type.element);
-      _addTypeHierarchyToProcess(type, isFullRenderer: isFullRenderer);
+    } else {
+      // We can do nothing with function types, etc.
+      return null;
     }
   }
 
-  /// Adds [type] to the queue of types to process, as well as its supertypes
-  /// (if a class), mixed in types, and superclass constraints (if a mixin).
+  /// Adds [type] to the queue of types to process, as well as related types:
+  ///
+  /// * its supertypes (if [type] is not a mixin),
+  /// * mixed in types,
+  /// * superclass constraints (if [type] a mixin),
+  /// * types of relevant properties (recursively).
   void _addTypeHierarchyToProcess(InterfaceType type,
       {@required bool isFullRenderer}) {
     while (type != null) {
       _addTypeToProcess(type.element, isFullRenderer: isFullRenderer);
+      if (isFullRenderer) {
+        for (var accessor in type.accessors) {
+          var accessorType = _relevantTypeFrom(accessor.type.returnType);
+          if (accessorType == null) continue;
+          var accessorElement = accessorType.element;
+          _addTypeToProcess(accessorElement,
+              isFullRenderer: _isVisibleToMustache(accessorElement));
+        }
+      }
       for (var mixin in type.element.mixins) {
         _addTypeToProcess(mixin.element, isFullRenderer: isFullRenderer);
       }
@@ -317,12 +348,6 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
         '$_contextTypeVariable extends ${renderer._typeName}');
     _buffer.writeln('static Map<String, Property<$_contextTypeVariable>> '
         'propertyMap$generics() => {');
-    var interfaceTypedProperties = contextClass.accessors
-        .where((property) => property.type.returnType is InterfaceType);
-    for (var property in [...interfaceTypedProperties]
-      ..sort((a, b) => a.name.compareTo(b.name))) {
-      _writeProperty(renderer, property);
-    }
     if (contextClass.supertype != null) {
       var superclassRendererName =
           _typeToRendererClassName[contextClass.supertype.element];
@@ -356,13 +381,23 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
         }
       }
     }
+    for (var property in [...contextClass.accessors]
+      ..sort((a, b) => a.name.compareTo(b.name))) {
+      var returnType = property.type.returnType;
+      if (returnType is InterfaceType) {
+        _writeProperty(renderer, property, returnType);
+      } else if (returnType is TypeParameterType &&
+          returnType.bound != null &&
+          !returnType.bound.isDynamic) {
+        _writeProperty(renderer, property, returnType.bound);
+      }
+    }
     _buffer.writeln('};');
     _buffer.writeln('');
   }
 
-  void _writeProperty(
-      _RendererInfo renderer, PropertyAccessorElement property) {
-    var getterType = property.type.returnType as InterfaceType;
+  void _writeProperty(_RendererInfo renderer, PropertyAccessorElement property,
+      InterfaceType getterType) {
     if (getterType == _typeProvider.typeType) {
       // The [Type] type is the first case of a type we don't want to traverse.
       return;
@@ -409,27 +444,24 @@ renderVariable:
         getterType, _typeProvider.iterableDynamicType)) {
       var iterableElement = _typeProvider.iterableElement;
       var iterableType = getterType.asInstanceOf(iterableElement);
-      var innerType = iterableType.typeArguments.first;
-      // Don't add Iterable functions for a generic type, for example
-      // `List<E>.reversed` has inner type `E`, which we don't have a specific
-      // renderer for.
-      // TODO(srawlins): Find a solution for this. We can track all of the
-      // concrete types substituted for `E` for example.
-      if (innerType is! TypeParameterType) {
-        var rendererName =
-            _typeToRenderFunctionName[innerType.element] ?? 'renderSimple';
-        _buffer.writeln('''
-isEmptyIterable: ($_contextTypeVariable c) => c.$getterName?.isEmpty ?? true,
-
+      // Not sure why [iterableType] would be null... unresolved type?
+      if (iterableType != null) {
+        var innerType = iterableType.typeArguments.first;
+        // Don't add Iterable functions for a generic type, for example
+        // `List<E>.reversed` has inner type `E`, which we don't have a specific
+        // renderer for.
+        // TODO(srawlins): Find a solution for this. We can track all of the
+        // concrete types substituted for `E` for example.
+        if (innerType is! TypeParameterType) {
+          var rendererName =
+              _typeToRenderFunctionName[innerType.element] ?? 'renderSimple';
+          _buffer.writeln('''
 renderIterable:
     ($_contextTypeVariable c, RendererBase<$_contextTypeVariable> r, List<MustachioNode> ast) {
-  var buffer = StringBuffer();
-  for (var e in c.$getterName) {
-    buffer.write($rendererName(e, ast, r.template, parent: r));
-  }
-  return buffer.toString();
+  return c.$getterName.map((e) => $rendererName(e, ast, r.template, parent: r));
 },
 ''');
+        }
       }
     } else {
       // Don't add Iterable functions for a generic type, for example
