@@ -230,13 +230,17 @@ abstract class RendererBase<T> {
     }
 
     if (property.renderIterable != null) {
-      // An inverted section is rendered with the current context.
-      if (node.invert && property.isEmptyIterable(context)) {
+      var renderedIterable =
+          property.renderIterable(context, this, node.children);
+      if (node.invert && renderedIterable.isEmpty) {
+        // An inverted section is rendered with the current context.
         renderBlock(node.children);
+      } else if (!node.invert && renderedIterable.isNotEmpty) {
+        var buffer = StringBuffer()..writeAll(renderedIterable);
+        write(buffer.toString());
       }
-      if (!node.invert && !property.isEmptyIterable(context)) {
-        write(property.renderIterable(context, this, node.children));
-      }
+      // Otherwise, render nothing.
+
       return;
     }
 
@@ -302,9 +306,7 @@ class Property<T> {
   /// object [context].
   final bool /*!*/ Function(T context) /*?*/ getBool;
 
-  final bool /*!*/ Function(T) /*?*/ isEmptyIterable;
-
-  final String /*!*/ Function(
+  final Iterable<String> /*!*/ Function(
           T, RendererBase<T>, List<MustachioNode> /*!*/) /*?*/
       renderIterable;
 
@@ -317,7 +319,6 @@ class Property<T> {
       {@required this.getValue,
       this.renderVariable,
       this.getBool,
-      this.isEmptyIterable,
       this.renderIterable,
       this.isNullValue,
       this.renderValue});

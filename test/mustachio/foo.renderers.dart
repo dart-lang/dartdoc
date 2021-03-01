@@ -53,14 +53,9 @@ class Renderer_Foo extends RendererBase<Foo> {
           renderVariable:
               (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                   self.renderSimpleVariable(c, remainingNames, 'List<int>'),
-          isEmptyIterable: (CT_ c) => c.l1?.isEmpty ?? true,
           renderIterable:
               (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            var buffer = StringBuffer();
-            for (var e in c.l1) {
-              buffer.write(renderSimple(e, ast, r.template, parent: r));
-            }
-            return buffer.toString();
+            return c.l1.map((e) => renderSimple(e, ast, r.template, parent: r));
           },
         ),
         'p1': Property(

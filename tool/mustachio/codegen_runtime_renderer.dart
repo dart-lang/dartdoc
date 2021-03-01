@@ -456,15 +456,9 @@ renderVariable:
           var rendererName =
               _typeToRenderFunctionName[innerType.element] ?? 'renderSimple';
           _buffer.writeln('''
-isEmptyIterable: ($_contextTypeVariable c) => c.$getterName?.isEmpty ?? true,
-
 renderIterable:
     ($_contextTypeVariable c, RendererBase<$_contextTypeVariable> r, List<MustachioNode> ast) {
-  var buffer = StringBuffer();
-  for (var e in c.$getterName) {
-    buffer.write($rendererName(e, ast, r.template, parent: r));
-  }
-  return buffer.toString();
+  return c.$getterName.map((e) => $rendererName(e, ast, r.template, parent: r));
 },
 ''');
         }
