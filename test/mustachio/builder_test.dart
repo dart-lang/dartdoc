@@ -144,7 +144,7 @@ class Baz {}
       expect(
           generatedContent,
           contains(
-              'static Map<String, Property<CT_>> propertyMap<CT_ extends Foo>() => {'));
+              'static Map<String, Property<CT_>> propertyMap<CT_ extends Foo>() =>'));
     });
 
     test('with a property map which references the superclass', () {
@@ -159,48 +159,49 @@ class Baz {}
 
     test('with a property map with a bool property', () {
       expect(generatedContent, contains('''
-        'b1': Property(
-          getValue: (CT_ c) => c.b1,
-          renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                  self.renderSimpleVariable(c, remainingNames, 'bool'),
-          getBool: (CT_ c) => c.b1 == true,
-        ),
+                'b1': Property(
+                  getValue: (CT_ c) => c.b1,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.b1 == true,
+                ),
 '''));
     });
 
     test('with a property map with an Iterable property', () {
       expect(generatedContent, contains('''
-        'l1': Property(
-          getValue: (CT_ c) => c.l1,
-          renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                  self.renderSimpleVariable(c, remainingNames, 'List<int>'),
-          isEmptyIterable: (CT_ c) => c.l1?.isEmpty ?? true,
-          renderIterable:
-              (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            var buffer = StringBuffer();
-            for (var e in c.l1) {
-              buffer.write(renderSimple(e, ast, r.template, parent: r));
-            }
-            return buffer.toString();
-          },
-        ),
+                'l1': Property(
+                  getValue: (CT_ c) => c.l1,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'List<int>'),
+                  isEmptyIterable: (CT_ c) => c.l1?.isEmpty ?? true,
+                  renderIterable:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    var buffer = StringBuffer();
+                    for (var e in c.l1) {
+                      buffer.write(renderSimple(e, ast, r.template, parent: r));
+                    }
+                    return buffer.toString();
+                  },
+                ),
 '''));
     });
 
     test('with a property map with a non-bool, non-Iterable property', () {
       expect(generatedContent, contains('''
-        's1': Property(
-          getValue: (CT_ c) => c.s1,
-          renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                  self.renderSimpleVariable(c, remainingNames, 'String'),
-          isNullValue: (CT_ c) => c.s1 == null,
-          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            return renderSimple(c.s1, ast, r.template, parent: r);
-          },
-        ),
+                's1': Property(
+                  getValue: (CT_ c) => c.s1,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'String'),
+                  isNullValue: (CT_ c) => c.s1 == null,
+                  renderValue:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    return renderSimple(c.s1, ast, r.template, parent: r);
+                  },
+                ),
 '''));
     });
   });
