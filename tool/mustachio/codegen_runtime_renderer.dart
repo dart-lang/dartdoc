@@ -346,6 +346,13 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
     var contextClass = renderer._contextClass;
     var generics = renderer._typeParametersStringWith(
         '$_contextTypeVariable extends ${renderer._typeName}');
+    // It would be simplest if [propertyMap] were just a getter, but it must be
+    // parameterized on `CT_`, so it is a static method. Due to the possibly
+    // extensive amount of spreading (supertypes, mixins) and object
+    // construction (lots of [Property] objects with function literals), we
+    // cache the construction of each one, keyed to the `CT_` value. Each cache
+    // should not have many entries, as there are probably not many values for
+    // each type variable, `CT_`, typically one.
     _buffer.writeln('''
     static final Map<Type, Object> _propertyMapCache = {};
     static Map<String, Property<$_contextTypeVariable>> propertyMap$generics() =>
