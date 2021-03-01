@@ -48,11 +48,39 @@ class MustachioParser {
   List<MustachioNode> _parseBlock({String /*?*/ sectionKey}) {
     var children = <MustachioNode>[];
     var textStartIndex = _index;
+    var textEndIndex = _index;
 
     void addTextNode(int startIndex, int endIndex) {
       if (endIndex > startIndex) {
         children.add(Text(template.substring(startIndex, endIndex),
             span: _sourceFile.span(startIndex, endIndex)));
+      }
+    }
+
+    /// Trims [textEndIndex] if it marks the end of a blank line.
+    ///
+    /// [textEndIndex] is reset back to the newline immediately preceding any
+    /// whitespace preceding [textEndIndex].
+    void trimTextRight() {
+      var newEndIndex = textEndIndex;
+      while (true) {
+        if (newEndIndex == textStartIndex) {
+          // We walked all the way to [textStartIndex] without finding a
+          // newline; for example in `{{a}} {{b}}` we don't want to trim the
+          // singular space.
+          return;
+        }
+        var ch = template.codeUnitAt(newEndIndex - 1);
+        if (ch == $space || ch == $tab) {
+          newEndIndex--;
+        } else if (ch == $cr || ch == $lf) {
+          textEndIndex = newEndIndex - 1;
+          return;
+        } else {
+          // We walked back to some other character; [textEndIndex] does not
+          // mark the end of a blank line.
+          return;
+        }
       }
     }
 
@@ -62,7 +90,7 @@ class MustachioParser {
         break;
       }
       if (_thisChar == $lbrace && _nextChar == $lbrace) {
-        var textEndIndex = _index;
+        textEndIndex = _index;
         _index += 2;
         var result = _parseTag();
         if (result == _TagParseResult.endOfFile) {
@@ -77,6 +105,7 @@ class MustachioParser {
           continue;
         } else if (result.type == _TagParseResultType.parsedEndTag) {
           if (sectionKey != null && sectionKey == result.endTagKey) {
+            trimTextRight();
             addTextNode(textStartIndex, textEndIndex);
             break;
           } else {
@@ -85,6 +114,8 @@ class MustachioParser {
             continue;
           }
         } else {
+          assert(result.type == _TagParseResultType.parsedTag);
+          trimTextRight();
           addTextNode(textStartIndex, textEndIndex);
           children.add(result.node);
           textStartIndex = _index;

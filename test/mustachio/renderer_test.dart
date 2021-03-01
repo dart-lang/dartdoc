@@ -36,7 +36,6 @@ void main() {
     expect(propertyMap['b1'].getValue, isNotNull);
     expect(propertyMap['b1'].renderVariable, isNotNull);
     expect(propertyMap['b1'].getBool, isNotNull);
-    expect(propertyMap['b1'].isEmptyIterable, isNull);
     expect(propertyMap['b1'].renderIterable, isNull);
     expect(propertyMap['b1'].isNullValue, isNull);
     expect(propertyMap['b1'].renderValue, isNull);
@@ -47,7 +46,6 @@ void main() {
     expect(propertyMap['l1'].getValue, isNotNull);
     expect(propertyMap['l1'].renderVariable, isNotNull);
     expect(propertyMap['l1'].getBool, isNull);
-    expect(propertyMap['l1'].isEmptyIterable, isNotNull);
     expect(propertyMap['l1'].renderIterable, isNotNull);
     expect(propertyMap['l1'].isNullValue, isNull);
     expect(propertyMap['l1'].renderValue, isNull);
@@ -58,7 +56,6 @@ void main() {
     expect(propertyMap['s1'].getValue, isNotNull);
     expect(propertyMap['s1'].renderVariable, isNotNull);
     expect(propertyMap['s1'].getBool, isNull);
-    expect(propertyMap['s1'].isEmptyIterable, isNull);
     expect(propertyMap['s1'].renderIterable, isNull);
     expect(propertyMap['s1'].isNullValue, isNotNull);
     expect(propertyMap['s1'].renderValue, isNotNull);
@@ -74,24 +71,6 @@ void main() {
     var propertyMap = Renderer_Foo.propertyMap();
     var foo = Foo()..b1 = true;
     expect(propertyMap['b1'].getBool(foo), isTrue);
-  });
-
-  test('isEmptyIterable returns true when an Iterable value is empty', () {
-    var propertyMap = Renderer_Foo.propertyMap();
-    var foo = Foo()..l1 = [];
-    expect(propertyMap['l1'].isEmptyIterable(foo), isTrue);
-  });
-
-  test('isEmptyIterable returns false when an Iterable value is not empty', () {
-    var propertyMap = Renderer_Foo.propertyMap();
-    var foo = Foo()..l1 = [1, 2, 3];
-    expect(propertyMap['l1'].isEmptyIterable(foo), isFalse);
-  });
-
-  test('isEmptyIterable returns true when an Iterable value is null', () {
-    var propertyMap = Renderer_Foo.propertyMap();
-    var foo = Foo()..l1 = null;
-    expect(propertyMap['l1'].isEmptyIterable(foo), isTrue);
   });
 
   test('isNullValue returns true when a value is null', () {
@@ -404,6 +383,26 @@ void main() {
     var bar = Bar()..foo = (Foo()..s1 = 'hello');
 
     expect(renderBar(bar, barTemplate), equals('Text Partial hello'));
+  });
+
+  test('Parser removes whitespace preceding a tag on its own line', () async {
+    var fooTemplateFile = getFile('/project/foo.mustache')
+      ..writeAsStringSync('''
+<ol>
+  {{#l1}}
+  <li>Num {{.}}</li>
+  {{/l1}}
+</ol>
+''');
+    var fooTemplate = await Template.parse(fooTemplateFile);
+    var foo = Foo()..l1 = [1, 2, 3];
+    expect(renderFoo(foo, fooTemplate), equals('''
+<ol>
+  <li>Num 1</li>
+  <li>Num 2</li>
+  <li>Num 3</li>
+</ol>
+'''));
   });
 
   test('Renderer throws when it cannot resolve a variable key', () async {
