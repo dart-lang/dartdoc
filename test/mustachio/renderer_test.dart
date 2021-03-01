@@ -406,6 +406,26 @@ void main() {
     expect(renderBar(bar, barTemplate), equals('Text Partial hello'));
   });
 
+  test('Parser removes whitespace preceding a tag on its own line', () async {
+    var fooTemplateFile = getFile('/project/foo.mustache')
+      ..writeAsStringSync('''
+<ol>
+  {{#l1}}
+  <li>Num {{.}}</li>
+  {{/l1}}
+</ol>
+''');
+    var fooTemplate = await Template.parse(fooTemplateFile);
+    var foo = Foo()..l1 = [1, 2, 3];
+    expect(renderFoo(foo, fooTemplate), equals('''
+<ol>
+  <li>Num 1</li>
+  <li>Num 2</li>
+  <li>Num 3</li>
+</ol>
+'''));
+  });
+
   test('Renderer throws when it cannot resolve a variable key', () async {
     var fooTemplateFile = getFile('/project/foo.mustache')
       ..writeAsStringSync('Text {{s2}}');
