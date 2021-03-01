@@ -24,71 +24,84 @@ String _render_Foo(Foo context, List<MustachioNode> ast, Template template,
 }
 
 class Renderer_Foo extends RendererBase<Foo> {
-  static Map<String, Property<CT_>> propertyMap<CT_ extends Foo>() => {
-        ...Renderer_FooBase.propertyMap<Baz, CT_>(),
-        'b1': Property(
-          getValue: (CT_ c) => c.b1,
-          renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                  self.renderSimpleVariable(c, remainingNames, 'bool'),
-          getBool: (CT_ c) => c.b1 == true,
-        ),
-        'baz': Property(
-          getValue: (CT_ c) => c.baz,
-          renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) return self.getValue(c).toString();
-            var name = remainingNames.first;
-            var nextProperty = Renderer_Baz.propertyMap().getValue(name);
-            return nextProperty.renderVariable(
-                self.getValue(c), nextProperty, [...remainingNames.skip(1)]);
-          },
-          isNullValue: (CT_ c) => c.baz == null,
-          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            return _render_Baz(c.baz, ast, r.template, parent: r);
-          },
-        ),
-        'l1': Property(
-          getValue: (CT_ c) => c.l1,
-          renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                  self.renderSimpleVariable(c, remainingNames, 'List<int>'),
-          isEmptyIterable: (CT_ c) => c.l1?.isEmpty ?? true,
-          renderIterable:
-              (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            var buffer = StringBuffer();
-            for (var e in c.l1) {
-              buffer.write(renderSimple(e, ast, r.template, parent: r));
-            }
-            return buffer.toString();
-          },
-        ),
-        'p1': Property(
-          getValue: (CT_ c) => c.p1,
-          renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) return self.getValue(c).toString();
-            var name = remainingNames.first;
-            var nextProperty = Renderer_Property1.propertyMap().getValue(name);
-            return nextProperty.renderVariable(
-                self.getValue(c), nextProperty, [...remainingNames.skip(1)]);
-          },
-          isNullValue: (CT_ c) => c.p1 == null,
-          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            return _render_Property1(c.p1, ast, r.template, parent: r);
-          },
-        ),
-        's1': Property(
-          getValue: (CT_ c) => c.s1,
-          renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                  self.renderSimpleVariable(c, remainingNames, 'String'),
-          isNullValue: (CT_ c) => c.s1 == null,
-          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            return renderSimple(c.s1, ast, r.template, parent: r);
-          },
-        ),
-      };
+  static final Map<Type, Object> _propertyMapCache = {};
+  static Map<String, Property<CT_>> propertyMap<CT_ extends Foo>() =>
+      _propertyMapCache.putIfAbsent(
+          CT_,
+          () => {
+                ...Renderer_FooBase.propertyMap<Baz, CT_>(),
+                'b1': Property(
+                  getValue: (CT_ c) => c.b1,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.b1 == true,
+                ),
+                'baz': Property(
+                  getValue: (CT_ c) => c.baz,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        Renderer_Baz.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(self.getValue(c),
+                        nextProperty, [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => c.baz == null,
+                  renderValue:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    return _render_Baz(c.baz, ast, r.template, parent: r);
+                  },
+                ),
+                'l1': Property(
+                  getValue: (CT_ c) => c.l1,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'List<int>'),
+                  isEmptyIterable: (CT_ c) => c.l1?.isEmpty ?? true,
+                  renderIterable:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    var buffer = StringBuffer();
+                    for (var e in c.l1) {
+                      buffer.write(renderSimple(e, ast, r.template, parent: r));
+                    }
+                    return buffer.toString();
+                  },
+                ),
+                'p1': Property(
+                  getValue: (CT_ c) => c.p1,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        Renderer_Property1.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(self.getValue(c),
+                        nextProperty, [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => c.p1 == null,
+                  renderValue:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    return _render_Property1(c.p1, ast, r.template, parent: r);
+                  },
+                ),
+                's1': Property(
+                  getValue: (CT_ c) => c.s1,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'String'),
+                  isNullValue: (CT_ c) => c.s1 == null,
+                  renderValue:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    return renderSimple(c.s1, ast, r.template, parent: r);
+                  },
+                ),
+              });
 
   Renderer_Foo(Foo context, RendererBase<Object> parent, Template template)
       : super(context, parent, template);
@@ -112,28 +125,35 @@ String _render_Object(
 }
 
 class Renderer_Object extends RendererBase<Object> {
-  static Map<String, Property<CT_>> propertyMap<CT_ extends Object>() => {
-        'hashCode': Property(
-          getValue: (CT_ c) => c.hashCode,
-          renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                  self.renderSimpleVariable(c, remainingNames, 'int'),
-          isNullValue: (CT_ c) => c.hashCode == null,
-          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            return renderSimple(c.hashCode, ast, r.template, parent: r);
-          },
-        ),
-        'runtimeType': Property(
-          getValue: (CT_ c) => c.runtimeType,
-          renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                  self.renderSimpleVariable(c, remainingNames, 'Type'),
-          isNullValue: (CT_ c) => c.runtimeType == null,
-          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            return renderSimple(c.runtimeType, ast, r.template, parent: r);
-          },
-        ),
-      };
+  static final Map<Type, Object> _propertyMapCache = {};
+  static Map<String, Property<CT_>> propertyMap<CT_ extends Object>() =>
+      _propertyMapCache.putIfAbsent(
+          CT_,
+          () => {
+                'hashCode': Property(
+                  getValue: (CT_ c) => c.hashCode,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'int'),
+                  isNullValue: (CT_ c) => c.hashCode == null,
+                  renderValue:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    return renderSimple(c.hashCode, ast, r.template, parent: r);
+                  },
+                ),
+                'runtimeType': Property(
+                  getValue: (CT_ c) => c.runtimeType,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'Type'),
+                  isNullValue: (CT_ c) => c.runtimeType == null,
+                  renderValue:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    return renderSimple(c.runtimeType, ast, r.template,
+                        parent: r);
+                  },
+                ),
+              });
 
   Renderer_Object(
       Object context, RendererBase<Object> parent, Template template)
@@ -158,24 +178,32 @@ String _render_Property1(
 }
 
 class Renderer_Property1 extends RendererBase<Property1> {
-  static Map<String, Property<CT_>> propertyMap<CT_ extends Property1>() => {
-        ...Renderer_Object.propertyMap<CT_>(),
-        'p2': Property(
-          getValue: (CT_ c) => c.p2,
-          renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) return self.getValue(c).toString();
-            var name = remainingNames.first;
-            var nextProperty = Renderer_Property2.propertyMap().getValue(name);
-            return nextProperty.renderVariable(
-                self.getValue(c), nextProperty, [...remainingNames.skip(1)]);
-          },
-          isNullValue: (CT_ c) => c.p2 == null,
-          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            return _render_Property2(c.p2, ast, r.template, parent: r);
-          },
-        ),
-      };
+  static final Map<Type, Object> _propertyMapCache = {};
+  static Map<String, Property<CT_>> propertyMap<CT_ extends Property1>() =>
+      _propertyMapCache.putIfAbsent(
+          CT_,
+          () => {
+                ...Renderer_Object.propertyMap<CT_>(),
+                'p2': Property(
+                  getValue: (CT_ c) => c.p2,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        Renderer_Property2.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(self.getValue(c),
+                        nextProperty, [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => c.p2 == null,
+                  renderValue:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    return _render_Property2(c.p2, ast, r.template, parent: r);
+                  },
+                ),
+              });
 
   Renderer_Property1(
       Property1 context, RendererBase<Object> parent, Template template)
@@ -200,19 +228,24 @@ String _render_Property2(
 }
 
 class Renderer_Property2 extends RendererBase<Property2> {
-  static Map<String, Property<CT_>> propertyMap<CT_ extends Property2>() => {
-        ...Renderer_Object.propertyMap<CT_>(),
-        's': Property(
-          getValue: (CT_ c) => c.s,
-          renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                  self.renderSimpleVariable(c, remainingNames, 'String'),
-          isNullValue: (CT_ c) => c.s == null,
-          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            return renderSimple(c.s, ast, r.template, parent: r);
-          },
-        ),
-      };
+  static final Map<Type, Object> _propertyMapCache = {};
+  static Map<String, Property<CT_>> propertyMap<CT_ extends Property2>() =>
+      _propertyMapCache.putIfAbsent(
+          CT_,
+          () => {
+                ...Renderer_Object.propertyMap<CT_>(),
+                's': Property(
+                  getValue: (CT_ c) => c.s,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'String'),
+                  isNullValue: (CT_ c) => c.s == null,
+                  renderValue:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    return renderSimple(c.s, ast, r.template, parent: r);
+                  },
+                ),
+              });
 
   Renderer_Property2(
       Property2 context, RendererBase<Object> parent, Template template)
@@ -237,21 +270,28 @@ String _render_FooBase<T extends Object>(
 }
 
 class Renderer_FooBase<T extends Object> extends RendererBase<FooBase<T>> {
+  static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>>
-      propertyMap<T extends Object, CT_ extends FooBase>() => {
-            ...Renderer_Object.propertyMap<CT_>(),
-            'baz': Property(
-              getValue: (CT_ c) => c.baz,
-              renderVariable:
-                  (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                if (remainingNames.isEmpty) return self.getValue(c).toString();
-                var name = remainingNames.first;
-                var nextProperty = Renderer_Object.propertyMap().getValue(name);
-                return nextProperty.renderVariable(self.getValue(c),
-                    nextProperty, [...remainingNames.skip(1)]);
-              },
-            ),
-          };
+      propertyMap<T extends Object, CT_ extends FooBase>() =>
+          _propertyMapCache.putIfAbsent(
+              CT_,
+              () => {
+                    ...Renderer_Object.propertyMap<CT_>(),
+                    'baz': Property(
+                      getValue: (CT_ c) => c.baz,
+                      renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) {
+                        if (remainingNames.isEmpty) {
+                          return self.getValue(c).toString();
+                        }
+                        var name = remainingNames.first;
+                        var nextProperty =
+                            Renderer_Object.propertyMap().getValue(name);
+                        return nextProperty.renderVariable(self.getValue(c),
+                            nextProperty, [...remainingNames.skip(1)]);
+                      },
+                    ),
+                  });
 
   Renderer_FooBase(
       FooBase<T> context, RendererBase<Object> parent, Template template)
@@ -279,56 +319,69 @@ String _render_Bar(Bar context, List<MustachioNode> ast, Template template,
 }
 
 class Renderer_Bar extends RendererBase<Bar> {
-  static Map<String, Property<CT_>> propertyMap<CT_ extends Bar>() => {
-        ...Renderer_Object.propertyMap<CT_>(),
-        'baz': Property(
-          getValue: (CT_ c) => c.baz,
-          renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) return self.getValue(c).toString();
-            var name = remainingNames.first;
-            var nextProperty = Renderer_Baz.propertyMap().getValue(name);
-            return nextProperty.renderVariable(
-                self.getValue(c), nextProperty, [...remainingNames.skip(1)]);
-          },
-          isNullValue: (CT_ c) => c.baz == null,
-          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            return _render_Baz(c.baz, ast, r.template, parent: r);
-          },
-        ),
-        'foo': Property(
-          getValue: (CT_ c) => c.foo,
-          renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) return self.getValue(c).toString();
-            var name = remainingNames.first;
-            var nextProperty = Renderer_Foo.propertyMap().getValue(name);
-            return nextProperty.renderVariable(
-                self.getValue(c), nextProperty, [...remainingNames.skip(1)]);
-          },
-          isNullValue: (CT_ c) => c.foo == null,
-          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            return _render_Foo(c.foo, ast, r.template, parent: r);
-          },
-        ),
-        'l1': Property(
-          getValue: (CT_ c) => c.l1,
-          renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                  self.renderSimpleVariable(c, remainingNames, 'bool'),
-          getBool: (CT_ c) => c.l1 == true,
-        ),
-        's2': Property(
-          getValue: (CT_ c) => c.s2,
-          renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                  self.renderSimpleVariable(c, remainingNames, 'String'),
-          isNullValue: (CT_ c) => c.s2 == null,
-          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            return renderSimple(c.s2, ast, r.template, parent: r);
-          },
-        ),
-      };
+  static final Map<Type, Object> _propertyMapCache = {};
+  static Map<String, Property<CT_>> propertyMap<CT_ extends Bar>() =>
+      _propertyMapCache.putIfAbsent(
+          CT_,
+          () => {
+                ...Renderer_Object.propertyMap<CT_>(),
+                'baz': Property(
+                  getValue: (CT_ c) => c.baz,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        Renderer_Baz.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(self.getValue(c),
+                        nextProperty, [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => c.baz == null,
+                  renderValue:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    return _render_Baz(c.baz, ast, r.template, parent: r);
+                  },
+                ),
+                'foo': Property(
+                  getValue: (CT_ c) => c.foo,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        Renderer_Foo.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(self.getValue(c),
+                        nextProperty, [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => c.foo == null,
+                  renderValue:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    return _render_Foo(c.foo, ast, r.template, parent: r);
+                  },
+                ),
+                'l1': Property(
+                  getValue: (CT_ c) => c.l1,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.l1 == true,
+                ),
+                's2': Property(
+                  getValue: (CT_ c) => c.s2,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'String'),
+                  isNullValue: (CT_ c) => c.s2 == null,
+                  renderValue:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    return renderSimple(c.s2, ast, r.template, parent: r);
+                  },
+                ),
+              });
 
   Renderer_Bar(Bar context, RendererBase<Object> parent, Template template)
       : super(context, parent, template);
@@ -355,24 +408,32 @@ String _render_Baz(Baz context, List<MustachioNode> ast, Template template,
 }
 
 class Renderer_Baz extends RendererBase<Baz> {
-  static Map<String, Property<CT_>> propertyMap<CT_ extends Baz>() => {
-        ...Renderer_Object.propertyMap<CT_>(),
-        'bar': Property(
-          getValue: (CT_ c) => c.bar,
-          renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) {
-            if (remainingNames.isEmpty) return self.getValue(c).toString();
-            var name = remainingNames.first;
-            var nextProperty = Renderer_Bar.propertyMap().getValue(name);
-            return nextProperty.renderVariable(
-                self.getValue(c), nextProperty, [...remainingNames.skip(1)]);
-          },
-          isNullValue: (CT_ c) => c.bar == null,
-          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            return _render_Bar(c.bar, ast, r.template, parent: r);
-          },
-        ),
-      };
+  static final Map<Type, Object> _propertyMapCache = {};
+  static Map<String, Property<CT_>> propertyMap<CT_ extends Baz>() =>
+      _propertyMapCache.putIfAbsent(
+          CT_,
+          () => {
+                ...Renderer_Object.propertyMap<CT_>(),
+                'bar': Property(
+                  getValue: (CT_ c) => c.bar,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        Renderer_Bar.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(self.getValue(c),
+                        nextProperty, [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => c.bar == null,
+                  renderValue:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    return _render_Bar(c.bar, ast, r.template, parent: r);
+                  },
+                ),
+              });
 
   Renderer_Baz(Baz context, RendererBase<Object> parent, Template template)
       : super(context, parent, template);

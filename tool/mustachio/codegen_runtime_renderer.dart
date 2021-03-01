@@ -346,8 +346,10 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
     var contextClass = renderer._contextClass;
     var generics = renderer._typeParametersStringWith(
         '$_contextTypeVariable extends ${renderer._typeName}');
-    _buffer.writeln('static Map<String, Property<$_contextTypeVariable>> '
-        'propertyMap$generics() => {');
+    _buffer.writeln('''
+    static final Map<Type, Object> _propertyMapCache = {};
+    static Map<String, Property<$_contextTypeVariable>> propertyMap$generics() =>
+        _propertyMapCache.putIfAbsent($_contextTypeVariable, () => {''');
     if (contextClass.supertype != null) {
       var superclassRendererName =
           _typeToRendererClassName[contextClass.supertype.element];
@@ -392,7 +394,7 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
         _writeProperty(renderer, property, returnType.bound);
       }
     }
-    _buffer.writeln('};');
+    _buffer.writeln('});');
     _buffer.writeln('');
   }
 
@@ -418,7 +420,9 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
       _buffer.writeln('''
 renderVariable:
     ($_contextTypeVariable c, Property<$_contextTypeVariable> self, List<String> remainingNames) {
-  if (remainingNames.isEmpty) return self.getValue(c).toString();
+  if (remainingNames.isEmpty) {
+    return self.getValue(c).toString();
+  }
   var name = remainingNames.first;
   var nextProperty = $rendererClassName.propertyMap().getValue(name);
   return nextProperty.renderVariable(
