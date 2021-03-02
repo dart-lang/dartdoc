@@ -1,3 +1,5 @@
+// @dart=2.9
+
 library src.mylib;
 
 void helperFunction(String message) => print(message);

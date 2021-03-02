@@ -119,8 +119,8 @@ void main() {
       expect(inferredTypeSet.modelType.name, equals('Set'));
       expect(
           inferredTypeSet.modelType.typeArguments.map((a) => a.name).toList(),
-          equals(['num']));
-      expect(inferredTypeSet.constantValue, equals('const {1, 2.5, 3}'));
+          equals(['int']));
+      expect(inferredTypeSet.constantValue, equals('const {1, 3, 5}'));
       expect(specifiedSet.modelType.name, equals('Set'));
       expect(specifiedSet.modelType.typeArguments.map((a) => a.name).toList(),
           equals(['int']));
@@ -3000,12 +3000,6 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           withGenericSub.inheritedFields.where((p) => p.name == 'prop').length,
           equals(1));
-    });
-
-    test('has abstract kind', () {
-      Field abstractField = UnusualProperties.allModelElements
-          .firstWhere((e) => e.name == 'abstractProperty');
-      expect(abstractField.fullkind, 'abstract property');
     });
   });
 
