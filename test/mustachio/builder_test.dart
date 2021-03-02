@@ -40,7 +40,7 @@ void main() {
 
   Future<LibraryElement> resolveGeneratedLibrary(
       InMemoryAssetWriter writer) async {
-    var rendererAsset = AssetId.parse('foo|lib/foo.renderers.dart');
+    var rendererAsset = AssetId('foo', 'lib/foo.renderers.dart');
     var writtenStrings = writer.assets
         .map((id, content) => MapEntry(id.toString(), utf8.decode(content)));
     return await resolveSources(writtenStrings,
@@ -96,7 +96,7 @@ class Bar {}
 class Baz {}
 ''');
       renderersLibrary = await resolveGeneratedLibrary(writer);
-      var rendererAsset = AssetId.parse('foo|lib/foo.renderers.dart');
+      var rendererAsset = AssetId('foo', 'lib/foo.renderers.dart');
       generatedContent = utf8.decode(writer.assets[rendererAsset]);
     });
 
@@ -245,7 +245,7 @@ class Baz {}
 library foo;
 import 'package:mustachio/annotations.dart';
 ''');
-      var rendererAsset = AssetId.parse('foo|lib/foo.renderers.dart');
+      var rendererAsset = AssetId('foo', 'lib/foo.renderers.dart');
       generatedContent = utf8.decode(writer.assets[rendererAsset]);
     });
 
