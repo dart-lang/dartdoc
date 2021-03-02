@@ -1,3 +1,5 @@
+
+@Timeout.factor(2)
 import 'dart:convert';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
@@ -219,7 +221,7 @@ import 'package:mustachio/annotations.dart';
     expect(renderersLibrary.getTopLevelFunction('renderBar'), isNotNull);
     expect(renderersLibrary.getType('_Renderer_Foo'), isNotNull);
     expect(renderersLibrary.getType('_Renderer_Bar'), isNotNull);
-  }, timeout: Timeout.factor(2));
+  });
 
   group('builds a renderer class for a generic type', () {
     String generatedContent;
