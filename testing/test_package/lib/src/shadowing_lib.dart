@@ -1,3 +1,5 @@
+// @dart=2.9
+
 library shadowing_lib;
 
 class ADuplicateClass {
