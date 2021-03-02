@@ -1283,6 +1283,42 @@ class _Renderer_TemplateData<T extends Documentable>
                     return renderSimple(c.bareHref, ast, r.template, parent: r);
                   },
                 ),
+                'customFooter': Property(
+                  getValue: (CT_ c) => c.customFooter,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'String'),
+                  isNullValue: (CT_ c) => c.customFooter == null,
+                  renderValue:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    return renderSimple(c.customFooter, ast, r.template,
+                        parent: r);
+                  },
+                ),
+                'customHeader': Property(
+                  getValue: (CT_ c) => c.customHeader,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'String'),
+                  isNullValue: (CT_ c) => c.customHeader == null,
+                  renderValue:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    return renderSimple(c.customHeader, ast, r.template,
+                        parent: r);
+                  },
+                ),
+                'customInnerFooter': Property(
+                  getValue: (CT_ c) => c.customInnerFooter,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'String'),
+                  isNullValue: (CT_ c) => c.customInnerFooter == null,
+                  renderValue:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    return renderSimple(c.customInnerFooter, ast, r.template,
+                        parent: r);
+                  },
+                ),
                 'defaultPackage': Property(
                   getValue: (CT_ c) => c.defaultPackage,
                   renderVariable:
