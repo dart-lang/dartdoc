@@ -117,7 +117,7 @@ void main() {
         expect(favicon.readAsStringSync(),
             contains('Not really a png, but a test file'));
         var indexString = index.readAsStringSync();
-        expect(indexString, contains('Footer things'));
+        expect(indexString, contains('<em>Footer</em> things'));
         expect(indexString, contains('footer.txt data'));
         expect(indexString, contains('HTML header file'));
       });
