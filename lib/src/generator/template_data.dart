@@ -12,6 +12,9 @@ abstract class TemplateOptions {
   String get relCanonicalPrefix;
   String get toolVersion;
   bool get useBaseHref;
+  String get customHeaderContent;
+  String get customFooterContent;
+  String get customInnerFooterText;
 }
 
 abstract class TemplateData<T extends Documentable> {
@@ -61,6 +64,12 @@ abstract class TemplateData<T extends Documentable> {
   String _layoutTitle(String name, String kind, bool isDeprecated) =>
       _packageGraph.rendererFactory.templateRenderer
           .composeLayoutTitle(name, kind, isDeprecated);
+
+  String get customHeader => htmlOptions.customHeaderContent;
+
+  String get customFooter => htmlOptions.customFooterContent;
+
+  String get customInnerFooter => htmlOptions.customInnerFooterText;
 }
 
 /// A [TemplateData] which contains a library, for rendering the

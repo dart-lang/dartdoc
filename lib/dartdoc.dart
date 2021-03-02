@@ -13,6 +13,7 @@ import 'dart:convert';
 import 'dart:io' show exitCode, stderr;
 
 import 'package:analyzer/file_system/file_system.dart';
+import 'package:dartdoc/options.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/generator/empty_generator.dart';
 import 'package:dartdoc/src/generator/generator.dart';
@@ -39,14 +40,6 @@ export 'package:dartdoc/src/package_meta.dart';
 const String programName = 'dartdoc';
 // Update when pubspec version changes by running `pub run build_runner build`
 const String dartdocVersion = packageVersion;
-
-/// Helper class that consolidates option contexts for instantiating generators.
-class DartdocGeneratorOptionContext extends DartdocOptionContext
-    with GeneratorContext {
-  DartdocGeneratorOptionContext(
-      DartdocOptionSet optionSet, Folder dir, ResourceProvider resourceProvider)
-      : super(optionSet, dir, resourceProvider);
-}
 
 class DartdocFileWriter implements FileWriter {
   final String outputDir;
