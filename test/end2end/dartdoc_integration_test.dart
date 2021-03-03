@@ -122,7 +122,7 @@ void main() {
       expect(
           outputLines.firstWhere((l) => l.startsWith(' fatal')),
           startsWith(
-              ' fatal error: Argument --input, set to ${impossiblePath}, resolves to missing path: '));
+              ' fatal error: Argument --input, set to $impossiblePath, resolves to missing path: '));
     });
 
     test('errors cause non-zero exit when warnings are off', () async {
@@ -212,7 +212,7 @@ void main() {
 
       var args = <String>[
         dartdocPath,
-        '--footer-text=${footerTextPath}',
+        '--footer-text=$footerTextPath',
         '--include',
         'ex',
         '--output',

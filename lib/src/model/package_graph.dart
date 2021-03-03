@@ -501,7 +501,7 @@ class PackageGraph {
           warnOnElement(
               null, PackageWarning.packageOrderGivesMissingPackageName,
               message:
-                  "${packageName}, packages: ${packages.map((p) => p.name).join(',')}");
+                  "$packageName, packages: ${packages.map((p) => p.name).join(',')}");
         }
       }
       _publicPackages = packages.where((p) => p.isPublic).toList()..sort();

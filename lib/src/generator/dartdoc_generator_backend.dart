@@ -95,7 +95,7 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
       }
     }
 
-    writer.write(_pathContext.join('categories.json'), '${json}\n');
+    writer.write(_pathContext.join('categories.json'), '$json\n');
   }
 
   @override
@@ -105,7 +105,7 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
     if (!options.useBaseHref) {
       json = json.replaceAll(htmlBasePlaceholder, '');
     }
-    writer.write(_pathContext.join('index.json'), '${json}\n');
+    writer.write(_pathContext.join('index.json'), '$json\n');
   }
 
   @override

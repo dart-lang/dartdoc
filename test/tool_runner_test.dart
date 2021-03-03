@@ -33,7 +33,7 @@ void main() {
       result = Process.runSync(
           Platform.resolvedExecutable,
           [
-            '--snapshot=${snapshotFile}',
+            '--snapshot=$snapshotFile',
             '--snapshot-kind=app-jit',
             'bin/drill.dart'
           ],

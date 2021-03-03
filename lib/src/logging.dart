@@ -118,7 +118,7 @@ void startLogging(LoggingContext config) {
           // the backspace to occur for stderr as well.
           stderr.write('${ansi.backspace} ${ansi.backspace}');
         }
-        stderr.write('${message}\n');
+        stderr.writeln('$message');
       }
       writingProgress = false;
     });

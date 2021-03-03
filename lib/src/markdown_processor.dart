@@ -516,7 +516,7 @@ class _MarkdownCommentReference {
 
   void _reducePreferReferencesIncludingFullyQualifiedName() {
     var startName = '${element.fullyQualifiedName}.';
-    var realName = '${element.fullyQualifiedName}.${codeRefChomped}';
+    var realName = '${element.fullyQualifiedName}.$codeRefChomped';
     if (results.any((r) => r.fullyQualifiedName == realName)) {
       results.removeWhere((r) => r.fullyQualifiedName != realName);
     }

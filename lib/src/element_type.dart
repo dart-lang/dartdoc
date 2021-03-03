@@ -136,7 +136,7 @@ class UndefinedElementType extends ElementType {
   }
 
   @override
-  String get nameWithGenerics => '$name${nullabilitySuffix}';
+  String get nameWithGenerics => '$name$nullabilitySuffix';
 
   /// Assume that undefined elements don't have useful bounds.
   @override
@@ -230,10 +230,10 @@ class TypeParameterElementType extends DefinedElementType {
   TypeParameterType get type => super.type;
 
   @override
-  String get linkedName => '${name}${nullabilitySuffix}';
+  String get linkedName => '$name$nullabilitySuffix';
 
   @override
-  String get nameWithGenerics => '${name}${nullabilitySuffix}';
+  String get nameWithGenerics => '$name$nullabilitySuffix';
 
   @override
   DartType get _bound => type.bound;

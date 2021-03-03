@@ -52,9 +52,9 @@ class Parameter extends ModelElement implements EnclosedElement {
           if (enclosingName != null && enclosingName.isNotEmpty) break;
         }
       }
-      return '${enclosingName}-param-${name}';
+      return '$enclosingName-param-$name';
     } else {
-      return 'param-${name}';
+      return 'param-$name';
     }
   }
 

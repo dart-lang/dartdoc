@@ -100,7 +100,7 @@ class CategoryConfiguration {
                   .join(canonicalYamlPath, documentationMarkdown));
           if (!resourceProvider.getFile(documentationMarkdown).exists) {
             throw DartdocFileMissing(
-                'In categories definition for ${name}, "markdown" resolves to '
+                'In categories definition for $name, "markdown" resolves to '
                 'the missing file $documentationMarkdown');
           }
         }
@@ -860,10 +860,10 @@ abstract class DartdocSyntheticOption<T> implements DartdocOption<T> {
 
   void _onMissingFromSynthetic(
       _OptionValueWithContext<Object> valueWithContext, String missingPath) {
-    var description = 'Synthetic configuration option ${name} from <internal>';
+    var description = 'Synthetic configuration option $name from <internal>';
     throw DartdocFileMissing(
         '$description, computed as ${valueWithContext.value}, resolves to '
-        'missing path: "${missingPath}"');
+        'missing path: "$missingPath"');
   }
 }
 
@@ -1062,9 +1062,8 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
       _OptionValueWithContext<Object> valueWithContext, String missingPath) {
     var dartdocYaml = resourceProvider.pathContext.join(
         valueWithContext.canonicalDirectoryPath, valueWithContext.definingFile);
-    throw DartdocFileMissing('Field ${fieldName} from ${dartdocYaml}, set to '
-        '${valueWithContext.value}, resolves to missing path: '
-        '"${missingPath}"');
+    throw DartdocFileMissing('Field $fieldName from $dartdocYaml, set to '
+        '${valueWithContext.value}, resolves to missing path: "$missingPath"');
   }
 
   @override
@@ -1174,7 +1173,7 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
         returnData = yamlData;
       }
     } else {
-      throw UnsupportedError('Type ${T} is not supported');
+      throw UnsupportedError('Type $T is not supported');
     }
     return _OptionValueWithContext(returnData as T, contextPath,
         definingFile: 'dartdoc_options.yaml');
@@ -1245,8 +1244,8 @@ abstract class _DartdocArgOption<T> implements DartdocOption<T> {
       example = '0.76';
     }
     throw DartdocOptionError(
-        'Invalid argument value: --${argName}, set to "${value}", must be a '
-        '${T}.  Example:  --${argName} ${example}');
+        'Invalid argument value: --$argName, set to "$value", must be a '
+        '$T.  Example:  --$argName $example');
   }
 
   /// Returns null if no argument was given on the command line.
@@ -1263,8 +1262,8 @@ abstract class _DartdocArgOption<T> implements DartdocOption<T> {
   void _onMissingFromArgs(
       _OptionValueWithContext<Object> valueWithContext, String missingPath) {
     throw DartdocFileMissing(
-        'Argument --${argName}, set to ${valueWithContext.value}, resolves to '
-        'missing path: "${missingPath}"');
+        'Argument --$argName, set to ${valueWithContext.value}, resolves to '
+        'missing path: "$missingPath"');
   }
 
   /// Generates an _OptionValueWithContext using the value of the argument from
@@ -1299,7 +1298,7 @@ abstract class _DartdocArgOption<T> implements DartdocOption<T> {
         (retval as Map<String, String>)[pairList.first] = pairList.last;
       }
     } else {
-      throw UnsupportedError('Type ${T} is not supported');
+      throw UnsupportedError('Type $T is not supported');
     }
     return _OptionValueWithContext(retval, _directoryCurrentPath);
   }
@@ -1319,7 +1318,7 @@ abstract class _DartdocArgOption<T> implements DartdocOption<T> {
     argName = argName.replaceAllMapped(camelCaseRegexp, (Match m) {
       var before = m.group(1);
       var after = m.group(2).toLowerCase();
-      return '${before}-${after}';
+      return '$before-$after';
     });
     return argName;
   }
@@ -1358,7 +1357,7 @@ abstract class _DartdocArgOption<T> implements DartdocOption<T> {
           hide: hide,
           splitCommas: splitCommas);
     } else {
-      throw UnsupportedError('Type ${T} is not supported');
+      throw UnsupportedError('Type $T is not supported');
     }
   }
 }

@@ -10,9 +10,9 @@ class HtmlTemplateRenderer implements TemplateRenderer {
   @override
   String composeLayoutTitle(String name, String kind, bool isDeprecated) {
     if (isDeprecated) {
-      return '<span class="deprecated">${name}</span> ${kind}';
+      return '<span class="deprecated">$name</span> $kind';
     } else {
-      return '${name} ${kind}';
+      return '$name $kind';
     }
   }
 }
@@ -21,9 +21,9 @@ class MdTemplateRenderer implements TemplateRenderer {
   @override
   String composeLayoutTitle(String name, String kind, bool isDeprecated) {
     if (isDeprecated) {
-      return '~~${name}~~ ${kind}';
+      return '~~$name~~ $kind';
     } else {
-      return '${name} ${kind}';
+      return '$name $kind';
     }
   }
 }
