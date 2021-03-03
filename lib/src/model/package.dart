@@ -243,7 +243,7 @@ class Package extends LibraryContainer
 
     if (documentedWhere == DocumentLocation.remote) {
       _baseHref = _remoteBaseHref;
-      if (!_baseHref.endsWith('/')) _baseHref = '${_baseHref}/';
+      if (!_baseHref.endsWith('/')) _baseHref = '$_baseHref/';
     } else {
       _baseHref = config.useBaseHref ? '' : htmlBasePlaceholder;
     }

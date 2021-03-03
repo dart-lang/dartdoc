@@ -68,7 +68,7 @@ class DartdocFileWriter implements FileWriter {
     if (!allowOverwrite) {
       if (_fileElementMap.containsKey(outFile)) {
         assert(element != null,
-            'Attempted overwrite of ${outFile} without corresponding element');
+            'Attempted overwrite of $outFile without corresponding element');
         var originalElement = _fileElementMap[outFile];
         Iterable<Warnable> referredFrom =
             originalElement != null ? [originalElement] : null;
@@ -183,7 +183,7 @@ class Dartdoc {
     packageGraph = await packageBuilder.buildPackageGraph();
     seconds = _stopwatch.elapsedMilliseconds / 1000.0;
     var libs = packageGraph.libraries.length;
-    logInfo("Initialized dartdoc with ${libs} librar${libs == 1 ? 'y' : 'ies'} "
+    logInfo("Initialized dartdoc with $libs librar${libs == 1 ? 'y' : 'ies'} "
         'in ${seconds.toStringAsFixed(1)} seconds');
     _stopwatch.reset();
 
@@ -206,13 +206,13 @@ class Dartdoc {
     if (warnings == 0 && errors == 0) {
       logInfo('no issues found');
     } else {
-      logWarning("Found ${warnings} ${pluralize('warning', warnings)} "
-          "and ${errors} ${pluralize('error', errors)}.");
+      logWarning("Found $warnings ${pluralize('warning', warnings)} "
+          "and $errors ${pluralize('error', errors)}.");
     }
 
     seconds = _stopwatch.elapsedMilliseconds / 1000.0;
     libs = packageGraph.localPublicLibraries.length;
-    logInfo("Documented ${libs} public librar${libs == 1 ? 'y' : 'ies'} "
+    logInfo("Documented $libs public librar${libs == 1 ? 'y' : 'ies'} "
         'in ${seconds.toStringAsFixed(1)} seconds');
     return DartdocResults(config.topLevelPackageMeta, packageGraph, outputDir);
   }
@@ -489,10 +489,10 @@ class Dartdoc {
       },
       (e, chain) {
         if (e is DartdocFailure) {
-          stderr.writeln('\ndartdoc failed: ${e}.');
+          stderr.writeln('\ndartdoc failed: $e.');
           exitCode = 1;
         } else {
-          stderr.writeln('\ndartdoc failed: ${e}\n${chain}');
+          stderr.writeln('\ndartdoc failed: $e\n$chain');
           exitCode = 255;
         }
       },

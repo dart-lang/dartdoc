@@ -100,10 +100,10 @@ class Constructor extends ModelElement
     if (_nameWithGenerics == null) {
       var constructorName = element.name;
       if (constructorName.isEmpty) {
-        _nameWithGenerics = '${enclosingElement.name}${genericParameters}';
+        _nameWithGenerics = '${enclosingElement.name}$genericParameters';
       } else {
         _nameWithGenerics =
-            '${enclosingElement.name}${genericParameters}.$constructorName';
+            '${enclosingElement.name}$genericParameters.$constructorName';
       }
     }
     return _nameWithGenerics;

@@ -218,7 +218,7 @@ class PubPackageBuilder implements PackageBuilder {
         }
         _addKnownFiles(r.element);
         if (!libraries.contains(r.element) && isLibraryIncluded(r.element)) {
-          logDebug('parsing ${f}...');
+          logDebug('parsing $f...');
           libraryAdder(r);
           libraries.add(r.element);
         }
@@ -273,8 +273,8 @@ class PubPackageBuilder implements PackageBuilder {
       for (var lib
           in _listDir(packageDir, recursive: true, listDir: _packageDirList)) {
         if (lib.endsWith('.dart') &&
-            (!lib.contains('${sep}packages${sep}') ||
-                packageDir.contains('${sep}packages${sep}'))) {
+            (!lib.contains('${sep}packages$sep') ||
+                packageDir.contains('${sep}packages$sep'))) {
           // Only include libraries within the lib dir that are not in 'lib/src'.
           if (_pathContext.isWithin(packageLibDir, lib) &&
               !_pathContext.isWithin(packageLibSrcDir, lib)) {

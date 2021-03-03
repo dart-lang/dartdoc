@@ -99,5 +99,5 @@ void _printUsage(ArgParser parser) {
 
 /// Print version information.
 void _printVersion(ArgParser parser) {
-  print('dartdoc version: ${dartdocVersion}');
+  print('dartdoc version: $dartdocVersion');
 }

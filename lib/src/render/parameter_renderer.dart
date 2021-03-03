@@ -22,7 +22,7 @@ class ParameterRendererHtmlList extends ParameterRendererHtml {
 /// Render HTML suitable for a single, wrapped line.
 class ParameterRendererHtml extends ParameterRenderer {
   @override
-  String listItem(String listItem) => '${listItem}';
+  String listItem(String listItem) => listItem;
   @override
   String orderedList(String listItems) => listItems;
   @override
@@ -38,7 +38,7 @@ class ParameterRendererHtml extends ParameterRenderer {
 
   @override
   String parameter(String parameter, String htmlId) =>
-      '<span class="parameter" id="${htmlId}">$parameter</span>';
+      '<span class="parameter" id="$htmlId">$parameter</span>';
   @override
   String parameterName(String parameterName) =>
       '<span class="parameter-name">$parameterName</span>';

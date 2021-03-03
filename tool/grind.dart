@@ -27,11 +27,11 @@ class GrindTestFailure {
 void expectFileContains(String path, List<Pattern> items) {
   var source = File(path);
   if (!source.existsSync()) {
-    throw GrindTestFailure('file not found: ${path}');
+    throw GrindTestFailure('file not found: $path');
   }
   for (var item in items) {
     if (!File(path).readAsStringSync().contains(item)) {
-      throw GrindTestFailure('Can not find ${item} in ${path}');
+      throw GrindTestFailure('Can not find $item in $path');
     }
   }
 }
@@ -507,7 +507,7 @@ Future<List<Map>> _buildSdkDocs(String sdkDocsPath, Future<String> futureCwd,
         '--enable-asserts',
         path.join('bin', 'dartdoc.dart'),
         '--output',
-        '${sdkDocsPath}',
+        '$sdkDocsPath',
         '--sdk-docs',
         '--json',
         '--show-progress',
@@ -822,7 +822,7 @@ Future<String> _buildPubPackageDocs(
 ]) async {
   var env = _createThrowawayPubCache();
   var launcher = SubprocessLauncher(
-      'build-${pubPackageName}${version == null ? "" : "-$version"}${label == null ? "" : "-$label"}',
+      'build-$pubPackageName${version == null ? "" : "-$version"}${label == null ? "" : "-$label"}',
       env);
   var args = <String>['cache', 'add'];
   if (version != null) args.addAll(<String>['-v', version]);
@@ -902,8 +902,8 @@ Future<void> checkChangelogHasVersion() async {
 
   var version = _getPackageVersion();
 
-  if (!changelog.readAsLinesSync().contains('## ${version}')) {
-    fail('ERROR: CHANGELOG.md does not mention version ${version}');
+  if (!changelog.readAsLinesSync().contains('## $version')) {
+    fail('ERROR: CHANGELOG.md does not mention version $version');
   }
 }
 
@@ -932,7 +932,7 @@ Future<void> build() async {
   await dartdocOptions.writeAsString('''dartdoc:
   linkToSource:
     root: '.'
-    uriTemplate: 'https://github.com/dart-lang/dartdoc/blob/v${version}/%f%#L%l%'
+    uriTemplate: 'https://github.com/dart-lang/dartdoc/blob/v$version/%f%#L%l%'
 ''');
 }
 

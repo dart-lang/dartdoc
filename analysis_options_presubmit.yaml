@@ -1,6 +1,6 @@
 # Change analysis_options.yaml and analysis_options_presubmit.yaml
 # together.
-include: package:pedantic/analysis_options.1.9.0.yaml
+include: package:pedantic/analysis_options.1.11.0.yaml
 
 analyzer:
   errors:

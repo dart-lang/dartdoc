@@ -322,7 +322,7 @@ class ConstructorTemplateData extends TemplateData<Constructor>
   @override
   String get metaDescription =>
       'API docs for the ${constructor.name} constructor from the '
-      '${clazz} class from the ${library.name} library, '
+      '$clazz class from the ${library.name} library, '
       'for the Dart programming language.';
 }
 
@@ -398,7 +398,7 @@ class MethodTemplateData extends TemplateData<Method>
   Method get self => method;
   @override
   String get title =>
-      '${method.name} method - ${container.name} ${containerDesc} - '
+      '${method.name} method - ${container.name} $containerDesc - '
       '${library.name} library - Dart API';
   @override
   String get layoutTitle => _layoutTitle(
@@ -406,7 +406,7 @@ class MethodTemplateData extends TemplateData<Method>
   @override
   String get metaDescription =>
       'API docs for the ${method.name} method from the '
-      '${container.name} ${containerDesc}, for the Dart programming language.';
+      '${container.name} $containerDesc, for the Dart programming language.';
   @override
   List<Documentable> get navLinks => [_packageGraph.defaultPackage, library];
   @override
@@ -440,7 +440,7 @@ class PropertyTemplateData extends TemplateData<Field>
 
   @override
   String get title =>
-      '${property.name} ${property.kind} - ${container.name} ${containerDesc} - '
+      '${property.name} ${property.kind} - ${container.name} $containerDesc - '
       '${library.name} library - Dart API';
   @override
   String get layoutTitle =>
@@ -448,7 +448,7 @@ class PropertyTemplateData extends TemplateData<Field>
   @override
   String get metaDescription =>
       'API docs for the ${property.name} ${property.kind} from the '
-      '${container.name} ${containerDesc}, for the Dart programming language.';
+      '${container.name} $containerDesc, for the Dart programming language.';
   @override
   List<Documentable> get navLinks => [_packageGraph.defaultPackage, library];
   @override

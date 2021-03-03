@@ -19,7 +19,7 @@ class TypeParametersRendererHtml extends TypeParametersRenderer {
     var joined = typeParameters.typeParameters
         .map((t) => t.name)
         .join('</span>, <span class="type-parameter">');
-    return '&lt;<wbr><span class="type-parameter">${joined}</span>&gt;';
+    return '&lt;<wbr><span class="type-parameter">$joined</span>&gt;';
   }
 
   @override
@@ -30,7 +30,7 @@ class TypeParametersRendererHtml extends TypeParametersRenderer {
     var joined = typeParameters.typeParameters
         .map((t) => t.linkedName)
         .join('</span>, <span class="type-parameter">');
-    return '<span class="signature">&lt;<wbr><span class="type-parameter">${joined}</span>&gt;</span>';
+    return '<span class="signature">&lt;<wbr><span class="type-parameter">$joined</span>&gt;</span>';
   }
 }
 
@@ -49,6 +49,6 @@ class TypeParametersRendererMd extends TypeParametersRenderer {
       return '';
     }
     var joined = typeParameters.map(mapfn).join(', ');
-    return '&lt;${joined}>';
+    return '&lt;$joined>';
   }
 }

@@ -54,7 +54,7 @@ mixin Inheritable on ContainerMember {
               orElse: () => null);
     }
     if (canonicalEnclosingContainer != null) {
-      throw UnimplementedError('${canonicalEnclosingContainer}: unknown type');
+      throw UnimplementedError('$canonicalEnclosingContainer: unknown type');
     }
     return null;
   }
