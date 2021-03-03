@@ -115,7 +115,13 @@ class MustachioParser {
           }
         } else {
           assert(result.type == _TagParseResultType.parsedTag);
-          trimTextRight();
+          if (result.node is Section) {
+            // Trim the right off of the preceding text node, only if a Section
+            // was just parsed. For other tags, like Variables or Partials,
+            // the whitespace may be important, as the tag itself will be
+            // rendered as text.
+            trimTextRight();
+          }
           addTextNode(textStartIndex, textEndIndex);
           children.add(result.node);
           textStartIndex = _index;
