@@ -32,27 +32,6 @@ abstract class Generator {
   Future<void> generate(PackageGraph packageGraph, FileWriter writer);
 }
 
-/// Dartdoc options related to generators generally.
-mixin GeneratorContext on DartdocOptionContextBase {
-  List<String> get footer => optionSet['footer'].valueAt(context);
-
-  List<String> get footerText => optionSet['footerText'].valueAt(context);
-
-  List<String> get header => optionSet['header'].valueAt(context);
-
-  bool get prettyIndexJson => optionSet['prettyIndexJson'].valueAt(context);
-
-  String get favicon => optionSet['favicon'].valueAt(context);
-
-  String get relCanonicalPrefix =>
-      optionSet['relCanonicalPrefix'].valueAt(context);
-
-  String get templatesDir => optionSet['templatesDir'].valueAt(context);
-
-  // TODO(jdkoren): duplicated temporarily so that GeneratorContext is enough for configuration.
-  bool get useBaseHref => optionSet['useBaseHref'].valueAt(context);
-}
-
 Future<List<DartdocOption<Object>>> createGeneratorOptions(
     PackageMetaProvider packageMetaProvider) async {
   var resourceProvider = packageMetaProvider.resourceProvider;
