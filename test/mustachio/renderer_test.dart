@@ -385,7 +385,8 @@ void main() {
     expect(renderBar(bar, barTemplate), equals('Text Partial hello'));
   });
 
-  test('Parser removes whitespace preceding a tag on its own line', () async {
+  test('Parser removes whitespace preceding a Section tag on its own line',
+      () async {
     var fooTemplateFile = getFile('/project/foo.mustache')
       ..writeAsStringSync('''
 <ol>
@@ -402,6 +403,25 @@ void main() {
   <li>Num 2</li>
   <li>Num 3</li>
 </ol>
+'''));
+  });
+
+  test('Parser does not remove whitespace preceding a non-Section tag',
+      () async {
+    var fooTemplateFile = getFile('/project/foo.mustache')
+      ..writeAsStringSync('''
+Hello
+{{ #b1 }}
+{{ s1 }}
+{{ /b1 }}
+''');
+    var fooTemplate = await Template.parse(fooTemplateFile);
+    var foo = Foo()
+      ..b1 = true
+      ..s1 = 'World';
+    expect(renderFoo(foo, fooTemplate), equals('''
+Hello
+World
 '''));
   });
 
