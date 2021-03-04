@@ -70,6 +70,10 @@ const _partials_md = <String>[
   'property',
   'source_code',
   'source_link',
+  'type',
+  'type_multiline',
+  'typedef',
+  'typedef_multiline',
 ];
 
 abstract class _TemplatesLoader {

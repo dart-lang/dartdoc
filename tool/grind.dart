@@ -226,10 +226,7 @@ void analyze() async {
       '--fatal-infos',
       '--options',
       'analysis_options_presubmit.yaml',
-      'bin',
-      'lib',
-      'test',
-      'tool',
+      '.'
     ],
   );
 }
@@ -241,22 +238,26 @@ void dartfmt() async {
     // Filter out test packages as they always have strange formatting.
     // Passing parameters to dartfmt for directories to search results in
     // filenames being stripped of the dirname so we have to filter here.
-    void addFileToFix(String fileName) {
+    void addFileToFix(String base, String fileName) {
       var pathComponents = path.split(fileName);
       if (pathComponents.isNotEmpty && pathComponents.first == 'testing') {
         return;
       }
-      filesToFix.add(fileName);
+      filesToFix.add(path.join(base, fileName));
     }
 
     log('Validating dartfmt with version ${Platform.version}');
-    await SubprocessLauncher('dartfmt').runStreamed(
-        sdkBin('dartfmt'),
-        [
-          '-n',
-          '.',
-        ],
-        perLine: addFileToFix);
+    // TODO(jcollins-g): return to global once dartfmt can handle generic
+    // type aliases
+    for (var subDirectory in ['bin', 'lib', 'test', 'tool', path.join('testing/test_package')]) {
+      await SubprocessLauncher('dartfmt').runStreamed(
+          sdkBin('dartfmt'),
+          [
+            '-n',
+            subDirectory,
+          ],
+          perLine: (n) => addFileToFix(subDirectory, n));
+    }
     if (filesToFix.isNotEmpty) {
       fail(
           'dartfmt found files needing reformatting. Use this command to reformat:\n'

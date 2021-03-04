@@ -97,20 +97,20 @@ void main() {
         T7 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T7');
       });
 
-      void expectTypedefs(Typedef t, String modelTypeToString, String genericParameters) {
+      void expectTypedefs(Typedef t, String modelTypeToString, Iterable<String> genericParameters) {
         expect(t.modelType.toString(), equals(modelTypeToString));
-        expect(t.genericParameters, equals(genericParameters));
+        expect(t.genericTypeParameters.map((p) => p.toString()), orderedEquals(genericParameters));
       }
 
       test('basic non-function typedefs work', () {
-        expectTypedefs(T0, 'void', '');
-        expectTypedefs(T1, 'Function', '');
-        expectTypedefs(T2, 'List<X>', '');
-        expectTypedefs(T3, '', '');
-        expectTypedefs(T4, '', '');
-        expectTypedefs(T5, '', '');
-        expectTypedefs(T6, '', '');
-        expectTypedefs(T7, '', '');
+        expectTypedefs(T0, 'void', []);
+        expectTypedefs(T1, 'Function', []);
+        expectTypedefs(T2, 'List<X>', ['out X']);
+        expectTypedefs(T3, 'Map<X, Y>', ['out X', 'out Y']);
+        expectTypedefs(T4, 'void Function()', []);
+        expectTypedefs(T5, 'X Function(X, {X name})', ['inout X']);
+        expectTypedefs(T6, 'X Function(Y, [Map<Y, Y>])', ['out X', 'in Y']);
+        expectTypedefs(T7, 'X Function(Y, [Map<Y, Y>])', ['out X extends String', 'in Y extends List<X>']);
       });
     }, skip: (!_generalizedTypedefsAllowed.allows(_platformVersion)));
   });

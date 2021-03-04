@@ -6,6 +6,8 @@
 /// typedef syntax, and produce correct results.
 library generalized_typedefs;
 
+// from basic_syntax_test (Dart SDK)
+
 typedef T0 = void;
 typedef T1 = Function;
 typedef T2<X> = List<X>;
@@ -15,8 +17,26 @@ typedef T5<X> = X Function(X, {X name});
 typedef T6<X, Y> = X Function(Y, [Map<Y, Y>]);
 typedef T7<X extends String, Y extends List<X>> = X Function(Y, [Map<Y, Y>]);
 
-void main() {
-  // ignore:unused_local_variable
-  var ensure_usage = [T0, T1, T2, T3, T4, T5, T6, T7];
-  print('hi');
+class C1<T3> {}
+
+typedef T8 = C1;
+
+abstract class C extends T8 {
+  T0 f;
+  T1 g(T2 a, T3 b);
+
+  T2 operator +(T2 other) => other;
+
+  static final T4 h = (){};
+  static T5<C>? i;
+
+  T7<String, List<String>> get j;
+
+  set k(T6<int, bool> value);
+}
+
+extension E on T6 {
+  static T4 f = () {};
+
+  T2 myMethod() => [5];
 }
