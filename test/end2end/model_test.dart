@@ -88,6 +88,191 @@ void main() {
         packageGraph.libraries.firstWhere((lib) => lib.name == 'base_class');
   });
 
+  group('NNBD cases', () {
+    Library lateFinalWithoutInitializer,
+        nullSafetyClassMemberDeclarations,
+        optOutOfNullSafety,
+        nullableElements;
+    Class b;
+    Class c;
+
+    setUpAll(() async {
+      lateFinalWithoutInitializer = packageGraph.libraries
+          .firstWhere((lib) => lib.name == 'late_final_without_initializer');
+      nullSafetyClassMemberDeclarations = packageGraph.libraries
+          .firstWhere((lib) => lib.name == 'nnbd_class_member_declarations');
+      optOutOfNullSafety = packageGraph.libraries
+          .firstWhere((lib) => lib.name == 'opt_out_of_nnbd');
+      nullableElements = packageGraph.libraries
+          .firstWhere((lib) => lib.name == 'nullable_elements');
+      b = nullSafetyClassMemberDeclarations.allClasses
+          .firstWhere((c) => c.name == 'B');
+      c = nullSafetyClassMemberDeclarations.allClasses
+          .firstWhere((c) => c.name == 'C');
+    });
+
+    test('isNullSafety is set correctly for libraries', () {
+      expect(lateFinalWithoutInitializer.isNullSafety, isTrue);
+      expect(optOutOfNullSafety.isNullSafety, isFalse);
+    });
+
+    test('method parameters with required', () {
+      var m1 = b.instanceMethods.firstWhere((m) => m.name == 'm1');
+      var p1 = m1.allParameters.firstWhere((p) => p.name == 'p1');
+      var p2 = m1.allParameters.firstWhere((p) => p.name == 'p2');
+      expect(p1.isRequiredNamed, isTrue);
+      expect(p2.isRequiredNamed, isFalse);
+      expect(p2.isNamed, isTrue);
+
+      expect(
+          m1.linkedParamsLines,
+          equals(
+              '<ol class="parameter-list"><li><span class="parameter" id="m1-param-some"><span class="type-annotation">int</span> <span class="parameter-name">some</span>, </span></li>\n'
+              '<li><span class="parameter" id="m1-param-regular"><span class="type-annotation">dynamic</span> <span class="parameter-name">regular</span>, </span></li>\n'
+              '<li><span class="parameter" id="m1-param-parameters"><span>covariant</span> <span class="type-annotation">dynamic</span> <span class="parameter-name">parameters</span>, </span></li>\n'
+              '<li><span class="parameter" id="m1-param-p1">{<span>required</span> <span class="type-annotation">dynamic</span> <span class="parameter-name">p1</span>, </span></li>\n'
+              '<li><span class="parameter" id="m1-param-p2"><span class="type-annotation">int</span> <span class="parameter-name">p2</span> = <span class="default-value">3</span>, </span></li>\n'
+              '<li><span class="parameter" id="m1-param-p3"><span>required</span> <span>covariant</span> <span class="type-annotation">dynamic</span> <span class="parameter-name">p3</span>, </span></li>\n'
+              '<li><span class="parameter" id="m1-param-p4"><span>required</span> <span>covariant</span> <span class="type-annotation">int</span> <span class="parameter-name">p4</span>}</span></li>\n'
+              '</ol>'));
+    });
+
+    test('verify no regression on ordinary optionals', () {
+      var m2 = b.instanceMethods.firstWhere((m) => m.name == 'm2');
+      var sometimes = m2.allParameters.firstWhere((p) => p.name == 'sometimes');
+      var optionals = m2.allParameters.firstWhere((p) => p.name == 'optionals');
+      expect(sometimes.isRequiredNamed, isFalse);
+      expect(sometimes.isRequiredPositional, isTrue);
+      expect(sometimes.isOptionalPositional, isFalse);
+      expect(optionals.isRequiredNamed, isFalse);
+      expect(optionals.isRequiredPositional, isFalse);
+      expect(optionals.isOptionalPositional, isTrue);
+
+      expect(
+          m2.linkedParamsLines,
+          equals(
+              '<ol class="parameter-list"><li><span class="parameter" id="m2-param-sometimes"><span class="type-annotation">int</span> <span class="parameter-name">sometimes</span>, </span></li>\n'
+              '<li><span class="parameter" id="m2-param-we"><span class="type-annotation">dynamic</span> <span class="parameter-name">we</span>, </span></li>\n'
+              '<li><span class="parameter" id="m2-param-have">[<span class="type-annotation">String</span> <span class="parameter-name">have</span>, </span></li>\n'
+              '<li><span class="parameter" id="m2-param-optionals"><span class="type-annotation">double</span> <span class="parameter-name">optionals</span>]</span></li>\n'
+              '</ol>'));
+    });
+
+    test('anonymous callback parameters are correctly marked as nullable', () {
+      var m3 = c.instanceMethods.firstWhere((m) => m.name == 'm3');
+      var listen = m3.allParameters.firstWhere((p) => p.name == 'listen');
+      var onDone = m3.allParameters.firstWhere((p) => p.name == 'onDone');
+      expect(listen.isRequiredPositional, isTrue);
+      expect(onDone.isNamed, isTrue);
+
+      expect(
+          m3.linkedParamsLines,
+          equals(
+              '<ol class="parameter-list"><li><span class="parameter" id="m3-param-listen"><span class="type-annotation">void</span> <span class="parameter-name">listen</span>(<ol class="parameter-list"><li><span class="parameter" id="param-t"><span class="type-annotation">int</span> <span class="parameter-name">t</span></span></li>\n'
+              '</ol>\n'
+              ')?, </span></li>\n'
+              '<li><span class="parameter" id="m3-param-onDone">{<span class="type-annotation">void</span> <span class="parameter-name">onDone</span>(<ol class="parameter-list"></ol>\n'
+              ')?}</span></li>\n'
+              '</ol>'));
+    });
+
+    test('Late final class member test', () {
+      var c = lateFinalWithoutInitializer.allClasses
+          .firstWhere((c) => c.name == 'C');
+      var a = c.instanceFields.firstWhere((f) => f.name == 'a');
+      var b = c.instanceFields.firstWhere((f) => f.name == 'b');
+      var cField = c.instanceFields.firstWhere((f) => f.name == 'cField');
+      var dField = c.instanceFields.firstWhere((f) => f.name == 'dField');
+
+      // If Null safety isn't enabled, fields named 'late' come back from the
+      // analyzer instead of setting up 'isLate'.
+      expect(c.instanceFields.any((f) => f.name == 'late'), isFalse);
+
+      expect(a.modelType.returnType.name, equals('dynamic'));
+      expect(a.isLate, isTrue);
+      expect(a.features, contains('late'));
+
+      expect(b.modelType.returnType.name, equals('int'));
+      expect(b.isLate, isTrue);
+      expect(b.features, contains('late'));
+
+      expect(cField.modelType.returnType.name, equals('dynamic'));
+      expect(cField.isLate, isTrue);
+      expect(cField.features, contains('late'));
+
+      expect(dField.modelType.returnType.name, equals('double'));
+      expect(dField.isLate, isTrue);
+      expect(dField.features, contains('late'));
+    });
+
+    test('Late final top level variables', () {
+      var initializeMe = lateFinalWithoutInitializer.publicProperties
+          .firstWhere((v) => v.name == 'initializeMe');
+      expect(initializeMe.modelType.returnType.name, equals('String'));
+      expect(initializeMe.isLate, isTrue);
+      expect(initializeMe.features, contains('late'));
+    });
+
+    test('Opt out of Null safety', () {
+      var notOptedIn = optOutOfNullSafety.publicProperties
+          .firstWhere((v) => v.name == 'notOptedIn');
+      expect(notOptedIn.isNullSafety, isFalse);
+      expect(notOptedIn.modelType.nullabilitySuffix, isEmpty);
+    });
+
+    test('complex nullable elements are detected and rendered correctly', () {
+      var complexNullableMembers = nullableElements.allClasses
+          .firstWhere((c) => c.name == 'ComplexNullableMembers');
+      var aComplexType = complexNullableMembers.allFields
+          .firstWhere((f) => f.name == 'aComplexType');
+      var aComplexSetterOnlyType = complexNullableMembers.allFields
+          .firstWhere((f) => f.name == 'aComplexSetterOnlyType');
+      expect(complexNullableMembers.isNullSafety, isTrue);
+      expect(
+          complexNullableMembers.nameWithGenerics,
+          equals(
+              'ComplexNullableMembers&lt;<wbr><span class=\"type-parameter\">T extends String?</span>&gt;'));
+      expect(
+          aComplexType.linkedReturnType,
+          equals(
+              'Map<span class="signature">&lt;<wbr><span class="type-parameter">T?</span>, <span class="type-parameter">String?</span>&gt;</span>'));
+      expect(aComplexSetterOnlyType.linkedReturnType, equals(
+          // TODO(jcollins-g): fix wrong span class for setter-only return type (#2226)
+          '<span class="parameter" id="aComplexSetterOnlyType=-param-value"><span class="type-annotation">List<span class="signature">&lt;<wbr><span class="type-parameter">Map<span class="signature">&lt;<wbr><span class="type-parameter">T?</span>, <span class="type-parameter">String?</span>&gt;</span>?</span>&gt;</span></span></span>'));
+    });
+
+    test('simple nullable elements are detected and rendered correctly', () {
+      var nullableMembers = nullableElements.allClasses
+          .firstWhere((c) => c.name == 'NullableMembers');
+      var initialized =
+          nullableMembers.allFields.firstWhere((f) => f.name == 'initialized');
+      var nullableField = nullableMembers.allFields
+          .firstWhere((f) => f.name == 'nullableField');
+      var methodWithNullables = nullableMembers.publicInstanceMethods
+          .firstWhere((f) => f.name == 'methodWithNullables');
+      var operatorStar = nullableMembers.publicInstanceOperators
+          .firstWhere((f) => f.name == 'operator *');
+      expect(nullableMembers.isNullSafety, isTrue);
+      expect(
+          nullableField.linkedReturnType,
+          equals(
+              'Iterable<span class=\"signature\">&lt;<wbr><span class=\"type-parameter\">BigInt</span>&gt;</span>?'));
+      expect(
+          methodWithNullables.linkedParams,
+          equals(
+              '<span class="parameter" id="methodWithNullables-param-foo"><span class="type-annotation">String?</span> <span class="parameter-name">foo</span></span>'));
+      expect(methodWithNullables.linkedReturnType, equals('int?'));
+      expect(
+          initialized.linkedReturnType,
+          equals(
+              'Map<span class="signature">&lt;<wbr><span class="type-parameter">String</span>, <span class="type-parameter">Map</span>&gt;</span>?'));
+      expect(
+          operatorStar.linkedParams,
+          equals(
+              '<span class="parameter" id="*-param-nullableOther"><span class="type-annotation"><a href="%%__HTMLBASE_dartdoc_internal__%%nullable_elements/NullableMembers-class.html">NullableMembers</a>?</span> <span class="parameter-name">nullableOther</span></span>'));
+    });
+  });
+
   group('Set Literals', () {
     Library set_literals;
     TopLevelVariable aComplexSet,
