@@ -75,7 +75,7 @@ void main() {
   }
 
   final _generalizedTypedefsAllowed =
-       VersionRange(min: Version.parse('2.13.0-0'), includeMin: true);
+      VersionRange(min: Version.parse('2.13.0-0'), includeMin: true);
   // Experimental features not yet enabled by default.  Move tests out of this
   // block when the feature is enabled by default.
   group('Experiments', () {
@@ -85,8 +85,8 @@ void main() {
 
       setUpAll(() async {
         generalizedTypedefs = (await _testPackageGraphExperiments)
-        .libraries
-        .firstWhere((l) => l.name == 'generalized_typedefs');
+            .libraries
+            .firstWhere((l) => l.name == 'generalized_typedefs');
         T0 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T0');
         T1 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T1');
         T2 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T2');
@@ -97,9 +97,11 @@ void main() {
         T7 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T7');
       });
 
-      void expectTypedefs(Typedef t, String modelTypeToString, Iterable<String> genericParameters) {
+      void expectTypedefs(Typedef t, String modelTypeToString,
+          Iterable<String> genericParameters) {
         expect(t.modelType.toString(), equals(modelTypeToString));
-        expect(t.genericTypeParameters.map((p) => p.toString()), orderedEquals(genericParameters));
+        expect(t.genericTypeParameters.map((p) => p.toString()),
+            orderedEquals(genericParameters));
       }
 
       test('basic non-function typedefs work', () {
@@ -110,7 +112,8 @@ void main() {
         expectTypedefs(T4, 'void Function()', []);
         expectTypedefs(T5, 'X Function(X, {X name})', ['inout X']);
         expectTypedefs(T6, 'X Function(Y, [Map<Y, Y>])', ['out X', 'in Y']);
-        expectTypedefs(T7, 'X Function(Y, [Map<Y, Y>])', ['out X extends String', 'in Y extends List<X>']);
+        expectTypedefs(T7, 'X Function(Y, [Map<Y, Y>])',
+            ['out X extends String', 'in Y extends List<X>']);
       });
     }, skip: (!_generalizedTypedefsAllowed.allows(_platformVersion)));
   });

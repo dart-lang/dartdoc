@@ -1229,11 +1229,10 @@ class _Super5 implements _Super2 {}
 
 class Super6 implements _Super5 {}
 
-
 abstract class IntermediateAbstract extends Object {
   /// This is an override.
   @override
-  bool operator==(Object other) {}
+  bool operator ==(Object other) {}
 }
 
 /// This should inherit [==] from [IntermediateAbstract].

@@ -10,8 +10,7 @@ import 'package:dartdoc/src/render/typedef_renderer.dart';
 class Typedef extends ModelElement
     with TypeParameters, Categorization
     implements EnclosedElement {
-  Typedef(TypeAliasElement element, Library library,
-      PackageGraph packageGraph)
+  Typedef(TypeAliasElement element, Library library, PackageGraph packageGraph)
       : super(element, library, packageGraph);
 
   DartType get aliasedType => element.aliasedType;
@@ -28,7 +27,8 @@ class Typedef extends ModelElement
   @override
   String get genericParameters => _renderer.renderGenericParameters(this);
 
-  List<TypeParameterElement> get genericTypeParameters => element.typeParameters;
+  List<TypeParameterElement> get genericTypeParameters =>
+      element.typeParameters;
 
   @override
   String get filePath => '${library.dirName}/$fileName';
@@ -61,8 +61,8 @@ class Typedef extends ModelElement
 
 /// A typedef referring to a function type.
 class FunctionTypedef extends Typedef {
-   FunctionTypedef(TypeAliasElement element, Library library,
-      PackageGraph packageGraph)
+  FunctionTypedef(
+      TypeAliasElement element, Library library, PackageGraph packageGraph)
       : super(element, library, packageGraph);
 
   @override

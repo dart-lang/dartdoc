@@ -11,4 +11,3 @@ library nodocme;
 class NodocMeImplementation {}
 
 class MeNeitherEvenWithoutADocComment {}
-

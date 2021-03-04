@@ -548,8 +548,7 @@ abstract class ModelElement extends Canonicalization
   }
 
   bool get isCallable =>
-      element is FunctionTypedElement ||
-      element is FunctionTypeAliasElement;
+      element is FunctionTypedElement || element is FunctionTypeAliasElement;
 
   ModelElement buildCanonicalModelElement() {
     Container preferredClass;

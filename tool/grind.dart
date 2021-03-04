@@ -222,12 +222,7 @@ void updateThirdParty() async {
 void analyze() async {
   await SubprocessLauncher('analyze').runStreamed(
     sdkBin('dartanalyzer'),
-    [
-      '--fatal-infos',
-      '--options',
-      'analysis_options_presubmit.yaml',
-      '.'
-    ],
+    ['--fatal-infos', '--options', 'analysis_options_presubmit.yaml', '.'],
   );
 }
 
@@ -249,7 +244,13 @@ void dartfmt() async {
     log('Validating dartfmt with version ${Platform.version}');
     // TODO(jcollins-g): return to global once dartfmt can handle generic
     // type aliases
-    for (var subDirectory in ['bin', 'lib', 'test', 'tool', path.join('testing/test_package')]) {
+    for (var subDirectory in [
+      'bin',
+      'lib',
+      'test',
+      'tool',
+      path.join('testing/test_package')
+    ]) {
       await SubprocessLauncher('dartfmt').runStreamed(
           sdkBin('dartfmt'),
           [
