@@ -9,6 +9,7 @@ import 'dart:io' show Platform;
 
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/dartdoc.dart';
+import 'package:dartdoc/options.dart';
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -116,7 +117,7 @@ void main() {
         expect(favicon.readAsStringSync(),
             contains('Not really a png, but a test file'));
         var indexString = index.readAsStringSync();
-        expect(indexString, contains('Footer things'));
+        expect(indexString, contains('<em>Footer</em> things'));
         expect(indexString, contains('footer.txt data'));
         expect(indexString, contains('HTML header file'));
       });

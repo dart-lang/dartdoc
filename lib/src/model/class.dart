@@ -295,7 +295,7 @@ class Class extends Container
             false,
             'Can not handle intermediate non-public interfaces '
             'created by ModelElements that are not classes or mixins:  '
-            '${fullyQualifiedName} contains an interface {$i}, '
+            '$fullyQualifiedName contains an interface {$i}, '
             'defined by ${i.element}');
         continue;
       }

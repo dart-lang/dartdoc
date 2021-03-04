@@ -68,7 +68,7 @@ void _printUsageAndExit(ArgParser parser, {int exitCode = 0}) {
 }
 
 void performList(int page) {
-  print('Listing pub packages for page ${page}');
+  print('Listing pub packages for page $page');
   print('');
 
   _packageUrls(page).then((List<String> packages) {
@@ -79,7 +79,7 @@ void performList(int page) {
 }
 
 void performGenerate(int page) {
-  print('Generating docs for page ${page} into ${_rootDir}/');
+  print('Generating docs for page $page into $_rootDir/');
   print('');
 
   _packageUrls(page).then((List<String> packages) {
@@ -92,12 +92,11 @@ void performGenerate(int page) {
 }
 
 void generateForPackages(List<String> packages) {
-  print('Generating docs into ${_rootDir}/');
+  print('Generating docs into $_rootDir/');
   print('');
 
-  var urls = packages
-      .map((s) => 'https://pub.dartlang.org/packages/${s}.json')
-      .toList();
+  var urls =
+      packages.map((s) => 'https://pub.dartlang.org/packages/$s.json').toList();
 
   _getPackageInfos(urls).then((List<PackageInfo> infos) {
     return Future.forEach(infos, (PackageInfo info) {
@@ -112,18 +111,18 @@ Future<void> _printGenerationResult(
 
   return generationResult.then((bool result) {
     if (result) {
-      print('${name}: passed');
+      print('$name: passed');
     } else {
-      print('${name}: (skipped)');
+      print('$name: (skipped)');
     }
   }).catchError((e) {
-    print('${name}: * failed *');
+    print('$name: * failed *');
   });
 }
 
 Future<List<String>> _packageUrls(int page) {
   return http
-      .get(Uri.parse('https://pub.dartlang.org/packages.json?page=${page}'))
+      .get(Uri.parse('https://pub.dartlang.org/packages.json?page=$page'))
       .then((response) {
     return List<String>.from(json.decode(response.body)['packages']);
   });
@@ -154,7 +153,7 @@ Future<bool> _generateFor(PackageInfo package) async {
   var response = await http.get(Uri.parse(package.archiveUrl));
   if (response.statusCode != 200) throw response;
 
-  var output = Directory('${_rootDir}/${package.name}');
+  var output = Directory('$_rootDir/${package.name}');
   output.createSync(recursive: true);
 
   try {
@@ -207,9 +206,9 @@ Future<void> _exec(String command, List<String> args,
 
     if (timeout != null) {
       return f.timeout(timeout, onTimeout: () {
-        _log('Timing out operation ${command}.');
+        _log('Timing out operation $command.');
         process.kill();
-        throw 'timeout on ${command}';
+        throw 'timeout on $command';
       });
     } else {
       return f;
@@ -228,7 +227,7 @@ bool _isOldSdkConstraint(var pubspecInfo) {
         version = version.substring(0, version.indexOf(' '));
       }
       if (!constraint.allows(Version.parse(version))) {
-        _log('sdk constraint = ${constraint}');
+        _log('sdk constraint = $constraint');
         return true;
       } else {
         return false;
@@ -250,8 +249,8 @@ class PackageInfo {
   PackageInfo(this.name, this.version);
 
   String get archiveUrl =>
-      'https://storage.googleapis.com/pub.dartlang.org/packages/${name}-${version}.tar.gz';
+      'https://storage.googleapis.com/pub.dartlang.org/packages/$name-$version.tar.gz';
 
   @override
-  String toString() => '${name}, ${version}';
+  String toString() => '$name, $version';
 }

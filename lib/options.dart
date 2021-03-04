@@ -5,6 +5,52 @@ import 'package:args/args.dart';
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/logging.dart';
 
+/// Helper class that consolidates option contexts for instantiating generators.
+class DartdocGeneratorOptionContext extends DartdocOptionContext {
+  DartdocGeneratorOptionContext(
+      DartdocOptionSet optionSet, Folder dir, ResourceProvider resourceProvider)
+      : super(optionSet, dir, resourceProvider);
+
+  // TODO(migration): Make late final with initializer when Null Safe.
+  String _header;
+
+  /// Returns the joined contents of any 'header' files specified in options.
+  String get header =>
+      _header ??= _joinCustomTextFiles(optionSet['header'].valueAt(context));
+
+  // TODO(migration): Make late final with initializer when Null Safe.
+  String _footer;
+
+  /// Returns the joined contents of any 'footer' files specified in options.
+  String get footer =>
+      _footer ??= _joinCustomTextFiles(optionSet['footer'].valueAt(context));
+
+  // TODO(migration): Make late final with initializer when Null Safe.
+  String _footerText;
+
+  /// Returns the joined contents of any 'footer-text' files specified in
+  /// options.
+  String get footerText => _footerText ??=
+      _joinCustomTextFiles(optionSet['footerText'].valueAt(context));
+
+  String _joinCustomTextFiles(Iterable<String> paths) => paths
+      .map((p) => resourceProvider.getFile(p).readAsStringSync())
+      .join('\n');
+
+  bool get prettyIndexJson => optionSet['prettyIndexJson'].valueAt(context);
+
+  String get favicon => optionSet['favicon'].valueAt(context);
+
+  String get relCanonicalPrefix =>
+      optionSet['relCanonicalPrefix'].valueAt(context);
+
+  String get templatesDir => optionSet['templatesDir'].valueAt(context);
+
+  // TODO(jdkoren): duplicated temporarily so that GeneratorContext is enough for configuration.
+  @override
+  bool get useBaseHref => optionSet['useBaseHref'].valueAt(context);
+}
+
 class DartdocProgramOptionContext extends DartdocGeneratorOptionContext
     with LoggingContext {
   DartdocProgramOptionContext(
@@ -99,5 +145,5 @@ void _printUsage(ArgParser parser) {
 
 /// Print version information.
 void _printVersion(ArgParser parser) {
-  print('dartdoc version: ${dartdocVersion}');
+  print('dartdoc version: $dartdocVersion');
 }

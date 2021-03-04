@@ -9,6 +9,7 @@ library dartdoc.templates;
 
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/dartdoc.dart';
+import 'package:dartdoc/options.dart';
 import 'package:dartdoc/src/generator/resource_loader.dart';
 import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/src/mustachio/annotations.dart';
@@ -70,36 +71,6 @@ const _partials_md = <String>[
   'source_code',
   'source_link',
 ];
-
-const String _headerPlaceholder = '{{! header placeholder }}';
-const String _footerPlaceholder = '{{! footer placeholder }}';
-const String _footerTextPlaceholder = '{{! footer-text placeholder }}';
-
-Future<Map<String, String>> _loadPartials(
-    _TemplatesLoader templatesLoader,
-    List<String> headerPaths,
-    List<String> footerPaths,
-    List<String> footerTextPaths) async {
-  var partials = await templatesLoader.loadPartials();
-
-  void replacePlaceholder(String key, String placeholder, List<String> paths) {
-    var template = partials[key];
-    if (template != null && paths != null && paths.isNotEmpty) {
-      var replacement = paths
-          .map((p) =>
-              templatesLoader.resourceProvider.getFile(p).readAsStringSync())
-          .join('\n');
-      template = template.replaceAll(placeholder, replacement);
-      partials[key] = template;
-    }
-  }
-
-  replacePlaceholder('head', _headerPlaceholder, headerPaths);
-  replacePlaceholder('footer', _footerPlaceholder, footerPaths);
-  replacePlaceholder('footer', _footerTextPlaceholder, footerTextPaths);
-
-  return partials;
-}
 
 abstract class _TemplatesLoader {
   ResourceProvider get resourceProvider;
@@ -211,53 +182,29 @@ class Templates {
       DartdocGeneratorOptionContext context) async {
     var templatesDir = context.templatesDir;
     var format = context.format;
-    var footerTextPaths = context.footerText;
 
     if (templatesDir != null) {
       return _fromDirectory(
           context.resourceProvider.getFolder(templatesDir), format,
-          resourceProvider: context.resourceProvider,
-          headerPaths: context.header,
-          footerPaths: context.footer,
-          footerTextPaths: footerTextPaths);
+          resourceProvider: context.resourceProvider);
     } else {
-      return createDefault(format,
-          resourceProvider: context.resourceProvider,
-          headerPaths: context.header,
-          footerPaths: context.footer,
-          footerTextPaths: footerTextPaths);
+      return createDefault(format, resourceProvider: context.resourceProvider);
     }
   }
 
   @visibleForTesting
   static Future<Templates> createDefault(String format,
-      {@required ResourceProvider resourceProvider,
-      List<String> headerPaths = const <String>[],
-      List<String> footerPaths = const <String>[],
-      List<String> footerTextPaths = const <String>[]}) async {
-    return _create(_DefaultTemplatesLoader.create(format, resourceProvider),
-        headerPaths: headerPaths,
-        footerPaths: footerPaths,
-        footerTextPaths: footerTextPaths);
+      {@required ResourceProvider resourceProvider}) async {
+    return _create(_DefaultTemplatesLoader.create(format, resourceProvider));
   }
 
   static Future<Templates> _fromDirectory(Folder dir, String format,
-      {@required ResourceProvider resourceProvider,
-      @required List<String> headerPaths,
-      @required List<String> footerPaths,
-      @required List<String> footerTextPaths}) async {
-    return _create(_DirectoryTemplatesLoader(dir, format, resourceProvider),
-        headerPaths: headerPaths,
-        footerPaths: footerPaths,
-        footerTextPaths: footerTextPaths);
+      {@required ResourceProvider resourceProvider}) async {
+    return _create(_DirectoryTemplatesLoader(dir, format, resourceProvider));
   }
 
-  static Future<Templates> _create(_TemplatesLoader templatesLoader,
-      {@required List<String> headerPaths,
-      @required List<String> footerPaths,
-      @required List<String> footerTextPaths}) async {
-    var partials = await _loadPartials(
-        templatesLoader, headerPaths, footerPaths, footerTextPaths);
+  static Future<Templates> _create(_TemplatesLoader templatesLoader) async {
+    var partials = await templatesLoader.loadPartials();
 
     Template _partial(String name) {
       var partial = partials[name];

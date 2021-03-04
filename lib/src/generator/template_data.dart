@@ -12,6 +12,9 @@ abstract class TemplateOptions {
   String get relCanonicalPrefix;
   String get toolVersion;
   bool get useBaseHref;
+  String get customHeaderContent;
+  String get customFooterContent;
+  String get customInnerFooterText;
 }
 
 abstract class TemplateData<T extends Documentable> {
@@ -61,6 +64,12 @@ abstract class TemplateData<T extends Documentable> {
   String _layoutTitle(String name, String kind, bool isDeprecated) =>
       _packageGraph.rendererFactory.templateRenderer
           .composeLayoutTitle(name, kind, isDeprecated);
+
+  String get customHeader => htmlOptions.customHeaderContent;
+
+  String get customFooter => htmlOptions.customFooterContent;
+
+  String get customInnerFooter => htmlOptions.customInnerFooterText;
 }
 
 /// A [TemplateData] which contains a library, for rendering the
@@ -322,7 +331,7 @@ class ConstructorTemplateData extends TemplateData<Constructor>
   @override
   String get metaDescription =>
       'API docs for the ${constructor.name} constructor from the '
-      '${clazz} class from the ${library.name} library, '
+      '$clazz class from the ${library.name} library, '
       'for the Dart programming language.';
 }
 
@@ -398,7 +407,7 @@ class MethodTemplateData extends TemplateData<Method>
   Method get self => method;
   @override
   String get title =>
-      '${method.name} method - ${container.name} ${containerDesc} - '
+      '${method.name} method - ${container.name} $containerDesc - '
       '${library.name} library - Dart API';
   @override
   String get layoutTitle => _layoutTitle(
@@ -406,7 +415,7 @@ class MethodTemplateData extends TemplateData<Method>
   @override
   String get metaDescription =>
       'API docs for the ${method.name} method from the '
-      '${container.name} ${containerDesc}, for the Dart programming language.';
+      '${container.name} $containerDesc, for the Dart programming language.';
   @override
   List<Documentable> get navLinks => [_packageGraph.defaultPackage, library];
   @override
@@ -440,7 +449,7 @@ class PropertyTemplateData extends TemplateData<Field>
 
   @override
   String get title =>
-      '${property.name} ${property.kind} - ${container.name} ${containerDesc} - '
+      '${property.name} ${property.kind} - ${container.name} $containerDesc - '
       '${library.name} library - Dart API';
   @override
   String get layoutTitle =>
@@ -448,7 +457,7 @@ class PropertyTemplateData extends TemplateData<Field>
   @override
   String get metaDescription =>
       'API docs for the ${property.name} ${property.kind} from the '
-      '${container.name} ${containerDesc}, for the Dart programming language.';
+      '${container.name} $containerDesc, for the Dart programming language.';
   @override
   List<Documentable> get navLinks => [_packageGraph.defaultPackage, library];
   @override

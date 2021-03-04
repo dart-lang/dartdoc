@@ -1,4 +1,6 @@
-const inferredTypeSet = {1, 2.5, 3};
+// @dart=2.9
+
+const inferredTypeSet = {1, 3, 5};
 const Set<int> specifiedSet = {};
 const untypedMap = {};
 const typedSet = <String>{};
@@ -8,10 +10,6 @@ class AClassContainingLiterals {
   final int value2;
 
   const AClassContainingLiterals(this.value1, this.value2);
-
-  @override
-  bool operator ==(Object other) =>
-      other is AClassContainingLiterals && value1 == other.value1;
 }
 
 const aComplexSet = {AClassContainingLiterals(3, 5)};

@@ -107,7 +107,7 @@ class ScoredCandidate implements Comparable<ScoredCandidate> {
     score += scoreDelta;
     if (scoreDelta != 0) {
       _reasons.add(
-          "${reason} (${scoreDelta >= 0 ? '+' : ''}${scoreDelta.toStringAsPrecision(4)})");
+          "$reason (${scoreDelta >= 0 ? '+' : ''}${scoreDelta.toStringAsPrecision(4)})");
     }
   }
 

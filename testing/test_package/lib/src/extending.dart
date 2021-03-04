@@ -1,3 +1,5 @@
+// @dart=2.9
+
 library two_exports.src.extending;
 
 import 'base.dart';

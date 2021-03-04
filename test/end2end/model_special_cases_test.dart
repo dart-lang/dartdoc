@@ -16,13 +16,9 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/special_elements.dart';
-import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
 import '../src/utils.dart' as utils;
-
-final String _platformVersionString = Platform.version.split(' ').first;
-final Version _platformVersion = Version.parse(_platformVersionString);
 
 final _testPackageGraphExperimentsMemo = AsyncMemoizer<PackageGraph>();
 Future<PackageGraph> get _testPackageGraphExperiments =>
@@ -73,16 +69,6 @@ void main() {
     print('Warning: unable to locate the Dart SDK.');
     exit(1);
   }
-
-  // This doesn't have the `max` because Null safety is supposed to work after
-  // this version, and if the `max` is placed here we'll silently pass 2.10
-  // stable if we haven't figured out how to switch on Null safety outside of
-  // dev builds as specified in #2148.
-  final _nullSafetyExperimentAllowed =
-      VersionRange(min: Version.parse('2.9.0-9.0.dev'), includeMin: true);
-
-  final _generalizedTypedefsAllowed =
-      VersionRange(min: Version.parse('2.12.0-279.0.dev'), includeMin: true);
 
   // Experimental features not yet enabled by default.  Move tests out of this
   // block when the feature is enabled by default.

@@ -1,3 +1,8 @@
+// Copyright (c) 2021, the Dart project authors.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
+@Timeout.factor(2)
 import 'dart:convert';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
@@ -35,7 +40,7 @@ void main() {
 
   Future<LibraryElement> resolveGeneratedLibrary(
       InMemoryAssetWriter writer) async {
-    var rendererAsset = AssetId.parse('foo|lib/foo.renderers.dart');
+    var rendererAsset = AssetId('foo', 'lib/foo.renderers.dart');
     var writtenStrings = writer.assets
         .map((id, content) => MapEntry(id.toString(), utf8.decode(content)));
     return await resolveSources(writtenStrings,
@@ -91,7 +96,7 @@ class Bar {}
 class Baz {}
 ''');
       renderersLibrary = await resolveGeneratedLibrary(writer);
-      var rendererAsset = AssetId.parse('foo|lib/foo.renderers.dart');
+      var rendererAsset = AssetId('foo', 'lib/foo.renderers.dart');
       generatedContent = utf8.decode(writer.assets[rendererAsset]);
     });
 
@@ -144,7 +149,7 @@ class Baz {}
       expect(
           generatedContent,
           contains(
-              'static Map<String, Property<CT_>> propertyMap<CT_ extends Foo>() => {'));
+              'static Map<String, Property<CT_>> propertyMap<CT_ extends Foo>() =>'));
     });
 
     test('with a property map which references the superclass', () {
@@ -159,43 +164,45 @@ class Baz {}
 
     test('with a property map with a bool property', () {
       expect(generatedContent, contains('''
-        'b1': Property(
-          getValue: (CT_ c) => c.b1,
-          renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                  self.renderSimpleVariable(c, remainingNames, 'bool'),
-          getBool: (CT_ c) => c.b1 == true,
-        ),
+                'b1': Property(
+                  getValue: (CT_ c) => c.b1,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.b1 == true,
+                ),
 '''));
     });
 
     test('with a property map with an Iterable property', () {
       expect(generatedContent, contains('''
-        'l1': Property(
-          getValue: (CT_ c) => c.l1,
-          renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                  self.renderSimpleVariable(c, remainingNames, 'List<int>'),
-          renderIterable:
-              (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            return c.l1.map((e) => renderSimple(e, ast, r.template, parent: r));
-          },
-        ),
+                'l1': Property(
+                  getValue: (CT_ c) => c.l1,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'List<int>'),
+                  renderIterable:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    return c.l1.map(
+                        (e) => renderSimple(e, ast, r.template, parent: r));
+                  },
+                ),
 '''));
     });
 
     test('with a property map with a non-bool, non-Iterable property', () {
       expect(generatedContent, contains('''
-        's1': Property(
-          getValue: (CT_ c) => c.s1,
-          renderVariable:
-              (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                  self.renderSimpleVariable(c, remainingNames, 'String'),
-          isNullValue: (CT_ c) => c.s1 == null,
-          renderValue: (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-            return renderSimple(c.s1, ast, r.template, parent: r);
-          },
-        ),
+                's1': Property(
+                  getValue: (CT_ c) => c.s1,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'String'),
+                  isNullValue: (CT_ c) => c.s1 == null,
+                  renderValue:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    return renderSimple(c.s1, ast, r.template, parent: r);
+                  },
+                ),
 '''));
     });
   });
@@ -217,7 +224,7 @@ import 'package:mustachio/annotations.dart';
     expect(renderersLibrary.getTopLevelFunction('renderBar'), isNotNull);
     expect(renderersLibrary.getType('_Renderer_Foo'), isNotNull);
     expect(renderersLibrary.getType('_Renderer_Bar'), isNotNull);
-  }, timeout: Timeout.factor(2));
+  });
 
   group('builds a renderer class for a generic type', () {
     String generatedContent;
@@ -238,7 +245,7 @@ class Baz {}
 library foo;
 import 'package:mustachio/annotations.dart';
 ''');
-      var rendererAsset = AssetId.parse('foo|lib/foo.renderers.dart');
+      var rendererAsset = AssetId('foo', 'lib/foo.renderers.dart');
       generatedContent = utf8.decode(writer.assets[rendererAsset]);
     });
 

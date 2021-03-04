@@ -1,3 +1,5 @@
+// @dart=2.9
+
 class A {
   /// A link to [AB.fromMap], [fromMap], and [AB] and [A].
   factory A.fromMap(Map<String, dynamic> map) => A._A();

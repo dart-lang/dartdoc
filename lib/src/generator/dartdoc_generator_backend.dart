@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:dartdoc/dartdoc.dart';
+import 'package:dartdoc/options.dart';
 import 'package:dartdoc/src/generator/generator_frontend.dart';
 import 'package:dartdoc/src/generator/generator_utils.dart' as generator_util;
 import 'package:dartdoc/src/generator/template_data.dart';
@@ -18,6 +19,7 @@ import 'package:path/path.dart' as path show Context;
 class DartdocGeneratorBackendOptions implements TemplateOptions {
   @override
   final String relCanonicalPrefix;
+
   @override
   final String toolVersion;
 
@@ -28,20 +30,35 @@ class DartdocGeneratorBackendOptions implements TemplateOptions {
   @override
   final bool useBaseHref;
 
+  @override
+  final String customHeaderContent;
+
+  @override
+  final String customFooterContent;
+
+  @override
+  final String customInnerFooterText;
+
   DartdocGeneratorBackendOptions.fromContext(
       DartdocGeneratorOptionContext context)
       : relCanonicalPrefix = context.relCanonicalPrefix,
         toolVersion = dartdocVersion,
         favicon = context.favicon,
         prettyIndexJson = context.prettyIndexJson,
-        useBaseHref = context.useBaseHref;
+        useBaseHref = context.useBaseHref,
+        customHeaderContent = context.header,
+        customFooterContent = context.footer,
+        customInnerFooterText = context.footerText;
 
-  DartdocGeneratorBackendOptions(
-      {this.relCanonicalPrefix,
-      this.toolVersion,
-      this.favicon,
-      this.prettyIndexJson = false,
-      this.useBaseHref = false});
+  DartdocGeneratorBackendOptions._defaults()
+      : relCanonicalPrefix = null,
+        toolVersion = null,
+        favicon = null,
+        prettyIndexJson = false,
+        useBaseHref = false,
+        customHeaderContent = '',
+        customFooterContent = '',
+        customInnerFooterText = '';
 }
 
 class SidebarGenerator<T extends Documentable> {
@@ -67,7 +84,7 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
 
   DartdocGeneratorBackend(
       DartdocGeneratorBackendOptions options, this.templates, this._pathContext)
-      : options = options ?? DartdocGeneratorBackendOptions(),
+      : options = options ?? DartdocGeneratorBackendOptions._defaults(),
         sidebarForContainer =
             SidebarGenerator(templates.sidebarContainerTemplate),
         sidebarForLibrary = SidebarGenerator(templates.sidebarLibraryTemplate);
@@ -86,7 +103,7 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
   @override
   void generateCategoryJson(
       FileWriter writer, List<Categorization> categories) {
-    var json = '';
+    var json = '[]';
     if (categories.isNotEmpty) {
       json = generator_util.generateCategoryJson(
           categories, options.prettyIndexJson);
@@ -95,7 +112,7 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
       }
     }
 
-    writer.write(_pathContext.join('categories.json'), '${json}\n');
+    writer.write(_pathContext.join('categories.json'), '$json\n');
   }
 
   @override
@@ -105,7 +122,7 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
     if (!options.useBaseHref) {
       json = json.replaceAll(htmlBasePlaceholder, '');
     }
-    writer.write(_pathContext.join('index.json'), '${json}\n');
+    writer.write(_pathContext.join('index.json'), '$json\n');
   }
 
   @override

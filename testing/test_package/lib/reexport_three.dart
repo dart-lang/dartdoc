@@ -1,3 +1,5 @@
+// @dart=2.9
+
 library reexport_three;
 
 // Test show/hide handling.

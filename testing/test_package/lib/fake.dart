@@ -44,13 +44,16 @@
 /// * <http://myfakepackage.com/buthidethisone>
 ///
 /// [pkg]: http://example.org
+
+// @dart=2.9
+
 library fake;
 
 import 'dart:async';
 import 'dart:collection';
 // Make sure dartdoc ignores invalid prefixes imports (#1896)
 // ignore: uri_does_not_exist
-import 'dart:json' as invalidPrefix;
+//import 'dart:json' as invalidPrefix;
 import 'package:meta/meta.dart' show Required;
 import 'csspub.dart' as css;
 import 'csspub.dart' as renamedLib2;
@@ -329,9 +332,9 @@ class NotAMixin {
   String get superString => "A string that's clearly important";
 }
 
-class AMixinCallingSuper extends NotAMixin {
+class AMixinCallingSuper extends Object {
   @override
-  String get superString => "${super.superString} but not as important as this";
+  String get superString => "${super.toString()} but not as important as this";
 }
 
 /// I am a new style mixin using the new mixin syntax.
@@ -503,7 +506,7 @@ class ImplicitProperties {
 ///
 /// Or rather, dartdoc used to think they didn't exist.  Check the variations
 /// on inheritance and overrides here.
-class ClassWithUnusualProperties extends ImplicitProperties {
+abstract class ClassWithUnusualProperties extends ImplicitProperties {
   /// This getter is documented, so we should see a read-only property here.
   @override
   String get documentedPartialFieldInSubclassOnly => "overridden getter";
@@ -553,9 +556,6 @@ class ClassWithUnusualProperties extends ImplicitProperties {
 
   /// This property has some docs, too.
   final Set finalProperty = Set();
-
-  /// This property has docs.
-  abstract Set abstractProperty;
 
   Map implicitReadWrite;
 
@@ -1230,7 +1230,7 @@ class _Super5 implements _Super2 {}
 class Super6 implements _Super5 {}
 
 
-abstract class IntermediateAbstract implements Object {
+abstract class IntermediateAbstract extends Object {
   /// This is an override.
   @override
   bool operator==(Object other) {}

@@ -13,6 +13,7 @@ import 'dart:convert';
 import 'dart:io' show exitCode, stderr;
 
 import 'package:analyzer/file_system/file_system.dart';
+import 'package:dartdoc/options.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/generator/empty_generator.dart';
 import 'package:dartdoc/src/generator/generator.dart';
@@ -40,14 +41,6 @@ const String programName = 'dartdoc';
 // Update when pubspec version changes by running `pub run build_runner build`
 const String dartdocVersion = packageVersion;
 
-/// Helper class that consolidates option contexts for instantiating generators.
-class DartdocGeneratorOptionContext extends DartdocOptionContext
-    with GeneratorContext {
-  DartdocGeneratorOptionContext(
-      DartdocOptionSet optionSet, Folder dir, ResourceProvider resourceProvider)
-      : super(optionSet, dir, resourceProvider);
-}
-
 class DartdocFileWriter implements FileWriter {
   final String outputDir;
   @override
@@ -68,7 +61,7 @@ class DartdocFileWriter implements FileWriter {
     if (!allowOverwrite) {
       if (_fileElementMap.containsKey(outFile)) {
         assert(element != null,
-            'Attempted overwrite of ${outFile} without corresponding element');
+            'Attempted overwrite of $outFile without corresponding element');
         var originalElement = _fileElementMap[outFile];
         Iterable<Warnable> referredFrom =
             originalElement != null ? [originalElement] : null;
@@ -183,7 +176,7 @@ class Dartdoc {
     packageGraph = await packageBuilder.buildPackageGraph();
     seconds = _stopwatch.elapsedMilliseconds / 1000.0;
     var libs = packageGraph.libraries.length;
-    logInfo("Initialized dartdoc with ${libs} librar${libs == 1 ? 'y' : 'ies'} "
+    logInfo("Initialized dartdoc with $libs librar${libs == 1 ? 'y' : 'ies'} "
         'in ${seconds.toStringAsFixed(1)} seconds');
     _stopwatch.reset();
 
@@ -206,13 +199,13 @@ class Dartdoc {
     if (warnings == 0 && errors == 0) {
       logInfo('no issues found');
     } else {
-      logWarning("Found ${warnings} ${pluralize('warning', warnings)} "
-          "and ${errors} ${pluralize('error', errors)}.");
+      logWarning("Found $warnings ${pluralize('warning', warnings)} "
+          "and $errors ${pluralize('error', errors)}.");
     }
 
     seconds = _stopwatch.elapsedMilliseconds / 1000.0;
     libs = packageGraph.localPublicLibraries.length;
-    logInfo("Documented ${libs} public librar${libs == 1 ? 'y' : 'ies'} "
+    logInfo("Documented $libs public librar${libs == 1 ? 'y' : 'ies'} "
         'in ${seconds.toStringAsFixed(1)} seconds');
     return DartdocResults(config.topLevelPackageMeta, packageGraph, outputDir);
   }
@@ -489,10 +482,10 @@ class Dartdoc {
       },
       (e, chain) {
         if (e is DartdocFailure) {
-          stderr.writeln('\ndartdoc failed: ${e}.');
+          stderr.writeln('\ndartdoc failed: $e.');
           exitCode = 1;
         } else {
-          stderr.writeln('\ndartdoc failed: ${e}\n${chain}');
+          stderr.writeln('\ndartdoc failed: $e\n$chain');
           exitCode = 255;
         }
       },

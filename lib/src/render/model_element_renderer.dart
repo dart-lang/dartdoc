@@ -19,7 +19,7 @@ class ModelElementRendererHtml extends ModelElementRenderer {
   @override
   String renderLinkedName(ModelElement modelElement) {
     var cssClass = modelElement.isDeprecated ? ' class="deprecated"' : '';
-    return '<a${cssClass} href="${modelElement.href}">${modelElement.name}</a>';
+    return '<a$cssClass href="${modelElement.href}">${modelElement.name}</a>';
   }
 
   @override
@@ -61,7 +61,7 @@ class ModelElementRendererHtml extends ModelElementRenderer {
     return '''
 
 <div style="position: relative;">
-  <div id="${overlayId}"
+  <div id="$overlayId"
        onclick="var $uniqueId = document.getElementById('$uniqueId');
                 if ($uniqueId.paused) {
                   $uniqueId.play();

@@ -1,5 +1,8 @@
 /// a library. testing string escaping: `var s = 'a string'` <cool>
 /// {@category Real Libraries}
+
+// @dart=2.9
+
 library ex;
 
 import 'dart:async';
@@ -198,7 +201,7 @@ class Apple {
   /**
    * fieldWithTypedef docs here
    */
-  final ParameterizedTypedef<bool> fieldWithTypedef;
+  final ParameterizedTypedef<bool> fieldWithTypedef = (bool a, int b) => 'hello, ${a} ${b}';
 }
 
 /// Extension on Apple
@@ -301,7 +304,7 @@ class Dog implements Cat, E {
   @deprecated
   int deprecatedField;
 
-  final int aFinalField;
+  final int aFinalField = 42;
 
   static const String aStaticConstField = "A Constant Dog";
 
@@ -309,7 +312,7 @@ class Dog implements Cat, E {
   static const ShortName aName = ExtendedShortName("hello there");
 
   @protected
-  final int aProtectedFinalField;
+  final int aProtectedFinalField = 84;
 
   Dog() {
     testMethod([]);
@@ -347,11 +350,11 @@ class Dog implements Cat, E {
   }
 
   /// A tasty static + final property.
-  static final int somethingTasty;
+  static final int somethingTasty = 12;
 
   static int __staticbacker = 0;
   static int get staticGetterSetter => __staticbacker;
-  static int set staticGetterSetter(x) {
+  static void set staticGetterSetter(x) {
     __staticbacker = x;
   }
 
