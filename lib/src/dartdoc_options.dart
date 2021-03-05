@@ -1098,8 +1098,8 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
     _OptionValueWithContext<Object> value;
     while (true) {
       value = _valueAtFromFile(dir);
-      if (value != null || dir.parent == null) break;
-      dir = dir.parent;
+      if (value != null || dir.isRoot) break;
+      dir = dir.parent2;
     }
     return value;
   }
@@ -1112,8 +1112,8 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
     while (true) {
       var tmpValue = _valueAtFromFile(dir);
       if (tmpValue != null) value = tmpValue;
-      dir = dir.parent;
-      if (dir == null) break;
+      if (dir.isRoot) break;
+      dir = dir.parent2;
     }
     return value;
   }
@@ -1192,10 +1192,10 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
           dartdocOptionsFile = resourceProvider.getFile(resourceProvider
               .pathContext
               .join(dir.path, 'dartdoc_options.yaml'));
-          if (dartdocOptionsFile.exists || dir.parent == null) {
+          if (dartdocOptionsFile.exists || dir.isRoot) {
             break;
           }
-          dir = dir.parent;
+          dir = dir.parent2;
           canonicalPaths
               .add(resourceProvider.pathContext.canonicalize(dir.path));
         }
@@ -1402,7 +1402,7 @@ class DartdocOptionContext extends DartdocOptionContextBase
     } else {
       context = resourceProvider.getFolder(resourceProvider.pathContext
           .canonicalize(
-              resource is File ? resource.parent.path : resource.path));
+              resource is File ? resource.parent2.path : resource.path));
     }
   }
 

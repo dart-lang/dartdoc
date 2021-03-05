@@ -70,7 +70,7 @@ class FunctionTypedef extends Typedef {
 
   @override
   List<TypeParameterElement> get genericTypeParameters {
-    var aliasedTypeElement = aliasedType.element;
+    var aliasedTypeElement = aliasedType.aliasElement;
     if (aliasedTypeElement is FunctionTypedElement) {
       return aliasedTypeElement.typeParameters;
     }

@@ -34,11 +34,7 @@ abstract class ElementType extends Privacy {
     } else {
       var element = ModelElement.fromElement(f.element, packageGraph);
       assert(f is ParameterizedType || f is TypeParameterType);
-      // TODO(jcollins-g): Remove reference to f.element.enclosingElement after
-      // analyzer 0.41.
-      var isGenericTypeAlias =
-          f.element.enclosingElement is FunctionTypeAliasElement ||
-              f.element is FunctionTypeAliasElement;
+      var isGenericTypeAlias = f.aliasElement != null;
       if (f is FunctionType) {
         assert(f is ParameterizedType);
         if (isGenericTypeAlias) {
@@ -366,13 +362,13 @@ abstract class CallableElementTypeMixin implements ParameterizedElementType {
       Iterable<DartType> dartTypeArguments;
       if (returnedFrom is FunctionTypeElementType) {
         if (type.typeFormals.isEmpty) {
-          dartTypeArguments = type.typeArguments;
+          dartTypeArguments = type.aliasArguments;
         } else {
           dartTypeArguments = type.typeFormals.map(_legacyTypeParameterType);
         }
       } else {
         if (type.typeFormals.isEmpty) {
-          dartTypeArguments = type.typeArguments;
+          dartTypeArguments = type.aliasArguments;
         } else if (returnedFrom != null &&
             returnedFrom.type.element is GenericFunctionTypeElement) {
           _typeArguments = (returnedFrom as DefinedElementType).typeArguments;
@@ -448,7 +444,7 @@ class CallableGenericTypeAliasElementType extends ParameterizedElementType
   @override
   ModelElement get returnElement {
     _returnElement ??=
-        ModelElement.fromElement(type.element.enclosingElement, packageGraph);
+        ModelElement.fromElement(type.aliasElement.enclosingElement, packageGraph);
     return _returnElement;
   }
 
