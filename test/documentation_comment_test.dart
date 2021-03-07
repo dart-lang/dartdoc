@@ -844,6 +844,67 @@ Text.
               'Supported YouTube URLs have the following format: '
               'https://www.youtube.com/watch?v=oHg5SJYRHA0.'));
     });
+
+    test('warns when fenced code block does not specify language', () async {
+      await libraryModel.processComment('''
+/// ```
+/// void main() {}
+/// ```
+''');
+
+      expect(
+          packageGraph.packageWarningCounter.hasWarning(
+              libraryModel,
+              PackageWarning.missingCodeBlockLanguage,
+              'A fenced code block in Markdown should have a language specified.'),
+          isTrue);
+    });
+
+    test('warns when squiggly fenced code block does not specify language',
+        () async {
+      await libraryModel.processComment('''
+/// ~~~
+/// void main() {}
+/// ~~~
+''');
+
+      expect(
+          packageGraph.packageWarningCounter.hasWarning(
+              libraryModel,
+              PackageWarning.missingCodeBlockLanguage,
+              'A fenced code block in Markdown should have a language specified.'),
+          isTrue);
+    });
+
+    test('does not warn when fenced code block does specify language',
+        () async {
+      await libraryModel.processComment('''
+/// ```dart
+/// void main() {}
+/// ```
+''');
+
+      expect(
+          packageGraph.packageWarningCounter.hasWarning(
+              libraryModel,
+              PackageWarning.missingCodeBlockLanguage,
+              'A fenced code block in Markdown should have a language specified.'),
+          isFalse);
+    });
+
+    test('does not warn when fenced block is not closed', () async {
+      await libraryModel.processComment('''
+/// ```
+/// A not closed fenced code block
+''');
+
+      expect(
+          packageGraph.packageWarningCounter.hasWarning(
+              libraryModel,
+              PackageWarning.missingCodeBlockLanguage,
+              'A fenced code block in Markdown should have a language specified.'),
+          isFalse);
+    });
   }, onPlatform: {
     'windows': Skip('These tests do not work on Windows (#2446)')
   });

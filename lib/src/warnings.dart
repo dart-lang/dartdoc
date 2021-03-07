@@ -306,6 +306,7 @@ enum PackageWarning {
   unresolvedExport,
   missingConstantConstructor,
   missingExampleFile,
+  missingCodeBlockLanguage,
 }
 
 /// Used to declare defaults for a particular package warning.
