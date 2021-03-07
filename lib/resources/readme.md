@@ -1,6 +1,6 @@
 # highlight.js
 
-Generated from https://highlightjs.org/download/ on 2020-12-30
+Generated from https://highlightjs.org/download/ on 2021-03-07
 
 Included languages:
 
@@ -14,6 +14,7 @@ Included languages:
 * kotlin
 * markdown
 * objective-c
+* plain text  
 * shell
 * swift
 * yaml
