@@ -452,6 +452,9 @@ class PackageGraph {
       case PackageWarning.missingExampleFile:
         warningMessage = 'example file not found: $message';
         break;
+      case PackageWarning.missingCodeBlockLanguage:
+        warningMessage = 'missing code block language: $message';
+        break;
     }
 
     var messageParts = <String>[warningMessage];
