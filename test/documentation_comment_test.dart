@@ -482,7 +482,7 @@ End text.'''));
 
     test('processes @example with file', () async {
       projectRoot.getChildAssumingFile('abc.md').writeAsStringSync('''
-```
+```plaintext
 Code snippet
 ```
 ''');
@@ -498,7 +498,7 @@ Code snippet
       expect(doc, equals('''
 Text.
 
-```
+```plaintext
 Code snippet
 ```
 
