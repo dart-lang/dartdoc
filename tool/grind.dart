@@ -719,7 +719,7 @@ Future<void> serveFlutterDocs() async {
 @Task('Serve language test directory docs on port 8004')
 @Depends(buildLanguageTestDocs)
 Future<void> serveLanguageTestDocs() async {
-  log('launching dhttpd on port 8004 for Flutter');
+  log('launching dhttpd on port 8004 for language tests');
   var launcher = SubprocessLauncher('serve-language-test-docs');
   await launcher.runStreamed(sdkBin('pub'), ['get']);
   await launcher.runStreamed(sdkBin('pub'), [
