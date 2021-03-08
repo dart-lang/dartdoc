@@ -856,7 +856,7 @@ Text.
           packageGraph.packageWarningCounter.hasWarning(
               libraryModel,
               PackageWarning.missingCodeBlockLanguage,
-              'A fenced code block in Markdown should have a language specified.'),
+              'A fenced code block in Markdown should have a language specified'),
           isTrue);
     });
 
@@ -872,7 +872,7 @@ Text.
           packageGraph.packageWarningCounter.hasWarning(
               libraryModel,
               PackageWarning.missingCodeBlockLanguage,
-              'A fenced code block in Markdown should have a language specified.'),
+              'A fenced code block in Markdown should have a language specified'),
           isTrue);
     });
 
@@ -888,7 +888,7 @@ Text.
           packageGraph.packageWarningCounter.hasWarning(
               libraryModel,
               PackageWarning.missingCodeBlockLanguage,
-              'A fenced code block in Markdown should have a language specified.'),
+              'A fenced code block in Markdown should have a language specified'),
           isFalse);
     });
 
@@ -902,7 +902,7 @@ Text.
           packageGraph.packageWarningCounter.hasWarning(
               libraryModel,
               PackageWarning.missingCodeBlockLanguage,
-              'A fenced code block in Markdown should have a language specified.'),
+              'A fenced code block in Markdown should have a language specified'),
           isFalse);
     });
   }, onPlatform: {

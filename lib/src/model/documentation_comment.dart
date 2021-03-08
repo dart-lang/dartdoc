@@ -697,7 +697,7 @@ mixin DocumentationComment
       if (result.isEmpty) {
         warn(PackageWarning.missingCodeBlockLanguage,
             message:
-                'A fenced code block in Markdown should have a language specified.');
+                'A fenced code block in Markdown should have a language specified');
       }
     });
   }
