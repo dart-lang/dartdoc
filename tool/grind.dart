@@ -759,8 +759,9 @@ $analyzerOptions
     ..createSync();
   var languageTestDir =
       Directory(path.context.resolveTildePath(languageTestPath));
-  if (!languageTestDir.existsSync())
+  if (!languageTestDir.existsSync()) {
     fail('language test dir does not exist:  $languageTestDir');
+  }
 
   for (var entry in languageTestDir.listSync(recursive: true)) {
     if (entry is File &&
