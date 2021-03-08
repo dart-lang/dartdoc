@@ -79,7 +79,7 @@
 ## Typedefs
 
 {{#library.publicTypedefsSorted}}
-{{>callable}}
+{{>typedef}}
 
 {{/library.publicTypedefsSorted}}
 {{/library.hasPublicTypedefs}}

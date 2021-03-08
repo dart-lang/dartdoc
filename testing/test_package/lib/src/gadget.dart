@@ -8,5 +8,4 @@ class _GadgetBase {
   int get gadgetGetter => 5;
 }
 
-
 class Gadget extends _GadgetBase {}

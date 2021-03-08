@@ -201,7 +201,8 @@ class Apple {
   /**
    * fieldWithTypedef docs here
    */
-  final ParameterizedTypedef<bool> fieldWithTypedef = (bool a, int b) => 'hello, ${a} ${b}';
+  final ParameterizedTypedef<bool> fieldWithTypedef =
+      (bool a, int b) => 'hello, ${a} ${b}';
 }
 
 /// Extension on Apple

@@ -104,9 +104,9 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
       compilationUnit.enums,
       compilationUnit.extensions,
       compilationUnit.functions,
-      compilationUnit.functionTypeAliases,
       compilationUnit.mixins,
       compilationUnit.topLevelVariables,
+      compilationUnit.typeAliases,
       compilationUnit.types,
     ]);
   }
@@ -493,7 +493,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   @override
   List<Typedef> get typedefs {
     _typedefs ??= _exportedAndLocalElements
-        .whereType<FunctionTypeAliasElement>()
+        .whereType<TypeAliasElement>()
         .map((e) => ModelElement.from(e, this, packageGraph) as Typedef)
         .toList(growable: false);
     return _typedefs;

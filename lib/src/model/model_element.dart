@@ -8,6 +8,7 @@ library dartdoc.models;
 import 'dart:convert';
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/type.dart' show FunctionType;
 import 'package:analyzer/source/line_info.dart';
 import 'package:analyzer/src/dart/element/element.dart';
 import 'package:analyzer/src/dart/element/member.dart'
@@ -333,7 +334,10 @@ abstract class ModelElement extends Canonicalization
       assert(e.enclosingElement.name != '');
       return ModelFunctionTypedef(e, library, packageGraph);
     }
-    if (e is FunctionTypeAliasElement) {
+    if (e is TypeAliasElement) {
+      if (e.aliasedType is FunctionType) {
+        return FunctionTypedef(e, library, packageGraph);
+      }
       return Typedef(e, library, packageGraph);
     }
     if (e is ConstructorElement) {
@@ -543,10 +547,8 @@ abstract class ModelElement extends Canonicalization
     return allFeatures.join(', ');
   }
 
-  bool get canHaveParameters =>
-      element is ExecutableElement ||
-      element is FunctionTypedElement ||
-      element is FunctionTypeAliasElement;
+  bool get isCallable =>
+      element is FunctionTypedElement || element is FunctionTypeAliasElement;
 
   ModelElement buildCanonicalModelElement() {
     Container preferredClass;
@@ -998,9 +1000,9 @@ abstract class ModelElement extends Canonicalization
         }
       } else if (element is ClassElement) {
         _modelType = ElementType.from(element.thisType, library, packageGraph);
-      } else if (element is FunctionTypeAliasElement) {
+      } else if (element is TypeAliasElement) {
         _modelType =
-            ElementType.from(element.function.type, library, packageGraph);
+            ElementType.from(element.aliasedType, library, packageGraph);
       } else if (element is FunctionTypedElement) {
         _modelType = ElementType.from(element.type, library, packageGraph);
       } else if (element is ParameterElement) {
@@ -1050,7 +1052,7 @@ abstract class ModelElement extends Canonicalization
           (this as GetterSetterCombo).setter != null) {
         newParameters.addAll((this as GetterSetterCombo).setter.parameters);
       } else {
-        if (canHaveParameters) newParameters.addAll(parameters);
+        if (isCallable) newParameters.addAll(parameters);
       }
       while (newParameters.isNotEmpty) {
         recursedParameters.addAll(newParameters);
@@ -1070,7 +1072,7 @@ abstract class ModelElement extends Canonicalization
   path.Context get pathContext => packageGraph.resourceProvider.pathContext;
 
   List<Parameter> get parameters {
-    if (!canHaveParameters) {
+    if (!isCallable) {
       throw StateError('$element cannot have parameters');
     }
 

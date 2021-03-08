@@ -273,7 +273,7 @@ abstract class DefinedElementType extends ElementType {
 
   @override
   List<Parameter> get parameters =>
-      element.canHaveParameters ? element.parameters : [];
+      element.isCallable ? element.parameters : [];
 
   ModelElement get returnElement => element;
   ElementType _returnType;

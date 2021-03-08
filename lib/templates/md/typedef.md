@@ -9,7 +9,7 @@
 {{/self}}
 
 {{#typeDef}}
-{{>callable_multiline}}
+{{>typedef_multiline}}
 
 {{>documentation}}
 
