@@ -42,8 +42,8 @@ final PackageMetaProvider pubPackageMetaProvider = PackageMetaProvider(
     PhysicalResourceProvider.INSTANCE
         .getFile(PhysicalResourceProvider.INSTANCE.pathContext
             .absolute(Platform.resolvedExecutable))
-        .parent
-        .parent);
+        .parent2
+        .parent2);
 
 /// Sets the supported way of constructing [PackageMeta] objects.
 ///
@@ -177,14 +177,14 @@ abstract class PubPackageMeta extends PackageMeta {
 
   static final _sdkDirParent = <String, Folder>{};
 
-  /// If [dir] is inside a Dart SDK, returns the directory of the SDK, and `null`
+  /// If [folder] is inside a Dart SDK, returns the directory of the SDK, and `null`
   /// otherwise.
-  static Folder sdkDirParent(Folder dir, ResourceProvider resourceProvider) {
+  static Folder sdkDirParent(Folder folder, ResourceProvider resourceProvider) {
     var pathContext = resourceProvider.pathContext;
-    var dirPathCanonical = pathContext.canonicalize(dir.path);
+    var dirPathCanonical = pathContext.canonicalize(folder.path);
     if (!_sdkDirParent.containsKey(dirPathCanonical)) {
       _sdkDirParent[dirPathCanonical] = null;
-      while (dir.exists) {
+      for (var dir in folder.withAncestors) {
         if (_sdkDirFilePaths.every((List<String> l) {
           return l.any((f) =>
               resourceProvider.getFile(pathContext.join(dir.path, f)).exists);
@@ -192,8 +192,6 @@ abstract class PubPackageMeta extends PackageMeta {
           _sdkDirParent[dirPathCanonical] = dir;
           break;
         }
-        dir = dir.parent;
-        if (dir == null) break;
       }
     }
     return _sdkDirParent[dirPathCanonical];
@@ -210,54 +208,50 @@ abstract class PubPackageMeta extends PackageMeta {
         resourceProvider
             .getFile(resourceProvider.pathContext
                 .canonicalize(libraryElement.source.fullName))
-            .parent,
+            .parent2,
         resourceProvider);
   }
 
   static PubPackageMeta fromFilename(
       String filename, ResourceProvider resourceProvider) {
     return PubPackageMeta.fromDir(
-        resourceProvider.getFile(filename).parent, resourceProvider);
+        resourceProvider.getFile(filename).parent2, resourceProvider);
   }
 
   /// This factory is guaranteed to return the same object for any given
   /// [dir.absolute.path].  Multiple [dir.absolute.path]s will resolve to the
   /// same object if they are part of the same package.  Returns null
   /// if the directory is not part of a known package.
-  static PubPackageMeta fromDir(Folder dir, ResourceProvider resourceProvider) {
+  static PubPackageMeta fromDir(
+      Folder folder, ResourceProvider resourceProvider) {
     var pathContext = resourceProvider.pathContext;
-    var original = resourceProvider.getFolder(pathContext.absolute(dir.path));
-    dir = original;
+    var original =
+        resourceProvider.getFolder(pathContext.absolute(folder.path));
+    folder = original;
     if (!original.exists) {
       throw PackageMetaFailure(
           'fatal error: unable to locate the input directory at ${original.path}.');
     }
 
-    if (!_packageMetaCache.containsKey(dir.path)) {
+    if (!_packageMetaCache.containsKey(folder.path)) {
       PackageMeta packageMeta;
       // There are pubspec.yaml files inside the SDK.  Ignore them.
-      var parentSdkDir = sdkDirParent(dir, resourceProvider);
+      var parentSdkDir = sdkDirParent(folder, resourceProvider);
       if (parentSdkDir != null) {
         packageMeta = _SdkMeta(parentSdkDir, resourceProvider);
       } else {
-        while (dir.exists) {
+        for (var dir in folder.withAncestors) {
           var pubspec = resourceProvider
               .getFile(pathContext.join(dir.path, 'pubspec.yaml'));
           if (pubspec.exists) {
             packageMeta = _FilePackageMeta(dir, resourceProvider);
             break;
           }
-          // Allow a package to be at root (possible in a Windows setting with
-          // drive letter mappings).
-          if (dir.parent == null) break;
-          // TODO(srawlins): or just... `.parent`?
-          dir =
-              resourceProvider.getFolder(pathContext.absolute(dir.parent.path));
         }
       }
-      _packageMetaCache[pathContext.absolute(dir.path)] = packageMeta;
+      _packageMetaCache[pathContext.absolute(folder.path)] = packageMeta;
     }
-    return _packageMetaCache[pathContext.absolute(dir.path)];
+    return _packageMetaCache[pathContext.absolute(folder.path)];
   }
 
   @override
@@ -317,10 +311,11 @@ class _FilePackageMeta extends PubPackageMeta {
       // a pub library to do this.
       // People could have a pub cache at root with Windows drive mappings.
       if (pathContext.split(pathContext.canonicalize(dir.path)).length >= 3) {
-        var pubCacheRoot = dir.parent.parent.parent?.path;
-        if (pubCacheRoot != null) {
-          var hosted = pathContext.canonicalize(dir.parent.parent.path);
-          var hostname = pathContext.canonicalize(dir.parent.path);
+        var pubCacheRoot = dir.parent2.parent2.parent2.path;
+        // Check for directory structure too close to root.
+        if (pubCacheRoot != dir.parent2.parent2.path) {
+          var hosted = pathContext.canonicalize(dir.parent2.parent2.path);
+          var hostname = pathContext.canonicalize(dir.parent2.path);
           if (pathContext.basename(hosted) == 'hosted' &&
               resourceProvider
                   .getFolder(pathContext.join(pubCacheRoot, '_temp'))

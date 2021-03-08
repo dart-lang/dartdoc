@@ -975,7 +975,7 @@ class PackageGraph {
       // might not be where the element was defined, which is what's important
       // for nodoc's semantics.  Looking up the defining element just to pull
       // a context is again, slow.
-      List<String> globs = config.optionSet['nodoc'].valueAt(file.parent);
+      List<String> globs = config.optionSet['nodoc'].valueAt(file.parent2);
       _configSetsNodocFor[fullName] = matchGlobs(globs, fullName);
     }
     return _configSetsNodocFor[fullName];

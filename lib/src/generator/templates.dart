@@ -42,6 +42,10 @@ const _partials_html = <String>[
   'source_code',
   'source_link',
   'sidebar_for_library',
+  'type',
+  'type_multiline',
+  'typedef',
+  'typedef_multiline',
   'accessor_getter',
   'accessor_setter',
 ];
@@ -66,6 +70,10 @@ const _partials_md = <String>[
   'property',
   'source_code',
   'source_link',
+  'type',
+  'type_multiline',
+  'typedef',
+  'typedef_multiline',
 ];
 
 abstract class _TemplatesLoader {

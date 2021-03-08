@@ -16,9 +16,25 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/special_elements.dart';
+import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
 import '../src/utils.dart' as utils;
+
+final String _platformVersionString = Platform.version.split(' ').first;
+final Version _platformVersion = Version.parse(_platformVersionString);
+
+final _testPackageGraphExperimentsMemo = AsyncMemoizer<PackageGraph>();
+Future<PackageGraph> get _testPackageGraphExperiments =>
+    _testPackageGraphExperimentsMemo.runOnce(() => utils.bootBasicPackage(
+            'testing/test_package_experiments',
+            pubPackageMetaProvider,
+            PhysicalPackageConfigProvider(),
+            additionalArguments: [
+              '--enable-experiment',
+              'non-nullable,nonfunction-type-aliases',
+              '--no-link-to-remote'
+            ]));
 
 final _testPackageGraphGinormousMemo = AsyncMemoizer<PackageGraph>();
 Future<PackageGraph> get _testPackageGraphGinormous =>
@@ -58,10 +74,48 @@ void main() {
     exit(1);
   }
 
+  final _generalizedTypedefsAllowed =
+      VersionRange(min: Version.parse('2.13.0-0'), includeMin: true);
   // Experimental features not yet enabled by default.  Move tests out of this
   // block when the feature is enabled by default.
   group('Experiments', () {
-    setUpAll(() async {});
+    group('generalized typedefs', () {
+      Library generalizedTypedefs;
+      Typedef T0, T1, T2, T3, T4, T5, T6, T7;
+
+      setUpAll(() async {
+        generalizedTypedefs = (await _testPackageGraphExperiments)
+            .libraries
+            .firstWhere((l) => l.name == 'generalized_typedefs');
+        T0 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T0');
+        T1 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T1');
+        T2 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T2');
+        T3 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T3');
+        T4 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T4');
+        T5 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T5');
+        T6 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T6');
+        T7 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T7');
+      });
+
+      void expectTypedefs(Typedef t, String modelTypeToString,
+          Iterable<String> genericParameters) {
+        expect(t.modelType.toString(), equals(modelTypeToString));
+        expect(t.genericTypeParameters.map((p) => p.toString()),
+            orderedEquals(genericParameters));
+      }
+
+      test('basic non-function typedefs work', () {
+        expectTypedefs(T0, 'void', []);
+        expectTypedefs(T1, 'Function', []);
+        expectTypedefs(T2, 'List<X>', ['out X']);
+        expectTypedefs(T3, 'Map<X, Y>', ['out X', 'out Y']);
+        expectTypedefs(T4, 'void Function()', []);
+        expectTypedefs(T5, 'X Function(X, {X name})', ['inout X']);
+        expectTypedefs(T6, 'X Function(Y, [Map<Y, Y>])', ['out X', 'in Y']);
+        expectTypedefs(T7, 'X Function(Y, [Map<Y, Y>])',
+            ['out X extends String', 'in Y extends List<X>']);
+      });
+    }, skip: (!_generalizedTypedefsAllowed.allows(_platformVersion)));
   });
 
   group('HTML Injection when allowed', () {

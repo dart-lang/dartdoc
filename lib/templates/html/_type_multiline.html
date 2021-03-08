@@ -1,0 +1,10 @@
+{{#hasAnnotations}}
+<div>
+  <ol class="annotation-list">
+    {{#annotations}}
+    <li>{{{.}}}</li>
+    {{/annotations}}
+  </ol>
+</div>
+{{/hasAnnotations}}
+{{>name_summary}}{{{genericParameters}}} = <span class="returntype"> {{{linkedReturnType}}}</span>

@@ -17,4 +17,3 @@ class C {
     dField = param * 8.854 * pow(10, -12);
   }
 }
-
