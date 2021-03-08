@@ -443,8 +443,8 @@ class CallableGenericTypeAliasElementType extends ParameterizedElementType
   ModelElement _returnElement;
   @override
   ModelElement get returnElement {
-    _returnElement ??=
-        ModelElement.fromElement(type.aliasElement.enclosingElement, packageGraph);
+    _returnElement ??= ModelElement.fromElement(
+        type.aliasElement.enclosingElement, packageGraph);
     return _returnElement;
   }
 

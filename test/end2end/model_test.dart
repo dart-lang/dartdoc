@@ -3656,7 +3656,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     Class TypedefUsingClass;
 
     setUpAll(() {
-      processMessage = exLibrary.typedefs.firstWhere((t) => t.name == 'processMessage');
+      processMessage =
+          exLibrary.typedefs.firstWhere((t) => t.name == 'processMessage');
       generic =
           fakeLibrary.typedefs.firstWhere((t) => t.name == 'NewGenericTypedef');
 
@@ -3738,7 +3739,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     // inspects its element member. Find a better way when we start to isolate
     // renderer tests.
     test('TypedefRendererHtml renders genericParameters', () {
-      expect(TypedefRendererHtml().renderGenericParameters(processMessage), equals('&lt;<wbr><span class="type-parameter">T</span>&gt;'));
+      expect(TypedefRendererHtml().renderGenericParameters(processMessage),
+          equals('&lt;<wbr><span class="type-parameter">T</span>&gt;'));
       expect(TypedefRendererHtml().renderGenericParameters(generic),
           equals('&lt;<wbr><span class="type-parameter">S</span>&gt;'));
     });
