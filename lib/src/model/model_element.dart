@@ -330,7 +330,7 @@ abstract class ModelElement extends Canonicalization
     if (e is FunctionElement) {
       return ModelFunction(e, library, packageGraph);
     } else if (e is GenericFunctionTypeElement) {
-      assert(e.enclosingElement is FunctionTypeAliasElement);
+      assert(e.enclosingElement is TypeAliasElement);
       assert(e.enclosingElement.name != '');
       return ModelFunctionTypedef(e, library, packageGraph);
     }
@@ -547,8 +547,11 @@ abstract class ModelElement extends Canonicalization
     return allFeatures.join(', ');
   }
 
+  // True if this is a function, or if it is an type alias to a function.
   bool get isCallable =>
-      element is FunctionTypedElement || element is FunctionTypeAliasElement;
+      element is FunctionTypedElement ||
+      (element is TypeAliasElement &&
+          (element as TypeAliasElement).aliasedElement is FunctionTypedElement);
 
   ModelElement buildCanonicalModelElement() {
     Container preferredClass;
@@ -1079,28 +1082,31 @@ abstract class ModelElement extends Canonicalization
     if (_parameters == null) {
       List<ParameterElement> params;
 
-      if (element is ExecutableElement) {
-        if (_originalMember != null) {
-          assert(_originalMember is ExecutableMember);
-          params = (_originalMember as ExecutableMember).parameters;
-        } else {
-          params = (element as ExecutableElement).parameters;
+      if (element is TypeAliasElement) {
+        _parameters = ModelElement.fromElement(
+                (element as TypeAliasElement).aliasedElement, packageGraph)
+            .parameters;
+      } else {
+        if (element is ExecutableElement) {
+          if (_originalMember != null) {
+            assert(_originalMember is ExecutableMember);
+            params = (_originalMember as ExecutableMember).parameters;
+          } else {
+            params = (element as ExecutableElement).parameters;
+          }
         }
-      }
-      if (params == null && element is FunctionTypedElement) {
-        if (_originalMember != null) {
-          params = (_originalMember as dynamic).parameters;
-        } else {
-          params = (element as FunctionTypedElement).parameters;
+        if (params == null && element is FunctionTypedElement) {
+          if (_originalMember != null) {
+            params = (_originalMember as dynamic).parameters;
+          } else {
+            params = (element as FunctionTypedElement).parameters;
+          }
         }
+        _parameters = UnmodifiableListView(params
+            .map(
+                (p) => ModelElement.from(p, library, packageGraph) as Parameter)
+            .toList(growable: false));
       }
-      if (params == null && element is FunctionTypeAliasElement) {
-        params = (element as FunctionTypeAliasElement).function.parameters;
-      }
-
-      _parameters = UnmodifiableListView(params
-          .map((p) => ModelElement.from(p, library, packageGraph) as Parameter)
-          .toList(growable: false));
     }
     return _parameters;
   }

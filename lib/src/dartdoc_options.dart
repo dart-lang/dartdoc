@@ -1094,12 +1094,11 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
 
   /// Searches all dartdoc_options files through parent directories, starting at
   /// [dir], for the option and returns one once found.
-  _OptionValueWithContext<Object> _valueAtFromFilesFirstFound(Folder dir) {
+  _OptionValueWithContext<Object> _valueAtFromFilesFirstFound(Folder folder) {
     _OptionValueWithContext<Object> value;
-    while (true) {
+    for (var dir in folder.withAncestors) {
       value = _valueAtFromFile(dir);
-      if (value != null || dir.parent == null) break;
-      dir = dir.parent;
+      if (value != null) break;
     }
     return value;
   }
@@ -1107,13 +1106,11 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
   /// Searches all dartdoc_options files for the option, and returns the value
   /// in the top-most parent directory `dartdoc_options.yaml` file it is
   /// mentioned in.
-  _OptionValueWithContext<Object> _valueAtFromFilesLastFound(Folder dir) {
+  _OptionValueWithContext<Object> _valueAtFromFilesLastFound(Folder folder) {
     _OptionValueWithContext<Object> value;
-    while (true) {
+    for (var dir in folder.withAncestors) {
       var tmpValue = _valueAtFromFile(dir);
       if (tmpValue != null) value = tmpValue;
-      dir = dir.parent;
-      if (dir == null) break;
     }
     return value;
   }
@@ -1179,35 +1176,32 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
         definingFile: 'dartdoc_options.yaml');
   }
 
-  _YamlFileData _yamlAtDirectory(Folder dir) {
-    var canonicalPaths = <String>[
-      resourceProvider.pathContext.canonicalize(dir.path)
-    ];
-    if (!_yamlAtCanonicalPathCache.containsKey(canonicalPaths.first)) {
-      var yamlData = _YamlFileData({}, _directoryCurrentPath);
-      if (dir.exists) {
-        File dartdocOptionsFile;
+  _YamlFileData _yamlAtDirectory(Folder folder) {
+    var canonicalPaths = <String>[];
+    var yamlData = _YamlFileData({}, _directoryCurrentPath);
 
-        while (true) {
-          dartdocOptionsFile = resourceProvider.getFile(resourceProvider
-              .pathContext
-              .join(dir.path, 'dartdoc_options.yaml'));
-          if (dartdocOptionsFile.exists || dir.parent == null) {
-            break;
-          }
-          dir = dir.parent;
-          canonicalPaths
-              .add(resourceProvider.pathContext.canonicalize(dir.path));
-        }
+    for (var dir in folder.withAncestors) {
+      var canonicalPath =
+          resourceProvider.pathContext.canonicalize(folder.path);
+      if (_yamlAtCanonicalPathCache.containsKey(canonicalPath)) {
+        yamlData = _yamlAtCanonicalPathCache[canonicalPath];
+        break;
+      }
+      canonicalPaths.add(canonicalPath);
+      if (dir.exists) {
+        var dartdocOptionsFile = resourceProvider.getFile(resourceProvider
+            .pathContext
+            .join(dir.path, 'dartdoc_options.yaml'));
         if (dartdocOptionsFile.exists) {
           yamlData = _YamlFileData(
               loadYaml(dartdocOptionsFile.readAsStringSync()),
               resourceProvider.pathContext.canonicalize(dir.path));
+          break;
         }
       }
-      canonicalPaths.forEach((p) => _yamlAtCanonicalPathCache[p] = yamlData);
     }
-    return _yamlAtCanonicalPathCache[canonicalPaths.first];
+    canonicalPaths.forEach((p) => _yamlAtCanonicalPathCache[p] = yamlData);
+    return yamlData;
   }
 }
 
@@ -1402,7 +1396,7 @@ class DartdocOptionContext extends DartdocOptionContextBase
     } else {
       context = resourceProvider.getFolder(resourceProvider.pathContext
           .canonicalize(
-              resource is File ? resource.parent.path : resource.path));
+              resource is File ? resource.parent2.path : resource.path));
     }
   }
 
