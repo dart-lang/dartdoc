@@ -14,6 +14,14 @@ void set nullableSetter(String? value) {
   _nullableSetter = _nullableSetter ??= value;
 }
 
+/// This should have return type of `Future?`.
+dynamic? oddAsyncFunction() async {}
+/// This should also have return type of `Future?`.
+dynamic anotherOddFunction() async {}
+
+Never neverReturns() {}
+Never? almostNeverReturns() {}
+
 void some(int? nullable, String? parameters) {}
 
 class NullableMembers {
