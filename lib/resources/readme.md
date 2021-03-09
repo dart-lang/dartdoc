@@ -2,9 +2,10 @@
 
 Generated from https://highlightjs.org/download/ on 2021-03-07
 
-Included languages:
+**Included languages:**
 
 * bash
+* c  
 * css
 * dart
 * html, xml
