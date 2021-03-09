@@ -111,24 +111,31 @@ void main() {
           .firstWhere((c) => c.name == 'B');
       c = nullSafetyClassMemberDeclarations.allClasses
           .firstWhere((c) => c.name == 'C');
-      oddAsyncFunction = nullableElements.publicFunctions.firstWhere((f) => f.name == 'oddAsyncFunction');
-      anotherOddFunction = nullableElements.publicFunctions.firstWhere((f) => f.name == 'oddAsyncFunction');
-      neverReturns = nullableElements.publicFunctions.firstWhere((f) => f.name == 'neverReturns');
-      almostNeverReturns = nullableElements.publicFunctions.firstWhere((f) => f.name == 'almostNeverReturns');
+      oddAsyncFunction = nullableElements.publicFunctions
+          .firstWhere((f) => f.name == 'oddAsyncFunction');
+      anotherOddFunction = nullableElements.publicFunctions
+          .firstWhere((f) => f.name == 'oddAsyncFunction');
+      neverReturns = nullableElements.publicFunctions
+          .firstWhere((f) => f.name == 'neverReturns');
+      almostNeverReturns = nullableElements.publicFunctions
+          .firstWhere((f) => f.name == 'almostNeverReturns');
     });
 
     test('Never types are allowed to have nullability markers', () {
       expect(neverReturns.modelType.returnType.name, equals('Never'));
       expect(neverReturns.modelType.returnType.nullabilitySuffix, equals(''));
       expect(almostNeverReturns.modelType.returnType.name, equals('Never'));
-      expect(almostNeverReturns.modelType.returnType.nullabilitySuffix, equals('?'));
+      expect(almostNeverReturns.modelType.returnType.nullabilitySuffix,
+          equals('?'));
     });
 
     test('implied Future types have correct nullability', () {
       expect(oddAsyncFunction.modelType.returnType.name, equals('Future'));
-      expect(oddAsyncFunction.modelType.returnType.nullabilitySuffix, equals('?'));
+      expect(
+          oddAsyncFunction.modelType.returnType.nullabilitySuffix, equals('?'));
       expect(anotherOddFunction.modelType.returnType.name, equals('Future'));
-      expect(anotherOddFunction.modelType.returnType.nullabilitySuffix, equals('?'));
+      expect(anotherOddFunction.modelType.returnType.nullabilitySuffix,
+          equals('?'));
     });
 
     test('isNullSafety is set correctly for libraries', () {

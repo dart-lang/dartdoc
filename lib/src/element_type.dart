@@ -124,15 +124,16 @@ class UndefinedElementType extends ElementType {
 
   /// Returns true if this type is an implied `Future`.
   bool get isImpliedFuture => (type.isDynamic &&
-    returnedFrom != null &&
-          returnedFrom is DefinedElementType &&
-              (returnedFrom as DefinedElementType).element.isAsynchronous);
+      returnedFrom != null &&
+      returnedFrom is DefinedElementType &&
+      (returnedFrom as DefinedElementType).element.isAsynchronous);
 
   @override
   String get nameWithGenerics => '$name$nullabilitySuffix';
 
   @override
-  String get nullabilitySuffix => isImpliedFuture && library.isNullSafety ? '?' : super.nullabilitySuffix;
+  String get nullabilitySuffix =>
+      isImpliedFuture && library.isNullSafety ? '?' : super.nullabilitySuffix;
 
   /// Assume that undefined elements don't have useful bounds.
   @override

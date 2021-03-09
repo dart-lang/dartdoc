@@ -16,10 +16,11 @@ void set nullableSetter(String? value) {
 
 /// This should have return type of `Future?`.
 dynamic? oddAsyncFunction() async {}
+
 /// This should also have return type of `Future?`.
 dynamic anotherOddFunction() async {}
 
-Never neverReturns() {}
+Never neverReturns() {throw Exception();}
 Never? almostNeverReturns() {}
 
 void some(int? nullable, String? parameters) {}
