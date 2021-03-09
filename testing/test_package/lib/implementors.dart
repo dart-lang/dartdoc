@@ -15,4 +15,5 @@ abstract class _APrivateThingToImplement implements ImplementBase {}
 
 abstract class ImplementerOfThings implements IntermediateImplementer {}
 
-abstract class ImplementerOfDeclaredPrivateClasses implements _APrivateThingToImplement {}
+abstract class ImplementerOfDeclaredPrivateClasses
+    implements _APrivateThingToImplement {}

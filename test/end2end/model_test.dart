@@ -2746,7 +2746,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('can have params', () {
-      expect(isGreaterThan.canHaveParameters, isTrue);
+      expect(isGreaterThan.isCallable, isTrue);
     });
 
     test('has parameters', () {
@@ -3650,13 +3650,14 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
   });
 
   group('Typedef', () {
-    Typedef t;
+    Typedef processMessage;
     Typedef generic;
     Typedef aComplexTypedef;
     Class TypedefUsingClass;
 
     setUpAll(() {
-      t = exLibrary.typedefs.firstWhere((t) => t.name == 'processMessage');
+      processMessage =
+          exLibrary.typedefs.firstWhere((t) => t.name == 'processMessage');
       generic =
           fakeLibrary.typedefs.firstWhere((t) => t.name == 'NewGenericTypedef');
 
@@ -3700,23 +3701,23 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('has a fully qualified name', () {
-      expect(t.fullyQualifiedName, 'ex.processMessage');
+      expect(processMessage.fullyQualifiedName, 'ex.processMessage');
       expect(generic.fullyQualifiedName, 'fake.NewGenericTypedef');
     });
 
     test('has enclosing element', () {
-      expect(t.enclosingElement.name, equals(exLibrary.name));
+      expect(processMessage.enclosingElement.name, equals(exLibrary.name));
       expect(generic.enclosingElement.name, equals(fakeLibrary.name));
     });
 
     test('docs', () {
-      expect(t.documentation, equals(''));
+      expect(processMessage.documentation, equals(''));
       expect(generic.documentation,
           equals('A typedef with the new style generic function syntax.'));
     });
 
     test('linked return type', () {
-      expect(t.linkedReturnType, equals('String'));
+      expect(processMessage.linkedReturnType, equals('String'));
       expect(
           generic.linkedReturnType,
           equals(
@@ -3725,7 +3726,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('name with generics', () {
       expect(
-          t.nameWithGenerics,
+          processMessage.nameWithGenerics,
           equals(
               'processMessage&lt;<wbr><span class="type-parameter">T</span>&gt;'));
       expect(
@@ -3738,7 +3739,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     // inspects its element member. Find a better way when we start to isolate
     // renderer tests.
     test('TypedefRendererHtml renders genericParameters', () {
-      expect(TypedefRendererHtml().renderGenericParameters(t), equals(''));
+      expect(TypedefRendererHtml().renderGenericParameters(processMessage),
+          equals('&lt;<wbr><span class="type-parameter">T</span>&gt;'));
       expect(TypedefRendererHtml().renderGenericParameters(generic),
           equals('&lt;<wbr><span class="type-parameter">S</span>&gt;'));
     });

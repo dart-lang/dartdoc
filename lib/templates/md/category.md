@@ -72,7 +72,7 @@
 ## Typedefs
 
 {{#publicTypedefsSorted}}
-{{>callable}}
+{{>typedef}}
 
 {{/publicTypedefsSorted}}
 {{/hasPublicTypedefs}}

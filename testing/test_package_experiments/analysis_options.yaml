@@ -2,3 +2,4 @@ analyzer:
   # enable for analysis on test package sources.
   enable-experiment:
     - non-nullable
+    - nonfunction-type-aliases

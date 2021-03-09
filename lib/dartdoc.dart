@@ -73,7 +73,7 @@ class DartdocFileWriter implements FileWriter {
 
     var file = resourceProvider
         .getFile(resourceProvider.pathContext.join(outputDir, outFile));
-    var parent = file.parent;
+    var parent = file.parent2;
     if (!parent.exists) {
       parent.create();
     }
