@@ -14,7 +14,7 @@ Included languages:
 * kotlin
 * markdown
 * objective-c
-* plain text  
+* plaintext  
 * shell
 * swift
 * yaml
