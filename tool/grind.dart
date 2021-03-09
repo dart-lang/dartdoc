@@ -36,6 +36,13 @@ void expectFileContains(String path, List<Pattern> items) {
   }
 }
 
+/// Path to the base directory for language tests.
+final String languageTestPath = Platform.environment['LANGUAGE_TESTS'];
+
+/// Enable the following experiments for language tests.
+final List<String> languageExperiments =
+    (Platform.environment['LANGUAGE_EXPERIMENTS'] ?? '').split(RegExp(r'\s+'));
+
 /// The pub cache inherited by grinder.
 final String defaultPubCache = Platform.environment['PUB_CACHE'] ??
     path.context.resolveTildePath('~/.pub-cache');
@@ -113,6 +120,10 @@ Directory cleanFlutterDir = Directory(path.join(
 Directory _flutterDir;
 
 Directory get flutterDir => _flutterDir ??= createTempSync('flutter');
+
+Directory _languageTestPackageDir;
+Directory get languageTestPackageDir =>
+    _languageTestPackageDir ??= createTempSync('languageTestPackageDir');
 
 Directory get testPackage =>
     Directory(path.joinAll(['testing', 'test_package']));
@@ -703,6 +714,85 @@ Future<void> serveFlutterDocs() async {
     '--path',
     path.join(flutterDir.path, 'dev', 'docs', 'doc'),
   ]);
+}
+
+@Task('Serve language test directory docs on port 8004')
+@Depends(buildLanguageTestDocs)
+Future<void> serveLanguageTestDocs() async {
+  log('launching dhttpd on port 8004 for language tests');
+  var launcher = SubprocessLauncher('serve-language-test-docs');
+  await launcher.runStreamed(sdkBin('pub'), ['get']);
+  await launcher.runStreamed(sdkBin('pub'), [
+    'global',
+    'run',
+    'dhttpd',
+    '--port',
+    '8004',
+    '--path',
+    path.join(languageTestPackageDir.path, 'doc', 'api'),
+  ]);
+}
+
+@Task('Build docs for a language test directory in the SDK')
+Future<void> buildLanguageTestDocs() async {
+  var launcher = SubprocessLauncher('build-language-test-docs');
+  if (languageTestPath == null) {
+    fail(
+        'LANGUAGE_TESTS must be set to the SDK language test directory from which to copy tests');
+  }
+  var pubspecFile =
+      File(path.join(languageTestPackageDir.path, 'pubspec.yaml'));
+  pubspecFile.writeAsStringSync('''name: _language_test_package
+version: 0.0.1
+environment:
+  sdk: '>=${Platform.version.split(' ').first}'
+''');
+
+  var analyzerOptionsFile =
+      File(path.join(languageTestPackageDir.path, 'analysis_options.yaml'));
+  var analyzerOptions = languageExperiments.map((e) => '    - $e').join('\n');
+  analyzerOptionsFile.writeAsStringSync('''analyzer:
+   enable-experiment:
+$analyzerOptions
+ ''');
+
+  var libDir = Directory(path.join(languageTestPackageDir.path, 'lib'))
+    ..createSync();
+  var languageTestDir =
+      Directory(path.context.resolveTildePath(languageTestPath));
+  if (!languageTestDir.existsSync()) {
+    fail('language test dir does not exist:  $languageTestDir');
+  }
+
+  for (var entry in languageTestDir.listSync(recursive: true)) {
+    if (entry is File &&
+        entry.existsSync() &&
+        !entry.path.endsWith('_error_test.dart') &&
+        !entry.path.endsWith('_error_lib.dart')) {
+      var destDir = Directory(path.join(
+          libDir.path,
+          path.dirname(entry.absolute.path.replaceFirst(
+              languageTestDir.absolute.path + path.separator, ''))));
+      if (!destDir.existsSync()) destDir.createSync(recursive: true);
+      copy(entry, destDir);
+    }
+  }
+
+  await launcher.runStreamed('pub', ['get'],
+      workingDirectory: languageTestPackageDir.absolute.path);
+  await launcher.runStreamed(
+      Platform.resolvedExecutable,
+      [
+        '--enable-asserts',
+        path.join(Directory.current.absolute.path, 'bin', 'dartdoc.dart'),
+        '--json',
+        '--link-to-remote',
+        '--show-progress',
+        '--enable-experiment',
+        '${languageExperiments.join(",")}',
+        ...extraDartdocParameters,
+      ],
+      workingDirectory: languageTestPackageDir.absolute.path);
 }
 
 @Task('Validate flutter docs')
