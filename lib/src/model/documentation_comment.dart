@@ -61,11 +61,15 @@ mixin DocumentationComment
   String processCommentWithoutTools(String documentationComment) {
     var docs = stripComments(documentationComment);
     if (!docs.contains('{@')) {
+      _analyzeCodeBlocks(docs);
       return docs;
     }
     docs = _injectExamples(docs);
     docs = _injectYouTube(docs);
     docs = _injectAnimations(docs);
+
+    _analyzeCodeBlocks(docs);
+
     // TODO(srawlins): Processing templates here causes #2281. But leaving them
     // unprocessed causes #2272.
     docs = _stripHtmlAndAddToIndex(docs);
@@ -79,6 +83,7 @@ mixin DocumentationComment
     // Must evaluate tools first, in case they insert any other directives.
     docs = await _evaluateTools(docs);
     docs = processCommentDirectives(docs);
+    _analyzeCodeBlocks(docs);
     return docs;
   }
 
@@ -671,6 +676,29 @@ mixin DocumentationComment
         return '$option${match[1] ?? ''}${match[3] ?? ''}${match[4] ?? ''}';
       }
       return '$option${match[0]}';
+    });
+  }
+
+  static final _codeBlockPattern =
+      RegExp(r'^[ ]{0,3}(`{3,}|~{3,})(.*)$', multiLine: true);
+
+  /// Analyze fenced code blocks present in the documentation comment,
+  /// warning if there is no language specified.
+  void _analyzeCodeBlocks(String docs) {
+    final results = _codeBlockPattern.allMatches(docs).toList(growable: false);
+    final firstOfPair = <Match>[];
+    for (var i = 0; i < results.length; i++) {
+      if (i.isEven && i != results.length - 1) {
+        firstOfPair.add(results[i]);
+      }
+    }
+    firstOfPair.forEach((element) {
+      final result = element.group(2).trim();
+      if (result.isEmpty) {
+        warn(PackageWarning.missingCodeBlockLanguage,
+            message:
+                'A fenced code block in Markdown should have a language specified');
+      }
     });
   }
 }

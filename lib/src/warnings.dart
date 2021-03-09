@@ -256,6 +256,16 @@ const Map<PackageWarning, PackageWarningDefinition> packageWarningDefinitions =
       // Defaults to ignore as this doesn't impact the docs severely but is
       // useful for debugging package structure.
       defaultWarningMode: PackageWarningMode.ignore),
+  PackageWarning.missingCodeBlockLanguage: PackageWarningDefinition(
+      PackageWarning.missingCodeBlockLanguage,
+      'missing-code-block-language',
+      'A fenced code block is missing a specified language.',
+      longHelp: [
+        'To enable proper syntax highlighting of Markdown code blocks,',
+        'Dartdoc requires code blocks to specify the language used after',
+        'the initial declaration.  As an example, to specify Dart you would',
+        'specify ```dart or ~~~dart.'
+      ]),
 };
 
 /// Something that package warnings can be called on.  Optionally associated
@@ -306,6 +316,7 @@ enum PackageWarning {
   unresolvedExport,
   missingConstantConstructor,
   missingExampleFile,
+  missingCodeBlockLanguage,
 }
 
 /// Used to declare defaults for a particular package warning.
