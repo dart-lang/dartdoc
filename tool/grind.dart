@@ -737,7 +737,8 @@ Future<void> serveLanguageTestDocs() async {
 Future<void> buildLanguageTestDocs() async {
   var launcher = SubprocessLauncher('build-language-test-docs');
   if (languageTestPath == null) {
-    fail('LANGUAGE_TESTS must be set to the directory to build language tests');
+    fail(
+        'LANGUAGE_TESTS must be set to the SDK language test directory from which to copy tests');
   }
   var pubspecFile =
       File(path.join(languageTestPackageDir.path, 'pubspec.yaml'));
@@ -766,7 +767,8 @@ $analyzerOptions
   for (var entry in languageTestDir.listSync(recursive: true)) {
     if (entry is File &&
         entry.existsSync() &&
-        !entry.path.endsWith('_error_test.dart')) {
+        !entry.path.endsWith('_error_test.dart') &&
+        !entry.path.endsWith('_error_lib.dart')) {
       var destDir = Directory(path.join(
           libDir.path,
           path.dirname(entry.absolute.path.replaceFirst(
