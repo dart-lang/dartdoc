@@ -115,24 +115,25 @@ class UndefinedElementType extends ElementType {
 
   @override
   String get name {
-    if (type.isDynamic) {
-      if (returnedFrom != null &&
-          (returnedFrom is DefinedElementType &&
-              (returnedFrom as DefinedElementType).element.isAsynchronous)) {
-        return 'Future';
-      } else {
-        return 'dynamic';
-      }
-    }
+    if (isImpliedFuture) return 'Future';
     if (type.isVoid) return 'void';
-    if (type.isBottom) return 'Never';
-    assert(false,
+    assert({'Never', 'void', 'dynamic'}.contains(type.element.name),
         'Unrecognized type for UndefinedElementType: ${type.toString()}');
-    return '';
+    return type.element.name;
   }
+
+  /// Returns true if this type is an implied `Future`.
+  bool get isImpliedFuture => (type.isDynamic &&
+      returnedFrom != null &&
+      returnedFrom is DefinedElementType &&
+      (returnedFrom as DefinedElementType).element.isAsynchronous);
 
   @override
   String get nameWithGenerics => '$name$nullabilitySuffix';
+
+  @override
+  String get nullabilitySuffix =>
+      isImpliedFuture && library.isNullSafety ? '?' : super.nullabilitySuffix;
 
   /// Assume that undefined elements don't have useful bounds.
   @override
