@@ -30,5 +30,5 @@ class C {
 
   List<Map<String, num?>>? method1() => null;
 
-  void m3(void listen(int t)?, {void onDone()?});
+  void m3(void listen(int t)?, {void onDone()?}) {}
 }
