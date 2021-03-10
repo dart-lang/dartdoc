@@ -11,6 +11,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/src/context/builder.dart';
 import 'package:analyzer/src/dart/sdk/sdk.dart';
+import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/generated/java_io.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source.dart';
@@ -118,12 +119,15 @@ class PubPackageBuilder implements PackageBuilder {
 
   AnalysisContextCollection get contextCollection {
     _contextCollection ??= AnalysisContextCollectionImpl(
-      includedPaths: [config.inputDir],
-      // TODO(jcollins-g): should we pass excluded directories here instead of
-      // handling it ourselves?
-      resourceProvider: resourceProvider,
-      sdkPath: config.sdkDir,
-    );
+        includedPaths: [config.inputDir],
+        // TODO(jcollins-g): should we pass excluded directories here instead of
+        // handling it ourselves?
+        resourceProvider: resourceProvider,
+        sdkPath: config.sdkDir,
+        updateAnalysisOptions: (AnalysisOptionsImpl options) => options
+          ..hint = false
+          ..lint = false);
+
     return _contextCollection;
   }
 
