@@ -127,9 +127,7 @@ class PubPackageBuilder implements PackageBuilder {
     return _contextCollection;
   }
 
-  /// Return an Iterable with the sdk files we should parse.
-  /// Filter can be String or RegExp (technically, anything valid for
-  /// [String.contains])
+  /// Returns an Iterable with the SDK files we should parse.
   Iterable<String> getSdkFilesToDocument() sync* {
     for (var sdkLib in sdk.sdkLibraries) {
       var source = sdk.mapDartUri(sdkLib.shortName);
