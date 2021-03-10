@@ -258,6 +258,16 @@ void main() {
     expect(renderFoo(foo, fooTemplate), equals('Text hello'));
   });
 
+  test('Renderer resolves variable with mixin properties not in @Renderer',
+      () async {
+    var fooTemplateFile = getFile('/project/foo.mustache')
+      ..writeAsStringSync('Text {{p1.p2.p3.s}}');
+    var fooTemplate = await Template.parse(fooTemplateFile);
+    var foo = Foo()
+      ..p1 = (Property1()..p2 = (Property2()..p3 = (Property3()..s = 'hello')));
+    expect(renderFoo(foo, fooTemplate), equals('Text hello'));
+  });
+
   test('Renderer resolves outer variable with key with two names', () async {
     var barTemplateFile = getFile('/project/foo.mustache')
       ..writeAsStringSync('Text {{#foo}}{{foo.s1}}{{/foo}}');

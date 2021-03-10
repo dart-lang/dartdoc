@@ -1,4 +1,5 @@
-@Renderer(#renderFoo, Context<Foo>(), visibleTypes: {Property1, Property2})
+@Renderer(#renderFoo, Context<Foo>(),
+    visibleTypes: {Property1, Property2, Property3})
 @Renderer(#renderBar, Context<Bar>())
 @Renderer(#renderBaz, Context<Baz>())
 library dartdoc.testing.foo;
@@ -33,6 +34,14 @@ class Property1 {
   Property2 p2;
 }
 
-class Property2 {
+class Property2 with Mixin1 {
+  String s;
+}
+
+mixin Mixin1 {
+  Property3 p3;
+}
+
+class Property3 {
   String s;
 }
