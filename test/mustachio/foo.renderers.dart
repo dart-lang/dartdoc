@@ -230,6 +230,7 @@ class Renderer_Property2 extends RendererBase<Property2> {
           CT_,
           () => {
                 ...Renderer_Object.propertyMap<CT_>(),
+                ...Renderer_Mixin1.propertyMap<CT_>(),
                 's': Property(
                   getValue: (CT_ c) => c.s,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -251,6 +252,97 @@ class Renderer_Property2 extends RendererBase<Property2> {
   Property<Property2> getProperty(String key) {
     if (propertyMap<Property2>().containsKey(key)) {
       return propertyMap<Property2>()[key];
+    } else {
+      return null;
+    }
+  }
+}
+
+String _render_Mixin1(
+    Mixin1 context, List<MustachioNode> ast, Template template,
+    {RendererBase<Object> parent}) {
+  var renderer = Renderer_Mixin1(context, parent, template);
+  renderer.renderBlock(ast);
+  return renderer.buffer.toString();
+}
+
+class Renderer_Mixin1 extends RendererBase<Mixin1> {
+  static final Map<Type, Object> _propertyMapCache = {};
+  static Map<String, Property<CT_>> propertyMap<CT_ extends Mixin1>() =>
+      _propertyMapCache.putIfAbsent(
+          CT_,
+          () => {
+                'p3': Property(
+                  getValue: (CT_ c) => c.p3,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        Renderer_Property3.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(self.getValue(c),
+                        nextProperty, [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => c.p3 == null,
+                  renderValue:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    return _render_Property3(c.p3, ast, r.template, parent: r);
+                  },
+                ),
+              });
+
+  Renderer_Mixin1(
+      Mixin1 context, RendererBase<Object> parent, Template template)
+      : super(context, parent, template);
+
+  @override
+  Property<Mixin1> getProperty(String key) {
+    if (propertyMap<Mixin1>().containsKey(key)) {
+      return propertyMap<Mixin1>()[key];
+    } else {
+      return null;
+    }
+  }
+}
+
+String _render_Property3(
+    Property3 context, List<MustachioNode> ast, Template template,
+    {RendererBase<Object> parent}) {
+  var renderer = Renderer_Property3(context, parent, template);
+  renderer.renderBlock(ast);
+  return renderer.buffer.toString();
+}
+
+class Renderer_Property3 extends RendererBase<Property3> {
+  static final Map<Type, Object> _propertyMapCache = {};
+  static Map<String, Property<CT_>> propertyMap<CT_ extends Property3>() =>
+      _propertyMapCache.putIfAbsent(
+          CT_,
+          () => {
+                ...Renderer_Object.propertyMap<CT_>(),
+                's': Property(
+                  getValue: (CT_ c) => c.s,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'String'),
+                  isNullValue: (CT_ c) => c.s == null,
+                  renderValue:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    return renderSimple(c.s, ast, r.template, parent: r);
+                  },
+                ),
+              });
+
+  Renderer_Property3(
+      Property3 context, RendererBase<Object> parent, Template template)
+      : super(context, parent, template);
+
+  @override
+  Property<Property3> getProperty(String key) {
+    if (propertyMap<Property3>().containsKey(key)) {
+      return propertyMap<Property3>()[key];
     } else {
       return null;
     }

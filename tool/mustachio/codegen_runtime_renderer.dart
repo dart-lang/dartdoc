@@ -217,18 +217,17 @@ import '${p.basename(_sourceUri.path)}';
         for (var accessor in type.accessors) {
           var accessorType = _relevantTypeFrom(accessor.type.returnType);
           if (accessorType == null) continue;
-          var accessorElement = accessorType.element;
-          _addTypeToProcess(accessorElement,
-              isFullRenderer: _isVisibleToMustache(accessorElement));
+          _addPropertyToProcess(accessor);
         }
       }
       for (var mixin in type.element.mixins) {
-        _addTypeToProcess(mixin.element, isFullRenderer: isFullRenderer);
+        _addTypeHierarchyToProcess(mixin, isFullRenderer: isFullRenderer);
       }
       if (type.element.isMixin) {
         for (var constraint in type.element.superclassConstraints) {
           _addTypeToProcess(constraint.element, isFullRenderer: isFullRenderer);
         }
+        break;
       } else {
         type = type.superclass;
       }
