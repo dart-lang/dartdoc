@@ -200,7 +200,7 @@ class Field extends ModelElement
   }
 
   @override
-  CallableElementType get modelType => super.modelType;
+  CallableElementTypeMixin get modelType => super.modelType;
 
   @override
   Inheritable get overriddenElement => null;

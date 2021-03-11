@@ -5,6 +5,7 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/source/line_info.dart';
 import 'package:analyzer/src/dart/element/member.dart' show Member;
+import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 class Method extends ModelElement
@@ -92,7 +93,10 @@ class Method extends ModelElement
   @override
   String get kind => 'method';
 
-  String get linkedReturnType => modelType.createLinkedReturnTypeName();
+  String get linkedReturnType => modelType.returnType.linkedName;
+
+  @override
+  CallableElementTypeMixin get modelType => super.modelType;
 
   @override
   Method get overriddenElement {

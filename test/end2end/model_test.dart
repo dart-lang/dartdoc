@@ -2781,7 +2781,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('return type', () {
-      expect(isGreaterThan.modelType.createLinkedReturnTypeName(), 'bool');
+      expect(isGreaterThan.modelType.returnType.linkedName, 'bool');
     });
 
     test('return type has Future', () {
@@ -2795,7 +2795,11 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('parameter is a function', () {
       var functionArgParam = m4.parameters[1];
-      expect(functionArgParam.modelType.createLinkedReturnTypeName(), 'String');
+      expect(
+          (functionArgParam.modelType as CallableElementTypeMixin)
+              .returnType
+              .linkedName,
+          'String');
     });
 
     test('method overrides another', () {
@@ -3677,9 +3681,9 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
   });
 
   group('Typedef', () {
-    Typedef processMessage;
-    Typedef generic;
-    Typedef aComplexTypedef;
+    FunctionTypedef processMessage;
+    FunctionTypedef generic;
+    FunctionTypedef aComplexTypedef;
     Class TypedefUsingClass;
 
     setUpAll(() {

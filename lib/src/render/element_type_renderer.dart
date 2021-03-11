@@ -87,10 +87,6 @@ class CallableElementTypeRendererHtml
     extends ElementTypeRenderer<CallableElementType> {
   @override
   String renderLinkedName(CallableElementType elementType) {
-    if (elementType.name != null && elementType.name.isNotEmpty) {
-      return elementType.superLinkedName;
-    }
-
     var buf = StringBuffer();
     buf.write(elementType.nameWithGenerics);
     buf.write('(');
@@ -168,15 +164,11 @@ class CallableElementTypeRendererMd
     extends ElementTypeRenderer<CallableElementType> {
   @override
   String renderLinkedName(CallableElementType elementType) {
-    if (elementType.name != null && elementType.name.isNotEmpty) {
-      return elementType.superLinkedName;
-    }
-
     var buf = StringBuffer();
     buf.write(elementType.nameWithGenerics);
     buf.write('(');
     buf.write(ParameterRendererMd()
-        .renderLinkedParams(elementType.element.parameters, showNames: false)
+        .renderLinkedParams(elementType.parameters, showNames: false)
         .trim());
     buf.write(') → ');
     buf.write(elementType.returnType.linkedName);
