@@ -198,8 +198,6 @@ class Field extends ModelElement
     }
   }
 
-
-
   @override
   Inheritable get overriddenElement => null;
 }

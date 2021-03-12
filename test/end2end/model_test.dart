@@ -263,8 +263,10 @@ void main() {
           aComplexType.modelType.linkedName,
           equals(
               'Map<span class="signature">&lt;<wbr><span class="type-parameter">T?</span>, <span class="type-parameter">String?</span>&gt;</span>'));
-      expect(aComplexSetterOnlyType.modelType.linkedName, equals(
-          'List<span class="signature">&lt;<wbr><span class="type-parameter">Map<span class="signature">&lt;<wbr><span class="type-parameter">T?</span>, <span class="type-parameter">String?</span>&gt;</span>?</span>&gt;</span>'));
+      expect(
+          aComplexSetterOnlyType.modelType.linkedName,
+          equals(
+              'List<span class="signature">&lt;<wbr><span class="type-parameter">Map<span class="signature">&lt;<wbr><span class="type-parameter">T?</span>, <span class="type-parameter">String?</span>&gt;</span>?</span>&gt;</span>'));
     });
 
     test('simple nullable elements are detected and rendered correctly', () {
@@ -287,7 +289,8 @@ void main() {
           methodWithNullables.linkedParams,
           equals(
               '<span class="parameter" id="methodWithNullables-param-foo"><span class="type-annotation">String?</span> <span class="parameter-name">foo</span></span>'));
-      expect(methodWithNullables.modelType.returnType.linkedName, equals('int?'));
+      expect(
+          methodWithNullables.modelType.returnType.linkedName, equals('int?'));
       expect(
           initialized.modelType.linkedName,
           equals(
@@ -323,25 +326,44 @@ void main() {
 
     test('Set literals test', () {
       expect(aComplexSet.modelType.name, equals('Set'));
-      expect((aComplexSet.modelType as ParameterizedElementType).typeArguments.map((a) => a.name).toList(),
+      expect(
+          (aComplexSet.modelType as ParameterizedElementType)
+              .typeArguments
+              .map((a) => a.name)
+              .toList(),
           equals(['AClassContainingLiterals']));
       expect(aComplexSet.constantValue,
           equals('const {const AClassContainingLiterals(3, 5)}'));
       expect(inferredTypeSet.modelType.name, equals('Set'));
       expect(
-          (inferredTypeSet.modelType as ParameterizedElementType).typeArguments. map((a) => a.name).toList(),
+          (inferredTypeSet.modelType as ParameterizedElementType)
+              .typeArguments
+              .map((a) => a.name)
+              .toList(),
           equals(['int']));
       expect(inferredTypeSet.constantValue, equals('const {1, 3, 5}'));
       expect(specifiedSet.modelType.name, equals('Set'));
-      expect((specifiedSet.modelType as ParameterizedElementType).typeArguments.map((a) => a.name).toList(),
+      expect(
+          (specifiedSet.modelType as ParameterizedElementType)
+              .typeArguments
+              .map((a) => a.name)
+              .toList(),
           equals(['int']));
       expect(specifiedSet.constantValue, equals('const {}'));
       expect(untypedMap.modelType.name, equals('Map'));
-      expect((untypedMap.modelType as ParameterizedElementType).typeArguments.map((a) => a.name).toList(),
+      expect(
+          (untypedMap.modelType as ParameterizedElementType)
+              .typeArguments
+              .map((a) => a.name)
+              .toList(),
           equals(['dynamic', 'dynamic']));
       expect(untypedMap.constantValue, equals('const {}'));
       expect(typedSet.modelType.name, equals('Set'));
-      expect((typedSet.modelType as ParameterizedElementType).typeArguments.map((a) => a.name).toList(),
+      expect(
+          (typedSet.modelType as ParameterizedElementType)
+              .typeArguments
+              .map((a) => a.name)
+              .toList(),
           equals(['String']));
       expect(typedSet.constantValue,
           matches(RegExp(r'const &lt;String&gt;\s?{}')));
@@ -1907,7 +1929,8 @@ void main() {
           equals('${htmlBasePlaceholder}ex/Deprecated/expires.html'));
     });
 
-    test('exported class should have modelType.returnType.linkedName for the current library',
+    test(
+        'exported class should have modelType.returnType.linkedName for the current library',
         () {
       var returnCool = Cool.instanceMethods
           .firstWhere((m) => m.name == 'returnCool', orElse: () => null);
@@ -2428,7 +2451,8 @@ void main() {
 
     test('function returning FutureOr', () {
       expect(thisIsFutureOr.isAsynchronous, isFalse);
-      expect(thisIsFutureOr.modelType.returnType.linkedName, equals('FutureOr'));
+      expect(
+          thisIsFutureOr.modelType.returnType.linkedName, equals('FutureOr'));
     });
 
     test('function returning FutureOr<Null>', () {
@@ -2540,8 +2564,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .singleWhere((f) => f.name == 'explicitSetter');
       // TODO(jcollins-g): really, these shouldn't be called "parameters" in
       // the span class.
-      expect(
-          explicitSetter.modelType.linkedName, 'dynamic Function<span class="signature">(<span class="parameter" id="param-bar"><span class="type-annotation">int</span> <span class="parameter-name">bar</span>, </span><span class="parameter" id="param-baz"><span class="type-annotation"><a href="%%__HTMLBASE_dartdoc_internal__%%fake/Cool-class.html">Cool</a></span> <span class="parameter-name">baz</span>, </span><span class="parameter" id="param-macTruck"><span class="type-annotation">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span> <span class="parameter-name">macTruck</span></span>)</span>');
+      expect(explicitSetter.modelType.linkedName,
+          'dynamic Function<span class="signature">(<span class="parameter" id="param-bar"><span class="type-annotation">int</span> <span class="parameter-name">bar</span>, </span><span class="parameter" id="param-baz"><span class="type-annotation"><a href="%%__HTMLBASE_dartdoc_internal__%%fake/Cool-class.html">Cool</a></span> <span class="parameter-name">baz</span>, </span><span class="parameter" id="param-macTruck"><span class="type-annotation">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span> <span class="parameter-name">macTruck</span></span>)</span>');
     });
 
     test('parameterized type from field is correctly displayed', () {
@@ -3310,8 +3334,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
         'Verify that a map containing anonymous functions as values works correctly',
         () {
       var typeArguments =
-          (importantComputations.modelType as DefinedElementType)
-              .typeArguments;
+          (importantComputations.modelType as DefinedElementType).typeArguments;
       expect(typeArguments, isNotEmpty);
       expect(
           typeArguments.last.linkedName,
@@ -3369,10 +3392,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('type arguments are correct', () {
       var modelType = mapWithDynamicKeys.modelType as ParameterizedElementType;
       expect(modelType.typeArguments, hasLength(2));
-      expect(modelType.typeArguments.first.name,
-          equals('dynamic'));
-      expect(modelType.typeArguments.last.name,
-          equals('String'));
+      expect(modelType.typeArguments.first.name, equals('dynamic'));
+      expect(modelType.typeArguments.last.name, equals('String'));
     });
 
     test('has enclosing element', () {
@@ -3705,7 +3726,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('anonymous nested functions inside typedefs are handled', () {
       expect(aComplexTypedef, isNotNull);
-      expect(aComplexTypedef.modelType.returnType.linkedName, startsWith('void Function'));
+      expect(aComplexTypedef.modelType.returnType.linkedName,
+          startsWith('void Function'));
       expect(
           aComplexTypedef.nameWithGenerics,
           equals(
