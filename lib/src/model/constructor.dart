@@ -26,6 +26,9 @@ class Constructor extends ModelElement
   }
 
   @override
+  ConstructorElement get element => super.element;
+
+  @override
   // TODO(jcollins-g): Revisit this when dart-lang/sdk#31517 is implemented.
   List<TypeParameter> get typeParameters =>
       (enclosingElement as Class).typeParameters;
@@ -75,8 +78,10 @@ class Constructor extends ModelElement
   @override
   String get kind => 'constructor';
 
+  DefinedElementType _modelType;
   @override
-  DefinedElementType get modelType => super.modelType;
+  DefinedElementType get modelType => _modelType ??= ElementType.from(element.type,
+    library, packageGraph);
 
   String _name;
 

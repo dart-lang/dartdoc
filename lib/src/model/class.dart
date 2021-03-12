@@ -334,8 +334,11 @@ class Class extends Container
   Iterable<DefinedElementType> get publicMixedInTypes =>
       model_utils.filterNonPublic(mixedInTypes);
 
+  DefinedElementType _modelType;
+
   @override
-  DefinedElementType get modelType => super.modelType;
+  DefinedElementType get modelType =>
+      _modelType ??= ElementType.from(element.thisType, library, packageGraph);
 
   /// Not the same as superChain as it may include mixins.
   /// It's really not even the same as ordinary Dart inheritance, either,

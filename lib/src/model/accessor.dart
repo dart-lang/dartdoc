@@ -3,7 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/src/dart/element/member.dart' show Member;
+import 'package:analyzer/src/dart/element/member.dart' show ExecutableMember;
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/source_code_renderer.dart';
@@ -16,11 +16,23 @@ class Accessor extends ModelElement implements EnclosedElement {
 
   Accessor(PropertyAccessorElement element, Library library,
       PackageGraph packageGraph,
-      [Member /*?*/ originalMember])
+      [ExecutableMember /*?*/ originalMember])
       : super(element, library, packageGraph, originalMember);
 
   @override
-  CallableElementTypeMixin get modelType => super.modelType;
+  ExecutableMember get originalMember => super.originalMember;
+
+  CallableElementTypeMixin _modelType;
+  @override
+  CallableElementTypeMixin get modelType {
+    if (_modelType == null) {
+      if (originalMember != null) {
+        _modelType = ElementType.from(originalMember.type, library,
+          packageGraph);
+      }
+    }
+    return _modelType;
+  }
 
   bool get isSynthetic => element.isSynthetic;
 
@@ -153,7 +165,7 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
 
   ContainerAccessor.inherited(PropertyAccessorElement element, Library library,
       PackageGraph packageGraph, this._enclosingElement,
-      {Member originalMember})
+      {ExecutableMember originalMember})
       : super(element, library, packageGraph, originalMember) {
     _isInherited = true;
   }
