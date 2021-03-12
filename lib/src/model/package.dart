@@ -343,7 +343,7 @@ class Package extends LibraryContainer
     return _categories;
   }
 
-  Iterable<LibraryContainer> get categoriesWithPublicLibraries =>
+  Iterable<Category> get categoriesWithPublicLibraries =>
       categories.where((c) => c.publicLibraries.isNotEmpty);
 
   Iterable<Category> get documentedCategories =>
