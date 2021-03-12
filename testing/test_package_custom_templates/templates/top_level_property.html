@@ -12,7 +12,7 @@
 
       {{#hasNoGetterSetter}}
         <section class="multi-line-signature">
-          <span class="returntype">{{{ linkedReturnType }}}</span>
+          <span class="returntype">{{{ modelType.returnType.linkedName }}}</span>
           {{>name_summary}}
           {{>features}}
         </section>

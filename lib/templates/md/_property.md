@@ -1,4 +1,4 @@
-##### {{{linkedName}}} {{{ arrow }}} {{{ linkedReturnType }}}
+##### {{{linkedName}}} {{{ arrow }}} {{{ modelType.linkedName }}}
 {{>categorization}}
 
 {{{ oneLineDoc }}} {{{ extendedDocLink }}}  {{!two spaces intentional}}

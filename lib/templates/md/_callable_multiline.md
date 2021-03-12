@@ -4,4 +4,4 @@
 {{/annotations}}
 {{/hasAnnotations}}
 
-{{{ linkedReturnType }}} {{>name_summary}}{{{genericParameters}}}({{#hasParameters}}{{{linkedParamsLines}}}{{/hasParameters}})
+{{{ modelType.returnType.linkedName }}} {{>name_summary}}{{{genericParameters}}}({{#hasParameters}}{{{linkedParamsLines}}}{{/hasParameters}})

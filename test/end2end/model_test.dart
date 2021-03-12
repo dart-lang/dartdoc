@@ -264,8 +264,7 @@ void main() {
           equals(
               'Map<span class="signature">&lt;<wbr><span class="type-parameter">T?</span>, <span class="type-parameter">String?</span>&gt;</span>'));
       expect(aComplexSetterOnlyType.modelType.linkedName, equals(
-          // TODO(jcollins-g): fix wrong span class for setter-only return type (#2226)
-          '<span class="parameter" id="aComplexSetterOnlyType=-param-value"><span class="type-annotation">List<span class="signature">&lt;<wbr><span class="type-parameter">Map<span class="signature">&lt;<wbr><span class="type-parameter">T?</span>, <span class="type-parameter">String?</span>&gt;</span>?</span>&gt;</span></span></span>'));
+          'List<span class="signature">&lt;<wbr><span class="type-parameter">Map<span class="signature">&lt;<wbr><span class="type-parameter">T?</span>, <span class="type-parameter">String?</span>&gt;</span>?</span>&gt;</span>'));
     });
 
     test('simple nullable elements are detected and rendered correctly', () {
@@ -2542,10 +2541,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       // TODO(jcollins-g): really, these shouldn't be called "parameters" in
       // the span class.
       expect(
-          explicitSetter.modelType.linkedName,
-          '<span class="parameter" id="explicitSetter=-param-f"><span class="type-annotation">dynamic</span> <span class="parameter-name">Function</span>(<span class="parameter" id="param-bar"><span class="type-annotation">int</span>, </span>'
-          '<span class="parameter" id="param-baz"><span class="type-annotation"><a href="${htmlBasePlaceholder}fake/Cool-class.html">Cool</a></span>, </span>'
-          '<span class="parameter" id="param-macTruck"><span class="type-annotation">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span></span>)</span>');
+          explicitSetter.modelType.linkedName, 'dynamic Function<span class="signature">(<span class="parameter" id="param-bar"><span class="type-annotation">int</span> <span class="parameter-name">bar</span>, </span><span class="parameter" id="param-baz"><span class="type-annotation"><a href="%%__HTMLBASE_dartdoc_internal__%%fake/Cool-class.html">Cool</a></span> <span class="parameter-name">baz</span>, </span><span class="parameter" id="param-macTruck"><span class="type-annotation">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span> <span class="parameter-name">macTruck</span></span>)</span>');
     });
 
     test('parameterized type from field is correctly displayed', () {
@@ -2590,10 +2586,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .setter;
       expect(aInheritedSetter.allParameters.first.modelType.linkedName,
           '<a href="${htmlBasePlaceholder}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
-      // TODO(jcollins-g): really, these shouldn't be called "parameters" in
-      // the span class.
       expect(aInheritedSetter.enclosingCombo.modelType.linkedName,
-          '<span class="parameter" id="aInheritedSetter=-param-thingToSet"><span class="type-annotation"><a href="${htmlBasePlaceholder}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span></span></span>');
+          '<a href="%%__HTMLBASE_dartdoc_internal__%%ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
     });
 
     test(

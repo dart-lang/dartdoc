@@ -126,7 +126,7 @@ void main() {
         expect(g.modelType.returnType.name, equals('T1'));
         expect(g.modelType.parameters.first.modelType.name, equals('T2'));
         expect(g.modelType.parameters.last.modelType.name, equals('T3'));
-      });
+      }, skip: 'dart-lang/sdk#45921');
 
       test('basic non-function typedefs work', () {
         expectTypedefs(T0, 'void', []);
