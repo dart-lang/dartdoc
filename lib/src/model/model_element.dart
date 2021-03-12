@@ -984,9 +984,7 @@ abstract class ModelElement extends Canonicalization
   String get linkedParamsNoMetadataOrNames => _parameterRenderer
       .renderLinkedParams(parameters, showMetadata: false, showNames: false);
 
-  ElementType get modelType => modelTypeReal;
-
-  ElementType get modelTypeReal {
+  ElementType get modelType {
     var element = this.element;
     if (_modelType == null) {
       // TODO(jcollins-g): Need an interface for a "member with a type" (or changed object model).
