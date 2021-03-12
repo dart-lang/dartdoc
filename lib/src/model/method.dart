@@ -93,8 +93,6 @@ class Method extends ModelElement
   @override
   String get kind => 'method';
 
-  String get linkedReturnType => modelType.returnType.linkedName;
-
   @override
   CallableElementTypeMixin get modelType => super.modelType;
 

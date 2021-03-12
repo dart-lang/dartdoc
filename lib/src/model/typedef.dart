@@ -79,8 +79,6 @@ class FunctionTypedef extends Typedef {
     return super.genericTypeParameters;
   }
 
-  String get linkedReturnType => modelType.returnType.linkedName;
-
   @override
   CallableElementTypeMixin get modelType => super.modelType;
 }

@@ -19,11 +19,6 @@ class Accessor extends ModelElement implements EnclosedElement {
       [Member /*?*/ originalMember])
       : super(element, library, packageGraph, originalMember);
 
-  String get linkedReturnType {
-    assert(isGetter);
-    return modelType.returnType.linkedName;
-  }
-
   @override
   CallableElementTypeMixin get modelType => super.modelType;
 

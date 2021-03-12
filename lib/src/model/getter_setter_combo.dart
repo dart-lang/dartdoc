@@ -8,6 +8,7 @@ import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/source/line_info.dart';
 import 'package:analyzer/src/dart/element/element.dart';
+import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/utils.dart';
 import 'package:dartdoc/src/warnings.dart';
@@ -179,14 +180,10 @@ mixin GetterSetterCombo on ModelElement {
     return buffer.toString();
   }
 
-  String get linkedReturnType {
-    if (hasGetter) {
-      return getter.linkedReturnType;
-    } else {
-      // TODO(jcollins-g): this results in the wrong span class for the return
-      // type.
-      return setter.linkedParamsNoMetadataOrNames;
-    }
+  @override
+  ElementType get modelType {
+    if (hasGetter) return getter.modelType.returnType;
+    return setter.parameters.first.modelType;
   }
 
   @override

@@ -215,19 +215,19 @@ void main() {
       // analyzer instead of setting up 'isLate'.
       expect(c.instanceFields.any((f) => f.name == 'late'), isFalse);
 
-      expect(a.modelType.returnType.name, equals('dynamic'));
+      expect(a.modelType.name, equals('dynamic'));
       expect(a.isLate, isTrue);
       expect(a.features, contains('late'));
 
-      expect(b.modelType.returnType.name, equals('int'));
+      expect(b.modelType.name, equals('int'));
       expect(b.isLate, isTrue);
       expect(b.features, contains('late'));
 
-      expect(cField.modelType.returnType.name, equals('dynamic'));
+      expect(cField.modelType.name, equals('dynamic'));
       expect(cField.isLate, isTrue);
       expect(cField.features, contains('late'));
 
-      expect(dField.modelType.returnType.name, equals('double'));
+      expect(dField.modelType.name, equals('double'));
       expect(dField.isLate, isTrue);
       expect(dField.features, contains('late'));
     });
@@ -235,7 +235,7 @@ void main() {
     test('Late final top level variables', () {
       var initializeMe = lateFinalWithoutInitializer.publicProperties
           .firstWhere((v) => v.name == 'initializeMe');
-      expect(initializeMe.modelType.returnType.name, equals('String'));
+      expect(initializeMe.modelType.name, equals('String'));
       expect(initializeMe.isLate, isTrue);
       expect(initializeMe.features, contains('late'));
     });
@@ -260,10 +260,10 @@ void main() {
           equals(
               'ComplexNullableMembers&lt;<wbr><span class=\"type-parameter\">T extends String?</span>&gt;'));
       expect(
-          aComplexType.linkedReturnType,
+          aComplexType.modelType.linkedName,
           equals(
               'Map<span class="signature">&lt;<wbr><span class="type-parameter">T?</span>, <span class="type-parameter">String?</span>&gt;</span>'));
-      expect(aComplexSetterOnlyType.linkedReturnType, equals(
+      expect(aComplexSetterOnlyType.modelType.linkedName, equals(
           // TODO(jcollins-g): fix wrong span class for setter-only return type (#2226)
           '<span class="parameter" id="aComplexSetterOnlyType=-param-value"><span class="type-annotation">List<span class="signature">&lt;<wbr><span class="type-parameter">Map<span class="signature">&lt;<wbr><span class="type-parameter">T?</span>, <span class="type-parameter">String?</span>&gt;</span>?</span>&gt;</span></span></span>'));
     });
@@ -281,16 +281,16 @@ void main() {
           .firstWhere((f) => f.name == 'operator *');
       expect(nullableMembers.isNullSafety, isTrue);
       expect(
-          nullableField.linkedReturnType,
+          nullableField.modelType.linkedName,
           equals(
               'Iterable<span class=\"signature\">&lt;<wbr><span class=\"type-parameter\">BigInt</span>&gt;</span>?'));
       expect(
           methodWithNullables.linkedParams,
           equals(
               '<span class="parameter" id="methodWithNullables-param-foo"><span class="type-annotation">String?</span> <span class="parameter-name">foo</span></span>'));
-      expect(methodWithNullables.linkedReturnType, equals('int?'));
+      expect(methodWithNullables.modelType.returnType.linkedName, equals('int?'));
       expect(
-          initialized.linkedReturnType,
+          initialized.modelType.linkedName,
           equals(
               'Map<span class="signature">&lt;<wbr><span class="type-parameter">String</span>, <span class="type-parameter">Map</span>&gt;</span>?'));
       expect(
@@ -324,25 +324,25 @@ void main() {
 
     test('Set literals test', () {
       expect(aComplexSet.modelType.name, equals('Set'));
-      expect(aComplexSet.modelType.typeArguments.map((a) => a.name).toList(),
+      expect((aComplexSet.modelType as ParameterizedElementType).typeArguments.map((a) => a.name).toList(),
           equals(['AClassContainingLiterals']));
       expect(aComplexSet.constantValue,
           equals('const {const AClassContainingLiterals(3, 5)}'));
       expect(inferredTypeSet.modelType.name, equals('Set'));
       expect(
-          inferredTypeSet.modelType.typeArguments.map((a) => a.name).toList(),
+          (inferredTypeSet.modelType as ParameterizedElementType).typeArguments. map((a) => a.name).toList(),
           equals(['int']));
       expect(inferredTypeSet.constantValue, equals('const {1, 3, 5}'));
       expect(specifiedSet.modelType.name, equals('Set'));
-      expect(specifiedSet.modelType.typeArguments.map((a) => a.name).toList(),
+      expect((specifiedSet.modelType as ParameterizedElementType).typeArguments.map((a) => a.name).toList(),
           equals(['int']));
       expect(specifiedSet.constantValue, equals('const {}'));
       expect(untypedMap.modelType.name, equals('Map'));
-      expect(untypedMap.modelType.typeArguments.map((a) => a.name).toList(),
+      expect((untypedMap.modelType as ParameterizedElementType).typeArguments.map((a) => a.name).toList(),
           equals(['dynamic', 'dynamic']));
       expect(untypedMap.constantValue, equals('const {}'));
       expect(typedSet.modelType.name, equals('Set'));
-      expect(typedSet.modelType.typeArguments.map((a) => a.name).toList(),
+      expect((typedSet.modelType as ParameterizedElementType).typeArguments.map((a) => a.name).toList(),
           equals(['String']));
       expect(typedSet.constantValue,
           matches(RegExp(r'const &lt;String&gt;\s?{}')));
@@ -1908,13 +1908,13 @@ void main() {
           equals('${htmlBasePlaceholder}ex/Deprecated/expires.html'));
     });
 
-    test('exported class should have linkedReturnType for the current library',
+    test('exported class should have modelType.returnType.linkedName for the current library',
         () {
       var returnCool = Cool.instanceMethods
           .firstWhere((m) => m.name == 'returnCool', orElse: () => null);
       expect(returnCool, isNotNull);
       expect(
-          returnCool.linkedReturnType,
+          returnCool.modelType.returnType.linkedName,
           equals(
               '<a href="${htmlBasePlaceholder}fake/Cool-class.html">Cool</a>'));
     });
@@ -2416,7 +2416,7 @@ void main() {
 
     test('async function', () {
       expect(thisIsAsync.isAsynchronous, isTrue);
-      expect(thisIsAsync.linkedReturnType, equals('Future'));
+      expect(thisIsAsync.modelType.returnType.linkedName, equals('Future'));
       expect(
           thisIsAsync.documentation,
           equals(
@@ -2429,13 +2429,13 @@ void main() {
 
     test('function returning FutureOr', () {
       expect(thisIsFutureOr.isAsynchronous, isFalse);
-      expect(thisIsFutureOr.linkedReturnType, equals('FutureOr'));
+      expect(thisIsFutureOr.modelType.returnType.linkedName, equals('FutureOr'));
     });
 
     test('function returning FutureOr<Null>', () {
       expect(thisIsFutureOrNull.isAsynchronous, isFalse);
       expect(
-          thisIsFutureOrNull.linkedReturnType,
+          thisIsFutureOrNull.modelType.returnType.linkedName,
           equals(
               'FutureOr<span class="signature">&lt;<wbr><span class="type-parameter">Null</span>&gt;</span>'));
     });
@@ -2443,7 +2443,7 @@ void main() {
     test('function returning FutureOr<T>', () {
       expect(thisIsFutureOrNull.isAsynchronous, isFalse);
       expect(
-          thisIsFutureOrT.linkedReturnType,
+          thisIsFutureOrT.modelType.returnType.linkedName,
           equals(
               'FutureOr<span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span>'));
     });
@@ -2542,7 +2542,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       // TODO(jcollins-g): really, these shouldn't be called "parameters" in
       // the span class.
       expect(
-          explicitSetter.linkedReturnType,
+          explicitSetter.modelType.linkedName,
           '<span class="parameter" id="explicitSetter=-param-f"><span class="type-annotation">dynamic</span> <span class="parameter-name">Function</span>(<span class="parameter" id="param-bar"><span class="type-annotation">int</span>, </span>'
           '<span class="parameter" id="param-baz"><span class="type-annotation"><a href="${htmlBasePlaceholder}fake/Cool-class.html">Cool</a></span>, </span>'
           '<span class="parameter" id="param-macTruck"><span class="type-annotation">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span></span>)</span>');
@@ -2551,14 +2551,14 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('parameterized type from field is correctly displayed', () {
       var aField = TemplatedInterface.instanceFields
           .singleWhere((f) => f.name == 'aField');
-      expect(aField.linkedReturnType,
+      expect(aField.modelType.linkedName,
           '<a href="${htmlBasePlaceholder}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">Stream<span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span></span>&gt;</span>');
     });
 
     test('parameterized type from inherited field is correctly displayed', () {
       var aInheritedField = TemplatedInterface.inheritedFields
           .singleWhere((f) => f.name == 'aInheritedField');
-      expect(aInheritedField.linkedReturnType,
+      expect(aInheritedField.modelType.linkedName,
           '<a href="${htmlBasePlaceholder}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
     });
 
@@ -2568,7 +2568,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       Accessor aGetter = TemplatedInterface.instanceFields
           .singleWhere((f) => f.name == 'aGetter')
           .getter;
-      expect(aGetter.linkedReturnType,
+      expect(aGetter.modelType.returnType.linkedName,
           '<a href="${htmlBasePlaceholder}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">Map<span class="signature">&lt;<wbr><span class="type-parameter">A</span>, <span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">String</span>&gt;</span></span>&gt;</span></span>&gt;</span>');
     });
 
@@ -2578,7 +2578,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       Accessor aInheritedGetter = TemplatedInterface.inheritedFields
           .singleWhere((f) => f.name == 'aInheritedGetter')
           .getter;
-      expect(aInheritedGetter.linkedReturnType,
+      expect(aInheritedGetter.modelType.returnType.linkedName,
           '<a href="${htmlBasePlaceholder}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
     });
 
@@ -2592,7 +2592,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           '<a href="${htmlBasePlaceholder}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
       // TODO(jcollins-g): really, these shouldn't be called "parameters" in
       // the span class.
-      expect(aInheritedSetter.enclosingCombo.linkedReturnType,
+      expect(aInheritedSetter.enclosingCombo.modelType.linkedName,
           '<span class="parameter" id="aInheritedSetter=-param-thingToSet"><span class="type-annotation"><a href="${htmlBasePlaceholder}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span></span></span>');
     });
 
@@ -2601,7 +2601,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
         () {
       var aMethodInterface = TemplatedInterface.instanceMethods
           .singleWhere((m) => m.name == 'aMethodInterface');
-      expect(aMethodInterface.linkedReturnType,
+      expect(aMethodInterface.modelType.returnType.linkedName,
           '<a href="${htmlBasePlaceholder}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
     });
 
@@ -2610,7 +2610,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
         () {
       var aInheritedMethod = TemplatedInterface.instanceMethods
           .singleWhere((m) => m.name == 'aInheritedMethod');
-      expect(aInheritedMethod.linkedReturnType,
+      expect(aInheritedMethod.modelType.returnType.linkedName,
           '<a href="${htmlBasePlaceholder}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
     });
 
@@ -2619,7 +2619,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
         () {
       var aTypedefReturningMethodInterface = TemplatedInterface.instanceMethods
           .singleWhere((m) => m.name == 'aTypedefReturningMethodInterface');
-      expect(aTypedefReturningMethodInterface.linkedReturnType,
+      expect(aTypedefReturningMethodInterface.modelType.returnType.linkedName,
           '<a href="${htmlBasePlaceholder}ex/ParameterizedTypedef.html">ParameterizedTypedef</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">String</span>&gt;</span></span>&gt;</span>');
     });
 
@@ -2628,7 +2628,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
         () {
       var aInheritedTypedefReturningMethod = TemplatedInterface.instanceMethods
           .singleWhere((m) => m.name == 'aInheritedTypedefReturningMethod');
-      expect(aInheritedTypedefReturningMethod.linkedReturnType,
+      expect(aInheritedTypedefReturningMethod.modelType.returnType.linkedName,
           '<a href="${htmlBasePlaceholder}ex/ParameterizedTypedef.html">ParameterizedTypedef</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
     });
 
@@ -2636,7 +2636,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
         () {
       var aInheritedAdditionOperator = TemplatedInterface.inheritedOperators
           .singleWhere((m) => m.name == 'operator +');
-      expect(aInheritedAdditionOperator.linkedReturnType,
+      expect(aInheritedAdditionOperator.modelType.returnType.linkedName,
           '<a href="${htmlBasePlaceholder}ex/ParameterizedClass-class.html">ParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
       expect(
           ParameterRendererHtml()
@@ -2702,7 +2702,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('verify parameter types are correctly displayed', () {
       expect(
-          getAFunctionReturningVoid.linkedReturnType,
+          getAFunctionReturningVoid.modelType.returnType.linkedName,
           equals(
               'void Function<span class="signature">(<span class="parameter" id="param-"><span class="type-annotation">T1</span>, </span><span class="parameter" id="param-"><span class="type-annotation">T2</span></span>)</span>'));
     });
@@ -2711,7 +2711,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
         'verify type parameters to anonymous functions are distinct from normal parameters and instantiated type parameters from method, displayed correctly',
         () {
       expect(
-          getAFunctionReturningBool.linkedReturnType,
+          getAFunctionReturningBool.modelType.returnType.linkedName,
           equals(
               'bool Function&lt;<wbr><span class="type-parameter">T4</span>&gt;<span class="signature">(<span class="parameter" id="param-"><span class="type-annotation">String</span>, </span><span class="parameter" id="param-"><span class="type-annotation">T1</span>, </span><span class="parameter" id="param-"><span class="type-annotation">T4</span></span>)</span>'));
     });
@@ -2785,7 +2785,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('return type has Future', () {
-      expect(m7.linkedReturnType, contains('Future'));
+      expect(m7.modelType.returnType.linkedName, contains('Future'));
     });
 
     test('parameter has generics in signature', () {
@@ -3262,7 +3262,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       final fieldWithTypedef =
           apple.instanceFields.firstWhere((m) => m.name == 'fieldWithTypedef');
       expect(
-          fieldWithTypedef.linkedReturnType,
+          fieldWithTypedef.modelType.linkedName,
           equals(
               '<a href="${htmlBasePlaceholder}ex/ParameterizedTypedef.html">ParameterizedTypedef</a><span class="signature">&lt;<wbr><span class="type-parameter">bool</span>&gt;</span>'));
     });
@@ -3316,7 +3316,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
         'Verify that a map containing anonymous functions as values works correctly',
         () {
       var typeArguments =
-          (importantComputations.modelType.returnType as DefinedElementType)
+          (importantComputations.modelType as DefinedElementType)
               .typeArguments;
       expect(typeArguments, isNotEmpty);
       expect(
@@ -3326,7 +3326,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           matches(RegExp(
               r'(dynamic|num) Function<span class="signature">\(<span class="parameter" id="param-a"><span class="type-annotation">List<span class="signature">&lt;<wbr><span class="type-parameter">num</span>&gt;</span></span> <span class="parameter-name">a</span></span>\)</span>')));
       expect(
-          importantComputations.linkedReturnType,
+          importantComputations.modelType.linkedName,
           matches(RegExp(
               r'Map<span class="signature">&lt;<wbr><span class="type-parameter">int</span>, <span class="type-parameter">(dynamic|num) Function<span class="signature">\(<span class="parameter" id="param-a"><span class="type-annotation">List<span class="signature">&lt;<wbr><span class="type-parameter">num</span>&gt;</span></span> <span class="parameter-name">a</span></span>\)</span></span>&gt;</span>')));
     });
@@ -3335,7 +3335,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
         'Verify that a complex type parameter with an anonymous function works correctly',
         () {
       expect(
-          complicatedReturn.linkedReturnType,
+          complicatedReturn.modelType.linkedName,
           equals(
               '<a href="${htmlBasePlaceholder}fake/ATypeTakingClass-class.html">ATypeTakingClass</a><span class="signature">&lt;<wbr><span class="type-parameter">String Function<span class="signature">(<span class="parameter" id="param-"><span class="type-annotation">int</span></span>)</span></span>&gt;</span>'));
     });
@@ -3373,10 +3373,11 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('type arguments are correct', () {
-      expect(mapWithDynamicKeys.modelType.typeArguments, hasLength(2));
-      expect(mapWithDynamicKeys.modelType.typeArguments.first.name,
+      var modelType = mapWithDynamicKeys.modelType as ParameterizedElementType;
+      expect(modelType.typeArguments, hasLength(2));
+      expect(modelType.typeArguments.first.name,
           equals('dynamic'));
-      expect(mapWithDynamicKeys.modelType.typeArguments.last.name,
+      expect(modelType.typeArguments.last.name,
           equals('String'));
     });
 
@@ -3389,11 +3390,11 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('linked return type is a double', () {
-      expect(v.linkedReturnType, 'double');
+      expect(v.modelType.linkedName, 'double');
     });
 
     test('linked return type is dynamic', () {
-      expect(v3.linkedReturnType, 'dynamic');
+      expect(v3.modelType.linkedName, 'dynamic');
     });
 
     test('just a getter has documentation', () {
@@ -3612,7 +3613,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('a function returning a Future<void>', () {
       expect(
-          returningFutureVoid.linkedReturnType,
+          returningFutureVoid.modelType.returnType.linkedName,
           equals(
               'Future<span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span>'));
     });
@@ -3710,7 +3711,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('anonymous nested functions inside typedefs are handled', () {
       expect(aComplexTypedef, isNotNull);
-      expect(aComplexTypedef.linkedReturnType, startsWith('void Function'));
+      expect(aComplexTypedef.modelType.returnType.linkedName, startsWith('void Function'));
       expect(
           aComplexTypedef.nameWithGenerics,
           equals(
@@ -3720,7 +3721,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('anonymous nested functions inside typedefs are handled correctly',
         () {
       expect(
-          aComplexTypedef.linkedReturnType,
+          aComplexTypedef.modelType.returnType.linkedName,
           equals(
               'void Function<span class="signature">(<span class="parameter" id="param-"><span class="type-annotation">A1</span>, </span><span class="parameter" id="param-"><span class="type-annotation">A2</span>, </span><span class="parameter" id="param-"><span class="type-annotation">A3</span></span>)</span>'));
       expect(
@@ -3748,9 +3749,9 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('linked return type', () {
-      expect(processMessage.linkedReturnType, equals('String'));
+      expect(processMessage.modelType.returnType.linkedName, equals('String'));
       expect(
-          generic.linkedReturnType,
+          generic.modelType.returnType.linkedName,
           equals(
               'List<span class="signature">&lt;<wbr><span class="type-parameter">S</span>&gt;</span>'));
     });
@@ -3856,7 +3857,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('async return type', () {
-      expect(asyncM.linkedReturnType, 'Future');
+      expect(asyncM.modelType.returnType.linkedName, 'Future');
     });
 
     test('param with generics', () {
