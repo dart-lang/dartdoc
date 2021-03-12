@@ -241,12 +241,11 @@ class _Renderer_Package extends RendererBase<Package> {
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<LibraryContainer>'),
+                          c, remainingNames, 'Iterable<Category>'),
                   renderIterable:
                       (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-                    return c.categoriesWithPublicLibraries.map((e) =>
-                        _render_LibraryContainer(e, ast, r.template,
-                            parent: r));
+                    return c.categoriesWithPublicLibraries.map(
+                        (e) => renderSimple(e, ast, r.template, parent: r));
                   },
                 ),
                 'config': Property(
