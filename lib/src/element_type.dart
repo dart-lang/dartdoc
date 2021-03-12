@@ -34,7 +34,10 @@ abstract class ElementType extends Privacy {
     } else {
       var element = ModelElement.fromElement(f.element, packageGraph);
       assert(f is ParameterizedType || f is TypeParameterType);
-      var isGenericTypeAlias = f.aliasElement != null;
+      // TODO(jcollins-g): after analyzer 1.2.0 implement InterfaceType
+      // alias references and strip out all the cruft that's accumulated
+      // here for non-generic type aliases.
+      var isGenericTypeAlias = f.aliasElement != null && f is! InterfaceType;
       if (f is FunctionType) {
         assert(f is ParameterizedType);
         if (isGenericTypeAlias) {
@@ -44,7 +47,6 @@ abstract class ElementType extends Privacy {
         return CallableElementType(
             f, library, packageGraph, element, returnedFrom);
       } else if (isGenericTypeAlias) {
-        assert(f is TypeParameterType);
         return GenericTypeAliasElementType(
             f, library, packageGraph, element, returnedFrom);
       }
