@@ -94,7 +94,7 @@ class Extension extends Container
   }
 
   @override
-  ParameterizedElementType get modelType => super.modelType;
+  ElementType get modelType => throw UnimplementedError('(${element.runtimeType}) $element');
 
   List<ModelElement> _allModelElements;
   @override

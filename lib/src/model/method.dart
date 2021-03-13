@@ -4,7 +4,7 @@
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/source/line_info.dart';
-import 'package:analyzer/src/dart/element/member.dart' show Member;
+import 'package:analyzer/src/dart/element/member.dart' show ExecutableMember;
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/model.dart';
 
@@ -23,14 +23,14 @@ class Method extends ModelElement
 
   Method.inherited(MethodElement element, this._enclosingContainer,
       Library library, PackageGraph packageGraph,
-      {Member originalMember})
+      {ExecutableMember originalMember})
       : super(element, library, packageGraph, originalMember) {
     _isInherited = true;
     _calcTypeParameters();
   }
 
   void _calcTypeParameters() {
-    typeParameters = _method.typeParameters.map((f) {
+    typeParameters = element.typeParameters.map((f) {
       return ModelElement.from(f, library, packageGraph) as TypeParameter;
     }).toList();
   }
@@ -51,7 +51,7 @@ class Method extends ModelElement
   @override
   ModelElement get enclosingElement {
     _enclosingContainer ??=
-        ModelElement.from(_method.enclosingElement, library, packageGraph);
+        ModelElement.from(element.enclosingElement, library, packageGraph);
     return _enclosingContainer;
   }
 
@@ -60,7 +60,7 @@ class Method extends ModelElement
       '${enclosingElement.library.dirName}/${enclosingElement.name}/$fileName';
 
   String get fullkind {
-    if (_method.isAbstract) return 'abstract $kind';
+    if (element.isAbstract) return 'abstract $kind';
     return kind;
   }
 
@@ -88,13 +88,29 @@ class Method extends ModelElement
   }
 
   @override
-  bool get isStatic => _method.isStatic;
+  bool get isStatic => element.isStatic;
 
   @override
   String get kind => 'method';
 
   @override
-  CallableElementTypeMixin get modelType => super.modelType;
+  ExecutableMember get originalMember => super.originalMember;
+
+  CallableElementTypeMixin _modelType;
+  @override
+  CallableElementTypeMixin get modelType {
+    if (_modelType == null) {
+      if (originalMember != null) {
+        _modelType = ElementType.from(
+              originalMember.type,
+              library,
+              packageGraph);
+      } else {
+        _modelType = ElementType.from(element.type, library, packageGraph);
+      }
+    }
+    return _modelType;
+  }
 
   @override
   Method get overriddenElement {
@@ -112,7 +128,8 @@ class Method extends ModelElement
     return null;
   }
 
-  MethodElement get _method => (element as MethodElement);
+  @override
+  MethodElement get element => super.element;
 
   /// Methods can not be covariant; always returns false.
   @override
