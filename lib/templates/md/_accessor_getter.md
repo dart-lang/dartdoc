@@ -1,5 +1,5 @@
 {{#getter}}
-{{{ linkedReturnType }}} {{>name_summary}}  {{!two spaces intentional}}
+{{{ modelType.returnType.linkedName }}} {{>name_summary}}  {{!two spaces intentional}}
 {{>features}}
 
 {{>documentation}}

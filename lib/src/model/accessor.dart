@@ -4,6 +4,7 @@
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/src/dart/element/member.dart' show Member;
+import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/source_code_renderer.dart';
 import 'package:dartdoc/src/utils.dart';
@@ -18,10 +19,8 @@ class Accessor extends ModelElement implements EnclosedElement {
       [Member /*?*/ originalMember])
       : super(element, library, packageGraph, originalMember);
 
-  String get linkedReturnType {
-    assert(isGetter);
-    return modelType.createLinkedReturnTypeName();
-  }
+  @override
+  CallableElementTypeMixin get modelType => super.modelType;
 
   bool get isSynthetic => element.isSynthetic;
 

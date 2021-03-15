@@ -4,6 +4,7 @@
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
+import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/typedef_renderer.dart';
 
@@ -49,8 +50,6 @@ class Typedef extends ModelElement
   @override
   String get kind => 'typedef';
 
-  String get linkedReturnType => modelType.createLinkedReturnTypeName();
-
   @override
   List<TypeParameter> get typeParameters => element.typeParameters.map((f) {
         return ModelElement.from(f, library, packageGraph) as TypeParameter;
@@ -79,4 +78,7 @@ class FunctionTypedef extends Typedef {
     }
     return super.genericTypeParameters;
   }
+
+  @override
+  CallableElementTypeMixin get modelType => super.modelType;
 }

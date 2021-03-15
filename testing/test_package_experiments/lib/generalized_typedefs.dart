@@ -17,7 +17,18 @@ typedef T5<X> = X Function(X, {X name});
 typedef T6<X, Y> = X Function(Y, [Map<Y, Y>]);
 typedef T7<X extends String, Y extends List<X>> = X Function(Y, [Map<Y, Y>]);
 
-class C1<T3> {}
+T0 a;
+
+class C2 {
+  T0 b;
+  T1 c;
+  T2 d(T3 e, T4 f);
+}
+
+class C1<T extends T3> {
+  T2 a;
+  T0 b(T1 c, T d);
+}
 
 typedef T8 = C1;
 
