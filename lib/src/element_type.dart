@@ -62,10 +62,6 @@ abstract class ElementType extends Privacy {
 
   bool get canHaveParameters => false;
 
-  // TODO(jcollins-g): change clients of ElementType to use subtypes more consistently
-  // and eliminate createLinkedReturnTypeName (instead, using returnType.linkedName);
-  String createLinkedReturnTypeName() => linkedName;
-
   bool get isTypedef => false;
 
   String get linkedName;
@@ -90,7 +86,7 @@ abstract class ElementType extends Privacy {
   }
 
   /// An unmodifiable list of this element type's parameters.
-  List<Parameter> get parameters => const <Parameter>[];
+  List<Parameter> get parameters;
 
   DartType get instantiatedType;
 
@@ -149,22 +145,25 @@ class UndefinedElementType extends ElementType {
 
   @override
   String get linkedName => name;
+
+  @override
+  // TODO(jcollins-g): remove the need for an empty list here.
+  List<Parameter> get parameters => [];
 }
 
 /// A FunctionType that does not have an underpinning Element.
-class FunctionTypeElementType extends UndefinedElementType {
+class FunctionTypeElementType extends UndefinedElementType
+    with CallableElementTypeMixin {
   FunctionTypeElementType(DartType f, Library library,
       PackageGraph packageGraph, ElementType returnedFrom)
       : super(f, library, packageGraph, returnedFrom);
-
-  @override
-  FunctionType get type => super.type;
 
   @override
   List<Parameter> get parameters => type.parameters
       .map((p) => ModelElement.from(p, library, packageGraph) as Parameter)
       .toList(growable: false);
 
+  @override
   ElementType get returnType =>
       ElementType.from(type.returnType, library, packageGraph, this);
 
@@ -174,11 +173,7 @@ class FunctionTypeElementType extends UndefinedElementType {
     return _linkedName;
   }
 
-  @override
-  String createLinkedReturnTypeName() => returnType.linkedName;
-
   String _nameWithGenerics;
-
   @override
   String get nameWithGenerics {
     _nameWithGenerics ??= _renderer.renderNameWithGenerics(this);
@@ -216,7 +211,7 @@ class ParameterizedElementType extends DefinedElementType {
     return _nameWithGenerics;
   }
 
-  ElementTypeRenderer<ParameterizedElementType> get _renderer =>
+  ElementTypeRenderer<ElementType> get _renderer =>
       packageGraph.rendererFactory.parameterizedElementTypeRenderer;
 }
 
@@ -281,9 +276,6 @@ abstract class DefinedElementType extends ElementType {
     return _returnType;
   }
 
-  @override
-  String createLinkedReturnTypeName() => returnType.linkedName;
-
   Iterable<ElementType> _typeArguments;
 
   /// An unmodifiable list of this element type's parameters.
@@ -341,13 +333,14 @@ abstract class DefinedElementType extends ElementType {
 }
 
 /// Any callable ElementType will mix-in this class, whether anonymous or not.
-abstract class CallableElementTypeMixin implements ParameterizedElementType {
-  @override
+abstract class CallableElementTypeMixin implements ElementType {
+  Iterable<ElementType> _typeArguments;
+
   ModelElement get returnElement => returnType is DefinedElementType
       ? (returnType as DefinedElementType).element
       : null;
 
-  @override
+  ElementType _returnType;
   ElementType get returnType {
     _returnType ??=
         ElementType.from(type.returnType, library, packageGraph, this);
@@ -357,7 +350,6 @@ abstract class CallableElementTypeMixin implements ParameterizedElementType {
   @override
   FunctionType get type => _type;
 
-  @override
   // TODO(jcollins-g): Rewrite this and improve object model so this doesn't
   // require type checking everywhere.
   Iterable<ElementType> get typeArguments {
@@ -414,11 +406,15 @@ class CallableElementType extends ParameterizedElementType
 
   @override
   String get linkedName {
-    _linkedName ??= _renderer.renderLinkedName(this);
+    if (_linkedName == null) {
+      if (name != null && name.isNotEmpty) {
+        _linkedName = super.linkedName;
+      } else {
+        _linkedName = _renderer.renderLinkedName(this);
+      }
+    }
     return _linkedName;
   }
-
-  String get superLinkedName => super.linkedName;
 
   @override
   ElementTypeRenderer<CallableElementType> get _renderer =>

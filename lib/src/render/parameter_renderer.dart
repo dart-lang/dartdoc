@@ -165,13 +165,12 @@ abstract class ParameterRenderer {
     if (param.isCovariant) {
       buf.write(covariant('covariant') + ' ');
     }
-    if (paramModelType is CallableElementTypeMixin ||
-        paramModelType.type is FunctionType) {
+    if (paramModelType is CallableElementTypeMixin) {
       String returnTypeName;
       if (paramModelType.isTypedef) {
         returnTypeName = paramModelType.linkedName;
       } else {
-        returnTypeName = paramModelType.createLinkedReturnTypeName();
+        returnTypeName = paramModelType.returnType.linkedName;
       }
       buf.write(typeName(returnTypeName));
       if (showNames) {
@@ -182,8 +181,10 @@ abstract class ParameterRenderer {
       }
       if (!paramModelType.isTypedef && paramModelType is DefinedElementType) {
         buf.write('(');
-        buf.write(renderLinkedParams(paramModelType.element.parameters,
-            showMetadata: showMetadata, showNames: showNames));
+        buf.write(renderLinkedParams(
+            (paramModelType as DefinedElementType).element.parameters,
+            showMetadata: showMetadata,
+            showNames: showNames));
         buf.write(')');
         buf.write(paramModelType.nullabilitySuffix);
       }

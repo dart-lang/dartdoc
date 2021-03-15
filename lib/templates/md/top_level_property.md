@@ -8,7 +8,7 @@
 {{>feature_set}}
 
 {{#hasNoGetterSetter}}
-{{{ linkedReturnType }}} {{>name_summary}}  {{!two spaces intentional}}
+{{{ modelType.linkedName }}} {{>name_summary}}  {{!two spaces intentional}}
 {{>features}}
 
 {{>documentation}}

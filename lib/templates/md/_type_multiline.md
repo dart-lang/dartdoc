@@ -4,4 +4,4 @@
 {{/annotations}}
 {{/hasAnnotations}}
 
-{{>name_summary}}{{{genericParameters}}} = {{{linkedReturnType}}}
+{{>name_summary}}{{{genericParameters}}} = {{{modelType.linkedName}}}

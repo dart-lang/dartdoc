@@ -3,7 +3,6 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/dart/element/element.dart';
-import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 /// Top-level variables. But also picks up getters and setters?
@@ -85,9 +84,6 @@ class TopLevelVariable extends ModelElement
 
   @override
   String get fileName => '${isConst ? '$name-constant' : name}.$fileType';
-
-  @override
-  DefinedElementType get modelType => super.modelType;
 
   TopLevelVariableElement get _variable => (element as TopLevelVariableElement);
 }

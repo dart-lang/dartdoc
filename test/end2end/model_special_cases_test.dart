@@ -82,6 +82,7 @@ void main() {
     group('generalized typedefs', () {
       Library generalizedTypedefs;
       Typedef T0, T1, T2, T3, T4, T5, T6, T7;
+      Class C, C2;
 
       setUpAll(() async {
         generalizedTypedefs = (await _testPackageGraphExperiments)
@@ -95,6 +96,8 @@ void main() {
         T5 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T5');
         T6 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T6');
         T7 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T7');
+        C = generalizedTypedefs.classes.firstWhere((c) => c.name == 'C');
+        C2 = generalizedTypedefs.classes.firstWhere((c) => c.name == 'C2');
       });
 
       void expectTypedefs(Typedef t, String modelTypeToString,
@@ -103,6 +106,27 @@ void main() {
         expect(t.genericTypeParameters.map((p) => p.toString()),
             orderedEquals(genericParameters));
       }
+
+      test('typedef references display aliases', () {
+        var f = C.allFields.firstWhere((f) => f.name == 'f');
+        var g = C.instanceMethods.firstWhere((m) => m.name == 'g');
+        var a = generalizedTypedefs.properties.firstWhere((p) => p.name == 'a');
+        var b = C2.allFields.firstWhere((f) => f.name == 'b');
+        var c = C2.allFields.firstWhere((f) => f.name == 'c');
+        var d = C2.instanceMethods.firstWhere((f) => f.name == 'd');
+
+        expect(a.modelType.name, equals('T0'));
+        expect(b.modelType.name, equals('T0'));
+        expect(c.modelType.name, equals('T1'));
+        expect(d.modelType.returnType.name, equals('T2'));
+        expect(d.parameters.first.modelType.name, equals('T3'));
+        expect(d.parameters.last.modelType.name, equals('T4'));
+
+        expect(f.modelType.name, equals('T0'));
+        expect(g.modelType.returnType.name, equals('T1'));
+        expect(g.modelType.parameters.first.modelType.name, equals('T2'));
+        expect(g.modelType.parameters.last.modelType.name, equals('T3'));
+      }, skip: 'dart-lang/sdk#45921');
 
       test('basic non-function typedefs work', () {
         expectTypedefs(T0, 'void', []);

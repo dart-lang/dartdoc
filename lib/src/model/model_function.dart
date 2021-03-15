@@ -66,8 +66,6 @@ class ModelFunctionTyped extends ModelElement
   @override
   String get kind => 'function';
 
-  String get linkedReturnType => modelType.createLinkedReturnTypeName();
-
   // Food for mustache. TODO(jcollins-g): what about enclosing elements?
   bool get isInherited => false;
 
