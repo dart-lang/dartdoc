@@ -191,11 +191,15 @@ mixin DocumentationComment
   /// ```yaml
   /// dartdoc:
   ///   tools:
-  ///     # Prefixes the given input with "## "
-  ///     # Path is relative to project root.
-  ///     prefix: "bin/prefix.dart"
-  ///     # Prints the date
-  ///     date: "/bin/date"
+  ///     prefix:
+  ///       # Path is relative to project root.
+  ///       command: ["bin/prefix.dart"]
+  ///       description: "Prefixes the given input with '##'"
+  ///       # If false, adds --no-sound-null-safety when compiling.
+  ///       sound-null-safety: false
+  ///     date:
+  ///       command: ["/bin/date"]
+  ///       description: "Prints the date"
   /// ```
   ///
   /// In code:

@@ -147,13 +147,13 @@ class ToolDefinition {
       List<String> command,
       List<String> setupCommand,
       String description,
-      ResourceProvider resourceProvider) {
+      ResourceProvider resourceProvider, {bool soundNullSafety = true}) {
     assert(command != null);
     assert(command.isNotEmpty);
     assert(description != null);
     if (isDartExecutable(command[0])) {
       return DartToolDefinition(
-          command, setupCommand, description, resourceProvider);
+          command, setupCommand, description, resourceProvider, soundNullSafety: soundNullSafety);
     } else {
       return ToolDefinition(command, setupCommand, description);
     }
@@ -274,6 +274,9 @@ class SnapshotCache {
 class DartToolDefinition extends ToolDefinition {
   final ResourceProvider _resourceProvider;
 
+  /// True if the command can successfully be compiled with sound null safety.
+  final bool soundNullSafety;
+
   /// Takes a list of args to modify, and returns the name of the executable
   /// to run. If no snapshot file existed, then create one and modify the args
   /// so that if they are executed with dart, will result in the snapshot being
@@ -293,6 +296,7 @@ class DartToolDefinition extends ToolDefinition {
         // https://dart-review.googlesource.com/c/sdk/+/181421 is safely
         // in the rearview mirror in dev/Flutter.
         '--ignore-unrecognized-flags',
+        if (!soundNullSafety) '--no-sound-null-safety',
         '--verbosity=error',
         '--snapshot=${_resourceProvider.pathContext.absolute(snapshotFile.path)}',
         '--snapshot_kind=app-jit'
@@ -307,7 +311,7 @@ class DartToolDefinition extends ToolDefinition {
   }
 
   DartToolDefinition(List<String> command, List<String> setupCommand,
-      String description, this._resourceProvider)
+      String description, this._resourceProvider, {this.soundNullSafety = true})
       : super(command, setupCommand, description);
 }
 
@@ -335,11 +339,13 @@ class ToolConfiguration {
     for (var entry in yamlMap.entries) {
       var name = entry.key.toString();
       var toolMap = entry.value;
+      var soundNullSafety = true;
       String description;
       List<String> command;
       List<String> setupCommand;
       if (toolMap is Map) {
         description = toolMap['description']?.toString();
+        soundNullSafety = toolMap['sound-null-safety'] ?? true;
         List<String> findCommand([String prefix = '']) {
           List<String> command;
           // If the command key is given, then it applies to all platforms.
@@ -421,7 +427,7 @@ class ToolConfiguration {
             setupCommand;
       }
       newToolDefinitions[name] = ToolDefinition.fromCommand(
-          [executable] + command, setupCommand, description, resourceProvider);
+          [executable] + command, setupCommand, description, resourceProvider, soundNullSafety: soundNullSafety);
     }
     return ToolConfiguration._(newToolDefinitions, resourceProvider);
   }
