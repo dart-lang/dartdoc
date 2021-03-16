@@ -59,6 +59,7 @@ void main() {
 drill:
   command: ["bin/drill.dart"]
   description: "Puts holes in things."
+  compile-args: ["--no-sound-null-safety"]
 snapshot_drill:
   command: ["${snapshotFile.replaceAll(r'\', r'\\')}"]
   description: "Puts holes in things, but faster."
@@ -104,6 +105,10 @@ echo:
     });
     // This test must come first, to verify that the first run creates
     // a snapshot.
+    test('Tool definition includes compile arguments.', () async {
+      DartToolDefinition definition = runner.toolConfiguration.tools['drill'];
+      expect(definition.compileArgs, equals(['--no-sound-null-safety']));
+    });
     test('can invoke a Dart tool, and second run is a snapshot.', () async {
       var result = await runner.run(
         ['drill', r'--file=$INPUT'],
@@ -114,6 +119,8 @@ echo:
       expect(result, contains('--file=<INPUT_FILE>'));
       expect(result, contains('## `TEST INPUT`'));
       expect(result, contains('Script location is in dartdoc tree.'));
+      // This shouldn't be in the args passed to the tool.
+      expect(result, isNot(contains('--no-sound-null-safety')));
       expect(setupFile.existsSync(), isFalse);
       result = await runner.run(
         ['drill', r'--file=$INPUT'],

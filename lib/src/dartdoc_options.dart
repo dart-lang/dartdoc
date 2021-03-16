@@ -147,14 +147,22 @@ class ToolDefinition {
       List<String> command,
       List<String> setupCommand,
       String description,
-      ResourceProvider resourceProvider, {bool soundNullSafety = true}) {
+      ResourceProvider resourceProvider,
+      {List<String> compileArgs}) {
     assert(command != null);
     assert(command.isNotEmpty);
     assert(description != null);
     if (isDartExecutable(command[0])) {
       return DartToolDefinition(
-          command, setupCommand, description, resourceProvider, soundNullSafety: soundNullSafety);
+          command, setupCommand, description, resourceProvider,
+          compileArgs: compileArgs ?? const []);
     } else {
+      if (compileArgs != null && compileArgs.isNotEmpty) {
+        throw DartdocOptionError(
+            'Compile arguments may only be specified for Dart tools, but '
+            'compile-args of $compileArgs were specified for '
+            '$command.');
+      }
       return ToolDefinition(command, setupCommand, description);
     }
   }
@@ -274,8 +282,8 @@ class SnapshotCache {
 class DartToolDefinition extends ToolDefinition {
   final ResourceProvider _resourceProvider;
 
-  /// True if the command can successfully be compiled with sound null safety.
-  final bool soundNullSafety;
+  /// A list of arguments to add to the snapshot compilation arguments.
+  final List<String> compileArgs;
 
   /// Takes a list of args to modify, and returns the name of the executable
   /// to run. If no snapshot file existed, then create one and modify the args
@@ -296,10 +304,10 @@ class DartToolDefinition extends ToolDefinition {
         // https://dart-review.googlesource.com/c/sdk/+/181421 is safely
         // in the rearview mirror in dev/Flutter.
         '--ignore-unrecognized-flags',
-        if (!soundNullSafety) '--no-sound-null-safety',
         '--verbosity=error',
         '--snapshot=${_resourceProvider.pathContext.absolute(snapshotFile.path)}',
-        '--snapshot_kind=app-jit'
+        '--snapshot_kind=app-jit',
+        ...compileArgs,
       ]);
     } else {
       await snapshot.snapshotValid();
@@ -311,8 +319,10 @@ class DartToolDefinition extends ToolDefinition {
   }
 
   DartToolDefinition(List<String> command, List<String> setupCommand,
-      String description, this._resourceProvider, {this.soundNullSafety = true})
-      : super(command, setupCommand, description);
+      String description, this._resourceProvider,
+      {this.compileArgs = const []})
+      : assert(compileArgs != null),
+        super(command, setupCommand, description);
 }
 
 /// A configuration class that can interpret [ToolDefinition]s from a YAML map.
@@ -339,13 +349,12 @@ class ToolConfiguration {
     for (var entry in yamlMap.entries) {
       var name = entry.key.toString();
       var toolMap = entry.value;
-      var soundNullSafety = true;
+      List<String> compileArgs;
       String description;
       List<String> command;
       List<String> setupCommand;
       if (toolMap is Map) {
         description = toolMap['description']?.toString();
-        soundNullSafety = toolMap['sound-null-safety'] ?? true;
         List<String> findCommand([String prefix = '']) {
           List<String> command;
           // If the command key is given, then it applies to all platforms.
@@ -382,6 +391,28 @@ class ToolConfiguration {
 
         command = findCommand();
         setupCommand = findCommand('setup_');
+
+        List<String> findArgs() {
+          const tagName = 'compile-args';
+          List<String> args;
+          if (toolMap.containsKey(tagName)) {
+            var compileArgs = toolMap[tagName];
+            if (compileArgs is String) {
+              args = [toolMap[tagName].toString()];
+            } else if (compileArgs is YamlList) {
+              args =
+                  compileArgs.map<String>((node) => node.toString()).toList();
+            } else {
+              throw DartdocOptionError(
+                  'Tool compile arguments must be a list of strings. The tool '
+                  '$name has a $tagName entry that is a '
+                  '${compileArgs.runtimeType}');
+            }
+          }
+          return args;
+        }
+
+        compileArgs = findArgs();
       } else {
         throw DartdocOptionError(
             'Tools must be defined as a map of tool names to definitions. Tool '
@@ -427,7 +458,8 @@ class ToolConfiguration {
             setupCommand;
       }
       newToolDefinitions[name] = ToolDefinition.fromCommand(
-          [executable] + command, setupCommand, description, resourceProvider, soundNullSafety: soundNullSafety);
+          [executable] + command, setupCommand, description, resourceProvider,
+          compileArgs: compileArgs ?? const []);
     }
     return ToolConfiguration._(newToolDefinitions, resourceProvider);
   }

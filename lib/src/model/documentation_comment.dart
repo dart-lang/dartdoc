@@ -194,9 +194,8 @@ mixin DocumentationComment
   ///     prefix:
   ///       # Path is relative to project root.
   ///       command: ["bin/prefix.dart"]
-  ///       description: "Prefixes the given input with '##'"
-  ///       # If false, adds --no-sound-null-safety when compiling.
-  ///       sound-null-safety: false
+  ///       description: "Prefixes the given input with '##'."
+  ///       compile-args: ["--no-sound-null-safety"]
   ///     date:
   ///       command: ["/bin/date"]
   ///       description: "Prints the date"
