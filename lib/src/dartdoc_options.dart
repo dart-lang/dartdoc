@@ -602,13 +602,13 @@ abstract class DartdocOption<T> {
     if (!mustExist) return;
     assert(isDir || isFile);
     List<String> resolvedPaths;
-    if (valueWithContext is _OptionValueWithContext<String>) {
+    var value = valueWithContext.value;
+    if (value is String) {
       resolvedPaths = [valueWithContext.resolvedValue];
-    } else if (valueWithContext is _OptionValueWithContext<List<String>>) {
-      resolvedPaths = valueWithContext.resolvedValue.toList();
-    } else if (valueWithContext
-        is _OptionValueWithContext<Map<String, String>>) {
-      resolvedPaths = valueWithContext.resolvedValue.values.toList();
+    } else if (value is List<String>) {
+      resolvedPaths = (valueWithContext.resolvedValue as List).toList();
+    } else if (value is Map<String, String>) {
+      resolvedPaths = (valueWithContext.resolvedValue as Map).values.toList();
     } else {
       assert(
           false,
