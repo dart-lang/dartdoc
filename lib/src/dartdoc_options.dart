@@ -39,6 +39,8 @@ const int _kIntVal = 0;
 const double _kDoubleVal = 0.0;
 const bool _kBoolVal = true;
 
+const String _kCompileArgsTagName = 'compile_args';
+
 int get _usageLineLength => stdout.hasTerminal ? stdout.terminalColumns : null;
 
 typedef ConvertYamlToType<T> = T Function(YamlMap, String, ResourceProvider);
@@ -160,7 +162,7 @@ class ToolDefinition {
       if (compileArgs != null && compileArgs.isNotEmpty) {
         throw DartdocOptionError(
             'Compile arguments may only be specified for Dart tools, but '
-            'compile-args of $compileArgs were specified for '
+            '$_kCompileArgsTagName of $compileArgs were specified for '
             '$command.');
       }
       return ToolDefinition(command, setupCommand, description);
@@ -393,19 +395,18 @@ class ToolConfiguration {
         setupCommand = findCommand('setup_');
 
         List<String> findArgs() {
-          const tagName = 'compile-args';
           List<String> args;
-          if (toolMap.containsKey(tagName)) {
-            var compileArgs = toolMap[tagName];
+          if (toolMap.containsKey(_kCompileArgsTagName)) {
+            var compileArgs = toolMap[_kCompileArgsTagName];
             if (compileArgs is String) {
-              args = [toolMap[tagName].toString()];
+              args = [toolMap[_kCompileArgsTagName].toString()];
             } else if (compileArgs is YamlList) {
               args =
                   compileArgs.map<String>((node) => node.toString()).toList();
             } else {
               throw DartdocOptionError(
                   'Tool compile arguments must be a list of strings. The tool '
-                  '$name has a $tagName entry that is a '
+                  '$name has a $_kCompileArgsTagName entry that is a '
                   '${compileArgs.runtimeType}');
             }
           }

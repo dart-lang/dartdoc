@@ -59,7 +59,7 @@ void main() {
 drill:
   command: ["bin/drill.dart"]
   description: "Puts holes in things."
-  compile-args: ["--no-sound-null-safety"]
+  compile_args: ["--no-sound-null-safety"]
 snapshot_drill:
   command: ["${snapshotFile.replaceAll(r'\', r'\\')}"]
   description: "Puts holes in things, but faster."
@@ -119,7 +119,7 @@ echo:
       expect(result, contains('--file=<INPUT_FILE>'));
       expect(result, contains('## `TEST INPUT`'));
       expect(result, contains('Script location is in dartdoc tree.'));
-      // This shouldn't be in the args passed to the tool.
+      // Compile args shouldn't be in the args passed to the tool.
       expect(result, isNot(contains('--no-sound-null-safety')));
       expect(setupFile.existsSync(), isFalse);
       result = await runner.run(
