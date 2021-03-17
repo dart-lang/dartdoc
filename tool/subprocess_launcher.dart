@@ -198,7 +198,8 @@ class SubprocessLauncher {
         if (result.containsKey('message')) {
           line = result['message'];
         } else if (result.containsKey('data')) {
-          line = result['data']['text'];
+          var data = result['data'] as Map;
+          line = data['text'];
         }
       }
       return line.split('\n');

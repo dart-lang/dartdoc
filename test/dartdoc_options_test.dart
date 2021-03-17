@@ -63,7 +63,7 @@ void main() {
     dartdocOptionSetSynthetic.add(
         DartdocOptionSyntheticOnly<List<String>>('vegetableLoader',
             (DartdocSyntheticOption<List<String>> option, Folder dir) {
-      if (option.root['mySpecialInteger'].valueAt(dir) > 20) {
+      if ((option.root['mySpecialInteger'].valueAt(dir) as num) > 20) {
         return <String>['existing.dart'];
       } else {
         return <String>['not_existing.dart'];
@@ -81,7 +81,7 @@ void main() {
     dartdocOptionSetSynthetic.add(
         DartdocOptionArgSynth<String>('nonCriticalFileOption',
             (DartdocSyntheticOption<String> option, Folder dir) {
-      return option.root['vegetableLoader'].valueAt(dir).first;
+      return (option.root['vegetableLoader'].valueAt(dir) as List).first;
     }, resourceProvider, optionIs: OptionKind.file));
 
     dartdocOptionSetFiles = DartdocOptionSet('dartdoc', resourceProvider);

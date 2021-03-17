@@ -1097,7 +1097,7 @@ abstract class ModelElement extends Canonicalization
         }
         if (params == null && element is FunctionTypedElement) {
           if (_originalMember != null) {
-            params = (_originalMember as dynamic).parameters;
+            params = (_originalMember as FunctionTypedElement).parameters;
           } else {
             params = (element as FunctionTypedElement).parameters;
           }
