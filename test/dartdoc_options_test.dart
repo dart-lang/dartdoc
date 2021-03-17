@@ -637,13 +637,13 @@ dartdoc:
           equals(
               'Field dartdoc.fileOptionList from ${path.canonicalize(dartdocOptionsTwo.path)}, set to [existing.dart, thing/that/does/not/exist], resolves to missing path: '
               '"${path.joinAll([
-            path.canonicalize(secondDir.path),
-            'thing',
-            'that',
-            'does',
-            'not',
-            'exist'
-          ])}"'));
+                path.canonicalize(secondDir.path),
+                'thing',
+                'that',
+                'does',
+                'not',
+                'exist'
+              ])}"'));
       // It doesn't matter that this fails.
       expect(dartdocOptionSetFiles['nonCriticalFileOption'].valueAt(firstDir),
           equals(path.joinAll([path.canonicalize(firstDir.path), 'whatever'])));
@@ -663,9 +663,9 @@ dartdoc:
           equals(
               'Field dartdoc.fileOption from ${path.canonicalize(dartdocOptionsTwo.path)}, set to not existing, resolves to missing path: '
               '"${path.joinAll([
-            path.canonicalize(secondDir.path),
-            "not existing"
-          ])}"'));
+                path.canonicalize(secondDir.path),
+                "not existing"
+              ])}"'));
     });
 
     test('DartdocOptionSetFile works for directory options', () {
