@@ -382,9 +382,9 @@ class _FilePackageMeta extends PubPackageMeta {
       _environment?.containsKey('flutter') == true ||
       _dependencies?.containsKey('flutter') == true;
 
-  Map<String, dynamic> /*?*/ get _environment => _pubspec['environment'];
+  YamlMap /*?*/ get _environment => _pubspec['environment'];
 
-  Map<String, dynamic> /*?*/ get _dependencies => _pubspec['environment'];
+  YamlMap /*?*/ get _dependencies => _pubspec['environment'];
 
   @override
   File getReadmeContents() =>
