@@ -42,9 +42,9 @@ jobs:
         if: runner.os == 'Windows'
         run: git config --global core.autocrlf input
       - uses: actions/checkout@v2
-      - uses: dart-lang/setup-dart@v0.1
+      - uses: dart-lang/setup-dart@v1.0
         with:
-          channel: ${{ matrix.sdk }}
+          sdk: ${{ matrix.sdk }}
       - name: Install dependencies
         run: dart pub get
       - name: ${{ matrix.job }}
