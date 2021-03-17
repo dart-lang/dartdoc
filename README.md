@@ -289,7 +289,7 @@ dartdoc:
       command: ["bin/drill.dart"]
       setup_command: ["bin/setup.dart"]
       description: "Puts holes in things."
-      compile_args: ["-no-sound-null-safety"]
+      compile_args: ["--no-sound-null-safety"]
     echo:
       macos: ['/bin/sh', '-c', 'echo']
       setup_macos: ['/bin/sh', '-c', 'setup.sh']
