@@ -33,6 +33,10 @@ abstract class ElementType extends Privacy {
       return UndefinedElementType(f, library, packageGraph, returnedFrom);
     } else {
       var element = ModelElement.fromElement(f.element, packageGraph);
+      // [TypeAliasElement.aliasElement] has different implications.
+      // In that case it is an actual type alias of some kind (generic
+      // or otherwise.   Here however aliasElement signals that this is a
+      // type referring to an alias.
       if (f is! TypeAliasElement && f.aliasElement != null) {
         return AliasedElementType(
             f, library, packageGraph, element, returnedFrom);
