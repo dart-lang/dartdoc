@@ -33,6 +33,10 @@ abstract class ElementType extends Privacy {
       return UndefinedElementType(f, library, packageGraph, returnedFrom);
     } else {
       var element = ModelElement.fromElement(f.element, packageGraph);
+      if (f is! TypeAliasElement && f.aliasElement != null) {
+        return AliasedElementType(
+            f, library, packageGraph, element, returnedFrom);
+      }
       assert(f is ParameterizedType || f is TypeParameterType);
       // TODO(jcollins-g): after analyzer 1.2.0 implement InterfaceType
       // alias references and strip out all the cruft that's accumulated
@@ -211,8 +215,30 @@ class ParameterizedElementType extends DefinedElementType {
     return _nameWithGenerics;
   }
 
-  ElementTypeRenderer<ElementType> get _renderer =>
+  ElementTypeRenderer<ParameterizedElementType> get _renderer =>
       packageGraph.rendererFactory.parameterizedElementTypeRenderer;
+}
+
+class AliasedElementType extends ParameterizedElementType {
+  AliasedElementType(ParameterizedType type, Library library,
+      PackageGraph packageGraph, ModelElement element, ElementType returnedFrom)
+      : super(type, library, packageGraph, element, returnedFrom) {
+    assert(type.aliasElement != null);
+  }
+
+  ModelElement _aliasElement;
+  ModelElement get aliasElement => _aliasElement ??=
+      ModelElement.fromElement(type.aliasElement, packageGraph);
+
+  Iterable<ElementType> _aliasArguments;
+  Iterable<ElementType> get aliasArguments =>
+      _aliasArguments ??= type.aliasArguments
+          .map((f) => ElementType.from(f, library, packageGraph))
+          .toList(growable: false);
+
+  @override
+  ElementTypeRenderer<AliasedElementType> get _renderer =>
+      packageGraph.rendererFactory.aliasedElementTypeRenderer;
 }
 
 class TypeParameterElementType extends DefinedElementType {

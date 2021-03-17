@@ -107,29 +107,35 @@ void main() {
             orderedEquals(genericParameters));
       }
 
+      void expectAliasedTypeName(AliasedElementType n, expected) {
+        expect(n.aliasElement.name, expected);
+      }
+
       test('typedef references display aliases', () {
-        var f = C.allFields.firstWhere((f) => f.name == 'f');
         var g = C.instanceMethods.firstWhere((m) => m.name == 'g');
 
         var c = C2.allFields.firstWhere((f) => f.name == 'c');
         var d = C2.instanceMethods.firstWhere((f) => f.name == 'd');
 
-        expect(c.modelType.name, equals('T1'));
-        expect(d.modelType.returnType.name, equals('T2'));
-        expect(d.parameters.first.modelType.name, equals('T3'));
-        expect(d.parameters.last.modelType.name, equals('T4'));
+        expectAliasedTypeName(c.modelType, equals('T1'));
+        expectAliasedTypeName(d.modelType.returnType, equals('T2'));
+        expectAliasedTypeName(d.parameters.first.modelType, equals('T3'));
+        expectAliasedTypeName(d.parameters.last.modelType, equals('T4'));
 
-        expect(f.modelType.name, equals('T0'));
-        expect(g.modelType.returnType.name, equals('T1'));
-        expect(g.modelType.parameters.first.modelType.name, equals('T2'));
-        expect(g.modelType.parameters.last.modelType.name, equals('T3'));
+        expectAliasedTypeName(g.modelType.returnType, equals('T1'));
+        expectAliasedTypeName(
+            g.modelType.parameters.first.modelType, equals('T2'));
+        expectAliasedTypeName(
+            g.modelType.parameters.last.modelType, equals('T3'));
       });
 
       test('typedef references to special types work', () {
         var a = generalizedTypedefs.properties.firstWhere((p) => p.name == 'a');
         var b = C2.allFields.firstWhere((f) => f.name == 'b');
-        expect(a.modelType.name, equals('T0'));
-        expect(b.modelType.name, equals('T0'));
+        var f = C.allFields.firstWhere((f) => f.name == 'f');
+        expectAliasedTypeName(a.modelType, equals('T0'));
+        expectAliasedTypeName(b.modelType, equals('T0'));
+        expectAliasedTypeName(f.modelType, equals('T0'));
       }, skip: 'dart-lang/sdk#45921');
 
       test('basic non-function typedefs work', () {
