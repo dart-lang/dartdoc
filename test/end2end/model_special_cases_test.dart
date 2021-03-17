@@ -110,13 +110,10 @@ void main() {
       test('typedef references display aliases', () {
         var f = C.allFields.firstWhere((f) => f.name == 'f');
         var g = C.instanceMethods.firstWhere((m) => m.name == 'g');
-        var a = generalizedTypedefs.properties.firstWhere((p) => p.name == 'a');
-        var b = C2.allFields.firstWhere((f) => f.name == 'b');
+
         var c = C2.allFields.firstWhere((f) => f.name == 'c');
         var d = C2.instanceMethods.firstWhere((f) => f.name == 'd');
 
-        expect(a.modelType.name, equals('T0'));
-        expect(b.modelType.name, equals('T0'));
         expect(c.modelType.name, equals('T1'));
         expect(d.modelType.returnType.name, equals('T2'));
         expect(d.parameters.first.modelType.name, equals('T3'));
@@ -126,6 +123,13 @@ void main() {
         expect(g.modelType.returnType.name, equals('T1'));
         expect(g.modelType.parameters.first.modelType.name, equals('T2'));
         expect(g.modelType.parameters.last.modelType.name, equals('T3'));
+      });
+
+      test('typedef references to special types work', () {
+        var a = generalizedTypedefs.properties.firstWhere((p) => p.name == 'a');
+        var b = C2.allFields.firstWhere((f) => f.name == 'b');
+        expect(a.modelType.name, equals('T0'));
+        expect(b.modelType.name, equals('T0'));
       }, skip: 'dart-lang/sdk#45921');
 
       test('basic non-function typedefs work', () {
