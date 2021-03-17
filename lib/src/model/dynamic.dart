@@ -10,7 +10,6 @@ class Dynamic extends ModelElement {
   Dynamic(Element element, PackageGraph packageGraph)
       : super(element, null, packageGraph);
 
-  @override
   UndefinedElementType get modelType =>
       throw UnimplementedError('(${element.runtimeType}) $element');
 

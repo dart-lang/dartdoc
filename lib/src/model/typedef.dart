@@ -20,7 +20,6 @@ class Typedef extends ModelElement
   TypeAliasElement get element => super.element;
 
   ElementType _modelType;
-  @override
   ElementType get modelType => _modelType ??=
       ElementType.from(element.aliasedType, library, packageGraph);
 

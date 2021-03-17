@@ -97,7 +97,6 @@ class Method extends ModelElement
   ExecutableMember get originalMember => super.originalMember;
 
   CallableElementTypeMixin _modelType;
-  @override
   CallableElementTypeMixin get modelType {
     if (_modelType == null) {
       if (originalMember != null) {

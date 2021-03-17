@@ -26,7 +26,6 @@ class Accessor extends ModelElement implements EnclosedElement {
   ExecutableMember get originalMember => super.originalMember;
 
   CallableElementTypeMixin _modelType;
-  @override
   CallableElementTypeMixin get modelType {
     if (_modelType == null) {
       if (originalMember != null) {
@@ -48,7 +47,7 @@ class Accessor extends ModelElement implements EnclosedElement {
   // The [enclosingCombo] where this element was defined.
   GetterSetterCombo get definingCombo {
     if (_definingCombo == null) {
-      var variable = (element as PropertyAccessorElement).variable;
+      var variable = element.variable;
       _definingCombo = ModelElement.fromElement(variable, packageGraph);
       assert(_definingCombo != null, 'Unable to find defining combo');
     }
@@ -102,12 +101,12 @@ class Accessor extends ModelElement implements EnclosedElement {
 
   @override
   ModelElement get enclosingElement {
-    if (_accessor.enclosingElement is CompilationUnitElement) {
+    if (element.enclosingElement is CompilationUnitElement) {
       return packageGraph.findButDoNotCreateLibraryFor(
-          _accessor.enclosingElement.enclosingElement);
+          element.enclosingElement.enclosingElement);
     }
 
-    return ModelElement.from(_accessor.enclosingElement, library, packageGraph);
+    return ModelElement.from(element.enclosingElement, library, packageGraph);
   }
 
   @override
@@ -121,9 +120,9 @@ class Accessor extends ModelElement implements EnclosedElement {
     return enclosingCombo.href;
   }
 
-  bool get isGetter => _accessor.isGetter;
+  bool get isGetter => element.isGetter;
 
-  bool get isSetter => _accessor.isSetter;
+  bool get isSetter => element.isSetter;
 
   @override
   String get kind => 'accessor';
@@ -135,8 +134,6 @@ class Accessor extends ModelElement implements EnclosedElement {
     _namePart ??= super.namePart.split('=').first;
     return _namePart;
   }
-
-  PropertyAccessorElement get _accessor => (element as PropertyAccessorElement);
 }
 
 /// A getter or setter that is a member of a [Container].

@@ -87,7 +87,6 @@ class Parameter extends ModelElement implements EnclosedElement {
   ParameterMember get originalMember => super.originalMember;
 
   ElementType _modelType;
-  @override
   ElementType get modelType => _modelType ??=
       ElementType.from((originalMember ?? element).type, library, packageGraph);
 }

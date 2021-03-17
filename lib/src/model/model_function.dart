@@ -73,7 +73,6 @@ class ModelFunctionTyped extends ModelElement
   FunctionTypedElement get element => super.element;
 
   DefinedElementType _modelType;
-  @override
   DefinedElementType get modelType =>
       _modelType ??= ElementType.from(element.type, library, packageGraph);
 }
