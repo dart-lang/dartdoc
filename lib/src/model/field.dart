@@ -23,7 +23,6 @@ class Field extends ModelElement
     assert(getter != null || setter != null);
     if (getter != null) getter.enclosingCombo = this;
     if (setter != null) setter.enclosingCombo = this;
-    _setModelType();
   }
 
   factory Field.inherited(
@@ -190,12 +189,6 @@ class Field extends ModelElement
       _sourceCode = buffer.toString();
     }
     return _sourceCode;
-  }
-
-  void _setModelType() {
-    if (hasGetter) {
-      setModelType(getter.modelType);
-    }
   }
 
   @override
