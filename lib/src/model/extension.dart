@@ -93,9 +93,6 @@ class Extension extends Container
     return _typeParameters;
   }
 
-  @override
-  ElementType get modelType => throw UnimplementedError('(${element.runtimeType}) $element');
-
   List<ModelElement> _allModelElements;
   @override
   List<ModelElement> get allModelElements {

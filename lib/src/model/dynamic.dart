@@ -11,7 +11,8 @@ class Dynamic extends ModelElement {
       : super(element, null, packageGraph);
 
   @override
-  UndefinedElementType get modelType => throw UnimplementedError('(${element.runtimeType}) $element');
+  UndefinedElementType get modelType =>
+      throw UnimplementedError('(${element.runtimeType}) $element');
 
   /// [dynamic] is not a real object, and so we can't document it, so there
   /// can be nothing canonical for it.

@@ -20,6 +20,9 @@ class Accessor extends ModelElement implements EnclosedElement {
       : super(element, library, packageGraph, originalMember);
 
   @override
+  PropertyAccessorElement get element => super.element;
+
+  @override
   ExecutableMember get originalMember => super.originalMember;
 
   CallableElementTypeMixin _modelType;
@@ -27,8 +30,10 @@ class Accessor extends ModelElement implements EnclosedElement {
   CallableElementTypeMixin get modelType {
     if (_modelType == null) {
       if (originalMember != null) {
-        _modelType = ElementType.from(originalMember.type, library,
-          packageGraph);
+        _modelType =
+            ElementType.from(originalMember.type, library, packageGraph);
+      } else {
+        _modelType = ElementType.from(element.type, library, packageGraph);
       }
     }
     return _modelType;

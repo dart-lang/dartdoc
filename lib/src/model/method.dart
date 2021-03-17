@@ -101,10 +101,8 @@ class Method extends ModelElement
   CallableElementTypeMixin get modelType {
     if (_modelType == null) {
       if (originalMember != null) {
-        _modelType = ElementType.from(
-              originalMember.type,
-              library,
-              packageGraph);
+        _modelType =
+            ElementType.from(originalMember.type, library, packageGraph);
       } else {
         _modelType = ElementType.from(element.type, library, packageGraph);
       }

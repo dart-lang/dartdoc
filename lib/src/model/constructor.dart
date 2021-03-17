@@ -80,8 +80,8 @@ class Constructor extends ModelElement
 
   DefinedElementType _modelType;
   @override
-  DefinedElementType get modelType => _modelType ??= ElementType.from(element.type,
-    library, packageGraph);
+  DefinedElementType get modelType =>
+      _modelType ??= ElementType.from(element.type, library, packageGraph);
 
   String _name;
 

@@ -70,9 +70,10 @@ class ModelFunctionTyped extends ModelElement
   bool get isInherited => false;
 
   @override
-  FunctionTypedElement element;
+  FunctionTypedElement get element => super.element;
 
   DefinedElementType _modelType;
   @override
-  DefinedElementType get modelType =>  _modelType ??= ElementType.from(element.type, library, packageGraph);
+  DefinedElementType get modelType =>
+      _modelType ??= ElementType.from(element.type, library, packageGraph);
 }
