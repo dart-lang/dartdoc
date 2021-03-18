@@ -97,17 +97,8 @@ class Method extends ModelElement
   ExecutableMember get originalMember => super.originalMember;
 
   CallableElementTypeMixin _modelType;
-  CallableElementTypeMixin get modelType {
-    if (_modelType == null) {
-      if (originalMember != null) {
-        _modelType =
-            ElementType.from(originalMember.type, library, packageGraph);
-      } else {
-        _modelType = ElementType.from(element.type, library, packageGraph);
-      }
-    }
-    return _modelType;
-  }
+  CallableElementTypeMixin get modelType => _modelType ??=
+      ElementType.from((originalMember ?? element).type, library, packageGraph);
 
   @override
   Method get overriddenElement {
