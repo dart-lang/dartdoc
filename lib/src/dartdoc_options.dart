@@ -39,6 +39,8 @@ const int _kIntVal = 0;
 const double _kDoubleVal = 0.0;
 const bool _kBoolVal = true;
 
+const String _kCompileArgsTagName = 'compile_args';
+
 int get _usageLineLength => stdout.hasTerminal ? stdout.terminalColumns : null;
 
 typedef ConvertYamlToType<T> = T Function(YamlMap, String, ResourceProvider);
@@ -147,14 +149,22 @@ class ToolDefinition {
       List<String> command,
       List<String> setupCommand,
       String description,
-      ResourceProvider resourceProvider) {
+      ResourceProvider resourceProvider,
+      {List<String> compileArgs}) {
     assert(command != null);
     assert(command.isNotEmpty);
     assert(description != null);
     if (isDartExecutable(command[0])) {
       return DartToolDefinition(
-          command, setupCommand, description, resourceProvider);
+          command, setupCommand, description, resourceProvider,
+          compileArgs: compileArgs ?? const []);
     } else {
+      if (compileArgs != null && compileArgs.isNotEmpty) {
+        throw DartdocOptionError(
+            'Compile arguments may only be specified for Dart tools, but '
+            '$_kCompileArgsTagName of $compileArgs were specified for '
+            '$command.');
+      }
       return ToolDefinition(command, setupCommand, description);
     }
   }
@@ -274,6 +284,9 @@ class SnapshotCache {
 class DartToolDefinition extends ToolDefinition {
   final ResourceProvider _resourceProvider;
 
+  /// A list of arguments to add to the snapshot compilation arguments.
+  final List<String> compileArgs;
+
   /// Takes a list of args to modify, and returns the name of the executable
   /// to run. If no snapshot file existed, then create one and modify the args
   /// so that if they are executed with dart, will result in the snapshot being
@@ -295,7 +308,8 @@ class DartToolDefinition extends ToolDefinition {
         '--ignore-unrecognized-flags',
         '--verbosity=error',
         '--snapshot=${_resourceProvider.pathContext.absolute(snapshotFile.path)}',
-        '--snapshot_kind=app-jit'
+        '--snapshot_kind=app-jit',
+        ...compileArgs,
       ]);
     } else {
       await snapshot.snapshotValid();
@@ -307,8 +321,10 @@ class DartToolDefinition extends ToolDefinition {
   }
 
   DartToolDefinition(List<String> command, List<String> setupCommand,
-      String description, this._resourceProvider)
-      : super(command, setupCommand, description);
+      String description, this._resourceProvider,
+      {this.compileArgs = const []})
+      : assert(compileArgs != null),
+        super(command, setupCommand, description);
 }
 
 /// A configuration class that can interpret [ToolDefinition]s from a YAML map.
@@ -335,6 +351,7 @@ class ToolConfiguration {
     for (var entry in yamlMap.entries) {
       var name = entry.key.toString();
       var toolMap = entry.value;
+      List<String> compileArgs;
       String description;
       List<String> command;
       List<String> setupCommand;
@@ -376,6 +393,27 @@ class ToolConfiguration {
 
         command = findCommand();
         setupCommand = findCommand('setup_');
+
+        List<String> findArgs() {
+          List<String> args;
+          if (toolMap.containsKey(_kCompileArgsTagName)) {
+            var compileArgs = toolMap[_kCompileArgsTagName];
+            if (compileArgs is String) {
+              args = [toolMap[_kCompileArgsTagName].toString()];
+            } else if (compileArgs is YamlList) {
+              args =
+                  compileArgs.map<String>((node) => node.toString()).toList();
+            } else {
+              throw DartdocOptionError(
+                  'Tool compile arguments must be a list of strings. The tool '
+                  '$name has a $_kCompileArgsTagName entry that is a '
+                  '${compileArgs.runtimeType}');
+            }
+          }
+          return args;
+        }
+
+        compileArgs = findArgs();
       } else {
         throw DartdocOptionError(
             'Tools must be defined as a map of tool names to definitions. Tool '
@@ -421,7 +459,8 @@ class ToolConfiguration {
             setupCommand;
       }
       newToolDefinitions[name] = ToolDefinition.fromCommand(
-          [executable] + command, setupCommand, description, resourceProvider);
+          [executable] + command, setupCommand, description, resourceProvider,
+          compileArgs: compileArgs ?? const []);
     }
     return ToolConfiguration._(newToolDefinitions, resourceProvider);
   }
