@@ -606,7 +606,7 @@ abstract class DartdocOption<T> {
     if (value is String) {
       resolvedPaths = [valueWithContext.resolvedValue];
     } else if (value is List<String>) {
-      resolvedPaths = (valueWithContext.resolvedValue as List).toList();
+      resolvedPaths = valueWithContext.resolvedValue as List;
     } else if (value is Map<String, String>) {
       resolvedPaths = (valueWithContext.resolvedValue as Map).values.toList();
     } else {

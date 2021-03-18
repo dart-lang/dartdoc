@@ -125,7 +125,7 @@ Future<List<String>> _packageUrls(int page) {
       .get(Uri.parse('https://pub.dartlang.org/packages.json?page=$page'))
       .then((response) {
     var decodedJson = json.decode(response.body) as Map;
-    return List.of(decodedJson['packages']);
+    return (decodedJson['packages'] as List).cast<String>();
   });
 }
 
