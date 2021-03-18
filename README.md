@@ -289,6 +289,7 @@ dartdoc:
       command: ["bin/drill.dart"]
       setup_command: ["bin/setup.dart"]
       description: "Puts holes in things."
+      compile_args: ["--no-sound-null-safety"]
     echo:
       macos: ['/bin/sh', '-c', 'echo']
       setup_macos: ['/bin/sh', '-c', 'setup.sh']
@@ -327,6 +328,9 @@ The `description` is just a short description of the tool for use as help text.
 
 Only tools which are configured in the `dartdoc_options.yaml` file are able to
 be invoked.
+
+The `compile_args` tag is used to pass options to the dart compiler when the
+first run of the tool is being snapshotted.
 
 To use the tools in comment documentation, use the `{@tool <name> [<options>
 ...] [$INPUT]}` directive to invoke the tool:

@@ -124,17 +124,20 @@ Future<List<String>> _packageUrls(int page) {
   return http
       .get(Uri.parse('https://pub.dartlang.org/packages.json?page=$page'))
       .then((response) {
-    return List<String>.from(json.decode(response.body)['packages']);
+    var decodedJson = json.decode(response.body) as Map;
+    return (decodedJson['packages'] as List).cast<String>();
   });
 }
 
 Future<List<PackageInfo>> _getPackageInfos(List<String> packageUrls) {
   var futures = packageUrls.map((String p) {
     return http.get(Uri.parse(p)).then((response) {
-      var decodedJson = json.decode(response.body);
+      var decodedJson = json.decode(response.body) as Map;
       String name = decodedJson['name'];
-      var versions = List<Version>.from(
-          decodedJson['versions'].map((v) => Version.parse(v)));
+      var versions = [
+        for (var version in decodedJson['versions'] as List)
+          Version.parse(version as String),
+      ];
       return PackageInfo(name, Version.primary(versions));
     });
   }).toList();
@@ -216,8 +219,8 @@ Future<void> _exec(String command, List<String> args,
   });
 }
 
-bool _isOldSdkConstraint(var pubspecInfo) {
-  var environment = pubspecInfo['environment'];
+bool _isOldSdkConstraint(Map<String, dynamic> pubspecInfo) {
+  var environment = pubspecInfo['environment'] as Map;
   if (environment != null) {
     var sdk = environment['sdk'];
     if (sdk != null) {

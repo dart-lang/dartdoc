@@ -39,6 +39,8 @@ const int _kIntVal = 0;
 const double _kDoubleVal = 0.0;
 const bool _kBoolVal = true;
 
+const String _kCompileArgsTagName = 'compile_args';
+
 int get _usageLineLength => stdout.hasTerminal ? stdout.terminalColumns : null;
 
 typedef ConvertYamlToType<T> = T Function(YamlMap, String, ResourceProvider);
@@ -147,14 +149,22 @@ class ToolDefinition {
       List<String> command,
       List<String> setupCommand,
       String description,
-      ResourceProvider resourceProvider) {
+      ResourceProvider resourceProvider,
+      {List<String> compileArgs}) {
     assert(command != null);
     assert(command.isNotEmpty);
     assert(description != null);
     if (isDartExecutable(command[0])) {
       return DartToolDefinition(
-          command, setupCommand, description, resourceProvider);
+          command, setupCommand, description, resourceProvider,
+          compileArgs: compileArgs ?? const []);
     } else {
+      if (compileArgs != null && compileArgs.isNotEmpty) {
+        throw DartdocOptionError(
+            'Compile arguments may only be specified for Dart tools, but '
+            '$_kCompileArgsTagName of $compileArgs were specified for '
+            '$command.');
+      }
       return ToolDefinition(command, setupCommand, description);
     }
   }
@@ -274,6 +284,9 @@ class SnapshotCache {
 class DartToolDefinition extends ToolDefinition {
   final ResourceProvider _resourceProvider;
 
+  /// A list of arguments to add to the snapshot compilation arguments.
+  final List<String> compileArgs;
+
   /// Takes a list of args to modify, and returns the name of the executable
   /// to run. If no snapshot file existed, then create one and modify the args
   /// so that if they are executed with dart, will result in the snapshot being
@@ -295,7 +308,8 @@ class DartToolDefinition extends ToolDefinition {
         '--ignore-unrecognized-flags',
         '--verbosity=error',
         '--snapshot=${_resourceProvider.pathContext.absolute(snapshotFile.path)}',
-        '--snapshot_kind=app-jit'
+        '--snapshot_kind=app-jit',
+        ...compileArgs,
       ]);
     } else {
       await snapshot.snapshotValid();
@@ -307,8 +321,10 @@ class DartToolDefinition extends ToolDefinition {
   }
 
   DartToolDefinition(List<String> command, List<String> setupCommand,
-      String description, this._resourceProvider)
-      : super(command, setupCommand, description);
+      String description, this._resourceProvider,
+      {this.compileArgs = const []})
+      : assert(compileArgs != null),
+        super(command, setupCommand, description);
 }
 
 /// A configuration class that can interpret [ToolDefinition]s from a YAML map.
@@ -335,6 +351,7 @@ class ToolConfiguration {
     for (var entry in yamlMap.entries) {
       var name = entry.key.toString();
       var toolMap = entry.value;
+      List<String> compileArgs;
       String description;
       List<String> command;
       List<String> setupCommand;
@@ -343,32 +360,32 @@ class ToolConfiguration {
         List<String> findCommand([String prefix = '']) {
           List<String> command;
           // If the command key is given, then it applies to all platforms.
-          var commandFrom = toolMap.containsKey('${prefix}command')
+          var commandFromKey = toolMap.containsKey('${prefix}command')
               ? '${prefix}command'
               : '$prefix${Platform.operatingSystem}';
-          if (toolMap.containsKey(commandFrom)) {
-            if (toolMap[commandFrom].value is String) {
-              command = [toolMap[commandFrom].toString()];
+          if (toolMap.containsKey(commandFromKey)) {
+            var commandFrom = toolMap[commandFromKey] as YamlNode;
+            if (commandFrom.value is String) {
+              command = [commandFrom.toString()];
               if (command[0].isEmpty) {
                 throw DartdocOptionError(
                     'Tool commands must not be empty. Tool $name command entry '
-                    '"$commandFrom" must contain at least one path.');
+                    '"$commandFromKey" must contain at least one path.');
               }
-            } else if (toolMap[commandFrom] is YamlList) {
-              command = (toolMap[commandFrom] as YamlList)
-                  .map<String>((node) => node.toString())
-                  .toList();
+            } else if (commandFrom is YamlList) {
+              command =
+                  commandFrom.map<String>((node) => node.toString()).toList();
               if (command.isEmpty) {
                 throw DartdocOptionError(
                     'Tool commands must not be empty. Tool $name command entry '
-                    '"$commandFrom" must contain at least one path.');
+                    '"$commandFromKey" must contain at least one path.');
               }
             } else {
               throw DartdocOptionError(
                   'Tool commands must be a path to an executable, or a list of '
                   'strings that starts with a path to an executable. '
-                  'The tool $name has a $commandFrom entry that is a '
-                  '${toolMap[commandFrom].runtimeType}');
+                  'The tool $name has a $commandFromKey entry that is a '
+                  '${commandFrom.runtimeType}');
             }
           }
           return command;
@@ -376,6 +393,27 @@ class ToolConfiguration {
 
         command = findCommand();
         setupCommand = findCommand('setup_');
+
+        List<String> findArgs() {
+          List<String> args;
+          if (toolMap.containsKey(_kCompileArgsTagName)) {
+            var compileArgs = toolMap[_kCompileArgsTagName];
+            if (compileArgs is String) {
+              args = [toolMap[_kCompileArgsTagName].toString()];
+            } else if (compileArgs is YamlList) {
+              args =
+                  compileArgs.map<String>((node) => node.toString()).toList();
+            } else {
+              throw DartdocOptionError(
+                  'Tool compile arguments must be a list of strings. The tool '
+                  '$name has a $_kCompileArgsTagName entry that is a '
+                  '${compileArgs.runtimeType}');
+            }
+          }
+          return args;
+        }
+
+        compileArgs = findArgs();
       } else {
         throw DartdocOptionError(
             'Tools must be defined as a map of tool names to definitions. Tool '
@@ -421,7 +459,8 @@ class ToolConfiguration {
             setupCommand;
       }
       newToolDefinitions[name] = ToolDefinition.fromCommand(
-          [executable] + command, setupCommand, description, resourceProvider);
+          [executable] + command, setupCommand, description, resourceProvider,
+          compileArgs: compileArgs ?? const []);
     }
     return ToolConfiguration._(newToolDefinitions, resourceProvider);
   }
@@ -598,16 +637,17 @@ abstract class DartdocOption<T> {
       _OptionValueWithContext<Object> valueWithContext, String missingFilename);
 
   /// Call [_onMissing] for every path that does not exist.
-  void _validatePaths(_OptionValueWithContext<dynamic> valueWithContext) {
+  void _validatePaths(_OptionValueWithContext<Object> valueWithContext) {
     if (!mustExist) return;
     assert(isDir || isFile);
     List<String> resolvedPaths;
-    if (valueWithContext.value is String) {
+    var value = valueWithContext.value;
+    if (value is String) {
       resolvedPaths = [valueWithContext.resolvedValue];
-    } else if (valueWithContext.value is List<String>) {
-      resolvedPaths = valueWithContext.resolvedValue.toList();
-    } else if (valueWithContext.value is Map<String, String>) {
-      resolvedPaths = valueWithContext.resolvedValue.values.toList();
+    } else if (value is List<String>) {
+      resolvedPaths = valueWithContext.resolvedValue as List;
+    } else if (value is Map<String, String>) {
+      resolvedPaths = (valueWithContext.resolvedValue as Map).values.toList();
     } else {
       assert(
           false,
@@ -1120,19 +1160,18 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
   _OptionValueWithContext<Object> _valueAtFromFile(Folder dir) {
     var yamlFileData = _yamlAtDirectory(dir);
     var contextPath = yamlFileData.canonicalDirectoryPath;
-    dynamic yamlData = yamlFileData.data ?? {};
+    Object yamlData = yamlFileData.data ?? {};
     for (var key in keys) {
-      if (!yamlData.containsKey(key)) return null;
-      yamlData = yamlData[key] ?? {};
+      if (yamlData is Map && !yamlData.containsKey(key)) return null;
+      yamlData = (yamlData as Map)[key] ?? {};
     }
 
-    dynamic returnData;
+    Object returnData;
     if (_isListString) {
       if (yamlData is YamlList) {
-        returnData = <String>[];
-        for (var item in yamlData) {
-          returnData.add(item.toString());
-        }
+        returnData = [
+          for (var item in yamlData) item.toString(),
+        ];
       }
     } else if (yamlData is YamlMap) {
       // TODO(jcollins-g): This special casing is unfortunate.  Consider
@@ -1700,7 +1739,7 @@ Future<List<DartdocOption<Object>>> createDartdocOptions(
         help: 'Generate ONLY the docs for the Dart SDK.'),
     DartdocOptionArgSynth<String>('sdkDir',
         (DartdocSyntheticOption<String> option, Folder dir) {
-      if (!option.parent['sdkDocs'].valueAt(dir) &&
+      if (!(option.parent['sdkDocs'].valueAt(dir) as bool) &&
           (option.root['topLevelPackageMeta'].valueAt(dir) as PackageMeta)
               .requiresFlutter) {
         String flutterRoot = option.root['flutterRoot'].valueAt(dir);
