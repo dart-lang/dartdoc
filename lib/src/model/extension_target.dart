@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 // TODO(jcollins-g): Mix-in ExtensionTarget on Method, ModelFunction, Typedef,
@@ -26,6 +27,8 @@ mixin ExtensionTarget on ModelElement {
         .toList(growable: false);
     return _potentiallyApplicableExtensions;
   }
+
+  ElementType get modelType;
 
   List<Extension> get potentiallyApplicableExtensionsSorted =>
       potentiallyApplicableExtensions.toList()..sort(byName);

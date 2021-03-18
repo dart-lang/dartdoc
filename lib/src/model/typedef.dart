@@ -19,6 +19,10 @@ class Typedef extends ModelElement
   @override
   TypeAliasElement get element => super.element;
 
+  ElementType _modelType;
+  ElementType get modelType => _modelType ??=
+      ElementType.from(element.aliasedType, library, packageGraph);
+
   @override
   ModelElement get enclosingElement => library;
 

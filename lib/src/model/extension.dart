@@ -93,9 +93,6 @@ class Extension extends Container
     return _typeParameters;
   }
 
-  @override
-  ParameterizedElementType get modelType => super.modelType;
-
   List<ModelElement> _allModelElements;
   @override
   List<ModelElement> get allModelElements {

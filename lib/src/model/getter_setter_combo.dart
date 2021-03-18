@@ -180,7 +180,6 @@ mixin GetterSetterCombo on ModelElement {
     return buffer.toString();
   }
 
-  @override
   ElementType get modelType {
     if (hasGetter) return getter.modelType.returnType;
     return setter.parameters.first.modelType;

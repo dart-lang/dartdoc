@@ -12,10 +12,9 @@ import 'package:analyzer/dart/element/type.dart' show FunctionType;
 import 'package:analyzer/source/line_info.dart';
 import 'package:analyzer/src/dart/element/element.dart';
 import 'package:analyzer/src/dart/element/member.dart'
-    show ExecutableMember, Member, ParameterMember;
+    show ExecutableMember, Member;
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
-import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/documentation_comment.dart';
 import 'package:dartdoc/src/model/feature_set.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -143,7 +142,6 @@ abstract class ModelElement extends Canonicalization
   final Member /*?*/ _originalMember;
   final Library /*?*/ _library;
 
-  ElementType _modelType;
   String _rawDocs;
   Documentation __documentation;
   UnmodifiableListView<Parameter> _parameters;
@@ -983,45 +981,6 @@ abstract class ModelElement extends Canonicalization
 
   String get linkedParamsNoMetadataOrNames => _parameterRenderer
       .renderLinkedParams(parameters, showMetadata: false, showNames: false);
-
-  ElementType get modelType {
-    var element = this.element;
-    if (_modelType == null) {
-      // TODO(jcollins-g): Need an interface for a "member with a type" (or changed object model).
-      if (_originalMember != null &&
-          (_originalMember is ExecutableMember ||
-              _originalMember is ParameterMember)) {
-        if (_originalMember is ExecutableMember) {
-          _modelType = ElementType.from(
-              (_originalMember as ExecutableMember).type,
-              library,
-              packageGraph);
-        } else {
-          // ParameterMember
-          _modelType = ElementType.from(
-              (_originalMember as ParameterMember).type, library, packageGraph);
-        }
-      } else if (element is ClassElement) {
-        _modelType = ElementType.from(element.thisType, library, packageGraph);
-      } else if (element is TypeAliasElement) {
-        _modelType =
-            ElementType.from(element.aliasedType, library, packageGraph);
-      } else if (element is FunctionTypedElement) {
-        _modelType = ElementType.from(element.type, library, packageGraph);
-      } else if (element is ParameterElement) {
-        _modelType = ElementType.from(element.type, library, packageGraph);
-      } else if (element is PropertyInducingElement) {
-        _modelType = ElementType.from(element.type, library, packageGraph);
-      } else {
-        throw UnimplementedError('(${element.runtimeType}) $element');
-      }
-    }
-    return _modelType;
-  }
-
-  void setModelType(ElementType type) {
-    _modelType = type;
-  }
 
   String _name;
 

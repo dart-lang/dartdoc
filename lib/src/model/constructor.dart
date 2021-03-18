@@ -26,13 +26,16 @@ class Constructor extends ModelElement
   }
 
   @override
+  ConstructorElement get element => super.element;
+
+  @override
   // TODO(jcollins-g): Revisit this when dart-lang/sdk#31517 is implemented.
   List<TypeParameter> get typeParameters =>
       (enclosingElement as Class).typeParameters;
 
   @override
   ModelElement get enclosingElement =>
-      ModelElement.from(_constructor.enclosingElement, library, packageGraph);
+      ModelElement.from(element.enclosingElement, library, packageGraph);
 
   @override
   String get filePath =>
@@ -61,7 +64,7 @@ class Constructor extends ModelElement
   }
 
   @override
-  bool get isConst => _constructor.isConst;
+  bool get isConst => element.isConst;
 
   bool get isUnnamedConstructor => name == enclosingElement.name;
 
@@ -70,13 +73,14 @@ class Constructor extends ModelElement
       'be removed as early as Dartdoc 1.0.0')
   bool get isDefaultConstructor => isUnnamedConstructor;
 
-  bool get isFactory => _constructor.isFactory;
+  bool get isFactory => element.isFactory;
 
   @override
   String get kind => 'constructor';
 
-  @override
-  DefinedElementType get modelType => super.modelType;
+  DefinedElementType _modelType;
+  DefinedElementType get modelType =>
+      _modelType ??= ElementType.from(element.type, library, packageGraph);
 
   String _name;
 
@@ -111,11 +115,9 @@ class Constructor extends ModelElement
 
   String get shortName {
     if (name.contains('.')) {
-      return name.substring(_constructor.enclosingElement.name.length + 1);
+      return name.substring(element.enclosingElement.name.length + 1);
     } else {
       return name;
     }
   }
-
-  ConstructorElement get _constructor => (element as ConstructorElement);
 }
