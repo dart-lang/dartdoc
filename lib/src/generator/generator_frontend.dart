@@ -147,7 +147,8 @@ class GeneratorFrontEnd implements Generator {
                 writer, packageGraph, lib, extension, property);
           }
 
-          for (var staticField in filterNonDocumented(extension.variableStaticFields)) {
+          for (var staticField
+              in filterNonDocumented(extension.variableStaticFields)) {
             indexAccumulator.add(staticField);
             _generatorBackend.generateProperty(
                 writer, packageGraph, lib, extension, staticField);

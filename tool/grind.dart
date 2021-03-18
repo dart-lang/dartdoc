@@ -238,9 +238,15 @@ void analyze() async {
   );
 
   for (var testPackagePath in [testPackageExperiments.path, testPackage.path]) {
-    await SubprocessLauncher('analyze-test-package').runStreamed(
+    await SubprocessLauncher('pub-get').runStreamed(
       sdkBin('dart'),
-      ['analyze', '--no-fatal-warnings', testPackagePath],
+      ['pub', 'get'],
+      workingDirectory: testPackagePath,
+    );
+    await SubprocessLauncher('analyze-test-package').runStreamed(
+      sdkBin('dartanalyzer'),
+      ['.'],
+      workingDirectory: testPackagePath,
     );
   }
 }
@@ -291,10 +297,10 @@ void dartfmt() async {
 @Task('Run quick presubmit checks.')
 @Depends(
   analyze,
-  checkBuild,
-  smokeTest,
   dartfmt,
+  checkBuild,
   tryPublish,
+  smokeTest,
 )
 void presubmit() => null;
 
