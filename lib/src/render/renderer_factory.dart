@@ -46,6 +46,8 @@ abstract class RendererFactory {
   ElementTypeRenderer<ParameterizedElementType>
       get parameterizedElementTypeRenderer;
 
+  ElementTypeRenderer<AliasedElementType> get aliasedElementTypeRenderer;
+
   ElementTypeRenderer<CallableElementType> get callableElementTypeRenderer;
 
   EnumFieldRenderer get enumFieldRenderer;
@@ -89,6 +91,10 @@ class HtmlRenderFactory extends RendererFactory {
   ElementTypeRenderer<ParameterizedElementType>
       get parameterizedElementTypeRenderer =>
           ParameterizedElementTypeRendererHtml();
+
+  @override
+  ElementTypeRenderer<AliasedElementType> get aliasedElementTypeRenderer =>
+      AliasedElementTypeRendererHtml();
 
   @override
   EnumFieldRenderer get enumFieldRenderer => EnumFieldRendererHtml();
@@ -145,6 +151,10 @@ class MdRenderFactory extends RendererFactory {
   ElementTypeRenderer<ParameterizedElementType>
       get parameterizedElementTypeRenderer =>
           ParameterizedElementTypeRendererMd();
+
+  @override
+  ElementTypeRenderer<AliasedElementType> get aliasedElementTypeRenderer =>
+      AliasedElementTypeRendererMd();
 
   @override
   EnumFieldRenderer get enumFieldRenderer => EnumFieldRendererMd();
