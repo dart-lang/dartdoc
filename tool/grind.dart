@@ -11,6 +11,7 @@ import 'package:dartdoc/src/package_meta.dart';
 import 'package:grinder/grinder.dart';
 import 'package:path/path.dart' as path;
 import 'package:yaml/yaml.dart' as yaml;
+import 'package:yaml/yaml.dart';
 
 import 'subprocess_launcher.dart';
 
@@ -402,7 +403,8 @@ WarningsCollection jsonMessageIterableToWarnings(Iterable<Map> messageIterable,
     if (message.containsKey('level') &&
         message['level'] == 'WARNING' &&
         message.containsKey('data')) {
-      warningTexts.add(message['data']['text']);
+      var data = message['data'] as Map;
+      warningTexts.add(data['text']);
     }
   }
   return warningTexts;
@@ -1001,15 +1003,11 @@ Future<void> checkChangelogHasVersion() async {
 
 String _getPackageVersion() {
   var pubspec = File('pubspec.yaml');
-  dynamic yamlDoc;
-  if (pubspec.existsSync()) {
-    yamlDoc = yaml.loadYaml(pubspec.readAsStringSync());
-  }
-  if (yamlDoc == null) {
+  if (!pubspec.existsSync()) {
     fail('Cannot find pubspec.yaml in ${Directory.current}');
   }
-  var version = yamlDoc['version'];
-  return version;
+  var yamlDoc = yaml.loadYaml(pubspec.readAsStringSync()) as YamlMap;
+  return yamlDoc['version'];
 }
 
 @Task('Rebuild generated files')
