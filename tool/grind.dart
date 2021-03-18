@@ -236,8 +236,11 @@ void analyze() async {
     sdkBin('dartanalyzer'),
     ['--fatal-infos', '--options', 'analysis_options_presubmit.yaml', '.'],
   );
-
-  for (var testPackagePath in [testPackageExperiments.path, testPackage.path]) {
+  var testPackagePaths = [testPackage.path];
+  if (Platform.version.contains('dev')) {
+    testPackagePaths.add(testPackageExperiments.path);
+  }
+  for (var testPackagePath in testPackagePaths) {
     await SubprocessLauncher('pub-get').runStreamed(
       sdkBin('dart'),
       ['pub', 'get'],
