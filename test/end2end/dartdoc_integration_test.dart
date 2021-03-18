@@ -107,7 +107,7 @@ void main() {
     });
 
     test('missing a required file path prints a fatal-error', () async {
-      var outputLines = [];
+      var outputLines = <String>[];
       var impossiblePath = path.join(dartdocPath, 'impossible');
       await expectLater(
           () => subprocessLauncher.runStreamed(

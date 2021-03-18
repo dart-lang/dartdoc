@@ -360,32 +360,32 @@ class ToolConfiguration {
         List<String> findCommand([String prefix = '']) {
           List<String> command;
           // If the command key is given, then it applies to all platforms.
-          var commandFrom = toolMap.containsKey('${prefix}command')
+          var commandFromKey = toolMap.containsKey('${prefix}command')
               ? '${prefix}command'
               : '$prefix${Platform.operatingSystem}';
-          if (toolMap.containsKey(commandFrom)) {
-            if (toolMap[commandFrom].value is String) {
-              command = [toolMap[commandFrom].toString()];
+          if (toolMap.containsKey(commandFromKey)) {
+            var commandFrom = toolMap[commandFromKey] as YamlNode;
+            if (commandFrom.value is String) {
+              command = [commandFrom.toString()];
               if (command[0].isEmpty) {
                 throw DartdocOptionError(
                     'Tool commands must not be empty. Tool $name command entry '
-                    '"$commandFrom" must contain at least one path.');
+                    '"$commandFromKey" must contain at least one path.');
               }
-            } else if (toolMap[commandFrom] is YamlList) {
-              command = (toolMap[commandFrom] as YamlList)
-                  .map<String>((node) => node.toString())
-                  .toList();
+            } else if (commandFrom is YamlList) {
+              command =
+                  commandFrom.map<String>((node) => node.toString()).toList();
               if (command.isEmpty) {
                 throw DartdocOptionError(
                     'Tool commands must not be empty. Tool $name command entry '
-                    '"$commandFrom" must contain at least one path.');
+                    '"$commandFromKey" must contain at least one path.');
               }
             } else {
               throw DartdocOptionError(
                   'Tool commands must be a path to an executable, or a list of '
                   'strings that starts with a path to an executable. '
-                  'The tool $name has a $commandFrom entry that is a '
-                  '${toolMap[commandFrom].runtimeType}');
+                  'The tool $name has a $commandFromKey entry that is a '
+                  '${commandFrom.runtimeType}');
             }
           }
           return command;
@@ -637,16 +637,17 @@ abstract class DartdocOption<T> {
       _OptionValueWithContext<Object> valueWithContext, String missingFilename);
 
   /// Call [_onMissing] for every path that does not exist.
-  void _validatePaths(_OptionValueWithContext<dynamic> valueWithContext) {
+  void _validatePaths(_OptionValueWithContext<Object> valueWithContext) {
     if (!mustExist) return;
     assert(isDir || isFile);
     List<String> resolvedPaths;
-    if (valueWithContext.value is String) {
+    var value = valueWithContext.value;
+    if (value is String) {
       resolvedPaths = [valueWithContext.resolvedValue];
-    } else if (valueWithContext.value is List<String>) {
-      resolvedPaths = valueWithContext.resolvedValue.toList();
-    } else if (valueWithContext.value is Map<String, String>) {
-      resolvedPaths = valueWithContext.resolvedValue.values.toList();
+    } else if (value is List<String>) {
+      resolvedPaths = valueWithContext.resolvedValue as List;
+    } else if (value is Map<String, String>) {
+      resolvedPaths = (valueWithContext.resolvedValue as Map).values.toList();
     } else {
       assert(
           false,
@@ -1159,19 +1160,18 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
   _OptionValueWithContext<Object> _valueAtFromFile(Folder dir) {
     var yamlFileData = _yamlAtDirectory(dir);
     var contextPath = yamlFileData.canonicalDirectoryPath;
-    dynamic yamlData = yamlFileData.data ?? {};
+    Object yamlData = yamlFileData.data ?? {};
     for (var key in keys) {
-      if (!yamlData.containsKey(key)) return null;
-      yamlData = yamlData[key] ?? {};
+      if (yamlData is Map && !yamlData.containsKey(key)) return null;
+      yamlData = (yamlData as Map)[key] ?? {};
     }
 
-    dynamic returnData;
+    Object returnData;
     if (_isListString) {
       if (yamlData is YamlList) {
-        returnData = <String>[];
-        for (var item in yamlData) {
-          returnData.add(item.toString());
-        }
+        returnData = [
+          for (var item in yamlData) item.toString(),
+        ];
       }
     } else if (yamlData is YamlMap) {
       // TODO(jcollins-g): This special casing is unfortunate.  Consider
@@ -1739,7 +1739,7 @@ Future<List<DartdocOption<Object>>> createDartdocOptions(
         help: 'Generate ONLY the docs for the Dart SDK.'),
     DartdocOptionArgSynth<String>('sdkDir',
         (DartdocSyntheticOption<String> option, Folder dir) {
-      if (!option.parent['sdkDocs'].valueAt(dir) &&
+      if (!(option.parent['sdkDocs'].valueAt(dir) as bool) &&
           (option.root['topLevelPackageMeta'].valueAt(dir) as PackageMeta)
               .requiresFlutter) {
         String flutterRoot = option.root['flutterRoot'].valueAt(dir);
