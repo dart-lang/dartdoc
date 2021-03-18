@@ -236,6 +236,13 @@ void analyze() async {
     sdkBin('dartanalyzer'),
     ['--fatal-infos', '--options', 'analysis_options_presubmit.yaml', '.'],
   );
+
+  for (var testPackagePath in [testPackageExperiments.path, testPackage.path]) {
+    await SubprocessLauncher('analyze-test-package').runStreamed(
+      sdkBin('dart'),
+      ['analyze', '--no-fatal-warnings', testPackagePath],
+    );
+  }
 }
 
 @Task('Check for dartfmt cleanliness')

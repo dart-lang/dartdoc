@@ -136,7 +136,7 @@ void main() {
         expectAliasedTypeName(a.modelType, equals('T0'));
         expectAliasedTypeName(b.modelType, equals('T0'));
         expectAliasedTypeName(f.modelType, equals('T0'));
-      }, skip: 'dart-lang/sdk#45921');
+      }, skip: 'dart-lang/sdk#45291');
 
       test('basic non-function typedefs work', () {
         expectTypedefs(T0, 'void', []);
