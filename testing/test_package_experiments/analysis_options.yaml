@@ -3,3 +3,4 @@ analyzer:
   enable-experiment:
     - non-nullable
     - nonfunction-type-aliases
+    - generic-metadata
