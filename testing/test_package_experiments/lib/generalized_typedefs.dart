@@ -21,13 +21,13 @@ T0 a;
 
 class C2 {
   T0 b;
-  T1 c;
-  T2 d(T3 e, T4 f);
+  T1? c;
+  T2? d(T3 e, T4 f) {}
 }
 
 class C1<T extends T3> {
-  T2 a;
-  T0 b(T1 c, T d);
+  T2? a;
+  T0 b(T1 c, T d) {}
 }
 
 typedef T8 = C1;
