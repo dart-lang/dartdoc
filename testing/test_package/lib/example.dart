@@ -211,6 +211,9 @@ extension AppleExtension on Apple {
   void s() {
     print('Extension on Apple');
   }
+
+  /// Do not crash on static const extensions.
+  static const int f = 3;
 }
 
 class WithGeneric<T> {

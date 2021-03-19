@@ -236,6 +236,22 @@ void analyze() async {
     sdkBin('dartanalyzer'),
     ['--fatal-infos', '--options', 'analysis_options_presubmit.yaml', '.'],
   );
+  var testPackagePaths = [testPackage.path];
+  if (Platform.version.contains('dev')) {
+    testPackagePaths.add(testPackageExperiments.path);
+  }
+  for (var testPackagePath in testPackagePaths) {
+    await SubprocessLauncher('pub-get').runStreamed(
+      sdkBin('dart'),
+      ['pub', 'get'],
+      workingDirectory: testPackagePath,
+    );
+    await SubprocessLauncher('analyze-test-package').runStreamed(
+      sdkBin('dartanalyzer'),
+      ['.'],
+      workingDirectory: testPackagePath,
+    );
+  }
 }
 
 @Task('Check for dartfmt cleanliness')
@@ -284,10 +300,10 @@ void dartfmt() async {
 @Task('Run quick presubmit checks.')
 @Depends(
   analyze,
-  checkBuild,
-  smokeTest,
   dartfmt,
+  checkBuild,
   tryPublish,
+  smokeTest,
 )
 void presubmit() => null;
 
