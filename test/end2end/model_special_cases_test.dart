@@ -79,6 +79,25 @@ void main() {
   // Experimental features not yet enabled by default.  Move tests out of this
   // block when the feature is enabled by default.
   group('Experiments', () {
+    group('generic metadata', () {
+      Library genericMetadata;
+      TopLevelVariable f;
+
+      setUpAll(() async {
+        genericMetadata = (await _testPackageGraphExperiments)
+            .libraries
+            .firstWhere((l) => l.name == 'generic_metadata');
+        f = genericMetadata.properties.firstWhere((p) => p.name == 'f');
+      });
+
+      test('Verify type arguments on annotations works', () {
+        expect(f.modelType.linkedName, equals('something'));
+      });
+
+
+    });
+
+
     group('generalized typedefs', () {
       Library generalizedTypedefs;
       Typedef T0, T1, T2, T3, T4, T5, T6, T7;
