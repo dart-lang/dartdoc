@@ -7,12 +7,15 @@
 
 // Check that metadata constructor invocations can have type arguments.
 
-@A<int>(0)
-library generic_metadata_test;
+@A<B>(0)
+library generic_metadata;
 
-// The annotation to use.
+/// A type to refer to.
+typedef B = int;
+
+/// The annotation to use.
 class A<T> {
-  final T value;
+  final int value;
 
   const A(this.value);
 }
@@ -20,190 +23,190 @@ class A<T> {
 // Annotations on various declarations.
 
 // Library declarations.
-@A<int>(0)
+@A<B>(0)
 const c = 0;
 
-@A<int>(0)
+@A<B>(0)
 final f = 0;
 
-@A<int>(0)
-void mp(@A<int>(0) Object x, [@A<int>(0) int y = 0]) {}
+@A<B>(0)
+void mp(@A<B>(0) Object x, [@A<B>(0) int y = 0]) {}
 
-@A<int>(0)
-void mn(@A<int>(0) Object x, {@A<int>(0) int y = 0}) {}
+@A<B>(0)
+void mn(@A<B>(0) Object x, {@A<B>(0) int y = 0}) {}
 
-@A<int>(0)
+@A<B>(0)
 int get g => 0;
 
-@A<int>(0)
-void set s(@A<int>(0) int x) {}
+@A<B>(0)
+void set s(@A<B>(0) int x) {}
 
-// Class declaration and members.
-@A<int>(0)
-class C<@A<int>(0) T> {
+/// Class declaration and members.
+@A<B>(0)
+class C<@A<B>(0) T> {
   final value;
 
-  // Constructor and initializing formal.
-  @A<int>(0)
-  const C(@A<int>(0) this.value);
+  /// Constructor and initializing formal.
+  @A<B>(0)
+  const C(@A<B>(0) this.value);
 
-  @A<int>(0)
-  C.genRed(@A<int>(0) int x) : this(x);
+  @A<B>(0)
+  C.genRed(@A<B>(0) int x) : this(x);
 
-  @A<int>(0)
-  factory C.fac(@A<int>(0) int x) => C(x);
+  @A<B>(0)
+  factory C.fac(@A<B>(0) int x) => C(x);
 
-  @A<int>(0)
-  factory C.facRed(@A<int>(0) int x) = C;
+  @A<B>(0)
+  factory C.facRed(@A<B>(0) int x) = C;
 
   // Instance (virtual) declarations.
-  @A<int>(0)
+  @A<B>(0)
   final f = 0;
 
-  @A<int>(0)
-  void mp(@A<int>(0) Object x, [@A<int>(0) int y = 0]) {}
+  @A<B>(0)
+  void mp(@A<B>(0) Object x, [@A<B>(0) int y = 0]) {}
 
-  @A<int>(0)
-  void mn(@A<int>(0) Object x, {@A<int>(0) int y = 0}) {}
+  @A<B>(0)
+  void mn(@A<B>(0) Object x, {@A<B>(0) int y = 0}) {}
 
-  @A<int>(0)
+  @A<B>(0)
   int get g => 0;
 
-  @A<int>(0)
-  void set s(@A<int>(0) int x) {}
+  @A<B>(0)
+  void set s(@A<B>(0) int x) {}
 
-  @A<int>(0)
-  int operator +(@A<int>(0) int x) => x;
+  @A<B>(0)
+  int operator +(@A<B>(0) int x) => x;
 
   // Static declarations.
-  @A<int>(0)
+  @A<B>(0)
   static const sc = C<int>(0);
 
-  @A<int>(0)
+  @A<B>(0)
   static final sf = C<int>(0);
 
-  @A<int>(0)
-  static void smp(@A<int>(0) Object x, [@A<int>(0) int y = 0]) {}
+  @A<B>(0)
+  static void smp(@A<B>(0) Object x, [@A<B>(0) int y = 0]) {}
 
-  @A<int>(0)
-  static void smn(@A<int>(0) Object x, {@A<int>(0) int y = 0}) {}
+  @A<B>(0)
+  static void smn(@A<B>(0) Object x, {@A<B>(0) int y = 0}) {}
 
-  @A<int>(0)
+  @A<B>(0)
   static int get sg => 0;
 
-  @A<int>(0)
-  static void set ss(@A<int>(0) int x) {}
+  @A<B>(0)
+  static void set ss(@A<B>(0) int x) {}
 }
 
-@A<int>(0)
-abstract class AC<@A<int>(0) T> {
+@A<B>(0)
+abstract class AC<@A<B>(0) T> {
   // Instance (virtual) declarations.
-  @A<int>(0)
+  @A<B>(0)
   abstract final f;
 
-  @A<int>(0)
-  void mp(@A<int>(0) Object x, [@A<int>(0) int y = 0]);
+  @A<B>(0)
+  void mp(@A<B>(0) Object x, [@A<B>(0) int y = 0]);
 
-  @A<int>(0)
-  void mn(@A<int>(0) Object x, {@A<int>(0) int y = 0});
+  @A<B>(0)
+  void mn(@A<B>(0) Object x, {@A<B>(0) int y = 0});
 
-  @A<int>(0)
+  @A<B>(0)
   int get g;
 
-  @A<int>(0)
-  void set s(@A<int>(0) int x);
+  @A<B>(0)
+  void set s(@A<B>(0) int x);
 
-  @A<int>(0)
-  int operator +(@A<int>(0) int x);
+  @A<B>(0)
+  int operator +(@A<B>(0) int x);
 }
 
-@A<int>(0)
-extension E<@A<int>(0) T> on T {
+@A<B>(0)
+extension E<@A<B>(0) T> on T {
   // Instance extension member declarations.
-  @A<int>(0)
-  void mp(@A<int>(0) Object x, [@A<int>(0) int y = 0]) {}
+  @A<B>(0)
+  void mp(@A<B>(0) Object x, [@A<B>(0) int y = 0]) {}
 
-  @A<int>(0)
-  void mn(@A<int>(0) Object x, {@A<int>(0) int y = 0}) {}
+  @A<B>(0)
+  void mn(@A<B>(0) Object x, {@A<B>(0) int y = 0}) {}
 
-  @A<int>(0)
+  @A<B>(0)
   int get g => 0;
 
-  @A<int>(0)
-  void set s(@A<int>(0) int x) {}
+  @A<B>(0)
+  void set s(@A<B>(0) int x) {}
 
-  @A<int>(0)
-  int operator +(@A<int>(0) int x) => x;
+  @A<B>(0)
+  int operator +(@A<B>(0) int x) => x;
 
   // Static declarations.
-  @A<int>(0)
+  @A<B>(0)
   static const sc = C<int>(0);
 
-  @A<int>(0)
+  @A<B>(0)
   static final sf = C<int>(0);
 
-  @A<int>(0)
-  static void smp(@A<int>(0) Object x, [@A<int>(0) int y = 0]) {}
+  @A<B>(0)
+  static void smp(@A<B>(0) Object x, [@A<B>(0) int y = 0]) {}
 
-  @A<int>(0)
-  static void smn(@A<int>(0) Object x, {@A<int>(0) int y = 0}) {}
+  @A<B>(0)
+  static void smn(@A<B>(0) Object x, {@A<B>(0) int y = 0}) {}
 
-  @A<int>(0)
+  @A<B>(0)
   static int get sg => 0;
 
-  @A<int>(0)
-  static void set ss(@A<int>(0) int x) {}
+  @A<B>(0)
+  static void set ss(@A<B>(0) int x) {}
 }
 
-@A<int>(0)
-mixin M<@A<int>(0) T> {
+@A<B>(0)
+mixin M<@A<B>(0) T> {
   // Instance member declarations.
-  @A<int>(0)
+  @A<B>(0)
   final f = 0;
 
-  @A<int>(0)
-  void mp(@A<int>(0) Object x, [@A<int>(0) int y = 0]) {}
+  @A<B>(0)
+  void mp(@A<B>(0) Object x, [@A<B>(0) int y = 0]) {}
 
-  @A<int>(0)
-  void mn(@A<int>(0) Object x, {@A<int>(0) int y = 0}) {}
+  @A<B>(0)
+  void mn(@A<B>(0) Object x, {@A<B>(0) int y = 0}) {}
 
-  @A<int>(0)
+  @A<B>(0)
   int get g => 0;
 
-  @A<int>(0)
-  void set s(@A<int>(0) int x) {}
+  @A<B>(0)
+  void set s(@A<B>(0) int x) {}
 
-  @A<int>(0)
-  int operator +(@A<int>(0) int x) => x;
+  @A<B>(0)
+  int operator +(@A<B>(0) int x) => x;
 
   // Static declarations.
-  @A<int>(0)
+  @A<B>(0)
   static const sc = C<int>(0);
 
-  @A<int>(0)
+  @A<B>(0)
   static final sf = C<int>(0);
 
-  @A<int>(0)
-  static void smp(@A<int>(0) Object x, [@A<int>(0) int y = 0]) {}
+  @A<B>(0)
+  static void smp(@A<B>(0) Object x, [@A<B>(0) int y = 0]) {}
 
-  @A<int>(0)
-  static void smn(@A<int>(0) Object x, {@A<int>(0) int y = 0}) {}
+  @A<B>(0)
+  static void smn(@A<B>(0) Object x, {@A<B>(0) int y = 0}) {}
 
-  @A<int>(0)
+  @A<B>(0)
   static int get sg => 0;
 
-  @A<int>(0)
-  static void set ss(@A<int>(0) int x) {}
+  @A<B>(0)
+  static void set ss(@A<B>(0) int x) {}
 }
 
-@A<int>(0)
+@A<B>(0)
 enum En {
- @A<int>(0)
+ @A<B>(0)
  foo
 }
 
-@A<int>(0)
-typedef F<@A<int>(0) T> = int Function<@A<int>(0) X>(@A<int>(0) int);
+@A<B>(0)
+typedef F<@A<B>(0) T> = int Function<@A<B>(0) X>(@A<B>(0) int);
 
 void main() {
 }
