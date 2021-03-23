@@ -4047,7 +4047,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('constructor annotations have the right link and are escaped', () {
       expect(
-          ctr.annotations[0],
+          ctr.annotations.first,
           equals(
               '@<a href="${htmlBasePlaceholder}ex/Deprecated-class.html">Deprecated</a>'
               '(&quot;Internal use&quot;)'));
@@ -4057,7 +4057,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       var createDog2 =
           dog.staticMethods.firstWhere((c) => c.name == 'createDog2');
       expect(
-          createDog2.annotations[0],
+          createDog2.annotations.first,
           equals(
               '@<a href="${htmlBasePlaceholder}ex/deprecated-constant.html">deprecated</a>'));
     });

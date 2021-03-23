@@ -105,12 +105,8 @@ class Field extends ModelElement
   @override
   List<String> get annotations {
     var allAnnotations = [...super.annotations];
-
-    if (element is PropertyInducingElement) {
-      var pie = element as PropertyInducingElement;
-      allAnnotations.addAll(annotationsFromMetadata(pie.getter?.metadata));
-      allAnnotations.addAll(annotationsFromMetadata(pie.setter?.metadata));
-    }
+    if (hasGetter) allAnnotations.addAll(getter.annotations);
+    if (hasSetter) allAnnotations.addAll(setter.annotations);
     return allAnnotations;
   }
 
