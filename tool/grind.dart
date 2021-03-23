@@ -583,7 +583,11 @@ Future<void> buildTestExperimentsPackageDocs() async {
   await _buildTestPackageDocs(
       testPackageExperimentsDocsDir.absolute.path, Directory.current.path,
       testPackagePath: testPackageExperiments.absolute.path,
-      params: ['--enable-experiment', 'non-nullable,generic-metadata', '--no-link-to-remote']);
+      params: [
+        '--enable-experiment',
+        'non-nullable,generic-metadata',
+        '--no-link-to-remote'
+      ]);
 }
 
 @Task('Serve experimental test package on port 8003.')

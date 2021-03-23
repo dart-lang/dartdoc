@@ -23,14 +23,16 @@ class Annotation extends Privacy with Nameable {
   Annotation(this.annotation, this.library, this.packageGraph);
 
   String _renderedAnnotation;
-  String get renderedAnnotation => _renderedAnnotation ??= '@' + linkedName + (const HtmlEscape()).convert(parameterText);
+  String get renderedAnnotation => _renderedAnnotation ??=
+      '@' + linkedName + (const HtmlEscape()).convert(parameterText);
 
   @override
-  String get name =>  annotation.element.name;
+  String get name => annotation.element.name;
 
   /// Return the linked name of the annotation.
-  String get linkedName => annotation.element is PropertyAccessorElement ?
-    ModelElement.fromElement(annotation.element, packageGraph).linkedName : modelType.linkedName;
+  String get linkedName => annotation.element is PropertyAccessorElement
+      ? ModelElement.fromElement(annotation.element, packageGraph).linkedName
+      : modelType.linkedName;
 
   ElementType _modelType;
   ElementType get modelType {
@@ -40,9 +42,13 @@ class Annotation extends Privacy with Nameable {
         _modelType =
             ElementType.from(annotatedWith.returnType, library, packageGraph);
       } else if (annotatedWith is PropertyAccessorElement) {
-        _modelType = (ModelElement.fromElement(annotatedWith.variable, packageGraph) as GetterSetterCombo).modelType;
+        _modelType =
+            (ModelElement.fromElement(annotatedWith.variable, packageGraph)
+                    as GetterSetterCombo)
+                .modelType;
       } else {
-        assert(false, 'non-callable element used as annotation?: ${annotation.element}');
+        assert(false,
+            'non-callable element used as annotation?: ${annotation.element}');
       }
     }
     return _modelType;
@@ -57,11 +63,16 @@ class Annotation extends Privacy with Nameable {
     if (_parameterText == null) {
       var source = annotation.toSource();
       var startIndex = source.indexOf('(');
-      _parameterText = source.substring(startIndex == -1 ? source.length : startIndex);
+      _parameterText =
+          source.substring(startIndex == -1 ? source.length : startIndex);
     }
     return _parameterText;
   }
 
   @override
-  bool get isPublic => modelType.isPublic && modelType is DefinedElementType && !packageGraph.invisibleAnnotations.contains((modelType as DefinedElementType).element);
+  bool get isPublic =>
+      modelType.isPublic &&
+      modelType is DefinedElementType &&
+      !packageGraph.invisibleAnnotations
+          .contains((modelType as DefinedElementType).element);
 }

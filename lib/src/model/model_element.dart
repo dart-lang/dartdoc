@@ -402,69 +402,13 @@ abstract class ModelElement extends Canonicalization
   ModelNode get modelNode =>
       _modelNode ??= packageGraph.getModelNodeFor(element);
 
-  Iterable<String> get annotations => modelAnnotations.map((a) => a.renderedAnnotation);
+  Iterable<String> get annotations =>
+      modelAnnotations.map((a) => a.renderedAnnotation);
 
   Iterable<Annotation> _modelAnnotations;
-  // TODO(jcollins-g): rename to annotations and redo templates when otherwise finished
-  Iterable<Annotation> get modelAnnotations => _modelAnnotations ??= element.metadata.map((m) => Annotation(m, library, packageGraph));
-
-  /// Returns linked annotations from a given metadata set, with escaping.
-  // TODO(srawlins): Attempt to revive constructor arguments in an annotation,
-  // akin to source_gen's Reviver, in order to link to inner components. For
-  // example, in `@Foo(const Bar(), baz: <Baz>[Baz.one, Baz.two])`, link to
-  // `Foo`, `Bar`, `Baz`, `Baz.one`, and `Baz.two`.
-  List<String> annotationsFromMetadata(Iterable<ElementAnnotation> md) {
-    var annotationStrings = <String>[];
-    if (md == null) return annotationStrings;
-    for (var a in md) {
-      var annotation = (const HtmlEscape()).convert(a.toSource());
-      var annotationElement = a.element;
-
-      if (annotationElement is ConstructorElement) {
-        // TODO(srawlins): I think we should actually link to the constructor,
-        // which may have details about parameters. For example, given the
-        // annotation `@Immutable('text')`, the constructor documents what the
-        // parameter is, and the class only references `immutable`. It's a
-        // lose-lose cycle of mis-direction.
-        annotationElement =
-            (annotationElement as ConstructorElement).returnType.element;
-      } else if (annotationElement is PropertyAccessorElement) {
-        annotationElement =
-            (annotationElement as PropertyAccessorElement).variable;
-      }
-      if (annotationElement is Member) {
-        annotationElement = (annotationElement as Member).declaration;
-      }
-
-      // Some annotations are intended to be invisible (such as `@pragma`).
-      if (!_shouldDisplayAnnotation(annotationElement)) continue;
-
-      var annotationModelElement =
-          packageGraph.findCanonicalModelElementFor(annotationElement);
-      if (annotationModelElement != null) {
-        annotation = annotation.replaceFirst(
-            annotationModelElement.name, annotationModelElement.linkedName);
-      }
-      annotationStrings.add(annotation);
-    }
-    return annotationStrings;
-  }
-
-  bool _shouldDisplayAnnotation(Element annotationElement) {
-    if (annotationElement is ClassElement) {
-      var annotationClass =
-          packageGraph.findCanonicalModelElementFor(annotationElement) as Class;
-      if (annotationClass == null && annotationElement != null) {
-        annotationClass =
-            ModelElement.fromElement(annotationElement, packageGraph) as Class;
-      }
-
-      return annotationClass == null ||
-          packageGraph.isAnnotationVisible(annotationClass);
-    }
-    // We cannot resolve it, which does not prevent it from being displayed.
-    return true;
-  }
+  // TODO(jcollins-g): rename to annotations and rework templates.
+  Iterable<Annotation> get modelAnnotations => _modelAnnotations ??=
+      element.metadata.map((m) => Annotation(m, library, packageGraph));
 
   bool _isPublic;
 
@@ -536,8 +480,7 @@ abstract class ModelElement extends Canonicalization
 
   Set<String> get features {
     return {
-      ...annotations
-          .where((a) => !_specialFeatures.contains(a)),
+      ...annotations.where((a) => !_specialFeatures.contains(a)),
       // 'const' and 'static' are not needed here because 'const' and 'static'
       // elements get their own sections in the doc.
       if (isFinal) 'final',

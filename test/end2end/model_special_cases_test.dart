@@ -97,24 +97,29 @@ void main() {
         mn = C.instanceMethods.firstWhere((m) => m.name == 'mn');
       });
 
-      test('Verify type arguments on annotations renders, including parameters', () {
-        var ab0 = '@<a href="%%__HTMLBASE_dartdoc_internal__%%generic_metadata/A-class.html">A</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="%%__HTMLBASE_dartdoc_internal__%%generic_metadata/B.html">B</a></span>&gt;</span>(0)';
+      test('Verify type arguments on annotations renders, including parameters',
+          () {
+        var ab0 =
+            '@<a href="%%__HTMLBASE_dartdoc_internal__%%generic_metadata/A-class.html">A</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="%%__HTMLBASE_dartdoc_internal__%%generic_metadata/B.html">B</a></span>&gt;</span>(0)';
 
         expect(genericMetadata.annotations.first, equals(ab0));
         expect(f.annotations.first, equals(ab0));
         expect(C.annotations.first, equals(ab0));
         expect(C.typeParameters.first.annotations.first, equals(ab0));
-        expect(mp.parameters.map((p) => p.annotations.first), everyElement(equals(ab0)));
-        expect(mn.parameters.map((p) => p.annotations.first), everyElement(equals(ab0)));
+        expect(mp.parameters.map((p) => p.annotations.first),
+            everyElement(equals(ab0)));
+        expect(mn.parameters.map((p) => p.annotations.first),
+            everyElement(equals(ab0)));
 
         expect(genericMetadata.features, contains(ab0));
         expect(f.features, contains(ab0));
         expect(C.features, contains(ab0));
         expect(C.typeParameters.first.features, contains(ab0));
-        expect(mp.parameters.map((p) => p.features), everyElement(contains(ab0)));
-        expect(mn.parameters.map((p) => p.features), everyElement(contains(ab0)));
+        expect(
+            mp.parameters.map((p) => p.features), everyElement(contains(ab0)));
+        expect(
+            mn.parameters.map((p) => p.features), everyElement(contains(ab0)));
       });
-
     }, skip: (!_genericMetadataAllowed.allows(_platformVersion)));
 
     group('generalized typedefs', () {
