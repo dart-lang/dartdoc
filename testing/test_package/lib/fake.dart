@@ -950,8 +950,6 @@ class BaseForDocComments {
   ///
   /// Reference to an inherited member in another library via class name: [ExtendedBaseReexported.action]
   ///
-  /// Link to a nonexistent file (erroneously expects base href): [link](SubForDocComments/localMethod.html)
-  ///
   /// Link to an existing file: [link](../SubForDocComments/localMethod.html)
   String doAwesomeStuff(int value) => null;
 
