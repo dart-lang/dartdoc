@@ -1,3 +1,21 @@
+## 0.41.0
+* Fix a crash where dartdoc tried to create a duplicate field in the event
+  a static const extension memeber is declared. (#2585)
+* Implementation of generic type aliases. (#2584, #2575, #2558)
+* BREAKING CHANGE: Refactors to better support new type handling.
+  With #2573 and changes building on it, `linkedReturnType` must be changed
+  to either `modelType` or `modelType.returnType` in templates. (#2583, #2573)
+* Add an option for setting arguments for tool compilation. (#2576)
+* Make signature of categoriesWithPublicLibraries more accurate. (#2571)
+* Improve analysis performance by avoiding hints/lints when resolving
+  files. (#2566)
+* Additional implementation for Mustachio. (#2568, #2555, #2554, #2549, #2547,
+  #2546)
+* Update highlight.js to include plaintext support and warn if the user
+  does not specify a language on code blocks.  (#2560, #2559)
+* Fix invalid json generation on an empty categories list. (#2550)
+* Many minor internal cleanups related to new lints and ecosystem changes.
+
 ## 0.40.0
 * More implementation added for Mustachio (#2481, #2482, #2488, #2491, #2497,
   #2498, #2512, #2515, #2519, #2523, #2525)
