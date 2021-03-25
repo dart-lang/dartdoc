@@ -76,8 +76,9 @@ void main() {
 
   final _generalizedTypedefsAllowed =
       VersionRange(min: Version.parse('2.13.0-0'), includeMin: true);
-  final _genericMetadataAllowed =
-      VersionRange(min: Version.parse('2.13.0-0'), includeMin: true);
+  //final _genericMetadataAllowed =
+  //    VersionRange(min: Version.parse('2.13.0-0'), includeMin: true);
+ 
   // Experimental features not yet enabled by default.  Move tests out of this
   // block when the feature is enabled by default.
   group('Experiments', () {
@@ -120,7 +121,9 @@ void main() {
         expect(
             mn.parameters.map((p) => p.features), everyElement(contains(ab0)));
       });
-    }, skip: (!_genericMetadataAllowed.allows(_platformVersion)));
+    }, skip: 'requires analyzer > 1.2.0'
+      //(!_genericMetadataAllowed.allows(_platformVersion))
+    );
 
     group('generalized typedefs', () {
       Library generalizedTypedefs;
