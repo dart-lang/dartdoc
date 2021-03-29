@@ -370,7 +370,8 @@ class Dartdoc {
     found.add(indexPath);
     for (Map<String, dynamic> entry in jsonData) {
       if (entry.containsKey('href')) {
-        var entryPath = path.joinAll([origin, entry['href']]);
+        var entryPath =
+            path.joinAll([origin, ...path.posix.split(entry['href'])]);
         if (!visited.contains(entryPath)) {
           _warn(packageGraph, PackageWarning.brokenLink, entryPath,
               path.normalize(origin),
