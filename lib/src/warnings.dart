@@ -265,7 +265,8 @@ const Map<PackageWarning, PackageWarningDefinition> packageWarningDefinitions =
         'Dartdoc requires code blocks to specify the language used after',
         'the initial declaration.  As an example, to specify Dart you would',
         'specify ```dart or ~~~dart.'
-      ]),
+      ],
+      defaultWarningMode: PackageWarningMode.ignore),
 };
 
 /// Something that package warnings can be called on.  Optionally associated
