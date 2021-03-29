@@ -12,8 +12,8 @@
   files. (#2566)
 * Additional implementation for Mustachio. (#2568, #2555, #2554, #2549, #2547,
   #2546)
-* Update highlight.js to include plaintext support and warn if the user
-  does not specify a language on code blocks.  (#2560, #2559)
+* Update highlight.js to include plaintext support and optionally, warn if the
+  user does not specify a language on code blocks.  (#2560, #2559, #2593)
 * Fix invalid json generation on an empty categories list. (#2550)
 * Many minor internal cleanups related to new lints and ecosystem changes.
 
