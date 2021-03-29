@@ -38,6 +38,8 @@ class Typedef extends ModelElement
   @override
   String get filePath => '${library.dirName}/$fileName';
 
+  FunctionTypedef get asCallable => this as FunctionTypedef;
+
   @override
   String get href {
     if (!identical(canonicalModelElement, this)) {
