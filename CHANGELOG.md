@@ -1,6 +1,7 @@
 ## 0.41.0
+* Write out doc files for static methods on extensions. (#2588, #2591)
 * Fix a crash where dartdoc tried to create a duplicate field in the event
-  a static const extension memeber is declared. (#2585)
+  a static const extension member is declared. (#2585)
 * Implementation of generic type aliases. (#2584, #2575, #2558)
 * BREAKING CHANGE: Refactors to better support new type handling.
   With #2573 and changes building on it, `linkedReturnType` must be changed
