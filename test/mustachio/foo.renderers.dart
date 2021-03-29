@@ -3,10 +3,14 @@
 // To change the contents of this library, make changes to the builder source
 // files in the tool/mustachio/ directory.
 
-// ignore_for_file: camel_case_types, unnecessary_cast, unused_element, unused_import, non_constant_identifier_names, deprecated_member_use_from_same_package
+// ignore_for_file: camel_case_types, deprecated_member_use_from_same_package
+// ignore_for_file: unnecessary_cast, unused_element, unused_import, non_constant_identifier_names
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/generator/template_data.dart';
+import 'package:dartdoc/src/model/extension_target.dart';
+import 'package:dartdoc/src/model/feature_set.dart';
+import 'package:dartdoc/src/model/language_feature.dart';
 import 'package:dartdoc/src/mustachio/renderer_base.dart';
 import 'package:dartdoc/src/mustachio/parser.dart';
 import 'package:dartdoc/src/warnings.dart';
