@@ -384,6 +384,8 @@ abstract class ModelElement extends Canonicalization
     throw 'Unknown type ${e.runtimeType}';
   }
 
+  static const _htmlEscape = HtmlEscape();
+
   // Stub for mustache, which would otherwise search enclosing elements to find
   // names for members.
   bool get hasCategoryNames => false;
@@ -412,30 +414,11 @@ abstract class ModelElement extends Canonicalization
     var annotationStrings = <String>[];
     if (md == null) return annotationStrings;
     for (var a in md) {
-      var annotation = (const HtmlEscape()).convert(a.toSource());
-      var annotationElement = a.element;
+      if (!_shouldDisplayAnnotation(a.realElement)) continue;
 
-      if (annotationElement is ConstructorElement) {
-        // TODO(srawlins): I think we should actually link to the constructor,
-        // which may have details about parameters. For example, given the
-        // annotation `@Immutable('text')`, the constructor documents what the
-        // parameter is, and the class only references `immutable`. It's a
-        // lose-lose cycle of mis-direction.
-        annotationElement =
-            (annotationElement as ConstructorElement).returnType.element;
-      } else if (annotationElement is PropertyAccessorElement) {
-        annotationElement =
-            (annotationElement as PropertyAccessorElement).variable;
-      }
-      if (annotationElement is Member) {
-        annotationElement = (annotationElement as Member).declaration;
-      }
-
-      // Some annotations are intended to be invisible (such as `@pragma`).
-      if (!_shouldDisplayAnnotation(annotationElement)) continue;
-
+      var annotation = _htmlEscape.convert(a.toSource());
       var annotationModelElement =
-          packageGraph.findCanonicalModelElementFor(annotationElement);
+          packageGraph.findCanonicalModelElementFor(a.realElement);
       if (annotationModelElement != null) {
         annotation = annotation.replaceFirst(
             annotationModelElement.name, annotationModelElement.linkedName);
@@ -445,6 +428,10 @@ abstract class ModelElement extends Canonicalization
     return annotationStrings;
   }
 
+  /// Returns whether [annotationElement] should be displayed when rendering
+  /// this element.
+  ///
+  /// Some annotations are intended to be invisible (such as `@pragma`).
   bool _shouldDisplayAnnotation(Element annotationElement) {
     if (annotationElement is ClassElement) {
       var annotationClass =
@@ -529,6 +516,16 @@ abstract class ModelElement extends Canonicalization
     'deprecated'
   };
 
+  /// Returns whether this has any displayable features.
+  bool get hasFeatures {
+    if (isFinal) return true;
+    if (isLate) return true;
+
+    return element.metadata
+        .where((e) => !_specialFeatures.contains(e.element?.name))
+        .any((e) => _shouldDisplayAnnotation(e.realElement));
+  }
+
   Set<String> get features {
     return {
       ...annotationsFromMetadata(element.metadata
@@ -540,6 +537,8 @@ abstract class ModelElement extends Canonicalization
     };
   }
 
+  /// Returns [features] as a single String, sorted [byFeatureOrdering], joined
+  /// with commas.
   String get featuresAsString {
     var allFeatures = features.toList()..sort(byFeatureOrdering);
     return allFeatures.join(', ');
@@ -1220,5 +1219,27 @@ abstract class ModelElement extends Canonicalization
       macro = processCommentDirectives(macro ?? '');
       return macro;
     });
+  }
+}
+
+extension on ElementAnnotation {
+  /// Returns this annotation's "real" element, passing through unused,
+  /// intermediate elements.
+  Element get realElement {
+    var element = this.element;
+    if (element is ConstructorElement) {
+      // TODO(srawlins): I think we should actually link to the constructor,
+      // which may have details about parameters. For example, given the
+      // annotation `@Immutable('text')`, the constructor documents what the
+      // parameter is, and the class only references `immutable`. It's a
+      // lose-lose cycle of mis-direction.
+      return element.returnType.element;
+    } else if (element is PropertyAccessorElement) {
+      return element.variable;
+    } else if (element is Member) {
+      return element.declaration;
+    } else {
+      return element;
+    }
   }
 }
