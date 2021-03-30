@@ -1216,20 +1216,21 @@ extension on ElementAnnotation {
   /// Returns this annotation's "real" element, passing through unused,
   /// intermediate elements.
   Element get realElement {
+    Element getDeclaration(Element e) => e is Member ? e.declaration : e;
+
     var element = this.element;
+
     if (element is ConstructorElement) {
       // TODO(srawlins): I think we should actually link to the constructor,
       // which may have details about parameters. For example, given the
       // annotation `@Immutable('text')`, the constructor documents what the
       // parameter is, and the class only references `immutable`. It's a
       // lose-lose cycle of mis-direction.
-      return element.returnType.element;
+      return getDeclaration(element.returnType.element);
     } else if (element is PropertyAccessorElement) {
-      return element.variable;
-    } else if (element is Member) {
-      return element.declaration;
+      return getDeclaration(element.variable);
     } else {
-      return element;
+      return getDeclaration(element);
     }
   }
 }
