@@ -30,7 +30,6 @@ import 'package:dartdoc/src/warnings.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path show Context;
 
-
 /// This doc may need to be processed in case it has a template or html
 /// fragment.
 final RegExp needsPrecacheRegExp = RegExp(r'{@(template|tool|inject-html)');
@@ -442,6 +441,8 @@ abstract class ModelElement extends Canonicalization
     // strikethroughs. Custom @Deprecated() will still appear.
     'deprecated'
   };
+
+  bool get hasFeatures => features.isNotEmpty;
 
   Set<Feature> get features {
     return {

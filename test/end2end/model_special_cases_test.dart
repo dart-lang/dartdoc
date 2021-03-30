@@ -115,11 +115,12 @@ void main() {
         expect(genericMetadata.features.map((f) => f.rendered), contains(ab0));
         expect(f.features.map((f) => f.rendered), contains(ab0));
         expect(C.features.map((f) => f.rendered), contains(ab0));
-        expect(C.typeParameters.first.features.map((f) => f.rendered), contains(ab0));
-        expect(
-            mp.parameters.map((p) => p.features.map((f) => f.rendered)), everyElement(contains(ab0)));
-        expect(
-            mn.parameters.map((p) => p.features.map((f) => f.rendered)), everyElement(contains(ab0)));
+        expect(C.typeParameters.first.features.map((f) => f.rendered),
+            contains(ab0));
+        expect(mp.parameters.map((p) => p.features.map((f) => f.rendered)),
+            everyElement(contains(ab0)));
+        expect(mn.parameters.map((p) => p.features.map((f) => f.rendered)),
+            everyElement(contains(ab0)));
       });
     }, skip: !_genericMetadataAllowed.allows(_platformVersion));
 

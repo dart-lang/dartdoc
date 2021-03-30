@@ -3046,7 +3046,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           contains('This getter is documented'));
       expect(
           documentedPartialFieldInSubclassOnly.annotations
-              .contains('inherited-setter'),
+              .contains(Feature.inheritedSetter),
           isFalse);
     });
 
@@ -3071,13 +3071,19 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(implicitGetterExplicitSetter.getter.isInherited, isTrue);
       expect(implicitGetterExplicitSetter.setter.isInherited, isFalse);
       expect(implicitGetterExplicitSetter.isInherited, isFalse);
+      expect(implicitGetterExplicitSetter.features.contains(Feature.inherited),
+          isFalse);
       expect(
-          implicitGetterExplicitSetter.features.contains(Feature.inherited), isFalse);
-      expect(implicitGetterExplicitSetter.features.contains(Feature.inheritedGetter),
+          implicitGetterExplicitSetter.features
+              .contains(Feature.inheritedGetter),
           isTrue);
       expect(
-          implicitGetterExplicitSetter.features.contains(Feature.overrideFeature), isFalse);
-      expect(implicitGetterExplicitSetter.features.contains(Feature.overrideSetter),
+          implicitGetterExplicitSetter.features
+              .contains(Feature.overrideFeature),
+          isFalse);
+      expect(
+          implicitGetterExplicitSetter.features
+              .contains(Feature.overrideSetter),
           isTrue);
       expect(implicitGetterExplicitSetter.features.contains(Feature.readWrite),
           isTrue);
@@ -3095,13 +3101,19 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(explicitGetterImplicitSetter.getter.isInherited, isFalse);
       expect(explicitGetterImplicitSetter.setter.isInherited, isTrue);
       expect(explicitGetterImplicitSetter.isInherited, isFalse);
+      expect(explicitGetterImplicitSetter.features.contains(Feature.inherited),
+          isFalse);
       expect(
-          explicitGetterImplicitSetter.features.contains(Feature.inherited), isFalse);
-      expect(explicitGetterImplicitSetter.features.contains(Feature.inheritedSetter),
+          explicitGetterImplicitSetter.features
+              .contains(Feature.inheritedSetter),
           isTrue);
       expect(
-          explicitGetterImplicitSetter.features.contains(Feature.overrideFeature), isFalse);
-      expect(explicitGetterImplicitSetter.features.contains(Feature.overrideGetter),
+          explicitGetterImplicitSetter.features
+              .contains(Feature.overrideFeature),
+          isFalse);
+      expect(
+          explicitGetterImplicitSetter.features
+              .contains(Feature.overrideGetter),
           isTrue);
       expect(explicitGetterImplicitSetter.features.contains(Feature.readWrite),
           isTrue);

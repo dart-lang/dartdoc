@@ -19,14 +19,15 @@ class Annotation extends Feature {
   final Library library;
   final PackageGraph packageGraph;
 
-  Annotation(this.annotation, this.library, this.packageGraph) : super(annotation.element.name);
+  Annotation(this.annotation, this.library, this.packageGraph)
+      : super(annotation.element.name);
 
   static const _htmlEscape = HtmlEscape();
 
   String _rendered;
   @override
-  String get rendered => _rendered ??=
-      '@' + linkedName + _htmlEscape.convert(parameterText);
+  String get rendered =>
+      _rendered ??= '@' + linkedName + _htmlEscape.convert(parameterText);
 
   /// Return the linked name of the annotation.
   String get linkedName => annotation.element is PropertyAccessorElement
@@ -74,4 +75,15 @@ class Annotation extends Feature {
       modelType is DefinedElementType &&
       !packageGraph.invisibleAnnotations
           .contains((modelType as DefinedElementType).element);
+
+  @override
+  bool operator ==(Object other) {
+    if (other is Annotation) {
+      return other.annotation == annotation;
+    }
+    return false;
+  }
+
+  @override
+  int get hashCode => annotation.hashCode;
 }

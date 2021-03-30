@@ -83,9 +83,9 @@ class Method extends ModelElement
 
   @override
   Set<Feature> get features => {
-    ...super.features,
-    if (isInherited) Feature.inherited,
-  };
+        ...super.features,
+        if (isInherited) Feature.inherited,
+      };
 
   @override
   bool get isStatic => element.isStatic;

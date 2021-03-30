@@ -29,12 +29,12 @@ mixin GetterSetterCombo on ModelElement {
 
   @protected
   Set<Feature> get comboFeatures => {
-    if (hasExplicitGetter && hasPublicGetter) ...getter.features,
-    if (hasExplicitSetter && hasPublicSetter) ...setter.features,
-    if (readOnly && !isFinal && !isConst) Feature.readOnly,
-    if (writeOnly) Feature.writeOnly,
-    if (readWrite) Feature.readWrite,
-  };
+        if (hasExplicitGetter && hasPublicGetter) ...getter.features,
+        if (hasExplicitSetter && hasPublicSetter) ...setter.features,
+        if (readOnly && !isFinal && !isConst) Feature.readOnly,
+        if (writeOnly) Feature.writeOnly,
+        if (readWrite) Feature.readWrite,
+      };
 
   @override
   ModelElement enclosingElement;

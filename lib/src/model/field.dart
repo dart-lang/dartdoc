@@ -106,10 +106,10 @@ class Field extends ModelElement
 
   @override
   Iterable<Annotation> get annotations => [
-    ...super.annotations,
-    if (hasGetter) ...getter.annotations,
-    if (hasSetter) ...setter.annotations,
-  ];
+        ...super.annotations,
+        if (hasGetter) ...getter.annotations,
+        if (hasSetter) ...setter.annotations,
+      ];
 
   String get fullkind {
     if (field.isAbstract) return 'abstract $kind';

@@ -48,7 +48,7 @@ class Feature implements Privacy {
   static const writeOnly = Feature('write-only', 2);
   static const readWrite = Feature('read / write', 2);
   static const covariant = Feature('covariant', 2);
-  static const extended =  Feature('extended', 3);
+  static const extended = Feature('extended', 3);
   static const inherited = Feature('inherited', 3);
   static const inheritedGetter = Feature('inherited-getter', 3);
   static const inheritedSetter = Feature('inherited-setter', 3);

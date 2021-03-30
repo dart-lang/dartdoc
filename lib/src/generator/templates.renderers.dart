@@ -3496,6 +3496,13 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.hasExtendedDocumentation == true,
                 ),
+                'hasFeatures': Property(
+                  getValue: (CT_ c) => c.hasFeatures,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.hasFeatures == true,
+                ),
                 'hasParameters': Property(
                   getValue: (CT_ c) => c.hasParameters,
                   renderVariable: (CT_ c, Property<CT_> self,
