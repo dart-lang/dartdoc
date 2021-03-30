@@ -1,1 +1,1 @@
-{{ #hasFeatures }}_{{{featuresAsString}}}_{{ /hasFeatures }}
+{{ #features }}_{{{featuresAsString}}}_{{ /features }}

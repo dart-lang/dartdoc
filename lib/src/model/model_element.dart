@@ -516,16 +516,6 @@ abstract class ModelElement extends Canonicalization
     'deprecated'
   };
 
-  /// Returns whether this has any displayable features.
-  bool get hasFeatures {
-    if (isFinal) return true;
-    if (isLate) return true;
-
-    return element.metadata
-        .where((e) => !_specialFeatures.contains(e.element?.name))
-        .any((e) => _shouldDisplayAnnotation(e.realElement));
-  }
-
   Set<String> get features {
     return {
       ...annotationsFromMetadata(element.metadata

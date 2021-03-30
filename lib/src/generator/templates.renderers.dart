@@ -8143,18 +8143,6 @@ class _Renderer_GetterSetterCombo extends RendererBase<GetterSetterCombo> {
                         parent: r);
                   },
                 ),
-                'comboFeatures': Property(
-                  getValue: (CT_ c) => c.comboFeatures,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Set<String>'),
-                  renderIterable:
-                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-                    return c.comboFeatures.map(
-                        (e) => _render_String(e, ast, r.template, parent: r));
-                  },
-                ),
                 'constantInitializer': Property(
                   getValue: (CT_ c) => c.constantInitializer,
                   renderVariable: (CT_ c, Property<CT_> self,

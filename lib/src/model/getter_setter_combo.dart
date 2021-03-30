@@ -12,6 +12,7 @@ import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/utils.dart';
 import 'package:dartdoc/src/warnings.dart';
+import 'package:meta/meta.dart';
 
 /// Mixin for top-level variables and fields (aka properties)
 mixin GetterSetterCombo on ModelElement {
@@ -25,6 +26,7 @@ mixin GetterSetterCombo on ModelElement {
     }
   }
 
+  @protected
   Set<String> get comboFeatures {
     var allFeatures = <String>{};
     if (hasExplicitGetter && hasPublicGetter) {

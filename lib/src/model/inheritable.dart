@@ -28,13 +28,12 @@ mixin Inheritable on ContainerMember {
   bool get isCovariant;
 
   @override
-  Set<String> get features {
-    var _features = super.features;
-    if (isOverride) _features.add('override');
-    if (isInherited) _features.add('inherited');
-    if (isCovariant) _features.add('covariant');
-    return _features;
-  }
+  Set<String> get features => {
+        ...super.features,
+        if (isOverride) 'override',
+        if (isInherited) 'inherited',
+        if (isCovariant) 'covariant',
+      };
 
   @override
   Library get canonicalLibrary => canonicalEnclosingContainer?.canonicalLibrary;
