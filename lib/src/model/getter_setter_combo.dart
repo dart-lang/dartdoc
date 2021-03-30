@@ -31,9 +31,9 @@ mixin GetterSetterCombo on ModelElement {
   Set<Feature> get comboFeatures => {
     if (hasExplicitGetter && hasPublicGetter) ...getter.features,
     if (hasExplicitSetter && hasPublicSetter) ...setter.features,
-    if (readOnly && !isFinal && !isConst) Feature.added('read-only'),
-    if (writeOnly) Feature.added('write-only'),
-    if (readWrite) Feature.added('read / write'),
+    if (readOnly && !isFinal && !isConst) Feature.readOnly,
+    if (writeOnly) Feature.writeOnly,
+    if (readWrite) Feature.readWrite,
   };
 
   @override

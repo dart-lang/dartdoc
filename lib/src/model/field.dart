@@ -124,22 +124,22 @@ class Field extends ModelElement
     // really specific enough for [Field]s that have public getter/setters.
     if (hasPublicGetter && hasPublicSetter) {
       if (getter.isInherited && setter.isInherited) {
-        allFeatures.add(Feature.added('inherited'));
+        allFeatures.add(Feature.inherited);
       } else {
-        allFeatures.remove(Feature.added('inherited'));
-        if (getter.isInherited) allFeatures.add(Feature.added('inherited-getter'));
-        if (setter.isInherited) allFeatures.add(Feature.added('inherited-setter'));
+        allFeatures.remove(Feature.inherited);
+        if (getter.isInherited) allFeatures.add(Feature.inheritedGetter);
+        if (setter.isInherited) allFeatures.add(Feature.inheritedSetter);
       }
       if (getter.isOverride && setter.isOverride) {
-        allFeatures.add(Feature.added('override'));
+        allFeatures.add(Feature.overrideFeature);
       } else {
-        allFeatures.remove(Feature.added('override'));
-        if (getter.isOverride) allFeatures.add(Feature.added('override-getter'));
-        if (setter.isOverride) allFeatures.add(Feature.added('override-setter'));
+        allFeatures.remove(Feature.overrideFeature);
+        if (getter.isOverride) allFeatures.add(Feature.overrideGetter);
+        if (setter.isOverride) allFeatures.add(Feature.overrideSetter);
       }
     } else {
-      if (isInherited) allFeatures.add(Feature.added('inherited'));
-      if (isOverride) allFeatures.add(Feature.added('override'));
+      if (isInherited) allFeatures.add(Feature.inherited);
+      if (isOverride) allFeatures.add(Feature.overrideFeature);
     }
     return allFeatures;
   }

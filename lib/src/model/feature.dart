@@ -5,30 +5,6 @@
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/model/privacy.dart';
 
-/// Use this constant to insure your feature is sorted last.
-const featureSortedLast = 1>>63;
-
-/// Items mapped less than zero will sort before custom annotations.
-/// Items mapped above zero are sorted after custom annotations.
-/// Items mapped to zero will sort alphabetically among custom annotations.
-/// Custom annotations are assumed to be any annotation or feature not in this
-/// map.
-const Map<String, Feature> _elementFeatures = {
-  'read-only': Feature('read-only', 1),
-  'write-only': Feature('write-only', 2),
-  'read / write': Feature('read / write', 2),
-  'covariant': Feature('covariant', 2),
-  'final': Feature('final', 2),
-  'late': Feature('late', 3),
-  'inherited': Feature('inherited', 3),
-  'inherited-getter': Feature('inherited-getter', 3),
-  'inherited-setter': Feature('inherited-setter', 3),
-  'override': Feature('override', 3),
-  'override-getter': Feature('override-getter', 3),
-  'override-setter': Feature('override-setter', 3),
-  'extended': Feature('extended', 3),
-};
-
 int byFeatureOrdering(Feature a, Feature b) {
   if (a.sortGroup < b.sortGroup) return -1;
   if (a.sortGroup > b.sortGroup) return 1;
@@ -48,10 +24,10 @@ class ElementFeatureNotFoundError extends Error {
 /// as well as others added by the documentation systme (`read-write`);
 class Feature implements Privacy {
   final String _name;
-  const Feature(this._name, [this.sortGroup = featureSortedLast]);
 
-  /// Use this to get prebuilt feature objects (preferred).
-  factory Feature.added(String name) => _elementFeatures.containsKey(name) ? _elementFeatures[name] : throw ElementFeatureNotFoundError(name);
+  /// Do not use this except in subclasses, prefer const members of this
+  /// class instead.
+  const Feature(this._name, [this.sortGroup = 0]);
 
   String get rendered => name;
 
@@ -60,5 +36,24 @@ class Feature implements Privacy {
   @override
   bool get isPublic => !name.startsWith('_');
 
+  /// Numerical sort group for this feature.
+  /// Less than zero will sort before custom annotations.
+  /// Above zero will sort after custom annotations.
+  /// Zero will sort alphabetically among custom annotations.
+  // TODO(jcollins-g): consider [Comparable]?
   final int sortGroup;
+
+  static const readOnly = Feature('read-only', 1);
+  static const finalFeature = Feature('final', 2);
+  static const writeOnly = Feature('write-only', 2);
+  static const readWrite = Feature('read / write', 2);
+  static const covariant = Feature('covariant', 2);
+  static const extended =  Feature('extended', 3);
+  static const inherited = Feature('inherited', 3);
+  static const inheritedGetter = Feature('inherited-getter', 3);
+  static const inheritedSetter = Feature('inherited-setter', 3);
+  static const lateFeature = Feature('late', 3);
+  static const overrideFeature = Feature('override', 3);
+  static const overrideGetter = Feature('override-getter', 3);
+  static const overrideSetter = Feature('override-setter', 3);
 }

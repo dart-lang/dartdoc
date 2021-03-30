@@ -31,9 +31,9 @@ mixin Inheritable on ContainerMember {
   @override
   Set<Feature> get features => {
     ...super.features,
-    if (isOverride) Feature.added('override'),
-    if (isInherited) Feature.added('inherited'),
-    if (isCovariant) Feature.added('covariant'),
+    if (isOverride) Feature.overrideFeature,
+    if (isInherited) Feature.inherited,
+    if (isCovariant) Feature.covariant,
   };
 
   @override

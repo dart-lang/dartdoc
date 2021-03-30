@@ -84,7 +84,7 @@ class Method extends ModelElement
   @override
   Set<Feature> get features => {
     ...super.features,
-    if (isInherited) Feature.added('inherited'),
+    if (isInherited) Feature.inherited,
   };
 
   @override

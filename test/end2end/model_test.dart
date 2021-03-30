@@ -218,19 +218,19 @@ void main() {
 
       expect(a.modelType.name, equals('dynamic'));
       expect(a.isLate, isTrue);
-      expect(a.features, contains(Feature.added('late')));
+      expect(a.features, contains(Feature.lateFeature));
 
       expect(b.modelType.name, equals('int'));
       expect(b.isLate, isTrue);
-      expect(b.features, contains(Feature.added('late')));
+      expect(b.features, contains(Feature.lateFeature));
 
       expect(cField.modelType.name, equals('dynamic'));
       expect(cField.isLate, isTrue);
-      expect(cField.features, contains(Feature.added('late')));
+      expect(cField.features, contains(Feature.lateFeature));
 
       expect(dField.modelType.name, equals('double'));
       expect(dField.isLate, isTrue);
-      expect(dField.features, contains(Feature.added('late')));
+      expect(dField.features, contains(Feature.lateFeature));
     });
 
     test('Late final top level variables', () {
@@ -238,7 +238,7 @@ void main() {
           .firstWhere((v) => v.name == 'initializeMe');
       expect(initializeMe.modelType.name, equals('String'));
       expect(initializeMe.isLate, isTrue);
-      expect(initializeMe.features, contains(Feature.added('late')));
+      expect(initializeMe.features, contains(Feature.lateFeature));
     });
 
     test('Opt out of Null safety', () {
@@ -2817,7 +2817,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('method overrides another', () {
       expect(m1.isOverride, isTrue);
-      expect(m1.features, contains(Feature.added('override')));
+      expect(m1.features, contains(Feature.overrideFeature));
     });
 
     test('generic method type args are rendered', () {
@@ -3072,14 +3072,14 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(implicitGetterExplicitSetter.setter.isInherited, isFalse);
       expect(implicitGetterExplicitSetter.isInherited, isFalse);
       expect(
-          implicitGetterExplicitSetter.features.contains(Feature.added('inherited')), isFalse);
-      expect(implicitGetterExplicitSetter.features.contains(Feature.added('inherited-getter')),
+          implicitGetterExplicitSetter.features.contains(Feature.inherited), isFalse);
+      expect(implicitGetterExplicitSetter.features.contains(Feature.inheritedGetter),
           isTrue);
       expect(
-          implicitGetterExplicitSetter.features.contains(Feature.added('override')), isFalse);
-      expect(implicitGetterExplicitSetter.features.contains(Feature.added('override-setter')),
+          implicitGetterExplicitSetter.features.contains(Feature.overrideFeature), isFalse);
+      expect(implicitGetterExplicitSetter.features.contains(Feature.overrideSetter),
           isTrue);
-      expect(implicitGetterExplicitSetter.features.contains(Feature.added('read / write')),
+      expect(implicitGetterExplicitSetter.features.contains(Feature.readWrite),
           isTrue);
       expect(
           implicitGetterExplicitSetter.oneLineDoc,
@@ -3096,14 +3096,14 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(explicitGetterImplicitSetter.setter.isInherited, isTrue);
       expect(explicitGetterImplicitSetter.isInherited, isFalse);
       expect(
-          explicitGetterImplicitSetter.features.contains(Feature.added('inherited')), isFalse);
-      expect(explicitGetterImplicitSetter.features.contains(Feature.added('inherited-setter')),
+          explicitGetterImplicitSetter.features.contains(Feature.inherited), isFalse);
+      expect(explicitGetterImplicitSetter.features.contains(Feature.inheritedSetter),
           isTrue);
       expect(
-          explicitGetterImplicitSetter.features.contains(Feature.added('override')), isFalse);
-      expect(explicitGetterImplicitSetter.features.contains(Feature.added('override-getter')),
+          explicitGetterImplicitSetter.features.contains(Feature.overrideFeature), isFalse);
+      expect(explicitGetterImplicitSetter.features.contains(Feature.overrideGetter),
           isTrue);
-      expect(explicitGetterImplicitSetter.features.contains(Feature.added('read / write')),
+      expect(explicitGetterImplicitSetter.features.contains(Feature.readWrite),
           isTrue);
       expect(explicitGetterImplicitSetter.oneLineDoc,
           equals('Getter doc for explicitGetterImplicitSetter'));
@@ -3172,14 +3172,14 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(f1.isFinal, isFalse);
       expect(finalProperty.isFinal, isTrue);
       expect(finalProperty.isLate, isFalse);
-      expect(finalProperty.features, contains(Feature.added('final')));
-      expect(finalProperty.features, isNot(contains(Feature.added('late'))));
+      expect(finalProperty.features, contains(Feature.finalFeature));
+      expect(finalProperty.features, isNot(contains(Feature.lateFeature)));
       expect(onlySetter.isFinal, isFalse);
-      expect(onlySetter.features, isNot(contains(Feature.added('final'))));
-      expect(onlySetter.features, isNot(contains(Feature.added('late'))));
+      expect(onlySetter.features, isNot(contains(Feature.finalFeature)));
+      expect(onlySetter.features, isNot(contains(Feature.lateFeature)));
       expect(dynamicGetter.isFinal, isFalse);
-      expect(dynamicGetter.features, isNot(contains(Feature.added('final'))));
-      expect(dynamicGetter.features, isNot(contains(Feature.added('late'))));
+      expect(dynamicGetter.features, isNot(contains(Feature.finalFeature)));
+      expect(dynamicGetter.features, isNot(contains(Feature.lateFeature)));
     });
 
     test('is not static', () {
@@ -3315,14 +3315,14 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('Verify that final and late show up (or not) appropriately', () {
       expect(meaningOfLife.isFinal, isTrue);
       expect(meaningOfLife.isLate, isFalse);
-      expect(meaningOfLife.features, contains(Feature.added('final')));
-      expect(meaningOfLife.features, isNot(contains(Feature.added('late'))));
+      expect(meaningOfLife.features, contains(Feature.finalFeature));
+      expect(meaningOfLife.features, isNot(contains(Feature.lateFeature)));
       expect(justGetter.isFinal, isFalse);
-      expect(justGetter.features, isNot(contains(Feature.added('final'))));
-      expect(justGetter.features, isNot(contains(Feature.added('late'))));
+      expect(justGetter.features, isNot(contains(Feature.finalFeature)));
+      expect(justGetter.features, isNot(contains(Feature.lateFeature)));
       expect(justSetter.isFinal, isFalse);
-      expect(justSetter.features, isNot(contains(Feature.added('final'))));
-      expect(justSetter.features, isNot(contains(Feature.added('late'))));
+      expect(justSetter.features, isNot(contains(Feature.finalFeature)));
+      expect(justSetter.features, isNot(contains(Feature.lateFeature)));
     });
 
     test(
