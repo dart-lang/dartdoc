@@ -25,11 +25,7 @@ mixin ContainerMember on ModelElement implements EnclosedElement {
   }
 
   @override
-  Set<String> get features {
-    var _features = super.features;
-    if (isExtended) _features.add('extended');
-    return _features;
-  }
+  Set<String> get features => {...super.features, if(isExtended) 'extended'};
 
   bool _canonicalEnclosingContainerIsSet = false;
   Container _canonicalEnclosingContainer;

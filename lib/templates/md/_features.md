@@ -1,1 +1,1 @@
-{{ #featuresAsString.isNotEmpty }}_{{{featuresAsString}}}_{{ /featuresAsString.isNotEmpty }}
+{{ #features }}_{{{featuresAsString}}}_{{ /features }}

@@ -6,28 +6,27 @@ import 'dart:convert';
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/element_type.dart';
+import 'package:dartdoc/src/model/feature.dart';
 import 'package:dartdoc/src/model/getter_setter_combo.dart';
 import 'package:dartdoc/src/model/library.dart';
 import 'package:dartdoc/src/model/model_element.dart';
-import 'package:dartdoc/src/model/nameable.dart';
 import 'package:dartdoc/src/model/package_graph.dart';
-import 'package:dartdoc/src/model/privacy.dart';
 
 /// Represents a Dart annotation, attached to an element in the source code with
 /// `@`.
-class Annotation extends Privacy with Nameable {
+class Annotation extends Feature {
   final ElementAnnotation annotation;
   final Library library;
   final PackageGraph packageGraph;
 
-  Annotation(this.annotation, this.library, this.packageGraph);
+  Annotation(this.annotation, this.library, this.packageGraph) : super(annotation.element.name);
 
-  String _renderedAnnotation;
-  String get renderedAnnotation => _renderedAnnotation ??=
-      '@' + linkedName + (const HtmlEscape()).convert(parameterText);
+  static const _htmlEscape = HtmlEscape();
 
+  String _rendered;
   @override
-  String get name => annotation.element.name;
+  String get rendered => _rendered ??=
+      '@' + linkedName + _htmlEscape.convert(parameterText);
 
   /// Return the linked name of the annotation.
   String get linkedName => annotation.element is PropertyAccessorElement

@@ -3075,11 +3075,11 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<String>'),
+                          c, remainingNames, 'Iterable<Annotation>'),
                   renderIterable:
                       (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
                     return c.annotations.map(
-                        (e) => _render_String(e, ast, r.template, parent: r));
+                        (e) => renderSimple(e, ast, r.template, parent: r));
                   },
                 ),
                 'canonicalLibrary': Property(
@@ -3825,18 +3825,6 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                       (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
                     return c.locationPieces.map(
                         (e) => _render_String(e, ast, r.template, parent: r));
-                  },
-                ),
-                'modelAnnotations': Property(
-                  getValue: (CT_ c) => c.modelAnnotations,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<Annotation>'),
-                  renderIterable:
-                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-                    return c.modelAnnotations.map(
-                        (e) => renderSimple(e, ast, r.template, parent: r));
                   },
                 ),
                 'modelNode': Property(
@@ -7438,11 +7426,11 @@ class _Renderer_Field extends RendererBase<Field> {
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
-                          c, remainingNames, 'List<String>'),
+                          c, remainingNames, 'Iterable<Annotation>'),
                   renderIterable:
                       (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
                     return c.annotations.map(
-                        (e) => _render_String(e, ast, r.template, parent: r));
+                        (e) => renderSimple(e, ast, r.template, parent: r));
                   },
                 ),
                 'documentation': Property(
@@ -8153,18 +8141,6 @@ class _Renderer_GetterSetterCombo extends RendererBase<GetterSetterCombo> {
                       (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
                     return renderSimple(c.characterLocation, ast, r.template,
                         parent: r);
-                  },
-                ),
-                'comboFeatures': Property(
-                  getValue: (CT_ c) => c.comboFeatures,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Set<String>'),
-                  renderIterable:
-                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-                    return c.comboFeatures.map(
-                        (e) => _render_String(e, ast, r.template, parent: r));
                   },
                 ),
                 'constantInitializer': Property(

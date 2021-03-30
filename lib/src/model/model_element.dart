@@ -402,12 +402,8 @@ abstract class ModelElement extends Canonicalization
   ModelNode get modelNode =>
       _modelNode ??= packageGraph.getModelNodeFor(element);
 
-  Iterable<String> get annotations =>
-      modelAnnotations.map((a) => a.renderedAnnotation);
-
-  Iterable<Annotation> _modelAnnotations;
-  // TODO(jcollins-g): rename to annotations and rework templates.
-  Iterable<Annotation> get modelAnnotations => _modelAnnotations ??=
+  Iterable<Annotation> _annotations;
+  Iterable<Annotation> get annotations => _annotations ??=
       element.metadata.map((m) => Annotation(m, library, packageGraph));
 
   bool _isPublic;
@@ -480,7 +476,7 @@ abstract class ModelElement extends Canonicalization
 
   Set<String> get features {
     return {
-      ...annotations.where((a) => !_specialFeatures.contains(a)),
+      ...annotations.map((a) => a.rendered).where((a) => !_specialFeatures.contains(a)),
       // 'const' and 'static' are not needed here because 'const' and 'static'
       // elements get their own sections in the doc.
       if (isFinal) 'final',
@@ -488,6 +484,8 @@ abstract class ModelElement extends Canonicalization
     };
   }
 
+  /// Returns [features] as a single String, sorted [byFeatureOrdering], joined
+  /// with commas.
   String get featuresAsString {
     var allFeatures = features.toList()..sort(byFeatureOrdering);
     return allFeatures.join(', ');
