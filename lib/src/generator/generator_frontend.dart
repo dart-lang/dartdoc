@@ -153,6 +153,14 @@ class GeneratorFrontEnd implements Generator {
             _generatorBackend.generateProperty(
                 writer, packageGraph, lib, extension, staticField);
           }
+
+          for (var method in filterNonDocumented(extension.staticMethods)) {
+            if (!method.isCanonical) continue;
+
+            indexAccumulator.add(method);
+            _generatorBackend.generateMethod(
+                writer, packageGraph, lib, extension, method);
+          }
         }
 
         for (var mixin in filterNonDocumented(lib.mixins)) {

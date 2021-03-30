@@ -13,7 +13,9 @@
 
     <section class="multi-line-signature">
       {{#typeDef}}
-        {{>callable_multiline}}
+        {{#asCallable}}
+          {{>callable_multiline}}
+        {{/asCallable}}
       {{/typeDef}}
     </section>
 

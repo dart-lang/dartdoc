@@ -12,6 +12,7 @@ import 'package:dartdoc/src/generator/html_resources.g.dart' as resources;
 import 'package:dartdoc/src/generator/resource_loader.dart';
 import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/src/generator/templates.dart';
+import 'package:dartdoc/src/generator/templates.renderers.dart';
 import 'package:dartdoc/src/model/package.dart';
 import 'package:dartdoc/src/model/package_graph.dart';
 import 'package:path/path.dart' as path show Context;
@@ -36,7 +37,8 @@ class HtmlGeneratorBackend extends DartdocGeneratorBackend {
     super.generatePackage(writer, graph, package);
     // We have to construct the data again. This only happens once per package.
     TemplateData data = PackageTemplateData(options, graph, package);
-    render(writer, '__404error.html', templates.errorTemplate, data);
+    var content = renderError(data, templates.errorTemplate);
+    write(writer, '__404error.html', data, content);
   }
 
   @override

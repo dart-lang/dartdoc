@@ -1332,12 +1332,6 @@ void main() {
             contains('<code>ThisIsNotHereNoWay&lt;MyType&gt;</code>'));
       });
 
-      test('leaves relative href resulting in a broken link', () {
-        // Dartdoc does emit a brokenLink warning for this.
-        expect(docsAsHtml,
-            contains('<a href="SubForDocComments/localMethod.html">link</a>'));
-      });
-
       test('leaves relative href resulting in a working link', () {
         // Ideally doc comments should not make assumptions about Dartdoc output
         // files, but unfortunately some do...

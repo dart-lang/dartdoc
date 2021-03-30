@@ -116,8 +116,7 @@ class CoverageSubprocessLauncher extends SubprocessLauncher {
         perLine: parsePortAsString);
 
     if (coverageEnabled) {
-      // ignore: unawaited_futures
-      super.runStreamed('pub', [
+      await super.runStreamed('pub', [
         'run',
         'coverage:collect_coverage',
         '--wait-paused',

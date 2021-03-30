@@ -214,8 +214,8 @@ abstract class RendererBase<T> {
     if (property == null) {
       if (parent == null) {
         throw MustachioResolutionError(node.keySpan.message(
-            "Failed to resolve '$key' as a property on any types in the current "
-            'context'));
+            "Failed to resolve '$key' as a property on any types in the "
+            'current context'));
       } else {
         return parent.section(node);
       }

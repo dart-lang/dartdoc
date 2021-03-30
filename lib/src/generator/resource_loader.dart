@@ -24,8 +24,12 @@ extension ResourceLoader on ResourceProvider {
       throw ArgumentError('path must begin with package:');
     }
 
+    return (await getResourceFile(path)).readAsBytesSync();
+  }
+
+  Future<File> getResourceFile(String path) async {
     var uri = await resolveResourceUri(Uri.parse(path));
-    return getFile(uri.toFilePath()).readAsBytesSync();
+    return getFile(uri.toFilePath());
   }
 
   /// Helper function for resolving to a non-relative, non-package URI.

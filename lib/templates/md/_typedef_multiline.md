@@ -1,5 +1,7 @@
 {{#isCallable}}
-  {{>callable_multiline}}
+  {{#asCallable}}
+    {{>callable_multiline}}
+  {{/asCallable}}
 {{/isCallable}}
 {{^isCallable}}
   {{>type_multiline}}

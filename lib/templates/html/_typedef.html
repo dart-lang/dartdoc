@@ -1,5 +1,7 @@
 {{#isCallable}}
-  {{>callable}}
+  {{#asCallable}}
+    {{>callable}}
+  {{/asCallable}}
 {{/isCallable}}
 {{^isCallable}}
   {{>type}}
