@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:dartdoc/src/model/feature.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 /// Top-level variables. But also picks up getters and setters?
@@ -73,7 +74,7 @@ class TopLevelVariable extends ModelElement
   String get kind => isConst ? 'top-level constant' : 'top-level property';
 
   @override
-  Set<String> get features => super.features..addAll(comboFeatures);
+  Set<Feature> get features => {...super.features, ...comboFeatures};
 
   @override
   String computeDocumentationComment() {

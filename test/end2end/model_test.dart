@@ -8,6 +8,7 @@ import 'dart:io';
 
 import 'package:async/async.dart';
 import 'package:dartdoc/dartdoc.dart';
+import 'package:dartdoc/src/model/feature.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/category_renderer.dart';
 import 'package:dartdoc/src/render/enum_field_renderer.dart';
@@ -217,19 +218,19 @@ void main() {
 
       expect(a.modelType.name, equals('dynamic'));
       expect(a.isLate, isTrue);
-      expect(a.features, contains('late'));
+      expect(a.features, contains(Feature.added('late')));
 
       expect(b.modelType.name, equals('int'));
       expect(b.isLate, isTrue);
-      expect(b.features, contains('late'));
+      expect(b.features, contains(Feature.added('late')));
 
       expect(cField.modelType.name, equals('dynamic'));
       expect(cField.isLate, isTrue);
-      expect(cField.features, contains('late'));
+      expect(cField.features, contains(Feature.added('late')));
 
       expect(dField.modelType.name, equals('double'));
       expect(dField.isLate, isTrue);
-      expect(dField.features, contains('late'));
+      expect(dField.features, contains(Feature.added('late')));
     });
 
     test('Late final top level variables', () {
@@ -237,7 +238,7 @@ void main() {
           .firstWhere((v) => v.name == 'initializeMe');
       expect(initializeMe.modelType.name, equals('String'));
       expect(initializeMe.isLate, isTrue);
-      expect(initializeMe.features, contains('late'));
+      expect(initializeMe.features, contains(Feature.added('late')));
     });
 
     test('Opt out of Null safety', () {
@@ -2816,7 +2817,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('method overrides another', () {
       expect(m1.isOverride, isTrue);
-      expect(m1.features, contains('override'));
+      expect(m1.features, contains(Feature.added('override')));
     });
 
     test('generic method type args are rendered', () {
@@ -3071,14 +3072,14 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(implicitGetterExplicitSetter.setter.isInherited, isFalse);
       expect(implicitGetterExplicitSetter.isInherited, isFalse);
       expect(
-          implicitGetterExplicitSetter.features.contains('inherited'), isFalse);
-      expect(implicitGetterExplicitSetter.features.contains('inherited-getter'),
+          implicitGetterExplicitSetter.features.contains(Feature.added('inherited')), isFalse);
+      expect(implicitGetterExplicitSetter.features.contains(Feature.added('inherited-getter')),
           isTrue);
       expect(
-          implicitGetterExplicitSetter.features.contains('override'), isFalse);
-      expect(implicitGetterExplicitSetter.features.contains('override-setter'),
+          implicitGetterExplicitSetter.features.contains(Feature.added('override')), isFalse);
+      expect(implicitGetterExplicitSetter.features.contains(Feature.added('override-setter')),
           isTrue);
-      expect(implicitGetterExplicitSetter.features.contains('read / write'),
+      expect(implicitGetterExplicitSetter.features.contains(Feature.added('read / write')),
           isTrue);
       expect(
           implicitGetterExplicitSetter.oneLineDoc,
@@ -3095,14 +3096,14 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(explicitGetterImplicitSetter.setter.isInherited, isTrue);
       expect(explicitGetterImplicitSetter.isInherited, isFalse);
       expect(
-          explicitGetterImplicitSetter.features.contains('inherited'), isFalse);
-      expect(explicitGetterImplicitSetter.features.contains('inherited-setter'),
+          explicitGetterImplicitSetter.features.contains(Feature.added('inherited')), isFalse);
+      expect(explicitGetterImplicitSetter.features.contains(Feature.added('inherited-setter')),
           isTrue);
       expect(
-          explicitGetterImplicitSetter.features.contains('override'), isFalse);
-      expect(explicitGetterImplicitSetter.features.contains('override-getter'),
+          explicitGetterImplicitSetter.features.contains(Feature.added('override')), isFalse);
+      expect(explicitGetterImplicitSetter.features.contains(Feature.added('override-getter')),
           isTrue);
-      expect(explicitGetterImplicitSetter.features.contains('read / write'),
+      expect(explicitGetterImplicitSetter.features.contains(Feature.added('read / write')),
           isTrue);
       expect(explicitGetterImplicitSetter.oneLineDoc,
           equals('Getter doc for explicitGetterImplicitSetter'));
@@ -3171,14 +3172,14 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(f1.isFinal, isFalse);
       expect(finalProperty.isFinal, isTrue);
       expect(finalProperty.isLate, isFalse);
-      expect(finalProperty.features, contains('final'));
-      expect(finalProperty.features, isNot(contains('late')));
+      expect(finalProperty.features, contains(Feature.added('final')));
+      expect(finalProperty.features, isNot(contains(Feature.added('late'))));
       expect(onlySetter.isFinal, isFalse);
-      expect(onlySetter.features, isNot(contains('final')));
-      expect(onlySetter.features, isNot(contains('late')));
+      expect(onlySetter.features, isNot(contains(Feature.added('final'))));
+      expect(onlySetter.features, isNot(contains(Feature.added('late'))));
       expect(dynamicGetter.isFinal, isFalse);
-      expect(dynamicGetter.features, isNot(contains('final')));
-      expect(dynamicGetter.features, isNot(contains('late')));
+      expect(dynamicGetter.features, isNot(contains(Feature.added('final'))));
+      expect(dynamicGetter.features, isNot(contains(Feature.added('late'))));
     });
 
     test('is not static', () {
@@ -3314,14 +3315,14 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('Verify that final and late show up (or not) appropriately', () {
       expect(meaningOfLife.isFinal, isTrue);
       expect(meaningOfLife.isLate, isFalse);
-      expect(meaningOfLife.features, contains('final'));
-      expect(meaningOfLife.features, isNot(contains('late')));
+      expect(meaningOfLife.features, contains(Feature.added('final')));
+      expect(meaningOfLife.features, isNot(contains(Feature.added('late'))));
       expect(justGetter.isFinal, isFalse);
-      expect(justGetter.features, isNot(contains('final')));
-      expect(justGetter.features, isNot(contains('late')));
+      expect(justGetter.features, isNot(contains(Feature.added('final'))));
+      expect(justGetter.features, isNot(contains(Feature.added('late'))));
       expect(justSetter.isFinal, isFalse);
-      expect(justSetter.features, isNot(contains('final')));
-      expect(justSetter.features, isNot(contains('late')));
+      expect(justSetter.features, isNot(contains(Feature.added('final'))));
+      expect(justSetter.features, isNot(contains(Feature.added('late'))));
     });
 
     test(
@@ -4024,7 +4025,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('has the right annotation and is escaped', () {
       expect(
-          forAnnotation.annotations.first,
+          forAnnotation.annotations.first.rendered,
           equals(
               '@<a href="${htmlBasePlaceholder}ex/ForAnnotation-class.html">ForAnnotation</a>'
               '(&#39;my value&#39;)'));
@@ -4034,14 +4035,14 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       var m = dog.instanceMethods.singleWhere((m) => m.name == 'getClassA');
       expect(m.hasAnnotations, isTrue);
       expect(
-          m.annotations.first,
+          m.annotations.first.rendered,
           equals(
               '@<a href="${htmlBasePlaceholder}ex/deprecated-constant.html">deprecated</a>'));
     });
 
     test('constructor annotations have the right link and are escaped', () {
       expect(
-          ctr.annotations.first,
+          ctr.annotations.first.rendered,
           equals(
               '@<a href="${htmlBasePlaceholder}ex/Deprecated-class.html">Deprecated</a>'
               '(&quot;Internal use&quot;)'));
@@ -4051,7 +4052,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       var createDog2 =
           dog.staticMethods.firstWhere((c) => c.name == 'createDog2');
       expect(
-          createDog2.annotations.first,
+          createDog2.annotations.first.rendered,
           equals(
               '@<a href="${htmlBasePlaceholder}ex/deprecated-constant.html">deprecated</a>'));
     });

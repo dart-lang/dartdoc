@@ -5,6 +5,7 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/src/dart/element/element.dart';
 import 'package:dartdoc/src/model/annotation.dart';
+import 'package:dartdoc/src/model/feature.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/source_code_renderer.dart';
 
@@ -116,29 +117,29 @@ class Field extends ModelElement
   }
 
   @override
-  Set<String> get features {
+  Set<Feature> get features {
     var allFeatures = super.features..addAll(comboFeatures);
     // Combo features can indicate 'inherited' and 'override' if
     // either the getter or setter has one of those properties, but that's not
     // really specific enough for [Field]s that have public getter/setters.
     if (hasPublicGetter && hasPublicSetter) {
       if (getter.isInherited && setter.isInherited) {
-        allFeatures.add('inherited');
+        allFeatures.add(Feature.added('inherited'));
       } else {
-        allFeatures.remove('inherited');
-        if (getter.isInherited) allFeatures.add('inherited-getter');
-        if (setter.isInherited) allFeatures.add('inherited-setter');
+        allFeatures.remove(Feature.added('inherited'));
+        if (getter.isInherited) allFeatures.add(Feature.added('inherited-getter'));
+        if (setter.isInherited) allFeatures.add(Feature.added('inherited-setter'));
       }
       if (getter.isOverride && setter.isOverride) {
-        allFeatures.add('override');
+        allFeatures.add(Feature.added('override'));
       } else {
-        allFeatures.remove('override');
-        if (getter.isOverride) allFeatures.add('override-getter');
-        if (setter.isOverride) allFeatures.add('override-setter');
+        allFeatures.remove(Feature.added('override'));
+        if (getter.isOverride) allFeatures.add(Feature.added('override-getter'));
+        if (setter.isOverride) allFeatures.add(Feature.added('override-setter'));
       }
     } else {
-      if (isInherited) allFeatures.add('inherited');
-      if (isOverride) allFeatures.add('override');
+      if (isInherited) allFeatures.add(Feature.added('inherited'));
+      if (isOverride) allFeatures.add(Feature.added('override'));
     }
     return allFeatures;
   }

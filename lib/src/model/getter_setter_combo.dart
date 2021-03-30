@@ -9,6 +9,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/source/line_info.dart';
 import 'package:analyzer/src/dart/element/element.dart';
 import 'package:dartdoc/src/element_type.dart';
+import 'package:dartdoc/src/model/feature.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/utils.dart';
 import 'package:dartdoc/src/warnings.dart';
@@ -27,19 +28,13 @@ mixin GetterSetterCombo on ModelElement {
   }
 
   @protected
-  Set<String> get comboFeatures {
-    var allFeatures = <String>{};
-    if (hasExplicitGetter && hasPublicGetter) {
-      allFeatures.addAll(getter.features);
-    }
-    if (hasExplicitSetter && hasPublicSetter) {
-      allFeatures.addAll(setter.features);
-    }
-    if (readOnly && !isFinal && !isConst) allFeatures.add('read-only');
-    if (writeOnly) allFeatures.add('write-only');
-    if (readWrite) allFeatures.add('read / write');
-    return allFeatures;
-  }
+  Set<Feature> get comboFeatures => {
+    if (hasExplicitGetter && hasPublicGetter) ...getter.features,
+    if (hasExplicitSetter && hasPublicSetter) ...setter.features,
+    if (readOnly && !isFinal && !isConst) Feature.added('read-only'),
+    if (writeOnly) Feature.added('write-only'),
+    if (readWrite) Feature.added('read / write'),
+  };
 
   @override
   ModelElement enclosingElement;

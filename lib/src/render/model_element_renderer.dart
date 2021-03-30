@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'package:dartdoc/src/model/feature.dart';
 import 'package:dartdoc/src/model/model_element.dart';
 
 abstract class ModelElementRenderer {
@@ -13,6 +14,12 @@ abstract class ModelElementRenderer {
 
   String renderAnimation(
       String uniqueId, int width, int height, Uri movieUrl, String overlayId);
+
+  // TODO(jcollins-g): consider extracting render for individual features?
+  String renderFeatures(ModelElement modelElement) {
+    var allFeatures = modelElement.features.toList()..sort(byFeatureOrdering);
+    return allFeatures.map((f) => f.rendered).join(', ');
+  }
 }
 
 class ModelElementRendererHtml extends ModelElementRenderer {

@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'package:dartdoc/src/model/feature.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 /// A [ModelElement] that is a [Container] member.
@@ -25,7 +26,7 @@ mixin ContainerMember on ModelElement implements EnclosedElement {
   }
 
   @override
-  Set<String> get features => {...super.features, if(isExtended) 'extended'};
+  Set<Feature> get features => {...super.features, if(isExtended) Feature.added('extended')};
 
   bool _canonicalEnclosingContainerIsSet = false;
   Container _canonicalEnclosingContainer;

@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'package:dartdoc/src/model/feature.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/special_elements.dart';
 
@@ -28,11 +29,11 @@ mixin Inheritable on ContainerMember {
   bool get isCovariant;
 
   @override
-  Set<String> get features => {
+  Set<Feature> get features => {
     ...super.features,
-    if (isOverride) 'override',
-    if (isInherited) 'inherited',
-    if (isCovariant) 'covariant',
+    if (isOverride) Feature.added('override'),
+    if (isInherited) Feature.added('inherited'),
+    if (isCovariant) Feature.added('covariant'),
   };
 
   @override

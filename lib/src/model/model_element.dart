@@ -17,6 +17,7 @@ import 'package:collection/collection.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/annotation.dart';
 import 'package:dartdoc/src/model/documentation_comment.dart';
+import 'package:dartdoc/src/model/feature.dart';
 import 'package:dartdoc/src/model/feature_set.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as utils;
@@ -29,38 +30,6 @@ import 'package:dartdoc/src/warnings.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path show Context;
 
-/// Items mapped less than zero will sort before custom annotations.
-/// Items mapped above zero are sorted after custom annotations.
-/// Items mapped to zero will sort alphabetically among custom annotations.
-/// Custom annotations are assumed to be any annotation or feature not in this
-/// map.
-const Map<String, int> featureOrder = {
-  'read-only': 1,
-  'write-only': 1,
-  'read / write': 1,
-  'covariant': 2,
-  'final': 2,
-  'late': 2,
-  'inherited': 3,
-  'inherited-getter': 3,
-  'inherited-setter': 3,
-  'override': 3,
-  'override-getter': 3,
-  'override-setter': 3,
-  'extended': 3,
-};
-
-int byFeatureOrdering(String a, String b) {
-  var scoreA = 0;
-  var scoreB = 0;
-
-  if (featureOrder.containsKey(a)) scoreA = featureOrder[a];
-  if (featureOrder.containsKey(b)) scoreB = featureOrder[b];
-
-  if (scoreA < scoreB) return -1;
-  if (scoreA > scoreB) return 1;
-  return compareAsciiLowerCaseNatural(a, b);
-}
 
 /// This doc may need to be processed in case it has a template or html
 /// fragment.
@@ -474,22 +443,17 @@ abstract class ModelElement extends Canonicalization
     'deprecated'
   };
 
-  Set<String> get features {
+  Set<Feature> get features {
     return {
-      ...annotations.map((a) => a.rendered).where((a) => !_specialFeatures.contains(a)),
+      ...annotations.where((a) => !_specialFeatures.contains(a.name)),
       // 'const' and 'static' are not needed here because 'const' and 'static'
       // elements get their own sections in the doc.
-      if (isFinal) 'final',
-      if (isLate) 'late',
+      if (isFinal) Feature.added('final'),
+      if (isLate) Feature.added('late'),
     };
   }
 
-  /// Returns [features] as a single String, sorted [byFeatureOrdering], joined
-  /// with commas.
-  String get featuresAsString {
-    var allFeatures = features.toList()..sort(byFeatureOrdering);
-    return allFeatures.join(', ');
-  }
+  String get featuresAsString => modelElementRenderer.renderFeatures(this);
 
   // True if this is a function, or if it is an type alias to a function.
   bool get isCallable =>

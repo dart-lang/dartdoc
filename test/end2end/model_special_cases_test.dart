@@ -76,9 +76,9 @@ void main() {
 
   final _generalizedTypedefsAllowed =
       VersionRange(min: Version.parse('2.13.0-0'), includeMin: true);
-  //final _genericMetadataAllowed =
-  //    VersionRange(min: Version.parse('2.13.0-0'), includeMin: true);
- 
+  final _genericMetadataAllowed =
+      VersionRange(min: Version.parse('2.13.0-0'), includeMin: true);
+
   // Experimental features not yet enabled by default.  Move tests out of this
   // block when the feature is enabled by default.
   group('Experiments', () {
@@ -103,27 +103,25 @@ void main() {
         var ab0 =
             '@<a href="%%__HTMLBASE_dartdoc_internal__%%generic_metadata/A-class.html">A</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="%%__HTMLBASE_dartdoc_internal__%%generic_metadata/B.html">B</a></span>&gt;</span>(0)';
 
-        expect(genericMetadata.annotations.first, equals(ab0));
-        expect(f.annotations.first, equals(ab0));
-        expect(C.annotations.first, equals(ab0));
-        expect(C.typeParameters.first.annotations.first, equals(ab0));
-        expect(mp.parameters.map((p) => p.annotations.first),
+        expect(genericMetadata.annotations.first.rendered, equals(ab0));
+        expect(f.annotations.first.rendered, equals(ab0));
+        expect(C.annotations.first.rendered, equals(ab0));
+        expect(C.typeParameters.first.annotations.first.rendered, equals(ab0));
+        expect(mp.parameters.map((p) => p.annotations.first.rendered),
             everyElement(equals(ab0)));
-        expect(mn.parameters.map((p) => p.annotations.first),
+        expect(mn.parameters.map((p) => p.annotations.first.rendered),
             everyElement(equals(ab0)));
 
-        expect(genericMetadata.features, contains(ab0));
-        expect(f.features, contains(ab0));
-        expect(C.features, contains(ab0));
-        expect(C.typeParameters.first.features, contains(ab0));
+        expect(genericMetadata.features.map((f) => f.rendered), contains(ab0));
+        expect(f.features.map((f) => f.rendered), contains(ab0));
+        expect(C.features.map((f) => f.rendered), contains(ab0));
+        expect(C.typeParameters.first.features.map((f) => f.rendered), contains(ab0));
         expect(
-            mp.parameters.map((p) => p.features), everyElement(contains(ab0)));
+            mp.parameters.map((p) => p.features.map((f) => f.rendered)), everyElement(contains(ab0)));
         expect(
-            mn.parameters.map((p) => p.features), everyElement(contains(ab0)));
+            mn.parameters.map((p) => p.features.map((f) => f.rendered)), everyElement(contains(ab0)));
       });
-    }, skip: 'requires analyzer > 1.2.0'
-      //(!_genericMetadataAllowed.allows(_platformVersion))
-    );
+    }, skip: !_genericMetadataAllowed.allows(_platformVersion));
 
     group('generalized typedefs', () {
       Library generalizedTypedefs;
