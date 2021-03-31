@@ -371,8 +371,12 @@ abstract class ModelElement extends Canonicalization
       _modelNode ??= packageGraph.getModelNodeFor(element);
 
   Iterable<Annotation> _annotations;
-  Iterable<Annotation> get annotations => _annotations ??=
-      element.metadata.map((m) => Annotation(m, library, packageGraph));
+  // Skips over annotations with null elements.  While technically they are
+  // invalid code from analyzer's perspective they are present in sky_engine
+  // (@Native) so we don't want to crash here.
+  Iterable<Annotation> get annotations => _annotations ??= element.metadata
+      .whereNot((m) => m.element == null)
+      .map((m) => Annotation(m, library, packageGraph));
 
   bool _isPublic;
 
@@ -444,6 +448,10 @@ abstract class ModelElement extends Canonicalization
 
   bool get hasFeatures => features.isNotEmpty;
 
+  /// Usually a superset of [annotations] except where [_specialFeatures]
+  /// replace them, a list of annotations as well as tags applied by
+  /// Dartdoc itself when it notices characteristics of an element
+  /// that need to be documented.  See [Feature] for a list.
   Set<Feature> get features {
     return {
       ...annotations.where((a) => !_specialFeatures.contains(a.name)),

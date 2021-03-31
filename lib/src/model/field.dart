@@ -4,7 +4,6 @@
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/src/dart/element/element.dart';
-import 'package:dartdoc/src/model/annotation.dart';
 import 'package:dartdoc/src/model/feature.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/source_code_renderer.dart';
@@ -103,13 +102,6 @@ class Field extends ModelElement
 
   @override
   String get kind => isConst ? 'constant' : 'property';
-
-  @override
-  Iterable<Annotation> get annotations => [
-        ...super.annotations,
-        if (hasGetter) ...getter.annotations,
-        if (hasSetter) ...setter.annotations,
-      ];
 
   String get fullkind {
     if (field.isAbstract) return 'abstract $kind';
