@@ -4,7 +4,8 @@
 
 import 'dart:convert';
 
-import 'package:analyzer/dart/ast/ast.dart' hide Annotation;
+import 'package:analyzer/dart/ast/ast.dart'
+    show Expression, InstanceCreationExpression;
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/source/line_info.dart';
 import 'package:analyzer/src/dart/element/element.dart';
