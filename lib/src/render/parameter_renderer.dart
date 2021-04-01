@@ -159,7 +159,8 @@ abstract class ParameterRenderer {
     if (showMetadata && param.hasAnnotations) {
       buf.write(param.annotations
               .map((a) => annotation(a.linkedNameWithParameters))
-              .join(' ') + ' ');
+              .join(' ') +
+          ' ');
     }
     if (param.isRequiredNamed) {
       buf.write(required('required') + ' ');
