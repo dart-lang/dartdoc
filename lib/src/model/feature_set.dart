@@ -18,7 +18,7 @@ mixin FeatureSet {
     // legacy interfaces.
     if (isNullSafety) {
       yield LanguageFeature(
-          'Null safety', packageGraph.rendererFactory.featureRenderer);
+          'Null safety', packageGraph.rendererFactory.languageFeatureRenderer);
     }
   }
 

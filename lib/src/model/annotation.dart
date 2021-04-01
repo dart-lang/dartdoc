@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'dart:convert';
-
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/feature.dart';
@@ -22,16 +20,16 @@ class Annotation extends Feature {
   Annotation(this.annotation, this.library, this.packageGraph)
       : super(annotation.element.name);
 
-  static const _htmlEscape = HtmlEscape();
-
-  String _rendered;
+  String _linkedNameWithParameters;
   @override
-  String get rendered =>
-      _rendered ??= '@' + linkedName + _htmlEscape.convert(parameterText);
+  String get linkedNameWithParameters => _linkedNameWithParameters ??=
+      packageGraph.rendererFactory.featureRenderer.renderAnnotation(this);
 
   /// Return the linked name of the annotation.
+  @override
   String get linkedName => annotation.element is PropertyAccessorElement
       ? ModelElement.fromElement(annotation.element, packageGraph).linkedName
+      // TODO(jcollins-g): consider linking to constructor instead of type?
       : modelType.linkedName;
 
   ElementType _modelType;

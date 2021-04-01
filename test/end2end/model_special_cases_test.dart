@@ -103,23 +103,39 @@ void main() {
         var ab0 =
             '@<a href="%%__HTMLBASE_dartdoc_internal__%%generic_metadata/A-class.html">A</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="%%__HTMLBASE_dartdoc_internal__%%generic_metadata/B.html">B</a></span>&gt;</span>(0)';
 
-        expect(genericMetadata.annotations.first.rendered, equals(ab0));
-        expect(f.annotations.first.rendered, equals(ab0));
-        expect(C.annotations.first.rendered, equals(ab0));
-        expect(C.typeParameters.first.annotations.first.rendered, equals(ab0));
-        expect(mp.parameters.map((p) => p.annotations.first.rendered),
+        expect(genericMetadata.annotations.first.linkedNameWithParameters,
+            equals(ab0));
+        expect(f.annotations.first.linkedNameWithParameters, equals(ab0));
+        expect(C.annotations.first.linkedNameWithParameters, equals(ab0));
+        expect(
+            C.typeParameters.first.annotations.first.linkedNameWithParameters,
+            equals(ab0));
+        expect(
+            mp.parameters
+                .map((p) => p.annotations.first.linkedNameWithParameters),
             everyElement(equals(ab0)));
-        expect(mn.parameters.map((p) => p.annotations.first.rendered),
+        expect(
+            mn.parameters
+                .map((p) => p.annotations.first.linkedNameWithParameters),
             everyElement(equals(ab0)));
 
-        expect(genericMetadata.features.map((f) => f.rendered), contains(ab0));
-        expect(f.features.map((f) => f.rendered), contains(ab0));
-        expect(C.features.map((f) => f.rendered), contains(ab0));
-        expect(C.typeParameters.first.features.map((f) => f.rendered),
+        expect(genericMetadata.features.map((f) => f.linkedNameWithParameters),
             contains(ab0));
-        expect(mp.parameters.map((p) => p.features.map((f) => f.rendered)),
+        expect(
+            f.features.map((f) => f.linkedNameWithParameters), contains(ab0));
+        expect(
+            C.features.map((f) => f.linkedNameWithParameters), contains(ab0));
+        expect(
+            C.typeParameters.first.features
+                .map((f) => f.linkedNameWithParameters),
+            contains(ab0));
+        expect(
+            mp.parameters
+                .map((p) => p.features.map((f) => f.linkedNameWithParameters)),
             everyElement(contains(ab0)));
-        expect(mn.parameters.map((p) => p.features.map((f) => f.rendered)),
+        expect(
+            mn.parameters
+                .map((p) => p.features.map((f) => f.linkedNameWithParameters)),
             everyElement(contains(ab0)));
       });
     }, skip: !_genericMetadataAllowed.allows(_platformVersion));

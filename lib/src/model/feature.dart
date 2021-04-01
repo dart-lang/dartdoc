@@ -29,9 +29,13 @@ class Feature implements Privacy {
   /// class instead.
   const Feature(this._name, [this.sortGroup = 0]);
 
-  String get rendered => name;
+  final String featurePrefix = '';
 
   String get name => _name;
+
+  String get linkedName => name;
+
+  String get linkedNameWithParameters => linkedName;
 
   @override
   bool get isPublic => !name.startsWith('_');

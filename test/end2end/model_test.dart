@@ -4037,7 +4037,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('has the right annotation and is escaped', () {
       expect(
-          forAnnotation.annotations.first.rendered,
+          forAnnotation.annotations.first.linkedNameWithParameters,
           equals(
               '@<a href="${htmlBasePlaceholder}ex/ForAnnotation-class.html">ForAnnotation</a>'
               '(&#39;my value&#39;)'));
@@ -4047,14 +4047,14 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       var m = dog.instanceMethods.singleWhere((m) => m.name == 'getClassA');
       expect(m.hasAnnotations, isTrue);
       expect(
-          m.annotations.first.rendered,
+          m.annotations.first.linkedNameWithParameters,
           equals(
               '@<a href="${htmlBasePlaceholder}ex/deprecated-constant.html">deprecated</a>'));
     });
 
     test('constructor annotations have the right link and are escaped', () {
       expect(
-          ctr.annotations.first.rendered,
+          ctr.annotations.first.linkedNameWithParameters,
           equals(
               '@<a href="${htmlBasePlaceholder}ex/Deprecated-class.html">Deprecated</a>'
               '(&quot;Internal use&quot;)'));
@@ -4064,7 +4064,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       var createDog2 =
           dog.staticMethods.firstWhere((c) => c.name == 'createDog2');
       expect(
-          createDog2.annotations.first.rendered,
+          createDog2.annotations.first.linkedNameWithParameters,
           equals(
               '@<a href="${htmlBasePlaceholder}ex/deprecated-constant.html">deprecated</a>'));
     });

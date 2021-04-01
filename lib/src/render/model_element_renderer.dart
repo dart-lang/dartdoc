@@ -15,10 +15,9 @@ abstract class ModelElementRenderer {
   String renderAnimation(
       String uniqueId, int width, int height, Uri movieUrl, String overlayId);
 
-  // TODO(jcollins-g): consider extracting render for individual features?
   String renderFeatures(ModelElement modelElement) {
     var allFeatures = modelElement.features.toList()..sort(byFeatureOrdering);
-    return allFeatures.map((f) => f.rendered).join(', ');
+    return allFeatures.map((f) => f.linkedNameWithParameters).join(', ');
   }
 }
 

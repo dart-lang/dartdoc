@@ -25,6 +25,7 @@ import 'package:dartdoc/src/render/model_element_renderer.dart';
 import 'package:dartdoc/src/render/parameter_renderer.dart';
 import 'package:dartdoc/src/render/source_code_renderer.dart';
 import 'package:dartdoc/src/source_linker.dart';
+import 'package:dartdoc/src/special_elements.dart';
 import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:meta/meta.dart';
@@ -371,13 +372,16 @@ abstract class ModelElement extends Canonicalization
       _modelNode ??= packageGraph.getModelNodeFor(element);
 
   Iterable<Annotation> _annotations;
-  // Skips over annotations with null elements.  While technically they are
+  // Skips over annotations with null elements or that are otherwise
+  // supposed to be invisible (@pragma).  While technically they are
   // invalid code from analyzer's perspective they are present in sky_engine
   // (@Native) so we don't want to crash here.
   Iterable<Annotation> get annotations => _annotations ??= element.metadata
-      .whereNot((m) => m.element == null)
+      .whereNot((m) =>
+          m.element == null ||
+          packageGraph.specialClasses[SpecialClass.pragma].element.constructors
+              .contains(m.element))
       .map((m) => Annotation(m, library, packageGraph));
-
   bool _isPublic;
 
   @override
