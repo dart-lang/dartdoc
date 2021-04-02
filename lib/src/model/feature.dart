@@ -21,7 +21,7 @@ class ElementFeatureNotFoundError extends Error {
 }
 
 /// A "feature" includes both explicit annotations in code (e.g. `deprecated`)
-/// as well as others added by the documentation systme (`read-write`);
+/// as well as others added by the documentation system (`read-write`);
 class Feature implements Privacy {
   final String _name;
 

@@ -373,9 +373,9 @@ abstract class ModelElement extends Canonicalization
 
   Iterable<Annotation> _annotations;
   // Skips over annotations with null elements or that are otherwise
-  // supposed to be invisible (@pragma).  While technically they are
-  // invalid code from analyzer's perspective they are present in sky_engine
-  // (@Native) so we don't want to crash here.
+  // supposed to be invisible (@pragma).  While technically, null elements
+  // indicate invalid code from analyzer's perspective they are present in
+  // sky_engine (@Native) so we don't want to crash here.
   Iterable<Annotation> get annotations => _annotations ??= element.metadata
       .whereNot((m) =>
           m.element == null ||
