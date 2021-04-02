@@ -1,3 +1,15 @@
+## 0.42.0
+* Add some tests and verify basic support for triple-shift, and check
+  to be sure that using the function as type parameter feature does not crash
+  dartdoc (#2518, #2517, #2603).
+* BREAKING CHANGE: Refactor of dartdoc features and annotations.  Use
+  `hasFeatures` in templates in place of checking `featuresAsString` as a
+  boolean (#2600).
+* Implement generic type parameters on annotations. (#2600, #2516).
+* No longer depend on mustache. (#2596)
+* BREAKING CHANGE: Replace mustache with mustachio.  Use `asCallable` instead
+  of `hasCallable` in templates to handle casts correctly. (#2564)
+
 ## 0.41.0
 * Write out doc files for static methods on extensions. (#2588, #2591)
 * Fix a crash where dartdoc tried to create a duplicate field in the event
