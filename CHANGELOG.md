@@ -4,7 +4,8 @@
   dartdoc (#2518, #2517, #2603).
 * BREAKING CHANGE: Refactor of dartdoc features and annotations.  Use
   `hasFeatures` in templates in place of checking `featuresAsString` as a
-  boolean (#2600).
+  boolean (#2600), and `linkedNameWithParameters` for getting rendered
+  annotations (#2605).
 * Implement generic type parameters on annotations. (#2600, #2516).
 * No longer depend on mustache. (#2596)
 * BREAKING CHANGE: Replace mustache with mustachio.  Use `asCallable` instead
