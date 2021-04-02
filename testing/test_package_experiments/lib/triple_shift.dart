@@ -27,8 +27,13 @@ class C {
   String toString() => "${_text}";
 }
 
-class NSM {
-  noSuchMethod(i) => i.memberName;
+class _D extends C {}
+
+class E extends _D {}
+
+class F extends E {
+  @override
+  F operator >>>(arg) => F();
 }
 
 // Valid in extensions too.
