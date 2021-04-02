@@ -78,10 +78,60 @@ void main() {
       VersionRange(min: Version.parse('2.13.0-0'), includeMin: true);
   final _genericMetadataAllowed =
       VersionRange(min: Version.parse('2.13.0-0'), includeMin: true);
+  final _tripleShiftAllowed =
+      VersionRange(min: Version.parse('2.13.0-0'), includeMin: true);
 
   // Experimental features not yet enabled by default.  Move tests out of this
   // block when the feature is enabled by default.
   group('Experiments', () {
+    group('triple-shift', () {
+      Library tripleShift;
+      Class C, E, F;
+      Extension ShiftIt;
+      Operator classShift, extensionShift;
+      Field constantTripleShifted;
+
+      setUpAll(() async {
+        tripleShift = (await _testPackageGraphExperiments)
+            .libraries
+            .firstWhere((l) => l.name == 'triple_shift');
+        C = tripleShift.classes.firstWhere((c) => c.name == 'C');
+        E = tripleShift.classes.firstWhere((c) => c.name == 'E');
+        F = tripleShift.classes.firstWhere((c) => c.name == 'F');
+        ShiftIt = tripleShift.extensions.firstWhere((e) => e.name == 'ShiftIt');
+        classShift =
+            C.instanceOperators.firstWhere((o) => o.name.contains('>>>'));
+        extensionShift =
+            ShiftIt.instanceOperators.firstWhere((o) => o.name.contains('>>>'));
+        constantTripleShifted = C.constantFields
+            .firstWhere((f) => f.name == 'constantTripleShifted');
+      });
+
+      test('constants with triple shift render correctly', () {
+        expect(constantTripleShifted.constantValue, equals('3 &gt;&gt;&gt; 5'));
+      });
+
+      test('operators exist and are named correctly', () {
+        expect(classShift.name, equals('operator >>>'));
+        expect(extensionShift.name, equals('operator >>>'));
+      });
+
+      test(
+          'inheritance and overriding of triple shift operators works correctly',
+          () {
+        var tripleShiftE =
+            E.instanceOperators.firstWhere((o) => o.name.contains('>>>'));
+        var tripleShiftF =
+            F.instanceOperators.firstWhere((o) => o.name.contains('>>>'));
+
+        expect(tripleShiftE.isInherited, isTrue);
+        expect(tripleShiftE.canonicalModelElement, equals(classShift));
+        expect(tripleShiftE.modelType.returnType.name, equals('C'));
+        expect(tripleShiftF.isInherited, isFalse);
+        expect(tripleShiftF.modelType.returnType.name, equals('F'));
+      });
+    }, skip: !_tripleShiftAllowed.allows(_platformVersion));
+
     group('generic metadata', () {
       Library genericMetadata;
       TopLevelVariable f;
