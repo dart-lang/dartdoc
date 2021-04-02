@@ -97,9 +97,12 @@ void main() {
         E = tripleShift.classes.firstWhere((c) => c.name == 'E');
         F = tripleShift.classes.firstWhere((c) => c.name == 'F');
         ShiftIt = tripleShift.extensions.firstWhere((e) => e.name == 'ShiftIt');
-        classShift = C.instanceOperators.firstWhere((o) => o.name.contains('>>>'));
-        extensionShift = ShiftIt.instanceOperators.firstWhere((o) => o.name.contains('>>>'));
-        constantTripleShifted = C.constantFields.firstWhere((f) => f.name == 'constantTripleShifted');
+        classShift =
+            C.instanceOperators.firstWhere((o) => o.name.contains('>>>'));
+        extensionShift =
+            ShiftIt.instanceOperators.firstWhere((o) => o.name.contains('>>>'));
+        constantTripleShifted = C.constantFields
+            .firstWhere((f) => f.name == 'constantTripleShifted');
       });
 
       test('constants with triple shift render correctly', () {
@@ -111,9 +114,13 @@ void main() {
         expect(extensionShift.name, equals('operator >>>'));
       });
 
-      test('inheritance and overriding of triple shift operators works correctly', () {
-        var tripleShiftE = E.instanceOperators.firstWhere((o) => o.name.contains('>>>'));
-        var tripleShiftF = F.instanceOperators.firstWhere((o) => o.name.contains('>>>'));
+      test(
+          'inheritance and overriding of triple shift operators works correctly',
+          () {
+        var tripleShiftE =
+            E.instanceOperators.firstWhere((o) => o.name.contains('>>>'));
+        var tripleShiftF =
+            F.instanceOperators.firstWhere((o) => o.name.contains('>>>'));
 
         expect(tripleShiftE.isInherited, isTrue);
         expect(tripleShiftE.canonicalModelElement, equals(classShift));
