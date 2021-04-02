@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'package:dartdoc/src/model/feature.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/special_elements.dart';
 
@@ -28,13 +29,12 @@ mixin Inheritable on ContainerMember {
   bool get isCovariant;
 
   @override
-  Set<String> get features {
-    var _features = super.features;
-    if (isOverride) _features.add('override');
-    if (isInherited) _features.add('inherited');
-    if (isCovariant) _features.add('covariant');
-    return _features;
-  }
+  Set<Feature> get features => {
+        ...super.features,
+        if (isOverride) Feature.overrideFeature,
+        if (isInherited) Feature.inherited,
+        if (isCovariant) Feature.covariant,
+      };
 
   @override
   Library get canonicalLibrary => canonicalEnclosingContainer?.canonicalLibrary;

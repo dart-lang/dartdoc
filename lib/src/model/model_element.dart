@@ -15,7 +15,9 @@ import 'package:analyzer/src/dart/element/member.dart'
     show ExecutableMember, Member;
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
+import 'package:dartdoc/src/model/annotation.dart';
 import 'package:dartdoc/src/model/documentation_comment.dart';
+import 'package:dartdoc/src/model/feature.dart';
 import 'package:dartdoc/src/model/feature_set.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as utils;
@@ -23,43 +25,11 @@ import 'package:dartdoc/src/render/model_element_renderer.dart';
 import 'package:dartdoc/src/render/parameter_renderer.dart';
 import 'package:dartdoc/src/render/source_code_renderer.dart';
 import 'package:dartdoc/src/source_linker.dart';
+import 'package:dartdoc/src/special_elements.dart';
 import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path show Context;
-
-/// Items mapped less than zero will sort before custom annotations.
-/// Items mapped above zero are sorted after custom annotations.
-/// Items mapped to zero will sort alphabetically among custom annotations.
-/// Custom annotations are assumed to be any annotation or feature not in this
-/// map.
-const Map<String, int> featureOrder = {
-  'read-only': 1,
-  'write-only': 1,
-  'read / write': 1,
-  'covariant': 2,
-  'final': 2,
-  'late': 2,
-  'inherited': 3,
-  'inherited-getter': 3,
-  'inherited-setter': 3,
-  'override': 3,
-  'override-getter': 3,
-  'override-setter': 3,
-  'extended': 3,
-};
-
-int byFeatureOrdering(String a, String b) {
-  var scoreA = 0;
-  var scoreB = 0;
-
-  if (featureOrder.containsKey(a)) scoreA = featureOrder[a];
-  if (featureOrder.containsKey(b)) scoreB = featureOrder[b];
-
-  if (scoreA < scoreB) return -1;
-  if (scoreA > scoreB) return 1;
-  return compareAsciiLowerCaseNatural(a, b);
-}
 
 /// This doc may need to be processed in case it has a template or html
 /// fragment.
@@ -401,66 +371,17 @@ abstract class ModelElement extends Canonicalization
   ModelNode get modelNode =>
       _modelNode ??= packageGraph.getModelNodeFor(element);
 
-  List<String> get annotations => annotationsFromMetadata(element.metadata);
-
-  /// Returns linked annotations from a given metadata set, with escaping.
-  // TODO(srawlins): Attempt to revive constructor arguments in an annotation,
-  // akin to source_gen's Reviver, in order to link to inner components. For
-  // example, in `@Foo(const Bar(), baz: <Baz>[Baz.one, Baz.two])`, link to
-  // `Foo`, `Bar`, `Baz`, `Baz.one`, and `Baz.two`.
-  List<String> annotationsFromMetadata(Iterable<ElementAnnotation> md) {
-    var annotationStrings = <String>[];
-    if (md == null) return annotationStrings;
-    for (var a in md) {
-      var annotation = (const HtmlEscape()).convert(a.toSource());
-      var annotationElement = a.element;
-
-      if (annotationElement is ConstructorElement) {
-        // TODO(srawlins): I think we should actually link to the constructor,
-        // which may have details about parameters. For example, given the
-        // annotation `@Immutable('text')`, the constructor documents what the
-        // parameter is, and the class only references `immutable`. It's a
-        // lose-lose cycle of mis-direction.
-        annotationElement =
-            (annotationElement as ConstructorElement).returnType.element;
-      } else if (annotationElement is PropertyAccessorElement) {
-        annotationElement =
-            (annotationElement as PropertyAccessorElement).variable;
-      }
-      if (annotationElement is Member) {
-        annotationElement = (annotationElement as Member).declaration;
-      }
-
-      // Some annotations are intended to be invisible (such as `@pragma`).
-      if (!_shouldDisplayAnnotation(annotationElement)) continue;
-
-      var annotationModelElement =
-          packageGraph.findCanonicalModelElementFor(annotationElement);
-      if (annotationModelElement != null) {
-        annotation = annotation.replaceFirst(
-            annotationModelElement.name, annotationModelElement.linkedName);
-      }
-      annotationStrings.add(annotation);
-    }
-    return annotationStrings;
-  }
-
-  bool _shouldDisplayAnnotation(Element annotationElement) {
-    if (annotationElement is ClassElement) {
-      var annotationClass =
-          packageGraph.findCanonicalModelElementFor(annotationElement) as Class;
-      if (annotationClass == null && annotationElement != null) {
-        annotationClass =
-            ModelElement.fromElement(annotationElement, packageGraph) as Class;
-      }
-
-      return annotationClass == null ||
-          packageGraph.isAnnotationVisible(annotationClass);
-    }
-    // We cannot resolve it, which does not prevent it from being displayed.
-    return true;
-  }
-
+  Iterable<Annotation> _annotations;
+  // Skips over annotations with null elements or that are otherwise
+  // supposed to be invisible (@pragma).  While technically, null elements
+  // indicate invalid code from analyzer's perspective they are present in
+  // sky_engine (@Native) so we don't want to crash here.
+  Iterable<Annotation> get annotations => _annotations ??= element.metadata
+      .whereNot((m) =>
+          m.element == null ||
+          packageGraph.specialClasses[SpecialClass.pragma].element.constructors
+              .contains(m.element))
+      .map((m) => Annotation(m, library, packageGraph));
   bool _isPublic;
 
   @override
@@ -529,21 +450,23 @@ abstract class ModelElement extends Canonicalization
     'deprecated'
   };
 
-  Set<String> get features {
+  bool get hasFeatures => features.isNotEmpty;
+
+  /// Usually a superset of [annotations] except where [_specialFeatures]
+  /// replace them, a list of annotations as well as tags applied by
+  /// Dartdoc itself when it notices characteristics of an element
+  /// that need to be documented.  See [Feature] for a list.
+  Set<Feature> get features {
     return {
-      ...annotationsFromMetadata(element.metadata
-          .where((e) => !_specialFeatures.contains(e.element?.name))),
+      ...annotations.where((a) => !_specialFeatures.contains(a.name)),
       // 'const' and 'static' are not needed here because 'const' and 'static'
       // elements get their own sections in the doc.
-      if (isFinal) 'final',
-      if (isLate) 'late',
+      if (isFinal) Feature.finalFeature,
+      if (isLate) Feature.lateFeature,
     };
   }
 
-  String get featuresAsString {
-    var allFeatures = features.toList()..sort(byFeatureOrdering);
-    return allFeatures.join(', ');
-  }
+  String get featuresAsString => modelElementRenderer.renderFeatures(this);
 
   // True if this is a function, or if it is an type alias to a function.
   bool get isCallable =>

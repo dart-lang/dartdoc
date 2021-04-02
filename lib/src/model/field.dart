@@ -4,6 +4,7 @@
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/src/dart/element/element.dart';
+import 'package:dartdoc/src/model/feature.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/source_code_renderer.dart';
 
@@ -102,47 +103,35 @@ class Field extends ModelElement
   @override
   String get kind => isConst ? 'constant' : 'property';
 
-  @override
-  List<String> get annotations {
-    var allAnnotations = [...super.annotations];
-
-    if (element is PropertyInducingElement) {
-      var pie = element as PropertyInducingElement;
-      allAnnotations.addAll(annotationsFromMetadata(pie.getter?.metadata));
-      allAnnotations.addAll(annotationsFromMetadata(pie.setter?.metadata));
-    }
-    return allAnnotations;
-  }
-
   String get fullkind {
     if (field.isAbstract) return 'abstract $kind';
     return kind;
   }
 
   @override
-  Set<String> get features {
+  Set<Feature> get features {
     var allFeatures = super.features..addAll(comboFeatures);
     // Combo features can indicate 'inherited' and 'override' if
     // either the getter or setter has one of those properties, but that's not
     // really specific enough for [Field]s that have public getter/setters.
     if (hasPublicGetter && hasPublicSetter) {
       if (getter.isInherited && setter.isInherited) {
-        allFeatures.add('inherited');
+        allFeatures.add(Feature.inherited);
       } else {
-        allFeatures.remove('inherited');
-        if (getter.isInherited) allFeatures.add('inherited-getter');
-        if (setter.isInherited) allFeatures.add('inherited-setter');
+        allFeatures.remove(Feature.inherited);
+        if (getter.isInherited) allFeatures.add(Feature.inheritedGetter);
+        if (setter.isInherited) allFeatures.add(Feature.inheritedSetter);
       }
       if (getter.isOverride && setter.isOverride) {
-        allFeatures.add('override');
+        allFeatures.add(Feature.overrideFeature);
       } else {
-        allFeatures.remove('override');
-        if (getter.isOverride) allFeatures.add('override-getter');
-        if (setter.isOverride) allFeatures.add('override-setter');
+        allFeatures.remove(Feature.overrideFeature);
+        if (getter.isOverride) allFeatures.add(Feature.overrideGetter);
+        if (setter.isOverride) allFeatures.add(Feature.overrideSetter);
       }
     } else {
-      if (isInherited) allFeatures.add('inherited');
-      if (isOverride) allFeatures.add('override');
+      if (isInherited) allFeatures.add(Feature.inherited);
+      if (isOverride) allFeatures.add(Feature.overrideFeature);
     }
     return allFeatures;
   }

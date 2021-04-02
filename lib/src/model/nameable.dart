@@ -7,13 +7,13 @@ import 'package:collection/collection.dart';
 import 'locatable.dart';
 
 /// Something that has a name.
+// TODO(jcollins-g): adjust interface so it can be const?
 abstract class Nameable {
   String get name;
 
   String get fullyQualifiedName => name;
 
   Set<String> _namePieces;
-
   Set<String> get namePieces {
     _namePieces ??= {
       ...name.split(locationSplitter).where((s) => s.isNotEmpty)

@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:dartdoc/src/render/feature_renderer.dart';
+import 'package:dartdoc/src/render/language_feature_renderer.dart';
 
 const Map<String, String> _featureDescriptions = {
   'Null safety': 'Supports the null safety language feature.',
@@ -23,12 +23,12 @@ class LanguageFeature {
   String /*?*/ get featureUrl => _featureUrls[name];
 
   /// The rendered label for this language feature.
-  String get featureLabel => _featureRenderer.renderFeatureLabel(this);
+  String get featureLabel => _featureRenderer.renderLanguageFeatureLabel(this);
 
   /// The name of this language feature.
   final String name;
 
-  final FeatureRenderer _featureRenderer;
+  final LanguageFeatureRenderer _featureRenderer;
 
   LanguageFeature(this.name, this._featureRenderer) {
     assert(_featureDescriptions.containsKey(name));

@@ -8,6 +8,7 @@ import 'package:dartdoc/src/render/documentation_renderer.dart';
 import 'package:dartdoc/src/render/element_type_renderer.dart';
 import 'package:dartdoc/src/render/enum_field_renderer.dart';
 import 'package:dartdoc/src/render/feature_renderer.dart';
+import 'package:dartdoc/src/render/language_feature_renderer.dart';
 import 'package:dartdoc/src/render/model_element_renderer.dart';
 import 'package:dartdoc/src/render/parameter_renderer.dart';
 import 'package:dartdoc/src/render/source_code_renderer.dart';
@@ -39,6 +40,8 @@ abstract class RendererFactory {
   DocumentationRenderer get documentationRenderer;
 
   FeatureRenderer get featureRenderer;
+
+  LanguageFeatureRenderer get languageFeatureRenderer;
 
   ElementTypeRenderer<FunctionTypeElementType>
       get functionTypeElementTypeRenderer;
@@ -117,10 +120,14 @@ class HtmlRenderFactory extends RendererFactory {
   TypedefRenderer get typedefRenderer => const TypedefRendererHtml();
 
   @override
-  FeatureRenderer get featureRenderer => const FeatureRendererHtml();
+  LanguageFeatureRenderer get languageFeatureRenderer =>
+      const LanguageFeatureRendererHtml();
 
   @override
   SourceCodeRenderer get sourceCodeRenderer => SourceCodeRendererHtml();
+
+  @override
+  FeatureRenderer get featureRenderer => FeatureRendererHtml();
 }
 
 class MdRenderFactory extends RendererFactory {
@@ -176,8 +183,12 @@ class MdRenderFactory extends RendererFactory {
   TypedefRenderer get typedefRenderer => const TypedefRendererMd();
 
   @override
-  FeatureRenderer get featureRenderer => const FeatureRendererMd();
+  LanguageFeatureRenderer get languageFeatureRenderer =>
+      const LanguageFeatureRendererMd();
 
   @override
   SourceCodeRenderer get sourceCodeRenderer => SourceCodeRendererNoop();
+
+  @override
+  FeatureRenderer get featureRenderer => FeatureRendererMd();
 }

@@ -4,14 +4,18 @@
 
 import 'dart:convert';
 
-import 'package:analyzer/dart/ast/ast.dart';
+import 'package:analyzer/dart/ast/ast.dart'
+    show Expression, InstanceCreationExpression;
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/source/line_info.dart';
 import 'package:analyzer/src/dart/element/element.dart';
 import 'package:dartdoc/src/element_type.dart';
+import 'package:dartdoc/src/model/annotation.dart';
+import 'package:dartdoc/src/model/feature.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/utils.dart';
 import 'package:dartdoc/src/warnings.dart';
+import 'package:meta/meta.dart';
 
 /// Mixin for top-level variables and fields (aka properties)
 mixin GetterSetterCombo on ModelElement {
@@ -19,25 +23,27 @@ mixin GetterSetterCombo on ModelElement {
 
   Accessor get setter;
 
+  @override
+  Iterable<Annotation> get annotations => [
+        ...super.annotations,
+        if (hasGetter) ...getter.annotations,
+        if (hasSetter) ...setter.annotations,
+      ];
+
   Iterable<Accessor> get allAccessors sync* {
     for (var a in [getter, setter]) {
       if (a != null) yield a;
     }
   }
 
-  Set<String> get comboFeatures {
-    var allFeatures = <String>{};
-    if (hasExplicitGetter && hasPublicGetter) {
-      allFeatures.addAll(getter.features);
-    }
-    if (hasExplicitSetter && hasPublicSetter) {
-      allFeatures.addAll(setter.features);
-    }
-    if (readOnly && !isFinal && !isConst) allFeatures.add('read-only');
-    if (writeOnly) allFeatures.add('write-only');
-    if (readWrite) allFeatures.add('read / write');
-    return allFeatures;
-  }
+  @protected
+  Set<Feature> get comboFeatures => {
+        if (hasExplicitGetter && hasPublicGetter) ...getter.features,
+        if (hasExplicitSetter && hasPublicSetter) ...setter.features,
+        if (readOnly && !isFinal && !isConst) Feature.readOnly,
+        if (writeOnly) Feature.writeOnly,
+        if (readWrite) Feature.readWrite,
+      };
 
   @override
   ModelElement enclosingElement;

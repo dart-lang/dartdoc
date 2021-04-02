@@ -76,9 +76,70 @@ void main() {
 
   final _generalizedTypedefsAllowed =
       VersionRange(min: Version.parse('2.13.0-0'), includeMin: true);
+  final _genericMetadataAllowed =
+      VersionRange(min: Version.parse('2.13.0-0'), includeMin: true);
+
   // Experimental features not yet enabled by default.  Move tests out of this
   // block when the feature is enabled by default.
   group('Experiments', () {
+    group('generic metadata', () {
+      Library genericMetadata;
+      TopLevelVariable f;
+      Class C;
+      Method mp, mn;
+
+      setUpAll(() async {
+        genericMetadata = (await _testPackageGraphExperiments)
+            .libraries
+            .firstWhere((l) => l.name == 'generic_metadata');
+        f = genericMetadata.properties.firstWhere((p) => p.name == 'f');
+        C = genericMetadata.classes.firstWhere((c) => c.name == 'C');
+        mp = C.instanceMethods.firstWhere((m) => m.name == 'mp');
+        mn = C.instanceMethods.firstWhere((m) => m.name == 'mn');
+      });
+
+      test('Verify type arguments on annotations renders, including parameters',
+          () {
+        var ab0 =
+            '@<a href="%%__HTMLBASE_dartdoc_internal__%%generic_metadata/A-class.html">A</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="%%__HTMLBASE_dartdoc_internal__%%generic_metadata/B.html">B</a></span>&gt;</span>(0)';
+
+        expect(genericMetadata.annotations.first.linkedNameWithParameters,
+            equals(ab0));
+        expect(f.annotations.first.linkedNameWithParameters, equals(ab0));
+        expect(C.annotations.first.linkedNameWithParameters, equals(ab0));
+        expect(
+            C.typeParameters.first.annotations.first.linkedNameWithParameters,
+            equals(ab0));
+        expect(
+            mp.parameters
+                .map((p) => p.annotations.first.linkedNameWithParameters),
+            everyElement(equals(ab0)));
+        expect(
+            mn.parameters
+                .map((p) => p.annotations.first.linkedNameWithParameters),
+            everyElement(equals(ab0)));
+
+        expect(genericMetadata.features.map((f) => f.linkedNameWithParameters),
+            contains(ab0));
+        expect(
+            f.features.map((f) => f.linkedNameWithParameters), contains(ab0));
+        expect(
+            C.features.map((f) => f.linkedNameWithParameters), contains(ab0));
+        expect(
+            C.typeParameters.first.features
+                .map((f) => f.linkedNameWithParameters),
+            contains(ab0));
+        expect(
+            mp.parameters
+                .map((p) => p.features.map((f) => f.linkedNameWithParameters)),
+            everyElement(contains(ab0)));
+        expect(
+            mn.parameters
+                .map((p) => p.features.map((f) => f.linkedNameWithParameters)),
+            everyElement(contains(ab0)));
+      });
+    }, skip: !_genericMetadataAllowed.allows(_platformVersion));
+
     group('generalized typedefs', () {
       Library generalizedTypedefs;
       Typedef T0, T1, T2, T3, T4, T5, T6, T7;

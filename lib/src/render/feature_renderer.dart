@@ -1,63 +1,37 @@
-// Copyright (c) 2020, the Dart project authors. Please see the AUTHORS file
+// Copyright (c) 2021, the Dart project authors. Please see the AUTHORS file
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:dartdoc/src/model/language_feature.dart';
+import 'dart:convert';
 
-/// A renderer for a [LanguageFeature].
+import 'package:dartdoc/src/model/annotation.dart';
+import 'package:dartdoc/src/model/feature.dart';
+
+const _htmlEscape = HtmlEscape();
+
+/// A renderer for subclasses of [Feature]. (The base class does not require
+/// separate rendering, represented by pre-defined constant strings.)
 abstract class FeatureRenderer {
   const FeatureRenderer();
 
-  /// Render the label of this [feature].
-  String renderFeatureLabel(LanguageFeature feature);
+  /// Render this [Annotation].
+  String renderAnnotation(Annotation feature);
 }
 
-/// A HTML renderer for a [LanguageFeature].
+/// A HTML renderer for a [Feature].
 class FeatureRendererHtml extends FeatureRenderer {
   const FeatureRendererHtml();
 
   @override
-  String renderFeatureLabel(LanguageFeature feature) {
-    final buffer = StringBuffer();
-    final url = feature.featureUrl;
-
-    if (url != null) {
-      buffer.write('<a href="');
-      buffer.write(url);
-      buffer.write('"');
-    } else {
-      buffer.write('<span');
-    }
-
-    final name = feature.name;
-
-    buffer.write(' class="feature feature-');
-    buffer.writeAll(name.toLowerCase().split(' '), '-');
-    buffer.write('" title="');
-    buffer.write(feature.featureDescription);
-    buffer.write('">');
-    buffer.write(name);
-
-    if (url != null) {
-      buffer.write('</a>');
-    } else {
-      buffer.write('</span>');
-    }
-
-    return buffer.toString();
-  }
+  String renderAnnotation(Annotation feature) =>
+      '@' + feature.linkedName + _htmlEscape.convert(feature.parameterText);
 }
 
-/// A markdown renderer for a [LanguageFeature].
+/// A markdown renderer for a [Feature].
 class FeatureRendererMd extends FeatureRenderer {
   const FeatureRendererMd();
 
   @override
-  String renderFeatureLabel(LanguageFeature feature) {
-    final featureUrl = feature.featureUrl;
-    if (featureUrl != null) {
-      return '*[\<${feature.name}\>]($featureUrl)*';
-    }
-    return '*\<${feature.name}\>*';
-  }
+  String renderAnnotation(Annotation feature) =>
+      '@' + feature.linkedName + _htmlEscape.convert(feature.parameterText);
 }
