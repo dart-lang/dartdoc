@@ -49,7 +49,7 @@
 **Annotations**
 
 {{#annotations}}
-- {{{.}}}
+- {{{linkedNameWithParameters}}}
 {{/annotations}}
 {{/hasAnnotations}}
 {{/hasModifiers}}

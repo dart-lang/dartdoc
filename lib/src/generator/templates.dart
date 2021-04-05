@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+// Annotations only appear on other pages, so there is no template data here.
+@Renderer(#renderAnnotation, Context<Annotation>())
 @Renderer(#renderCategory, Context<CategoryTemplateData>(),
     visibleTypes: _visibleTypes)
 @Renderer(#renderClass, Context<ClassTemplateData>())
@@ -28,6 +30,7 @@ import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/options.dart';
 import 'package:dartdoc/src/generator/resource_loader.dart';
 import 'package:dartdoc/src/generator/template_data.dart';
+import 'package:dartdoc/src/model/annotation.dart';
 import 'package:dartdoc/src/model/feature_set.dart';
 import 'package:dartdoc/src/model/language_feature.dart';
 import 'package:dartdoc/src/mustachio/annotations.dart';
@@ -36,6 +39,7 @@ import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path show Context;
 
 const _visibleTypes = {
+  Annotation,
   CallableElementTypeMixin,
   Category,
   Class,

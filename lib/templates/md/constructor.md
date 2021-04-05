@@ -10,7 +10,7 @@
 {{#constructor}}
 {{#hasAnnotations}}
 {{#annotations}}
-- {{{.}}}
+- {{{linkedNameWithParameters}}}
 {{/annotations}}
 {{/hasAnnotations}}
 
