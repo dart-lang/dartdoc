@@ -86,8 +86,7 @@ class RuntimeRenderersBuilder {
 // files in the tool/mustachio/ directory.
 
 // ignore_for_file: camel_case_types, deprecated_member_use_from_same_package
-// ignore_for_file: unnecessary_cast, unused_element, unused_import, non_constant_identifier_names
-import 'package:analyzer/file_system/file_system.dart';
+// ignore_for_file: unused_import
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/src/model/annotation.dart';
@@ -132,15 +131,18 @@ import '${p.basename(_sourceUri.path)}';
     spec._contextType.accessors.forEach(_addPropertyToProcess);
 
     for (var mixin in spec._contextType.element.mixins) {
-      _addTypeToProcess(mixin.element, isFullRenderer: true);
+      _addTypeToProcess(mixin.element,
+          isFullRenderer: true, includeRenderFunction: false);
     }
     var superclass = spec._contextType.element.supertype;
 
     while (superclass != null) {
       // Any type specified with a renderer spec (`@Renderer`) is full.
-      _addTypeToProcess(superclass.element, isFullRenderer: true);
+      _addTypeToProcess(superclass.element,
+          isFullRenderer: true, includeRenderFunction: false);
       for (var mixin in superclass.element.mixins) {
-        _addTypeToProcess(mixin.element, isFullRenderer: true);
+        _addTypeToProcess(mixin.element,
+            isFullRenderer: true, includeRenderFunction: false);
       }
       superclass.accessors.forEach(_addPropertyToProcess);
       superclass = superclass.element.supertype;
@@ -161,13 +163,19 @@ import '${p.basename(_sourceUri.path)}';
 
     var types = _typesToProcess.where((rs) => rs._contextClass == type.element);
     if (types.isNotEmpty) {
-      // [type] has already been added to [_typesToProcess], and all of its
-      // supertypes and properties have been visited.
-      return;
+      assert(types.length == 1);
+      if (types.first.includeRenderFunction) {
+        // [type] has already been added to [_typesToProcess], and all of its
+        // supertypes and properties have been visited.
+        return;
+      }
     }
 
-    _addTypeHierarchyToProcess(type,
-        isFullRenderer: _isVisibleToMustache(type.element));
+    _addTypeHierarchyToProcess(
+      type,
+      isFullRenderer: _isVisibleToMustache(type.element),
+      includeRenderFunction: true,
+    );
   }
 
   /// Returns an [InterfaceType] which may be relevant for generating a
@@ -215,10 +223,17 @@ import '${p.basename(_sourceUri.path)}';
   /// * mixed in types,
   /// * superclass constraints (if [type] a mixin),
   /// * types of relevant properties (recursively).
-  void _addTypeHierarchyToProcess(InterfaceType type,
-      {@required bool isFullRenderer}) {
+  void _addTypeHierarchyToProcess(
+    InterfaceType type, {
+    @required bool isFullRenderer,
+    @required bool includeRenderFunction,
+  }) {
     while (type != null) {
-      _addTypeToProcess(type.element, isFullRenderer: isFullRenderer);
+      _addTypeToProcess(
+        type.element,
+        isFullRenderer: isFullRenderer,
+        includeRenderFunction: includeRenderFunction,
+      );
       if (isFullRenderer) {
         for (var accessor in type.accessors) {
           var accessorType = _relevantTypeFrom(accessor.type.returnType);
@@ -227,38 +242,68 @@ import '${p.basename(_sourceUri.path)}';
         }
       }
       for (var mixin in type.element.mixins) {
-        _addTypeHierarchyToProcess(mixin, isFullRenderer: isFullRenderer);
+        _addTypeHierarchyToProcess(
+          mixin,
+          isFullRenderer: isFullRenderer,
+          includeRenderFunction: false,
+        );
       }
       if (type.element.isMixin) {
         for (var constraint in type.element.superclassConstraints) {
-          _addTypeToProcess(constraint.element, isFullRenderer: isFullRenderer);
+          _addTypeToProcess(
+            constraint.element,
+            isFullRenderer: isFullRenderer,
+            includeRenderFunction: false,
+          );
         }
         break;
       } else {
         type = type.superclass;
+        // Render functions are not needed for superclasses.
+        includeRenderFunction = false;
       }
     }
   }
 
   /// Adds [type] to the [_typesToProcess] queue, if it is not already there.
-  void _addTypeToProcess(ClassElement element,
-      {@required bool isFullRenderer}) {
+  void _addTypeToProcess(
+    ClassElement element, {
+    @required bool isFullRenderer,
+    @required bool includeRenderFunction,
+  }) {
     var types = _typesToProcess.where((rs) => rs._contextClass == element);
     if (types.isEmpty) {
-      var rendererInfo = _RendererInfo(element,
-          isFullRenderer: isFullRenderer, public: _rendererClassesArePublic);
+      var rendererInfo = _RendererInfo(
+        element,
+        isFullRenderer: isFullRenderer,
+        includeRenderFunction: includeRenderFunction,
+        public: _rendererClassesArePublic,
+      );
       _typesToProcess.add(rendererInfo);
       if (isFullRenderer) {
-        _typeToRenderFunctionName[element] = rendererInfo._renderFunctionName;
+        if (includeRenderFunction) {
+          _typeToRenderFunctionName[element] = rendererInfo._renderFunctionName;
+        }
         _typeToRendererClassName[element] = rendererInfo._rendererClassName;
       }
     } else {
       for (var typeToProcess in types) {
+        // "Upgrade" the renderer info to include a render function if the
+        // current one doesn't.
+        if (includeRenderFunction && !typeToProcess.includeRenderFunction) {
+          typeToProcess.includeRenderFunction = true;
+        }
+        // "Upgrade" the renderer info to "full" if the current one isn't.
         if (isFullRenderer && !typeToProcess.isFullRenderer) {
-          // This is the only case in which we update a type-to-render.
           typeToProcess.isFullRenderer = true;
-          _typeToRenderFunctionName[element] =
-              typeToProcess._renderFunctionName;
+        }
+
+        // Log the names if we've perhaps just "upgraded" the renderer info.
+        if (isFullRenderer) {
+          if (typeToProcess.includeRenderFunction) {
+            _typeToRenderFunctionName[element] =
+                typeToProcess._renderFunctionName;
+          }
           _typeToRendererClassName[element] = typeToProcess._rendererClassName;
         }
       }
@@ -304,7 +349,8 @@ String ${renderer.publicApiFunctionName}${renderer._typeParametersString}(
     if (buildOnlyPublicFunction) return;
 
     // Write out the render function.
-    _buffer.writeln('''
+    if (renderer.includeRenderFunction) {
+      _buffer.writeln('''
 String ${renderer._renderFunctionName}${renderer._typeParametersString}(
     $typeWithVariables context, List<MustachioNode> ast, Template template,
     {RendererBase<Object> parent}) {
@@ -313,6 +359,7 @@ String ${renderer._renderFunctionName}${renderer._typeParametersString}(
   return renderer.buffer.toString();
 }
 ''');
+    }
 
     // Write out the renderer class.
     _buffer.write('''
@@ -527,26 +574,41 @@ class _RendererInfo {
   /// later determined that we need a full renderer, so this field is not final.
   bool isFullRenderer;
 
+  bool includeRenderFunction;
+
   /// The public API function name specified with @Renderer, or null.
   String publicApiFunctionName;
 
-  factory _RendererInfo(ClassElement contextClass,
-      {bool public = false,
-      bool isFullRenderer = true,
-      String publicApiFunctionName}) {
+  factory _RendererInfo(
+    ClassElement contextClass, {
+    bool public = false,
+    bool isFullRenderer = true,
+    bool includeRenderFunction = true,
+    String publicApiFunctionName,
+  }) {
     var typeBaseName = contextClass.name;
     var renderFunctionName = '_render_$typeBaseName';
     var rendererClassName =
         public ? 'Renderer_$typeBaseName' : '_Renderer_$typeBaseName';
 
-    return _RendererInfo._(contextClass, renderFunctionName, rendererClassName,
-        isFullRenderer: isFullRenderer,
-        publicApiFunctionName: publicApiFunctionName);
+    return _RendererInfo._(
+      contextClass,
+      renderFunctionName,
+      rendererClassName,
+      isFullRenderer: isFullRenderer,
+      includeRenderFunction: includeRenderFunction,
+      publicApiFunctionName: publicApiFunctionName,
+    );
   }
 
   _RendererInfo._(
-      this._contextClass, this._renderFunctionName, this._rendererClassName,
-      {@required this.isFullRenderer, this.publicApiFunctionName});
+    this._contextClass,
+    this._renderFunctionName,
+    this._rendererClassName, {
+    @required this.isFullRenderer,
+    @required this.includeRenderFunction,
+    this.publicApiFunctionName,
+  });
 
   String get _typeName => _contextClass.name;
 

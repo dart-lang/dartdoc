@@ -4,8 +4,7 @@
 // files in the tool/mustachio/ directory.
 
 // ignore_for_file: camel_case_types, deprecated_member_use_from_same_package
-// ignore_for_file: unnecessary_cast, unused_element, unused_import, non_constant_identifier_names
-import 'package:analyzer/file_system/file_system.dart';
+// ignore_for_file: unused_import
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/src/model/annotation.dart';
@@ -116,14 +115,6 @@ class Renderer_Foo extends RendererBase<Foo> {
       return null;
     }
   }
-}
-
-String _render_Object(
-    Object context, List<MustachioNode> ast, Template template,
-    {RendererBase<Object> parent}) {
-  var renderer = Renderer_Object(context, parent, template);
-  renderer.renderBlock(ast);
-  return renderer.buffer.toString();
 }
 
 class Renderer_Object extends RendererBase<Object> {
@@ -264,14 +255,6 @@ class Renderer_Property2 extends RendererBase<Property2> {
   }
 }
 
-String _render_Mixin1(
-    Mixin1 context, List<MustachioNode> ast, Template template,
-    {RendererBase<Object> parent}) {
-  var renderer = Renderer_Mixin1(context, parent, template);
-  renderer.renderBlock(ast);
-  return renderer.buffer.toString();
-}
-
 class Renderer_Mixin1 extends RendererBase<Mixin1> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends Mixin1>() =>
@@ -353,14 +336,6 @@ class Renderer_Property3 extends RendererBase<Property3> {
       return null;
     }
   }
-}
-
-String _render_FooBase<T extends Object>(
-    FooBase<T> context, List<MustachioNode> ast, Template template,
-    {RendererBase<Object> parent}) {
-  var renderer = Renderer_FooBase(context, parent, template);
-  renderer.renderBlock(ast);
-  return renderer.buffer.toString();
 }
 
 class Renderer_FooBase<T extends Object> extends RendererBase<FooBase<T>> {
