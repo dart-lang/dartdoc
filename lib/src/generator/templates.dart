@@ -2,25 +2,28 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-@Renderer(#renderCategory, Context<CategoryTemplateData>(),
+@Renderer(#renderCategory, Context<CategoryTemplateData>(), 'category',
     visibleTypes: _visibleTypes)
-@Renderer(#renderClass, Context<ClassTemplateData>())
-@Renderer(#renderConstructor, Context<ConstructorTemplateData>())
-@Renderer(#renderEnum, Context<EnumTemplateData>())
-@Renderer(#renderError, Context<PackageTemplateData>())
-@Renderer(#renderExtension, Context<ExtensionTemplateData>())
-@Renderer(#renderFunction, Context<FunctionTemplateData>())
-@Renderer(#renderIndex, Context<PackageTemplateData>())
-@Renderer(#renderLibrary, Context<LibraryTemplateData>())
-@Renderer(#renderMethod, Context<MethodTemplateData>())
-@Renderer(#renderMixin, Context<MixinTemplateData>())
-@Renderer(#renderProperty, Context<PropertyTemplateData>())
-@Renderer(#renderSidebarForContainer,
-    Context<TemplateDataWithContainer<Documentable>>())
+@Renderer(#renderClass, Context<ClassTemplateData>(), 'class')
+@Renderer(#renderConstructor, Context<ConstructorTemplateData>(), 'constructor')
+@Renderer(#renderEnum, Context<EnumTemplateData>(), 'enum')
+@Renderer(#renderError, Context<PackageTemplateData>(), '404error')
+@Renderer(#renderExtension, Context<ExtensionTemplateData>(), 'extension')
+@Renderer(#renderFunction, Context<FunctionTemplateData>(), 'function')
+@Renderer(#renderIndex, Context<PackageTemplateData>(), 'index')
+@Renderer(#renderLibrary, Context<LibraryTemplateData>(), 'library')
+@Renderer(#renderMethod, Context<MethodTemplateData>(), 'method')
+@Renderer(#renderMixin, Context<MixinTemplateData>(), 'mixin')
+@Renderer(#renderProperty, Context<PropertyTemplateData>(), 'property')
 @Renderer(
-    #renderSidebarForLibrary, Context<TemplateDataWithLibrary<Documentable>>())
-@Renderer(#renderTopLevelProperty, Context<TopLevelPropertyTemplateData>())
-@Renderer(#renderTypedef, Context<TypedefTemplateData>())
+    #renderSidebarForContainer,
+    Context<TemplateDataWithContainer<Documentable>>(),
+    '_sidebar_for_container')
+@Renderer(#renderSidebarForLibrary,
+    Context<TemplateDataWithLibrary<Documentable>>(), '_sidebar_for_library')
+@Renderer(#renderTopLevelProperty, Context<TopLevelPropertyTemplateData>(),
+    'top_level_property')
+@Renderer(#renderTypedef, Context<TypedefTemplateData>(), 'typedef')
 library dartdoc.templates;
 
 import 'package:analyzer/file_system/file_system.dart';

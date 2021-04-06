@@ -1,7 +1,9 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/src/dart/element/member.dart';
 import 'package:build/build.dart';
+import 'package:dartdoc/src/mustachio/annotations.dart';
 
+import 'codegen_aot_compiler.dart';
 import 'codegen_runtime_renderer.dart';
 
 const rendererClassesArePublicOption = 'rendererClassesArePublic';
@@ -15,7 +17,11 @@ class MustachioBuilder implements Builder {
 
   @override
   final buildExtensions = const {
-    '.dart': ['.renderers.dart']
+    '.dart': [
+      '.aot_renderers_for_html.dart',
+      '.aot_renderers_for_md.dart',
+      '.runtime_renderers.dart',
+    ]
   };
 
   @override
@@ -29,15 +35,50 @@ class MustachioBuilder implements Builder {
     final rendererGatherer = _RendererGatherer(entryLib);
 
     // Create a new target `AssetId` based on the old one.
-    var renderersLibrary = inputId.changeExtension('.renderers.dart');
-    var contents = '';
+    var runtimeRenderersLibrary =
+        inputId.changeExtension('.runtime_renderers.dart');
 
-    if (rendererGatherer._rendererSpecs.isNotEmpty) {
-      contents += buildTemplateRenderers(rendererGatherer._rendererSpecs,
-          entryLib.source.uri, entryLib.typeProvider, entryLib.typeSystem,
-          rendererClassesArePublic: _rendererClassesArePublic);
+    var aotLibraries = {
+      TemplateFormat.html:
+          inputId.changeExtension('.aot_renderers_for_html.dart'),
+      TemplateFormat.md: inputId.changeExtension('.aot_renderers_for_md.dart'),
+    };
 
-      await buildStep.writeAsString(renderersLibrary, contents);
+    if (rendererGatherer._rendererSpecs.isEmpty) {
+      await buildStep.writeAsString(runtimeRenderersLibrary, '');
+      await buildStep.writeAsString(aotLibraries[TemplateFormat.html], '');
+      await buildStep.writeAsString(aotLibraries[TemplateFormat.md], '');
+
+      return;
+    }
+
+    var runtimeRenderersContents = buildRuntimeRenderers(
+      rendererGatherer._rendererSpecs,
+      entryLib.source.uri,
+      entryLib.typeProvider,
+      entryLib.typeSystem,
+      rendererClassesArePublic: _rendererClassesArePublic,
+    );
+    await buildStep.writeAsString(
+        runtimeRenderersLibrary, runtimeRenderersContents);
+
+    for (var format in TemplateFormat.values) {
+      String aotRenderersContents;
+      var someSpec = rendererGatherer._rendererSpecs.first;
+      if (someSpec.standardTemplateUri[format] != null) {
+        aotRenderersContents = await compileTemplatesToRenderers(
+          rendererGatherer._rendererSpecs,
+          entryLib.source.uri,
+          buildStep,
+          entryLib.typeProvider,
+          entryLib.typeSystem,
+          format,
+        );
+      } else {
+        aotRenderersContents = '';
+      }
+
+      await buildStep.writeAsString(aotLibraries[format], aotRenderersContents);
     }
   }
 }
@@ -98,7 +139,17 @@ class _RendererGatherer {
       ...visibleTypesField.toSetValue().map((object) => object.toTypeValue())
     };
 
-    return RendererSpec(nameField.toSymbolValue(), contextType, visibleTypes);
+    var standardHtmlTemplateField =
+        constantValue.getField('standardHtmlTemplate');
+    var standardMdTemplateField = constantValue.getField('standardMdTemplate');
+
+    return RendererSpec(
+      nameField.toSymbolValue(),
+      contextType,
+      visibleTypes,
+      standardHtmlTemplateField.toStringValue(),
+      standardMdTemplateField.toStringValue(),
+    );
   }
 }
 

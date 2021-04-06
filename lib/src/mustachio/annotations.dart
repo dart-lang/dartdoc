@@ -5,8 +5,13 @@
 // See the Mustachio README at tool/mustachio/README.md for high-level
 // documentation.
 
-/// Specifies information for generating a Mustache renderer for a [context]
-/// object, using a Mustache template at [templateUri]
+import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/type.dart';
+import 'package:meta/meta.dart';
+
+/// Specifies information for generating both a runtime-interpreted Mustache
+/// renderer and a pre-compiled Mustache renderer for a [context] object, using
+/// a Mustache template at [templateUri]
 class Renderer {
   /// The name of the render function to generate.
   final Symbol name;
@@ -14,14 +19,49 @@ class Renderer {
   /// The type of the context type, specified as the [Context] type argument.
   final Context context;
 
-  /// A set of types which are "visible" to Mustache. Mustache rendering has
-  /// access to all of a type's public getters if it is visible to Mustache.
+  /// The unparsed, string form of the URI of the _standard_ HTML template.
+  ///
+  /// This represents the Mustache template that dartdoc uses out-of-the-box to
+  /// render the [context] object while generating documentation in HTML.
+  final String standardHtmlTemplate;
+
+  /// The unparsed, string form of the URI of the _standard_ Markdown template.
+  ///
+  /// This represents the Mustache template that dartdoc uses out-of-the-box to
+  /// render the [context] object while generating documentation in HTML.
+  final String standardMdTemplate;
+
+  /// A set of types which are "visible" to the Mustache runtime interpreter.
+  /// Mustache runtime-rendering has access to all of a type's public getters if
+  /// the type is visible to Mustache.
   ///
   /// Note that all subtypes and supertypes of a "visible" type are also visible
   /// to Mustache.
   final Set<Type> visibleTypes;
 
-  const Renderer(this.name, this.context, {this.visibleTypes = const {}});
+  /// Returns a Renderer with the specified renderer function [name] which can
+  /// render [context] objects.
+  ///
+  /// [standardTemplateBasename] is used as a basename in an
+  /// Asset URL, in both [standardHtmlTemplate] and [standardMdTemplate],
+  /// in order to render with the out-of-the-box Mustache templates.
+  const Renderer(
+    this.name,
+    this.context,
+    String standardTemplateBasename, {
+    this.visibleTypes = const {},
+  })  : standardHtmlTemplate =
+            'package:dartdoc/templates/html/$standardTemplateBasename.html',
+        standardMdTemplate =
+            'package:dartdoc/templates/md/$standardTemplateBasename.md';
+
+  @visibleForTesting
+  const Renderer.forTest(
+    this.name,
+    this.context,
+    this.standardHtmlTemplate, {
+    this.visibleTypes = const {},
+  }) : standardMdTemplate = null;
 }
 
 /// A container for a type, [T], which is the type of a context object,
@@ -30,4 +70,46 @@ class Renderer {
 /// An instance of this class holds zero information, except for [T], a type.
 class Context<T> {
   const Context();
+}
+
+/// The specification of a renderer, as derived from a @Renderer annotation.
+///
+/// This is only meant to be used by dartdoc's builders.
+@internal
+class RendererSpec {
+  /// The name of the render function.
+  final String name;
+
+  final InterfaceType contextType;
+
+  final Set<DartType> visibleTypes;
+
+  final String standardHtmlTemplate;
+
+  final String standardMdTemplate;
+
+  RendererSpec(
+    this.name,
+    this.contextType,
+    this.visibleTypes,
+    this.standardHtmlTemplate,
+    this.standardMdTemplate,
+  );
+
+  ClassElement get contextElement => contextType.element;
+
+  Map<TemplateFormat, Uri> get standardTemplateUri => {
+        TemplateFormat.html: standardHtmlTemplate == 'null'
+            ? null
+            : Uri.parse(standardHtmlTemplate),
+        TemplateFormat.md:
+            standardMdTemplate == 'null' || standardMdTemplate == null
+                ? null
+                : Uri.parse(standardMdTemplate),
+      };
+}
+
+enum TemplateFormat {
+  html,
+  md,
 }
