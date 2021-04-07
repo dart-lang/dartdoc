@@ -4,8 +4,7 @@
 // files in the tool/mustachio/ directory.
 
 // ignore_for_file: camel_case_types, deprecated_member_use_from_same_package
-// ignore_for_file: unnecessary_cast, unused_element, unused_import, non_constant_identifier_names
-import 'package:analyzer/file_system/file_system.dart';
+// ignore_for_file: unused_import
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/src/model/annotation.dart';
@@ -196,14 +195,6 @@ class _Renderer_Annotation extends RendererBase<Annotation> {
       return null;
     }
   }
-}
-
-String _render_Object(
-    Object context, List<MustachioNode> ast, Template template,
-    {RendererBase<Object> parent}) {
-  var renderer = _Renderer_Object(context, parent, template);
-  renderer.renderBlock(ast);
-  return renderer.buffer.toString();
 }
 
 class _Renderer_Object extends RendererBase<Object> {
@@ -4971,14 +4962,6 @@ class _Renderer_ElementType extends RendererBase<ElementType> {
   }
 }
 
-String _render_Privacy(
-    Privacy context, List<MustachioNode> ast, Template template,
-    {RendererBase<Object> parent}) {
-  var renderer = _Renderer_Privacy(context, parent, template);
-  renderer.renderBlock(ast);
-  return renderer.buffer.toString();
-}
-
 class _Renderer_Privacy extends RendererBase<Privacy> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends Privacy>() =>
@@ -5007,14 +4990,6 @@ class _Renderer_Privacy extends RendererBase<Privacy> {
       return null;
     }
   }
-}
-
-String _render_Nameable(
-    Nameable context, List<MustachioNode> ast, Template template,
-    {RendererBase<Object> parent}) {
-  var renderer = _Renderer_Nameable(context, parent, template);
-  renderer.renderBlock(ast);
-  return renderer.buffer.toString();
 }
 
 class _Renderer_Nameable extends RendererBase<Nameable> {
@@ -5109,14 +5084,6 @@ class _Renderer_Nameable extends RendererBase<Nameable> {
       return null;
     }
   }
-}
-
-String _render_SourceCodeMixin(
-    SourceCodeMixin context, List<MustachioNode> ast, Template template,
-    {RendererBase<Object> parent}) {
-  var renderer = _Renderer_SourceCodeMixin(context, parent, template);
-  renderer.renderBlock(ast);
-  return renderer.buffer.toString();
 }
 
 class _Renderer_SourceCodeMixin extends RendererBase<SourceCodeMixin> {
@@ -5226,14 +5193,6 @@ class _Renderer_SourceCodeMixin extends RendererBase<SourceCodeMixin> {
   }
 }
 
-String _render_Indexable(
-    Indexable context, List<MustachioNode> ast, Template template,
-    {RendererBase<Object> parent}) {
-  var renderer = _Renderer_Indexable(context, parent, template);
-  renderer.renderBlock(ast);
-  return renderer.buffer.toString();
-}
-
 class _Renderer_Indexable extends RendererBase<Indexable> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends Indexable>() =>
@@ -5305,14 +5264,6 @@ class _Renderer_Indexable extends RendererBase<Indexable> {
       return null;
     }
   }
-}
-
-String _render_FeatureSet(
-    FeatureSet context, List<MustachioNode> ast, Template template,
-    {RendererBase<Object> parent}) {
-  var renderer = _Renderer_FeatureSet(context, parent, template);
-  renderer.renderBlock(ast);
-  return renderer.buffer.toString();
 }
 
 class _Renderer_FeatureSet extends RendererBase<FeatureSet> {
@@ -5505,14 +5456,6 @@ class _Renderer_LanguageFeature extends RendererBase<LanguageFeature> {
       return null;
     }
   }
-}
-
-String _render_DocumentationComment(
-    DocumentationComment context, List<MustachioNode> ast, Template template,
-    {RendererBase<Object> parent}) {
-  var renderer = _Renderer_DocumentationComment(context, parent, template);
-  renderer.renderBlock(ast);
-  return renderer.buffer.toString();
 }
 
 class _Renderer_DocumentationComment
@@ -5808,14 +5751,6 @@ class _Renderer_Documentable extends RendererBase<Documentable> {
       return null;
     }
   }
-}
-
-String _render_Canonicalization(
-    Canonicalization context, List<MustachioNode> ast, Template template,
-    {RendererBase<Object> parent}) {
-  var renderer = _Renderer_Canonicalization(context, parent, template);
-  renderer.renderBlock(ast);
-  return renderer.buffer.toString();
 }
 
 class _Renderer_Canonicalization extends RendererBase<Canonicalization> {
@@ -6469,14 +6404,6 @@ class _Renderer_CallableElementTypeMixin
   }
 }
 
-String _render_TypeParameters(
-    TypeParameters context, List<MustachioNode> ast, Template template,
-    {RendererBase<Object> parent}) {
-  var renderer = _Renderer_TypeParameters(context, parent, template);
-  renderer.renderBlock(ast);
-  return renderer.buffer.toString();
-}
-
 class _Renderer_TypeParameters extends RendererBase<TypeParameters> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends TypeParameters>() =>
@@ -6863,14 +6790,6 @@ class _Renderer_Method extends RendererBase<Method> {
       return null;
     }
   }
-}
-
-String _render_ContainerMember(
-    ContainerMember context, List<MustachioNode> ast, Template template,
-    {RendererBase<Object> parent}) {
-  var renderer = _Renderer_ContainerMember(context, parent, template);
-  renderer.renderBlock(ast);
-  return renderer.buffer.toString();
 }
 
 class _Renderer_ContainerMember extends RendererBase<ContainerMember> {
@@ -8819,14 +8738,6 @@ class _Renderer_GetterSetterCombo extends RendererBase<GetterSetterCombo> {
   }
 }
 
-String _render_Categorization(
-    Categorization context, List<MustachioNode> ast, Template template,
-    {RendererBase<Object> parent}) {
-  var renderer = _Renderer_Categorization(context, parent, template);
-  renderer.renderBlock(ast);
-  return renderer.buffer.toString();
-}
-
 class _Renderer_Categorization extends RendererBase<Categorization> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends Categorization>() =>
@@ -8977,14 +8888,6 @@ class _Renderer_Categorization extends RendererBase<Categorization> {
       return null;
     }
   }
-}
-
-String _render_ExtensionTarget(
-    ExtensionTarget context, List<MustachioNode> ast, Template template,
-    {RendererBase<Object> parent}) {
-  var renderer = _Renderer_ExtensionTarget(context, parent, template);
-  renderer.renderBlock(ast);
-  return renderer.buffer.toString();
 }
 
 class _Renderer_ExtensionTarget extends RendererBase<ExtensionTarget> {
@@ -10336,14 +10239,6 @@ class _Renderer_FunctionTypedef extends RendererBase<FunctionTypedef> {
   }
 }
 
-String _render_MarkdownFileDocumentation(MarkdownFileDocumentation context,
-    List<MustachioNode> ast, Template template,
-    {RendererBase<Object> parent}) {
-  var renderer = _Renderer_MarkdownFileDocumentation(context, parent, template);
-  renderer.renderBlock(ast);
-  return renderer.buffer.toString();
-}
-
 class _Renderer_MarkdownFileDocumentation
     extends RendererBase<MarkdownFileDocumentation> {
   static final Map<Type, Object> _propertyMapCache = {};
@@ -10505,14 +10400,6 @@ class _Renderer_MarkdownFileDocumentation
       return null;
     }
   }
-}
-
-String _render_TopLevelContainer(
-    TopLevelContainer context, List<MustachioNode> ast, Template template,
-    {RendererBase<Object> parent}) {
-  var renderer = _Renderer_TopLevelContainer(context, parent, template);
-  renderer.renderBlock(ast);
-  return renderer.buffer.toString();
 }
 
 class _Renderer_TopLevelContainer extends RendererBase<TopLevelContainer> {
@@ -11099,14 +10986,6 @@ class _Renderer_CategoryTemplateData
       return null;
     }
   }
-}
-
-String _render_TemplateData<T extends Documentable>(
-    TemplateData<T> context, List<MustachioNode> ast, Template template,
-    {RendererBase<Object> parent}) {
-  var renderer = _Renderer_TemplateData(context, parent, template);
-  renderer.renderBlock(ast);
-  return renderer.buffer.toString();
 }
 
 class _Renderer_TemplateData<T extends Documentable>
