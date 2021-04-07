@@ -42,7 +42,7 @@ mixin GetterSetterCombo on ModelElement {
         if (hasExplicitSetter && hasPublicSetter) ...setter.features,
         if (readOnly && !isFinal && !isConst) Feature.readOnly,
         if (writeOnly) Feature.writeOnly,
-        if (readWrite) Feature.readWrite,
+        if (readWrite && !isLate) Feature.readWrite,
       };
 
   @override
