@@ -10,7 +10,7 @@ library dartdoc;
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io' show exitCode, stderr;
+import 'dart:io' show Platform, exitCode, stderr;
 
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/options.dart';
@@ -483,10 +483,10 @@ class Dartdoc {
       },
       (e, chain) {
         if (e is DartdocFailure) {
-          stderr.writeln('\ndartdoc failed: $e.');
+          stderr.writeln('\n$_dartdocFailedMessage: $e.');
           exitCode = 1;
         } else {
-          stderr.writeln('\ndartdoc failed: $e\n$chain');
+          stderr.writeln('\n$_dartdocFailedMessage: $e\n$chain');
           exitCode = 255;
         }
       },
@@ -516,3 +516,6 @@ class DartdocResults {
 
   DartdocResults(this.packageMeta, this.packageGraph, this.outDir);
 }
+
+String get _dartdocFailedMessage =>
+    'dartdoc $packageVersion (${Platform.script.path}) failed';
