@@ -101,11 +101,6 @@ class Baz {}
     });
 
     test('for a class which implicitly extends Object', () {
-      // The render function for Foo
-      expect(
-          generatedContent,
-          contains('String _render_FooBase<T extends Baz>(\n'
-              '    FooBase<T> context, List<MustachioNode> ast, Template template,'));
       // The renderer class for Foo
       expect(
           generatedContent,
@@ -114,24 +109,20 @@ class Baz {}
     });
 
     test('for Object', () {
-      // The render function for Object
-      expect(
-          generatedContent,
-          contains('String _render_Object(\n'
-              '    Object context, List<MustachioNode> ast, Template template,'));
       // The renderer class for Object
       expect(generatedContent,
           contains('class _Renderer_Object extends RendererBase<Object> {'));
     });
 
     test('for a class which is extended by a rendered class', () {
-      expect(
-          renderersLibrary.getTopLevelFunction('_render_FooBase'), isNotNull);
+      // No render function is necessary.
+      expect(renderersLibrary.getTopLevelFunction('_render_FooBase'), isNull);
       expect(renderersLibrary.getType('_Renderer_FooBase'), isNotNull);
     });
 
     test('for a class which is mixed into a rendered class', () {
-      expect(renderersLibrary.getTopLevelFunction('_render_Mix'), isNotNull);
+      // No render function is necessary.
+      expect(renderersLibrary.getTopLevelFunction('_render_Mix'), isNull);
       expect(renderersLibrary.getType('_Renderer_Mix'), isNotNull);
     });
 
