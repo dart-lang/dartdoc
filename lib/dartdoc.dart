@@ -171,16 +171,16 @@ class Dartdoc {
   /// thrown if dartdoc fails in an expected way, for example if there is an
   /// analysis error in the code.
   Future<DartdocResults> generateDocsBase() async {
-    var _stopwatch = Stopwatch()..start();
+    var stopwatch = Stopwatch()..start();
     double seconds;
     packageGraph = await packageBuilder.buildPackageGraph();
-    seconds = _stopwatch.elapsedMilliseconds / 1000.0;
+    seconds = stopwatch.elapsedMilliseconds / 1000.0;
     var libs = packageGraph.libraries.length;
     logInfo("Initialized dartdoc with $libs librar${libs == 1 ? 'y' : 'ies'} "
         'in ${seconds.toStringAsFixed(1)} seconds');
-    _stopwatch.reset();
+    stopwatch.reset();
 
-    final generator = this.generator;
+    var generator = this.generator;
     if (generator != null) {
       // Create the out directory.
       if (!outputDir.exists) outputDir.create();
@@ -203,7 +203,7 @@ class Dartdoc {
           "and $errors ${pluralize('error', errors)}.");
     }
 
-    seconds = _stopwatch.elapsedMilliseconds / 1000.0;
+    seconds = stopwatch.elapsedMilliseconds / 1000.0;
     libs = packageGraph.localPublicLibraries.length;
     logInfo("Documented $libs public librar${libs == 1 ? 'y' : 'ies'} "
         'in ${seconds.toStringAsFixed(1)} seconds');

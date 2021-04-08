@@ -18,12 +18,12 @@ abstract class Categorization implements ModelElement {
   String buildDocumentationAddition(String rawDocs) =>
       _stripAndSetDartdocCategories(rawDocs ??= '');
 
-  /// Parse {@category ...} and related information in API comments, stripping
+  /// Parse `{@category ...}` and related information in API comments, stripping
   /// out that information from the given comments and returning the stripped
   /// version.
   String _stripAndSetDartdocCategories(String rawDocs) {
-    var _categorySet = <String>{};
-    var _subCategorySet = <String>{};
+    var categorySet = <String>{};
+    var subCategorySet = <String>{};
     _hasCategorization = false;
 
     rawDocs = rawDocs.replaceAllMapped(_categoryRegExp, (match) {
@@ -31,10 +31,10 @@ abstract class Categorization implements ModelElement {
       switch (match[1]) {
         case 'category':
         case 'api':
-          _categorySet.add(match[2].trim());
+          categorySet.add(match[2].trim());
           break;
         case 'subCategory':
-          _subCategorySet.add(match[2].trim());
+          subCategorySet.add(match[2].trim());
           break;
         case 'image':
           _image = match[2].trim();
@@ -46,8 +46,8 @@ abstract class Categorization implements ModelElement {
       return '';
     });
 
-    _categoryNames = _categorySet.toList()..sort();
-    _subCategoryNames = _subCategorySet.toList()..sort();
+    _categoryNames = categorySet.toList()..sort();
+    _subCategoryNames = subCategorySet.toList()..sort();
     _image ??= '';
     _samples ??= '';
     return rawDocs;

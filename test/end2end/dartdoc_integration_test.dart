@@ -227,13 +227,13 @@ void main() {
     }, timeout: Timeout.factor(2));
 
     test('--footer-text excludes version', () async {
-      var _testPackagePath = path.fromUri(
+      var testPackagePath = path.fromUri(
           _currentFileUri.resolve('../../testing/test_package_options'));
 
       var args = <String>[dartdocPath, '--output', tempDir.path];
 
       await subprocessLauncher.runStreamed(Platform.resolvedExecutable, args,
-          workingDirectory: _testPackagePath);
+          workingDirectory: testPackagePath);
 
       var outFile = File(path.join(tempDir.path, 'index.html'));
       var footerRegex =

@@ -73,13 +73,13 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     var element = resolvedLibrary.result.element;
     if (element == null) throw ArgumentError.notNull('element');
 
-    // Initialize [packageGraph]'s cache of ModelNodes for relevant
+    // Initialize [packageGraph]'s cache of [ModelNode]s for relevant
     // elements in this library.
-    var _compilationUnitMap = <String, CompilationUnit>{};
-    _compilationUnitMap.addEntries(resolvedLibrary.result.units
-        .map((ResolvedUnitResult u) => MapEntry(u.path, u.unit)));
+    var compilationUnitMap = <String, CompilationUnit>{
+      for (var unit in resolvedLibrary.result.units) unit.path: unit.unit,
+    };
     _HashableChildLibraryElementVisitor((Element e) =>
-            packageGraph.populateModelNodeFor(e, _compilationUnitMap))
+            packageGraph.populateModelNodeFor(e, compilationUnitMap))
         .visitElement(element);
 
     var exportedAndLocalElements = {
