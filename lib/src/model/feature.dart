@@ -47,6 +47,7 @@ class Feature implements Privacy {
   // TODO(jcollins-g): consider [Comparable]?
   final int sortGroup;
 
+  static const lateFeature = Feature('late', 1);
   static const readOnly = Feature('read-only', 1);
   static const finalFeature = Feature('final', 2);
   static const writeOnly = Feature('write-only', 2);
@@ -56,7 +57,6 @@ class Feature implements Privacy {
   static const inherited = Feature('inherited', 3);
   static const inheritedGetter = Feature('inherited-getter', 3);
   static const inheritedSetter = Feature('inherited-setter', 3);
-  static const lateFeature = Feature('late', 3);
   static const overrideFeature = Feature('override', 3);
   static const overrideGetter = Feature('override-getter', 3);
   static const overrideSetter = Feature('override-setter', 3);

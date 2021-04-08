@@ -219,18 +219,22 @@ void main() {
       expect(a.modelType.name, equals('dynamic'));
       expect(a.isLate, isTrue);
       expect(a.features, contains(Feature.lateFeature));
+      expect(a.features, isNot(contains(Feature.readWrite)));
 
       expect(b.modelType.name, equals('int'));
       expect(b.isLate, isTrue);
       expect(b.features, contains(Feature.lateFeature));
+      expect(b.features, isNot(contains(Feature.readWrite)));
 
       expect(cField.modelType.name, equals('dynamic'));
       expect(cField.isLate, isTrue);
       expect(cField.features, contains(Feature.lateFeature));
+      expect(cField.features, isNot(contains(Feature.readWrite)));
 
       expect(dField.modelType.name, equals('double'));
       expect(dField.isLate, isTrue);
       expect(dField.features, contains(Feature.lateFeature));
+      expect(dField.features, isNot(contains(Feature.readWrite)));
     });
 
     test('Late final top level variables', () {
@@ -239,6 +243,7 @@ void main() {
       expect(initializeMe.modelType.name, equals('String'));
       expect(initializeMe.isLate, isTrue);
       expect(initializeMe.features, contains(Feature.lateFeature));
+      expect(initializeMe.features, isNot(contains(Feature.readWrite)));
     });
 
     test('Opt out of Null safety', () {
