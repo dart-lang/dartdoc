@@ -52,8 +52,7 @@ jobs:
         run: ./tool/travis.sh
         env:
           DARTDOC_BOT: ${{ matrix.job }}
-          # TODO(jcollins-g): uncomment after #2590 is fixed
-          #COVERAGE_TOKEN: true # this needs to be set to enable coverage
+          COVERAGE_TOKEN: true # this needs to be set to enable coverage
       - name: ${{ matrix.job }}
         if: runner.os == 'Windows' && matrix.job == 'main'
         run: pub run grinder buildbot
