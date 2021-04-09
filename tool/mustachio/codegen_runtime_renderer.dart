@@ -28,11 +28,11 @@ class RendererSpec {
 String buildTemplateRenderers(Set<RendererSpec> specs, Uri sourceUri,
     TypeProvider typeProvider, TypeSystem typeSystem,
     {bool rendererClassesArePublic = false}) {
-  var allVisibleTypes = specs
-      .map((spec) => spec._visibleTypes)
-      .reduce((value, element) => value.union(element))
-      .map((type) => type.element)
-      .toSet();
+  var allVisibleTypes = {
+    for (var spec in specs) spec._contextType.element,
+    for (var spec in specs)
+      for (var type in spec._visibleTypes) type.element,
+  };
   var raw = RuntimeRenderersBuilder(
           sourceUri, typeProvider, typeSystem, allVisibleTypes,
           rendererClassesArePublic: rendererClassesArePublic)
@@ -48,8 +48,7 @@ class RuntimeRenderersBuilder {
 
   /// A queue of types to process, in order to find all types for which we need
   /// to build renderers.
-  final _typesToProcess = SplayTreeSet<_RendererInfo>(
-      (key1, key2) => key1._typeName.compareTo(key2._typeName));
+  final _typesToProcess = Queue<_RendererInfo>();
 
   /// Maps a type to the name of the render function which can render that type
   /// as a context type.
@@ -102,12 +101,11 @@ import '${p.basename(_sourceUri.path)}';
 ''');
 
     specs.forEach(_addTypesForRendererSpec);
-
     var builtRenderers = <ClassElement>{};
+    var elementsToProcess = _typesToProcess.toList()
+      ..sort((a, b) => a._typeName.compareTo(b._typeName));
 
-    for (var info in _typesToProcess) {
-      //var info = _typesToProcess.removeFirst();
-
+    for (var info in elementsToProcess) {
       if (info.isFullRenderer) {
         var buildOnlyPublicFunction =
             builtRenderers.contains(info._contextClass);

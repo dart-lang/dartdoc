@@ -10700,7 +10700,7 @@ class _Renderer_Package extends RendererBase<Package> {
   }
 }
 
-String renderError(PackageTemplateData context, Template template) {
+String renderIndex(PackageTemplateData context, Template template) {
   return _render_PackageTemplateData(context, template.ast, template);
 }
 
@@ -10898,6 +10898,10 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
       return null;
     }
   }
+}
+
+String renderError(PackageTemplateData context, Template template) {
+  return _render_PackageTemplateData(context, template.ast, template);
 }
 
 String _render_Parameter(

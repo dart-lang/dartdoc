@@ -17,10 +17,6 @@ import 'package:dartdoc/src/mustachio/parser.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'foo.dart';
 
-String renderBar(Bar context, Template template) {
-  return _render_Bar(context, template.ast, template);
-}
-
 String _render_Bar(Bar context, List<MustachioNode> ast, Template template,
     {RendererBase<Object> parent}) {
   var renderer = Renderer_Bar(context, parent, template);
@@ -104,6 +100,62 @@ class Renderer_Bar extends RendererBase<Bar> {
       return null;
     }
   }
+}
+
+String renderBar(Bar context, Template template) {
+  return _render_Bar(context, template.ast, template);
+}
+
+String _render_Baz(Baz context, List<MustachioNode> ast, Template template,
+    {RendererBase<Object> parent}) {
+  var renderer = Renderer_Baz(context, parent, template);
+  renderer.renderBlock(ast);
+  return renderer.buffer.toString();
+}
+
+class Renderer_Baz extends RendererBase<Baz> {
+  static final Map<Type, Object> _propertyMapCache = {};
+  static Map<String, Property<CT_>> propertyMap<CT_ extends Baz>() =>
+      _propertyMapCache.putIfAbsent(
+          CT_,
+          () => {
+                ...Renderer_Object.propertyMap<CT_>(),
+                'bar': Property(
+                  getValue: (CT_ c) => c.bar,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        Renderer_Bar.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(self.getValue(c),
+                        nextProperty, [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => c.bar == null,
+                  renderValue:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    return _render_Bar(c.bar, ast, r.template, parent: r);
+                  },
+                ),
+              });
+
+  Renderer_Baz(Baz context, RendererBase<Object> parent, Template template)
+      : super(context, parent, template);
+
+  @override
+  Property<Baz> getProperty(String key) {
+    if (propertyMap<Baz>().containsKey(key)) {
+      return propertyMap<Baz>()[key];
+    } else {
+      return null;
+    }
+  }
+}
+
+String renderBaz(Baz context, Template template) {
+  return _render_Baz(context, template.ast, template);
 }
 
 String renderFoo(Foo context, Template template) {
