@@ -48,7 +48,8 @@ class RuntimeRenderersBuilder {
 
   /// A queue of types to process, in order to find all types for which we need
   /// to build renderers.
-  final _typesToProcess = Queue<_RendererInfo>();
+  final _typesToProcess = SplayTreeSet<_RendererInfo>(
+      (key1, key2) => key1._typeName.compareTo(key2._typeName));
 
   /// Maps a type to the name of the render function which can render that type
   /// as a context type.
@@ -104,8 +105,8 @@ import '${p.basename(_sourceUri.path)}';
 
     var builtRenderers = <ClassElement>{};
 
-    while (_typesToProcess.isNotEmpty) {
-      var info = _typesToProcess.removeFirst();
+    for (var info in _typesToProcess) {
+      //var info = _typesToProcess.removeFirst();
 
       if (info.isFullRenderer) {
         var buildOnlyPublicFunction =
@@ -174,7 +175,9 @@ import '${p.basename(_sourceUri.path)}';
     _addTypeHierarchyToProcess(
       type,
       isFullRenderer: _isVisibleToMustache(type.element),
-      includeRenderFunction: true,
+      // If [type.element] is not visible to mustache, then [renderSimple] will
+      // be used, not [type.element]'s render function.
+      includeRenderFunction: _isVisibleToMustache(type.element),
     );
   }
 

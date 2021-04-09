@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// Annotations only appear on other pages, so there is no template data here.
-@Renderer(#renderAnnotation, Context<Annotation>())
 @Renderer(#renderCategory, Context<CategoryTemplateData>(),
     visibleTypes: _visibleTypes)
 @Renderer(#renderClass, Context<ClassTemplateData>())
