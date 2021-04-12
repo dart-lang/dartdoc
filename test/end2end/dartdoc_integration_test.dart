@@ -136,14 +136,19 @@ void main() {
     });
 
     test('errors cause non-zero exit when warnings are off', () async {
-      expect(
-          () => subprocessLauncher.runStreamed(Platform.resolvedExecutable, [
-                dartdocPath,
-                '--allow-tools',
-                '--input=${testPackageToolError.path}',
-                '--output=${path.join(tempDir.absolute.path, 'test_package_tool_error')}'
-              ]),
-          throwsA(const TypeMatcher<ProcessException>()));
+      // consider [expectLater] when it works with coverage.
+      var exceptionThrown = false;
+      try {
+        await subprocessLauncher.runStreamed(Platform.resolvedExecutable, [
+          dartdocPath,
+          '--allow-tools',
+          '--input=${testPackageToolError.path}',
+          '--output=${path.join(tempDir.absolute.path, 'test_package_tool_error')}'
+        ]);
+      } on ProcessException {
+        exceptionThrown = true;
+      }
+      expect(exceptionThrown, isTrue);
     });
 
     test('help prints command line args', () async {
@@ -166,19 +171,20 @@ void main() {
       var dartTool =
           Directory(path.join(_testPackageFlutterPluginPath, '.dart_tool'));
       if (dartTool.existsSync()) dartTool.deleteSync(recursive: true);
-      Future run = subprocessLauncher.runStreamed(
-          Platform.resolvedExecutable, args,
-          environment: Map.from(Platform.environment)..remove('FLUTTER_ROOT'),
-          includeParentEnvironment: false,
-          workingDirectory: _testPackageFlutterPluginPath, perLine: (s) {
-        output.writeln(s);
-      });
-      // Asynchronous exception, but we still need the output, too.
-      expect(run, throwsA(TypeMatcher<ProcessException>()));
+      var exceptionThrown = false;
+      // consider [expectLater] when this works with coverage
       try {
-        await run;
-      } on ProcessException catch (_) {}
-
+        await subprocessLauncher.runStreamed(Platform.resolvedExecutable, args,
+            environment: Map.from(Platform.environment)..remove('FLUTTER_ROOT'),
+            includeParentEnvironment: false,
+            workingDirectory: _testPackageFlutterPluginPath, perLine: (s) {
+          output.writeln(s);
+        });
+      } on ProcessException {
+        exceptionThrown = true;
+      }
+      // Asynchronous exception, but we still need the output, too.
+      expect(exceptionThrown, isTrue);
       expect(
           output.toString(),
           contains(RegExp(
