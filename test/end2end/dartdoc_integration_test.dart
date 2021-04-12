@@ -109,16 +109,20 @@ void main() {
     test('missing a required file path prints a fatal-error', () async {
       var outputLines = <String>[];
       var impossiblePath = path.join(dartdocPath, 'impossible');
-      await expectLater(
-          () => subprocessLauncher.runStreamed(
-              Platform.resolvedExecutable,
-              [
-                dartdocPath,
-                '--input',
-                impossiblePath,
-              ],
-              perLine: outputLines.add),
-          throwsA(const TypeMatcher<ProcessException>()));
+      try {
+        await expectLater(
+            () => subprocessLauncher.runStreamed(
+                Platform.resolvedExecutable,
+                [
+                  dartdocPath,
+                  '--input',
+                  impossiblePath,
+                ],
+                perLine: outputLines.add),
+            throwsA(const TypeMatcher<ProcessException>()));
+      } catch (e) {
+        print('How did we get here, should be impossible right?\n$e');
+      }
       expect(
           outputLines.firstWhere((l) => l.startsWith(' fatal')),
           startsWith(
