@@ -8795,13 +8795,6 @@ class _Renderer_Categorization extends RendererBase<Categorization> {
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.hasCategoryNames == true,
                 ),
-                'hasDisplayedCategories': Property(
-                  getValue: (CT_ c) => c.hasDisplayedCategories,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasDisplayedCategories == true,
-                ),
                 'hasImage': Property(
                   getValue: (CT_ c) => c.hasImage,
                   renderVariable: (CT_ c, Property<CT_> self,
