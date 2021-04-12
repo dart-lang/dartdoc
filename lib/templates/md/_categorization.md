@@ -1,6 +1,6 @@
-{{#hasDisplayedCategories}}
+{{#hasCategoryNames}}
 Categories:
 {{#displayedCategories}}
 {{{categoryLabel}}}
 {{/displayedCategories}}
-{{/hasDisplayedCategories}}
+{{/hasCategoryNames}}
