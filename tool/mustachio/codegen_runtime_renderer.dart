@@ -28,13 +28,15 @@ class RendererSpec {
 String buildTemplateRenderers(Set<RendererSpec> specs, Uri sourceUri,
     TypeProvider typeProvider, TypeSystem typeSystem,
     {bool rendererClassesArePublic = false}) {
-  var allVisibleTypes = {
+  var visibleTypes = specs
+      .map((spec) => spec._visibleTypes)
+      .reduce((value, type) => value.union(type));
+  var visibleElements = {
     for (var spec in specs) spec._contextType.element,
-    for (var spec in specs)
-      for (var type in spec._visibleTypes) type.element,
+    for (var type in visibleTypes) type.element,
   };
   var raw = RuntimeRenderersBuilder(
-          sourceUri, typeProvider, typeSystem, allVisibleTypes,
+          sourceUri, typeProvider, typeSystem, visibleElements,
           rendererClassesArePublic: rendererClassesArePublic)
       ._buildTemplateRenderers(specs);
   return DartFormatter().format(raw.toString());
