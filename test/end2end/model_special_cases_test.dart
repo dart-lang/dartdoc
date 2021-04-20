@@ -27,14 +27,10 @@ final Version _platformVersion = Version.parse(_platformVersionString);
 final _testPackageGraphExperimentsMemo = AsyncMemoizer<PackageGraph>();
 Future<PackageGraph> get _testPackageGraphExperiments =>
     _testPackageGraphExperimentsMemo.runOnce(() => utils.bootBasicPackage(
-            'testing/test_package_experiments',
-            pubPackageMetaProvider,
-            PhysicalPackageConfigProvider(),
-            additionalArguments: [
-              '--enable-experiment',
-              'non-nullable,nonfunction-type-aliases',
-              '--no-link-to-remote'
-            ]));
+        'testing/test_package_experiments',
+        pubPackageMetaProvider,
+        PhysicalPackageConfigProvider(),
+        additionalArguments: ['--no-link-to-remote']));
 
 final _testPackageGraphGinormousMemo = AsyncMemoizer<PackageGraph>();
 Future<PackageGraph> get _testPackageGraphGinormous =>
@@ -74,12 +70,16 @@ void main() {
     exit(1);
   }
 
+  // We can not use ExperimentalFeature.releaseVersion or even
+  // ExperimentalFeature.experimentalReleaseVersion as these are set to null
+  // even when partial analyzer implementations are available, and are often
+  // set too high after release.
   final _generalizedTypedefsAllowed =
       VersionRange(min: Version.parse('2.13.0-0'), includeMin: true);
   final _genericMetadataAllowed =
-      VersionRange(min: Version.parse('2.13.0-0'), includeMin: true);
+      VersionRange(min: Version.parse('2.15.0-0'), includeMin: true);
   final _tripleShiftAllowed =
-      VersionRange(min: Version.parse('2.13.0-0'), includeMin: true);
+      VersionRange(min: Version.parse('2.15.0-0'), includeMin: true);
 
   // Experimental features not yet enabled by default.  Move tests out of this
   // block when the feature is enabled by default.
