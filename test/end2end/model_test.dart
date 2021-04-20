@@ -1561,7 +1561,9 @@ void main() {
 
       expect(ImplementerOfThings.publicInterfaces.first.modelElement,
           equals(ImplementBase));
-      expect(ImplementerOfDeclaredPrivateClasses.publicInterfaces.first.modelElement,
+      expect(
+          ImplementerOfDeclaredPrivateClasses
+              .publicInterfaces.first.modelElement,
           equals(ImplementBase));
 
       expect(ImplementBase.publicImplementors,

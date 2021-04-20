@@ -5,7 +5,7 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/source/line_info.dart';
 import 'package:dartdoc/src/element_type.dart';
-import 'package:dartdoc/src/model/comment_reference.dart';
+import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 class Constructor extends ModelElement

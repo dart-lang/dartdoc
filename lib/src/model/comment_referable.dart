@@ -5,7 +5,7 @@
 ///
 /// Code for managing comment reference lookups in dartdoc.
 ///
-library dartdoc.comment_reference;
+library dartdoc.src.model.comment_reference;
 
 import 'dart:core';
 
@@ -30,6 +30,7 @@ mixin CommentReferable implements Nameable {
       return null;
     }
     CommentReferable result;
+
     /// Search for the completely reference
     for (var referenceLookup in childLookups(reference)) {
       if (referenceChildren.containsKey(referenceLookup.lookup)) {
@@ -64,8 +65,7 @@ mixin CommentReferable implements Nameable {
   Map<String, CommentReferable> get referenceChildren;
 
   /// Iterable of immediate "parents" to try resolving component parts.
-  /// Ignored when [parent] is false in [referenceBy], and it stops at the
-  /// first parent where a part is found.
+  /// [referenceBy] stops at the first parent where a part is found.
   /// Can be cached.
   /// TODO(jcollins-g): Rationalize the different "enclosing" types so that
   /// this doesn't duplicate `[enclosingElement]` in many cases.
@@ -73,8 +73,13 @@ mixin CommentReferable implements Nameable {
   /// making the iterable make sense here.
   Iterable<CommentReferable> get referenceParents;
 
+  /// TODO(jcollins-g): Eliminate need for this in markdown_processor.
+  @Deprecated(
+      'Only still here for markdown_processor; remove after conversion to new lookup code')
   Library get library => null;
 
-  /// TODO(jcollins-g): eliminate need for this in markdown_processor;
+  /// TODO(jcollins-g): Eliminate need for this in markdown_processor.
+  @Deprecated(
+      'Only still here for markdown_processor; remove after conversion to new lookup code')
   Element get element;
 }

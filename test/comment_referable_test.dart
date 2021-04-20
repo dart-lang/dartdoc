@@ -5,7 +5,7 @@
 library dartdoc.comment_reference_test;
 
 import 'package:analyzer/dart/element/element.dart';
-import 'package:dartdoc/src/model/comment_reference.dart';
+import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/nameable.dart';
 import 'package:test/test.dart';
 
@@ -17,8 +17,7 @@ abstract class Base extends Nameable with CommentReferable {
   /// Returns the added (or already existing) [Base].
   Base add(String newName);
 
-  Base lookup(String value) =>
-      referenceBy(value.split(SEPARATOR));
+  Base lookup(String value) => referenceBy(value.split(SEPARATOR));
 
   @override
   Element get element => throw UnimplementedError();
@@ -43,8 +42,7 @@ class Top extends Base {
       retval = parent;
     }
     if (newNameSplit.length > 1) {
-      retval =
-          parent.add(newNameSplit.sublist(1).join(SEPARATOR));
+      retval = parent.add(newNameSplit.sublist(1).join(SEPARATOR));
     }
     return retval;
   }
@@ -72,8 +70,7 @@ abstract class Child extends Base {
       retval = child;
     }
     if (newNameSplit.length > 1) {
-      retval =
-          child.add(newNameSplit.sublist(1).join(SEPARATOR));
+      retval = child.add(newNameSplit.sublist(1).join(SEPARATOR));
     }
     return retval;
   }

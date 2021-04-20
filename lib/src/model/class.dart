@@ -353,7 +353,8 @@ class Class extends Container
       _inheritanceChain.add(this);
 
       /// Caching should make this recursion a little less painful.
-      for (var c in mixedInTypes.reversed.map((e) => (e.modelElement as Class))) {
+      for (var c
+          in mixedInTypes.reversed.map((e) => (e.modelElement as Class))) {
         _inheritanceChain.addAll(c.inheritanceChain);
       }
 

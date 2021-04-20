@@ -12,7 +12,7 @@ import 'package:analyzer/source/line_info.dart';
 import 'package:analyzer/src/dart/element/inheritance_manager3.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:dartdoc/src/io_utils.dart';
-import 'package:dartdoc/src/model/comment_reference.dart';
+import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart' show PackageMeta;
 import 'package:dartdoc/src/quiver.dart' as quiver;
@@ -656,6 +656,8 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
   Map<String, CommentReferable> _referenceChildren;
   @override
+  // TODO(jcollins-g): This should take the import/export graph
+  // and resulting namespace into account.
   Map<String, CommentReferable> get referenceChildren {
     if (_referenceChildren == null) {
       _referenceChildren = {};

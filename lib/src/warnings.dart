@@ -8,6 +8,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/logging.dart';
+import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
 
@@ -271,7 +272,8 @@ const Map<PackageWarning, PackageWarningDefinition> packageWarningDefinitions =
 
 /// Something that package warnings can be called on.  Optionally associated
 /// with an analyzer [element].
-mixin Warnable implements Canonicalization {
+mixin Warnable implements Canonicalization, CommentReferable {
+  @override
   Element get element;
 
   Warnable get enclosingElement;

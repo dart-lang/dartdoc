@@ -10,8 +10,9 @@ import 'dart:math';
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/element_type.dart';
-import 'package:dartdoc/src/model/comment_reference.dart';
+import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/quiver.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:markdown/markdown.dart' as md;
 
@@ -157,6 +158,7 @@ RegExp get isConstructor => _constructorIndicationPattern;
 /// punctuation, spaces.
 ///
 /// The idea is to catch such cases and not produce warnings about the contents.
+/// TODO(jcollins-g): consider being more strict here.
 final RegExp notARealDocReference = RegExp(r'''(^[^\w]|^[\d]|[,"'/]|^$)''');
 
 final RegExp operatorPrefix = RegExp(r'^operator[ ]*');
@@ -182,10 +184,20 @@ final List<md.BlockSyntax> _markdownBlockSyntaxes = [
 final RegExp _hideSchemes = RegExp('^(http|https)://');
 
 class MatchingLinkResult {
-  final ModelElement element;
+  final ModelElement modelElement;
   final bool warn;
 
-  MatchingLinkResult(this.element, {this.warn = true});
+  MatchingLinkResult(this.modelElement, {this.warn = true});
+
+  @override
+  bool operator ==(Object other) {
+    return other is MatchingLinkResult &&
+        modelElement == other.modelElement &&
+        warn == other.warn;
+  }
+
+  @override
+  int get hashCode => hash2(modelElement, warn);
 }
 
 class IterableBlockParser extends md.BlockParser {
@@ -214,6 +226,23 @@ ModelElement _getPreferredClass(ModelElement modelElement) {
     return modelElement;
   }
   return null;
+}
+
+/// Implements _getMatchingLinkElement via [CommentReferable.referenceBy].
+// ignore: unused_element
+MatchingLinkResult _getMatchingLinkElementCommentReferable(
+    String codeRef, Warnable element, List<ModelCommentReference> commentRefs) {
+  if (!codeRef.contains(_constructorIndicationPattern) &&
+      codeRef.contains(notARealDocReference)) {
+    // Don't waste our time on things we won't ever find.
+    return MatchingLinkResult(null, warn: false);
+  }
+
+  // TODO(jcollins-g): implement implied constructor?
+  var codeRefChompedParts =
+      codeRef.replaceAll(_constructorIndicationPattern, '').split('.');
+  var lookupResult = element.referenceBy(codeRefChompedParts);
+  return MatchingLinkResult(lookupResult, warn: lookupResult == null);
 }
 
 /// Returns null if element is a parameter.
@@ -854,7 +883,7 @@ md.Node _makeLinkNode(String codeRef, Warnable warnable,
     List<ModelCommentReference> commentRefs) {
   var result = _getMatchingLinkElement(codeRef, warnable, commentRefs);
   var textContent = htmlEscape.convert(codeRef);
-  var linkedElement = result.element;
+  var linkedElement = result.modelElement;
   if (linkedElement != null) {
     if (linkedElement.href != null) {
       var anchor = md.Element.text('a', textContent);
