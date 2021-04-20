@@ -21,8 +21,6 @@ class ReferenceChildrenLookup {
 
 /// Support comment reference lookups on a Nameable object.
 mixin CommentReferable implements Nameable {
-  static const SEPARATOR = '.';
-
   /// Look up a comment reference by its component parts.  If [parent] is true,
   /// try looking up the same reference in any parents of [this].
   @nonVirtual
@@ -32,6 +30,7 @@ mixin CommentReferable implements Nameable {
       return null;
     }
     CommentReferable result;
+    /// Search for the completely reference
     for (var referenceLookup in childLookups(reference)) {
       if (referenceChildren.containsKey(referenceLookup.lookup)) {
         result = referenceChildren[referenceLookup.lookup];
@@ -53,7 +52,7 @@ mixin CommentReferable implements Nameable {
 
   /// A list of lookups that should be attempted on children based on
   /// [reference].  This allows us to deal with libraries that may have
-  /// separators in them.
+  /// separators in them. [referenceBy] stops at the first
   List<ReferenceChildrenLookup> childLookups(List<String> reference) => [
         ReferenceChildrenLookup(
             reference.first, reference.length > 1 ? reference.sublist(1) : [])
@@ -65,6 +64,8 @@ mixin CommentReferable implements Nameable {
   Map<String, CommentReferable> get referenceChildren;
 
   /// Iterable of immediate "parents" to try resolving component parts.
+  /// Ignored when [parent] is false in [referenceBy], and it stops at the
+  /// first parent where a part is found.
   /// Can be cached.
   /// TODO(jcollins-g): Rationalize the different "enclosing" types so that
   /// this doesn't duplicate `[enclosingElement]` in many cases.

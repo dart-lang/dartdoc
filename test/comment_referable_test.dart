@@ -9,15 +9,16 @@ import 'package:dartdoc/src/model/comment_reference.dart';
 import 'package:dartdoc/src/model/nameable.dart';
 import 'package:test/test.dart';
 
+const SEPARATOR = '.';
+
 abstract class Base extends Nameable with CommentReferable {
   /// Utility function to quickly build structures similar to [ModelElement]
   /// hierarchies in dartdoc in tests.
   /// Returns the added (or already existing) [Base].
-
   Base add(String newName);
 
   Base lookup(String value) =>
-      referenceBy(value.split(CommentReferable.SEPARATOR));
+      referenceBy(value.split(SEPARATOR));
 
   @override
   Element get element => throw UnimplementedError();
@@ -33,7 +34,7 @@ class Top extends Base {
   @override
   Base add(String newName) {
     Base retval;
-    var newNameSplit = newName.split(CommentReferable.SEPARATOR).toList();
+    var newNameSplit = newName.split(SEPARATOR).toList();
     var parent = children.firstWhere((c) => c.name == newNameSplit.first,
         orElse: () => null);
     if (parent == null) {
@@ -43,7 +44,7 @@ class Top extends Base {
     }
     if (newNameSplit.length > 1) {
       retval =
-          parent.add(newNameSplit.sublist(1).join(CommentReferable.SEPARATOR));
+          parent.add(newNameSplit.sublist(1).join(SEPARATOR));
     }
     return retval;
   }
@@ -62,7 +63,7 @@ abstract class Child extends Base {
   @override
   Base add(String newName) {
     Base retval;
-    var newNameSplit = newName.split(CommentReferable.SEPARATOR).toList();
+    var newNameSplit = newName.split(SEPARATOR).toList();
     var child = children.firstWhere((c) => c.name == newNameSplit.first,
         orElse: () => null);
     if (child == null) {
@@ -72,7 +73,7 @@ abstract class Child extends Base {
     }
     if (newNameSplit.length > 1) {
       retval =
-          child.add(newNameSplit.sublist(1).join(CommentReferable.SEPARATOR));
+          child.add(newNameSplit.sublist(1).join(SEPARATOR));
     }
     return retval;
   }
