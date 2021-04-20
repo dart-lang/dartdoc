@@ -7196,6 +7196,14 @@ class _Renderer_Library extends RendererBase<Library> {
   }
 }
 
+String _render_LibraryContainer(
+    LibraryContainer context, List<MustachioNode> ast, Template template,
+    {RendererBase<Object> parent}) {
+  var renderer = _Renderer_LibraryContainer(context, parent, template);
+  renderer.renderBlock(ast);
+  return renderer.buffer.toString();
+}
+
 class _Renderer_LibraryContainer extends RendererBase<LibraryContainer> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<
@@ -10110,7 +10118,8 @@ class _Renderer_Package extends RendererBase<Package> {
                   isNullValue: (CT_ c) => c.defaultCategory == null,
                   renderValue:
                       (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-                    return renderSimple(c.defaultCategory, ast, r.template,
+                    return _render_LibraryContainer(
+                        c.defaultCategory, ast, r.template,
                         parent: r);
                   },
                 ),

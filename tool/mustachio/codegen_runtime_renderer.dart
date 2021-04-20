@@ -28,13 +28,11 @@ class RendererSpec {
 String buildTemplateRenderers(Set<RendererSpec> specs, Uri sourceUri,
     TypeProvider typeProvider, TypeSystem typeSystem,
     {bool rendererClassesArePublic = false}) {
-  var visibleTypes = specs
+  var visibleElements = specs
       .map((spec) => spec._visibleTypes)
-      .reduce((value, type) => value.union(type));
-  var visibleElements = {
-    for (var spec in specs) spec._contextType.element,
-    for (var type in visibleTypes) type.element,
-  };
+      .reduce((value, element) => value.union(element))
+      .map((type) => type.element)
+      .toSet();
   var raw = RuntimeRenderersBuilder(
           sourceUri, typeProvider, typeSystem, visibleElements,
           rendererClassesArePublic: rendererClassesArePublic)

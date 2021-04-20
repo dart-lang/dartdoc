@@ -17,6 +17,10 @@ import 'package:dartdoc/src/mustachio/parser.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'foo.dart';
 
+String renderBar(Bar context, Template template) {
+  return _render_Bar(context, template.ast, template);
+}
+
 String _render_Bar(Bar context, List<MustachioNode> ast, Template template,
     {RendererBase<Object> parent}) {
   var renderer = Renderer_Bar(context, parent, template);
@@ -102,8 +106,8 @@ class Renderer_Bar extends RendererBase<Bar> {
   }
 }
 
-String renderBar(Bar context, Template template) {
-  return _render_Bar(context, template.ast, template);
+String renderBaz(Baz context, Template template) {
+  return _render_Baz(context, template.ast, template);
 }
 
 String _render_Baz(Baz context, List<MustachioNode> ast, Template template,
@@ -152,10 +156,6 @@ class Renderer_Baz extends RendererBase<Baz> {
       return null;
     }
   }
-}
-
-String renderBaz(Baz context, Template template) {
-  return _render_Baz(context, template.ast, template);
 }
 
 String renderFoo(Foo context, Template template) {

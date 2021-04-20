@@ -49,6 +49,7 @@ const _visibleTypes = {
   FeatureSet,
   LanguageFeature,
   Library,
+  LibraryContainer,
   Method,
   ModelElement,
   Package,
