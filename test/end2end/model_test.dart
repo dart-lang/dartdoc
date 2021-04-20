@@ -1559,9 +1559,9 @@ void main() {
       var ImplementBase = implementorsLibrary.classes
           .firstWhere((c) => c.name == 'ImplementBase');
 
-      expect(ImplementerOfThings.publicInterfaces.first.element,
+      expect(ImplementerOfThings.publicInterfaces.first.modelElement,
           equals(ImplementBase));
-      expect(ImplementerOfDeclaredPrivateClasses.publicInterfaces.first.element,
+      expect(ImplementerOfDeclaredPrivateClasses.publicInterfaces.first.modelElement,
           equals(ImplementBase));
 
       expect(ImplementBase.publicImplementors,
@@ -1669,7 +1669,7 @@ void main() {
     test('Verify inheritance/mixin structure and type inference', () {
       expect(
           TypeInferenceMixedIn.mixedInTypes
-              .map<String>((DefinedElementType t) => t.element.name),
+              .map<String>((DefinedElementType t) => t.modelElement.name),
           orderedEquals(['GenericMixin']));
       expect(
           TypeInferenceMixedIn.mixedInTypes.first.typeArguments
@@ -2020,14 +2020,16 @@ void main() {
         () {
       // The real implementation of BaseClass is private, but it is exported.
       expect(ExtendingClass.superChain.first.name, equals('BaseClass'));
+      expect(ExtendingClass.superChain.first.modelElement.isCanonical,
+          equals(false));
       expect(
-          ExtendingClass.superChain.first.element.isCanonical, equals(false));
-      expect(ExtendingClass.superChain.first.element.isPublic, equals(false));
+          ExtendingClass.superChain.first.modelElement.isPublic, equals(false));
       // And it should still show up in the publicSuperChain, because it is
       // exported.
       expect(ExtendingClass.publicSuperChain.first.name, equals('BaseClass'));
       expect(
-          ExtendingClass.publicSuperChain.first.element.canonicalLibrary.name,
+          ExtendingClass
+              .publicSuperChain.first.modelElement.canonicalLibrary.name,
           equals('two_exports'));
     });
 
@@ -2036,8 +2038,8 @@ void main() {
         () {
       expect(
           ExtendingClass.superChain.last.name, equals('WithGetterAndSetter'));
-      expect(
-          ExtendingClass.superChain.last.element.library.name, equals('fake'));
+      expect(ExtendingClass.superChain.last.modelElement.library.name,
+          equals('fake'));
     });
   });
 

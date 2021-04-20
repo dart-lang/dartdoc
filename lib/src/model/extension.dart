@@ -4,6 +4,7 @@
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/element_type.dart';
+import 'package:dartdoc/src/model/comment_reference.dart';
 import 'package:dartdoc/src/model/extension_target.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/quiver.dart' as quiver;
@@ -42,6 +43,7 @@ class Extension extends Container
         extendedType.isBoundSupertypeTo(t);
   }
 
+  /// Returns the library that encloses this element.
   @override
   ModelElement get enclosingElement => library;
 
@@ -116,6 +118,18 @@ class Extension extends Container
     assert(canonicalLibrary != null);
     assert(canonicalLibrary == library);
     return '${package.baseHref}$filePath';
+  }
+
+  Map<String, CommentReferable> _referenceChildren;
+  @override
+  Map<String, CommentReferable> get referenceChildren {
+    if (_referenceChildren == null) {
+      _referenceChildren = {};
+      _referenceChildren.addEntries(extendedType.referenceChildren.entries);
+      // Override extendedType entries with local items.
+      _referenceChildren.addAll(super.referenceChildren);
+    }
+    return _referenceChildren;
   }
 
   @override

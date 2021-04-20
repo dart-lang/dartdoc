@@ -3241,7 +3241,7 @@ class _Renderer_DefinedElementType extends RendererBase<DefinedElementType> {
                   isNullValue: (CT_ c) => c.element == null,
                   renderValue:
                       (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-                    return _render_ModelElement(c.element, ast, r.template,
+                    return _render_ModelElement(c.modelElement, ast, r.template,
                         parent: r);
                   },
                 ),

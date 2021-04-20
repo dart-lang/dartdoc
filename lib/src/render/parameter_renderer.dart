@@ -185,7 +185,7 @@ abstract class ParameterRenderer {
       if (!paramModelType.isTypedef && paramModelType is DefinedElementType) {
         buf.write('(');
         buf.write(renderLinkedParams(
-            (paramModelType as DefinedElementType).element.parameters,
+            (paramModelType as DefinedElementType).modelElement.parameters,
             showMetadata: showMetadata,
             showNames: showNames));
         buf.write(')');

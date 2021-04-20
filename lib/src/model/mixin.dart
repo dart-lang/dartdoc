@@ -28,14 +28,14 @@ class Mixin extends Class {
       // Mix-in interfaces come before other interfaces.
       _inheritanceChain.addAll(superclassConstraints
           .expand((ParameterizedElementType i) =>
-              (i.element as Class).inheritanceChain)
+              (i.modelElement as Class).inheritanceChain)
           .where((Class c) =>
               c != packageGraph.specialClasses[SpecialClass.object]));
 
       // Interfaces need to come last, because classes in the superChain might
       // implement them even when they aren't mentioned.
       _inheritanceChain.addAll(
-          interfaces.expand((e) => (e.element as Class).inheritanceChain));
+          interfaces.expand((e) => (e.modelElement as Class).inheritanceChain));
     }
     return _inheritanceChain.toList(growable: false);
   }

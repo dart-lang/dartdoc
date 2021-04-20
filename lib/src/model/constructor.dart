@@ -5,6 +5,7 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/source/line_info.dart';
 import 'package:dartdoc/src/element_type.dart';
+import 'package:dartdoc/src/model/comment_reference.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 class Constructor extends ModelElement
@@ -120,4 +121,20 @@ class Constructor extends ModelElement
       return name;
     }
   }
+
+  Map<String, CommentReferable> _referenceChildren;
+  @override
+  Map<String, CommentReferable> get referenceChildren {
+    if (_referenceChildren == null) {
+      _referenceChildren = {};
+      _referenceChildren
+          .addEntries(allParameters.map((p) => MapEntry(p.name, p)));
+      _referenceChildren
+          .addEntries(typeParameters.map((p) => MapEntry(p.name, p)));
+    }
+    return _referenceChildren;
+  }
+
+  @override
+  Iterable<CommentReferable> get referenceParents => [enclosingElement];
 }

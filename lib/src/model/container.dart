@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:dartdoc/src/model/comment_reference.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as model_utils;
 import 'package:dartdoc/src/quiver.dart' as quiver;
@@ -97,6 +98,9 @@ abstract class Container extends ModelElement with TypeParameters {
         declaredMethods.whereType<Operator>().toList(growable: false);
     return _declaredOperators;
   }
+
+  @override
+  ModelElement get enclosingElement;
 
   Iterable<Operator> get instanceOperators => declaredOperators;
 
@@ -242,4 +246,16 @@ abstract class Container extends ModelElement with TypeParameters {
   List<Method> _publicStaticMethodsSorted;
   List<Method> get publicStaticMethodsSorted =>
       _publicStaticMethodsSorted ??= publicStaticMethods.toList()..sort(byName);
+
+  Map<String, CommentReferable> _referenceChildren;
+  @override
+  @mustCallSuper
+  Map<String, CommentReferable> get referenceChildren {
+    return _referenceChildren ??= Map.fromEntries(allModelElements
+        .where((e) => e is! Accessor)
+        .map((e) => MapEntry(e.name, e)));
+  }
+
+  @override
+  Iterable<CommentReferable> get referenceParents => [enclosingElement];
 }

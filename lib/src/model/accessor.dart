@@ -4,6 +4,7 @@
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/src/dart/element/member.dart' show ExecutableMember;
+import 'package:dartdoc/src/model/comment_reference.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/source_code_renderer.dart';
@@ -125,6 +126,17 @@ class Accessor extends ModelElement implements EnclosedElement {
     _namePart ??= super.namePart.split('=').first;
     return _namePart;
   }
+
+  @override
+
+  /// Accessors should never be participating in comment reference lookups.
+  Map<String, CommentReferable> get referenceChildren =>
+      throw UnimplementedError();
+
+  @override
+
+  /// Accessors should never be participating in comment reference lookups.
+  Iterable<CommentReferable> get referenceParents => throw UnimplementedError();
 }
 
 /// A getter or setter that is a member of a [Container].

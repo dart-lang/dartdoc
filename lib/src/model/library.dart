@@ -4,7 +4,7 @@
 
 import 'dart:collection';
 
-import 'package:analyzer/dart/ast/ast.dart';
+import 'package:analyzer/dart/ast/ast.dart' hide CommentReference;
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type_system.dart';
 import 'package:analyzer/dart/element/visitor.dart';
@@ -12,6 +12,7 @@ import 'package:analyzer/source/line_info.dart';
 import 'package:analyzer/src/dart/element/inheritance_manager3.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:dartdoc/src/io_utils.dart';
+import 'package:dartdoc/src/model/comment_reference.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart' show PackageMeta;
 import 'package:dartdoc/src/quiver.dart' as quiver;
@@ -652,4 +653,24 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     return (_allCanonicalModelElements ??=
         allModelElements.where((e) => e.isCanonical).toList());
   }
+
+  Map<String, CommentReferable> _referenceChildren;
+  @override
+  Map<String, CommentReferable> get referenceChildren {
+    if (_referenceChildren == null) {
+      _referenceChildren = {};
+      _referenceChildren.addEntries(constants.map((e) => MapEntry(e.name, e)));
+      _referenceChildren.addEntries(extensions.map((e) => MapEntry(e.name, e)));
+      _referenceChildren.addEntries(enums.map((e) => MapEntry(e.name, e)));
+      _referenceChildren.addEntries(extensions.map((e) => MapEntry(e.name, e)));
+      _referenceChildren.addEntries(mixins.map((e) => MapEntry(e.name, e)));
+      _referenceChildren.addEntries(properties.map((e) => MapEntry(e.name, e)));
+      _referenceChildren.addEntries(typedefs.map((e) => MapEntry(e.name, e)));
+      _referenceChildren.addEntries(classes.map((e) => MapEntry(e.name, e)));
+    }
+    return _referenceChildren;
+  }
+
+  @override
+  Iterable<CommentReferable> get referenceParents => [package];
 }

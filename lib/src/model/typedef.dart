@@ -5,6 +5,7 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:dartdoc/src/element_type.dart';
+import 'package:dartdoc/src/model/comment_reference.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/typedef_renderer.dart';
 
@@ -24,7 +25,7 @@ class Typedef extends ModelElement
       ElementType.from(element.aliasedType, library, packageGraph);
 
   @override
-  ModelElement get enclosingElement => library;
+  Library get enclosingElement => library;
 
   @override
   String get nameWithGenerics => '$name${super.genericParameters}';
@@ -62,6 +63,21 @@ class Typedef extends ModelElement
       }).toList();
 
   TypedefRenderer get _renderer => packageGraph.rendererFactory.typedefRenderer;
+
+  Map<String, CommentReferable> _referenceChildren;
+
+  @override
+  Map<String, CommentReferable> get referenceChildren {
+    if (_referenceChildren == null) {
+      referenceChildren.addEntries(parameters.map((p) => MapEntry(p.name, p)));
+      referenceChildren
+          .addEntries(typeParameters.map((p) => MapEntry(p.name, p)));
+    }
+    return _referenceChildren;
+  }
+
+  @override
+  Iterable<CommentReferable> get referenceParents => [enclosingElement];
 }
 
 /// A typedef referring to a function type.

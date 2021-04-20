@@ -12,7 +12,7 @@ import 'package:dartdoc/src/special_elements.dart';
 /// We can search the inheritance chain between this instance and
 /// [definingEnclosingContainer] in [Inheritable.canonicalEnclosingContainer],
 /// for the canonical [Class] closest to where this member was defined.  We
-/// can then know that when we find [Inheritable.element] inside that [Class]'s
+/// can then know that when we find [Inheritable.modelElement] inside that [Class]'s
 /// namespace, that's the one we should treat as canonical and implementors
 /// of this class can use that knowledge to determine canonicalization.
 ///

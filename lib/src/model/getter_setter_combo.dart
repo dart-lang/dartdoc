@@ -9,6 +9,7 @@ import 'package:analyzer/dart/ast/ast.dart'
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/source/line_info.dart';
 import 'package:analyzer/src/dart/element/element.dart';
+import 'package:dartdoc/src/model/comment_reference.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/annotation.dart';
 import 'package:dartdoc/src/model/feature.dart';
@@ -233,4 +234,18 @@ mixin GetterSetterCombo on ModelElement {
   bool get readWrite => hasPublicGetter && hasPublicSetter;
 
   bool get writeOnly => hasPublicSetter && !hasPublicGetter;
+
+  Map<String, CommentReferable> _referenceChildren;
+  @override
+  Map<String, CommentReferable> get referenceChildren {
+    if (_referenceChildren == null) {
+      _referenceChildren = {};
+      _referenceChildren
+          .addEntries(allParameters.map((p) => MapEntry(p.name, p)));
+    }
+    return _referenceChildren;
+  }
+
+  @override
+  Iterable<CommentReferable> get referenceParents => [enclosingElement];
 }

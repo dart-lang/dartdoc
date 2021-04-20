@@ -10,6 +10,7 @@ import 'dart:math';
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/element_type.dart';
+import 'package:dartdoc/src/model/comment_reference.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:markdown/markdown.dart' as md;
@@ -322,7 +323,7 @@ class _MarkdownCommentReference {
   final Class preferredClass;
 
   /// Current results.  Input/output of all _find and _reduce methods.
-  Set<ModelElement> results;
+  Set<CommentReferable> results;
 
   /// codeRef with any leading constructor string, stripped.
   String codeRefChomped;
@@ -727,7 +728,7 @@ class _MarkdownCommentReference {
 
     if (results.isEmpty && realClass != null) {
       for (var superClass
-          in realClass.publicSuperChain.map((et) => et.element)) {
+          in realClass.publicSuperChain.map((et) => et.modelElement)) {
         if (!tryClasses.contains(superClass)) {
           _getResultsForClass(superClass);
         }
@@ -801,7 +802,7 @@ class _MarkdownCommentReference {
       results.add((tryClass.modelType.typeArguments.firstWhere(
                   (e) => e.name == codeRefChomped && e is DefinedElementType)
               as DefinedElementType)
-          .element);
+          .modelElement);
     } else {
       // People like to use 'this' in docrefs too.
       if (codeRef == 'this') {
@@ -810,12 +811,12 @@ class _MarkdownCommentReference {
         // TODO(jcollins-g): get rid of reimplementation of identifier resolution
         //                   or integrate into ModelElement in a simpler way.
         var superChain = <Class>[tryClass];
-        superChain.addAll(tryClass.interfaces.map((t) => t.element));
+        superChain.addAll(tryClass.interfaces.map((t) => t.modelElement));
         // This seems duplicitous with our caller, but the preferredClass
         // hint matters with findCanonicalModelElementFor.
         // TODO(jcollins-g): This makes our caller ~O(n^2) vs length of superChain.
         //                   Fortunately superChains are short, but optimize this if it matters.
-        superChain.addAll(tryClass.superChain.map((t) => t.element));
+        superChain.addAll(tryClass.superChain.map((t) => t.modelElement));
         for (final c in superChain) {
           _getResultsForSuperChainElement(c);
           if (results.isNotEmpty) break;

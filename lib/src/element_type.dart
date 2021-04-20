@@ -8,15 +8,17 @@ library dartdoc.element_type;
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
+import 'package:dartdoc/src/model/comment_reference.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/element_type_renderer.dart';
 
 /// Base class representing a type in Dartdoc.  It wraps a [DartType], and
 /// may link to a [ModelElement].
-abstract class ElementType extends Privacy {
+abstract class ElementType extends Privacy with CommentReferable, Nameable {
   final DartType _type;
   final PackageGraph packageGraph;
   final ElementType returnedFrom;
+  @override
   final Library library;
 
   ElementType(this._type, this.library, this.packageGraph, this.returnedFrom);
@@ -73,8 +75,6 @@ abstract class ElementType extends Privacy {
 
   String get linkedName;
 
-  String get name;
-
   /// Name with generics and nullability indication.
   String get nameWithGenerics;
 
@@ -113,6 +113,9 @@ class UndefinedElementType extends ElementType {
       ElementType returnedFrom)
       : super(f, library, packageGraph, returnedFrom);
 
+  @override
+  Element get element => null;
+
   String _linkedName;
 
   @override
@@ -131,7 +134,7 @@ class UndefinedElementType extends ElementType {
   bool get isImpliedFuture => (type.isDynamic &&
       returnedFrom != null &&
       returnedFrom is DefinedElementType &&
-      (returnedFrom as DefinedElementType).element.isAsynchronous);
+      (returnedFrom as DefinedElementType).modelElement.isAsynchronous);
 
   @override
   String get nameWithGenerics => '$name$nullabilitySuffix';
@@ -152,6 +155,12 @@ class UndefinedElementType extends ElementType {
 
   @override
   String get linkedName => name;
+
+  @override
+  Map<String, CommentReferable> get referenceChildren => {};
+
+  @override
+  Iterable<CommentReferable> get referenceParents => [];
 
   @override
   // TODO(jcollins-g): remove the need for an empty list here.
@@ -264,15 +273,18 @@ class TypeParameterElementType extends DefinedElementType {
 
 /// An [ElementType] associated with an [Element].
 abstract class DefinedElementType extends ElementType {
-  final ModelElement _element;
+  final ModelElement _modelElement;
 
   DefinedElementType(DartType type, Library library, PackageGraph packageGraph,
-      this._element, ElementType returnedFrom)
+      this._modelElement, ElementType returnedFrom)
       : super(type, library, packageGraph, returnedFrom);
 
-  ModelElement get element {
-    assert(_element != null);
-    return _element;
+  @override
+  Element get element => modelElement.element;
+
+  ModelElement get modelElement {
+    assert(_modelElement != null);
+    return _modelElement;
   }
 
   @override
@@ -285,20 +297,21 @@ abstract class DefinedElementType extends ElementType {
   /// would ordinarily do.
   @override
   bool get isPublic {
-    Container canonicalClass =
-        element.packageGraph.findCanonicalModelElementFor(element.element) ??
-            element;
-    return canonicalClass.isPublic;
+    Container canonicalClass = modelElement.packageGraph
+            .findCanonicalModelElementFor(modelElement.element) ??
+        modelElement;
+    return canonicalClass?.isPublic ?? false;
   }
 
   @override
-  bool get isTypedef => element is Typedef || element is ModelFunctionTypedef;
+  bool get isTypedef =>
+      modelElement is Typedef || modelElement is ModelFunctionTypedef;
 
   @override
   List<Parameter> get parameters =>
-      element.isCallable ? element.parameters : [];
+      modelElement.isCallable ? modelElement.parameters : [];
 
-  ModelElement get returnElement => element;
+  ModelElement get returnElement => modelElement;
   ElementType _returnType;
   ElementType get returnType {
     _returnType ??= ElementType.from(type, library, packageGraph, this);
@@ -359,6 +372,14 @@ abstract class DefinedElementType extends ElementType {
     }
     return false;
   }
+
+  @override
+  Map<String, CommentReferable> get referenceChildren =>
+      modelElement.referenceChildren;
+
+  @override
+  Iterable<CommentReferable> get referenceParents =>
+      modelElement.referenceParents;
 }
 
 /// Any callable ElementType will mix-in this class, whether anonymous or not.
@@ -366,7 +387,7 @@ abstract class CallableElementTypeMixin implements ElementType {
   Iterable<ElementType> _typeArguments;
 
   ModelElement get returnElement => returnType is DefinedElementType
-      ? (returnType as DefinedElementType).element
+      ? (returnType as DefinedElementType).modelElement
       : null;
 
   ElementType _returnType;

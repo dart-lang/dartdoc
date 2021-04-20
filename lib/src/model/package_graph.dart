@@ -4,7 +4,7 @@
 
 import 'dart:collection';
 
-import 'package:analyzer/dart/ast/ast.dart';
+import 'package:analyzer/dart/ast/ast.dart' hide CommentReference;
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/src/generated/sdk.dart';
@@ -12,6 +12,7 @@ import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/generated/source_io.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/logging.dart';
+import 'package:dartdoc/src/model/comment_reference.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as utils;
 import 'package:dartdoc/src/package_meta.dart'
@@ -22,7 +23,7 @@ import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:dartdoc/src/model_utils.dart' show matchGlobs;
 
-class PackageGraph {
+class PackageGraph with CommentReferable, Nameable {
   PackageGraph.uninitialized(
     this.config,
     this.sdk,
@@ -35,6 +36,12 @@ class PackageGraph {
     // This can happen for packages that only contain embedder SDKs.
     Package.fromPackageMeta(packageMeta, this);
   }
+
+  @override
+  String get name => null;
+
+  @override
+  Element get element => null;
 
   @Deprecated('Use with [PackageGraph.uninitialized] instead')
   // ignore: non_constant_identifier_names
@@ -197,12 +204,12 @@ class PackageGraph {
       _findRefElementCache = HashMap<String, Set<ModelElement>>();
       for (final modelElement
           in utils.filterHasCanonical(packageGraph.allModelElements)) {
-        _findRefElementCache.putIfAbsent(
-            modelElement.fullyQualifiedNameWithoutLibrary, () => {});
-        _findRefElementCache.putIfAbsent(
-            modelElement.fullyQualifiedName, () => {});
-        _findRefElementCache[modelElement.fullyQualifiedName].add(modelElement);
-        _findRefElementCache[modelElement.fullyQualifiedNameWithoutLibrary]
+        _findRefElementCache
+            .putIfAbsent(
+                modelElement.fullyQualifiedNameWithoutLibrary, () => {})
+            .add(modelElement);
+        _findRefElementCache
+            .putIfAbsent(modelElement.fullyQualifiedName, () => {})
             .add(modelElement);
       }
     }
@@ -622,16 +629,16 @@ class PackageGraph {
 
     void addImplementor(Class clazz) {
       for (var type in clazz.mixedInTypes) {
-        checkAndAddClass(type.element, clazz);
+        checkAndAddClass(type.modelElement, clazz);
       }
       if (clazz.supertype != null) {
-        checkAndAddClass(clazz.supertype.element, clazz);
+        checkAndAddClass(clazz.supertype.modelElement, clazz);
       }
       for (var type in clazz.interfaces) {
-        checkAndAddClass(type.element, clazz);
+        checkAndAddClass(type.modelElement, clazz);
       }
       for (var type in clazz.publicInterfaces) {
-        checkAndAddClass(type.element, clazz);
+        checkAndAddClass(type.modelElement, clazz);
       }
     }
 
@@ -825,7 +832,7 @@ class PackageGraph {
           preferredClass is Class) {
         // Search for matches inside our superchain.
         var superChain = preferredClass.superChain
-            .map((et) => et.element)
+            .map((et) => et.modelElement)
             .cast<Class>()
             .toList();
         superChain.add(preferredClass);
@@ -1008,4 +1015,30 @@ class PackageGraph {
     //assert(!_localDocumentationBuilt);
     _htmlFragments[name] = content;
   }
+
+  Map<String, CommentReferable> _referenceChildren;
+  @override
+  Map<String, CommentReferable> get referenceChildren {
+    if (_referenceChildren == null) {
+      _referenceChildren = {};
+
+      _referenceChildren.addEntries(packages.map((p) => MapEntry(p.name, p)));
+      // TODO(jcollins-g): deprecate and start warning for anything needing these
+      // elements.
+      var librariesWithCanonicals = packages.expand((p) =>
+          (referenceChildren as Map<String, ModelElement>)
+              .entries
+              .where((e) => e.value.canonicalModelElement != null));
+      var topLevelsWithCanonicals = librariesWithCanonicals.expand((p) =>
+          (referenceChildren as Map<String, ModelElement>)
+              .entries
+              .where((e) => e.value.canonicalModelElement != null));
+      _referenceChildren.addEntries(librariesWithCanonicals);
+      _referenceChildren.addEntries(topLevelsWithCanonicals);
+    }
+    return _referenceChildren;
+  }
+
+  @override
+  Iterable<CommentReferable> get referenceParents => [];
 }

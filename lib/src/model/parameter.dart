@@ -5,6 +5,7 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/src/dart/element/member.dart' show ParameterMember;
 import 'package:dartdoc/src/element_type.dart';
+import 'package:dartdoc/src/model/comment_reference.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 class Parameter extends ModelElement implements EnclosedElement {
@@ -80,6 +81,19 @@ class Parameter extends ModelElement implements EnclosedElement {
   @override
   String get kind => 'parameter';
 
+  Map<String, CommentReferable> _referenceChildren;
+
+  @override
+  Map<String, CommentReferable> get referenceChildren {
+    if (_referenceChildren == null) {
+      _referenceChildren = {};
+      _referenceChildren.addEntries(parameters.map((p) => MapEntry(p.name, p)));
+    }
+    return _referenceChildren;
+  }
+
+  @override
+  Iterable<CommentReferable> get referenceParents => [enclosingElement];
   @override
   ParameterElement get element => super.element;
 

@@ -55,7 +55,7 @@ class ParameterizedElementTypeRendererHtml
   @override
   String renderLinkedName(ParameterizedElementType elementType) {
     var buf = StringBuffer();
-    buf.write(elementType.element.linkedName);
+    buf.write(elementType.modelElement.linkedName);
     if (elementType.typeArguments.isNotEmpty &&
         !elementType.typeArguments.every((t) => t.name == 'dynamic')) {
       buf.write('<span class="signature">');
@@ -71,7 +71,7 @@ class ParameterizedElementTypeRendererHtml
   @override
   String renderNameWithGenerics(ParameterizedElementType elementType) {
     var buf = StringBuffer();
-    buf.write(elementType.element.name);
+    buf.write(elementType.modelElement.name);
     if (elementType.typeArguments.isNotEmpty &&
         !elementType.typeArguments.every((t) => t.name == 'dynamic')) {
       buf.write('&lt;<wbr><span class="type-parameter">');
@@ -124,7 +124,8 @@ class CallableElementTypeRendererHtml
     buf.write(elementType.nameWithGenerics);
     buf.write('(');
     buf.write(ParameterRendererHtml()
-        .renderLinkedParams(elementType.element.parameters, showNames: false)
+        .renderLinkedParams(elementType.modelElement.parameters,
+            showNames: false)
         .trim());
     buf.write(') → ');
     buf.write(elementType.returnType.linkedName);
@@ -167,7 +168,7 @@ class ParameterizedElementTypeRendererMd
   @override
   String renderLinkedName(ParameterizedElementType elementType) {
     var buf = StringBuffer();
-    buf.write(elementType.element.linkedName);
+    buf.write(elementType.modelElement.linkedName);
     if (elementType.typeArguments.isNotEmpty &&
         !elementType.typeArguments.every((t) => t.name == 'dynamic')) {
       buf.write('&lt;');
@@ -180,7 +181,7 @@ class ParameterizedElementTypeRendererMd
   @override
   String renderNameWithGenerics(ParameterizedElementType elementType) {
     var buf = StringBuffer();
-    buf.write(elementType.element.name);
+    buf.write(elementType.modelElement.name);
     if (elementType.typeArguments.isNotEmpty &&
         !elementType.typeArguments.every((t) => t.name == 'dynamic')) {
       buf.write('&lt;');
