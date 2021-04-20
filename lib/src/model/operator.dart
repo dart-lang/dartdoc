@@ -22,6 +22,7 @@ class Operator extends Method {
     '<=': 'less_equal',
     '<<': 'shift_left',
     '>>': 'shift_right',
+    '>>>': 'triple_shift',
     '^': 'bitwise_exclusive_or',
     'unary-': 'unary_minus',
     '|': 'bitwise_or',
