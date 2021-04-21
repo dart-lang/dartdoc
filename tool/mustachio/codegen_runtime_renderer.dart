@@ -28,13 +28,13 @@ class RendererSpec {
 String buildTemplateRenderers(Set<RendererSpec> specs, Uri sourceUri,
     TypeProvider typeProvider, TypeSystem typeSystem,
     {bool rendererClassesArePublic = false}) {
-  var allVisibleTypes = specs
+  var visibleElements = specs
       .map((spec) => spec._visibleTypes)
       .reduce((value, element) => value.union(element))
       .map((type) => type.element)
       .toSet();
   var raw = RuntimeRenderersBuilder(
-          sourceUri, typeProvider, typeSystem, allVisibleTypes,
+          sourceUri, typeProvider, typeSystem, visibleElements,
           rendererClassesArePublic: rendererClassesArePublic)
       ._buildTemplateRenderers(specs);
   return DartFormatter().format(raw.toString());
@@ -101,12 +101,11 @@ import '${p.basename(_sourceUri.path)}';
 ''');
 
     specs.forEach(_addTypesForRendererSpec);
-
     var builtRenderers = <ClassElement>{};
+    var elementsToProcess = _typesToProcess.toList()
+      ..sort((a, b) => a._typeName.compareTo(b._typeName));
 
-    while (_typesToProcess.isNotEmpty) {
-      var info = _typesToProcess.removeFirst();
-
+    for (var info in elementsToProcess) {
       if (info.isFullRenderer) {
         var buildOnlyPublicFunction =
             builtRenderers.contains(info._contextClass);
@@ -174,7 +173,9 @@ import '${p.basename(_sourceUri.path)}';
     _addTypeHierarchyToProcess(
       type,
       isFullRenderer: _isVisibleToMustache(type.element),
-      includeRenderFunction: true,
+      // If [type.element] is not visible to mustache, then [renderSimple] will
+      // be used, not [type.element]'s render function.
+      includeRenderFunction: _isVisibleToMustache(type.element),
     );
   }
 

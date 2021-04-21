@@ -17,6 +17,147 @@ import 'package:dartdoc/src/mustachio/parser.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'foo.dart';
 
+String renderBar(Bar context, Template template) {
+  return _render_Bar(context, template.ast, template);
+}
+
+String _render_Bar(Bar context, List<MustachioNode> ast, Template template,
+    {RendererBase<Object> parent}) {
+  var renderer = Renderer_Bar(context, parent, template);
+  renderer.renderBlock(ast);
+  return renderer.buffer.toString();
+}
+
+class Renderer_Bar extends RendererBase<Bar> {
+  static final Map<Type, Object> _propertyMapCache = {};
+  static Map<String, Property<CT_>> propertyMap<CT_ extends Bar>() =>
+      _propertyMapCache.putIfAbsent(
+          CT_,
+          () => {
+                ...Renderer_Object.propertyMap<CT_>(),
+                'baz': Property(
+                  getValue: (CT_ c) => c.baz,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        Renderer_Baz.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(self.getValue(c),
+                        nextProperty, [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => c.baz == null,
+                  renderValue:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    return _render_Baz(c.baz, ast, r.template, parent: r);
+                  },
+                ),
+                'foo': Property(
+                  getValue: (CT_ c) => c.foo,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        Renderer_Foo.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(self.getValue(c),
+                        nextProperty, [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => c.foo == null,
+                  renderValue:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    return _render_Foo(c.foo, ast, r.template, parent: r);
+                  },
+                ),
+                'l1': Property(
+                  getValue: (CT_ c) => c.l1,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.l1 == true,
+                ),
+                's2': Property(
+                  getValue: (CT_ c) => c.s2,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'String'),
+                  isNullValue: (CT_ c) => c.s2 == null,
+                  renderValue:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    return renderSimple(c.s2, ast, r.template, parent: r);
+                  },
+                ),
+              });
+
+  Renderer_Bar(Bar context, RendererBase<Object> parent, Template template)
+      : super(context, parent, template);
+
+  @override
+  Property<Bar> getProperty(String key) {
+    if (propertyMap<Bar>().containsKey(key)) {
+      return propertyMap<Bar>()[key];
+    } else {
+      return null;
+    }
+  }
+}
+
+String renderBaz(Baz context, Template template) {
+  return _render_Baz(context, template.ast, template);
+}
+
+String _render_Baz(Baz context, List<MustachioNode> ast, Template template,
+    {RendererBase<Object> parent}) {
+  var renderer = Renderer_Baz(context, parent, template);
+  renderer.renderBlock(ast);
+  return renderer.buffer.toString();
+}
+
+class Renderer_Baz extends RendererBase<Baz> {
+  static final Map<Type, Object> _propertyMapCache = {};
+  static Map<String, Property<CT_>> propertyMap<CT_ extends Baz>() =>
+      _propertyMapCache.putIfAbsent(
+          CT_,
+          () => {
+                ...Renderer_Object.propertyMap<CT_>(),
+                'bar': Property(
+                  getValue: (CT_ c) => c.bar,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        Renderer_Bar.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(self.getValue(c),
+                        nextProperty, [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => c.bar == null,
+                  renderValue:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    return _render_Bar(c.bar, ast, r.template, parent: r);
+                  },
+                ),
+              });
+
+  Renderer_Baz(Baz context, RendererBase<Object> parent, Template template)
+      : super(context, parent, template);
+
+  @override
+  Property<Baz> getProperty(String key) {
+    if (propertyMap<Baz>().containsKey(key)) {
+      return propertyMap<Baz>()[key];
+    } else {
+      return null;
+    }
+  }
+}
+
 String renderFoo(Foo context, Template template) {
   return _render_Foo(context, template.ast, template);
 }
@@ -111,6 +252,85 @@ class Renderer_Foo extends RendererBase<Foo> {
   Property<Foo> getProperty(String key) {
     if (propertyMap<Foo>().containsKey(key)) {
       return propertyMap<Foo>()[key];
+    } else {
+      return null;
+    }
+  }
+}
+
+class Renderer_FooBase<T extends Object> extends RendererBase<FooBase<T>> {
+  static final Map<Type, Object> _propertyMapCache = {};
+  static Map<String, Property<CT_>>
+      propertyMap<T extends Object, CT_ extends FooBase>() =>
+          _propertyMapCache.putIfAbsent(
+              CT_,
+              () => {
+                    ...Renderer_Object.propertyMap<CT_>(),
+                    'baz': Property(
+                      getValue: (CT_ c) => c.baz,
+                      renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) {
+                        if (remainingNames.isEmpty) {
+                          return self.getValue(c).toString();
+                        }
+                        var name = remainingNames.first;
+                        var nextProperty =
+                            Renderer_Object.propertyMap().getValue(name);
+                        return nextProperty.renderVariable(self.getValue(c),
+                            nextProperty, [...remainingNames.skip(1)]);
+                      },
+                    ),
+                  });
+
+  Renderer_FooBase(
+      FooBase<T> context, RendererBase<Object> parent, Template template)
+      : super(context, parent, template);
+
+  @override
+  Property<FooBase<T>> getProperty(String key) {
+    if (propertyMap<T, FooBase>().containsKey(key)) {
+      return propertyMap<T, FooBase>()[key];
+    } else {
+      return null;
+    }
+  }
+}
+
+class Renderer_Mixin1 extends RendererBase<Mixin1> {
+  static final Map<Type, Object> _propertyMapCache = {};
+  static Map<String, Property<CT_>> propertyMap<CT_ extends Mixin1>() =>
+      _propertyMapCache.putIfAbsent(
+          CT_,
+          () => {
+                'p3': Property(
+                  getValue: (CT_ c) => c.p3,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        Renderer_Property3.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(self.getValue(c),
+                        nextProperty, [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => c.p3 == null,
+                  renderValue:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    return _render_Property3(c.p3, ast, r.template, parent: r);
+                  },
+                ),
+              });
+
+  Renderer_Mixin1(
+      Mixin1 context, RendererBase<Object> parent, Template template)
+      : super(context, parent, template);
+
+  @override
+  Property<Mixin1> getProperty(String key) {
+    if (propertyMap<Mixin1>().containsKey(key)) {
+      return propertyMap<Mixin1>()[key];
     } else {
       return null;
     }
@@ -255,47 +475,6 @@ class Renderer_Property2 extends RendererBase<Property2> {
   }
 }
 
-class Renderer_Mixin1 extends RendererBase<Mixin1> {
-  static final Map<Type, Object> _propertyMapCache = {};
-  static Map<String, Property<CT_>> propertyMap<CT_ extends Mixin1>() =>
-      _propertyMapCache.putIfAbsent(
-          CT_,
-          () => {
-                'p3': Property(
-                  getValue: (CT_ c) => c.p3,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        Renderer_Property3.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(self.getValue(c),
-                        nextProperty, [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => c.p3 == null,
-                  renderValue:
-                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-                    return _render_Property3(c.p3, ast, r.template, parent: r);
-                  },
-                ),
-              });
-
-  Renderer_Mixin1(
-      Mixin1 context, RendererBase<Object> parent, Template template)
-      : super(context, parent, template);
-
-  @override
-  Property<Mixin1> getProperty(String key) {
-    if (propertyMap<Mixin1>().containsKey(key)) {
-      return propertyMap<Mixin1>()[key];
-    } else {
-      return null;
-    }
-  }
-}
-
 String _render_Property3(
     Property3 context, List<MustachioNode> ast, Template template,
     {RendererBase<Object> parent}) {
@@ -332,185 +511,6 @@ class Renderer_Property3 extends RendererBase<Property3> {
   Property<Property3> getProperty(String key) {
     if (propertyMap<Property3>().containsKey(key)) {
       return propertyMap<Property3>()[key];
-    } else {
-      return null;
-    }
-  }
-}
-
-class Renderer_FooBase<T extends Object> extends RendererBase<FooBase<T>> {
-  static final Map<Type, Object> _propertyMapCache = {};
-  static Map<String, Property<CT_>>
-      propertyMap<T extends Object, CT_ extends FooBase>() =>
-          _propertyMapCache.putIfAbsent(
-              CT_,
-              () => {
-                    ...Renderer_Object.propertyMap<CT_>(),
-                    'baz': Property(
-                      getValue: (CT_ c) => c.baz,
-                      renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) {
-                        if (remainingNames.isEmpty) {
-                          return self.getValue(c).toString();
-                        }
-                        var name = remainingNames.first;
-                        var nextProperty =
-                            Renderer_Object.propertyMap().getValue(name);
-                        return nextProperty.renderVariable(self.getValue(c),
-                            nextProperty, [...remainingNames.skip(1)]);
-                      },
-                    ),
-                  });
-
-  Renderer_FooBase(
-      FooBase<T> context, RendererBase<Object> parent, Template template)
-      : super(context, parent, template);
-
-  @override
-  Property<FooBase<T>> getProperty(String key) {
-    if (propertyMap<T, FooBase>().containsKey(key)) {
-      return propertyMap<T, FooBase>()[key];
-    } else {
-      return null;
-    }
-  }
-}
-
-String renderBar(Bar context, Template template) {
-  return _render_Bar(context, template.ast, template);
-}
-
-String _render_Bar(Bar context, List<MustachioNode> ast, Template template,
-    {RendererBase<Object> parent}) {
-  var renderer = Renderer_Bar(context, parent, template);
-  renderer.renderBlock(ast);
-  return renderer.buffer.toString();
-}
-
-class Renderer_Bar extends RendererBase<Bar> {
-  static final Map<Type, Object> _propertyMapCache = {};
-  static Map<String, Property<CT_>> propertyMap<CT_ extends Bar>() =>
-      _propertyMapCache.putIfAbsent(
-          CT_,
-          () => {
-                ...Renderer_Object.propertyMap<CT_>(),
-                'baz': Property(
-                  getValue: (CT_ c) => c.baz,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        Renderer_Baz.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(self.getValue(c),
-                        nextProperty, [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => c.baz == null,
-                  renderValue:
-                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-                    return _render_Baz(c.baz, ast, r.template, parent: r);
-                  },
-                ),
-                'foo': Property(
-                  getValue: (CT_ c) => c.foo,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        Renderer_Foo.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(self.getValue(c),
-                        nextProperty, [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => c.foo == null,
-                  renderValue:
-                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-                    return _render_Foo(c.foo, ast, r.template, parent: r);
-                  },
-                ),
-                'l1': Property(
-                  getValue: (CT_ c) => c.l1,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.l1 == true,
-                ),
-                's2': Property(
-                  getValue: (CT_ c) => c.s2,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'String'),
-                  isNullValue: (CT_ c) => c.s2 == null,
-                  renderValue:
-                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-                    return renderSimple(c.s2, ast, r.template, parent: r);
-                  },
-                ),
-              });
-
-  Renderer_Bar(Bar context, RendererBase<Object> parent, Template template)
-      : super(context, parent, template);
-
-  @override
-  Property<Bar> getProperty(String key) {
-    if (propertyMap<Bar>().containsKey(key)) {
-      return propertyMap<Bar>()[key];
-    } else {
-      return null;
-    }
-  }
-}
-
-String renderBaz(Baz context, Template template) {
-  return _render_Baz(context, template.ast, template);
-}
-
-String _render_Baz(Baz context, List<MustachioNode> ast, Template template,
-    {RendererBase<Object> parent}) {
-  var renderer = Renderer_Baz(context, parent, template);
-  renderer.renderBlock(ast);
-  return renderer.buffer.toString();
-}
-
-class Renderer_Baz extends RendererBase<Baz> {
-  static final Map<Type, Object> _propertyMapCache = {};
-  static Map<String, Property<CT_>> propertyMap<CT_ extends Baz>() =>
-      _propertyMapCache.putIfAbsent(
-          CT_,
-          () => {
-                ...Renderer_Object.propertyMap<CT_>(),
-                'bar': Property(
-                  getValue: (CT_ c) => c.bar,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        Renderer_Bar.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(self.getValue(c),
-                        nextProperty, [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => c.bar == null,
-                  renderValue:
-                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-                    return _render_Bar(c.bar, ast, r.template, parent: r);
-                  },
-                ),
-              });
-
-  Renderer_Baz(Baz context, RendererBase<Object> parent, Template template)
-      : super(context, parent, template);
-
-  @override
-  Property<Baz> getProperty(String key) {
-    if (propertyMap<Baz>().containsKey(key)) {
-      return propertyMap<Baz>()[key];
     } else {
       return null;
     }
