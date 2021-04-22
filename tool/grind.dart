@@ -1267,16 +1267,16 @@ void validateSdkDocs() {
   var indexContents = indexHtml.readAsStringSync();
   var foundLibs = _findCount(indexContents, '  <li><a href="dart-');
   if (!expectedLibCounts.contains(foundLibs)) {
-    fail(
-        'expected $expectedTotalCount dart: index.html entries, found $foundLibs');
+    fail('expected $expectedLibCounts "dart:" index.html entries, found '
+        '$foundLibs');
   }
   log('$foundLibs index.html dart: entries found');
 
   var foundSubLibs =
       _findCount(indexContents, '<li class="section-subitem"><a href="dart-');
   if (!expectedSubLibCount.contains(foundSubLibs)) {
-    fail(
-        'expected $expectedSubLibCount dart: index.html entries in categories, found $foundSubLibs');
+    fail('expected $expectedSubLibCount "dart:" index.html entries in '
+        'categories, found $foundSubLibs');
   }
   log('$foundSubLibs index.html dart: entries in categories found');
 

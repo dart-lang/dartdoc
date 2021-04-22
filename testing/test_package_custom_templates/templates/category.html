@@ -1,11 +1,5 @@
 {{>head}}
 
-  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
-    {{>search_sidebar}}
-    <h5><span class="package-name">{{parent.name}}</span> <span class="package-kind">{{parent.kind}}</span></h5>
-    {{>packages}}
-  </div>
-
   <div id="dartdoc-main-content" class="main-content">
     {{#self}}
       <h1><span class="kind-category">{{name}}</span> {{kind}}</h1>
@@ -121,6 +115,13 @@
     {{/self}}
 
   </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    {{>search_sidebar}}
+    <h5><span class="package-name">{{parent.name}}</span> <span class="package-kind">{{parent.kind}}</span></h5>
+    {{>packages}}
+  </div>
+
   <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
     <h5>{{self.name}} {{self.kind}}</h5>
     {{>sidebar_for_category}}
