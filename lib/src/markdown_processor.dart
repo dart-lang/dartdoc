@@ -203,6 +203,12 @@ class MatchingLinkResult {
     if (this == other) return true;
     if (modelElement?.canonicalModelElement ==
         other.modelElement?.canonicalModelElement) return true;
+    if (other.modelElement is Parameter && modelElement == null) {
+      return true;
+    }
+    if (modelElement is Parameter && other.modelElement == null) {
+      return true;
+    }
     return false;
   }
 
@@ -992,7 +998,9 @@ MatchingLinkResult _getMatchingLinkElement(Warnable warnable, String codeRef,
     }
   }
   if (doComparison) {
-    if (resultOld != resultNew) {
+    if (resultOld.isEquivalentTo(resultNew)) {
+      markdownStats.resolvedIdenticallyReferences++;
+    } else {
       if (resultNew.modelElement == null && resultOld.modelElement != null) {
         warnable.warn(PackageWarning.referenceLookupMissingWithNew,
             message: '[$codeRef] => ' + resultOld.toString(),
@@ -1002,17 +1010,12 @@ MatchingLinkResult _getMatchingLinkElement(Warnable warnable, String codeRef,
         warnable.warn(PackageWarning.referenceLookupFoundWithNew,
             message: '[$codeRef] => ' + resultNew.toString(),
             referredFrom: warnable.documentationFrom);
-      } else if (!resultOld.isEquivalentTo(resultNew)) {
+      } else {
         warnable.warn(PackageWarning.referenceLookupDiffersWithNew,
             message:
                 '[$codeRef] => new: ${resultNew.toString()} old: ${resultOld.toString()}',
             referredFrom: warnable.documentationFrom);
-      } else {
-        // TODO(jcollins-g): split this stat from equivalent if interesting.
-        markdownStats.resolvedIdenticallyReferences++;
       }
-    } else {
-      markdownStats.resolvedIdenticallyReferences++;
     }
   }
   markdownStats.totalReferences++;
