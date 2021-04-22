@@ -87,7 +87,10 @@ class Parameter extends ModelElement implements EnclosedElement {
   Map<String, CommentReferable> get referenceChildren {
     if (_referenceChildren == null) {
       _referenceChildren = {};
-      _referenceChildren.addEntries(parameters.map((p) => MapEntry(p.name, p)));
+      if (isCallable) {
+        _referenceChildren
+            .addEntries(parameters.map((p) => MapEntry(p.name, p)));
+      }
     }
     return _referenceChildren;
   }

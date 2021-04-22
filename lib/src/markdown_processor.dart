@@ -198,7 +198,54 @@ class MatchingLinkResult {
 
   @override
   int get hashCode => hash2(modelElement, warn);
+
+  bool isEquivalentTo(MatchingLinkResult other) {
+    if (this == other) return true;
+    if (modelElement?.canonicalModelElement ==
+        other.modelElement?.canonicalModelElement) return true;
+    return false;
+  }
+
+  @override
+  String toString() {
+    return 'element: ${modelElement?.fullyQualifiedName} warn: $warn';
+  }
 }
+
+class _MarkdownStats {
+  int totalReferences = 0;
+  // Resolved references in the output.  Guaranteed to match at least one of
+  // [resolvedNewLookupReferences] or [resolvedOldLookupReferences].
+  int resolvedReferences = 0;
+  int resolvedNewLookupReferences = 0;
+  int resolvedOldLookupReferences = 0;
+  int resolvedIdenticallyReferences = 0;
+
+  String buildReport() {
+    var report = StringBuffer();
+    report.writeln('Reference Counts:');
+    report.writeln('total references: $totalReferences');
+    report.writeln(
+        'resolved references:  $resolvedReferences (${resolvedReferences.toDouble() / totalReferences.toDouble() * 100}%)');
+    if (resolvedNewLookupReferences > 0) {
+      report.writeln(
+          'resolved references with new lookup:  $resolvedNewLookupReferences (${resolvedNewLookupReferences.toDouble() / totalReferences.toDouble() * 100}%)');
+    }
+    if (resolvedOldLookupReferences > 0) {
+      report.writeln(
+          'resolved references with old lookup:  $resolvedOldLookupReferences (${resolvedOldLookupReferences.toDouble() / totalReferences.toDouble() * 100}%)');
+    }
+    if (resolvedIdenticallyReferences > 0) {
+      report.writeln(
+          'resolved references with equivalent links:  $resolvedOldLookupReferences (${resolvedIdenticallyReferences.toDouble() / totalReferences.toDouble() * 100}%)');
+    }
+    return report.toString();
+  }
+}
+
+/// TODO(jcollins-g): perhaps a more generic stats gathering apparatus for
+/// dartdoc would be useful, and one that isn't process-global.
+final markdownStats = _MarkdownStats();
 
 class IterableBlockParser extends md.BlockParser {
   IterableBlockParser(List<String> lines, md.Document document)
@@ -230,8 +277,8 @@ ModelElement _getPreferredClass(ModelElement modelElement) {
 
 /// Implements _getMatchingLinkElement via [CommentReferable.referenceBy].
 // ignore: unused_element
-MatchingLinkResult _getMatchingLinkElementCommentReferable(
-    String codeRef, Warnable element, List<ModelCommentReference> commentRefs) {
+MatchingLinkResult _getMatchingLinkElementCommentReferable(String codeRef,
+    Warnable warnable, List<ModelCommentReference> commentRefs) {
   if (!codeRef.contains(_constructorIndicationPattern) &&
       codeRef.contains(notARealDocReference)) {
     // Don't waste our time on things we won't ever find.
@@ -241,13 +288,13 @@ MatchingLinkResult _getMatchingLinkElementCommentReferable(
   // TODO(jcollins-g): implement implied constructor?
   var codeRefChompedParts =
       codeRef.replaceAll(_constructorIndicationPattern, '').split('.');
-  var lookupResult = element.referenceBy(codeRefChompedParts);
-  return MatchingLinkResult(lookupResult, warn: lookupResult == null);
+  var lookupResult = warnable.referenceBy(codeRefChompedParts);
+  return MatchingLinkResult(lookupResult);
 }
 
 /// Returns null if element is a parameter.
-MatchingLinkResult _getMatchingLinkElement(
-    String codeRef, Warnable element, List<ModelCommentReference> commentRefs) {
+MatchingLinkResult _getMatchingLinkElementLegacy(String codeRef,
+    Warnable warnable, List<ModelCommentReference> commentRefs) {
   if (!codeRef.contains(_constructorIndicationPattern) &&
       codeRef.contains(notARealDocReference)) {
     // Don't waste our time on things we won't ever find.
@@ -257,15 +304,15 @@ MatchingLinkResult _getMatchingLinkElement(
   ModelElement refModelElement;
 
   // Try expensive not-scoped lookup.
-  if (refModelElement == null && element is ModelElement) {
-    Container preferredClass = _getPreferredClass(element);
+  if (refModelElement == null && warnable is ModelElement) {
+    Container preferredClass = _getPreferredClass(warnable);
     if (preferredClass is Extension) {
-      element.warn(PackageWarning.notImplemented,
+      warnable.warn(PackageWarning.notImplemented,
           message:
               'Comment reference resolution inside extension methods is not yet implemented');
     } else {
       refModelElement = _MarkdownCommentReference(
-              codeRef, element, commentRefs, preferredClass)
+              codeRef, warnable, commentRefs, preferredClass)
           .computeReferredElement();
     }
   }
@@ -275,7 +322,7 @@ MatchingLinkResult _getMatchingLinkElement(
     // TODO(jcollins-g): remove squelching of non-canonical warnings here
     //                   once we no longer process full markdown for
     //                   oneLineDocs (#1417)
-    return MatchingLinkResult(null, warn: element.isCanonical);
+    return MatchingLinkResult(null, warn: warnable.isCanonical);
   }
 
   // Ignore all parameters.
@@ -287,7 +334,7 @@ MatchingLinkResult _getMatchingLinkElement(
   // regardless of what package they are associated with.  This assert
   // will protect us from reintroducing that.
   assert(refModelElement == null ||
-      refModelElement.packageGraph == element.packageGraph);
+      refModelElement.packageGraph == warnable.packageGraph);
   if (refModelElement != null) {
     return MatchingLinkResult(refModelElement);
   }
@@ -295,7 +342,7 @@ MatchingLinkResult _getMatchingLinkElement(
   if (!refModelElement.isCanonical) {
     if (refModelElement.library.isPublicAndPackageDocumented) {
       refModelElement
-          .warn(PackageWarning.noCanonicalFound, referredFrom: [element]);
+          .warn(PackageWarning.noCanonicalFound, referredFrom: [warnable]);
     }
     // Don't warn about doc references because that's covered by the no
     // canonical library found message.
@@ -879,9 +926,15 @@ class _MarkdownCommentReference {
   }
 }
 
+const _referenceLookupWarnings = {
+  PackageWarning.referenceLookupDiffersWithNew,
+  PackageWarning.referenceLookupFoundWithNew,
+  PackageWarning.referenceLookupMissingWithNew,
+};
+
 md.Node _makeLinkNode(String codeRef, Warnable warnable,
     List<ModelCommentReference> commentRefs) {
-  var result = _getMatchingLinkElement(codeRef, warnable, commentRefs);
+  var result = _getMatchingLinkElement(warnable, codeRef, commentRefs);
   var textContent = htmlEscape.convert(codeRef);
   var linkedElement = result.modelElement;
   if (linkedElement != null) {
@@ -908,6 +961,63 @@ md.Node _makeLinkNode(String codeRef, Warnable warnable,
   }
 
   return md.Element.text('code', textContent);
+}
+
+MatchingLinkResult _getMatchingLinkElement(Warnable warnable, String codeRef,
+    List<ModelCommentReference> commentRefs) {
+  MatchingLinkResult result, resultOld, resultNew;
+  // Do a comparison between result types only if the warnings for them are
+  // enabled, because there's a significant performance penalty.
+  var doComparison = warnable.config.packageWarningOptions.warningModes.entries
+      .where((entry) => _referenceLookupWarnings.contains(entry.key))
+      .any((entry) => entry.value != PackageWarningMode.ignore);
+  if (doComparison) {
+    resultNew =
+        _getMatchingLinkElementCommentReferable(codeRef, warnable, commentRefs);
+    resultOld = _getMatchingLinkElementLegacy(codeRef, warnable, commentRefs);
+    if (resultNew.modelElement != null) {
+      markdownStats.resolvedNewLookupReferences++;
+    }
+    result =
+        warnable.config.experimentalReferenceLookup ? resultNew : resultOld;
+    if (resultOld.modelElement != null) {
+      markdownStats.resolvedOldLookupReferences++;
+    }
+  } else {
+    if (warnable.config.experimentalReferenceLookup) {
+      result = _getMatchingLinkElementCommentReferable(
+          codeRef, warnable, commentRefs);
+    } else {
+      result = _getMatchingLinkElementLegacy(codeRef, warnable, commentRefs);
+    }
+  }
+  if (doComparison) {
+    if (resultOld != resultNew) {
+      if (resultNew.modelElement == null && resultOld.modelElement != null) {
+        warnable.warn(PackageWarning.referenceLookupMissingWithNew,
+            message: '[$codeRef] => ' + resultOld.toString(),
+            referredFrom: warnable.documentationFrom);
+      } else if (resultNew.modelElement != null &&
+          resultOld.modelElement == null) {
+        warnable.warn(PackageWarning.referenceLookupFoundWithNew,
+            message: '[$codeRef] => ' + resultNew.toString(),
+            referredFrom: warnable.documentationFrom);
+      } else if (!resultOld.isEquivalentTo(resultNew)) {
+        warnable.warn(PackageWarning.referenceLookupDiffersWithNew,
+            message:
+                '[$codeRef] => new: ${resultNew.toString()} old: ${resultOld.toString()}',
+            referredFrom: warnable.documentationFrom);
+      } else {
+        // TODO(jcollins-g): split this stat from equivalent if interesting.
+        markdownStats.resolvedIdenticallyReferences++;
+      }
+    } else {
+      markdownStats.resolvedIdenticallyReferences++;
+    }
+  }
+  markdownStats.totalReferences++;
+  if (result.modelElement != null) markdownStats.resolvedReferences++;
+  return result;
 }
 
 // Maximum number of characters to display before a suspected generic.

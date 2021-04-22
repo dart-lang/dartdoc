@@ -69,8 +69,9 @@ class Typedef extends ModelElement
   @override
   Map<String, CommentReferable> get referenceChildren {
     if (_referenceChildren == null) {
-      referenceChildren.addEntries(parameters.map((p) => MapEntry(p.name, p)));
-      referenceChildren
+      _referenceChildren = {};
+      _referenceChildren.addEntries(parameters.map((p) => MapEntry(p.name, p)));
+      _referenceChildren
           .addEntries(typeParameters.map((p) => MapEntry(p.name, p)));
     }
     return _referenceChildren;

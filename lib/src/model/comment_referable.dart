@@ -74,12 +74,8 @@ mixin CommentReferable implements Nameable {
   Iterable<CommentReferable> get referenceParents;
 
   /// TODO(jcollins-g): Eliminate need for this in markdown_processor.
-  @Deprecated(
-      'Only still here for markdown_processor; remove after conversion to new lookup code')
   Library get library => null;
 
   /// TODO(jcollins-g): Eliminate need for this in markdown_processor.
-  @Deprecated(
-      'Only still here for markdown_processor; remove after conversion to new lookup code')
   Element get element;
 }

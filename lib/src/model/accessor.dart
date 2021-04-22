@@ -129,14 +129,17 @@ class Accessor extends ModelElement implements EnclosedElement {
 
   @override
 
-  /// Accessors should never be participating in comment reference lookups.
+  /// Accessors should never be participating directly in comment reference
+  /// lookups.
   Map<String, CommentReferable> get referenceChildren =>
-      throw UnimplementedError();
+      enclosingCombo.referenceChildren;
 
   @override
 
-  /// Accessors should never be participating in comment reference lookups.
-  Iterable<CommentReferable> get referenceParents => throw UnimplementedError();
+  /// Accessors should never be participating directly in comment reference
+  /// lookups.
+  Iterable<CommentReferable> get referenceParents =>
+      enclosingCombo.referenceParents;
 }
 
 /// A getter or setter that is a member of a [Container].
