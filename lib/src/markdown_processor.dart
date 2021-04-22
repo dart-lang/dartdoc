@@ -220,12 +220,10 @@ class MatchingLinkResult {
 
 class _MarkdownStats {
   int totalReferences = 0;
-  // Resolved references in the output.  Guaranteed to match at least one of
-  // [resolvedNewLookupReferences] or [resolvedOldLookupReferences].
   int resolvedReferences = 0;
   int resolvedNewLookupReferences = 0;
   int resolvedOldLookupReferences = 0;
-  int resolvedIdenticallyReferences = 0;
+  int resolvedEquivalentlyReferences = 0;
 
   String buildReport() {
     var report = StringBuffer();
@@ -241,9 +239,9 @@ class _MarkdownStats {
       report.writeln(
           'resolved references with old lookup:  $resolvedOldLookupReferences (${resolvedOldLookupReferences.toDouble() / totalReferences.toDouble() * 100}%)');
     }
-    if (resolvedIdenticallyReferences > 0) {
+    if (resolvedEquivalentlyReferences > 0) {
       report.writeln(
-          'resolved references with equivalent links:  $resolvedOldLookupReferences (${resolvedIdenticallyReferences.toDouble() / totalReferences.toDouble() * 100}%)');
+          'resolved references with equivalent links:  $resolvedEquivalentlyReferences (${resolvedEquivalentlyReferences.toDouble() / totalReferences.toDouble() * 100}%)');
     }
     return report.toString();
   }
@@ -999,7 +997,7 @@ MatchingLinkResult _getMatchingLinkElement(Warnable warnable, String codeRef,
   }
   if (doComparison) {
     if (resultOld.isEquivalentTo(resultNew)) {
-      markdownStats.resolvedIdenticallyReferences++;
+      markdownStats.resolvedEquivalentlyReferences++;
     } else {
       if (resultNew.modelElement == null && resultOld.modelElement != null) {
         warnable.warn(PackageWarning.referenceLookupMissingWithNew,
