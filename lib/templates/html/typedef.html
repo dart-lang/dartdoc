@@ -1,11 +1,5 @@
 {{>head}}
 
-  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
-    {{>search_sidebar}}
-    <h5>{{parent.name}} {{parent.kind}}</h5>
-    {{{sidebarForLibrary}}}
-  </div><!--/.sidebar-offcanvas-left-->
-
   <div id="dartdoc-main-content" class="main-content">
     {{#self}}
       <div>{{>source_link}}<h1><span class="kind-typedef">{{{nameWithGenerics}}}</span> {{kind}} {{>feature_set}} {{>categorization}}</h1></div>
@@ -23,6 +17,12 @@
     {{/typeDef}}
 
   </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    {{>search_sidebar}}
+    <h5>{{parent.name}} {{parent.kind}}</h5>
+    {{{sidebarForLibrary}}}
+  </div><!--/.sidebar-offcanvas-left-->
 
   <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
   </div><!--/.sidebar-offcanvas-->
