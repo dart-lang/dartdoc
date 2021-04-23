@@ -20,7 +20,6 @@ import 'package:dartdoc/src/render/renderer_factory.dart';
 import 'package:dartdoc/src/special_elements.dart';
 import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/warnings.dart';
-import 'package:dartdoc/src/model_utils.dart' show matchGlobs;
 
 class PackageGraph {
   PackageGraph.uninitialized(
@@ -976,7 +975,7 @@ class PackageGraph {
       // for nodoc's semantics.  Looking up the defining element just to pull
       // a context is again, slow.
       List<String> globs = config.optionSet['nodoc'].valueAt(file.parent2);
-      _configSetsNodocFor[fullName] = matchGlobs(globs, fullName);
+      _configSetsNodocFor[fullName] = utils.matchGlobs(globs, fullName);
     }
     return _configSetsNodocFor[fullName];
   }
