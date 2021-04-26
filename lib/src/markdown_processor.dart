@@ -158,7 +158,7 @@ RegExp get isConstructor => _constructorIndicationPattern;
 /// punctuation, spaces.
 ///
 /// The idea is to catch such cases and not produce warnings about the contents.
-/// TODO(jcollins-g): consider being more strict here.
+// TODO(jcollins-g): consider being more strict here.
 final RegExp notARealDocReference = RegExp(r'''(^[^\w]|^[\d]|[,"'/]|^$)''');
 
 final RegExp operatorPrefix = RegExp(r'^operator[ ]*');
@@ -203,6 +203,10 @@ class MatchingLinkResult {
     if (this == other) return true;
     if (modelElement?.canonicalModelElement ==
         other.modelElement?.canonicalModelElement) return true;
+    // The old implementation just throws away Parameter matches to avoid
+    // problems with warning unnecessarily at higher levels of the code.
+    // I'd like to fix this at a different layer with the new lookup, so treat
+    // this as equivalent to a null type.
     if (other.modelElement is Parameter && modelElement == null) {
       return true;
     }
@@ -225,23 +229,27 @@ class _MarkdownStats {
   int resolvedOldLookupReferences = 0;
   int resolvedEquivalentlyReferences = 0;
 
+  String _valueAndPercent(int references) {
+    return '$references (${references.toDouble() / totalReferences.toDouble() * 100}%)';
+  }
+
   String buildReport() {
     var report = StringBuffer();
     report.writeln('Reference Counts:');
     report.writeln('total references: $totalReferences');
     report.writeln(
-        'resolved references:  $resolvedReferences (${resolvedReferences.toDouble() / totalReferences.toDouble() * 100}%)');
+        'resolved references:  ${_valueAndPercent(resolvedReferences)}');
     if (resolvedNewLookupReferences > 0) {
       report.writeln(
-          'resolved references with new lookup:  $resolvedNewLookupReferences (${resolvedNewLookupReferences.toDouble() / totalReferences.toDouble() * 100}%)');
+          'resolved references with new lookup:  $resolvedNewLookupReferences (${resolvedNewLookupReferences / totalReferences * 100}%)');
     }
     if (resolvedOldLookupReferences > 0) {
       report.writeln(
-          'resolved references with old lookup:  $resolvedOldLookupReferences (${resolvedOldLookupReferences.toDouble() / totalReferences.toDouble() * 100}%)');
+          'resolved references with old lookup:  $resolvedOldLookupReferences (${resolvedOldLookupReferences / totalReferences * 100}%)');
     }
     if (resolvedEquivalentlyReferences > 0) {
       report.writeln(
-          'resolved references with equivalent links:  $resolvedEquivalentlyReferences (${resolvedEquivalentlyReferences.toDouble() / totalReferences.toDouble() * 100}%)');
+          'resolved references with equivalent links:  $resolvedEquivalentlyReferences (${resolvedEquivalentlyReferences / totalReferences * 100}%)');
     }
     return report.toString();
   }
