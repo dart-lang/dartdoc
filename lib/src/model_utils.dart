@@ -13,8 +13,8 @@ import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/src/dart/ast/utilities.dart';
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/model/model.dart';
-import 'package:path/path.dart' as path;
 import 'package:glob/glob.dart';
+import 'package:path/path.dart' as path;
 
 final _driveLetterMatcher = RegExp(r'^\w:\\');
 
