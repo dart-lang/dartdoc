@@ -270,7 +270,7 @@ class Class extends Container
   Iterable<DefinedElementType> get publicInterfaces sync* {
     for (var i in _directInterfaces) {
       /// Do not recurse if we can find an element here.
-      if (i.element.canonicalModelElement != null) {
+      if (i.modelElement.canonicalModelElement != null) {
         yield i;
         continue;
       }
@@ -284,8 +284,8 @@ class Class extends Container
       // the superchain and publicInterfaces of this interface to pretend
       // as though the hidden class didn't exist and this class was declared
       // directly referencing the canonical classes further up the chain.
-      if (i.element is Class) {
-        var hiddenClass = i.element as Class;
+      if (i.modelElement is Class) {
+        var hiddenClass = i.modelElement as Class;
         if (hiddenClass.publicSuperChain.isNotEmpty) {
           yield hiddenClass.publicSuperChain.first;
         }
@@ -296,7 +296,7 @@ class Class extends Container
             'Can not handle intermediate non-public interfaces '
             'created by ModelElements that are not classes or mixins:  '
             '$fullyQualifiedName contains an interface {$i}, '
-            'defined by ${i.element}');
+            'defined by ${i.modelElement}');
         continue;
       }
     }
@@ -321,7 +321,7 @@ class Class extends Container
 
   /// Returns true if [other] is a parent class for this class.
   bool _isInheritingFrom(Class other) =>
-      superChain.map((et) => (et.element as Class)).contains(other);
+      superChain.map((et) => (et.modelElement as Class)).contains(other);
 
   @Deprecated(
       'Public method intended to be private; will be removed as early as '
@@ -353,18 +353,19 @@ class Class extends Container
       _inheritanceChain.add(this);
 
       /// Caching should make this recursion a little less painful.
-      for (var c in mixedInTypes.reversed.map((e) => (e.element as Class))) {
+      for (var c
+          in mixedInTypes.reversed.map((e) => (e.modelElement as Class))) {
         _inheritanceChain.addAll(c.inheritanceChain);
       }
 
-      for (var c in superChain.map((e) => (e.element as Class))) {
+      for (var c in superChain.map((e) => (e.modelElement as Class))) {
         _inheritanceChain.addAll(c.inheritanceChain);
       }
 
       /// Interfaces need to come last, because classes in the superChain might
       /// implement them even when they aren't mentioned.
       _inheritanceChain.addAll(
-          interfaces.expand((e) => (e.element as Class).inheritanceChain));
+          interfaces.expand((e) => (e.modelElement as Class).inheritanceChain));
     }
     return _inheritanceChain.toList(growable: false);
   }
@@ -384,7 +385,7 @@ class Class extends Container
               (parent.type as InterfaceType).superclass, library, packageGraph);
         }
       } else {
-        parent = (parent.element as Class).supertype;
+        parent = (parent.modelElement as Class).supertype;
       }
     }
     return typeChain;

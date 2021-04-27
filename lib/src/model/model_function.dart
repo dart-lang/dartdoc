@@ -4,6 +4,7 @@
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/element_type.dart';
+import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 /// A [ModelElement] for a [FunctionElement] that isn't part of a type definition.
@@ -68,6 +69,21 @@ class ModelFunctionTyped extends ModelElement
 
   // Food for mustache. TODO(jcollins-g): what about enclosing elements?
   bool get isInherited => false;
+
+  Map<String, CommentReferable> _referenceChildren;
+  @override
+  Map<String, CommentReferable> get referenceChildren {
+    if (_referenceChildren == null) {
+      _referenceChildren = {};
+      _referenceChildren
+          .addEntries(typeParameters.map((p) => MapEntry(p.name, p)));
+      _referenceChildren.addEntries(parameters.map((p) => MapEntry(p.name, p)));
+    }
+    return _referenceChildren;
+  }
+
+  @override
+  Iterable<CommentReferable> get referenceParents => [enclosingElement];
 
   @override
   FunctionTypedElement get element => super.element;

@@ -6,6 +6,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/io_utils.dart';
+import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/warnings.dart';
@@ -37,7 +38,7 @@ const String HTMLBASE_PLACEHOLDER = htmlBasePlaceholder;
 /// A [LibraryContainer] that contains [Library] objects related to a particular
 /// package.
 class Package extends LibraryContainer
-    with Nameable, Locatable, Canonicalization, Warnable
+    with Nameable, Locatable, Canonicalization, Warnable, CommentReferable
     implements Privacy, Documentable {
   String _name;
   PackageGraph _packageGraph;
@@ -398,6 +399,20 @@ class Package extends LibraryContainer
 
   @override
   List<String> get containerOrder => config.packageOrder;
+
+  Map<String, CommentReferable> _referenceChildren;
+  @override
+  Map<String, CommentReferable> get referenceChildren {
+    if (_referenceChildren == null) {
+      _referenceChildren = {};
+      _referenceChildren
+          .addEntries(allLibraries.map((l) => MapEntry(l.name, l)));
+    }
+    return _referenceChildren;
+  }
+
+  @override
+  Iterable<CommentReferable> get referenceParents => [packageGraph];
 
   path.Context get _pathContext => _packageGraph.resourceProvider.pathContext;
 }

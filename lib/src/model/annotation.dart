@@ -72,7 +72,7 @@ class Annotation extends Feature {
       modelType.isPublic &&
       modelType is DefinedElementType &&
       !packageGraph.invisibleAnnotations
-          .contains((modelType as DefinedElementType).element);
+          .contains((modelType as DefinedElementType).modelElement);
 
   @override
   bool operator ==(Object other) {

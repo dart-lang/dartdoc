@@ -4,7 +4,7 @@
 
 import 'dart:collection';
 
-import 'package:analyzer/dart/ast/ast.dart';
+import 'package:analyzer/dart/ast/ast.dart' hide CommentReference;
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type_system.dart';
 import 'package:analyzer/dart/element/visitor.dart';
@@ -12,6 +12,7 @@ import 'package:analyzer/source/line_info.dart';
 import 'package:analyzer/src/dart/element/inheritance_manager3.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:dartdoc/src/io_utils.dart';
+import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart' show PackageMeta;
 import 'package:dartdoc/src/quiver.dart' as quiver;
@@ -652,4 +653,23 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     return (_allCanonicalModelElements ??=
         allModelElements.where((e) => e.isCanonical).toList());
   }
+
+  Map<String, CommentReferable> _referenceChildren;
+  @override
+  // TODO(jcollins-g): This should take the import/export graph
+  // and resulting namespace into account.
+  Map<String, CommentReferable> get referenceChildren {
+    return _referenceChildren ??= {
+      for (var e in constants) e.name: e,
+      for (var e in enums) e.name: e,
+      for (var e in extensions) e.name: e,
+      for (var e in mixins) e.name: e,
+      for (var e in properties) e.name: e,
+      for (var e in typedefs) e.name: e,
+      for (var e in classes) e.name: e,
+    };
+  }
+
+  @override
+  Iterable<CommentReferable> get referenceParents => [package];
 }
