@@ -1256,9 +1256,9 @@ Future<void> testDartdocFlutterPlugin() async {
 void validateSdkDocs() {
   // TODO(jcollins-g): Remove flexibility in library counts once dev build
   // includes https://dart-review.googlesource.com/c/sdk/+/93160
-  const expectedLibCounts = [0, 1];
-  const expectedSubLibCount = [19, 20];
-  const expectedTotalCount = [19, 20];
+  const expectedLibCounts = {0, 1};
+  const expectedSubLibCount = {18, 19, 20};
+  const expectedTotalCount = {18, 19, 20};
   var indexHtml = joinFile(sdkDocsDir, ['index.html']);
   if (!indexHtml.existsSync()) {
     fail('no index.html found for SDK docs');
@@ -1285,7 +1285,7 @@ void validateSdkDocs() {
       sdkDocsDir.listSync().where((fs) => fs.path.contains('dart-')).length;
   if (!expectedTotalCount.contains(libsLength)) {
     fail('docs not generated for all the SDK libraries, '
-        'expected ${expectedTotalCount + expectedTotalCount} directories, generated $libsLength directories');
+        'expected $expectedTotalCount directories, generated $libsLength directories');
   }
   log('$libsLength dart: libraries found');
 

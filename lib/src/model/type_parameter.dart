@@ -4,6 +4,7 @@
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/element_type.dart';
+import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/type_parameters_renderer.dart';
 
@@ -66,6 +67,20 @@ class TypeParameter extends ModelElement {
     return _linkedName;
   }
 
+  Map<String, CommentReferable> _referenceChildren;
+
+  @override
+  Map<String, CommentReferable> get referenceChildren {
+    if (_referenceChildren == null) {
+      _referenceChildren = {};
+      _referenceChildren.addEntries(parameters.map((p) => MapEntry(p.name, p)));
+      _referenceChildren[boundType.name] = boundType;
+    }
+    return _referenceChildren;
+  }
+
+  @override
+  Iterable<CommentReferable> get referenceParents => [enclosingElement];
   @override
   TypeParameterElement get element => super.element;
 }

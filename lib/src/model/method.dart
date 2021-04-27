@@ -4,6 +4,7 @@
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/source/line_info.dart';
+import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:analyzer/src/dart/element/member.dart' show ExecutableMember;
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/feature.dart';
@@ -122,4 +123,20 @@ class Method extends ModelElement
   /// Methods can not be covariant; always returns false.
   @override
   bool get isCovariant => false;
+
+  Map<String, CommentReferable> _referenceChildren;
+  @override
+  Map<String, CommentReferable> get referenceChildren {
+    if (_referenceChildren == null) {
+      _referenceChildren = {};
+      _referenceChildren
+          .addEntries(typeParameters.map((p) => MapEntry(p.name, p)));
+      _referenceChildren
+          .addEntries(allParameters.map((p) => MapEntry(p.name, p)));
+    }
+    return _referenceChildren;
+  }
+
+  @override
+  Iterable<CommentReferable> get referenceParents => [enclosingElement];
 }

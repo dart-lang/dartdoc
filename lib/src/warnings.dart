@@ -8,6 +8,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/logging.dart';
+import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
 
@@ -267,11 +268,27 @@ const Map<PackageWarning, PackageWarningDefinition> packageWarningDefinitions =
         'specify ```dart or ~~~dart.'
       ],
       defaultWarningMode: PackageWarningMode.ignore),
+  PackageWarning.referenceLookupFoundWithNew: PackageWarningDefinition(
+      PackageWarning.referenceLookupFoundWithNew,
+      'reference-lookup-found-with-new',
+      'A code reference that was previously invalid is now found in the new lookup code.',
+      defaultWarningMode: PackageWarningMode.ignore),
+  PackageWarning.referenceLookupMissingWithNew: PackageWarningDefinition(
+      PackageWarning.referenceLookupMissingWithNew,
+      'reference-lookup-missing-with-new',
+      'A code reference found by the old lookup code is no longer found with the new lookup code.',
+      defaultWarningMode: PackageWarningMode.ignore),
+  PackageWarning.referenceLookupDiffersWithNew: PackageWarningDefinition(
+      PackageWarning.referenceLookupDiffersWithNew,
+      'reference-lookup-not-found-with-new',
+      'A code reference points to a different object in the new lookup code than the old.',
+      defaultWarningMode: PackageWarningMode.ignore),
 };
 
 /// Something that package warnings can be called on.  Optionally associated
 /// with an analyzer [element].
-mixin Warnable implements Canonicalization {
+mixin Warnable implements Canonicalization, CommentReferable {
+  @override
   Element get element;
 
   Warnable get enclosingElement;
@@ -318,6 +335,9 @@ enum PackageWarning {
   missingConstantConstructor,
   missingExampleFile,
   missingCodeBlockLanguage,
+  referenceLookupFoundWithNew,
+  referenceLookupMissingWithNew,
+  referenceLookupDiffersWithNew,
 }
 
 /// Used to declare defaults for a particular package warning.

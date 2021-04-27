@@ -5,6 +5,7 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
+import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/category_renderer.dart';
 import 'package:dartdoc/src/warnings.dart';
@@ -14,6 +15,7 @@ import 'package:dartdoc/src/warnings.dart';
 class Category extends Nameable
     with
         Warnable,
+        CommentReferable,
         Locatable,
         Canonicalization,
         MarkdownFileDocumentation,
@@ -210,4 +212,12 @@ class Category extends Nameable
 
   CategoryRenderer get _categoryRenderer =>
       packageGraph.rendererFactory.categoryRenderer;
+
+  @override
+  // TODO: implement referenceChildren
+  Map<String, CommentReferable> get referenceChildren => {};
+
+  @override
+  // TODO: implement referenceParents
+  Iterable<CommentReferable> get referenceParents => [];
 }

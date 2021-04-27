@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 class NeverType extends ModelElement {
@@ -30,4 +31,10 @@ class NeverType extends ModelElement {
 
   @override
   String get filePath => null;
+
+  @override
+  Map<String, CommentReferable> get referenceChildren => {};
+
+  @override
+  Iterable<CommentReferable> get referenceParents => [];
 }

@@ -1496,6 +1496,9 @@ class DartdocOptionContext extends DartdocOptionContextBase
   List<String> get excludePackages =>
       optionSet['excludePackages'].valueAt(context);
 
+  bool get experimentalReferenceLookup =>
+      optionSet['experimentalReferenceLookup'].valueAt(context);
+
   String get flutterRoot => optionSet['flutterRoot'].valueAt(context);
 
   bool get hideSdkText => optionSet['hideSdkText'].valueAt(context);
@@ -1557,6 +1560,8 @@ class DartdocOptionContext extends DartdocOptionContextBase
 
   bool isPackageExcluded(String name) =>
       excludePackages.any((pattern) => name == pattern);
+
+  bool get showStats => optionSet['showStats'].valueAt(context);
 
   /// Output format, e.g. 'html', 'md'
   String get format => optionSet['format'].valueAt(context);
@@ -1627,6 +1632,12 @@ Future<List<DartdocOption<Object>>> createDartdocOptions(
         help: 'Library names to ignore.', splitCommas: true),
     DartdocOptionArgOnly<List<String>>('excludePackages', [], resourceProvider,
         help: 'Package names to ignore.', splitCommas: true),
+    DartdocOptionArgFile<bool>(
+        'experimentalReferenceLookup', false, resourceProvider,
+        hide: true,
+        help:
+            'Use an experimental code path to resolve comment reference lookups',
+        negatable: true),
     // This could be a ArgOnly, but trying to not provide too many ways
     // to set the flutter root.
     DartdocOptionSyntheticOnly<String>(
@@ -1799,6 +1810,8 @@ Future<List<DartdocOption<Object>>> createDartdocOptions(
             'pages, and please file an issue on GitHub.',
         negatable: false,
         hide: true),
+    DartdocOptionArgOnly<bool>('showStats', false, resourceProvider,
+        help: 'Show statistics useful for debugging.', hide: true),
     // TODO(jdkoren): Unhide when we have good support for another format.
     DartdocOptionArgOnly<String>('format', 'html', resourceProvider,
         hide: true),
