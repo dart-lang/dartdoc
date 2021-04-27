@@ -35,9 +35,7 @@ class Parameter extends ModelElement implements EnclosedElement {
   }
 
   @override
-  String get href {
-    throw StateError('href not implemented for parameters');
-  }
+  String get href => null;
 
   @override
   String get htmlId {
