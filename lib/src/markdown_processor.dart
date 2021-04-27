@@ -126,10 +126,6 @@ final RegExp nonHTML =
 /// parentheses.
 final _trailingIgnorePattern = RegExp(r'(<.*>|\(.*\)|\?|!)$');
 
-@Deprecated('Public variable intended to be private; will be removed as early '
-    'as Dartdoc 1.0.0')
-RegExp get trailingIgnoreStuff => _trailingIgnorePattern;
-
 /// Things to ignore at the beginning of a doc reference.
 ///
 /// This is intended to catch various keywords that a developer may include in
@@ -139,17 +135,9 @@ RegExp get trailingIgnoreStuff => _trailingIgnorePattern;
 final _leadingIgnorePattern =
     RegExp(r'^(const|final|var)[\s]+', multiLine: true);
 
-@Deprecated('Public variable intended to be private; will be removed as early '
-    'as Dartdoc 1.0.0')
-RegExp get leadingIgnoreStuff => _leadingIgnorePattern;
-
 /// If found, this pattern may indicate a reference to a constructor.
 final _constructorIndicationPattern =
     RegExp(r'(^new[\s]+|\(\)$)', multiLine: true);
-
-@Deprecated('Public variable intended to be private; will be removed as early '
-    'as Dartdoc 1.0.0')
-RegExp get isConstructor => _constructorIndicationPattern;
 
 /// A pattern indicating that text which looks like a doc reference is not
 /// intended to be.
