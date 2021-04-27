@@ -77,9 +77,9 @@ void main() {
   final _generalizedTypedefsAllowed =
       VersionRange(min: Version.parse('2.13.0-0'), includeMin: true);
   final _genericMetadataAllowed =
-      VersionRange(min: Version.parse('2.15.0-0'), includeMin: true);
+      VersionRange(min: Version.parse('2.14.0-0'), includeMin: true);
   final _tripleShiftAllowed =
-      VersionRange(min: Version.parse('2.15.0-0'), includeMin: true);
+      VersionRange(min: Version.parse('2.14.0-0'), includeMin: true);
 
   // Experimental features not yet enabled by default.  Move tests out of this
   // block when the feature is enabled by default.
