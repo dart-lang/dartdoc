@@ -7,7 +7,9 @@ library test_utils;
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/memory_file_system.dart';
 import 'package:analyzer/src/test_utilities/mock_sdk.dart';
-import 'package:dartdoc/dartdoc.dart';
+import 'package:dartdoc/src/dartdoc_options.dart';
+import 'package:dartdoc/src/model/package_builder.dart';
+import 'package:dartdoc/src/model/package_graph.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 

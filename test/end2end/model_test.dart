@@ -7,9 +7,12 @@ library dartdoc.model_test;
 import 'dart:io';
 
 import 'package:async/async.dart';
-import 'package:dartdoc/dartdoc.dart';
+import 'package:dartdoc/src/element_type.dart';
+//import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/model/feature.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/package_config_provider.dart';
+import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/render/category_renderer.dart';
 import 'package:dartdoc/src/render/enum_field_renderer.dart';
 import 'package:dartdoc/src/render/model_element_renderer.dart';
