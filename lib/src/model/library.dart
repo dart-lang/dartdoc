@@ -659,18 +659,15 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   // TODO(jcollins-g): This should take the import/export graph
   // and resulting namespace into account.
   Map<String, CommentReferable> get referenceChildren {
-    if (_referenceChildren == null) {
-      _referenceChildren = {};
-      _referenceChildren.addEntries(constants.map((e) => MapEntry(e.name, e)));
-      _referenceChildren.addEntries(extensions.map((e) => MapEntry(e.name, e)));
-      _referenceChildren.addEntries(enums.map((e) => MapEntry(e.name, e)));
-      _referenceChildren.addEntries(extensions.map((e) => MapEntry(e.name, e)));
-      _referenceChildren.addEntries(mixins.map((e) => MapEntry(e.name, e)));
-      _referenceChildren.addEntries(properties.map((e) => MapEntry(e.name, e)));
-      _referenceChildren.addEntries(typedefs.map((e) => MapEntry(e.name, e)));
-      _referenceChildren.addEntries(classes.map((e) => MapEntry(e.name, e)));
-    }
-    return _referenceChildren;
+    return _referenceChildren ??= {
+      for (var e in constants) e.name: e,
+      for (var e in enums) e.name: e,
+      for (var e in extensions) e.name: e,
+      for (var e in mixins) e.name: e,
+      for (var e in properties) e.name: e,
+      for (var e in typedefs) e.name: e,
+      for (var e in classes) e.name: e,
+    };
   }
 
   @override

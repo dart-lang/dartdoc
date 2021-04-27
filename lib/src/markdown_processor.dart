@@ -288,7 +288,6 @@ ModelElement _getPreferredClass(ModelElement modelElement) {
 }
 
 /// Implements _getMatchingLinkElement via [CommentReferable.referenceBy].
-// ignore: unused_element
 MatchingLinkResult _getMatchingLinkElementCommentReferable(String codeRef,
     Warnable warnable, List<ModelCommentReference> commentRefs) {
   if (!codeRef.contains(_constructorIndicationPattern) &&

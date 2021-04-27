@@ -1,4 +1,4 @@
-// Copyright (c) 2020, the Dart project authors.  Please see the AUTHORS file
+// Copyright (c) 2021, the Dart project authors.  Please see the AUTHORS file
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
@@ -9,7 +9,7 @@ import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/nameable.dart';
 import 'package:test/test.dart';
 
-const SEPARATOR = '.';
+const _separator = '.';
 
 abstract class Base extends Nameable with CommentReferable {
   /// Utility function to quickly build structures similar to [ModelElement]
@@ -17,7 +17,7 @@ abstract class Base extends Nameable with CommentReferable {
   /// Returns the added (or already existing) [Base].
   Base add(String newName);
 
-  Base lookup(String value) => referenceBy(value.split(SEPARATOR));
+  Base lookup(String value) => referenceBy(value.split(_separator));
 
   @override
   Element get element => throw UnimplementedError();
@@ -33,7 +33,7 @@ class Top extends Base {
   @override
   Base add(String newName) {
     Base retval;
-    var newNameSplit = newName.split(SEPARATOR).toList();
+    var newNameSplit = newName.split(_separator).toList();
     var parent = children.firstWhere((c) => c.name == newNameSplit.first,
         orElse: () => null);
     if (parent == null) {
@@ -42,7 +42,7 @@ class Top extends Base {
       retval = parent;
     }
     if (newNameSplit.length > 1) {
-      retval = parent.add(newNameSplit.sublist(1).join(SEPARATOR));
+      retval = parent.add(newNameSplit.sublist(1).join(_separator));
     }
     return retval;
   }
@@ -61,7 +61,7 @@ abstract class Child extends Base {
   @override
   Base add(String newName) {
     Base retval;
-    var newNameSplit = newName.split(SEPARATOR).toList();
+    var newNameSplit = newName.split(_separator).toList();
     var child = children.firstWhere((c) => c.name == newNameSplit.first,
         orElse: () => null);
     if (child == null) {
@@ -70,7 +70,7 @@ abstract class Child extends Base {
       retval = child;
     }
     if (newNameSplit.length > 1) {
-      retval = child.add(newNameSplit.sublist(1).join(SEPARATOR));
+      retval = child.add(newNameSplit.sublist(1).join(_separator));
     }
     return retval;
   }

@@ -21,28 +21,30 @@ class ReferenceChildrenLookup {
 
 /// Support comment reference lookups on a Nameable object.
 mixin CommentReferable implements Nameable {
-  /// Look up a comment reference by its component parts.  If [parent] is true,
-  /// try looking up the same reference in any parents of [this].
+  /// Look up a comment reference by its component parts.  If [tryParents] is
+  /// true, try looking up the same reference in any parents of [this].
   @nonVirtual
-  CommentReferable referenceBy(List<String> reference, [bool parent = true]) {
+  CommentReferable referenceBy(List<String> reference,
+      {bool tryParents = true}) {
     if (reference.isEmpty) {
-      if (parent == false) return this;
+      if (tryParents == false) return this;
       return null;
     }
     CommentReferable result;
 
-    /// Search for the completely reference
+    /// Search for the reference
     for (var referenceLookup in childLookups(reference)) {
       if (referenceChildren.containsKey(referenceLookup.lookup)) {
         result = referenceChildren[referenceLookup.lookup];
         if (referenceLookup.remaining.isNotEmpty) {
           result =
-              result?.referenceBy(referenceLookup.remaining, parent = false);
+              result?.referenceBy(referenceLookup.remaining, tryParents: false);
         }
       }
       if (result != null) break;
     }
-    if (result == null && parent == true) {
+    // If we can't find it in children, try searching parents if allowed.
+    if (result == null && tryParents) {
       for (var parent in referenceParents) {
         result = parent.referenceBy(reference);
         if (result != null) break;
@@ -53,7 +55,7 @@ mixin CommentReferable implements Nameable {
 
   /// A list of lookups that should be attempted on children based on
   /// [reference].  This allows us to deal with libraries that may have
-  /// separators in them. [referenceBy] stops at the first
+  /// separators in them. [referenceBy] stops at the first one found.
   List<ReferenceChildrenLookup> childLookups(List<String> reference) => [
         ReferenceChildrenLookup(
             reference.first, reference.length > 1 ? reference.sublist(1) : [])
@@ -67,15 +69,15 @@ mixin CommentReferable implements Nameable {
   /// Iterable of immediate "parents" to try resolving component parts.
   /// [referenceBy] stops at the first parent where a part is found.
   /// Can be cached.
-  /// TODO(jcollins-g): Rationalize the different "enclosing" types so that
-  /// this doesn't duplicate `[enclosingElement]` in many cases.
-  /// TODO(jcollins-g): Implement comment reference resolution via categories,
-  /// making the iterable make sense here.
+  // TODO(jcollins-g): Rationalize the different "enclosing" types so that
+  // this doesn't duplicate `[enclosingElement]` in many cases.
+  // TODO(jcollins-g): Implement comment reference resolution via categories,
+  // making the iterable make sense here.
   Iterable<CommentReferable> get referenceParents;
 
-  /// TODO(jcollins-g): Eliminate need for this in markdown_processor.
+  // TODO(jcollins-g): Eliminate need for this in markdown_processor.
   Library get library => null;
 
-  /// TODO(jcollins-g): Eliminate need for this in markdown_processor.
+  // TODO(jcollins-g): Eliminate need for this in markdown_processor.
   Element get element;
 }

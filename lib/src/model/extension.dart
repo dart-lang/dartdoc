@@ -123,13 +123,11 @@ class Extension extends Container
   Map<String, CommentReferable> _referenceChildren;
   @override
   Map<String, CommentReferable> get referenceChildren {
-    if (_referenceChildren == null) {
-      _referenceChildren = {};
-      _referenceChildren.addEntries(extendedType.referenceChildren.entries);
+    return _referenceChildren ??= {
+      ...extendedType.referenceChildren,
       // Override extendedType entries with local items.
-      _referenceChildren.addAll(super.referenceChildren);
-    }
-    return _referenceChildren;
+      ...super.referenceChildren,
+    };
   }
 
   @override
