@@ -64,6 +64,7 @@ class DartdocFileWriter implements FileWriter {
     if (!allowOverwrite) {
       _warnAboutOverwrite(outFile, null);
     }
+    _fileElementMap[outFile] = null;
 
     var file = _getFile(outFile);
     file.writeAsBytesSync(content);
@@ -77,6 +78,7 @@ class DartdocFileWriter implements FileWriter {
     var outFile = path.joinAll(filePath.split('/'));
 
     _warnAboutOverwrite(outFile, element);
+    _fileElementMap[outFile] = element;
 
     var file = _getFile(outFile);
     file.writeAsStringSync(content);
