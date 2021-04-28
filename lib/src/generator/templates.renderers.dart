@@ -8407,26 +8407,6 @@ class _Renderer_MethodTemplateData extends RendererBase<MethodTemplateData> {
                         parent: r);
                   },
                 ),
-                'containerDesc': Property(
-                  getValue: (CT_ c) => c.containerDesc,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_String.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(self.getValue(c),
-                        nextProperty, [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => c.containerDesc == null,
-                  renderValue:
-                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-                    return _render_String(c.containerDesc, ast, r.template,
-                        parent: r);
-                  },
-                ),
                 'htmlBase': Property(
                   getValue: (CT_ c) => c.htmlBase,
                   renderVariable:
@@ -11680,26 +11660,6 @@ class _Renderer_PropertyTemplateData
                   renderValue:
                       (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
                     return _render_Container(c.container, ast, r.template,
-                        parent: r);
-                  },
-                ),
-                'containerDesc': Property(
-                  getValue: (CT_ c) => c.containerDesc,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_String.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(self.getValue(c),
-                        nextProperty, [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => c.containerDesc == null,
-                  renderValue:
-                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-                    return _render_String(c.containerDesc, ast, r.template,
                         parent: r);
                   },
                 ),
