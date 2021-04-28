@@ -53,43 +53,60 @@ class DartdocFileWriter implements FileWriter {
   DartdocFileWriter(this.outputDir, this.resourceProvider);
 
   @override
-  void write(String filePath, Object content,
-      {bool allowOverwrite, Warnable element}) {
+  void writeBytes(
+    String filePath,
+    List<int> content, {
+    bool allowOverwrite = false,
+  }) {
     // Replace '/' separators with proper separators for the platform.
     var outFile = path.joinAll(filePath.split('/'));
 
-    allowOverwrite ??= false;
     if (!allowOverwrite) {
-      if (_fileElementMap.containsKey(outFile)) {
-        assert(element != null,
-            'Attempted overwrite of $outFile without corresponding element');
-        var originalElement = _fileElementMap[outFile];
-        Iterable<Warnable> referredFrom =
-            originalElement != null ? [originalElement] : null;
-        element?.warn(PackageWarning.duplicateFile,
-            message: outFile, referredFrom: referredFrom);
-      }
+      _warnAboutOverwrite(outFile, null);
     }
+    _fileElementMap[outFile] = null;
+
+    var file = _getFile(outFile);
+    file.writeAsBytesSync(content);
+    writtenFiles.add(outFile);
+    logProgress(outFile);
+  }
+
+  @override
+  void write(String filePath, String content, {Warnable element}) {
+    // Replace '/' separators with proper separators for the platform.
+    var outFile = path.joinAll(filePath.split('/'));
+
+    _warnAboutOverwrite(outFile, element);
     _fileElementMap[outFile] = element;
 
+    var file = _getFile(outFile);
+    file.writeAsStringSync(content);
+    writtenFiles.add(outFile);
+    logProgress(outFile);
+  }
+
+  void _warnAboutOverwrite(String outFile, Warnable element) {
+    if (_fileElementMap.containsKey(outFile)) {
+      assert(element != null,
+          'Attempted overwrite of $outFile without corresponding element');
+      var originalElement = _fileElementMap[outFile];
+      var referredFrom = originalElement != null ? [originalElement] : null;
+      element?.warn(PackageWarning.duplicateFile,
+          message: outFile, referredFrom: referredFrom);
+    }
+  }
+
+  /// Returns the file at [outFile] relative to [outputDir], creating the parent
+  /// directory if necessary.
+  File _getFile(String outFile) {
     var file = resourceProvider
         .getFile(resourceProvider.pathContext.join(outputDir, outFile));
     var parent = file.parent2;
     if (!parent.exists) {
       parent.create();
     }
-
-    if (content is String) {
-      file.writeAsStringSync(content);
-    } else if (content is List<int>) {
-      file.writeAsBytesSync(content);
-    } else {
-      throw ArgumentError.value(
-          content, 'content', '`content` must be `String` or `List<int>`.');
-    }
-
-    writtenFiles.add(outFile);
-    logProgress(outFile);
+    return file;
   }
 }
 

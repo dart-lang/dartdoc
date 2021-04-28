@@ -48,12 +48,12 @@ class HtmlGeneratorBackend extends DartdocGeneratorBackend {
     if (options.favicon != null) {
       // Allow overwrite of favicon.
       var bytes =
-          graph.resourceProvider.getFile(options.favicon).readAsBytesSync();
-      writer.write(
-          graph.resourceProvider.pathContext
-              .join('static-assets', 'favicon.png'),
-          bytes,
-          allowOverwrite: true);
+          writer.resourceProvider.getFile(options.favicon).readAsBytesSync();
+      writer.writeBytes(
+        graph.resourceProvider.pathContext.join('static-assets', 'favicon.png'),
+        bytes,
+        allowOverwrite: true,
+      );
     }
   }
 
@@ -66,7 +66,7 @@ class HtmlGeneratorBackend extends DartdocGeneratorBackend {
       var destFileName = resourcePath.substring(_dartdocResourcePrefix.length);
       var destFilePath = writer.resourceProvider.pathContext
           .join('static-assets', destFileName);
-      writer.write(destFilePath,
+      writer.writeBytes(destFilePath,
           await writer.resourceProvider.loadResourceAsBytes(resourcePath));
     }
   }
