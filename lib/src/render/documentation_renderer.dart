@@ -66,5 +66,5 @@ class DocumentationRenderResult {
   final String asOneLiner;
 
   const DocumentationRenderResult(
-      {@required this.asHtml, @required this.asOneLiner = ''});
+      {@required this.asHtml, @required this.asOneLiner});
 }
