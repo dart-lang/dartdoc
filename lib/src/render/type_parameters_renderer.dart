@@ -10,7 +10,9 @@ abstract class TypeParametersRenderer {
   String renderLinkedGenericParameters(TypeParameters typeParameters);
 }
 
-class TypeParametersRendererHtml extends TypeParametersRenderer {
+class TypeParametersRendererHtml implements TypeParametersRenderer {
+  const TypeParametersRendererHtml();
+
   @override
   String renderGenericParameters(TypeParameters typeParameters) {
     if (typeParameters.typeParameters.isEmpty) {
@@ -34,7 +36,9 @@ class TypeParametersRendererHtml extends TypeParametersRenderer {
   }
 }
 
-class TypeParametersRendererMd extends TypeParametersRenderer {
+class TypeParametersRendererMd implements TypeParametersRenderer {
+  const TypeParametersRendererMd();
+
   @override
   String renderGenericParameters(TypeParameters typeParameters) =>
       _compose(typeParameters.typeParameters, (t) => t.name);

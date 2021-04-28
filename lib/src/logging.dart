@@ -7,8 +7,8 @@ import 'dart:io' show stderr, stdout;
 
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:cli_util/cli_logging.dart' show Ansi;
-import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
+import 'package:dartdoc/src/package_meta.dart';
 import 'package:logging/logging.dart';
 
 final _logger = Logger('dartdoc');

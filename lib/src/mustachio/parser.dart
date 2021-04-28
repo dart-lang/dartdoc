@@ -2,6 +2,9 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+// See the Mustachio README at tool/mustachio/README.md for high-level
+// documentation.
+
 import 'package:charcode/charcode.dart';
 import 'package:meta/meta.dart';
 import 'package:source_span/source_span.dart';

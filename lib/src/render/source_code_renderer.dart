@@ -9,13 +9,17 @@ abstract class SourceCodeRenderer {
   String renderSourceCode(String source);
 }
 
-class SourceCodeRendererNoop extends SourceCodeRenderer {
+class SourceCodeRendererNoop implements SourceCodeRenderer {
+  const SourceCodeRendererNoop();
+
   @override
   String renderSourceCode(String source) => source;
 }
 
 /// [SourceCodeRenderer] that escapes characters for HTML.
-class SourceCodeRendererHtml extends SourceCodeRenderer {
+class SourceCodeRendererHtml implements SourceCodeRenderer {
+  const SourceCodeRendererHtml();
+
   @override
   String renderSourceCode(String source) {
     return (const HtmlEscape()).convert(source);

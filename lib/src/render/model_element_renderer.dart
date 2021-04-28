@@ -6,6 +6,8 @@ import 'package:dartdoc/src/model/feature.dart';
 import 'package:dartdoc/src/model/model_element.dart';
 
 abstract class ModelElementRenderer {
+  const ModelElementRenderer();
+
   String renderLinkedName(ModelElement modelElement);
 
   String renderExtendedDocLink(ModelElement modelElement);
@@ -22,6 +24,8 @@ abstract class ModelElementRenderer {
 }
 
 class ModelElementRendererHtml extends ModelElementRenderer {
+  const ModelElementRendererHtml();
+
   @override
   String renderLinkedName(ModelElement modelElement) {
     var cssClass = modelElement.isDeprecated ? ' class="deprecated"' : '';
@@ -103,6 +107,8 @@ class ModelElementRendererHtml extends ModelElementRenderer {
 }
 
 class ModelElementRendererMd extends ModelElementRendererHtml {
+  const ModelElementRendererMd();
+
   @override
   String renderLinkedName(ModelElement modelElement) {
     if (modelElement.isDeprecated) {

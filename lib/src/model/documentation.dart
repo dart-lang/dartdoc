@@ -44,16 +44,17 @@ class Documentation {
 
   Map<String, ModelCommentReference> get commentRefs => _element.commentRefs;
 
-  void _renderDocumentation(bool processAllDocs) {
-    var parseResult = _parseDocumentation(processAllDocs);
+  void _renderDocumentation(bool processFullDocs) {
+    var parseResult = _parseDocumentation(processFullDocs);
     if (_hasExtendedDocs != null) {
       assert(_hasExtendedDocs == parseResult.hasExtendedDocs);
     }
     _hasExtendedDocs = parseResult.hasExtendedDocs;
 
-    var renderResult = _renderer.render(parseResult.nodes, processAllDocs);
+    var renderResult =
+        _renderer.render(parseResult.nodes, processFullDocs: processFullDocs);
 
-    if (processAllDocs) {
+    if (processFullDocs) {
       _asHtml = renderResult.asHtml;
     }
     _asOneLiner ??= renderResult.asOneLiner;

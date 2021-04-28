@@ -33,7 +33,7 @@ abstract class RendererFactory {
     }
   }
 
-  TemplateRenderer get templateRenderer;
+  LayoutRenderer get templateRenderer;
 
   CategoryRenderer get categoryRenderer;
 
@@ -72,49 +72,50 @@ class HtmlRenderFactory extends RendererFactory {
   const HtmlRenderFactory();
 
   @override
-  TemplateRenderer get templateRenderer => HtmlTemplateRenderer();
+  LayoutRenderer get templateRenderer => const HtmlLayoutRenderer();
 
   @override
   CategoryRenderer get categoryRenderer => const CategoryRendererHtml();
 
   @override
   DocumentationRenderer get documentationRenderer =>
-      DocumentationRendererHtml();
+      const DocumentationRendererHtml();
 
   @override
   ElementTypeRenderer<CallableElementType> get callableElementTypeRenderer =>
-      CallableElementTypeRendererHtml();
+      const CallableElementTypeRendererHtml();
 
   @override
   ElementTypeRenderer<FunctionTypeElementType>
       get functionTypeElementTypeRenderer =>
-          FunctionTypeElementTypeRendererHtml();
+          const FunctionTypeElementTypeRendererHtml();
 
   @override
   ElementTypeRenderer<ParameterizedElementType>
       get parameterizedElementTypeRenderer =>
-          ParameterizedElementTypeRendererHtml();
+          const ParameterizedElementTypeRendererHtml();
 
   @override
   ElementTypeRenderer<AliasedElementType> get aliasedElementTypeRenderer =>
-      AliasedElementTypeRendererHtml();
+      const AliasedElementTypeRendererHtml();
 
   @override
-  EnumFieldRenderer get enumFieldRenderer => EnumFieldRendererHtml();
+  EnumFieldRenderer get enumFieldRenderer => const EnumFieldRendererHtml();
 
   @override
-  ModelElementRenderer get modelElementRenderer => ModelElementRendererHtml();
+  ModelElementRenderer get modelElementRenderer =>
+      const ModelElementRendererHtml();
 
   @override
-  ParameterRenderer get parameterRenderer => ParameterRendererHtml();
+  ParameterRenderer get parameterRenderer => const ParameterRendererHtml();
 
   @override
   ParameterRenderer get parameterRendererDetailed =>
-      ParameterRendererHtmlList();
+      const ParameterRendererHtmlList();
 
   @override
   TypeParametersRenderer get typeParametersRenderer =>
-      TypeParametersRendererHtml();
+      const TypeParametersRendererHtml();
 
   @override
   TypedefRenderer get typedefRenderer => const TypedefRendererHtml();
@@ -124,17 +125,17 @@ class HtmlRenderFactory extends RendererFactory {
       const LanguageFeatureRendererHtml();
 
   @override
-  SourceCodeRenderer get sourceCodeRenderer => SourceCodeRendererHtml();
+  SourceCodeRenderer get sourceCodeRenderer => const SourceCodeRendererHtml();
 
   @override
-  FeatureRenderer get featureRenderer => FeatureRendererHtml();
+  FeatureRenderer get featureRenderer => const FeatureRendererHtml();
 }
 
 class MdRenderFactory extends RendererFactory {
   const MdRenderFactory();
 
   @override
-  TemplateRenderer get templateRenderer => MdTemplateRenderer();
+  LayoutRenderer get templateRenderer => const MdLayoutRenderer();
 
   @override
   CategoryRenderer get categoryRenderer => const CategoryRendererMd();
@@ -143,41 +144,42 @@ class MdRenderFactory extends RendererFactory {
   // TODO(jdkoren): explore using documentation directly in the output file.
   @override
   DocumentationRenderer get documentationRenderer =>
-      DocumentationRendererHtml();
+      const DocumentationRendererHtml();
 
   @override
   ElementTypeRenderer<CallableElementType> get callableElementTypeRenderer =>
-      CallableElementTypeRendererMd();
+      const CallableElementTypeRendererMd();
 
   @override
   ElementTypeRenderer<FunctionTypeElementType>
       get functionTypeElementTypeRenderer =>
-          FunctionTypeElementTypeRendererMd();
+          const FunctionTypeElementTypeRendererMd();
 
   @override
   ElementTypeRenderer<ParameterizedElementType>
       get parameterizedElementTypeRenderer =>
-          ParameterizedElementTypeRendererMd();
+          const ParameterizedElementTypeRendererMd();
 
   @override
   ElementTypeRenderer<AliasedElementType> get aliasedElementTypeRenderer =>
-      AliasedElementTypeRendererMd();
+      const AliasedElementTypeRendererMd();
 
   @override
-  EnumFieldRenderer get enumFieldRenderer => EnumFieldRendererMd();
+  EnumFieldRenderer get enumFieldRenderer => const EnumFieldRendererMd();
 
   @override
-  ModelElementRenderer get modelElementRenderer => ModelElementRendererMd();
+  ModelElementRenderer get modelElementRenderer =>
+      const ModelElementRendererMd();
 
   @override
-  ParameterRenderer get parameterRenderer => ParameterRendererMd();
+  ParameterRenderer get parameterRenderer => const ParameterRendererMd();
 
   @override
   ParameterRenderer get parameterRendererDetailed => parameterRenderer;
 
   @override
   TypeParametersRenderer get typeParametersRenderer =>
-      TypeParametersRendererMd();
+      const TypeParametersRendererMd();
 
   @override
   TypedefRenderer get typedefRenderer => const TypedefRendererMd();
@@ -187,8 +189,8 @@ class MdRenderFactory extends RendererFactory {
       const LanguageFeatureRendererMd();
 
   @override
-  SourceCodeRenderer get sourceCodeRenderer => SourceCodeRendererNoop();
+  SourceCodeRenderer get sourceCodeRenderer => const SourceCodeRendererNoop();
 
   @override
-  FeatureRenderer get featureRenderer => FeatureRendererMd();
+  FeatureRenderer get featureRenderer => const FeatureRendererMd();
 }
