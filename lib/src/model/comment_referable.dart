@@ -32,7 +32,7 @@ mixin CommentReferable implements Nameable {
     }
     CommentReferable result;
 
-    /// Search for the reference
+    /// Search for the reference.
     for (var referenceLookup in childLookups(reference)) {
       if (referenceChildren.containsKey(referenceLookup.lookup)) {
         result = referenceChildren[referenceLookup.lookup];

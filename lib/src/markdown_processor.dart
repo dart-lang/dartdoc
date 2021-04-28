@@ -276,8 +276,8 @@ ModelElement _getPreferredClass(ModelElement modelElement) {
 }
 
 /// Implements _getMatchingLinkElement via [CommentReferable.referenceBy].
-MatchingLinkResult _getMatchingLinkElementCommentReferable(String codeRef,
-    Warnable warnable, List<ModelCommentReference> commentRefs) {
+MatchingLinkResult _getMatchingLinkElementCommentReferable(
+    String codeRef, Warnable warnable) {
   if (!codeRef.contains(_constructorIndicationPattern) &&
       codeRef.contains(notARealDocReference)) {
     // Don't waste our time on things we won't ever find.
@@ -292,8 +292,8 @@ MatchingLinkResult _getMatchingLinkElementCommentReferable(String codeRef,
 }
 
 /// Returns null if element is a parameter.
-MatchingLinkResult _getMatchingLinkElementLegacy(String codeRef,
-    Warnable warnable, List<ModelCommentReference> commentRefs) {
+MatchingLinkResult _getMatchingLinkElementLegacy(
+    String codeRef, Warnable warnable) {
   if (!codeRef.contains(_constructorIndicationPattern) &&
       codeRef.contains(notARealDocReference)) {
     // Don't waste our time on things we won't ever find.
@@ -310,9 +310,9 @@ MatchingLinkResult _getMatchingLinkElementLegacy(String codeRef,
           message:
               'Comment reference resolution inside extension methods is not yet implemented');
     } else {
-      refModelElement = _MarkdownCommentReference(
-              codeRef, warnable, commentRefs, preferredClass)
-          .computeReferredElement();
+      refModelElement =
+          _MarkdownCommentReference(codeRef, warnable, preferredClass)
+              .computeReferredElement();
     }
   }
 
@@ -357,26 +357,25 @@ MatchingLinkResult _getMatchingLinkElementLegacy(String codeRef,
 }
 
 /// Given a set of commentRefs, return the one whose name matches the codeRef.
-Element _getRefElementFromCommentRefs(
-    List<ModelCommentReference> commentRefs, String codeRef) {
-  if (commentRefs != null) {
-    for (var ref in commentRefs) {
-      if (ref.name == codeRef) {
-        var isConstrElement = ref.staticElement is ConstructorElement;
-        // Constructors are now handled by library search.
-        if (!isConstrElement) {
-          var refElement = ref.staticElement;
-          if (refElement is PropertyAccessorElement) {
-            // yay we found an accessor that wraps a const, but we really
-            // want the top-level field itself
-            refElement = (refElement as PropertyAccessorElement).variable;
-          }
-          if (refElement is PrefixElement) {
-            // We found a prefix element, but what we really want is the library element.
-            refElement = (refElement as PrefixElement).enclosingElement;
-          }
-          return refElement;
+Element _getRefElementFromCommentRefs(Warnable element, String codeRef) {
+  if (element.commentRefs != null) {
+    var ref = element.commentRefs[codeRef];
+    // ref can be null here if the analyzer failed to recognize this as a
+    // comment reference (e.g. [Foo.operator []]).
+    if (ref != null) {
+      // Constructors are now handled by library search.
+      if (ref.staticElement is! ConstructorElement) {
+        var refElement = ref.staticElement;
+        if (refElement is PropertyAccessorElement) {
+          // yay we found an accessor that wraps a const, but we really
+          // want the top-level field itself
+          refElement = (refElement as PropertyAccessorElement).variable;
         }
+        if (refElement is PrefixElement) {
+          // We found a prefix element, but what we really want is the library element.
+          refElement = (refElement as PrefixElement).enclosingElement;
+        }
+        return refElement;
       }
     }
   }
@@ -390,9 +389,6 @@ class _MarkdownCommentReference {
 
   /// The element containing the code reference.
   final Warnable element;
-
-  /// A list of [ModelCommentReference]s for this element.
-  final List<ModelCommentReference> commentRefs;
 
   /// Disambiguate inheritance with this class.
   final Class preferredClass;
@@ -409,8 +405,7 @@ class _MarkdownCommentReference {
   /// PackageGraph associated with this element.
   PackageGraph packageGraph;
 
-  _MarkdownCommentReference(
-      this.codeRef, this.element, this.commentRefs, this.preferredClass) {
+  _MarkdownCommentReference(this.codeRef, this.element, this.preferredClass) {
     assert(element != null);
     assert(element.packageGraph.allLibrariesAdded);
 
@@ -577,7 +572,7 @@ class _MarkdownCommentReference {
       _codeRefChompedParts ??= codeRefChomped.split('.');
 
   void _reducePreferAnalyzerResolution() {
-    var refElement = _getRefElementFromCommentRefs(commentRefs, codeRef);
+    var refElement = _getRefElementFromCommentRefs(element, codeRef);
     if (results.any((me) => me.element == refElement)) {
       results.removeWhere((me) => me.element != refElement);
     }
@@ -651,8 +646,7 @@ class _MarkdownCommentReference {
   void _findWithoutLeadingIgnoreStuff() {
     if (codeRef.contains(_leadingIgnorePattern)) {
       var newCodeRef = codeRef.replaceFirst(_leadingIgnorePattern, '');
-      results.add(_MarkdownCommentReference(
-              newCodeRef, element, commentRefs, preferredClass)
+      results.add(_MarkdownCommentReference(newCodeRef, element, preferredClass)
           .computeReferredElement());
     }
   }
@@ -660,8 +654,7 @@ class _MarkdownCommentReference {
   void _findWithoutTrailingIgnoreStuff() {
     if (codeRef.contains(_trailingIgnorePattern)) {
       var newCodeRef = codeRef.replaceFirst(_trailingIgnorePattern, '');
-      results.add(_MarkdownCommentReference(
-              newCodeRef, element, commentRefs, preferredClass)
+      results.add(_MarkdownCommentReference(newCodeRef, element, preferredClass)
           .computeReferredElement());
     }
   }
@@ -669,8 +662,7 @@ class _MarkdownCommentReference {
   void _findWithoutOperatorPrefix() {
     if (codeRef.startsWith(operatorPrefix)) {
       var newCodeRef = codeRef.replaceFirst(operatorPrefix, '');
-      results.add(_MarkdownCommentReference(
-              newCodeRef, element, commentRefs, preferredClass)
+      results.add(_MarkdownCommentReference(newCodeRef, element, preferredClass)
           .computeReferredElement());
     }
   }
@@ -814,7 +806,7 @@ class _MarkdownCommentReference {
   }
 
   void _findAnalyzerReferences() {
-    var refElement = _getRefElementFromCommentRefs(commentRefs, codeRef);
+    var refElement = _getRefElementFromCommentRefs(element, codeRef);
     if (refElement == null) return;
 
     ModelElement refModelElement;
@@ -931,9 +923,8 @@ const _referenceLookupWarnings = {
   PackageWarning.referenceLookupMissingWithNew,
 };
 
-md.Node _makeLinkNode(String codeRef, Warnable warnable,
-    List<ModelCommentReference> commentRefs) {
-  var result = _getMatchingLinkElement(warnable, codeRef, commentRefs);
+md.Node _makeLinkNode(String codeRef, Warnable warnable) {
+  var result = _getMatchingLinkElement(warnable, codeRef);
   var textContent = htmlEscape.convert(codeRef);
   var linkedElement = result.modelElement;
   if (linkedElement != null) {
@@ -962,8 +953,7 @@ md.Node _makeLinkNode(String codeRef, Warnable warnable,
   return md.Element.text('code', textContent);
 }
 
-MatchingLinkResult _getMatchingLinkElement(Warnable warnable, String codeRef,
-    List<ModelCommentReference> commentRefs) {
+MatchingLinkResult _getMatchingLinkElement(Warnable warnable, String codeRef) {
   MatchingLinkResult result, resultOld, resultNew;
   // Do a comparison between result types only if the warnings for them are
   // enabled, because there's a significant performance penalty.
@@ -971,9 +961,8 @@ MatchingLinkResult _getMatchingLinkElement(Warnable warnable, String codeRef,
       .where((entry) => _referenceLookupWarnings.contains(entry.key))
       .any((entry) => entry.value != PackageWarningMode.ignore);
   if (doComparison) {
-    resultNew =
-        _getMatchingLinkElementCommentReferable(codeRef, warnable, commentRefs);
-    resultOld = _getMatchingLinkElementLegacy(codeRef, warnable, commentRefs);
+    resultNew = _getMatchingLinkElementCommentReferable(codeRef, warnable);
+    resultOld = _getMatchingLinkElementLegacy(codeRef, warnable);
     if (resultNew.modelElement != null) {
       markdownStats.resolvedNewLookupReferences++;
     }
@@ -984,10 +973,9 @@ MatchingLinkResult _getMatchingLinkElement(Warnable warnable, String codeRef,
     }
   } else {
     if (warnable.config.experimentalReferenceLookup) {
-      result = _getMatchingLinkElementCommentReferable(
-          codeRef, warnable, commentRefs);
+      result = _getMatchingLinkElementCommentReferable(codeRef, warnable);
     } else {
-      result = _getMatchingLinkElementLegacy(codeRef, warnable, commentRefs);
+      result = _getMatchingLinkElementLegacy(codeRef, warnable);
     }
   }
   if (doComparison) {
@@ -1072,13 +1060,12 @@ Iterable<int> findFreeHangingGenericsPositions(String string) sync* {
 }
 
 class MarkdownDocument extends md.Document {
-  factory MarkdownDocument.withElementLinkResolver(
-      Canonicalization element, List<ModelCommentReference> commentRefs) {
+  factory MarkdownDocument.withElementLinkResolver(Canonicalization element) {
     md.Node /*?*/ linkResolver(String name, [String /*?*/ _]) {
       if (name.isEmpty) {
         return null;
       }
-      return _makeLinkNode(name, element, commentRefs);
+      return _makeLinkNode(name, element);
     }
 
     return MarkdownDocument(

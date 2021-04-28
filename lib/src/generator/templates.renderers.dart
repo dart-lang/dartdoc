@@ -614,12 +614,13 @@ class _Renderer_Canonicalization extends RendererBase<Canonicalization> {
                   getValue: (CT_ c) => c.commentRefs,
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'List<ModelCommentReference>'),
-                  renderIterable:
+                      self.renderSimpleVariable(c, remainingNames,
+                          'Map<String, ModelCommentReference>'),
+                  isNullValue: (CT_ c) => c.commentRefs == null,
+                  renderValue:
                       (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-                    return c.commentRefs.map(
-                        (e) => renderSimple(e, ast, r.template, parent: r));
+                    return renderSimple(c.commentRefs, ast, r.template,
+                        parent: r);
                   },
                 ),
                 'isCanonical': Property(
@@ -8932,12 +8933,13 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                   getValue: (CT_ c) => c.commentRefs,
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'List<ModelCommentReference>'),
-                  renderIterable:
+                      self.renderSimpleVariable(c, remainingNames,
+                          'Map<String, ModelCommentReference>'),
+                  isNullValue: (CT_ c) => c.commentRefs == null,
+                  renderValue:
                       (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-                    return c.commentRefs.map(
-                        (e) => renderSimple(e, ast, r.template, parent: r));
+                    return renderSimple(c.commentRefs, ast, r.template,
+                        parent: r);
                   },
                 ),
                 'compilationUnitElement': Property(
