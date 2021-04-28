@@ -8,7 +8,6 @@ import 'dart:io';
 
 import 'package:async/async.dart';
 import 'package:dartdoc/src/element_type.dart';
-//import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/model/feature.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
