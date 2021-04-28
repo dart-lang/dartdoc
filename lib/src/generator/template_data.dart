@@ -393,13 +393,12 @@ class MethodTemplateData extends TemplateData<Method>
   final Container container;
   final ContainerSidebar _sidebarForContainer;
 
-  String containerDesc;
+  final String _containerDescription;
 
   MethodTemplateData(TemplateOptions htmlOptions, PackageGraph packageGraph,
       this.library, this.container, this.method, this._sidebarForContainer)
-      : super(htmlOptions, packageGraph) {
-    containerDesc = container.isClass ? 'class' : 'extension';
-  }
+      : _containerDescription = container.isClass ? 'class' : 'extension',
+        super(htmlOptions, packageGraph);
 
   String get sidebarForContainer => _sidebarForContainer(container, this);
 
@@ -407,7 +406,7 @@ class MethodTemplateData extends TemplateData<Method>
   Method get self => method;
   @override
   String get title =>
-      '${method.name} method - ${container.name} $containerDesc - '
+      '${method.name} method - ${container.name} $_containerDescription - '
       '${library.name} library - Dart API';
   @override
   String get layoutTitle => _layoutTitle(
@@ -415,7 +414,8 @@ class MethodTemplateData extends TemplateData<Method>
   @override
   String get metaDescription =>
       'API docs for the ${method.name} method from the '
-      '${container.name} $containerDesc, for the Dart programming language.';
+      '${container.name} $_containerDescription, '
+      'for the Dart programming language.';
   @override
   List<Documentable> get navLinks => [_packageGraph.defaultPackage, library];
   @override
