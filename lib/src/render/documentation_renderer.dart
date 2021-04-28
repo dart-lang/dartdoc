@@ -4,14 +4,23 @@
 
 import 'package:html/parser.dart' show parse;
 import 'package:markdown/markdown.dart' as md;
+import 'package:meta/meta.dart';
 
 abstract class DocumentationRenderer {
-  DocumentationRenderResult render(List<md.Node> nodes, bool processFullDocs);
+  DocumentationRenderResult render(
+    List<md.Node> nodes, {
+    @required bool processFullDocs,
+  });
 }
 
-class DocumentationRendererHtml extends DocumentationRenderer {
+class DocumentationRendererHtml implements DocumentationRenderer {
+  const DocumentationRendererHtml();
+
   @override
-  DocumentationRenderResult render(List<md.Node> nodes, bool processFullDocs) {
+  DocumentationRenderResult render(
+    List<md.Node> nodes, {
+    @required bool processFullDocs,
+  }) {
     if (nodes.isEmpty) {
       return DocumentationRenderResult.empty;
     }
@@ -21,9 +30,7 @@ class DocumentationRendererHtml extends DocumentationRenderer {
       s.remove();
     }
     for (var pre in asHtmlDocument.querySelectorAll('pre')) {
-      if (pre.children.isNotEmpty &&
-          pre.children.length != 1 &&
-          pre.children.first.localName != 'code') {
+      if (pre.children.length > 1 && pre.children.first.localName != 'code') {
         continue;
       }
 
@@ -37,14 +44,14 @@ class DocumentationRendererHtml extends DocumentationRenderer {
       // Assume the user intended Dart if there are no other classes present.
       if (!specifiesLanguage) pre.classes.add('language-dart');
     }
-    String asHtml;
-    String asOneLiner;
+    var asHtml = '';
 
     if (processFullDocs) {
-      // `trim` fixes issue with line ending differences between mac and windows.
+      // `trim` fixes an issue with line ending differences between Mac and
+      // Windows.
       asHtml = asHtmlDocument.body.innerHtml?.trim();
     }
-    asOneLiner = asHtmlDocument.body.children.isEmpty
+    var asOneLiner = asHtmlDocument.body.children.isEmpty
         ? ''
         : asHtmlDocument.body.children.first.innerHtml;
 
@@ -58,5 +65,6 @@ class DocumentationRenderResult {
   final String /*?*/ asHtml;
   final String asOneLiner;
 
-  const DocumentationRenderResult({this.asHtml, this.asOneLiner = ''});
+  const DocumentationRenderResult(
+      {@required this.asHtml, @required this.asOneLiner});
 }

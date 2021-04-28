@@ -7,10 +7,10 @@ import 'package:test/test.dart';
 
 void main() {
   group('HtmlTemplateRenderer', () {
-    HtmlTemplateRenderer renderer;
+    HtmlLayoutRenderer renderer;
 
     setUpAll(() {
-      renderer = HtmlTemplateRenderer();
+      renderer = HtmlLayoutRenderer();
     });
 
     test('composeLayoutTitle', () {
@@ -25,10 +25,10 @@ void main() {
   });
 
   group('MdTemplateRenderer', () {
-    MdTemplateRenderer renderer;
+    MdLayoutRenderer renderer;
 
     setUpAll(() {
-      renderer = MdTemplateRenderer();
+      renderer = MdLayoutRenderer();
     });
 
     test('composeLayoutTitle', () {

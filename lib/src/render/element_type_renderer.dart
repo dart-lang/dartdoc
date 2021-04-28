@@ -6,6 +6,8 @@ import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/render/parameter_renderer.dart';
 
 abstract class ElementTypeRenderer<T extends ElementType> {
+  const ElementTypeRenderer();
+
   String renderLinkedName(T elementType);
 
   String renderNameWithGenerics(T elementType) => '';
@@ -22,6 +24,8 @@ abstract class ElementTypeRenderer<T extends ElementType> {
 
 class FunctionTypeElementTypeRendererHtml
     extends ElementTypeRenderer<FunctionTypeElementType> {
+  const FunctionTypeElementTypeRendererHtml();
+
   @override
   String renderLinkedName(FunctionTypeElementType elementType) {
     var buf = StringBuffer();
@@ -52,6 +56,8 @@ class FunctionTypeElementTypeRendererHtml
 
 class ParameterizedElementTypeRendererHtml
     extends ElementTypeRenderer<ParameterizedElementType> {
+  const ParameterizedElementTypeRendererHtml();
+
   @override
   String renderLinkedName(ParameterizedElementType elementType) {
     var buf = StringBuffer();
@@ -85,6 +91,8 @@ class ParameterizedElementTypeRendererHtml
 
 class AliasedElementTypeRendererHtml
     extends ElementTypeRenderer<AliasedElementType> {
+  const AliasedElementTypeRendererHtml();
+
   @override
   String renderLinkedName(AliasedElementType elementType) {
     var buf = StringBuffer();
@@ -118,6 +126,8 @@ class AliasedElementTypeRendererHtml
 
 class CallableElementTypeRendererHtml
     extends ElementTypeRenderer<CallableElementType> {
+  const CallableElementTypeRendererHtml();
+
   @override
   String renderLinkedName(CallableElementType elementType) {
     var buf = StringBuffer();
@@ -137,6 +147,8 @@ class CallableElementTypeRendererHtml
 
 class FunctionTypeElementTypeRendererMd
     extends ElementTypeRenderer<FunctionTypeElementType> {
+  const FunctionTypeElementTypeRendererMd();
+
   @override
   String renderLinkedName(FunctionTypeElementType elementType) {
     var buf = StringBuffer();
@@ -165,6 +177,8 @@ class FunctionTypeElementTypeRendererMd
 
 class ParameterizedElementTypeRendererMd
     extends ElementTypeRenderer<ParameterizedElementType> {
+  const ParameterizedElementTypeRendererMd();
+
   @override
   String renderLinkedName(ParameterizedElementType elementType) {
     var buf = StringBuffer();
@@ -196,6 +210,8 @@ class ParameterizedElementTypeRendererMd
 
 class AliasedElementTypeRendererMd
     extends ElementTypeRenderer<AliasedElementType> {
+  const AliasedElementTypeRendererMd();
+
   @override
   String renderLinkedName(AliasedElementType elementType) {
     var buf = StringBuffer();
@@ -227,6 +243,8 @@ class AliasedElementTypeRendererMd
 
 class CallableElementTypeRendererMd
     extends ElementTypeRenderer<CallableElementType> {
+  const CallableElementTypeRendererMd();
+
   @override
   String renderLinkedName(CallableElementType elementType) {
     var buf = StringBuffer();
