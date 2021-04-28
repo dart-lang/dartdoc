@@ -11,6 +11,8 @@ import 'package:meta/meta.dart' as meta;
 
 /// Render HTML in an extended vertical format using <ol> tag.
 class ParameterRendererHtmlList extends ParameterRendererHtml {
+  const ParameterRendererHtmlList();
+
   @override
   String listItem(String listItem) => '<li>$listItem</li>\n';
   @override
@@ -21,6 +23,8 @@ class ParameterRendererHtmlList extends ParameterRendererHtml {
 
 /// Render HTML suitable for a single, wrapped line.
 class ParameterRendererHtml extends ParameterRenderer {
+  const ParameterRendererHtml();
+
   @override
   String listItem(String listItem) => listItem;
   @override
@@ -50,6 +54,8 @@ class ParameterRendererHtml extends ParameterRenderer {
 }
 
 class ParameterRendererMd extends ParameterRenderer {
+  const ParameterRendererMd();
+
   @override
   String annotation(String annotation) => annotation;
 
@@ -79,6 +85,8 @@ class ParameterRendererMd extends ParameterRenderer {
 }
 
 abstract class ParameterRenderer {
+  const ParameterRenderer();
+
   String listItem(String item);
   String orderedList(String listItems);
   String annotation(String annotation);
@@ -97,16 +105,16 @@ abstract class ParameterRenderer {
         parameters.where((Parameter p) => p.isOptionalPositional).toList();
     var namedParams = parameters.where((Parameter p) => p.isNamed).toList();
 
-    var positional = '', optional = '', named = '';
+    var output = StringBuffer();
     if (positionalParams.isNotEmpty) {
-      positional = _linkedParameterSublist(positionalParams,
+      _renderLinkedParameterSublist(positionalParams, output,
           trailingComma:
               optionalPositionalParams.isNotEmpty || namedParams.isNotEmpty,
           showMetadata: showMetadata,
           showNames: showNames);
     }
     if (optionalPositionalParams.isNotEmpty) {
-      optional = _linkedParameterSublist(optionalPositionalParams,
+      _renderLinkedParameterSublist(optionalPositionalParams, output,
           trailingComma: namedParams.isNotEmpty,
           openBracket: '[',
           closeBracket: ']',
@@ -114,23 +122,23 @@ abstract class ParameterRenderer {
           showNames: showNames);
     }
     if (namedParams.isNotEmpty) {
-      named = _linkedParameterSublist(namedParams,
+      _renderLinkedParameterSublist(namedParams, output,
           trailingComma: false,
           openBracket: '{',
           closeBracket: '}',
           showMetadata: showMetadata,
           showNames: showNames);
     }
-    return orderedList(positional + optional + named);
+    return orderedList(output.toString());
   }
 
-  String _linkedParameterSublist(List<Parameter> parameters,
+  void _renderLinkedParameterSublist(
+      List<Parameter> parameters, StringBuffer output,
       {@meta.required bool trailingComma,
       String openBracket = '',
       String closeBracket = '',
-      showMetadata = true,
-      showNames = true}) {
-    var builder = StringBuffer();
+      bool showMetadata = true,
+      bool showNames = true}) {
     for (var p in parameters) {
       var prefix = '';
       var suffix = '';
@@ -143,24 +151,32 @@ abstract class ParameterRenderer {
       } else {
         suffix += ', ';
       }
-      var renderedParam =
-          _renderParam(p, showMetadata: showMetadata, showNames: showNames);
-      builder.write(
+      var renderedParam = _renderParam(p,
+          prefix: prefix,
+          suffix: suffix,
+          showMetadata: showMetadata,
+          showNames: showNames);
+      output.write(
           listItem(parameter(prefix + renderedParam + suffix, p.htmlId)));
     }
-    return builder.toString();
   }
 
-  String _renderParam(Parameter param,
-      {showMetadata = true, showNames = true}) {
+  String _renderParam(
+    Parameter param, {
+    @meta.required String prefix,
+    @meta.required String suffix,
+    bool showMetadata = true,
+    bool showNames = true,
+  }) {
     var buf = StringBuffer();
+    buf.write(prefix);
     var paramModelType = param.modelType;
 
     if (showMetadata && param.hasAnnotations) {
-      buf.write(param.annotations
-              .map((a) => annotation(a.linkedNameWithParameters))
-              .join(' ') +
-          ' ');
+      for (var a in param.annotations) {
+        buf.write(annotation(a.linkedNameWithParameters));
+        buf.write(' ');
+      }
     }
     if (param.isRequiredNamed) {
       buf.write(required('required') + ' ');
@@ -217,6 +233,8 @@ abstract class ParameterRenderer {
       buf.write(' = ');
       buf.write(defaultValue(param.defaultValue));
     }
+
+    buf.write(suffix);
     return buf.toString();
   }
 }

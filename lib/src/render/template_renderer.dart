@@ -2,11 +2,13 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-abstract class TemplateRenderer {
+abstract class LayoutRenderer {
   String composeLayoutTitle(String name, String kind, bool isDeprecated);
 }
 
-class HtmlTemplateRenderer implements TemplateRenderer {
+class HtmlLayoutRenderer implements LayoutRenderer {
+  const HtmlLayoutRenderer();
+
   @override
   String composeLayoutTitle(String name, String kind, bool isDeprecated) {
     if (isDeprecated) {
@@ -17,7 +19,9 @@ class HtmlTemplateRenderer implements TemplateRenderer {
   }
 }
 
-class MdTemplateRenderer implements TemplateRenderer {
+class MdLayoutRenderer implements LayoutRenderer {
+  const MdLayoutRenderer();
+
   @override
   String composeLayoutTitle(String name, String kind, bool isDeprecated) {
     if (isDeprecated) {

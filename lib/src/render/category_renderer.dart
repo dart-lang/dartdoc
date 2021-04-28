@@ -6,8 +6,6 @@ import 'package:dartdoc/src/model/category.dart';
 
 /// A renderer for a [Category].
 abstract class CategoryRenderer {
-  const CategoryRenderer();
-
   /// Render the label of this [category].
   String renderCategoryLabel(Category category);
 
@@ -17,7 +15,7 @@ abstract class CategoryRenderer {
 }
 
 /// A HTML renderer for a [Category].
-class CategoryRendererHtml extends CategoryRenderer {
+class CategoryRendererHtml implements CategoryRenderer {
   const CategoryRendererHtml();
 
   @override
@@ -57,7 +55,7 @@ class CategoryRendererHtml extends CategoryRenderer {
 }
 
 /// A markdown renderer for a [Category].
-class CategoryRendererMd extends CategoryRenderer {
+class CategoryRendererMd implements CategoryRenderer {
   const CategoryRendererMd();
 
   @override

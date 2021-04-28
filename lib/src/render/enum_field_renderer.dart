@@ -8,7 +8,9 @@ abstract class EnumFieldRenderer {
   String renderValue(EnumField field);
 }
 
-class EnumFieldRendererHtml extends EnumFieldRenderer {
+class EnumFieldRendererHtml implements EnumFieldRenderer {
+  const EnumFieldRendererHtml();
+
   @override
   String renderValue(EnumField field) {
     if (field.name == 'values') {
@@ -19,7 +21,9 @@ class EnumFieldRendererHtml extends EnumFieldRenderer {
   }
 }
 
-class EnumFieldRendererMd extends EnumFieldRenderer {
+class EnumFieldRendererMd implements EnumFieldRenderer {
+  const EnumFieldRendererMd();
+
   @override
   String renderValue(EnumField field) {
     if (field.name == 'values') {
