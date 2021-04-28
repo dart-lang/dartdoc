@@ -434,13 +434,12 @@ class PropertyTemplateData extends TemplateData<Field>
   final Container container;
   final Field property;
   final ContainerSidebar _sidebarForContainer;
-  String containerDesc;
+  final String _containerDescription;
 
   PropertyTemplateData(TemplateOptions htmlOptions, PackageGraph packageGraph,
       this.library, this.container, this.property, this._sidebarForContainer)
-      : super(htmlOptions, packageGraph) {
-    containerDesc = container.isClass ? 'class' : 'extension';
-  }
+      : _containerDescription = container.isClass ? 'class' : 'extension',
+        super(htmlOptions, packageGraph);
 
   String get sidebarForContainer => _sidebarForContainer(container, this);
 
@@ -448,8 +447,8 @@ class PropertyTemplateData extends TemplateData<Field>
   Field get self => property;
 
   @override
-  String get title =>
-      '${property.name} ${property.kind} - ${container.name} $containerDesc - '
+  String get title => '${property.name} ${property.kind} - '
+      '${container.name} $_containerDescription - '
       '${library.name} library - Dart API';
   @override
   String get layoutTitle =>
@@ -457,7 +456,8 @@ class PropertyTemplateData extends TemplateData<Field>
   @override
   String get metaDescription =>
       'API docs for the ${property.name} ${property.kind} from the '
-      '${container.name} $containerDesc, for the Dart programming language.';
+      '${container.name} $_containerDescription, '
+      'for the Dart programming language.';
   @override
   List<Documentable> get navLinks => [_packageGraph.defaultPackage, library];
   @override
