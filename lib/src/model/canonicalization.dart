@@ -16,7 +16,7 @@ abstract class Canonicalization implements Locatable, Documentable {
   /// strings inside a single documentation comment will point to the same
   /// place, so it should not be used to count exactly how many references
   /// there are.
-  Map<String, ModelCommentReference> get commentRefs => null;
+  Map<String, ModelCommentReference> get commentRefs;
 
   /// Pieces of the location, split to remove 'package:' and slashes.
   Set<String> get locationPieces;

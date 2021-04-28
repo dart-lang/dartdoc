@@ -16,8 +16,8 @@ import 'package:analyzer/src/dart/element/member.dart'
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/comment_references/model_comment_reference.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
-import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/annotation.dart';
+import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/feature.dart';
 import 'package:dartdoc/src/model/feature_set.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -407,7 +407,6 @@ abstract class ModelElement extends Canonicalization
   }
 
   Map<String, ModelCommentReference> _commentRefs;
-
   @override
   Map<String, ModelCommentReference> get commentRefs {
     if (_commentRefs == null) {
@@ -418,7 +417,8 @@ abstract class ModelElement extends Canonicalization
           checkReferences.add(from.enclosingCombo);
         }
         for (var e in checkReferences) {
-          _commentRefs.addAll(e.modelNode.commentRefs ?? {});
+          _commentRefs
+              .addAll({for (var r in e.modelNode.commentRefs) r.codeRef: r});
         }
       }
     }

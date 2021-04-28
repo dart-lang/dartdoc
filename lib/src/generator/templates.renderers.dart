@@ -903,6 +903,19 @@ class _Renderer_Category extends RendererBase<Category> {
                         (e) => _render_Class(e, ast, r.template, parent: r));
                   },
                 ),
+                'commentRefs': Property(
+                  getValue: (CT_ c) => c.commentRefs,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames,
+                          'Map<String, ModelCommentReference>'),
+                  isNullValue: (CT_ c) => c.commentRefs == null,
+                  renderValue:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    return renderSimple(c.commentRefs, ast, r.template,
+                        parent: r);
+                  },
+                ),
                 'config': Property(
                   getValue: (CT_ c) => c.config,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -10394,6 +10407,19 @@ class _Renderer_Package extends RendererBase<Package> {
                       (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
                     return c.categoriesWithPublicLibraries.map(
                         (e) => _render_Category(e, ast, r.template, parent: r));
+                  },
+                ),
+                'commentRefs': Property(
+                  getValue: (CT_ c) => c.commentRefs,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames,
+                          'Map<String, ModelCommentReference>'),
+                  isNullValue: (CT_ c) => c.commentRefs == null,
+                  renderValue:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    return renderSimple(c.commentRefs, ast, r.template,
+                        parent: r);
                   },
                 ),
                 'config': Property(

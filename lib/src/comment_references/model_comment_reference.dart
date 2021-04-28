@@ -18,6 +18,8 @@ class ModelCommentReference {
       : codeRef = _referenceText(ref, resourceProvider),
         staticElement = ref.identifier.staticElement;
 
+  /// "Unparse" the code reference into the raw text associated with the
+  /// [CommentReference].
   static String _referenceText(
       CommentReference ref, ResourceProvider resourceProvider) {
     var contents = getFileContentsFor(

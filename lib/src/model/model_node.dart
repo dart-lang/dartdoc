@@ -11,7 +11,7 @@ import 'package:dartdoc/src/model_utils.dart' as model_utils;
 /// Stripped down information derived from [AstNode] containing only information
 /// needed for Dartdoc.  Drops link to the [AstNode] after construction.
 class ModelNode {
-  final Map<String, ModelCommentReference> commentRefs;
+  final List<ModelCommentReference> commentRefs;
   final Element element;
   final ResourceProvider resourceProvider;
 
@@ -21,17 +21,16 @@ class ModelNode {
       : _sourceNode = sourceNode,
         commentRefs = _commentRefsFor(sourceNode, resourceProvider);
 
-  static Map<String, ModelCommentReference> _commentRefsFor(
+  static List<ModelCommentReference> _commentRefsFor(
       AstNode node, ResourceProvider resourceProvider) {
     if (node is AnnotatedNode &&
         node?.documentationComment?.references != null) {
-      return {
-        for (var m in node.documentationComment.references
-            .map((c) => ModelCommentReference(c, resourceProvider)))
-          m.codeRef: m,
-      };
+      return [
+        for (var m in node.documentationComment.references)
+          ModelCommentReference(m, resourceProvider),
+      ];
     }
-    return null;
+    return [];
   }
 
   String _sourceCode;
