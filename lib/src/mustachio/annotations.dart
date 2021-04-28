@@ -1,3 +1,10 @@
+// Copyright (c) 2021, the Dart project authors.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
+// See the Mustachio README at tool/mustachio/README.md for high-level
+// documentation.
+
 /// Specifies information for generating a Mustache renderer for a [context]
 /// object, using a Mustache template at [templateUri]
 class Renderer {
