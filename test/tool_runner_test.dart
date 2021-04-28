@@ -6,8 +6,8 @@ library dartdoc.model_test;
 
 import 'dart:io';
 
-import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
+import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/tool_runner.dart';
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';

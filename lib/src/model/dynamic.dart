@@ -3,8 +3,8 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
-import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 class Dynamic extends ModelElement {
