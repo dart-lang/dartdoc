@@ -156,8 +156,7 @@ abstract class ParameterRenderer {
           suffix: suffix,
           showMetadata: showMetadata,
           showNames: showNames);
-      output.write(
-          listItem(parameter(prefix + renderedParam + suffix, p.htmlId)));
+      output.write(listItem(parameter(renderedParam, p.htmlId)));
     }
   }
 
