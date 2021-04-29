@@ -161,6 +161,253 @@ types:
 
 ## Generated renderer for a specific type which interprets templates at runtime
 
+Mustachio's first set of generated renderers render objects into
+runtime-interpreted Mustache template blocks. Each template block may be the
+content of a Mustache template file, a Mustache partial file, or a Mustache
+section. The design for a tool which can generate such a renderer is included
+after the design for the renderer.
+
+The mechanics of the tool which generates these renderers is a separate concern
+from the mechanics of the renderers themselves. This section is primarily
+concerned with documenting how the renderers work. At the end, a higher level
+description of the code generator can be found.
+
+### Example types
+
+Any examples in this section will use the following types:
+
+```dart
+abstract class User {
+  String get name;
+  UserProfile get profile;
+  List<Post>? get posts;
+}
+
+abstract class UserProfile {
+  String get avatarUrl;
+  String get biography;
+}
+
+abstract class Post {
+  String get title;
+  String get content;
+  bool? get isPublished;
+}
+```
+
+A User object can be rendered into the following Mustache template:
+
+```dart
+<h1>{{ name }}</h1>
+{{ #profile }}
+  <img src=”{{ avatarUrl }}” />
+  <p>{{ biography }}</p>
+{{ /profile }}
+{{ #posts }}
+  {{ #isPublished }}
+    <div>
+      <h2>{{ title }}</h2>
+      <p>{{ content }}</h2>
+    </div>
+  {{ /isPublished }}
+{{ /posts }}
+```
+
+### Renderer outline
+
+In order to support repeated sections and value sections, a renderer for a type
+_T_ requires renderers for other types:
+
+* If _T_ has a getter of type _S_, then a renderer for type _T_ may be called
+  upon to render a [value section][] for that getter, which requires a renderer
+  for type _S_.
+* If _T_ has a getter of type _Iterable&lt;S>_ for some type _S_, then a
+  renderer for type _T_ may be called upon to render a repeated section for that
+  getter, which requires a renderer for type _S_.
+
+An instance of a renderer needs four things in order to render an object using a
+Mustache syntax tree (a _template block_):
+
+* the context object,
+* the Mustache template block (a list of nodes),
+* the path to the directory in which the Mustache template is located, in order
+  to locate partials,
+* optionally, a parent renderer
+
+Additionally, a renderer needs various functions in order to render each getter
+for the renderer's context type. It may need to render each getter (1) as a
+variable, (2) possibly as a conditional section, (3) possibly as a repeated
+section, and (4) possibly as a value section).
+
+Here are all of the elements of such a renderer for the User class:
+
+```dart
+class Renderer_User extends RendererBase<User> {
+  static final Map<String, Property<CT_>> propertyMap<CT_ extends User>() => ...;
+
+  Renderer_User(User context, RendererBase<Object> parent, Template template)
+      : super(context, parent, template);
+
+  @override
+  Property<User> getProperty(String key) {
+    if (propertyMap<User>().containsKey(key)) {
+      return propertyMap<User>()[key];
+    } else {
+      return null;
+    }
+  }
+}
+```
+
+* The base class, **RendererBase**, provides functionality common to all
+  renderers, for example a buffer to which output may be written; each of the
+  methods discussed in [Rendering a block][] below.
+* The map of properties forms the bulk of each individual renderer. The Property
+  class is described just below.
+* The renderer instance may be asked to render multiple blocks; while rendering
+  a list of nodes, the children of certain nodes are rendered without changing
+  context, and so can use the same renderer. In particular:
+  * when rendering a conditional section,
+  * when rendering an inverted repeated section or inverted value section,
+  * when rendering a partial.
+
+#### Map of properties
+
+The core functionality of accessing getters on an object by name (as a String)
+is a static map of properties for each type which may be used as a context
+object during the rendering process. Each getter names is mapped to a Property
+object which holds functions that allow performing certain rendering actions
+using the given property.
+
+The property map is actually a function because it needs to be type
+parameterized on `CT_`, a type variable bounded to the type of the context
+object. This is an unfortunate complication which arises from the design of
+Property being a collection of functions. Since a renderer can be used to
+render _subtypes_ of the context type, we cannot type all of the functions in
+the Properties with the context type; they must each be typed with the runtime
+type of the context object.
+
+Here is the Property interface:
+
+```dart
+class Property<T> {
+  final Object Function(T context) getValue;
+  final String Function(T, Property<T>, List<String>) renderVariable;
+  final bool Function(T context) getBool;
+  final Iterable<String> Function(T, RendererBase<T>, List<MustachioNode>)
+      renderIterable;
+  final bool Function(T) isNullValue;
+  final String Function(T, RendererBase<T>, List<MustachioNode>) renderValue;
+}
+```
+
+For each valid getter on a type, the renderer will map out a Property object
+with non-`null` values for the appropriate functions, and `null` values for
+inappropriate functions.
+
+##### The `getValue` function
+
+For every valid getter, the Property object will contain a function named
+`getValue` which calls the getter and returns the result. This function is used
+to render a property in a [variable node][]. For example, the Property for
+`name` on the User renderer has the following `getValue` function:
+
+```dart
+(CT_ c) => c.name
+```
+
+##### The `renderVariable` function
+
+TODO(srawlins): Write.
+
+##### The `getBool` function
+
+For every valid getter with a `bool?` or `bool` return type, the Property object
+contains a function named `getBool` which returns the non-`null` `bool` value of
+the getter (`null` is converted to `false`). This function is used to render a
+property in a conditional section node (or an inverted one). For example, the
+Property for `isPublished` on the Post renderer has the following `getBool`
+function:
+
+```dart
+(CT_ c) => c.isPublished == true
+```
+
+##### The `renderIterable` function
+
+For every valid getter with a return type assignable to `Iterable<Object?>?`,
+the Property object contains a function named `renderIterable` which requires
+some parameters: the context object, the current renderer, and the AST to
+render. This function is used to render a property in a repeated section node
+(or an inverted one). For example, the Property for `posts` on the User renderer
+has the following `renderIterable` function:
+
+```dart
+(CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+  return c.posts.map(
+      (e) => _render_Post(e, ast, r.template, parent: r));
+}
+```
+
+This function needs the three arguments so that it can iterate over the `posts`
+of the context object, and then create new instances of the Post renderer, which
+requires the AST to render, and the parent context.
+
+##### The `isNullValue` and `renderValue` functions
+
+For each valid getter which has neither a `bool` return type nor an `Iterable`
+return type, the Property object contains a function named `isNullValue` which
+returns whether the value of the getter is `null` or not. It also contains a
+function named `renderValue` which requires more parameters: the context object,
+the current renderer, and the AST to render. These functions are used to render
+a property in a value section node (or an inverted one). For example, the
+Property for `profile` on the User renderer has the following `isNullValue`
+function:
+
+```dart
+(CT_ c) => c.profile == null
+```
+
+and `renderValue` function:
+
+```dart
+(CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+  return _render_UserProfile(c.profile, ast, r.template, parent: r);
+}
+```
+
+The `renderValue` function needs the three arguments so that it can render the
+property value using a new `UserProfile` renderer, which requires the AST to
+render, and the parent context.
+
+#### Rendering a block
+
+TODO(srawlins): Write.
+
+#### Resolving a variable key
+
+TODO(srawlins): Write.
+
+#### Rendering a section
+
+TODO(srawlins): Write.
+
+##### Conditional section
+
+##### Repeated section
+
+##### Value section
+
+#### Rendering a partial
+
+TODO(srawlins): Write.
+
+[value section]: https://mustache.github.io/mustache.5.html#Sections
+[Rendering a block]: #rendering-a-block
+[variable node]: https://mustache.github.io/mustache.5.html#Variables
+
+### High level design for generating renderers
+
 TODO(srawlins): Write.
 
 ## Generated renderer for a specific type and a static template which pre-compiles the templates
