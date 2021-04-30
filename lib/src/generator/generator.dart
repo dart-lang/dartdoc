@@ -17,9 +17,20 @@ abstract class FileWriter {
   /// All filenames written by this generator.
   Set<String> get writtenFiles;
 
-  /// Write [content] to a file at [filePath].
-  void write(String filePath, Object content,
-      {bool allowOverwrite, Warnable element});
+  /// Writes [content] to a file at [filePath].
+  ///
+  /// If a file is to be overwritten, a warning will be reported on [element].
+  void write(String filePath, String content, {Warnable element});
+
+  /// Writes [content] to a file at [filePath].
+  ///
+  /// If a file is to be overwritten, a warning will be reported, unless
+  /// [allowOverwrite] is `true`.
+  void writeBytes(
+    String filePath,
+    List<int> content, {
+    bool allowOverwrite = false,
+  });
 }
 
 /// An abstract class that defines a generator that generates documentation for
