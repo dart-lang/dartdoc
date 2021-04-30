@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'package:dartdoc/src/comment_references/model_comment_reference.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 /// Classes extending this class have canonicalization support in Dartdoc.
@@ -10,7 +11,12 @@ abstract class Canonicalization implements Locatable, Documentable {
 
   Library get canonicalLibrary;
 
-  List<ModelCommentReference> get commentRefs => null;
+  /// A map of [ModelCommentReference.codeRef] to [ModelCommentReference].
+  /// This map deduplicates comment references as all identical reference
+  /// strings inside a single documentation comment will point to the same
+  /// place, so it should not be used to count exactly how many references
+  /// there are.
+  Map<String, ModelCommentReference> get commentRefs;
 
   /// Pieces of the location, split to remove 'package:' and slashes.
   Set<String> get locationPieces;

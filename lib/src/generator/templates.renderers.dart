@@ -614,12 +614,13 @@ class _Renderer_Canonicalization extends RendererBase<Canonicalization> {
                   getValue: (CT_ c) => c.commentRefs,
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'List<ModelCommentReference>'),
-                  renderIterable:
+                      self.renderSimpleVariable(c, remainingNames,
+                          'Map<String, ModelCommentReference>'),
+                  isNullValue: (CT_ c) => c.commentRefs == null,
+                  renderValue:
                       (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-                    return c.commentRefs.map(
-                        (e) => renderSimple(e, ast, r.template, parent: r));
+                    return renderSimple(c.commentRefs, ast, r.template,
+                        parent: r);
                   },
                 ),
                 'isCanonical': Property(
@@ -900,6 +901,19 @@ class _Renderer_Category extends RendererBase<Category> {
                       (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
                     return c.classes.map(
                         (e) => _render_Class(e, ast, r.template, parent: r));
+                  },
+                ),
+                'commentRefs': Property(
+                  getValue: (CT_ c) => c.commentRefs,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames,
+                          'Map<String, ModelCommentReference>'),
+                  isNullValue: (CT_ c) => c.commentRefs == null,
+                  renderValue:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    return renderSimple(c.commentRefs, ast, r.template,
+                        parent: r);
                   },
                 ),
                 'config': Property(
@@ -8912,12 +8926,13 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                   getValue: (CT_ c) => c.commentRefs,
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'List<ModelCommentReference>'),
-                  renderIterable:
+                      self.renderSimpleVariable(c, remainingNames,
+                          'Map<String, ModelCommentReference>'),
+                  isNullValue: (CT_ c) => c.commentRefs == null,
+                  renderValue:
                       (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-                    return c.commentRefs.map(
-                        (e) => renderSimple(e, ast, r.template, parent: r));
+                    return renderSimple(c.commentRefs, ast, r.template,
+                        parent: r);
                   },
                 ),
                 'compilationUnitElement': Property(
@@ -10392,6 +10407,19 @@ class _Renderer_Package extends RendererBase<Package> {
                       (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
                     return c.categoriesWithPublicLibraries.map(
                         (e) => _render_Category(e, ast, r.template, parent: r));
+                  },
+                ),
+                'commentRefs': Property(
+                  getValue: (CT_ c) => c.commentRefs,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames,
+                          'Map<String, ModelCommentReference>'),
+                  isNullValue: (CT_ c) => c.commentRefs == null,
+                  renderValue:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    return renderSimple(c.commentRefs, ast, r.template,
+                        parent: r);
                   },
                 ),
                 'config': Property(

@@ -5,18 +5,8 @@
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
+import 'package:dartdoc/src/comment_references/model_comment_reference.dart';
 import 'package:dartdoc/src/model_utils.dart' as model_utils;
-
-/// A stripped down [CommentReference] containing only that information needed
-/// for Dartdoc.  Drops link to the [CommentReference] after construction.
-class ModelCommentReference {
-  final String name;
-  final Element staticElement;
-
-  ModelCommentReference(CommentReference ref)
-      : name = ref.identifier.name,
-        staticElement = ref.identifier.staticElement;
-}
 
 /// Stripped down information derived from [AstNode] containing only information
 /// needed for Dartdoc.  Drops link to the [AstNode] after construction.
@@ -29,16 +19,18 @@ class ModelNode {
 
   ModelNode(AstNode sourceNode, this.element, this.resourceProvider)
       : _sourceNode = sourceNode,
-        commentRefs = _commentRefsFor(sourceNode);
+        commentRefs = _commentRefsFor(sourceNode, resourceProvider);
 
-  static List<ModelCommentReference> _commentRefsFor(AstNode node) {
+  static List<ModelCommentReference> _commentRefsFor(
+      AstNode node, ResourceProvider resourceProvider) {
     if (node is AnnotatedNode &&
         node?.documentationComment?.references != null) {
-      return node.documentationComment.references
-          .map((c) => ModelCommentReference(c))
-          .toList(growable: false);
+      return [
+        for (var m in node.documentationComment.references)
+          ModelCommentReference(m, resourceProvider),
+      ];
     }
-    return null;
+    return [];
   }
 
   String _sourceCode;
