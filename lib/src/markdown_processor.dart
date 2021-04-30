@@ -356,7 +356,9 @@ MatchingLinkResult _getMatchingLinkElementLegacy(
   return MatchingLinkResult(refModelElement);
 }
 
-/// Given a set of commentRefs, return the one whose name matches the codeRef.
+/// Get the element referred by the [codeRef] in analyzer.
+/// Deletes constructors and otherwise messes with the output for the rest
+/// of the heuristics.
 Element _getRefElementFromCommentRefs(Warnable element, String codeRef) {
   if (element.commentRefs != null) {
     var ref = element.commentRefs[codeRef];
