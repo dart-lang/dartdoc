@@ -4,6 +4,7 @@
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
+import 'package:dartdoc/src/comment_references/model_comment_reference.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -220,4 +221,9 @@ class Category extends Nameable
   @override
   // TODO: implement referenceParents
   Iterable<CommentReferable> get referenceParents => [];
+
+  @override
+  // Categories are not analyzed by the analyzer, so they can't have
+  // comment references.
+  Map<String, ModelCommentReference> get commentRefs => {};
 }

@@ -14,9 +14,10 @@ import 'package:analyzer/src/dart/element/element.dart';
 import 'package:analyzer/src/dart/element/member.dart'
     show ExecutableMember, Member;
 import 'package:collection/collection.dart';
+import 'package:dartdoc/src/comment_references/model_comment_reference.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
-import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/annotation.dart';
+import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/feature.dart';
 import 'package:dartdoc/src/model/feature_set.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -405,19 +406,19 @@ abstract class ModelElement extends Canonicalization
     return _isPublic;
   }
 
-  List<ModelCommentReference> _commentRefs;
-
+  Map<String, ModelCommentReference> _commentRefs;
   @override
-  List<ModelCommentReference> get commentRefs {
+  Map<String, ModelCommentReference> get commentRefs {
     if (_commentRefs == null) {
-      _commentRefs = [];
+      _commentRefs = {};
       for (var from in documentationFrom) {
         var checkReferences = <ModelElement>[from];
         if (from is Accessor) {
           checkReferences.add(from.enclosingCombo);
         }
         for (var e in checkReferences) {
-          _commentRefs.addAll(e.modelNode.commentRefs ?? []);
+          _commentRefs
+              .addAll({for (var r in e.modelNode.commentRefs) r.codeRef: r});
         }
       }
     }
