@@ -14,8 +14,6 @@ import 'package:analyzer/src/dart/sdk/sdk.dart';
 import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/generated/java_io.dart';
 import 'package:analyzer/src/generated/sdk.dart';
-import 'package:analyzer/src/generated/source.dart';
-import 'package:analyzer/src/generated/source_io.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart' hide Package;
@@ -156,17 +154,21 @@ class PubPackageBuilder implements PackageBuilder {
 
     var analysisContext = contextCollection.contextFor(config.inputDir);
     var session = analysisContext.currentSession;
-    var sourceKind = await session.getSourceKind(filePath);
+    var isPart = false;
+    var sourceFile = session.getFile2(filePath);
+    if (sourceFile is FileResult) {
+      isPart = sourceFile.isPart;
+    }
 
     // Allow dart source files with inappropriate suffixes (#1897).  Those
     // do not show up as SourceKind.LIBRARY.
-    if (sourceKind != SourceKind.PART) {
-      // Loading libraryElements from part files works, but is painfully slow
-      // and creates many duplicates.
-      final library = await session.getResolvedLibrary(filePath);
-      final libraryElement = library.element;
-      var restoredUri = libraryElement.source.uri.toString();
-      return DartDocResolvedLibrary(library, restoredUri);
+    if (!isPart) {
+      final library = await session.getResolvedLibrary2(filePath);
+      if (library is ResolvedLibraryResult) {
+        final libraryElement = library.element;
+        var restoredUri = libraryElement.source.uri.toString();
+        return DartDocResolvedLibrary(library, restoredUri);
+      }
     }
     return null;
   }
