@@ -23,6 +23,11 @@ void main() {
 
   group('Basic comment reference parsing', () {
     test('Check that basic references parse', () {
+      expectParseEquivalent('valid', ['valid']);
+      expectParseEquivalent('new valid', ['valid'], constructorHint: true);
+      expectParseEquivalent('valid()', ['valid'], constructorHint: true);
+      expectParseEquivalent('const valid()', ['valid'], constructorHint: true);
+      expectParseEquivalent('final valid', ['valid']);
       expectParseEquivalent('this.is.valid', ['this', 'is', 'valid']);
       expectParseEquivalent('this.is.valid()', ['this', 'is', 'valid'],
           constructorHint: true);
