@@ -203,7 +203,6 @@ class ParameterizedElementTypeRendererMd
           elementType.typeArguments.map((t) => t.nameWithGenerics), ', ');
       buf.write('>');
     }
-    buf.write(elementType.nullabilitySuffix);
     return wrapNullability(elementType, buf.toString());
   }
 }
@@ -236,7 +235,6 @@ class AliasedElementTypeRendererMd
           elementType.aliasArguments.map((t) => t.nameWithGenerics), ', ');
       buf.write('>');
     }
-    buf.write(elementType.nullabilitySuffix);
     return wrapNullability(elementType, buf.toString());
   }
 }

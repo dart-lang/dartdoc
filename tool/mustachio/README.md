@@ -213,6 +213,39 @@ A User object can be rendered into the following Mustache template:
 {{ /posts }}
 ```
 
+### Render function
+
+Each generated renderer is paired with a generated _public render function_,
+which is the public interface for rendering objects into Mustache templates,
+and _private render function_, which is a convenience function for constructing
+a renderer and rendering an AST with it.
+
+```dart
+String renderUser(User context, Template template) {
+  return _render_User(context, template.ast, template);
+}
+
+String _render_User(User context, List<MustachioNode> ast, Template template,
+    {RendererBase<Object> parent}) {
+  var renderer = _Renderer_User(context, parent, template);
+  renderer.renderBlock(ast);
+  return renderer.buffer.toString();
+}
+```
+
+In order to use the public render function, one first needs a Template object.
+This is a container for a parsed Mustache template. The `Template.parse`
+constructor accepts a file path and an optional partial resolver. It parses the
+Mustache template at the given file path, and also reads and parses all partials
+referenced in the template. The returned Template object contains a mapping of
+all partial keys to partial file paths, and also a mapping of all partial file
+paths to partial Template objects. This Template object can be used to render
+various context objects, without needing to re-read or re-parse the template
+file or any referenced partial files.
+
+The `renderUser` function just requires two arguments, the User object to
+render, and the Mustache Template object that it should be rendered into.
+
 ### Renderer outline
 
 In order to support repeated sections and value sections, a renderer for a type
@@ -382,29 +415,211 @@ render, and the parent context.
 
 #### Rendering a block
 
-TODO(srawlins): Write.
+The RendererBase class defines a very simple `renderBlock` method. This method
+iterates over an AST, delegating to other methods depending on the type of each
+node:
+
+```dart
+  /// Renders a block of Mustache template, the [ast], into [buffer].
+  void renderBlock(List<MustachioNode> ast) {
+    for (var node in ast) {
+      if (node is Text) {
+        write(node.content);
+      } else if (node is Variable) {
+        var content = getFields(node);
+        write(content);
+      } else if (node is Section) {
+        section(node);
+      } else if (node is Partial) {
+        partial(node);
+      }
+    }
+  }
+```
+
+Text is rendered verbatim.
+
+Rendering a variable is mostly a matter of resolving the variable (see below).
+
+Sections and Partials are complex enough to warrant their own methods.
 
 #### Resolving a variable key
 
-TODO(srawlins): Write.
+Rendering a variable requires _resolution_; the variable's _key_ may consist of
+multiple _names_, (e.g. `{{ foo.bar.baz }}` is a variable node with a key of
+"foo.bar.baz"; this key has three names: "foo", "bar", and "baz") and resolution
+may require context objects further down in the stack. This resolution is
+performed in the renderer's `getFields` method.
+
+```dart
+  String getFields(Variable node) {
+    var names = node.key;
+    if (names.length == 1 && names.single == '.') {
+      return context.toString();
+    }
+    var property = getProperty(names.first);
+    if (property != null) {
+      var remainingNames = [...names.skip(1)];
+      try {
+        return property.renderVariable(context, property, remainingNames);
+      } on PartialMustachioResolutionError catch (e) {
+        // The error thrown by [Property.renderVariable] does not have all of
+        // the names required for a decent error. We throw a new error here.
+        throw MustachioResolutionError(...);
+      }
+    } else if (parent != null) {
+      return parent.getFields(node);
+    } else {
+      throw MustachioResolutionError(...);
+    }
+  }
+```
+
+We can see the entire resolution process here:
+
+* If the key is just ".", then we render the current context object as a String.
+* If the first name (which is often the whole key) is found on the context
+  object's property map, then we resolve the name as a property on the context
+  object.
+  * For each remaining name in the key names, we search the resolved object for
+    a property with this name. If it is found, we resolve the name as a property
+    on the previously resolved object. If it is not found, resolution has
+    failed.
+* If the first name is not found on the context object, we request that the
+  parent renderer resolve the key.
+* If there is no parent, resolution has failed.
 
 #### Rendering a section
 
-TODO(srawlins): Write.
+A section key is not allowed to have multiple names. We first search for a
+property on the context object with the key as its name. If we don't find it, we
+search the parent context:
+
+```dart
+    var key = node.key.first;
+    var property = getProperty(key);
+    if (property == null) {
+      if (parent == null) {
+        throw MustachioResolutionError(...);
+      } else {
+        return parent.section(node);
+      }
+    }
+```
+
+The `getProperty` method returns the Property instance for the specified name,
+which has various methods on it which can access the property for various
+purposes.
 
 ##### Conditional section
 
+First we check if the property can be used in a conditional section:
+
+```dart
+    if (property.getBool != null) {
+      var boolResult = property.getBool(context);
+      if ((boolResult && !node.invert) || (!boolResult && node.invert)) {
+        renderBlock(node.children);
+      }
+      return;
+    }
+```
+
+If the getter's return type is not `bool?` or `bool`, then `getBool` returns
+`null`.
+
+If the getter's return type is `bool?` or `bool`, then `getBool` is a function
+which takes the context object as an argument, and returns the non-nullable
+`bool` value of the property on the context object (resolving a `null` value as
+`false`).
+
+Since a conditional section can be inverted, we have to account for this when
+deciding to render the children.
+
 ##### Repeated section
+
+If the getter does not result in a conditional section, we check whether it is
+iterable:
+
+```dart
+    if (property.renderIterable != null) {
+      var renderedIterable =
+          property.renderIterable(context, this, node.children);
+      if (node.invert && renderedIterable.isEmpty) {
+        // An inverted section is rendered with the current context.
+        renderBlock(node.children);
+      } else if (!node.invert && renderedIterable.isNotEmpty) {
+        var buffer = StringBuffer()..writeAll(renderedIterable);
+        write(buffer.toString());
+      }
+      // Otherwise, render nothing.
+
+      return;
+    }
+```
+
+If the getter's return type is not a subtype of `Iterable<Object?>?`, then
+`renderIterable` returns `null`.
+
+If the getter's return type is a subtype of `Iterable<Object?>?`, then
+`renderIterable`, [detailed here][renderIterable], is a function which returns
+the non-nullable String value of the rendered section.
+
+An inverted repeated section is rendered with the current context if the
+iterable is `null` or empty.
 
 ##### Value section
 
+If the getter does not result in a conditional section, nor a repeated section, we render the section as a value section:
+
+```dart
+    if (node.invert && property.isNullValue(context)) {
+      renderBlock(node.children);
+    } else if (!node.invert && !property.isNullValue(context)) {
+      write(property.renderValue(context, this, node.children));
+    }
+```
+
+An inverted value section is rendered with the current context if the value is
+`null`.
+
+The `renderValue` function, [detailed here][renderValue], takes the context
+object, the renderer, and the section's children as arguments, and returns the
+non-nullable String value of the rendered section.
+
 #### Rendering a partial
 
-TODO(srawlins): Write.
+A partial key is not resolved as a sequence of names; it is instead a free form
+text key which maps to a partial file. Mustachio can either use a built-in
+partial resolver, in which case each key is a path which is relative to the
+template in which the key is found, or a custom partial resolver which can use
+custom logic to map the key to a file path. The keys have been mapped ahead of
+time (when the Template was parsed) to paths and the paths have been mapped
+ahead of time to Template objects. We map the key to the partial's file path,
+and map the partial's file path to the partial's Template:
+
+```dart
+  void partial(Partial node) {
+    var key = node.key;
+    var partialFile = template.partials[key];
+    var partialTemplate = template.partialTemplates[partialFile];
+    var outerTemplate = _template;
+    _template = partialTemplate;
+    renderBlock(partialTemplate.ast);
+    _template = outerTemplate;
+  }
+```
+
+To render the partial, we first replace the renderer's template with the
+partial's template (for further partial key resolution of any partial tags found
+inside this partial) and render the partial with the same renderer, using
+`renderBlock`.
 
 [value section]: https://mustache.github.io/mustache.5.html#Sections
 [Rendering a block]: #rendering-a-block
 [variable node]: https://mustache.github.io/mustache.5.html#Variables
+[renderIterable]: #the-renderIterable-function
+[renderValue]: #the-renderValue-function
 
 ### High level design for generating renderers
 
