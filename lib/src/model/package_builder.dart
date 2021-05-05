@@ -154,21 +154,12 @@ class PubPackageBuilder implements PackageBuilder {
 
     var analysisContext = contextCollection.contextFor(config.inputDir);
     var session = analysisContext.currentSession;
-    var isPart = false;
-    var sourceFile = session.getFile2(filePath);
-    if (sourceFile is FileResult) {
-      isPart = sourceFile.isPart;
-    }
-
-    // Allow dart source files with inappropriate suffixes (#1897).  Those
-    // do not show up as SourceKind.LIBRARY.
-    if (!isPart) {
-      final library = await session.getResolvedLibrary2(filePath);
-      if (library is ResolvedLibraryResult) {
-        final libraryElement = library.element;
-        var restoredUri = libraryElement.source.uri.toString();
-        return DartDocResolvedLibrary(library, restoredUri);
-      }
+    // Allow dart source files with inappropriate suffixes (#1897).
+    final library = await session.getResolvedLibrary2(filePath);
+    if (library is ResolvedLibraryResult) {
+      final libraryElement = library.element;
+      var restoredUri = libraryElement.source.uri.toString();
+      return DartDocResolvedLibrary(library, restoredUri);
     }
     return null;
   }
