@@ -43,7 +43,7 @@ class CommentReferenceParser {
     if (prefixResult.type == _PrefixResultType.parsedConstructorHint) {
       children.add(prefixResult.node);
     }
-    // junk / missing we can skip.
+    // [_PrefixResultType.junk] and [_PrefixResultType.missing] we can skip.
 
     // <commentReference>
     while (!_atEnd) {
@@ -74,7 +74,7 @@ class CommentReferenceParser {
       children.add(suffixResult.node);
     }
 
-    // missing or junk we can skip.
+    // [_SuffixResultType.junk] or [_SuffixResultType.missing] we can skip.
     return children;
   }
 
@@ -176,7 +176,6 @@ class CommentReferenceParser {
       return _SuffixParseResult.junk;
     }
 
-    // TODO(jcollins-g): implement junk suffixes if necessary
     return _SuffixParseResult.notSuffix;
   }
 
@@ -219,9 +218,9 @@ class CommentReferenceParser {
     return;
   }
 
-  /// Returns true if we started with startChar and ended with endChar
+  /// Returns `true` if we started with [startChar] and ended with [endChar]
   /// with a matching number of braces.
-  /// Returns _index to start if returning false.
+  /// Restores [_index] to state when called if returning `false`.
   bool _matchBraces(int startChar, int endChar) {
     var braceCount = 0;
     if (_thisChar != startChar) return false;
