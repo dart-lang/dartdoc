@@ -9,7 +9,14 @@ import 'package:dartdoc/src/comment_references/parser.dart';
 import 'package:dartdoc/src/model_utils.dart';
 
 abstract class ModelCommentReference {
+  /// Does the structure of the reference itself imply a possible default
+  /// constructor?
+  // TODO(jcollins-g): rewrite/discard this once default constructor tear-off
+  // design process is complete.
+  bool get allowDefaultConstructor;
   String get codeRef;
+  bool get hasConstructorHint;
+  List<String> get referenceBy;
   Element get staticElement;
 
   /// Construct a [ModelCommentReference] using the analyzer AST.
@@ -18,8 +25,8 @@ abstract class ModelCommentReference {
       _ModelCommentReferenceImpl(ref, resourceProvider);
 
   /// Construct a [ModelCommentReference] given a raw string.
-  factory ModelCommentReference.synthetic(String codeRef, Element element) =>
-      _ModelCommentReferenceImpl.synthetic(codeRef, element);
+  factory ModelCommentReference.synthetic(String codeRef) =>
+      _ModelCommentReferenceImpl.synthetic(codeRef, null);
 }
 
 /// A stripped down analyzer AST [CommentReference] containing only that
@@ -27,7 +34,28 @@ abstract class ModelCommentReference {
 /// and [ResourceProvider] after construction.
 class _ModelCommentReferenceImpl implements ModelCommentReference {
   @override
+  bool get allowDefaultConstructor {
+    if (parsed.length >= 2) {
+      return parsed[parsed.length - 2] == parsed[parsed.length - 1];
+    }
+    return false;
+  }
+
+  @override
   final String codeRef;
+
+  @override
+  bool get hasConstructorHint =>
+      parsed.isNotEmpty &&
+      (parsed.first is ConstructorHintStartNode ||
+          parsed.last is ConstructorHintEndNode);
+
+  @override
+  List<String> get referenceBy => parsed
+      .whereType<IdentifierNode>()
+      .map<String>((i) => i.text)
+      .toList(growable: false);
+
   @override
   final Element staticElement;
 
@@ -47,5 +75,7 @@ class _ModelCommentReferenceImpl implements ModelCommentReference {
     return contents.substring(ref.offset, ref.end);
   }
 
-  List<CommentReferenceNode> parse() => CommentReferenceParser(codeRef).parse();
+  List<CommentReferenceNode> _parsed;
+  List<CommentReferenceNode> get parsed =>
+      _parsed ??= CommentReferenceParser(codeRef).parse();
 }
