@@ -1,0 +1,355 @@
+// Copyright (c) 2021, the Dart project authors. Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+//
+import 'package:charcode/charcode.dart';
+import 'package:meta/meta.dart';
+
+/// A parser for comment references.
+// TODO(jcollins-g): align with [CommentReference] from analyzer AST.
+class CommentReferenceParser {
+  /// Original, unparsed reference.
+  final String codeRef;
+
+  final int _referenceLength;
+
+  CommentReferenceParser(this.codeRef) : _referenceLength = codeRef.length;
+
+  int _index = 0;
+
+  List<CommentReferenceNode> parse() {
+    assert(_index == 0);
+    var children = _parseRawCommentReference();
+    return children;
+  }
+
+  ///
+  /// Parser for rawCommentReferences.  Does not at present distinguish
+  /// between package/library names and identifiers.
+  ///
+  /// ```text
+  ///   <rawCommentReference> ::= <prefix>?<commentReference><suffix>?
+  ///
+  ///   <commentReference> ::= (<packageName> '.')? (<libraryName> '.')? <identifier> ('.' <identifier>)*
+  /// ```
+  List<CommentReferenceNode> _parseRawCommentReference() {
+    var children = <CommentReferenceNode>[];
+
+    // <prefix>?
+    var prefixResult = _parsePrefix();
+    if (prefixResult.type == _PrefixResultType.endOfFile) {
+      return [];
+    }
+    if (prefixResult.type == _PrefixResultType.parsedConstructorHint) {
+      children.add(prefixResult.node);
+    }
+    // [_PrefixResultType.junk] and [_PrefixResultType.missing] we can skip.
+
+    // <commentReference>
+    while (!_atEnd) {
+      var savedIndex = _index;
+      var identifierResult = _parseIdentifier();
+      if (identifierResult.type == _IdentifierResultType.endOfFile) {
+        break;
+      } else if (identifierResult.type == _IdentifierResultType.notIdentifier) {
+        // Push the '.' back.
+        _index = savedIndex;
+        break;
+      } else if (identifierResult.type ==
+          _IdentifierResultType.parsedIdentifier) {
+        children.add(identifierResult.node);
+      }
+      if (_atEnd || _thisChar != $dot) {
+        break;
+      }
+      _index++;
+    }
+
+    // <suffix>?
+    var suffixResult = _parseSuffix();
+    if (suffixResult.type == _SuffixResultType.notSuffix) {
+      // Invalid trailing junk; reject the reference.
+      return [];
+    } else if (suffixResult.type == _SuffixResultType.parsedConstructorHint) {
+      children.add(suffixResult.node);
+    }
+
+    // [_SuffixResultType.junk] or [_SuffixResultType.missing] we can skip.
+    return children;
+  }
+
+  static const _constructorHintPrefix = 'new';
+
+  static const _ignorePrefixes = ['const', 'final', 'var'];
+
+  /// Implement parsing a prefix to a comment reference.
+  ///
+  /// ```text
+  /// <prefix> ::= <constructorPrefixHint>
+  ///    | <leadingJunk>
+  ///
+  /// <constructorPrefixHint> ::= 'new '
+  ///
+  /// <leadingJunk> ::= ('const' | 'final' | 'var')(' '+)
+  /// ```
+  _PrefixParseResult _parsePrefix() {
+    if (_atEnd) {
+      return _PrefixParseResult.endOfFile;
+    }
+    if (_tryMatchLiteral(_constructorHintPrefix)) {
+      return _PrefixParseResult.ok(
+          ConstructorHintStartNode(_constructorHintPrefix));
+    }
+    if (_ignorePrefixes.any((p) => _tryMatchLiteral(p))) {
+      return _PrefixParseResult.junk;
+    }
+
+    /// There is something else here that doesn't look like a prefix.
+    return _PrefixParseResult.missing;
+  }
+
+  static const _whitespace = [$space, $tab, $lf, $cr];
+  static const _nonIdentifierChars = {
+    $dot,
+    $lt,
+    $gt,
+    $lparen,
+    $rparen,
+    $slash,
+    $backslash,
+    $question,
+    $exclamation,
+    ..._whitespace,
+  };
+
+  _IdentifierParseResult _parseIdentifier() {
+    if (_atEnd) {
+      return _IdentifierParseResult.endOfFile;
+    }
+    var startIndex = _index;
+    while (!_atEnd) {
+      if (_nonIdentifierChars.contains(_thisChar)) {
+        if (startIndex == _index) {
+          return _IdentifierParseResult.notIdentifier;
+        } else {
+          break;
+        }
+      }
+      _index++;
+    }
+    return _IdentifierParseResult.ok(
+        IdentifierNode(codeRef.substring(startIndex, _index)));
+  }
+
+  static const _constructorHintSuffix = '()';
+
+  /// ```text
+  /// <suffix> ::= <constructorPostfixHint>
+  ///   | <trailingJunk>
+  ///
+  /// <trailingJunk> ::= '<'<CHARACTER>*'>'
+  ///   | '('<notClosedParenthesis>*')'
+  ///   | '<'<notGreaterThan>*'>'
+  ///   | '?'
+  ///   | '!'
+  ///
+  /// <constructorPostfixHint> ::= '()'
+  /// ```
+  _SuffixParseResult _parseSuffix() {
+    var startIndex = _index;
+    _walkPastWhitespace();
+    if (_atEnd) {
+      return _SuffixParseResult.missing;
+    }
+    if (_tryMatchLiteral(_constructorHintSuffix)) {
+      if (_atEnd) {
+        return _SuffixParseResult.ok(
+            ConstructorHintEndNode(codeRef.substring(startIndex, _index)));
+      }
+      return _SuffixParseResult.notSuffix;
+    }
+
+    if ((_thisChar == $exclamation || _thisChar == $question) && _nextAtEnd) {
+      return _SuffixParseResult.junk;
+    }
+    if (_matchBraces($lparen, $rparen) || _matchBraces($lt, $gt)) {
+      return _SuffixParseResult.junk;
+    }
+
+    return _SuffixParseResult.notSuffix;
+  }
+
+  bool get _atEnd => _index >= _referenceLength;
+  bool get _nextAtEnd => _index + 1 >= _referenceLength;
+  int get _thisChar => codeRef.codeUnitAt(_index);
+
+  /// Advances [_index] on match, preserves on non-match.
+  bool _tryMatchLiteral(String characters,
+      {bool acceptTrailingWhitespace = true}) {
+    assert(acceptTrailingWhitespace != null);
+    if (characters.length + _index > _referenceLength) return false;
+    for (var startIndex = _index;
+        _index - startIndex < characters.length;
+        _index++) {
+      if (codeRef.codeUnitAt(_index) !=
+          characters.codeUnitAt(_index - startIndex)) {
+        _index = startIndex;
+        return false;
+      }
+    }
+    if (acceptTrailingWhitespace) _walkPastWhitespace();
+    return true;
+  }
+
+  /// Walks past any whitespace characters.
+  ///
+  /// [_index] points to a non-whitespace character when this method returns.
+  ///
+  /// If EOF is reached, then [_index] points past the end of the template
+  /// content when this method returns.
+  void _walkPastWhitespace() {
+    while (!_atEnd) {
+      if (_whitespace.contains(_thisChar)) {
+        _index++;
+      } else {
+        return;
+      }
+    }
+    return;
+  }
+
+  /// Returns `true` if we started with [startChar] and ended with [endChar]
+  /// with a matching number of braces.
+  /// Restores [_index] to state when called if returning `false`.
+  bool _matchBraces(int startChar, int endChar) {
+    var braceCount = 0;
+    if (_thisChar != startChar) return false;
+    var startIndex = _index;
+    while (!_atEnd) {
+      if (_thisChar == startChar) braceCount++;
+      if (_thisChar == endChar) braceCount--;
+      ++_index;
+      if (braceCount == 0) return true;
+    }
+    _index = startIndex;
+    return false;
+  }
+}
+
+enum _PrefixResultType {
+  endOfFile, // Found end of file instead of a prefix.
+  junk, // Found some recognized junk that can be ignored.
+  missing, // There is no prefix here.
+  parsedConstructorHint, // Parsed a [ConstructorHintStartNode].
+}
+
+/// The result of attempting to parse a prefix to a comment reference.
+class _PrefixParseResult {
+  final _PrefixResultType type;
+
+  final CommentReferenceNode node;
+
+  const _PrefixParseResult._(this.type, this.node);
+
+  factory _PrefixParseResult.ok(ConstructorHintStartNode node) =>
+      _PrefixParseResult._(_PrefixResultType.parsedConstructorHint, node);
+
+  static const _PrefixParseResult endOfFile =
+      _PrefixParseResult._(_PrefixResultType.endOfFile, null);
+
+  static const _PrefixParseResult junk =
+      _PrefixParseResult._(_PrefixResultType.junk, null);
+
+  static const _PrefixParseResult missing =
+      _PrefixParseResult._(_PrefixResultType.missing, null);
+}
+
+enum _IdentifierResultType {
+  endOfFile, // Found end of file instead of the beginning of an identifier.
+  notIdentifier, // This is not an identifier.
+  parsedIdentifier, // Found an identifier.
+}
+
+/// The result of attempting to parse a single identifier within a
+/// comment reference.
+class _IdentifierParseResult {
+  final _IdentifierResultType type;
+
+  final IdentifierNode node;
+
+  const _IdentifierParseResult._(this.type, this.node);
+
+  factory _IdentifierParseResult.ok(IdentifierNode node) =>
+      _IdentifierParseResult._(_IdentifierResultType.parsedIdentifier, node);
+
+  static const _IdentifierParseResult endOfFile =
+      _IdentifierParseResult._(_IdentifierResultType.endOfFile, null);
+
+  static const _IdentifierParseResult notIdentifier =
+      _IdentifierParseResult._(_IdentifierResultType.notIdentifier, null);
+}
+
+enum _SuffixResultType {
+  junk, // Found known types of junk it is OK to ignore.
+  missing, // There is no suffix here.  Same as EOF as this is a suffix.
+  notSuffix, // Found something, but not a valid suffix.
+  parsedConstructorHint, // Parsed a [ConstructorHintEndNode].
+}
+
+/// The result of attempting to parse a prefix to a comment reference.
+class _SuffixParseResult {
+  final _SuffixResultType type;
+
+  final CommentReferenceNode node;
+
+  const _SuffixParseResult._(this.type, this.node);
+
+  factory _SuffixParseResult.ok(CommentReferenceNode node) =>
+      _SuffixParseResult._(_SuffixResultType.parsedConstructorHint, node);
+
+  static const _SuffixParseResult junk =
+      _SuffixParseResult._(_SuffixResultType.junk, null);
+
+  static const _SuffixParseResult missing =
+      _SuffixParseResult._(_SuffixResultType.missing, null);
+
+  static const _SuffixParseResult notSuffix =
+      _SuffixParseResult._(_SuffixResultType.notSuffix, null);
+}
+
+@sealed
+// TODO(jcollins-g): add SourceSpans?
+abstract class CommentReferenceNode {
+  String get text;
+}
+
+class ConstructorHintStartNode extends CommentReferenceNode {
+  @override
+  final String text;
+
+  ConstructorHintStartNode(this.text);
+
+  @override
+  String toString() => 'ConstructorHintStartNode["$text"]';
+}
+
+class ConstructorHintEndNode extends CommentReferenceNode {
+  @override
+  final String text;
+
+  ConstructorHintEndNode(this.text);
+
+  @override
+  String toString() => 'ConstructorHintEndNode["$text"]';
+}
+
+/// Represents an identifier.
+class IdentifierNode extends CommentReferenceNode {
+  @override
+  final String text;
+
+  IdentifierNode(this.text);
+
+  @override
+  String toString() => 'Identifier["$text"]';
+}
