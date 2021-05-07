@@ -11,6 +11,8 @@ import 'package:dartdoc/src/model_utils.dart' as model_utils;
 import 'package:dartdoc/src/quiver.dart' as quiver;
 import 'package:meta/meta.dart';
 
+import 'comment_referable.dart';
+
 /// A [Container] defined with a `class` declaration in Dart.
 ///
 /// Members follow similar naming rules to [Container], with the following
@@ -602,4 +604,10 @@ class Class extends Container
 
   @override
   Iterable<Field> get constantFields => allFields.where((f) => f.isConst);
+
+  @override
+  Iterable<CommentReferable> get referenceParents => <CommentReferable>[
+        ...super.referenceParents,
+        ...superChain.map((m) => m.modelElement)
+      ];
 }

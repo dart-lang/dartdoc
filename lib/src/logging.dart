@@ -105,7 +105,6 @@ void startLogging(LoggingContext config) {
         stdout.write('${ansi.backspace} ${ansi.backspace}');
       }
       var message = record.message;
-      assert(message == message.trimRight());
       assert(message.isNotEmpty);
 
       if (record.level < Level.WARNING) {
