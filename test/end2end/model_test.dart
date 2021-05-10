@@ -24,7 +24,7 @@ import 'package:test/test.dart';
 import '../src/utils.dart' as utils;
 
 final _testPackageGraphMemo = AsyncMemoizer<PackageGraph>();
-Future<PackageGraph> get _testPackageGraph =>
+Future<PackageGraph> get testPackageGraph async =>
     _testPackageGraphMemo.runOnce(() => utils.bootBasicPackage(
         'testing/test_package',
         pubPackageMetaProvider,
@@ -79,7 +79,7 @@ void main() {
   setUpAll(() async {
     // Use model_special_cases_test.dart for tests that require
     // a different package graph.
-    packageGraph = await _testPackageGraph;
+    packageGraph = await testPackageGraph;
     exLibrary = packageGraph.libraries.firstWhere((lib) => lib.name == 'ex');
     fakeLibrary =
         packageGraph.libraries.firstWhere((lib) => lib.name == 'fake');

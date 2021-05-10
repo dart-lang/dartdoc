@@ -16,6 +16,7 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/quiver.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:markdown/markdown.dart' as md;
+import 'package:meta/meta.dart';
 
 const validHtmlTags = [
   'a',
@@ -947,7 +948,7 @@ const _referenceLookupWarnings = {
 };
 
 md.Node _makeLinkNode(String codeRef, Warnable warnable) {
-  var result = _getMatchingLinkElement(warnable, codeRef);
+  var result = getMatchingLinkElement(warnable, codeRef);
   var textContent = htmlEscape.convert(codeRef);
   var linkedElement = result.modelElement;
   if (linkedElement != null) {
@@ -976,7 +977,8 @@ md.Node _makeLinkNode(String codeRef, Warnable warnable) {
   return md.Element.text('code', textContent);
 }
 
-MatchingLinkResult _getMatchingLinkElement(Warnable warnable, String codeRef) {
+@visibleForTesting
+MatchingLinkResult getMatchingLinkElement(Warnable warnable, String codeRef) {
   MatchingLinkResult result, resultOld, resultNew;
   // Do a comparison between result types only if the warnings for them are
   // enabled, because there's a significant performance penalty.
