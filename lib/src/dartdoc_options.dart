@@ -545,6 +545,9 @@ class _OptionValueWithContext<T> {
 /// built in to these classes so that file existence can be verified, types
 /// constrained, and defaults provided.
 ///
+/// This class caches the current working directory from the [ResourceProvider];
+/// do not attempt to change it during the life of an instance.
+///
 /// Use via implementations [DartdocOptionSet], [DartdocOptionArgFile],
 /// [DartdocOptionArgOnly], and [DartdocOptionFileOnly].
 abstract class DartdocOption<T> {
@@ -727,10 +730,13 @@ abstract class DartdocOption<T> {
   /// Calls [valueAt] with the working directory at the start of the program.
   T valueAtCurrent() => valueAt(_directoryCurrent);
 
+  Folder __directoryCurrent;
   Folder get _directoryCurrent =>
-      resourceProvider.getFolder(resourceProvider.pathContext.current);
+      __directoryCurrent ??= resourceProvider.getFolder(_directoryCurrentPath);
 
-  String get _directoryCurrentPath => resourceProvider.pathContext.current;
+  String __directoryCurrentPath;
+  String get _directoryCurrentPath =>
+      __directoryCurrentPath ??= resourceProvider.pathContext.current;
 
   /// Calls [valueAt] on the directory this element is defined in.
   T valueAtElement(Element element) =>
