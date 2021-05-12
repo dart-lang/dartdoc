@@ -96,11 +96,10 @@ Iterable<Class> findCanonicalFor(Iterable<Class> classes) {
       c.packageGraph.findCanonicalModelElementFor(c.element) as Class ?? c);
 }
 
-/// Uses direct file access to get the contents of a file, out of a
-/// cache if possible.
+/// Uses direct file access to get the contents of a file.  Cached.
 ///
 /// Direct reading of source code via a [PhysicalResourceProvider] is not
-/// allowed in some environments, so avoid this where possible.
+/// allowed in some environments, so avoid using this.
 // TODO(jcollins-g): consider deprecating this and the `--include-source`
 // feature that uses it now that source code linking is possible.
 String getFileContentsFor(Element e, ResourceProvider resourceProvider) {
