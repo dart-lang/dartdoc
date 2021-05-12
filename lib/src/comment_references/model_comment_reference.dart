@@ -6,7 +6,6 @@ import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/comment_references/parser.dart';
-import 'package:dartdoc/src/model_utils.dart';
 
 abstract class ModelCommentReference {
   /// Does the structure of the reference itself imply a possible default
@@ -70,9 +69,11 @@ class _ModelCommentReferenceImpl implements ModelCommentReference {
   /// [CommentReference].
   static String _referenceText(
       CommentReference ref, ResourceProvider resourceProvider) {
-    var contents = getFileContentsFor(
-        (ref.root as CompilationUnit).declaredElement, resourceProvider);
-    return contents.substring(ref.offset, ref.end);
+    var token = (ref.parent as Comment).tokens.firstWhere((t) => t.offset <= ref.offset && t.end >= ref.end);
+    // This is a little sketchy, but works since comments happen to be a token
+    // that is fully preserved in its string representation.
+    // TODO(jcollins-g): replace unparsing in general with lower level changes.
+    return token.toString().substring(ref.offset - token.offset, ref.end - token.offset);
   }
 
   List<CommentReferenceNode> _parsed;
