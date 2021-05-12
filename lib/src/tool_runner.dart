@@ -4,7 +4,7 @@
 
 library dartdoc.tool_runner;
 
-import 'dart:io' show Process, ProcessException;
+import 'dart:io' show Platform, Process, ProcessException;
 
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/io_utils.dart';
@@ -17,7 +17,8 @@ typedef FakeResultCallback = String Function(String tool,
 
 /// Set a ceiling on how many tool instances can be in progress at once,
 /// limiting both parallelization and the number of open temporary files.
-final MultiFutureTracker<void> _toolTracker = MultiFutureTracker(4);
+final MultiFutureTracker<void> _toolTracker =
+    MultiFutureTracker(Platform.numberOfProcessors);
 
 /// Can be called when the ToolRunner is no longer needed.
 ///

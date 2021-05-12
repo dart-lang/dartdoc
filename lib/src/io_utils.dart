@@ -135,7 +135,8 @@ class MultiFutureTracker<T> {
 
   /// Generates a [Future] from the given closure and adds it to the queue,
   /// once the queue is sufficiently empty.  The returned future completes
-  /// when the generated [Future] has been added to the queue.
+  /// when the generated [Future] has been added to the queue.  Generated
+  /// futures are `awaited` when [wait] is called.
   ///
   /// If the closure does not handle its own exceptions, other calls to
   /// [addFutureFromClosure] or [wait] may trigger an exception.

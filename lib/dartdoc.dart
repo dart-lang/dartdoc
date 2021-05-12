@@ -252,10 +252,8 @@ class Dartdoc {
       return dartdocResults;
     } finally {
       // Clear out any cached tool snapshots and temporary directories.
-      // ignore: unawaited_futures
       SnapshotCache.instance?.dispose();
-      // ignore: unawaited_futures
-      ToolTempFileTracker.instance?.dispose();
+      await ToolTempFileTracker.instance?.dispose();
     }
   }
 
