@@ -23,9 +23,12 @@ class ReferenceChildrenLookup {
 mixin CommentReferable implements Nameable {
   /// Look up a comment reference by its component parts.  If [tryParents] is
   /// true, try looking up the same reference in any parents of [this].
+  /// Will skip over results that do not pass a given [filter] and keep
+  /// searching.
   @nonVirtual
   CommentReferable referenceBy(List<String> reference,
-      {bool tryParents = true}) {
+      {bool tryParents = true, bool Function(CommentReferable) filter}) {
+    filter ??= (r) => true;
     if (reference.isEmpty) {
       if (tryParents == false) return this;
       return null;
@@ -37,8 +40,14 @@ mixin CommentReferable implements Nameable {
       if (referenceChildren.containsKey(referenceLookup.lookup)) {
         result = referenceChildren[referenceLookup.lookup];
         if (referenceLookup.remaining.isNotEmpty) {
-          result =
-              result?.referenceBy(referenceLookup.remaining, tryParents: false);
+          result = result?.referenceBy(referenceLookup.remaining,
+              tryParents: false, filter: filter);
+        } else if (!filter(result)) {
+          result = result?.referenceBy([referenceLookup.lookup],
+              tryParents: false, filter: filter);
+        }
+        if (!filter(result)) {
+          result = null;
         }
       }
       if (result != null) break;
@@ -46,7 +55,7 @@ mixin CommentReferable implements Nameable {
     // If we can't find it in children, try searching parents if allowed.
     if (result == null && tryParents) {
       for (var parent in referenceParents) {
-        result = parent.referenceBy(reference);
+        result = parent.referenceBy(reference, filter: filter);
         if (result != null) break;
       }
     }

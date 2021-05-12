@@ -17,13 +17,15 @@ abstract class Base extends Nameable with CommentReferable {
   /// Returns the added (or already existing) [Base].
   Base add(String newName);
 
-  Base lookup(String value) => referenceBy(value.split(_separator));
+  T lookup<T extends CommentReferable>(String value,
+          {bool Function(CommentReferable) filter}) =>
+      referenceBy(value.split(_separator), filter: filter);
 
   @override
   Element get element => throw UnimplementedError();
 }
 
-class Top extends Base {
+class Top extends Base with CommentReferable {
   @override
   final String name;
   final List<TopChild> children;
@@ -124,6 +126,7 @@ void main() {
       referable.add('lib1.class2.member1');
       referable.add('lib2');
       referable.add('lib2.class3');
+      referable.add('lib3.lib3.lib3');
     });
 
     test('Check that basic lookups work', () {
@@ -131,6 +134,12 @@ void main() {
       expect(referable.lookup('lib2').name, equals('lib2'));
       expect(referable.lookup('lib1.class2.member1').name, equals('member1'));
       expect(referable.lookup('lib2.class3').name, equals('class3'));
+    });
+
+    test('Check that filters work', () {
+      expect(referable.lookup('lib3'), isA<TopChild>());
+      expect(referable.lookup('lib3', filter: ((r) => r is GenericChild)),
+          isA<GenericChild>());
     });
   });
 }

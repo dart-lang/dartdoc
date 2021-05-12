@@ -1,3 +1,21 @@
+## 0.43.0
+* Add experimental lookup code for comment references eventually
+  destined to replace most of `lib/src/markdown_processor.dart`.  Most
+  of this work is disabled by default but does impact internal APIs.
+  (#2637, #2634, #2630, #2622)
+* Fix duplicate nullability suffix in some cases with markdown output.
+  (#2632)
+* Update analyzer requirement to 1.5.0 and fix/allow experimental
+  features in 2.14. (#2625, #2618)
+* Improvement to browser search, making browser find prioritize the
+  main text area. (#2621)
+* BREAKING CHANGE: hasDisplayedCategories replaced with
+  hasCategoryNames. (#2614)
+* Fix the public mixins link in the category sidebar. (#2613)
+* Do not show late fields as 'read/write'. (#2608)
+* Print version information when an exception is encountered.  (#2607)
+* A number of minor, internal cleanups.
+
 ## 0.42.0
 * Add some tests and verify basic support for triple-shift, and check
   to be sure that using the function as type parameter feature does not crash

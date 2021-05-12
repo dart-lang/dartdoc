@@ -9,6 +9,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:dartdoc/src/comment_references/model_comment_reference.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -275,19 +276,39 @@ ModelElement _getPreferredClass(ModelElement modelElement) {
   return null;
 }
 
+/// Return false if the passed [referable] is a default [Constructor].
+bool _rejectDefaultConstructors(CommentReferable referable) {
+  if (referable is Constructor &&
+      referable.name == referable.enclosingElement.name) {
+    return false;
+  }
+  return true;
+}
+
+/// Return false unless the passed [referable] is a [Constructor].
+bool _requireConstructor(CommentReferable referable) =>
+    referable is Constructor;
+
 /// Implements _getMatchingLinkElement via [CommentReferable.referenceBy].
 MatchingLinkResult _getMatchingLinkElementCommentReferable(
     String codeRef, Warnable warnable) {
-  if (!codeRef.contains(_constructorIndicationPattern) &&
-      codeRef.contains(notARealDocReference)) {
-    // Don't waste our time on things we won't ever find.
-    return MatchingLinkResult(null, warn: false);
-  }
+  var commentReference =
+      warnable.commentRefs[codeRef] ?? ModelCommentReference.synthetic(codeRef);
+  var filter = commentReference.hasConstructorHint
+      ? _requireConstructor
+      : _rejectDefaultConstructors;
 
-  // TODO(jcollins-g): implement implied constructor?
-  var codeRefChompedParts =
-      codeRef.replaceAll(_constructorIndicationPattern, '').split('.');
-  var lookupResult = warnable.referenceBy(codeRefChompedParts);
+  /// Neither reject, nor require, a default constructor in the event
+  /// the comment reference structure implies one.  (We can not require it
+  /// in case a library name is the same as a member class name and the class
+  /// is the intended lookup).
+  if (commentReference.allowDefaultConstructor) {
+    filter = null;
+  }
+  var lookupResult =
+      warnable.referenceBy(commentReference.referenceBy, filter: filter);
+
+  // TODO(jcollins-g): Consider prioritizing analyzer resolution before custom.
   return MatchingLinkResult(lookupResult);
 }
 

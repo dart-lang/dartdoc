@@ -2146,6 +2146,18 @@ class _Renderer_Class extends RendererBase<Class> {
                             parent: r));
                   },
                 ),
+                'referenceParents': Property(
+                  getValue: (CT_ c) => c.referenceParents,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'Iterable<CommentReferable>'),
+                  renderIterable:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    return c.referenceParents.map(
+                        (e) => renderSimple(e, ast, r.template, parent: r));
+                  },
+                ),
                 'superChain': Property(
                   getValue: (CT_ c) => c.superChain,
                   renderVariable: (CT_ c, Property<CT_> self,
