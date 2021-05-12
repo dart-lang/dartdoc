@@ -69,11 +69,15 @@ class _ModelCommentReferenceImpl implements ModelCommentReference {
   /// [CommentReference].
   static String _referenceText(
       CommentReference ref, ResourceProvider resourceProvider) {
-    var token = (ref.parent as Comment).tokens.firstWhere((t) => t.offset <= ref.offset && t.end >= ref.end);
+    var token = (ref.parent as Comment)
+        .tokens
+        .firstWhere((t) => t.offset <= ref.offset && t.end >= ref.end);
     // This is a little sketchy, but works since comments happen to be a token
     // that is fully preserved in its string representation.
     // TODO(jcollins-g): replace unparsing in general with lower level changes.
-    return token.toString().substring(ref.offset - token.offset, ref.end - token.offset);
+    return token
+        .toString()
+        .substring(ref.offset - token.offset, ref.end - token.offset);
   }
 
   List<CommentReferenceNode> _parsed;
