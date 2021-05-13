@@ -88,25 +88,26 @@ class RendererSpec {
 
   final String standardMdTemplate;
 
+  final Map<TemplateFormat, Uri> standardTemplateUris;
+
   RendererSpec(
     this.name,
     this.contextType,
     this.visibleTypes,
     this.standardHtmlTemplate,
     this.standardMdTemplate,
-  );
+  ) : standardTemplateUris = {
+          TemplateFormat.html: _parseUriFromAnnotation(standardHtmlTemplate),
+          TemplateFormat.md: _parseUriFromAnnotation(standardMdTemplate),
+        };
+
+  /// Parses a URI from a String which comes from a const annotation object.
+  ///
+  /// The String value may be the literal value, 'null'.
+  static Uri _parseUriFromAnnotation(String unparsed) =>
+      unparsed == 'null' || unparsed == null ? null : Uri.parse(unparsed);
 
   ClassElement get contextElement => contextType.element;
-
-  Map<TemplateFormat, Uri> get standardTemplateUri => {
-        TemplateFormat.html: standardHtmlTemplate == 'null'
-            ? null
-            : Uri.parse(standardHtmlTemplate),
-        TemplateFormat.md:
-            standardMdTemplate == 'null' || standardMdTemplate == null
-                ? null
-                : Uri.parse(standardMdTemplate),
-      };
 }
 
 enum TemplateFormat {

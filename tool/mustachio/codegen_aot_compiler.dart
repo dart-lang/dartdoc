@@ -15,20 +15,30 @@ import 'package:path/path.dart' as p;
 
 import 'utilities.dart';
 
-class _AotCompiler {
-  final InterfaceType _contextType;
-
-  final String _rendererName;
-
+/// Various static build data to be used for each renderer, including specified
+/// renderers and template renderers.
+class _BuildData {
   final BuildStep _buildStep;
 
   final TypeProvider _typeProvider;
 
   final TypeSystem _typeSystem;
 
+  final TemplateFormat _format;
+
+  _BuildData(
+      this._buildStep, this._typeProvider, this._typeSystem, this._format);
+}
+
+/// A class which compiles a single template file into a single
+class _AotCompiler {
+  final InterfaceType _contextType;
+
+  final String _rendererName;
+
   final AssetId _templateAssetId;
 
-  final TemplateFormat _format;
+  final _BuildData _buildData;
 
   final List<MustachioNode> _syntaxTree;
 
@@ -38,21 +48,25 @@ class _AotCompiler {
 
   final List<_VariableLookup> _contextStack;
 
-  static Future<_AotCompiler> readAndParse(
+  int _partialCounter = 0;
+
+  /*late*/ int _contextNameCounter;
+
+  /// Reads the template at [templateAssetId] and parses it into a syntax tree,
+  /// returning an [_AotCompiler] with the necessary information to be able to
+  /// compile the template into a renderer.
+  static Future<_AotCompiler> _readAndParse(
     InterfaceType contextType,
     String rendererName,
     AssetId templateAssetId,
-    TemplateFormat format,
-    StringBuffer buffer,
-    BuildStep buildStep,
-    TypeProvider typeProvider,
-    TypeSystem typeSystem, {
+    _BuildData buildData,
+    StringBuffer buffer, {
     List<_VariableLookup> contextStack,
   }) async {
-    var template = await buildStep.readAsString(templateAssetId);
+    var template = await buildData._buildStep.readAsString(templateAssetId);
     var syntaxTree = MustachioParser(template, templateAssetId.uri).parse();
-    return _AotCompiler._(contextType, rendererName, templateAssetId, format,
-        syntaxTree, buffer, buildStep, typeProvider, typeSystem,
+    return _AotCompiler._(contextType, rendererName, templateAssetId,
+        syntaxTree, buildData, buffer,
         contextStack: contextStack);
   }
 
@@ -60,12 +74,9 @@ class _AotCompiler {
     this._contextType,
     this._rendererName,
     this._templateAssetId,
-    this._format,
     this._syntaxTree,
-    this._buffer,
-    this._buildStep,
-    this._typeProvider,
-    this._typeSystem, {
+    this._buildData,
+    this._buffer, {
     List<_VariableLookup> contextStack,
   })  : _contextStack = _rename(contextStack ?? []),
         _contextNameCounter = contextStack?.length ?? 0;
@@ -80,11 +91,6 @@ class _AotCompiler {
     return [...result.reversed];
   }
 
-  Future<String> _compileToLibrary() async {
-    await _compileToRenderer();
-    return DartFormatter().format(_buffer.toString());
-  }
-
   Future<void> _compileToRenderer() async {
     if (_contextStack.isEmpty) {
       var contextName = 'context0';
@@ -92,6 +98,7 @@ class _AotCompiler {
       _contextStack.push(contextVariable);
       _contextNameCounter++;
     }
+
     // Get the type parameters of _each_ of the context types in the stack,
     // including their bounds, concatenate them, and wrap them in angle
     // brackets.
@@ -124,10 +131,6 @@ class _AotCompiler {
       _buffer.write(partialRenderer._buffer.toString());
     }
   }
-
-  int _partialCounter = 0;
-
-  /*late*/ int _contextNameCounter;
 }
 
 /// Represents a variable lookup via property access chain [name] which returns
@@ -146,22 +149,32 @@ class _BlockCompiler {
 
   final List<_VariableLookup> _contextStack;
 
-  InterfaceType get contextType => _contextStack.first.type;
-
-  String get contextName => _contextStack.first.name;
-
   _BlockCompiler(this._templateCompiler, this._contextStack);
 
   void write(String text) => _templateCompiler._buffer.write(text);
 
   void writeln(String text) => _templateCompiler._buffer.writeln(text);
 
-  String getNewConextName() {
+  InterfaceType get contextType => _contextStack.first.type;
+
+  String get contextName => _contextStack.first.name;
+
+  TemplateFormat get format => _templateCompiler._buildData._format;
+
+  TypeProvider get typeProvider => _templateCompiler._buildData._typeProvider;
+
+  TypeSystem get typeSystem => _templateCompiler._buildData._typeSystem;
+
+  /// Generates a new name for a context variable. Each context variable going
+  /// up the stack needs to be accessible, so they each need a unique variable
+  /// name.
+  String getNewContextName() {
     var newContextName = 'context${_templateCompiler._contextNameCounter}';
     _templateCompiler._contextNameCounter++;
     return newContextName;
   }
 
+  /// The base name of a partial rendering function.
   String get partialBaseName => '_${_templateCompiler._rendererName}_partial';
 
   Future<void> _compile(List<MustachioNode> syntaxTree) async {
@@ -180,8 +193,7 @@ class _BlockCompiler {
   }
 
   Future<void> _compilePartial(Partial node) async {
-    var extension =
-        _templateCompiler._format == TemplateFormat.html ? 'html' : 'md';
+    var extension = format == TemplateFormat.html ? 'html' : 'md';
     var partialAssetId = AssetId.resolve(Uri.parse('_${node.key}.$extension'),
         from: _templateCompiler._templateAssetId);
     var partialRenderer = _templateCompiler._partialRenderers.firstWhere(
@@ -190,15 +202,8 @@ class _BlockCompiler {
     if (partialRenderer == null) {
       var name =
           '${partialBaseName}_${node.key}_${_templateCompiler._partialCounter}';
-      partialRenderer = await _AotCompiler.readAndParse(
-          contextType,
-          name,
-          partialAssetId,
-          _templateCompiler._format,
-          StringBuffer(),
-          _templateCompiler._buildStep,
-          _templateCompiler._typeProvider,
-          _templateCompiler._typeSystem,
+      partialRenderer = await _AotCompiler._readAndParse(contextType, name,
+          partialAssetId, _templateCompiler._buildData, StringBuffer(),
           contextStack: _contextStack);
       // Add this partial renderer to be written later.
       _templateCompiler._partialRenderers.add(partialRenderer);
@@ -222,8 +227,8 @@ class _BlockCompiler {
       // Conditional block.
       await _compileConditionalSection(variableLookup, node.children,
           invert: node.invert);
-    } else if (_templateCompiler._typeSystem.isAssignableTo(variableLookup.type,
-        _templateCompiler._typeProvider.iterableDynamicType)) {
+    } else if (typeSystem.isAssignableTo(
+        variableLookup.type, typeProvider.iterableDynamicType)) {
       // Repeated block.
       await _compileRepeatedSection(variableLookup, node.children,
           invert: node.invert);
@@ -256,14 +261,14 @@ class _BlockCompiler {
       await _BlockCompiler(_templateCompiler, _contextStack)._compile(block);
       writeln('}');
     } else {
-      var newContextName = getNewConextName();
+      var newContextName = getNewContextName();
       write('for (var $newContextName in $variableAccess) {');
       // If [loopType] is something like `C<int>` where
       // `class C<T> implements Queue<Future<T>>`, we need the [ClassElement]
       // for [Iterable], and then use [DartType.asInstanceOf] to ultimately
       // determine that the inner type of the loop is, for example,
       // `Future<int>`.
-      var iterableElement = _templateCompiler._typeProvider.iterableElement;
+      var iterableElement = typeProvider.iterableElement;
       var iterableType = variableLookup.type.asInstanceOf(iterableElement);
       var innerContextType = iterableType.typeArguments.first;
       var innerContext = _VariableLookup(innerContextType, newContextName);
@@ -283,7 +288,7 @@ class _BlockCompiler {
       await _BlockCompiler(_templateCompiler, _contextStack)._compile(block);
       writeln('}');
     } else {
-      var innerContextName = getNewConextName();
+      var innerContextName = getNewContextName();
       writeln('if ($variableAccess != null) {');
       writeln('  var $innerContextName = $variableAccess;');
       var innerContext = _VariableLookup(variableLookup.type, innerContextName);
@@ -366,6 +371,8 @@ class _BlockCompiler {
   }
 }
 
+/// Compiles all templates specified in [specs] into a Dart library containing
+/// a renderer for each template.
 Future<String> compileTemplatesToRenderers(
   Set<RendererSpec> specs,
   Uri sourceUri,
@@ -394,16 +401,21 @@ import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/generator/template_data.dart';
 import '${p.basename(sourceUri.path)}';
 ''');
+  var buildData = _BuildData(buildStep, typeProvider, typeSystem, format);
   for (var spec in specs) {
-    var templateUri = spec.standardTemplateUri[format];
-    print('for $spec, found tU: $templateUri; ${templateUri?.isAbsolute}');
+    var templateUri = spec.standardTemplateUris[format];
     if (templateUri == null) continue;
     var templateAsset = templateUri.isAbsolute
         ? AssetId.resolve(templateUri)
         : AssetId.resolve(templateUri, from: buildStep.inputId);
-    var compiler = await _AotCompiler.readAndParse(spec.contextType, spec.name,
-        templateAsset, format, buffer, buildStep, typeProvider, typeSystem);
-    await compiler._compileToLibrary();
+    var compiler = await _AotCompiler._readAndParse(
+      spec.contextType,
+      spec.name,
+      templateAsset,
+      buildData,
+      buffer,
+    );
+    await compiler._compileToRenderer();
   }
   return DartFormatter().format(buffer.toString());
 }
