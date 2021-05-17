@@ -5,11 +5,12 @@
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as model_utils;
 
-/// A set of [Class]es, [Enum]s, [TopLevelVariable]s, [ModelFunction]s,
-/// [Field]s, and [Typedef]s, possibly initialized after construction by
-/// accessing private member variables.  Do not call any methods or members
-/// excepting [name] and the private Lists below before finishing initialization
-/// of a [TopLevelContainer].
+/// A set of [Class]es, [Extension]s, [Enum]s, [Mixin]s, [TopLevelVariable]s,
+/// [ModelFunction]s, and [Typedef]s, possibly initialized after construction by
+/// accessing private member variables.
+///
+/// Do not call any methods or members excepting [name] and the private Lists
+/// below before finishing initialization of a [TopLevelContainer].
 abstract class TopLevelContainer implements Nameable {
   Iterable<Class> get classes;
 
