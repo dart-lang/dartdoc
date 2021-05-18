@@ -143,8 +143,19 @@ class CallableElementTypeRendererHtml
   }
 
   @override
-  String renderNameWithGenerics() {
-
+  String renderNameWithGenerics(CallableElementType elementType) {
+    var buf = StringBuffer();
+    buf.write(elementType.name);
+    if (elementType.typeArguments != null) {
+      if (elementType.typeArguments.isNotEmpty &&
+          !elementType.typeArguments.every((t) => t.name == 'dynamic')) {
+        buf.write('&lt;');
+        buf.writeAll(
+            elementType.typeArguments.map((t) => t.nameWithGenerics), ', ');
+        buf.write('>');
+      }
+    }
+    return wrapNullability(elementType, buf.toString());
   }
 }
 
