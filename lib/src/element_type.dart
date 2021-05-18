@@ -461,9 +461,6 @@ class CallableElementType extends ParameterizedElementType
   String get name => super.name != null && super.name.isNotEmpty ? super.name : 'Function';
 
   @override
-  String get nameWithGenerics => super.nameWithGenerics;
-
-  @override
   ElementTypeRenderer<CallableElementType> get _renderer =>
       packageGraph.rendererFactory.callableElementTypeRenderer;
 }

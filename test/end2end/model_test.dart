@@ -3795,7 +3795,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('return type', () {
       expect(oldgeneric.modelType.linkedName,
-          equals('something'));
+          equals('Function(<span class=\"parameter\" id=\"GenericTypedef-param-input\"><span class=\"type-annotation\">T</span></span>) → T'));
       expect(generic.modelType.linkedName,
           equals('List<span class="signature">&lt;<wbr><span class="type-parameter">S</span>&gt;</span> Function&lt;<wbr><span class="type-parameter">S</span>&gt;<span class="signature">(<span class="parameter" id="param-"><span class="type-annotation">T</span>, </span><span class="parameter" id="param-"><span class="type-annotation">int</span>, </span><span class="parameter" id="param-"><span class="type-annotation">bool</span></span>)</span>'));
     });

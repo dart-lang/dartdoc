@@ -11,9 +11,6 @@ abstract class TypedefRenderer {
 
   /// Render the the generic type parameters of the specified [typedef].
   String renderGenericParameters(Typedef typedef);
-
-  /// Render the the generic type parameters of the specified [typedef]'s generic parameters.
-  String renderAliasedGenericParameters(FunctionTypedef typedef);
 }
 
 /// A HTML renderer for a [Typedef].
@@ -35,9 +32,6 @@ class TypedefRendererHtml extends TypedefRenderer {
 
   @override
   String renderGenericParameters(Typedef typedef) => _renderTypeParameters(typedef.typeParameters);
-
-  @override
-  String renderAliasedGenericParameters(FunctionTypedef typedef) => _renderTypeParameters(typedef.aliasedTypeParameters);
 }
 
 /// A markdown renderer for a [Typedef].
@@ -58,7 +52,4 @@ class TypedefRendererMd extends TypedefRenderer {
 
   @override
   String renderGenericParameters(Typedef typedef) => _renderTypeParameters(typedef.typeParameters);
-
-  @override
-  String renderAliasedGenericParameters(FunctionTypedef typedef) => _renderTypeParameters(typedef.aliasedTypeParameters);
 }

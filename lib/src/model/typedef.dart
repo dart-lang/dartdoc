@@ -88,28 +88,5 @@ class FunctionTypedef extends Typedef {
       : super(element, library, packageGraph);
 
   @override
-  FunctionType get aliasedType => super.aliasedType;
-
-  List<TypeParameterElement> get aliasedGenericTypeParameters {
-    var aliasedTypeElement = aliasedType.aliasElement;
-    if (aliasedTypeElement is FunctionTypedElement) {
-      return aliasedTypeElement.typeParameters;
-    }
-    if (aliasedType.typeFormals.isNotEmpty == true) {
-      return aliasedType.typeFormals;
-    }
-    assert(false);
-    return element.typeParameters;
-  }
-
-  String get aliasedDisplayName => aliasedType.aliasElement?.name ?? 'Function';
-
-  List<TypeParameter> get aliasedTypeParameters => element.typeParameters.map((f) {
-    return ModelElement.from(f, library, packageGraph) as TypeParameter;
-  }).toList();
-
-  String get aliasedGenericParameters => _renderer.renderAliasedGenericParameters(this);
-
-  @override
   CallableElementTypeMixin get modelType => super.modelType;
 }
