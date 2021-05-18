@@ -383,10 +383,9 @@ abstract class DefinedElementType extends ElementType {
 }
 
 /// Any callable ElementType will mix-in this class, whether anonymous or not.
-abstract class CallableElementTypeMixin implements ElementType {
-  Iterable<ElementType> _typeArguments;
-
+mixin CallableElementTypeMixin implements ElementType {
   @override
+  // TODO(jcollins-g): remove after dart-lang/dartdoc#2648 is fixed.
   String get linkedName;
 
   ModelElement get returnElement => returnType is DefinedElementType
@@ -403,6 +402,7 @@ abstract class CallableElementTypeMixin implements ElementType {
   @override
   FunctionType get type => _type;
 
+  Iterable<ElementType> _typeArguments;
   Iterable<ElementType> get typeArguments =>
         _typeArguments ??= type.aliasArguments?.map((f) => ElementType.from(f, library, packageGraph))
             ?.toList() ?? [];

@@ -224,7 +224,7 @@ void main() {
       void expectTypedefs(Typedef t, String modelTypeToString,
           Iterable<String> genericParameters) {
         expect(t.modelType.toString(), equals(modelTypeToString));
-        expect(t.typeParameters.map((p) => p.toString()),
+        expect(t.typeParameters.map((p) => p.element.toString()),
             orderedEquals(genericParameters));
       }
 

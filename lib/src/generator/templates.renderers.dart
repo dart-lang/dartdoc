@@ -500,7 +500,6 @@ class _Renderer_CallableElementTypeMixin
       _propertyMapCache.putIfAbsent(
           CT_,
           () => {
-                ..._Renderer_Object.propertyMap<CT_>(),
                 'linkedName': Property(
                   getValue: (CT_ c) => c.linkedName,
                   renderVariable:
