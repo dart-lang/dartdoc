@@ -20,7 +20,6 @@ import 'foo.dart';
 String renderFoo(Foo context0) {
   final buffer = StringBuffer();
   buffer.write('''<div>
-
     ''');
   buffer.write(_renderFoo_partial_foo_header_0(context0));
   buffer.write('''
@@ -28,8 +27,33 @@ String renderFoo(Foo context0) {
     s1: ''');
   buffer.write(htmlEscape.convert(context0.s1.toString()));
   buffer.write('''
-    b1: ''');
-  buffer.write(htmlEscape.convert(context0.b1.toString()));
+    b1? ''');
+  if (context0.b1 == true) {
+    buffer.write('''yes''');
+  }
+  if (context0.b1 != true) {
+    buffer.write('''no''');
+  }
+  buffer.write('''
+    l1:''');
+  for (var context1 in context0.l1) {
+    buffer.write('''item: ''');
+    buffer.write(htmlEscape.convert(context1.toString()));
+  }
+  if (context0.l1?.isEmpty ?? true) {
+    buffer.write('''no items''');
+  }
+  buffer.write('''
+    baz:''');
+  if (context0.baz != null) {
+    var context2 = context0.baz;
+    buffer.write('''
+    Baz has a ''');
+    buffer.write(htmlEscape.convert(context2.bar.s2.toString()));
+  }
+  if (context0.baz == null) {
+    buffer.write('''baz is null''');
+  }
   buffer.write('''
 </div>''');
   return buffer.toString();
