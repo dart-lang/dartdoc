@@ -3818,7 +3818,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(TypedefRendererHtml().renderGenericParameters(processMessage),
           equals('&lt;<wbr><span class="type-parameter">T</span>&gt;'));
       expect(TypedefRendererHtml().renderGenericParameters(generic),
-          equals('&lt;<wbr><span class="type-parameter">S</span>&gt;'));
+          equals('&lt;<wbr><span class="type-parameter">T</span>&gt;'));
     });
   });
 

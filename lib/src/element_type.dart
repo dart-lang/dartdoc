@@ -403,50 +403,9 @@ abstract class CallableElementTypeMixin implements ElementType {
   @override
   FunctionType get type => _type;
 
-  // TODO(jcollins-g): Rewrite this and improve object model so this doesn't
-  // require type checking everywhere.
-  Iterable<ElementType> get typeArguments {
-    if (_typeArguments == null) {
-      Iterable<DartType> dartTypeArguments;
-      if (returnedFrom is FunctionTypeElementType) {
-        if (type.typeFormals.isEmpty) {
-          dartTypeArguments = type.aliasArguments;
-        } else {
-          dartTypeArguments = type.typeFormals.map(_legacyTypeParameterType);
-        }
-      } else {
-        if (type.typeFormals.isEmpty) {
-          dartTypeArguments = type.aliasArguments;
-        } else if (returnedFrom != null &&
-            returnedFrom.type.element is GenericFunctionTypeElement) {
-          _typeArguments = (returnedFrom as DefinedElementType).typeArguments;
-        } else {
-          dartTypeArguments = type.typeFormals.map(_legacyTypeParameterType);
-        }
-      }
-      if (dartTypeArguments != null) {
-        _typeArguments = dartTypeArguments
-            .map((f) => ElementType.from(f, library, packageGraph))
-            .toList();
-      }
-    }
-    return _typeArguments;
-  }
-
-  /// Return the [TypeParameterType] with the legacy nullability for the given
-  /// type parameter [element].
-  ///
-  /// TODO(scheglov): This method is a work around that fact that DartDoc
-  /// currently represents both type formals and uses of them as actual types,
-  /// as [TypeParameterType]s. This was not perfect, but worked before Null
-  /// safety. With Null safety, types have nullability suffixes, but type
-  /// formals should not. Eventually we should separate models for type formals
-  /// and types.
-  static TypeParameterType _legacyTypeParameterType(
-    TypeParameterElement element,
-  ) {
-    return element.instantiate(nullabilitySuffix: NullabilitySuffix.star);
-  }
+  Iterable<ElementType> get typeArguments =>
+        _typeArguments ??= type.aliasArguments?.map((f) => ElementType.from(f, library, packageGraph))
+            ?.toList() ?? [];
 }
 
 /// A callable type that may or may not be backed by a declaration using the generic
