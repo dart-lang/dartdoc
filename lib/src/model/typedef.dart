@@ -33,8 +33,8 @@ class Typedef extends ModelElement
   @override
   String get genericParameters => _renderer.renderGenericParameters(this);
 
-  List<TypeParameterElement> get genericTypeParameters =>
-      element.typeParameters;
+  @override
+  String get linkedGenericParameters => genericParameters;
 
   @override
   String get filePath => '${library.dirName}/$fileName';
@@ -90,8 +90,7 @@ class FunctionTypedef extends Typedef {
   @override
   FunctionType get aliasedType => super.aliasedType;
 
-  @override
-  List<TypeParameterElement> get genericTypeParameters {
+  List<TypeParameterElement> get aliasedGenericTypeParameters {
     var aliasedTypeElement = aliasedType.aliasElement;
     if (aliasedTypeElement is FunctionTypedElement) {
       return aliasedTypeElement.typeParameters;
@@ -99,8 +98,17 @@ class FunctionTypedef extends Typedef {
     if (aliasedType.typeFormals.isNotEmpty == true) {
       return aliasedType.typeFormals;
     }
-    return super.genericTypeParameters;
+    assert(false);
+    return element.typeParameters;
   }
+
+  String get aliasedDisplayName => aliasedType.aliasElement?.name ?? 'Function';
+
+  List<TypeParameter> get aliasedTypeParameters => element.typeParameters.map((f) {
+    return ModelElement.from(f, library, packageGraph) as TypeParameter;
+  }).toList();
+
+  String get aliasedGenericParameters => _renderer.renderAliasedGenericParameters(this);
 
   @override
   CallableElementTypeMixin get modelType => super.modelType;

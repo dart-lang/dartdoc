@@ -135,6 +135,7 @@ void main() {
     group('generic metadata', () {
       Library genericMetadata;
       TopLevelVariable f;
+      Typedef F;
       Class C;
       Method mp, mn;
 
@@ -142,10 +143,15 @@ void main() {
         genericMetadata = (await _testPackageGraphExperiments)
             .libraries
             .firstWhere((l) => l.name == 'generic_metadata');
+        F = genericMetadata.typedefs.firstWhere((t) => t.name == 'F');
         f = genericMetadata.properties.firstWhere((p) => p.name == 'f');
         C = genericMetadata.classes.firstWhere((c) => c.name == 'C');
         mp = C.instanceMethods.firstWhere((m) => m.name == 'mp');
         mn = C.instanceMethods.firstWhere((m) => m.name == 'mn');
+      });
+
+      test('Verify annotations and their type arguments render on type parameters', () {
+        //expect(F.typeParameters.first.hasAnnotations, isTrue);
       });
 
       test('Verify type arguments on annotations renders, including parameters',
@@ -214,7 +220,7 @@ void main() {
       void expectTypedefs(Typedef t, String modelTypeToString,
           Iterable<String> genericParameters) {
         expect(t.modelType.toString(), equals(modelTypeToString));
-        expect(t.genericTypeParameters.map((p) => p.toString()),
+        expect(t.typeParameters.map((p) => p.toString()),
             orderedEquals(genericParameters));
       }
 

@@ -386,6 +386,9 @@ abstract class DefinedElementType extends ElementType {
 abstract class CallableElementTypeMixin implements ElementType {
   Iterable<ElementType> _typeArguments;
 
+  @override
+  String get linkedName;
+
   ModelElement get returnElement => returnType is DefinedElementType
       ? (returnType as DefinedElementType).modelElement
       : null;

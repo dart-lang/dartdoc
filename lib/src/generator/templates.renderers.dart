@@ -501,6 +501,26 @@ class _Renderer_CallableElementTypeMixin
           CT_,
           () => {
                 ..._Renderer_Object.propertyMap<CT_>(),
+                'linkedName': Property(
+                  getValue: (CT_ c) => c.linkedName,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        _Renderer_String.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(self.getValue(c),
+                        nextProperty, [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => c.linkedName == null,
+                  renderValue:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    return _render_String(c.linkedName, ast, r.template,
+                        parent: r);
+                  },
+                ),
                 'returnElement': Property(
                   getValue: (CT_ c) => c.returnElement,
                   renderVariable:
@@ -6048,6 +6068,59 @@ class _Renderer_FunctionTypedef extends RendererBase<FunctionTypedef> {
           CT_,
           () => {
                 ..._Renderer_Typedef.propertyMap<CT_>(),
+                'aliasedDisplayName': Property(
+                  getValue: (CT_ c) => c.aliasedDisplayName,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        _Renderer_String.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(self.getValue(c),
+                        nextProperty, [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => c.aliasedDisplayName == null,
+                  renderValue:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    return _render_String(c.aliasedDisplayName, ast, r.template,
+                        parent: r);
+                  },
+                ),
+                'aliasedGenericParameters': Property(
+                  getValue: (CT_ c) => c.aliasedGenericParameters,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        _Renderer_String.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(self.getValue(c),
+                        nextProperty, [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => c.aliasedGenericParameters == null,
+                  renderValue:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    return _render_String(
+                        c.aliasedGenericParameters, ast, r.template,
+                        parent: r);
+                  },
+                ),
+                'aliasedGenericTypeParameters': Property(
+                  getValue: (CT_ c) => c.aliasedGenericTypeParameters,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'List<TypeParameterElement>'),
+                  renderIterable:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    return c.aliasedGenericTypeParameters.map(
+                        (e) => renderSimple(e, ast, r.template, parent: r));
+                  },
+                ),
                 'aliasedType': Property(
                   getValue: (CT_ c) => c.aliasedType,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -6061,16 +6134,16 @@ class _Renderer_FunctionTypedef extends RendererBase<FunctionTypedef> {
                         parent: r);
                   },
                 ),
-                'genericTypeParameters': Property(
-                  getValue: (CT_ c) => c.genericTypeParameters,
+                'aliasedTypeParameters': Property(
+                  getValue: (CT_ c) => c.aliasedTypeParameters,
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
-                          c, remainingNames, 'List<TypeParameterElement>'),
+                          c, remainingNames, 'List<TypeParameter>'),
                   renderIterable:
                       (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-                    return c.genericTypeParameters.map(
-                        (e) => renderSimple(e, ast, r.template, parent: r));
+                    return c.aliasedTypeParameters.map((e) =>
+                        _render_TypeParameter(e, ast, r.template, parent: r));
                   },
                 ),
                 'modelType': Property(
@@ -13914,18 +13987,6 @@ class _Renderer_Typedef extends RendererBase<Typedef> {
                         parent: r);
                   },
                 ),
-                'genericTypeParameters': Property(
-                  getValue: (CT_ c) => c.genericTypeParameters,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'List<TypeParameterElement>'),
-                  renderIterable:
-                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-                    return c.genericTypeParameters.map(
-                        (e) => renderSimple(e, ast, r.template, parent: r));
-                  },
-                ),
                 'href': Property(
                   getValue: (CT_ c) => c.href,
                   renderVariable:
@@ -13969,6 +14030,27 @@ class _Renderer_Typedef extends RendererBase<Typedef> {
                   renderValue:
                       (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
                     return _render_String(c.kind, ast, r.template, parent: r);
+                  },
+                ),
+                'linkedGenericParameters': Property(
+                  getValue: (CT_ c) => c.linkedGenericParameters,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        _Renderer_String.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(self.getValue(c),
+                        nextProperty, [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => c.linkedGenericParameters == null,
+                  renderValue:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    return _render_String(
+                        c.linkedGenericParameters, ast, r.template,
+                        parent: r);
                   },
                 ),
                 'modelType': Property(
