@@ -3716,6 +3716,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
   group('Typedef', () {
     FunctionTypedef processMessage;
+    FunctionTypedef oldgeneric;
     FunctionTypedef generic;
     FunctionTypedef aComplexTypedef;
     Class TypedefUsingClass;
@@ -3723,6 +3724,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     setUpAll(() {
       processMessage =
           exLibrary.typedefs.firstWhere((t) => t.name == 'processMessage');
+      oldgeneric =
+          fakeLibrary.typedefs.firstWhere((t) => t.name == 'GenericTypedef');
       generic =
           fakeLibrary.typedefs.firstWhere((t) => t.name == 'NewGenericTypedef');
 
@@ -3788,6 +3791,13 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           generic.modelType.returnType.linkedName,
           equals(
               'List<span class="signature">&lt;<wbr><span class="type-parameter">S</span>&gt;</span>'));
+    });
+
+    test('return type', () {
+      expect(oldgeneric.modelType.linkedName,
+          equals('something'));
+      expect(generic.modelType.linkedName,
+          equals('List<span class="signature">&lt;<wbr><span class="type-parameter">S</span>&gt;</span> Function&lt;<wbr><span class="type-parameter">S</span>&gt;<span class="signature">(<span class="parameter" id="param-"><span class="type-annotation">T</span>, </span><span class="parameter" id="param-"><span class="type-annotation">int</span>, </span><span class="parameter" id="param-"><span class="type-annotation">bool</span></span>)</span>'));
     });
 
     test('name with generics', () {

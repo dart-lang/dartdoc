@@ -458,16 +458,10 @@ class CallableElementType extends ParameterizedElementType
       : super(t, library, packageGraph, element, returnedFrom);
 
   @override
-  String get linkedName {
-    if (_linkedName == null) {
-      if (name != null && name.isNotEmpty) {
-        _linkedName = super.linkedName;
-      } else {
-        _linkedName = _renderer.renderLinkedName(this);
-      }
-    }
-    return _linkedName;
-  }
+  String get name => super.name != null && super.name.isNotEmpty ? super.name : 'Function';
+
+  @override
+  String get nameWithGenerics => super.nameWithGenerics;
 
   @override
   ElementTypeRenderer<CallableElementType> get _renderer =>

@@ -141,6 +141,11 @@ class CallableElementTypeRendererHtml
     buf.write(elementType.returnType.linkedName);
     return wrapNullabilityParens(elementType, buf.toString());
   }
+
+  @override
+  String renderNameWithGenerics() {
+
+  }
 }
 
 // Markdown implementations
