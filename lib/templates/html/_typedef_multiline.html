@@ -9,7 +9,7 @@
     </ol>
     </div>
     {{/hasAnnotations}}
-     {{#isConst}}const {{/isConst}}<span class="name {{#isDeprecated}}deprecated{{/isDeprecated}}">{{name}}</span>{{{genericParameters}}} =
+     {{#isConst}}const {{/isConst}}<span class="name {{#isDeprecated}}deprecated{{/isDeprecated}}">{{name}}</span>{{{linkedGenericParameters}}} =
      <span class="returntype">{{{ modelType.linkedName }}}</span>
   {{/asCallable}}
 {{/isCallable}}
