@@ -151,9 +151,13 @@ void main() {
         mn = C.instanceMethods.firstWhere((m) => m.name == 'mn');
       });
 
-      test('Verify annotations and their type arguments render on type parameters for typedefs', () {
-        expect((F.aliasedType as FunctionType).typeFormals.first.metadata, isNotEmpty);
-        expect((F.aliasedType as FunctionType).parameters.first.metadata, isNotEmpty);
+      test(
+          'Verify annotations and their type arguments render on type parameters for typedefs',
+          () {
+        expect((F.aliasedType as FunctionType).typeFormals.first.metadata,
+            isNotEmpty);
+        expect((F.aliasedType as FunctionType).parameters.first.metadata,
+            isNotEmpty);
         // TODO(jcollins-g): add rendering verification once we have data from
         // analyzer.
       }, skip: 'dart-lang/sdk#46064');

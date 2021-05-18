@@ -34,7 +34,8 @@ class Typedef extends ModelElement
   String get genericParameters => _renderer.renderGenericParameters(this);
 
   @override
-  String get linkedGenericParameters => _renderer.renderLinkedGenericParameters(this);
+  String get linkedGenericParameters =>
+      _renderer.renderLinkedGenericParameters(this);
 
   @override
   String get filePath => '${library.dirName}/$fileName';

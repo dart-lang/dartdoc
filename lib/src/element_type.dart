@@ -404,8 +404,10 @@ mixin CallableElementTypeMixin implements ElementType {
 
   Iterable<ElementType> _typeArguments;
   Iterable<ElementType> get typeArguments =>
-        _typeArguments ??= type.aliasArguments?.map((f) => ElementType.from(f, library, packageGraph))
-            ?.toList() ?? [];
+      _typeArguments ??= type.aliasArguments
+              ?.map((f) => ElementType.from(f, library, packageGraph))
+              ?.toList() ??
+          [];
 }
 
 /// A callable type that may or may not be backed by a declaration using the generic
@@ -417,7 +419,8 @@ class CallableElementType extends ParameterizedElementType
       : super(t, library, packageGraph, element, returnedFrom);
 
   @override
-  String get name => super.name != null && super.name.isNotEmpty ? super.name : 'Function';
+  String get name =>
+      super.name != null && super.name.isNotEmpty ? super.name : 'Function';
 
   @override
   ElementTypeRenderer<CallableElementType> get _renderer =>
