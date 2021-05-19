@@ -10,6 +10,7 @@ library dartdoc.model_special_cases_test;
 
 import 'dart:io';
 
+import 'package:analyzer/dart/element/type.dart';
 import 'package:async/async.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
@@ -132,6 +133,7 @@ void main() {
     group('generic metadata', () {
       Library genericMetadata;
       TopLevelVariable f;
+      Typedef F;
       Class C;
       Method mp, mn;
 
@@ -139,11 +141,23 @@ void main() {
         genericMetadata = (await _testPackageGraphExperiments)
             .libraries
             .firstWhere((l) => l.name == 'generic_metadata');
+        F = genericMetadata.typedefs.firstWhere((t) => t.name == 'F');
         f = genericMetadata.properties.firstWhere((p) => p.name == 'f');
         C = genericMetadata.classes.firstWhere((c) => c.name == 'C');
         mp = C.instanceMethods.firstWhere((m) => m.name == 'mp');
         mn = C.instanceMethods.firstWhere((m) => m.name == 'mn');
       });
+
+      test(
+          'Verify annotations and their type arguments render on type parameters for typedefs',
+          () {
+        expect((F.aliasedType as FunctionType).typeFormals.first.metadata,
+            isNotEmpty);
+        expect((F.aliasedType as FunctionType).parameters.first.metadata,
+            isNotEmpty);
+        // TODO(jcollins-g): add rendering verification once we have data from
+        // analyzer.
+      }, skip: 'dart-lang/sdk#46064');
 
       test('Verify type arguments on annotations renders, including parameters',
           () {

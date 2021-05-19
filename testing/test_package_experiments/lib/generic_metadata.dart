@@ -2,7 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-/// Borrowed from the Dart SDK: tests/language/generic_metadata_test.dart
+/// Borrowed from the Dart SDK:
+/// tests/language/generic/generic_metadata_test.dart
 /// with modifications to remove cases dartdoc is not interested in.
 
 // Check that metadata constructor invocations can have type arguments.

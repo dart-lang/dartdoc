@@ -114,7 +114,7 @@ void main() {
     void expectTypedefs(Typedef t, String modelTypeToString,
         Iterable<String> genericParameters) {
       expect(t.modelType.toString(), equals(modelTypeToString));
-      expect(t.genericTypeParameters.map((p) => p.toString()),
+      expect(t.element.typeParameters.map((p) => p.toString()),
           orderedEquals(genericParameters));
     }
 
@@ -3787,6 +3787,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
   group('Typedef', () {
     FunctionTypedef processMessage;
+    FunctionTypedef oldgeneric;
     FunctionTypedef generic;
     FunctionTypedef aComplexTypedef;
     Class TypedefUsingClass;
@@ -3794,6 +3795,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     setUpAll(() {
       processMessage =
           exLibrary.typedefs.firstWhere((t) => t.name == 'processMessage');
+      oldgeneric =
+          fakeLibrary.typedefs.firstWhere((t) => t.name == 'GenericTypedef');
       generic =
           fakeLibrary.typedefs.firstWhere((t) => t.name == 'NewGenericTypedef');
 
@@ -3861,6 +3864,20 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
               'List<span class="signature">&lt;<wbr><span class="type-parameter">S</span>&gt;</span>'));
     });
 
+    test('return type', () {
+      expect(
+          oldgeneric.modelType.linkedName,
+          isIn([
+            'T Function<span class="signature">(<span class="parameter" id="param-input"><span class="type-annotation">T</span> <span class="parameter-name">input</span></span>)</span>',
+            // Remove below option after analyzer 1.6.0.
+            'Function(<span class=\"parameter\" id=\"GenericTypedef-param-input\"><span class=\"type-annotation\">T</span></span>) → T'
+          ]));
+      expect(
+          generic.modelType.linkedName,
+          equals(
+              'List<span class="signature">&lt;<wbr><span class="type-parameter">S</span>&gt;</span> Function&lt;<wbr><span class="type-parameter">S</span>&gt;<span class="signature">(<span class="parameter" id="param-"><span class="type-annotation">T</span>, </span><span class="parameter" id="param-"><span class="type-annotation">int</span>, </span><span class="parameter" id="param-"><span class="type-annotation">bool</span></span>)</span>'));
+    });
+
     test('name with generics', () {
       expect(
           processMessage.nameWithGenerics,
@@ -3879,7 +3896,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(TypedefRendererHtml().renderGenericParameters(processMessage),
           equals('&lt;<wbr><span class="type-parameter">T</span>&gt;'));
       expect(TypedefRendererHtml().renderGenericParameters(generic),
-          equals('&lt;<wbr><span class="type-parameter">S</span>&gt;'));
+          equals('&lt;<wbr><span class="type-parameter">T</span>&gt;'));
     });
   });
 
