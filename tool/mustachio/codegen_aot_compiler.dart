@@ -312,7 +312,7 @@ class _BlockCompiler {
     var variableAccess = variableLookup.name;
     if (invert) {
       writeln('if ($variableAccess?.isEmpty ?? true) {');
-      await _BlockCompiler(_templateCompiler, _contextStack)._compile(block);
+      await _compile(block);
       writeln('}');
     } else {
       var variableAccessResult = getNewContextName();
@@ -330,7 +330,7 @@ class _BlockCompiler {
       var innerContextType = iterableType.typeArguments.first;
       var innerContext = _VariableLookup(innerContextType, newContextName);
       _contextStack.push(innerContext);
-      await _BlockCompiler(_templateCompiler, _contextStack)._compile(block);
+      await _compile(block);
       _contextStack.pop();
       writeln('  }');
       writeln('}');
@@ -344,7 +344,7 @@ class _BlockCompiler {
     var variableAccess = variableLookup.name;
     if (invert) {
       writeln('if ($variableAccess == null) {');
-      await _BlockCompiler(_templateCompiler, _contextStack)._compile(block);
+      await _compile(block);
       writeln('}');
     } else {
       var innerContextName = getNewContextName();
@@ -352,7 +352,7 @@ class _BlockCompiler {
       writeln('if ($innerContextName != null) {');
       var innerContext = _VariableLookup(variableLookup.type, innerContextName);
       _contextStack.push(innerContext);
-      await _BlockCompiler(_templateCompiler, _contextStack)._compile(block);
+      await _compile(block);
       _contextStack.pop();
       writeln('}');
     }
