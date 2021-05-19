@@ -97,8 +97,7 @@ void main() {
     Class C, C2;
 
     setUpAll(() {
-      generalizedTypedefs = packageGraph
-          .libraries
+      generalizedTypedefs = packageGraph.libraries
           .firstWhere((l) => l.name == 'generalized_typedefs');
       T0 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T0');
       T1 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T1');

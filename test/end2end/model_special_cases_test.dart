@@ -186,8 +186,6 @@ void main() {
             everyElement(contains(ab0)));
       });
     }, skip: !_genericMetadataAllowed.allows(_platformVersion));
-
-
   });
 
   group('HTML Injection when allowed', () {
