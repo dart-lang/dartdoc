@@ -38,7 +38,7 @@ abstract class C extends T8 {
 
   T2 operator +(T2 other) => other;
 
-  static final T4 h = (){};
+  static final T4 h = () {};
   static T5<C>? i;
 
   T7<String, List<String>> get j;

@@ -91,6 +91,77 @@ void main() {
         packageGraph.libraries.firstWhere((lib) => lib.name == 'base_class');
   });
 
+  group('generalized typedefs', () {
+    Library generalizedTypedefs;
+    Typedef T0, T1, T2, T3, T4, T5, T6, T7;
+    Class C, C2;
+
+    setUpAll(() {
+      generalizedTypedefs = packageGraph.libraries
+          .firstWhere((l) => l.name == 'generalized_typedefs');
+      T0 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T0');
+      T1 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T1');
+      T2 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T2');
+      T3 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T3');
+      T4 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T4');
+      T5 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T5');
+      T6 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T6');
+      T7 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T7');
+      C = generalizedTypedefs.classes.firstWhere((c) => c.name == 'C');
+      C2 = generalizedTypedefs.classes.firstWhere((c) => c.name == 'C2');
+    });
+
+    void expectTypedefs(Typedef t, String modelTypeToString,
+        Iterable<String> genericParameters) {
+      expect(t.modelType.toString(), equals(modelTypeToString));
+      expect(t.genericTypeParameters.map((p) => p.toString()),
+          orderedEquals(genericParameters));
+    }
+
+    void expectAliasedTypeName(AliasedElementType n, expected) {
+      expect(n.aliasElement.name, expected);
+    }
+
+    test('typedef references display aliases', () {
+      var g = C.instanceMethods.firstWhere((m) => m.name == 'g');
+
+      var c = C2.allFields.firstWhere((f) => f.name == 'c');
+      var d = C2.instanceMethods.firstWhere((f) => f.name == 'd');
+
+      expectAliasedTypeName(c.modelType, equals('T1'));
+      expectAliasedTypeName(d.modelType.returnType, equals('T2'));
+      expectAliasedTypeName(d.parameters.first.modelType, equals('T3'));
+      expectAliasedTypeName(d.parameters.last.modelType, equals('T4'));
+
+      expectAliasedTypeName(g.modelType.returnType, equals('T1'));
+      expectAliasedTypeName(
+          g.modelType.parameters.first.modelType, equals('T2'));
+      expectAliasedTypeName(
+          g.modelType.parameters.last.modelType, equals('T3'));
+    });
+
+    test('typedef references to special types work', () {
+      var a = generalizedTypedefs.properties.firstWhere((p) => p.name == 'a');
+      var b = C2.allFields.firstWhere((f) => f.name == 'b');
+      var f = C.allFields.firstWhere((f) => f.name == 'f');
+      expectAliasedTypeName(a.modelType, equals('T0'));
+      expectAliasedTypeName(b.modelType, equals('T0'));
+      expectAliasedTypeName(f.modelType, equals('T0'));
+    }, skip: 'dart-lang/sdk#45291');
+
+    test('basic non-function typedefs work', () {
+      expectTypedefs(T0, 'void', []);
+      expectTypedefs(T1, 'Function', []);
+      expectTypedefs(T2, 'List<X>', ['out X']);
+      expectTypedefs(T3, 'Map<X, Y>', ['out X', 'out Y']);
+      expectTypedefs(T4, 'void Function()', []);
+      expectTypedefs(T5, 'X Function(X, {X name})', ['inout X']);
+      expectTypedefs(T6, 'X Function(Y, [Map<Y, Y>])', ['out X', 'in Y']);
+      expectTypedefs(T7, 'X Function(Y, [Map<Y, Y>])',
+          ['out X extends String', 'in Y extends List<X>']);
+    });
+  });
+
   group('NNBD cases', () {
     Library lateFinalWithoutInitializer,
         nullSafetyClassMemberDeclarations,
