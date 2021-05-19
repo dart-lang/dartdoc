@@ -3867,9 +3867,11 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('return type', () {
       expect(
           oldgeneric.modelType.linkedName,
-          isIn(['T Function<span class="signature">(<span class="parameter" id="param-input"><span class="type-annotation">T</span> <span class="parameter-name">input</span></span>)</span>',
+          isIn([
+            'T Function<span class="signature">(<span class="parameter" id="param-input"><span class="type-annotation">T</span> <span class="parameter-name">input</span></span>)</span>',
             // Remove below option after analyzer 1.6.0.
-            'Function(<span class=\"parameter\" id=\"GenericTypedef-param-input\"><span class=\"type-annotation\">T</span></span>) → T']));
+            'Function(<span class=\"parameter\" id=\"GenericTypedef-param-input\"><span class=\"type-annotation\">T</span></span>) → T'
+          ]));
       expect(
           generic.modelType.linkedName,
           equals(
