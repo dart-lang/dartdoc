@@ -33,8 +33,10 @@ final Folder _testPackageIncludeExclude =
 final Folder _testPackageImportExportError =
     _getFolder('testing/test_package_import_export_error');
 final Folder _testPackageOptions = _getFolder('testing/test_package_options');
-final _testPackageCustomTemplates =
+final Folder _testPackageCustomTemplates =
     _getFolder('testing/test_package_custom_templates');
+final Folder _testPackageExperiments =
+    _getFolder('testing/test_package_experiments');
 
 /// Convenience factory to build a [DartdocGeneratorOptionContext] and associate
 /// it with a [DartdocOptionSet] based on the current working directory and/or
@@ -361,6 +363,13 @@ void main() {
     test('generating markdown docs does not crash', () async {
       var dartdoc =
           await buildDartdoc(['--format', 'md'], _testPackageDir, tempDir);
+      await dartdoc.generateDocsBase();
+    });
+
+    test('generating markdown docs for experimental features does not crash',
+        () async {
+      var dartdoc = await buildDartdoc(
+          ['--format', 'md'], _testPackageExperiments, tempDir);
       await dartdoc.generateDocsBase();
     });
 
