@@ -14,9 +14,13 @@ import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:path/path.dart' as path;
+import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
 import '../src/utils.dart';
+
+final _experimentPackageAllowed =
+    VersionRange(min: Version.parse('2.14.0-0'), includeMin: true);
 
 final _resourceProvider = pubPackageMetaProvider.resourceProvider;
 final _pathContext = _resourceProvider.pathContext;
@@ -371,7 +375,7 @@ void main() {
       var dartdoc = await buildDartdoc(
           ['--format', 'md'], _testPackageExperiments, tempDir);
       await dartdoc.generateDocsBase();
-    });
+    }, skip: !_experimentPackageAllowed.allows(platformVersion));
 
     test('rel canonical prefix does not include base href', () async {
       final prefix = 'foo.bar/baz';
