@@ -36,20 +36,23 @@ String renderFoo(Foo context0) {
   }
   buffer.write('''
     l1:''');
-  for (var context1 in context0.l1) {
-    buffer.write('''item: ''');
-    buffer.write(htmlEscape.convert(context1.toString()));
+  var context1 = context0.l1;
+  if (context1 != null) {
+    for (var context2 in context1) {
+      buffer.write('''item: ''');
+      buffer.write(htmlEscape.convert(context2.toString()));
+    }
   }
   if (context0.l1?.isEmpty ?? true) {
     buffer.write('''no items''');
   }
   buffer.write('''
     baz:''');
-  if (context0.baz != null) {
-    var context2 = context0.baz;
+  var context3 = context0.baz;
+  if (context3 != null) {
     buffer.write('''
     Baz has a ''');
-    buffer.write(htmlEscape.convert(context2.bar.s2.toString()));
+    buffer.write(htmlEscape.convert(context3.bar.s2.toString()));
   }
   if (context0.baz == null) {
     buffer.write('''baz is null''');

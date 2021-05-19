@@ -315,8 +315,11 @@ class _BlockCompiler {
       await _BlockCompiler(_templateCompiler, _contextStack)._compile(block);
       writeln('}');
     } else {
+      var variableAccessResult = getNewContextName();
+      writeln('var $variableAccessResult = $variableAccess;');
       var newContextName = getNewContextName();
-      write('for (var $newContextName in $variableAccess) {');
+      writeln('if ($variableAccessResult != null) {');
+      writeln('  for (var $newContextName in $variableAccessResult) {');
       // If [loopType] is something like `C<int>` where
       // `class C<T> implements Queue<Future<T>>`, we need the [ClassElement]
       // for [Iterable], and then use [DartType.asInstanceOf] to ultimately
@@ -329,6 +332,7 @@ class _BlockCompiler {
       _contextStack.push(innerContext);
       await _BlockCompiler(_templateCompiler, _contextStack)._compile(block);
       _contextStack.pop();
+      writeln('  }');
       writeln('}');
     }
   }
@@ -344,8 +348,8 @@ class _BlockCompiler {
       writeln('}');
     } else {
       var innerContextName = getNewContextName();
-      writeln('if ($variableAccess != null) {');
-      writeln('  var $innerContextName = $variableAccess;');
+      writeln('var $innerContextName = $variableAccess;');
+      writeln('if ($innerContextName != null) {');
       var innerContext = _VariableLookup(variableLookup.type, innerContextName);
       _contextStack.push(innerContext);
       await _BlockCompiler(_templateCompiler, _contextStack)._compile(block);

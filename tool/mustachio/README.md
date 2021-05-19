@@ -724,22 +724,30 @@ section were inverted (starting with `{{ ^isFeatured }}`), this would be a
 compiles to:
 
 ```dart
-  for (var context1 in context0.posts) {
-    buffer.write('''<h2>''');
-    buffer.write(htmlEscape.convert(context1.title.toString()));
-    buffer.write('''</h2>''');
+  var context1 = context0.posts;
+  if (context1 != null) {
+    for (var context2 in context1) {
+      buffer.write('''<h2>''');
+      buffer.write(htmlEscape.convert(context2.title.toString()));
+      buffer.write('''</h2>''');
+    }
   }
 ```
 
-#### Rendering a valud section
+The section contents are written for each value in `context0.posts` (only if
+`context0.posts` is not `null`). In order to avoid accessing the getter multiple
+times (and to make the value type-promotable), the value is stored in a local
+variable.
+
+#### Rendering a value section
 
 `{{ #featuredPost }}<h2>{{ title }}</h2>{{ /featuredPost }}`
 
 compiles to:
 
 ```dart
-  if (context0.featuredPost != null) {
-    var context2 = context0.featuredPost;
+  var context2 = context0.featuredPost;
+  if (context2 != null) {
     buffer.write('''<h2>''');
     buffer.write(htmlEscape.convert(context2.title.toString()));
     buffer.write('''</h2>''');
