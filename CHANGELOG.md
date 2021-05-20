@@ -1,3 +1,14 @@
+## 0.44.0
+* BREAKING CHANGE:  Add support for generic metadata rendering in
+  typedefs. (#2649,  #2654).  This changes how typedefs are rendered
+  so that they all appear as new generic typedefs.  This means
+  that typedefs can no longer share the `_callable` templates
+  and have their own implementations.
+* Add query strings to static assets to ensure they refresh in
+  browsers on changes. (#2646)
+* Change the comment reference unparser to use analyzer AST tokens
+  instead of file access. (#2642)
+
 ## 0.43.0
 * Add experimental lookup code for comment references eventually
   destined to replace most of `lib/src/markdown_processor.dart`.  Most
