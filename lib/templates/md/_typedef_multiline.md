@@ -1,6 +1,12 @@
 {{#isCallable}}
   {{#asCallable}}
-    {{>callable_multiline}}
+    {{#hasAnnotations}}
+    {{#annotations}}
+    - {{{linkedNameWithParameters}}}
+    {{/annotations}}
+    {{/hasAnnotations}}
+
+    {{{modelType.returnType.linkedName}}} {{name}}{{{linkedGenericParameters}}} = {{{modelType.linkedName}}}
   {{/asCallable}}
 {{/isCallable}}
 {{^isCallable}}
