@@ -21,9 +21,6 @@ import 'package:test/test.dart';
 
 import '../src/utils.dart' as utils;
 
-final String _platformVersionString = Platform.version.split(' ').first;
-final Version _platformVersion = Version.parse(_platformVersionString);
-
 final _testPackageGraphExperimentsMemo = AsyncMemoizer<PackageGraph>();
 Future<PackageGraph> get _testPackageGraphExperiments =>
     _testPackageGraphExperimentsMemo.runOnce(() => utils.bootBasicPackage(
@@ -128,7 +125,7 @@ void main() {
         expect(tripleShiftF.isInherited, isFalse);
         expect(tripleShiftF.modelType.returnType.name, equals('F'));
       });
-    }, skip: !_tripleShiftAllowed.allows(_platformVersion));
+    }, skip: !_tripleShiftAllowed.allows(utils.platformVersion));
 
     group('generic metadata', () {
       Library genericMetadata;
@@ -199,7 +196,7 @@ void main() {
                 .map((p) => p.features.map((f) => f.linkedNameWithParameters)),
             everyElement(contains(ab0)));
       });
-    }, skip: !_genericMetadataAllowed.allows(_platformVersion));
+    }, skip: !_genericMetadataAllowed.allows(utils.platformVersion));
   });
 
   group('HTML Injection when allowed', () {

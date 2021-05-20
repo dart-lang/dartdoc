@@ -4,6 +4,8 @@
 
 library test_utils;
 
+import 'dart:io';
+
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/memory_file_system.dart';
 import 'package:analyzer/src/test_utilities/mock_sdk.dart';
@@ -12,6 +14,7 @@ import 'package:dartdoc/src/model/package_builder.dart';
 import 'package:dartdoc/src/model/package_graph.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
+import 'package:pub_semver/pub_semver.dart';
 
 /// The number of public libraries in testing/test_package, minus 2 for
 /// the excluded libraries listed in the initializers for _testPackageGraphMemo
@@ -20,6 +23,9 @@ const int kTestPackagePublicLibraries = 23;
 
 final _resourceProvider = pubPackageMetaProvider.resourceProvider;
 final _pathContext = _resourceProvider.pathContext;
+
+final String platformVersionString = Platform.version.split(' ').first;
+final Version platformVersion = Version.parse(platformVersionString);
 
 final Folder testPackageToolError = _resourceProvider.getFolder(_pathContext
     .absolute(_pathContext.normalize('testing/test_package_tool_error')));
