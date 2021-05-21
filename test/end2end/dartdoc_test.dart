@@ -14,9 +14,13 @@ import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:path/path.dart' as path;
+import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
 import '../src/utils.dart';
+
+final _experimentPackageAllowed =
+    VersionRange(min: Version.parse('2.14.0-0'), includeMin: true);
 
 final _resourceProvider = pubPackageMetaProvider.resourceProvider;
 final _pathContext = _resourceProvider.pathContext;
@@ -33,8 +37,10 @@ final Folder _testPackageIncludeExclude =
 final Folder _testPackageImportExportError =
     _getFolder('testing/test_package_import_export_error');
 final Folder _testPackageOptions = _getFolder('testing/test_package_options');
-final _testPackageCustomTemplates =
+final Folder _testPackageCustomTemplates =
     _getFolder('testing/test_package_custom_templates');
+final Folder _testPackageExperiments =
+    _getFolder('testing/test_package_experiments');
 
 /// Convenience factory to build a [DartdocGeneratorOptionContext] and associate
 /// it with a [DartdocOptionSet] based on the current working directory and/or
@@ -363,6 +369,13 @@ void main() {
           await buildDartdoc(['--format', 'md'], _testPackageDir, tempDir);
       await dartdoc.generateDocsBase();
     });
+
+    test('generating markdown docs for experimental features does not crash',
+        () async {
+      var dartdoc = await buildDartdoc(
+          ['--format', 'md'], _testPackageExperiments, tempDir);
+      await dartdoc.generateDocsBase();
+    }, skip: !_experimentPackageAllowed.allows(platformVersion));
 
     test('rel canonical prefix does not include base href', () async {
       final prefix = 'foo.bar/baz';
