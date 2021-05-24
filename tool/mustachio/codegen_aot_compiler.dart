@@ -169,6 +169,8 @@ class _AotCompiler {
         ...context.type.element.typeParameters
             .map((tp) => tp.getDisplayString(withNullability: false)),
     ]);
+    // TODO(srawlins): Consider the option of passing in a StringSink to allow
+    // for streaming writes.
     _buffer.writeln('String $_rendererName$typeParametersString(');
     _buffer.writeln(_contextStack.map((context) {
       var contextElement = context.type.element;
@@ -413,7 +415,7 @@ class _BlockCompiler {
       writeln('buffer.writeln();');
     } else {
       content = content.replaceAll("'", "\\'").replaceAll(r'$', r'\\$');
-      if (RegExp('^[ \\n]+\$').hasMatch(content)) {
+      if (_multipleWhitespacePattern.hasMatch(content)) {
         write("buffer.write('");
         write(content.replaceAll('\n', '\\n'));
         writeln("');");
@@ -424,6 +426,9 @@ class _BlockCompiler {
       }
     }
   }
+
+  /// A pattern for a String containing only space and newlines, more than one.
+  static final RegExp _multipleWhitespacePattern = RegExp('^[ \\n]+\$');
 
   /// Writes a call to [variableLookup] to the renderer.
   ///

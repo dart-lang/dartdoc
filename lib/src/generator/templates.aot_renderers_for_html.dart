@@ -286,21 +286,23 @@ String _renderCategory_partial_head_0(CategoryTemplateData context0) {
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  ''');
+  buffer.write('''
   <link rel="stylesheet" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/github.css">
+  buffer.write('''static-assets/github.css?v1">
   <link rel="stylesheet" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/styles.css">
+  buffer.write('''static-assets/styles.css?v1">
   <link rel="icon" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/favicon.png">
+  buffer.write('''static-assets/favicon.png?v1">
 
   ''');
   buffer.write(context0.customHeader.toString());
@@ -753,79 +755,62 @@ String _renderCategory_partial_typedef_8(
   if (context2.isCallable == true) {
     var context3 = context2.asCallable;
     if (context3 != null) {
-      buffer.write('\n    ');
-      buffer.write(__renderCategory_partial_typedef_8_partial_callable_0(
+      buffer.write('''
+  <dt id="''');
+      buffer.write(htmlEscape.convert(context3.htmlId.toString()));
+      buffer.write('''" class="callable''');
+      if (context3.isInherited == true) {
+        buffer.write(''' inherited''');
+      }
+      buffer.write('''">
+    <span class="name''');
+      if (context3.isDeprecated == true) {
+        buffer.write(''' deprecated''');
+      }
+      buffer.write('''">''');
+      buffer.write(context3.linkedName.toString());
+      buffer.write('''</span>''');
+      buffer.write(context3.linkedGenericParameters.toString());
+      buffer.write('''<span class="signature">
+      <span class="returntype parameter">= ''');
+      buffer.write(context3.modelType.linkedName.toString());
+      buffer.write('''</span>
+    </span>
+    ''');
+      buffer.write(__renderCategory_partial_typedef_8_partial_categorization_0(
           context3, context2, context1, context0));
+      buffer.write('''
+  </dt>
+  <dd''');
+      if (context3.isInherited == true) {
+        buffer.write(''' class="inherited"''');
+      }
+      buffer.write('''>
+    ''');
+      buffer.write(context3.oneLineDoc.toString());
+      buffer.write(' ');
+      buffer.write(context3.extendedDocLink.toString());
+      buffer.write('\n    ');
+      buffer.write(__renderCategory_partial_typedef_8_partial_features_1(
+          context3, context2, context1, context0));
+      buffer.write('''
+  </dd>''');
     }
   }
   if (context2.isCallable != true) {
     buffer.write('\n  ');
-    buffer.write(__renderCategory_partial_typedef_8_partial_type_1(
+    buffer.write(__renderCategory_partial_typedef_8_partial_type_2(
         context2, context1, context0));
   }
   buffer.writeln();
   return buffer.toString();
 }
 
-String __renderCategory_partial_typedef_8_partial_callable_0(
+String __renderCategory_partial_typedef_8_partial_categorization_0(
     FunctionTypedef context3,
     Typedef context2,
     Category context1,
     CategoryTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''<dt id="''');
-  buffer.write(htmlEscape.convert(context3.htmlId.toString()));
-  buffer.write('''" class="callable''');
-  if (context3.isInherited == true) {
-    buffer.write(''' inherited''');
-  }
-  buffer.write('''">
-  <span class="name''');
-  if (context3.isDeprecated == true) {
-    buffer.write(''' deprecated''');
-  }
-  buffer.write('''">''');
-  buffer.write(context3.linkedName.toString());
-  buffer.write('''</span>''');
-  buffer.write(context3.linkedGenericParameters.toString());
-  buffer.write('''<span class="signature">(<wbr>''');
-  buffer.write(context3.linkedParamsNoMetadata.toString());
-  buffer.write(''')
-    <span class="returntype parameter">&#8594; ''');
-  buffer.write(context3.modelType.returnType.linkedName.toString());
-  buffer.write('''</span>
-  </span>
-  ''');
-  buffer.write(
-      ___renderCategory_partial_typedef_8_partial_callable_0_partial_categorization_0(
-          context3, context2, context1, context0));
-  buffer.write('''
-</dt>
-<dd''');
-  if (context3.isInherited == true) {
-    buffer.write(''' class="inherited"''');
-  }
-  buffer.write('''>
-  ''');
-  buffer.write(context3.oneLineDoc.toString());
-  buffer.write(' ');
-  buffer.write(context3.extendedDocLink.toString());
-  buffer.write('\n  ');
-  buffer.write(
-      ___renderCategory_partial_typedef_8_partial_callable_0_partial_features_1(
-          context3, context2, context1, context0));
-  buffer.write('''
-</dd>
-''');
-  return buffer.toString();
-}
-
-String
-    ___renderCategory_partial_typedef_8_partial_callable_0_partial_categorization_0(
-        FunctionTypedef context3,
-        Typedef context2,
-        Category context1,
-        CategoryTemplateData context0) {
   final buffer = StringBuffer();
   if (context3.hasCategoryNames == true) {
     var context4 = context3.displayedCategories;
@@ -840,12 +825,11 @@ String
   return buffer.toString();
 }
 
-String
-    ___renderCategory_partial_typedef_8_partial_callable_0_partial_features_1(
-        FunctionTypedef context3,
-        Typedef context2,
-        Category context1,
-        CategoryTemplateData context0) {
+String __renderCategory_partial_typedef_8_partial_features_1(
+    FunctionTypedef context3,
+    Typedef context2,
+    Category context1,
+    CategoryTemplateData context0) {
   final buffer = StringBuffer();
   if (context3.hasFeatures == true) {
     buffer.write('''<div class="features">''');
@@ -856,7 +840,7 @@ String
   return buffer.toString();
 }
 
-String __renderCategory_partial_typedef_8_partial_type_1(
+String __renderCategory_partial_typedef_8_partial_type_2(
     Typedef context2, Category context1, CategoryTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
@@ -881,7 +865,7 @@ String __renderCategory_partial_typedef_8_partial_type_1(
   </span>
   ''');
   buffer.write(
-      ___renderCategory_partial_typedef_8_partial_type_1_partial_categorization_0(
+      ___renderCategory_partial_typedef_8_partial_type_2_partial_categorization_0(
           context2, context1, context0));
   buffer.write('''
 </dt>
@@ -896,7 +880,7 @@ String __renderCategory_partial_typedef_8_partial_type_1(
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('\n  ');
   buffer.write(
-      ___renderCategory_partial_typedef_8_partial_type_1_partial_features_1(
+      ___renderCategory_partial_typedef_8_partial_type_2_partial_features_1(
           context2, context1, context0));
   buffer.write('''
 </dd>
@@ -905,7 +889,7 @@ String __renderCategory_partial_typedef_8_partial_type_1(
 }
 
 String
-    ___renderCategory_partial_typedef_8_partial_type_1_partial_categorization_0(
+    ___renderCategory_partial_typedef_8_partial_type_2_partial_categorization_0(
         Typedef context2, Category context1, CategoryTemplateData context0) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
@@ -921,7 +905,7 @@ String
   return buffer.toString();
 }
 
-String ___renderCategory_partial_typedef_8_partial_type_1_partial_features_1(
+String ___renderCategory_partial_typedef_8_partial_type_2_partial_features_1(
     Typedef context2, Category context1, CategoryTemplateData context0) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
@@ -1286,17 +1270,18 @@ String _renderCategory_partial_footer_12(CategoryTemplateData context0) {
 </footer>
 
 ''');
+  buffer.writeln();
   buffer.write('''
 <script src="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/highlight.pack.js"></script>
+  buffer.write('''static-assets/highlight.pack.js?v1"></script>
 <script src="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/script.js"></script>
+  buffer.write('''static-assets/script.js?v1"></script>
 
 ''');
   buffer.write(context0.customFooter.toString());
@@ -1695,21 +1680,23 @@ String _renderClass_partial_head_0<T extends Class>(
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  ''');
+  buffer.write('''
   <link rel="stylesheet" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/github.css">
+  buffer.write('''static-assets/github.css?v1">
   <link rel="stylesheet" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/styles.css">
+  buffer.write('''static-assets/styles.css?v1">
   <link rel="icon" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/favicon.png">
+  buffer.write('''static-assets/favicon.png?v1">
 
   ''');
   buffer.write(context0.customHeader.toString());
@@ -2142,17 +2129,18 @@ String _renderClass_partial_footer_9<T extends Class>(
 </footer>
 
 ''');
+  buffer.writeln();
   buffer.write('''
 <script src="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/highlight.pack.js"></script>
+  buffer.write('''static-assets/highlight.pack.js?v1"></script>
 <script src="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/script.js"></script>
+  buffer.write('''static-assets/script.js?v1"></script>
 
 ''');
   buffer.write(context0.customFooter.toString());
@@ -2302,21 +2290,23 @@ String _renderConstructor_partial_head_0(ConstructorTemplateData context0) {
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  ''');
+  buffer.write('''
   <link rel="stylesheet" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/github.css">
+  buffer.write('''static-assets/github.css?v1">
   <link rel="stylesheet" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/styles.css">
+  buffer.write('''static-assets/styles.css?v1">
   <link rel="icon" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/favicon.png">
+  buffer.write('''static-assets/favicon.png?v1">
 
   ''');
   buffer.write(context0.customHeader.toString());
@@ -2533,17 +2523,18 @@ String _renderConstructor_partial_footer_6(ConstructorTemplateData context0) {
 </footer>
 
 ''');
+  buffer.writeln();
   buffer.write('''
 <script src="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/highlight.pack.js"></script>
+  buffer.write('''static-assets/highlight.pack.js?v1"></script>
 <script src="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/script.js"></script>
+  buffer.write('''static-assets/script.js?v1"></script>
 
 ''');
   buffer.write(context0.customFooter.toString());
@@ -2923,21 +2914,23 @@ String _renderEnum_partial_head_0(EnumTemplateData context0) {
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  ''');
+  buffer.write('''
   <link rel="stylesheet" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/github.css">
+  buffer.write('''static-assets/github.css?v1">
   <link rel="stylesheet" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/styles.css">
+  buffer.write('''static-assets/styles.css?v1">
   <link rel="icon" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/favicon.png">
+  buffer.write('''static-assets/favicon.png?v1">
 
   ''');
   buffer.write(context0.customHeader.toString());
@@ -3365,17 +3358,18 @@ String _renderEnum_partial_footer_9(EnumTemplateData context0) {
 </footer>
 
 ''');
+  buffer.writeln();
   buffer.write('''
 <script src="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/highlight.pack.js"></script>
+  buffer.write('''static-assets/highlight.pack.js?v1"></script>
 <script src="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/script.js"></script>
+  buffer.write('''static-assets/script.js?v1"></script>
 
 ''');
   buffer.write(context0.customFooter.toString());
@@ -3477,21 +3471,23 @@ String _renderError_partial_head_0(PackageTemplateData context0) {
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  ''');
+  buffer.write('''
   <link rel="stylesheet" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/github.css">
+  buffer.write('''static-assets/github.css?v1">
   <link rel="stylesheet" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/styles.css">
+  buffer.write('''static-assets/styles.css?v1">
   <link rel="icon" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/favicon.png">
+  buffer.write('''static-assets/favicon.png?v1">
 
   ''');
   buffer.write(context0.customHeader.toString());
@@ -3714,17 +3710,18 @@ String _renderError_partial_footer_3(PackageTemplateData context0) {
 </footer>
 
 ''');
+  buffer.writeln();
   buffer.write('''
 <script src="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/highlight.pack.js"></script>
+  buffer.write('''static-assets/highlight.pack.js?v1"></script>
 <script src="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/script.js"></script>
+  buffer.write('''static-assets/script.js?v1"></script>
 
 ''');
   buffer.write(context0.customFooter.toString());
@@ -3970,21 +3967,23 @@ String _renderExtension_partial_head_0<T extends Extension>(
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  ''');
+  buffer.write('''
   <link rel="stylesheet" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/github.css">
+  buffer.write('''static-assets/github.css?v1">
   <link rel="stylesheet" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/styles.css">
+  buffer.write('''static-assets/styles.css?v1">
   <link rel="icon" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/favicon.png">
+  buffer.write('''static-assets/favicon.png?v1">
 
   ''');
   buffer.write(context0.customHeader.toString());
@@ -4420,17 +4419,18 @@ String _renderExtension_partial_footer_9<T extends Extension>(
 </footer>
 
 ''');
+  buffer.writeln();
   buffer.write('''
 <script src="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/highlight.pack.js"></script>
+  buffer.write('''static-assets/highlight.pack.js?v1"></script>
 <script src="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/script.js"></script>
+  buffer.write('''static-assets/script.js?v1"></script>
 
 ''');
   buffer.write(context0.customFooter.toString());
@@ -4552,21 +4552,23 @@ String _renderFunction_partial_head_0(FunctionTemplateData context0) {
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  ''');
+  buffer.write('''
   <link rel="stylesheet" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/github.css">
+  buffer.write('''static-assets/github.css?v1">
   <link rel="stylesheet" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/styles.css">
+  buffer.write('''static-assets/styles.css?v1">
   <link rel="icon" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/favicon.png">
+  buffer.write('''static-assets/favicon.png?v1">
 
   ''');
   buffer.write(context0.customHeader.toString());
@@ -4853,17 +4855,18 @@ String _renderFunction_partial_footer_8(FunctionTemplateData context0) {
 </footer>
 
 ''');
+  buffer.writeln();
   buffer.write('''
 <script src="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/highlight.pack.js"></script>
+  buffer.write('''static-assets/highlight.pack.js?v1"></script>
 <script src="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/script.js"></script>
+  buffer.write('''static-assets/script.js?v1"></script>
 
 ''');
   buffer.write(context0.customFooter.toString());
@@ -5011,21 +5014,23 @@ String _renderIndex_partial_head_0(PackageTemplateData context0) {
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  ''');
+  buffer.write('''
   <link rel="stylesheet" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/github.css">
+  buffer.write('''static-assets/github.css?v1">
   <link rel="stylesheet" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/styles.css">
+  buffer.write('''static-assets/styles.css?v1">
   <link rel="icon" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/favicon.png">
+  buffer.write('''static-assets/favicon.png?v1">
 
   ''');
   buffer.write(context0.customHeader.toString());
@@ -5307,17 +5312,18 @@ String _renderIndex_partial_footer_5(PackageTemplateData context0) {
 </footer>
 
 ''');
+  buffer.writeln();
   buffer.write('''
 <script src="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/highlight.pack.js"></script>
+  buffer.write('''static-assets/highlight.pack.js?v1"></script>
 <script src="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/script.js"></script>
+  buffer.write('''static-assets/script.js?v1"></script>
 
 ''');
   buffer.write(context0.customFooter.toString());
@@ -5663,21 +5669,23 @@ String _renderLibrary_partial_head_0(LibraryTemplateData context0) {
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  ''');
+  buffer.write('''
   <link rel="stylesheet" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/github.css">
+  buffer.write('''static-assets/github.css?v1">
   <link rel="stylesheet" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/styles.css">
+  buffer.write('''static-assets/styles.css?v1">
   <link rel="icon" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/favicon.png">
+  buffer.write('''static-assets/favicon.png?v1">
 
   ''');
   buffer.write(context0.customHeader.toString());
@@ -6188,81 +6196,63 @@ String _renderLibrary_partial_typedef_11(Typedef context3, Library context2,
   if (context3.isCallable == true) {
     var context4 = context3.asCallable;
     if (context4 != null) {
-      buffer.write('\n    ');
-      buffer.write(__renderLibrary_partial_typedef_11_partial_callable_0(
+      buffer.write('''
+  <dt id="''');
+      buffer.write(htmlEscape.convert(context4.htmlId.toString()));
+      buffer.write('''" class="callable''');
+      if (context4.isInherited == true) {
+        buffer.write(''' inherited''');
+      }
+      buffer.write('''">
+    <span class="name''');
+      if (context4.isDeprecated == true) {
+        buffer.write(''' deprecated''');
+      }
+      buffer.write('''">''');
+      buffer.write(context4.linkedName.toString());
+      buffer.write('''</span>''');
+      buffer.write(context4.linkedGenericParameters.toString());
+      buffer.write('''<span class="signature">
+      <span class="returntype parameter">= ''');
+      buffer.write(context4.modelType.linkedName.toString());
+      buffer.write('''</span>
+    </span>
+    ''');
+      buffer.write(__renderLibrary_partial_typedef_11_partial_categorization_0(
           context4, context3, context2, context1, context0));
+      buffer.write('''
+  </dt>
+  <dd''');
+      if (context4.isInherited == true) {
+        buffer.write(''' class="inherited"''');
+      }
+      buffer.write('''>
+    ''');
+      buffer.write(context4.oneLineDoc.toString());
+      buffer.write(' ');
+      buffer.write(context4.extendedDocLink.toString());
+      buffer.write('\n    ');
+      buffer.write(__renderLibrary_partial_typedef_11_partial_features_1(
+          context4, context3, context2, context1, context0));
+      buffer.write('''
+  </dd>''');
     }
   }
   if (context3.isCallable != true) {
     buffer.write('\n  ');
-    buffer.write(__renderLibrary_partial_typedef_11_partial_type_1(
+    buffer.write(__renderLibrary_partial_typedef_11_partial_type_2(
         context3, context2, context1, context0));
   }
   buffer.writeln();
   return buffer.toString();
 }
 
-String __renderLibrary_partial_typedef_11_partial_callable_0(
+String __renderLibrary_partial_typedef_11_partial_categorization_0(
     FunctionTypedef context4,
     Typedef context3,
     Library context2,
     Library context1,
     LibraryTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''<dt id="''');
-  buffer.write(htmlEscape.convert(context4.htmlId.toString()));
-  buffer.write('''" class="callable''');
-  if (context4.isInherited == true) {
-    buffer.write(''' inherited''');
-  }
-  buffer.write('''">
-  <span class="name''');
-  if (context4.isDeprecated == true) {
-    buffer.write(''' deprecated''');
-  }
-  buffer.write('''">''');
-  buffer.write(context4.linkedName.toString());
-  buffer.write('''</span>''');
-  buffer.write(context4.linkedGenericParameters.toString());
-  buffer.write('''<span class="signature">(<wbr>''');
-  buffer.write(context4.linkedParamsNoMetadata.toString());
-  buffer.write(''')
-    <span class="returntype parameter">&#8594; ''');
-  buffer.write(context4.modelType.returnType.linkedName.toString());
-  buffer.write('''</span>
-  </span>
-  ''');
-  buffer.write(
-      ___renderLibrary_partial_typedef_11_partial_callable_0_partial_categorization_0(
-          context4, context3, context2, context1, context0));
-  buffer.write('''
-</dt>
-<dd''');
-  if (context4.isInherited == true) {
-    buffer.write(''' class="inherited"''');
-  }
-  buffer.write('''>
-  ''');
-  buffer.write(context4.oneLineDoc.toString());
-  buffer.write(' ');
-  buffer.write(context4.extendedDocLink.toString());
-  buffer.write('\n  ');
-  buffer.write(
-      ___renderLibrary_partial_typedef_11_partial_callable_0_partial_features_1(
-          context4, context3, context2, context1, context0));
-  buffer.write('''
-</dd>
-''');
-  return buffer.toString();
-}
-
-String
-    ___renderLibrary_partial_typedef_11_partial_callable_0_partial_categorization_0(
-        FunctionTypedef context4,
-        Typedef context3,
-        Library context2,
-        Library context1,
-        LibraryTemplateData context0) {
   final buffer = StringBuffer();
   if (context4.hasCategoryNames == true) {
     var context5 = context4.displayedCategories;
@@ -6277,13 +6267,12 @@ String
   return buffer.toString();
 }
 
-String
-    ___renderLibrary_partial_typedef_11_partial_callable_0_partial_features_1(
-        FunctionTypedef context4,
-        Typedef context3,
-        Library context2,
-        Library context1,
-        LibraryTemplateData context0) {
+String __renderLibrary_partial_typedef_11_partial_features_1(
+    FunctionTypedef context4,
+    Typedef context3,
+    Library context2,
+    Library context1,
+    LibraryTemplateData context0) {
   final buffer = StringBuffer();
   if (context4.hasFeatures == true) {
     buffer.write('''<div class="features">''');
@@ -6294,7 +6283,7 @@ String
   return buffer.toString();
 }
 
-String __renderLibrary_partial_typedef_11_partial_type_1(Typedef context3,
+String __renderLibrary_partial_typedef_11_partial_type_2(Typedef context3,
     Library context2, Library context1, LibraryTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
@@ -6319,7 +6308,7 @@ String __renderLibrary_partial_typedef_11_partial_type_1(Typedef context3,
   </span>
   ''');
   buffer.write(
-      ___renderLibrary_partial_typedef_11_partial_type_1_partial_categorization_0(
+      ___renderLibrary_partial_typedef_11_partial_type_2_partial_categorization_0(
           context3, context2, context1, context0));
   buffer.write('''
 </dt>
@@ -6334,7 +6323,7 @@ String __renderLibrary_partial_typedef_11_partial_type_1(Typedef context3,
   buffer.write(context3.extendedDocLink.toString());
   buffer.write('\n  ');
   buffer.write(
-      ___renderLibrary_partial_typedef_11_partial_type_1_partial_features_1(
+      ___renderLibrary_partial_typedef_11_partial_type_2_partial_features_1(
           context3, context2, context1, context0));
   buffer.write('''
 </dd>
@@ -6343,7 +6332,7 @@ String __renderLibrary_partial_typedef_11_partial_type_1(Typedef context3,
 }
 
 String
-    ___renderLibrary_partial_typedef_11_partial_type_1_partial_categorization_0(
+    ___renderLibrary_partial_typedef_11_partial_type_2_partial_categorization_0(
         Typedef context3,
         Library context2,
         Library context1,
@@ -6362,7 +6351,7 @@ String
   return buffer.toString();
 }
 
-String ___renderLibrary_partial_typedef_11_partial_type_1_partial_features_1(
+String ___renderLibrary_partial_typedef_11_partial_type_2_partial_features_1(
     Typedef context3,
     Library context2,
     Library context1,
@@ -6523,17 +6512,18 @@ String _renderLibrary_partial_footer_14(LibraryTemplateData context0) {
 </footer>
 
 ''');
+  buffer.writeln();
   buffer.write('''
 <script src="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/highlight.pack.js"></script>
+  buffer.write('''static-assets/highlight.pack.js?v1"></script>
 <script src="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/script.js"></script>
+  buffer.write('''static-assets/script.js?v1"></script>
 
 ''');
   buffer.write(context0.customFooter.toString());
@@ -6655,21 +6645,23 @@ String _renderMethod_partial_head_0(MethodTemplateData context0) {
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  ''');
+  buffer.write('''
   <link rel="stylesheet" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/github.css">
+  buffer.write('''static-assets/github.css?v1">
   <link rel="stylesheet" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/styles.css">
+  buffer.write('''static-assets/styles.css?v1">
   <link rel="icon" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/favicon.png">
+  buffer.write('''static-assets/favicon.png?v1">
 
   ''');
   buffer.write(context0.customHeader.toString());
@@ -6952,17 +6944,18 @@ String _renderMethod_partial_footer_8(MethodTemplateData context0) {
 </footer>
 
 ''');
+  buffer.writeln();
   buffer.write('''
 <script src="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/highlight.pack.js"></script>
+  buffer.write('''static-assets/highlight.pack.js?v1"></script>
 <script src="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/script.js"></script>
+  buffer.write('''static-assets/script.js?v1"></script>
 
 ''');
   buffer.write(context0.customFooter.toString());
@@ -7359,21 +7352,23 @@ String _renderMixin_partial_head_0(MixinTemplateData context0) {
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  ''');
+  buffer.write('''
   <link rel="stylesheet" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/github.css">
+  buffer.write('''static-assets/github.css?v1">
   <link rel="stylesheet" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/styles.css">
+  buffer.write('''static-assets/styles.css?v1">
   <link rel="icon" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/favicon.png">
+  buffer.write('''static-assets/favicon.png?v1">
 
   ''');
   buffer.write(context0.customHeader.toString());
@@ -7801,17 +7796,18 @@ String _renderMixin_partial_footer_9(MixinTemplateData context0) {
 </footer>
 
 ''');
+  buffer.writeln();
   buffer.write('''
 <script src="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/highlight.pack.js"></script>
+  buffer.write('''static-assets/highlight.pack.js?v1"></script>
 <script src="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/script.js"></script>
+  buffer.write('''static-assets/script.js?v1"></script>
 
 ''');
   buffer.write(context0.customFooter.toString());
@@ -7949,21 +7945,23 @@ String _renderProperty_partial_head_0(PropertyTemplateData context0) {
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  ''');
+  buffer.write('''
   <link rel="stylesheet" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/github.css">
+  buffer.write('''static-assets/github.css?v1">
   <link rel="stylesheet" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/styles.css">
+  buffer.write('''static-assets/styles.css?v1">
   <link rel="icon" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/favicon.png">
+  buffer.write('''static-assets/favicon.png?v1">
 
   ''');
   buffer.write(context0.customHeader.toString());
@@ -8400,17 +8398,18 @@ String _renderProperty_partial_footer_10(PropertyTemplateData context0) {
 </footer>
 
 ''');
+  buffer.writeln();
   buffer.write('''
 <script src="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/highlight.pack.js"></script>
+  buffer.write('''static-assets/highlight.pack.js?v1"></script>
 <script src="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/script.js"></script>
+  buffer.write('''static-assets/script.js?v1"></script>
 
 ''');
   buffer.write(context0.customFooter.toString());
@@ -8941,21 +8940,23 @@ String _renderTopLevelProperty_partial_head_0(
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  ''');
+  buffer.write('''
   <link rel="stylesheet" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/github.css">
+  buffer.write('''static-assets/github.css?v1">
   <link rel="stylesheet" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/styles.css">
+  buffer.write('''static-assets/styles.css?v1">
   <link rel="icon" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/favicon.png">
+  buffer.write('''static-assets/favicon.png?v1">
 
   ''');
   buffer.write(context0.customHeader.toString());
@@ -9432,17 +9433,18 @@ String _renderTopLevelProperty_partial_footer_11(
 </footer>
 
 ''');
+  buffer.writeln();
   buffer.write('''
 <script src="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/highlight.pack.js"></script>
+  buffer.write('''static-assets/highlight.pack.js?v1"></script>
 <script src="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/script.js"></script>
+  buffer.write('''static-assets/script.js?v1"></script>
 
 ''');
   buffer.write(context0.customFooter.toString());
@@ -9568,21 +9570,23 @@ String _renderTypedef_partial_head_0(TypedefTemplateData context0) {
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  ''');
+  buffer.write('''
   <link rel="stylesheet" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/github.css">
+  buffer.write('''static-assets/github.css?v1">
   <link rel="stylesheet" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/styles.css">
+  buffer.write('''static-assets/styles.css?v1">
   <link rel="icon" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/favicon.png">
+  buffer.write('''static-assets/favicon.png?v1">
 
   ''');
   buffer.write(context0.customHeader.toString());
@@ -9710,81 +9714,51 @@ String _renderTypedef_partial_typedef_multiline_4(
   if (context1.isCallable == true) {
     var context2 = context1.asCallable;
     if (context2 != null) {
-      buffer.write('\n    ');
-      buffer.write(
-          __renderTypedef_partial_typedef_multiline_4_partial_callable_multiline_0(
-              context2, context1, context0));
+      if (context2.hasAnnotations == true) {
+        buffer.write('''
+    <div>
+      <ol class="annotation-list">''');
+        var context3 = context2.annotations;
+        if (context3 != null) {
+          for (var context4 in context3) {
+            buffer.write('''
+      <li>''');
+            buffer.write(context4.linkedNameWithParameters.toString());
+            buffer.write('''</li>''');
+          }
+        }
+        buffer.write('''
+    </ol>
+    </div>''');
+      }
+      if (context2.isConst == true) {
+        buffer.write('''const ''');
+      }
+      buffer.write('''<span class="name ''');
+      if (context2.isDeprecated == true) {
+        buffer.write('''deprecated''');
+      }
+      buffer.write('''">''');
+      buffer.write(htmlEscape.convert(context2.name.toString()));
+      buffer.write('''</span>''');
+      buffer.write(context2.linkedGenericParameters.toString());
+      buffer.write(''' =
+     <span class="returntype">''');
+      buffer.write(context2.modelType.linkedName.toString());
+      buffer.write('''</span>''');
     }
   }
   if (context1.isCallable != true) {
     buffer.write('\n  ');
     buffer.write(
-        __renderTypedef_partial_typedef_multiline_4_partial_type_multiline_1(
+        __renderTypedef_partial_typedef_multiline_4_partial_type_multiline_0(
             context1, context0));
   }
   buffer.writeln();
   return buffer.toString();
 }
 
-String __renderTypedef_partial_typedef_multiline_4_partial_callable_multiline_0(
-    FunctionTypedef context2, Typedef context1, TypedefTemplateData context0) {
-  final buffer = StringBuffer();
-  if (context2.hasAnnotations == true) {
-    buffer.write('''
-<div>
-  <ol class="annotation-list">''');
-    var context3 = context2.annotations;
-    if (context3 != null) {
-      for (var context4 in context3) {
-        buffer.write('''
-    <li>''');
-        buffer.write(context4.linkedNameWithParameters.toString());
-        buffer.write('''</li>''');
-      }
-    }
-    buffer.write('''
-  </ol>
-</div>''');
-  }
-  buffer.write('''
-
-<span class="returntype">''');
-  buffer.write(context2.modelType.returnType.linkedName.toString());
-  buffer.write('''</span>
-''');
-  buffer.write(
-      ___renderTypedef_partial_typedef_multiline_4_partial_callable_multiline_0_partial_name_summary_0(
-          context2, context1, context0));
-  buffer.write(context2.genericParameters.toString());
-  buffer.write('''(<wbr>''');
-  if (context2.hasParameters == true) {
-    buffer.write(context2.linkedParamsLines.toString());
-  }
-  buffer.write(''')
-''');
-  return buffer.toString();
-}
-
-String
-    ___renderTypedef_partial_typedef_multiline_4_partial_callable_multiline_0_partial_name_summary_0(
-        FunctionTypedef context2,
-        Typedef context1,
-        TypedefTemplateData context0) {
-  final buffer = StringBuffer();
-  if (context2.isConst == true) {
-    buffer.write('''const ''');
-  }
-  buffer.write('''<span class="name ''');
-  if (context2.isDeprecated == true) {
-    buffer.write('''deprecated''');
-  }
-  buffer.write('''">''');
-  buffer.write(htmlEscape.convert(context2.name.toString()));
-  buffer.write('''</span>''');
-  return buffer.toString();
-}
-
-String __renderTypedef_partial_typedef_multiline_4_partial_type_multiline_1(
+String __renderTypedef_partial_typedef_multiline_4_partial_type_multiline_0(
     Typedef context1, TypedefTemplateData context0) {
   final buffer = StringBuffer();
   if (context1.hasAnnotations == true) {
@@ -9806,7 +9780,7 @@ String __renderTypedef_partial_typedef_multiline_4_partial_type_multiline_1(
   }
   buffer.writeln();
   buffer.write(
-      ___renderTypedef_partial_typedef_multiline_4_partial_type_multiline_1_partial_name_summary_0(
+      ___renderTypedef_partial_typedef_multiline_4_partial_type_multiline_0_partial_name_summary_0(
           context1, context0));
   buffer.write(context1.genericParameters.toString());
   buffer.write(''' = ''');
@@ -9817,7 +9791,7 @@ String __renderTypedef_partial_typedef_multiline_4_partial_type_multiline_1(
 }
 
 String
-    ___renderTypedef_partial_typedef_multiline_4_partial_type_multiline_1_partial_name_summary_0(
+    ___renderTypedef_partial_typedef_multiline_4_partial_type_multiline_0_partial_name_summary_0(
         Typedef context1, TypedefTemplateData context0) {
   final buffer = StringBuffer();
   if (context1.isConst == true) {
@@ -9943,17 +9917,18 @@ String _renderTypedef_partial_footer_8(TypedefTemplateData context0) {
 </footer>
 
 ''');
+  buffer.writeln();
   buffer.write('''
 <script src="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/highlight.pack.js"></script>
+  buffer.write('''static-assets/highlight.pack.js?v1"></script>
 <script src="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/script.js"></script>
+  buffer.write('''static-assets/script.js?v1"></script>
 
 ''');
   buffer.write(context0.customFooter.toString());

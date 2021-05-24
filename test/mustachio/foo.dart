@@ -1,7 +1,7 @@
-@Renderer.forTest(#renderFoo, Context<Foo>(), 'templates/foo.html',
+@Renderer.forTest(#renderFoo, Context<Foo>(), 'foo',
     visibleTypes: {Property1, Property2, Property3})
-@Renderer.forTest(#renderBar, Context<Bar>(), 'templates/bar.html')
-@Renderer.forTest(#renderBaz, Context<Baz>(), 'templates/baz.html')
+@Renderer.forTest(#renderBar, Context<Bar>(), 'bar')
+@Renderer.forTest(#renderBaz, Context<Baz>(), 'baz')
 library dartdoc.testing.foo;
 
 import 'package:dartdoc/src/mustachio/annotations.dart';

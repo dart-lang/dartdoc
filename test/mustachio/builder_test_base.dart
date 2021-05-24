@@ -5,6 +5,10 @@
 import 'package:analyzer/dart/element/element.dart';
 
 /// The build package Asset for a copy of the Renderer annotation for tests.
+///
+/// In testing builders, the builder cannot access both in-line assets specified
+/// in tests, _and_ assets on disk in the package.
+// Update this when [Renderer] and [Context] are updated.
 const annotationsAsset = {
   'mustachio|lib/annotations.dart': '''
 class Renderer {

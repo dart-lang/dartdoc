@@ -11,7 +11,10 @@ import 'package:meta/meta.dart';
 
 /// Specifies information for generating both a runtime-interpreted Mustache
 /// renderer and a pre-compiled Mustache renderer for a [context] object, using
-/// a Mustache template at [templateUri]
+/// a Mustache template located at [standardHtmlTemplate] and at
+/// [standardMdTemplate], for an HTML template, and for a Markdown template,
+/// respectively.
+// Update `test/builder_test_base.dart` when updating this.
 class Renderer {
   /// The name of the render function to generate.
   final Symbol name;
@@ -28,7 +31,7 @@ class Renderer {
   /// The unparsed, string form of the URI of the _standard_ Markdown template.
   ///
   /// This represents the Mustache template that dartdoc uses out-of-the-box to
-  /// render the [context] object while generating documentation in HTML.
+  /// render the [context] object while generating documentation in Markdown.
   final String standardMdTemplate;
 
   /// A set of types which are "visible" to the Mustache runtime interpreter.
@@ -59,15 +62,17 @@ class Renderer {
   const Renderer.forTest(
     this.name,
     this.context,
-    this.standardHtmlTemplate, {
+    String standardTemplateBasename, {
     this.visibleTypes = const {},
-  }) : standardMdTemplate = null;
+  })  : standardHtmlTemplate = 'templates/$standardTemplateBasename.html',
+        standardMdTemplate = 'templates/$standardTemplateBasename.md';
 }
 
 /// A container for a type, [T], which is the type of a context object,
 /// referenced in a `@Renderer` annotation.
 ///
 /// An instance of this class holds zero information, except for [T], a type.
+// Update `test/builder_test_base.dart` when updating this.
 class Context<T> {
   const Context();
 }
