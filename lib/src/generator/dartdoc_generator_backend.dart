@@ -8,7 +8,7 @@ import 'package:dartdoc/src/generator/generator_frontend.dart';
 import 'package:dartdoc/src/generator/generator_utils.dart' as generator_util;
 import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/src/generator/templates.dart';
-import 'package:dartdoc/src/generator/templates.renderers.dart';
+import 'package:dartdoc/src/generator/templates.runtime_renderers.dart';
 import 'package:dartdoc/src/mustachio/renderer_base.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:path/path.dart' as path show Context;

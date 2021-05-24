@@ -10,37 +10,14 @@ import 'package:build_test/build_test.dart';
 import 'package:test/test.dart';
 
 import '../../tool/mustachio/builder.dart';
-
-const _annotationsAsset = {
-  'mustachio|lib/annotations.dart': '''
-class Renderer {
-  final Symbol name;
-
-  final Context context;
-
-  final Set<Type> visibleTypes;
-
-  const Renderer(this.name, this.context, {this.visibleTypes = const {}});
-}
-
-class Context<T> {
-  const Context();
-}
-'''
-};
-
-const _libraryFrontMatter = '''
-@Renderer(#renderFoo, Context<Foo>(), visibleTypes: {Bar, Baz})
-library foo;
-import 'package:mustachio/annotations.dart';
-''';
+import 'builder_test_base.dart';
 
 void main() {
   InMemoryAssetWriter writer;
 
   Future<LibraryElement> resolveGeneratedLibrary(
       InMemoryAssetWriter writer) async {
-    var rendererAsset = AssetId('foo', 'lib/foo.renderers.dart');
+    var rendererAsset = AssetId('foo', 'lib/foo.runtime_renderers.dart');
     var writtenStrings = writer.assets
         .map((id, content) => MapEntry(id.toString(), utf8.decode(content)));
     return await resolveSources(writtenStrings,
@@ -48,7 +25,7 @@ void main() {
   }
 
   Future<void> testMustachioBuilder(String sourceLibraryContent,
-      {String libraryFrontMatter = _libraryFrontMatter,
+      {String libraryFrontMatter = libraryFrontMatter,
       Map<String, Object> outputs}) async {
     sourceLibraryContent = '''
 $libraryFrontMatter
@@ -57,8 +34,12 @@ $sourceLibraryContent
     await testBuilder(
       mustachioBuilder(BuilderOptions({})),
       {
-        ..._annotationsAsset,
+        ...annotationsAsset,
         'foo|lib/foo.dart': sourceLibraryContent,
+        'foo|lib/templates/html/foo.html': 'EMPTY',
+        'foo|lib/templates/md/foo.md': 'EMPTY',
+        'foo|lib/templates/html/bar.html': 'EMPTY',
+        'foo|lib/templates/md/bar.md': 'EMPTY',
       },
       outputs: outputs,
       writer: writer,
@@ -96,7 +77,7 @@ class Bar {}
 class Baz {}
 ''');
       renderersLibrary = await resolveGeneratedLibrary(writer);
-      var rendererAsset = AssetId('foo', 'lib/foo.renderers.dart');
+      var rendererAsset = AssetId('foo', 'lib/foo.runtime_renderers.dart');
       generatedContent = utf8.decode(writer.assets[rendererAsset]);
     });
 
@@ -204,8 +185,8 @@ class Foo {}
 class Bar {}
 class Baz {}
 ''', libraryFrontMatter: '''
-@Renderer(#renderFoo, Context<Foo>())
-@Renderer(#renderBar, Context<Bar>())
+@Renderer(#renderFoo, Context<Foo>(), 'foo')
+@Renderer(#renderBar, Context<Bar>(), 'bar')
 library foo;
 import 'package:mustachio/annotations.dart';
 ''');
@@ -231,12 +212,12 @@ class BarBase<T> {}
 class Bar<T> extends BarBase<int> {}
 class Baz {}
 ''', libraryFrontMatter: '''
-@Renderer(#renderFoo, Context<Foo>())
-@Renderer(#renderBar, Context<Bar>())
+@Renderer(#renderFoo, Context<Foo>(), 'foo')
+@Renderer(#renderBar, Context<Bar>(), 'bar')
 library foo;
 import 'package:mustachio/annotations.dart';
 ''');
-      var rendererAsset = AssetId('foo', 'lib/foo.renderers.dart');
+      var rendererAsset = AssetId('foo', 'lib/foo.runtime_renderers.dart');
       generatedContent = utf8.decode(writer.assets[rendererAsset]);
     });
 
@@ -338,10 +319,4 @@ class Method {}
       expect(renderersLibrary.getType('_Renderer_String'), isNull);
     });
   });
-}
-
-extension on LibraryElement {
-  FunctionElement getTopLevelFunction(String name) => topLevelElements
-      .whereType<FunctionElement>()
-      .firstWhere((element) => element.name == name, orElse: () => null);
 }
