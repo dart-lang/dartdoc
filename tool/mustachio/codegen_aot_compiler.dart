@@ -414,7 +414,10 @@ class _BlockCompiler {
       // Blank lines happen a lot; just indicate them as such.
       writeln('buffer.writeln();');
     } else {
-      content = content.replaceAll("'", "\\'").replaceAll(r'$', r'\\$');
+      content = content
+          .replaceAll(r'\', r'\\')
+          .replaceAll("'", r"\'")
+          .replaceAll(r'$', r'\$');
       if (_multipleWhitespacePattern.hasMatch(content)) {
         write("buffer.write('");
         write(content.replaceAll('\n', '\\n'));
