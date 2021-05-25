@@ -2122,137 +2122,194 @@ void main() {
   // Put linkage tests here; rendering tests should go to the appropriate
   // [Class], [Extension], etc groups.
   group('Comment References link tests', () {
-      ModelFunction doesStuff, function1, topLevelFunction;
-      TopLevelVariable incorrectDocReference, incorrectDocReferenceFromEx, nameWithTwoUnderscores, nameWithSingleUnderscore, theOnlyThingInTheLibrary;
-      Class Apple, BaseClass, baseForDocComments, ExtraSpecialList, string;
-      Method doAwesomeStuff, anotherMethod;
-      // ignore: unused_local_variable
-      Operator bracketOperator, bracketOperatorOtherClass;
-      Parameter doAwesomeStuffParam;
-      Field forInheriting, action;
+    ModelFunction doesStuff, function1, topLevelFunction;
+    TopLevelVariable incorrectDocReference,
+        incorrectDocReferenceFromEx,
+        nameWithTwoUnderscores,
+        nameWithSingleUnderscore,
+        theOnlyThingInTheLibrary;
+    Class Apple, BaseClass, baseForDocComments, ExtraSpecialList, string;
+    Method doAwesomeStuff, anotherMethod;
+    // ignore: unused_local_variable
+    Operator bracketOperator, bracketOperatorOtherClass;
+    Parameter doAwesomeStuffParam;
+    Field forInheriting, action;
 
-      setUpAll(() async {
-        nameWithTwoUnderscores = fakeLibrary.constants.firstWhere((v) => v.name == 'NAME_WITH_TWO_UNDERSCORES');
-        nameWithSingleUnderscore = fakeLibrary.constants.firstWhere((v) => v.name == 'NAME_SINGLEUNDERSCORE');
-        string = packageGraph.allLibraries.values
-                .firstWhere((e) => e.name == 'dart:core')
-            .allClasses
-            .firstWhere((c) => c.name == 'String');
-        baseForDocComments =
-            fakeLibrary.classes.firstWhere((c) => c.name == 'BaseForDocComments');
-        doAwesomeStuff = baseForDocComments.instanceMethods
-            .firstWhere((m) => m.name == 'doAwesomeStuff');
-        anotherMethod = baseForDocComments.instanceMethods
-            .firstWhere((m) => m.name == 'anotherMethod');
-        doAwesomeStuffParam = doAwesomeStuff.parameters.first;
-        topLevelFunction = fakeLibrary.functions.firstWhere((f) => f.name == 'topLevelFunction');
-        function1 = exLibrary.functions.firstWhere((f) => f.name == 'function1');
-        Apple = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
-        incorrectDocReference = fakeLibrary.constants.firstWhere((v) => v.name == 'incorrectDocReference');
-        incorrectDocReferenceFromEx = exLibrary.constants.firstWhere((v) => v.name == 'incorrectDocReferenceFromEx');
-        theOnlyThingInTheLibrary = packageGraph.libraries.firstWhere((l) => l.name == 'csspub').properties.firstWhere((v) => v.name == 'theOnlyThingInTheLibrary');
-        doesStuff = packageGraph.allLibraries.values.firstWhere((l) => l.name == 'anonymous_library').functions.firstWhere((f) => f.name == 'doesStuff');
-        BaseClass = packageGraph.allLibraries.values.firstWhere((l) => l.name == 'two_exports.src.base').classes.firstWhere((c) => c.name == 'BaseClass');
-        bracketOperator = baseForDocComments.instanceOperators
-            .firstWhere((o) => o.name == 'operator []');
-        bracketOperatorOtherClass = fakeLibrary.classes.firstWhere((c) => c.name == 'SpecialList')
-            .instanceOperators.firstWhere((o) => o.name == 'operator []');
-        ExtraSpecialList = fakeLibrary.classes.firstWhere((c) => c.name == 'ExtraSpecialList');
-        forInheriting = fakeLibrary.classes.firstWhere((c) => c.name == 'ImplicitProperties').allFields.firstWhere((n) => n.name == 'forInheriting');
-        action = packageGraph.allLibraries.values.firstWhere((l) => l.name == 'reexport.somelib').classes.firstWhere((c) => c.name == 'BaseReexported').allFields.firstWhere((f) => f.name == 'action');
-      });
+    setUpAll(() async {
+      nameWithTwoUnderscores = fakeLibrary.constants
+          .firstWhere((v) => v.name == 'NAME_WITH_TWO_UNDERSCORES');
+      nameWithSingleUnderscore = fakeLibrary.constants
+          .firstWhere((v) => v.name == 'NAME_SINGLEUNDERSCORE');
+      string = packageGraph.allLibraries.values
+          .firstWhere((e) => e.name == 'dart:core')
+          .allClasses
+          .firstWhere((c) => c.name == 'String');
+      baseForDocComments =
+          fakeLibrary.classes.firstWhere((c) => c.name == 'BaseForDocComments');
+      doAwesomeStuff = baseForDocComments.instanceMethods
+          .firstWhere((m) => m.name == 'doAwesomeStuff');
+      anotherMethod = baseForDocComments.instanceMethods
+          .firstWhere((m) => m.name == 'anotherMethod');
+      doAwesomeStuffParam = doAwesomeStuff.parameters.first;
+      topLevelFunction =
+          fakeLibrary.functions.firstWhere((f) => f.name == 'topLevelFunction');
+      function1 = exLibrary.functions.firstWhere((f) => f.name == 'function1');
+      Apple = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
+      incorrectDocReference = fakeLibrary.constants
+          .firstWhere((v) => v.name == 'incorrectDocReference');
+      incorrectDocReferenceFromEx = exLibrary.constants
+          .firstWhere((v) => v.name == 'incorrectDocReferenceFromEx');
+      theOnlyThingInTheLibrary = packageGraph.libraries
+          .firstWhere((l) => l.name == 'csspub')
+          .properties
+          .firstWhere((v) => v.name == 'theOnlyThingInTheLibrary');
+      doesStuff = packageGraph.allLibraries.values
+          .firstWhere((l) => l.name == 'anonymous_library')
+          .functions
+          .firstWhere((f) => f.name == 'doesStuff');
+      BaseClass = packageGraph.allLibraries.values
+          .firstWhere((l) => l.name == 'two_exports.src.base')
+          .classes
+          .firstWhere((c) => c.name == 'BaseClass');
+      bracketOperator = baseForDocComments.instanceOperators
+          .firstWhere((o) => o.name == 'operator []');
+      bracketOperatorOtherClass = fakeLibrary.classes
+          .firstWhere((c) => c.name == 'SpecialList')
+          .instanceOperators
+          .firstWhere((o) => o.name == 'operator []');
+      ExtraSpecialList =
+          fakeLibrary.classes.firstWhere((c) => c.name == 'ExtraSpecialList');
+      forInheriting = fakeLibrary.classes
+          .firstWhere((c) => c.name == 'ImplicitProperties')
+          .allFields
+          .firstWhere((n) => n.name == 'forInheriting');
+      action = packageGraph.allLibraries.values
+          .firstWhere((l) => l.name == 'reexport.somelib')
+          .classes
+          .firstWhere((c) => c.name == 'BaseReexported')
+          .allFields
+          .firstWhere((f) => f.name == 'action');
+    });
 
-      /// For comparison purposes, return an equivalent [MatchingLinkResult]
-      /// for the defining element returned.  May return [originalResult].
-      /// We do this to eliminate canonicalization effects from comparison,
-      /// as the original lookup code returns canonicalized results and the
-      /// new lookup code is only guaranteed to return equivalent results.
-      MatchingLinkResult definingLinkResult(MatchingLinkResult originalResult) {
-        if (originalResult.modelElement != null) {
-          return MatchingLinkResult(ModelElement.fromElement(originalResult.modelElement.element, originalResult.modelElement.packageGraph), warn: originalResult.warn);
-        }
-        return originalResult;
+    /// For comparison purposes, return an equivalent [MatchingLinkResult]
+    /// for the defining element returned.  May return [originalResult].
+    /// We do this to eliminate canonicalization effects from comparison,
+    /// as the original lookup code returns canonicalized results and the
+    /// new lookup code is only guaranteed to return equivalent results.
+    MatchingLinkResult definingLinkResult(MatchingLinkResult originalResult) {
+      if (originalResult.modelElement != null) {
+        return MatchingLinkResult(
+            ModelElement.fromElement(originalResult.modelElement.element,
+                originalResult.modelElement.packageGraph),
+            warn: originalResult.warn);
       }
+      return originalResult;
+    }
 
-      MatchingLinkResult originalLookup(Warnable element, String codeRef) => definingLinkResult(getMatchingLinkElement(element, codeRef, experimentalReferenceLookup: false));
-      MatchingLinkResult newLookup(Warnable element, String codeRef) => definingLinkResult(getMatchingLinkElement(element, codeRef, experimentalReferenceLookup: true));
+    MatchingLinkResult originalLookup(Warnable element, String codeRef) =>
+        definingLinkResult(getMatchingLinkElement(element, codeRef,
+            experimentalReferenceLookup: false));
+    MatchingLinkResult newLookup(Warnable element, String codeRef) =>
+        definingLinkResult(getMatchingLinkElement(element, codeRef,
+            experimentalReferenceLookup: true));
 
-      MatchingLinkResult bothLookup(Warnable element, String codeRef) {
-        var originalLookupResult = originalLookup(element, codeRef);
-        var newLookupResult = newLookup(element, codeRef);
-        expect(newLookupResult, equals(originalLookupResult));
-        return newLookupResult;
-      }
+    MatchingLinkResult bothLookup(Warnable element, String codeRef) {
+      var originalLookupResult = originalLookup(element, codeRef);
+      var newLookupResult = newLookup(element, codeRef);
+      expect(newLookupResult, equals(originalLookupResult));
+      return newLookupResult;
+    }
 
-      test('Verify basic linking inside class', () {
-        // parameter of [doAwesomeStuff]
-        // Parameter lookups are discarded with the original lookup code
-        expect(originalLookup(doAwesomeStuff, 'value'), equals(MatchingLinkResult(null, warn: false)));
-        expect(newLookup(doAwesomeStuff, 'value'), equals(MatchingLinkResult(doAwesomeStuffParam)));
+    test('Verify basic linking inside class', () {
+      // parameter of [doAwesomeStuff]
+      // Parameter lookups are discarded with the original lookup code
+      expect(originalLookup(doAwesomeStuff, 'value'),
+          equals(MatchingLinkResult(null, warn: false)));
+      expect(newLookup(doAwesomeStuff, 'value'),
+          equals(MatchingLinkResult(doAwesomeStuffParam)));
 
-        // Parent class of [doAwesomeStuff].
-        expect(bothLookup(doAwesomeStuff, 'BaseForDocComments'), equals(MatchingLinkResult(baseForDocComments)));
+      // Parent class of [doAwesomeStuff].
+      expect(bothLookup(doAwesomeStuff, 'BaseForDocComments'),
+          equals(MatchingLinkResult(baseForDocComments)));
 
-        // Top level constants in the same library as [doAwesomeStuff].
-        expect(bothLookup(doAwesomeStuff, 'NAME_WITH_TWO_UNDERSCORES'), equals(MatchingLinkResult(nameWithTwoUnderscores)));
-        expect(bothLookup(doAwesomeStuff, 'NAME_SINGLEUNDERSCORE'), equals(MatchingLinkResult(nameWithSingleUnderscore)));
+      // Top level constants in the same library as [doAwesomeStuff].
+      expect(bothLookup(doAwesomeStuff, 'NAME_WITH_TWO_UNDERSCORES'),
+          equals(MatchingLinkResult(nameWithTwoUnderscores)));
+      expect(bothLookup(doAwesomeStuff, 'NAME_SINGLEUNDERSCORE'),
+          equals(MatchingLinkResult(nameWithSingleUnderscore)));
 
-        // Top level class from [dart:core].
-        // TODO(jcollins-g): dart:core not recognized yet with new lookup code.
-        expect(originalLookup(doAwesomeStuff, 'String'), equals(MatchingLinkResult(string)));
+      // Top level class from [dart:core].
+      // TODO(jcollins-g): dart:core not recognized yet with new lookup code.
+      expect(originalLookup(doAwesomeStuff, 'String'),
+          equals(MatchingLinkResult(string)));
 
-        // Another method in the same class.
-        expect(bothLookup(doAwesomeStuff, 'anotherMethod'), equals(MatchingLinkResult(anotherMethod)));
+      // Another method in the same class.
+      expect(bothLookup(doAwesomeStuff, 'anotherMethod'),
+          equals(MatchingLinkResult(anotherMethod)));
 
-        // A top level function in this library.
-        // TODO(jcollins-g): top level functions not recognized yet with new lookup code.
-        expect(originalLookup(doAwesomeStuff, 'topLevelFunction'), equals(MatchingLinkResult(topLevelFunction)));
+      // A top level function in this library.
+      // TODO(jcollins-g): top level functions not recognized yet with new lookup code.
+      expect(originalLookup(doAwesomeStuff, 'topLevelFunction'),
+          equals(MatchingLinkResult(topLevelFunction)));
 
-        // A top level function in another library imported into this library.
-        // TODO(jcollins-g): namespace lookups are not yet implemented with new lookup code.
-        expect(originalLookup(doAwesomeStuff, 'function1'), equals(MatchingLinkResult(function1)));
+      // A top level function in another library imported into this library.
+      // TODO(jcollins-g): namespace lookups are not yet implemented with new lookup code.
+      expect(originalLookup(doAwesomeStuff, 'function1'),
+          equals(MatchingLinkResult(function1)));
 
-        // A class in another library imported into this library.
-        // TODO(jcollins-g): namespace lookups are not yet implemented with new lookup code.
-        expect(originalLookup(doAwesomeStuff, 'Apple'), equals(MatchingLinkResult(Apple)));
+      // A class in another library imported into this library.
+      // TODO(jcollins-g): namespace lookups are not yet implemented with new lookup code.
+      expect(originalLookup(doAwesomeStuff, 'Apple'),
+          equals(MatchingLinkResult(Apple)));
 
-        // A top level constant in this library sharing the same name as a name in another library.
-        // TODO(jcollins-g): namespace lookups are not yet implemented with new lookup code.
-        expect(originalLookup(doAwesomeStuff, 'incorrectDocReference'), equals(MatchingLinkResult(incorrectDocReference)));
+      // A top level constant in this library sharing the same name as a name in another library.
+      // TODO(jcollins-g): namespace lookups are not yet implemented with new lookup code.
+      expect(originalLookup(doAwesomeStuff, 'incorrectDocReference'),
+          equals(MatchingLinkResult(incorrectDocReference)));
 
-        // A top level constant in another library.
-        // TODO(jcollins-g): namespace lookups are not yet implemented with new lookup code.
-        expect(originalLookup(doAwesomeStuff, 'incorrectDocReferenceFromEx'), equals(MatchingLinkResult(incorrectDocReferenceFromEx)));
+      // A top level constant in another library.
+      // TODO(jcollins-g): namespace lookups are not yet implemented with new lookup code.
+      expect(originalLookup(doAwesomeStuff, 'incorrectDocReferenceFromEx'),
+          equals(MatchingLinkResult(incorrectDocReferenceFromEx)));
 
-        // A prefixed constant in another library.
-        // TODO(jcollins-g): prefixed namespace lookups are not yet implemented with new lookup code.
-        expect(originalLookup(doAwesomeStuff, 'css.theOnlyThingInTheLibrary'), equals(MatchingLinkResult(theOnlyThingInTheLibrary)));
+      // A prefixed constant in another library.
+      // TODO(jcollins-g): prefixed namespace lookups are not yet implemented with new lookup code.
+      expect(originalLookup(doAwesomeStuff, 'css.theOnlyThingInTheLibrary'),
+          equals(MatchingLinkResult(theOnlyThingInTheLibrary)));
 
-        // A name that exists in this package but is not imported.
-        // TODO(jcollins-g): package-wide lookups are not yet implemented with the new lookup code.
-        expect(originalLookup(doAwesomeStuff, 'doesStuff'), equals(MatchingLinkResult(doesStuff)));
+      // A name that exists in this package but is not imported.
+      // TODO(jcollins-g): package-wide lookups are not yet implemented with the new lookup code.
+      expect(originalLookup(doAwesomeStuff, 'doesStuff'),
+          equals(MatchingLinkResult(doesStuff)));
 
-        // A name of a class from an import of a library that exported that name.
-        expect(originalLookup(doAwesomeStuff, 'BaseClass'), equals(MatchingLinkResult(BaseClass)));
+      // A name of a class from an import of a library that exported that name.
+      expect(originalLookup(doAwesomeStuff, 'BaseClass'),
+          equals(MatchingLinkResult(BaseClass)));
 
-        // A bracket operator within this class.
-        // TODO(jcollins-g): operator lookups not yet implemented with the new lookup code.
-        expect(originalLookup(doAwesomeStuff, 'operator []'), equals(MatchingLinkResult(bracketOperator)));
+      // A bracket operator within this class.
+      // TODO(jcollins-g): operator lookups not yet implemented with the new lookup code.
+      expect(originalLookup(doAwesomeStuff, 'operator []'),
+          equals(MatchingLinkResult(bracketOperator)));
 
-        // A bracket operator in another class.
-        // TODO(jcollins-g): This has never worked...
-        //expect(bothLookup(doAwesomeStuff, 'SpecialList.operator []'), equals(MatchingLinkResult(bracketOperatorOtherClass)));
+      // A bracket operator in another class.
+      // TODO(jcollins-g): This has never worked...
+      //expect(bothLookup(doAwesomeStuff, 'SpecialList.operator []'), equals(MatchingLinkResult(bracketOperatorOtherClass)));
 
-        // Reference containing a type parameter.
-        expect(bothLookup(doAwesomeStuff, 'ExtraSpecialList<Object>'), equals(MatchingLinkResult(ExtraSpecialList)));
+      // Reference containing a type parameter.
+      expect(bothLookup(doAwesomeStuff, 'ExtraSpecialList<Object>'),
+          equals(MatchingLinkResult(ExtraSpecialList)));
 
-        // Reference to an inherited member.
-        expect(bothLookup(doAwesomeStuff, 'ClassWithUnusualProperties.forInheriting'), equals(MatchingLinkResult(forInheriting)));
+      // Reference to an inherited member.
+      expect(
+          bothLookup(
+              doAwesomeStuff, 'ClassWithUnusualProperties.forInheriting'),
+          equals(MatchingLinkResult(forInheriting)));
 
-        // Reference to an inherited member in another library via class name.
-        // TODO(jcollins-g): reference to non-imported symbols isn't implemented yet in new lookup.
-        expect(originalLookup(doAwesomeStuff, 'ExtendedBaseReexported.action'), equals(MatchingLinkResult(action)));
-      });
+      // Reference to an inherited member in another library via class name.
+      // TODO(jcollins-g): reference to non-imported symbols isn't implemented yet in new lookup.
+      expect(originalLookup(doAwesomeStuff, 'ExtendedBaseReexported.action'),
+          equals(MatchingLinkResult(action)));
+    });
   });
 
   group('Extension', () {

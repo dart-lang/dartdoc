@@ -179,7 +179,6 @@ class MatchingLinkResult {
 
   MatchingLinkResult(this.modelElement, {this.warn = true});
 
-
   @override
   bool operator ==(Object other) {
     return other is MatchingLinkResult &&
@@ -979,7 +978,8 @@ md.Node _makeLinkNode(String codeRef, Warnable warnable) {
 }
 
 @visibleForTesting
-MatchingLinkResult getMatchingLinkElement(Warnable warnable, String codeRef, {bool experimentalReferenceLookup}) {
+MatchingLinkResult getMatchingLinkElement(Warnable warnable, String codeRef,
+    {bool experimentalReferenceLookup}) {
   experimentalReferenceLookup ??= warnable.config.experimentalReferenceLookup;
   MatchingLinkResult result, resultOld, resultNew;
   // Do a comparison between result types only if the warnings for them are
@@ -993,8 +993,7 @@ MatchingLinkResult getMatchingLinkElement(Warnable warnable, String codeRef, {bo
     if (resultNew.modelElement != null) {
       markdownStats.resolvedNewLookupReferences++;
     }
-    result =
-        experimentalReferenceLookup ? resultNew : resultOld;
+    result = experimentalReferenceLookup ? resultNew : resultOld;
     if (resultOld.modelElement != null) {
       markdownStats.resolvedOldLookupReferences++;
     }
