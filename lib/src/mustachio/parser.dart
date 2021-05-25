@@ -420,6 +420,13 @@ abstract class MustachioNode {
   SourceSpan get span;
 }
 
+/// A [MustachioNode] with a multi-named key.
+mixin HasMultiNamedKey {
+  List<String> get key;
+
+  SourceSpan get keySpan;
+}
+
 /// A Text node, representing literal text.
 @immutable
 class Text implements MustachioNode {
@@ -436,7 +443,8 @@ class Text implements MustachioNode {
 
 /// A Variable node, representing a variable to be resolved.
 @immutable
-class Variable implements MustachioNode {
+class Variable with HasMultiNamedKey implements MustachioNode {
+  @override
   final List<String> key;
 
   final bool escape;
@@ -444,6 +452,7 @@ class Variable implements MustachioNode {
   @override
   final SourceSpan span;
 
+  @override
   final SourceSpan keySpan;
 
   Variable(this.key,
@@ -456,7 +465,8 @@ class Variable implements MustachioNode {
 /// A Section node, representing either a Conditional Section, a Repeated
 /// Section, or a Value Section, possibly inverted.
 @immutable
-class Section implements MustachioNode {
+class Section with HasMultiNamedKey implements MustachioNode {
+  @override
   final List<String> key;
 
   final bool invert;
@@ -466,6 +476,7 @@ class Section implements MustachioNode {
   @override
   final SourceSpan span;
 
+  @override
   final SourceSpan keySpan;
 
   Section(this.key, this.children,

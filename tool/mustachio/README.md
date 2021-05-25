@@ -164,8 +164,7 @@ types:
 Mustachio's first set of generated renderers render objects into
 runtime-interpreted Mustache template blocks. Each template block may be the
 content of a Mustache template file, a Mustache partial file, or a Mustache
-section. The design for a tool which can generate such a renderer is included
-after the design for the renderer.
+section.
 
 The mechanics of the tool which generates these renderers is a separate concern
 from the mechanics of the renderers themselves. This section is primarily
@@ -180,7 +179,9 @@ Any examples in this section will use the following types:
 abstract class User {
   String get name;
   UserProfile get profile;
+  bool get isFeatured;
   List<Post>? get posts;
+  Post? featuredPost;
 }
 
 abstract class UserProfile {
@@ -625,6 +626,184 @@ inside this partial) and render the partial with the same renderer, using
 
 TODO(srawlins): Write.
 
-## Generated renderer for a specific type and a static template which pre-compiles the templates
+## Generated renderer for a specific type and a pre-compiled static template
+
+Mustachio's second set of generated renderers render objects into
+ahead-of-time compiled Mustache template blocks. Each template block may be the
+content of a Mustache template file, a Mustache partial file, or a Mustache
+section.
+
+The mechanics of the tool which generates these renderers is a separate concern
+from the mechanics of the renderers themselves. This section is primarily
+concerned with documenting how the renderers work. At the end, a higher level
+description of the code generator can be found.
+
+### Annotation
+
+The code generation trigger is a `@Renderer` annotation, which specifies a
+render function name, a context type, and a template file. The code generator
+parses the specified template file, and uses the context type to resolve all tag
+keys at the time of code generation. For example, given the following template:
+
+```html
+<h1>{{ name }}</h1>
+{{ #isFeatured }}<strong>Featured</strong>{{ /isFeatured }}
+<div class="posts">
+{{ #featuredPost }}<h2>{{ title }}</h2>{{ /featuredPost }}
+{{ #posts }}<h2>{{ title }}</h2>{{ /posts }}
+</div>
+```
+
+The code generator resolves `name` to a String getter on User, `posts` to a
+`List<Post>` getter on User, `isPublished` to a `bool` getter on `Post`, and
+`title` to a String getter on `Post`. It has all of the information it needs to
+write out the logic of the template as a simple state machine. This state
+machine is written out as the render function and helper functions for partials:
+
+```dart
+String renderUser(User context0) {
+  final buffer = StringBuffer();
+  // ...
+  return buffer.toString();
+}
+```
+
+The `renderFoo` function takes a `Foo` object, the context object, as
+`context0`. Since the context objects exist in a stack and can each be accessed,
+we must enumerate them. We write various text to the buffer, according to the
+template, and then return the rendered output.
+
+### Rendering plain text
+
+Rendering plain text is as simple as writing it to the buffer:
+
+```dart
+  buffer.write('''<h1>''');
+```
+
+### Rendering a variable
+
+Rendering a variable requires one or more getter calls. During code generation,
+variable keys have been resolved so that the renderer knows the context objects
+that provide each getter.
+
+`{{ name }}` compiles to:
+
+```dart
+  buffer.write(htmlEscape.convert(context0.name.toString()));
+```
+
+This code calls the `name` getter on `conext0`, and then `toString()`. Since
+`{{ name }}` uses two brackets, the output must be HTML-escaped. If it were
+written `{{{ name }}}`, then the HTML-escaping call would not be made.
+
+### Rendering a section
+
+A section could be a conditional section, a repeated section, or a value
+section. The code generator will know, and will write the correct behavior into
+the renderer.
+
+#### Rendering a conditional section
+
+`{{ #isFeatured }}<strong>Featured</strong>{{ /isFeatured }}` compiles to:
+
+```dart
+  if (context0.b1 == true) {
+    buffer.write('''<strong>Featured</strong>''');
+  }
+```
+
+The text is written only if `b1` is `true` (not `false` or `null`). If the
+section were inverted (starting with `{{ ^isFeatured }}`), this would be a
+`!= true` check.
+
+#### Rendering a repeated section
+
+`{{ #posts }}<h2>{{ title }}</h2>{{ /posts }}`
+
+compiles to:
+
+```dart
+  var context1 = context0.posts;
+  if (context1 != null) {
+    for (var context2 in context1) {
+      buffer.write('''<h2>''');
+      buffer.write(htmlEscape.convert(context2.title.toString()));
+      buffer.write('''</h2>''');
+    }
+  }
+```
+
+The section contents are written for each value in `context0.posts` (only if
+`context0.posts` is not `null`). In order to avoid accessing the getter multiple
+times (and to make the value type-promotable), the value is stored in a local
+variable.
+
+#### Rendering a value section
+
+`{{ #featuredPost }}<h2>{{ title }}</h2>{{ /featuredPost }}`
+
+compiles to:
+
+```dart
+  var context2 = context0.featuredPost;
+  if (context2 != null) {
+    buffer.write('''<h2>''');
+    buffer.write(htmlEscape.convert(context2.title.toString()));
+    buffer.write('''</h2>''');
+  }
+```
+
+The section contents are written only if `context0.featuredPost` is not `null`.
+Additionally, the section needs `context0.featuredPost` pushed onto the context
+stack, which becomes `context2`. This new context object is used to render the
+featured post's `title`.
+
+### Rendering a partial
+
+Partials are allowed to reference themselves, so they must be implemented as new
+functions which can reference themselves. This template code:
+
+```html
+{{ #posts }}{{ >post }}{{ /posts }}
+```
+
+will use a custom partial resolver to resolve `post` to a file at `_post.html`,
+which contains the following template:
+
+```html
+<h2>{{ title }}</h2>
+<p>by {{ name }}</p>
+```
+
+These two templates compile into the following two render functions:
+
+```dart
+String renderUser(User context0) {
+  final buffer = StringBuffer();
+  for (var context1 in context0.posts) {
+    buffer.write(_renderUser_partial_user_post_0(context1, context0));
+  }
+  return buffer.toString();
+}
+
+String _renderUser_partial_user_post_0(Post context1, User context0) {
+  final buffer = StringBuffer();
+  buffer.write('''<h2>''');
+  buffer.write(htmlEscape.convert(context1.title.toString()));
+  buffer.write('''</h2>
+<p>by ''');
+  buffer.write(htmlEscape.convert(context0.name.toString()));
+  buffer.write('''</p>''');
+  return buffer.toString();
+}
+```
+
+Note that the partial function is written to accept each context object as a
+separate parameter, so that they are easily accessed by name. `context1` is
+accessed in order to write the post's `title`, and `context0` is accessed in
+order to write the author's `name`.
+
+### High level design for generating renderers
 
 TODO(srawlins): Write.
