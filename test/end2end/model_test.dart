@@ -6,6 +6,7 @@ library dartdoc.model_test;
 
 import 'dart:io';
 
+import 'package:analyzer/source/line_info.dart';
 import 'package:async/async.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/feature.dart';
@@ -3345,6 +3346,39 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       onlySetterGetter = justSetter.getter;
 
       classB = exLibrary.classes.singleWhere((c) => c.name == 'B');
+    });
+
+    test('always has a valid location', () {
+      void expectValidLocation(CharacterLocation location) {
+        expect(location.lineNumber, greaterThanOrEqualTo(0));
+        expect(location.columnNumber, greaterThanOrEqualTo(0));
+      }
+
+      ;
+      var simpleProperty =
+          fakeLibrary.properties.firstWhere((p) => p.name == 'simpleProperty');
+      expectValidLocation(simpleProperty.getter.characterLocation);
+      expectValidLocation(simpleProperty.setter.characterLocation);
+      expectValidLocation(onlyGetterGetter.characterLocation);
+      expectValidLocation(onlySetterSetter.characterLocation);
+
+      Iterable<Accessor> _expandAccessors(Field f) sync* {
+        if (f.hasGetter) yield f.getter;
+        if (f.hasSetter) yield f.setter;
+      }
+
+      // classB has a variety of inherited and partially overridden fields.
+      // All should have valid locations on their accessors.
+      for (var a in classB.allFields.expand(_expandAccessors)) {
+        expectValidLocation(a.characterLocation);
+      }
+
+      // Enums also have fields and have historically had problems.
+      var macrosFromAccessors =
+          fakeLibrary.enums.firstWhere((e) => e.name == 'MacrosFromAccessors');
+      for (var a in macrosFromAccessors.allFields.expand(_expandAccessors)) {
+        expectValidLocation(a.characterLocation);
+      }
     });
 
     test('are available on top-level variables', () {
