@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/source/line_info.dart';
 import 'package:analyzer/src/dart/element/member.dart' show ExecutableMember;
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
@@ -159,6 +160,19 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
           element, enclosingClass.library, enclosingClass.packageGraph);
     }
     return accessor;
+  }
+
+  /// The index and values fields are never declared, and must be special cased.
+  bool get _isEnumSynthetic =>
+      enclosingCombo is EnumField && (name == 'index' || name == 'values');
+
+  @override
+  CharacterLocation get characterLocation {
+    if (_isEnumSynthetic) return enclosingElement.characterLocation;
+    // TODO(jcollins-g): Remove the enclosingCombo case below once
+    // https://github.com/dart-lang/sdk/issues/46154 is fixed.
+    if (enclosingCombo is EnumField) return enclosingCombo.characterLocation;
+    return super.characterLocation;
   }
 
   ModelElement _enclosingElement;
