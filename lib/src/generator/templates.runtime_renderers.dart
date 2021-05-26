@@ -3794,6 +3794,19 @@ class _Renderer_ContainerAccessor extends RendererBase<ContainerAccessor> {
                 ..._Renderer_Accessor.propertyMap<CT_>(),
                 ..._Renderer_ContainerMember.propertyMap<CT_>(),
                 ..._Renderer_Inheritable.propertyMap<CT_>(),
+                'characterLocation': Property(
+                  getValue: (CT_ c) => c.characterLocation,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'CharacterLocation'),
+                  isNullValue: (CT_ c) => c.characterLocation == null,
+                  renderValue:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    return renderSimple(c.characterLocation, ast, r.template,
+                        parent: r);
+                  },
+                ),
                 'enclosingElement': Property(
                   getValue: (CT_ c) => c.enclosingElement,
                   renderVariable:
