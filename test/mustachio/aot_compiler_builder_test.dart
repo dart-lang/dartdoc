@@ -77,7 +77,7 @@ import 'package:mustachio/annotations.dart';
     expect(
         renderersLibrary.getTopLevelFunction('_renderFoo_partial_foo_header_0'),
         isNotNull);
-  });
+  }, timeout: Timeout.factor(2));
 
   test('builds a public API render function', () async {
     writer = InMemoryAssetWriter();
