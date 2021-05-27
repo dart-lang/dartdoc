@@ -2586,6 +2586,19 @@ class _Renderer_CommentReferable extends RendererBase<CommentReferable> {
                         parent: r);
                   },
                 ),
+                'packageGraph': Property(
+                  getValue: (CT_ c) => c.packageGraph,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'PackageGraph'),
+                  isNullValue: (CT_ c) => c.packageGraph == null,
+                  renderValue:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    return renderSimple(c.packageGraph, ast, r.template,
+                        parent: r);
+                  },
+                ),
                 'referenceChildren': Property(
                   getValue: (CT_ c) => c.referenceChildren,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -2609,6 +2622,17 @@ class _Renderer_CommentReferable extends RendererBase<CommentReferable> {
                       (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
                     return c.referenceParents.map(
                         (e) => renderSimple(e, ast, r.template, parent: r));
+                  },
+                ),
+                'scope': Property(
+                  getValue: (CT_ c) => c.scope,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'Scope'),
+                  isNullValue: (CT_ c) => c.scope == null,
+                  renderValue:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    return renderSimple(c.scope, ast, r.template, parent: r);
                   },
                 ),
               });

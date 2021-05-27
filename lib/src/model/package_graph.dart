@@ -267,6 +267,7 @@ class PackageGraph with CommentReferable, Nameable {
 
   bool get hasFooterVersion => !config.excludeFooterVersion;
 
+  @override
   PackageGraph get packageGraph => this;
 
   /// Map of package name to Package.
