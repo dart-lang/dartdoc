@@ -100,7 +100,8 @@ mixin CommentReferable implements Nameable {
       recurseChildrenAndFilter(
           referenceLookup, referenceChildren[referenceLookup.lookup], filter);
 
-  /// Assuming we found a [result], recurse through children, skipping over
+  /// Given a [result] found in an implementation of [lookupViaScope] or
+  /// [_lookupViaReferenceChildren], recurse through children, skipping over
   /// results that do not match the filter.
   CommentReferable recurseChildrenAndFilter(
       ReferenceChildrenLookup referenceLookup,
@@ -108,10 +109,10 @@ mixin CommentReferable implements Nameable {
       bool Function(CommentReferable) filter) {
     assert(result != null);
     if (referenceLookup.remaining.isNotEmpty) {
-      result = result?.referenceBy(referenceLookup.remaining,
+      result = result.referenceBy(referenceLookup.remaining,
           tryParents: false, filter: filter);
     } else if (!filter(result)) {
-      result = result?.referenceBy([referenceLookup.lookup],
+      result = result.referenceBy([referenceLookup.lookup],
           tryParents: false, filter: filter);
     }
     if (!filter(result)) {
