@@ -25,7 +25,7 @@ abstract class Base extends Nameable with CommentReferable {
   Element get element => throw UnimplementedError();
 }
 
-class Top extends Base with CommentReferable {
+class Top extends Base {
   @override
   final String name;
   final List<TopChild> children;

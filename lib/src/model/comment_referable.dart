@@ -10,17 +10,37 @@ library dartdoc.src.model.comment_reference;
 import 'dart:core';
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/scope.dart';
 import 'package:dartdoc/dartdoc.dart';
 import 'package:meta/meta.dart';
 
 class ReferenceChildrenLookup {
   final String lookup;
   final List<String> remaining;
+
   ReferenceChildrenLookup(this.lookup, this.remaining);
+
+  @override
+  String toString() => '$lookup.${remaining.join(".")}';
+}
+
+extension on Scope {
+  /// Prefer the getter for a bundled lookup if both exist.
+  Element lookupPreferGetter(String id) {
+    var result = lookup(id);
+    return result.getter ?? result.setter;
+  }
 }
 
 /// Support comment reference lookups on a Nameable object.
 mixin CommentReferable implements Nameable {
+  PackageGraph packageGraph;
+
+  /// For any [CommentReferable] where an analyzer [Scope] exists (or can
+  /// be constructed), implement this.  This will take priority over
+  /// lookups via [referenceChildren].  Can be cached.
+  Scope get scope => null;
+
   /// Look up a comment reference by its component parts.  If [tryParents] is
   /// true, try looking up the same reference in any parents of [this].
   /// Will skip over results that do not pass a given [filter] and keep
@@ -37,20 +57,14 @@ mixin CommentReferable implements Nameable {
 
     /// Search for the reference.
     for (var referenceLookup in childLookups(reference)) {
-      if (referenceChildren.containsKey(referenceLookup.lookup)) {
-        result = referenceChildren[referenceLookup.lookup];
-        if (referenceLookup.remaining.isNotEmpty) {
-          result = result?.referenceBy(referenceLookup.remaining,
-              tryParents: false, filter: filter);
-        } else if (!filter(result)) {
-          result = result?.referenceBy([referenceLookup.lookup],
-              tryParents: false, filter: filter);
-        }
-        if (!filter(result)) {
-          result = null;
-        }
+      if (scope != null) {
+        result = lookupViaScope(referenceLookup, filter);
+        if (result != null) break;
       }
-      if (result != null) break;
+      if (referenceChildren.containsKey(referenceLookup.lookup)) {
+        result = _lookupViaReferenceChildren(referenceLookup, filter);
+        if (result != null) break;
+      }
     }
     // If we can't find it in children, try searching parents if allowed.
     if (result == null && tryParents) {
@@ -58,6 +72,50 @@ mixin CommentReferable implements Nameable {
         result = parent.referenceBy(reference, filter: filter);
         if (result != null) break;
       }
+    }
+    return result;
+  }
+
+  /// Looks up references by [scope], skipping over results that do not match
+  /// the given filter.
+  ///
+  /// Override if [Scope.lookup] may return a [PrefixElement] or other elements
+  /// not corresponding to a [CommentReferable], but you still want to have
+  /// an implementation of [scope].
+  CommentReferable lookupViaScope(ReferenceChildrenLookup referenceLookup,
+      bool Function(CommentReferable) filter) {
+    var resultElement = scope.lookupPreferGetter(referenceLookup.lookup);
+    if (resultElement is PrefixElement) {
+      assert(false,
+          'PrefixElement detected, override [lookupViaScope] in subclass');
+      return null;
+    }
+    return recurseChildrenAndFilter(referenceLookup,
+        ModelElement.fromElement(resultElement, packageGraph), filter);
+  }
+
+  CommentReferable _lookupViaReferenceChildren(
+          ReferenceChildrenLookup referenceLookup,
+          bool Function(CommentReferable) filter) =>
+      recurseChildrenAndFilter(
+          referenceLookup, referenceChildren[referenceLookup.lookup], filter);
+
+  /// Assuming we found a [result], recurse through children, skipping over
+  /// results that do not match the filter.
+  CommentReferable recurseChildrenAndFilter(
+      ReferenceChildrenLookup referenceLookup,
+      CommentReferable result,
+      bool Function(CommentReferable) filter) {
+    assert(result != null);
+    if (referenceLookup.remaining.isNotEmpty) {
+      result = result?.referenceBy(referenceLookup.remaining,
+          tryParents: false, filter: filter);
+    } else if (!filter(result)) {
+      result = result?.referenceBy([referenceLookup.lookup],
+          tryParents: false, filter: filter);
+    }
+    if (!filter(result)) {
+      result = null;
     }
     return result;
   }
@@ -71,8 +129,10 @@ mixin CommentReferable implements Nameable {
       ];
 
   /// Map of name to the elements that are a member of [this], but
-  /// not this model element itself.
-  /// Can be cached.
+  /// not this model element itself.  Can be cached.
+  ///
+  /// There is no need to duplicate references here that can be found via
+  /// [scope].
   Map<String, CommentReferable> get referenceChildren;
 
   /// Iterable of immediate "parents" to try resolving component parts.

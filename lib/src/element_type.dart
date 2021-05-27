@@ -16,6 +16,7 @@ import 'package:dartdoc/src/render/element_type_renderer.dart';
 /// may link to a [ModelElement].
 abstract class ElementType extends Privacy with CommentReferable, Nameable {
   final DartType _type;
+  @override
   final PackageGraph packageGraph;
   final ElementType returnedFrom;
   @override
