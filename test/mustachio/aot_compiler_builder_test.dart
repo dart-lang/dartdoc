@@ -64,7 +64,8 @@ import 'package:mustachio/annotations.dart';
 ''');
     var rendererAsset = AssetId('foo', 'lib/foo.aot_renderers_for_html.dart');
     var generatedContent = utf8.decode(writer.assets[rendererAsset]);
-    expect(generatedContent, contains('String renderFoo<T>(Foo<T> context0)'));
+    expect(
+        generatedContent, contains('String renderFoo<T>(_i1.Foo<T> context0)'));
   });
 
   test('builds a private render function for a partial', () async {
@@ -85,8 +86,10 @@ import 'package:mustachio/annotations.dart';
     );
     var rendererAsset = AssetId('foo', 'lib/foo.aot_renderers_for_html.dart');
     var generatedContent = utf8.decode(writer.assets[rendererAsset]);
-    expect(generatedContent,
-        contains('String _renderFoo_partial_foo_header_0<T>(Foo<T> context0)'));
+    expect(
+        generatedContent,
+        contains(
+            'String _renderFoo_partial_foo_header_0<T>(_i1.Foo<T> context0)'));
   });
 
   test('builds a renderer for a generic, bounded type', () async {
