@@ -205,14 +205,14 @@ void main() {
           equals('?'));
     });
 
-    test('implied Future types have correct nullability', () {
-      expect(oddAsyncFunction.modelType.returnType.name, equals('Future'));
+    test('old implied Future types have correct nullability', () {
+      expect(oddAsyncFunction.modelType.returnType.name, equals('dynamic'));
       expect(
-          oddAsyncFunction.modelType.returnType.nullabilitySuffix, equals('?'));
-      expect(anotherOddFunction.modelType.returnType.name, equals('Future'));
+          oddAsyncFunction.modelType.returnType.nullabilitySuffix, equals(''));
+      expect(anotherOddFunction.modelType.returnType.name, equals('dynamic'));
       expect(anotherOddFunction.modelType.returnType.nullabilitySuffix,
-          equals('?'));
-    }, skip: 'implied Future detection is broken');
+          equals(''));
+    });
 
     test('isNullSafety is set correctly for libraries', () {
       expect(lateFinalWithoutInitializer.isNullSafety, isTrue);
@@ -4207,8 +4207,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('async return type', () {
-      expect(asyncM.modelType.returnType.linkedName, 'Future');
-    }, skip: 'async return type is no longer overwritten');
+      expect(asyncM.modelType.returnType.linkedName, 'dynamic');
+    });
 
     test('param with generics', () {
       var params = ParameterRendererHtml()
