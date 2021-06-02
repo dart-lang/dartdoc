@@ -14114,13 +14114,6 @@ class _Renderer_UndefinedElementType
                         parent: r);
                   },
                 ),
-                'isImpliedFuture': Property(
-                  getValue: (CT_ c) => c.isImpliedFuture,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isImpliedFuture == true,
-                ),
                 'isPublic': Property(
                   getValue: (CT_ c) => c.isPublic,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -14184,26 +14177,6 @@ class _Renderer_UndefinedElementType
                   renderValue:
                       (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
                     return _render_String(c.nameWithGenerics, ast, r.template,
-                        parent: r);
-                  },
-                ),
-                'nullabilitySuffix': Property(
-                  getValue: (CT_ c) => c.nullabilitySuffix,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_String.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(self.getValue(c),
-                        nextProperty, [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => c.nullabilitySuffix == null,
-                  renderValue:
-                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-                    return _render_String(c.nullabilitySuffix, ast, r.template,
                         parent: r);
                   },
                 ),
