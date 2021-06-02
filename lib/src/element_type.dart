@@ -97,7 +97,6 @@ abstract class ElementType extends Privacy with CommentReferable, Nameable {
 
   DartType get instantiatedType;
 
-  /// An unmodifiable list of this element type's parameters.
   Iterable<ElementType> get typeArguments;
 
   bool isBoundSupertypeTo(ElementType t);
