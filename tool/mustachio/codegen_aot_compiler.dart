@@ -2,18 +2,18 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/dart/element/type_provider.dart';
 import 'package:analyzer/dart/element/type_system.dart';
 import 'package:build/build.dart';
+import 'package:code_builder/code_builder.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:dartdoc/src/mustachio/annotations.dart';
 import 'package:dartdoc/src/mustachio/parser.dart';
 import 'package:dartdoc/src/mustachio/renderer_base.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
-
-import 'utilities.dart';
 
 /// Compiles all templates specified in [specs] into a Dart library containing
 /// a renderer for each template.
@@ -25,27 +25,8 @@ Future<String> compileTemplatesToRenderers(
   TypeSystem typeSystem,
   TemplateFormat format,
 ) async {
-  var buffer = StringBuffer('''
-// GENERATED CODE. DO NOT EDIT.
-//
-// To change the contents of this library, make changes to the builder source
-// files in the tool/mustachio/ directory.
-
-// Sometimes we enter a new section which triggers creating a new variable, but
-// the variable is not used; generally when the section is checking if a
-// non-bool, non-Iterable field is non-null.
-// ignore_for_file: unused_local_variable
-
-// It is hard to track exact imports without using package:code_builder.
-// ignore_for_file: unused_import
-
-import 'dart:convert' show htmlEscape;
-
-import 'package:dartdoc/dartdoc.dart';
-import 'package:dartdoc/src/generator/template_data.dart';
-import '${p.basename(sourceUri.path)}';
-''');
   var buildData = _BuildData(buildStep, typeProvider, typeSystem, format);
+  var rendererFunctions = <Method>[];
   for (var spec in specs) {
     var templateUri = spec.standardTemplateUris[format];
     if (templateUri == null) continue;
@@ -57,11 +38,38 @@ import '${p.basename(sourceUri.path)}';
       spec.name,
       templateAsset,
       buildData,
-      buffer,
     );
-    await compiler._compileToRenderer();
+    rendererFunctions.addAll(await compiler._compileToRenderer());
   }
-  return DartFormatter().format(buffer.toString());
+  var library = Library((b) {
+    b.body.addAll(rendererFunctions);
+    b.body.add(Extension((b) => b
+      ..on = refer('StringBuffer')
+      ..methods.add(Method((b) => b
+        ..returns = refer('void')
+        ..name = 'writeEscaped'
+        ..requiredParameters.add(Parameter((b) => b
+          ..type = refer('String')
+          ..name = 'value'))
+        ..body = refer('write').call([
+          refer('htmlEscape', 'dart:convert')
+              .property('convert')
+              .call([refer('value')])
+        ]).statement))));
+  });
+  return DartFormatter().format('''
+// GENERATED CODE. DO NOT EDIT.
+//
+// To change the contents of this library, make changes to the builder source
+// files in the tool/mustachio/ directory.
+
+// Sometimes we enter a new section which triggers creating a new variable, but
+// the variable is not used; generally when the section is checking if a
+// non-bool, non-Iterable field is non-null.
+// ignore_for_file: unused_local_variable
+
+${library.accept(DartEmitter.scoped(orderDirectives: true))}
+''');
 }
 
 /// A class which compiles a single template file into a renderer Dart function,
@@ -82,10 +90,6 @@ class _AotCompiler {
 
   /// The parsed syntax tree of the template at [_templateAssetId].
   final List<MustachioNode> _syntaxTree;
-
-  /// The output buffer into which the various renderer source code is to be
-  /// written.
-  final StringBuffer _buffer;
 
   /// The set of compilers for all referenced partials.
   final Set<_AotCompiler> _partialCompilers = {};
@@ -110,14 +114,13 @@ class _AotCompiler {
     InterfaceType contextType,
     String rendererName,
     AssetId templateAssetId,
-    _BuildData buildData,
-    StringBuffer buffer, {
+    _BuildData buildData, {
     List<_VariableLookup> contextStack,
   }) async {
     var template = await buildData._buildStep.readAsString(templateAssetId);
     var syntaxTree = MustachioParser(template, templateAssetId.uri).parse();
-    return _AotCompiler._(contextType, rendererName, templateAssetId,
-        syntaxTree, buildData, buffer,
+    return _AotCompiler._(
+        contextType, rendererName, templateAssetId, syntaxTree, buildData,
         contextStack: contextStack);
   }
 
@@ -126,8 +129,7 @@ class _AotCompiler {
     this._rendererName,
     this._templateAssetId,
     this._syntaxTree,
-    this._buildData,
-    this._buffer, {
+    this._buildData, {
     List<_VariableLookup> contextStack,
   })  : _contextStack = _rename(contextStack ?? []),
         _contextNameCounter = contextStack?.length ?? 0;
@@ -147,7 +149,7 @@ class _AotCompiler {
     return [...result.reversed];
   }
 
-  Future<void> _compileToRenderer() async {
+  Future<List<Method>> _compileToRenderer() async {
     if (_contextStack.isEmpty) {
       var contextName = 'context0';
       var contextVariable = _VariableLookup(_contextType, contextName);
@@ -164,29 +166,71 @@ class _AotCompiler {
     // Rename type parameters to some predictable collision-free naming scheme;
     // the body of the function should not reference the type parameters, so
     // this should be perfectly possible.
-    var typeParametersString = asGenerics([
-      for (var context in _contextStack)
-        ...context.type.element.typeParameters
-            .map((tp) => tp.getDisplayString(withNullability: false)),
-    ]);
-    // TODO(srawlins): Consider the option of passing in a StringSink to allow
-    // for streaming writes.
-    _buffer.writeln('String $_rendererName$typeParametersString(');
-    _buffer.writeln(_contextStack.map((context) {
-      var contextElement = context.type.element;
-      var contextTypeName = contextElement.displayName;
-      var typeVariablesString = contextElement.typeVariablesString;
-      return '$contextTypeName$typeVariablesString ${context.name}';
-    }).join(','));
-    _buffer.writeln(') {');
-    _buffer.writeln('  final buffer = StringBuffer();');
-    await _BlockCompiler(this, _contextStack)._compile(_syntaxTree);
-    _buffer.writeln('  return buffer.toString();');
-    _buffer.writeln('}');
+    var typeParameters = <TypeReference>[];
+    for (var context in _contextStack) {
+      for (var typeParameter in context.type.element.typeParameters) {
+        if (typeParameter.bound == null) {
+          typeParameters
+              .add(TypeReference((b) => b..symbol = typeParameter.name));
+        } else {
+          var bound = typeParameter.bound.element;
+          var boundUri = await _elementUri(bound);
+          typeParameters.add(TypeReference((b) => b
+            ..symbol = typeParameter.name
+            ..bound = refer(bound.name, boundUri)));
+        }
+      }
+    }
 
-    for (var partialRenderer in _partialCompilers) {
-      await partialRenderer._compileToRenderer();
-      _buffer.write(partialRenderer._buffer.toString());
+    var blockCompiler = _BlockCompiler(this, _contextStack);
+    await blockCompiler._compile(_syntaxTree);
+    var rendererBody = blockCompiler._buffer.toString();
+
+    var parameters = <Parameter>[];
+    for (var context in _contextStack) {
+      var contextElement = context.type.element;
+      var contextElementUri = await _elementUri(contextElement);
+      parameters.add(Parameter((b) => b
+        ..type = TypeReference((b) => b
+          ..symbol = contextElement.displayName
+          ..url = contextElementUri
+          ..types.addAll(
+              contextElement.typeParameters.map((tp) => refer(tp.name))))
+        ..name = context.name));
+    }
+
+    var renderFunction = Method((b) => b
+      ..returns = refer('String')
+      ..name = _rendererName
+      ..types.addAll(typeParameters)
+      ..requiredParameters.addAll(parameters)
+      ..body = Code('''
+final buffer = StringBuffer();
+$rendererBody
+return buffer.toString();
+'''));
+
+    return [
+      renderFunction,
+      for (var partialRenderer in _partialCompilers)
+        ...(await partialRenderer._compileToRenderer()),
+    ];
+  }
+
+  /// Returns the URI of [element] for use in generated import directives.
+  Future<String> _elementUri(Element element) async {
+    if (element.library.isInSdk) {
+      return element.library.source.uri.toString();
+    }
+
+    var typeAssetId =
+        await _buildData._buildStep.resolver.assetIdForElement(element.library);
+    if (typeAssetId.path.startsWith('lib/')) {
+      return typeAssetId.uri.toString();
+    } else {
+      var entryAssetId = await _buildData._buildStep.resolver
+          .assetIdForElement(await _buildData._buildStep.inputLibrary);
+      return p.relative(typeAssetId.path, from: p.dirname(entryAssetId.path));
     }
   }
 }
@@ -198,11 +242,13 @@ class _BlockCompiler {
 
   final List<_VariableLookup> _contextStack;
 
+  final _buffer = StringBuffer();
+
   _BlockCompiler(this._templateCompiler, this._contextStack);
 
-  void write(String text) => _templateCompiler._buffer.write(text);
+  void write(String text) => _buffer.write(text);
 
-  void writeln(String text) => _templateCompiler._buffer.writeln(text);
+  void writeln(String text) => _buffer.writeln(text);
 
   InterfaceType get contextType => _contextStack.first.type;
 
@@ -244,16 +290,21 @@ class _BlockCompiler {
   /// Compiles [node] into a renderer's Dart source.
   Future<void> _compilePartial(Partial node) async {
     var extension = format == TemplateFormat.html ? 'html' : 'md';
-    var partialAssetId = AssetId.resolve(Uri.parse('_${node.key}.$extension'),
+    var path = node.key.split('/');
+    var fileName = path.removeLast();
+    path.add('_$fileName.$extension');
+    var partialAssetId = AssetId.resolve(Uri.parse(path.join('/')),
         from: _templateCompiler._templateAssetId);
     var partialRenderer = _templateCompiler._partialCompilers.firstWhere(
         (p) => p._templateAssetId == partialAssetId,
         orElse: () => null);
     if (partialRenderer == null) {
-      var name =
-          '${partialBaseName}_${node.key}_${_templateCompiler._partialCounter}';
-      partialRenderer = await _AotCompiler._readAndParse(contextType, name,
-          partialAssetId, _templateCompiler._buildData, StringBuffer(),
+      var sanitizedKey = node.key.replaceAll('.', '_').replaceAll('/', '_');
+      var name = '${partialBaseName}_'
+          '${sanitizedKey}_'
+          '${_templateCompiler._partialCounter}';
+      partialRenderer = await _AotCompiler._readAndParse(
+          contextType, name, partialAssetId, _templateCompiler._buildData,
           contextStack: _contextStack);
       // Add this partial renderer; to be written later.
       _templateCompiler._partialCompilers.add(partialRenderer);
@@ -302,7 +353,7 @@ class _BlockCompiler {
     } else {
       writeln('if ($variableAccess == true) {');
     }
-    await _BlockCompiler(_templateCompiler, _contextStack)._compile(block);
+    await _compile(block);
     writeln('}');
   }
 
@@ -439,8 +490,7 @@ class _BlockCompiler {
   void _writeGetter(_VariableLookup variableLookup, {bool escape = true}) {
     var variableAccess = variableLookup.name;
     if (escape) {
-      writeln('buffer.write(htmlEscape.convert('
-          '$variableAccess.toString()));');
+      writeln('buffer.writeEscaped($variableAccess.toString());');
     } else {
       writeln('buffer.write($variableAccess.toString());');
     }

@@ -9,41 +9,17 @@ import 'package:build/build.dart';
 import 'package:build_test/build_test.dart';
 import 'package:test/test.dart';
 
-import '../../tool/mustachio/builder.dart';
 import 'builder_test_base.dart';
 
 void main() {
   InMemoryAssetWriter writer;
 
-  Future<LibraryElement> resolveGeneratedLibrary(
-      InMemoryAssetWriter writer) async {
+  Future<LibraryElement> resolveGeneratedLibrary() async {
     var rendererAsset = AssetId('foo', 'lib/foo.runtime_renderers.dart');
     var writtenStrings = writer.assets
         .map((id, content) => MapEntry(id.toString(), utf8.decode(content)));
     return await resolveSources(writtenStrings,
         (Resolver resolver) => resolver.libraryFor(rendererAsset));
-  }
-
-  Future<void> testMustachioBuilder(String sourceLibraryContent,
-      {String libraryFrontMatter = libraryFrontMatter,
-      Map<String, Object> outputs}) async {
-    sourceLibraryContent = '''
-$libraryFrontMatter
-$sourceLibraryContent
-''';
-    await testBuilder(
-      mustachioBuilder(BuilderOptions({})),
-      {
-        ...annotationsAsset,
-        'foo|lib/foo.dart': sourceLibraryContent,
-        'foo|lib/templates/html/foo.html': 'EMPTY',
-        'foo|lib/templates/md/foo.md': 'EMPTY',
-        'foo|lib/templates/html/bar.html': 'EMPTY',
-        'foo|lib/templates/md/bar.md': 'EMPTY',
-      },
-      outputs: outputs,
-      writer: writer,
-    );
   }
 
   setUp(() {
@@ -58,7 +34,7 @@ $sourceLibraryContent
     // so this [setUpAll] saves significant time over [setUp].
     setUpAll(() async {
       writer = InMemoryAssetWriter();
-      await testMustachioBuilder('''
+      await testMustachioBuilder(writer, '''
 abstract class FooBase2<T> {
   T get generic;
 }
@@ -76,7 +52,7 @@ abstract class Foo extends FooBase with Mix<int> {
 class Bar {}
 class Baz {}
 ''');
-      renderersLibrary = await resolveGeneratedLibrary(writer);
+      renderersLibrary = await resolveGeneratedLibrary();
       var rendererAsset = AssetId('foo', 'lib/foo.runtime_renderers.dart');
       generatedContent = utf8.decode(writer.assets[rendererAsset]);
     });
@@ -180,7 +156,7 @@ class Baz {}
   });
 
   test('builds renderers from multiple annotations', () async {
-    await testMustachioBuilder('''
+    await testMustachioBuilder(writer, '''
 class Foo {}
 class Bar {}
 class Baz {}
@@ -190,7 +166,7 @@ class Baz {}
 library foo;
 import 'package:mustachio/annotations.dart';
 ''');
-    var renderersLibrary = await resolveGeneratedLibrary(writer);
+    var renderersLibrary = await resolveGeneratedLibrary();
 
     expect(renderersLibrary.getTopLevelFunction('renderFoo'), isNotNull);
     expect(renderersLibrary.getTopLevelFunction('renderBar'), isNotNull);
@@ -205,7 +181,7 @@ import 'package:mustachio/annotations.dart';
     // so this [setUpAll] saves significant time over [setUp].
     setUpAll(() async {
       writer = InMemoryAssetWriter();
-      await testMustachioBuilder('''
+      await testMustachioBuilder(writer, '''
 class FooBase<T> {}
 class Foo<T> extends FooBase<T> {}
 class BarBase<T> {}
@@ -254,12 +230,12 @@ import 'package:mustachio/annotations.dart';
   });
 
   test('builds a renderer for a generic, bounded type', () async {
-    await testMustachioBuilder('''
+    await testMustachioBuilder(writer, '''
 class Foo<T extends num> {}
 class Bar {}
 class Baz {}
 ''');
-    var renderersLibrary = await resolveGeneratedLibrary(writer);
+    var renderersLibrary = await resolveGeneratedLibrary();
 
     var fooRenderFunction = renderersLibrary.getTopLevelFunction('renderFoo');
     expect(fooRenderFunction.typeParameters, hasLength(1));
@@ -277,7 +253,7 @@ class Baz {}
 
     setUpAll(() async {
       writer = InMemoryAssetWriter();
-      await testMustachioBuilder('''
+      await testMustachioBuilder(writer, '''
 abstract class Foo<T> {
   static Static get static1 => Bar();
   Private get _private1 => Bar();
@@ -291,7 +267,7 @@ class Private {}
 class Setter {}
 class Method {}
 ''');
-      renderersLibrary = await resolveGeneratedLibrary(writer);
+      renderersLibrary = await resolveGeneratedLibrary();
     });
 
     test('found in a static getter', () {
