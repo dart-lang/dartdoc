@@ -230,6 +230,10 @@ class AliasedElementType extends ParameterizedElementType with Aliased {
     assert(type.aliasElement != null);
   }
 
+  /// Parameters, if available, for the underlying typedef.
+  List<Parameter> get aliasedParameters =>
+      modelElement.isCallable ? modelElement.parameters : [];
+
   @override
   ElementTypeRenderer<AliasedElementType> get _renderer =>
       packageGraph.rendererFactory.aliasedElementTypeRenderer;
@@ -348,7 +352,8 @@ abstract class DefinedElementType extends ElementType {
       modelElement.referenceParents;
 }
 
-/// Any callable ElementType will mix-in this class, whether anonymous or not.
+/// Any callable ElementType will mix-in this class, whether anonymous or not,
+/// unless it is an alias reference.
 mixin Callable implements ElementType {
   List<Parameter> get parameters => type.parameters
       .map((p) => ModelElement.from(p, library, packageGraph) as Parameter)

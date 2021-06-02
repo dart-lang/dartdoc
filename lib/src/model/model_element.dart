@@ -942,6 +942,7 @@ abstract class ModelElement extends Canonicalization
       } else {
         if (isCallable) newParameters.addAll(parameters);
       }
+      // TODO(jcollins-g): This part probably belongs in [ElementType].
       while (newParameters.isNotEmpty) {
         recursedParameters.addAll(newParameters);
         newParameters.clear();
@@ -949,6 +950,10 @@ abstract class ModelElement extends Canonicalization
           var parameterModelType = p.modelType;
           if (parameterModelType is Callable) {
             newParameters.addAll(parameterModelType.parameters
+                .where((pm) => !recursedParameters.contains(pm)));
+          }
+          if (parameterModelType is AliasedElementType) {
+            newParameters.addAll(parameterModelType.aliasedParameters
                 .where((pm) => !recursedParameters.contains(pm)));
           }
         }
