@@ -120,7 +120,7 @@ void main() {
           orderedEquals(genericParameters));
     }
 
-    void expectAliasedTypeName(AliasedElementTypeMixin n, expected) {
+    void expectAliasedTypeName(Aliased n, expected) {
       expect(n.aliasElement.name, expected);
     }
 
@@ -3085,10 +3085,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('parameter is a function', () {
       var functionArgParam = m4.parameters[1];
-      expect(
-          (functionArgParam.modelType as CallableElementTypeMixin)
-              .returnType
-              .linkedName,
+      expect((functionArgParam.modelType as Callable).returnType.linkedName,
           'String');
     });
 

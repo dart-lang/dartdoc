@@ -88,7 +88,7 @@ class ModelFunctionTyped extends ModelElement
   @override
   FunctionTypedElement get element => super.element;
 
-  CallableElementTypeMixin _modelType;
-  CallableElementTypeMixin get modelType =>
+  Callable _modelType;
+  Callable get modelType =>
       _modelType ??= ElementType.from(element.type, library, packageGraph);
 }

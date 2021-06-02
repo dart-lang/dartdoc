@@ -89,5 +89,5 @@ class FunctionTypedef extends Typedef {
       : super(element, library, packageGraph);
 
   @override
-  CallableElementTypeMixin get modelType => super.modelType;
+  FunctionTypeElementType get modelType => super.modelType;
 }
