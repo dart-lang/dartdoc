@@ -15,7 +15,8 @@ void main() {
     var testCasePattern = RegExp(r'test\(.*,');
     var dartdocLibUri = await Isolate.resolvePackageUri(
         Uri.parse('package:dartdoc/dartdoc.dart'));
-    var dartdocPath = p.dirname(p.dirname(dartdocLibUri.path));
+    var dartdocPath =
+        p.dirname(p.dirname(p.joinAll(dartdocLibUri.pathSegments)));
     var runtimeRendererRenderTest = File(p.join(dartdocPath, 'test',
             'mustachio', 'runtime_renderer_render_test.dart'))
         .readAsLinesSync();
