@@ -520,6 +520,26 @@ class _Renderer_CallableElementTypeMixin
                         parent: r);
                   },
                 ),
+                'nameWithGenerics': Property(
+                  getValue: (CT_ c) => c.nameWithGenerics,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        _Renderer_String.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(self.getValue(c),
+                        nextProperty, [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => c.nameWithGenerics == null,
+                  renderValue:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    return _render_String(c.nameWithGenerics, ast, r.template,
+                        parent: r);
+                  },
+                ),
                 'returnElement': Property(
                   getValue: (CT_ c) => c.returnElement,
                   renderVariable:
@@ -4039,13 +4059,6 @@ class _Renderer_DefinedElementType extends RendererBase<DefinedElementType> {
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.isPublic == true,
-                ),
-                'isTypedef': Property(
-                  getValue: (CT_ c) => c.isTypedef,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isTypedef == true,
                 ),
                 'modelElement': Property(
                   getValue: (CT_ c) => c.modelElement,
@@ -10054,7 +10067,7 @@ class _Renderer_ModelFunctionTyped extends RendererBase<ModelFunctionTyped> {
                     }
                     var name = remainingNames.first;
                     var nextProperty =
-                        _Renderer_DefinedElementType.propertyMap()
+                        _Renderer_CallableElementTypeMixin.propertyMap()
                             .getValue(name);
                     return nextProperty.renderVariable(self.getValue(c),
                         nextProperty, [...remainingNames.skip(1)]);
@@ -10062,7 +10075,7 @@ class _Renderer_ModelFunctionTyped extends RendererBase<ModelFunctionTyped> {
                   isNullValue: (CT_ c) => c.modelType == null,
                   renderValue:
                       (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-                    return _render_DefinedElementType(
+                    return _render_CallableElementTypeMixin(
                         c.modelType, ast, r.template,
                         parent: r);
                   },

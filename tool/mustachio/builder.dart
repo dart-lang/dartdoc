@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/src/dart/element/member.dart';
 import 'package:build/build.dart';
 import 'package:dartdoc/src/mustachio/annotations.dart';
@@ -131,7 +132,7 @@ class _RendererGatherer {
     if (contextField.isNull) {
       throw StateError('@Renderer context must not be null');
     }
-    var contextFieldType = contextField.type;
+    var contextFieldType = contextField.type as InterfaceType;
     assert(contextFieldType.typeArguments.length == 1);
     var contextType = contextFieldType.typeArguments.single;
 
