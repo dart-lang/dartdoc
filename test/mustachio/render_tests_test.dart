@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// This test does not need to be run on all platforms.
-@OnPlatform({'windows': Skip()})
 import 'dart:io';
 import 'dart:isolate' show Isolate;
 
@@ -18,6 +16,10 @@ void main() {
     var dartdocLibUri = await Isolate.resolvePackageUri(
         Uri.parse('package:dartdoc/dartdoc.dart'));
     var dartdocPath = p.dirname(p.dirname(dartdocLibUri.path));
+    // Correct Windows issue path coming out of [Isolate.resolvePackageUri].
+    if (dartdocPath.startsWith(p.windows.separator)) {
+      dartdocPath = dartdocPath.substring(1).replaceAll('/', p.separator);
+    }
     var runtimeRendererRenderTest = File(p.join(dartdocPath, 'test',
             'mustachio', 'runtime_renderer_render_test.dart'))
         .readAsLinesSync();
