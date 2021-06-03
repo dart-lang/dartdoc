@@ -1,3 +1,7 @@
+// Copyright (c) 2021, the Dart project authors.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/memory_file_system.dart';
 import 'package:dartdoc/src/mustachio/renderer_base.dart';
@@ -238,7 +242,7 @@ void main() {
       ..foo = (Foo()..s1 = 'hello')
       ..s2 = 'goodbye';
     expect(renderBar(bar, barTemplate), equals('Text goodbye'));
-  });
+  }); //
 
   test('Renderer resolves variable with key with multiple names', () async {
     var barTemplateFile = getFile('/project/bar.mustache')
@@ -269,7 +273,7 @@ void main() {
   });
 
   test('Renderer resolves outer variable with key with two names', () async {
-    var barTemplateFile = getFile('/project/foo.mustache')
+    var barTemplateFile = getFile('/project/bar.mustache')
       ..writeAsStringSync('Text {{#foo}}{{foo.s1}}{{/foo}}');
     var barTemplate = await Template.parse(barTemplateFile);
     var bar = Bar()
@@ -279,7 +283,7 @@ void main() {
   });
 
   test('Renderer resolves outer variable with key with three names', () async {
-    var bazTemplateFile = getFile('/project/foo.mustache')
+    var bazTemplateFile = getFile('/project/baz.mustache')
       ..writeAsStringSync('Text {{#bar}}{{bar.foo.s1}}{{/bar}}');
     var bazTemplate = await Template.parse(bazTemplateFile);
     var baz = Baz()..bar = (Bar()..foo = (Foo()..s1 = 'hello'));
@@ -486,7 +490,7 @@ line 1, column 9 of ${fooTemplateFile.path}: Failed to resolve 's2' as a propert
   test('Renderer throws when it cannot resolve a multi-name section key',
       () async {
     var barTemplateFile = getFile('/project/bar.mustache')
-      ..writeAsStringSync('Text {{foo.x}}');
+      ..writeAsStringSync('Text {{#foo.x}}Section{{/foo.x}}');
     var barTemplate = await Template.parse(barTemplateFile);
     var bar = Bar()..foo = Foo();
     expect(
@@ -494,9 +498,8 @@ line 1, column 9 of ${fooTemplateFile.path}: Failed to resolve 's2' as a propert
         throwsA(const TypeMatcher<MustachioResolutionError>().having(
             (e) => e.message,
             'message',
-            contains("Failed to resolve 'x' on Foo while resolving [x] as a "
-                'property chain on any types in the context chain: Bar, after '
-                "first resolving 'foo' to a property on Bar"))));
+            contains("Failed to resolve 'x' as a property on any types in the "
+                'current context'))));
   });
 
   test('Renderer throws when it cannot resolve a key with a SimpleRenderer',

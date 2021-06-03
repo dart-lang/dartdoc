@@ -9,43 +9,17 @@ import 'package:build/build.dart';
 import 'package:build_test/build_test.dart';
 import 'package:test/test.dart';
 
-import '../../tool/mustachio/builder.dart';
 import 'builder_test_base.dart';
 
 void main() {
   InMemoryAssetWriter writer;
 
-  Future<LibraryElement> resolveGeneratedLibrary(
-      InMemoryAssetWriter writer) async {
+  Future<LibraryElement> resolveGeneratedLibrary() async {
     var rendererAsset = AssetId('foo', 'lib/foo.aot_renderers_for_html.dart');
     var writtenStrings = writer.assets
         .map((id, content) => MapEntry(id.toString(), utf8.decode(content)));
     return await resolveSources(writtenStrings,
         (Resolver resolver) => resolver.libraryFor(rendererAsset));
-  }
-
-  Future<void> testMustachioBuilder(
-    String sourceLibraryContent, {
-    String libraryFrontMatter = libraryFrontMatter,
-    Map<String, String> additionalAssets,
-  }) async {
-    sourceLibraryContent = '''
-$libraryFrontMatter
-$sourceLibraryContent
-''';
-    await testBuilder(
-      mustachioBuilder(BuilderOptions({})),
-      {
-        ...annotationsAsset,
-        'foo|lib/foo.dart': sourceLibraryContent,
-        'foo|lib/templates/html/foo.html': 'EMPTY',
-        'foo|lib/templates/md/foo.md': 'EMPTY',
-        'foo|lib/templates/html/bar.html': 'EMPTY',
-        'foo|lib/templates/md/bar.md': 'EMPTY',
-        ...?additionalAssets,
-      },
-      writer: writer,
-    );
   }
 
   setUp(() {
@@ -54,6 +28,7 @@ $sourceLibraryContent
 
   test('builds renderers from multiple annotations', () async {
     await testMustachioBuilder(
+      writer,
       '''
 class Foo {}
 class Bar {}
@@ -70,7 +45,7 @@ import 'package:mustachio/annotations.dart';
         'foo|lib/templates/html/_foo_header.html': 'EMPTY',
       },
     );
-    var renderersLibrary = await resolveGeneratedLibrary(writer);
+    var renderersLibrary = await resolveGeneratedLibrary();
 
     expect(renderersLibrary.getTopLevelFunction('renderFoo'), isNotNull);
     expect(renderersLibrary.getTopLevelFunction('renderBar'), isNotNull);
@@ -80,8 +55,7 @@ import 'package:mustachio/annotations.dart';
   }, timeout: Timeout.factor(2));
 
   test('builds a public API render function', () async {
-    writer = InMemoryAssetWriter();
-    await testMustachioBuilder('''
+    await testMustachioBuilder(writer, '''
 class Foo<T> {}
 ''', libraryFrontMatter: '''
 @Renderer(#renderFoo, Context<Foo>(), 'foo')
@@ -90,12 +64,13 @@ import 'package:mustachio/annotations.dart';
 ''');
     var rendererAsset = AssetId('foo', 'lib/foo.aot_renderers_for_html.dart');
     var generatedContent = utf8.decode(writer.assets[rendererAsset]);
-    expect(generatedContent, contains('String renderFoo<T>(Foo<T> context0)'));
+    expect(
+        generatedContent, contains('String renderFoo<T>(_i1.Foo<T> context0)'));
   });
 
   test('builds a private render function for a partial', () async {
-    writer = InMemoryAssetWriter();
     await testMustachioBuilder(
+      writer,
       '''
 class Foo<T> {}
 ''',
@@ -111,17 +86,19 @@ import 'package:mustachio/annotations.dart';
     );
     var rendererAsset = AssetId('foo', 'lib/foo.aot_renderers_for_html.dart');
     var generatedContent = utf8.decode(writer.assets[rendererAsset]);
-    expect(generatedContent,
-        contains('String _renderFoo_partial_foo_header_0<T>(Foo<T> context0)'));
+    expect(
+        generatedContent,
+        contains(
+            'String _renderFoo_partial_foo_header_0<T>(_i1.Foo<T> context0)'));
   });
 
   test('builds a renderer for a generic, bounded type', () async {
-    await testMustachioBuilder('''
+    await testMustachioBuilder(writer, '''
 class Foo<T extends num> {}
 class Bar {}
 class Baz {}
 ''');
-    var renderersLibrary = await resolveGeneratedLibrary(writer);
+    var renderersLibrary = await resolveGeneratedLibrary();
 
     var fooRenderFunction = renderersLibrary.getTopLevelFunction('renderFoo');
     expect(fooRenderFunction.typeParameters, hasLength(1));

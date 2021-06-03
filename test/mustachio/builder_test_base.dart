@@ -3,6 +3,10 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:build/build.dart';
+import 'package:build_test/build_test.dart';
+
+import '../../tool/mustachio/builder.dart';
 
 /// The build package Asset for a copy of the Renderer annotation for tests.
 ///
@@ -45,6 +49,34 @@ const libraryFrontMatter = '''
 library foo;
 import 'package:mustachio/annotations.dart';
 ''';
+
+/// Tests the Mustachio builder using in-memory Assets.
+Future<void> testMustachioBuilder(
+  InMemoryAssetWriter writer,
+  String sourceLibraryContent, {
+  String libraryFrontMatter = libraryFrontMatter,
+  Map<String, String> additionalAssets,
+}) async {
+  sourceLibraryContent = '''
+$libraryFrontMatter
+$sourceLibraryContent
+''';
+  await testBuilder(
+    mustachioBuilder(BuilderOptions({})),
+    {
+      ...annotationsAsset,
+      'foo|lib/foo.dart': sourceLibraryContent,
+      'foo|lib/templates/html/foo.html': 'EMPTY',
+      'foo|lib/templates/md/foo.md': 'EMPTY',
+      'foo|lib/templates/html/bar.html': 'EMPTY',
+      'foo|lib/templates/md/bar.md': 'EMPTY',
+      'foo|lib/templates/html/baz.html': 'EMPTY',
+      'foo|lib/templates/md/baz.md': 'EMPTY',
+      ...?additionalAssets,
+    },
+    writer: writer,
+  );
+}
 
 extension LibraryExtensions on LibraryElement {
   /// Returns the top-level function in [this] library, named [name].
