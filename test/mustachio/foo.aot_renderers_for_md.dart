@@ -8,22 +8,17 @@
 // non-bool, non-Iterable field is non-null.
 // ignore_for_file: unused_local_variable
 
-// It is hard to track exact imports without using package:code_builder.
-// ignore_for_file: unused_import
+import 'dart:convert' as _i2;
 
-import 'dart:convert' show htmlEscape;
+import 'foo.dart' as _i1;
 
-import 'package:dartdoc/dartdoc.dart';
-import 'package:dartdoc/src/generator/template_data.dart';
-import 'foo.dart';
-
-String renderFoo(Foo context0) {
+String renderFoo(_i1.Foo context0) {
   final buffer = StringBuffer();
   buffer.write(_renderFoo_partial_foo_header_0(context0));
   buffer.write('''
 
 s1: ''');
-  buffer.write(htmlEscape.convert(context0.s1.toString()));
+  buffer.writeEscaped(context0.s1.toString());
   buffer.write('''
 b1? ''');
   if (context0.b1 == true) {
@@ -38,7 +33,7 @@ l1:''');
   if (context1 != null) {
     for (var context2 in context1) {
       buffer.write('''item: ''');
-      buffer.write(htmlEscape.convert(context2.toString()));
+      buffer.writeEscaped(context2.toString());
     }
   }
   if (context0.l1?.isEmpty ?? true) {
@@ -50,27 +45,37 @@ baz:''');
   if (context3 != null) {
     buffer.write('''
 Baz has a ''');
-    buffer.write(htmlEscape.convert(context3.bar.s2.toString()));
+    buffer.writeEscaped(context3.bar.s2.toString());
   }
   if (context0.baz == null) {
     buffer.write('''baz is null''');
   }
+
   return buffer.toString();
 }
 
-String _renderFoo_partial_foo_header_0(Foo context0) {
+String _renderFoo_partial_foo_header_0(_i1.Foo context0) {
   final buffer = StringBuffer();
   buffer.write('''l1: ''');
-  buffer.write(htmlEscape.convert(context0.l1.toString()));
+  buffer.writeEscaped(context0.l1.toString());
+
   return buffer.toString();
 }
 
-String renderBar(Bar context0) {
+String renderBar(_i1.Bar context0) {
   final buffer = StringBuffer();
+
   return buffer.toString();
 }
 
-String renderBaz(Baz context0) {
+String renderBaz(_i1.Baz context0) {
   final buffer = StringBuffer();
+
   return buffer.toString();
+}
+
+extension on StringBuffer {
+  void writeEscaped(String value) {
+    write(_i2.htmlEscape.convert(value));
+  }
 }
