@@ -1,3 +1,17 @@
+## 0.45.0
+* BREAKING CHANGE:  Custom templates using some obscure
+  getters of modelType may no longer function (returnElement
+  and others not used in standard templates).  (#2665)
+* BREAKING CHANGE:  Implicit `Future` detection, where an
+  asynchronous function without a declared return type had
+  its return type listed as `Future`, is no more.  Those
+  functions now show a `dynamic` return type. (#2665)
+* Fix a problem with enum field location calculations.
+  (#2660, #2659)
+* Support for AOT compilation of templates added to Mustachio,
+  but not yet enabled. (#2664, #2651)
+* Some additional new lookup code implementation and testing.
+
 ## 0.44.0
 * BREAKING CHANGE:  Add support for generic metadata rendering in
   typedefs. (#2649,  #2654).  This changes how typedefs are rendered
