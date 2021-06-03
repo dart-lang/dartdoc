@@ -15,12 +15,11 @@ void main() {
     var testCasePattern = RegExp(r'test\(.*,');
     var dartdocLibUri = await Isolate.resolvePackageUri(
         Uri.parse('package:dartdoc/dartdoc.dart'));
-    print('uri: $dartdocLibUri, uri.path: ${dartdocLibUri.path}');
     var dartdocPath = p.dirname(p.dirname(dartdocLibUri.path));
     // Correct Windows issue path coming out of [Isolate.resolvePackageUri].
-    //if (dartdocPath.startsWith('/')) {
-    //  dartdocPath = dartdocPath.substring(1).replaceAll('/', p.separator);
-    //}
+    if (p.context == p.windows && dartdocPath.startsWith('/')) {
+      dartdocPath = dartdocPath.substring(1).replaceAll('/', p.separator);
+    }
     var runtimeRendererRenderTest = File(p.join(dartdocPath, 'test',
             'mustachio', 'runtime_renderer_render_test.dart'))
         .readAsLinesSync();
