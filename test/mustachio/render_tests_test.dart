@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// This test only needs to be run on one platform. Mac OS simplifies things.
+// This test does not need to be run on all platforms.
 @OnPlatform({'windows': Skip()})
 import 'dart:io';
 import 'dart:isolate' show Isolate;
