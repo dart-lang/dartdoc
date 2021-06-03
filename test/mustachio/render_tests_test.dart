@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+// This test only needs to be run on one platform. Mac OS simplifies things.
+@TestOn('mac-os')
 import 'dart:io';
 import 'dart:isolate' show Isolate;
 
@@ -15,8 +17,7 @@ void main() {
     var testCasePattern = RegExp(r'test\(.*,');
     var dartdocLibUri = await Isolate.resolvePackageUri(
         Uri.parse('package:dartdoc/dartdoc.dart'));
-    var dartdocPath = p.dirname(
-        p.dirname(p.separator + p.joinAll(dartdocLibUri.pathSegments)));
+    var dartdocPath = p.dirname(p.dirname(dartdocLibUri.path));
     var runtimeRendererRenderTest = File(p.join(dartdocPath, 'test',
             'mustachio', 'runtime_renderer_render_test.dart'))
         .readAsLinesSync();
