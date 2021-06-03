@@ -17,7 +17,7 @@ void main() {
         Uri.parse('package:dartdoc/dartdoc.dart'));
     var dartdocPath = p.dirname(p.dirname(dartdocLibUri.path));
     // Correct Windows issue path coming out of [Isolate.resolvePackageUri].
-    if (dartdocPath.startsWith(p.windows.separator)) {
+    if (dartdocPath.startsWith('/')) {
       dartdocPath = dartdocPath.substring(1).replaceAll('/', p.separator);
     }
     var runtimeRendererRenderTest = File(p.join(dartdocPath, 'test',
