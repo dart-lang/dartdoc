@@ -54,8 +54,13 @@ abstract class ElementType extends Privacy with CommentReferable, Nameable {
       var isGenericTypeAlias = f.aliasElement != null && f is! InterfaceType;
       if (f is FunctionType) {
         assert(f is ParameterizedType);
+        // This is an indication we have an extremely out of date analyzer....
         assert(
             !isGenericTypeAlias, 'should never occur: out of date analyzer?');
+        // And finally, delete this case and its associated class
+        // after https://dart-review.googlesource.com/c/sdk/+/201520
+        // is in all published versions of analyzer this version of dartdoc
+        // is compatible with.
         return CallableElementType(
             f, library, packageGraph, element, returnedFrom);
       } else if (isGenericTypeAlias) {
@@ -158,7 +163,7 @@ class UndefinedElementType extends ElementType {
 /// A FunctionType that does not have an underpinning Element.
 class FunctionTypeElementType extends UndefinedElementType
     with Rendered, Callable {
-  FunctionTypeElementType(DartType f, Library library,
+  FunctionTypeElementType(FunctionType f, Library library,
       PackageGraph packageGraph, ElementType returnedFrom)
       : super(f, library, packageGraph, returnedFrom);
 
@@ -177,9 +182,12 @@ class FunctionTypeElementType extends UndefinedElementType
 
 class AliasedFunctionTypeElementType extends FunctionTypeElementType
     with Aliased {
-  AliasedFunctionTypeElementType(DartType f, Library library,
+  AliasedFunctionTypeElementType(FunctionType f, Library library,
       PackageGraph packageGraph, ElementType returnedFrom)
-      : super(f, library, packageGraph, returnedFrom);
+      : super(f, library, packageGraph, returnedFrom) {
+    assert(type.aliasElement != null);
+    assert(type.aliasArguments != null);
+  }
 
   @override
   ElementTypeRenderer<AliasedFunctionTypeElementType> get _renderer =>
