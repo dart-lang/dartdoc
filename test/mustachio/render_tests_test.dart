@@ -3,7 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 // This test only needs to be run on one platform. Mac OS simplifies things.
-@TestOn('mac-os')
+@OnPlatform({'windows': Skip()})
 import 'dart:io';
 import 'dart:isolate' show Isolate;
 
