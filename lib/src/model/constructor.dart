@@ -79,8 +79,8 @@ class Constructor extends ModelElement
   @override
   String get kind => 'constructor';
 
-  CallableElementTypeMixin _modelType;
-  CallableElementTypeMixin get modelType =>
+  Callable _modelType;
+  Callable get modelType =>
       _modelType ??= ElementType.from(element.type, library, packageGraph);
 
   String _name;

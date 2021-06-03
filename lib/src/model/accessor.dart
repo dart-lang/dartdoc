@@ -27,8 +27,8 @@ class Accessor extends ModelElement implements EnclosedElement {
   @override
   ExecutableMember get originalMember => super.originalMember;
 
-  CallableElementTypeMixin _modelType;
-  CallableElementTypeMixin get modelType => _modelType ??=
+  Callable _modelType;
+  Callable get modelType => _modelType ??=
       ElementType.from((originalMember ?? element).type, library, packageGraph);
 
   bool get isSynthetic => element.isSynthetic;

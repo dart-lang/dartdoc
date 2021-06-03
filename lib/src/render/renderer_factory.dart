@@ -51,6 +51,9 @@ abstract class RendererFactory {
 
   ElementTypeRenderer<AliasedElementType> get aliasedElementTypeRenderer;
 
+  ElementTypeRenderer<AliasedFunctionTypeElementType>
+      get aliasedFunctionTypeElementTypeRenderer;
+
   ElementTypeRenderer<CallableElementType> get callableElementTypeRenderer;
 
   EnumFieldRenderer get enumFieldRenderer;
@@ -129,6 +132,11 @@ class HtmlRenderFactory extends RendererFactory {
 
   @override
   FeatureRenderer get featureRenderer => const FeatureRendererHtml();
+
+  @override
+  ElementTypeRenderer<AliasedFunctionTypeElementType>
+      get aliasedFunctionTypeElementTypeRenderer =>
+          const AliasedFunctionTypeElementTypeRendererHtml();
 }
 
 class MdRenderFactory extends RendererFactory {
@@ -193,4 +201,9 @@ class MdRenderFactory extends RendererFactory {
 
   @override
   FeatureRenderer get featureRenderer => const FeatureRendererMd();
+
+  @override
+  ElementTypeRenderer<AliasedFunctionTypeElementType>
+      get aliasedFunctionTypeElementTypeRenderer =>
+          const AliasedFunctionTypeElementTypeRendererMd();
 }

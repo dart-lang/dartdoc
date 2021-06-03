@@ -120,7 +120,7 @@ void main() {
           orderedEquals(genericParameters));
     }
 
-    void expectAliasedTypeName(AliasedElementType n, expected) {
+    void expectAliasedTypeName(Aliased n, expected) {
       expect(n.aliasElement.name, expected);
     }
 
@@ -205,13 +205,13 @@ void main() {
           equals('?'));
     });
 
-    test('implied Future types have correct nullability', () {
-      expect(oddAsyncFunction.modelType.returnType.name, equals('Future'));
+    test('old implied Future types have correct nullability', () {
+      expect(oddAsyncFunction.modelType.returnType.name, equals('dynamic'));
       expect(
-          oddAsyncFunction.modelType.returnType.nullabilitySuffix, equals('?'));
-      expect(anotherOddFunction.modelType.returnType.name, equals('Future'));
+          oddAsyncFunction.modelType.returnType.nullabilitySuffix, equals(''));
+      expect(anotherOddFunction.modelType.returnType.name, equals('dynamic'));
       expect(anotherOddFunction.modelType.returnType.nullabilitySuffix,
-          equals('?'));
+          equals(''));
     });
 
     test('isNullSafety is set correctly for libraries', () {
@@ -2710,7 +2710,7 @@ void main() {
 
     test('async function', () {
       expect(thisIsAsync.isAsynchronous, isTrue);
-      expect(thisIsAsync.modelType.returnType.linkedName, equals('Future'));
+      expect(thisIsAsync.modelType.returnType.linkedName, equals('dynamic'));
       expect(
           thisIsAsync.documentation,
           equals(
@@ -3085,10 +3085,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('parameter is a function', () {
       var functionArgParam = m4.parameters[1];
-      expect(
-          (functionArgParam.modelType as CallableElementTypeMixin)
-              .returnType
-              .linkedName,
+      expect((functionArgParam.modelType as Callable).returnType.linkedName,
           'String');
     });
 
@@ -4207,7 +4204,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('async return type', () {
-      expect(asyncM.modelType.returnType.linkedName, 'Future');
+      expect(asyncM.modelType.returnType.linkedName, 'dynamic');
     });
 
     test('param with generics', () {

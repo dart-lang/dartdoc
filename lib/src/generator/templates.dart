@@ -41,7 +41,7 @@ import 'package:path/path.dart' as path show Context;
 
 const _visibleTypes = {
   Annotation,
-  CallableElementTypeMixin,
+  Callable,
   Category,
   Class,
   Constructor,
@@ -50,6 +50,7 @@ const _visibleTypes = {
   Enum,
   Extension,
   FeatureSet,
+  FunctionTypeElementType,
   LanguageFeature,
   Library,
   LibraryContainer,
