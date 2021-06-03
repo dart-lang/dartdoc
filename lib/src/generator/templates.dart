@@ -45,6 +45,7 @@ const _visibleTypes = {
   Category,
   Class,
   Constructor,
+  DefinedElementType,
   Documentable,
   Enum,
   Extension,
