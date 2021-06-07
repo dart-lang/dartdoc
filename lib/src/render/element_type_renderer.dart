@@ -89,6 +89,41 @@ class ParameterizedElementTypeRendererHtml
   }
 }
 
+class AliasedFunctionTypeElementTypeRendererHtml
+    extends ElementTypeRenderer<AliasedFunctionTypeElementType> {
+  const AliasedFunctionTypeElementTypeRendererHtml();
+
+  @override
+  String renderLinkedName(AliasedFunctionTypeElementType elementType) {
+    var buf = StringBuffer();
+    buf.write(elementType.aliasElement.linkedName);
+    if (elementType.aliasArguments.isNotEmpty &&
+        !elementType.aliasArguments.every((t) => t.name == 'dynamic')) {
+      buf.write('<span class="signature">');
+      buf.write('&lt;<wbr><span class="type-parameter">');
+      buf.writeAll(elementType.aliasArguments.map((t) => t.linkedName),
+          '</span>, <span class="type-parameter">');
+      buf.write('</span>&gt;');
+      buf.write('</span>');
+    }
+    return wrapNullability(elementType, buf.toString());
+  }
+
+  @override
+  String renderNameWithGenerics(AliasedFunctionTypeElementType elementType) {
+    var buf = StringBuffer();
+    buf.write(elementType.aliasElement.name);
+    if (elementType.aliasArguments.isNotEmpty &&
+        !elementType.aliasArguments.every((t) => t.name == 'dynamic')) {
+      buf.write('&lt;<wbr><span class="type-parameter">');
+      buf.writeAll(elementType.aliasArguments.map((t) => t.nameWithGenerics),
+          '</span>, <span class="type-parameter">');
+      buf.write('</span>&gt;');
+    }
+    return wrapNullability(elementType, buf.toString());
+  }
+}
+
 class AliasedElementTypeRendererHtml
     extends ElementTypeRenderer<AliasedElementType> {
   const AliasedElementTypeRendererHtml();
@@ -242,6 +277,38 @@ class AliasedElementTypeRendererMd
 
   @override
   String renderNameWithGenerics(AliasedElementType elementType) {
+    var buf = StringBuffer();
+    buf.write(elementType.aliasElement.name);
+    if (elementType.aliasArguments.isNotEmpty &&
+        !elementType.aliasArguments.every((t) => t.name == 'dynamic')) {
+      buf.write('&lt;');
+      buf.writeAll(
+          elementType.aliasArguments.map((t) => t.nameWithGenerics), ', ');
+      buf.write('>');
+    }
+    return wrapNullability(elementType, buf.toString());
+  }
+}
+
+class AliasedFunctionTypeElementTypeRendererMd
+    extends ElementTypeRenderer<AliasedFunctionTypeElementType> {
+  const AliasedFunctionTypeElementTypeRendererMd();
+
+  @override
+  String renderLinkedName(AliasedFunctionTypeElementType elementType) {
+    var buf = StringBuffer();
+    buf.write(elementType.aliasElement.linkedName);
+    if (elementType.aliasArguments.isNotEmpty &&
+        !elementType.aliasArguments.every((t) => t.name == 'dynamic')) {
+      buf.write('&lt;');
+      buf.writeAll(elementType.aliasArguments.map((t) => t.linkedName), ', ');
+      buf.write('>');
+    }
+    return wrapNullability(elementType, buf.toString());
+  }
+
+  @override
+  String renderNameWithGenerics(AliasedFunctionTypeElementType elementType) {
     var buf = StringBuffer();
     buf.write(elementType.aliasElement.name);
     if (elementType.aliasArguments.isNotEmpty &&

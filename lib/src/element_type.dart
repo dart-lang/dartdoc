@@ -16,6 +16,7 @@ import 'package:dartdoc/src/render/element_type_renderer.dart';
 /// may link to a [ModelElement].
 abstract class ElementType extends Privacy with CommentReferable, Nameable {
   final DartType _type;
+  @override
   final PackageGraph packageGraph;
   final ElementType returnedFrom;
   @override
@@ -25,11 +26,15 @@ abstract class ElementType extends Privacy with CommentReferable, Nameable {
 
   factory ElementType.from(
       DartType f, Library library, PackageGraph packageGraph,
-      [ElementType returnedFrom]) {
+      {ElementType returnedFrom}) {
     if (f.element == null ||
         f.element.kind == ElementKind.DYNAMIC ||
         f.element.kind == ElementKind.NEVER) {
       if (f is FunctionType) {
+        if (f.aliasElement != null) {
+          return AliasedFunctionTypeElementType(
+              f, library, packageGraph, returnedFrom);
+        }
         return FunctionTypeElementType(f, library, packageGraph, returnedFrom);
       }
       return UndefinedElementType(f, library, packageGraph, returnedFrom);
@@ -49,10 +54,13 @@ abstract class ElementType extends Privacy with CommentReferable, Nameable {
       var isGenericTypeAlias = f.aliasElement != null && f is! InterfaceType;
       if (f is FunctionType) {
         assert(f is ParameterizedType);
-        if (isGenericTypeAlias) {
-          return CallableGenericTypeAliasElementType(
-              f, library, packageGraph, element, returnedFrom);
-        }
+        // This is an indication we have an extremely out of date analyzer....
+        assert(
+            !isGenericTypeAlias, 'should never occur: out of date analyzer?');
+        // And finally, delete this case and its associated class
+        // after https://dart-review.googlesource.com/c/sdk/+/201520
+        // is in all published versions of analyzer this version of dartdoc
+        // is compatible with.
         return CallableElementType(
             f, library, packageGraph, element, returnedFrom);
       } else if (isGenericTypeAlias) {
@@ -92,10 +100,9 @@ abstract class ElementType extends Privacy with CommentReferable, Nameable {
     return '';
   }
 
-  /// An unmodifiable list of this element type's parameters.
-  List<Parameter> get parameters;
-
   DartType get instantiatedType;
+
+  Iterable<ElementType> get typeArguments;
 
   bool isBoundSupertypeTo(ElementType t);
   bool isSubtypeOf(ElementType t);
@@ -116,32 +123,19 @@ class UndefinedElementType extends ElementType {
   @override
   Element get element => null;
 
-  String _linkedName;
-
   @override
   bool get isPublic => true;
 
   @override
   String get name {
-    if (isImpliedFuture) return 'Future';
     if (type.isVoid) return 'void';
     assert({'Never', 'void', 'dynamic'}.contains(type.element.name),
         'Unrecognized type for UndefinedElementType: ${type.toString()}');
     return type.element.name;
   }
 
-  /// Returns true if this type is an implied `Future`.
-  bool get isImpliedFuture => (type.isDynamic &&
-      returnedFrom != null &&
-      returnedFrom is DefinedElementType &&
-      (returnedFrom as DefinedElementType).modelElement.isAsynchronous);
-
   @override
   String get nameWithGenerics => '$name$nullabilitySuffix';
-
-  @override
-  String get nullabilitySuffix =>
-      isImpliedFuture && library.isNullSafety ? '?' : super.nullabilitySuffix;
 
   /// Assume that undefined elements don't have useful bounds.
   @override
@@ -157,44 +151,21 @@ class UndefinedElementType extends ElementType {
   String get linkedName => name;
 
   @override
+  Iterable<ElementType> get typeArguments => [];
+
+  @override
   Map<String, CommentReferable> get referenceChildren => {};
 
   @override
   Iterable<CommentReferable> get referenceParents => [];
-
-  @override
-  // TODO(jcollins-g): remove the need for an empty list here.
-  List<Parameter> get parameters => [];
 }
 
 /// A FunctionType that does not have an underpinning Element.
 class FunctionTypeElementType extends UndefinedElementType
-    with CallableElementTypeMixin {
-  FunctionTypeElementType(DartType f, Library library,
+    with Rendered, Callable {
+  FunctionTypeElementType(FunctionType f, Library library,
       PackageGraph packageGraph, ElementType returnedFrom)
       : super(f, library, packageGraph, returnedFrom);
-
-  @override
-  List<Parameter> get parameters => type.parameters
-      .map((p) => ModelElement.from(p, library, packageGraph) as Parameter)
-      .toList(growable: false);
-
-  @override
-  ElementType get returnType =>
-      ElementType.from(type.returnType, library, packageGraph, this);
-
-  @override
-  String get linkedName {
-    _linkedName ??= _renderer.renderLinkedName(this);
-    return _linkedName;
-  }
-
-  String _nameWithGenerics;
-  @override
-  String get nameWithGenerics {
-    _nameWithGenerics ??= _renderer.renderNameWithGenerics(this);
-    return _nameWithGenerics;
-  }
 
   /// An unmodifiable list of this function element's type parameters.
   List<TypeParameter> get typeFormals => type.typeFormals
@@ -204,39 +175,42 @@ class FunctionTypeElementType extends UndefinedElementType
   @override
   String get name => 'Function';
 
-  ElementTypeRenderer<FunctionTypeElementType> get _renderer =>
+  @override
+  ElementTypeRenderer get _renderer =>
       packageGraph.rendererFactory.functionTypeElementTypeRenderer;
 }
 
-class ParameterizedElementType extends DefinedElementType {
+class AliasedFunctionTypeElementType extends FunctionTypeElementType
+    with Aliased {
+  AliasedFunctionTypeElementType(FunctionType f, Library library,
+      PackageGraph packageGraph, ElementType returnedFrom)
+      : super(f, library, packageGraph, returnedFrom) {
+    assert(type.aliasElement != null);
+    assert(type.aliasArguments != null);
+  }
+
+  @override
+  ElementTypeRenderer<AliasedFunctionTypeElementType> get _renderer =>
+      packageGraph.rendererFactory.aliasedFunctionTypeElementTypeRenderer;
+}
+
+class ParameterizedElementType extends DefinedElementType with Rendered {
   ParameterizedElementType(ParameterizedType type, Library library,
       PackageGraph packageGraph, ModelElement element, ElementType returnedFrom)
       : super(type, library, packageGraph, element, returnedFrom);
 
-  String _linkedName;
   @override
-  String get linkedName {
-    _linkedName ??= _renderer.renderLinkedName(this);
-    return _linkedName;
-  }
-
-  String _nameWithGenerics;
-  @override
-  String get nameWithGenerics {
-    _nameWithGenerics ??= _renderer.renderNameWithGenerics(this);
-    return _nameWithGenerics;
-  }
-
   ElementTypeRenderer<ParameterizedElementType> get _renderer =>
       packageGraph.rendererFactory.parameterizedElementTypeRenderer;
 }
 
-class AliasedElementType extends ParameterizedElementType {
-  AliasedElementType(ParameterizedType type, Library library,
-      PackageGraph packageGraph, ModelElement element, ElementType returnedFrom)
-      : super(type, library, packageGraph, element, returnedFrom) {
-    assert(type.aliasElement != null);
-  }
+/// A [ElementType] whose underlying type was referrred to by a type alias.
+mixin Aliased implements ElementType {
+  @override
+  String get name => type.aliasElement.name;
+
+  @override
+  bool get isTypedef => true;
 
   ModelElement _aliasElement;
   ModelElement get aliasElement => _aliasElement ??=
@@ -247,6 +221,26 @@ class AliasedElementType extends ParameterizedElementType {
       _aliasArguments ??= type.aliasArguments
           .map((f) => ElementType.from(f, library, packageGraph))
           .toList(growable: false);
+
+  Iterable<ElementType> _typeArguments;
+  @override
+  Iterable<ElementType> get typeArguments =>
+      _typeArguments ??= (type as ParameterizedType)
+          .typeArguments
+          .map((f) => ElementType.from(f, library, packageGraph))
+          .toList(growable: false);
+}
+
+class AliasedElementType extends ParameterizedElementType with Aliased {
+  AliasedElementType(ParameterizedType type, Library library,
+      PackageGraph packageGraph, ModelElement element, ElementType returnedFrom)
+      : super(type, library, packageGraph, element, returnedFrom) {
+    assert(type.aliasElement != null);
+  }
+
+  /// Parameters, if available, for the underlying typedef.
+  List<Parameter> get aliasedParameters =>
+      modelElement.isCallable ? modelElement.parameters : [];
 
   @override
   ElementTypeRenderer<AliasedElementType> get _renderer =>
@@ -303,24 +297,8 @@ abstract class DefinedElementType extends ElementType {
     return canonicalClass?.isPublic ?? false;
   }
 
-  @override
-  bool get isTypedef =>
-      modelElement is Typedef || modelElement is ModelFunctionTypedef;
-
-  @override
-  List<Parameter> get parameters =>
-      modelElement.isCallable ? modelElement.parameters : [];
-
-  ModelElement get returnElement => modelElement;
-  ElementType _returnType;
-  ElementType get returnType {
-    _returnType ??= ElementType.from(type, library, packageGraph, this);
-    return _returnType;
-  }
-
   Iterable<ElementType> _typeArguments;
-
-  /// An unmodifiable list of this element type's parameters.
+  @override
   Iterable<ElementType> get typeArguments =>
       _typeArguments ??= (type as ParameterizedType)
           .typeArguments
@@ -382,38 +360,46 @@ abstract class DefinedElementType extends ElementType {
       modelElement.referenceParents;
 }
 
-/// Any callable ElementType will mix-in this class, whether anonymous or not.
-mixin CallableElementTypeMixin implements ElementType {
-  @override
-  // TODO(jcollins-g): remove after dart-lang/dartdoc#2648 is fixed.
-  String get linkedName;
-
-  ModelElement get returnElement => returnType is DefinedElementType
-      ? (returnType as DefinedElementType).modelElement
-      : null;
+/// Any callable ElementType will mix-in this class, whether anonymous or not,
+/// unless it is an alias reference.
+mixin Callable implements ElementType {
+  List<Parameter> get parameters => type.parameters
+      .map((p) => ModelElement.from(p, library, packageGraph) as Parameter)
+      .toList(growable: false);
 
   ElementType _returnType;
   ElementType get returnType {
-    _returnType ??=
-        ElementType.from(type.returnType, library, packageGraph, this);
+    _returnType ??= ElementType.from(type.returnType, library, packageGraph);
     return _returnType;
   }
 
   @override
   FunctionType get type => _type;
+}
 
-  Iterable<ElementType> _typeArguments;
-  Iterable<ElementType> get typeArguments =>
-      _typeArguments ??= type.aliasArguments
-              ?.map((f) => ElementType.from(f, library, packageGraph))
-              ?.toList() ??
-          [];
+/// This [ElementType] uses an [ElementTypeRenderer] to generate
+/// some of its parameters.
+mixin Rendered implements ElementType {
+  String _linkedName;
+  @override
+  String get linkedName {
+    _linkedName ??= _renderer.renderLinkedName(this);
+    return _linkedName;
+  }
+
+  String _nameWithGenerics;
+  @override
+  String get nameWithGenerics {
+    _nameWithGenerics ??= _renderer.renderNameWithGenerics(this);
+    return _nameWithGenerics;
+  }
+
+  ElementTypeRenderer<ElementType> get _renderer;
 }
 
 /// A callable type that may or may not be backed by a declaration using the generic
 /// function syntax.
-class CallableElementType extends ParameterizedElementType
-    with CallableElementTypeMixin {
+class CallableElementType extends DefinedElementType with Rendered, Callable {
   CallableElementType(FunctionType t, Library library,
       PackageGraph packageGraph, ModelElement element, ElementType returnedFrom)
       : super(t, library, packageGraph, element, returnedFrom);
@@ -427,39 +413,9 @@ class CallableElementType extends ParameterizedElementType
       packageGraph.rendererFactory.callableElementTypeRenderer;
 }
 
-/// Types backed by a [GenericTypeAliasElement] that may or may not be callable.
-abstract class GenericTypeAliasElementTypeMixin {}
-
 /// A non-callable type backed by a [GenericTypeAliasElement].
-class GenericTypeAliasElementType extends TypeParameterElementType
-    with GenericTypeAliasElementTypeMixin {
+class GenericTypeAliasElementType extends TypeParameterElementType {
   GenericTypeAliasElementType(TypeParameterType t, Library library,
       PackageGraph packageGraph, ModelElement element, ElementType returnedFrom)
       : super(t, library, packageGraph, element, returnedFrom);
-}
-
-/// A Callable generic type alias that may or may not have a name.
-class CallableGenericTypeAliasElementType extends ParameterizedElementType
-    with CallableElementTypeMixin, GenericTypeAliasElementTypeMixin {
-  CallableGenericTypeAliasElementType(FunctionType t, Library library,
-      PackageGraph packageGraph, ModelElement element, ElementType returnedFrom)
-      : super(t, library, packageGraph, element, returnedFrom);
-
-  ModelElement _returnElement;
-  @override
-  ModelElement get returnElement {
-    _returnElement ??= ModelElement.fromElement(
-        type.aliasElement.enclosingElement, packageGraph);
-    return _returnElement;
-  }
-
-  @override
-  ElementType get returnType {
-    _returnType ??=
-        ElementType.from(type.returnType, library, packageGraph, this);
-    return _returnType;
-  }
-
-  @override
-  DartType get instantiatedType => type;
 }

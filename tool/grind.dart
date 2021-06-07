@@ -1050,7 +1050,9 @@ Future<void> build() async {
 final _generatedFilesList = <String>[
   '../dartdoc_options.yaml',
   'src/generator/html_resources.g.dart',
-  'src/generator/templates.renderers.dart',
+  'src/generator/templates.aot_renderers_for_html.dart',
+  'src/generator/templates.aot_renderers_for_md.dart',
+  'src/generator/templates.runtime_renderers.dart',
   'src/version.dart',
   '../test/mustachio/foo.dart',
 ].map((s) => path.joinAll(path.posix.split(s)));

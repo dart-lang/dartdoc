@@ -8,7 +8,11 @@ builders:
   mustachio_builder:
     import: "tool/mustachio/builder.dart"
     builder_factories: ["mustachioBuilder"]
-    build_extensions: {".dart": [".renderers.dart"]}
+    build_extensions:
+      ".dart":
+        - ".aot_renderers_for_html.dart"
+        - ".aot_renderers_for_md.dart"
+        - ".runtime_renderers.dart"
     build_to: "source"
 
 targets:

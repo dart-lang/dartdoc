@@ -16,6 +16,7 @@ import 'package:analyzer/src/dart/element/member.dart'
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/comment_references/model_comment_reference.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
+import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/annotation.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/feature.dart';
@@ -941,13 +942,20 @@ abstract class ModelElement extends Canonicalization
       } else {
         if (isCallable) newParameters.addAll(parameters);
       }
+      // TODO(jcollins-g): This part probably belongs in [ElementType].
       while (newParameters.isNotEmpty) {
         recursedParameters.addAll(newParameters);
         newParameters.clear();
         for (var p in recursedParameters) {
-          var l = p.modelType.parameters
-              .where((pm) => !recursedParameters.contains(pm));
-          newParameters.addAll(l);
+          var parameterModelType = p.modelType;
+          if (parameterModelType is Callable) {
+            newParameters.addAll(parameterModelType.parameters
+                .where((pm) => !recursedParameters.contains(pm)));
+          }
+          if (parameterModelType is AliasedElementType) {
+            newParameters.addAll(parameterModelType.aliasedParameters
+                .where((pm) => !recursedParameters.contains(pm)));
+          }
         }
       }
       _allParameters = recursedParameters.toList();

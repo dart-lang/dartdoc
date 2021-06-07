@@ -9,27 +9,18 @@ import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/dart/element/type_provider.dart';
 import 'package:analyzer/dart/element/type_system.dart';
 import 'package:dart_style/dart_style.dart';
+import 'package:dartdoc/src/mustachio/annotations.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 
-/// The specification of a renderer, as derived from a @Renderer annotation.
-class RendererSpec {
-  /// The name of the render function.
-  final String _name;
-
-  final InterfaceType _contextType;
-
-  final Set<DartType> _visibleTypes;
-
-  RendererSpec(this._name, this._contextType, this._visibleTypes);
-}
+import 'utilities.dart';
 
 /// Builds [specs] into a Dart library containing runtime renderers.
-String buildTemplateRenderers(Set<RendererSpec> specs, Uri sourceUri,
+String buildRuntimeRenderers(Set<RendererSpec> specs, Uri sourceUri,
     TypeProvider typeProvider, TypeSystem typeSystem,
     {bool rendererClassesArePublic = false}) {
   var visibleElements = specs
-      .map((spec) => spec._visibleTypes)
+      .map((spec) => spec.visibleTypes)
       .reduce((value, element) => value.union(element))
       .map((type) => type.element)
       .toSet();
@@ -37,7 +28,7 @@ String buildTemplateRenderers(Set<RendererSpec> specs, Uri sourceUri,
           sourceUri, typeProvider, typeSystem, visibleElements,
           rendererClassesArePublic: rendererClassesArePublic)
       ._buildTemplateRenderers(specs);
-  return DartFormatter().format(raw.toString());
+  return DartFormatter().format(raw);
 }
 
 /// This class builds runtime Mustache renderers from a set of [RendererSpec]s.
@@ -121,20 +112,20 @@ import '${p.basename(_sourceUri.path)}';
   /// Adds type specified in [spec] to the [_typesToProcess] queue, as well as
   /// all supertypes, and the types of all valid getters, recursively.
   void _addTypesForRendererSpec(RendererSpec spec) {
-    var element = spec._contextType.element;
+    var element = spec.contextElement;
     var rendererInfo = _RendererInfo(element,
-        public: _rendererClassesArePublic, publicApiFunctionName: spec._name);
+        public: _rendererClassesArePublic, publicApiFunctionName: spec.name);
     _typesToProcess.add(rendererInfo);
     _typeToRenderFunctionName[element] = rendererInfo._renderFunctionName;
     _typeToRendererClassName[element] = rendererInfo._rendererClassName;
 
-    spec._contextType.accessors.forEach(_addPropertyToProcess);
+    spec.contextType.accessors.forEach(_addPropertyToProcess);
 
-    for (var mixin in spec._contextType.element.mixins) {
+    for (var mixin in spec.contextElement.mixins) {
       _addTypeToProcess(mixin.element,
           isFullRenderer: true, includeRenderFunction: false);
     }
-    var superclass = spec._contextType.element.supertype;
+    var superclass = spec.contextElement.supertype;
 
     while (superclass != null) {
       // Any type specified with a renderer spec (`@Renderer`) is full.
@@ -416,7 +407,7 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
           _typeToRendererClassName[contextClass.supertype.element];
       if (superclassRendererName != null) {
         var superMapName = '$superclassRendererName.propertyMap';
-        var generics = _asGenerics([
+        var generics = asGenerics([
           ...contextClass.supertype.typeArguments
               .map((e) => e.getDisplayString(withNullability: false)),
           _contextTypeVariable
@@ -435,7 +426,7 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
         var mixinRendererName = _typeToRendererClassName[mixin.element];
         if (mixinRendererName != null) {
           var mixinMapName = '$mixinRendererName.propertyMap';
-          var generics = _asGenerics([
+          var generics = asGenerics([
             ...mixin.typeArguments
                 .map((e) => e.getDisplayString(withNullability: false)),
             _contextTypeVariable
@@ -616,41 +607,20 @@ class _RendererInfo {
 
   final String _rendererClassName;
 
-  /// The type parameters of the context type, if any, as a String, including
-  /// bounds and the angled brackets, otherwise a blank String.
-  String get _typeParametersString {
-    return _asGenerics(_contextClass.typeParameters
-        .map((tp) => tp.getDisplayString(withNullability: false)));
-  }
+  String get _typeParametersString => _contextClass.typeParametersString;
 
-  /// The type variables of the context type, if any, as a String, including
-  /// the angled brackets, otherwise a blank String.
-  String get _typeVariablesString {
-    return _asGenerics(_contextClass.typeParameters.map((tp) => tp.name));
-  }
+  String get _typeVariablesString => _contextClass.typeVariablesString;
 
-  /// Returns the type parameters of the context type, and [extra], as they
-  /// appear in a list of generics.
-  String _typeParametersStringWith(String extra) {
-    return _asGenerics([
-      ..._contextClass.typeParameters
-          .map((tp) => tp.getDisplayString(withNullability: false)),
-      extra,
-    ]);
-  }
+  String _typeParametersStringWith(String extra) =>
+      _contextClass.typeParametersStringWith(extra);
 
   /// Returns the type arguments of the context type, and [extra], as they
   /// appear in a list of generics.
   String _typeArgumentsStringWith(String extra) {
-    return _asGenerics([
+    return asGenerics([
       ..._contextClass.thisType.typeArguments
           .map((tp) => tp.getDisplayString(withNullability: false)),
       extra,
     ]);
   }
 }
-
-/// Returns [values] as they appear in a list of generics, with angled brackets,
-/// and an empty string when [values] is empty.
-String _asGenerics(Iterable<String> values) =>
-    values.isEmpty ? '' : '<${values.join(', ')}>';
