@@ -91,20 +91,14 @@ void main() {
     test('invalid parameters return non-zero and print a fatal-error',
         () async {
       var outputLines = <String>[];
-      var threwException = false;
-      // consider [expectLater] when it works reliably with coverage again.
-      try {
-        await subprocessLauncher.runStreamed(
-            Platform.resolvedExecutable,
-            [
-              dartdocPath,
-              '--nonexisting',
-            ],
-            perLine: outputLines.add);
-      } on ProcessException {
-        threwException = true;
-      }
-      expect(threwException, isTrue);
+      await subprocessLauncher.runStreamed(
+          Platform.resolvedExecutable,
+          [
+            dartdocPath,
+            '--nonexisting',
+          ],
+          perLine: outputLines.add,
+          expectExitCode: 64);
       expect(
           outputLines.firstWhere((l) => l.startsWith(' fatal')),
           equals(
@@ -114,21 +108,15 @@ void main() {
     test('missing a required file path prints a fatal-error', () async {
       var outputLines = <String>[];
       var impossiblePath = path.join(dartdocPath, 'impossible');
-      var threwException = false;
-      // consider [expectLater] when it works with coverage again.
-      try {
-        await subprocessLauncher.runStreamed(
-            Platform.resolvedExecutable,
-            [
-              dartdocPath,
-              '--input',
-              impossiblePath,
-            ],
-            perLine: outputLines.add);
-      } on ProcessException {
-        threwException = true;
-      }
-      expect(threwException, isTrue);
+      await subprocessLauncher.runStreamed(
+          Platform.resolvedExecutable,
+          [
+            dartdocPath,
+            '--input',
+            impossiblePath,
+          ],
+          perLine: outputLines.add,
+          expectExitCode: 64);
       expect(
           outputLines.firstWhere((l) => l.startsWith(' fatal')),
           startsWith(

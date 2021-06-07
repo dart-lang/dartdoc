@@ -75,7 +75,8 @@ class CoverageSubprocessLauncher extends SubprocessLauncher {
       {String workingDirectory,
       Map<String, String> environment,
       bool includeParentEnvironment = true,
-      void Function(String) perLine}) async {
+      void Function(String) perLine,
+      int expectExitCode = 0}) async {
     environment ??= {};
     assert(
         executable == Platform.executable ||
@@ -113,7 +114,8 @@ class CoverageSubprocessLauncher extends SubprocessLauncher {
         environment: environment,
         includeParentEnvironment: includeParentEnvironment,
         workingDirectory: workingDirectory,
-        perLine: parsePortAsString);
+        perLine: parsePortAsString,
+        expectExitCode: expectExitCode);
 
     if (coverageEnabled) {
       await super.runStreamed('pub', [
@@ -172,7 +174,8 @@ class SubprocessLauncher {
       {String workingDirectory,
       Map<String, String> environment,
       bool includeParentEnvironment = true,
-      void Function(String) perLine}) async {
+      void Function(String) perLine,
+      int expectExitCode = 0}) async {
     environment ??= {};
     environment.addAll(environmentDefaults);
     List<Map> jsonObjects;
@@ -257,7 +260,7 @@ class SubprocessLauncher {
     await Future.wait([stderrFuture, stdoutFuture, process.exitCode]);
 
     var exitCode = await process.exitCode;
-    if (exitCode != 0) {
+    if (exitCode != expectExitCode) {
       throw ProcessException(
           executable,
           arguments,
