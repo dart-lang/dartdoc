@@ -68,7 +68,6 @@ class DartdocLoggingOptionContext extends DartdocGeneratorOptionContext
 
 void main() {
   group('dartdoc with generators', () {
-    var resourceProvider = pubPackageMetaProvider.resourceProvider;
     Folder tempDir;
 
     setUpAll(() async {
@@ -77,12 +76,12 @@ void main() {
       optionSet.parseArguments([]);
       startLogging(DartdocLoggingOptionContext(
           optionSet,
-          resourceProvider.getFolder(resourceProvider.pathContext.current),
-          resourceProvider));
+          _resourceProvider.getFolder(_pathContext.current),
+          _resourceProvider));
     });
 
     setUp(() async {
-      tempDir = resourceProvider.createSystemTemp('dartdoc.test.');
+      tempDir = _resourceProvider.createSystemTemp('dartdoc.test.');
     });
 
     tearDown(() async {
@@ -108,17 +107,17 @@ void main() {
       Folder tempDir;
 
       setUpAll(() async {
-        tempDir = resourceProvider.createSystemTemp('dartdoc.test.');
+        tempDir = _resourceProvider.createSystemTemp('dartdoc.test.');
         dartdoc = await buildDartdoc([], _testPackageOptions, tempDir);
         results = await dartdoc.generateDocsBase();
         p = results.packageGraph;
       });
 
       test('generator parameters', () async {
-        var favicon = resourceProvider.getFile(resourceProvider.pathContext
+        var favicon = _resourceProvider.getFile(_pathContext
             .joinAll([tempDir.path, 'static-assets', 'favicon.png']));
-        var index = resourceProvider.getFile(
-            resourceProvider.pathContext.joinAll([tempDir.path, 'index.html']));
+        var index = _resourceProvider
+            .getFile(_pathContext.joinAll([tempDir.path, 'index.html']));
         expect(favicon.readAsStringSync(),
             contains('Not really a png, but a test file'));
         var indexString = index.readAsStringSync();
@@ -233,13 +232,12 @@ void main() {
     });
 
     group('validate basic doc generation', () {
-      Dartdoc dartdoc;
       DartdocResults results;
       Folder tempDir;
 
       setUpAll(() async {
-        tempDir = resourceProvider.createSystemTemp('dartdoc.test.');
-        dartdoc = await buildDartdoc([], _testPackageDir, tempDir);
+        tempDir = _resourceProvider.createSystemTemp('dartdoc.test.');
+        var dartdoc = await buildDartdoc([], _testPackageDir, tempDir);
         results = await dartdoc.generateDocs();
       });
 
@@ -262,9 +260,10 @@ void main() {
       test('source code links are visible', () async {
         // Picked this object as this library explicitly should never contain
         // a library directive, so we can predict what line number it will be.
-        var anonymousOutput = resourceProvider.getFile(
-            resourceProvider.pathContext.join(tempDir.path, 'anonymous_library',
-                'anonymous_library-library.html'));
+        var anonymousOutput = _resourceProvider.getFile(_pathContext.join(
+            tempDir.path,
+            'anonymous_library',
+            'anonymous_library-library.html'));
         expect(anonymousOutput.exists, isTrue);
         expect(
             anonymousOutput.readAsStringSync(),
@@ -334,8 +333,8 @@ void main() {
       expect(p.defaultPackage.name, 'test_package_custom_templates');
       expect(p.localPublicLibraries, hasLength(1));
 
-      var index = resourceProvider.getFile(
-          resourceProvider.pathContext.join(tempDir.path, 'index.html'));
+      var index = _resourceProvider
+          .getFile(_pathContext.join(tempDir.path, 'index.html'));
       expect(index.readAsStringSync(),
           contains('Welcome my friends to a custom template'));
     });
@@ -384,15 +383,15 @@ void main() {
       await dartdoc.generateDocsBase();
 
       // Verify files at different levels have correct <link> content.
-      var level1 = resourceProvider.getFile(resourceProvider.pathContext
-          .join(tempDir.path, 'ex', 'Apple-class.html'));
+      var level1 = _resourceProvider
+          .getFile(_pathContext.join(tempDir.path, 'ex', 'Apple-class.html'));
       expect(level1.exists, isTrue);
       expect(
           level1.readAsStringSync(),
           contains(
               '<link rel="canonical" href="$prefix/ex/Apple-class.html">'));
-      var level2 = resourceProvider.getFile(resourceProvider.pathContext
-          .join(tempDir.path, 'ex', 'Apple', 'm.html'));
+      var level2 = _resourceProvider
+          .getFile(_pathContext.join(tempDir.path, 'ex', 'Apple', 'm.html'));
       expect(level2.exists, isTrue);
       expect(level2.readAsStringSync(),
           contains('<link rel="canonical" href="$prefix/ex/Apple/m.html">'));
