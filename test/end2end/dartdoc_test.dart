@@ -68,7 +68,6 @@ class DartdocLoggingOptionContext extends DartdocGeneratorOptionContext
 
 void main() {
   group('dartdoc with generators', () {
-    var resourceProvider = pubPackageMetaProvider.resourceProvider;
     Folder tempDir;
 
     setUpAll(() async {
@@ -77,20 +76,19 @@ void main() {
       optionSet.parseArguments([]);
       startLogging(DartdocLoggingOptionContext(
           optionSet,
-          resourceProvider.getFolder(resourceProvider.pathContext.current),
-          resourceProvider));
+          _resourceProvider.getFolder(_pathContext.current),
+          _resourceProvider));
     });
 
     setUp(() async {
-      tempDir = resourceProvider.createSystemTemp('dartdoc.test.');
+      tempDir = _resourceProvider.createSystemTemp('dartdoc.test.');
     });
 
     tearDown(() async {
       tempDir.delete();
     });
 
-    Future<Dartdoc> buildDartdoc(
-        List<String> argv, Folder packageRoot, Folder tempDir) async {
+    Future<Dartdoc> buildDartdoc(List<String> argv, Folder packageRoot) async {
       var context = await _generatorContextFromArgv(argv
         ..addAll(['--input', packageRoot.path, '--output', tempDir.path]));
 
@@ -102,23 +100,20 @@ void main() {
     }
 
     group('Option handling', () {
-      Dartdoc dartdoc;
-      DartdocResults results;
       PackageGraph p;
-      Folder tempDir;
 
       setUpAll(() async {
-        tempDir = resourceProvider.createSystemTemp('dartdoc.test.');
-        dartdoc = await buildDartdoc([], _testPackageOptions, tempDir);
-        results = await dartdoc.generateDocsBase();
+        tempDir = _resourceProvider.createSystemTemp('dartdoc.test.');
+        var dartdoc = await buildDartdoc([], _testPackageOptions);
+        var results = await dartdoc.generateDocsBase();
         p = results.packageGraph;
       });
 
       test('generator parameters', () async {
-        var favicon = resourceProvider.getFile(resourceProvider.pathContext
+        var favicon = _resourceProvider.getFile(_pathContext
             .joinAll([tempDir.path, 'static-assets', 'favicon.png']));
-        var index = resourceProvider.getFile(
-            resourceProvider.pathContext.joinAll([tempDir.path, 'index.html']));
+        var index = _resourceProvider
+            .getFile(_pathContext.joinAll([tempDir.path, 'index.html']));
         expect(favicon.readAsStringSync(),
             contains('Not really a png, but a test file'));
         var indexString = index.readAsStringSync();
@@ -147,8 +142,7 @@ void main() {
     });
 
     test('errors generate errors even when warnings are off', () async {
-      var dartdoc =
-          await buildDartdoc(['--allow-tools'], testPackageToolError, tempDir);
+      var dartdoc = await buildDartdoc(['--allow-tools'], testPackageToolError);
       var results = await dartdoc.generateDocsBase();
       var p = results.packageGraph;
       var unresolvedToolErrors = p.packageWarningCounter.countedWarnings.values
@@ -162,8 +156,7 @@ void main() {
     });
 
     test('with broken reexport chain', () async {
-      var dartdoc =
-          await buildDartdoc([], _testPackageImportExportError, tempDir);
+      var dartdoc = await buildDartdoc([], _testPackageImportExportError);
       var results = await dartdoc.generateDocsBase();
       var p = results.packageGraph;
       var unresolvedExportWarnings = p
@@ -178,8 +171,7 @@ void main() {
 
     group('include/exclude parameters', () {
       test('with config file', () async {
-        var dartdoc =
-            await buildDartdoc([], _testPackageIncludeExclude, tempDir);
+        var dartdoc = await buildDartdoc([], _testPackageIncludeExclude);
         var results = await dartdoc.generateDocs();
         var p = results.packageGraph;
         expect(p.localPublicLibraries.map((l) => l.name),
@@ -187,8 +179,8 @@ void main() {
       });
 
       test('with include command line argument', () async {
-        var dartdoc = await buildDartdoc(['--include', 'another_included'],
-            _testPackageIncludeExclude, tempDir);
+        var dartdoc = await buildDartdoc(
+            ['--include', 'another_included'], _testPackageIncludeExclude);
         var results = await dartdoc.generateDocs();
         var p = results.packageGraph;
         expect(p.localPublicLibraries.length, equals(1));
@@ -196,8 +188,8 @@ void main() {
       });
 
       test('with exclude command line argument', () async {
-        var dartdoc = await buildDartdoc(['--exclude', 'more_included'],
-            _testPackageIncludeExclude, tempDir);
+        var dartdoc = await buildDartdoc(
+            ['--exclude', 'more_included'], _testPackageIncludeExclude);
         var results = await dartdoc.generateDocs();
         var p = results.packageGraph;
         expect(p.localPublicLibraries.length, equals(1));
@@ -207,8 +199,8 @@ void main() {
     });
 
     test('basic interlinking test', () async {
-      var dartdoc = await buildDartdoc(
-          ['--exclude-packages=args'], _testPackageDir, tempDir);
+      var dartdoc =
+          await buildDartdoc(['--exclude-packages=args'], _testPackageDir);
       var results = await dartdoc.generateDocs();
       var p = results.packageGraph;
       var meta = p.publicPackages.firstWhere((p) => p.name == 'meta');
@@ -233,13 +225,11 @@ void main() {
     });
 
     group('validate basic doc generation', () {
-      Dartdoc dartdoc;
       DartdocResults results;
-      Folder tempDir;
 
       setUpAll(() async {
-        tempDir = resourceProvider.createSystemTemp('dartdoc.test.');
-        dartdoc = await buildDartdoc([], _testPackageDir, tempDir);
+        tempDir = _resourceProvider.createSystemTemp('dartdoc.test.');
+        var dartdoc = await buildDartdoc([], _testPackageDir);
         results = await dartdoc.generateDocs();
       });
 
@@ -262,9 +252,10 @@ void main() {
       test('source code links are visible', () async {
         // Picked this object as this library explicitly should never contain
         // a library directive, so we can predict what line number it will be.
-        var anonymousOutput = resourceProvider.getFile(
-            resourceProvider.pathContext.join(tempDir.path, 'anonymous_library',
-                'anonymous_library-library.html'));
+        var anonymousOutput = _resourceProvider.getFile(_pathContext.join(
+            tempDir.path,
+            'anonymous_library',
+            'anonymous_library-library.html'));
         expect(anonymousOutput.exists, isTrue);
         expect(
             anonymousOutput.readAsStringSync(),
@@ -276,7 +267,7 @@ void main() {
 
     test('generate docs for ${path.basename(_testPackageBadDir.path)} fails',
         () async {
-      var dartdoc = await buildDartdoc([], _testPackageBadDir, tempDir);
+      var dartdoc = await buildDartdoc([], _testPackageBadDir);
 
       try {
         await dartdoc.generateDocs();
@@ -289,7 +280,7 @@ void main() {
             'from analysis_options');
 
     test('generate docs for package with embedder yaml', () async {
-      var dartdoc = await buildDartdoc([], _testSkyEnginePackage, tempDir);
+      var dartdoc = await buildDartdoc([], _testSkyEnginePackage);
 
       var results = await dartdoc.generateDocs();
       expect(results.packageGraph, isNotNull);
@@ -324,8 +315,8 @@ void main() {
     test('generate docs with custom templates', () async {
       var templatesDir =
           path.join(_testPackageCustomTemplates.path, 'templates');
-      var dartdoc = await buildDartdoc(['--templates-dir', templatesDir],
-          _testPackageCustomTemplates, tempDir);
+      var dartdoc = await buildDartdoc(
+          ['--templates-dir', templatesDir], _testPackageCustomTemplates);
 
       var results = await dartdoc.generateDocs();
       expect(results.packageGraph, isNotNull);
@@ -334,8 +325,8 @@ void main() {
       expect(p.defaultPackage.name, 'test_package_custom_templates');
       expect(p.localPublicLibraries, hasLength(1));
 
-      var index = resourceProvider.getFile(
-          resourceProvider.pathContext.join(tempDir.path, 'index.html'));
+      var index = _resourceProvider
+          .getFile(_pathContext.join(tempDir.path, 'index.html'));
       expect(index.readAsStringSync(),
           contains('Welcome my friends to a custom template'));
     });
@@ -343,8 +334,8 @@ void main() {
     test('generate docs with missing required template fails', () async {
       var templatesDir = path.join(path.current, 'test/templates');
       try {
-        await buildDartdoc(['--templates-dir', templatesDir],
-            _testPackageCustomTemplates, tempDir);
+        await buildDartdoc(
+            ['--templates-dir', templatesDir], _testPackageCustomTemplates);
         fail('dartdoc should fail with missing required template');
       } catch (e) {
         expect(e is DartdocFailure, isTrue);
@@ -357,7 +348,7 @@ void main() {
       var badPath = path.join(tempDir.path, 'BAD');
       try {
         await buildDartdoc(
-            ['--templates-dir', badPath], _testPackageCustomTemplates, tempDir);
+            ['--templates-dir', badPath], _testPackageCustomTemplates);
         fail('dartdoc should fail with bad templatesDir path');
       } catch (e) {
         expect(e is DartdocFailure, isTrue);
@@ -365,34 +356,33 @@ void main() {
     });
 
     test('generating markdown docs does not crash', () async {
-      var dartdoc =
-          await buildDartdoc(['--format', 'md'], _testPackageDir, tempDir);
+      var dartdoc = await buildDartdoc(['--format', 'md'], _testPackageDir);
       await dartdoc.generateDocsBase();
     });
 
     test('generating markdown docs for experimental features does not crash',
         () async {
-      var dartdoc = await buildDartdoc(
-          ['--format', 'md'], _testPackageExperiments, tempDir);
+      var dartdoc =
+          await buildDartdoc(['--format', 'md'], _testPackageExperiments);
       await dartdoc.generateDocsBase();
     }, skip: !_experimentPackageAllowed.allows(platformVersion));
 
     test('rel canonical prefix does not include base href', () async {
       final prefix = 'foo.bar/baz';
       var dartdoc = await buildDartdoc(
-          ['--rel-canonical-prefix', prefix], _testPackageDir, tempDir);
+          ['--rel-canonical-prefix', prefix], _testPackageDir);
       await dartdoc.generateDocsBase();
 
       // Verify files at different levels have correct <link> content.
-      var level1 = resourceProvider.getFile(resourceProvider.pathContext
-          .join(tempDir.path, 'ex', 'Apple-class.html'));
+      var level1 = _resourceProvider
+          .getFile(_pathContext.join(tempDir.path, 'ex', 'Apple-class.html'));
       expect(level1.exists, isTrue);
       expect(
           level1.readAsStringSync(),
           contains(
               '<link rel="canonical" href="$prefix/ex/Apple-class.html">'));
-      var level2 = resourceProvider.getFile(resourceProvider.pathContext
-          .join(tempDir.path, 'ex', 'Apple', 'm.html'));
+      var level2 = _resourceProvider
+          .getFile(_pathContext.join(tempDir.path, 'ex', 'Apple', 'm.html'));
       expect(level2.exists, isTrue);
       expect(level2.readAsStringSync(),
           contains('<link rel="canonical" href="$prefix/ex/Apple/m.html">'));
@@ -400,7 +390,7 @@ void main() {
 
     test('generate docs with bad output format', () async {
       try {
-        await buildDartdoc(['--format', 'bad'], _testPackageDir, tempDir);
+        await buildDartdoc(['--format', 'bad'], _testPackageDir);
         fail('dartdoc should fail with bad output format');
       } catch (e) {
         expect(e is DartdocFailure, isTrue);

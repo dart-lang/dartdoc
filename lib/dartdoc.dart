@@ -29,6 +29,7 @@ import 'package:dartdoc/src/utils.dart';
 import 'package:dartdoc/src/version.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:html/parser.dart' show parse;
+import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
 
 export 'package:dartdoc/src/dartdoc_options.dart';
@@ -43,14 +44,14 @@ const String programName = 'dartdoc';
 const String dartdocVersion = packageVersion;
 
 class DartdocFileWriter implements FileWriter {
-  final String outputDir;
+  final String _outputDir;
   @override
   final ResourceProvider resourceProvider;
   final Map<String, Warnable> _fileElementMap = {};
   @override
   final Set<String> writtenFiles = {};
 
-  DartdocFileWriter(this.outputDir, this.resourceProvider);
+  DartdocFileWriter(this._outputDir, this.resourceProvider);
 
   @override
   void writeBytes(
@@ -97,11 +98,11 @@ class DartdocFileWriter implements FileWriter {
     }
   }
 
-  /// Returns the file at [outFile] relative to [outputDir], creating the parent
-  /// directory if necessary.
+  /// Returns the file at [outFile] relative to [_outputDir], creating the
+  /// parent directory if necessary.
   File _getFile(String outFile) {
     var file = resourceProvider
-        .getFile(resourceProvider.pathContext.join(outputDir, outFile));
+        .getFile(resourceProvider.pathContext.join(_outputDir, outFile));
     var parent = file.parent2;
     if (!parent.exists) {
       parent.create();
@@ -116,15 +117,15 @@ class Dartdoc {
   final Generator generator;
   final PackageBuilder packageBuilder;
   final DartdocOptionContext config;
-  final Set<String> writtenFiles = {};
-  Folder outputDir;
+  final Set<String> _writtenFiles = {};
+  Folder _outputDir;
 
   // Fires when the self checks make progress.
   final StreamController<String> _onCheckProgress =
       StreamController(sync: true);
 
   Dartdoc._(this.config, this.generator, this.packageBuilder) {
-    outputDir = config.resourceProvider
+    _outputDir = config.resourceProvider
         .getFolder(config.resourceProvider.pathContext.absolute(config.output))
           ..create();
   }
@@ -183,16 +184,11 @@ class Dartdoc {
 
   PackageGraph packageGraph;
 
-  /// Generate Dartdoc documentation.
-  ///
-  /// [DartdocResults] is returned if dartdoc succeeds. [DartdocFailure] is
-  /// thrown if dartdoc fails in an expected way, for example if there is an
-  /// analysis error in the code.
+  @visibleForTesting
   Future<DartdocResults> generateDocsBase() async {
     var stopwatch = Stopwatch()..start();
-    double seconds;
     packageGraph = await packageBuilder.buildPackageGraph();
-    seconds = stopwatch.elapsedMilliseconds / 1000.0;
+    var seconds = stopwatch.elapsedMilliseconds / 1000.0;
     var libs = packageGraph.libraries.length;
     logInfo("Initialized dartdoc with $libs librar${libs == 1 ? 'y' : 'ies'} "
         'in ${seconds.toStringAsFixed(1)} seconds');
@@ -201,14 +197,14 @@ class Dartdoc {
     var generator = this.generator;
     if (generator != null) {
       // Create the out directory.
-      if (!outputDir.exists) outputDir.create();
+      if (!_outputDir.exists) _outputDir.create();
 
-      var writer = DartdocFileWriter(outputDir.path, config.resourceProvider);
+      var writer = DartdocFileWriter(_outputDir.path, config.resourceProvider);
       await generator.generate(packageGraph, writer);
 
-      writtenFiles.addAll(writer.writtenFiles);
-      if (config.validateLinks && writtenFiles.isNotEmpty) {
-        validateLinks(packageGraph, outputDir.path);
+      _writtenFiles.addAll(writer.writtenFiles);
+      if (config.validateLinks && _writtenFiles.isNotEmpty) {
+        _validateLinks(packageGraph, _outputDir.path);
       }
     }
 
@@ -229,9 +225,14 @@ class Dartdoc {
     if (config.showStats) {
       logInfo(markdownStats.buildReport());
     }
-    return DartdocResults(config.topLevelPackageMeta, packageGraph, outputDir);
+    return DartdocResults(config.topLevelPackageMeta, packageGraph, _outputDir);
   }
 
+  /// Generate Dartdoc documentation.
+  ///
+  /// [DartdocResults] is returned if dartdoc succeeds. [DartdocFailure] is
+  /// thrown if dartdoc fails in an expected way, for example if there is an
+  /// analysis error in the code.
   Future<DartdocResults> generateDocs() async {
     try {
       logInfo('Documenting ${config.topLevelPackageMeta}...');
@@ -252,7 +253,6 @@ class Dartdoc {
       return dartdocResults;
     } finally {
       // Clear out any cached tool snapshots and temporary directories.
-      // ignore: unawaited_futures
       SnapshotCache.instance?.dispose();
       // ignore: unawaited_futures
       ToolTempFileTracker.instance?.dispose();
@@ -325,7 +325,7 @@ class Dartdoc {
         }
         if (visited.contains(fullPath)) continue;
         var relativeFullPath = path.relative(fullPath, from: normalOrigin);
-        if (!writtenFiles.contains(relativeFullPath)) {
+        if (!_writtenFiles.contains(relativeFullPath)) {
           // This isn't a file we wrote (this time); don't claim we did.
           _warn(
               packageGraph, PackageWarning.unknownFile, fullPath, normalOrigin);
@@ -471,7 +471,7 @@ class Dartdoc {
 
   /// Don't call this method more than once, and only after you've
   /// generated all docs for the Package.
-  void validateLinks(PackageGraph packageGraph, String origin) {
+  void _validateLinks(PackageGraph packageGraph, String origin) {
     assert(_hrefs == null);
     _hrefs = packageGraph.allHrefs;
 
