@@ -268,18 +268,31 @@ abstract class RendererBase<T> {
 }
 
 String renderSimple(Object context, List<MustachioNode> ast, Template template,
-    {RendererBase parent}) {
-  var renderer = SimpleRenderer(context, parent, template);
+    {@required RendererBase parent, Set<String> getters}) {
+  var renderer = SimpleRenderer(context, parent, template, getters);
   renderer.renderBlock(ast);
   return renderer.buffer.toString();
 }
 
 class SimpleRenderer extends RendererBase<Object> {
-  SimpleRenderer(Object context, RendererBase<Object> parent, Template template)
-      : super(context, parent, template);
+  final Set<String> _invisibleGetters;
+
+  SimpleRenderer(
+    Object context,
+    RendererBase<Object> parent,
+    Template template,
+    this._invisibleGetters,
+  ) : super(context, parent, template);
 
   @override
-  Property<Object> getProperty(String key) => null;
+  Property<Object> getProperty(String key) {
+    if (_invisibleGetters.contains(key)) {
+      throw 'boo';
+    } else {
+      // [key] is not a field on [context].
+      return null;
+    }
+  }
 
   @override
   String getFields(Variable node) {

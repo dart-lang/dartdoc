@@ -59,6 +59,9 @@ class RuntimeRenderersBuilder {
   /// Whether renderer classes are public. This should only be true for testing.
   final bool _rendererClassesArePublic;
 
+  /// A mapping of getter names on classes which are not "visible."
+  final Map<String, Set<String>> _invisibleGetters = {};
+
   RuntimeRenderersBuilder(this._sourceUri, this._typeProvider, this._typeSystem,
       this._allVisibleElements,
       {bool rendererClassesArePublic = false})
@@ -105,6 +108,8 @@ import '${p.basename(_sourceUri.path)}';
         builtRenderers.add(info._contextClass);
       }
     }
+
+    _writeInvisibleGetters();
 
     return _buffer.toString();
   }
@@ -509,12 +514,23 @@ renderVariable:
         // TODO(srawlins): Find a solution for this. We can track all of the
         // concrete types substituted for `E` for example.
         if (innerType is! TypeParameterType) {
-          var rendererName =
-              _typeToRenderFunctionName[innerType.element] ?? 'renderSimple';
+          var renderFunctionName = _typeToRenderFunctionName[innerType.element];
+          String renderCall;
+          if (renderFunctionName == null) {
+            var typeName = innerType.element.name;
+            if (innerType is InterfaceType) {
+              _invisibleGetters.putIfAbsent(
+                  typeName, () => innerType.element.allAccessorNames);
+            }
+            renderCall = 'renderSimple(e, ast, r.template, parent: r, '
+                "getters: _invisibleGetters['$typeName'])";
+          } else {
+            renderCall = '$renderFunctionName(e, ast, r.template, parent: r)';
+          }
           _buffer.writeln('''
 renderIterable:
     ($_contextTypeVariable c, RendererBase<$_contextTypeVariable> r, List<MustachioNode> ast) {
-  return c.$getterName.map((e) => $rendererName(e, ast, r.template, parent: r));
+  return c.$getterName.map((e) => $renderCall);
 },
 ''');
         }
@@ -526,19 +542,44 @@ renderIterable:
       // TODO(srawlins): Find a solution for this. We can track all of the
       // concrete types substituted for `E` for example.
       if (getterName is! TypeParameterType) {
-        var rendererName =
-            _typeToRenderFunctionName[getterType.element] ?? 'renderSimple';
+        var renderFunctionName = _typeToRenderFunctionName[getterType.element];
+        String renderCall;
+        if (renderFunctionName == null) {
+          var typeName = getterType.element.name;
+          if (getterType is InterfaceType) {
+            _invisibleGetters.putIfAbsent(
+                typeName, () => getterType.element.allAccessorNames);
+          }
+          renderCall =
+              'renderSimple(c.$getterName, ast, r.template, parent: r, '
+              "getters: _invisibleGetters['$typeName'])";
+        } else {
+          renderCall =
+              '$renderFunctionName(c.$getterName, ast, r.template, parent: r)';
+        }
         _buffer.writeln('''
 isNullValue: ($_contextTypeVariable c) => c.$getterName == null,
 
 renderValue:
     ($_contextTypeVariable c, RendererBase<$_contextTypeVariable> r, List<MustachioNode> ast) {
-  return $rendererName(c.$getterName, ast, r.template, parent: r);
+  return $renderCall;
 },
 ''');
       }
     }
     _buffer.writeln('),');
+  }
+
+  /// Writes the mapping of invisible getters, used to report simple renderer
+  /// errors.
+  void _writeInvisibleGetters() {
+    _buffer.write('const _invisibleGetters = {');
+    for (var class_ in _invisibleGetters.keys.toList()..sort()) {
+      _buffer.write("'$class_':");
+      var getters = _invisibleGetters[class_];
+      _buffer.write('{${getters.map((e) => "'$e'").join(', ')}},');
+    }
+    _buffer.write('};');
   }
 }
 
@@ -622,5 +663,17 @@ class _RendererInfo {
           .map((tp) => tp.getDisplayString(withNullability: false)),
       extra,
     ]);
+  }
+}
+
+extension on ClassElement {
+  /// Returns a set of the names of all accessors on this [ClassElement], including supertypes.
+  Set<String> get allAccessorNames {
+    return {
+      ...?supertype?.element?.allAccessorNames,
+      ...accessors
+          .where((e) => e.isPublic && !e.isStatic && !e.isSetter)
+          .map((e) => e.name),
+    };
   }
 }
