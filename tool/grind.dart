@@ -1152,7 +1152,8 @@ Future<void> testDartViaPubRun(Iterable<String> tags) async {
   /// Make use of temporary directories so that dartdoc subprocesses
   /// dump into the right place.
   if (CoverageSubprocessLauncher.coverageEnabled) {
-    parameters.add('--coverage=${CoverageSubprocessLauncher.tempDir}');
+    parameters
+        .add('--coverage=${CoverageSubprocessLauncher.tempDir.absolute.path}');
   }
 
   // Trust that coverage will be handled by pub.
