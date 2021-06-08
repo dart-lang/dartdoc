@@ -1102,21 +1102,21 @@ Future<void> tryPublish() async {
 @Task('Run a smoke test, only')
 @Depends(clean)
 Future<void> smokeTest() async {
-  await testDart2(smokeTestFiles);
+  await testDartViaPubRun(['smoke']);
   await testFutures.wait();
 }
 
 @Task('Run non-smoke tests, only')
 @Depends(clean)
 Future<void> longTest() async {
-  await testDart2(testFiles);
+  await testDartViaPubRun(['!smoke']);
   await testFutures.wait();
 }
 
 @Task('Run all the tests.')
 @Depends(clean)
 Future<void> test() async {
-  await testDart2(smokeTestFiles.followedBy(testFiles));
+  await testDartViaPubRun([]);
   await testFutures.wait();
 }
 
@@ -1138,28 +1138,26 @@ Iterable<FileSystemEntity> get nonRootPubData {
           .contains(path.basename(e.path)));
 }
 
-List<File> get smokeTestFiles => Directory('test')
-    .listSync(recursive: true)
-    .whereType<File>()
-    .where((e) => path.basename(e.path) == 'model_test.dart')
-    .toList();
+Future<void> testDartViaPubRun(Iterable<String> tags) async {
+  var parameters = <String>[
+    '--debug',
+    '--verbose-trace',
+    '--chain-stack-traces'
+  ];
 
-List<File> get testFiles => Directory('test')
-    .listSync(recursive: true)
-    .whereType<File>()
-    .where((e) => e.path.endsWith('test.dart'))
-    .where((e) => path.basename(e.path) != 'model_test.dart')
-    .toList();
-
-Future<void> testDart2(Iterable<File> tests) async {
-  var parameters = <String>['--enable-asserts'];
-
-  for (var dartFile in tests) {
-    await testFutures.addFutureFromClosure(() =>
-        CoverageSubprocessLauncher('dart2-${path.basename(dartFile.path)}')
-            .runStreamed(Platform.resolvedExecutable,
-                <String>[...parameters, dartFile.path]));
+  if (tags.isNotEmpty) {
+    parameters.addAll(['--tags', tags.join(' ')]);
   }
+
+  /// Make use of temporary directories so that dartdoc subprocesses
+  /// dump into the right place.
+  if (CoverageSubprocessLauncher.coverageEnabled) {
+    parameters
+        .add('--coverage=${CoverageSubprocessLauncher.tempDir.absolute.path}');
+  }
+
+  // Trust that coverage will be handled by pub.
+  await Pub.runAsync('test', arguments: parameters);
 
   return CoverageSubprocessLauncher.generateCoverageToFile(
       PhysicalResourceProvider.INSTANCE.getFile(path.canonicalize('lcov.info')),
