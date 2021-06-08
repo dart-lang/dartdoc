@@ -517,8 +517,7 @@ line 1, column 9 of ${fooTemplateFile.path}: Failed to resolve 's2' as a propert
             contains('Failed to resolve [length] property chain on String'))));
   });
 
-  test(
-      'Renderer throws when a SimpleRenderer key would shadow a non-SimpleRenderer key in a variable',
+  test('Renderer throws when a SimpleRenderer variable key shadows another key',
       () async {
     var fooTemplateFile = getFile('/project/foo.mustache')
       ..writeAsStringSync('Text {{#s1}} {{length}} {{/s1}}');
@@ -533,8 +532,7 @@ line 1, column 9 of ${fooTemplateFile.path}: Failed to resolve 's2' as a propert
                 'Mustache.'))));
   });
 
-  test(
-      'Renderer throws when a SimpleRenderer key would shadow a non-SimpleRenderer key in a section',
+  test('Renderer throws when a SimpleRenderer section key shadows another key',
       () async {
     var fooTemplateFile = getFile('/project/foo.mustache')
       ..writeAsStringSync('Text {{#s1}} {{#length}}Inner{{/length}} {{/s1}}');
