@@ -446,14 +446,13 @@ World
     var foo = Foo();
     expect(
         () => renderFoo(foo, fooTemplate),
-        throwsA(const TypeMatcher<MustachioResolutionError>().having(
-            (e) => e.message,
-            'message',
-            contains(
-                '''line 1, column 8 of ${fooTemplateFile.path}: Failed to resolve 's2' as a property on any types in the context chain: Foo
+        throwsA(const TypeMatcher<MustachioResolutionError>()
+            .having((e) => e.message, 'message', equals('''
+line 1, column 8 of ${fooTemplateFile.path}: Failed to resolve 's2' as a property on any types in the context chain: Foo
   ╷
 1 │ Text {{s2}}
-  │        ^^'''))));
+  │        ^^
+  ╵'''))));
   });
 
   test('Renderer throws when it cannot resolve a section key', () async {
@@ -463,14 +462,13 @@ World
     var foo = Foo();
     expect(
         () => renderFoo(foo, fooTemplate),
-        throwsA(const TypeMatcher<MustachioResolutionError>().having(
-            (e) => e.message,
-            'message',
-            contains(
-                '''line 1, column 9 of ${fooTemplateFile.path}: Failed to resolve 's2' as a property on any types in the current context
+        throwsA(const TypeMatcher<MustachioResolutionError>()
+            .having((e) => e.message, 'message', equals('''
+line 1, column 9 of ${fooTemplateFile.path}: Failed to resolve 's2' as a property on any types in the current context
   ╷
 1 │ Text {{#s2}}Section{{/s2}}
-  │         ^^'''))));
+  │         ^^
+'''))));
   });
 
   test('Renderer throws when it cannot resolve a multi-name variable key',
