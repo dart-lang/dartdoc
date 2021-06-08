@@ -438,8 +438,8 @@ class _Renderer_Annotation extends RendererBase<Annotation> {
                   isNullValue: (CT_ c) => c.modelType == null,
                   renderValue:
                       (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-                    return renderSimple(c.modelType, ast, r.template,
-                        parent: r, getters: _invisibleGetters['ElementType']);
+                    return _render_ElementType(c.modelType, ast, r.template,
+                        parent: r);
                   },
                 ),
                 'packageGraph': Property(
@@ -533,8 +533,8 @@ class _Renderer_Callable extends RendererBase<Callable> {
                   isNullValue: (CT_ c) => c.returnType == null,
                   renderValue:
                       (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-                    return renderSimple(c.returnType, ast, r.template,
-                        parent: r, getters: _invisibleGetters['ElementType']);
+                    return _render_ElementType(c.returnType, ast, r.template,
+                        parent: r);
                   },
                 ),
                 'type': Property(
@@ -4103,9 +4103,8 @@ class _Renderer_DefinedElementType extends RendererBase<DefinedElementType> {
                           c, remainingNames, 'Iterable<ElementType>'),
                   renderIterable:
                       (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-                    return c.typeArguments.map((e) => renderSimple(
-                        e, ast, r.template,
-                        parent: r, getters: _invisibleGetters['ElementType']));
+                    return c.typeArguments.map((e) =>
+                        _render_ElementType(e, ast, r.template, parent: r));
                   },
                 ),
               });
@@ -4422,6 +4421,14 @@ class _Renderer_DocumentationComment
   }
 }
 
+String _render_ElementType(
+    ElementType context, List<MustachioNode> ast, Template template,
+    {RendererBase<Object> parent}) {
+  var renderer = _Renderer_ElementType(context, parent, template);
+  renderer.renderBlock(ast);
+  return renderer.buffer.toString();
+}
+
 class _Renderer_ElementType extends RendererBase<ElementType> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends ElementType>() =>
@@ -4566,8 +4573,8 @@ class _Renderer_ElementType extends RendererBase<ElementType> {
                   isNullValue: (CT_ c) => c.returnedFrom == null,
                   renderValue:
                       (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-                    return renderSimple(c.returnedFrom, ast, r.template,
-                        parent: r, getters: _invisibleGetters['ElementType']);
+                    return _render_ElementType(c.returnedFrom, ast, r.template,
+                        parent: r);
                   },
                 ),
                 'type': Property(
@@ -4590,9 +4597,8 @@ class _Renderer_ElementType extends RendererBase<ElementType> {
                           c, remainingNames, 'Iterable<ElementType>'),
                   renderIterable:
                       (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-                    return c.typeArguments.map((e) => renderSimple(
-                        e, ast, r.template,
-                        parent: r, getters: _invisibleGetters['ElementType']));
+                    return c.typeArguments.map((e) =>
+                        _render_ElementType(e, ast, r.template, parent: r));
                   },
                 ),
               });
@@ -4829,8 +4835,8 @@ class _Renderer_Extension extends RendererBase<Extension> {
                   isNullValue: (CT_ c) => c.extendedType == null,
                   renderValue:
                       (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-                    return renderSimple(c.extendedType, ast, r.template,
-                        parent: r, getters: _invisibleGetters['ElementType']);
+                    return _render_ElementType(c.extendedType, ast, r.template,
+                        parent: r);
                   },
                 ),
                 'filePath': Property(
@@ -5008,8 +5014,8 @@ class _Renderer_ExtensionTarget extends RendererBase<ExtensionTarget> {
                   isNullValue: (CT_ c) => c.modelType == null,
                   renderValue:
                       (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-                    return renderSimple(c.modelType, ast, r.template,
-                        parent: r, getters: _invisibleGetters['ElementType']);
+                    return _render_ElementType(c.modelType, ast, r.template,
+                        parent: r);
                   },
                 ),
                 'potentiallyApplicableExtensions': Property(
@@ -6495,8 +6501,8 @@ class _Renderer_GetterSetterCombo extends RendererBase<GetterSetterCombo> {
                   isNullValue: (CT_ c) => c.modelType == null,
                   renderValue:
                       (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-                    return renderSimple(c.modelType, ast, r.template,
-                        parent: r, getters: _invisibleGetters['ElementType']);
+                    return _render_ElementType(c.modelType, ast, r.template,
+                        parent: r);
                   },
                 ),
                 'oneLineDoc': Property(
@@ -11576,8 +11582,8 @@ class _Renderer_Parameter extends RendererBase<Parameter> {
                   isNullValue: (CT_ c) => c.modelType == null,
                   renderValue:
                       (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-                    return renderSimple(c.modelType, ast, r.template,
-                        parent: r, getters: _invisibleGetters['ElementType']);
+                    return _render_ElementType(c.modelType, ast, r.template,
+                        parent: r);
                   },
                 ),
                 'originalMember': Property(
@@ -13602,8 +13608,8 @@ class _Renderer_TypeParameter extends RendererBase<TypeParameter> {
                   isNullValue: (CT_ c) => c.boundType == null,
                   renderValue:
                       (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-                    return renderSimple(c.boundType, ast, r.template,
-                        parent: r, getters: _invisibleGetters['ElementType']);
+                    return _render_ElementType(c.boundType, ast, r.template,
+                        parent: r);
                   },
                 ),
                 'element': Property(
@@ -14110,8 +14116,8 @@ class _Renderer_Typedef extends RendererBase<Typedef> {
                   isNullValue: (CT_ c) => c.modelType == null,
                   renderValue:
                       (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-                    return renderSimple(c.modelType, ast, r.template,
-                        parent: r, getters: _invisibleGetters['ElementType']);
+                    return _render_ElementType(c.modelType, ast, r.template,
+                        parent: r);
                   },
                 ),
                 'nameWithGenerics': Property(
@@ -14529,9 +14535,8 @@ class _Renderer_UndefinedElementType
                           c, remainingNames, 'Iterable<ElementType>'),
                   renderIterable:
                       (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-                    return c.typeArguments.map((e) => renderSimple(
-                        e, ast, r.template,
-                        parent: r, getters: _invisibleGetters['ElementType']));
+                    return c.typeArguments.map((e) =>
+                        _render_ElementType(e, ast, r.template, parent: r));
                   },
                 ),
               });
@@ -14841,22 +14846,6 @@ const _invisibleGetters = {
     'isTarget',
     'isVisibleForTemplate',
     'isVisibleForTesting'
-  },
-  'ElementType': {
-    'hashCode',
-    'runtimeType',
-    'isPublic',
-    'packageGraph',
-    'returnedFrom',
-    'library',
-    'canHaveParameters',
-    'isTypedef',
-    'linkedName',
-    'nameWithGenerics',
-    'nullabilitySuffix',
-    'instantiatedType',
-    'typeArguments',
-    'type'
   },
   'ExecutableMember': {
     'hashCode',
