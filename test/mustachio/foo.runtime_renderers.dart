@@ -89,7 +89,8 @@ class Renderer_Bar extends RendererBase<Bar> {
                   isNullValue: (CT_ c) => c.s2 == null,
                   renderValue:
                       (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-                    return renderSimple(c.s2, ast, r.template, parent: r);
+                    return renderSimple(c.s2, ast, r.template,
+                        parent: r, getters: _invisibleGetters['String']);
                   },
                 ),
               });
@@ -210,8 +211,20 @@ class Renderer_Foo extends RendererBase<Foo> {
                       self.renderSimpleVariable(c, remainingNames, 'List<int>'),
                   renderIterable:
                       (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-                    return c.l1.map(
-                        (e) => renderSimple(e, ast, r.template, parent: r));
+                    return c.l1.map((e) => renderSimple(e, ast, r.template,
+                        parent: r, getters: _invisibleGetters['int']));
+                  },
+                ),
+                'length': Property(
+                  getValue: (CT_ c) => c.length,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'int'),
+                  isNullValue: (CT_ c) => c.length == null,
+                  renderValue:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    return renderSimple(c.length, ast, r.template,
+                        parent: r, getters: _invisibleGetters['int']);
                   },
                 ),
                 'p1': Property(
@@ -241,7 +254,8 @@ class Renderer_Foo extends RendererBase<Foo> {
                   isNullValue: (CT_ c) => c.s1 == null,
                   renderValue:
                       (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-                    return renderSimple(c.s1, ast, r.template, parent: r);
+                    return renderSimple(c.s1, ast, r.template,
+                        parent: r, getters: _invisibleGetters['String']);
                   },
                 ),
               });
@@ -352,7 +366,8 @@ class Renderer_Object extends RendererBase<Object> {
                   isNullValue: (CT_ c) => c.hashCode == null,
                   renderValue:
                       (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-                    return renderSimple(c.hashCode, ast, r.template, parent: r);
+                    return renderSimple(c.hashCode, ast, r.template,
+                        parent: r, getters: _invisibleGetters['int']);
                   },
                 ),
                 'runtimeType': Property(
@@ -364,7 +379,7 @@ class Renderer_Object extends RendererBase<Object> {
                   renderValue:
                       (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
                     return renderSimple(c.runtimeType, ast, r.template,
-                        parent: r);
+                        parent: r, getters: _invisibleGetters['Type']);
                   },
                 ),
               });
@@ -457,7 +472,8 @@ class Renderer_Property2 extends RendererBase<Property2> {
                   isNullValue: (CT_ c) => c.s == null,
                   renderValue:
                       (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-                    return renderSimple(c.s, ast, r.template, parent: r);
+                    return renderSimple(c.s, ast, r.template,
+                        parent: r, getters: _invisibleGetters['String']);
                   },
                 ),
               });
@@ -499,7 +515,8 @@ class Renderer_Property3 extends RendererBase<Property3> {
                   isNullValue: (CT_ c) => c.s == null,
                   renderValue:
                       (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-                    return renderSimple(c.s, ast, r.template, parent: r);
+                    return renderSimple(c.s, ast, r.template,
+                        parent: r, getters: _invisibleGetters['String']);
                   },
                 ),
               });
@@ -517,3 +534,28 @@ class Renderer_Property3 extends RendererBase<Property3> {
     }
   }
 }
+
+const _invisibleGetters = {
+  'String': {
+    'hashCode',
+    'runtimeType',
+    'length',
+    'isEmpty',
+    'isNotEmpty',
+    'codeUnits',
+    'runes'
+  },
+  'Type': {'hashCode', 'runtimeType'},
+  'int': {
+    'hashCode',
+    'runtimeType',
+    'isNaN',
+    'isNegative',
+    'isInfinite',
+    'isFinite',
+    'sign',
+    'isEven',
+    'isOdd',
+    'bitLength'
+  },
+};

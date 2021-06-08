@@ -147,7 +147,14 @@ abstract class RendererBase<T> {
   /// The output buffer into which [context] is rendered, using a template.
   final buffer = StringBuffer();
 
-  RendererBase(this.context, this.parent, this._template);
+  final Set<String> _invisibleGetters;
+
+  RendererBase(
+    this.context,
+    this.parent,
+    this._template, {
+    Set<String> invisibleGetters = const {},
+  }) : _invisibleGetters = invisibleGetters;
 
   Template get template => _template;
 
@@ -172,21 +179,28 @@ abstract class RendererBase<T> {
     if (names.length == 1 && names.single == '.') {
       return context.toString();
     }
-    var property = getProperty(names.first);
-    if (property != null) {
-      var remainingNames = [...names.skip(1)];
-      try {
-        return property.renderVariable(context, property, remainingNames);
-      } on PartialMustachioResolutionError catch (e) {
-        // The error thrown by [Property.renderVariable] does not have all of
-        // the names required for a decent error. We throw a new error here.
-        throw MustachioResolutionError(node.keySpan.message(
-            "Failed to resolve '${e.name}' on ${e.contextType} while resolving "
-            '$remainingNames as a property chain on any types in the context '
-            "chain: $contextChainString, after first resolving '${names.first}' "
-            'to a property on $T'));
+    var firstName = names.first;
+    try {
+      var property = getProperty(firstName);
+      if (property != null) {
+        var remainingNames = [...names.skip(1)];
+        try {
+          return property.renderVariable(context, property, remainingNames);
+        } on PartialMustachioResolutionError catch (e) {
+          // The error thrown by [Property.renderVariable] does not have all of
+          // the names required for a decent error. We throw a new error here.
+          throw MustachioResolutionError(node.keySpan.message(
+              "Failed to resolve '${e.name}' on ${e.contextType} while "
+              'resolving $remainingNames as a property chain on any types in '
+              'the context chain: $contextChainString, after first resolving '
+              "'$firstName' to a property on $T"));
+        }
       }
-    } else if (parent != null) {
+    } on _MustachioResolutionErrorWithoutSpan catch (e) {
+      throw MustachioResolutionError(node.keySpan.message(e.message));
+    }
+
+    if (parent != null) {
       return parent.getFields(node);
     } else {
       throw MustachioResolutionError(node.keySpan.message(
@@ -268,30 +282,51 @@ abstract class RendererBase<T> {
 }
 
 String renderSimple(Object context, List<MustachioNode> ast, Template template,
-    {RendererBase parent}) {
-  var renderer = SimpleRenderer(context, parent, template);
+    {@required RendererBase parent, Set<String> getters}) {
+  var renderer = SimpleRenderer(context, parent, template, getters);
   renderer.renderBlock(ast);
   return renderer.buffer.toString();
 }
 
 class SimpleRenderer extends RendererBase<Object> {
-  SimpleRenderer(Object context, RendererBase<Object> parent, Template template)
-      : super(context, parent, template);
+  SimpleRenderer(
+    Object context,
+    RendererBase<Object> parent,
+    Template template,
+    Set<String> invisibleGetters,
+  ) : super(context, parent, template, invisibleGetters: invisibleGetters);
 
   @override
-  Property<Object> getProperty(String key) => null;
+  Property<Object> getProperty(String key) {
+    if (_invisibleGetters.contains(key)) {
+      throw MustachioResolutionError(_failedKeyVisibilityMessage(key));
+    } else {
+      return null;
+    }
+  }
 
   @override
   String getFields(Variable node) {
     var names = node.key;
-    if (names.length == 1 && names.single == '.') {
+    var firstName = node.key.first;
+    if (names.length == 1 && firstName == '.') {
       return context.toString();
-    }
-    if (parent != null) {
+    } else if (_invisibleGetters.contains(firstName)) {
+      throw MustachioResolutionError(_failedKeyVisibilityMessage(firstName));
+    } else if (parent != null) {
       return parent.getFields(node);
     } else {
       return 'null';
     }
+  }
+
+  String _failedKeyVisibilityMessage(String name) {
+    var type = context.runtimeType;
+    return '[$name] is a getter on $type, which is not visible to Mustache. '
+        'To render [$name] on $type, make it visible to Mustache via the '
+        '`visibleTypes` parameter on `@Renderer`; to render [$name] on a '
+        'different type up in the context stack, perhaps provide [$name] via '
+        'a different name.';
   }
 }
 
@@ -346,7 +381,7 @@ class Property<T> {
 class MustachioResolutionError extends Error {
   final String message;
 
-  MustachioResolutionError([this.message]);
+  MustachioResolutionError(this.message);
 
   @override
   String toString() => 'MustachioResolutionError: $message';
@@ -360,6 +395,17 @@ class PartialMustachioResolutionError extends Error {
   final Type contextType;
 
   PartialMustachioResolutionError(this.name, this.contextType);
+}
+
+/// A Mustachio resolution error which is thrown in a position where the AST
+/// node is not known.
+///
+/// This error should be caught and "re-thrown" as a [MustachioResolutionError]
+/// with a message derived from a [SourceSpan].
+class _MustachioResolutionErrorWithoutSpan extends Error {
+  final String message;
+
+  _MustachioResolutionErrorWithoutSpan(this.message);
 }
 
 extension MapExtensions<T> on Map<String, Property<T>> {
