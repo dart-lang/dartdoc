@@ -518,8 +518,8 @@ line 1, column 9 of ${fooTemplateFile.path}: Failed to resolve 's2' as a propert
   });
 
   test(
-      'Renderer throws when a SimpleRenderer key would shadow a '
-      'non-SimpleRenderer key in a variable', () async {
+      'Renderer throws when a SimpleRenderer key would shadow a non-SimpleRenderer key in a variable',
+      () async {
     var fooTemplateFile = getFile('/project/foo.mustache')
       ..writeAsStringSync('Text {{#s1}} {{length}} {{/s1}}');
     var fooTemplate = await Template.parse(fooTemplateFile);
@@ -534,8 +534,8 @@ line 1, column 9 of ${fooTemplateFile.path}: Failed to resolve 's2' as a propert
   });
 
   test(
-      'Renderer throws when a SimpleRenderer key would shadow a '
-      'non-SimpleRenderer key in a section', () async {
+      'Renderer throws when a SimpleRenderer key would shadow a non-SimpleRenderer key in a section',
+      () async {
     var fooTemplateFile = getFile('/project/foo.mustache')
       ..writeAsStringSync('Text {{#s1}} {{#length}}Inner{{/length}} {{/s1}}');
     var fooTemplate = await Template.parse(fooTemplateFile);
