@@ -2222,11 +2222,7 @@ void main() {
     }
 
     test('Verify basic linking inside class', () {
-      // parameter of [doAwesomeStuff]
-      // Parameter lookups are discarded with the original lookup code
-      expect(originalLookup(doAwesomeStuff, 'value'),
-          equals(MatchingLinkResult(null, warn: false)));
-      expect(newLookup(doAwesomeStuff, 'value'),
+      expect(bothLookup(doAwesomeStuff, 'value'),
           equals(MatchingLinkResult(doAwesomeStuffParam)));
 
       // Parent class of [doAwesomeStuff].
@@ -2240,7 +2236,6 @@ void main() {
           equals(MatchingLinkResult(nameWithSingleUnderscore)));
 
       // Top level class from [dart:core].
-      // TODO(jcollins-g): dart:core not recognized yet with new lookup code.
       expect(bothLookup(doAwesomeStuff, 'String'),
           equals(MatchingLinkResult(string)));
 
@@ -2249,28 +2244,23 @@ void main() {
           equals(MatchingLinkResult(anotherMethod)));
 
       // A top level function in this library.
-      // TODO(jcollins-g): top level functions not recognized yet with new lookup code.
-      expect(originalLookup(doAwesomeStuff, 'topLevelFunction'),
+      expect(bothLookup(doAwesomeStuff, 'topLevelFunction'),
           equals(MatchingLinkResult(topLevelFunction)));
 
       // A top level function in another library imported into this library.
-      // TODO(jcollins-g): namespace lookups are not yet implemented with new lookup code.
-      expect(originalLookup(doAwesomeStuff, 'function1'),
+      expect(bothLookup(doAwesomeStuff, 'function1'),
           equals(MatchingLinkResult(function1)));
 
       // A class in another library imported into this library.
-      // TODO(jcollins-g): namespace lookups are not yet implemented with new lookup code.
-      expect(originalLookup(doAwesomeStuff, 'Apple'),
+      expect(bothLookup(doAwesomeStuff, 'Apple'),
           equals(MatchingLinkResult(Apple)));
 
       // A top level constant in this library sharing the same name as a name in another library.
-      // TODO(jcollins-g): namespace lookups are not yet implemented with new lookup code.
-      expect(originalLookup(doAwesomeStuff, 'incorrectDocReference'),
+      expect(bothLookup(doAwesomeStuff, 'incorrectDocReference'),
           equals(MatchingLinkResult(incorrectDocReference)));
 
       // A top level constant in another library.
-      // TODO(jcollins-g): namespace lookups are not yet implemented with new lookup code.
-      expect(originalLookup(doAwesomeStuff, 'incorrectDocReferenceFromEx'),
+      expect(bothLookup(doAwesomeStuff, 'incorrectDocReferenceFromEx'),
           equals(MatchingLinkResult(incorrectDocReferenceFromEx)));
 
       // A prefixed constant in another library.
@@ -2284,7 +2274,7 @@ void main() {
           equals(MatchingLinkResult(doesStuff)));
 
       // A name of a class from an import of a library that exported that name.
-      expect(originalLookup(doAwesomeStuff, 'BaseClass'),
+      expect(bothLookup(doAwesomeStuff, 'BaseClass'),
           equals(MatchingLinkResult(BaseClass)));
 
       // A bracket operator within this class.
