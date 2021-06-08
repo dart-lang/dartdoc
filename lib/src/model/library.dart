@@ -119,9 +119,8 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
           CompilationUnitElement compilationUnit) =>
       _getDefinedElements(compilationUnit);
 
-  @override
-
   /// Allow scope for Libraries.
+  @override
   Scope get scope => element.scope;
 
   List<String> __allOriginalModelElementNames;
