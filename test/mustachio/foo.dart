@@ -17,6 +17,7 @@ class Foo extends FooBase<Baz> {
   @override
   Baz baz;
   Property1 p1;
+  int length;
 }
 
 class Bar {

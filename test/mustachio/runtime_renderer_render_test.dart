@@ -25,12 +25,13 @@ void main() {
 
   test('property map contains all public getters', () {
     var propertyMap = Renderer_Foo.propertyMap();
-    expect(propertyMap.keys, hasLength(7));
+    expect(propertyMap.keys, hasLength(8));
     expect(propertyMap['b1'], isNotNull);
     expect(propertyMap['s1'], isNotNull);
     expect(propertyMap['l1'], isNotNull);
     expect(propertyMap['baz'], isNotNull);
     expect(propertyMap['p1'], isNotNull);
+    expect(propertyMap['length'], isNotNull);
     expect(propertyMap['hashCode'], isNotNull);
     expect(propertyMap['runtimeType'], isNotNull);
   });
@@ -514,6 +515,38 @@ line 1, column 9 of ${fooTemplateFile.path}: Failed to resolve 's2' as a propert
             (e) => e.message,
             'message',
             contains('Failed to resolve [length] property chain on String'))));
+  });
+
+  test(
+      'Renderer throws when a SimpleRenderer key would shadow a '
+      'non-SimpleRenderer key in a variable', () async {
+    var fooTemplateFile = getFile('/project/foo.mustache')
+      ..writeAsStringSync('Text {{#s1}} {{length}} {{/s1}}');
+    var fooTemplate = await Template.parse(fooTemplateFile);
+    var foo = Foo()..s1 = 'String';
+    expect(
+        () => renderFoo(foo, fooTemplate),
+        throwsA(const TypeMatcher<MustachioResolutionError>().having(
+            (e) => e.message,
+            'message',
+            contains('[length] is a getter on String, which is not visible to '
+                'Mustache.'))));
+  });
+
+  test(
+      'Renderer throws when a SimpleRenderer key would shadow a '
+      'non-SimpleRenderer key in a section', () async {
+    var fooTemplateFile = getFile('/project/foo.mustache')
+      ..writeAsStringSync('Text {{#s1}} {{#length}}Inner{{/length}} {{/s1}}');
+    var fooTemplate = await Template.parse(fooTemplateFile);
+    var foo = Foo()..s1 = 'String';
+    expect(
+        () => renderFoo(foo, fooTemplate),
+        throwsA(const TypeMatcher<MustachioResolutionError>().having(
+            (e) => e.message,
+            'message',
+            contains('[length] is a getter on String, which is not visible to '
+                'Mustache.'))));
   });
 
   test('Template parser throws when it cannot read a template', () async {

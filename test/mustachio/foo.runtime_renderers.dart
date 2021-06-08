@@ -215,6 +215,18 @@ class Renderer_Foo extends RendererBase<Foo> {
                         parent: r, getters: _invisibleGetters['int']));
                   },
                 ),
+                'length': Property(
+                  getValue: (CT_ c) => c.length,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'int'),
+                  isNullValue: (CT_ c) => c.length == null,
+                  renderValue:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    return renderSimple(c.length, ast, r.template,
+                        parent: r, getters: _invisibleGetters['int']);
+                  },
+                ),
                 'p1': Property(
                   getValue: (CT_ c) => c.p1,
                   renderVariable:
