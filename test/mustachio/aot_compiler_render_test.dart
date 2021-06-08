@@ -403,9 +403,9 @@ void main() {
 
   test('Renderer throws when it cannot resolve a variable key', () async {
     expect(
-        renderFoo({
-          'foo|lib/templates/html/foo.html': 'Text {{s2}}',
-        }, '_i1.Foo()'),
+        () => renderFoo({
+              'foo|lib/templates/html/foo.html': 'Text {{s2}}',
+            }, '_i1.Foo()'),
         throwsA(const TypeMatcher<MustachioResolutionError>()
             .having((e) => e.message, 'message', contains('''
 line 1, column 8 of package:foo/templates/html/foo.html: Failed to resolve '[s2]' as a property on any types in the context chain: [Foo]
@@ -417,9 +417,9 @@ line 1, column 8 of package:foo/templates/html/foo.html: Failed to resolve '[s2]
 
   test('Renderer throws when it cannot resolve a section key', () async {
     expect(
-        renderFoo({
-          'foo|lib/templates/html/foo.html': 'Text {{#s2}}Section{{/s2}}',
-        }, '_i1.Foo()'),
+        () => renderFoo({
+              'foo|lib/templates/html/foo.html': 'Text {{#s2}}Section{{/s2}}',
+            }, '_i1.Foo()'),
         throwsA(const TypeMatcher<MustachioResolutionError>()
             .having((e) => e.message, 'message', contains('''
 line 1, column 9 of package:foo/templates/html/foo.html: Failed to resolve '[s2]' as a property on any types in the context chain: [Foo]
@@ -432,9 +432,9 @@ line 1, column 9 of package:foo/templates/html/foo.html: Failed to resolve '[s2]
   test('Renderer throws when it cannot resolve a multi-name variable key',
       () async {
     expect(
-        renderBar({
-          'foo|lib/templates/html/bar.html': 'Text {{foo.x}}',
-        }, '_i1.Bar()..foo = _i1.Foo()'),
+        () => renderBar({
+              'foo|lib/templates/html/bar.html': 'Text {{foo.x}}',
+            }, '_i1.Bar()..foo = _i1.Foo()'),
         throwsA(const TypeMatcher<MustachioResolutionError>()
             .having((e) => e.message, 'message', contains('''
 line 1, column 8 of package:foo/templates/html/bar.html: Failed to resolve 'x' on Bar while resolving [x] as a property chain on any types in the context chain: context0.foo, after first resolving 'foo' to a property on Foo
@@ -447,9 +447,10 @@ line 1, column 8 of package:foo/templates/html/bar.html: Failed to resolve 'x' o
   test('Renderer throws when it cannot resolve a multi-name section key',
       () async {
     expect(
-        renderBar({
-          'foo|lib/templates/html/bar.html': 'Text {{#foo.x}}Section{{/foo.x}}',
-        }, '_i1.Bar()..foo = _i1.Foo()'),
+        () => renderBar({
+              'foo|lib/templates/html/bar.html':
+                  'Text {{#foo.x}}Section{{/foo.x}}',
+            }, '_i1.Bar()..foo = _i1.Foo()'),
         throwsA(const TypeMatcher<MustachioResolutionError>()
             .having((e) => e.message, 'message', contains('''
 line 1, column 13 of package:foo/templates/html/bar.html: Failed to resolve '[x]' as a property on any types in the context chain: [Foo, Bar]
@@ -465,10 +466,10 @@ line 1, column 13 of package:foo/templates/html/bar.html: Failed to resolve '[x]
 
   test('Template parser throws when it cannot read a partial', () async {
     expect(
-        renderBar({
-          'foo|lib/templates/html/bar.html':
-              'Text {{#foo}}{{>missing.mustache}}{{/foo}}',
-        }, '_i1.Bar()'),
+        () => renderBar({
+              'foo|lib/templates/html/bar.html':
+                  'Text {{#foo}}{{>missing.mustache}}{{/foo}}',
+            }, '_i1.Bar()'),
         throwsA(const TypeMatcher<AssetNotFoundException>()));
   });
 }

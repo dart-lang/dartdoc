@@ -519,7 +519,7 @@ line 1, column 9 of ${fooTemplateFile.path}: Failed to resolve 's2' as a propert
   test('Template parser throws when it cannot read a template', () async {
     var barTemplateFile = getFile('/project/src/bar.mustache');
     expect(
-        () async => await Template.parse(barTemplateFile),
+        Template.parse(barTemplateFile),
         throwsA(const TypeMatcher<FileSystemException>().having(
             (e) => e.message,
             'message',
@@ -531,7 +531,7 @@ line 1, column 9 of ${fooTemplateFile.path}: Failed to resolve 's2' as a propert
       ..writeAsStringSync('Text {{#foo}}{{>missing.mustache}}{{/foo}}');
     var missingTemplateFile = getFile('/project/src/missing.mustache');
     expect(
-        () async => await Template.parse(barTemplateFile),
+        Template.parse(barTemplateFile),
         throwsA(const TypeMatcher<MustachioResolutionError>()
             .having((e) => e.message, 'message', contains('''
 line 1, column 14 of ${barTemplateFile.path}: FileSystemException (File "${missingTemplateFile.path}" does not exist.) when reading partial:
