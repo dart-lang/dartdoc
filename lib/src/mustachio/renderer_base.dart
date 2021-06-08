@@ -147,7 +147,14 @@ abstract class RendererBase<T> {
   /// The output buffer into which [context] is rendered, using a template.
   final buffer = StringBuffer();
 
-  RendererBase(this.context, this.parent, this._template);
+  final Set<String> _invisibleGetters;
+
+  RendererBase(
+    this.context,
+    this.parent,
+    this._template, {
+    Set<String> invisibleGetters = const {},
+  }) : _invisibleGetters = invisibleGetters;
 
   Template get template => _template;
 
@@ -172,7 +179,8 @@ abstract class RendererBase<T> {
     if (names.length == 1 && names.single == '.') {
       return context.toString();
     }
-    var property = getProperty(names.first);
+    var firstName = names.first;
+    var property = getProperty(firstName);
     if (property != null) {
       var remainingNames = [...names.skip(1)];
       try {
@@ -183,10 +191,21 @@ abstract class RendererBase<T> {
         throw MustachioResolutionError(node.keySpan.message(
             "Failed to resolve '${e.name}' on ${e.contextType} while resolving "
             '$remainingNames as a property chain on any types in the context '
-            "chain: $contextChainString, after first resolving '${names.first}' "
-            'to a property on $T'));
+            "chain: $contextChainString, after first resolving '$firstName' to "
+            'a property on $T'));
       }
-    } else if (parent != null) {
+    }
+
+    if (this is SimpleRenderer && _invisibleGetters.contains(names.first)) {
+      var type = context.runtimeType;
+      throw MustachioResolutionError(node.keySpan.message(
+          '$firstName is a getter on $type, which is not visible to Mustache. '
+          'To render $firstName on $type, make it visible to mustache; to '
+          'render $firstName on a different type up in the context stack, '
+          'perhaps provide $firstName via a different name.'));
+    }
+
+    if (parent != null) {
       return parent.getFields(node);
     } else {
       throw MustachioResolutionError(node.keySpan.message(
@@ -275,24 +294,15 @@ String renderSimple(Object context, List<MustachioNode> ast, Template template,
 }
 
 class SimpleRenderer extends RendererBase<Object> {
-  final Set<String> _invisibleGetters;
-
   SimpleRenderer(
     Object context,
     RendererBase<Object> parent,
     Template template,
-    this._invisibleGetters,
-  ) : super(context, parent, template);
+    Set<String> invisibleGetters,
+  ) : super(context, parent, template, invisibleGetters: invisibleGetters);
 
   @override
-  Property<Object> getProperty(String key) {
-    if (_invisibleGetters.contains(key)) {
-      throw 'boo';
-    } else {
-      // [key] is not a field on [context].
-      return null;
-    }
-  }
+  Property<Object> getProperty(String key) => null;
 
   @override
   String getFields(Variable node) {
