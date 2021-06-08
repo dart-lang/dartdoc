@@ -7443,6 +7443,17 @@ class _Renderer_Library extends RendererBase<Library> {
                         (e) => renderSimple(e, ast, r.template, parent: r));
                   },
                 ),
+                'scope': Property(
+                  getValue: (CT_ c) => c.scope,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'Scope'),
+                  isNullValue: (CT_ c) => c.scope == null,
+                  renderValue:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    return renderSimple(c.scope, ast, r.template, parent: r);
+                  },
+                ),
                 'sdkLib': Property(
                   getValue: (CT_ c) => c.sdkLib,
                   renderVariable: (CT_ c, Property<CT_> self,

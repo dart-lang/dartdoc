@@ -20,7 +20,7 @@ class Dynamic extends ModelElement {
   ModelElement get canonicalModelElement => null;
 
   @override
-  ModelElement get enclosingElement => throw UnsupportedError('');
+  ModelElement get enclosingElement => null;
 
   /// And similarly, even if someone references it directly it can have
   /// no hyperlink.

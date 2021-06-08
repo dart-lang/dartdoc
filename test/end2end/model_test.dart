@@ -2217,7 +2217,7 @@ void main() {
     MatchingLinkResult bothLookup(Warnable element, String codeRef) {
       var originalLookupResult = originalLookup(element, codeRef);
       var newLookupResult = newLookup(element, codeRef);
-      expect(newLookupResult, equals(originalLookupResult));
+      expect(newLookupResult.isEquivalentTo(originalLookupResult), isTrue);
       return newLookupResult;
     }
 
@@ -2241,7 +2241,7 @@ void main() {
 
       // Top level class from [dart:core].
       // TODO(jcollins-g): dart:core not recognized yet with new lookup code.
-      expect(originalLookup(doAwesomeStuff, 'String'),
+      expect(bothLookup(doAwesomeStuff, 'String'),
           equals(MatchingLinkResult(string)));
 
       // Another method in the same class.

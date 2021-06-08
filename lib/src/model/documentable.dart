@@ -81,9 +81,7 @@ mixin MarkdownFileDocumentation implements Documentable, Canonicalization {
   File get documentationFile;
 
   @override
-  String get location => packageGraph.resourceProvider.pathContext
-      .toUri(documentationFile.path)
-      .toString();
+  String get location => '(${documentationFile.path})';
 
   @override
   Set<String> get locationPieces => <String>{location};

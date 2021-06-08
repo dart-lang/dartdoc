@@ -494,12 +494,7 @@ class PackageGraph with CommentReferable, Nameable {
     if (config.verboseWarnings && extendedDebug != null) {
       messageParts.addAll(extendedDebug.map((s) => '    $s'));
     }
-    String fullMessage;
-    if (messageParts.length <= 2) {
-      fullMessage = messageParts.join(', ');
-    } else {
-      fullMessage = messageParts.join('\n    ');
-    }
+    var fullMessage = messageParts.join('\n    ');
 
     packageWarningCounter.addWarning(warnable, kind, message, fullMessage);
   }

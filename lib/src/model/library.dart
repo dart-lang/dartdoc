@@ -6,6 +6,7 @@ import 'dart:collection';
 
 import 'package:analyzer/dart/ast/ast.dart' hide CommentReference;
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/scope.dart';
 import 'package:analyzer/dart/element/type_system.dart';
 import 'package:analyzer/dart/element/visitor.dart';
 import 'package:analyzer/source/line_info.dart';
@@ -117,6 +118,11 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   static Iterable<Element> getDefinedElements(
           CompilationUnitElement compilationUnit) =>
       _getDefinedElements(compilationUnit);
+
+  @override
+
+  /// Allow scope for Libraries.
+  Scope get scope => element.scope;
 
   List<String> __allOriginalModelElementNames;
 
@@ -577,7 +583,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   /*late final*/ HashMap<String, Set<ModelElement>> _modelElementsNameMap;
 
   /// Map of [fullyQualifiedNameWithoutLibrary] to all matching [ModelElement]s
-  /// in this library.  Used for code reference lookups.
+  /// in this library.  Used for legacy code reference lookups.
   HashMap<String, Set<ModelElement>> get modelElementsNameMap {
     if (_modelElementsNameMap == null) {
       _modelElementsNameMap = HashMap<String, Set<ModelElement>>();
@@ -656,18 +662,10 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
   Map<String, CommentReferable> _referenceChildren;
   @override
-  // TODO(jcollins-g): This should take the import/export graph
-  // and resulting namespace into account.
   Map<String, CommentReferable> get referenceChildren {
-    return _referenceChildren ??= {
-      for (var e in constants) e.name: e,
-      for (var e in enums) e.name: e,
-      for (var e in extensions) e.name: e,
-      for (var e in mixins) e.name: e,
-      for (var e in properties) e.name: e,
-      for (var e in typedefs) e.name: e,
-      for (var e in classes) e.name: e,
-    };
+    return _referenceChildren ??= Map.fromEntries(
+        element.exportNamespace.definedNames.entries.map((entry) => MapEntry(
+            entry.key, ModelElement.fromElement(entry.value, packageGraph))));
   }
 
   @override
