@@ -90,8 +90,17 @@ mixin CommentReferable implements Nameable {
           'PrefixElement detected, override [lookupViaScope] in subclass');
       return null;
     }
-    return recurseChildrenAndFilter(referenceLookup,
-        ModelElement.fromElement(resultElement, packageGraph), filter);
+    if (resultElement == null) return null;
+    var result = ModelElement.fromElement(resultElement, packageGraph);
+    if (result is Accessor) {
+      result = (result as Accessor).enclosingCombo;
+    }
+    if (result?.enclosingElement is Container) {
+      assert(false,
+          '[Container] member detected, override in subclass and handle inheritance');
+      return null;
+    }
+    return recurseChildrenAndFilter(referenceLookup, result, filter);
   }
 
   CommentReferable _lookupViaReferenceChildren(

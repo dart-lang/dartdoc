@@ -261,15 +261,17 @@ void dartfmt() async {
     // Filter out test packages as they always have strange formatting.
     // Passing parameters to dartfmt for directories to search results in
     // filenames being stripped of the dirname so we have to filter here.
-    void addFileToFix(String base, String fileName) {
+    void addFileToFix(String line) {
+      if (!line.startsWith('Changed ')) return;
+      var fileName = line.substring(8);
       var pathComponents = path.split(fileName);
       if (pathComponents.isNotEmpty && pathComponents.first == 'testing') {
         return;
       }
-      filesToFix.add(path.join(base, fileName));
+      filesToFix.add(fileName);
     }
 
-    log('Validating dartfmt with version ${Platform.version}');
+    log('Validating dart format with version ${Platform.version}');
     // TODO(jcollins-g): return to global once dartfmt can handle generic
     // type aliases
     for (var subDirectory in [
@@ -280,17 +282,19 @@ void dartfmt() async {
       path.join('testing/test_package')
     ]) {
       await SubprocessLauncher('dartfmt').runStreamed(
-          sdkBin('dartfmt'),
+          sdkBin('dart'),
           [
-            '-n',
+            'format',
+            '-o',
+            'none',
             subDirectory,
           ],
-          perLine: (n) => addFileToFix(subDirectory, n));
+          perLine: (n) => addFileToFix(n));
     }
     if (filesToFix.isNotEmpty) {
       fail(
-          'dartfmt found files needing reformatting. Use this command to reformat:\n'
-          'dartfmt -w ${filesToFix.map((f) => "\'$f\'").join(' ')}');
+          'dart format found files needing reformatting. Use this command to reformat:\n'
+          'dart format ${filesToFix.map((f) => "\'$f\'").join(' ')}');
     }
   } else {
     log('Skipping dartfmt check, requires latest dev version of SDK');
