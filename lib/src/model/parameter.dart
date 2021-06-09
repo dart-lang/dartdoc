@@ -31,7 +31,7 @@ class Parameter extends ModelElement implements EnclosedElement {
 
   @override
   String get filePath {
-    throw StateError('filePath not implemented for parameters');
+    throw UnimplementedError('Parameters have no generated files in dartdoc');
   }
 
   @override
