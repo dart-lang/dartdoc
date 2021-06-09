@@ -960,6 +960,8 @@ class BaseForDocComments {
 
   String operator [](String key) => "${key}'s value";
 
+
+  BaseForDocComments();
   factory BaseForDocComments.aFactoryFunction() => null;
 }
 
