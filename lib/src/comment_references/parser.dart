@@ -5,6 +5,67 @@
 import 'package:charcode/charcode.dart';
 import 'package:meta/meta.dart';
 
+const _operatorKeyword = 'operator';
+const Map<String, String> operatorNames = {
+  '[]': 'get',
+  '[]=': 'put',
+  '~': 'bitwise_negate',
+  '==': 'equals',
+  '-': 'minus',
+  '+': 'plus',
+  '*': 'multiply',
+  '/': 'divide',
+  '<': 'less',
+  '>': 'greater',
+  '>=': 'greater_equal',
+  '<=': 'less_equal',
+  '<<': 'shift_left',
+  '>>': 'shift_right',
+  '>>>': 'triple_shift',
+  '^': 'bitwise_exclusive_or',
+  'unary-': 'unary_minus',
+  '|': 'bitwise_or',
+  '&': 'bitwise_and',
+  '~/': 'truncate_divide',
+  '%': 'modulo'
+};
+
+class StringTrie {
+  final Map<int, StringTrie> children = {};
+  bool valid = false;
+
+  /// Greedily match on the string trie.  Returns the index of the first
+  /// non-operator character if valid, otherwise -1.
+  int match(String toMatch, [int index = 0]) {
+    if (index < 0 || index >= toMatch.length) return valid ? index : 1;
+    var matchChar = toMatch.codeUnitAt(index);
+    if (children.containsKey(matchChar)) {
+      return children[matchChar].match(toMatch, index + 1);
+    }
+    return valid ? index : -1;
+  }
+
+  void addWord(String toAdd) {
+    var currentTrie = this;
+    for (var i in toAdd.codeUnits) {
+      currentTrie.children.putIfAbsent(i, () => StringTrie());
+      currentTrie = currentTrie.children[i];
+    }
+    currentTrie.valid = true;
+  }
+}
+
+StringTrie _operatorParseTrie;
+StringTrie get operatorParseTrie {
+  if (_operatorParseTrie == null) {
+    _operatorParseTrie = StringTrie();
+    for (var name in operatorNames.keys) {
+      _operatorParseTrie.addWord(name);
+    }
+  }
+  return _operatorParseTrie;
+}
+
 /// A parser for comment references.
 // TODO(jcollins-g): align with [CommentReference] from analyzer AST.
 class CommentReferenceParser {
@@ -30,7 +91,7 @@ class CommentReferenceParser {
   /// ```text
   ///   <rawCommentReference> ::= <prefix>?<commentReference><suffix>?
   ///
-  ///   <commentReference> ::= (<packageName> '.')? (<libraryName> '.')? <identifier> ('.' <identifier>)*
+  ///   <commentReference> ::= (<packageName> '.')? (<libraryName> '.')? <dartdocIdentifier> ('.' <identifier>)*
   /// ```
   List<CommentReferenceNode> _parseRawCommentReference() {
     var children = <CommentReferenceNode>[];
@@ -90,7 +151,7 @@ class CommentReferenceParser {
   ///
   /// <constructorPrefixHint> ::= 'new '
   ///
-  /// <leadingJunk> ::= ('const' | 'final' | 'var')(' '+)
+  /// <leadingJunk> ::= ('const' | 'final' | 'var' | 'operator')(' '+)
   /// ```
   _PrefixParseResult _parsePrefix() {
     if (_atEnd) {
@@ -108,25 +169,55 @@ class CommentReferenceParser {
     return _PrefixParseResult.missing;
   }
 
-  static const _whitespace = [$space, $tab, $lf, $cr];
+  static const _whitespace = {$space, $tab, $lf, $cr};
   static const _nonIdentifierChars = {
     $dot,
-    $lt,
     $gt,
     $lparen,
+    $lt,
     $rparen,
-    $slash,
     $backslash,
     $question,
     $exclamation,
     ..._whitespace,
   };
 
+  /// Advances the index forward to the end of the operator if one is
+  /// present and returns the operator's name.  Otherwise, leaves _index
+  /// unchanged and returns null.
+  String _tryParseOperator() {
+    var tryIndex = _index;
+    if (tryIndex + _operatorKeyword.length < codeRef.length &&
+        codeRef.substring(tryIndex, tryIndex + _operatorKeyword.length) ==
+            _operatorKeyword) {
+      tryIndex = tryIndex + _operatorKeyword.length;
+      while (_whitespace.contains(codeRef.codeUnitAt(tryIndex))) {
+        tryIndex++;
+      }
+    }
+
+    var result = operatorParseTrie.match(codeRef, tryIndex);
+    if (result == -1) {
+      return null;
+    }
+    _index = result;
+    return codeRef.substring(tryIndex, result);
+  }
+
+  /// Parse a dartdoc identifier.
+  ///
+  /// Dartdoc identifiers can include some operators.
   _IdentifierParseResult _parseIdentifier() {
     if (_atEnd) {
       return _IdentifierParseResult.endOfFile;
     }
     var startIndex = _index;
+
+    var foundOperator = _tryParseOperator();
+    if (foundOperator != null) {
+      return _IdentifierParseResult.ok(IdentifierNode(foundOperator));
+    }
+
     while (!_atEnd) {
       if (_nonIdentifierChars.contains(_thisChar)) {
         if (startIndex == _index) {

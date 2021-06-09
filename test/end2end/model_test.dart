@@ -2222,6 +2222,9 @@ void main() {
     }
 
     test('Verify basic linking inside class', () {
+      expect(bothLookup(doAwesomeStuff, 'this'),
+          equals(MatchingLinkResult(baseForDocComments)));
+
       expect(bothLookup(doAwesomeStuff, 'value'),
           equals(MatchingLinkResult(doAwesomeStuffParam)));
 
@@ -2278,12 +2281,13 @@ void main() {
 
       // A bracket operator within this class.
       // TODO(jcollins-g): operator lookups not yet implemented with the new lookup code.
-      expect(originalLookup(doAwesomeStuff, 'operator []'),
+      expect(bothLookup(doAwesomeStuff, 'operator []'),
           equals(MatchingLinkResult(bracketOperator)));
 
       // A bracket operator in another class.
-      // TODO(jcollins-g): This has never worked...
-      //expect(bothLookup(doAwesomeStuff, 'SpecialList.operator []'), equals(MatchingLinkResult(bracketOperatorOtherClass)));
+      // Doesn't work in older lookup code.
+      expect(newLookup(doAwesomeStuff, 'SpecialList.operator []'),
+          equals(MatchingLinkResult(bracketOperatorOtherClass)));
 
       // Reference containing a type parameter.
       expect(bothLookup(doAwesomeStuff, 'ExtraSpecialList<Object>'),

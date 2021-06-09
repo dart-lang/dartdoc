@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/scope.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as model_utils;
@@ -31,6 +32,13 @@ import 'package:meta/meta.dart';
 abstract class Container extends ModelElement with TypeParameters {
   Container(Element element, Library library, PackageGraph packageGraph)
       : super(element, library, packageGraph);
+
+  // TODO(jcollins-g): Implement a ContainerScope that flattens supertypes?
+  @override
+  Scope get scope => null;
+
+  @override
+  bool get hasParameters => false;
 
   /// Is this a class (but not an enum)?
   bool get isClass =>
@@ -251,9 +259,31 @@ abstract class Container extends ModelElement with TypeParameters {
   @override
   @mustCallSuper
   Map<String, CommentReferable> get referenceChildren {
-    return _referenceChildren ??= Map.fromEntries(allModelElements
-        .where((e) => e is! Accessor)
-        .map((e) => MapEntry(e.name, e)));
+    if (_referenceChildren == null) {
+      _referenceChildren = {};
+      for (var modelElement in allModelElements) {
+        if (modelElement is Accessor) continue;
+        if (modelElement is Operator) {
+          // TODO(jcollins-g): once todo in [Operator.name] is fixed, remove
+          // this special case.
+          _referenceChildren[modelElement.element.name] = modelElement;
+        } else {
+          _referenceChildren[modelElement.name] = modelElement;
+        }
+        // Don't complain about references to parameter names, but prefer
+        // referring to anything else.
+        // TODO(jcollins-g): Figure out something good to do in the ecosystem
+        // here to wean people off the habit of unscoped parameter references.
+        if (modelElement.hasParameters) {
+          for (var parameterElement in modelElement.parameters) {
+            _referenceChildren.putIfAbsent(
+                parameterElement.name, () => parameterElement);
+          }
+        }
+      }
+      _referenceChildren['this'] = this;
+    }
+    return _referenceChildren;
   }
 
   @override

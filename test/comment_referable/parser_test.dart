@@ -17,6 +17,9 @@ void main() {
     expect(hasHint, equals(constructorHint));
   }
 
+  void expectParsePassthrough(String codeRef) =>
+      expectParseEquivalent(codeRef, [codeRef]);
+
   void expectParseError(String codeRef) {
     expect(CommentReferenceParser(codeRef).parse(), isEmpty);
   }
@@ -43,11 +46,32 @@ void main() {
       expectParseEquivalent('this.is.valid(things)', ['this', 'is', 'valid']);
     });
 
+    test('Check that operator references parse', () {
+      expectParsePassthrough('[]');
+      expectParsePassthrough('<=');
+      expectParsePassthrough('>=');
+      expectParsePassthrough('>');
+      expectParsePassthrough('>>');
+      expectParsePassthrough('>>>');
+      expectParseEquivalent('operator []', ['[]']);
+      expectParseEquivalent('operator       []', ['[]']);
+      expectParseEquivalent('operator[]', ['[]']);
+      expectParseEquivalent('operator <=', ['<=']);
+      expectParseEquivalent('operator >=', ['>=']);
+
+      expectParseEquivalent('ThisThingy.operator []', ['ThisThingy', '[]']);
+      expectParseEquivalent('ThisThingy.operator [].parameter',
+          ['ThisThingy', '[]', 'parameter']);
+    });
+
     test('Basic negative tests', () {
       expectParseError(r'.');
       expectParseError(r'');
       expectParseError('foo(wefoi');
       expectParseError('<MoofMilker>');
+      expectParseError('>%');
+      expectParseError('>=>');
+      expectParseError('operator');
     });
   });
 }

@@ -959,6 +959,8 @@ class BaseForDocComments {
   bool get getterWithDocs => true;
 
   String operator [](String key) => "${key}'s value";
+
+  factory BaseForDocComments.aFactoryFunction() => null;
 }
 
 /// Verify that we can define and use macros inside accessors.

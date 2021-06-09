@@ -4,33 +4,10 @@
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/src/dart/element/member.dart' show Member;
+import 'package:dartdoc/src/comment_references/parser.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 class Operator extends Method {
-  static const Map<String, String> friendlyNames = {
-    '[]': 'get',
-    '[]=': 'put',
-    '~': 'bitwise_negate',
-    '==': 'equals',
-    '-': 'minus',
-    '+': 'plus',
-    '*': 'multiply',
-    '/': 'divide',
-    '<': 'less',
-    '>': 'greater',
-    '>=': 'greater_equal',
-    '<=': 'less_equal',
-    '<<': 'shift_left',
-    '>>': 'shift_right',
-    '>>>': 'triple_shift',
-    '^': 'bitwise_exclusive_or',
-    'unary-': 'unary_minus',
-    '|': 'bitwise_or',
-    '&': 'bitwise_and',
-    '~/': 'truncate_divide',
-    '%': 'modulo'
-  };
-
   Operator(MethodElement element, Library library, PackageGraph packageGraph)
       : super(element, library, packageGraph);
 
@@ -42,8 +19,8 @@ class Operator extends Method {
   @override
   String get fileName {
     var actualName = super.name;
-    if (friendlyNames.containsKey(actualName)) {
-      actualName = 'operator_${friendlyNames[actualName]}';
+    if (operatorNames.containsKey(actualName)) {
+      actualName = 'operator_${operatorNames[actualName]}';
     }
     return '$actualName.$fileType';
   }
@@ -57,6 +34,9 @@ class Operator extends Method {
 
   @override
   String get name {
+    // TODO(jcollins-g): New lookup code will no longer require this operator
+    // prefix.  Delete it and use super implementation after old lookup code
+    // is removed.
     return 'operator ${super.name}';
   }
 }
