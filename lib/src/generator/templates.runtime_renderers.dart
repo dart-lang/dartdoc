@@ -3347,6 +3347,13 @@ class _Renderer_Container extends RendererBase<Container> {
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.hasInstanceFields == true,
                 ),
+                'hasParameters': Property(
+                  getValue: (CT_ c) => c.hasParameters,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.hasParameters == true,
+                ),
                 'hasPublicConstantFields': Property(
                   getValue: (CT_ c) => c.hasPublicConstantFields,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -3720,6 +3727,18 @@ class _Renderer_Container extends RendererBase<Container> {
                         e, ast, r.template,
                         parent: r,
                         getters: _invisibleGetters['CommentReferable']));
+                  },
+                ),
+                'scope': Property(
+                  getValue: (CT_ c) => c.scope,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'Scope'),
+                  isNullValue: (CT_ c) => c.scope == null,
+                  renderValue:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    return renderSimple(c.scope, ast, r.template,
+                        parent: r, getters: _invisibleGetters['Scope']);
                   },
                 ),
                 'staticAccessors': Property(
@@ -6414,6 +6433,13 @@ class _Renderer_GetterSetterCombo extends RendererBase<GetterSetterCombo> {
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.hasNoGetterSetter == true,
+                ),
+                'hasParameters': Property(
+                  getValue: (CT_ c) => c.hasParameters,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.hasParameters == true,
                 ),
                 'hasPublicGetter': Property(
                   getValue: (CT_ c) => c.hasPublicGetter,
@@ -13679,6 +13705,13 @@ class _Renderer_TypeParameter extends RendererBase<TypeParameter> {
                         parent: r);
                   },
                 ),
+                'hasParameters': Property(
+                  getValue: (CT_ c) => c.hasParameters,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.hasParameters == true,
+                ),
                 'href': Property(
                   getValue: (CT_ c) => c.href,
                   renderVariable:
@@ -14996,6 +15029,7 @@ const _invisibleGetters = {
     'getterSetterDocumentationComment',
     'modelType',
     'isCallable',
+    'hasParameters',
     'parameters',
     'linkedParamsNoMetadata',
     'hasExplicitGetter',
