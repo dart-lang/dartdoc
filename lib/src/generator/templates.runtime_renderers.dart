@@ -7514,7 +7514,8 @@ class _Renderer_Library extends RendererBase<Library> {
                   isNullValue: (CT_ c) => c.scope == null,
                   renderValue:
                       (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-                    return renderSimple(c.scope, ast, r.template, parent: r);
+                    return renderSimple(c.scope, ast, r.template,
+                        parent: r, getters: _invisibleGetters['Scope']);
                   },
                 ),
                 'sdkLib': Property(
@@ -11172,7 +11173,7 @@ class _Renderer_Package extends RendererBase<Package> {
   }
 }
 
-String renderError(PackageTemplateData context, Template template) {
+String renderIndex(PackageTemplateData context, Template template) {
   return _render_PackageTemplateData(context, template.ast, template);
 }
 
@@ -11372,7 +11373,7 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
   }
 }
 
-String renderIndex(PackageTemplateData context, Template template) {
+String renderError(PackageTemplateData context, Template template) {
   return _render_PackageTemplateData(context, template.ast, template);
 }
 
