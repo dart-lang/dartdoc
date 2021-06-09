@@ -71,7 +71,6 @@ void main() {
       expectParseError('<MoofMilker>');
       expectParseError('>%');
       expectParseError('>=>');
-      expectParseError('operator');
     });
   });
 }
