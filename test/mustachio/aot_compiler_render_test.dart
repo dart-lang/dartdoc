@@ -259,6 +259,15 @@ void main() {
     expect(output, equals('Text Foo: hello'));
   });
 
+  test('Renderer renders a value section node keyed lower in the stack',
+      () async {
+    var output = await renderBar({
+      'foo|lib/templates/html/bar.html':
+          'Text {{#foo}}One {{#s2}}Two{{/s2}}{{/foo}}',
+    }, '_i1.Bar()..foo = _i1.Foo()..s2 = "hello"');
+    expect(output, equals('Text One Two'));
+  });
+
   test('Renderer renders a null value section node as blank', () async {
     var output = await renderFoo({
       'foo|lib/templates/html/foo.html':

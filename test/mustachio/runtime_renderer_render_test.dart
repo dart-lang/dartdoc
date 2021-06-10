@@ -208,7 +208,7 @@ void main() {
       ..writeAsStringSync('Text {{#foo}}One {{#s2}}Two{{/s2}}{{/foo}}');
     var barTemplate = await Template.parse(barTemplateFile);
     var bar = Bar()
-      ..foo = (Foo()..s1 = 'goodbye')
+      ..foo = Foo()
       ..s2 = 'hello';
     expect(renderBar(bar, barTemplate), equals('Text One Two'));
   });
