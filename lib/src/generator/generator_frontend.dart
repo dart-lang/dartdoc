@@ -29,7 +29,8 @@ class GeneratorFrontEnd implements Generator {
     _generatorBackend.generateSearchIndex(writer, indexElements);
   }
 
-  // Traverses the package graph and collects elements for the search index.
+  /// Traverses the package graph and generates documentation for all contained
+  /// elements.
   void _generateDocs(PackageGraph packageGraph, FileWriter writer,
       List<Indexable> indexAccumulator) {
     if (packageGraph == null) return;

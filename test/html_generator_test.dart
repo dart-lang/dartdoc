@@ -23,7 +23,7 @@ void main() {
   PackageMetaProvider packageMetaProvider;
   FakePackageConfigProvider packageConfigProvider;
 
-  Templates templates;
+  final Templates templates = HtmlAotTemplates();
   GeneratorFrontEnd generator;
   DartdocFileWriter writer;
 
@@ -97,8 +97,6 @@ void main() {
           'resources/$resource', 'CONTENT');
     }
 
-    templates = await Templates.createDefault('html',
-        resourceProvider: resourceProvider);
     generator =
         GeneratorFrontEnd(HtmlGeneratorBackend(null, templates, pathContext));
 
@@ -154,17 +152,6 @@ void main() {
         packageGraph.localPublicLibraries,
         anyElement((l) => packageGraph.packageWarningCounter
             .hasWarning(l, PackageWarning.duplicateFile, expectedPath)));
-  }, onPlatform: {'windows': Skip('Test does not work on Windows (#2446)')});
-
-  test('has HTML templates', () async {
-    expect(templates.indexTemplate, isNotNull);
-    expect(templates.libraryTemplate, isNotNull);
-    expect(templates.classTemplate, isNotNull);
-    expect(templates.functionTemplate, isNotNull);
-    expect(templates.constructorTemplate, isNotNull);
-    expect(templates.methodTemplate, isNotNull);
-    expect(templates.propertyTemplate, isNotNull);
-    expect(templates.topLevelPropertyTemplate, isNotNull);
   }, onPlatform: {'windows': Skip('Test does not work on Windows (#2446)')});
 }
 

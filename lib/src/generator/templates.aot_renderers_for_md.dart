@@ -34,6 +34,7 @@ String renderCategory(_i1.CategoryTemplateData context0) {
   buffer.writeln();
   var context1 = context0.self;
   if (context1 != null) {
+    buffer.writeln();
     buffer.write('''
 # ''');
     buffer.writeEscaped(context1.name.toString());
@@ -43,6 +44,7 @@ String renderCategory(_i1.CategoryTemplateData context0) {
     buffer.write(_renderCategory_partial_documentation_1(context1, context0));
     buffer.writeln();
     if (context1.hasPublicLibraries == true) {
+      buffer.writeln();
       buffer.write('''
 ## Libraries
 ''');
@@ -58,6 +60,7 @@ String renderCategory(_i1.CategoryTemplateData context0) {
     }
     buffer.writeln();
     if (context1.hasPublicClasses == true) {
+      buffer.writeln();
       buffer.write('''
 ## Classes
 ''');
@@ -73,6 +76,7 @@ String renderCategory(_i1.CategoryTemplateData context0) {
     }
     buffer.writeln();
     if (context1.hasPublicMixins == true) {
+      buffer.writeln();
       buffer.write('''
 ## Mixins
 ''');
@@ -88,6 +92,7 @@ String renderCategory(_i1.CategoryTemplateData context0) {
     }
     buffer.writeln();
     if (context1.hasPublicConstants == true) {
+      buffer.writeln();
       buffer.write('''
 ## Constants
 ''');
@@ -103,6 +108,7 @@ String renderCategory(_i1.CategoryTemplateData context0) {
     }
     buffer.writeln();
     if (context1.hasPublicProperties == true) {
+      buffer.writeln();
       buffer.write('''
 ## Properties
 ''');
@@ -118,6 +124,7 @@ String renderCategory(_i1.CategoryTemplateData context0) {
     }
     buffer.writeln();
     if (context1.hasPublicFunctions == true) {
+      buffer.writeln();
       buffer.write('''
 ## Functions
 ''');
@@ -133,6 +140,7 @@ String renderCategory(_i1.CategoryTemplateData context0) {
     }
     buffer.writeln();
     if (context1.hasPublicEnums == true) {
+      buffer.writeln();
       buffer.write('''
 ## Enums
 ''');
@@ -148,6 +156,7 @@ String renderCategory(_i1.CategoryTemplateData context0) {
     }
     buffer.writeln();
     if (context1.hasPublicTypedefs == true) {
+      buffer.writeln();
       buffer.write('''
 ## Typedefs
 ''');
@@ -163,6 +172,7 @@ String renderCategory(_i1.CategoryTemplateData context0) {
     }
     buffer.writeln();
     if (context1.hasPublicExceptions == true) {
+      buffer.writeln();
       buffer.write('''
 ## Exceptions / Errors
 ''');
@@ -245,6 +255,7 @@ String __renderCategory_partial_class_3_partial_categorization_0(
     _i1.CategoryTemplateData context0) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
+    buffer.writeln();
     buffer.write('''
 Categories:''');
     var context3 = context2.displayedCategories;
@@ -284,6 +295,7 @@ String __renderCategory_partial_mixin_4_partial_categorization_0(
     _i1.CategoryTemplateData context0) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
+    buffer.writeln();
     buffer.write('''
 Categories:''');
     var context3 = context2.displayedCategories;
@@ -328,6 +340,7 @@ String __renderCategory_partial_constant_5_partial_categorization_0(
     _i1.CategoryTemplateData context0) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
+    buffer.writeln();
     buffer.write('''
 Categories:''');
     var context3 = context2.displayedCategories;
@@ -389,6 +402,7 @@ String __renderCategory_partial_property_6_partial_categorization_0(
     _i1.CategoryTemplateData context0) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
+    buffer.writeln();
     buffer.write('''
 Categories:''');
     var context3 = context2.displayedCategories;
@@ -451,6 +465,7 @@ String __renderCategory_partial_callable_7_partial_categorization_0(
     _i1.CategoryTemplateData context0) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
+    buffer.writeln();
     buffer.write('''
 Categories:''');
     var context3 = context2.displayedCategories;
@@ -487,6 +502,7 @@ String _renderCategory_partial_typedef_8(_i8.Typedef context2,
   if (context2.isCallable == true) {
     var context3 = context2.asCallable;
     if (context3 != null) {
+      buffer.writeln();
       buffer.write('''
     ##### ''');
       buffer.write(context3.linkedName.toString());
@@ -523,6 +539,7 @@ String __renderCategory_partial_typedef_8_partial_categorization_0(
     _i1.CategoryTemplateData context0) {
   final buffer = StringBuffer();
   if (context3.hasCategoryNames == true) {
+    buffer.writeln();
     buffer.write('''
 Categories:''');
     var context4 = context3.displayedCategories;
@@ -587,6 +604,7 @@ String
         _i1.CategoryTemplateData context0) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
+    buffer.writeln();
     buffer.write('''
 Categories:''');
     var context3 = context2.displayedCategories;
@@ -634,6 +652,7 @@ String renderClass<T extends _i4.Class>(_i1.ClassTemplateData<T> context0) {
   buffer.writeln();
   var context1 = context0.self;
   if (context1 != null) {
+    buffer.writeln();
     buffer.write('''
 # ''');
     buffer.write(context1.nameWithGenerics.toString());
@@ -654,6 +673,7 @@ String renderClass<T extends _i4.Class>(_i1.ClassTemplateData<T> context0) {
     buffer.writeln();
     if (context2.hasModifiers == true) {
       if (context2.hasPublicSuperChainReversed == true) {
+        buffer.writeln();
         buffer.write('''
 **Inheritance**
 
@@ -662,23 +682,27 @@ String renderClass<T extends _i4.Class>(_i1.ClassTemplateData<T> context0) {
         var context3 = context2.publicSuperChainReversed;
         if (context3 != null) {
           for (var context4 in context3) {
+            buffer.writeln();
             buffer.write('''
 - ''');
             buffer.write(context4.linkedName.toString());
           }
         }
+        buffer.writeln();
         buffer.write('''
 - ''');
         buffer.write(context2.name.toString());
       }
       buffer.writeln();
       if (context2.hasPublicInterfaces == true) {
+        buffer.writeln();
         buffer.write('''
 **Implemented types**
 ''');
         var context5 = context2.publicInterfaces;
         if (context5 != null) {
           for (var context6 in context5) {
+            buffer.writeln();
             buffer.write('''
 - ''');
             buffer.write(context6.linkedName.toString());
@@ -687,12 +711,14 @@ String renderClass<T extends _i4.Class>(_i1.ClassTemplateData<T> context0) {
       }
       buffer.writeln();
       if (context2.hasPublicMixedInTypes == true) {
+        buffer.writeln();
         buffer.write('''
 **Mixed in types**
 ''');
         var context7 = context2.publicMixedInTypes;
         if (context7 != null) {
           for (var context8 in context7) {
+            buffer.writeln();
             buffer.write('''
 - ''');
             buffer.write(context8.linkedName.toString());
@@ -701,12 +727,14 @@ String renderClass<T extends _i4.Class>(_i1.ClassTemplateData<T> context0) {
       }
       buffer.writeln();
       if (context2.hasPublicImplementors == true) {
+        buffer.writeln();
         buffer.write('''
 **Implementers**
 ''');
         var context9 = context2.publicImplementorsSorted;
         if (context9 != null) {
           for (var context10 in context9) {
+            buffer.writeln();
             buffer.write('''
 - ''');
             buffer.write(context10.linkedName.toString());
@@ -715,12 +743,14 @@ String renderClass<T extends _i4.Class>(_i1.ClassTemplateData<T> context0) {
       }
       buffer.writeln();
       if (context2.hasPotentiallyApplicableExtensions == true) {
+        buffer.writeln();
         buffer.write('''
 **Available Extensions**
 ''');
         var context11 = context2.potentiallyApplicableExtensions;
         if (context11 != null) {
           for (var context12 in context11) {
+            buffer.writeln();
             buffer.write('''
 - ''');
             buffer.write(context12.linkedName.toString());
@@ -729,12 +759,14 @@ String renderClass<T extends _i4.Class>(_i1.ClassTemplateData<T> context0) {
       }
       buffer.writeln();
       if (context2.hasAnnotations == true) {
+        buffer.writeln();
         buffer.write('''
 **Annotations**
 ''');
         var context13 = context2.annotations;
         if (context13 != null) {
           for (var context14 in context13) {
+            buffer.writeln();
             buffer.write('''
 - ''');
             buffer.write(context14.linkedNameWithParameters.toString());
@@ -744,6 +776,7 @@ String renderClass<T extends _i4.Class>(_i1.ClassTemplateData<T> context0) {
     }
     buffer.writeln();
     if (context2.hasPublicConstructors == true) {
+      buffer.writeln();
       buffer.write('''
 ## Constructors
 ''');
@@ -774,6 +807,7 @@ String renderClass<T extends _i4.Class>(_i1.ClassTemplateData<T> context0) {
     }
     buffer.writeln();
     if (context2.hasPublicInstanceFields == true) {
+      buffer.writeln();
       buffer.write('''
 ## Properties
 ''');
@@ -789,6 +823,7 @@ String renderClass<T extends _i4.Class>(_i1.ClassTemplateData<T> context0) {
     }
     buffer.writeln();
     if (context2.hasPublicInstanceMethods == true) {
+      buffer.writeln();
       buffer.write('''
 ## Methods
 ''');
@@ -804,6 +839,7 @@ String renderClass<T extends _i4.Class>(_i1.ClassTemplateData<T> context0) {
     }
     buffer.writeln();
     if (context2.hasPublicInstanceOperators == true) {
+      buffer.writeln();
       buffer.write('''
 ## Operators
 ''');
@@ -819,6 +855,7 @@ String renderClass<T extends _i4.Class>(_i1.ClassTemplateData<T> context0) {
     }
     buffer.writeln();
     if (context2.hasPublicVariableStaticFields == true) {
+      buffer.writeln();
       buffer.write('''
 ## Static Properties
 ''');
@@ -834,6 +871,7 @@ String renderClass<T extends _i4.Class>(_i1.ClassTemplateData<T> context0) {
     }
     buffer.writeln();
     if (context2.hasPublicStaticMethods == true) {
+      buffer.writeln();
       buffer.write('''
 ## Static Methods
 ''');
@@ -849,6 +887,7 @@ String renderClass<T extends _i4.Class>(_i1.ClassTemplateData<T> context0) {
     }
     buffer.writeln();
     if (context2.hasPublicConstantFields == true) {
+      buffer.writeln();
       buffer.write('''
 ## Constants
 ''');
@@ -883,6 +922,7 @@ String _renderClass_partial_source_link_1<T extends _i4.Class>(
     _i4.Class context1, _i1.ClassTemplateData<T> context0) {
   final buffer = StringBuffer();
   if (context1.hasSourceHref == true) {
+    buffer.writeln();
     buffer.write('''
 [view source](''');
     buffer.write(context1.sourceHref.toString());
@@ -897,6 +937,7 @@ String _renderClass_partial_categorization_2<T extends _i4.Class>(
     _i4.Class context1, _i1.ClassTemplateData<T> context0) {
   final buffer = StringBuffer();
   if (context1.hasCategoryNames == true) {
+    buffer.writeln();
     buffer.write('''
 Categories:''');
     var context2 = context1.displayedCategories;
@@ -971,6 +1012,7 @@ String __renderClass_partial_property_5_partial_categorization_0<
     _i9.Field context2, _i4.Class context1, _i1.ClassTemplateData<T> context0) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
+    buffer.writeln();
     buffer.write('''
 Categories:''');
     var context3 = context2.displayedCategories;
@@ -1032,6 +1074,7 @@ String __renderClass_partial_callable_6_partial_categorization_0<
     _i1.ClassTemplateData<T> context0) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
+    buffer.writeln();
     buffer.write('''
 Categories:''');
     var context3 = context2.displayedCategories;
@@ -1090,6 +1133,7 @@ String __renderClass_partial_constant_7_partial_categorization_0<
     _i9.Field context2, _i4.Class context1, _i1.ClassTemplateData<T> context0) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
+    buffer.writeln();
     buffer.write('''
 Categories:''');
     var context3 = context2.displayedCategories;
@@ -1136,6 +1180,7 @@ String renderConstructor(_i1.ConstructorTemplateData context0) {
   buffer.writeln();
   var context1 = context0.self;
   if (context1 != null) {
+    buffer.writeln();
     buffer.write('''
 # ''');
     buffer.write(context1.nameWithGenerics.toString());
@@ -1153,6 +1198,7 @@ String renderConstructor(_i1.ConstructorTemplateData context0) {
       var context3 = context2.annotations;
       if (context3 != null) {
         for (var context4 in context3) {
+          buffer.writeln();
           buffer.write('''
 - ''');
           buffer.write(context4.linkedNameWithParameters.toString());
@@ -1197,6 +1243,7 @@ String _renderConstructor_partial_source_link_1(
     _i11.Constructor context1, _i1.ConstructorTemplateData context0) {
   final buffer = StringBuffer();
   if (context1.hasSourceHref == true) {
+    buffer.writeln();
     buffer.write('''
 [view source](''');
     buffer.write(context1.sourceHref.toString());
@@ -1240,12 +1287,14 @@ String _renderConstructor_partial_source_code_4(
     _i11.Constructor context1, _i1.ConstructorTemplateData context0) {
   final buffer = StringBuffer();
   if (context1.hasSourceCode == true) {
+    buffer.writeln();
     buffer.write('''
 ## Implementation
 
 ```dart
 ''');
     buffer.write(context1.sourceCode.toString());
+    buffer.writeln();
     buffer.write('''
 ```''');
   }
@@ -1272,6 +1321,7 @@ String renderEnum(_i1.EnumTemplateData context0) {
   buffer.writeln();
   var context1 = context0.self;
   if (context1 != null) {
+    buffer.writeln();
     buffer.write('''
 # ''');
     buffer.write(context1.name.toString());
@@ -1290,6 +1340,7 @@ String renderEnum(_i1.EnumTemplateData context0) {
     buffer.writeln();
     if (context2.hasModifiers == true) {
       if (context2.hasPublicSuperChainReversed == true) {
+        buffer.writeln();
         buffer.write('''
 **Inheritance**
 
@@ -1298,23 +1349,27 @@ String renderEnum(_i1.EnumTemplateData context0) {
         var context3 = context2.publicSuperChainReversed;
         if (context3 != null) {
           for (var context4 in context3) {
+            buffer.writeln();
             buffer.write('''
 - ''');
             buffer.write(context4.linkedName.toString());
           }
         }
+        buffer.writeln();
         buffer.write('''
 - ''');
         buffer.write(context2.name.toString());
       }
       buffer.writeln();
       if (context2.hasPublicInterfaces == true) {
+        buffer.writeln();
         buffer.write('''
 **Implemented types**
 ''');
         var context5 = context2.publicInterfaces;
         if (context5 != null) {
           for (var context6 in context5) {
+            buffer.writeln();
             buffer.write('''
 - ''');
             buffer.write(context6.linkedName.toString());
@@ -1323,12 +1378,14 @@ String renderEnum(_i1.EnumTemplateData context0) {
       }
       buffer.writeln();
       if (context2.hasPublicMixedInTypes == true) {
+        buffer.writeln();
         buffer.write('''
 **Mixed in types**
 ''');
         var context7 = context2.publicMixedInTypes;
         if (context7 != null) {
           for (var context8 in context7) {
+            buffer.writeln();
             buffer.write('''
 - ''');
             buffer.write(context8.linkedName.toString());
@@ -1337,12 +1394,14 @@ String renderEnum(_i1.EnumTemplateData context0) {
       }
       buffer.writeln();
       if (context2.hasPublicImplementors == true) {
+        buffer.writeln();
         buffer.write('''
 **Implementers**
 ''');
         var context9 = context2.publicImplementorsSorted;
         if (context9 != null) {
           for (var context10 in context9) {
+            buffer.writeln();
             buffer.write('''
 - ''');
             buffer.write(context10.linkedName.toString());
@@ -1351,12 +1410,14 @@ String renderEnum(_i1.EnumTemplateData context0) {
       }
       buffer.writeln();
       if (context2.hasAnnotations == true) {
+        buffer.writeln();
         buffer.write('''
 **Annotations**
 ''');
         var context11 = context2.annotations;
         if (context11 != null) {
           for (var context12 in context11) {
+            buffer.writeln();
             buffer.write('''
 - ''');
             buffer.write(context12.linkedNameWithParameters.toString());
@@ -1366,6 +1427,7 @@ String renderEnum(_i1.EnumTemplateData context0) {
     }
     buffer.writeln();
     if (context2.hasPublicConstantFields == true) {
+      buffer.writeln();
       buffer.write('''
 ## Constants
 ''');
@@ -1381,6 +1443,7 @@ String renderEnum(_i1.EnumTemplateData context0) {
     }
     buffer.writeln();
     if (context2.hasPublicConstructors == true) {
+      buffer.writeln();
       buffer.write('''
 ## Constructors
 ''');
@@ -1411,6 +1474,7 @@ String renderEnum(_i1.EnumTemplateData context0) {
     }
     buffer.writeln();
     if (context2.hasPublicInstanceFields == true) {
+      buffer.writeln();
       buffer.write('''
 ## Properties
 ''');
@@ -1426,6 +1490,7 @@ String renderEnum(_i1.EnumTemplateData context0) {
     }
     buffer.writeln();
     if (context2.hasPublicInstanceMethods == true) {
+      buffer.writeln();
       buffer.write('''
 ## Methods
 ''');
@@ -1441,6 +1506,7 @@ String renderEnum(_i1.EnumTemplateData context0) {
     }
     buffer.writeln();
     if (context2.hasPublicInstanceOperators == true) {
+      buffer.writeln();
       buffer.write('''
 ## Operators
 ''');
@@ -1456,6 +1522,7 @@ String renderEnum(_i1.EnumTemplateData context0) {
     }
     buffer.writeln();
     if (context2.hasPublicVariableStaticFields == true) {
+      buffer.writeln();
       buffer.write('''
 ## Static Properties
 ''');
@@ -1471,6 +1538,7 @@ String renderEnum(_i1.EnumTemplateData context0) {
     }
     buffer.writeln();
     if (context2.hasPublicStaticMethods == true) {
+      buffer.writeln();
       buffer.write('''
 ## Static Methods
 ''');
@@ -1504,6 +1572,7 @@ String _renderEnum_partial_source_link_1(
     _i12.Enum context1, _i1.EnumTemplateData context0) {
   final buffer = StringBuffer();
   if (context1.hasSourceHref == true) {
+    buffer.writeln();
     buffer.write('''
 [view source](''');
     buffer.write(context1.sourceHref.toString());
@@ -1570,6 +1639,7 @@ String __renderEnum_partial_constant_4_partial_categorization_0(
     _i9.Field context2, _i12.Enum context1, _i1.EnumTemplateData context0) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
+    buffer.writeln();
     buffer.write('''
 Categories:''');
     var context3 = context2.displayedCategories;
@@ -1627,6 +1697,7 @@ String __renderEnum_partial_property_5_partial_categorization_0(
     _i9.Field context2, _i12.Enum context1, _i1.EnumTemplateData context0) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
+    buffer.writeln();
     buffer.write('''
 Categories:''');
     var context3 = context2.displayedCategories;
@@ -1685,6 +1756,7 @@ String __renderEnum_partial_callable_6_partial_categorization_0(
     _i10.Method context2, _i12.Enum context1, _i1.EnumTemplateData context0) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
+    buffer.writeln();
     buffer.write('''
 Categories:''');
     var context3 = context2.displayedCategories;
@@ -1744,11 +1816,13 @@ String renderExtension<T extends _i13.Extension>(
   buffer.writeln();
   var context1 = context0.self;
   if (context1 != null) {
+    buffer.writeln();
     buffer.write('''
 # ''');
     buffer.write(context1.nameWithGenerics.toString());
     buffer.write(' ');
     buffer.writeEscaped(context1.kind.toString());
+    buffer.writeln();
     buffer.write('''
 on ''');
     var context2 = context1.extendedType;
@@ -1769,6 +1843,7 @@ on ''');
     buffer.write(_renderExtension_partial_documentation_4(context3, context0));
     buffer.writeln();
     if (context3.hasPublicInstanceFields == true) {
+      buffer.writeln();
       buffer.write('''
 ## Properties
 ''');
@@ -1784,6 +1859,7 @@ on ''');
     }
     buffer.writeln();
     if (context3.hasPublicInstanceMethods == true) {
+      buffer.writeln();
       buffer.write('''
 ## Methods
 ''');
@@ -1799,6 +1875,7 @@ on ''');
     }
     buffer.writeln();
     if (context3.hasPublicInstanceOperators == true) {
+      buffer.writeln();
       buffer.write('''
 ## Operators
 ''');
@@ -1814,6 +1891,7 @@ on ''');
     }
     buffer.writeln();
     if (context3.hasPublicVariableStaticFields == true) {
+      buffer.writeln();
       buffer.write('''
 ## Static Properties
 ''');
@@ -1829,6 +1907,7 @@ on ''');
     }
     buffer.writeln();
     if (context3.hasPublicStaticMethods == true) {
+      buffer.writeln();
       buffer.write('''
 ## Static Methods
 ''');
@@ -1844,6 +1923,7 @@ on ''');
     }
     buffer.writeln();
     if (context3.hasPublicConstantFields == true) {
+      buffer.writeln();
       buffer.write('''
 ## Constants
 ''');
@@ -1878,6 +1958,7 @@ String _renderExtension_partial_source_link_1<T extends _i13.Extension>(
     _i13.Extension context1, _i1.ExtensionTemplateData<T> context0) {
   final buffer = StringBuffer();
   if (context1.hasSourceHref == true) {
+    buffer.writeln();
     buffer.write('''
 [view source](''');
     buffer.write(context1.sourceHref.toString());
@@ -1892,6 +1973,7 @@ String _renderExtension_partial_categorization_2<T extends _i13.Extension>(
     _i13.Extension context1, _i1.ExtensionTemplateData<T> context0) {
   final buffer = StringBuffer();
   if (context1.hasCategoryNames == true) {
+    buffer.writeln();
     buffer.write('''
 Categories:''');
     var context2 = context1.displayedCategories;
@@ -1968,6 +2050,7 @@ String __renderExtension_partial_property_5_partial_categorization_0<
     _i1.ExtensionTemplateData<T> context0) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
+    buffer.writeln();
     buffer.write('''
 Categories:''');
     var context3 = context2.displayedCategories;
@@ -2030,6 +2113,7 @@ String __renderExtension_partial_callable_6_partial_categorization_0<
     _i1.ExtensionTemplateData<T> context0) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
+    buffer.writeln();
     buffer.write('''
 Categories:''');
     var context3 = context2.displayedCategories;
@@ -2089,6 +2173,7 @@ String __renderExtension_partial_constant_7_partial_categorization_0<
     _i1.ExtensionTemplateData<T> context0) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
+    buffer.writeln();
     buffer.write('''
 Categories:''');
     var context3 = context2.displayedCategories;
@@ -2136,6 +2221,7 @@ String renderFunction(_i1.FunctionTemplateData context0) {
   buffer.writeln();
   var context1 = context0.self;
   if (context1 != null) {
+    buffer.writeln();
     buffer.write('''
 # ''');
     buffer.write(context1.nameWithGenerics.toString());
@@ -2179,6 +2265,7 @@ String _renderFunction_partial_source_link_1(
     _i7.ModelFunction context1, _i1.FunctionTemplateData context0) {
   final buffer = StringBuffer();
   if (context1.hasSourceHref == true) {
+    buffer.writeln();
     buffer.write('''
 [view source](''');
     buffer.write(context1.sourceHref.toString());
@@ -2193,6 +2280,7 @@ String _renderFunction_partial_categorization_2(
     _i7.ModelFunction context1, _i1.FunctionTemplateData context0) {
   final buffer = StringBuffer();
   if (context1.hasCategoryNames == true) {
+    buffer.writeln();
     buffer.write('''
 Categories:''');
     var context2 = context1.displayedCategories;
@@ -2232,6 +2320,7 @@ String _renderFunction_partial_callable_multiline_4(
     var context2 = context1.annotations;
     if (context2 != null) {
       for (var context3 in context2) {
+        buffer.writeln();
         buffer.write('''
 - ''');
         buffer.write(context3.linkedNameWithParameters.toString());
@@ -2289,12 +2378,14 @@ String _renderFunction_partial_source_code_6(
     _i7.ModelFunction context1, _i1.FunctionTemplateData context0) {
   final buffer = StringBuffer();
   if (context1.hasSourceCode == true) {
+    buffer.writeln();
     buffer.write('''
 ## Implementation
 
 ```dart
 ''');
     buffer.write(context1.sourceCode.toString());
+    buffer.writeln();
     buffer.write('''
 ```''');
   }
@@ -2317,6 +2408,7 @@ String _renderFunction_partial_footer_7(_i1.FunctionTemplateData context0) {
 String renderIndex(_i1.PackageTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write(_renderIndex_partial_head_0(context0));
+  buffer.writeln();
   buffer.write('''
 
 # ''');
@@ -2332,10 +2424,12 @@ String renderIndex(_i1.PackageTemplateData context0) {
   if (context2 != null) {
     for (var context3 in context2) {
       if (context3.isFirstPackage == true) {
+        buffer.writeln();
         buffer.write('''
 ## Libraries''');
       }
       if (context3.isFirstPackage != true) {
+        buffer.writeln();
         buffer.write('''
 ## ''');
         buffer.writeEscaped(context3.name.toString());
@@ -2356,6 +2450,7 @@ String renderIndex(_i1.PackageTemplateData context0) {
       var context7 = context3.categoriesWithPublicLibraries;
       if (context7 != null) {
         for (var context8 in context7) {
+          buffer.writeln();
           buffer.write('''
 ### Category ''');
           buffer.write(context8.categoryLabel.toString());
@@ -2436,6 +2531,7 @@ String renderLibrary(_i1.LibraryTemplateData context0) {
   buffer.writeln();
   var context1 = context0.self;
   if (context1 != null) {
+    buffer.writeln();
     buffer.write('''
 # ''');
     buffer.write(context1.name.toString());
@@ -2458,6 +2554,7 @@ String renderLibrary(_i1.LibraryTemplateData context0) {
   var context3 = context0.library;
   if (context3 != null) {
     if (context3.hasPublicClasses == true) {
+      buffer.writeln();
       buffer.write('''
 ## Classes
 ''');
@@ -2479,6 +2576,7 @@ String renderLibrary(_i1.LibraryTemplateData context0) {
   var context7 = context0.library;
   if (context7 != null) {
     if (context7.hasPublicMixins == true) {
+      buffer.writeln();
       buffer.write('''
 ## Mixins
 ''');
@@ -2500,6 +2598,7 @@ String renderLibrary(_i1.LibraryTemplateData context0) {
   var context11 = context0.library;
   if (context11 != null) {
     if (context11.hasPublicExtensions == true) {
+      buffer.writeln();
       buffer.write('''
 ## Extensions
 ''');
@@ -2521,6 +2620,7 @@ String renderLibrary(_i1.LibraryTemplateData context0) {
   var context15 = context0.library;
   if (context15 != null) {
     if (context15.hasPublicConstants == true) {
+      buffer.writeln();
       buffer.write('''
 ## Constants
 ''');
@@ -2542,6 +2642,7 @@ String renderLibrary(_i1.LibraryTemplateData context0) {
   var context19 = context0.library;
   if (context19 != null) {
     if (context19.hasPublicProperties == true) {
+      buffer.writeln();
       buffer.write('''
 ## Properties
 ''');
@@ -2563,6 +2664,7 @@ String renderLibrary(_i1.LibraryTemplateData context0) {
   var context23 = context0.library;
   if (context23 != null) {
     if (context23.hasPublicFunctions == true) {
+      buffer.writeln();
       buffer.write('''
 ## Functions
 ''');
@@ -2584,6 +2686,7 @@ String renderLibrary(_i1.LibraryTemplateData context0) {
   var context27 = context0.library;
   if (context27 != null) {
     if (context27.hasPublicEnums == true) {
+      buffer.writeln();
       buffer.write('''
 ## Enums
 ''');
@@ -2605,6 +2708,7 @@ String renderLibrary(_i1.LibraryTemplateData context0) {
   var context31 = context0.library;
   if (context31 != null) {
     if (context31.hasPublicTypedefs == true) {
+      buffer.writeln();
       buffer.write('''
 ## Typedefs
 ''');
@@ -2626,6 +2730,7 @@ String renderLibrary(_i1.LibraryTemplateData context0) {
   var context35 = context0.library;
   if (context35 != null) {
     if (context35.hasPublicExceptions == true) {
+      buffer.writeln();
       buffer.write('''
 ## Exceptions / Errors
 ''');
@@ -2662,6 +2767,7 @@ String _renderLibrary_partial_source_link_1(
     _i3.Library context1, _i1.LibraryTemplateData context0) {
   final buffer = StringBuffer();
   if (context1.hasSourceHref == true) {
+    buffer.writeln();
     buffer.write('''
 [view source](''');
     buffer.write(context1.sourceHref.toString());
@@ -2676,6 +2782,7 @@ String _renderLibrary_partial_categorization_2(
     _i3.Library context1, _i1.LibraryTemplateData context0) {
   final buffer = StringBuffer();
   if (context1.hasCategoryNames == true) {
+    buffer.writeln();
     buffer.write('''
 Categories:''');
     var context2 = context1.displayedCategories;
@@ -2745,6 +2852,7 @@ String __renderLibrary_partial_class_5_partial_categorization_0(
     _i1.LibraryTemplateData context0) {
   final buffer = StringBuffer();
   if (context3.hasCategoryNames == true) {
+    buffer.writeln();
     buffer.write('''
 Categories:''');
     var context4 = context3.displayedCategories;
@@ -2785,6 +2893,7 @@ String __renderLibrary_partial_mixin_6_partial_categorization_0(
     _i1.LibraryTemplateData context0) {
   final buffer = StringBuffer();
   if (context3.hasCategoryNames == true) {
+    buffer.writeln();
     buffer.write('''
 Categories:''');
     var context4 = context3.displayedCategories;
@@ -2827,6 +2936,7 @@ String __renderLibrary_partial_extension_7_partial_categorization_0(
     _i1.LibraryTemplateData context0) {
   final buffer = StringBuffer();
   if (context3.hasCategoryNames == true) {
+    buffer.writeln();
     buffer.write('''
 Categories:''');
     var context4 = context3.displayedCategories;
@@ -2875,6 +2985,7 @@ String __renderLibrary_partial_constant_8_partial_categorization_0(
     _i1.LibraryTemplateData context0) {
   final buffer = StringBuffer();
   if (context3.hasCategoryNames == true) {
+    buffer.writeln();
     buffer.write('''
 Categories:''');
     var context4 = context3.displayedCategories;
@@ -2941,6 +3052,7 @@ String __renderLibrary_partial_property_9_partial_categorization_0(
     _i1.LibraryTemplateData context0) {
   final buffer = StringBuffer();
   if (context3.hasCategoryNames == true) {
+    buffer.writeln();
     buffer.write('''
 Categories:''');
     var context4 = context3.displayedCategories;
@@ -3008,6 +3120,7 @@ String __renderLibrary_partial_callable_10_partial_categorization_0(
     _i1.LibraryTemplateData context0) {
   final buffer = StringBuffer();
   if (context3.hasCategoryNames == true) {
+    buffer.writeln();
     buffer.write('''
 Categories:''');
     var context4 = context3.displayedCategories;
@@ -3048,6 +3161,7 @@ String _renderLibrary_partial_typedef_11(
   if (context3.isCallable == true) {
     var context4 = context3.asCallable;
     if (context4 != null) {
+      buffer.writeln();
       buffer.write('''
     ##### ''');
       buffer.write(context4.linkedName.toString());
@@ -3085,6 +3199,7 @@ String __renderLibrary_partial_typedef_11_partial_categorization_0(
     _i1.LibraryTemplateData context0) {
   final buffer = StringBuffer();
   if (context4.hasCategoryNames == true) {
+    buffer.writeln();
     buffer.write('''
 Categories:''');
     var context5 = context4.displayedCategories;
@@ -3154,6 +3269,7 @@ String
         _i1.LibraryTemplateData context0) {
   final buffer = StringBuffer();
   if (context3.hasCategoryNames == true) {
+    buffer.writeln();
     buffer.write('''
 Categories:''');
     var context4 = context3.displayedCategories;
@@ -3202,6 +3318,7 @@ String renderMethod(_i1.MethodTemplateData context0) {
   buffer.writeln();
   var context1 = context0.self;
   if (context1 != null) {
+    buffer.writeln();
     buffer.write('''
 # ''');
     buffer.write(context1.nameWithGenerics.toString());
@@ -3245,6 +3362,7 @@ String _renderMethod_partial_source_link_1(
     _i10.Method context1, _i1.MethodTemplateData context0) {
   final buffer = StringBuffer();
   if (context1.hasSourceHref == true) {
+    buffer.writeln();
     buffer.write('''
 [view source](''');
     buffer.write(context1.sourceHref.toString());
@@ -3279,6 +3397,7 @@ String _renderMethod_partial_callable_multiline_3(
     var context2 = context1.annotations;
     if (context2 != null) {
       for (var context3 in context2) {
+        buffer.writeln();
         buffer.write('''
 - ''');
         buffer.write(context3.linkedNameWithParameters.toString());
@@ -3349,12 +3468,14 @@ String _renderMethod_partial_source_code_6(
     _i10.Method context1, _i1.MethodTemplateData context0) {
   final buffer = StringBuffer();
   if (context1.hasSourceCode == true) {
+    buffer.writeln();
     buffer.write('''
 ## Implementation
 
 ```dart
 ''');
     buffer.write(context1.sourceCode.toString());
+    buffer.writeln();
     buffer.write('''
 ```''');
   }
@@ -3380,6 +3501,7 @@ String renderMixin(_i1.MixinTemplateData context0) {
   buffer.writeln();
   var context1 = context0.self;
   if (context1 != null) {
+    buffer.writeln();
     buffer.write('''
 # ''');
     buffer.write(context1.nameWithGenerics.toString());
@@ -3400,12 +3522,14 @@ String renderMixin(_i1.MixinTemplateData context0) {
     buffer.writeln();
     if (context2.hasModifiers == true) {
       if (context2.hasPublicSuperclassConstraints == true) {
+        buffer.writeln();
         buffer.write('''
 **Superclass Constraints**
 ''');
         var context3 = context2.publicSuperclassConstraints;
         if (context3 != null) {
           for (var context4 in context3) {
+            buffer.writeln();
             buffer.write('''
 - ''');
             buffer.write(context4.linkedName.toString());
@@ -3414,6 +3538,7 @@ String renderMixin(_i1.MixinTemplateData context0) {
       }
       buffer.writeln();
       if (context2.hasPublicSuperChainReversed == true) {
+        buffer.writeln();
         buffer.write('''
 **Inheritance**
 
@@ -3422,23 +3547,27 @@ String renderMixin(_i1.MixinTemplateData context0) {
         var context5 = context2.publicSuperChainReversed;
         if (context5 != null) {
           for (var context6 in context5) {
+            buffer.writeln();
             buffer.write('''
 - ''');
             buffer.write(context6.linkedName.toString());
           }
         }
+        buffer.writeln();
         buffer.write('''
 - ''');
         buffer.write(context2.name.toString());
       }
       buffer.writeln();
       if (context2.hasPublicInterfaces == true) {
+        buffer.writeln();
         buffer.write('''
 **Implemented types**
 ''');
         var context7 = context2.publicInterfaces;
         if (context7 != null) {
           for (var context8 in context7) {
+            buffer.writeln();
             buffer.write('''
 - ''');
             buffer.write(context8.linkedName.toString());
@@ -3447,12 +3576,14 @@ String renderMixin(_i1.MixinTemplateData context0) {
       }
       buffer.writeln();
       if (context2.hasPublicMixedInTypes == true) {
+        buffer.writeln();
         buffer.write('''
 **Mixed in types**
 ''');
         var context9 = context2.publicMixedInTypes;
         if (context9 != null) {
           for (var context10 in context9) {
+            buffer.writeln();
             buffer.write('''
 - ''');
             buffer.write(context10.linkedName.toString());
@@ -3461,12 +3592,14 @@ String renderMixin(_i1.MixinTemplateData context0) {
       }
       buffer.writeln();
       if (context2.hasPublicImplementors == true) {
+        buffer.writeln();
         buffer.write('''
 **Implementers**
 ''');
         var context11 = context2.publicImplementorsSorted;
         if (context11 != null) {
           for (var context12 in context11) {
+            buffer.writeln();
             buffer.write('''
 - ''');
             buffer.write(context12.linkedName.toString());
@@ -3475,12 +3608,14 @@ String renderMixin(_i1.MixinTemplateData context0) {
       }
       buffer.writeln();
       if (context2.hasAnnotations == true) {
+        buffer.writeln();
         buffer.write('''
 **Annotations**
 ''');
         var context13 = context2.annotations;
         if (context13 != null) {
           for (var context14 in context13) {
+            buffer.writeln();
             buffer.write('''
 - ''');
             buffer.write(context14.linkedNameWithParameters.toString());
@@ -3490,6 +3625,7 @@ String renderMixin(_i1.MixinTemplateData context0) {
     }
     buffer.writeln();
     if (context2.hasPublicConstructors == true) {
+      buffer.writeln();
       buffer.write('''
 ## Constructors
 ''');
@@ -3520,6 +3656,7 @@ String renderMixin(_i1.MixinTemplateData context0) {
     }
     buffer.writeln();
     if (context2.hasPublicInstanceFields == true) {
+      buffer.writeln();
       buffer.write('''
 ## Properties
 ''');
@@ -3535,6 +3672,7 @@ String renderMixin(_i1.MixinTemplateData context0) {
     }
     buffer.writeln();
     if (context2.hasPublicInstanceMethods == true) {
+      buffer.writeln();
       buffer.write('''
 ## Methods
 ''');
@@ -3550,6 +3688,7 @@ String renderMixin(_i1.MixinTemplateData context0) {
     }
     buffer.writeln();
     if (context2.hasPublicInstanceOperators == true) {
+      buffer.writeln();
       buffer.write('''
 ## Operators
 ''');
@@ -3565,6 +3704,7 @@ String renderMixin(_i1.MixinTemplateData context0) {
     }
     buffer.writeln();
     if (context2.hasPublicVariableStaticFields == true) {
+      buffer.writeln();
       buffer.write('''
 ## Static Properties
 ''');
@@ -3580,6 +3720,7 @@ String renderMixin(_i1.MixinTemplateData context0) {
     }
     buffer.writeln();
     if (context2.hasPublicStaticMethods == true) {
+      buffer.writeln();
       buffer.write('''
 ## Static Methods
 ''');
@@ -3595,6 +3736,7 @@ String renderMixin(_i1.MixinTemplateData context0) {
     }
     buffer.writeln();
     if (context2.hasPublicConstantFields == true) {
+      buffer.writeln();
       buffer.write('''
 ## Constants
 ''');
@@ -3628,6 +3770,7 @@ String _renderMixin_partial_source_link_1(
     _i5.Mixin context1, _i1.MixinTemplateData context0) {
   final buffer = StringBuffer();
   if (context1.hasSourceHref == true) {
+    buffer.writeln();
     buffer.write('''
 [view source](''');
     buffer.write(context1.sourceHref.toString());
@@ -3642,6 +3785,7 @@ String _renderMixin_partial_categorization_2(
     _i5.Mixin context1, _i1.MixinTemplateData context0) {
   final buffer = StringBuffer();
   if (context1.hasCategoryNames == true) {
+    buffer.writeln();
     buffer.write('''
 Categories:''');
     var context2 = context1.displayedCategories;
@@ -3715,6 +3859,7 @@ String __renderMixin_partial_property_5_partial_categorization_0(
     _i9.Field context2, _i5.Mixin context1, _i1.MixinTemplateData context0) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
+    buffer.writeln();
     buffer.write('''
 Categories:''');
     var context3 = context2.displayedCategories;
@@ -3773,6 +3918,7 @@ String __renderMixin_partial_callable_6_partial_categorization_0(
     _i10.Method context2, _i5.Mixin context1, _i1.MixinTemplateData context0) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
+    buffer.writeln();
     buffer.write('''
 Categories:''');
     var context3 = context2.displayedCategories;
@@ -3828,6 +3974,7 @@ String __renderMixin_partial_constant_7_partial_categorization_0(
     _i9.Field context2, _i5.Mixin context1, _i1.MixinTemplateData context0) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
+    buffer.writeln();
     buffer.write('''
 Categories:''');
     var context3 = context2.displayedCategories;
@@ -3873,6 +4020,7 @@ String renderProperty(_i1.PropertyTemplateData context0) {
   buffer.writeln();
   var context1 = context0.self;
   if (context1 != null) {
+    buffer.writeln();
     buffer.write('''
 # ''');
     buffer.writeEscaped(context1.name.toString());
@@ -3933,6 +4081,7 @@ String _renderProperty_partial_source_link_1(
     _i9.Field context1, _i1.PropertyTemplateData context0) {
   final buffer = StringBuffer();
   if (context1.hasSourceHref == true) {
+    buffer.writeln();
     buffer.write('''
 [view source](''');
     buffer.write(context1.sourceHref.toString());
@@ -4007,12 +4156,14 @@ String _renderProperty_partial_source_code_6(
     _i9.Field context1, _i1.PropertyTemplateData context0) {
   final buffer = StringBuffer();
   if (context1.hasSourceCode == true) {
+    buffer.writeln();
     buffer.write('''
 ## Implementation
 
 ```dart
 ''');
     buffer.write(context1.sourceCode.toString());
+    buffer.writeln();
     buffer.write('''
 ```''');
   }
@@ -4105,12 +4256,14 @@ String __renderProperty_partial_accessor_getter_7_partial_source_code_3(
     _i1.PropertyTemplateData context0) {
   final buffer = StringBuffer();
   if (context2.hasSourceCode == true) {
+    buffer.writeln();
     buffer.write('''
 ## Implementation
 
 ```dart
 ''');
     buffer.write(context2.sourceCode.toString());
+    buffer.writeln();
     buffer.write('''
 ```''');
   }
@@ -4203,12 +4356,14 @@ String __renderProperty_partial_accessor_setter_8_partial_source_code_3(
     _i1.PropertyTemplateData context0) {
   final buffer = StringBuffer();
   if (context2.hasSourceCode == true) {
+    buffer.writeln();
     buffer.write('''
 ## Implementation
 
 ```dart
 ''');
     buffer.write(context2.sourceCode.toString());
+    buffer.writeln();
     buffer.write('''
 ```''');
   }
@@ -4248,6 +4403,7 @@ String renderTopLevelProperty(_i1.TopLevelPropertyTemplateData context0) {
   buffer.writeln();
   var context1 = context0.self;
   if (context1 != null) {
+    buffer.writeln();
     buffer.write('''
 # ''');
     buffer.write(context1.name.toString());
@@ -4313,6 +4469,7 @@ String _renderTopLevelProperty_partial_source_link_1(
     _i6.TopLevelVariable context1, _i1.TopLevelPropertyTemplateData context0) {
   final buffer = StringBuffer();
   if (context1.hasSourceHref == true) {
+    buffer.writeln();
     buffer.write('''
 [view source](''');
     buffer.write(context1.sourceHref.toString());
@@ -4327,6 +4484,7 @@ String _renderTopLevelProperty_partial_categorization_2(
     _i6.TopLevelVariable context1, _i1.TopLevelPropertyTemplateData context0) {
   final buffer = StringBuffer();
   if (context1.hasCategoryNames == true) {
+    buffer.writeln();
     buffer.write('''
 Categories:''');
     var context2 = context1.displayedCategories;
@@ -4406,12 +4564,14 @@ String _renderTopLevelProperty_partial_source_code_7(
     _i6.TopLevelVariable context1, _i1.TopLevelPropertyTemplateData context0) {
   final buffer = StringBuffer();
   if (context1.hasSourceCode == true) {
+    buffer.writeln();
     buffer.write('''
 ## Implementation
 
 ```dart
 ''');
     buffer.write(context1.sourceCode.toString());
+    buffer.writeln();
     buffer.write('''
 ```''');
   }
@@ -4507,12 +4667,14 @@ String __renderTopLevelProperty_partial_accessor_getter_8_partial_source_code_3(
     _i1.TopLevelPropertyTemplateData context0) {
   final buffer = StringBuffer();
   if (context2.hasSourceCode == true) {
+    buffer.writeln();
     buffer.write('''
 ## Implementation
 
 ```dart
 ''');
     buffer.write(context2.sourceCode.toString());
+    buffer.writeln();
     buffer.write('''
 ```''');
   }
@@ -4608,12 +4770,14 @@ String __renderTopLevelProperty_partial_accessor_setter_9_partial_source_code_3(
     _i1.TopLevelPropertyTemplateData context0) {
   final buffer = StringBuffer();
   if (context2.hasSourceCode == true) {
+    buffer.writeln();
     buffer.write('''
 ## Implementation
 
 ```dart
 ''');
     buffer.write(context2.sourceCode.toString());
+    buffer.writeln();
     buffer.write('''
 ```''');
   }
@@ -4640,6 +4804,7 @@ String renderTypedef(_i1.TypedefTemplateData context0) {
   buffer.writeln();
   var context1 = context0.self;
   if (context1 != null) {
+    buffer.writeln();
     buffer.write('''
 # ''');
     buffer.write(context1.nameWithGenerics.toString());
@@ -4682,6 +4847,7 @@ String _renderTypedef_partial_source_link_1(
     _i8.Typedef context1, _i1.TypedefTemplateData context0) {
   final buffer = StringBuffer();
   if (context1.hasSourceHref == true) {
+    buffer.writeln();
     buffer.write('''
 [view source](''');
     buffer.write(context1.sourceHref.toString());
@@ -4696,6 +4862,7 @@ String _renderTypedef_partial_categorization_2(
     _i8.Typedef context1, _i1.TypedefTemplateData context0) {
   final buffer = StringBuffer();
   if (context1.hasCategoryNames == true) {
+    buffer.writeln();
     buffer.write('''
 Categories:''');
     var context2 = context1.displayedCategories;
@@ -4738,6 +4905,7 @@ String _renderTypedef_partial_typedef_multiline_4(
         var context3 = context2.annotations;
         if (context3 != null) {
           for (var context4 in context3) {
+            buffer.writeln();
             buffer.write('''
     - ''');
             buffer.write(context4.linkedNameWithParameters.toString());
@@ -4771,6 +4939,7 @@ String __renderTypedef_partial_typedef_multiline_4_partial_type_multiline_0(
     var context2 = context1.annotations;
     if (context2 != null) {
       for (var context3 in context2) {
+        buffer.writeln();
         buffer.write('''
 - ''');
         buffer.write(context3.linkedNameWithParameters.toString());
@@ -4824,12 +4993,14 @@ String _renderTypedef_partial_source_code_6(
     _i8.Typedef context1, _i1.TypedefTemplateData context0) {
   final buffer = StringBuffer();
   if (context1.hasSourceCode == true) {
+    buffer.writeln();
     buffer.write('''
 ## Implementation
 
 ```dart
 ''');
     buffer.write(context1.sourceCode.toString());
+    buffer.writeln();
     buffer.write('''
 ```''');
   }
