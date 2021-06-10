@@ -96,12 +96,21 @@ void main() {
     expect(propertyMap['b1'].getBool(foo), isFalse);
   });
 
-  test('Renderer renders a non-bool variable node', () async {
+  test('Renderer renders a non-bool variable node, escaped', () async {
     var fooTemplateFile = getFile('/project/foo.mustache')
       ..writeAsStringSync('Text {{s1}}');
     var fooTemplate = await Template.parse(fooTemplateFile);
-    var foo = Foo()..s1 = 'hello';
-    expect(renderFoo(foo, fooTemplate), equals('Text hello'));
+    var foo = Foo()..s1 = '<p>hello</p>';
+    expect(renderFoo(foo, fooTemplate),
+        equals('Text &lt;p&gt;hello&lt;&#47;p&gt;'));
+  });
+
+  test('Renderer renders a non-bool variable node, not escaped', () async {
+    var fooTemplateFile = getFile('/project/foo.mustache')
+      ..writeAsStringSync('Text {{{s1}}}');
+    var fooTemplate = await Template.parse(fooTemplateFile);
+    var foo = Foo()..s1 = '<p>hello</p>';
+    expect(renderFoo(foo, fooTemplate), equals('Text <p>hello</p>'));
   });
 
   test('Renderer renders a bool variable node', () async {
@@ -379,7 +388,7 @@ void main() {
     expect(
         renderBar(bar, barTemplate),
         equals('Line 1 Partial Section 1Section 2Section 3\n'
-            'Line 2 Partial Section Instance of \'Bar\''));
+            'Line 2 Partial Section Instance of &#39;Bar&#39;'));
   });
 
   test('Renderer renders a partial using a custom partial renderer', () async {

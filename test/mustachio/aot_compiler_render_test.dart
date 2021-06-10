@@ -158,11 +158,18 @@ void main() {
     s1: hello    b1? no    l1:item: 1item: 2item: 3    baz:baz is null</div>'''));
   });
 
-  test('Renderer renders a non-bool variable node', () async {
+  test('Renderer renders a non-bool variable node, escaped', () async {
     var output = await renderFoo({
       'foo|lib/templates/html/foo.html': 'Text {{s1}}',
-    }, '_i1.Foo()..s1 = "hello"');
-    expect(output, equals('Text hello'));
+    }, '_i1.Foo()..s1 = "<p>hello</p>"');
+    expect(output, equals('Text &lt;p&gt;hello&lt;&#47;p&gt;'));
+  });
+
+  test('Renderer renders a non-bool variable node, not escaped', () async {
+    var output = await renderFoo({
+      'foo|lib/templates/html/foo.html': 'Text {{{s1}}}',
+    }, '_i1.Foo()..s1 = "<p>hello</p>"');
+    expect(output, equals('Text <p>hello</p>'));
   });
 
   test('Renderer renders a bool variable node', () async {

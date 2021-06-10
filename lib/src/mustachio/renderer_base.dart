@@ -6,6 +6,7 @@
 // documentation.
 
 import 'dart:collection';
+import 'dart:convert' show htmlEscape;
 
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:meta/meta.dart';
@@ -216,7 +217,11 @@ abstract class RendererBase<T> {
         write(node.content);
       } else if (node is Variable) {
         var content = getFields(node);
-        write(content);
+        if (node.escape) {
+          write(htmlEscape.convert(content));
+        } else {
+          write(content);
+        }
       } else if (node is Section) {
         section(node);
       } else if (node is Partial) {
