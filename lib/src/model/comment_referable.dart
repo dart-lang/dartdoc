@@ -79,17 +79,12 @@ mixin CommentReferable implements Nameable {
   /// Looks up references by [scope], skipping over results that do not match
   /// the given filter.
   ///
-  /// Override if [Scope.lookup] may return a [PrefixElement] or other elements
-  /// not corresponding to a [CommentReferable], but you still want to have
-  /// an implementation of [scope].
+  /// Override if [Scope.lookup] may return elements not corresponding to a
+  /// [CommentReferable], but you still want to have an implementation of
+  /// [scope].
   CommentReferable lookupViaScope(ReferenceChildrenLookup referenceLookup,
       bool Function(CommentReferable) filter) {
     var resultElement = scope.lookupPreferGetter(referenceLookup.lookup);
-    if (resultElement is PrefixElement) {
-      assert(false,
-          'PrefixElement detected, override [lookupViaScope] in subclass');
-      return null;
-    }
     if (resultElement == null) return null;
     var result = ModelElement.fromElement(resultElement, packageGraph);
     if (result is Accessor) {

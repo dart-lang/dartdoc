@@ -309,6 +309,12 @@ MatchingLinkResult _getMatchingLinkElementCommentReferable(
   var lookupResult =
       warnable.referenceBy(commentReference.referenceBy, filter: filter);
 
+  // TODO(jcollins-g): Referring to packages or other non-[ModelElement]s
+  // might be needed here.  Determine if that's the case.
+  if (!(lookupResult is ModelElement)) {
+    lookupResult = null;
+  }
+
   // TODO(jcollins-g): Consider prioritizing analyzer resolution before custom.
   return MatchingLinkResult(lookupResult);
 }

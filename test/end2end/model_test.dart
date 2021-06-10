@@ -2264,8 +2264,7 @@ void main() {
           equals(MatchingLinkResult(incorrectDocReferenceFromEx)));
 
       // A prefixed constant in another library.
-      // TODO(jcollins-g): prefixed namespace lookups are not yet implemented with new lookup code.
-      expect(originalLookup(doAwesomeStuff, 'css.theOnlyThingInTheLibrary'),
+      expect(bothLookup(doAwesomeStuff, 'css.theOnlyThingInTheLibrary'),
           equals(MatchingLinkResult(theOnlyThingInTheLibrary)));
 
       // A name that exists in this package but is not imported.

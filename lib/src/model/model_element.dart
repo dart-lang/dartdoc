@@ -22,6 +22,7 @@ import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/feature.dart';
 import 'package:dartdoc/src/model/feature_set.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/model/prefix.dart';
 import 'package:dartdoc/src/model_utils.dart' as utils;
 import 'package:dartdoc/src/render/model_element_renderer.dart';
 import 'package:dartdoc/src/render/parameter_renderer.dart';
@@ -285,6 +286,9 @@ abstract class ModelElement extends Canonicalization
     assert(e is! MultiplyDefinedElement);
     if (e is LibraryElement) {
       return Library(e, packageGraph);
+    }
+    if (e is PrefixElement) {
+      return Prefix(e, library, packageGraph);
     }
     if (e is ClassElement) {
       if (e.isMixin) {
