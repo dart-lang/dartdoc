@@ -145,7 +145,7 @@ abstract class RendererBase<T> {
   Template _template;
 
   /// The output buffer into which [context] is rendered, using a template.
-  final buffer = StringBuffer();
+  StringBuffer buffer = StringBuffer();
 
   final Set<String> _invisibleGetters;
 
@@ -234,7 +234,7 @@ abstract class RendererBase<T> {
             "Failed to resolve '$key' as a property on any types in the "
             'current context'));
       } else {
-        return parent.section(node);
+        return parent.withBuffer(buffer, () => parent.section(node));
       }
     }
 
@@ -278,6 +278,16 @@ abstract class RendererBase<T> {
     _template = partialTemplate;
     renderBlock(partialTemplate.ast);
     _template = outerTemplate;
+  }
+
+  /// Executes [fn] after replacing [buffer] with [newBuffer].
+  ///
+  /// Replaces the previous buffer as [buffer].
+  void withBuffer(StringBuffer newBuffer, void Function() fn) {
+    var previousBuffer = buffer;
+    buffer = newBuffer;
+    fn();
+    buffer = previousBuffer;
   }
 }
 

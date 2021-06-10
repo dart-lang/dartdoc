@@ -255,7 +255,6 @@ class MustachioParser {
           keySpanEndOffset - lastName.length, keySpanEndOffset);
       var section = Section([lastName], children,
           invert: invert, span: span, keySpan: lastNameSpan);
-      //for (var sectionKey in parsedKey.names.reversed.skip(1)) {
       for (var i = parsedKey.names.length - 2; i >= 0; i--) {
         var sectionKey = parsedKey.names[i];
         // To find the start offset of the ith name, take the length of all of

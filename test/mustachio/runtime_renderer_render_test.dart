@@ -202,6 +202,17 @@ void main() {
     expect(renderBar(bar, barTemplate), equals('Text Foo: hello'));
   });
 
+  test('Renderer renders a value section node keyed lower in the stack',
+      () async {
+    var barTemplateFile = getFile('/project/bar.mustache')
+      ..writeAsStringSync('Text {{#foo}}One {{#s2}}Two{{/s2}}{{/foo}}');
+    var barTemplate = await Template.parse(barTemplateFile);
+    var bar = Bar()
+      ..foo = (Foo()..s1 = 'goodbye')
+      ..s2 = 'hello';
+    expect(renderBar(bar, barTemplate), equals('Text One Two'));
+  });
+
   test('Renderer renders a null value section node as blank', () async {
     var fooTemplateFile = getFile('/project/foo.mustache')
       ..writeAsStringSync('Text {{#s1}}"{{.}}" ({{length}}){{/s1}}');
