@@ -145,6 +145,8 @@ abstract class RendererBase<T> {
   Template _template;
 
   /// The output buffer into which [context] is rendered, using a template.
+  // TODO(srawlins): Pass around a single [StringBuffer], and make this field
+  // `final`.
   StringBuffer buffer = StringBuffer();
 
   final Set<String> _invisibleGetters;
