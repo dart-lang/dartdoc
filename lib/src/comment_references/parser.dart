@@ -32,6 +32,8 @@ const Map<String, String> operatorNames = {
 
 class StringTrie {
   final Map<int, StringTrie> children = {};
+
+  /// Does [this] node represent a valid entry in the trie?
   bool valid = false;
 
   /// Greedily match on the string trie.  Returns the index of the first
