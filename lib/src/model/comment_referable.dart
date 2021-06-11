@@ -92,7 +92,7 @@ mixin CommentReferable implements Nameable {
     }
     if (result?.enclosingElement is Container) {
       assert(false,
-          '[Container] member detected, override in subclass and handle inheritance');
+          '[Container] member detected, support not implemented for analyzer scope inside containers');
       return null;
     }
     return recurseChildrenAndFilter(referenceLookup, result, filter);

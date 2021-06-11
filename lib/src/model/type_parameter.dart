@@ -47,6 +47,9 @@ class TypeParameter extends ModelElement {
     return _boundType;
   }
 
+  @override
+  bool get hasParameters => false;
+
   String _name;
 
   @override
