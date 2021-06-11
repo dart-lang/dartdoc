@@ -169,8 +169,10 @@ class Dartdoc {
 
   /// Asynchronous factory method that builds Dartdoc with a generator
   /// determined by the given context.
-  static Future<Dartdoc> fromContext(DartdocGeneratorOptionContext context,
-      PackageBuilder packageBuilder) async {
+  static Future<Dartdoc> fromContext(
+    DartdocGeneratorOptionContext context,
+    PackageBuilder packageBuilder,
+  ) async {
     Generator generator;
     switch (context.format) {
       case 'html':
