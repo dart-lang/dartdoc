@@ -148,20 +148,21 @@ abstract class RendererBase<T> {
   /// The output buffer into which [context] is rendered, using a template.
   // TODO(srawlins): Pass around a single [StringBuffer], and make this field
   // `final`.
-  StringBuffer buffer = StringBuffer();
+  final StringSink sink;
 
   final Set<String> _invisibleGetters;
 
   RendererBase(
     this.context,
     this.parent,
-    this._template, {
+    this._template,
+    this.sink, {
     Set<String> invisibleGetters = const {},
   }) : _invisibleGetters = invisibleGetters;
 
   Template get template => _template;
 
-  void write(String text) => buffer.write(text);
+  void write(String text) => sink.write(text);
 
   String get contextChainString =>
       parent == null ? '$T' : '${parent.contextChainString} > $T';
@@ -212,7 +213,7 @@ abstract class RendererBase<T> {
     }
   }
 
-  /// Renders a block of Mustache template, the [ast], into [buffer].
+  /// Renders a block of Mustache template, the [ast], into [sink].
   void renderBlock(List<MustachioNode> ast) {
     for (var node in ast) {
       if (node is Text) {
@@ -241,7 +242,7 @@ abstract class RendererBase<T> {
             "Failed to resolve '$key' as a property on any types in the "
             'current context'));
       } else {
-        return parent.withBuffer(buffer, () => parent.section(node));
+        return parent.section(node);
       }
     }
 
@@ -255,13 +256,12 @@ abstract class RendererBase<T> {
 
     if (property.renderIterable != null) {
       var renderedIterable =
-          property.renderIterable(context, this, node.children);
+          property.renderIterable(context, this, node.children, sink);
       if (node.invert && renderedIterable.isEmpty) {
         // An inverted section is rendered with the current context.
         renderBlock(node.children);
       } else if (!node.invert && renderedIterable.isNotEmpty) {
-        var buffer = StringBuffer()..writeAll(renderedIterable);
-        write(buffer.toString());
+        renderedIterable.toList();
       }
       // Otherwise, render nothing.
 
@@ -273,7 +273,7 @@ abstract class RendererBase<T> {
     if (node.invert && property.isNullValue(context)) {
       renderBlock(node.children);
     } else if (!node.invert && !property.isNullValue(context)) {
-      write(property.renderValue(context, this, node.children));
+      property.renderValue(context, this, node.children, sink);
     }
   }
 
@@ -286,23 +286,14 @@ abstract class RendererBase<T> {
     renderBlock(partialTemplate.ast);
     _template = outerTemplate;
   }
-
-  /// Executes [fn] after replacing [buffer] with [newBuffer].
-  ///
-  /// Replaces the previous buffer as [buffer].
-  void withBuffer(StringBuffer newBuffer, void Function() fn) {
-    var previousBuffer = buffer;
-    buffer = newBuffer;
-    fn();
-    buffer = previousBuffer;
-  }
 }
 
-String renderSimple(Object context, List<MustachioNode> ast, Template template,
+String renderSimple(
+    Object context, List<MustachioNode> ast, Template template, StringSink sink,
     {@required RendererBase parent, Set<String> getters}) {
-  var renderer = SimpleRenderer(context, parent, template, getters);
+  var renderer = SimpleRenderer(context, parent, template, sink, getters);
   renderer.renderBlock(ast);
-  return renderer.buffer.toString();
+  return renderer.sink.toString();
 }
 
 class SimpleRenderer extends RendererBase<Object> {
@@ -310,8 +301,10 @@ class SimpleRenderer extends RendererBase<Object> {
     Object context,
     RendererBase<Object> parent,
     Template template,
+    StringSink sink,
     Set<String> invisibleGetters,
-  ) : super(context, parent, template, invisibleGetters: invisibleGetters);
+  ) : super(context, parent, template, sink,
+            invisibleGetters: invisibleGetters);
 
   @override
   Property<Object> getProperty(String key) {
@@ -361,14 +354,14 @@ class Property<T> {
   /// object [context].
   final bool /*!*/ Function(T context) /*?*/ getBool;
 
-  final Iterable<String> /*!*/ Function(
-          T, RendererBase<T>, List<MustachioNode> /*!*/) /*?*/
+  final Iterable<void> /*!*/ Function(
+          T, RendererBase<T>, List<MustachioNode> /*!*/, StringSink /*!*/) /*?*/
       renderIterable;
 
   final bool /*!*/ Function(T) /*?*/ isNullValue;
 
-  final String /*!*/ Function(
-      T, RendererBase<T>, List<MustachioNode> /*!*/) /*?*/ renderValue;
+  final void /*!*/ Function(T, RendererBase<T>, List<MustachioNode> /*!*/,
+      StringSink /*!*/) /*?*/ renderValue;
 
   Property(
       {@required this.getValue,

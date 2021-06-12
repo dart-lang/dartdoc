@@ -339,7 +339,9 @@ import '${p.basename(_sourceUri.path)}';
       _buffer.writeln('''
 String ${renderer.publicApiFunctionName}${renderer._typeParametersString}(
     $typeWithVariables context, Template template) {
-  return ${renderer._renderFunctionName}(context, template.ast, template);
+  var buffer = StringBuffer();
+  ${renderer._renderFunctionName}(context, template.ast, template, buffer);
+  return buffer.toString();
 }
 ''');
     }
@@ -349,12 +351,12 @@ String ${renderer.publicApiFunctionName}${renderer._typeParametersString}(
     // Write out the render function.
     if (renderer.includeRenderFunction) {
       _buffer.writeln('''
-String ${renderer._renderFunctionName}${renderer._typeParametersString}(
-    $typeWithVariables context, List<MustachioNode> ast, Template template,
+void ${renderer._renderFunctionName}${renderer._typeParametersString}(
+    $typeWithVariables context, List<MustachioNode> ast,
+    Template template, StringSink sink,
     {RendererBase<Object> parent}) {
-  var renderer = ${renderer._rendererClassName}(context, parent, template);
+  var renderer = ${renderer._rendererClassName}(context, parent, template, sink);
   renderer.renderBlock(ast);
-  return renderer.buffer.toString();
 }
 ''');
     }
@@ -368,8 +370,9 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
     // Write out the constructor.
     _buffer.writeln('''
   ${renderer._rendererClassName}(
-        $typeWithVariables context, RendererBase<Object> parent, Template template)
-      : super(context, parent, template);
+        $typeWithVariables context, RendererBase<Object> parent,
+        Template template, StringSink sink)
+      : super(context, parent, template, sink);
 ''');
     var propertyMapTypeArguments = renderer._typeArgumentsStringWith(typeName);
     var propertyMapName = 'propertyMap$propertyMapTypeArguments';
@@ -522,14 +525,16 @@ renderVariable:
               _invisibleGetters.putIfAbsent(
                   typeName, () => innerType.element.allAccessorNames);
             }
-            renderCall = 'renderSimple(e, ast, r.template, parent: r, '
+            renderCall = 'renderSimple(e, ast, r.template, sink, parent: r, '
                 "getters: _invisibleGetters['$typeName'])";
           } else {
-            renderCall = '$renderFunctionName(e, ast, r.template, parent: r)';
+            renderCall =
+                '$renderFunctionName(e, ast, r.template, sink, parent: r)';
           }
           _buffer.writeln('''
 renderIterable:
-    ($_contextTypeVariable c, RendererBase<$_contextTypeVariable> r, List<MustachioNode> ast) {
+    ($_contextTypeVariable c, RendererBase<$_contextTypeVariable> r,
+     List<MustachioNode> ast, StringSink sink) {
   return c.$getterName.map((e) => $renderCall);
 },
 ''');
@@ -551,18 +556,19 @@ renderIterable:
                 typeName, () => getterType.element.allAccessorNames);
           }
           renderCall =
-              'renderSimple(c.$getterName, ast, r.template, parent: r, '
+              'renderSimple(c.$getterName, ast, r.template, sink, parent: r, '
               "getters: _invisibleGetters['$typeName'])";
         } else {
           renderCall =
-              '$renderFunctionName(c.$getterName, ast, r.template, parent: r)';
+              '$renderFunctionName(c.$getterName, ast, r.template, sink, parent: r)';
         }
         _buffer.writeln('''
 isNullValue: ($_contextTypeVariable c) => c.$getterName == null,
 
 renderValue:
-    ($_contextTypeVariable c, RendererBase<$_contextTypeVariable> r, List<MustachioNode> ast) {
-  return $renderCall;
+    ($_contextTypeVariable c, RendererBase<$_contextTypeVariable> r,
+     List<MustachioNode> ast, StringSink sink) {
+  $renderCall;
 },
 ''');
       }
