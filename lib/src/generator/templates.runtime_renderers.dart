@@ -39,9 +39,9 @@ class _Renderer_Accessor extends RendererBase<Accessor> {
                       self.renderSimpleVariable(
                           c, remainingNames, 'CharacterLocation'),
                   isNullValue: (CT_ c) => c.characterLocation == null,
-                  renderValue:
-                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-                    return renderSimple(c.characterLocation, ast, r.template,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    renderSimple(c.characterLocation, ast, r.template, sink,
                         parent: r,
                         getters: _invisibleGetters['CharacterLocation']);
                   },
