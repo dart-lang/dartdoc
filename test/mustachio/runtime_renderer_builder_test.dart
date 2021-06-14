@@ -129,9 +129,10 @@ class Baz {}
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(c, remainingNames, 'List<int>'),
-                  renderIterable:
-                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-                    return c.l1.map((e) => renderSimple(e, ast, r.template,
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    return c.l1.map((e) => renderSimple(
+                        e, ast, r.template, sink,
                         parent: r, getters: _invisibleGetters['int']));
                   },
                 ),
@@ -146,9 +147,9 @@ class Baz {}
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(c, remainingNames, 'String'),
                   isNullValue: (CT_ c) => c.s1 == null,
-                  renderValue:
-                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-                    return renderSimple(c.s1, ast, r.template,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    renderSimple(c.s1, ast, r.template, sink,
                         parent: r, getters: _invisibleGetters['String']);
                   },
                 ),
@@ -206,8 +207,8 @@ import 'package:mustachio/annotations.dart';
     test('with a corresponding render function', () async {
       expect(
           generatedContent,
-          contains('String _render_Foo<T>(\n'
-              '    Foo<T> context, List<MustachioNode> ast, Template template,'));
+          contains('void _render_Foo<T>(\n'
+              '    Foo<T> context, List<MustachioNode> ast, Template template, StringSink sink'));
     });
 
     test('with a generic supertype type argument', () async {
