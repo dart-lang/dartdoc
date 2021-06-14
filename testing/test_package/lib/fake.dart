@@ -962,6 +962,8 @@ class BaseForDocComments {
 
 
   BaseForDocComments();
+  BaseForDocComments.aNonDefaultConstructor();
+
   factory BaseForDocComments.aFactoryFunction() => null;
 }
 

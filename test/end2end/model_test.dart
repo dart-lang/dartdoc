@@ -2129,6 +2129,7 @@ void main() {
         nameWithTwoUnderscores,
         nameWithSingleUnderscore,
         theOnlyThingInTheLibrary;
+    Constructor aNonDefaultConstructor;
     Class Apple, BaseClass, baseForDocComments, ExtraSpecialList, string;
     Method doAwesomeStuff, anotherMethod;
     // ignore: unused_local_variable
@@ -2147,6 +2148,7 @@ void main() {
           .firstWhere((c) => c.name == 'String');
       baseForDocComments =
           fakeLibrary.classes.firstWhere((c) => c.name == 'BaseForDocComments');
+      aNonDefaultConstructor = baseForDocComments.constructors.firstWhere((c) => c.name == 'BaseForDocComments.aNonDefaultConstructor');
       doAwesomeStuff = baseForDocComments.instanceMethods
           .firstWhere((m) => m.name == 'doAwesomeStuff');
       anotherMethod = baseForDocComments.instanceMethods
@@ -2222,6 +2224,12 @@ void main() {
     }
 
     test('Verify basic linking inside class', () {
+      expect(bothLookup(doAwesomeStuff, 'aNonDefaultConstructor'),
+          equals(MatchingLinkResult(aNonDefaultConstructor)));
+
+      expect(bothLookup(doAwesomeStuff, 'BaseForDocComments.aNonDefaultConstructor'),
+          equals(MatchingLinkResult(aNonDefaultConstructor)));
+
       expect(bothLookup(doAwesomeStuff, 'this'),
           equals(MatchingLinkResult(baseForDocComments)));
 
@@ -2280,7 +2288,6 @@ void main() {
           equals(MatchingLinkResult(BaseClass)));
 
       // A bracket operator within this class.
-      // TODO(jcollins-g): operator lookups not yet implemented with the new lookup code.
       expect(bothLookup(doAwesomeStuff, 'operator []'),
           equals(MatchingLinkResult(bracketOperator)));
 
