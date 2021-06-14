@@ -2136,13 +2136,13 @@ void main() {
         nameWithTwoUnderscores,
         nameWithSingleUnderscore,
         theOnlyThingInTheLibrary;
-    Constructor aNonDefaultConstructor;
+    Constructor aNonDefaultConstructor, defaultConstructor;
     Class Apple, BaseClass, baseForDocComments, ExtraSpecialList, string;
     Method doAwesomeStuff, anotherMethod;
     // ignore: unused_local_variable
     Operator bracketOperator, bracketOperatorOtherClass;
     Parameter doAwesomeStuffParam;
-    Field forInheriting, action;
+    Field forInheriting, action, initializeMe;
 
     setUpAll(() async {
       nameWithTwoUnderscores = fakeLibrary.constants
@@ -2157,6 +2157,10 @@ void main() {
           fakeLibrary.classes.firstWhere((c) => c.name == 'BaseForDocComments');
       aNonDefaultConstructor = baseForDocComments.constructors.firstWhere(
           (c) => c.name == 'BaseForDocComments.aNonDefaultConstructor');
+      defaultConstructor = baseForDocComments.constructors
+          .firstWhere((c) => c.name == 'BaseForDocComments');
+      initializeMe = baseForDocComments.allFields
+          .firstWhere((f) => f.name == 'initializeMe');
       doAwesomeStuff = baseForDocComments.instanceMethods
           .firstWhere((m) => m.name == 'doAwesomeStuff');
       anotherMethod = baseForDocComments.instanceMethods
@@ -2231,7 +2235,25 @@ void main() {
       return newLookupResult;
     }
 
+    test('Verify basic linking inside a constructor', () {
+      // Field formal parameters worked sometimes by accident in the old code,
+      // but should work reliably now.
+      expect(newLookup(aNonDefaultConstructor, 'initializeMe'),
+          equals(MatchingLinkResult(initializeMe)));
+      expect(newLookup(aNonDefaultConstructor, 'aNonDefaultConstructor'),
+          equals(MatchingLinkResult(aNonDefaultConstructor)));
+      expect(
+          bothLookup(aNonDefaultConstructor,
+              'BaseForDocComments.aNonDefaultConstructor'),
+          equals(MatchingLinkResult(aNonDefaultConstructor)));
+    });
+
     test('Verify basic linking inside class', () {
+      expect(
+          bothLookup(
+              baseForDocComments, 'BaseForDocComments.BaseForDocComments'),
+          equals(MatchingLinkResult(defaultConstructor)));
+
       expect(bothLookup(doAwesomeStuff, 'aNonDefaultConstructor'),
           equals(MatchingLinkResult(aNonDefaultConstructor)));
 

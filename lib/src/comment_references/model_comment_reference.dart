@@ -15,6 +15,7 @@ abstract class ModelCommentReference {
   bool get allowDefaultConstructor;
   String get codeRef;
   bool get hasConstructorHint;
+  bool get hasCallableHint;
   List<String> get referenceBy;
   Element get staticElement;
 
@@ -32,22 +33,42 @@ abstract class ModelCommentReference {
 /// information needed for Dartdoc.  Drops link to the [CommentReference]
 /// and [ResourceProvider] after construction.
 class _ModelCommentReferenceImpl implements ModelCommentReference {
+  bool _allowDefaultConstructor;
   @override
   bool get allowDefaultConstructor {
-    if (parsed.length >= 2) {
-      return parsed[parsed.length - 2] == parsed[parsed.length - 1];
+    if (_allowDefaultConstructor == null) {
+      _allowDefaultConstructor = false;
+      var foundFirst = false;
+      String checkText;
+      // Check for two identically named identifiers at the end of the
+      // parse list, skipping over any junk or other nodes.
+      for (var node in parsed.reversed.whereType<IdentifierNode>()) {
+        if (foundFirst) {
+          if (checkText == node.text) {
+            _allowDefaultConstructor = true;
+          }
+          break;
+        } else {
+          foundFirst = true;
+          checkText = node.text;
+        }
+      }
     }
-    return false;
+    return _allowDefaultConstructor;
   }
 
   @override
   final String codeRef;
 
   @override
-  bool get hasConstructorHint =>
+  bool get hasCallableHint =>
       parsed.isNotEmpty &&
       (parsed.first is ConstructorHintStartNode ||
-          parsed.last is ConstructorHintEndNode);
+          parsed.last is CallableHintEndNode);
+
+  @override
+  bool get hasConstructorHint =>
+      parsed.isNotEmpty && parsed.first is ConstructorHintStartNode;
 
   @override
   List<String> get referenceBy => parsed

@@ -960,9 +960,11 @@ class BaseForDocComments {
 
   String operator [](String key) => "${key}'s value";
 
+  final bool initializeMe;
 
-  BaseForDocComments();
-  BaseForDocComments.aNonDefaultConstructor();
+  BaseForDocComments(this.initializeMe);
+
+  BaseForDocComments.aNonDefaultConstructor(this.initializeMe);
 
   factory BaseForDocComments.aFactoryFunction() => null;
 }

@@ -11,7 +11,7 @@ void main() {
     var result = CommentReferenceParser(codeRef).parse();
     var hasHint = result.isNotEmpty &&
         (result.first is ConstructorHintStartNode ||
-            result.last is ConstructorHintEndNode);
+            result.last is CallableHintEndNode);
     var stringParts = result.whereType<IdentifierNode>().map((i) => i.text);
     expect(stringParts, equals(parts));
     expect(hasHint, equals(constructorHint));

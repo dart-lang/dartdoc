@@ -203,6 +203,13 @@ class MatchingLinkResult {
     if (modelElement is Parameter && other.modelElement == null) {
       return true;
     }
+    // Same with TypeParameter.
+    if (other.modelElement is TypeParameter && modelElement == null) {
+      return true;
+    }
+    if (modelElement is TypeParameter && other.modelElement == null) {
+      return true;
+    }
     return false;
   }
 
@@ -286,7 +293,12 @@ bool _rejectDefaultConstructors(CommentReferable referable) {
   return true;
 }
 
-/// Return false unless the passed [referable] is a [Constructor].
+/// Return false unless the passed [referable] represents a callable object.
+/// Allows constructors but does not require them.
+bool _requireCallable(CommentReferable referable) =>
+    referable is ModelElement && referable.isCallable;
+
+/// Return false unless the passed [referable] represents a constructor.
 bool _requireConstructor(CommentReferable referable) =>
     referable is Constructor;
 
@@ -295,17 +307,29 @@ MatchingLinkResult _getMatchingLinkElementCommentReferable(
     String codeRef, Warnable warnable) {
   var commentReference =
       warnable.commentRefs[codeRef] ?? ModelCommentReference.synthetic(codeRef);
-  var filter = commentReference.hasConstructorHint
-      ? _requireConstructor
-      : _rejectDefaultConstructors;
 
-  /// Neither reject, nor require, a default constructor in the event
-  /// the comment reference structure implies one.  (We can not require it
-  /// in case a library name is the same as a member class name and the class
-  /// is the intended lookup).
+  bool Function(CommentReferable) filter;
+
   if (commentReference.allowDefaultConstructor) {
-    filter = null;
+    // Neither reject, nor require, a default constructor in the event
+    // the comment reference structure implies one.  (We can not require it
+    // in case a library name is the same as a member class name and the class
+    // is the intended lookup).
+    filter = commentReference.hasCallableHint ? _requireCallable : null;
+  } else if (commentReference.hasConstructorHint &&
+      commentReference.hasCallableHint) {
+    // This takes precedence over the callable hint if both are present --
+    // pick a constructor and only constructor if we see `new`.
+    filter = _requireConstructor;
+  } else if (commentReference.hasCallableHint) {
+    // Trailing parens indicate we are looking for a callable.
+    filter = _requireCallable;
+  } else {
+    // Without hints, reject default constructors to force resolution to the
+    // class.
+    filter = _rejectDefaultConstructors;
   }
+
   var lookupResult =
       warnable.referenceBy(commentReference.referenceBy, filter: filter);
 
