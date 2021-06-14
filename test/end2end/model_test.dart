@@ -403,8 +403,8 @@ void main() {
           set_literals.constants.firstWhere((v) => v.name == 'specifiedSet');
       untypedMap =
           set_literals.constants.firstWhere((v) => v.name == 'untypedMap');
-      untypedMapWithoutConst =
-          set_literals.constants.firstWhere((v) => v.name == 'untypedMapWithoutConst');
+      untypedMapWithoutConst = set_literals.constants
+          .firstWhere((v) => v.name == 'untypedMapWithoutConst');
       typedSet = set_literals.constants.firstWhere((v) => v.name == 'typedSet');
     });
 
@@ -436,7 +436,8 @@ void main() {
       expect(specifiedSet.constantValue, equals('const {}'));
       // The analyzer is allowed to return a string with or without leading
       // `const` here.
-      expect(untypedMapWithoutConst.constantValue, matches(RegExp('(const )?{}')));
+      expect(
+          untypedMapWithoutConst.constantValue, matches(RegExp('(const )?{}')));
       expect(untypedMap.modelType.name, equals('Map'));
       expect(
           (untypedMap.modelType as ParameterizedElementType)
