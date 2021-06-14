@@ -2148,7 +2148,8 @@ void main() {
           .firstWhere((c) => c.name == 'String');
       baseForDocComments =
           fakeLibrary.classes.firstWhere((c) => c.name == 'BaseForDocComments');
-      aNonDefaultConstructor = baseForDocComments.constructors.firstWhere((c) => c.name == 'BaseForDocComments.aNonDefaultConstructor');
+      aNonDefaultConstructor = baseForDocComments.constructors.firstWhere(
+          (c) => c.name == 'BaseForDocComments.aNonDefaultConstructor');
       doAwesomeStuff = baseForDocComments.instanceMethods
           .firstWhere((m) => m.name == 'doAwesomeStuff');
       anotherMethod = baseForDocComments.instanceMethods
@@ -2227,7 +2228,9 @@ void main() {
       expect(bothLookup(doAwesomeStuff, 'aNonDefaultConstructor'),
           equals(MatchingLinkResult(aNonDefaultConstructor)));
 
-      expect(bothLookup(doAwesomeStuff, 'BaseForDocComments.aNonDefaultConstructor'),
+      expect(
+          bothLookup(
+              doAwesomeStuff, 'BaseForDocComments.aNonDefaultConstructor'),
           equals(MatchingLinkResult(aNonDefaultConstructor)));
 
       expect(bothLookup(doAwesomeStuff, 'this'),
