@@ -58,8 +58,8 @@ class aThingToDo {
   const aThingToDo(this.who, this.what);
 }
 
-const ConstantCat MY_CAT = ConstantCat('tabby');
-const List<String> PRETTY_COLORS = <String>[COLOR_GREEN, COLOR_ORANGE, 'blue'];
+const ConstantCat MY_CAT = const ConstantCat('tabby');
+const List<String> PRETTY_COLORS = const <String>[COLOR_GREEN, COLOR_ORANGE, 'blue'];
 @deprecated
 int deprecatedField;
 
@@ -313,7 +313,7 @@ class Dog implements Cat, E {
   static const String aStaticConstField = "A Constant Dog";
 
   /// Verify link substitution in constants (#1535)
-  static const ShortName aName = ExtendedShortName("hello there");
+  static const ShortName aName = const ExtendedShortName("hello there");
 
   @protected
   final int aProtectedFinalField = 84;
