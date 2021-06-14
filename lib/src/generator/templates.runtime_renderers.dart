@@ -32,6 +32,20 @@ class _Renderer_Accessor extends RendererBase<Accessor> {
           CT_,
           () => {
                 ..._Renderer_ModelElement.propertyMap<CT_>(),
+                'characterLocation': Property(
+                  getValue: (CT_ c) => c.characterLocation,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'CharacterLocation'),
+                  isNullValue: (CT_ c) => c.characterLocation == null,
+                  renderValue:
+                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
+                    return renderSimple(c.characterLocation, ast, r.template,
+                        parent: r,
+                        getters: _invisibleGetters['CharacterLocation']);
+                  },
+                ),
                 'definingCombo': Property(
                   getValue: (CT_ c) => c.definingCombo,
                   renderVariable:

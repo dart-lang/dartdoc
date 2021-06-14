@@ -254,7 +254,7 @@ class AClassWithFancyProperties {
   String aProperty;
 }
 
-const _APrivateConstClass CUSTOM_CLASS_PRIVATE = _APrivateConstClass();
+const _APrivateConstClass CUSTOM_CLASS_PRIVATE = const _APrivateConstClass();
 
 /// Type inference mixing with anonymous functions.
 final importantComputations = {

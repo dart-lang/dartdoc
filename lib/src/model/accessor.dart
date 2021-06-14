@@ -22,6 +22,16 @@ class Accessor extends ModelElement implements EnclosedElement {
       : super(element, library, packageGraph, originalMember);
 
   @override
+  CharacterLocation get characterLocation {
+    if (element.nameOffset < 0) {
+      assert(element.isSynthetic, 'Invalid offset for non-synthetic element');
+      // TODO(jcollins-g): switch to [element.nonSynthetic] after analyzer 1.8
+      return enclosingCombo.characterLocation;
+    }
+    return super.characterLocation;
+  }
+
+  @override
   PropertyAccessorElement get element => super.element;
 
   @override
