@@ -2162,9 +2162,9 @@ class _Renderer_Class extends RendererBase<Class> {
                       self.renderSimpleVariable(
                           c, remainingNames, 'Map<String, CommentReferable>'),
                   isNullValue: (CT_ c) => c.referenceChildren == null,
-                  renderValue:
-                      (CT_ c, RendererBase<CT_> r, List<MustachioNode> ast) {
-                    return renderSimple(c.referenceChildren, ast, r.template,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    renderSimple(c.referenceChildren, ast, r.template, sink,
                         parent: r, getters: _invisibleGetters['Map']);
                   },
                 ),
