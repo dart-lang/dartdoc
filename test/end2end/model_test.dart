@@ -2137,12 +2137,17 @@ void main() {
         nameWithSingleUnderscore,
         theOnlyThingInTheLibrary;
     Constructor aNonDefaultConstructor, defaultConstructor;
-    Class Apple, BaseClass, baseForDocComments, ExtraSpecialList, string;
+    Class Apple,
+        BaseClass,
+        baseForDocComments,
+        ExtraSpecialList,
+        string,
+        metaUseResult;
     Method doAwesomeStuff, anotherMethod;
     // ignore: unused_local_variable
     Operator bracketOperator, bracketOperatorOtherClass;
     Parameter doAwesomeStuffParam;
-    Field forInheriting, action, initializeMe;
+    Field forInheriting, action, initializeMe, somethingShadowy;
 
     setUpAll(() async {
       nameWithTwoUnderscores = fakeLibrary.constants
@@ -2153,6 +2158,10 @@ void main() {
           .firstWhere((e) => e.name == 'dart:core')
           .allClasses
           .firstWhere((c) => c.name == 'String');
+      metaUseResult = packageGraph.allLibraries.values
+          .firstWhere((e) => e.name == 'meta')
+          .allClasses
+          .firstWhere((c) => c.name == 'UseResult');
       baseForDocComments =
           fakeLibrary.classes.firstWhere((c) => c.name == 'BaseForDocComments');
       aNonDefaultConstructor = baseForDocComments.constructors.firstWhere(
@@ -2161,6 +2170,8 @@ void main() {
           .firstWhere((c) => c.name == 'BaseForDocComments');
       initializeMe = baseForDocComments.allFields
           .firstWhere((f) => f.name == 'initializeMe');
+      somethingShadowy = baseForDocComments.allFields
+          .firstWhere((f) => f.name == 'somethingShadowy');
       doAwesomeStuff = baseForDocComments.instanceMethods
           .firstWhere((m) => m.name == 'doAwesomeStuff');
       anotherMethod = baseForDocComments.instanceMethods
@@ -2248,11 +2259,22 @@ void main() {
           equals(MatchingLinkResult(aNonDefaultConstructor)));
     });
 
+    test('Deprecated lookup styles still function', () {
+      // dart-lang/dartdoc#2683
+      expect(bothLookup(baseForDocComments, 'aPrefix.UseResult'),
+          equals(MatchingLinkResult(metaUseResult)));
+    });
+
     test('Verify basic linking inside class', () {
       expect(
           bothLookup(
               baseForDocComments, 'BaseForDocComments.BaseForDocComments'),
           equals(MatchingLinkResult(defaultConstructor)));
+
+      // We don't want the parameter on the default constructor, here.
+      expect(
+          bothLookup(baseForDocComments, 'BaseForDocComments.somethingShadowy'),
+          equals(MatchingLinkResult(somethingShadowy)));
 
       expect(bothLookup(doAwesomeStuff, 'aNonDefaultConstructor'),
           equals(MatchingLinkResult(aNonDefaultConstructor)));
@@ -2311,8 +2333,7 @@ void main() {
           equals(MatchingLinkResult(theOnlyThingInTheLibrary)));
 
       // A name that exists in this package but is not imported.
-      // TODO(jcollins-g): package-wide lookups are not yet implemented with the new lookup code.
-      expect(originalLookup(doAwesomeStuff, 'doesStuff'),
+      expect(bothLookup(doAwesomeStuff, 'doesStuff'),
           equals(MatchingLinkResult(doesStuff)));
 
       // A name of a class from an import of a library that exported that name.
@@ -2339,8 +2360,7 @@ void main() {
           equals(MatchingLinkResult(forInheriting)));
 
       // Reference to an inherited member in another library via class name.
-      // TODO(jcollins-g): reference to non-imported symbols isn't implemented yet in new lookup.
-      expect(originalLookup(doAwesomeStuff, 'ExtendedBaseReexported.action'),
+      expect(bothLookup(doAwesomeStuff, 'ExtendedBaseReexported.action'),
           equals(MatchingLinkResult(action)));
     });
   });

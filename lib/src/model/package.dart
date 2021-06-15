@@ -414,6 +414,7 @@ class Package extends LibraryContainer
       // lookups like this.
       for (var lib in publicLibrariesSorted) {
         for (var referableEntry in lib.referenceChildren.entries) {
+          // Avoiding tearoffs for performance reasons.
           if (!_referenceChildren.containsKey(referableEntry.key)) {
             _referenceChildren[referableEntry.key] = referableEntry.value;
           }

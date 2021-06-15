@@ -142,7 +142,6 @@ class CommentReferenceParser {
   }
 
   static const _constructorHintPrefix = 'new';
-
   static const _ignorePrefixes = ['const', 'final', 'var'];
 
   /// Implement parsing a prefix to a comment reference.
@@ -153,17 +152,19 @@ class CommentReferenceParser {
   ///
   /// <constructorPrefixHint> ::= 'new '
   ///
-  /// <leadingJunk> ::= ('const' | 'final' | 'var' | 'operator')(' '+)
+  /// <leadingJunk> ::= ('const' | 'final' | 'var')(' '+)
   /// ```
   _PrefixParseResult _parsePrefix() {
     if (_atEnd) {
       return _PrefixParseResult.endOfFile;
     }
-    if (_tryMatchLiteral(_constructorHintPrefix)) {
+    if (_tryMatchLiteral(_constructorHintPrefix,
+        requireTrailingNonidentifier: true)) {
       return _PrefixParseResult.ok(
           ConstructorHintStartNode(_constructorHintPrefix));
     }
-    if (_ignorePrefixes.any((p) => _tryMatchLiteral(p))) {
+    if (_ignorePrefixes
+        .any((p) => _tryMatchLiteral(p, requireTrailingNonidentifier: true))) {
       return _PrefixParseResult.junk;
     }
 
@@ -278,14 +279,22 @@ class CommentReferenceParser {
 
   /// Advances [_index] on match, preserves on non-match.
   bool _tryMatchLiteral(String characters,
-      {bool acceptTrailingWhitespace = true}) {
+      {bool acceptTrailingWhitespace = true,
+      bool requireTrailingNonidentifier = false}) {
     assert(acceptTrailingWhitespace != null);
     if (characters.length + _index > _referenceLength) return false;
-    for (var startIndex = _index;
+    int startIndex;
+    for (startIndex = _index;
         _index - startIndex < characters.length;
         _index++) {
       if (codeRef.codeUnitAt(_index) !=
           characters.codeUnitAt(_index - startIndex)) {
+        _index = startIndex;
+        return false;
+      }
+    }
+    if (requireTrailingNonidentifier) {
+      if (_atEnd || !_nonIdentifierChars.contains(_thisChar)) {
         _index = startIndex;
         return false;
       }
