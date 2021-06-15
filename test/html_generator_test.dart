@@ -97,8 +97,8 @@ void main() {
           'resources/$resource', 'CONTENT');
     }
 
-    generator =
-        GeneratorFrontEnd(HtmlGeneratorBackend(null, templates, pathContext));
+    generator = GeneratorFrontEnd(
+        HtmlGeneratorBackend(null, templates, resourceProvider));
 
     projectRoot = utils.writePackage(
         'my_package', resourceProvider, packageConfigProvider);

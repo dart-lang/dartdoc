@@ -19,7 +19,7 @@ class GeneratorFrontEnd implements Generator {
   Future<void> generate(PackageGraph packageGraph, FileWriter writer) async {
     var indexElements = <Indexable>[];
     _generateDocs(packageGraph, writer, indexElements);
-    await _generatorBackend.generateAdditionalFiles(writer, packageGraph);
+    await _generatorBackend.generateAdditionalFiles(writer);
 
     var categories = indexElements
         .whereType<Categorization>()
@@ -339,5 +339,5 @@ abstract class GeneratorBackend {
       FileWriter writer, PackageGraph graph, Library library, Typedef typedef);
 
   /// Emit files not specific to a Dart language element.
-  Future<void> generateAdditionalFiles(FileWriter writer, PackageGraph graph);
+  Future<void> generateAdditionalFiles(FileWriter writer);
 }

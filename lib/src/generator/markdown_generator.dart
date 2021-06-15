@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/options.dart';
 import 'package:dartdoc/src/generator/dartdoc_generator_backend.dart';
 import 'package:dartdoc/src/generator/generator.dart';
@@ -10,7 +11,6 @@ import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/src/generator/templates.dart';
 import 'package:dartdoc/src/model/package.dart';
 import 'package:dartdoc/src/model/package_graph.dart';
-import 'package:path/path.dart' as path show Context;
 
 /// Creates a [Generator] with an [MarkdownGeneratorBackend] backend.
 ///
@@ -19,16 +19,16 @@ Future<Generator> initMarkdownGenerator(DartdocGeneratorOptionContext context,
     {bool forceRuntimeTemplates = false}) async {
   var templates = await Templates.fromContext(context);
   var options = DartdocGeneratorBackendOptions.fromContext(context);
-  var backend = MarkdownGeneratorBackend(
-      options, templates, context.resourceProvider.pathContext);
+  var backend =
+      MarkdownGeneratorBackend(options, templates, context.resourceProvider);
   return GeneratorFrontEnd(backend);
 }
 
 /// Generator backend for markdown output.
 class MarkdownGeneratorBackend extends DartdocGeneratorBackend {
   MarkdownGeneratorBackend(DartdocGeneratorBackendOptions options,
-      Templates templates, path.Context pathContext)
-      : super(options, templates, pathContext);
+      Templates templates, ResourceProvider resourceProvider)
+      : super(options, templates, resourceProvider);
 
   @override
   void generatePackage(FileWriter writer, PackageGraph graph, Package package) {

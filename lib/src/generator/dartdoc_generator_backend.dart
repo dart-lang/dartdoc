@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/options.dart';
 import 'package:dartdoc/src/generator/generator_frontend.dart';
@@ -78,14 +79,16 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
       sidebarForLibrary;
   final SidebarGenerator<TemplateDataWithContainer<Documentable>>
       sidebarForContainer;
+  final ResourceProvider resourceProvider;
   final path.Context _pathContext;
 
-  DartdocGeneratorBackend(
-      DartdocGeneratorBackendOptions options, this.templates, this._pathContext)
+  DartdocGeneratorBackend(DartdocGeneratorBackendOptions options,
+      this.templates, this.resourceProvider)
       : options = options ?? DartdocGeneratorBackendOptions._defaults(),
         sidebarForLibrary = SidebarGenerator(templates.renderSidebarForLibrary),
         sidebarForContainer =
-            SidebarGenerator(templates.renderSidebarForContainer);
+            SidebarGenerator(templates.renderSidebarForContainer),
+        _pathContext = resourceProvider.pathContext;
 
   /// Helper method to bind template data and emit the content to the writer.
   void write(
@@ -252,6 +255,5 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
   }
 
   @override
-  Future<void> generateAdditionalFiles(
-      FileWriter writer, PackageGraph graph) async {}
+  Future<void> generateAdditionalFiles(FileWriter writer) async {}
 }

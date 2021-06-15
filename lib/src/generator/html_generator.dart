@@ -15,7 +15,6 @@ import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/src/generator/templates.dart';
 import 'package:dartdoc/src/model/package.dart';
 import 'package:dartdoc/src/model/package_graph.dart';
-import 'package:path/path.dart' as path show Context;
 
 /// Creates a [Generator] with an [HtmlGeneratorBackend] backend.
 ///
@@ -25,16 +24,16 @@ Future<Generator> initHtmlGenerator(DartdocGeneratorOptionContext context,
   var templates = await Templates.fromContext(context,
       forceRuntimeTemplates: forceRuntimeTemplates);
   var options = DartdocGeneratorBackendOptions.fromContext(context);
-  var backend = HtmlGeneratorBackend(
-      options, templates, context.resourceProvider.pathContext);
+  var backend =
+      HtmlGeneratorBackend(options, templates, context.resourceProvider);
   return GeneratorFrontEnd(backend);
 }
 
 /// Generator backend for html output.
 class HtmlGeneratorBackend extends DartdocGeneratorBackend {
   HtmlGeneratorBackend(DartdocGeneratorBackendOptions options,
-      Templates templates, path.Context pathContext)
-      : super(options, templates, pathContext);
+      Templates templates, ResourceProvider resourceProvider)
+      : super(options, templates, resourceProvider);
 
   @override
   void generatePackage(FileWriter writer, PackageGraph graph, Package package) {
@@ -46,23 +45,20 @@ class HtmlGeneratorBackend extends DartdocGeneratorBackend {
   }
 
   @override
-  Future<void> generateAdditionalFiles(
-      FileWriter writer, PackageGraph graph) async {
-    await _copyResources(writer, graph.resourceProvider);
+  Future<void> generateAdditionalFiles(FileWriter writer) async {
+    await _copyResources(writer);
     if (options.favicon != null) {
       // Allow overwrite of favicon.
-      var bytes =
-          writer.resourceProvider.getFile(options.favicon).readAsBytesSync();
+      var bytes = resourceProvider.getFile(options.favicon).readAsBytesSync();
       writer.writeBytes(
-        graph.resourceProvider.pathContext.join('static-assets', 'favicon.png'),
+        resourceProvider.pathContext.join('static-assets', 'favicon.png'),
         bytes,
         allowOverwrite: true,
       );
     }
   }
 
-  Future<void> _copyResources(
-      FileWriter writer, ResourceProvider resourceProvider) async {
+  Future<void> _copyResources(FileWriter writer) async {
     for (var resourcePath in resources.resource_names) {
       if (!resourcePath.startsWith(_dartdocResourcePrefix)) {
         throw StateError('Resource paths must start with '
