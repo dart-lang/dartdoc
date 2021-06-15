@@ -960,8 +960,12 @@ class BaseForDocComments {
 
   String operator [](String key) => "${key}'s value";
 
+  final bool initializeMe;
 
-  BaseForDocComments();
+  BaseForDocComments(this.initializeMe);
+
+  BaseForDocComments.aNonDefaultConstructor(this.initializeMe);
+
   factory BaseForDocComments.aFactoryFunction() => null;
 }
 
@@ -981,6 +985,8 @@ enum MacrosFromAccessors {
 /// Testing if docs for inherited method are correct.
 /// {@category NotSoExcellent}
 class SubForDocComments extends BaseForDocComments {
+  SubForDocComments(bool thing) : super(thing);
+  
   /// Reference to [foo] and [bar]
   void localMethod(String foo, bar) {}
 

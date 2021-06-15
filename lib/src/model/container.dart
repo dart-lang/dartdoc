@@ -262,7 +262,18 @@ abstract class Container extends ModelElement with TypeParameters {
     if (_referenceChildren == null) {
       _referenceChildren = {};
       for (var modelElement in allModelElements) {
+        // Never directly look up accessors.
         if (modelElement is Accessor) continue;
+        if (modelElement is Constructor) {
+          // Populate default constructor names so they make sense for the
+          // new lookup code.
+          var constructorName = modelElement.element.name;
+          if (constructorName == '') {
+            constructorName = name;
+          }
+          _referenceChildren[constructorName] = modelElement;
+          continue;
+        }
         if (modelElement is Operator) {
           // TODO(jcollins-g): once todo in [Operator.name] is fixed, remove
           // this special case.
@@ -270,6 +281,10 @@ abstract class Container extends ModelElement with TypeParameters {
         } else {
           _referenceChildren[modelElement.name] = modelElement;
         }
+      }
+      // Process unscoped parameters last to make sure they don't override
+      // other options.
+      for (var modelElement in allModelElements) {
         // Don't complain about references to parameter names, but prefer
         // referring to anything else.
         // TODO(jcollins-g): Figure out something good to do in the ecosystem

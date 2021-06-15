@@ -2155,6 +2155,19 @@ class _Renderer_Class extends RendererBase<Class> {
                             parent: r));
                   },
                 ),
+                'referenceChildren': Property(
+                  getValue: (CT_ c) => c.referenceChildren,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'Map<String, CommentReferable>'),
+                  isNullValue: (CT_ c) => c.referenceChildren == null,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    renderSimple(c.referenceChildren, ast, r.template, sink,
+                        parent: r, getters: _invisibleGetters['Map']);
+                  },
+                ),
                 'referenceParents': Property(
                   getValue: (CT_ c) => c.referenceParents,
                   renderVariable: (CT_ c, Property<CT_> self,
