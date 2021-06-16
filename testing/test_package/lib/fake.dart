@@ -55,6 +55,7 @@ import 'dart:collection';
 // ignore: uri_does_not_exist
 //import 'dart:json' as invalidPrefix;
 import 'package:meta/meta.dart' show Required;
+import 'package:meta/meta.dart' as aPrefix show Immutable;
 import 'csspub.dart' as css;
 import 'csspub.dart' as renamedLib2;
 import 'package:test_package/src//import_unusual.dart';
@@ -962,7 +963,9 @@ class BaseForDocComments {
 
   final bool initializeMe;
 
-  BaseForDocComments(this.initializeMe);
+  int somethingShadowy;
+
+  BaseForDocComments(this.initializeMe, [bool somethingShadowy]);
 
   BaseForDocComments.aNonDefaultConstructor(this.initializeMe);
 

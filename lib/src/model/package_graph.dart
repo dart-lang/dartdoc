@@ -1030,26 +1030,39 @@ class PackageGraph with CommentReferable, Nameable {
   Map<String, CommentReferable> get referenceChildren {
     if (_referenceChildren == null) {
       _referenceChildren = {};
-
+      // Packages are the top priority.
       _referenceChildren.addEntries(packages.map((p) => MapEntry(p.name, p)));
-      // TODO(jcollins-g): deprecate and start warning for anything needing these
-      // elements.
-      var librariesWithCanonicals =
-          packages.expand((p) => referenceChildren.entries.where((e) {
-                var v = e.value;
-                return v is ModelElement
-                    ? v.canonicalModelElement != null
-                    : true;
-              }));
-      var topLevelsWithCanonicals = librariesWithCanonicals
-          .expand((p) => referenceChildren.entries.where((e) {
-                var v = e.value;
-                return v is ModelElement
-                    ? v.canonicalModelElement != null
-                    : true;
-              }));
-      _referenceChildren.addEntries(librariesWithCanonicals);
-      _referenceChildren.addEntries(topLevelsWithCanonicals);
+
+      // Libraries are next.
+      // TODO(jcollins-g): Warn about directly referencing libraries out of
+      // scope?
+      for (var p in documentedPackages) {
+        for (var lib in p.publicLibrariesSorted) {
+          if (!_referenceChildren.containsKey(lib.name)) {
+            _referenceChildren[lib.name] = lib;
+          }
+        }
+      }
+      // TODO(jcollins-g): Warn about directly referencing top level items
+      // out of scope?
+      for (var p in documentedPackages) {
+        for (var lib in p.publicLibrariesSorted) {
+          for (var me in [
+            ...lib.publicConstants,
+            ...lib.publicFunctions,
+            ...lib.publicProperties,
+            ...lib.publicTypedefs,
+            ...lib.publicExtensions,
+            ...lib.publicClasses,
+            ...lib.publicEnums,
+            ...lib.publicMixins
+          ]) {
+            if (!_referenceChildren.containsKey(me.name)) {
+              _referenceChildren[me.name] = me;
+            }
+          }
+        }
+      }
     }
     return _referenceChildren;
   }

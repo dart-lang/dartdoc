@@ -408,6 +408,18 @@ class Package extends LibraryContainer
       _referenceChildren = {};
       _referenceChildren
           .addEntries(allLibraries.map((l) => MapEntry(l.name, l)));
+      // Do not override any preexisting data, and insert based on the
+      // public library sort order.
+      // TODO(jcollins-g): warn when results require package-global
+      // lookups like this.
+      for (var lib in publicLibrariesSorted) {
+        for (var referableEntry in lib.referenceChildren.entries) {
+          // Avoiding tearoffs for performance reasons.
+          if (!_referenceChildren.containsKey(referableEntry.key)) {
+            _referenceChildren[referableEntry.key] = referableEntry.value;
+          }
+        }
+      }
     }
     return _referenceChildren;
   }

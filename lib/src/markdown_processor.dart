@@ -191,23 +191,34 @@ class MatchingLinkResult {
 
   bool isEquivalentTo(MatchingLinkResult other) {
     if (this == other) return true;
-    if (modelElement?.canonicalModelElement ==
-        other.modelElement?.canonicalModelElement) return true;
+    var compareThis = modelElement;
+    var compareOther = other.modelElement;
+
+    if (compareThis is Accessor) {
+      compareThis = (compareThis as Accessor).enclosingCombo;
+    }
+
+    if (compareOther is Accessor) {
+      compareOther = (compareOther as Accessor).enclosingCombo;
+    }
+
+    if (compareThis?.canonicalModelElement ==
+        compareOther?.canonicalModelElement) return true;
     // The old implementation just throws away Parameter matches to avoid
     // problems with warning unnecessarily at higher levels of the code.
     // I'd like to fix this at a different layer with the new lookup, so treat
     // this as equivalent to a null type.
-    if (other.modelElement is Parameter && modelElement == null) {
+    if (compareOther is Parameter && compareThis == null) {
       return true;
     }
-    if (modelElement is Parameter && other.modelElement == null) {
+    if (compareThis is Parameter && compareOther == null) {
       return true;
     }
     // Same with TypeParameter.
-    if (other.modelElement is TypeParameter && modelElement == null) {
+    if (compareOther is TypeParameter && compareThis == null) {
       return true;
     }
-    if (modelElement is TypeParameter && other.modelElement == null) {
+    if (compareThis is TypeParameter && compareOther == null) {
       return true;
     }
     return false;
@@ -288,6 +299,10 @@ ModelElement _getPreferredClass(ModelElement modelElement) {
 bool _rejectDefaultConstructors(CommentReferable referable) {
   if (referable is Constructor &&
       referable.name == referable.enclosingElement.name) {
+    return false;
+  }
+  // Avoid accidentally preferring arguments of the default constructor.
+  if (referable is ModelElement && referable.enclosingElement is Constructor) {
     return false;
   }
   return true;
