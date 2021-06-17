@@ -193,7 +193,6 @@ class ToolRunner {
           toolName, toolDefinition, envWithInput, toolErrorCallback);
     }
 
-    argsWithInput = toolArgs + argsWithInput;
     var toolStateForArgs = await toolDefinition.toolStateForArgs(argsWithInput);
     var commandPath = toolStateForArgs.commandPath;
     argsWithInput = toolStateForArgs.args;
