@@ -68,7 +68,7 @@ class Documentation {
     if (text == null || text.isEmpty) {
       return DocumentationParseResult.empty;
     }
-    showWarningsForGenericsOutsideSquareBracketsBlocks(text, _element);
+    //showWarningsForGenericsOutsideSquareBracketsBlocks(text, _element);
     var document = MarkdownDocument.withElementLinkResolver(_element);
     return document.parseMarkdownText(text, processFullDocs);
   }

@@ -9,7 +9,7 @@ import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 class Constructor extends ModelElement
-    with TypeParameters
+    with TypeParameters, ContainerMember
     implements EnclosedElement {
   Constructor(
       ConstructorElement element, Library library, PackageGraph packageGraph)
@@ -142,7 +142,4 @@ class Constructor extends ModelElement
     }
     return _referenceChildren;
   }
-
-  @override
-  Iterable<CommentReferable> get referenceParents => [enclosingElement];
 }

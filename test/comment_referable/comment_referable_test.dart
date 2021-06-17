@@ -12,6 +12,8 @@ import 'package:test/test.dart';
 const _separator = '.';
 
 abstract class Base extends Nameable with CommentReferable {
+  List<Base> children;
+
   /// Utility function to quickly build structures similar to [ModelElement]
   /// hierarchies in dartdoc in tests.
   /// Returns the added (or already existing) [Base].
@@ -23,11 +25,15 @@ abstract class Base extends Nameable with CommentReferable {
 
   @override
   Element get element => throw UnimplementedError();
+
+  @override
+  Iterable<Iterable<CommentReferable>> get referenceGrandparentOverrides => null;
 }
 
 class Top extends Base {
   @override
   final String name;
+  @override
   final List<TopChild> children;
 
   Top(this.name, this.children);
@@ -58,6 +64,7 @@ class Top extends Base {
 }
 
 abstract class Child extends Base {
+  @override
   List<Child> get children;
 
   @override
@@ -110,13 +117,22 @@ class GenericChild extends Child {
 
   @override
   Iterable<CommentReferable> get referenceParents => [parent];
+
 }
+
+class GrandparentOverrider extends GenericChild {
+  @override
+  final Iterable<Iterable<Base>> referenceGrandparentOverrides;
+
+  GrandparentOverrider(String name, List<GenericChild> children, Base parent, this.referenceGrandparentOverrides) : super(name, children, parent);
+}
+
 
 void main() {
   group('Basic comment reference lookups', () {
     Top referable;
 
-    setUpAll(() {
+    setUp(() {
       referable = Top('top', []);
       referable.add('lib1');
       referable.add('lib2');
@@ -140,6 +156,21 @@ void main() {
       expect(referable.lookup('lib3'), isA<TopChild>());
       expect(referable.lookup('lib3', filter: ((r) => r is GenericChild)),
           isA<GenericChild>());
+    });
+
+    test('Check that grandparent overrides work', () {
+      referable.add('lib4');
+      var i1 = referable.add('lib4.intermediate1');
+      var i1target = referable.add('lib4.intermediate1.target');
+      var i2target = referable.add('lib4.intermediate2.target');
+      var i2notFromHere = referable.add('lib4.intermediate2.notFromHere');
+      var overrider = GrandparentOverrider('fromHere', [], i2target, [[i1]]);
+      i2target.children.add(overrider);
+      expect(i2notFromHere.lookup('target'), i2target);
+      // Ordinarily, since overrider's parent is i2target, we would expect this
+      // to work the same.  But it has an override.
+      expect(overrider.lookup('target'), i1target);
+      expect(overrider.lookup('intermediate2.target'), i2target);
     });
   });
 }

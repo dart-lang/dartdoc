@@ -4,6 +4,7 @@
 
 import 'package:dartdoc/src/model/feature.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:meta/meta.dart';
 
 /// A [ModelElement] that is a [Container] member.
 mixin ContainerMember on ModelElement implements EnclosedElement {
@@ -55,5 +56,18 @@ mixin ContainerMember on ModelElement implements EnclosedElement {
           .findCanonicalModelElementFor(element.enclosingElement);
     }
     return null;
+  }
+
+  @override
+  @nonVirtual
+  Iterable<Container> get referenceParents => [enclosingElement];
+
+  @override
+  Iterable<Iterable<Library>> get referenceGrandparentOverrides {
+    // TODO(jcollins-g): split Field documentation up between accessors
+    // and resolve the pieces with different scopes.
+    //assert(documentationFrom.length == 1);
+    // Until then, just pretend we're handling this correctly.
+    return [[documentationFrom.first.definingLibrary]];
   }
 }

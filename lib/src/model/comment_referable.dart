@@ -32,6 +32,7 @@ extension on Scope {
   }
 }
 
+
 /// Support comment reference lookups on a Nameable object.
 mixin CommentReferable implements Nameable {
   PackageGraph packageGraph;
@@ -47,8 +48,10 @@ mixin CommentReferable implements Nameable {
   /// searching.
   @nonVirtual
   CommentReferable referenceBy(List<String> reference,
-      {bool tryParents = true, bool Function(CommentReferable) filter}) {
+      {bool tryParents = true, bool Function(CommentReferable) filter,
+       List<CommentReferable> parentOverrides}) {
     filter ??= (r) => true;
+    parentOverrides ??= referenceParents;
     if (reference.isEmpty) {
       if (tryParents == false) return this;
       return null;
@@ -68,13 +71,17 @@ mixin CommentReferable implements Nameable {
     }
     // If we can't find it in children, try searching parents if allowed.
     if (result == null && tryParents) {
-      for (var parent in referenceParents) {
-        result = parent.referenceBy(reference, filter: filter);
+      var overrideIterator = (referenceGrandparentOverrides ?? []).iterator;
+      for (var parent in parentOverrides) {
+        overrideIterator.moveNext();
+        var grandparentOverride = overrideIterator.current;
+        result = parent.referenceBy(reference, parentOverrides: grandparentOverride, filter: filter);
         if (result != null) break;
       }
     }
     return result;
   }
+
 
   /// Looks up references by [scope], skipping over results that do not match
   /// the given filter.
@@ -148,6 +155,11 @@ mixin CommentReferable implements Nameable {
   // TODO(jcollins-g): Implement comment reference resolution via categories,
   // making the iterable make sense here.
   Iterable<CommentReferable> get referenceParents;
+
+  /// Replace the parents of parents.  For each parent in
+  /// [referenceParents], an iterable containing overrides must exist here
+  /// (or return null for the getter to indicate no overrides).
+  Iterable<Iterable<CommentReferable>> get referenceGrandparentOverrides => null;
 
   // TODO(jcollins-g): Eliminate need for this in markdown_processor.
   Library get library => null;

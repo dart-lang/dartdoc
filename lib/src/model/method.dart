@@ -136,7 +136,4 @@ class Method extends ModelElement
     }
     return _referenceChildren;
   }
-
-  @override
-  Iterable<CommentReferable> get referenceParents => [enclosingElement];
 }
