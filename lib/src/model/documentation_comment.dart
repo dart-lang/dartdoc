@@ -4,6 +4,7 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/model_element_renderer.dart';
 import 'package:dartdoc/src/utils.dart';
 import 'package:dartdoc/src/warnings.dart';
+import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path show Context;
 
 final _templatePattern = RegExp(
@@ -232,28 +233,29 @@ mixin DocumentationComment
       // Count the number of invocations of tools in this dartdoc block,
       // so that tools can differentiate different blocks from each other.
       invocationIndex++;
-      return await config.tools.runner.run(
-          args,
-          (String message) async =>
-              warn(PackageWarning.toolError, message: message),
-          content: basicMatch[2],
-          environment: {
-            'SOURCE_LINE': characterLocation?.lineNumber.toString(),
-            'SOURCE_COLUMN': characterLocation?.columnNumber.toString(),
-            'SOURCE_PATH':
-                (sourceFileName == null || package?.packagePath == null)
-                    ? null
-                    : pathContext.relative(sourceFileName,
-                        from: package.packagePath),
-            'PACKAGE_PATH': package?.packagePath,
-            'PACKAGE_NAME': package?.name,
-            'LIBRARY_NAME': library?.fullyQualifiedName,
-            'ELEMENT_NAME': fullyQualifiedNameWithoutLibrary,
-            'INVOCATION_INDEX': invocationIndex.toString(),
-            'PACKAGE_INVOCATION_INDEX':
-                (package.toolInvocationIndex++).toString(),
-          }..removeWhere((key, value) => value == null));
+      return await config.tools.runner.run(args, content: basicMatch[2],
+          toolErrorCallback: (String message) async {
+        print('toolerrocallback for $args');
+        warn(PackageWarning.toolError, message: message);
+      }, environment: _toolsEnvironment(invocationIndex: invocationIndex));
     });
+  }
+
+  /// The environment variables to use when running a tool.
+  Map<String, String> _toolsEnvironment({@required int invocationIndex}) {
+    return {
+      'SOURCE_LINE': characterLocation?.lineNumber.toString(),
+      'SOURCE_COLUMN': characterLocation?.columnNumber.toString(),
+      if (sourceFileName != null && package?.packagePath != null)
+        'SOURCE_PATH':
+            pathContext.relative(sourceFileName, from: package.packagePath),
+      'PACKAGE_PATH': package?.packagePath,
+      'PACKAGE_NAME': package?.name,
+      'LIBRARY_NAME': library?.fullyQualifiedName,
+      'ELEMENT_NAME': fullyQualifiedNameWithoutLibrary,
+      'INVOCATION_INDEX': invocationIndex.toString(),
+      'PACKAGE_INVOCATION_INDEX': (package.toolInvocationIndex++).toString(),
+    }..removeWhere((key, value) => value == null);
   }
 
   /// Replace &#123;@example ...&#125; in API comments with the content of named file.
