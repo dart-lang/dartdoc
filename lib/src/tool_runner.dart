@@ -8,6 +8,7 @@ import 'dart:io' show Process, ProcessException;
 
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/io_utils.dart';
+import 'package:dartdoc/src/tool_definition.dart';
 import 'package:path/path.dart' as p;
 import 'dartdoc_options.dart';
 
@@ -206,16 +207,10 @@ class ToolRunner {
     }
 
     argsWithInput = toolArgs + argsWithInput;
-    String commandPath;
-    void Function() callCompleter;
-    if (toolDefinition is DartToolDefinition) {
-      var modified = await toolDefinition
-          .modifyArgsToCreateSnapshotIfNeeded(argsWithInput);
-      commandPath = modified.item1;
-      callCompleter = modified.item2;
-    } else {
-      commandPath = argsWithInput.removeAt(0);
-    }
+    var toolStateForArgs = await toolDefinition.toolStateForArgs(argsWithInput);
+    var commandPath = toolStateForArgs.commandPath;
+    argsWithInput = toolStateForArgs.args;
+    var callCompleter = toolStateForArgs.onProcessComplete;
 
     if (callCompleter != null) {
       return _runProcess(tool, content, commandPath, argsWithInput,
