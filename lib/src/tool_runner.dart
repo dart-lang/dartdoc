@@ -209,7 +209,7 @@ class ToolRunner {
     if (callCompleter == null) {
       return stdout;
     } else {
-      return stdout.whenComplete(callCompleter); // ignore: unawaited_futures
+      return stdout.whenComplete(callCompleter);
     }
   }
 
