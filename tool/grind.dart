@@ -49,8 +49,9 @@ final String defaultPubCache = Platform.environment['PUB_CACHE'] ??
     path.context.resolveTildePath('~/.pub-cache');
 
 /// Run no more than the number of processors available in parallel.
-final MultiFutureTracker testFutures =
-    MultiFutureTracker(Platform.numberOfProcessors);
+final MultiFutureTracker testFutures = MultiFutureTracker(
+    int.tryParse(Platform.environment['MAX_TEST_FUTURES'] ?? '') ??
+        Platform.numberOfProcessors);
 
 // Directory.systemTemp is not a constant.  So wrap it.
 Directory createTempSync(String prefix) =>
