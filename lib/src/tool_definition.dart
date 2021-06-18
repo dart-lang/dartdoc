@@ -7,6 +7,8 @@ import 'dart:async';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/io_utils.dart';
+import 'package:dartdoc/src/tool_runner.dart';
+import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p show extension;
 
 /// Defines the attributes of a tool in the options file, corresponding to
@@ -81,7 +83,8 @@ class ToolDefinition {
     }
   }
 
-  Future<ToolStateForArgs> toolStateForArgs(List<String> args) async {
+  Future<ToolStateForArgs> toolStateForArgs(String toolName, List<String> args,
+      {@required ToolErrorCallback toolErrorCallback}) async {
     var commandPath = args.removeAt(0);
     return ToolStateForArgs(commandPath, args, null);
   }
@@ -101,14 +104,16 @@ class DartToolDefinition extends ToolDefinition {
   /// so that if they are executed with dart, will result in the snapshot being
   /// built.
   @override
-  Future<ToolStateForArgs> toolStateForArgs(List<String> args) async {
+  Future<ToolStateForArgs> toolStateForArgs(String toolName, List<String> args,
+      {@required ToolErrorCallback toolErrorCallback}) async {
     assert(args[0] == command.first);
     // Set up flags to create a new snapshot, if needed, and use the first run
     // as the training run.
     SnapshotCache.createInstance(_resourceProvider);
     var snapshot = SnapshotCache.instance.getSnapshot(command.first);
+    var snapshotFile = snapshot._snapshotFile;
     var snapshotPath =
-        _resourceProvider.pathContext.absolute(snapshot._snapshotFile.path);
+        _resourceProvider.pathContext.absolute(snapshotFile.path);
     var needsSnapshot = snapshot.needsSnapshot;
     if (needsSnapshot) {
       return ToolStateForArgs(
@@ -127,8 +132,16 @@ class DartToolDefinition extends ToolDefinition {
           snapshot._snapshotCompleted);
     } else {
       await snapshot._snapshotValid();
-      // replace the first argument with the path to the snapshot.
-      args[0] = snapshotPath;
+      if (!snapshotFile.exists) {
+        if (toolErrorCallback != null) {
+          toolErrorCallback(
+              'Snapshot creation failed for $toolName tool. $snapshotPath does '
+              'not exist. Will execute tool without snapshot.');
+        }
+      } else {
+        // replace the first argument with the path to the snapshot.
+        args[0] = snapshotPath;
+      }
       return ToolStateForArgs(_resourceProvider.resolvedExecutable, args, null);
     }
   }
