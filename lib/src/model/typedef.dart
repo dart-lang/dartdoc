@@ -79,7 +79,7 @@ class Typedef extends ModelElement
   }
 
   @override
-  Iterable<CommentReferable> get referenceParents => [enclosingElement];
+  Iterable<CommentReferable> get referenceParents => [definingLibrary];
 }
 
 /// A typedef referring to a function type.

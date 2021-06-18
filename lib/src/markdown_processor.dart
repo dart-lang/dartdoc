@@ -226,7 +226,7 @@ class MatchingLinkResult {
 
   @override
   String toString() {
-    return 'element: ${modelElement?.fullyQualifiedName} warn: $warn';
+    return 'element: [${modelElement is Constructor ? 'new ' : ''}${modelElement?.fullyQualifiedName}] warn: $warn';
   }
 }
 
@@ -316,6 +316,7 @@ bool _requireCallable(CommentReferable referable) =>
 /// Return false unless the passed [referable] represents a constructor.
 bool _requireConstructor(CommentReferable referable) =>
     referable is Constructor;
+
 
 /// Implements _getMatchingLinkElement via [CommentReferable.referenceBy].
 MatchingLinkResult _getMatchingLinkElementCommentReferable(

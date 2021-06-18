@@ -60,7 +60,11 @@ mixin ContainerMember on ModelElement implements EnclosedElement {
 
   @override
   @nonVirtual
-  Iterable<Container> get referenceParents => [enclosingElement];
+  Iterable<Container> get referenceParents sync* {
+    yield enclosingElement;
+    if (enclosingElement != definingEnclosingContainer) yield definingEnclosingContainer;
+  }
+
 
   @override
   Iterable<Iterable<Library>> get referenceGrandparentOverrides {

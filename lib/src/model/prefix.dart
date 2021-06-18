@@ -45,5 +45,5 @@ class Prefix extends ModelElement implements EnclosedElement {
   Map<String, CommentReferable> get referenceChildren => {};
 
   @override
-  Iterable<CommentReferable> get referenceParents => [library];
+  Iterable<CommentReferable> get referenceParents => [definingLibrary];
 }

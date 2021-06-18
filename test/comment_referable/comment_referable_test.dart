@@ -162,10 +162,12 @@ void main() {
       referable.add('lib4');
       var i1 = referable.add('lib4.intermediate1');
       var i1target = referable.add('lib4.intermediate1.target');
+      referable.add('lib4.intermediate2');
       var i2target = referable.add('lib4.intermediate2.target');
+      var i2other = referable.add('lib4.intermediate2.other');
       var i2notFromHere = referable.add('lib4.intermediate2.notFromHere');
-      var overrider = GrandparentOverrider('fromHere', [], i2target, [[i1]]);
-      i2target.children.add(overrider);
+      var overrider = GrandparentOverrider('fromHere', [], i2other, [[i1]]);
+      i2other.children.add(overrider);
       expect(i2notFromHere.lookup('target'), i2target);
       // Ordinarily, since overrider's parent is i2target, we would expect this
       // to work the same.  But it has an override.

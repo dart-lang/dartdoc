@@ -271,7 +271,14 @@ abstract class Container extends ModelElement with TypeParameters {
           if (constructorName == '') {
             constructorName = name;
           }
-          _referenceChildren[constructorName] = modelElement;
+          // TODO(jcollins-g): Create an unambiguous way to refer to
+          // fields/methods with the same name as a constructor.  Until then,
+          // assume that we're not referring to the constructor unless
+          // there is a hint.
+          if (!_referenceChildren.containsKey(constructorName)) {
+            _referenceChildren[constructorName] = modelElement;
+          }
+          _referenceChildren['$name.$constructorName'] = modelElement;
           continue;
         }
         if (modelElement is Operator) {
@@ -302,5 +309,5 @@ abstract class Container extends ModelElement with TypeParameters {
   }
 
   @override
-  Iterable<CommentReferable> get referenceParents => [enclosingElement];
+  Iterable<CommentReferable> get referenceParents => [definingLibrary];
 }

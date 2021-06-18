@@ -135,10 +135,11 @@ mixin CommentReferable implements Nameable {
   /// A list of lookups that should be attempted on children based on
   /// [reference].  This allows us to deal with libraries that may have
   /// separators in them. [referenceBy] stops at the first one found.
-  List<ReferenceChildrenLookup> childLookups(List<String> reference) => [
-        ReferenceChildrenLookup(
-            reference.first, reference.length > 1 ? reference.sublist(1) : [])
-      ];
+  Iterable<ReferenceChildrenLookup> childLookups(List<String> reference) sync* {
+    for (var index = 1; index <= reference.length; index++) {
+      yield ReferenceChildrenLookup(reference.sublist(0, index).join('.'), reference.sublist(index));
+    }
+  }
 
   /// Map of name to the elements that are a member of [this], but
   /// not this model element itself.  Can be cached.
@@ -156,10 +157,10 @@ mixin CommentReferable implements Nameable {
   // making the iterable make sense here.
   Iterable<CommentReferable> get referenceParents;
 
-  /// Replace the parents of parents.  For each parent in
-  /// [referenceParents], an iterable containing overrides must exist here
-  /// (or return null for the getter to indicate no overrides).
-  Iterable<Iterable<CommentReferable>> get referenceGrandparentOverrides => null;
+  /// Replace the parents of parents.  [referenceBy] ignores whatever might
+  /// otherwise be implied by the [referenceParents] of [referenceParents],
+  /// replacing them with this.
+  Iterable<CommentReferable> get referenceGrandparentOverrides => null;
 
   // TODO(jcollins-g): Eliminate need for this in markdown_processor.
   Library get library => null;

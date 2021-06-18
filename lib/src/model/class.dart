@@ -624,6 +624,6 @@ class Class extends Container
   @override
   Iterable<CommentReferable> get referenceParents => <CommentReferable>[
         ...super.referenceParents,
-        ...superChain.map((m) => m.modelElement)
+        ...superChain.expand((m) => m.modelElement.referenceParents)
       ];
 }
