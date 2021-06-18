@@ -6094,73 +6094,6 @@ class _Renderer_FunctionTemplateData
   }
 }
 
-void _render_FunctionTypeElementType(FunctionTypeElementType context,
-    List<MustachioNode> ast, Template template, StringSink sink,
-    {RendererBase<Object> parent}) {
-  var renderer =
-      _Renderer_FunctionTypeElementType(context, parent, template, sink);
-  renderer.renderBlock(ast);
-}
-
-class _Renderer_FunctionTypeElementType
-    extends RendererBase<FunctionTypeElementType> {
-  static final Map<Type, Object> _propertyMapCache = {};
-  static Map<String, Property<CT_>> propertyMap<
-          CT_ extends FunctionTypeElementType>() =>
-      _propertyMapCache.putIfAbsent(
-          CT_,
-          () => {
-                ..._Renderer_UndefinedElementType.propertyMap<CT_>(),
-                ..._Renderer_Rendered.propertyMap<CT_>(),
-                ..._Renderer_Callable.propertyMap<CT_>(),
-                'name': Property(
-                  getValue: (CT_ c) => c.name,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_String.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(self.getValue(c),
-                        nextProperty, [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => c.name == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.name, ast, r.template, sink, parent: r);
-                  },
-                ),
-                'typeFormals': Property(
-                  getValue: (CT_ c) => c.typeFormals,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'List<TypeParameter>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.typeFormals.map((e) => _render_TypeParameter(
-                        e, ast, r.template, sink,
-                        parent: r));
-                  },
-                ),
-              });
-
-  _Renderer_FunctionTypeElementType(FunctionTypeElementType context,
-      RendererBase<Object> parent, Template template, StringSink sink)
-      : super(context, parent, template, sink);
-
-  @override
-  Property<FunctionTypeElementType> getProperty(String key) {
-    if (propertyMap<FunctionTypeElementType>().containsKey(key)) {
-      return propertyMap<FunctionTypeElementType>()[key];
-    } else {
-      return null;
-    }
-  }
-}
-
 void _render_FunctionTypedef(FunctionTypedef context, List<MustachioNode> ast,
     Template template, StringSink sink,
     {RendererBase<Object> parent}) {
@@ -6185,16 +6118,14 @@ class _Renderer_FunctionTypedef extends RendererBase<FunctionTypedef> {
                         }
                         var name = remainingNames.first;
                         var nextProperty =
-                            _Renderer_FunctionTypeElementType.propertyMap()
-                                .getValue(name);
+                            _Renderer_Callable.propertyMap().getValue(name);
                         return nextProperty.renderVariable(self.getValue(c),
                             nextProperty, [...remainingNames.skip(1)]);
                       },
                       isNullValue: (CT_ c) => c.modelType == null,
                       renderValue: (CT_ c, RendererBase<CT_> r,
                           List<MustachioNode> ast, StringSink sink) {
-                        _render_FunctionTypeElementType(
-                            c.modelType, ast, r.template, sink,
+                        _render_Callable(c.modelType, ast, r.template, sink,
                             parent: r);
                       },
                     ),
@@ -14495,161 +14426,6 @@ class _Renderer_TypedefTemplateData extends RendererBase<TypedefTemplateData> {
   Property<TypedefTemplateData> getProperty(String key) {
     if (propertyMap<TypedefTemplateData>().containsKey(key)) {
       return propertyMap<TypedefTemplateData>()[key];
-    } else {
-      return null;
-    }
-  }
-}
-
-class _Renderer_UndefinedElementType
-    extends RendererBase<UndefinedElementType> {
-  static final Map<Type, Object> _propertyMapCache = {};
-  static Map<String, Property<CT_>> propertyMap<
-          CT_ extends UndefinedElementType>() =>
-      _propertyMapCache.putIfAbsent(
-          CT_,
-          () => {
-                ..._Renderer_ElementType.propertyMap<CT_>(),
-                'element': Property(
-                  getValue: (CT_ c) => c.element,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'Element'),
-                  isNullValue: (CT_ c) => c.element == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.element, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['Element']);
-                  },
-                ),
-                'instantiatedType': Property(
-                  getValue: (CT_ c) => c.instantiatedType,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'DartType'),
-                  isNullValue: (CT_ c) => c.instantiatedType == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.instantiatedType, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['DartType']);
-                  },
-                ),
-                'isPublic': Property(
-                  getValue: (CT_ c) => c.isPublic,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isPublic == true,
-                ),
-                'linkedName': Property(
-                  getValue: (CT_ c) => c.linkedName,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_String.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(self.getValue(c),
-                        nextProperty, [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => c.linkedName == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.linkedName, ast, r.template, sink,
-                        parent: r);
-                  },
-                ),
-                'name': Property(
-                  getValue: (CT_ c) => c.name,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_String.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(self.getValue(c),
-                        nextProperty, [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => c.name == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.name, ast, r.template, sink, parent: r);
-                  },
-                ),
-                'nameWithGenerics': Property(
-                  getValue: (CT_ c) => c.nameWithGenerics,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_String.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(self.getValue(c),
-                        nextProperty, [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => c.nameWithGenerics == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.nameWithGenerics, ast, r.template, sink,
-                        parent: r);
-                  },
-                ),
-                'referenceChildren': Property(
-                  getValue: (CT_ c) => c.referenceChildren,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Map<String, CommentReferable>'),
-                  isNullValue: (CT_ c) => c.referenceChildren == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.referenceChildren, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['Map']);
-                  },
-                ),
-                'referenceParents': Property(
-                  getValue: (CT_ c) => c.referenceParents,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<CommentReferable>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.referenceParents.map((e) => renderSimple(
-                        e, ast, r.template, sink,
-                        parent: r,
-                        getters: _invisibleGetters['CommentReferable']));
-                  },
-                ),
-                'typeArguments': Property(
-                  getValue: (CT_ c) => c.typeArguments,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<ElementType>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.typeArguments.map((e) => _render_ElementType(
-                        e, ast, r.template, sink,
-                        parent: r));
-                  },
-                ),
-              });
-
-  _Renderer_UndefinedElementType(UndefinedElementType context,
-      RendererBase<Object> parent, Template template, StringSink sink)
-      : super(context, parent, template, sink);
-
-  @override
-  Property<UndefinedElementType> getProperty(String key) {
-    if (propertyMap<UndefinedElementType>().containsKey(key)) {
-      return propertyMap<UndefinedElementType>()[key];
     } else {
       return null;
     }
