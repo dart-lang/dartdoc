@@ -268,15 +268,8 @@ void main() {
       expect(listen.isRequiredPositional, isTrue);
       expect(onDone.isNamed, isTrue);
 
-      expect(
-          m3.linkedParamsLines,
-          equals(
-              '<ol class="parameter-list"><li><span class="parameter" id="m3-param-listen"><span class="type-annotation">void</span> <span class="parameter-name">listen</span>(<ol class="parameter-list"><li><span class="parameter" id="param-t"><span class="type-annotation">int</span> <span class="parameter-name">t</span></span></li>\n'
-              '</ol>\n'
-              ')?, </span></li>\n'
-              '<li><span class="parameter" id="m3-param-onDone">{<span class="type-annotation">void</span> <span class="parameter-name">onDone</span>(<ol class="parameter-list"></ol>\n'
-              ')?}</span></li>\n'
-              '</ol>'));
+      expect(m3.linkedParamsLines, contains('</ol>\n)?, '));
+      expect(m3.linkedParamsLines, contains('</ol>\n)?}</span>'));
     });
 
     test('Late final class member test', () {
