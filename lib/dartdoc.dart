@@ -23,6 +23,7 @@ import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/markdown_processor.dart' show markdownStats;
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
+import 'package:dartdoc/src/tool_definition.dart';
 import 'package:dartdoc/src/tool_runner.dart';
 import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/utils.dart';

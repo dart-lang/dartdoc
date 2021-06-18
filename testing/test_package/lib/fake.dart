@@ -55,6 +55,7 @@ import 'dart:collection';
 // ignore: uri_does_not_exist
 //import 'dart:json' as invalidPrefix;
 import 'package:meta/meta.dart' show Required;
+import 'package:meta/meta.dart' as aPrefix show Immutable;
 import 'csspub.dart' as css;
 import 'csspub.dart' as renamedLib2;
 import 'package:test_package/src//import_unusual.dart';
@@ -960,8 +961,14 @@ class BaseForDocComments {
 
   String operator [](String key) => "${key}'s value";
 
+  final bool initializeMe;
 
-  BaseForDocComments();
+  int somethingShadowy;
+
+  BaseForDocComments(this.initializeMe, [bool somethingShadowy]);
+
+  BaseForDocComments.aNonDefaultConstructor(this.initializeMe);
+
   factory BaseForDocComments.aFactoryFunction() => null;
 }
 
@@ -981,6 +988,8 @@ enum MacrosFromAccessors {
 /// Testing if docs for inherited method are correct.
 /// {@category NotSoExcellent}
 class SubForDocComments extends BaseForDocComments {
+  SubForDocComments(bool thing) : super(thing);
+  
   /// Reference to [foo] and [bar]
   void localMethod(String foo, bar) {}
 

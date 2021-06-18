@@ -133,7 +133,7 @@ class CommentReferenceParser {
     if (suffixResult.type == _SuffixResultType.notSuffix) {
       // Invalid trailing junk; reject the reference.
       return [];
-    } else if (suffixResult.type == _SuffixResultType.parsedConstructorHint) {
+    } else if (suffixResult.type == _SuffixResultType.parsedCallableHint) {
       children.add(suffixResult.node);
     }
 
@@ -142,7 +142,6 @@ class CommentReferenceParser {
   }
 
   static const _constructorHintPrefix = 'new';
-
   static const _ignorePrefixes = ['const', 'final', 'var'];
 
   /// Implement parsing a prefix to a comment reference.
@@ -153,17 +152,19 @@ class CommentReferenceParser {
   ///
   /// <constructorPrefixHint> ::= 'new '
   ///
-  /// <leadingJunk> ::= ('const' | 'final' | 'var' | 'operator')(' '+)
+  /// <leadingJunk> ::= ('const' | 'final' | 'var')(' '+)
   /// ```
   _PrefixParseResult _parsePrefix() {
     if (_atEnd) {
       return _PrefixParseResult.endOfFile;
     }
-    if (_tryMatchLiteral(_constructorHintPrefix)) {
+    if (_tryMatchLiteral(_constructorHintPrefix,
+        requireTrailingNonidentifier: true)) {
       return _PrefixParseResult.ok(
           ConstructorHintStartNode(_constructorHintPrefix));
     }
-    if (_ignorePrefixes.any((p) => _tryMatchLiteral(p))) {
+    if (_ignorePrefixes
+        .any((p) => _tryMatchLiteral(p, requireTrailingNonidentifier: true))) {
       return _PrefixParseResult.junk;
     }
 
@@ -234,10 +235,10 @@ class CommentReferenceParser {
         IdentifierNode(codeRef.substring(startIndex, _index)));
   }
 
-  static const _constructorHintSuffix = '()';
+  static const _callableHintSuffix = '()';
 
   /// ```text
-  /// <suffix> ::= <constructorPostfixHint>
+  /// <suffix> ::= <callableHintSuffix>
   ///   | <trailingJunk>
   ///
   /// <trailingJunk> ::= '<'<CHARACTER>*'>'
@@ -246,7 +247,7 @@ class CommentReferenceParser {
   ///   | '?'
   ///   | '!'
   ///
-  /// <constructorPostfixHint> ::= '()'
+  /// <callableHintSuffix> ::= '()'
   /// ```
   _SuffixParseResult _parseSuffix() {
     var startIndex = _index;
@@ -254,10 +255,10 @@ class CommentReferenceParser {
     if (_atEnd) {
       return _SuffixParseResult.missing;
     }
-    if (_tryMatchLiteral(_constructorHintSuffix)) {
+    if (_tryMatchLiteral(_callableHintSuffix)) {
       if (_atEnd) {
         return _SuffixParseResult.ok(
-            ConstructorHintEndNode(codeRef.substring(startIndex, _index)));
+            CallableHintEndNode(codeRef.substring(startIndex, _index)));
       }
       return _SuffixParseResult.notSuffix;
     }
@@ -278,14 +279,22 @@ class CommentReferenceParser {
 
   /// Advances [_index] on match, preserves on non-match.
   bool _tryMatchLiteral(String characters,
-      {bool acceptTrailingWhitespace = true}) {
+      {bool acceptTrailingWhitespace = true,
+      bool requireTrailingNonidentifier = false}) {
     assert(acceptTrailingWhitespace != null);
     if (characters.length + _index > _referenceLength) return false;
-    for (var startIndex = _index;
+    int startIndex;
+    for (startIndex = _index;
         _index - startIndex < characters.length;
         _index++) {
       if (codeRef.codeUnitAt(_index) !=
           characters.codeUnitAt(_index - startIndex)) {
+        _index = startIndex;
+        return false;
+      }
+    }
+    if (requireTrailingNonidentifier) {
+      if (_atEnd || !_nonIdentifierChars.contains(_thisChar)) {
         _index = startIndex;
         return false;
       }
@@ -386,10 +395,10 @@ enum _SuffixResultType {
   junk, // Found known types of junk it is OK to ignore.
   missing, // There is no suffix here.  Same as EOF as this is a suffix.
   notSuffix, // Found something, but not a valid suffix.
-  parsedConstructorHint, // Parsed a [ConstructorHintEndNode].
+  parsedCallableHint, // Parsed a [CallableHintEndNode].
 }
 
-/// The result of attempting to parse a prefix to a comment reference.
+/// The result of attempting to parse a suffix to a comment reference.
 class _SuffixParseResult {
   final _SuffixResultType type;
 
@@ -398,7 +407,7 @@ class _SuffixParseResult {
   const _SuffixParseResult._(this.type, this.node);
 
   factory _SuffixParseResult.ok(CommentReferenceNode node) =>
-      _SuffixParseResult._(_SuffixResultType.parsedConstructorHint, node);
+      _SuffixParseResult._(_SuffixResultType.parsedCallableHint, node);
 
   static const _SuffixParseResult junk =
       _SuffixParseResult._(_SuffixResultType.junk, null);
@@ -426,14 +435,14 @@ class ConstructorHintStartNode extends CommentReferenceNode {
   String toString() => 'ConstructorHintStartNode["$text"]';
 }
 
-class ConstructorHintEndNode extends CommentReferenceNode {
+class CallableHintEndNode extends CommentReferenceNode {
   @override
   final String text;
 
-  ConstructorHintEndNode(this.text);
+  CallableHintEndNode(this.text);
 
   @override
-  String toString() => 'ConstructorHintEndNode["$text"]';
+  String toString() => 'CallableHintEndNode["$text"]';
 }
 
 /// Represents an identifier.

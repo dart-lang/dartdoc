@@ -605,6 +605,22 @@ class Class extends Container
   @override
   Iterable<Field> get constantFields => allFields.where((f) => f.isConst);
 
+  Map<String, CommentReferable> _referenceChildren;
+  @override
+  Map<String, CommentReferable> get referenceChildren {
+    if (_referenceChildren == null) {
+      _referenceChildren = super.referenceChildren;
+      for (var constructor in constructors) {
+        // For default constructors this is a no-op, but other constructors
+        // sometimes have a prefix attached to them in their "real name".
+        // TODO(jcollins-g): consider disallowing that, and only using
+        // the element name as here?
+        _referenceChildren[constructor.element.name] = constructor;
+      }
+    }
+    return _referenceChildren;
+  }
+
   @override
   Iterable<CommentReferable> get referenceParents => <CommentReferable>[
         ...super.referenceParents,

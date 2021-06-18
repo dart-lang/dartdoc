@@ -662,9 +662,21 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   Map<String, CommentReferable> _referenceChildren;
   @override
   Map<String, CommentReferable> get referenceChildren {
-    return _referenceChildren ??= Map.fromEntries(
-        element.exportNamespace.definedNames.entries.map((entry) => MapEntry(
-            entry.key, ModelElement.fromElement(entry.value, packageGraph))));
+    if (_referenceChildren == null) {
+      _referenceChildren = Map.fromEntries(
+          element.exportNamespace.definedNames.entries.map((entry) => MapEntry(
+              entry.key, ModelElement.fromElement(entry.value, packageGraph))));
+      // TODO(jcollins-g): warn and get rid of this case where it shows up.
+      // If a user is hiding parts of a prefix import, the user should not
+      // refer to hidden members via the prefix, because that can be
+      // ambiguous.  dart-lang/dartdoc#2683.
+      for (var prefixEntry in prefixToLibrary.entries) {
+        if (!_referenceChildren.containsKey(prefixEntry.key)) {
+          _referenceChildren[prefixEntry.key] = prefixEntry.value.first;
+        }
+      }
+    }
+    return _referenceChildren;
   }
 
   @override

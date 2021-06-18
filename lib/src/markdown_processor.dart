@@ -191,16 +191,34 @@ class MatchingLinkResult {
 
   bool isEquivalentTo(MatchingLinkResult other) {
     if (this == other) return true;
-    if (modelElement?.canonicalModelElement ==
-        other.modelElement?.canonicalModelElement) return true;
+    var compareThis = modelElement;
+    var compareOther = other.modelElement;
+
+    if (compareThis is Accessor) {
+      compareThis = (compareThis as Accessor).enclosingCombo;
+    }
+
+    if (compareOther is Accessor) {
+      compareOther = (compareOther as Accessor).enclosingCombo;
+    }
+
+    if (compareThis?.canonicalModelElement ==
+        compareOther?.canonicalModelElement) return true;
     // The old implementation just throws away Parameter matches to avoid
     // problems with warning unnecessarily at higher levels of the code.
     // I'd like to fix this at a different layer with the new lookup, so treat
     // this as equivalent to a null type.
-    if (other.modelElement is Parameter && modelElement == null) {
+    if (compareOther is Parameter && compareThis == null) {
       return true;
     }
-    if (modelElement is Parameter && other.modelElement == null) {
+    if (compareThis is Parameter && compareOther == null) {
+      return true;
+    }
+    // Same with TypeParameter.
+    if (compareOther is TypeParameter && compareThis == null) {
+      return true;
+    }
+    if (compareThis is TypeParameter && compareOther == null) {
       return true;
     }
     return false;
@@ -283,10 +301,19 @@ bool _rejectDefaultConstructors(CommentReferable referable) {
       referable.name == referable.enclosingElement.name) {
     return false;
   }
+  // Avoid accidentally preferring arguments of the default constructor.
+  if (referable is ModelElement && referable.enclosingElement is Constructor) {
+    return false;
+  }
   return true;
 }
 
-/// Return false unless the passed [referable] is a [Constructor].
+/// Return false unless the passed [referable] represents a callable object.
+/// Allows constructors but does not require them.
+bool _requireCallable(CommentReferable referable) =>
+    referable is ModelElement && referable.isCallable;
+
+/// Return false unless the passed [referable] represents a constructor.
 bool _requireConstructor(CommentReferable referable) =>
     referable is Constructor;
 
@@ -295,17 +322,29 @@ MatchingLinkResult _getMatchingLinkElementCommentReferable(
     String codeRef, Warnable warnable) {
   var commentReference =
       warnable.commentRefs[codeRef] ?? ModelCommentReference.synthetic(codeRef);
-  var filter = commentReference.hasConstructorHint
-      ? _requireConstructor
-      : _rejectDefaultConstructors;
 
-  /// Neither reject, nor require, a default constructor in the event
-  /// the comment reference structure implies one.  (We can not require it
-  /// in case a library name is the same as a member class name and the class
-  /// is the intended lookup).
+  bool Function(CommentReferable) filter;
+
   if (commentReference.allowDefaultConstructor) {
-    filter = null;
+    // Neither reject, nor require, a default constructor in the event
+    // the comment reference structure implies one.  (We can not require it
+    // in case a library name is the same as a member class name and the class
+    // is the intended lookup).
+    filter = commentReference.hasCallableHint ? _requireCallable : null;
+  } else if (commentReference.hasConstructorHint &&
+      commentReference.hasCallableHint) {
+    // This takes precedence over the callable hint if both are present --
+    // pick a constructor and only constructor if we see `new`.
+    filter = _requireConstructor;
+  } else if (commentReference.hasCallableHint) {
+    // Trailing parens indicate we are looking for a callable.
+    filter = _requireCallable;
+  } else {
+    // Without hints, reject default constructors to force resolution to the
+    // class.
+    filter = _rejectDefaultConstructors;
   }
+
   var lookupResult =
       warnable.referenceBy(commentReference.referenceBy, filter: filter);
 

@@ -127,8 +127,16 @@ class Constructor extends ModelElement
   Map<String, CommentReferable> get referenceChildren {
     if (_referenceChildren == null) {
       _referenceChildren = {};
-      _referenceChildren
-          .addEntries(allParameters.map((p) => MapEntry(p.name, p)));
+      for (var param in allParameters) {
+        var paramElement = param.element;
+        if (paramElement is FieldFormalParameterElement) {
+          var fieldFormal =
+              ModelElement.fromElement(paramElement.field, packageGraph);
+          _referenceChildren[paramElement.name] = fieldFormal;
+        } else {
+          _referenceChildren[param.name] = param;
+        }
+      }
       _referenceChildren
           .addEntries(typeParameters.map((p) => MapEntry(p.name, p)));
     }
