@@ -516,6 +516,26 @@ class _Renderer_Callable extends RendererBase<Callable> {
       _propertyMapCache.putIfAbsent(
           CT_,
           () => {
+                'linkedName': Property(
+                  getValue: (CT_ c) => c.linkedName,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        _Renderer_String.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(self.getValue(c),
+                        nextProperty, [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => c.linkedName == null,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    _render_String(c.linkedName, ast, r.template, sink,
+                        parent: r);
+                  },
+                ),
                 'parameters': Property(
                   getValue: (CT_ c) => c.parameters,
                   renderVariable: (CT_ c, Property<CT_> self,
