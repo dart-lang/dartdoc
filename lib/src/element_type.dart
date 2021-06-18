@@ -374,6 +374,10 @@ mixin Callable implements ElementType {
   }
 
   @override
+  // TODO(jcollins-g): mustachio should not require this
+  String get linkedName;
+
+  @override
   FunctionType get type => _type;
 }
 
