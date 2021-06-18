@@ -235,7 +235,6 @@ mixin DocumentationComment
       invocationIndex++;
       return await config.tools.runner.run(args, content: basicMatch[2],
           toolErrorCallback: (String message) async {
-        print('toolerrocallback for $args');
         warn(PackageWarning.toolError, message: message);
       }, environment: _toolsEnvironment(invocationIndex: invocationIndex));
     });
