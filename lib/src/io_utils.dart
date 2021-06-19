@@ -117,12 +117,11 @@ final RegExp partOfRegexp = RegExp('part of ');
     'as Dartdoc 1.0.0')
 final RegExp newLinePartOfRegexp = RegExp('\npart of ');
 
-/// Best used with Future<void>.
-class MultiFutureTracker<T> {
+class MultiFutureTracker {
   /// Approximate maximum number of simultaneous active Futures.
   final int parallel;
 
-  final Set<Future<T>> _trackedFutures = {};
+  final Set<Future<void>> _trackedFutures = {};
 
   MultiFutureTracker(this.parallel);
 
@@ -139,9 +138,9 @@ class MultiFutureTracker<T> {
   ///
   /// If the closure does not handle its own exceptions, other calls to
   /// [addFutureFromClosure] or [wait] may trigger an exception.
-  Future<void> addFutureFromClosure(Future<T> Function() closure) async {
+  Future<void> addFutureFromClosure(Future<void> Function() closure) async {
     await _waitUntil(parallel - 1);
-    Future<void> future = closure();
+    var future = closure();
     _trackedFutures.add(future);
     // ignore: unawaited_futures
     future.then((f) {
