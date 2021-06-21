@@ -49,7 +49,7 @@ mixin CommentReferable implements Nameable {
   @nonVirtual
   CommentReferable referenceBy(List<String> reference,
       {bool tryParents = true, bool Function(CommentReferable) filter,
-       List<CommentReferable> parentOverrides}) {
+       Iterable<CommentReferable> parentOverrides}) {
     filter ??= (r) => true;
     parentOverrides ??= referenceParents;
     if (reference.isEmpty) {
@@ -71,11 +71,8 @@ mixin CommentReferable implements Nameable {
     }
     // If we can't find it in children, try searching parents if allowed.
     if (result == null && tryParents) {
-      var overrideIterator = (referenceGrandparentOverrides ?? []).iterator;
       for (var parent in parentOverrides) {
-        overrideIterator.moveNext();
-        var grandparentOverride = overrideIterator.current;
-        result = parent.referenceBy(reference, parentOverrides: grandparentOverride, filter: filter);
+        result = parent.referenceBy(reference, parentOverrides: referenceGrandparentOverrides, filter: filter);
         if (result != null) break;
       }
     }

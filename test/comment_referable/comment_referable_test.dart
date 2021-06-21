@@ -27,7 +27,7 @@ abstract class Base extends Nameable with CommentReferable {
   Element get element => throw UnimplementedError();
 
   @override
-  Iterable<Iterable<CommentReferable>> get referenceGrandparentOverrides => null;
+  Iterable<CommentReferable> get referenceGrandparentOverrides => null;
 }
 
 class Top extends Base {
@@ -122,7 +122,7 @@ class GenericChild extends Child {
 
 class GrandparentOverrider extends GenericChild {
   @override
-  final Iterable<Iterable<Base>> referenceGrandparentOverrides;
+  final Iterable<Base> referenceGrandparentOverrides;
 
   GrandparentOverrider(String name, List<GenericChild> children, Base parent, this.referenceGrandparentOverrides) : super(name, children, parent);
 }
@@ -166,7 +166,7 @@ void main() {
       var i2target = referable.add('lib4.intermediate2.target');
       var i2other = referable.add('lib4.intermediate2.other');
       var i2notFromHere = referable.add('lib4.intermediate2.notFromHere');
-      var overrider = GrandparentOverrider('fromHere', [], i2other, [[i1]]);
+      var overrider = GrandparentOverrider('fromHere', [], i2other, [i1]);
       i2other.children.add(overrider);
       expect(i2notFromHere.lookup('target'), i2target);
       // Ordinarily, since overrider's parent is i2target, we would expect this

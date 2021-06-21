@@ -67,11 +67,11 @@ mixin ContainerMember on ModelElement implements EnclosedElement {
 
 
   @override
-  Iterable<Iterable<Library>> get referenceGrandparentOverrides {
+  Iterable<Library> get referenceGrandparentOverrides {
     // TODO(jcollins-g): split Field documentation up between accessors
-    // and resolve the pieces with different scopes.
+    // and resolve the pieces with different scopes.  dart-lang/dartdoc#2693.
     //assert(documentationFrom.length == 1);
     // Until then, just pretend we're handling this correctly.
-    return [[documentationFrom.first.definingLibrary]];
+    return [documentationFrom.first.definingLibrary];
   }
 }

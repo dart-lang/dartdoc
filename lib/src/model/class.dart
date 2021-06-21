@@ -622,6 +622,28 @@ class Class extends Container
   }
 
   @override
+  Iterable<MapEntry<String, CommentReferable>> get extraReferenceChildren {
+    for (var modelElement in _constructors)
+      // Populate default constructor names so they make sense for the
+      // new lookup code.
+      var constructorName = modelElement.element.name;
+    if (constructorName == '') {
+      constructorName = name;
+    }
+    // TODO(jcollins-g): Create an unambiguous way to refer to
+    // fields/methods with the same name as a constructor.  Until then,
+    // assume that we're not referring to the constructor unless
+    // there is a hint.
+    if (!_referenceChildren.containsKey(constructorName)) {
+      _referenceChildren[constructorName] = modelElement;
+    }
+    _referenceChildren['$name.$constructorName'] = modelElement;
+    continue;
+  }
+}
+
+
+  @override
   Iterable<CommentReferable> get referenceParents => <CommentReferable>[
         ...super.referenceParents,
         ...superChain.expand((m) => m.modelElement.referenceParents)

@@ -255,32 +255,20 @@ abstract class Container extends ModelElement with TypeParameters {
   List<Method> get publicStaticMethodsSorted =>
       _publicStaticMethodsSorted ??= publicStaticMethods.toList()..sort(byName);
 
+  /// For subclasses;
+  Iterable<MapEntry<String, CommentReferable>> referenceChildrenExtra => [];
+
   Map<String, CommentReferable> _referenceChildren;
   @override
-  @mustCallSuper
+  @nonVirtual
   Map<String, CommentReferable> get referenceChildren {
     if (_referenceChildren == null) {
       _referenceChildren = {};
       for (var modelElement in allModelElements) {
         // Never directly look up accessors.
         if (modelElement is Accessor) continue;
-        if (modelElement is Constructor) {
-          // Populate default constructor names so they make sense for the
-          // new lookup code.
-          var constructorName = modelElement.element.name;
-          if (constructorName == '') {
-            constructorName = name;
-          }
-          // TODO(jcollins-g): Create an unambiguous way to refer to
-          // fields/methods with the same name as a constructor.  Until then,
-          // assume that we're not referring to the constructor unless
-          // there is a hint.
-          if (!_referenceChildren.containsKey(constructorName)) {
-            _referenceChildren[constructorName] = modelElement;
-          }
-          _referenceChildren['$name.$constructorName'] = modelElement;
-          continue;
-        }
+        // Constructors are special; see [Class.referenceChildrenExtra].
+        if (modelElement is Constructor) continue;
         if (modelElement is Operator) {
           // TODO(jcollins-g): once todo in [Operator.name] is fixed, remove
           // this special case.
@@ -288,6 +276,27 @@ abstract class Container extends ModelElement with TypeParameters {
         } else {
           _referenceChildren[modelElement.name] = modelElement;
         }
+      }
+      // Constructors go last due to possible conflicts with member variables.
+      // TODO(jcollins-g): place implementation in [Class] once we no longer
+      // allow unscoped parameters (see below todo).  Constructors have to
+      // go before them.
+      for (var modelElement in _constructors)
+        // Populate default constructor names so they make sense for the
+        // new lookup code.
+        var constructorName = modelElement.element.name;
+        if (constructorName == '') {
+          constructorName = name;
+        }
+        // TODO(jcollins-g): Create an unambiguous way to refer to
+        // fields/methods with the same name as a constructor.  Until then,
+        // assume that we're not referring to the constructor unless
+        // there is a hint.
+        if (!_referenceChildren.containsKey(constructorName)) {
+          _referenceChildren[constructorName] = modelElement;
+        }
+        _referenceChildren['$name.$constructorName'] = modelElement;
+        continue;
       }
       // Process unscoped parameters last to make sure they don't override
       // other options.
