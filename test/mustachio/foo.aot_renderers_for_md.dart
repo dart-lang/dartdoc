@@ -15,10 +15,12 @@ import 'foo.dart' as _i1;
 String renderFoo(_i1.Foo context0) {
   final buffer = StringBuffer();
   buffer.write(_renderFoo_partial_foo_header_0(context0));
+  buffer.writeln();
   buffer.write('''
 
 s1: ''');
   buffer.writeEscaped(context0.s1.toString());
+  buffer.writeln();
   buffer.write('''
 b1? ''');
   if (context0.b1 == true) {
@@ -27,6 +29,7 @@ b1? ''');
   if (context0.b1 != true) {
     buffer.write('''no''');
   }
+  buffer.writeln();
   buffer.write('''
 l1:''');
   var context1 = context0.l1;
@@ -39,10 +42,12 @@ l1:''');
   if (context0.l1?.isEmpty ?? true) {
     buffer.write('''no items''');
   }
+  buffer.writeln();
   buffer.write('''
 baz:''');
   var context3 = context0.baz;
   if (context3 != null) {
+    buffer.writeln();
     buffer.write('''
 Baz has a ''');
     buffer.writeEscaped(context3.bar.s2.toString());

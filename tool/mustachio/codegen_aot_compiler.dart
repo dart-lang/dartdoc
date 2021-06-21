@@ -474,6 +474,9 @@ class _BlockCompiler {
         write(content.replaceAll('\n', '\\n'));
         writeln("');");
       } else {
+        if (content[0] == '\n') {
+          write('buffer.writeln();');
+        }
         write("buffer.write('''");
         write(content);
         writeln("''');");

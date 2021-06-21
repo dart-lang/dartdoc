@@ -115,7 +115,7 @@ class DartdocFileWriter implements FileWriter {
 /// Generates Dart documentation for all public Dart libraries in the given
 /// directory.
 class Dartdoc {
-  final Generator generator;
+  Generator _generator;
   final PackageBuilder packageBuilder;
   final DartdocOptionContext config;
   final Set<String> _writtenFiles = {};
@@ -125,11 +125,22 @@ class Dartdoc {
   final StreamController<String> _onCheckProgress =
       StreamController(sync: true);
 
-  Dartdoc._(this.config, this.generator, this.packageBuilder) {
+  Dartdoc._(this.config, this._generator, this.packageBuilder) {
     _outputDir = config.resourceProvider
         .getFolder(config.resourceProvider.pathContext.absolute(config.output))
           ..create();
   }
+
+  // TODO(srawlins): Remove when https://github.com/dart-lang/linter/issues/2706
+  // is fixed.
+  // ignore: unnecessary_getters_setters
+  Generator get generator => _generator;
+
+  @visibleForTesting
+  // TODO(srawlins): Remove when https://github.com/dart-lang/linter/issues/2706
+  // is fixed.
+  // ignore: unnecessary_getters_setters
+  set generator(Generator newGenerator) => _generator = newGenerator;
 
   /// An asynchronous factory method that builds Dartdoc's file writers
   /// and returns a Dartdoc object with them.
@@ -195,18 +206,15 @@ class Dartdoc {
         'in ${seconds.toStringAsFixed(1)} seconds');
     stopwatch.reset();
 
-    var generator = this.generator;
-    if (generator != null) {
-      // Create the out directory.
-      if (!_outputDir.exists) _outputDir.create();
+    // Create the out directory.
+    if (!_outputDir.exists) _outputDir.create();
 
-      var writer = DartdocFileWriter(_outputDir.path, config.resourceProvider);
-      await generator.generate(packageGraph, writer);
+    var writer = DartdocFileWriter(_outputDir.path, config.resourceProvider);
+    await generator.generate(packageGraph, writer);
 
-      _writtenFiles.addAll(writer.writtenFiles);
-      if (config.validateLinks && _writtenFiles.isNotEmpty) {
-        _validateLinks(packageGraph, _outputDir.path);
-      }
+    _writtenFiles.addAll(writer.writtenFiles);
+    if (config.validateLinks && _writtenFiles.isNotEmpty) {
+      _validateLinks(packageGraph, _outputDir.path);
     }
 
     var warnings = packageGraph.packageWarningCounter.warningCount;
