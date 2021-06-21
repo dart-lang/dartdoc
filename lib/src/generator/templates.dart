@@ -31,13 +31,18 @@ import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/options.dart';
 import 'package:dartdoc/src/generator/resource_loader.dart';
 import 'package:dartdoc/src/generator/template_data.dart';
+import 'package:dartdoc/src/generator/templates.aot_renderers_for_html.dart'
+    as aot_renderers_for_html;
+import 'package:dartdoc/src/generator/templates.aot_renderers_for_md.dart'
+    as aot_renderers_for_md;
+import 'package:dartdoc/src/generator/templates.runtime_renderers.dart'
+    as runtime_renderers;
 import 'package:dartdoc/src/model/annotation.dart';
 import 'package:dartdoc/src/model/feature_set.dart';
 import 'package:dartdoc/src/model/language_feature.dart';
 import 'package:dartdoc/src/mustachio/annotations.dart';
 import 'package:dartdoc/src/mustachio/renderer_base.dart';
 import 'package:meta/meta.dart';
-import 'package:path/path.dart' as path show Context;
 
 const _visibleTypes = {
   Annotation,
@@ -64,260 +69,345 @@ const _visibleTypes = {
   TypeParameter,
 };
 
-// resource_loader and the Resource API doesn't support viewing resources like
-// a directory listing, so we have to explicitly list the partials.
-const _partials_html = <String>[
-  'callable',
-  'callable_multiline',
-  'categorization',
-  'class',
-  'constant',
-  'extension',
-  'feature_set',
-  'footer',
-  'head',
-  'library',
-  'mixin',
-  'packages',
-  'property',
-  'features',
-  'documentation',
-  'name_summary',
-  'search_sidebar',
-  'sidebar_for_category',
-  'sidebar_for_container',
-  'source_code',
-  'source_link',
-  'sidebar_for_library',
-  'type',
-  'type_multiline',
-  'typedef',
-  'typedef_multiline',
-  'accessor_getter',
-  'accessor_setter',
-];
+/// The collection of [Template] objects
+abstract class Templates {
+  String renderCategory(CategoryTemplateData context);
+  String renderClass<T extends Class>(ClassTemplateData<T> context);
+  String renderConstructor(ConstructorTemplateData context);
+  String renderEnum(EnumTemplateData context);
+  String renderError(PackageTemplateData context);
+  String renderExtension(ExtensionTemplateData context);
+  String renderFunction(FunctionTemplateData context);
+  String renderIndex(PackageTemplateData context);
+  String renderLibrary(LibraryTemplateData context);
+  String renderMethod(MethodTemplateData context);
+  String renderMixin(MixinTemplateData context);
+  String renderProperty(PropertyTemplateData context);
+  String renderSidebarForContainer(
+      TemplateDataWithContainer<Documentable> context);
+  String renderSidebarForLibrary(TemplateDataWithLibrary<Documentable> context);
+  String renderTopLevelProperty(TopLevelPropertyTemplateData context);
+  String renderTypedef(TypedefTemplateData context);
 
-const _partials_md = <String>[
-  'accessor_getter',
-  'accessor_setter',
-  'callable',
-  'callable_multiline',
-  'categorization',
-  'class',
-  'constant',
-  'documentation',
-  'extension',
-  'features',
-  'feature_set',
-  'footer',
-  'head',
-  'library',
-  'mixin',
-  'name_summary',
-  'property',
-  'source_code',
-  'source_link',
-  'type',
-  'type_multiline',
-  'typedef',
-  'typedef_multiline',
-];
-
-abstract class _TemplatesLoader {
-  ResourceProvider get resourceProvider;
-
-  Future<Map<String, String>> loadPartials();
-
-  Future<Template> loadTemplate(String name);
-}
-
-/// Loads default templates included in the Dartdoc program.
-class _DefaultTemplatesLoader extends _TemplatesLoader {
-  final String _format;
-  final List<String> _partials;
-
-  @override
-  final ResourceProvider resourceProvider;
-
-  factory _DefaultTemplatesLoader.create(
-      String format, ResourceProvider resourceProvider) {
-    List<String> partials;
-    switch (format) {
-      case 'html':
-        partials = _partials_html;
-        break;
-      case 'md':
-        partials = _partials_md;
-        break;
-      default:
-        partials = [];
-    }
-    return _DefaultTemplatesLoader(format, partials, resourceProvider);
-  }
-
-  _DefaultTemplatesLoader(this._format, this._partials, this.resourceProvider);
-
-  @override
-  Future<Map<String, String>> loadPartials() async {
-    var templates = <String, String>{};
-    for (var name in _partials) {
-      var uri = 'package:dartdoc/templates/$_format/_$name.$_format';
-      templates[name] = await resourceProvider.loadResourceAsString(uri);
-    }
-    return templates;
-  }
-
-  @override
-  Future<Template> loadTemplate(String name) async {
-    var templateFile = await resourceProvider
-        .getResourceFile('package:dartdoc/templates/$_format/$name.$_format');
-    return Template.parse(templateFile,
-        partialResolver: (String partialName) =>
-            resourceProvider.getResourceFile(
-                'package:dartdoc/templates/$_format/_$partialName.$_format'));
-  }
-}
-
-/// Loads templates from a specified Directory.
-class _DirectoryTemplatesLoader extends _TemplatesLoader {
-  final Folder _directory;
-  final String _format;
-
-  @override
-  final ResourceProvider resourceProvider;
-
-  _DirectoryTemplatesLoader(
-      this._directory, this._format, this.resourceProvider);
-
-  path.Context get pathContext => _directory.provider.pathContext;
-
-  @override
-  Future<Map<String, String>> loadPartials() async {
-    var partials = <String, String>{};
-
-    for (var file in _directory.getChildren().whereType<File>()) {
-      var basename = pathContext.basename(file.path);
-      if (basename.startsWith('_') && basename.endsWith('.$_format')) {
-        var content = file.readAsStringSync();
-        var partialName = basename.substring(1, basename.lastIndexOf('.'));
-        partials[partialName] = content;
-      }
-    }
-    return partials;
-  }
-
-  @override
-  Future<Template> loadTemplate(String name) async {
-    var templateFile = _directory.getChildAssumingFile('$name.$_format');
-    if (!templateFile.exists) {
-      throw DartdocFailure('Missing required template file: $name.$_format');
-    }
-    return Template.parse(templateFile,
-        partialResolver: (String partialName) async =>
-            _directory.getChildAssumingFile('_$partialName.$_format'));
-  }
-}
-
-class Templates {
-  final Template categoryTemplate;
-  final Template classTemplate;
-  final Template extensionTemplate;
-  final Template enumTemplate;
-  final Template constructorTemplate;
-  final Template errorTemplate;
-  final Template functionTemplate;
-  final Template indexTemplate;
-  final Template libraryTemplate;
-  final Template methodTemplate;
-  final Template mixinTemplate;
-  final Template propertyTemplate;
-  final Template sidebarContainerTemplate;
-  final Template sidebarLibraryTemplate;
-  final Template topLevelPropertyTemplate;
-  final Template typeDefTemplate;
-
-  static Future<Templates> fromContext(
-      DartdocGeneratorOptionContext context) async {
+  /// Creates a [Templates] instance either from the default set of templates,
+  /// or a custom set if the 'templatesDir' Dartdoc option is used.
+  ///
+  /// [forceRuntimeTemplates] should only be given [true] during tests.
+  static Future<Templates> fromContext(DartdocGeneratorOptionContext context,
+      {bool forceRuntimeTemplates = false}) async {
     var templatesDir = context.templatesDir;
     var format = context.format;
 
     if (templatesDir != null) {
-      return _fromDirectory(
+      return RuntimeTemplates._create(
           context.resourceProvider.getFolder(templatesDir), format,
           resourceProvider: context.resourceProvider);
+    } else if (forceRuntimeTemplates) {
+      var directory = await context.resourceProvider
+          .getResourceFolder('package:dartdoc/templates/$format');
+      return RuntimeTemplates._create(directory, format,
+          resourceProvider: context.resourceProvider);
+    } else if (format == 'html') {
+      return HtmlAotTemplates();
+    } else if (format == 'md') {
+      return MarkdownAotTemplates();
     } else {
-      return createDefault(format, resourceProvider: context.resourceProvider);
+      throw ArgumentError.value(format, 'format');
     }
   }
+}
 
-  @visibleForTesting
-  static Future<Templates> createDefault(String format,
+class HtmlAotTemplates implements Templates {
+  @override
+  String renderCategory(CategoryTemplateData context) =>
+      aot_renderers_for_html.renderCategory(context);
+
+  @override
+  String renderClass<T extends Class>(ClassTemplateData<T> context) =>
+      aot_renderers_for_html.renderClass(context);
+
+  @override
+  String renderConstructor(ConstructorTemplateData context) =>
+      aot_renderers_for_html.renderConstructor(context);
+
+  @override
+  String renderEnum(EnumTemplateData context) =>
+      aot_renderers_for_html.renderEnum(context);
+
+  @override
+  String renderError(PackageTemplateData context) =>
+      aot_renderers_for_html.renderError(context);
+
+  @override
+  String renderExtension(ExtensionTemplateData context) =>
+      aot_renderers_for_html.renderExtension(context);
+
+  @override
+  String renderFunction(FunctionTemplateData context) =>
+      aot_renderers_for_html.renderFunction(context);
+
+  @override
+  String renderIndex(PackageTemplateData context) =>
+      aot_renderers_for_html.renderIndex(context);
+
+  @override
+  String renderLibrary(LibraryTemplateData context) =>
+      aot_renderers_for_html.renderLibrary(context);
+
+  @override
+  String renderMethod(MethodTemplateData context) =>
+      aot_renderers_for_html.renderMethod(context);
+
+  @override
+  String renderMixin(MixinTemplateData context) =>
+      aot_renderers_for_html.renderMixin(context);
+
+  @override
+  String renderProperty(PropertyTemplateData context) =>
+      aot_renderers_for_html.renderProperty(context);
+
+  @override
+  String renderSidebarForContainer(
+          TemplateDataWithContainer<Documentable> context) =>
+      aot_renderers_for_html.renderSidebarForContainer(context);
+
+  @override
+  String renderSidebarForLibrary(
+          TemplateDataWithLibrary<Documentable> context) =>
+      aot_renderers_for_html.renderSidebarForLibrary(context);
+
+  @override
+  String renderTopLevelProperty(TopLevelPropertyTemplateData context) =>
+      aot_renderers_for_html.renderTopLevelProperty(context);
+
+  @override
+  String renderTypedef(TypedefTemplateData context) =>
+      aot_renderers_for_html.renderTypedef(context);
+}
+
+class MarkdownAotTemplates implements Templates {
+  @override
+  String renderCategory(CategoryTemplateData context) =>
+      aot_renderers_for_md.renderCategory(context);
+
+  @override
+  String renderClass<T extends Class>(ClassTemplateData<T> context) =>
+      aot_renderers_for_md.renderClass(context);
+
+  @override
+  String renderConstructor(ConstructorTemplateData context) =>
+      aot_renderers_for_md.renderConstructor(context);
+
+  @override
+  String renderEnum(EnumTemplateData context) =>
+      aot_renderers_for_md.renderEnum(context);
+
+  @override
+  String renderError(PackageTemplateData context) =>
+      aot_renderers_for_md.renderError(context);
+
+  @override
+  String renderExtension(ExtensionTemplateData context) =>
+      aot_renderers_for_md.renderExtension(context);
+
+  @override
+  String renderFunction(FunctionTemplateData context) =>
+      aot_renderers_for_md.renderFunction(context);
+
+  @override
+  String renderIndex(PackageTemplateData context) =>
+      aot_renderers_for_md.renderIndex(context);
+
+  @override
+  String renderLibrary(LibraryTemplateData context) =>
+      aot_renderers_for_md.renderLibrary(context);
+
+  @override
+  String renderMethod(MethodTemplateData context) =>
+      aot_renderers_for_md.renderMethod(context);
+
+  @override
+  String renderMixin(MixinTemplateData context) =>
+      aot_renderers_for_md.renderMixin(context);
+
+  @override
+  String renderProperty(PropertyTemplateData context) =>
+      aot_renderers_for_md.renderProperty(context);
+
+  @override
+  String renderSidebarForContainer(
+          TemplateDataWithContainer<Documentable> context) =>
+      aot_renderers_for_md.renderSidebarForContainer(context);
+
+  @override
+  String renderSidebarForLibrary(
+          TemplateDataWithLibrary<Documentable> context) =>
+      aot_renderers_for_md.renderSidebarForLibrary(context);
+
+  @override
+  String renderTopLevelProperty(TopLevelPropertyTemplateData context) =>
+      aot_renderers_for_md.renderTopLevelProperty(context);
+
+  @override
+  String renderTypedef(TypedefTemplateData context) =>
+      aot_renderers_for_md.renderTypedef(context);
+}
+
+/// The collection of [Template] objects parsed at runtime.
+class RuntimeTemplates implements Templates {
+  @override
+  String renderCategory(CategoryTemplateData context) =>
+      runtime_renderers.renderCategory(context, _categoryTemplate);
+
+  @override
+  String renderClass<T extends Class>(ClassTemplateData<T> context) =>
+      runtime_renderers.renderClass(context, _classTemplate);
+
+  @override
+  String renderConstructor(ConstructorTemplateData context) =>
+      runtime_renderers.renderConstructor(context, _constructorTemplate);
+
+  @override
+  String renderEnum(EnumTemplateData context) =>
+      runtime_renderers.renderEnum(context, _enumTemplate);
+
+  @override
+  String renderError(PackageTemplateData context) =>
+      runtime_renderers.renderError(context, _errorTemplate);
+
+  @override
+  String renderExtension(ExtensionTemplateData context) =>
+      runtime_renderers.renderExtension(context, _extensionTemplate);
+
+  @override
+  String renderFunction(FunctionTemplateData context) =>
+      runtime_renderers.renderFunction(context, _functionTemplate);
+
+  @override
+  String renderIndex(PackageTemplateData context) =>
+      runtime_renderers.renderIndex(context, _indexTemplate);
+
+  @override
+  String renderLibrary(LibraryTemplateData context) =>
+      runtime_renderers.renderLibrary(context, _libraryTemplate);
+
+  @override
+  String renderMethod(MethodTemplateData context) =>
+      runtime_renderers.renderMethod(context, _methodTemplate);
+
+  @override
+  String renderMixin(MixinTemplateData context) =>
+      runtime_renderers.renderMixin(context, _mixinTemplate);
+
+  @override
+  String renderProperty(PropertyTemplateData context) =>
+      runtime_renderers.renderProperty(context, _propertyTemplate);
+
+  @override
+  String renderSidebarForContainer(
+          TemplateDataWithContainer<Documentable> context) =>
+      runtime_renderers.renderSidebarForContainer(
+          context, _sidebarContainerTemplate);
+
+  @override
+  String renderSidebarForLibrary(
+          TemplateDataWithLibrary<Documentable> context) =>
+      runtime_renderers.renderSidebarForLibrary(
+          context, _sidebarLibraryTemplate);
+
+  @override
+  String renderTopLevelProperty(TopLevelPropertyTemplateData context) =>
+      runtime_renderers.renderTopLevelProperty(
+          context, _topLevelPropertyTemplate);
+
+  @override
+  String renderTypedef(TypedefTemplateData context) =>
+      runtime_renderers.renderTypedef(context, _typedefTemplate);
+
+  final Template _categoryTemplate;
+  final Template _classTemplate;
+  final Template _constructorTemplate;
+  final Template _enumTemplate;
+  final Template _errorTemplate;
+  final Template _extensionTemplate;
+  final Template _functionTemplate;
+  final Template _indexTemplate;
+  final Template _libraryTemplate;
+  final Template _methodTemplate;
+  final Template _mixinTemplate;
+  final Template _propertyTemplate;
+  final Template _sidebarContainerTemplate;
+  final Template _sidebarLibraryTemplate;
+  final Template _topLevelPropertyTemplate;
+  final Template _typedefTemplate;
+
+  /// Creates a [Templates] from a custom set of template files, found in [dir].
+  static Future<Templates> _create(Folder dir, String format,
       {@required ResourceProvider resourceProvider}) async {
-    return _create(_DefaultTemplatesLoader.create(format, resourceProvider));
-  }
-
-  static Future<Templates> _fromDirectory(Folder dir, String format,
-      {@required ResourceProvider resourceProvider}) async {
-    return _create(_DirectoryTemplatesLoader(dir, format, resourceProvider));
-  }
-
-  static Future<Templates> _create(_TemplatesLoader templatesLoader) async {
-    Future<Template> _loadTemplate(String templatePath) async {
-      return templatesLoader.loadTemplate(templatePath);
+    Future<Template> loadTemplate(String templatePath) async {
+      var templateFile = dir.getChildAssumingFile('$templatePath.$format');
+      if (!templateFile.exists) {
+        throw DartdocFailure(
+            'Missing required template file: $templatePath.$format');
+      }
+      return Template.parse(templateFile,
+          partialResolver: (String partialName) async =>
+              dir.getChildAssumingFile('_$partialName.$format'));
     }
 
-    var indexTemplate = await _loadTemplate('index');
-    var libraryTemplate = await _loadTemplate('library');
-    var sidebarContainerTemplate =
-        await _loadTemplate('_sidebar_for_container');
-    var sidebarLibraryTemplate = await _loadTemplate('_sidebar_for_library');
-    var categoryTemplate = await _loadTemplate('category');
-    var classTemplate = await _loadTemplate('class');
-    var extensionTemplate = await _loadTemplate('extension');
-    var enumTemplate = await _loadTemplate('enum');
-    var functionTemplate = await _loadTemplate('function');
-    var methodTemplate = await _loadTemplate('method');
-    var constructorTemplate = await _loadTemplate('constructor');
-    var errorTemplate = await _loadTemplate('404error');
-    var propertyTemplate = await _loadTemplate('property');
-    var topLevelPropertyTemplate = await _loadTemplate('top_level_property');
-    var typeDefTemplate = await _loadTemplate('typedef');
-    var mixinTemplate = await _loadTemplate('mixin');
+    var indexTemplate = await loadTemplate('index');
+    var libraryTemplate = await loadTemplate('library');
+    var sidebarContainerTemplate = await loadTemplate('_sidebar_for_container');
+    var sidebarLibraryTemplate = await loadTemplate('_sidebar_for_library');
+    var categoryTemplate = await loadTemplate('category');
+    var classTemplate = await loadTemplate('class');
+    var constructorTemplate = await loadTemplate('constructor');
+    var enumTemplate = await loadTemplate('enum');
+    var errorTemplate = await loadTemplate('404error');
+    var extensionTemplate = await loadTemplate('extension');
+    var functionTemplate = await loadTemplate('function');
+    var methodTemplate = await loadTemplate('method');
+    var mixinTemplate = await loadTemplate('mixin');
+    var propertyTemplate = await loadTemplate('property');
+    var topLevelPropertyTemplate = await loadTemplate('top_level_property');
+    var typeDefTemplate = await loadTemplate('typedef');
 
-    return Templates._(
-        indexTemplate,
-        categoryTemplate,
-        libraryTemplate,
-        sidebarContainerTemplate,
-        sidebarLibraryTemplate,
-        classTemplate,
-        extensionTemplate,
-        enumTemplate,
-        functionTemplate,
-        methodTemplate,
-        constructorTemplate,
-        errorTemplate,
-        propertyTemplate,
-        topLevelPropertyTemplate,
-        typeDefTemplate,
-        mixinTemplate);
+    return RuntimeTemplates._(
+      categoryTemplate,
+      libraryTemplate,
+      classTemplate,
+      constructorTemplate,
+      enumTemplate,
+      errorTemplate,
+      extensionTemplate,
+      functionTemplate,
+      indexTemplate,
+      methodTemplate,
+      mixinTemplate,
+      propertyTemplate,
+      sidebarContainerTemplate,
+      sidebarLibraryTemplate,
+      topLevelPropertyTemplate,
+      typeDefTemplate,
+    );
   }
 
-  Templates._(
-      this.indexTemplate,
-      this.categoryTemplate,
-      this.libraryTemplate,
-      this.sidebarContainerTemplate,
-      this.sidebarLibraryTemplate,
-      this.classTemplate,
-      this.extensionTemplate,
-      this.enumTemplate,
-      this.functionTemplate,
-      this.methodTemplate,
-      this.constructorTemplate,
-      this.errorTemplate,
-      this.propertyTemplate,
-      this.topLevelPropertyTemplate,
-      this.typeDefTemplate,
-      this.mixinTemplate);
+  RuntimeTemplates._(
+    this._categoryTemplate,
+    this._libraryTemplate,
+    this._classTemplate,
+    this._constructorTemplate,
+    this._enumTemplate,
+    this._errorTemplate,
+    this._extensionTemplate,
+    this._functionTemplate,
+    this._indexTemplate,
+    this._methodTemplate,
+    this._mixinTemplate,
+    this._propertyTemplate,
+    this._sidebarContainerTemplate,
+    this._sidebarLibraryTemplate,
+    this._topLevelPropertyTemplate,
+    this._typedefTemplate,
+  );
 }

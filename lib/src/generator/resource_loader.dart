@@ -32,6 +32,11 @@ extension ResourceLoader on ResourceProvider {
     return getFile(uri.toFilePath());
   }
 
+  Future<Folder> getResourceFolder(String path) async {
+    var uri = await resolveResourceUri(Uri.parse(path));
+    return getFolder(uri.toFilePath());
+  }
+
   /// Helper function for resolving to a non-relative, non-package URI.
   @visibleForTesting
   Future<Uri> resolveResourceUri(Uri uri) {
