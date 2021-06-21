@@ -8,6 +8,7 @@ import 'dart:io';
 
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/package_meta.dart';
+import 'package:dartdoc/src/tool_definition.dart';
 import 'package:dartdoc/src/tool_runner.dart';
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
@@ -112,8 +113,8 @@ echo:
     test('can invoke a Dart tool, and second run is a snapshot.', () async {
       var result = await runner.run(
         ['drill', r'--file=$INPUT'],
-        errorCallback,
         content: 'TEST INPUT',
+        toolErrorCallback: errorCallback,
       );
       expect(errors, isEmpty);
       expect(result, contains('--file=<INPUT_FILE>'));
@@ -124,8 +125,8 @@ echo:
       expect(setupFile.existsSync(), isFalse);
       result = await runner.run(
         ['drill', r'--file=$INPUT'],
-        errorCallback,
         content: 'TEST INPUT 2',
+        toolErrorCallback: errorCallback,
       );
       expect(errors, isEmpty);
       expect(result, contains('--file=<INPUT_FILE>'));
@@ -136,8 +137,8 @@ echo:
     test('can invoke a Dart tool', () async {
       var result = await runner.run(
         ['drill', r'--file=$INPUT'],
-        errorCallback,
         content: 'TEST INPUT',
+        toolErrorCallback: errorCallback,
       );
       expect(errors, isEmpty);
       expect(result, contains('Script location is in snapshot cache.'));
@@ -148,8 +149,8 @@ echo:
     test('can invoke a non-Dart tool', () async {
       var result = await runner.run(
         ['non_dart', '--version'],
-        errorCallback,
         content: 'TEST INPUT',
+        toolErrorCallback: errorCallback,
       );
       expect(errors, isEmpty);
       expect(result, isEmpty); // Output is on stderr.
@@ -157,8 +158,8 @@ echo:
     test('can invoke a pre-snapshotted tool', () async {
       var result = await runner.run(
         ['snapshot_drill', r'--file=$INPUT'],
-        errorCallback,
         content: 'TEST INPUT',
+        toolErrorCallback: errorCallback,
       );
       expect(errors, isEmpty);
       expect(result, contains('--file=<INPUT_FILE>'));
@@ -167,8 +168,8 @@ echo:
     test('can invoke a tool with a setup action', () async {
       var result = await runner.run(
         ['setup_drill', r'--file=$INPUT'],
-        errorCallback,
         content: 'TEST INPUT',
+        toolErrorCallback: errorCallback,
       );
       expect(errors, isEmpty);
       expect(result, contains('--file=<INPUT_FILE>'));
@@ -178,8 +179,8 @@ echo:
     test('fails if tool not in tool map', () async {
       var result = await runner.run(
         ['hammer', r'--file=$INPUT'],
-        errorCallback,
         content: 'TEST INPUT',
+        toolErrorCallback: errorCallback,
       );
       expect(errors, isNotEmpty);
       expect(
@@ -189,8 +190,8 @@ echo:
     test('fails if tool returns non-zero status', () async {
       var result = await runner.run(
         ['drill', r'--file=/a/missing/file'],
-        errorCallback,
         content: 'TEST INPUT',
+        toolErrorCallback: errorCallback,
       );
       expect(errors, isNotEmpty);
       expect(errors[0], contains('Tool "drill" returned non-zero exit code'));
@@ -199,8 +200,8 @@ echo:
     test("fails if tool in tool map doesn't exist", () async {
       var result = await runner.run(
         ['missing'],
-        errorCallback,
         content: 'TEST INPUT',
+        toolErrorCallback: errorCallback,
       );
       expect(errors, isNotEmpty);
       expect(errors[0],
