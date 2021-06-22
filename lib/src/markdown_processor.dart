@@ -1090,7 +1090,7 @@ final RegExp allAfterLastNewline = RegExp(r'\n.*$', multiLine: true);
 // https://github.com/dart-lang/dartdoc/issues/1250#issuecomment-269257942
 void showWarningsForGenericsOutsideSquareBracketsBlocks(
     String text, Warnable element) {
-  findFreeHangingGenericsPositions(text).forEach((int position) {
+  for (var position in findFreeHangingGenericsPositions(text)) {
     var priorContext =
         '${text.substring(max(position - maxPriorContext, 0), position)}';
     var postContext =
@@ -1100,7 +1100,7 @@ void showWarningsForGenericsOutsideSquareBracketsBlocks(
     var errorMessage = '$priorContext$postContext';
     // TODO(jcollins-g):  allow for more specific error location inside comments
     element.warn(PackageWarning.typeAsHtml, message: errorMessage);
-  });
+  }
 }
 
 Iterable<int> findFreeHangingGenericsPositions(String string) sync* {
