@@ -66,7 +66,6 @@ mixin ContainerMember on ModelElement implements EnclosedElement {
   Iterable<Library> get referenceGrandparentOverrides sync* {
     // TODO(jcollins-g): split Field documentation up between accessors
     // and resolve the pieces with different scopes.  dart-lang/dartdoc#2693.
-    //assert(documentationFrom.length == 1);
     // Until then, just pretend we're handling this correctly.
     yield documentationFrom.first.definingLibrary;
     // TODO(jcollins-g): Wean users off of depending on canonical library
