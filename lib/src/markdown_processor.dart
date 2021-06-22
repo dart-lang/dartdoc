@@ -190,7 +190,6 @@ class MatchingLinkResult {
   int get hashCode => hash2(commentReferable, warn);
 
   bool isEquivalentTo(MatchingLinkResult other) {
-    if (this == other) return true;
     var compareThis = commentReferable;
     var compareOther = other.commentReferable;
 
@@ -202,27 +201,34 @@ class MatchingLinkResult {
       compareOther = (compareOther as Accessor).enclosingCombo;
     }
 
-    if (compareThis is ModelElement && compareOther is ModelElement) {
-      if (compareThis?.canonicalModelElement ==
-          compareOther?.canonicalModelElement) return true;
-      // The old implementation just throws away Parameter matches to avoid
-      // problems with warning unnecessarily at higher levels of the code.
-      // I'd like to fix this at a different layer with the new lookup, so treat
-      // this as equivalent to a null type.
-      if (compareOther is Parameter && compareThis == null) {
-        return true;
-      }
-      if (compareThis is Parameter && compareOther == null) {
-        return true;
-      }
-      // Same with TypeParameter.
-      if (compareOther is TypeParameter && compareThis == null) {
-        return true;
-      }
-      if (compareThis is TypeParameter && compareOther == null) {
-        return true;
-      }
+    if (compareThis is ModelElement &&
+        compareThis.canonicalModelElement != null) {
+      compareThis = (compareThis as ModelElement).canonicalModelElement;
     }
+    if (compareOther is ModelElement &&
+        compareOther.canonicalModelElement != null) {
+      compareOther = (compareOther as ModelElement).canonicalModelElement;
+    }
+    if (compareThis == compareOther) return true;
+
+    // The old implementation just throws away Parameter matches to avoid
+    // problems with warning unnecessarily at higher levels of the code.
+    // I'd like to fix this at a different layer with the new lookup, so treat
+    // this as equivalent to a null type.
+    if (compareOther is Parameter && compareThis == null) {
+      return true;
+    }
+    if (compareThis is Parameter && compareOther == null) {
+      return true;
+    }
+    // Same with TypeParameter.
+    if (compareOther is TypeParameter && compareThis == null) {
+      return true;
+    }
+    if (compareThis is TypeParameter && compareOther == null) {
+      return true;
+    }
+
     return false;
   }
 
@@ -1093,13 +1099,14 @@ final RegExp allAfterLastNewline = RegExp(r'\n.*$', multiLine: true);
 void showWarningsForGenericsOutsideSquareBracketsBlocks(
     String text, Warnable element) {
   // Skip this if not warned for performance and for dart-lang/sdk#46419.
-  if (element.config.packageWarningOptions.warningModes[PackageWarning.typeAsHtml] != PackageWarningMode.ignore) {
+  if (element.config.packageWarningOptions
+          .warningModes[PackageWarning.typeAsHtml] !=
+      PackageWarningMode.ignore) {
     for (var position in findFreeHangingGenericsPositions(text)) {
       var priorContext =
           '${text.substring(max(position - maxPriorContext, 0), position)}';
       var postContext =
-          '${text.substring(
-          position, min(position + maxPostContext, text.length))}';
+          '${text.substring(position, min(position + maxPostContext, text.length))}';
       priorContext = priorContext.replaceAll(allBeforeFirstNewline, '');
       postContext = postContext.replaceAll(allAfterLastNewline, '');
       var errorMessage = '$priorContext$postContext';

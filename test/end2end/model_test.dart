@@ -2228,7 +2228,10 @@ void main() {
       });
 
       test('Linking for inherited field from reexport context', () {
-        expect(bothLookup(aField, 'anotherNotReexportedVariable'),
+        // While this can work in the old code at times, it is using the
+        // analyzer and the new test harness can't leverage the analyzer
+        // when testing the old lookup code.
+        expect(newLookup(aField, 'anotherNotReexportedVariable'),
             equals(MatchingLinkResult(anotherNotReexportedVariable)));
       });
 
@@ -2391,7 +2394,10 @@ void main() {
 
       test('Deprecated lookup styles still function', () {
         // dart-lang/dartdoc#2683
-        expect(bothLookup(baseForDocComments, 'aPrefix.UseResult'),
+        // We can't check the old code this way as this is one of the few
+        // cases in the old code where it relies on the analyzer's resolution of
+        // the doc comment -- the test harness can't do that for the old code.
+        expect(newLookup(baseForDocComments, 'aPrefix.UseResult'),
             equals(MatchingLinkResult(metaUseResult)));
       });
 

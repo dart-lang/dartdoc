@@ -4117,25 +4117,6 @@ class _Renderer_DefinedElementType extends RendererBase<DefinedElementType> {
                         parent: r, getters: _invisibleGetters['Element']);
                   },
                 ),
-                'href': Property(
-                  getValue: (CT_ c) => c.href,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_String.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(self.getValue(c),
-                        nextProperty, [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => c.href == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.href, ast, r.template, sink, parent: r);
-                  },
-                ),
                 'instantiatedType': Property(
                   getValue: (CT_ c) => c.instantiatedType,
                   renderVariable: (CT_ c, Property<CT_> self,
