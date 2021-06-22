@@ -255,6 +255,10 @@ abstract class Container extends ModelElement with TypeParameters {
   List<Method> get publicStaticMethodsSorted =>
       _publicStaticMethodsSorted ??= publicStaticMethods.toList()..sort(byName);
 
+  /// For subclasses to add items after the main pass but before the
+  /// parameter-global.
+  Iterable<MapEntry<String, CommentReferable>> get extraReferenceChildren => [];
+
   Map<String, CommentReferable> _referenceChildren;
   @override
   @mustCallSuper
@@ -264,22 +268,19 @@ abstract class Container extends ModelElement with TypeParameters {
       for (var modelElement in allModelElements) {
         // Never directly look up accessors.
         if (modelElement is Accessor) continue;
-        if (modelElement is Constructor) {
-          // Populate default constructor names so they make sense for the
-          // new lookup code.
-          var constructorName = modelElement.element.name;
-          if (constructorName == '') {
-            constructorName = name;
-          }
-          _referenceChildren[constructorName] = modelElement;
-          continue;
-        }
+        // Constructors are special; see [Class.referenceChildrenExtra].
+        if (modelElement is Constructor) continue;
         if (modelElement is Operator) {
           // TODO(jcollins-g): once todo in [Operator.name] is fixed, remove
           // this special case.
           _referenceChildren[modelElement.element.name] = modelElement;
         } else {
           _referenceChildren[modelElement.name] = modelElement;
+        }
+      }
+      for (var entry in extraReferenceChildren) {
+        if (!_referenceChildren.containsKey(entry.key)) {
+          _referenceChildren[entry.key] = entry.value;
         }
       }
       // Process unscoped parameters last to make sure they don't override
@@ -302,5 +303,5 @@ abstract class Container extends ModelElement with TypeParameters {
   }
 
   @override
-  Iterable<CommentReferable> get referenceParents => [enclosingElement];
+  Iterable<CommentReferable> get referenceParents => [definingLibrary, library];
 }

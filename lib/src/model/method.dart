@@ -131,12 +131,16 @@ class Method extends ModelElement
       _referenceChildren = {};
       _referenceChildren
           .addEntries(typeParameters.map((p) => MapEntry(p.name, p)));
-      _referenceChildren
-          .addEntries(allParameters.map((p) => MapEntry(p.name, p)));
+      _referenceChildren.addEntries(allParameters.expand((p) {
+        if (p.name == name) {
+          // Force explicit references to parameters named the same as
+          // the method.
+          return [MapEntry('$name.${p.name}', p)];
+        }
+        // Allow fallback handling in [Container] to deal with other cases.
+        return [];
+      }));
     }
     return _referenceChildren;
   }
-
-  @override
-  Iterable<CommentReferable> get referenceParents => [enclosingElement];
 }

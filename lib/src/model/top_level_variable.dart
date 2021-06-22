@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/feature.dart';
 import 'package:dartdoc/src/model/model.dart';
 
@@ -87,4 +88,7 @@ class TopLevelVariable extends ModelElement
   String get fileName => '${isConst ? '$name-constant' : name}.$fileType';
 
   TopLevelVariableElement get _variable => (element as TopLevelVariableElement);
+
+  @override
+  Iterable<CommentReferable> get referenceParents => [definingLibrary];
 }

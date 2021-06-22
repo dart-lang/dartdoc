@@ -206,10 +206,12 @@ class Class extends Container
   }
 
   List<Class> _publicImplementorsSorted;
+
   Iterable<Class> get publicImplementorsSorted =>
       _publicImplementorsSorted ??= publicImplementors.toList()..sort(byName);
 
-  /*lazy final*/ List<Method> _inheritedMethods;
+  /*lazy final*/
+  List<Method> _inheritedMethods;
 
   Iterable<Method> get inheritedMethods {
     if (_inheritedMethods == null) {
@@ -237,7 +239,8 @@ class Class extends Container
 
   bool get hasPublicInheritedMethods => publicInheritedMethods.isNotEmpty;
 
-  /*lazy final*/ List<Operator> _inheritedOperators;
+  /*lazy final*/
+  List<Operator> _inheritedOperators;
 
   Iterable<Operator> get inheritedOperators {
     if (_inheritedOperators == null) {
@@ -605,25 +608,36 @@ class Class extends Container
   @override
   Iterable<Field> get constantFields => allFields.where((f) => f.isConst);
 
-  Map<String, CommentReferable> _referenceChildren;
-  @override
-  Map<String, CommentReferable> get referenceChildren {
-    if (_referenceChildren == null) {
-      _referenceChildren = super.referenceChildren;
-      for (var constructor in constructors) {
-        // For default constructors this is a no-op, but other constructors
-        // sometimes have a prefix attached to them in their "real name".
-        // TODO(jcollins-g): consider disallowing that, and only using
-        // the element name as here?
-        _referenceChildren[constructor.element.name] = constructor;
+  static Iterable<MapEntry<String, CommentReferable>> _constructorGenerator(
+      Iterable<Constructor> source) sync* {
+    for (var constructor in source) {
+      var constructorName = constructor.element.name;
+      if (constructorName == '') {
+        constructorName = constructor.enclosingElement.name;
       }
+      yield MapEntry(constructorName, constructor);
+      yield MapEntry(
+          '${constructor.enclosingElement.name}.$constructorName', constructor);
     }
-    return _referenceChildren;
   }
 
   @override
-  Iterable<CommentReferable> get referenceParents => <CommentReferable>[
-        ...super.referenceParents,
-        ...superChain.map((m) => m.modelElement)
-      ];
+  Iterable<MapEntry<String, CommentReferable>>
+      get extraReferenceChildren sync* {
+    yield* _constructorGenerator(constructors);
+    // TODO(jcollins-g): wean important users off of relying on static method
+    // inheritance (dart-lang/dartdoc#2698)
+    for (var container
+        in publicSuperChain.map((t) => t.modelElement).whereType<Container>()) {
+      for (var modelElement in [
+        ...container.staticFields,
+        ...container.staticMethods,
+      ]) {
+        yield MapEntry(modelElement.name, modelElement);
+      }
+      if (container is Class) {
+        yield* _constructorGenerator(container.constructors);
+      }
+    }
+  }
 }

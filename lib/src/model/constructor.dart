@@ -9,7 +9,7 @@ import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 class Constructor extends ModelElement
-    with TypeParameters
+    with TypeParameters, ContainerMember
     implements EnclosedElement {
   Constructor(
       ConstructorElement element, Library library, PackageGraph packageGraph)
@@ -88,6 +88,9 @@ class Constructor extends ModelElement
   @override
   String get name {
     if (_name == null) {
+      // TODO(jcollins-g): After the old lookup code is retired, rationalize
+      // [name] around the conventions used in referenceChildren and replace
+      // code there and elsewhere with simple references to the name.
       var constructorName = element.name;
       if (constructorName.isEmpty) {
         _name = enclosingElement.name;
@@ -134,7 +137,15 @@ class Constructor extends ModelElement
               ModelElement.fromElement(paramElement.field, packageGraph);
           _referenceChildren[paramElement.name] = fieldFormal;
         } else {
-          _referenceChildren[param.name] = param;
+          var constructorName = element.name;
+          if (constructorName == '') {
+            constructorName = enclosingElement.name;
+          }
+          if (constructorName == param.name) {
+            // Force users to specify a parameter explicitly in this case.
+            _referenceChildren['$constructorName.${param.name}'] = param;
+          }
+          // Allow fallback handling in [Container] to handle other cases.
         }
       }
       _referenceChildren
@@ -142,7 +153,4 @@ class Constructor extends ModelElement
     }
     return _referenceChildren;
   }
-
-  @override
-  Iterable<CommentReferable> get referenceParents => [enclosingElement];
 }

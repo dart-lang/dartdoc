@@ -158,6 +158,9 @@ class UndefinedElementType extends ElementType {
 
   @override
   Iterable<CommentReferable> get referenceParents => [];
+
+  @override
+  Iterable<CommentReferable> get referenceGrandparentOverrides => null;
 }
 
 /// A FunctionType that does not have an underpinning Element.
@@ -358,6 +361,10 @@ abstract class DefinedElementType extends ElementType {
   @override
   Iterable<CommentReferable> get referenceParents =>
       modelElement.referenceParents;
+
+  @override
+  Iterable<CommentReferable> get referenceGrandparentOverrides =>
+      modelElement.referenceGrandparentOverrides;
 }
 
 /// Any callable ElementType will mix-in this class, whether anonymous or not,
