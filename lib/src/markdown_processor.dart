@@ -317,7 +317,6 @@ bool _requireCallable(CommentReferable referable) =>
 bool _requireConstructor(CommentReferable referable) =>
     referable is Constructor;
 
-
 /// Implements _getMatchingLinkElement via [CommentReferable.referenceBy].
 MatchingLinkResult _getMatchingLinkElementCommentReferable(
     String codeRef, Warnable warnable) {

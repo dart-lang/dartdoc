@@ -243,9 +243,7 @@ mixin GetterSetterCombo on ModelElement {
   Map<String, CommentReferable> get referenceChildren {
     if (_referenceChildren == null) {
       _referenceChildren = {};
-      _referenceChildren
-          .addEntries(allParameters.expand((p)
-      {
+      _referenceChildren.addEntries(allParameters.expand((p) {
         if (p.name == name) {
           // Force explicit references to parameters named the same as
           // the method.

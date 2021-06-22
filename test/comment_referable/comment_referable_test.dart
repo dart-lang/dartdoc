@@ -117,16 +117,16 @@ class GenericChild extends Child {
 
   @override
   Iterable<CommentReferable> get referenceParents => [parent];
-
 }
 
 class GrandparentOverrider extends GenericChild {
   @override
   final Iterable<Base> referenceGrandparentOverrides;
 
-  GrandparentOverrider(String name, List<GenericChild> children, Base parent, this.referenceGrandparentOverrides) : super(name, children, parent);
+  GrandparentOverrider(String name, List<GenericChild> children, Base parent,
+      this.referenceGrandparentOverrides)
+      : super(name, children, parent);
 }
-
 
 void main() {
   group('Basic comment reference lookups', () {

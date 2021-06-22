@@ -32,7 +32,6 @@ extension on Scope {
   }
 }
 
-
 /// Support comment reference lookups on a Nameable object.
 mixin CommentReferable implements Nameable {
   PackageGraph packageGraph;
@@ -48,8 +47,9 @@ mixin CommentReferable implements Nameable {
   /// searching.
   @nonVirtual
   CommentReferable referenceBy(List<String> reference,
-      {bool tryParents = true, bool Function(CommentReferable) filter,
-       Iterable<CommentReferable> parentOverrides}) {
+      {bool tryParents = true,
+      bool Function(CommentReferable) filter,
+      Iterable<CommentReferable> parentOverrides}) {
     filter ??= (r) => true;
     parentOverrides ??= referenceParents;
     if (reference.isEmpty) {
@@ -72,13 +72,15 @@ mixin CommentReferable implements Nameable {
     // If we can't find it in children, try searching parents if allowed.
     if (result == null && tryParents) {
       for (var parent in parentOverrides) {
-        result = parent.referenceBy(reference, tryParents: true, parentOverrides: referenceGrandparentOverrides, filter: filter);
+        result = parent.referenceBy(reference,
+            tryParents: true,
+            parentOverrides: referenceGrandparentOverrides,
+            filter: filter);
         if (result != null) break;
       }
     }
     return result;
   }
-
 
   /// Looks up references by [scope], skipping over results that do not match
   /// the given filter.
@@ -134,7 +136,8 @@ mixin CommentReferable implements Nameable {
   /// separators in them. [referenceBy] stops at the first one found.
   Iterable<ReferenceChildrenLookup> childLookups(List<String> reference) sync* {
     for (var index = 1; index <= reference.length; index++) {
-      yield ReferenceChildrenLookup(reference.sublist(0, index).join('.'), reference.sublist(index));
+      yield ReferenceChildrenLookup(
+          reference.sublist(0, index).join('.'), reference.sublist(index));
     }
   }
 

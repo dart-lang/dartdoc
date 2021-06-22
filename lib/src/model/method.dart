@@ -131,9 +131,7 @@ class Method extends ModelElement
       _referenceChildren = {};
       _referenceChildren
           .addEntries(typeParameters.map((p) => MapEntry(p.name, p)));
-      _referenceChildren
-          .addEntries(allParameters.expand((p)
-      {
+      _referenceChildren.addEntries(allParameters.expand((p) {
         if (p.name == name) {
           // Force explicit references to parameters named the same as
           // the method.
