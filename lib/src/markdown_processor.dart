@@ -301,9 +301,8 @@ bool _rejectDefaultAndShadowingConstructors(CommentReferable referable) {
     if (referable.name == referable.enclosingElement.name) {
       return false;
     }
-    if (referable.enclosingElement.referenceChildren[referable.name
-        .split('.')
-        .last] is! Constructor) {
+    if (referable.enclosingElement
+        .referenceChildren[referable.name.split('.').last] is! Constructor) {
       return false;
     }
   }

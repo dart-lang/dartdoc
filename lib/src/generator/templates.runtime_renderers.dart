@@ -1740,6 +1740,19 @@ class _Renderer_Class extends RendererBase<Class> {
                         parent: r);
                   },
                 ),
+                'extraReferenceChildren': Property(
+                  getValue: (CT_ c) => c.extraReferenceChildren,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames,
+                          'Iterable<MapEntry<String, CommentReferable>>'),
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    return c.extraReferenceChildren.map((e) => renderSimple(
+                        e, ast, r.template, sink,
+                        parent: r, getters: _invisibleGetters['MapEntry']));
+                  },
+                ),
                 'fileName': Property(
                   getValue: (CT_ c) => c.fileName,
                   renderVariable:
@@ -2173,33 +2186,6 @@ class _Renderer_Class extends RendererBase<Class> {
                     return c.publicSuperChainReversed.map((e) =>
                         _render_DefinedElementType(e, ast, r.template, sink,
                             parent: r));
-                  },
-                ),
-                'referenceChildren': Property(
-                  getValue: (CT_ c) => c.referenceChildren,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Map<String, CommentReferable>'),
-                  isNullValue: (CT_ c) => c.referenceChildren == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.referenceChildren, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['Map']);
-                  },
-                ),
-                'referenceParents': Property(
-                  getValue: (CT_ c) => c.referenceParents,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<CommentReferable>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.referenceParents.map((e) => renderSimple(
-                        e, ast, r.template, sink,
-                        parent: r,
-                        getters: _invisibleGetters['CommentReferable']));
                   },
                 ),
                 'superChain': Property(
@@ -2641,6 +2627,20 @@ class _Renderer_CommentReferable extends RendererBase<CommentReferable> {
                         parent: r, getters: _invisibleGetters['Map']);
                   },
                 ),
+                'referenceGrandparentOverrides': Property(
+                  getValue: (CT_ c) => c.referenceGrandparentOverrides,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'Iterable<CommentReferable>'),
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    return c.referenceGrandparentOverrides.map((e) =>
+                        renderSimple(e, ast, r.template, sink,
+                            parent: r,
+                            getters: _invisibleGetters['CommentReferable']));
+                  },
+                ),
                 'referenceParents': Property(
                   getValue: (CT_ c) => c.referenceParents,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -2698,6 +2698,7 @@ class _Renderer_Constructor extends RendererBase<Constructor> {
           () => {
                 ..._Renderer_ModelElement.propertyMap<CT_>(),
                 ..._Renderer_TypeParameters.propertyMap<CT_>(),
+                ..._Renderer_ContainerMember.propertyMap<CT_>(),
                 'characterLocation': Property(
                   getValue: (CT_ c) => c.characterLocation,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -2943,20 +2944,6 @@ class _Renderer_Constructor extends RendererBase<Constructor> {
                       List<MustachioNode> ast, StringSink sink) {
                     renderSimple(c.referenceChildren, ast, r.template, sink,
                         parent: r, getters: _invisibleGetters['Map']);
-                  },
-                ),
-                'referenceParents': Property(
-                  getValue: (CT_ c) => c.referenceParents,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<CommentReferable>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.referenceParents.map((e) => renderSimple(
-                        e, ast, r.template, sink,
-                        parent: r,
-                        getters: _invisibleGetters['CommentReferable']));
                   },
                 ),
                 'shortName': Property(
@@ -3392,6 +3379,19 @@ class _Renderer_Container extends RendererBase<Container> {
                     _render_ModelElement(
                         c.enclosingElement, ast, r.template, sink,
                         parent: r);
+                  },
+                ),
+                'extraReferenceChildren': Property(
+                  getValue: (CT_ c) => c.extraReferenceChildren,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames,
+                          'Iterable<MapEntry<String, CommentReferable>>'),
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    return c.extraReferenceChildren.map((e) => renderSimple(
+                        e, ast, r.template, sink,
+                        parent: r, getters: _invisibleGetters['MapEntry']));
                   },
                 ),
                 'hasInstanceFields': Property(
@@ -4031,6 +4031,30 @@ class _Renderer_ContainerMember extends RendererBase<ContainerMember> {
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.isExtended == true,
                 ),
+                'referenceGrandparentOverrides': Property(
+                  getValue: (CT_ c) => c.referenceGrandparentOverrides,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'Iterable<Library>'),
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    return c.referenceGrandparentOverrides.map((e) =>
+                        _render_Library(e, ast, r.template, sink, parent: r));
+                  },
+                ),
+                'referenceParents': Property(
+                  getValue: (CT_ c) => c.referenceParents,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'Iterable<Container>'),
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    return c.referenceParents.map((e) =>
+                        _render_Container(e, ast, r.template, sink, parent: r));
+                  },
+                ),
               });
 
   _Renderer_ContainerMember(ContainerMember context,
@@ -4150,6 +4174,20 @@ class _Renderer_DefinedElementType extends RendererBase<DefinedElementType> {
                       List<MustachioNode> ast, StringSink sink) {
                     renderSimple(c.referenceChildren, ast, r.template, sink,
                         parent: r, getters: _invisibleGetters['Map']);
+                  },
+                ),
+                'referenceGrandparentOverrides': Property(
+                  getValue: (CT_ c) => c.referenceGrandparentOverrides,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'Iterable<CommentReferable>'),
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    return c.referenceGrandparentOverrides.map((e) =>
+                        renderSimple(e, ast, r.template, sink,
+                            parent: r,
+                            getters: _invisibleGetters['CommentReferable']));
                   },
                 ),
                 'referenceParents': Property(
@@ -6585,20 +6623,6 @@ class _Renderer_GetterSetterCombo extends RendererBase<GetterSetterCombo> {
                         parent: r, getters: _invisibleGetters['Map']);
                   },
                 ),
-                'referenceParents': Property(
-                  getValue: (CT_ c) => c.referenceParents,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<CommentReferable>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.referenceParents.map((e) => renderSimple(
-                        e, ast, r.template, sink,
-                        parent: r,
-                        getters: _invisibleGetters['CommentReferable']));
-                  },
-                ),
                 'setter': Property(
                   getValue: (CT_ c) => c.setter,
                   renderVariable:
@@ -8440,20 +8464,6 @@ class _Renderer_Method extends RendererBase<Method> {
                       List<MustachioNode> ast, StringSink sink) {
                     renderSimple(c.referenceChildren, ast, r.template, sink,
                         parent: r, getters: _invisibleGetters['Map']);
-                  },
-                ),
-                'referenceParents': Property(
-                  getValue: (CT_ c) => c.referenceParents,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<CommentReferable>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.referenceParents.map((e) => renderSimple(
-                        e, ast, r.template, sink,
-                        parent: r,
-                        getters: _invisibleGetters['CommentReferable']));
                   },
                 ),
                 'typeParameters': Property(
@@ -13584,6 +13594,20 @@ class _Renderer_TopLevelVariable extends RendererBase<TopLevelVariable> {
                     _render_String(c.kind, ast, r.template, sink, parent: r);
                   },
                 ),
+                'referenceParents': Property(
+                  getValue: (CT_ c) => c.referenceParents,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'Iterable<CommentReferable>'),
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    return c.referenceParents.map((e) => renderSimple(
+                        e, ast, r.template, sink,
+                        parent: r,
+                        getters: _invisibleGetters['CommentReferable']));
+                  },
+                ),
                 'setter': Property(
                   getValue: (CT_ c) => c.setter,
                   renderVariable:
@@ -14570,6 +14594,7 @@ const _invisibleGetters = {
     'scope',
     'referenceChildren',
     'referenceParents',
+    'referenceGrandparentOverrides',
     'library',
     'element',
     'packageGraph'
@@ -14896,7 +14921,6 @@ const _invisibleGetters = {
     'readWrite',
     'writeOnly',
     'referenceChildren',
-    'referenceParents',
     'enclosingElement'
   },
   'HashMap': {'hashCode', 'runtimeType'},
@@ -14961,6 +14985,7 @@ const _invisibleGetters = {
     'isEmpty',
     'isNotEmpty'
   },
+  'MapEntry': {'hashCode', 'runtimeType', 'key', 'value'},
   'Member': {
     'hashCode',
     'runtimeType',

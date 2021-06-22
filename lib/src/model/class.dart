@@ -608,14 +608,16 @@ class Class extends Container
   @override
   Iterable<Field> get constantFields => allFields.where((f) => f.isConst);
 
-  static Iterable<MapEntry<String, CommentReferable>> _constructorGenerator(Iterable<Constructor> source) sync* {
+  static Iterable<MapEntry<String, CommentReferable>> _constructorGenerator(
+      Iterable<Constructor> source) sync* {
     for (var constructor in source) {
       var constructorName = constructor.element.name;
       if (constructorName == '') {
         constructorName = constructor.enclosingElement.name;
       }
       yield MapEntry(constructorName, constructor);
-      yield MapEntry('${constructor.enclosingElement.name}.$constructorName', constructor);
+      yield MapEntry(
+          '${constructor.enclosingElement.name}.$constructorName', constructor);
     }
   }
 
