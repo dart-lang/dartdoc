@@ -2129,7 +2129,7 @@ void main() {
     /// as the original lookup code returns canonicalized results and the
     /// new lookup code is only guaranteed to return equivalent results.
     MatchingLinkResult definingLinkResult(MatchingLinkResult originalResult) {
-      if (originalResult.commentReferable.element != null) {
+      if (originalResult.commentReferable?.element != null) {
         return MatchingLinkResult(
             ModelElement.fromElement(originalResult.commentReferable.element,
                 originalResult.commentReferable.packageGraph),

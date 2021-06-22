@@ -1092,19 +1092,21 @@ final RegExp allAfterLastNewline = RegExp(r'\n.*$', multiLine: true);
 // https://github.com/dart-lang/dartdoc/issues/1250#issuecomment-269257942
 void showWarningsForGenericsOutsideSquareBracketsBlocks(
     String text, Warnable element) {
-  /*
-  for (var position in findFreeHangingGenericsPositions(text)) {
-    var priorContext =
-        '${text.substring(max(position - maxPriorContext, 0), position)}';
-    var postContext =
-        '${text.substring(position, min(position + maxPostContext, text.length))}';
-    priorContext = priorContext.replaceAll(allBeforeFirstNewline, '');
-    postContext = postContext.replaceAll(allAfterLastNewline, '');
-    var errorMessage = '$priorContext$postContext';
-    // TODO(jcollins-g):  allow for more specific error location inside comments
-    element.warn(PackageWarning.typeAsHtml, message: errorMessage);
+  // Skip this if not warned for performance and for dart-lang/sdk#46419.
+  if (element.config.packageWarningOptions.warningModes[PackageWarning.typeAsHtml] != PackageWarningMode.ignore) {
+    for (var position in findFreeHangingGenericsPositions(text)) {
+      var priorContext =
+          '${text.substring(max(position - maxPriorContext, 0), position)}';
+      var postContext =
+          '${text.substring(
+          position, min(position + maxPostContext, text.length))}';
+      priorContext = priorContext.replaceAll(allBeforeFirstNewline, '');
+      postContext = postContext.replaceAll(allAfterLastNewline, '');
+      var errorMessage = '$priorContext$postContext';
+      // TODO(jcollins-g):  allow for more specific error location inside comments
+      element.warn(PackageWarning.typeAsHtml, message: errorMessage);
+    }
   }
-   */
 }
 
 Iterable<int> findFreeHangingGenericsPositions(String string) sync* {
