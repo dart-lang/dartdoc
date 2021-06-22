@@ -4,6 +4,6 @@
 library two_exports.src.local_scope;
 
 
-final String aNotReexportedVariable;
+String aNotReexportedVariable;
 
-final bool anotherNotReexportedVariable;
+bool anotherNotReexportedVariable;
