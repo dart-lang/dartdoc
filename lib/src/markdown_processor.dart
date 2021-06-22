@@ -295,7 +295,8 @@ ModelElement _getPreferredClass(ModelElement modelElement) {
   return null;
 }
 
-/// Return false if the passed [referable] is a default [Constructor].
+/// Return false if the passed [referable] is a default [Constructor],
+/// or if it is shadowing another type of element.
 bool _rejectDefaultAndShadowingConstructors(CommentReferable referable) {
   if (referable is Constructor) {
     if (referable.name == referable.enclosingElement.name) {
