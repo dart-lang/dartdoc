@@ -1031,7 +1031,8 @@ class PackageGraph with CommentReferable, Nameable {
     if (_referenceChildren == null) {
       _referenceChildren = {};
       // Packages are the top priority.
-      _referenceChildren.addEntries(packages.map((p) => MapEntry(p.name, p)));
+      _referenceChildren
+          .addEntries(packages.map((p) => MapEntry('package:${p.name}', p)));
 
       // Libraries are next.
       // TODO(jcollins-g): Warn about directly referencing libraries out of

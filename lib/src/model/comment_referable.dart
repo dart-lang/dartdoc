@@ -42,6 +42,8 @@ mixin CommentReferable implements Nameable {
   /// lookups via [referenceChildren].  Can be cached.
   Scope get scope => null;
 
+  String get href => null;
+
   /// Look up a comment reference by its component parts.  If [tryParents] is
   /// true, try looking up the same reference in any parents of [this].
   /// Will skip over results that do not pass a given [filter] and keep

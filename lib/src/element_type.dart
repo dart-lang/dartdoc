@@ -124,6 +124,9 @@ class UndefinedElementType extends ElementType {
   Element get element => null;
 
   @override
+  String get href => null;
+
+  @override
   bool get isPublic => true;
 
   @override
@@ -278,6 +281,9 @@ abstract class DefinedElementType extends ElementType {
 
   @override
   Element get element => modelElement.element;
+
+  @override
+  String get href => modelElement.href;
 
   ModelElement get modelElement {
     assert(_modelElement != null);

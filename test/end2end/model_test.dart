@@ -2129,10 +2129,10 @@ void main() {
     /// as the original lookup code returns canonicalized results and the
     /// new lookup code is only guaranteed to return equivalent results.
     MatchingLinkResult definingLinkResult(MatchingLinkResult originalResult) {
-      if (originalResult.modelElement != null) {
+      if (originalResult.commentReferable.element != null) {
         return MatchingLinkResult(
-            ModelElement.fromElement(originalResult.modelElement.element,
-                originalResult.modelElement.packageGraph),
+            ModelElement.fromElement(originalResult.commentReferable.element,
+                originalResult.commentReferable.packageGraph),
             warn: originalResult.warn);
       }
       return originalResult;
@@ -2153,7 +2153,8 @@ void main() {
     }
 
     group('Linking for complex inheritance and reexport cases', () {
-      Library base, extending, local_scope, two_exports;
+      Package DartPackage;
+      Library base, Dart, extending, local_scope, two_exports;
       Class BaseWithMembers, ExtendingAgain;
       Field aField, anotherField, aStaticField;
       TopLevelVariable aNotReexportedVariable,
@@ -2173,6 +2174,8 @@ void main() {
             .firstWhere((l) => l.name == 'two_exports.src.local_scope');
         two_exports = packageGraph.allLibraries.values
             .firstWhere((l) => l.name == 'two_exports');
+        Dart = base.package.libraries.firstWhere((l) => l.name == 'Dart');
+        DartPackage = packageGraph.packages.firstWhere((p) => p.name == 'Dart');
 
         BaseWithMembers =
             base.classes.firstWhere((c) => c.name == 'BaseWithMembers');
@@ -2202,6 +2205,14 @@ void main() {
             .firstWhere((p) => p.name == 'aSymbolOnlyAvailableInExportContext');
         someConflictingNameSymbolTwoExports = two_exports.properties
             .firstWhere((p) => p.name == 'someConflictingNameSymbol');
+      });
+
+      test('Referring to libraries and packages with the same name is fine',
+          () {
+        expect(bothLookup(base, 'Dart'), equals(MatchingLinkResult(Dart)));
+        // New feature: allow disambiguation if you really want to specify a package.
+        expect(newLookup(base, 'package:Dart'),
+            equals(MatchingLinkResult(DartPackage)));
       });
 
       test('Grandparent override in container members', () {
