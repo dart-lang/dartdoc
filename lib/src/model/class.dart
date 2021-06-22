@@ -605,47 +605,23 @@ class Class extends Container
   @override
   Iterable<Field> get constantFields => allFields.where((f) => f.isConst);
 
-  Map<String, CommentReferable> _referenceChildren;
   @override
-  Map<String, CommentReferable> get referenceChildren {
-    if (_referenceChildren == null) {
-      _referenceChildren = super.referenceChildren;
-      for (var constructor in constructors) {
-        // For default constructors this is a no-op, but other constructors
-        // sometimes have a prefix attached to them in their "real name".
-        // TODO(jcollins-g): consider disallowing that, and only using
-        // the element name as here?
-        _referenceChildren[constructor.element.name] = constructor;
-      }
-    }
-    return _referenceChildren;
-  }
-
-  @override
-  Iterable<MapEntry<String, CommentReferable>> get extraReferenceChildren {
-    for (var modelElement in _constructors)
+  Iterable<MapEntry<String, CommentReferable>> get extraReferenceChildren sync* {
+    for (var modelElement in constructors) {
       // Populate default constructor names so they make sense for the
       // new lookup code.
       var constructorName = modelElement.element.name;
-    if (constructorName == '') {
-      constructorName = name;
+      if (constructorName == '') {
+        constructorName = modelElement.enclosingElement.name;
+      }
+      yield MapEntry(constructorName, modelElement);
+      yield MapEntry('$name.$constructorName', modelElement);
     }
-    // TODO(jcollins-g): Create an unambiguous way to refer to
-    // fields/methods with the same name as a constructor.  Until then,
-    // assume that we're not referring to the constructor unless
-    // there is a hint.
-    if (!_referenceChildren.containsKey(constructorName)) {
-      _referenceChildren[constructorName] = modelElement;
-    }
-    _referenceChildren['$name.$constructorName'] = modelElement;
-    continue;
   }
-}
-
 
   @override
-  Iterable<CommentReferable> get referenceParents => <CommentReferable>[
-        ...super.referenceParents,
-        ...superChain.expand((m) => m.modelElement.referenceParents)
-      ];
+  Iterable<CommentReferable> get referenceParents sync* {
+    yield* super.referenceParents;
+    yield* superChain.expand((m) => m.modelElement.referenceParents);
+  }
 }

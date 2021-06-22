@@ -72,7 +72,7 @@ mixin CommentReferable implements Nameable {
     // If we can't find it in children, try searching parents if allowed.
     if (result == null && tryParents) {
       for (var parent in parentOverrides) {
-        result = parent.referenceBy(reference, parentOverrides: referenceGrandparentOverrides, filter: filter);
+        result = parent.referenceBy(reference, tryParents: true, parentOverrides: referenceGrandparentOverrides, filter: filter);
         if (result != null) break;
       }
     }

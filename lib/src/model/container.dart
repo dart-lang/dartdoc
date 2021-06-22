@@ -255,12 +255,13 @@ abstract class Container extends ModelElement with TypeParameters {
   List<Method> get publicStaticMethodsSorted =>
       _publicStaticMethodsSorted ??= publicStaticMethods.toList()..sort(byName);
 
-  /// For subclasses;
-  Iterable<MapEntry<String, CommentReferable>> referenceChildrenExtra => [];
+  /// For subclasses to add items after the main pass but before the
+  /// parameter-global.
+  Iterable<MapEntry<String, CommentReferable>> get extraReferenceChildren => [];
 
   Map<String, CommentReferable> _referenceChildren;
   @override
-  @nonVirtual
+  @mustCallSuper
   Map<String, CommentReferable> get referenceChildren {
     if (_referenceChildren == null) {
       _referenceChildren = {};
@@ -277,26 +278,10 @@ abstract class Container extends ModelElement with TypeParameters {
           _referenceChildren[modelElement.name] = modelElement;
         }
       }
-      // Constructors go last due to possible conflicts with member variables.
-      // TODO(jcollins-g): place implementation in [Class] once we no longer
-      // allow unscoped parameters (see below todo).  Constructors have to
-      // go before them.
-      for (var modelElement in _constructors)
-        // Populate default constructor names so they make sense for the
-        // new lookup code.
-        var constructorName = modelElement.element.name;
-        if (constructorName == '') {
-          constructorName = name;
+      for (var entry in extraReferenceChildren) {
+        if (!_referenceChildren.containsKey(entry.key)) {
+          _referenceChildren[entry.key] = entry.value;
         }
-        // TODO(jcollins-g): Create an unambiguous way to refer to
-        // fields/methods with the same name as a constructor.  Until then,
-        // assume that we're not referring to the constructor unless
-        // there is a hint.
-        if (!_referenceChildren.containsKey(constructorName)) {
-          _referenceChildren[constructorName] = modelElement;
-        }
-        _referenceChildren['$name.$constructorName'] = modelElement;
-        continue;
       }
       // Process unscoped parameters last to make sure they don't override
       // other options.
@@ -318,5 +303,5 @@ abstract class Container extends ModelElement with TypeParameters {
   }
 
   @override
-  Iterable<CommentReferable> get referenceParents => [definingLibrary];
+  Iterable<CommentReferable> get referenceParents => [definingLibrary, library];
 }

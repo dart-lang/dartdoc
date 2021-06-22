@@ -62,16 +62,22 @@ mixin ContainerMember on ModelElement implements EnclosedElement {
   @nonVirtual
   Iterable<Container> get referenceParents sync* {
     yield enclosingElement;
+    // TODO(jcollins-g): Wean users off of depending on canonical library
+    // resolution. dart-lang/dartdoc#2696
+    if (enclosingElement != canonicalEnclosingContainer && canonicalEnclosingContainer != null) yield canonicalEnclosingContainer;
     if (enclosingElement != definingEnclosingContainer) yield definingEnclosingContainer;
   }
 
 
   @override
-  Iterable<Library> get referenceGrandparentOverrides {
+  Iterable<Library> get referenceGrandparentOverrides sync* {
     // TODO(jcollins-g): split Field documentation up between accessors
     // and resolve the pieces with different scopes.  dart-lang/dartdoc#2693.
     //assert(documentationFrom.length == 1);
     // Until then, just pretend we're handling this correctly.
-    return [documentationFrom.first.definingLibrary];
+    yield documentationFrom.first.definingLibrary;
+    // TODO(jcollins-g): Wean users off of depending on canonical library
+    // resolution. dart-lang/dartdoc#2696
+    if (canonicalLibrary != null) yield canonicalLibrary;
   }
 }
