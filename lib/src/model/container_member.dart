@@ -60,14 +60,7 @@ mixin ContainerMember on ModelElement implements EnclosedElement {
 
   @override
   @nonVirtual
-  Iterable<Container> get referenceParents sync* {
-    yield enclosingElement;
-    // TODO(jcollins-g): Wean users off of depending on canonical library
-    // resolution. dart-lang/dartdoc#2696
-    if (enclosingElement != canonicalEnclosingContainer && canonicalEnclosingContainer != null) yield canonicalEnclosingContainer;
-    if (enclosingElement != definingEnclosingContainer) yield definingEnclosingContainer;
-  }
-
+  Iterable<Container> get referenceParents => [enclosingElement];
 
   @override
   Iterable<Library> get referenceGrandparentOverrides sync* {

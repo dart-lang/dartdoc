@@ -47,10 +47,10 @@ class Class extends Container
 
   Class(ClassElement element, Library library, PackageGraph packageGraph)
       : _mixedInTypes = element.mixins
-            .map<DefinedElementType>(
-                (f) => ElementType.from(f, library, packageGraph))
-            .where((mixin) => mixin != null)
-            .toList(growable: false),
+      .map<DefinedElementType>(
+          (f) => ElementType.from(f, library, packageGraph))
+      .where((mixin) => mixin != null)
+      .toList(growable: false),
         _supertype = element.supertype?.element?.supertype == null
             ? null
             : ElementType.from(element.supertype, library, packageGraph),
@@ -72,7 +72,7 @@ class Class extends Container
 
   @Deprecated(
       'Renamed to `unnamedConstructor`; this getter with the old name will be '
-      'removed as early as Dartdoc 1.0.0')
+          'removed as early as Dartdoc 1.0.0')
   Constructor get defaultConstructor => unnamedConstructor;
 
   @override
@@ -112,8 +112,10 @@ class Class extends Container
         allModelElements.where((e) => e.isCanonical).toList());
   }
 
-  Iterable<Constructor> get constructors => element.constructors
-      .map((e) => ModelElement.from(e, library, packageGraph) as Constructor);
+  Iterable<Constructor> get constructors =>
+      element.constructors
+          .map((e) =>
+      ModelElement.from(e, library, packageGraph) as Constructor);
 
   @override
   bool get hasPublicConstructors => publicConstructors.isNotEmpty;
@@ -126,7 +128,8 @@ class Class extends Container
 
   @override
   Iterable<Constructor> get publicConstructorsSorted =>
-      _publicConstructorsSorted ??= publicConstructors.toList()..sort(byName);
+      _publicConstructorsSorted ??= publicConstructors.toList()
+        ..sort(byName);
 
   /// Returns the library that encloses this element.
   @override
@@ -155,11 +158,11 @@ class Class extends Container
   @override
   bool get hasModifiers =>
       hasPublicMixedInTypes ||
-      hasAnnotations ||
-      hasPublicInterfaces ||
-      hasPublicSuperChainReversed ||
-      hasPublicImplementors ||
-      hasPotentiallyApplicableExtensions;
+          hasAnnotations ||
+          hasPublicInterfaces ||
+          hasPublicSuperChainReversed ||
+          hasPublicImplementors ||
+          hasPotentiallyApplicableExtensions;
 
   bool get hasPublicSuperChainReversed => publicSuperChainReversed.isNotEmpty;
 
@@ -206,10 +209,13 @@ class Class extends Container
   }
 
   List<Class> _publicImplementorsSorted;
-  Iterable<Class> get publicImplementorsSorted =>
-      _publicImplementorsSorted ??= publicImplementors.toList()..sort(byName);
 
-  /*lazy final*/ List<Method> _inheritedMethods;
+  Iterable<Class> get publicImplementorsSorted =>
+      _publicImplementorsSorted ??= publicImplementors.toList()
+        ..sort(byName);
+
+  /*lazy final*/
+  List<Method> _inheritedMethods;
 
   Iterable<Method> get inheritedMethods {
     if (_inheritedMethods == null) {
@@ -237,7 +243,8 @@ class Class extends Container
 
   bool get hasPublicInheritedMethods => publicInheritedMethods.isNotEmpty;
 
-  /*lazy final*/ List<Operator> _inheritedOperators;
+  /*lazy final*/
+  List<Operator> _inheritedOperators;
 
   Iterable<Operator> get inheritedOperators {
     if (_inheritedOperators == null) {
@@ -294,8 +301,8 @@ class Class extends Container
         yield* hiddenClass.publicInterfaces;
       } else {
         assert(
-            false,
-            'Can not handle intermediate non-public interfaces '
+        false,
+        'Can not handle intermediate non-public interfaces '
             'created by ModelElements that are not classes or mixins:  '
             '$fullyQualifiedName contains an interface {$i}, '
             'defined by ${i.modelElement}');
@@ -327,7 +334,7 @@ class Class extends Container
 
   @Deprecated(
       'Public method intended to be private; will be removed as early as '
-      'Dartdoc 1.0.0')
+          'Dartdoc 1.0.0')
   bool isInheritingFrom(Class other) => _isInheritingFrom(other);
 
   @override
@@ -356,7 +363,7 @@ class Class extends Container
 
       /// Caching should make this recursion a little less painful.
       for (var c
-          in mixedInTypes.reversed.map((e) => (e.modelElement as Class))) {
+      in mixedInTypes.reversed.map((e) => (e.modelElement as Class))) {
         _inheritanceChain.addAll(c.inheritanceChain);
       }
 
@@ -397,7 +404,9 @@ class Class extends Container
       model_utils.filterNonPublic(superChain);
 
   Iterable<DefinedElementType> get publicSuperChainReversed =>
-      publicSuperChain.toList().reversed;
+      publicSuperChain
+          .toList()
+          .reversed;
 
   List<ExecutableElement> __inheritedElements;
 
@@ -437,7 +446,7 @@ class Class extends Container
           bool _isDartCoreObject(ClassElement e) =>
               e.name == 'Object' && e.library.name == 'dart.core';
           assert(inheritanceChainElements
-                  .contains(imap[nameObj].enclosingElement) ||
+              .contains(imap[nameObj].enclosingElement) ||
               _isDartCoreObject(imap[nameObj].enclosingElement));
 
           // If the concrete object from [InheritanceManager3.getInheritedConcreteMap2]
@@ -446,7 +455,7 @@ class Class extends Container
           // correctly accounts for intermediate abstract classes that have
           // method/field implementations.
           if (inheritanceChainElements
-                  .indexOf(combinedMap[nameObj.name].enclosingElement) <
+              .indexOf(combinedMap[nameObj.name].enclosingElement) <
               inheritanceChainElements
                   .indexOf(imap[nameObj].enclosingElement)) {
             combinedMap[nameObj.name] = imap[nameObj];
@@ -501,9 +510,9 @@ class Class extends Container
       for (var fieldName in accessorMap.keys) {
         var elements = accessorMap[fieldName].toList();
         var getterElement =
-            elements.firstWhere((e) => e.isGetter, orElse: () => null);
+        elements.firstWhere((e) => e.isGetter, orElse: () => null);
         var setterElement =
-            elements.firstWhere((e) => e.isSetter, orElse: () => null);
+        elements.firstWhere((e) => e.isSetter, orElse: () => null);
         _addSingleField(
             getterElement, setterElement, inheritedAccessorElements);
       }
@@ -519,15 +528,14 @@ class Class extends Container
   /// If [f] is not specified, pick the FieldElement from the PropertyAccessorElement
   /// whose enclosing class inherits from the other (defaulting to the getter)
   /// and construct a Field using that.
-  void _addSingleField(
-      PropertyAccessorElement getterElement,
+  void _addSingleField(PropertyAccessorElement getterElement,
       PropertyAccessorElement setterElement,
       Set<PropertyAccessorElement> inheritedAccessors,
       [FieldElement f]) {
     var getter =
-        ContainerAccessor.from(getterElement, inheritedAccessors, this);
+    ContainerAccessor.from(getterElement, inheritedAccessors, this);
     var setter =
-        ContainerAccessor.from(setterElement, inheritedAccessors, this);
+    ContainerAccessor.from(setterElement, inheritedAccessors, this);
     // Rebind getterElement/setterElement as ModelElement.from can resolve
     // MultiplyInheritedExecutableElements or resolve Members.
     getterElement = getter?.element;
@@ -606,7 +614,8 @@ class Class extends Container
   Iterable<Field> get constantFields => allFields.where((f) => f.isConst);
 
   @override
-  Iterable<MapEntry<String, CommentReferable>> get extraReferenceChildren sync* {
+  Iterable<
+      MapEntry<String, CommentReferable>> get extraReferenceChildren sync* {
     for (var modelElement in constructors) {
       // Populate default constructor names so they make sense for the
       // new lookup code.
@@ -617,11 +626,17 @@ class Class extends Container
       yield MapEntry(constructorName, modelElement);
       yield MapEntry('$name.$constructorName', modelElement);
     }
-  }
-
-  @override
-  Iterable<CommentReferable> get referenceParents sync* {
-    yield* super.referenceParents;
-    yield* superChain.expand((m) => m.modelElement.referenceParents);
+    // TODO(jcollins-g): wean important users off of relying on static method
+    // inheritance (dart-lang/dartdoc#2698)
+    for (var container in publicSuperChain.map((t) => t.modelElement).whereType<
+        Container>()) {
+      for (var modelElement in [
+        ...container.staticFields,
+        ...container.staticAccessors,
+        ...container.staticMethods
+      ]) {
+        yield MapEntry(modelElement.name, modelElement);
+      }
+    }
   }
 }
