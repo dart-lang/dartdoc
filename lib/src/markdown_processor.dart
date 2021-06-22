@@ -296,10 +296,16 @@ ModelElement _getPreferredClass(ModelElement modelElement) {
 }
 
 /// Return false if the passed [referable] is a default [Constructor].
-bool _rejectDefaultConstructors(CommentReferable referable) {
-  if (referable is Constructor &&
-      referable.name == referable.enclosingElement.name) {
-    return false;
+bool _rejectDefaultAndShadowingConstructors(CommentReferable referable) {
+  if (referable is Constructor) {
+    if (referable.name == referable.enclosingElement.name) {
+      return false;
+    }
+    if (referable.enclosingElement.referenceChildren[referable.name
+        .split('.')
+        .last] is! Constructor) {
+      return false;
+    }
   }
   // Avoid accidentally preferring arguments of the default constructor.
   if (referable is ModelElement && referable.enclosingElement is Constructor) {
@@ -342,7 +348,7 @@ MatchingLinkResult _getMatchingLinkElementCommentReferable(
   } else {
     // Without hints, reject default constructors to force resolution to the
     // class.
-    filter = _rejectDefaultConstructors;
+    filter = _rejectDefaultAndShadowingConstructors;
   }
 
   var lookupResult =

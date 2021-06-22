@@ -965,9 +965,14 @@ class BaseForDocComments {
 
   int somethingShadowy;
 
+  /// I'm not really a constructor, but I'm allowed to exist anyway.
+  int aConstructorShadowed;
+
   BaseForDocComments(this.initializeMe, [bool somethingShadowy]);
 
   BaseForDocComments.aNonDefaultConstructor(this.initializeMe);
+
+  BaseForDocComments.aConstructorShadowed(this.initializeMe);
 
   factory BaseForDocComments.aFactoryFunction() => null;
 }

@@ -608,29 +608,33 @@ class Class extends Container
   @override
   Iterable<Field> get constantFields => allFields.where((f) => f.isConst);
 
+  static Iterable<MapEntry<String, CommentReferable>> _constructorGenerator(Iterable<Constructor> source) sync* {
+    for (var constructor in source) {
+      var constructorName = constructor.element.name;
+      if (constructorName == '') {
+        constructorName = constructor.enclosingElement.name;
+      }
+      yield MapEntry(constructorName, constructor);
+      yield MapEntry('${constructor.enclosingElement.name}.$constructorName', constructor);
+    }
+  }
+
   @override
   Iterable<MapEntry<String, CommentReferable>>
       get extraReferenceChildren sync* {
-    for (var modelElement in constructors) {
-      // Populate default constructor names so they make sense for the
-      // new lookup code.
-      var constructorName = modelElement.element.name;
-      if (constructorName == '') {
-        constructorName = modelElement.enclosingElement.name;
-      }
-      yield MapEntry(constructorName, modelElement);
-      yield MapEntry('$name.$constructorName', modelElement);
-    }
+    yield* _constructorGenerator(constructors);
     // TODO(jcollins-g): wean important users off of relying on static method
     // inheritance (dart-lang/dartdoc#2698)
     for (var container
         in publicSuperChain.map((t) => t.modelElement).whereType<Container>()) {
       for (var modelElement in [
         ...container.staticFields,
-        ...container.staticAccessors,
-        ...container.staticMethods
+        ...container.staticMethods,
       ]) {
         yield MapEntry(modelElement.name, modelElement);
+      }
+      if (container is Class) {
+        yield* _constructorGenerator(container.constructors);
       }
     }
   }

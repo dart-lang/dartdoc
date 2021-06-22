@@ -664,8 +664,14 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   Map<String, CommentReferable> get referenceChildren {
     if (_referenceChildren == null) {
       _referenceChildren = Map.fromEntries(
-          element.exportNamespace.definedNames.entries.map((entry) => MapEntry(
-              entry.key, ModelElement.fromElement(entry.value, packageGraph))));
+          element.exportNamespace.definedNames.entries.expand((entry) sync* {
+            var modelElement = ModelElement.fromElement(entry.value, packageGraph);
+            if (modelElement is! Accessor) {
+              yield MapEntry(
+                  entry.key,
+                  ModelElement.fromElement(entry.value, packageGraph));
+            }
+          }));
       // TODO(jcollins-g): warn and get rid of this case where it shows up.
       // If a user is hiding parts of a prefix import, the user should not
       // refer to hidden members via the prefix, because that can be
