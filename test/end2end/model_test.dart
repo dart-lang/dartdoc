@@ -2153,8 +2153,7 @@ void main() {
     }
 
     group('Linking for complex inheritance and reexport cases', () {
-      Package DartPackage;
-      Library base, Dart, extending, local_scope, two_exports;
+      Library base, extending, local_scope, two_exports;
       Class BaseWithMembers, ExtendingAgain;
       Field aField, anotherField, aStaticField;
       TopLevelVariable aNotReexportedVariable,
@@ -2174,8 +2173,6 @@ void main() {
             .firstWhere((l) => l.name == 'two_exports.src.local_scope');
         two_exports = packageGraph.allLibraries.values
             .firstWhere((l) => l.name == 'two_exports');
-        Dart = base.package.libraries.firstWhere((l) => l.name == 'Dart');
-        DartPackage = packageGraph.packages.firstWhere((p) => p.name == 'Dart');
 
         BaseWithMembers =
             base.classes.firstWhere((c) => c.name == 'BaseWithMembers');
@@ -2205,14 +2202,6 @@ void main() {
             .firstWhere((p) => p.name == 'aSymbolOnlyAvailableInExportContext');
         someConflictingNameSymbolTwoExports = two_exports.properties
             .firstWhere((p) => p.name == 'someConflictingNameSymbol');
-      });
-
-      test('Referring to libraries and packages with the same name is fine',
-          () {
-        expect(bothLookup(base, 'Dart'), equals(MatchingLinkResult(Dart)));
-        // New feature: allow disambiguation if you really want to specify a package.
-        expect(newLookup(base, 'package:Dart'),
-            equals(MatchingLinkResult(DartPackage)));
       });
 
       test('Grandparent override in container members', () {
@@ -2261,6 +2250,8 @@ void main() {
     });
 
     group('Ordinary namespace cases', () {
+      Package DartPackage;
+      Library Dart;
       ModelFunction doesStuff, function1, topLevelFunction;
       TopLevelVariable incorrectDocReference,
           incorrectDocReferenceFromEx,
@@ -2287,6 +2278,9 @@ void main() {
           aConstructorShadowedField;
 
       setUpAll(() async {
+        Dart = packageGraph.allLibraries.values
+            .firstWhere((l) => l.name == 'Dart');
+        DartPackage = packageGraph.packages.firstWhere((p) => p.name == 'Dart');
         nameWithTwoUnderscores = fakeLibrary.constants
             .firstWhere((v) => v.name == 'NAME_WITH_TWO_UNDERSCORES');
         nameWithSingleUnderscore = fakeLibrary.constants
@@ -2357,6 +2351,14 @@ void main() {
             (c) => c.name == 'BaseForDocComments.aConstructorShadowed');
         aConstructorShadowedField = baseForDocComments.allFields
             .firstWhere((f) => f.name == 'aConstructorShadowed');
+      });
+
+      test('Referring to libraries and packages with the same name is fine',
+          () {
+        expect(bothLookup(Apple, 'Dart'), equals(MatchingLinkResult(Dart)));
+        // New feature: allow disambiguation if you really want to specify a package.
+        expect(newLookup(Apple, 'package:Dart'),
+            equals(MatchingLinkResult(DartPackage)));
       });
 
       test('Verify basic linking inside a constructor', () {
