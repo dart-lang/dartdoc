@@ -82,7 +82,7 @@ export 'src/reexport_this.dart';
 
 /// Does not render with emoji 3ffe:2a00:100:7031::1
 const int hasMarkdownInDoc = 1;
-
+/
 abstract class ImplementingThingy implements BaseThingy {}
 
 abstract class BaseThingy {

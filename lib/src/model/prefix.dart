@@ -4,6 +4,7 @@
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/scope.dart';
+import 'package:analyzer/src/dart/element/element.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/library.dart';
 
@@ -19,14 +20,18 @@ class Prefix extends ModelElement implements EnclosedElement {
       : super(element, library, packageGraph);
 
   @override
-  // TODO(jcollins-g): consider allowing bare prefixes to link to a library doc?
   bool get isCanonical => false;
+
+  Library get associatedLibrary => ModelElement.fromElement(element.reference.parent.parent.element, packageGraph);
+
+  @override
+  Library get canonicalModelElement => associatedLibrary.canonicalLibrary;
 
   @override
   Scope get scope => element.scope;
 
   @override
-  PrefixElement get element => super.element;
+  PrefixElementImpl get element => super.element;
 
   @override
   ModelElement get enclosingElement => library;

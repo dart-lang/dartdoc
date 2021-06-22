@@ -2251,8 +2251,8 @@ void main() {
 
     group('Ordinary namespace cases', () {
       Package DartPackage;
-      Library Dart;
-      ModelFunction doesStuff, function1, topLevelFunction;
+      Library Dart, mylibpub;
+      ModelFunction doesStuff, function1, topLevelFunction, aFunctionUsingRenamedLib;
       TopLevelVariable incorrectDocReference,
           incorrectDocReferenceFromEx,
           nameWithTwoUnderscores,
@@ -2278,6 +2278,8 @@ void main() {
           aConstructorShadowedField;
 
       setUpAll(() async {
+        mylibpub = packageGraph.allLibraries.values.firstWhere((l) => l.name == 'mylibpub');
+        aFunctionUsingRenamedLib = fakeLibrary.functions.firstWhere((f) => f.name == 'aFunctionUsingRenamedLib');
         Dart = packageGraph.allLibraries.values
             .firstWhere((l) => l.name == 'Dart');
         DartPackage = packageGraph.packages.firstWhere((p) => p.name == 'Dart');
@@ -2351,6 +2353,11 @@ void main() {
             (c) => c.name == 'BaseForDocComments.aConstructorShadowed');
         aConstructorShadowedField = baseForDocComments.allFields
             .firstWhere((f) => f.name == 'aConstructorShadowed');
+      });
+
+      test('Referring to a renamed library and its members works', () {
+        expect(bothLookup(aFunctionUsingRenamedLib, 'renamedLib'),
+          equals(MatchingLinkResult(mylibpub)));
       });
 
       test('Referring to libraries and packages with the same name is fine',
