@@ -374,7 +374,9 @@ MatchingLinkResult _getMatchingLinkElementLegacy(
   // Try expensive not-scoped lookup.
   if (refModelElement == null && warnable is ModelElement) {
     Container preferredClass = _getPreferredClass(warnable);
-    if (preferredClass is Extension) {
+    // We might still get here in comparison mode, don't complain if that's
+    // the case.
+    if (preferredClass is Extension && warnable.config.enhancedReferenceLookup == false) {
       warnable.warn(PackageWarning.notImplemented,
           message:
               'Comment reference resolution inside extension methods is not yet implemented');
@@ -1026,8 +1028,8 @@ md.Node _makeLinkNode(String codeRef, Warnable warnable) {
 
 @visibleForTesting
 MatchingLinkResult getMatchingLinkElement(Warnable warnable, String codeRef,
-    {bool experimentalReferenceLookup}) {
-  experimentalReferenceLookup ??= warnable.config.experimentalReferenceLookup;
+    {bool enhancedReferenceLookup}) {
+  enhancedReferenceLookup ??= warnable.config.enhancedReferenceLookup;
   MatchingLinkResult result, resultOld, resultNew;
   // Do a comparison between result types only if the warnings for them are
   // enabled, because there's a significant performance penalty.
@@ -1040,12 +1042,12 @@ MatchingLinkResult getMatchingLinkElement(Warnable warnable, String codeRef,
     if (resultNew.commentReferable != null) {
       markdownStats.resolvedNewLookupReferences++;
     }
-    result = experimentalReferenceLookup ? resultNew : resultOld;
+    result = enhancedReferenceLookup ? resultNew : resultOld;
     if (resultOld.commentReferable != null) {
       markdownStats.resolvedOldLookupReferences++;
     }
   } else {
-    if (experimentalReferenceLookup) {
+    if (enhancedReferenceLookup) {
       result = _getMatchingLinkElementCommentReferable(codeRef, warnable);
     } else {
       result = _getMatchingLinkElementLegacy(codeRef, warnable);

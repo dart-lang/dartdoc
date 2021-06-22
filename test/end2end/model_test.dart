@@ -2140,10 +2140,10 @@ void main() {
 
     MatchingLinkResult originalLookup(Warnable element, String codeRef) =>
         definingLinkResult(getMatchingLinkElement(element, codeRef,
-            experimentalReferenceLookup: false));
+            enhancedReferenceLookup: false));
     MatchingLinkResult newLookup(Warnable element, String codeRef) =>
         definingLinkResult(getMatchingLinkElement(element, codeRef,
-            experimentalReferenceLookup: true));
+            enhancedReferenceLookup: true));
 
     MatchingLinkResult bothLookup(Warnable element, String codeRef) {
       var originalLookupResult = originalLookup(element, codeRef);
