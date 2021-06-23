@@ -2129,10 +2129,10 @@ void main() {
     /// as the original lookup code returns canonicalized results and the
     /// new lookup code is only guaranteed to return equivalent results.
     MatchingLinkResult definingLinkResult(MatchingLinkResult originalResult) {
-      if (originalResult.modelElement != null) {
+      if (originalResult.commentReferable?.element != null) {
         return MatchingLinkResult(
-            ModelElement.fromElement(originalResult.modelElement.element,
-                originalResult.modelElement.packageGraph),
+            ModelElement.fromElement(originalResult.commentReferable.element,
+                originalResult.commentReferable.packageGraph),
             warn: originalResult.warn);
       }
       return originalResult;
@@ -2228,7 +2228,10 @@ void main() {
       });
 
       test('Linking for inherited field from reexport context', () {
-        expect(bothLookup(aField, 'anotherNotReexportedVariable'),
+        // While this can work in the old code at times, it is using the
+        // analyzer and the new test harness can't leverage the analyzer
+        // when testing the old lookup code.
+        expect(newLookup(aField, 'anotherNotReexportedVariable'),
             equals(MatchingLinkResult(anotherNotReexportedVariable)));
       });
 
@@ -2250,6 +2253,8 @@ void main() {
     });
 
     group('Ordinary namespace cases', () {
+      Package DartPackage;
+      Library Dart;
       ModelFunction doesStuff, function1, topLevelFunction;
       TopLevelVariable incorrectDocReference,
           incorrectDocReferenceFromEx,
@@ -2276,6 +2281,9 @@ void main() {
           aConstructorShadowedField;
 
       setUpAll(() async {
+        Dart = packageGraph.allLibraries.values
+            .firstWhere((l) => l.name == 'Dart');
+        DartPackage = packageGraph.packages.firstWhere((p) => p.name == 'Dart');
         nameWithTwoUnderscores = fakeLibrary.constants
             .firstWhere((v) => v.name == 'NAME_WITH_TWO_UNDERSCORES');
         nameWithSingleUnderscore = fakeLibrary.constants
@@ -2348,6 +2356,14 @@ void main() {
             .firstWhere((f) => f.name == 'aConstructorShadowed');
       });
 
+      test('Referring to libraries and packages with the same name is fine',
+          () {
+        expect(bothLookup(Apple, 'Dart'), equals(MatchingLinkResult(Dart)));
+        // New feature: allow disambiguation if you really want to specify a package.
+        expect(newLookup(Apple, 'package:Dart'),
+            equals(MatchingLinkResult(DartPackage)));
+      });
+
       test('Verify basic linking inside a constructor', () {
         // Field formal parameters worked sometimes by accident in the old code,
         // but should work reliably now.
@@ -2378,7 +2394,10 @@ void main() {
 
       test('Deprecated lookup styles still function', () {
         // dart-lang/dartdoc#2683
-        expect(bothLookup(baseForDocComments, 'aPrefix.UseResult'),
+        // We can't check the old code this way as this is one of the few
+        // cases in the old code where it relies on the analyzer's resolution of
+        // the doc comment -- the test harness can't do that for the old code.
+        expect(newLookup(baseForDocComments, 'aPrefix.UseResult'),
             equals(MatchingLinkResult(metaUseResult)));
       });
 

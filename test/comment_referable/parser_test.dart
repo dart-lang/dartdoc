@@ -47,6 +47,7 @@ void main() {
       expectParseEquivalent('this.is.valid<>', ['this', 'is', 'valid']);
       expectParseEquivalent('this.is.valid<stuff>', ['this', 'is', 'valid']);
       expectParseEquivalent('this.is.valid(things)', ['this', 'is', 'valid']);
+      expectParseEquivalent('\nthis.is.valid', ['this', 'is', 'valid']);
     });
 
     test('Check that cases dependent on prefix resolution not firing parse',
