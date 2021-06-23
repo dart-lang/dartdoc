@@ -1897,7 +1897,7 @@ void main() {
     });
 
     test('correctly finds all the classes', () {
-      expect(classes, hasLength(38));
+      expect(classes, hasLength(39));
     });
 
     test('abstract', () {
@@ -2140,10 +2140,10 @@ void main() {
 
     MatchingLinkResult originalLookup(Warnable element, String codeRef) =>
         definingLinkResult(getMatchingLinkElement(element, codeRef,
-            experimentalReferenceLookup: false));
+            enhancedReferenceLookup: false));
     MatchingLinkResult newLookup(Warnable element, String codeRef) =>
         definingLinkResult(getMatchingLinkElement(element, codeRef,
-            experimentalReferenceLookup: true));
+            enhancedReferenceLookup: true));
 
     MatchingLinkResult bothLookup(Warnable element, String codeRef) {
       var originalLookupResult = originalLookup(element, codeRef);
@@ -2254,8 +2254,11 @@ void main() {
 
     group('Ordinary namespace cases', () {
       Package DartPackage;
-      Library Dart;
-      ModelFunction doesStuff, function1, topLevelFunction;
+      Library Dart, mylibpub;
+      ModelFunction doesStuff,
+          function1,
+          topLevelFunction,
+          aFunctionUsingRenamedLib;
       TopLevelVariable incorrectDocReference,
           incorrectDocReferenceFromEx,
           nameWithTwoUnderscores,
@@ -2281,6 +2284,10 @@ void main() {
           aConstructorShadowedField;
 
       setUpAll(() async {
+        mylibpub = packageGraph.allLibraries.values
+            .firstWhere((l) => l.name == 'mylibpub');
+        aFunctionUsingRenamedLib = fakeLibrary.functions
+            .firstWhere((f) => f.name == 'aFunctionUsingRenamedLib');
         Dart = packageGraph.allLibraries.values
             .firstWhere((l) => l.name == 'Dart');
         DartPackage = packageGraph.packages.firstWhere((p) => p.name == 'Dart');
@@ -2354,6 +2361,16 @@ void main() {
             (c) => c.name == 'BaseForDocComments.aConstructorShadowed');
         aConstructorShadowedField = baseForDocComments.allFields
             .firstWhere((f) => f.name == 'aConstructorShadowed');
+      });
+
+      test('Referring to a renamed library directly works', () {
+        // The new code forwards from the prefix, so doesn't quite work the
+        // same as the old for an equality comparison via [MatchingLinkResult].
+        expect(
+            (bothLookup(aFunctionUsingRenamedLib, 'renamedLib').commentReferable
+                    as ModelElement)
+                .canonicalModelElement,
+            equals(mylibpub));
       });
 
       test('Referring to libraries and packages with the same name is fine',
@@ -2660,20 +2677,20 @@ void main() {
           megaTron.potentiallyApplicableExtensions, orderedEquals([arm, leg]));
     });
 
-    // TODO(jcollins-g): implement feature and update tests
     test('documentation links do not crash in base cases', () {
-      packageGraph.packageWarningCounter.hasWarning(
-          doStuff,
-          PackageWarning.notImplemented,
-          'Comment reference resolution inside extension methods is not yet implemented');
-      packageGraph.packageWarningCounter.hasWarning(
-          doSomeStuff,
-          PackageWarning.notImplemented,
-          'Comment reference resolution inside extension methods is not yet implemented');
+      // Parameters are OK.
       expect(doStuff.documentationAsHtml, contains('<code>another</code>'));
-      expect(doSomeStuff.documentationAsHtml,
-          contains('<code>String.extensionNumber</code>'));
-    });
+      expect(
+          doStuff.documentationAsHtml,
+          contains(
+              '<a href="%%__HTMLBASE_dartdoc_internal__%%ex/AnExtendableThing/aMember.html">aMember</a>'));
+      expect(
+          doStuff.documentationAsHtml,
+          contains(
+              '<a href="%%__HTMLBASE_dartdoc_internal__%%ex/AnExtendableThing-class.html">AnExtendableThing</a>'));
+      // TODO(jcollins-g): consider linking via applied extensions?
+      expect(doSomeStuff.documentationAsHtml, contains('<code>aMember</code>'));
+    }, skip: 'unskip when enhanced lookups are on by default');
 
     test(
         'references from outside an extension refer correctly to the extension',

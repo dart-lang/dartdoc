@@ -14694,7 +14694,7 @@ const _invisibleGetters = {
     'examplePathPrefix',
     'exclude',
     'excludePackages',
-    'experimentalReferenceLookup',
+    'enhancedReferenceLookup',
     'flutterRoot',
     'hideSdkText',
     'include',
