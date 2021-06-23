@@ -1426,7 +1426,7 @@ Future<List<DartdocOption<Object>>> createDartdocOptions(
     DartdocOptionArgOnly<List<String>>('excludePackages', [], resourceProvider,
         help: 'Package names to ignore.', splitCommas: true),
     DartdocOptionArgFile<bool>(
-        'enhancedReferenceLookup', true, resourceProvider,
+        'enhancedReferenceLookup', false, resourceProvider,
         hide: true,
         help:
             'Use the new comment reference lookup system instead of the legacy '
