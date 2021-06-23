@@ -2255,7 +2255,10 @@ void main() {
     group('Ordinary namespace cases', () {
       Package DartPackage;
       Library Dart, mylibpub;
-      ModelFunction doesStuff, function1, topLevelFunction, aFunctionUsingRenamedLib;
+      ModelFunction doesStuff,
+          function1,
+          topLevelFunction,
+          aFunctionUsingRenamedLib;
       TopLevelVariable incorrectDocReference,
           incorrectDocReferenceFromEx,
           nameWithTwoUnderscores,
@@ -2281,8 +2284,10 @@ void main() {
           aConstructorShadowedField;
 
       setUpAll(() async {
-        mylibpub = packageGraph.allLibraries.values.firstWhere((l) => l.name == 'mylibpub');
-        aFunctionUsingRenamedLib = fakeLibrary.functions.firstWhere((f) => f.name == 'aFunctionUsingRenamedLib');
+        mylibpub = packageGraph.allLibraries.values
+            .firstWhere((l) => l.name == 'mylibpub');
+        aFunctionUsingRenamedLib = fakeLibrary.functions
+            .firstWhere((f) => f.name == 'aFunctionUsingRenamedLib');
         Dart = packageGraph.allLibraries.values
             .firstWhere((l) => l.name == 'Dart');
         DartPackage = packageGraph.packages.firstWhere((p) => p.name == 'Dart');
@@ -2358,9 +2363,14 @@ void main() {
             .firstWhere((f) => f.name == 'aConstructorShadowed');
       });
 
-      test('Referring to a renamed library and its members works', () {
-        expect(bothLookup(aFunctionUsingRenamedLib, 'renamedLib'),
-          equals(MatchingLinkResult(mylibpub)));
+      test('Referring to a renamed library directly works', () {
+        // The new code forwards from the prefix, so doesn't quite work the
+        // same as the old for an equality comparison via [MatchingLinkResult].
+        expect(
+            (bothLookup(aFunctionUsingRenamedLib, 'renamedLib').commentReferable
+                    as ModelElement)
+                .canonicalModelElement,
+            equals(mylibpub));
       });
 
       test('Referring to libraries and packages with the same name is fine',

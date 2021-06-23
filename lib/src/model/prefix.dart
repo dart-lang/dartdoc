@@ -13,6 +13,7 @@ import '../../dartdoc.dart';
 /// Represents a [PrefixElement] for dartdoc.
 ///
 /// Like [Parameter], it doesn't have doc pages, but participates in lookups.
+/// Forwards to its referenced library if referred to directly.
 class Prefix extends ModelElement implements EnclosedElement {
   /// [library] is the library the prefix is defined in, not the [Library]
   /// referred to by the [PrefixElement].
@@ -22,7 +23,15 @@ class Prefix extends ModelElement implements EnclosedElement {
   @override
   bool get isCanonical => false;
 
-  Library get associatedLibrary => ModelElement.fromElement(element.reference.parent.parent.element, packageGraph);
+  Library _associatedLibrary;
+  // TODO(jcollins-g): consider connecting PrefixElement to the imported library
+  // in analyzer?
+  Library get associatedLibrary =>
+      _associatedLibrary ??= ModelElement.fromElement(
+          library.element.imports
+              .firstWhere((i) => i.prefix == element)
+              .importedLibrary,
+          packageGraph);
 
   @override
   Library get canonicalModelElement => associatedLibrary.canonicalLibrary;
@@ -41,7 +50,8 @@ class Prefix extends ModelElement implements EnclosedElement {
       throw UnimplementedError('prefixes have no generated files in dartdoc');
 
   @override
-  String get href => null;
+  String get href =>
+      canonicalModelElement == null ? null : canonicalModelElement.href;
 
   @override
   String get kind => 'prefix';

@@ -382,7 +382,8 @@ MatchingLinkResult _getMatchingLinkElementLegacy(
     Container preferredClass = _getPreferredClass(warnable);
     // We might still get here in comparison mode, don't complain if that's
     // the case.
-    if (preferredClass is Extension && warnable.config.enhancedReferenceLookup == false) {
+    if (preferredClass is Extension &&
+        warnable.config.enhancedReferenceLookup == false) {
       warnable.warn(PackageWarning.notImplemented,
           message:
               'Comment reference resolution inside extension methods is not yet implemented');
