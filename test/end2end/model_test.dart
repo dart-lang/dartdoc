@@ -2677,20 +2677,20 @@ void main() {
           megaTron.potentiallyApplicableExtensions, orderedEquals([arm, leg]));
     });
 
-    // TODO(jcollins-g): implement feature and update tests
     test('documentation links do not crash in base cases', () {
-      packageGraph.packageWarningCounter.hasWarning(
-          doStuff,
-          PackageWarning.notImplemented,
-          'Comment reference resolution inside extension methods is not yet implemented');
-      packageGraph.packageWarningCounter.hasWarning(
-          doSomeStuff,
-          PackageWarning.notImplemented,
-          'Comment reference resolution inside extension methods is not yet implemented');
+      // Parameters are OK.
       expect(doStuff.documentationAsHtml, contains('<code>another</code>'));
-      expect(doSomeStuff.documentationAsHtml,
-          contains('<code>String.extensionNumber</code>'));
-    });
+      expect(
+          doStuff.documentationAsHtml,
+          contains(
+              '<a href="%%__HTMLBASE_dartdoc_internal__%%ex/AnExtendableThing/aMember.html">aMember</a>'));
+      expect(
+          doStuff.documentationAsHtml,
+          contains(
+              '<a href="%%__HTMLBASE_dartdoc_internal__%%ex/AnExtendableThing-class.html">AnExtendableThing</a>'));
+      // TODO(jcollins-g): consider linking via applied extensions?
+      expect(doSomeStuff.documentationAsHtml, contains('<code>aMember</code>'));
+    }, skip: 'unskip when enhanced lookups are on by default');
 
     test(
         'references from outside an extension refer correctly to the extension',

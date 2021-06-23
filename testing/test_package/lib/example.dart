@@ -610,22 +610,22 @@ extension AnExtension<Q> on WithGeneric<Q> {
   int call(String s) => 0;
 }
 
-extension SimpleStringExtension on String {
+class AnExtendableThing {
+  int aMember;
+}
+
+extension SimpleStringExtension on AnExtendableThing {
   /// Print this and [another].
-  /// Refer to [indexOf], from [String].
+  /// Refer to [aMember], from [AnExtendableThing].
   /// Also refer to [extensionNumber].
-  void doStuff(String another) {
-    print(this + another);
-  }
+  void doStuff(String another) {}
 
   int get extensionNumber => 3;
 }
 
 class ExtensionUser {
-  /// Refer to [String.extensionNumber], which we use here.
-  void doSomeStuff(String things) {
-    print(things.extensionNumber + 1);
-  }
+  /// Refer to [aMember], which we use here.
+  void doSomeStuff(String things) {}
 }
 
 /// Extension on List
