@@ -315,10 +315,6 @@ bool _rejectDefaultAndShadowingConstructors(CommentReferable referable) {
       return false;
     }
   }
-  // Avoid accidentally preferring arguments of the default constructor.
-  if (referable is ModelElement && referable.enclosingElement is Constructor) {
-    return false;
-  }
   return true;
 }
 

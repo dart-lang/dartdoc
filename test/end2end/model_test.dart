@@ -2266,22 +2266,37 @@ void main() {
           theOnlyThingInTheLibrary;
       Constructor aNonDefaultConstructor,
           defaultConstructor,
-          aConstructorShadowed;
+          aConstructorShadowed,
+          anotherName,
+          anotherConstructor,
+          factoryConstructorThingsDefault;
       Class Apple,
           BaseClass,
           baseForDocComments,
           ExtraSpecialList,
+          FactoryConstructorThings,
           string,
           metaUseResult;
-      Method doAwesomeStuff, anotherMethod;
+      Method doAwesomeStuff, anotherMethod, aMethod;
       // ignore: unused_local_variable
       Operator bracketOperator, bracketOperatorOtherClass;
-      Parameter doAwesomeStuffParam;
+      Parameter doAwesomeStuffParam,
+          aName,
+          anotherNameParameter,
+          anotherDifferentName,
+          differentName,
+          redHerring,
+          yetAnotherName,
+          somethingShadowyParameter;
       Field forInheriting,
           action,
           initializeMe,
           somethingShadowy,
-          aConstructorShadowedField;
+          aConstructorShadowedField,
+          aNameField,
+          anotherNameField,
+          yetAnotherNameField,
+          initViaFieldFormal;
 
       setUpAll(() async {
         mylibpub = packageGraph.allLibraries.values
@@ -2309,6 +2324,8 @@ void main() {
             (c) => c.name == 'BaseForDocComments.aNonDefaultConstructor');
         defaultConstructor = baseForDocComments.constructors
             .firstWhere((c) => c.name == 'BaseForDocComments');
+        somethingShadowyParameter = defaultConstructor.allParameters
+            .firstWhere((p) => p.name == 'somethingShadowy');
         initializeMe = baseForDocComments.allFields
             .firstWhere((f) => f.name == 'initializeMe');
         somethingShadowy = baseForDocComments.allFields
@@ -2361,6 +2378,106 @@ void main() {
             (c) => c.name == 'BaseForDocComments.aConstructorShadowed');
         aConstructorShadowedField = baseForDocComments.allFields
             .firstWhere((f) => f.name == 'aConstructorShadowed');
+
+        FactoryConstructorThings = fakeLibrary.classes
+            .firstWhere((c) => c.name == 'FactoryConstructorThings');
+        anotherName = FactoryConstructorThings.constructors.firstWhere(
+            (c) => c.name == 'FactoryConstructorThings.anotherName');
+        anotherConstructor = FactoryConstructorThings.constructors.firstWhere(
+            (c) => c.name == 'FactoryConstructorThings.anotherConstructor');
+        factoryConstructorThingsDefault = FactoryConstructorThings.constructors
+            .firstWhere((c) => c.name == 'FactoryConstructorThings');
+
+        aName = anotherName.allParameters.firstWhere((p) => p.name == 'aName');
+        anotherNameParameter = anotherName.allParameters
+            .firstWhere((p) => p.name == 'anotherName');
+        anotherDifferentName = anotherName.allParameters
+            .firstWhere((p) => p.name == 'anotherDifferentName');
+        differentName = anotherName.allParameters
+            .firstWhere((p) => p.name == 'differentName');
+        redHerring = anotherConstructor.allParameters
+            .firstWhere((p) => p.name == 'redHerring');
+
+        aNameField = FactoryConstructorThings.allFields
+            .firstWhere((f) => f.name == 'aName');
+        anotherNameField = FactoryConstructorThings.allFields
+            .firstWhere((f) => f.name == 'anotherName');
+        yetAnotherNameField = FactoryConstructorThings.allFields
+            .firstWhere((f) => f.name == 'yetAnotherName');
+        initViaFieldFormal = FactoryConstructorThings.allFields
+            .firstWhere((f) => f.name == 'initViaFieldFormal');
+
+        aMethod = FactoryConstructorThings.instanceMethods
+            .firstWhere((m) => m.name == 'aMethod');
+        yetAnotherName =
+            aMethod.allParameters.firstWhere((p) => p.name == 'yetAnotherName');
+      });
+
+      group('Parameter references work properly', () {
+        test('in class scope overridden by fields', () {
+          expect(bothLookup(FactoryConstructorThings, 'aName'),
+              equals(MatchingLinkResult(aNameField)));
+          expect(bothLookup(FactoryConstructorThings, 'anotherName'),
+              equals(MatchingLinkResult(anotherNameField)));
+          expect(bothLookup(FactoryConstructorThings, 'yetAnotherName'),
+              equals(MatchingLinkResult(yetAnotherNameField)));
+          expect(bothLookup(FactoryConstructorThings, 'initViaFieldFormal'),
+              equals(MatchingLinkResult(initViaFieldFormal)));
+          expect(bothLookup(FactoryConstructorThings, 'redHerring'),
+              equals(MatchingLinkResult(redHerring)));
+        });
+
+        test('in class scope overridden by constructors when specified', () {
+          expect(
+              bothLookup(FactoryConstructorThings,
+                  'new FactoryConstructorThings.anotherName'),
+              equals(MatchingLinkResult(anotherName)));
+        });
+
+        test(
+            'in default constructor scope referring to a field formal parameter',
+            () {
+          expect(
+              newLookup(factoryConstructorThingsDefault, 'initViaFieldFormal'),
+              equals(MatchingLinkResult(initViaFieldFormal)));
+        });
+
+        test('in factory constructor scope referring to parameters', () {
+          expect(newLookup(anotherName, 'aName'),
+              equals(MatchingLinkResult(aName)));
+          expect(bothLookup(anotherName, 'anotherName'),
+              equals(MatchingLinkResult(anotherNameParameter)));
+          expect(bothLookup(anotherName, 'anotherDifferentName'),
+              equals(MatchingLinkResult(anotherDifferentName)));
+          expect(bothLookup(anotherName, 'differentName'),
+              equals(MatchingLinkResult(differentName)));
+          expect(bothLookup(anotherName, 'redHerring'),
+              equals(MatchingLinkResult(redHerring)));
+        });
+
+        test('in factory constructor scope referring to constructors', () {
+          // A bare constructor reference is OK because there is no conflict.
+          expect(bothLookup(anotherName, 'anotherConstructor'),
+              equals(MatchingLinkResult(anotherConstructor)));
+          // A conflicting constructor has to be explicit.
+          expect(
+              bothLookup(
+                  anotherName, 'new FactoryConstructorThings.anotherName'),
+              equals(MatchingLinkResult(anotherName)));
+        });
+
+        test('in method scope referring to parameters and variables', () {
+          expect(bothLookup(aMethod, 'yetAnotherName'),
+              equals(MatchingLinkResult(yetAnotherName)));
+          expect(bothLookup(aMethod, 'FactoryConstructorThings.yetAnotherName'),
+              equals(MatchingLinkResult(yetAnotherNameField)));
+          expect(
+              bothLookup(
+                  aMethod, 'FactoryConstructorThings.anotherName.anotherName'),
+              equals(MatchingLinkResult(anotherNameParameter)));
+          expect(bothLookup(aMethod, 'aName'),
+              equals(MatchingLinkResult(aNameField)));
+        });
       });
 
       test('Referring to a renamed library directly works', () {
@@ -2425,10 +2542,16 @@ void main() {
             equals(MatchingLinkResult(defaultConstructor)));
 
         // We don't want the parameter on the default constructor, here.
-        expect(
-            bothLookup(
-                baseForDocComments, 'BaseForDocComments.somethingShadowy'),
+        expect(bothLookup(fakeLibrary, 'BaseForDocComments.somethingShadowy'),
             equals(MatchingLinkResult(somethingShadowy)));
+        expect(bothLookup(baseForDocComments, 'somethingShadowy'),
+            equals(MatchingLinkResult(somethingShadowy)));
+
+        // Allow specific reference if necessary
+        expect(
+            newLookup(baseForDocComments,
+                'BaseForDocComments.BaseForDocComments.somethingShadowy'),
+            equals(MatchingLinkResult(somethingShadowyParameter)));
 
         expect(bothLookup(doAwesomeStuff, 'aNonDefaultConstructor'),
             equals(MatchingLinkResult(aNonDefaultConstructor)));

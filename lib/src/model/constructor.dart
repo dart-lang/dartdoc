@@ -137,15 +137,7 @@ class Constructor extends ModelElement
               ModelElement.fromElement(paramElement.field, packageGraph);
           _referenceChildren[paramElement.name] = fieldFormal;
         } else {
-          var constructorName = element.name;
-          if (constructorName == '') {
-            constructorName = enclosingElement.name;
-          }
-          if (constructorName == param.name) {
-            // Force users to specify a parameter explicitly in this case.
-            _referenceChildren['$constructorName.${param.name}'] = param;
-          }
-          // Allow fallback handling in [Container] to handle other cases.
+          _referenceChildren[param.name] = param;
         }
       }
       _referenceChildren
