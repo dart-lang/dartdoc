@@ -137,6 +137,7 @@ mixin CommentReferable implements Nameable {
   /// A list of lookups that should be attempted on children based on
   /// [reference].  This allows us to deal with libraries that may have
   /// separators in them. [referenceBy] stops at the first one found.
+  // TODO(jcollins-g): Convert to generator after dart-lang/sdk#46419
   Iterable<ReferenceChildrenLookup> childLookups(List<String> reference) {
     var retval = <ReferenceChildrenLookup>[];
     for (var index = 1; index <= reference.length; index++) {
