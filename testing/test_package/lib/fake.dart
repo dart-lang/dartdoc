@@ -1253,3 +1253,32 @@ abstract class IntermediateAbstract extends Object {
 
 /// This should inherit [==] from [IntermediateAbstract].
 class IntermediateAbstractSubclass extends IntermediateAbstract {}
+
+
+/// Test parameter comment resolution in factory constructors and methods.
+class FactoryConstructorThings {
+  bool aName;
+  int anotherName;
+  String yetAnotherName;
+  final List<String> initViaFieldFormal;
+
+  FactoryConstructorThings(this.initViaFieldFormal);
+
+  factory FactoryConstructorThings.anotherName({
+    bool aName,
+    List<int> anotherName,
+    int anotherDifferentName,
+    String differentName,
+  }) {
+    return null;
+  }
+
+  factory FactoryConstructorThings.anotherConstructor({
+    bool anotherName,
+    bool redHerring,
+  }) {
+    return null;
+  }
+
+  void aMethod(bool yetAnotherName) {}
+}

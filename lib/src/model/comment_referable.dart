@@ -68,7 +68,7 @@ mixin CommentReferable implements Nameable {
         if (result != null) break;
       }
       if (referenceChildren.containsKey(referenceLookup.lookup)) {
-        result = _lookupViaReferenceChildren(referenceLookup, filter);
+        result = lookupViaReferenceChildren(referenceLookup, filter);
         if (result != null) break;
       }
     }
@@ -107,14 +107,14 @@ mixin CommentReferable implements Nameable {
     return recurseChildrenAndFilter(referenceLookup, result, filter);
   }
 
-  CommentReferable _lookupViaReferenceChildren(
+  CommentReferable lookupViaReferenceChildren(
           ReferenceChildrenLookup referenceLookup,
           bool Function(CommentReferable) filter) =>
       recurseChildrenAndFilter(
           referenceLookup, referenceChildren[referenceLookup.lookup], filter);
 
   /// Given a [result] found in an implementation of [lookupViaScope] or
-  /// [_lookupViaReferenceChildren], recurse through children, skipping over
+  /// [lookupViaReferenceChildren], recurse through children, skipping over
   /// results that do not match the filter.
   CommentReferable recurseChildrenAndFilter(
       ReferenceChildrenLookup referenceLookup,
@@ -137,11 +137,13 @@ mixin CommentReferable implements Nameable {
   /// A list of lookups that should be attempted on children based on
   /// [reference].  This allows us to deal with libraries that may have
   /// separators in them. [referenceBy] stops at the first one found.
-  Iterable<ReferenceChildrenLookup> childLookups(List<String> reference) sync* {
+  Iterable<ReferenceChildrenLookup> childLookups(List<String> reference) {
+    var retval = <ReferenceChildrenLookup>[];
     for (var index = 1; index <= reference.length; index++) {
-      yield ReferenceChildrenLookup(
-          reference.sublist(0, index).join('.'), reference.sublist(index));
+      retval.add(ReferenceChildrenLookup(
+          reference.sublist(0, index).join('.'), reference.sublist(index)));
     }
+    return retval;
   }
 
   /// Map of name to the elements that are a member of [this], but
