@@ -68,7 +68,7 @@ mixin CommentReferable implements Nameable {
         if (result != null) break;
       }
       if (referenceChildren.containsKey(referenceLookup.lookup)) {
-        result = lookupViaReferenceChildren(referenceLookup, filter);
+        result = _lookupViaReferenceChildren(referenceLookup, filter);
         if (result != null) break;
       }
     }
@@ -107,14 +107,14 @@ mixin CommentReferable implements Nameable {
     return recurseChildrenAndFilter(referenceLookup, result, filter);
   }
 
-  CommentReferable lookupViaReferenceChildren(
+  CommentReferable _lookupViaReferenceChildren(
           ReferenceChildrenLookup referenceLookup,
           bool Function(CommentReferable) filter) =>
       recurseChildrenAndFilter(
           referenceLookup, referenceChildren[referenceLookup.lookup], filter);
 
   /// Given a [result] found in an implementation of [lookupViaScope] or
-  /// [lookupViaReferenceChildren], recurse through children, skipping over
+  /// [_lookupViaReferenceChildren], recurse through children, skipping over
   /// results that do not match the filter.
   CommentReferable recurseChildrenAndFilter(
       ReferenceChildrenLookup referenceLookup,
