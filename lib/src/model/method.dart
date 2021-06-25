@@ -127,10 +127,20 @@ class Method extends ModelElement
   Map<String, CommentReferable> _referenceChildren;
   @override
   Map<String, CommentReferable> get referenceChildren {
-    _referenceChildren ??= Map.fromEntries([
-      ...typeParameters.map((p) => MapEntry(p.name, p)),
-      ...allParameters.map((p) => MapEntry(p.name, p)),
-    ]);
+    var from = documentationFrom.first as Method;
+    if (!identical(this, from)) {
+      return from.referenceChildren;
+    }
+    if (_referenceChildren == null) {
+      _referenceChildren = {};
+      _referenceChildren.addEntriesIfAbsent([
+        ...from.typeParameters.explicitOnCollisionWith(this),
+        ...from.allParameters.explicitOnCollisionWith(this),
+        ...from.modelType.typeArguments.explicitOnCollisionWith(this),
+        ...from.modelType.returnType.typeArguments.explicitOnCollisionWith(
+            this),
+      ]);
+    }
     return _referenceChildren;
   }
 }

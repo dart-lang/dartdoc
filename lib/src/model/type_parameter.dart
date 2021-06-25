@@ -76,7 +76,7 @@ class TypeParameter extends ModelElement {
   Map<String, CommentReferable> get referenceChildren {
     if (_referenceChildren == null) {
       _referenceChildren = {};
-      _referenceChildren.addEntries(parameters.map((p) => MapEntry(p.name, p)));
+      _referenceChildren.addEntries(parameters.map((p) => MapEntry(p.referenceName, p)));
       _referenceChildren[boundType.name] = boundType;
     }
     return _referenceChildren;
@@ -86,6 +86,9 @@ class TypeParameter extends ModelElement {
   Iterable<CommentReferable> get referenceParents => [enclosingElement];
   @override
   TypeParameterElement get element => super.element;
+
+  @override
+  String get referenceName => element.name;
 }
 
 mixin TypeParameters implements ModelElement {

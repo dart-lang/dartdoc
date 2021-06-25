@@ -203,8 +203,19 @@ class ParameterizedElementType extends DefinedElementType with Rendered {
       : super(type, library, packageGraph, element, returnedFrom);
 
   @override
+  ParameterizedType get type => super.type;
+
+  @override
   ElementTypeRenderer<ParameterizedElementType> get _renderer =>
       packageGraph.rendererFactory.parameterizedElementTypeRenderer;
+
+  Iterable<ElementType> _typeArguments;
+  @override
+  Iterable<ElementType> get typeArguments =>
+      _typeArguments ??= type
+          .typeArguments
+          .map((f) => ElementType.from(f, library, packageGraph))
+          .toList(growable: false);
 }
 
 /// A [ElementType] whose underlying type was referrred to by a type alias.
@@ -300,13 +311,6 @@ abstract class DefinedElementType extends ElementType {
     return canonicalClass?.isPublic ?? false;
   }
 
-  Iterable<ElementType> _typeArguments;
-  @override
-  Iterable<ElementType> get typeArguments =>
-      _typeArguments ??= (type as ParameterizedType)
-          .typeArguments
-          .map((f) => ElementType.from(f, library, packageGraph))
-          .toList(growable: false);
 
   DartType get _bound => type;
 
@@ -353,6 +357,9 @@ abstract class DefinedElementType extends ElementType {
     }
     return false;
   }
+
+  @override
+  Iterable<ElementType> get typeArguments => [];
 
   @override
   Map<String, CommentReferable> get referenceChildren =>
@@ -422,6 +429,14 @@ class CallableElementType extends DefinedElementType with Rendered, Callable {
   @override
   ElementTypeRenderer<CallableElementType> get _renderer =>
       packageGraph.rendererFactory.callableElementTypeRenderer;
+
+
+  Iterable<ElementType> _typeArguments;
+  @override
+  Iterable<ElementType> get typeArguments =>
+      _typeArguments ??= (type.aliasArguments ?? [])
+          .map((f) => ElementType.from(f, library, packageGraph))
+          .toList(growable: false);
 }
 
 /// A non-callable type backed by a [GenericTypeAliasElement].
