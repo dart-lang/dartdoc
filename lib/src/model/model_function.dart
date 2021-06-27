@@ -83,7 +83,7 @@ class ModelFunctionTyped extends ModelElement
   }
 
   @override
-  Iterable<CommentReferable> get referenceParents => [enclosingElement];
+  Iterable<CommentReferable> get referenceParents => [definingLibrary];
 
   @override
   FunctionTypedElement get element => super.element;

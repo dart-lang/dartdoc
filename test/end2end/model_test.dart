@@ -1897,7 +1897,7 @@ void main() {
     });
 
     test('correctly finds all the classes', () {
-      expect(classes, hasLength(38));
+      expect(classes, hasLength(39));
     });
 
     test('abstract', () {
@@ -2123,103 +2123,16 @@ void main() {
   // Put linkage tests here; rendering tests should go to the appropriate
   // [Class], [Extension], etc groups.
   group('Comment References link tests', () {
-    ModelFunction doesStuff, function1, topLevelFunction;
-    TopLevelVariable incorrectDocReference,
-        incorrectDocReferenceFromEx,
-        nameWithTwoUnderscores,
-        nameWithSingleUnderscore,
-        theOnlyThingInTheLibrary;
-    Constructor aNonDefaultConstructor, defaultConstructor;
-    Class Apple,
-        BaseClass,
-        baseForDocComments,
-        ExtraSpecialList,
-        string,
-        metaUseResult;
-    Method doAwesomeStuff, anotherMethod;
-    // ignore: unused_local_variable
-    Operator bracketOperator, bracketOperatorOtherClass;
-    Parameter doAwesomeStuffParam;
-    Field forInheriting, action, initializeMe, somethingShadowy;
-
-    setUpAll(() async {
-      nameWithTwoUnderscores = fakeLibrary.constants
-          .firstWhere((v) => v.name == 'NAME_WITH_TWO_UNDERSCORES');
-      nameWithSingleUnderscore = fakeLibrary.constants
-          .firstWhere((v) => v.name == 'NAME_SINGLEUNDERSCORE');
-      string = packageGraph.allLibraries.values
-          .firstWhere((e) => e.name == 'dart:core')
-          .allClasses
-          .firstWhere((c) => c.name == 'String');
-      metaUseResult = packageGraph.allLibraries.values
-          .firstWhere((e) => e.name == 'meta')
-          .allClasses
-          .firstWhere((c) => c.name == 'UseResult');
-      baseForDocComments =
-          fakeLibrary.classes.firstWhere((c) => c.name == 'BaseForDocComments');
-      aNonDefaultConstructor = baseForDocComments.constructors.firstWhere(
-          (c) => c.name == 'BaseForDocComments.aNonDefaultConstructor');
-      defaultConstructor = baseForDocComments.constructors
-          .firstWhere((c) => c.name == 'BaseForDocComments');
-      initializeMe = baseForDocComments.allFields
-          .firstWhere((f) => f.name == 'initializeMe');
-      somethingShadowy = baseForDocComments.allFields
-          .firstWhere((f) => f.name == 'somethingShadowy');
-      doAwesomeStuff = baseForDocComments.instanceMethods
-          .firstWhere((m) => m.name == 'doAwesomeStuff');
-      anotherMethod = baseForDocComments.instanceMethods
-          .firstWhere((m) => m.name == 'anotherMethod');
-      doAwesomeStuffParam = doAwesomeStuff.parameters.first;
-      topLevelFunction =
-          fakeLibrary.functions.firstWhere((f) => f.name == 'topLevelFunction');
-      function1 = exLibrary.functions.firstWhere((f) => f.name == 'function1');
-      Apple = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
-      incorrectDocReference = fakeLibrary.constants
-          .firstWhere((v) => v.name == 'incorrectDocReference');
-      incorrectDocReferenceFromEx = exLibrary.constants
-          .firstWhere((v) => v.name == 'incorrectDocReferenceFromEx');
-      theOnlyThingInTheLibrary = packageGraph.libraries
-          .firstWhere((l) => l.name == 'csspub')
-          .properties
-          .firstWhere((v) => v.name == 'theOnlyThingInTheLibrary');
-      doesStuff = packageGraph.allLibraries.values
-          .firstWhere((l) => l.name == 'anonymous_library')
-          .functions
-          .firstWhere((f) => f.name == 'doesStuff');
-      BaseClass = packageGraph.allLibraries.values
-          .firstWhere((l) => l.name == 'two_exports.src.base')
-          .classes
-          .firstWhere((c) => c.name == 'BaseClass');
-      bracketOperator = baseForDocComments.instanceOperators
-          .firstWhere((o) => o.name == 'operator []');
-      bracketOperatorOtherClass = fakeLibrary.classes
-          .firstWhere((c) => c.name == 'SpecialList')
-          .instanceOperators
-          .firstWhere((o) => o.name == 'operator []');
-      ExtraSpecialList =
-          fakeLibrary.classes.firstWhere((c) => c.name == 'ExtraSpecialList');
-      forInheriting = fakeLibrary.classes
-          .firstWhere((c) => c.name == 'ImplicitProperties')
-          .allFields
-          .firstWhere((n) => n.name == 'forInheriting');
-      action = packageGraph.allLibraries.values
-          .firstWhere((l) => l.name == 'reexport.somelib')
-          .classes
-          .firstWhere((c) => c.name == 'BaseReexported')
-          .allFields
-          .firstWhere((f) => f.name == 'action');
-    });
-
     /// For comparison purposes, return an equivalent [MatchingLinkResult]
     /// for the defining element returned.  May return [originalResult].
     /// We do this to eliminate canonicalization effects from comparison,
     /// as the original lookup code returns canonicalized results and the
     /// new lookup code is only guaranteed to return equivalent results.
     MatchingLinkResult definingLinkResult(MatchingLinkResult originalResult) {
-      if (originalResult.modelElement != null) {
+      if (originalResult.commentReferable?.element != null) {
         return MatchingLinkResult(
-            ModelElement.fromElement(originalResult.modelElement.element,
-                originalResult.modelElement.packageGraph),
+            ModelElement.fromElement(originalResult.commentReferable.element,
+                originalResult.commentReferable.packageGraph),
             warn: originalResult.warn);
       }
       return originalResult;
@@ -2227,10 +2140,10 @@ void main() {
 
     MatchingLinkResult originalLookup(Warnable element, String codeRef) =>
         definingLinkResult(getMatchingLinkElement(element, codeRef,
-            experimentalReferenceLookup: false));
+            enhancedReferenceLookup: false));
     MatchingLinkResult newLookup(Warnable element, String codeRef) =>
         definingLinkResult(getMatchingLinkElement(element, codeRef,
-            experimentalReferenceLookup: true));
+            enhancedReferenceLookup: true));
 
     MatchingLinkResult bothLookup(Warnable element, String codeRef) {
       var originalLookupResult = originalLookup(element, codeRef);
@@ -2239,122 +2152,494 @@ void main() {
       return newLookupResult;
     }
 
-    test('Verify basic linking inside a constructor', () {
-      // Field formal parameters worked sometimes by accident in the old code,
-      // but should work reliably now.
-      expect(newLookup(aNonDefaultConstructor, 'initializeMe'),
-          equals(MatchingLinkResult(initializeMe)));
-      expect(newLookup(aNonDefaultConstructor, 'aNonDefaultConstructor'),
-          equals(MatchingLinkResult(aNonDefaultConstructor)));
-      expect(
-          bothLookup(aNonDefaultConstructor,
-              'BaseForDocComments.aNonDefaultConstructor'),
-          equals(MatchingLinkResult(aNonDefaultConstructor)));
+    group('Linking for complex inheritance and reexport cases', () {
+      Library base, extending, local_scope, two_exports;
+      Class BaseWithMembers, ExtendingAgain;
+      Field aField, anotherField, aStaticField;
+      TopLevelVariable aNotReexportedVariable,
+          anotherNotReexportedVariable,
+          aSymbolOnlyAvailableInExportContext,
+          someConflictingNameSymbolTwoExports,
+          someConflictingNameSymbol;
+      Method aStaticMethod;
+      Constructor aConstructor;
+
+      setUp(() {
+        base = packageGraph.allLibraries.values
+            .firstWhere((l) => l.name == 'two_exports.src.base');
+        extending = packageGraph.allLibraries.values
+            .firstWhere((l) => l.name == 'two_exports.src.extending');
+        local_scope = packageGraph.allLibraries.values
+            .firstWhere((l) => l.name == 'two_exports.src.local_scope');
+        two_exports = packageGraph.allLibraries.values
+            .firstWhere((l) => l.name == 'two_exports');
+
+        BaseWithMembers =
+            base.classes.firstWhere((c) => c.name == 'BaseWithMembers');
+        aStaticField = BaseWithMembers.staticFields
+            .firstWhere((f) => f.name == 'aStaticField');
+        aStaticMethod = BaseWithMembers.staticMethods
+            .firstWhere((m) => m.name == 'aStaticMethod');
+        aConstructor = BaseWithMembers.constructors
+            .firstWhere((c) => c.name == 'BaseWithMembers.aConstructor');
+
+        someConflictingNameSymbol = extending.properties
+            .firstWhere((p) => p.name == 'someConflictingNameSymbol');
+
+        // This group tests lookups from the perspective of the reexported
+        // elements, to verify that various fallbacks work correctly.
+        ExtendingAgain =
+            two_exports.classes.firstWhere((c) => c.name == 'ExtendingAgain');
+        aField = ExtendingAgain.allFields.firstWhere((f) => f.name == 'aField');
+        anotherField = ExtendingAgain.allFields
+            .firstWhere((f) => f.name == 'anotherField');
+
+        aNotReexportedVariable = local_scope.properties
+            .firstWhere((p) => p.name == 'aNotReexportedVariable');
+        anotherNotReexportedVariable = local_scope.properties
+            .firstWhere((p) => p.name == 'anotherNotReexportedVariable');
+        aSymbolOnlyAvailableInExportContext = two_exports.properties
+            .firstWhere((p) => p.name == 'aSymbolOnlyAvailableInExportContext');
+        someConflictingNameSymbolTwoExports = two_exports.properties
+            .firstWhere((p) => p.name == 'someConflictingNameSymbol');
+      });
+
+      test('Grandparent override in container members', () {
+        // Original lookup fails unless the variable is reexported via other
+        // means, but to do that would not be testing the same case on both.
+        expect(newLookup(aField, 'aNotReexportedVariable'),
+            equals(MatchingLinkResult(aNotReexportedVariable)));
+
+        // Verify that documentationFrom cases work.  Just having the doc
+        // in the base class is enough to trigger [documentationFrom] and this
+        // feature.
+        expect(bothLookup(anotherField, 'aNotReexportedVariable'),
+            equals(MatchingLinkResult(aNotReexportedVariable)));
+      });
+
+      // TODO(jcollins-g): dart-lang/dartdoc#2698
+      test('Linking for static/constructor inheritance across libraries', () {
+        expect(bothLookup(ExtendingAgain, 'aStaticField'),
+            equals(MatchingLinkResult(aStaticField)));
+        expect(bothLookup(ExtendingAgain, 'aStaticMethod'),
+            equals(MatchingLinkResult(aStaticMethod)));
+        expect(bothLookup(ExtendingAgain, 'aConstructor'),
+            equals(MatchingLinkResult(aConstructor)));
+      });
+
+      test('Linking for inherited field from reexport context', () {
+        // While this can work in the old code at times, it is using the
+        // analyzer and the new test harness can't leverage the analyzer
+        // when testing the old lookup code.
+        expect(newLookup(aField, 'anotherNotReexportedVariable'),
+            equals(MatchingLinkResult(anotherNotReexportedVariable)));
+      });
+
+      // TODO(jcollins-g): dart-lang/dartdoc#2696
+      test('Allow non-explicit export namespace linking', () {
+        expect(
+            bothLookup(BaseWithMembers, 'aSymbolOnlyAvailableInExportContext'),
+            equals(MatchingLinkResult(aSymbolOnlyAvailableInExportContext)));
+      });
+
+      test('Link to definingLibrary for class rather than its export context',
+          () {
+        // This is an improvement over the original.
+        expect(newLookup(ExtendingAgain, 'someConflictingNameSymbol'),
+            equals(MatchingLinkResult(someConflictingNameSymbol)));
+        expect(newLookup(two_exports, 'someConflictingNameSymbol'),
+            equals(MatchingLinkResult(someConflictingNameSymbolTwoExports)));
+      });
     });
 
-    test('Deprecated lookup styles still function', () {
-      // dart-lang/dartdoc#2683
-      expect(bothLookup(baseForDocComments, 'aPrefix.UseResult'),
-          equals(MatchingLinkResult(metaUseResult)));
-    });
+    group('Ordinary namespace cases', () {
+      Package DartPackage;
+      Library Dart, mylibpub;
+      ModelFunction doesStuff,
+          function1,
+          topLevelFunction,
+          aFunctionUsingRenamedLib;
+      TopLevelVariable incorrectDocReference,
+          incorrectDocReferenceFromEx,
+          nameWithTwoUnderscores,
+          nameWithSingleUnderscore,
+          theOnlyThingInTheLibrary;
+      Constructor aNonDefaultConstructor,
+          defaultConstructor,
+          aConstructorShadowed,
+          anotherName,
+          anotherConstructor,
+          factoryConstructorThingsDefault;
+      Class Apple,
+          BaseClass,
+          baseForDocComments,
+          ExtraSpecialList,
+          FactoryConstructorThings,
+          string,
+          metaUseResult;
+      Method doAwesomeStuff, anotherMethod, aMethod;
+      // ignore: unused_local_variable
+      Operator bracketOperator, bracketOperatorOtherClass;
+      Parameter doAwesomeStuffParam,
+          aName,
+          anotherNameParameter,
+          anotherDifferentName,
+          differentName,
+          redHerring,
+          yetAnotherName,
+          somethingShadowyParameter;
+      Field forInheriting,
+          action,
+          initializeMe,
+          somethingShadowy,
+          aConstructorShadowedField,
+          aNameField,
+          anotherNameField,
+          yetAnotherNameField,
+          initViaFieldFormal;
 
-    test('Verify basic linking inside class', () {
-      expect(
-          bothLookup(
-              baseForDocComments, 'BaseForDocComments.BaseForDocComments'),
-          equals(MatchingLinkResult(defaultConstructor)));
+      setUpAll(() async {
+        mylibpub = packageGraph.allLibraries.values
+            .firstWhere((l) => l.name == 'mylibpub');
+        aFunctionUsingRenamedLib = fakeLibrary.functions
+            .firstWhere((f) => f.name == 'aFunctionUsingRenamedLib');
+        Dart = packageGraph.allLibraries.values
+            .firstWhere((l) => l.name == 'Dart');
+        DartPackage = packageGraph.packages.firstWhere((p) => p.name == 'Dart');
+        nameWithTwoUnderscores = fakeLibrary.constants
+            .firstWhere((v) => v.name == 'NAME_WITH_TWO_UNDERSCORES');
+        nameWithSingleUnderscore = fakeLibrary.constants
+            .firstWhere((v) => v.name == 'NAME_SINGLEUNDERSCORE');
+        string = packageGraph.allLibraries.values
+            .firstWhere((e) => e.name == 'dart:core')
+            .allClasses
+            .firstWhere((c) => c.name == 'String');
+        metaUseResult = packageGraph.allLibraries.values
+            .firstWhere((e) => e.name == 'meta')
+            .allClasses
+            .firstWhere((c) => c.name == 'UseResult');
+        baseForDocComments = fakeLibrary.classes
+            .firstWhere((c) => c.name == 'BaseForDocComments');
+        aNonDefaultConstructor = baseForDocComments.constructors.firstWhere(
+            (c) => c.name == 'BaseForDocComments.aNonDefaultConstructor');
+        defaultConstructor = baseForDocComments.constructors
+            .firstWhere((c) => c.name == 'BaseForDocComments');
+        somethingShadowyParameter = defaultConstructor.allParameters
+            .firstWhere((p) => p.name == 'somethingShadowy');
+        initializeMe = baseForDocComments.allFields
+            .firstWhere((f) => f.name == 'initializeMe');
+        somethingShadowy = baseForDocComments.allFields
+            .firstWhere((f) => f.name == 'somethingShadowy');
+        doAwesomeStuff = baseForDocComments.instanceMethods
+            .firstWhere((m) => m.name == 'doAwesomeStuff');
+        anotherMethod = baseForDocComments.instanceMethods
+            .firstWhere((m) => m.name == 'anotherMethod');
+        doAwesomeStuffParam = doAwesomeStuff.parameters.first;
+        topLevelFunction = fakeLibrary.functions
+            .firstWhere((f) => f.name == 'topLevelFunction');
+        function1 =
+            exLibrary.functions.firstWhere((f) => f.name == 'function1');
+        Apple = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
+        incorrectDocReference = fakeLibrary.constants
+            .firstWhere((v) => v.name == 'incorrectDocReference');
+        incorrectDocReferenceFromEx = exLibrary.constants
+            .firstWhere((v) => v.name == 'incorrectDocReferenceFromEx');
+        theOnlyThingInTheLibrary = packageGraph.libraries
+            .firstWhere((l) => l.name == 'csspub')
+            .properties
+            .firstWhere((v) => v.name == 'theOnlyThingInTheLibrary');
+        doesStuff = packageGraph.allLibraries.values
+            .firstWhere((l) => l.name == 'anonymous_library')
+            .functions
+            .firstWhere((f) => f.name == 'doesStuff');
+        BaseClass = packageGraph.allLibraries.values
+            .firstWhere((l) => l.name == 'two_exports.src.base')
+            .classes
+            .firstWhere((c) => c.name == 'BaseClass');
+        bracketOperator = baseForDocComments.instanceOperators
+            .firstWhere((o) => o.name == 'operator []');
+        bracketOperatorOtherClass = fakeLibrary.classes
+            .firstWhere((c) => c.name == 'SpecialList')
+            .instanceOperators
+            .firstWhere((o) => o.name == 'operator []');
+        ExtraSpecialList =
+            fakeLibrary.classes.firstWhere((c) => c.name == 'ExtraSpecialList');
+        forInheriting = fakeLibrary.classes
+            .firstWhere((c) => c.name == 'ImplicitProperties')
+            .allFields
+            .firstWhere((n) => n.name == 'forInheriting');
+        action = packageGraph.allLibraries.values
+            .firstWhere((l) => l.name == 'reexport.somelib')
+            .classes
+            .firstWhere((c) => c.name == 'BaseReexported')
+            .allFields
+            .firstWhere((f) => f.name == 'action');
+        aConstructorShadowed = baseForDocComments.constructors.firstWhere(
+            (c) => c.name == 'BaseForDocComments.aConstructorShadowed');
+        aConstructorShadowedField = baseForDocComments.allFields
+            .firstWhere((f) => f.name == 'aConstructorShadowed');
 
-      // We don't want the parameter on the default constructor, here.
-      expect(
-          bothLookup(baseForDocComments, 'BaseForDocComments.somethingShadowy'),
-          equals(MatchingLinkResult(somethingShadowy)));
+        FactoryConstructorThings = fakeLibrary.classes
+            .firstWhere((c) => c.name == 'FactoryConstructorThings');
+        anotherName = FactoryConstructorThings.constructors.firstWhere(
+            (c) => c.name == 'FactoryConstructorThings.anotherName');
+        anotherConstructor = FactoryConstructorThings.constructors.firstWhere(
+            (c) => c.name == 'FactoryConstructorThings.anotherConstructor');
+        factoryConstructorThingsDefault = FactoryConstructorThings.constructors
+            .firstWhere((c) => c.name == 'FactoryConstructorThings');
 
-      expect(bothLookup(doAwesomeStuff, 'aNonDefaultConstructor'),
-          equals(MatchingLinkResult(aNonDefaultConstructor)));
+        aName = anotherName.allParameters.firstWhere((p) => p.name == 'aName');
+        anotherNameParameter = anotherName.allParameters
+            .firstWhere((p) => p.name == 'anotherName');
+        anotherDifferentName = anotherName.allParameters
+            .firstWhere((p) => p.name == 'anotherDifferentName');
+        differentName = anotherName.allParameters
+            .firstWhere((p) => p.name == 'differentName');
+        redHerring = anotherConstructor.allParameters
+            .firstWhere((p) => p.name == 'redHerring');
 
-      expect(
-          bothLookup(
-              doAwesomeStuff, 'BaseForDocComments.aNonDefaultConstructor'),
-          equals(MatchingLinkResult(aNonDefaultConstructor)));
+        aNameField = FactoryConstructorThings.allFields
+            .firstWhere((f) => f.name == 'aName');
+        anotherNameField = FactoryConstructorThings.allFields
+            .firstWhere((f) => f.name == 'anotherName');
+        yetAnotherNameField = FactoryConstructorThings.allFields
+            .firstWhere((f) => f.name == 'yetAnotherName');
+        initViaFieldFormal = FactoryConstructorThings.allFields
+            .firstWhere((f) => f.name == 'initViaFieldFormal');
 
-      expect(bothLookup(doAwesomeStuff, 'this'),
-          equals(MatchingLinkResult(baseForDocComments)));
+        aMethod = FactoryConstructorThings.instanceMethods
+            .firstWhere((m) => m.name == 'aMethod');
+        yetAnotherName =
+            aMethod.allParameters.firstWhere((p) => p.name == 'yetAnotherName');
+      });
 
-      expect(bothLookup(doAwesomeStuff, 'value'),
-          equals(MatchingLinkResult(doAwesomeStuffParam)));
+      group('Parameter references work properly', () {
+        test('in class scope overridden by fields', () {
+          expect(bothLookup(FactoryConstructorThings, 'aName'),
+              equals(MatchingLinkResult(aNameField)));
+          expect(bothLookup(FactoryConstructorThings, 'anotherName'),
+              equals(MatchingLinkResult(anotherNameField)));
+          expect(bothLookup(FactoryConstructorThings, 'yetAnotherName'),
+              equals(MatchingLinkResult(yetAnotherNameField)));
+          expect(bothLookup(FactoryConstructorThings, 'initViaFieldFormal'),
+              equals(MatchingLinkResult(initViaFieldFormal)));
+          expect(bothLookup(FactoryConstructorThings, 'redHerring'),
+              equals(MatchingLinkResult(redHerring)));
+        });
 
-      // Parent class of [doAwesomeStuff].
-      expect(bothLookup(doAwesomeStuff, 'BaseForDocComments'),
-          equals(MatchingLinkResult(baseForDocComments)));
+        test('in class scope overridden by constructors when specified', () {
+          expect(
+              bothLookup(FactoryConstructorThings,
+                  'new FactoryConstructorThings.anotherName'),
+              equals(MatchingLinkResult(anotherName)));
+        });
 
-      // Top level constants in the same library as [doAwesomeStuff].
-      expect(bothLookup(doAwesomeStuff, 'NAME_WITH_TWO_UNDERSCORES'),
-          equals(MatchingLinkResult(nameWithTwoUnderscores)));
-      expect(bothLookup(doAwesomeStuff, 'NAME_SINGLEUNDERSCORE'),
-          equals(MatchingLinkResult(nameWithSingleUnderscore)));
+        test(
+            'in default constructor scope referring to a field formal parameter',
+            () {
+          expect(
+              newLookup(factoryConstructorThingsDefault, 'initViaFieldFormal'),
+              equals(MatchingLinkResult(initViaFieldFormal)));
+        });
 
-      // Top level class from [dart:core].
-      expect(bothLookup(doAwesomeStuff, 'String'),
-          equals(MatchingLinkResult(string)));
+        test('in factory constructor scope referring to parameters', () {
+          expect(newLookup(anotherName, 'aName'),
+              equals(MatchingLinkResult(aName)));
+          expect(bothLookup(anotherName, 'anotherName'),
+              equals(MatchingLinkResult(anotherNameParameter)));
+          expect(bothLookup(anotherName, 'anotherDifferentName'),
+              equals(MatchingLinkResult(anotherDifferentName)));
+          expect(bothLookup(anotherName, 'differentName'),
+              equals(MatchingLinkResult(differentName)));
+          expect(bothLookup(anotherName, 'redHerring'),
+              equals(MatchingLinkResult(redHerring)));
+        });
 
-      // Another method in the same class.
-      expect(bothLookup(doAwesomeStuff, 'anotherMethod'),
-          equals(MatchingLinkResult(anotherMethod)));
+        test('in factory constructor scope referring to constructors', () {
+          // A bare constructor reference is OK because there is no conflict.
+          expect(bothLookup(anotherName, 'anotherConstructor'),
+              equals(MatchingLinkResult(anotherConstructor)));
+          // A conflicting constructor has to be explicit.
+          expect(
+              bothLookup(
+                  anotherName, 'new FactoryConstructorThings.anotherName'),
+              equals(MatchingLinkResult(anotherName)));
+        });
 
-      // A top level function in this library.
-      expect(bothLookup(doAwesomeStuff, 'topLevelFunction'),
-          equals(MatchingLinkResult(topLevelFunction)));
+        test('in method scope referring to parameters and variables', () {
+          expect(bothLookup(aMethod, 'yetAnotherName'),
+              equals(MatchingLinkResult(yetAnotherName)));
+          expect(bothLookup(aMethod, 'FactoryConstructorThings.yetAnotherName'),
+              equals(MatchingLinkResult(yetAnotherNameField)));
+          expect(
+              bothLookup(
+                  aMethod, 'FactoryConstructorThings.anotherName.anotherName'),
+              equals(MatchingLinkResult(anotherNameParameter)));
+          expect(bothLookup(aMethod, 'aName'),
+              equals(MatchingLinkResult(aNameField)));
+        });
+      });
 
-      // A top level function in another library imported into this library.
-      expect(bothLookup(doAwesomeStuff, 'function1'),
-          equals(MatchingLinkResult(function1)));
+      test('Referring to a renamed library directly works', () {
+        // The new code forwards from the prefix, so doesn't quite work the
+        // same as the old for an equality comparison via [MatchingLinkResult].
+        expect(
+            (bothLookup(aFunctionUsingRenamedLib, 'renamedLib').commentReferable
+                    as ModelElement)
+                .canonicalModelElement,
+            equals(mylibpub));
+      });
 
-      // A class in another library imported into this library.
-      expect(bothLookup(doAwesomeStuff, 'Apple'),
-          equals(MatchingLinkResult(Apple)));
+      test('Referring to libraries and packages with the same name is fine',
+          () {
+        expect(bothLookup(Apple, 'Dart'), equals(MatchingLinkResult(Dart)));
+        // New feature: allow disambiguation if you really want to specify a package.
+        expect(newLookup(Apple, 'package:Dart'),
+            equals(MatchingLinkResult(DartPackage)));
+      });
 
-      // A top level constant in this library sharing the same name as a name in another library.
-      expect(bothLookup(doAwesomeStuff, 'incorrectDocReference'),
-          equals(MatchingLinkResult(incorrectDocReference)));
+      test('Verify basic linking inside a constructor', () {
+        // Field formal parameters worked sometimes by accident in the old code,
+        // but should work reliably now.
+        expect(newLookup(aNonDefaultConstructor, 'initializeMe'),
+            equals(MatchingLinkResult(initializeMe)));
+        expect(newLookup(aNonDefaultConstructor, 'aNonDefaultConstructor'),
+            equals(MatchingLinkResult(aNonDefaultConstructor)));
+        expect(
+            bothLookup(aNonDefaultConstructor,
+                'BaseForDocComments.aNonDefaultConstructor'),
+            equals(MatchingLinkResult(aNonDefaultConstructor)));
+      });
 
-      // A top level constant in another library.
-      expect(bothLookup(doAwesomeStuff, 'incorrectDocReferenceFromEx'),
-          equals(MatchingLinkResult(incorrectDocReferenceFromEx)));
+      test(
+          'Verify that constructors do not override member fields unless explicitly specified',
+          () {
+        expect(bothLookup(baseForDocComments, 'aConstructorShadowed'),
+            equals(MatchingLinkResult(aConstructorShadowedField)));
+        expect(
+            bothLookup(
+                baseForDocComments, 'BaseForDocComments.aConstructorShadowed'),
+            equals(MatchingLinkResult(aConstructorShadowedField)));
+        expect(
+            bothLookup(baseForDocComments,
+                'new BaseForDocComments.aConstructorShadowed'),
+            equals(MatchingLinkResult(aConstructorShadowed)));
+      });
 
-      // A prefixed constant in another library.
-      expect(bothLookup(doAwesomeStuff, 'css.theOnlyThingInTheLibrary'),
-          equals(MatchingLinkResult(theOnlyThingInTheLibrary)));
+      test('Deprecated lookup styles still function', () {
+        // dart-lang/dartdoc#2683
+        // We can't check the old code this way as this is one of the few
+        // cases in the old code where it relies on the analyzer's resolution of
+        // the doc comment -- the test harness can't do that for the old code.
+        expect(newLookup(baseForDocComments, 'aPrefix.UseResult'),
+            equals(MatchingLinkResult(metaUseResult)));
+      });
 
-      // A name that exists in this package but is not imported.
-      expect(bothLookup(doAwesomeStuff, 'doesStuff'),
-          equals(MatchingLinkResult(doesStuff)));
+      test('Verify basic linking inside class', () {
+        expect(
+            bothLookup(
+                baseForDocComments, 'BaseForDocComments.BaseForDocComments'),
+            equals(MatchingLinkResult(defaultConstructor)));
 
-      // A name of a class from an import of a library that exported that name.
-      expect(bothLookup(doAwesomeStuff, 'BaseClass'),
-          equals(MatchingLinkResult(BaseClass)));
+        // We don't want the parameter on the default constructor, here.
+        expect(bothLookup(fakeLibrary, 'BaseForDocComments.somethingShadowy'),
+            equals(MatchingLinkResult(somethingShadowy)));
+        expect(bothLookup(baseForDocComments, 'somethingShadowy'),
+            equals(MatchingLinkResult(somethingShadowy)));
 
-      // A bracket operator within this class.
-      expect(bothLookup(doAwesomeStuff, 'operator []'),
-          equals(MatchingLinkResult(bracketOperator)));
+        // Allow specific reference if necessary
+        expect(
+            newLookup(baseForDocComments,
+                'BaseForDocComments.BaseForDocComments.somethingShadowy'),
+            equals(MatchingLinkResult(somethingShadowyParameter)));
 
-      // A bracket operator in another class.
-      // Doesn't work in older lookup code.
-      expect(newLookup(doAwesomeStuff, 'SpecialList.operator []'),
-          equals(MatchingLinkResult(bracketOperatorOtherClass)));
+        expect(bothLookup(doAwesomeStuff, 'aNonDefaultConstructor'),
+            equals(MatchingLinkResult(aNonDefaultConstructor)));
 
-      // Reference containing a type parameter.
-      expect(bothLookup(doAwesomeStuff, 'ExtraSpecialList<Object>'),
-          equals(MatchingLinkResult(ExtraSpecialList)));
+        expect(
+            bothLookup(
+                doAwesomeStuff, 'BaseForDocComments.aNonDefaultConstructor'),
+            equals(MatchingLinkResult(aNonDefaultConstructor)));
 
-      // Reference to an inherited member.
-      expect(
-          bothLookup(
-              doAwesomeStuff, 'ClassWithUnusualProperties.forInheriting'),
-          equals(MatchingLinkResult(forInheriting)));
+        expect(bothLookup(doAwesomeStuff, 'this'),
+            equals(MatchingLinkResult(baseForDocComments)));
 
-      // Reference to an inherited member in another library via class name.
-      expect(bothLookup(doAwesomeStuff, 'ExtendedBaseReexported.action'),
-          equals(MatchingLinkResult(action)));
+        expect(bothLookup(doAwesomeStuff, 'value'),
+            equals(MatchingLinkResult(doAwesomeStuffParam)));
+
+        // Parent class of [doAwesomeStuff].
+        expect(bothLookup(doAwesomeStuff, 'BaseForDocComments'),
+            equals(MatchingLinkResult(baseForDocComments)));
+
+        // Top level constants in the same library as [doAwesomeStuff].
+        expect(bothLookup(doAwesomeStuff, 'NAME_WITH_TWO_UNDERSCORES'),
+            equals(MatchingLinkResult(nameWithTwoUnderscores)));
+        expect(bothLookup(doAwesomeStuff, 'NAME_SINGLEUNDERSCORE'),
+            equals(MatchingLinkResult(nameWithSingleUnderscore)));
+
+        // Top level class from [dart:core].
+        expect(bothLookup(doAwesomeStuff, 'String'),
+            equals(MatchingLinkResult(string)));
+
+        // Another method in the same class.
+        expect(bothLookup(doAwesomeStuff, 'anotherMethod'),
+            equals(MatchingLinkResult(anotherMethod)));
+
+        // A top level function in this library.
+        expect(bothLookup(doAwesomeStuff, 'topLevelFunction'),
+            equals(MatchingLinkResult(topLevelFunction)));
+
+        // A top level function in another library imported into this library.
+        expect(bothLookup(doAwesomeStuff, 'function1'),
+            equals(MatchingLinkResult(function1)));
+
+        // A class in another library imported into this library.
+        expect(bothLookup(doAwesomeStuff, 'Apple'),
+            equals(MatchingLinkResult(Apple)));
+
+        // A top level constant in this library sharing the same name as a name in another library.
+        expect(bothLookup(doAwesomeStuff, 'incorrectDocReference'),
+            equals(MatchingLinkResult(incorrectDocReference)));
+
+        // A top level constant in another library.
+        expect(bothLookup(doAwesomeStuff, 'incorrectDocReferenceFromEx'),
+            equals(MatchingLinkResult(incorrectDocReferenceFromEx)));
+
+        // A prefixed constant in another library.
+        expect(bothLookup(doAwesomeStuff, 'css.theOnlyThingInTheLibrary'),
+            equals(MatchingLinkResult(theOnlyThingInTheLibrary)));
+
+        // A name that exists in this package but is not imported.
+        expect(bothLookup(doAwesomeStuff, 'doesStuff'),
+            equals(MatchingLinkResult(doesStuff)));
+
+        // A name of a class from an import of a library that exported that name.
+        expect(bothLookup(doAwesomeStuff, 'BaseClass'),
+            equals(MatchingLinkResult(BaseClass)));
+
+        // A bracket operator within this class.
+        expect(bothLookup(doAwesomeStuff, 'operator []'),
+            equals(MatchingLinkResult(bracketOperator)));
+
+        // A bracket operator in another class.
+        // Doesn't work in older lookup code.
+        expect(newLookup(doAwesomeStuff, 'SpecialList.operator []'),
+            equals(MatchingLinkResult(bracketOperatorOtherClass)));
+
+        // Reference containing a type parameter.
+        expect(bothLookup(doAwesomeStuff, 'ExtraSpecialList<Object>'),
+            equals(MatchingLinkResult(ExtraSpecialList)));
+
+        // Reference to an inherited member.
+        expect(
+            bothLookup(
+                doAwesomeStuff, 'ClassWithUnusualProperties.forInheriting'),
+            equals(MatchingLinkResult(forInheriting)));
+
+        // Reference to an inherited member in another library via class name.
+        expect(bothLookup(doAwesomeStuff, 'ExtendedBaseReexported.action'),
+            equals(MatchingLinkResult(action)));
+      });
     });
   });
 
@@ -2515,20 +2800,20 @@ void main() {
           megaTron.potentiallyApplicableExtensions, orderedEquals([arm, leg]));
     });
 
-    // TODO(jcollins-g): implement feature and update tests
     test('documentation links do not crash in base cases', () {
-      packageGraph.packageWarningCounter.hasWarning(
-          doStuff,
-          PackageWarning.notImplemented,
-          'Comment reference resolution inside extension methods is not yet implemented');
-      packageGraph.packageWarningCounter.hasWarning(
-          doSomeStuff,
-          PackageWarning.notImplemented,
-          'Comment reference resolution inside extension methods is not yet implemented');
+      // Parameters are OK.
       expect(doStuff.documentationAsHtml, contains('<code>another</code>'));
-      expect(doSomeStuff.documentationAsHtml,
-          contains('<code>String.extensionNumber</code>'));
-    });
+      expect(
+          doStuff.documentationAsHtml,
+          contains(
+              '<a href="%%__HTMLBASE_dartdoc_internal__%%ex/AnExtendableThing/aMember.html">aMember</a>'));
+      expect(
+          doStuff.documentationAsHtml,
+          contains(
+              '<a href="%%__HTMLBASE_dartdoc_internal__%%ex/AnExtendableThing-class.html">AnExtendableThing</a>'));
+      // TODO(jcollins-g): consider linking via applied extensions?
+      expect(doSomeStuff.documentationAsHtml, contains('<code>aMember</code>'));
+    }, skip: 'unskip when enhanced lookups are on by default');
 
     test(
         'references from outside an extension refer correctly to the extension',

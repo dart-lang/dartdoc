@@ -127,16 +127,10 @@ class Method extends ModelElement
   Map<String, CommentReferable> _referenceChildren;
   @override
   Map<String, CommentReferable> get referenceChildren {
-    if (_referenceChildren == null) {
-      _referenceChildren = {};
-      _referenceChildren
-          .addEntries(typeParameters.map((p) => MapEntry(p.name, p)));
-      _referenceChildren
-          .addEntries(allParameters.map((p) => MapEntry(p.name, p)));
-    }
+    _referenceChildren ??= Map.fromEntries([
+      ...typeParameters.map((p) => MapEntry(p.name, p)),
+      ...allParameters.map((p) => MapEntry(p.name, p)),
+    ]);
     return _referenceChildren;
   }
-
-  @override
-  Iterable<CommentReferable> get referenceParents => [enclosingElement];
 }

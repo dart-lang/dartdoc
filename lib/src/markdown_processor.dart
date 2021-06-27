@@ -174,25 +174,24 @@ final List<md.BlockSyntax> _markdownBlockSyntaxes = [
 final RegExp _hideSchemes = RegExp('^(http|https)://');
 
 class MatchingLinkResult {
-  final ModelElement modelElement;
+  final CommentReferable commentReferable;
   final bool warn;
 
-  MatchingLinkResult(this.modelElement, {this.warn = true});
+  MatchingLinkResult(this.commentReferable, {this.warn = true});
 
   @override
   bool operator ==(Object other) {
     return other is MatchingLinkResult &&
-        modelElement == other.modelElement &&
+        commentReferable == other.commentReferable &&
         warn == other.warn;
   }
 
   @override
-  int get hashCode => hash2(modelElement, warn);
+  int get hashCode => hash2(commentReferable, warn);
 
   bool isEquivalentTo(MatchingLinkResult other) {
-    if (this == other) return true;
-    var compareThis = modelElement;
-    var compareOther = other.modelElement;
+    var compareThis = commentReferable;
+    var compareOther = other.commentReferable;
 
     if (compareThis is Accessor) {
       compareThis = (compareThis as Accessor).enclosingCombo;
@@ -202,8 +201,16 @@ class MatchingLinkResult {
       compareOther = (compareOther as Accessor).enclosingCombo;
     }
 
-    if (compareThis?.canonicalModelElement ==
-        compareOther?.canonicalModelElement) return true;
+    if (compareThis is ModelElement &&
+        compareThis.canonicalModelElement != null) {
+      compareThis = (compareThis as ModelElement).canonicalModelElement;
+    }
+    if (compareOther is ModelElement &&
+        compareOther.canonicalModelElement != null) {
+      compareOther = (compareOther as ModelElement).canonicalModelElement;
+    }
+    if (compareThis == compareOther) return true;
+
     // The old implementation just throws away Parameter matches to avoid
     // problems with warning unnecessarily at higher levels of the code.
     // I'd like to fix this at a different layer with the new lookup, so treat
@@ -221,12 +228,13 @@ class MatchingLinkResult {
     if (compareThis is TypeParameter && compareOther == null) {
       return true;
     }
+
     return false;
   }
 
   @override
   String toString() {
-    return 'element: ${modelElement?.fullyQualifiedName} warn: $warn';
+    return 'element: [${commentReferable is Constructor ? 'new ' : ''}${commentReferable?.fullyQualifiedName}] warn: $warn';
   }
 }
 
@@ -295,15 +303,17 @@ ModelElement _getPreferredClass(ModelElement modelElement) {
   return null;
 }
 
-/// Return false if the passed [referable] is a default [Constructor].
-bool _rejectDefaultConstructors(CommentReferable referable) {
-  if (referable is Constructor &&
-      referable.name == referable.enclosingElement.name) {
-    return false;
-  }
-  // Avoid accidentally preferring arguments of the default constructor.
-  if (referable is ModelElement && referable.enclosingElement is Constructor) {
-    return false;
+/// Return false if the passed [referable] is a default [Constructor],
+/// or if it is shadowing another type of element.
+bool _rejectDefaultAndShadowingConstructors(CommentReferable referable) {
+  if (referable is Constructor) {
+    if (referable.name == referable.enclosingElement.name) {
+      return false;
+    }
+    if (referable.enclosingElement
+        .referenceChildren[referable.name.split('.').last] is! Constructor) {
+      return false;
+    }
   }
   return true;
 }
@@ -342,17 +352,11 @@ MatchingLinkResult _getMatchingLinkElementCommentReferable(
   } else {
     // Without hints, reject default constructors to force resolution to the
     // class.
-    filter = _rejectDefaultConstructors;
+    filter = _rejectDefaultAndShadowingConstructors;
   }
 
   var lookupResult =
       warnable.referenceBy(commentReference.referenceBy, filter: filter);
-
-  // TODO(jcollins-g): Referring to packages or other non-[ModelElement]s
-  // might be needed here.  Determine if that's the case.
-  if (!(lookupResult is ModelElement)) {
-    lookupResult = null;
-  }
 
   // TODO(jcollins-g): Consider prioritizing analyzer resolution before custom.
   return MatchingLinkResult(lookupResult);
@@ -372,7 +376,10 @@ MatchingLinkResult _getMatchingLinkElementLegacy(
   // Try expensive not-scoped lookup.
   if (refModelElement == null && warnable is ModelElement) {
     Container preferredClass = _getPreferredClass(warnable);
-    if (preferredClass is Extension) {
+    // We might still get here in comparison mode, don't complain if that's
+    // the case.
+    if (preferredClass is Extension &&
+        warnable.config.enhancedReferenceLookup == false) {
       warnable.warn(PackageWarning.notImplemented,
           message:
               'Comment reference resolution inside extension methods is not yet implemented');
@@ -995,11 +1002,11 @@ const _referenceLookupWarnings = {
 md.Node _makeLinkNode(String codeRef, Warnable warnable) {
   var result = getMatchingLinkElement(warnable, codeRef);
   var textContent = htmlEscape.convert(codeRef);
-  var linkedElement = result.modelElement;
+  var linkedElement = result.commentReferable;
   if (linkedElement != null) {
     if (linkedElement.href != null) {
       var anchor = md.Element.text('a', textContent);
-      if (linkedElement.isDeprecated) {
+      if (linkedElement is ModelElement && linkedElement.isDeprecated) {
         anchor.attributes['class'] = 'deprecated';
       }
       anchor.attributes['href'] = linkedElement.href;
@@ -1024,8 +1031,8 @@ md.Node _makeLinkNode(String codeRef, Warnable warnable) {
 
 @visibleForTesting
 MatchingLinkResult getMatchingLinkElement(Warnable warnable, String codeRef,
-    {bool experimentalReferenceLookup}) {
-  experimentalReferenceLookup ??= warnable.config.experimentalReferenceLookup;
+    {bool enhancedReferenceLookup}) {
+  enhancedReferenceLookup ??= warnable.config.enhancedReferenceLookup;
   MatchingLinkResult result, resultOld, resultNew;
   // Do a comparison between result types only if the warnings for them are
   // enabled, because there's a significant performance penalty.
@@ -1035,15 +1042,15 @@ MatchingLinkResult getMatchingLinkElement(Warnable warnable, String codeRef,
   if (doComparison) {
     resultNew = _getMatchingLinkElementCommentReferable(codeRef, warnable);
     resultOld = _getMatchingLinkElementLegacy(codeRef, warnable);
-    if (resultNew.modelElement != null) {
+    if (resultNew.commentReferable != null) {
       markdownStats.resolvedNewLookupReferences++;
     }
-    result = experimentalReferenceLookup ? resultNew : resultOld;
-    if (resultOld.modelElement != null) {
+    result = enhancedReferenceLookup ? resultNew : resultOld;
+    if (resultOld.commentReferable != null) {
       markdownStats.resolvedOldLookupReferences++;
     }
   } else {
-    if (experimentalReferenceLookup) {
+    if (enhancedReferenceLookup) {
       result = _getMatchingLinkElementCommentReferable(codeRef, warnable);
     } else {
       result = _getMatchingLinkElementLegacy(codeRef, warnable);
@@ -1053,12 +1060,13 @@ MatchingLinkResult getMatchingLinkElement(Warnable warnable, String codeRef,
     if (resultOld.isEquivalentTo(resultNew)) {
       markdownStats.resolvedEquivalentlyReferences++;
     } else {
-      if (resultNew.modelElement == null && resultOld.modelElement != null) {
+      if (resultNew.commentReferable == null &&
+          resultOld.commentReferable != null) {
         warnable.warn(PackageWarning.referenceLookupMissingWithNew,
             message: '[$codeRef] => ' + resultOld.toString(),
             referredFrom: warnable.documentationFrom);
-      } else if (resultNew.modelElement != null &&
-          resultOld.modelElement == null) {
+      } else if (resultNew.commentReferable != null &&
+          resultOld.commentReferable == null) {
         warnable.warn(PackageWarning.referenceLookupFoundWithNew,
             message: '[$codeRef] => ' + resultNew.toString(),
             referredFrom: warnable.documentationFrom);
@@ -1071,7 +1079,7 @@ MatchingLinkResult getMatchingLinkElement(Warnable warnable, String codeRef,
     }
   }
   markdownStats.totalReferences++;
-  if (result.modelElement != null) markdownStats.resolvedReferences++;
+  if (result.commentReferable != null) markdownStats.resolvedReferences++;
   return result;
 }
 
@@ -1089,17 +1097,22 @@ final RegExp allAfterLastNewline = RegExp(r'\n.*$', multiLine: true);
 // https://github.com/dart-lang/dartdoc/issues/1250#issuecomment-269257942
 void showWarningsForGenericsOutsideSquareBracketsBlocks(
     String text, Warnable element) {
-  findFreeHangingGenericsPositions(text).forEach((int position) {
-    var priorContext =
-        '${text.substring(max(position - maxPriorContext, 0), position)}';
-    var postContext =
-        '${text.substring(position, min(position + maxPostContext, text.length))}';
-    priorContext = priorContext.replaceAll(allBeforeFirstNewline, '');
-    postContext = postContext.replaceAll(allAfterLastNewline, '');
-    var errorMessage = '$priorContext$postContext';
-    // TODO(jcollins-g):  allow for more specific error location inside comments
-    element.warn(PackageWarning.typeAsHtml, message: errorMessage);
-  });
+  // Skip this if not warned for performance and for dart-lang/sdk#46419.
+  if (element.config.packageWarningOptions
+          .warningModes[PackageWarning.typeAsHtml] !=
+      PackageWarningMode.ignore) {
+    for (var position in findFreeHangingGenericsPositions(text)) {
+      var priorContext =
+          '${text.substring(max(position - maxPriorContext, 0), position)}';
+      var postContext =
+          '${text.substring(position, min(position + maxPostContext, text.length))}';
+      priorContext = priorContext.replaceAll(allBeforeFirstNewline, '');
+      postContext = postContext.replaceAll(allAfterLastNewline, '');
+      var errorMessage = '$priorContext$postContext';
+      // TODO(jcollins-g):  allow for more specific error location inside comments
+      element.warn(PackageWarning.typeAsHtml, message: errorMessage);
+    }
+  }
 }
 
 Iterable<int> findFreeHangingGenericsPositions(String string) sync* {

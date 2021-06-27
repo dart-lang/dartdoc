@@ -21,7 +21,8 @@ class ReferenceChildrenLookup {
   ReferenceChildrenLookup(this.lookup, this.remaining);
 
   @override
-  String toString() => '$lookup.${remaining.join(".")}';
+  String toString() =>
+      '$lookup ($lookup${remaining.isNotEmpty ? "." + remaining.join(".") : ''})';
 }
 
 extension on Scope {
@@ -41,14 +42,19 @@ mixin CommentReferable implements Nameable {
   /// lookups via [referenceChildren].  Can be cached.
   Scope get scope => null;
 
+  String get href => null;
+
   /// Look up a comment reference by its component parts.  If [tryParents] is
   /// true, try looking up the same reference in any parents of [this].
   /// Will skip over results that do not pass a given [filter] and keep
   /// searching.
   @nonVirtual
   CommentReferable referenceBy(List<String> reference,
-      {bool tryParents = true, bool Function(CommentReferable) filter}) {
+      {bool tryParents = true,
+      bool Function(CommentReferable) filter,
+      Iterable<CommentReferable> parentOverrides}) {
     filter ??= (r) => true;
+    parentOverrides ??= referenceParents;
     if (reference.isEmpty) {
       if (tryParents == false) return this;
       return null;
@@ -68,8 +74,11 @@ mixin CommentReferable implements Nameable {
     }
     // If we can't find it in children, try searching parents if allowed.
     if (result == null && tryParents) {
-      for (var parent in referenceParents) {
-        result = parent.referenceBy(reference, filter: filter);
+      for (var parent in parentOverrides) {
+        result = parent.referenceBy(reference,
+            tryParents: true,
+            parentOverrides: referenceGrandparentOverrides,
+            filter: filter);
         if (result != null) break;
       }
     }
@@ -128,10 +137,15 @@ mixin CommentReferable implements Nameable {
   /// A list of lookups that should be attempted on children based on
   /// [reference].  This allows us to deal with libraries that may have
   /// separators in them. [referenceBy] stops at the first one found.
-  List<ReferenceChildrenLookup> childLookups(List<String> reference) => [
-        ReferenceChildrenLookup(
-            reference.first, reference.length > 1 ? reference.sublist(1) : [])
-      ];
+  // TODO(jcollins-g): Convert to generator after dart-lang/sdk#46419
+  Iterable<ReferenceChildrenLookup> childLookups(List<String> reference) {
+    var retval = <ReferenceChildrenLookup>[];
+    for (var index = 1; index <= reference.length; index++) {
+      retval.add(ReferenceChildrenLookup(
+          reference.sublist(0, index).join('.'), reference.sublist(index)));
+    }
+    return retval;
+  }
 
   /// Map of name to the elements that are a member of [this], but
   /// not this model element itself.  Can be cached.
@@ -148,6 +162,11 @@ mixin CommentReferable implements Nameable {
   // TODO(jcollins-g): Implement comment reference resolution via categories,
   // making the iterable make sense here.
   Iterable<CommentReferable> get referenceParents;
+
+  /// Replace the parents of parents.  [referenceBy] ignores whatever might
+  /// otherwise be implied by the [referenceParents] of [referenceParents],
+  /// replacing them with this.
+  Iterable<CommentReferable> get referenceGrandparentOverrides => null;
 
   // TODO(jcollins-g): Eliminate need for this in markdown_processor.
   Library get library => null;

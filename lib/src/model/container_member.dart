@@ -4,6 +4,7 @@
 
 import 'package:dartdoc/src/model/feature.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:meta/meta.dart';
 
 /// A [ModelElement] that is a [Container] member.
 mixin ContainerMember on ModelElement implements EnclosedElement {
@@ -55,5 +56,20 @@ mixin ContainerMember on ModelElement implements EnclosedElement {
           .findCanonicalModelElementFor(element.enclosingElement);
     }
     return null;
+  }
+
+  @override
+  @nonVirtual
+  Iterable<Container> get referenceParents => [enclosingElement];
+
+  @override
+  Iterable<Library> get referenceGrandparentOverrides sync* {
+    // TODO(jcollins-g): split Field documentation up between accessors
+    // and resolve the pieces with different scopes.  dart-lang/dartdoc#2693.
+    // Until then, just pretend we're handling this correctly.
+    yield documentationFrom.first.definingLibrary;
+    // TODO(jcollins-g): Wean users off of depending on canonical library
+    // resolution. dart-lang/dartdoc#2696
+    if (canonicalLibrary != null) yield canonicalLibrary;
   }
 }

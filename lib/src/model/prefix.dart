@@ -4,6 +4,7 @@
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/scope.dart';
+import 'package:analyzer/src/dart/element/element.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/library.dart';
 
@@ -12,6 +13,7 @@ import '../../dartdoc.dart';
 /// Represents a [PrefixElement] for dartdoc.
 ///
 /// Like [Parameter], it doesn't have doc pages, but participates in lookups.
+/// Forwards to its referenced library if referred to directly.
 class Prefix extends ModelElement implements EnclosedElement {
   /// [library] is the library the prefix is defined in, not the [Library]
   /// referred to by the [PrefixElement].
@@ -19,14 +21,26 @@ class Prefix extends ModelElement implements EnclosedElement {
       : super(element, library, packageGraph);
 
   @override
-  // TODO(jcollins-g): consider allowing bare prefixes to link to a library doc?
   bool get isCanonical => false;
+
+  Library _associatedLibrary;
+  // TODO(jcollins-g): consider connecting PrefixElement to the imported library
+  // in analyzer?
+  Library get associatedLibrary =>
+      _associatedLibrary ??= ModelElement.fromElement(
+          library.element.imports
+              .firstWhere((i) => i.prefix == element)
+              .importedLibrary,
+          packageGraph);
+
+  @override
+  Library get canonicalModelElement => associatedLibrary.canonicalLibrary;
 
   @override
   Scope get scope => element.scope;
 
   @override
-  PrefixElement get element => super.element;
+  PrefixElementImpl get element => super.element;
 
   @override
   ModelElement get enclosingElement => library;
@@ -36,7 +50,8 @@ class Prefix extends ModelElement implements EnclosedElement {
       throw UnimplementedError('prefixes have no generated files in dartdoc');
 
   @override
-  String get href => null;
+  String get href =>
+      canonicalModelElement == null ? null : canonicalModelElement.href;
 
   @override
   String get kind => 'prefix';
@@ -45,5 +60,5 @@ class Prefix extends ModelElement implements EnclosedElement {
   Map<String, CommentReferable> get referenceChildren => {};
 
   @override
-  Iterable<CommentReferable> get referenceParents => [library];
+  Iterable<CommentReferable> get referenceParents => [definingLibrary];
 }

@@ -158,6 +158,7 @@ class CommentReferenceParser {
     if (_atEnd) {
       return _PrefixParseResult.endOfFile;
     }
+    _walkPastWhitespace();
     if (_tryMatchLiteral(_constructorHintPrefix,
         requireTrailingNonidentifier: true)) {
       return _PrefixParseResult.ok(
