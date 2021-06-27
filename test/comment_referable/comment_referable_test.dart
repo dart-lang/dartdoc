@@ -23,8 +23,9 @@ abstract class Base extends Nameable with CommentReferable {
 
   T lookup<T extends CommentReferable>(String value,
           {bool Function(CommentReferable) allowTree,
-            bool Function(CommentReferable) filter}) =>
-      referenceBy(value.split(_separator), allowTree: allowTree, filter: filter);
+          bool Function(CommentReferable) filter}) =>
+      referenceBy(value.split(_separator),
+          allowTree: allowTree, filter: filter);
 
   @override
   Element get element => throw UnimplementedError();
@@ -171,7 +172,10 @@ void main() {
       var sub2 = referable.add('lib4.sub2');
       expect(sub2.lookup('lib4.lib4'), equals(lib4lib4));
       expect(sub2.lookup('lib4.sub1'), equals(tooDeepSub1));
-      expect(sub2.lookup('lib4.sub1', allowTree: ((r) => r is Base && (r.parent is Top))), equals(sub1));
+      expect(
+          sub2.lookup('lib4.sub1',
+              allowTree: ((r) => r is Base && (r.parent is Top))),
+          equals(sub1));
     });
 
     test('Check that grandparent overrides work', () {

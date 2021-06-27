@@ -173,7 +173,6 @@ final List<md.BlockSyntax> _markdownBlockSyntaxes = [
 // Remove these schemas from the display text for hyperlinks.
 final RegExp _hideSchemes = RegExp('^(http|https)://');
 
-
 class IterableBlockParser extends md.BlockParser {
   IterableBlockParser(List<String> lines, md.Document document)
       : super(lines, document);
@@ -266,9 +265,8 @@ MatchingLinkResult _getMatchingLinkElementCommentReferable(
     }
   }
 
-
-  var lookupResult =
-      warnable.referenceBy(commentReference.referenceBy, allowTree: allowTree, filter: filter);
+  var lookupResult = warnable.referenceBy(commentReference.referenceBy,
+      allowTree: allowTree, filter: filter);
 
   // TODO(jcollins-g): Consider prioritizing analyzer resolution before custom.
   return MatchingLinkResult(lookupResult);

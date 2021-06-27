@@ -425,8 +425,10 @@ abstract class ModelElement extends Canonicalization
           // Some elements don't have modelNodes or aren't traversed by
           // the element visitor, or both.
           assert(e is Parameter || e.modelNode != null);
-          _commentRefs
-              .addAll({for (var r in e.modelNode?.commentRefs ?? <ModelCommentReference>[]) r.codeRef: r});
+          _commentRefs.addAll({
+            for (var r in e.modelNode?.commentRefs ?? <ModelCommentReference>[])
+              r.codeRef: r
+          });
         }
       }
     }

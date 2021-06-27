@@ -118,7 +118,8 @@ mixin CommentReferable implements Nameable {
       }
       if (referenceChildren.containsKey(referenceLookup.lookup)) {
         result = recurseChildrenAndFilter(
-            referenceLookup, referenceChildren[referenceLookup.lookup], allowTree: allowTree, filter: filter);
+            referenceLookup, referenceChildren[referenceLookup.lookup],
+            allowTree: allowTree, filter: filter);
         if (result != null) break;
       }
     }
@@ -142,7 +143,8 @@ mixin CommentReferable implements Nameable {
   /// Override if [Scope.lookup] may return elements not corresponding to a
   /// [CommentReferable], but you still want to have an implementation of
   /// [scope].
-  CommentReferable lookupViaScope(ReferenceChildrenLookup referenceLookup,
+  CommentReferable lookupViaScope(
+      ReferenceChildrenLookup referenceLookup,
       bool Function(CommentReferable) allowTree,
       bool Function(CommentReferable) filter) {
     var resultElement = scope.lookupPreferGetter(referenceLookup.lookup);
@@ -157,15 +159,15 @@ mixin CommentReferable implements Nameable {
       return null;
     }
     if (!allowTree(result)) return null;
-    return recurseChildrenAndFilter(referenceLookup, result, allowTree: allowTree, filter: filter);
+    return recurseChildrenAndFilter(referenceLookup, result,
+        allowTree: allowTree, filter: filter);
   }
 
   /// Given a [result] found in an implementation of [lookupViaScope] or
   /// [_lookupViaReferenceChildren], recurse through children, skipping over
   /// results that do not match the filter.
   CommentReferable recurseChildrenAndFilter(
-      ReferenceChildrenLookup referenceLookup,
-      CommentReferable result,
+      ReferenceChildrenLookup referenceLookup, CommentReferable result,
       {bool Function(CommentReferable) allowTree,
       bool Function(CommentReferable) filter}) {
     assert(result != null);
