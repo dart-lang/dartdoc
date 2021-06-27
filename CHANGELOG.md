@@ -3,8 +3,8 @@
 * Many changes to improve compliance on the new lookup code.
   (#2682, #2684, #2673, #2672, #2671)
 * Update favicon to match dart.dev. (#2681)
-* Runtime and AOT renderer fixes for Mustachio.  (#2674,
-  #2676, #2670)
+* Runtime and AOT renderer fixes for Mustachio.  (#2697,
+  #2674, #2676, #2670, #2697)
 * Fix several problems with head analyzer.  (#2680, #2687)
 
 ## 0.45.0
