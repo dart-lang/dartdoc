@@ -1288,7 +1288,7 @@ D aTopLevelTypeParameterFunction<D extends TypeParameterThings>(D typedParam) {}
 
 abstract class TypeParameterThings<A, B extends FactoryConstructorThings> {
   A aName;
-  final List<B> aThing;
+  List<B> aThing;
 
   B aMethod<C>(A aParam, C anotherParam);
 }
