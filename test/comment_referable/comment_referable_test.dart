@@ -14,14 +14,17 @@ const _separator = '.';
 abstract class Base extends Nameable with CommentReferable {
   List<Base> children;
 
+  Base parent;
+
   /// Utility function to quickly build structures similar to [ModelElement]
   /// hierarchies in dartdoc in tests.
   /// Returns the added (or already existing) [Base].
   Base add(String newName);
 
   T lookup<T extends CommentReferable>(String value,
-          {bool Function(CommentReferable) filter}) =>
-      referenceBy(value.split(_separator), filter: filter);
+          {bool Function(CommentReferable) allowTree,
+            bool Function(CommentReferable) filter}) =>
+      referenceBy(value.split(_separator), allowTree: allowTree, filter: filter);
 
   @override
   Element get element => throw UnimplementedError();
@@ -90,6 +93,7 @@ class TopChild extends Child {
   final String name;
   @override
   final List<GenericChild> children;
+  @override
   final Top parent;
 
   TopChild(this.name, this.children, this.parent);
@@ -107,6 +111,7 @@ class GenericChild extends Child {
   final String name;
   @override
   final List<GenericChild> children;
+  @override
   final Base parent;
 
   GenericChild(this.name, this.children, this.parent);
@@ -156,6 +161,17 @@ void main() {
       expect(referable.lookup('lib3'), isA<TopChild>());
       expect(referable.lookup('lib3', filter: ((r) => r is GenericChild)),
           isA<GenericChild>());
+    });
+
+    test('Check that allowTree works', () {
+      referable.add('lib4');
+      var lib4lib4 = referable.add('lib4.lib4');
+      var tooDeepSub1 = referable.add('lib4.lib4.sub1');
+      var sub1 = referable.add('lib4.sub1');
+      var sub2 = referable.add('lib4.sub2');
+      expect(sub2.lookup('lib4.lib4'), equals(lib4lib4));
+      expect(sub2.lookup('lib4.sub1'), equals(tooDeepSub1));
+      expect(sub2.lookup('lib4.sub1', allowTree: ((r) => r is Base && (r.parent is Top))), equals(sub1));
     });
 
     test('Check that grandparent overrides work', () {

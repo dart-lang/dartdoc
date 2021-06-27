@@ -11,9 +11,9 @@ import 'dart:math';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/comment_references/model_comment_reference.dart';
 import 'package:dartdoc/src/element_type.dart';
+import 'package:dartdoc/src/matching_link_result.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
-import 'package:dartdoc/src/quiver.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'package:meta/meta.dart';
@@ -173,107 +173,6 @@ final List<md.BlockSyntax> _markdownBlockSyntaxes = [
 // Remove these schemas from the display text for hyperlinks.
 final RegExp _hideSchemes = RegExp('^(http|https)://');
 
-class MatchingLinkResult {
-  final CommentReferable commentReferable;
-  final bool warn;
-
-  MatchingLinkResult(this.commentReferable, {this.warn = true});
-
-  @override
-  bool operator ==(Object other) {
-    return other is MatchingLinkResult &&
-        commentReferable == other.commentReferable &&
-        warn == other.warn;
-  }
-
-  @override
-  int get hashCode => hash2(commentReferable, warn);
-
-  bool isEquivalentTo(MatchingLinkResult other) {
-    var compareThis = commentReferable;
-    var compareOther = other.commentReferable;
-
-    if (compareThis is Accessor) {
-      compareThis = (compareThis as Accessor).enclosingCombo;
-    }
-
-    if (compareOther is Accessor) {
-      compareOther = (compareOther as Accessor).enclosingCombo;
-    }
-
-    if (compareThis is ModelElement &&
-        compareThis.canonicalModelElement != null) {
-      compareThis = (compareThis as ModelElement).canonicalModelElement;
-    }
-    if (compareOther is ModelElement &&
-        compareOther.canonicalModelElement != null) {
-      compareOther = (compareOther as ModelElement).canonicalModelElement;
-    }
-    if (compareThis == compareOther) return true;
-
-    // The old implementation just throws away Parameter matches to avoid
-    // problems with warning unnecessarily at higher levels of the code.
-    // I'd like to fix this at a different layer with the new lookup, so treat
-    // this as equivalent to a null type.
-    if (compareOther is Parameter && compareThis == null) {
-      return true;
-    }
-    if (compareThis is Parameter && compareOther == null) {
-      return true;
-    }
-    // Same with TypeParameter.
-    if (compareOther is TypeParameter && compareThis == null) {
-      return true;
-    }
-    if (compareThis is TypeParameter && compareOther == null) {
-      return true;
-    }
-
-    return false;
-  }
-
-  @override
-  String toString() {
-    return 'element: [${commentReferable is Constructor ? 'new ' : ''}${commentReferable?.fullyQualifiedName}] warn: $warn';
-  }
-}
-
-class _MarkdownStats {
-  int totalReferences = 0;
-  int resolvedReferences = 0;
-  int resolvedNewLookupReferences = 0;
-  int resolvedOldLookupReferences = 0;
-  int resolvedEquivalentlyReferences = 0;
-
-  String _valueAndPercent(int references) {
-    return '$references (${references.toDouble() / totalReferences.toDouble() * 100}%)';
-  }
-
-  String buildReport() {
-    var report = StringBuffer();
-    report.writeln('Reference Counts:');
-    report.writeln('total references: $totalReferences');
-    report.writeln(
-        'resolved references:  ${_valueAndPercent(resolvedReferences)}');
-    if (resolvedNewLookupReferences > 0) {
-      report.writeln(
-          'resolved references with new lookup:  $resolvedNewLookupReferences (${resolvedNewLookupReferences / totalReferences * 100}%)');
-    }
-    if (resolvedOldLookupReferences > 0) {
-      report.writeln(
-          'resolved references with old lookup:  $resolvedOldLookupReferences (${resolvedOldLookupReferences / totalReferences * 100}%)');
-    }
-    if (resolvedEquivalentlyReferences > 0) {
-      report.writeln(
-          'resolved references with equivalent links:  $resolvedEquivalentlyReferences (${resolvedEquivalentlyReferences / totalReferences * 100}%)');
-    }
-    return report.toString();
-  }
-}
-
-/// TODO(jcollins-g): perhaps a more generic stats gathering apparatus for
-/// dartdoc would be useful, and one that isn't process-global.
-final markdownStats = _MarkdownStats();
 
 class IterableBlockParser extends md.BlockParser {
   IterableBlockParser(List<String> lines, md.Document document)
@@ -304,7 +203,8 @@ ModelElement _getPreferredClass(ModelElement modelElement) {
 }
 
 /// Return false if the passed [referable] is a default [Constructor],
-/// or if it is shadowing another type of element.
+/// or if it is shadowing another type of element, or is a parameter of
+/// one of the above.
 bool _rejectDefaultAndShadowingConstructors(CommentReferable referable) {
   if (referable is Constructor) {
     if (referable.name == referable.enclosingElement.name) {
@@ -334,12 +234,19 @@ MatchingLinkResult _getMatchingLinkElementCommentReferable(
       warnable.commentRefs[codeRef] ?? ModelCommentReference.synthetic(codeRef);
 
   bool Function(CommentReferable) filter;
+  bool Function(CommentReferable) allowTree;
 
+  // Constructor references are pretty ambiguous by nature since they are
+  // declared with the same name as the class they are constructing, and even
+  // if they don't use field-formal parameters, sometimes have parameters
+  // named the same as members.
+  // Maybe clean this up with inspiration from constructor tear-off syntax?
   if (commentReference.allowDefaultConstructor) {
     // Neither reject, nor require, a default constructor in the event
     // the comment reference structure implies one.  (We can not require it
     // in case a library name is the same as a member class name and the class
-    // is the intended lookup).
+    // is the intended lookup).   For example, [FooClass.FooClass] structurally
+    // "looks like" a default constructor, so we should allow it here.
     filter = commentReference.hasCallableHint ? _requireCallable : null;
   } else if (commentReference.hasConstructorHint &&
       commentReference.hasCallableHint) {
@@ -350,13 +257,18 @@ MatchingLinkResult _getMatchingLinkElementCommentReferable(
     // Trailing parens indicate we are looking for a callable.
     filter = _requireCallable;
   } else {
-    // Without hints, reject default constructors to force resolution to the
-    // class.
+    // Without hints, reject default constructors and their parameters to force
+    // resolution to the class.
     filter = _rejectDefaultAndShadowingConstructors;
+
+    if (!commentReference.allowDefaultConstructorParameter) {
+      allowTree = _rejectDefaultAndShadowingConstructors;
+    }
   }
 
+
   var lookupResult =
-      warnable.referenceBy(commentReference.referenceBy, filter: filter);
+      warnable.referenceBy(commentReference.referenceBy, allowTree: allowTree, filter: filter);
 
   // TODO(jcollins-g): Consider prioritizing analyzer resolution before custom.
   return MatchingLinkResult(lookupResult);

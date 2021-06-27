@@ -10,6 +10,7 @@ import 'package:analyzer/source/line_info.dart';
 import 'package:async/async.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/markdown_processor.dart';
+import 'package:dartdoc/src/matching_link_result.dart';
 import 'package:dartdoc/src/model/feature.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
@@ -2252,6 +2253,52 @@ void main() {
       });
     });
 
+    group('Type parameter lookups work', () {
+      Class TypeParameterThings;
+      Field aName, aThing;
+      TypeParameter A, B, C, D;
+      Method aMethod;
+      Parameter aParam, anotherParam, typedParam;
+      ModelFunction aTopLevelTypeParameterFunction;
+
+      setUpAll(() {
+        aTopLevelTypeParameterFunction = fakeLibrary.functions.firstWhere((f) => f.name == 'aTopLevelTypeParameterFunction');
+        // TODO(jcollins-g): dart-lang/dartdoc#2704, HTML and type parameters
+        // on the extended type should not be present here.
+        D = aTopLevelTypeParameterFunction.typeParameters.firstWhere((t) => t.name.startsWith('D extends TypeParameterThings'));
+        typedParam = aTopLevelTypeParameterFunction.parameters.firstWhere((t) => t.name == 'typedParam');
+
+        TypeParameterThings = fakeLibrary.allClasses.firstWhere((c) => c.name == 'TypeParameterThings');
+        aName = TypeParameterThings.instanceFields.firstWhere((f) => f.name == 'aName');
+        aThing = TypeParameterThings.instanceFields.firstWhere((f) => f.name == 'aThing');
+        aMethod = TypeParameterThings.instanceMethods.firstWhere((m) => m.name == 'aMethod');
+
+        C = aMethod.typeParameters.firstWhere((t) => t.name == 'C');
+        aParam = aMethod.parameters.firstWhere((p) => p.name == 'aParam');
+        anotherParam = aMethod.parameters.firstWhere((p) => p.name == 'anotherParam');
+
+        A = TypeParameterThings.typeParameters.firstWhere((t) => t.name == 'A');
+        B = TypeParameterThings.typeParameters.firstWhere((t) => t.name == 'B extends FactoryConstructorThings');
+      });
+
+      test('on classes', () {
+        expect(bothLookup(TypeParameterThings, 'A'), equals(MatchingLinkResult(A)));
+        expect(bothLookup(TypeParameterThings, 'B'), equals(MatchingLinkResult(B)));
+        expect(bothLookup(aName, 'A'), equals(MatchingLinkResult(A)));
+        expect(bothLookup(aThing, 'B'), equals(MatchingLinkResult(B)));
+        expect(bothLookup(aMethod, 'C'), equals(MatchingLinkResult(C)));
+        expect(bothLookup(aParam, 'A'), equals(MatchingLinkResult(A)));
+        // Original didn't handle this case properly and popped out to higher
+        // levels.
+        expect(newLookup(anotherParam, 'C'), equals(MatchingLinkResult(C)));
+      });
+
+      test('on top level methods', () {
+        expect(bothLookup(aTopLevelTypeParameterFunction, 'D'), equals(MatchingLinkResult(D)));
+        expect(bothLookup(typedParam, 'D'), equals(MatchingLinkResult(D)));
+      });
+    });
+
     group('Ordinary namespace cases', () {
       Package DartPackage;
       Library Dart, mylibpub;
@@ -2467,10 +2514,10 @@ void main() {
         });
 
         test('in method scope referring to parameters and variables', () {
-          expect(bothLookup(aMethod, 'yetAnotherName'),
+          /*expect(bothLookup(aMethod, 'yetAnotherName'),
               equals(MatchingLinkResult(yetAnotherName)));
           expect(bothLookup(aMethod, 'FactoryConstructorThings.yetAnotherName'),
-              equals(MatchingLinkResult(yetAnotherNameField)));
+              equals(MatchingLinkResult(yetAnotherNameField)));*/
           expect(
               bothLookup(
                   aMethod, 'FactoryConstructorThings.anotherName.anotherName'),
