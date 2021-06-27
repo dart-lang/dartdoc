@@ -75,8 +75,10 @@ class ModelFunctionTyped extends ModelElement
   Map<String, CommentReferable> get referenceChildren {
     if (_referenceChildren == null) {
       _referenceChildren = {};
-      _referenceChildren.addEntriesIfAbsent(typeParameters.explicitOnCollisionWith(this));
-      _referenceChildren.addEntriesIfAbsent(parameters.explicitOnCollisionWith(this));
+      _referenceChildren
+          .addEntriesIfAbsent(typeParameters.explicitOnCollisionWith(this));
+      _referenceChildren
+          .addEntriesIfAbsent(parameters.explicitOnCollisionWith(this));
     }
     return _referenceChildren;
   }

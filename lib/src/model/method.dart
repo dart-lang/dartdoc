@@ -137,8 +137,8 @@ class Method extends ModelElement
         ...from.typeParameters.explicitOnCollisionWith(this),
         ...from.allParameters.explicitOnCollisionWith(this),
         ...from.modelType.typeArguments.explicitOnCollisionWith(this),
-        ...from.modelType.returnType.typeArguments.explicitOnCollisionWith(
-            this),
+        ...from.modelType.returnType.typeArguments
+            .explicitOnCollisionWith(this),
       ]);
     }
     return _referenceChildren;

@@ -40,12 +40,16 @@ extension CommentReferableEntryGenerators on Iterable<CommentReferable> {
   /// Discards all entries that do not collide with [referable],
   /// and generates an [MapEntry] using [referable]'s
   /// [CommentReferable.referenceName] as a prefix for the item that does.
-  Iterable<MapEntry<String, CommentReferable>> onlyExplicitOnCollisionWith(CommentReferable referable) => where((r) => r.referenceName == referable.referenceName)
-      .map((r) => MapEntry('${referable.referenceName}.${r.referenceName}', r));
+  Iterable<MapEntry<String, CommentReferable>> onlyExplicitOnCollisionWith(
+          CommentReferable referable) =>
+      where((r) => r.referenceName == referable.referenceName).map(
+          (r) => MapEntry('${referable.referenceName}.${r.referenceName}', r));
 
   /// Like [onlyExplicitOnCollisionWith], except does not discard non-conflicting
   /// items.
-  Iterable<MapEntry<String, CommentReferable>> explicitOnCollisionWith(CommentReferable referable) => map((r) {
+  Iterable<MapEntry<String, CommentReferable>> explicitOnCollisionWith(
+          CommentReferable referable) =>
+      map((r) {
         if (r.referenceName == referable.referenceName) {
           return MapEntry('${referable.referenceName}.${r.referenceName}', r);
         }
@@ -53,7 +57,8 @@ extension CommentReferableEntryGenerators on Iterable<CommentReferable> {
       });
 
   /// Just generate entries from this iterable.
-  Iterable<MapEntry<String, CommentReferable>> generateEntries() => map((r) => MapEntry(r.referenceName, r));
+  Iterable<MapEntry<String, CommentReferable>> generateEntries() =>
+      map((r) => MapEntry(r.referenceName, r));
 
   /// Return all values not of this type.
   Iterable<CommentReferable> whereNotType<T>() sync* {
@@ -67,12 +72,12 @@ extension CommentReferableEntryGenerators on Iterable<CommentReferable> {
 /// [CommentReferable.referenceChildren].
 extension CommentReferableEntryBuilder on Map<String, CommentReferable> {
   /// Like [Map.putIfAbsent] except works on an iterable of entries.
-  void addEntriesIfAbsent(Iterable<MapEntry<String, CommentReferable>> entries) =>
-    entries.forEach((e) {
-      if (!containsKey(e.key)) this[e.key] = e.value;
-    });
+  void addEntriesIfAbsent(
+          Iterable<MapEntry<String, CommentReferable>> entries) =>
+      entries.forEach((e) {
+        if (!containsKey(e.key)) this[e.key] = e.value;
+      });
 }
-
 
 /// Support comment reference lookups on a Nameable object.
 mixin CommentReferable implements Nameable {
@@ -188,7 +193,6 @@ mixin CommentReferable implements Nameable {
     return retval;
   }
 
-
   /// Map of [referenceName] to the elements that are a member of [this], but
   /// not this model element itself.  Can be cached.
   ///
@@ -213,7 +217,6 @@ mixin CommentReferable implements Nameable {
   // TODO(jcollins-g): Enforce that reference name is always the same
   // as [ModelElement.name].  Easier/possible after old lookup code is gone.
   String get referenceName => name;
-
 
   // TODO(jcollins-g): Eliminate need for this in markdown_processor.
   Library get library => null;

@@ -1036,22 +1036,25 @@ class PackageGraph with CommentReferable, Nameable {
       // Libraries are next.
       // TODO(jcollins-g): Warn about directly referencing libraries out of
       // scope?
-      _referenceChildren.addEntriesIfAbsent(documentedPackages.expand((p) => p.publicLibrariesSorted).generateEntries());
+      _referenceChildren.addEntriesIfAbsent(documentedPackages
+          .expand((p) => p.publicLibrariesSorted)
+          .generateEntries());
 
       // TODO(jcollins-g): Warn about directly referencing top level items
       // out of scope?
       _referenceChildren.addEntriesIfAbsent(documentedPackages
           .expand((p) => p.publicLibrariesSorted)
           .expand((l) => [
-        ...l.publicConstants,
-        ...l.publicFunctions,
-        ...l.publicProperties,
-        ...l.publicTypedefs,
-        ...l.publicExtensions,
-        ...l.publicClasses,
-        ...l.publicEnums,
-        ...l.publicMixins
-      ]).generateEntries());
+                ...l.publicConstants,
+                ...l.publicFunctions,
+                ...l.publicProperties,
+                ...l.publicTypedefs,
+                ...l.publicExtensions,
+                ...l.publicClasses,
+                ...l.publicEnums,
+                ...l.publicMixins
+              ])
+          .generateEntries());
     }
     return _referenceChildren;
   }

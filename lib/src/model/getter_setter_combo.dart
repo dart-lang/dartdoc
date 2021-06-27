@@ -248,10 +248,11 @@ mixin GetterSetterCombo on ModelElement {
         // of the usual interface to a combo, so only reference them as part of
         // [Container] fallbacks or if someone wants to explicitly specify a
         // colliding parameter name.
-        _referenceChildren.addEntries(parameters.onlyExplicitOnCollisionWith(this));
+        _referenceChildren
+            .addEntries(parameters.onlyExplicitOnCollisionWith(this));
       }
-      _referenceChildren.addEntries(modelType.typeArguments.explicitOnCollisionWith(this));
-
+      _referenceChildren
+          .addEntries(modelType.typeArguments.explicitOnCollisionWith(this));
     }
     return _referenceChildren;
   }

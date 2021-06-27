@@ -143,5 +143,6 @@ class Constructor extends ModelElement
   }
 
   @override
-  String get  referenceName => element.name == '' ? enclosingElement.name : element.name;
+  String get referenceName =>
+      element.name == '' ? enclosingElement.name : element.name;
 }

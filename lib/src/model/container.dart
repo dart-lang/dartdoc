@@ -265,9 +265,10 @@ abstract class Container extends ModelElement with TypeParameters {
   Map<String, CommentReferable> get referenceChildren {
     if (_referenceChildren == null) {
       _referenceChildren = {};
-      _referenceChildren.addEntries(
-        allModelElements.whereNotType<Accessor>().whereNotType<Constructor>().generateEntries()
-      );
+      _referenceChildren.addEntries(allModelElements
+          .whereNotType<Accessor>()
+          .whereNotType<Constructor>()
+          .generateEntries());
 
       /*for (var modelElement in allModelElements) {
         // Never directly look up accessors.
@@ -285,7 +286,8 @@ abstract class Container extends ModelElement with TypeParameters {
         // TODO(jcollins-g): Figure out something good to do in the ecosystem
         // here to wean people off the habit of unscoped parameter references.
         if (modelElement.hasParameters) {
-          _referenceChildren.addEntriesIfAbsent(modelElement.parameters.generateEntries());
+          _referenceChildren
+              .addEntriesIfAbsent(modelElement.parameters.generateEntries());
         }
       }
       _referenceChildren['this'] = this;

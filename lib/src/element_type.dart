@@ -212,8 +212,7 @@ class ParameterizedElementType extends DefinedElementType with Rendered {
   Iterable<ElementType> _typeArguments;
   @override
   Iterable<ElementType> get typeArguments =>
-      _typeArguments ??= type
-          .typeArguments
+      _typeArguments ??= type.typeArguments
           .map((f) => ElementType.from(f, library, packageGraph))
           .toList(growable: false);
 }
@@ -310,7 +309,6 @@ abstract class DefinedElementType extends ElementType {
         modelElement;
     return canonicalClass?.isPublic ?? false;
   }
-
 
   DartType get _bound => type;
 
@@ -429,7 +427,6 @@ class CallableElementType extends DefinedElementType with Rendered, Callable {
   @override
   ElementTypeRenderer<CallableElementType> get _renderer =>
       packageGraph.rendererFactory.callableElementTypeRenderer;
-
 
   Iterable<ElementType> _typeArguments;
   @override

@@ -86,12 +86,16 @@ class Parameter extends ModelElement implements EnclosedElement {
     if (_referenceChildren == null) {
       _referenceChildren = {};
       if (isCallable) {
-        _referenceChildren.addEntriesIfAbsent(parameters.explicitOnCollisionWith(this));
+        _referenceChildren
+            .addEntriesIfAbsent(parameters.explicitOnCollisionWith(this));
       }
-      _referenceChildren.addEntriesIfAbsent(modelType.typeArguments.explicitOnCollisionWith(this));
+      _referenceChildren.addEntriesIfAbsent(
+          modelType.typeArguments.explicitOnCollisionWith(this));
       if (modelType is Callable) {
-        _referenceChildren.addEntriesIfAbsent(
-            (modelType as Callable).returnType.typeArguments.explicitOnCollisionWith(this));
+        _referenceChildren.addEntriesIfAbsent((modelType as Callable)
+            .returnType
+            .typeArguments
+            .explicitOnCollisionWith(this));
       }
     }
     return _referenceChildren;

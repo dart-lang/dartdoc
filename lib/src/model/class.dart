@@ -613,7 +613,8 @@ class Class extends Container
     for (var constructor in source) {
       yield MapEntry(constructor.referenceName, constructor);
       yield MapEntry(
-          '${constructor.enclosingElement.name}.${constructor.referenceName}', constructor);
+          '${constructor.enclosingElement.name}.${constructor.referenceName}',
+          constructor);
     }
   }
 

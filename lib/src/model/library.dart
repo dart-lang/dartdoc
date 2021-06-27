@@ -664,10 +664,11 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   Map<String, CommentReferable> get referenceChildren {
     if (_referenceChildren == null) {
       _referenceChildren = {};
-      var definedNamesModelElements = element.exportNamespace.definedNames.values.map((v) => ModelElement.fromElement(v, packageGraph));
-      _referenceChildren.addEntries(definedNamesModelElements
-          .whereNotType<Accessor>()
-          .generateEntries());
+      var definedNamesModelElements = element
+          .exportNamespace.definedNames.values
+          .map((v) => ModelElement.fromElement(v, packageGraph));
+      _referenceChildren.addEntries(
+          definedNamesModelElements.whereNotType<Accessor>().generateEntries());
       /*
       Map.fromEntries(
           element.exportNamespace.definedNames.entries.expand((entry) sync* {
