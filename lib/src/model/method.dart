@@ -134,11 +134,10 @@ class Method extends ModelElement
     if (_referenceChildren == null) {
       _referenceChildren = {};
       _referenceChildren.addEntriesIfAbsent([
-        ...from.typeParameters.explicitOnCollisionWith(this),
-        ...from.allParameters.explicitOnCollisionWith(this),
-        ...from.modelType.typeArguments.explicitOnCollisionWith(this),
-        ...from.modelType.returnType.typeArguments
-            .explicitOnCollisionWith(this),
+        ...typeParameters.explicitOnCollisionWith(this),
+        ...allParameters.explicitOnCollisionWith(this),
+        ...modelType.typeArguments.explicitOnCollisionWith(this),
+        ...modelType.returnType.typeArguments.explicitOnCollisionWith(this),
       ]);
     }
     return _referenceChildren;

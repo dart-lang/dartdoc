@@ -2254,10 +2254,12 @@ void main() {
     });
 
     group('Type parameter lookups work', () {
-      Class TypeParameterThings;
+      Class TypeParameterThings,
+          TypeParameterThingsExtended,
+          TypeParameterThingsExtendedQ;
       Field aName, aThing;
-      TypeParameter A, B, C, D;
-      Method aMethod;
+      TypeParameter ATypeParam, BTypeParam, CTypeParam, DTypeParam, QTypeParam;
+      Method aMethod, aMethodExtended, aMethodExtendedQ;
       Parameter aParam, anotherParam, typedParam;
       ModelFunction aTopLevelTypeParameterFunction;
 
@@ -2266,8 +2268,8 @@ void main() {
             .firstWhere((f) => f.name == 'aTopLevelTypeParameterFunction');
         // TODO(jcollins-g): dart-lang/dartdoc#2704, HTML and type parameters
         // on the extended type should not be present here.
-        D = aTopLevelTypeParameterFunction.typeParameters.firstWhere(
-            (t) => t.name.startsWith('D extends TypeParameterThings'));
+        DTypeParam = aTopLevelTypeParameterFunction.typeParameters.firstWhere(
+            (t) => t.name.startsWith('DTypeParam extends TypeParameterThings'));
         typedParam = aTopLevelTypeParameterFunction.parameters
             .firstWhere((t) => t.name == 'typedParam');
 
@@ -2280,34 +2282,77 @@ void main() {
         aMethod = TypeParameterThings.instanceMethods
             .firstWhere((m) => m.name == 'aMethod');
 
-        C = aMethod.typeParameters.firstWhere((t) => t.name == 'C');
+        CTypeParam =
+            aMethod.typeParameters.firstWhere((t) => t.name == 'CTypeParam');
         aParam = aMethod.parameters.firstWhere((p) => p.name == 'aParam');
         anotherParam =
             aMethod.parameters.firstWhere((p) => p.name == 'anotherParam');
 
-        A = TypeParameterThings.typeParameters.firstWhere((t) => t.name == 'A');
-        B = TypeParameterThings.typeParameters
-            .firstWhere((t) => t.name == 'B extends FactoryConstructorThings');
+        ATypeParam = TypeParameterThings.typeParameters
+            .firstWhere((t) => t.name == 'ATypeParam');
+        BTypeParam = TypeParameterThings.typeParameters.firstWhere(
+            (t) => t.name == 'BTypeParam extends FactoryConstructorThings');
+
+        TypeParameterThingsExtended = fakeLibrary.allClasses
+            .firstWhere((c) => c.name == 'TypeParameterThingsExtended');
+        aMethodExtended = TypeParameterThingsExtended.instanceMethods
+            .firstWhere((m) => m.name == 'aMethod');
+
+        TypeParameterThingsExtendedQ = fakeLibrary.allClasses
+            .firstWhere((c) => c.name == 'TypeParameterThingsExtendedQ');
+        aMethodExtendedQ = TypeParameterThingsExtendedQ.instanceMethods
+            .firstWhere((m) => m.name == 'aMethod');
+        QTypeParam = aMethodExtendedQ.typeParameters
+            .firstWhere((p) => p.name == 'QTypeParam');
+      });
+
+      test('on inherited documentation', () {
+        expect(newLookup(aMethodExtended, 'ATypeParam'),
+            equals(MatchingLinkResult(ATypeParam)));
+        expect(newLookup(aMethodExtended, 'BTypeParam'),
+            equals(MatchingLinkResult(BTypeParam)));
+        expect(newLookup(aMethodExtended, 'CTypeParam'),
+            equals(MatchingLinkResult(CTypeParam)));
+        // Disallowed, because Q does not exist where the docs originated from.
+        // The old code forgave this most of the time.
+        expect(newLookup(aMethodExtended, 'QTypeParam'),
+            equals(MatchingLinkResult(null)));
+
+        // We get an inverse situation on the extendedQ class.
+        expect(newLookup(aMethodExtendedQ, 'ATypeParam'),
+            equals(MatchingLinkResult(null)));
+        expect(newLookup(aMethodExtendedQ, 'BTypeParam'),
+            equals(MatchingLinkResult(null)));
+        expect(newLookup(aMethodExtendedQ, 'CTypeParam'),
+            equals(MatchingLinkResult(null)));
+        expect(newLookup(aMethodExtendedQ, 'QTypeParam'),
+            equals(MatchingLinkResult(QTypeParam)));
       });
 
       test('on classes', () {
-        expect(bothLookup(TypeParameterThings, 'A'),
-            equals(MatchingLinkResult(A)));
-        expect(bothLookup(TypeParameterThings, 'B'),
-            equals(MatchingLinkResult(B)));
-        expect(bothLookup(aName, 'A'), equals(MatchingLinkResult(A)));
-        expect(bothLookup(aThing, 'B'), equals(MatchingLinkResult(B)));
-        expect(bothLookup(aMethod, 'C'), equals(MatchingLinkResult(C)));
-        expect(bothLookup(aParam, 'A'), equals(MatchingLinkResult(A)));
+        expect(bothLookup(TypeParameterThings, 'ATypeParam'),
+            equals(MatchingLinkResult(ATypeParam)));
+        expect(bothLookup(TypeParameterThings, 'BTypeParam'),
+            equals(MatchingLinkResult(BTypeParam)));
+        expect(bothLookup(aName, 'ATypeParam'),
+            equals(MatchingLinkResult(ATypeParam)));
+        expect(bothLookup(aThing, 'BTypeParam'),
+            equals(MatchingLinkResult(BTypeParam)));
+        expect(bothLookup(aMethod, 'CTypeParam'),
+            equals(MatchingLinkResult(CTypeParam)));
+        expect(bothLookup(aParam, 'ATypeParam'),
+            equals(MatchingLinkResult(ATypeParam)));
         // Original didn't handle this case properly and popped out to higher
         // levels.
-        expect(newLookup(anotherParam, 'C'), equals(MatchingLinkResult(C)));
+        expect(newLookup(anotherParam, 'CTypeParam'),
+            equals(MatchingLinkResult(CTypeParam)));
       });
 
       test('on top level methods', () {
-        expect(bothLookup(aTopLevelTypeParameterFunction, 'D'),
-            equals(MatchingLinkResult(D)));
-        expect(bothLookup(typedParam, 'D'), equals(MatchingLinkResult(D)));
+        expect(bothLookup(aTopLevelTypeParameterFunction, 'DTypeParam'),
+            equals(MatchingLinkResult(DTypeParam)));
+        expect(bothLookup(typedParam, 'DTypeParam'),
+            equals(MatchingLinkResult(DTypeParam)));
       });
     });
 
