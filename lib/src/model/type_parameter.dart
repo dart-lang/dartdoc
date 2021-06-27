@@ -23,14 +23,9 @@ class TypeParameter extends ModelElement {
       '${enclosingElement.library.dirName}/${enclosingElement.name}/$name';
 
   @override
-  String get href {
-    if (!identical(canonicalModelElement, this)) {
-      return canonicalModelElement?.href;
-    }
-    assert(canonicalLibrary != null);
-    assert(canonicalLibrary == library);
-    return '${package.baseHref}$filePath';
-  }
+
+  /// [TypeParameter]s don't have documentation pages.
+  String get href => null;
 
   @override
   String get kind => 'type parameter';
