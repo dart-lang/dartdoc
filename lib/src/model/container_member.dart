@@ -60,7 +60,9 @@ mixin ContainerMember on ModelElement implements EnclosedElement {
 
   @override
   @nonVirtual
-  Iterable<Container> get referenceParents => [enclosingElement];
+  // TODO(jcollins-g): dart-lang/dartdoc#2693.
+  Iterable<Container> get referenceParents =>
+      [documentationFrom.first.enclosingElement];
 
   @override
   Iterable<Library> get referenceGrandparentOverrides sync* {
