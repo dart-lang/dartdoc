@@ -478,6 +478,7 @@ Future<String> createSdkDartdoc() async {
   var dartdocSdk = Directory.systemTemp.createTempSync('dartdoc-sdk');
   await launcher
       .runStreamed('git', ['clone', Directory.current.path, dartdocSdk.path]);
+  // TODO(jcollins-g): remove pin after dart-lang/sdk#46475 is resolved.
   await launcher.runStreamed('git', ['checkout'],
       workingDirectory: dartdocSdk.path);
 
@@ -486,11 +487,16 @@ Future<String> createSdkDartdoc() async {
     'clone',
     '--branch',
     'master',
-    '--depth',
-    '1',
+    // TODO(jcollins-g): remove after removing pin, below.
+    //'--depth',
+    //'1',
     'https://dart.googlesource.com/sdk.git',
     sdkClone.path
   ]);
+  // TODO(jcollins-g): remove pin after dart-lang/sdk#46475 is resolved.
+  await launcher.runStreamed(
+      'git', ['checkout', '253764ebbb67669773f3e239f8c6211ebc74e19d'],
+      workingDirectory: sdkClone.path);
   var dartdocPubspec = File(path.join(dartdocSdk.path, 'pubspec.yaml'));
   var pubspecLines = await dartdocPubspec.readAsLines();
   var pubspecLinesFiltered = <String>[];
