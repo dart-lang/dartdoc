@@ -37,16 +37,9 @@ extension on Scope {
 /// [CommentReferable.referenceChildren] out of collections of other
 /// [CommmentReferable]s.
 extension CommentReferableEntryGenerators on Iterable<CommentReferable> {
-  /// Discards all entries that do not collide with [referable],
-  /// and generates an [MapEntry] using [referable]'s
-  /// [CommentReferable.referenceName] as a prefix for the item that does.
-  Iterable<MapEntry<String, CommentReferable>> onlyExplicitOnCollisionWith(
-          CommentReferable referable) =>
-      where((r) => r.referenceName == referable.referenceName).map(
-          (r) => MapEntry('${referable.referenceName}.${r.referenceName}', r));
-
-  /// Like [onlyExplicitOnCollisionWith], except does not discard non-conflicting
-  /// items.
+  /// Creates ordinary references except if there is a conflict with
+  /// [referable], it will generate a [MapEntry] using [referable]'s
+  /// [CommentReferable.referenceName] as a prefix for the conflicting item.
   Iterable<MapEntry<String, CommentReferable>> explicitOnCollisionWith(
           CommentReferable referable) =>
       map((r) {
