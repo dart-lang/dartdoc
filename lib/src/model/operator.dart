@@ -39,4 +39,7 @@ class Operator extends Method {
     // is removed.
     return 'operator ${super.name}';
   }
+
+  @override
+  String get referenceName => super.name;
 }

@@ -406,20 +406,13 @@ class Package extends LibraryContainer
   Map<String, CommentReferable> get referenceChildren {
     if (_referenceChildren == null) {
       _referenceChildren = {};
-      _referenceChildren
-          .addEntries(allLibraries.map((l) => MapEntry(l.name, l)));
+      _referenceChildren.addEntries(allLibraries.generateEntries());
       // Do not override any preexisting data, and insert based on the
       // public library sort order.
       // TODO(jcollins-g): warn when results require package-global
       // lookups like this.
-      for (var lib in publicLibrariesSorted) {
-        for (var referableEntry in lib.referenceChildren.entries) {
-          // Avoiding tearoffs for performance reasons.
-          if (!_referenceChildren.containsKey(referableEntry.key)) {
-            _referenceChildren[referableEntry.key] = referableEntry.value;
-          }
-        }
-      }
+      _referenceChildren.addEntriesIfAbsent(
+          publicLibrariesSorted.expand((l) => l.referenceChildren.entries));
     }
     return _referenceChildren;
   }
@@ -433,4 +426,7 @@ class Package extends LibraryContainer
   // Packages are not interpreted by the analyzer in such a way to generate
   // [CommentReference] nodes, so this is always empty.
   Map<String, ModelCommentReference> get commentRefs => {};
+
+  @override
+  String get referenceName => 'package:$name';
 }

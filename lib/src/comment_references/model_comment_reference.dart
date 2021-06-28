@@ -13,6 +13,7 @@ abstract class ModelCommentReference {
   // TODO(jcollins-g): rewrite/discard this once default constructor tear-off
   // design process is complete.
   bool get allowDefaultConstructor;
+  bool get allowDefaultConstructorParameter;
   String get codeRef;
   bool get hasConstructorHint;
   bool get hasCallableHint;
@@ -34,27 +35,41 @@ abstract class ModelCommentReference {
 /// and [ResourceProvider] after construction.
 class _ModelCommentReferenceImpl implements ModelCommentReference {
   bool _allowDefaultConstructor;
+
+  void _initAllowCache() {
+    var referencePieces = parsed.whereType<IdentifierNode>().toList();
+    _allowDefaultConstructor = false;
+    _allowDefaultConstructorParameter = false;
+    if (referencePieces.length >= 2) {
+      IdentifierNode nodeLast;
+      for (var f in referencePieces) {
+        if (f.text == nodeLast?.text) {
+          if (identical(referencePieces.last, f)) {
+            _allowDefaultConstructor = true;
+          } else {
+            _allowDefaultConstructorParameter = true;
+          }
+        }
+        nodeLast = f;
+      }
+    }
+  }
+
   @override
   bool get allowDefaultConstructor {
     if (_allowDefaultConstructor == null) {
-      _allowDefaultConstructor = false;
-      var foundFirst = false;
-      String checkText;
-      // Check for two identically named identifiers at the end of the
-      // parse list, skipping over any junk or other nodes.
-      for (var node in parsed.reversed.whereType<IdentifierNode>()) {
-        if (foundFirst) {
-          if (checkText == node.text) {
-            _allowDefaultConstructor = true;
-          }
-          break;
-        } else {
-          foundFirst = true;
-          checkText = node.text;
-        }
-      }
+      _initAllowCache();
     }
     return _allowDefaultConstructor;
+  }
+
+  bool _allowDefaultConstructorParameter;
+  @override
+  bool get allowDefaultConstructorParameter {
+    if (_allowDefaultConstructorParameter == null) {
+      _initAllowCache();
+    }
+    return _allowDefaultConstructorParameter;
   }
 
   @override

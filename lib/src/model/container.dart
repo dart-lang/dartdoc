@@ -265,24 +265,12 @@ abstract class Container extends ModelElement with TypeParameters {
   Map<String, CommentReferable> get referenceChildren {
     if (_referenceChildren == null) {
       _referenceChildren = {};
-      for (var modelElement in allModelElements) {
-        // Never directly look up accessors.
-        if (modelElement is Accessor) continue;
-        // Constructors are special; see [Class.referenceChildrenExtra].
-        if (modelElement is Constructor) continue;
-        if (modelElement is Operator) {
-          // TODO(jcollins-g): once todo in [Operator.name] is fixed, remove
-          // this special case.
-          _referenceChildren[modelElement.element.name] = modelElement;
-        } else {
-          _referenceChildren[modelElement.name] = modelElement;
-        }
-      }
-      for (var entry in extraReferenceChildren) {
-        if (!_referenceChildren.containsKey(entry.key)) {
-          _referenceChildren[entry.key] = entry.value;
-        }
-      }
+      _referenceChildren.addEntries(allModelElements
+          .whereNotType<Accessor>()
+          .whereNotType<Constructor>()
+          .generateEntries());
+
+      _referenceChildren.addEntriesIfAbsent(extraReferenceChildren);
       // Process unscoped parameters last to make sure they don't override
       // other options.
       for (var modelElement in allModelElements) {
@@ -291,10 +279,8 @@ abstract class Container extends ModelElement with TypeParameters {
         // TODO(jcollins-g): Figure out something good to do in the ecosystem
         // here to wean people off the habit of unscoped parameter references.
         if (modelElement.hasParameters) {
-          for (var parameterElement in modelElement.parameters) {
-            _referenceChildren.putIfAbsent(
-                parameterElement.name, () => parameterElement);
-          }
+          _referenceChildren
+              .addEntriesIfAbsent(modelElement.parameters.generateEntries());
         }
       }
       _referenceChildren['this'] = this;

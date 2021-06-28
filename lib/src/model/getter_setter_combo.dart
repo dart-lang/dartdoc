@@ -243,15 +243,16 @@ mixin GetterSetterCombo on ModelElement {
   Map<String, CommentReferable> get referenceChildren {
     if (_referenceChildren == null) {
       _referenceChildren = {};
-      _referenceChildren.addEntries(allParameters.expand((p) {
-        if (p.name == name) {
-          // Force explicit references to parameters named the same as
-          // the method.
-          return [MapEntry('$name.${p.name}', p)];
-        }
-        // Allow fallback handling in [Container] to deal with other cases.
-        return [];
-      }));
+      if (hasParameters) {
+        // Parameters in combos rarely matter for anything and are not part
+        // of the usual interface to a combo, so only reference them as part of
+        // [Container] fallbacks or if someone wants to explicitly specify a
+        // colliding parameter name.
+        _referenceChildren
+            .addEntries(parameters.onlyExplicitOnCollisionWith(this));
+      }
+      _referenceChildren
+          .addEntries(modelType.typeArguments.explicitOnCollisionWith(this));
     }
     return _referenceChildren;
   }

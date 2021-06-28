@@ -20,7 +20,7 @@ import 'package:dartdoc/src/generator/generator.dart';
 import 'package:dartdoc/src/generator/html_generator.dart';
 import 'package:dartdoc/src/generator/markdown_generator.dart';
 import 'package:dartdoc/src/logging.dart';
-import 'package:dartdoc/src/markdown_processor.dart' show markdownStats;
+import 'package:dartdoc/src/matching_link_result.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/tool_definition.dart';

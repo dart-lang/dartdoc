@@ -1282,3 +1282,28 @@ class FactoryConstructorThings {
 
   void aMethod(bool yetAnotherName) {}
 }
+
+
+DTypeParam aTopLevelTypeParameterFunction<DTypeParam extends TypeParameterThings>(DTypeParam typedParam) {}
+
+abstract class TypeParameterThings<ATypeParam, BTypeParam extends FactoryConstructorThings> {
+  ATypeParam aName;
+  List<BTypeParam> aThing;
+
+  /// Here are some docs to inherit referencing [ATypeParam], [BTypeParam], and [CTypeParam].
+  BTypeParam aMethod<CTypeParam>(ATypeParam aParam, CTypeParam anotherParam);
+}
+
+/// Test that inheriting documentation can still reference parent type
+/// parameters.
+class TypeParameterThingsExtended extends TypeParameterThings<String, FactoryConstructorThings> {
+  @override
+  FactoryConstructorThings aMethod<QTypeParam>(String aParam, QTypeParam anotherParam) => null;
+}
+
+/// Test that overriding documentation uses local type parameters.
+class TypeParameterThingsExtendedQ extends TypeParameterThings<String, FactoryConstructorThings> {
+  @override
+  /// I override documentation so I can reference [QTypeParam].
+  FactoryConstructorThings aMethod<QTypeParam>(String aParam, QTypeParam anotherParam) => null;
+}

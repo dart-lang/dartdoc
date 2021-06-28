@@ -41,4 +41,10 @@ class Dynamic extends ModelElement {
 
   @override
   Iterable<CommentReferable> get referenceParents => [];
+
+  @override
+  bool operator ==(Object other) => other is Dynamic;
+
+  @override
+  int get hashCode => 31415;
 }
