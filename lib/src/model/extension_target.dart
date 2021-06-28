@@ -31,5 +31,5 @@ mixin ExtensionTarget on ModelElement {
   ElementType get modelType;
 
   List<Extension> get potentiallyApplicableExtensionsSorted =>
-      potentiallyApplicableExtensions.toList()..sort(byName);
+      potentiallyApplicableExtensions.toList()..sort(byNameStable);
 }

@@ -21,7 +21,7 @@ abstract class LibraryContainer
 
   List<Library> _publicLibrariesSorted;
   Iterable<Library> get publicLibrariesSorted =>
-      _publicLibrariesSorted ??= publicLibraries.toList()..sort(byName);
+      _publicLibrariesSorted ??= publicLibraries.toList()..sort(byNameStable);
 
   bool get hasPublicLibraries => publicLibraries.isNotEmpty;
 

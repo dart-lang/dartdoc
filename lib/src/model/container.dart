@@ -97,7 +97,7 @@ abstract class Container extends ModelElement with TypeParameters {
   List<Method> _publicInstanceMethodsSorted;
   List<Method> get publicInstanceMethodsSorted =>
       _publicInstanceMethodsSorted ?? publicInstanceMethods.toList()
-        ..sort(byName);
+        ..sort(byNameStable);
 
   Iterable<Operator> _declaredOperators;
   @nonVirtual
@@ -123,7 +123,7 @@ abstract class Container extends ModelElement with TypeParameters {
   List<Operator> _publicInstanceOperatorsSorted;
   List<Operator> get publicInstanceOperatorsSorted =>
       _publicInstanceOperatorsSorted ??= publicInstanceOperators.toList()
-        ..sort(byName);
+        ..sort(byNameStable);
 
   /// Fields fully declared in this [Container].
   Iterable<Field> get declaredFields;
@@ -143,7 +143,7 @@ abstract class Container extends ModelElement with TypeParameters {
 
   List<Field> _publicInstanceFieldsSorted;
   List<Field> get publicInstanceFieldsSorted => _publicInstanceFieldsSorted ??=
-      publicInstanceFields.toList()..sort(byName);
+      publicInstanceFields.toList()..sort(byNameStable);
 
   Iterable<Field> get constantFields => declaredFields.where((f) => f.isConst);
 
@@ -154,7 +154,7 @@ abstract class Container extends ModelElement with TypeParameters {
 
   List<Field> _publicConstantFieldsSorted;
   List<Field> get publicConstantFieldsSorted => _publicConstantFieldsSorted ??=
-      publicConstantFields.toList()..sort(byName);
+      publicConstantFields.toList()..sort(byNameStable);
 
   Iterable<Accessor> get instanceAccessors =>
       instanceFields.expand((f) => f.allAccessors);
@@ -223,8 +223,8 @@ abstract class Container extends ModelElement with TypeParameters {
       model_utils.filterNonPublic(staticFields);
 
   List<Field> _publicStaticFieldsSorted;
-  List<Field> get publicStaticFieldsSorted =>
-      _publicStaticFieldsSorted ??= publicStaticFields.toList()..sort(byName);
+  List<Field> get publicStaticFieldsSorted => _publicStaticFieldsSorted ??=
+      publicStaticFields.toList()..sort(byNameStable);
 
   Iterable<Field> get staticFields => declaredFields.where((f) => f.isStatic);
 
@@ -240,7 +240,7 @@ abstract class Container extends ModelElement with TypeParameters {
   List<Field> _publicVariableStaticFieldsSorted;
   List<Field> get publicVariableStaticFieldsSorted =>
       _publicVariableStaticFieldsSorted ??= publicVariableStaticFields.toList()
-        ..sort(byName);
+        ..sort(byNameStable);
 
   Iterable<Method> get staticMethods =>
       declaredMethods.where((m) => m.isStatic);
@@ -252,8 +252,8 @@ abstract class Container extends ModelElement with TypeParameters {
       model_utils.filterNonPublic(staticMethods);
 
   List<Method> _publicStaticMethodsSorted;
-  List<Method> get publicStaticMethodsSorted =>
-      _publicStaticMethodsSorted ??= publicStaticMethods.toList()..sort(byName);
+  List<Method> get publicStaticMethodsSorted => _publicStaticMethodsSorted ??=
+      publicStaticMethods.toList()..sort(byNameStable);
 
   /// For subclasses to add items after the main pass but before the
   /// parameter-global.
