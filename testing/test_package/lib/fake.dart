@@ -1307,3 +1307,7 @@ class TypeParameterThingsExtendedQ extends TypeParameterThings<String, FactoryCo
   /// I override documentation so I can reference [QTypeParam].
   FactoryConstructorThings aMethod<QTypeParam>(String aParam, QTypeParam anotherParam) => null;
 }
+
+/// We should still be able to reference [fParam.fParamA], [fParam.fParamB],
+/// and [fParam.fParamC].
+void set aSetterWithFunctionParameter(bool fParam(int fParamA, String fParamB, String fParamC)) {}
