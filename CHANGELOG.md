@@ -1,4 +1,4 @@
-## 0.46.0
+## 1.0.0
 * BREAKING CHANGE:  Enable the enhanced lookups by default.
   Some formerly invalid doc references will no longer be
   ignored and now generate warnings, and some ambiguous
@@ -11,8 +11,8 @@
   the markdown support (#2703)
 * Internal refactors of tool/dartdoc code. (#2686, 2669)
 * Many changes to improve compliance on the new lookup code.
-  (#2707, #2706, #2703, #2702, #2700, #2691, #2687, #2684, #2682,
-  #2673, #2672, #2671)
+  (#2709, #2707, #2706, #2703, #2702, #2700, #2691, #2687, #2684,
+  #2682, #2673, #2672, #2671)
 * Update favicon to match dart.dev. (#2681)
 * Runtime and AOT renderer fixes for Mustachio.  (#2697,
   #2674, #2676, #2670, #2697)
