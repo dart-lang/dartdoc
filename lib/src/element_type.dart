@@ -297,6 +297,9 @@ abstract class DefinedElementType extends ElementType {
   @override
   String get name => type.element.name;
 
+  @override
+  String get fullyQualifiedName => modelElement.fullyQualifiedName;
+
   bool get isParameterType => (type is TypeParameterType);
 
   /// This type is a public type if the underlying, canonical element is public.
