@@ -2363,7 +2363,8 @@ void main() {
           function1,
           topLevelFunction,
           aFunctionUsingRenamedLib;
-      TopLevelVariable incorrectDocReference,
+      TopLevelVariable aSetterWithFunctionParameter,
+          incorrectDocReference,
           incorrectDocReferenceFromEx,
           nameWithTwoUnderscores,
           nameWithSingleUnderscore,
@@ -2392,6 +2393,7 @@ void main() {
           redHerring,
           yetAnotherName,
           somethingShadowyParameter;
+      Parameter fParam, fParamA, fParamB, fParamC;
       Field forInheriting,
           action,
           initializeMe,
@@ -2515,9 +2517,32 @@ void main() {
             .firstWhere((m) => m.name == 'aMethod');
         yetAnotherName =
             aMethod.allParameters.firstWhere((p) => p.name == 'yetAnotherName');
+
+        aSetterWithFunctionParameter = fakeLibrary.properties
+            .firstWhere((p) => p.name == 'aSetterWithFunctionParameter');
+        fParam = aSetterWithFunctionParameter.parameters
+            .firstWhere((p) => p.name == 'fParam');
+        fParamA = (fParam.modelType as Callable)
+            .parameters
+            .firstWhere((p) => p.name == 'fParamA');
+        fParamB = (fParam.modelType as Callable)
+            .parameters
+            .firstWhere((p) => p.name == 'fParamB');
+        fParamC = (fParam.modelType as Callable)
+            .parameters
+            .firstWhere((p) => p.name == 'fParamC');
       });
 
       group('Parameter references work properly', () {
+        test('via a setter with a function parameter', () {
+          expect(bothLookup(aSetterWithFunctionParameter, 'fParam.fParamA'),
+              equals(MatchingLinkResult(fParamA)));
+          expect(bothLookup(aSetterWithFunctionParameter, 'fParam.fParamB'),
+              equals(MatchingLinkResult(fParamB)));
+          expect(bothLookup(aSetterWithFunctionParameter, 'fParam.fParamC'),
+              equals(MatchingLinkResult(fParamC)));
+        });
+
         test('in class scope overridden by fields', () {
           expect(bothLookup(FactoryConstructorThings, 'aName'),
               equals(MatchingLinkResult(aNameField)));
