@@ -10,6 +10,7 @@ import 'package:analyzer/source/line_info.dart';
 import 'package:async/async.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/markdown_processor.dart';
+import 'package:dartdoc/src/matching_link_result.dart';
 import 'package:dartdoc/src/model/feature.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
@@ -2252,6 +2253,109 @@ void main() {
       });
     });
 
+    group('Type parameter lookups work', () {
+      Class TypeParameterThings,
+          TypeParameterThingsExtended,
+          TypeParameterThingsExtendedQ;
+      Field aName, aThing;
+      TypeParameter ATypeParam, BTypeParam, CTypeParam, DTypeParam, QTypeParam;
+      Method aMethod, aMethodExtended, aMethodExtendedQ;
+      Parameter aParam, anotherParam, typedParam;
+      ModelFunction aTopLevelTypeParameterFunction;
+
+      setUpAll(() {
+        aTopLevelTypeParameterFunction = fakeLibrary.functions
+            .firstWhere((f) => f.name == 'aTopLevelTypeParameterFunction');
+        // TODO(jcollins-g): dart-lang/dartdoc#2704, HTML and type parameters
+        // on the extended type should not be present here.
+        DTypeParam = aTopLevelTypeParameterFunction.typeParameters.firstWhere(
+            (t) => t.name.startsWith('DTypeParam extends TypeParameterThings'));
+        typedParam = aTopLevelTypeParameterFunction.parameters
+            .firstWhere((t) => t.name == 'typedParam');
+
+        TypeParameterThings = fakeLibrary.allClasses
+            .firstWhere((c) => c.name == 'TypeParameterThings');
+        aName = TypeParameterThings.instanceFields
+            .firstWhere((f) => f.name == 'aName');
+        aThing = TypeParameterThings.instanceFields
+            .firstWhere((f) => f.name == 'aThing');
+        aMethod = TypeParameterThings.instanceMethods
+            .firstWhere((m) => m.name == 'aMethod');
+
+        CTypeParam =
+            aMethod.typeParameters.firstWhere((t) => t.name == 'CTypeParam');
+        aParam = aMethod.parameters.firstWhere((p) => p.name == 'aParam');
+        anotherParam =
+            aMethod.parameters.firstWhere((p) => p.name == 'anotherParam');
+
+        ATypeParam = TypeParameterThings.typeParameters
+            .firstWhere((t) => t.name == 'ATypeParam');
+        BTypeParam = TypeParameterThings.typeParameters.firstWhere(
+            (t) => t.name == 'BTypeParam extends FactoryConstructorThings');
+
+        TypeParameterThingsExtended = fakeLibrary.allClasses
+            .firstWhere((c) => c.name == 'TypeParameterThingsExtended');
+        aMethodExtended = TypeParameterThingsExtended.instanceMethods
+            .firstWhere((m) => m.name == 'aMethod');
+
+        TypeParameterThingsExtendedQ = fakeLibrary.allClasses
+            .firstWhere((c) => c.name == 'TypeParameterThingsExtendedQ');
+        aMethodExtendedQ = TypeParameterThingsExtendedQ.instanceMethods
+            .firstWhere((m) => m.name == 'aMethod');
+        QTypeParam = aMethodExtendedQ.typeParameters
+            .firstWhere((p) => p.name == 'QTypeParam');
+      });
+
+      test('on inherited documentation', () {
+        expect(newLookup(aMethodExtended, 'ATypeParam'),
+            equals(MatchingLinkResult(ATypeParam)));
+        expect(newLookup(aMethodExtended, 'BTypeParam'),
+            equals(MatchingLinkResult(BTypeParam)));
+        expect(newLookup(aMethodExtended, 'CTypeParam'),
+            equals(MatchingLinkResult(CTypeParam)));
+        // Disallowed, because Q does not exist where the docs originated from.
+        // The old code forgave this most of the time.
+        expect(newLookup(aMethodExtended, 'QTypeParam'),
+            equals(MatchingLinkResult(null)));
+
+        // We get an inverse situation on the extendedQ class.
+        expect(newLookup(aMethodExtendedQ, 'ATypeParam'),
+            equals(MatchingLinkResult(null)));
+        expect(newLookup(aMethodExtendedQ, 'BTypeParam'),
+            equals(MatchingLinkResult(null)));
+        expect(newLookup(aMethodExtendedQ, 'CTypeParam'),
+            equals(MatchingLinkResult(null)));
+        expect(newLookup(aMethodExtendedQ, 'QTypeParam'),
+            equals(MatchingLinkResult(QTypeParam)));
+      });
+
+      test('on classes', () {
+        expect(bothLookup(TypeParameterThings, 'ATypeParam'),
+            equals(MatchingLinkResult(ATypeParam)));
+        expect(bothLookup(TypeParameterThings, 'BTypeParam'),
+            equals(MatchingLinkResult(BTypeParam)));
+        expect(bothLookup(aName, 'ATypeParam'),
+            equals(MatchingLinkResult(ATypeParam)));
+        expect(bothLookup(aThing, 'BTypeParam'),
+            equals(MatchingLinkResult(BTypeParam)));
+        expect(bothLookup(aMethod, 'CTypeParam'),
+            equals(MatchingLinkResult(CTypeParam)));
+        expect(bothLookup(aParam, 'ATypeParam'),
+            equals(MatchingLinkResult(ATypeParam)));
+        // Original didn't handle this case properly and popped out to higher
+        // levels.
+        expect(newLookup(anotherParam, 'CTypeParam'),
+            equals(MatchingLinkResult(CTypeParam)));
+      });
+
+      test('on top level methods', () {
+        expect(bothLookup(aTopLevelTypeParameterFunction, 'DTypeParam'),
+            equals(MatchingLinkResult(DTypeParam)));
+        expect(bothLookup(typedParam, 'DTypeParam'),
+            equals(MatchingLinkResult(DTypeParam)));
+      });
+    });
+
     group('Ordinary namespace cases', () {
       Package DartPackage;
       Library Dart, mylibpub;
@@ -2259,7 +2363,8 @@ void main() {
           function1,
           topLevelFunction,
           aFunctionUsingRenamedLib;
-      TopLevelVariable incorrectDocReference,
+      TopLevelVariable aSetterWithFunctionParameter,
+          incorrectDocReference,
           incorrectDocReferenceFromEx,
           nameWithTwoUnderscores,
           nameWithSingleUnderscore,
@@ -2288,6 +2393,7 @@ void main() {
           redHerring,
           yetAnotherName,
           somethingShadowyParameter;
+      Parameter fParam, fParamA, fParamB, fParamC;
       Field forInheriting,
           action,
           initializeMe,
@@ -2411,9 +2517,32 @@ void main() {
             .firstWhere((m) => m.name == 'aMethod');
         yetAnotherName =
             aMethod.allParameters.firstWhere((p) => p.name == 'yetAnotherName');
+
+        aSetterWithFunctionParameter = fakeLibrary.properties
+            .firstWhere((p) => p.name == 'aSetterWithFunctionParameter');
+        fParam = aSetterWithFunctionParameter.parameters
+            .firstWhere((p) => p.name == 'fParam');
+        fParamA = (fParam.modelType as Callable)
+            .parameters
+            .firstWhere((p) => p.name == 'fParamA');
+        fParamB = (fParam.modelType as Callable)
+            .parameters
+            .firstWhere((p) => p.name == 'fParamB');
+        fParamC = (fParam.modelType as Callable)
+            .parameters
+            .firstWhere((p) => p.name == 'fParamC');
       });
 
       group('Parameter references work properly', () {
+        test('via a setter with a function parameter', () {
+          expect(bothLookup(aSetterWithFunctionParameter, 'fParam.fParamA'),
+              equals(MatchingLinkResult(fParamA)));
+          expect(bothLookup(aSetterWithFunctionParameter, 'fParam.fParamB'),
+              equals(MatchingLinkResult(fParamB)));
+          expect(bothLookup(aSetterWithFunctionParameter, 'fParam.fParamC'),
+              equals(MatchingLinkResult(fParamC)));
+        });
+
         test('in class scope overridden by fields', () {
           expect(bothLookup(FactoryConstructorThings, 'aName'),
               equals(MatchingLinkResult(aNameField)));

@@ -1031,39 +1031,30 @@ class PackageGraph with CommentReferable, Nameable {
     if (_referenceChildren == null) {
       _referenceChildren = {};
       // Packages are the top priority.
-      _referenceChildren
-          .addEntries(packages.map((p) => MapEntry('package:${p.name}', p)));
+      _referenceChildren.addEntries(packages.generateEntries());
 
       // Libraries are next.
       // TODO(jcollins-g): Warn about directly referencing libraries out of
       // scope?
-      for (var p in documentedPackages) {
-        for (var lib in p.publicLibrariesSorted) {
-          if (!_referenceChildren.containsKey(lib.name)) {
-            _referenceChildren[lib.name] = lib;
-          }
-        }
-      }
+      _referenceChildren.addEntriesIfAbsent(documentedPackages
+          .expand((p) => p.publicLibrariesSorted)
+          .generateEntries());
+
       // TODO(jcollins-g): Warn about directly referencing top level items
       // out of scope?
-      for (var p in documentedPackages) {
-        for (var lib in p.publicLibrariesSorted) {
-          for (var me in [
-            ...lib.publicConstants,
-            ...lib.publicFunctions,
-            ...lib.publicProperties,
-            ...lib.publicTypedefs,
-            ...lib.publicExtensions,
-            ...lib.publicClasses,
-            ...lib.publicEnums,
-            ...lib.publicMixins
-          ]) {
-            if (!_referenceChildren.containsKey(me.name)) {
-              _referenceChildren[me.name] = me;
-            }
-          }
-        }
-      }
+      _referenceChildren.addEntriesIfAbsent(documentedPackages
+          .expand((p) => p.publicLibrariesSorted)
+          .expand((l) => [
+                ...l.publicConstants,
+                ...l.publicFunctions,
+                ...l.publicProperties,
+                ...l.publicTypedefs,
+                ...l.publicExtensions,
+                ...l.publicClasses,
+                ...l.publicEnums,
+                ...l.publicMixins
+              ])
+          .generateEntries());
     }
     return _referenceChildren;
   }

@@ -243,15 +243,11 @@ mixin GetterSetterCombo on ModelElement {
   Map<String, CommentReferable> get referenceChildren {
     if (_referenceChildren == null) {
       _referenceChildren = {};
-      _referenceChildren.addEntries(allParameters.expand((p) {
-        if (p.name == name) {
-          // Force explicit references to parameters named the same as
-          // the method.
-          return [MapEntry('$name.${p.name}', p)];
-        }
-        // Allow fallback handling in [Container] to deal with other cases.
-        return [];
-      }));
+      if (hasParameters) {
+        _referenceChildren.addEntries(parameters.explicitOnCollisionWith(this));
+      }
+      _referenceChildren
+          .addEntries(modelType.typeArguments.explicitOnCollisionWith(this));
     }
     return _referenceChildren;
   }

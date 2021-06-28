@@ -13,7 +13,6 @@ class Parameter extends ModelElement implements EnclosedElement {
       ParameterElement element, Library library, PackageGraph packageGraph,
       {ParameterMember originalMember})
       : super(element, library, packageGraph, originalMember);
-
   String get defaultValue {
     if (!hasDefaultValue) return null;
     return element.defaultValueCode;
@@ -85,9 +84,16 @@ class Parameter extends ModelElement implements EnclosedElement {
   Map<String, CommentReferable> get referenceChildren {
     if (_referenceChildren == null) {
       _referenceChildren = {};
-      if (isCallable) {
-        _referenceChildren
-            .addEntries(parameters.map((p) => MapEntry(p.name, p)));
+      var _modelType = modelType;
+      if (_modelType is Callable) {
+        _referenceChildren.addEntriesIfAbsent(
+            _modelType.parameters.explicitOnCollisionWith(this));
+      }
+      _referenceChildren.addEntriesIfAbsent(
+          modelType.typeArguments.explicitOnCollisionWith(this));
+      if (_modelType is Callable) {
+        _referenceChildren.addEntriesIfAbsent(
+            _modelType.returnType.typeArguments.explicitOnCollisionWith(this));
       }
     }
     return _referenceChildren;

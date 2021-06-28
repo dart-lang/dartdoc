@@ -611,13 +611,10 @@ class Class extends Container
   static Iterable<MapEntry<String, CommentReferable>> _constructorGenerator(
       Iterable<Constructor> source) sync* {
     for (var constructor in source) {
-      var constructorName = constructor.element.name;
-      if (constructorName == '') {
-        constructorName = constructor.enclosingElement.name;
-      }
-      yield MapEntry(constructorName, constructor);
+      yield MapEntry(constructor.referenceName, constructor);
       yield MapEntry(
-          '${constructor.enclosingElement.name}.$constructorName', constructor);
+          '${constructor.enclosingElement.name}.${constructor.referenceName}',
+          constructor);
     }
   }
 
@@ -633,7 +630,7 @@ class Class extends Container
         ...container.staticFields,
         ...container.staticMethods,
       ]) {
-        yield MapEntry(modelElement.name, modelElement);
+        yield MapEntry(modelElement.referenceName, modelElement);
       }
       if (container is Class) {
         yield* _constructorGenerator(container.constructors);

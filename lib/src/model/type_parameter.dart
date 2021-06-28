@@ -23,14 +23,9 @@ class TypeParameter extends ModelElement {
       '${enclosingElement.library.dirName}/${enclosingElement.name}/$name';
 
   @override
-  String get href {
-    if (!identical(canonicalModelElement, this)) {
-      return canonicalModelElement?.href;
-    }
-    assert(canonicalLibrary != null);
-    assert(canonicalLibrary == library);
-    return '${package.baseHref}$filePath';
-  }
+
+  /// [TypeParameter]s don't have documentation pages.
+  String get href => null;
 
   @override
   String get kind => 'type parameter';
@@ -76,7 +71,8 @@ class TypeParameter extends ModelElement {
   Map<String, CommentReferable> get referenceChildren {
     if (_referenceChildren == null) {
       _referenceChildren = {};
-      _referenceChildren.addEntries(parameters.map((p) => MapEntry(p.name, p)));
+      _referenceChildren
+          .addEntries(parameters.map((p) => MapEntry(p.referenceName, p)));
       _referenceChildren[boundType.name] = boundType;
     }
     return _referenceChildren;
@@ -86,6 +82,9 @@ class TypeParameter extends ModelElement {
   Iterable<CommentReferable> get referenceParents => [enclosingElement];
   @override
   TypeParameterElement get element => super.element;
+
+  @override
+  String get referenceName => element.name;
 }
 
 mixin TypeParameters implements ModelElement {

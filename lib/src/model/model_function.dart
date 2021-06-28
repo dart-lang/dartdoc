@@ -76,8 +76,9 @@ class ModelFunctionTyped extends ModelElement
     if (_referenceChildren == null) {
       _referenceChildren = {};
       _referenceChildren
-          .addEntries(typeParameters.map((p) => MapEntry(p.name, p)));
-      _referenceChildren.addEntries(parameters.map((p) => MapEntry(p.name, p)));
+          .addEntriesIfAbsent(typeParameters.explicitOnCollisionWith(this));
+      _referenceChildren
+          .addEntriesIfAbsent(parameters.explicitOnCollisionWith(this));
     }
     return _referenceChildren;
   }
