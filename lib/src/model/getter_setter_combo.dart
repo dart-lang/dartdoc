@@ -244,12 +244,7 @@ mixin GetterSetterCombo on ModelElement {
     if (_referenceChildren == null) {
       _referenceChildren = {};
       if (hasParameters) {
-        // Parameters in combos rarely matter for anything and are not part
-        // of the usual interface to a combo, so only reference them as part of
-        // [Container] fallbacks or if someone wants to explicitly specify a
-        // colliding parameter name.
-        _referenceChildren
-            .addEntries(parameters.onlyExplicitOnCollisionWith(this));
+        _referenceChildren.addEntries(parameters.explicitOnCollisionWith(this));
       }
       _referenceChildren
           .addEntries(modelType.typeArguments.explicitOnCollisionWith(this));
