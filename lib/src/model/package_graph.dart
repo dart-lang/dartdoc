@@ -1033,7 +1033,8 @@ class PackageGraph with CommentReferable, Nameable {
       // We have to use a stable order or otherwise references depending
       // on ambiguous resolution (see below) will change where they
       // resolve based on internal implementation details.
-      var sortedPackages = documentedPackages.toList()..sort(byName);
+      var sortedPackages = packages.toList()..sort(byName);
+      var sortedDocumentedPackages = documentedPackages.toList()..sort(byName);
       // Packages are the top priority.
       _referenceChildren.addEntries(sortedPackages.generateEntries());
 
@@ -1041,14 +1042,14 @@ class PackageGraph with CommentReferable, Nameable {
       // TODO(jcollins-g): Warn about directly referencing libraries out of
       // scope?  Doing this is always going to be ambiguous and potentially
       // confusing.
-      _referenceChildren.addEntriesIfAbsent(sortedPackages
+      _referenceChildren.addEntriesIfAbsent(sortedDocumentedPackages
           .expand((p) => p.publicLibrariesSorted)
           .generateEntries());
 
       // TODO(jcollins-g): Warn about directly referencing top level items
       // out of scope?  Doing this will be even more ambiguous and
       // potentially confusing than doing so with libraries.
-      _referenceChildren.addEntriesIfAbsent(sortedPackages
+      _referenceChildren.addEntriesIfAbsent(sortedDocumentedPackages
           .expand((p) => p.publicLibrariesSorted)
           .expand((l) => [
                 ...l.publicConstants,
