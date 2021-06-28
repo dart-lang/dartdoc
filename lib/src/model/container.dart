@@ -270,13 +270,6 @@ abstract class Container extends ModelElement with TypeParameters {
           .whereNotType<Constructor>()
           .generateEntries());
 
-      /*for (var modelElement in allModelElements) {
-        // Never directly look up accessors.
-        if (modelElement is Accessor) continue;
-        // Constructors are special; see [Class.referenceChildrenExtra].
-        if (modelElement is Constructor) continue;
-        _referenceChildren[modelElement.referenceName] = modelElement;
-      }*/
       _referenceChildren.addEntriesIfAbsent(extraReferenceChildren);
       // Process unscoped parameters last to make sure they don't override
       // other options.
