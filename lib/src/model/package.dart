@@ -357,7 +357,7 @@ class Package extends LibraryContainer
     if (config.categoryOrder.isEmpty) {
       return documentedCategories;
     }
-    return documentedCategories.toList()..sort(byName);
+    return documentedCategories.toList()..sort(byNameStable);
   }
 
   bool get hasDocumentedCategories => documentedCategories.isNotEmpty;

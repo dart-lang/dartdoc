@@ -52,57 +52,57 @@ abstract class TopLevelContainer implements Nameable {
 
   List<Class> _publicClassesSorted;
   Iterable<Class> get publicClassesSorted =>
-      _publicClassesSorted ??= publicClasses.toList()..sort(byName);
+      _publicClassesSorted ??= publicClasses.toList()..sort(byNameStable);
 
   Iterable<Extension> get publicExtensions =>
       model_utils.filterNonPublic(extensions);
 
   List<Extension> _publicExtensionsSorted;
   Iterable<Extension> get publicExtensionsSorted =>
-      _publicExtensionsSorted ??= publicExtensions.toList()..sort(byName);
+      _publicExtensionsSorted ??= publicExtensions.toList()..sort(byNameStable);
 
   Iterable<TopLevelVariable> get publicConstants =>
       model_utils.filterNonPublic(constants);
 
   Iterable<TopLevelVariable> get publicConstantsSorted =>
-      publicConstants.toList()..sort(byName);
+      publicConstants.toList()..sort(byNameStable);
 
   Iterable<Enum> get publicEnums => model_utils.filterNonPublic(enums);
 
   List<Enum> _publicEnumsSorted;
   Iterable<Enum> get publicEnumsSorted =>
-      _publicEnumsSorted ??= publicEnums.toList()..sort(byName);
+      _publicEnumsSorted ??= publicEnums.toList()..sort(byNameStable);
 
   Iterable<Class> get publicExceptions =>
       model_utils.filterNonPublic(exceptions);
 
   List<Class> _publicExceptionsSorted;
   Iterable<Class> get publicExceptionsSorted =>
-      _publicExceptionsSorted ??= publicExceptions.toList()..sort(byName);
+      _publicExceptionsSorted ??= publicExceptions.toList()..sort(byNameStable);
 
   Iterable<ModelFunctionTyped> get publicFunctions =>
       model_utils.filterNonPublic(functions);
 
   List<ModelFunctionTyped> _publicFunctionsSorted;
   Iterable<ModelFunctionTyped> get publicFunctionsSorted =>
-      _publicFunctionsSorted ??= publicFunctions.toList()..sort(byName);
+      _publicFunctionsSorted ??= publicFunctions.toList()..sort(byNameStable);
 
   Iterable<Mixin> get publicMixins => model_utils.filterNonPublic(mixins);
 
   List<Mixin> _publicMixinsSorted;
   Iterable<Mixin> get publicMixinsSorted =>
-      _publicMixinsSorted ??= publicMixins.toList()..sort(byName);
+      _publicMixinsSorted ??= publicMixins.toList()..sort(byNameStable);
 
   Iterable<TopLevelVariable> get publicProperties =>
       model_utils.filterNonPublic(properties);
 
   List<TopLevelVariable> _publicPropertiesSorted;
   Iterable<TopLevelVariable> get publicPropertiesSorted =>
-      _publicPropertiesSorted ??= publicProperties.toList()..sort(byName);
+      _publicPropertiesSorted ??= publicProperties.toList()..sort(byNameStable);
 
   Iterable<Typedef> get publicTypedefs => model_utils.filterNonPublic(typedefs);
 
   List<Typedef> _publicTypedefsSorted;
   Iterable<Typedef> get publicTypedefsSorted =>
-      _publicTypedefsSorted ??= publicTypedefs.toList()..sort(byName);
+      _publicTypedefsSorted ??= publicTypedefs.toList()..sort(byNameStable);
 }
