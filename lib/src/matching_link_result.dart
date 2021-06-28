@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/quiver.dart';
@@ -25,6 +26,14 @@ class MatchingLinkResult {
   bool isEquivalentTo(MatchingLinkResult other) {
     var compareThis = commentReferable;
     var compareOther = other.commentReferable;
+
+    if (compareThis is DefinedElementType) {
+      compareThis = (compareThis as DefinedElementType).modelElement;
+    }
+
+    if (compareOther is DefinedElementType) {
+      compareOther = (compareOther as DefinedElementType).modelElement;
+    }
 
     if (compareThis is Accessor) {
       compareThis = (compareThis as Accessor).enclosingCombo;
