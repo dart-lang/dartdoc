@@ -406,7 +406,7 @@ class Package extends LibraryContainer
   Map<String, CommentReferable> get referenceChildren {
     if (_referenceChildren == null) {
       _referenceChildren = {};
-      _referenceChildren.addEntries(allLibraries.generateEntries());
+      _referenceChildren.addEntries(publicLibrariesSorted.generateEntries());
       // Do not override any preexisting data, and insert based on the
       // public library sort order.
       // TODO(jcollins-g): warn when results require package-global

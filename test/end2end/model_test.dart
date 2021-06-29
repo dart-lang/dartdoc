@@ -4970,6 +4970,16 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
         expect(byName(b, a), 1);
       });
     }
+
+    test('sort order is stable when necessary', () {
+      var a = StringNameHashCode('a', 12);
+      var b = StringNameHashCode('b', 12);
+      var aa = StringNameHashCode('a', 14);
+      expect(byName(a, aa), -1);
+      expect(byName(a, b), -1);
+      expect(byName(b, a), 1);
+      expect(byName(aa, b), -1);
+    });
   });
 }
 
@@ -4981,4 +4991,19 @@ class StringName extends Nameable {
 
   @override
   String toString() => name;
+}
+
+class StringNameHashCode extends Nameable {
+  @override
+  final String name;
+  @override
+  final int hashCode;
+
+  StringNameHashCode(this.name, this.hashCode);
+
+  @override
+  String toString() => name;
+
+  @override
+  bool operator ==(Object other) => super == other;
 }

@@ -35,5 +35,10 @@ abstract class Nameable {
   String toString() => name;
 }
 
-int byName(Nameable a, Nameable b) =>
-    compareAsciiLowerCaseNatural(a.name, b.name);
+int byName(Nameable a, Nameable b) {
+  var stringCompare = compareAsciiLowerCaseNatural(a.name, b.name);
+  if (stringCompare == 0) {
+    return a.hashCode.compareTo(b.hashCode);
+  }
+  return stringCompare;
+}
