@@ -1033,9 +1033,8 @@ class PackageGraph with CommentReferable, Nameable {
       // We have to use a stable order or otherwise references depending
       // on ambiguous resolution (see below) will change where they
       // resolve based on internal implementation details.
-      var sortedPackages = packages.toList()..sort(byNameStable);
-      var sortedDocumentedPackages = documentedPackages.toList()
-        ..sort(byNameStable);
+      var sortedPackages = packages.toList()..sort(byName);
+      var sortedDocumentedPackages = documentedPackages.toList()..sort(byName);
       // Packages are the top priority.
       _referenceChildren.addEntries(sortedPackages.generateEntries());
 
