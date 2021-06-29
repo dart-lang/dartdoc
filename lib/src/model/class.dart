@@ -126,8 +126,7 @@ class Class extends Container
 
   @override
   Iterable<Constructor> get publicConstructorsSorted =>
-      _publicConstructorsSorted ??= publicConstructors.toList()
-        ..sort(byNameStable);
+      _publicConstructorsSorted ??= publicConstructors.toList()..sort(byName);
 
   /// Returns the library that encloses this element.
   @override
@@ -208,8 +207,8 @@ class Class extends Container
 
   List<Class> _publicImplementorsSorted;
 
-  Iterable<Class> get publicImplementorsSorted => _publicImplementorsSorted ??=
-      publicImplementors.toList()..sort(byNameStable);
+  Iterable<Class> get publicImplementorsSorted =>
+      _publicImplementorsSorted ??= publicImplementors.toList()..sort(byName);
 
   /*lazy final*/
   List<Method> _inheritedMethods;

@@ -4964,10 +4964,10 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       var a = StringName(names[i - 1]);
       var b = StringName(names[i]);
       test('"$a" < "$b"', () {
-        expect(byNameStable(a, a), 0);
-        expect(byNameStable(b, b), 0);
-        expect(byNameStable(a, b), -1);
-        expect(byNameStable(b, a), 1);
+        expect(byName(a, a), 0);
+        expect(byName(b, b), 0);
+        expect(byName(a, b), -1);
+        expect(byName(b, a), 1);
       });
     }
 
@@ -4975,10 +4975,10 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       var a = StringNameHashCode('a', 12);
       var b = StringNameHashCode('b', 12);
       var aa = StringNameHashCode('a', 14);
-      expect(byNameStable(a, aa), -1);
-      expect(byNameStable(a, b), -1);
-      expect(byNameStable(b, a), 1);
-      expect(byNameStable(aa, b), -1);
+      expect(byName(a, aa), -1);
+      expect(byName(a, b), -1);
+      expect(byName(b, a), 1);
+      expect(byName(aa, b), -1);
     });
   });
 }
