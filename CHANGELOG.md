@@ -1,3 +1,25 @@
+## 1.0.0
+* BREAKING CHANGE:  Enable the enhanced lookups by default.
+  Some formerly invalid doc references will no longer be
+  ignored and now generate warnings, and some ambiguous
+  references may change where they point to.  As a fallback,
+  allow a `--no-enhanced-reference-lookup` but this will
+  be removed soon so please file bugs if you need to use this.
+  (#2705)
+* Use the Mustachio AOT compiler for default templates. (#2677)
+* Unhide the `--format` option so users can discover
+  the markdown support (#2703)
+* Internal refactors of tool/dartdoc code. (#2686, 2669)
+* Many changes to improve compliance on the new lookup code.
+  (#2709, #2707, #2706, #2703, #2702, #2700, #2691, #2687, #2684,
+  #2682, #2673, #2672, #2671)
+* Update favicon to match dart.dev. (#2681)
+* Runtime and AOT renderer fixes for Mustachio.  (#2697,
+  #2674, #2676, #2670, #2697)
+* Fix several problems with head analyzer.  (#2680, #2687)
+* The favicon has been updated to match dart.dev. (#2681)
+* A variety of internal refactoring changes.
+
 ## 0.45.0
 * BREAKING CHANGE:  Custom templates using some obscure
   getters of modelType may no longer function (returnElement
