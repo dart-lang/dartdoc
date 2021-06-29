@@ -1426,7 +1426,7 @@ Future<List<DartdocOption<Object>>> createDartdocOptions(
     DartdocOptionArgOnly<List<String>>('excludePackages', [], resourceProvider,
         help: 'Package names to ignore.', splitCommas: true),
     DartdocOptionArgFile<bool>(
-        'enhancedReferenceLookup', false, resourceProvider,
+        'enhancedReferenceLookup', true, resourceProvider,
         hide: true,
         help:
             'Use the new comment reference lookup system instead of the legacy '
@@ -1608,9 +1608,10 @@ Future<List<DartdocOption<Object>>> createDartdocOptions(
         hide: true),
     DartdocOptionArgOnly<bool>('showStats', false, resourceProvider,
         help: 'Show statistics useful for debugging.', hide: true),
-    // TODO(jdkoren): Unhide when we have good support for another format.
     DartdocOptionArgOnly<String>('format', 'html', resourceProvider,
-        hide: true),
+        help: 'The format of documentation to generate: `md` for markdown, '
+            '`html` for html.',
+        hide: false),
     // TODO(jcollins-g): refactor so there is a single static "create" for
     // each DartdocOptionContext that traverses the inheritance tree itself.
     ...await createExperimentOptions(resourceProvider),
