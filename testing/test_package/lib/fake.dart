@@ -301,6 +301,9 @@ typedef T GenericTypedef<T>(T input);
 /// A typedef with the new style generic function syntax.
 typedef NewGenericTypedef<T> = List<S> Function<S>(T, int, bool);
 
+/// A top level variable with a generic typedef type.
+NewGenericTypedef genericTypedefCombo;
+
 /// A complicated type parameter to ATypeTakingClass.
 ATypeTakingClass<String Function(int)> get complicatedReturn => null;
 

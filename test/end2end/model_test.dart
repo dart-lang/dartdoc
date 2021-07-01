@@ -4068,6 +4068,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     TopLevelVariable nodocGetter, nodocSetter;
     TopLevelVariable complicatedReturn;
     TopLevelVariable meaningOfLife, importantComputations;
+    TopLevelVariable genericTypedefCombo;
 
     setUpAll(() {
       v = exLibrary.properties.firstWhere((p) => p.name == 'number');
@@ -4090,6 +4091,19 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           fakeLibrary.properties.firstWhere((p) => p.name == 'setAndGet');
       mapWithDynamicKeys = fakeLibrary.properties
           .firstWhere((p) => p.name == 'mapWithDynamicKeys');
+      genericTypedefCombo = fakeLibrary.properties
+          .firstWhere((p) => p.name == 'genericTypedefCombo');
+    });
+
+    test(
+        'Verify that combos with a generic typedef modelType can render correctly',
+        () {
+      // TODO(jcollins-g): After analyzer 2.0.0, this can be `isEmpty`.
+      expect(genericTypedefCombo.modelType.typeArguments, isNotNull);
+      expect(
+          genericTypedefCombo.modelType.linkedName,
+          equals(
+              '<a href=\"%%__HTMLBASE_dartdoc_internal__%%fake/NewGenericTypedef.html\">NewGenericTypedef</a>'));
     });
 
     test('Verify that final and late show up (or not) appropriately', () {
@@ -4554,9 +4568,9 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           oldgeneric.modelType.linkedName,
           isIn([
+            'T Function<span class="signature">(<span class="parameter" id="GenericTypedef-param-input"><span class="type-annotation">T</span> <span class="parameter-name">input</span></span>)</span>',
+            // Remove following after analyzer 2.0.0
             'T Function<span class="signature">(<span class="parameter" id="param-input"><span class="type-annotation">T</span> <span class="parameter-name">input</span></span>)</span>',
-            // Remove below option after analyzer 1.6.0.
-            'Function(<span class=\"parameter\" id=\"GenericTypedef-param-input\"><span class=\"type-annotation\">T</span></span>) → T'
           ]));
       expect(
           generic.modelType.linkedName,
