@@ -253,13 +253,6 @@ class AliasedElementType extends ParameterizedElementType with Aliased {
   @override
   ElementTypeRenderer<AliasedElementType> get _renderer =>
       packageGraph.rendererFactory.aliasedElementTypeRenderer;
-
-  Iterable<ElementType> _typeArguments;
-  @override
-  Iterable<ElementType> get typeArguments =>
-      _typeArguments ??= type.typeArguments
-          .map((f) => ElementType.from(f, library, packageGraph))
-          .toList(growable: false);
 }
 
 class TypeParameterElementType extends DefinedElementType {
