@@ -19,7 +19,7 @@ typedef FakeResultCallback = String Function(String tool,
 
 /// Set a ceiling on how many tool instances can be in progress at once,
 /// limiting both parallelization and the number of open temporary files.
-final MultiFutureTracker<void> _toolTracker = MultiFutureTracker(4);
+final MultiFutureTracker _toolTracker = MultiFutureTracker(4);
 
 class ToolTempFileTracker {
   final ResourceProvider resourceProvider;
