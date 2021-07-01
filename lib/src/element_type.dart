@@ -235,13 +235,7 @@ mixin Aliased implements ElementType {
           .map((f) => ElementType.from(f, library, packageGraph))
           .toList(growable: false);
 
-  Iterable<ElementType> _typeArguments;
-  @override
-  Iterable<ElementType> get typeArguments =>
-      _typeArguments ??= (type as ParameterizedType)
-          .typeArguments
-          .map((f) => ElementType.from(f, library, packageGraph))
-          .toList(growable: false);
+
 }
 
 class AliasedElementType extends ParameterizedElementType with Aliased {
@@ -251,6 +245,9 @@ class AliasedElementType extends ParameterizedElementType with Aliased {
     assert(type.aliasElement != null);
   }
 
+  @override
+  ParameterizedType get type;
+
   /// Parameters, if available, for the underlying typedef.
   List<Parameter> get aliasedParameters =>
       modelElement.isCallable ? modelElement.parameters : [];
@@ -258,6 +255,13 @@ class AliasedElementType extends ParameterizedElementType with Aliased {
   @override
   ElementTypeRenderer<AliasedElementType> get _renderer =>
       packageGraph.rendererFactory.aliasedElementTypeRenderer;
+
+  Iterable<ElementType> _typeArguments;
+  @override
+  Iterable<ElementType> get typeArguments =>
+      _typeArguments ??= type.typeArguments
+      .map((f) => ElementType.from(f, library, packageGraph))
+      .toList(growable: false);
 }
 
 class TypeParameterElementType extends DefinedElementType {
