@@ -234,8 +234,6 @@ mixin Aliased implements ElementType {
       _aliasArguments ??= type.aliasArguments
           .map((f) => ElementType.from(f, library, packageGraph))
           .toList(growable: false);
-
-
 }
 
 class AliasedElementType extends ParameterizedElementType with Aliased {
@@ -260,8 +258,8 @@ class AliasedElementType extends ParameterizedElementType with Aliased {
   @override
   Iterable<ElementType> get typeArguments =>
       _typeArguments ??= type.typeArguments
-      .map((f) => ElementType.from(f, library, packageGraph))
-      .toList(growable: false);
+          .map((f) => ElementType.from(f, library, packageGraph))
+          .toList(growable: false);
 }
 
 class TypeParameterElementType extends DefinedElementType {

@@ -4068,6 +4068,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     TopLevelVariable nodocGetter, nodocSetter;
     TopLevelVariable complicatedReturn;
     TopLevelVariable meaningOfLife, importantComputations;
+    TopLevelVariable genericTypedefCombo;
 
     setUpAll(() {
       v = exLibrary.properties.firstWhere((p) => p.name == 'number');
@@ -4090,6 +4091,19 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           fakeLibrary.properties.firstWhere((p) => p.name == 'setAndGet');
       mapWithDynamicKeys = fakeLibrary.properties
           .firstWhere((p) => p.name == 'mapWithDynamicKeys');
+      genericTypedefCombo = fakeLibrary.properties
+          .firstWhere((p) => p.name == 'genericTypedefCombo');
+    });
+
+    test(
+        'Verify that combos with a generic typedef modelType can render correctly',
+        () {
+      // TODO(jcollins-g): After analyzer 2.0.0, this can be `isEmpty`.
+      expect(genericTypedefCombo.modelType.typeArguments, isNotNull);
+      expect(
+          genericTypedefCombo.modelType.linkedName,
+          equals(
+              '<a href=\"%%__HTMLBASE_dartdoc_internal__%%fake/NewGenericTypedef.html\">NewGenericTypedef</a>'));
     });
 
     test('Verify that final and late show up (or not) appropriately', () {
