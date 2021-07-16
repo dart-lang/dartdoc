@@ -8,8 +8,6 @@ import 'local_scope.dart';
 
 class BaseClass extends WithGetterAndSetter {}
 
-
-
 class BaseWithMembers {
   int aField;
 

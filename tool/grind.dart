@@ -220,7 +220,7 @@ void updateThirdParty() async {
       .map((e) => path.basename(e.path))
       .where(_mustache4dartPatches.hasMatch)
       .toList()
-        ..sort()) {
+    ..sort()) {
     run('patch',
         arguments: [
           '-p0',

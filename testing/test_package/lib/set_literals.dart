@@ -6,7 +6,6 @@ const untypedMap = const {};
 const typedSet = const <String>{};
 const untypedMapWithoutConst = {};
 
-
 class AClassContainingLiterals {
   final int value1;
   final int value2;

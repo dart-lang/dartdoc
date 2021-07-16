@@ -19,15 +19,15 @@ extension AnExtension on Apple {
 /// Extension on List
 extension FancyList<Z> on List<Z> {
   int get doubleLength => this.length * 2;
-  List<Z> operator-() => this.reversed.toList();
+  List<Z> operator -() => this.reversed.toList();
   List<List<Z>> split(int at) =>
-  <List<Z>>[this.sublist(0, at), this.sublist(at)];
+      <List<Z>>[this.sublist(0, at), this.sublist(at)];
   static List<Z> big() => List(1000000);
 }
 
 extension SymDiff<T> on Set<T> {
   Set<T> symmetricDifference(Set<T> other) =>
-  this.difference(other).union(other.difference(this));
+      this.difference(other).union(other.difference(this));
 }
 
 /// Extensions can be made specific.
@@ -37,16 +37,14 @@ extension IntSet on Set<int> {
 
 // Extensions can be private.
 extension _Shhh on Object {
-  void secret() { }
+  void secret() {}
 }
 
 // Or unnamed!
 extension on Object {
-  void bar() { }
+  void bar() {}
 }
 
 extension Bar on Object {
-  void bar() { }
+  void bar() {}
 }
-
-
