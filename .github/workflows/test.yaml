@@ -55,7 +55,7 @@ jobs:
           #COVERAGE_TOKEN: true # this needs to be set to enable coverage
       - name: ${{ matrix.job }}
         if: runner.os == 'Windows' && matrix.job == 'main'
-        run: pub run grinder buildbot
+        run: dart run grinder buildbot
         env:
           DARTDOC_BOT: ${{ matrix.job }}
      # - id: coverage
