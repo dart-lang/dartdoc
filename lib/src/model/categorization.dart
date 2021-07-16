@@ -107,7 +107,7 @@ abstract class Categorization implements ModelElement {
         .map((n) => package.nameToCategory[n])
         .where((c) => c != null)
         .toList()
-          ..sort();
+      ..sort();
     return _categories;
   }
 

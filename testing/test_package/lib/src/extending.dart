@@ -15,8 +15,6 @@ bool someConflictingNameSymbol;
 /// Linking over to [Apple] should work.
 class ExtendingClass extends BaseClass {}
 
-
-
 class ExtendingAgain extends BaseWithMembers {
   @override
   bool anotherField;

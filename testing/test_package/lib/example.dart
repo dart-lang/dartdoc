@@ -59,7 +59,11 @@ class aThingToDo {
 }
 
 const ConstantCat MY_CAT = const ConstantCat('tabby');
-const List<String> PRETTY_COLORS = const <String>[COLOR_GREEN, COLOR_ORANGE, 'blue'];
+const List<String> PRETTY_COLORS = const <String>[
+  COLOR_GREEN,
+  COLOR_ORANGE,
+  'blue'
+];
 @deprecated
 int deprecatedField;
 
