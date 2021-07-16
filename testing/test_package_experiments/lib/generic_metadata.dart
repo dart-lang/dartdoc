@@ -202,12 +202,11 @@ mixin M<@A<B>(0) T> {
 
 @A<B>(0)
 enum En {
- @A<B>(0)
- foo
+  @A<B>(0)
+  foo
 }
 
 @A<B>(0)
 typedef F<@A<B>(0) T> = int Function<@A<B>(0) X>(@A<B>(0) int);
 
-void main() {
-}
+void main() {}

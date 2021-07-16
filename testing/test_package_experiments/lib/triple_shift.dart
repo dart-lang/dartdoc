@@ -9,7 +9,7 @@ class C {
   static int ctr = 0;
 
   /// Check that constants using a triple shift operator appear correctly.
-  static const int constantTripleShifted = 3>>>5;
+  static const int constantTripleShifted = 3 >>> 5;
   final Object? _text;
   C([Object? text]) : _text = text ?? "${++ctr}";
 
@@ -22,7 +22,7 @@ class C {
   C operator >>(arg) => C("(${++ctr}:$_text>>$arg)");
   C operator <<(arg) => C("(${++ctr}:$_text<<$arg)");
   // & binds less strongly than `>>`, `>>>` and `<<`.
-  C operator &(arg) =>  C("(${++ctr}:$_text&$arg)");
+  C operator &(arg) => C("(${++ctr}:$_text&$arg)");
 
   String toString() => "${_text}";
 }
