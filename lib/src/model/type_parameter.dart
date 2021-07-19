@@ -69,13 +69,9 @@ class TypeParameter extends ModelElement {
 
   @override
   Map<String, CommentReferable> get referenceChildren {
-    if (_referenceChildren == null) {
-      _referenceChildren = {};
-      _referenceChildren
-          .addEntries(parameters.map((p) => MapEntry(p.referenceName, p)));
-      _referenceChildren[boundType.name] = boundType;
-    }
-    return _referenceChildren;
+    return _referenceChildren ??= {
+      boundType.name: boundType,
+    };
   }
 
   @override
