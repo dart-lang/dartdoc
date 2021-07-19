@@ -177,13 +177,13 @@ void main() {
     tempDir = resourceProvider.createSystemTemp('options_test');
     firstDir = resourceProvider
         .getFolder(resourceProvider.pathContext.join(tempDir.path, 'firstDir'))
-          ..create();
+      ..create();
     firstExisting = resourceProvider.getFile(
         resourceProvider.pathContext.join(firstDir.path, 'existing.dart'))
       ..writeAsStringSync('');
     secondDir = resourceProvider
         .getFolder(resourceProvider.pathContext.join(tempDir.path, 'secondDir'))
-          ..create();
+      ..create();
     resourceProvider
         .getFile(
             resourceProvider.pathContext.join(secondDir.path, 'existing.dart'))

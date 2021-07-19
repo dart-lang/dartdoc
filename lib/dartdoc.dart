@@ -128,7 +128,7 @@ class Dartdoc {
   Dartdoc._(this.config, this._generator, this.packageBuilder) {
     _outputDir = config.resourceProvider
         .getFolder(config.resourceProvider.pathContext.absolute(config.output))
-          ..create();
+      ..create();
   }
 
   // TODO(srawlins): Remove when https://github.com/dart-lang/linter/issues/2706
