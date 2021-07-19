@@ -62,7 +62,7 @@ Future<List<DartdocOption<Object>>> createPackageWarningOptions(
                     .where(
                         (d) => d.defaultWarningMode == PackageWarningMode.error)
                     .toList()
-                      ..sort())
+                  ..sort())
                 .map((d) => '   ${d.warningName}: ${d.shortHelp}')
                 .join('\n')),
     DartdocOptionArgFile<List<String>>('ignore', null, resourceProvider,
@@ -72,7 +72,7 @@ Future<List<DartdocOption<Object>>> createPackageWarningOptions(
                     .where((d) =>
                         d.defaultWarningMode == PackageWarningMode.ignore)
                     .toList()
-                      ..sort())
+                  ..sort())
                 .map((d) => '   ${d.warningName}: ${d.shortHelp}')
                 .join('\n')),
     DartdocOptionArgFile<List<String>>('warnings', null, resourceProvider,
@@ -83,7 +83,7 @@ Future<List<DartdocOption<Object>>> createPackageWarningOptions(
                         .where((d) =>
                             d.defaultWarningMode == PackageWarningMode.warn)
                         .toList()
-                          ..sort())
+                      ..sort())
                     .map((d) => '   ${d.warningName}: ${d.shortHelp}')
                     .join('\n')),
     // Synthetic option uses a factory to build a PackageWarningOptions from all the above flags.
