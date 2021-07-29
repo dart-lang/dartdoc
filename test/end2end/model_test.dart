@@ -2363,8 +2363,7 @@ void main() {
           function1,
           topLevelFunction,
           aFunctionUsingRenamedLib;
-      TopLevelVariable aSetterWithFunctionParameter,
-          incorrectDocReference,
+      TopLevelVariable incorrectDocReference,
           incorrectDocReferenceFromEx,
           nameWithTwoUnderscores,
           nameWithSingleUnderscore,
@@ -2393,14 +2392,12 @@ void main() {
           redHerring,
           yetAnotherName,
           somethingShadowyParameter;
-      Parameter fParam, fParamA, fParamB, fParamC;
       Field forInheriting,
           action,
           initializeMe,
           somethingShadowy,
           aConstructorShadowedField,
           aNameField,
-          anotherNameField,
           yetAnotherNameField,
           initViaFieldFormal;
 
@@ -2506,8 +2503,6 @@ void main() {
 
         aNameField = FactoryConstructorThings.allFields
             .firstWhere((f) => f.name == 'aName');
-        anotherNameField = FactoryConstructorThings.allFields
-            .firstWhere((f) => f.name == 'anotherName');
         yetAnotherNameField = FactoryConstructorThings.allFields
             .firstWhere((f) => f.name == 'yetAnotherName');
         initViaFieldFormal = FactoryConstructorThings.allFields
@@ -2517,24 +2512,24 @@ void main() {
             .firstWhere((m) => m.name == 'aMethod');
         yetAnotherName =
             aMethod.allParameters.firstWhere((p) => p.name == 'yetAnotherName');
-
-        aSetterWithFunctionParameter = fakeLibrary.properties
-            .firstWhere((p) => p.name == 'aSetterWithFunctionParameter');
-        fParam = aSetterWithFunctionParameter.parameters
-            .firstWhere((p) => p.name == 'fParam');
-        fParamA = (fParam.modelType as Callable)
-            .parameters
-            .firstWhere((p) => p.name == 'fParamA');
-        fParamB = (fParam.modelType as Callable)
-            .parameters
-            .firstWhere((p) => p.name == 'fParamB');
-        fParamC = (fParam.modelType as Callable)
-            .parameters
-            .firstWhere((p) => p.name == 'fParamC');
       });
 
       group('Parameter references work properly', () {
         test('via a setter with a function parameter', () {
+          var aSetterWithFunctionParameter = fakeLibrary.properties
+              .firstWhere((p) => p.name == 'aSetterWithFunctionParameter');
+          var fParam = aSetterWithFunctionParameter.parameters
+              .firstWhere((p) => p.name == 'fParam');
+          var fParamA = (fParam.modelType as Callable)
+              .parameters
+              .firstWhere((p) => p.name == 'fParamA');
+          var fParamB = (fParam.modelType as Callable)
+              .parameters
+              .firstWhere((p) => p.name == 'fParamB');
+          var fParamC = (fParam.modelType as Callable)
+              .parameters
+              .firstWhere((p) => p.name == 'fParamC');
+
           expect(bothLookup(aSetterWithFunctionParameter, 'fParam.fParamA'),
               equals(MatchingLinkResult(fParamA)));
           expect(bothLookup(aSetterWithFunctionParameter, 'fParam.fParamB'),
@@ -2546,6 +2541,8 @@ void main() {
         test('in class scope overridden by fields', () {
           expect(bothLookup(FactoryConstructorThings, 'aName'),
               equals(MatchingLinkResult(aNameField)));
+          var anotherNameField = FactoryConstructorThings.allFields
+              .firstWhere((f) => f.name == 'anotherName');
           expect(bothLookup(FactoryConstructorThings, 'anotherName'),
               equals(MatchingLinkResult(anotherNameField)));
           expect(bothLookup(FactoryConstructorThings, 'yetAnotherName'),
@@ -2768,6 +2765,14 @@ void main() {
         // Reference to an inherited member in another library via class name.
         expect(bothLookup(doAwesomeStuff, 'ExtendedBaseReexported.action'),
             equals(MatchingLinkResult(action)));
+      });
+
+      test('displays default value of field formal parameter', () {
+        expect(
+            factoryConstructorThingsDefault.linkedParamsLines,
+            contains(
+                '<span class="parameter-name">fieldFormalWithDefault</span> = '
+                '<span class="default-value">7</span>}'));
       });
     });
   });
