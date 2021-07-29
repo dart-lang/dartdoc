@@ -73,31 +73,33 @@ ModelElement resolveMultiplyInheritedElement(
 }
 
 /// This class is the foundation of Dartdoc's model for source code.
+///
 /// All ModelElements are contained within a [PackageGraph], and laid out in a
 /// structure that mirrors the availability of identifiers in the various
-/// namespaces within that package.  For example, multiple [Class] objects
-/// for a particular identifier ([ModelElement.element]) may show up in
-/// different [Library]s as the identifier is reexported.
+/// namespaces within that package.  For example, multiple [Class] objects for a
+/// particular identifier ([ModelElement.element]) may show up in different
+/// [Library]s as the identifier is reexported.
 ///
 /// However, ModelElements have an additional concept vital to generating
 /// documentation: canonicalization.
 ///
 /// A ModelElement is canonical if it is the element in the namespace where that
-/// element 'comes from' in the public interface to this [PackageGraph].  That often
-/// means the [ModelElement.library] is contained in [PackageGraph.libraries], but
-/// there are many exceptions and ambiguities the code tries to address here.
+/// element 'comes from' in the public interface to this [PackageGraph].  That
+/// often means the [ModelElement.library] is contained in
+/// [PackageGraph.libraries], but there are many exceptions and ambiguities the
+/// code tries to address here.
 ///
 /// Non-canonical elements should refer to their canonical counterparts, making
-/// it easy to calculate links via [ModelElement.href] without having to
-/// know in a particular namespace which elements are canonical or not.
-/// A number of [PackageGraph] methods, such as [PackageGraph.findCanonicalModelElementFor]
+/// it easy to calculate links via [ModelElement.href] without having to know in
+/// a particular namespace which elements are canonical or not.  A number of
+/// [PackageGraph] methods, such as [PackageGraph.findCanonicalModelElementFor]
 /// can help with this.
 ///
 /// When documenting, Dartdoc should only write out files corresponding to
 /// canonical instances of ModelElement ([ModelElement.isCanonical]).  This
 /// helps prevent subtle bugs as generated output for a non-canonical
-/// ModelElement will reference itself as part of the "wrong" [Library]
-/// from the public interface perspective.
+/// ModelElement will reference itself as part of the "wrong" [Library] from the
+/// public interface perspective.
 abstract class ModelElement extends Canonicalization
     with
         CommentReferable,
@@ -628,8 +630,9 @@ abstract class ModelElement extends Canonicalization
         if ((this as Inheritable).isInherited &&
             _canonicalLibrary == null &&
             packageGraph.publicLibraries.contains(library)) {
-          // In the event we've inherited a field from an object that isn't directly reexported,
-          // we may need to pretend we are canonical for this.
+          // In the event we've inherited a field from an object that isn't
+          // directly reexported, we may need to pretend we are canonical for
+          // this.
           _canonicalLibrary = library;
         }
       }
@@ -939,8 +942,8 @@ abstract class ModelElement extends Canonicalization
 
   List<Parameter> _allParameters;
 
-  // TODO(jcollins-g): This is in the wrong place.  Move parts to GetterSetterCombo,
-  // elsewhere as appropriate?
+  // TODO(jcollins-g): This is in the wrong place.  Move parts to
+  // [GetterSetterCombo], elsewhere as appropriate?
   List<Parameter> get allParameters {
     if (_allParameters == null) {
       var recursedParameters = <Parameter>{};
@@ -977,7 +980,8 @@ abstract class ModelElement extends Canonicalization
 
   List<Parameter> get parameters {
     if (!isCallable) {
-      throw StateError('$element cannot have parameters');
+      throw StateError(
+          '$element (${element.runtimeType}) cannot have parameters');
     }
 
     if (_parameters == null) {
