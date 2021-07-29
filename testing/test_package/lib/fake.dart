@@ -1263,8 +1263,10 @@ class FactoryConstructorThings {
   int anotherName;
   String yetAnotherName;
   final List<String> initViaFieldFormal;
+  final int fieldFormalWithDefault;
 
-  FactoryConstructorThings(this.initViaFieldFormal);
+  FactoryConstructorThings(this.initViaFieldFormal,
+      {this.fieldFormalWithDefault = 7});
 
   factory FactoryConstructorThings.anotherName({
     bool aName,
