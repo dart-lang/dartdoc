@@ -5,6 +5,8 @@
 /// This is a helper library to make working with io easier.
 library dartdoc.io_utils;
 
+import 'dart:async';
+import 'dart:collection';
 import 'dart:convert';
 import 'dart:io' as io;
 
@@ -118,40 +120,103 @@ final RegExp partOfRegexp = RegExp('part of ');
     'as Dartdoc 1.0.0')
 final RegExp newLinePartOfRegexp = RegExp('\npart of ');
 
-/// Best used with Future<void>.
-class MultiFutureTracker<T> {
-  /// Approximate maximum number of simultaneous active Futures.
-  final int parallel;
+typedef TaskQueueClosure<T> = Future<T> Function();
+typedef CompleteCallback = void Function();
 
-  final Set<Future<T>> _trackedFutures = {};
+class _TaskQueueItem<T> {
+  _TaskQueueItem(this.closure, this.completer, {this.onComplete});
 
-  MultiFutureTracker(this.parallel);
+  final TaskQueueClosure<T> closure;
+  final Completer<T> completer;
+  CompleteCallback onComplete;
 
-  /// Wait until fewer or equal to this many Futures are outstanding.
-  Future<void> _waitUntil(int max) async {
-    while (_trackedFutures.length > max) {
-      await Future.any(_trackedFutures);
+  Future<void> run() async {
+    try {
+      final result = await closure();
+      if (result != null) {
+        completer.complete(result);
+      } else {
+        completer.complete(null);
+      }
+      await Future<void>.microtask(() {});
+    } catch (e) {
+      completer.completeError(e);
+    } finally {
+      onComplete?.call();
+    }
+  }
+}
+
+/// A task queue of Futures to be completed in parallel, throttling
+/// the number of simultaneous tasks.
+///
+/// The tasks return results of type T.
+class TaskQueue<T> {
+  /// Creates a task queue with a maximum number of simultaneous jobs.
+  /// The [maxJobs] parameter defaults to the number of CPU cores on the
+  /// system.
+  TaskQueue({int maxJobs})
+      : maxJobs = maxJobs ?? io.Platform.numberOfProcessors;
+
+  /// The maximum number of jobs that this queue will run simultaneously.
+  final int maxJobs;
+
+  final Queue<_TaskQueueItem<T>> _pendingTasks = Queue<_TaskQueueItem<T>>();
+  final Set<_TaskQueueItem<T>> _activeTasks = <_TaskQueueItem<T>>{};
+  final Set<Completer<void>> _completeListeners = <Completer<void>>{};
+
+  /// Returns a future that completes when all tasks in the [TaskQueue] are
+  /// complete.
+  Future<void> get tasksComplete {
+    // In case this is called when there are no tasks, we want it to
+    // signal complete immediately.
+    if (_activeTasks.isEmpty && _pendingTasks.isEmpty) {
+      return Future<void>.value();
+    }
+    final completer = Completer<void>();
+    _completeListeners.add(completer);
+    return completer.future;
+  }
+
+  /// Adds a single closure to the task queue, returning a future that
+  /// completes when the task completes.
+  Future<T> add(TaskQueueClosure<T> task) {
+    final completer = Completer<T>();
+    _pendingTasks.add(_TaskQueueItem<T>(task, completer));
+    _processTasks();
+    return completer.future;
+  }
+
+  // Process a single task.
+  void _processTask() {
+    if (_pendingTasks.isNotEmpty && _activeTasks.length <= maxJobs) {
+      final item = _pendingTasks.removeFirst();
+      _activeTasks.add(item);
+      item.onComplete = () {
+        _activeTasks.remove(item);
+        _processTask();
+      };
+      item.run();
+    } else {
+      _checkForCompletion();
     }
   }
 
-  /// Generates a [Future] from the given closure and adds it to the queue,
-  /// once the queue is sufficiently empty.  The returned future completes
-  /// when the generated [Future] has been added to the queue.
-  ///
-  /// If the closure does not handle its own exceptions, other calls to
-  /// [addFutureFromClosure] or [wait] may trigger an exception.
-  Future<void> addFutureFromClosure(Future<T> Function() closure) async {
-    await _waitUntil(parallel - 1);
-    Future<void> future = closure();
-    _trackedFutures.add(future);
-    // ignore: unawaited_futures
-    future.then((f) {
-      _trackedFutures.remove(future);
-    }, onError: (s, e) {
-      _trackedFutures.remove(future);
-    });
+  void _checkForCompletion() {
+    if (_activeTasks.isEmpty && _pendingTasks.isEmpty) {
+      for (final completer in _completeListeners) {
+        if (!completer.isCompleted) {
+          completer.complete();
+        }
+      }
+      _completeListeners.clear();
+    }
   }
 
-  /// Wait until all futures added so far have completed.
-  Future<void> wait() async => await _waitUntil(0);
+  // Process any pending tasks.
+  Future<void> _processTasks() async {
+    if (_activeTasks.length < maxJobs) {
+      _processTask();
+    }
+  }
 }
