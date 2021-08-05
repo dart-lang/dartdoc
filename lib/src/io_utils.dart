@@ -121,26 +121,25 @@ final RegExp partOfRegexp = RegExp('part of ');
 final RegExp newLinePartOfRegexp = RegExp('\npart of ');
 
 typedef TaskQueueClosure<T> = Future<T> Function();
-typedef CompleteCallback = void Function();
 
 class _TaskQueueItem<T> {
-  _TaskQueueItem(this.closure, this.completer, {this.onComplete});
+  _TaskQueueItem(this._closure, this._completer, {this.onComplete});
 
-  final TaskQueueClosure<T> closure;
-  final Completer<T> completer;
-  CompleteCallback onComplete;
+  final TaskQueueClosure<T> _closure;
+  final Completer<T> _completer;
+  void Function() onComplete;
 
   Future<void> run() async {
     try {
-      final result = await closure();
+      final result = await _closure();
       if (result != null) {
-        completer.complete(result);
+        _completer.complete(result);
       } else {
-        completer.complete(null);
+        _completer.complete(null);
       }
       await Future<void>.microtask(() {});
     } catch (e) {
-      completer.completeError(e);
+      _completer.completeError(e);
     } finally {
       onComplete?.call();
     }

@@ -18,10 +18,10 @@ void main() {
     });
   });
 
-  group('MultiFutureTracker', () {
-    /// A special test designed to check shared [MultiFutureTracker]
+  group('TaskQueue', () {
+    /// A special test designed to check shared [TaskQueue]
     /// behavior when exceptions occur after a delay in the passed closures to
-    /// [MultiFutureTracker.add].
+    /// [TaskQueue.add].
     test('no deadlock when delayed exceptions fire in closures', () async {
       var sharedTracker = TaskQueue(maxJobs: 2);
       expect(() async {
