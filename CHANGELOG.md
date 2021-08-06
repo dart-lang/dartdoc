@@ -1,3 +1,8 @@
+## 1.0.1
+
+* Fix several issues with new type hierarchy.  (#2714, #2721)
+* Allow code in "diff" language to be syntax highlighted.  (#2718)
+
 ## 1.0.0
 * BREAKING CHANGE:  Enable the enhanced lookups by default.
   Some formerly invalid doc references will no longer be

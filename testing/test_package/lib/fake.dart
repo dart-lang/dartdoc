@@ -997,7 +997,7 @@ enum MacrosFromAccessors {
 /// {@category NotSoExcellent}
 class SubForDocComments extends BaseForDocComments {
   SubForDocComments(bool thing) : super(thing);
-  
+
   /// Reference to [foo] and [bar]
   void localMethod(String foo, bar) {}
 
@@ -1257,15 +1257,16 @@ abstract class IntermediateAbstract extends Object {
 /// This should inherit [==] from [IntermediateAbstract].
 class IntermediateAbstractSubclass extends IntermediateAbstract {}
 
-
 /// Test parameter comment resolution in factory constructors and methods.
 class FactoryConstructorThings {
   bool aName;
   int anotherName;
   String yetAnotherName;
   final List<String> initViaFieldFormal;
+  final int fieldFormalWithDefault;
 
-  FactoryConstructorThings(this.initViaFieldFormal);
+  FactoryConstructorThings(this.initViaFieldFormal,
+      {this.fieldFormalWithDefault = 7});
 
   factory FactoryConstructorThings.anotherName({
     bool aName,
@@ -1286,10 +1287,12 @@ class FactoryConstructorThings {
   void aMethod(bool yetAnotherName) {}
 }
 
+DTypeParam
+    aTopLevelTypeParameterFunction<DTypeParam extends TypeParameterThings>(
+        DTypeParam typedParam) {}
 
-DTypeParam aTopLevelTypeParameterFunction<DTypeParam extends TypeParameterThings>(DTypeParam typedParam) {}
-
-abstract class TypeParameterThings<ATypeParam, BTypeParam extends FactoryConstructorThings> {
+abstract class TypeParameterThings<ATypeParam,
+    BTypeParam extends FactoryConstructorThings> {
   ATypeParam aName;
   List<BTypeParam> aThing;
 
@@ -1299,18 +1302,26 @@ abstract class TypeParameterThings<ATypeParam, BTypeParam extends FactoryConstru
 
 /// Test that inheriting documentation can still reference parent type
 /// parameters.
-class TypeParameterThingsExtended extends TypeParameterThings<String, FactoryConstructorThings> {
+class TypeParameterThingsExtended
+    extends TypeParameterThings<String, FactoryConstructorThings> {
   @override
-  FactoryConstructorThings aMethod<QTypeParam>(String aParam, QTypeParam anotherParam) => null;
+  FactoryConstructorThings aMethod<QTypeParam>(
+          String aParam, QTypeParam anotherParam) =>
+      null;
 }
 
 /// Test that overriding documentation uses local type parameters.
-class TypeParameterThingsExtendedQ extends TypeParameterThings<String, FactoryConstructorThings> {
+class TypeParameterThingsExtendedQ
+    extends TypeParameterThings<String, FactoryConstructorThings> {
   @override
+
   /// I override documentation so I can reference [QTypeParam].
-  FactoryConstructorThings aMethod<QTypeParam>(String aParam, QTypeParam anotherParam) => null;
+  FactoryConstructorThings aMethod<QTypeParam>(
+          String aParam, QTypeParam anotherParam) =>
+      null;
 }
 
 /// We should still be able to reference [fParam.fParamA], [fParam.fParamB],
 /// and [fParam.fParamC].
-void set aSetterWithFunctionParameter(bool fParam(int fParamA, String fParamB, String fParamC)) {}
+void set aSetterWithFunctionParameter(
+    bool fParam(int fParamA, String fParamB, String fParamC)) {}

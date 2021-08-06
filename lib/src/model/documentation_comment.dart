@@ -635,7 +635,9 @@ mixin DocumentationComment
     for (var match in exp.allMatches(string)) {
       var prefix = match.input.substring(currentIndex, match.start);
       currentIndex = match.end;
-      replaced..write(prefix)..write(await replace(match));
+      replaced
+        ..write(prefix)
+        ..write(await replace(match));
     }
     replaced.write(string.substring(currentIndex));
     return replaced.toString();
