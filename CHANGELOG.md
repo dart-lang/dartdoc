@@ -1,3 +1,11 @@
+## 1.0.2
+
+* Fix where extensions header in library sidebar linked to the
+  wrong place. (#2717)
+* Fix concurrency issues in tool execution and parallelize
+  optimally for the number of cores in the system. (#2730)
+* Display message if tool snapshotting fails.  (#2731)
+
 ## 1.0.1
 
 * Fix several issues with new type hierarchy.  (#2714, #2721)
