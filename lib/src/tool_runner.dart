@@ -191,7 +191,9 @@ class ToolRunner {
           toolName, toolDefinition, envWithInput, toolErrorCallback);
     }
 
-    var toolStateForArgs = await toolDefinition.toolStateForArgs(argsWithInput);
+    var toolStateForArgs = await toolDefinition.toolStateForArgs(
+        toolName, argsWithInput,
+        toolErrorCallback: toolErrorCallback);
     var commandPath = toolStateForArgs.commandPath;
     argsWithInput = toolStateForArgs.args;
     var callCompleter = toolStateForArgs.onProcessComplete;
