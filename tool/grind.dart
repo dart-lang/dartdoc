@@ -49,8 +49,8 @@ final String defaultPubCache = Platform.environment['PUB_CACHE'] ??
     path.context.resolveTildePath('~/.pub-cache');
 
 /// Run no more than the number of processors available in parallel.
-final MultiFutureTracker testFutures = MultiFutureTracker(
-    int.tryParse(Platform.environment['MAX_TEST_FUTURES'] ?? '') ??
+final TaskQueue testFutures = TaskQueue(
+    maxJobs: int.tryParse(Platform.environment['MAX_TEST_FUTURES'] ?? '') ??
         Platform.numberOfProcessors);
 
 // Directory.systemTemp is not a constant.  So wrap it.
@@ -1114,21 +1114,21 @@ Future<void> tryPublish() async {
 @Depends(clean)
 Future<void> smokeTest() async {
   await testDart2(smokeTestFiles);
-  await testFutures.wait();
+  await testFutures.tasksComplete;
 }
 
 @Task('Run non-smoke tests, only')
 @Depends(clean)
 Future<void> longTest() async {
   await testDart2(testFiles);
-  await testFutures.wait();
+  await testFutures.tasksComplete;
 }
 
 @Task('Run all the tests.')
 @Depends(clean)
 Future<void> test() async {
   await testDart2(smokeTestFiles.followedBy(testFiles));
-  await testFutures.wait();
+  await testFutures.tasksComplete;
 }
 
 @Task('Clean up pub data from test directories')
@@ -1166,7 +1166,7 @@ Future<void> testDart2(Iterable<File> tests) async {
   var parameters = <String>['--enable-asserts'];
 
   for (var dartFile in tests) {
-    await testFutures.addFutureFromClosure(() =>
+    await testFutures.add(() =>
         CoverageSubprocessLauncher('dart2-${path.basename(dartFile.path)}')
             .runStreamed(Platform.resolvedExecutable,
                 <String>[...parameters, dartFile.path]));

@@ -86,7 +86,7 @@ class PackageGraph with CommentReferable, Nameable {
     // specialClasses handler so when we find them, they get added.
     specialClasses = SpecialClasses();
     // Go through docs of every ModelElement in package to pre-build the macros
-    // index.  Uses toList() in order to get all the precaching on the stack.
+    // index.
     await Future.wait(precacheLocalDocs());
     _localDocumentationBuilt = true;
 
@@ -153,6 +153,8 @@ class PackageGraph with CommentReferable, Nameable {
       }
       yield* precacheOneElement(m);
     }
+    // Now wait for any of the tasks still running to complete.
+    yield config.tools.runner.wait();
   }
 
   // Many ModelElements have the same ModelNode; don't build/cache this data more
