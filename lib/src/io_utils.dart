@@ -131,13 +131,7 @@ class _TaskQueueItem<T> {
 
   Future<void> run() async {
     try {
-      final result = await _closure();
-      if (result != null) {
-        _completer.complete(result);
-      } else {
-        _completer.complete(null);
-      }
-      await Future<void>.microtask(() {});
+      _completer.complete(await _closure());
     } catch (e) {
       _completer.completeError(e);
     } finally {
