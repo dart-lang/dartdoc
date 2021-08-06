@@ -176,7 +176,9 @@ class TaskQueue<T> {
   Future<T> add(TaskQueueClosure<T> task) {
     final completer = Completer<T>();
     _pendingTasks.add(_TaskQueueItem<T>(task, completer));
-    _processTasks();
+    if (_activeTasks.length < maxJobs) {
+      _processTask();
+    }
     return completer.future;
   }
 
@@ -203,13 +205,6 @@ class TaskQueue<T> {
         }
       }
       _completeListeners.clear();
-    }
-  }
-
-  // Process any pending tasks.
-  Future<void> _processTasks() async {
-    if (_activeTasks.length < maxJobs) {
-      _processTask();
     }
   }
 }
