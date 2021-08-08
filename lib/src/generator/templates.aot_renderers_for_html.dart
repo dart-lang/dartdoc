@@ -9640,7 +9640,7 @@ String renderSidebarForLibrary<T extends _i17.Documentable>(
       buffer.write('''
   <li class="section-title"><a href="''');
       buffer.write(context1.href.toString());
-      buffer.write('''#extension">Extensions</a></li>''');
+      buffer.write('''#extensions">Extensions</a></li>''');
       var context4 = context1.publicExtensionsSorted;
       if (context4 != null) {
         for (var context5 in context4) {
