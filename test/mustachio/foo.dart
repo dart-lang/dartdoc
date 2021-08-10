@@ -1,3 +1,5 @@
+// @dart=2.9
+
 @Renderer.forTest(#renderFoo, Context<Foo>(), 'foo',
     visibleTypes: {Property1, Property2, Property3})
 @Renderer.forTest(#renderBar, Context<Bar>(), 'bar')

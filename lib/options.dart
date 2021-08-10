@@ -1,3 +1,5 @@
+// @dart=2.9
+
 import 'dart:io' show stderr, exitCode;
 
 import 'package:analyzer/file_system/file_system.dart';

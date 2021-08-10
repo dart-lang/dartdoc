@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+// @dart=2.9
+
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/dart/element/type_provider.dart';
@@ -67,6 +69,7 @@ Future<String> compileTemplatesToRenderers(
 // the variable is not used; generally when the section is checking if a
 // non-bool, non-Iterable field is non-null.
 // ignore_for_file: unused_local_variable
+// @dart=2.9
 
 ${library.accept(DartEmitter.scoped(orderDirectives: true))}
 ''');
