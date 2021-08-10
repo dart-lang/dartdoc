@@ -11323,7 +11323,7 @@ class _Renderer_Package extends RendererBase<Package> {
   }
 }
 
-String renderIndex(PackageTemplateData context, Template template) {
+String renderError(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -11525,7 +11525,7 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
   }
 }
 
-String renderError(PackageTemplateData context, Template template) {
+String renderIndex(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -14757,6 +14757,7 @@ const _invisibleGetters = {
     'unnamedConstructor'
   },
   'CommentReferable': {
+    'packageGraph',
     'scope',
     'href',
     'referenceChildren',
@@ -14764,18 +14765,17 @@ const _invisibleGetters = {
     'referenceGrandparentOverrides',
     'referenceName',
     'library',
-    'element',
-    'packageGraph'
+    'element'
   },
   'CompilationUnitElement': {
     'hashCode',
     'runtimeType',
     'accessors',
+    'classes',
     'enclosingElement',
     'enums',
     'extensions',
     'functions',
-    'functionTypeAliases',
     'hasLoadLibraryFunction',
     'lineInfo',
     'mixins',
@@ -14895,6 +14895,7 @@ const _invisibleGetters = {
     'hasRequired',
     'hasSealed',
     'hasUseResult',
+    'hasVisibleForOverriding',
     'hasVisibleForTemplate',
     'hasVisibleForTesting',
     'id',
@@ -14908,6 +14909,7 @@ const _invisibleGetters = {
     'name',
     'nameLength',
     'nameOffset',
+    'nonSynthetic',
     'session',
     'source'
   },
@@ -14936,6 +14938,7 @@ const _invisibleGetters = {
     'isSealed',
     'isTarget',
     'isUseResult',
+    'isVisibleForOverriding',
     'isVisibleForTemplate',
     'isVisibleForTesting'
   },
@@ -14965,6 +14968,7 @@ const _invisibleGetters = {
     'hasRequired',
     'hasSealed',
     'hasUseResult',
+    'hasVisibleForOverriding',
     'hasVisibleForTemplate',
     'hasVisibleForTesting',
     'id',
@@ -14979,6 +14983,7 @@ const _invisibleGetters = {
     'name',
     'nameLength',
     'nameOffset',
+    'nonSynthetic',
     'session',
     'source',
     'substitution',
@@ -15037,7 +15042,6 @@ const _invisibleGetters = {
   'FunctionType': {
     'hashCode',
     'runtimeType',
-    'element',
     'namedParameterTypes',
     'normalParameterNames',
     'normalParameterTypes',
@@ -15045,7 +15049,6 @@ const _invisibleGetters = {
     'optionalParameterTypes',
     'parameters',
     'returnType',
-    'typeArguments',
     'typeFormals'
   },
   'FunctionTypedElement': {
@@ -15056,6 +15059,7 @@ const _invisibleGetters = {
     'type'
   },
   'GetterSetterCombo': {
+    'enclosingElement',
     'getter',
     'setter',
     'annotations',
@@ -15091,8 +15095,7 @@ const _invisibleGetters = {
     'readOnly',
     'readWrite',
     'writeOnly',
-    'referenceChildren',
-    'enclosingElement'
+    'referenceChildren'
   },
   'HashMap': {'hashCode', 'runtimeType'},
   'Inheritable': {
@@ -15127,6 +15130,7 @@ const _invisibleGetters = {
     'isNonNullableByDefault',
     'languageVersion',
     'loadLibraryFunction',
+    'name',
     'parts',
     'prefixes',
     'publicNamespace',
@@ -15183,6 +15187,7 @@ const _invisibleGetters = {
     'hasRequired',
     'hasSealed',
     'hasUseResult',
+    'hasVisibleForOverriding',
     'hasVisibleForTemplate',
     'hasVisibleForTesting',
     'id',
@@ -15197,6 +15202,7 @@ const _invisibleGetters = {
     'name',
     'nameLength',
     'nameOffset',
+    'nonSynthetic',
     'session',
     'source',
     'substitution'
@@ -15323,6 +15329,7 @@ const _invisibleGetters = {
     'hasRequired',
     'hasSealed',
     'hasUseResult',
+    'hasVisibleForOverriding',
     'hasVisibleForTemplate',
     'hasVisibleForTesting',
     'id',
@@ -15337,6 +15344,7 @@ const _invisibleGetters = {
     'name',
     'nameLength',
     'nameOffset',
+    'nonSynthetic',
     'session',
     'source',
     'substitution',
