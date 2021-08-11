@@ -10,7 +10,7 @@ dependencies:
   analyzer: ^2.0.0
   args: ^2.0.0
   charcode: ^1.2.0
-  collection: ^1.15.0-nullsafety.4
+  collection: ^1.15.0
   cli_util: ^0.3.0
   crypto: ^3.0.0
   glob: ^2.0.0
