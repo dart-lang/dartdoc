@@ -42,6 +42,9 @@ elif [ "$DARTDOC_BOT" = "sdk-analyzer" ]; then
   echo "Running all tests against the SDK analyzer"
   unset COVERAGE_TOKEN
   pub run grinder test-with-analyzer-sdk
+elif [ "$DARTDOC_BOT" = "nnbd" ]; then
+  echo "Running main dartdoc bot excluding presubmit"
+  pub run grinder buildbot-no-presubmit
 else
   echo "Running main dartdoc bot"
   pub run grinder buildbot
