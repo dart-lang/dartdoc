@@ -318,6 +318,10 @@ void presubmit() => null;
 @Depends(presubmit, longTest, testDartdoc)
 void buildbot() => null;
 
+@Task('Run buildbot tests, but without publish test')
+@Depends(analyze, dartfmt, checkBuild, smokeTest, longTest, testDartdoc)
+void buildbotNoPublish() => null;
+
 @Task('Generate docs for the Dart SDK')
 Future buildSdkDocs() async {
   log('building SDK docs');
@@ -918,8 +922,7 @@ Future<List<Map>> _buildFlutterDocs(
   );
   await flutterRepo.launcher.runStreamed(
     flutterRepo.cachePub,
-    ['get'],
-    workingDirectory: path.join(flutterPath, 'dev', 'snippets'),
+    ['global', 'activate', 'snippets'],
   );
   // TODO(jcollins-g): flutter's dart SDK pub tries to precompile the universe
   // when using -spath.  Why?
