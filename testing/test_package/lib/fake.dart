@@ -1087,6 +1087,12 @@ extension Leg on Megatron<String> {
   bool get hasRightLeg => true;
 }
 
+/// Refer to [doesNotCrash] here.
+extension UnboundTypeTargetExtension<T> on T {
+  /// We hope so!
+  bool get doesNotCrash => true;
+}
+
 class Megatron<T> {}
 
 class SuperMegaTron<T extends String> extends Megatron<String> {}
