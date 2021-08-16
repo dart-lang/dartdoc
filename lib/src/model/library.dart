@@ -102,13 +102,13 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
       CompilationUnitElement compilationUnit) {
     return quiver.concat([
       compilationUnit.accessors,
+      compilationUnit.classes,
       compilationUnit.enums,
       compilationUnit.extensions,
       compilationUnit.functions,
       compilationUnit.mixins,
       compilationUnit.topLevelVariables,
       compilationUnit.typeAliases,
-      compilationUnit.types,
     ]);
   }
 
