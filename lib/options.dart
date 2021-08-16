@@ -2,8 +2,11 @@ import 'dart:io' show stderr, exitCode;
 
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:args/args.dart';
-import 'package:dartdoc/dartdoc.dart';
+import 'package:dartdoc/dartdoc.dart' show dartdocVersion, programName;
+import 'package:dartdoc/src/dartdoc_options.dart';
+import 'package:dartdoc/src/generator/generator.dart';
 import 'package:dartdoc/src/logging.dart';
+import 'package:dartdoc/src/package_meta.dart';
 
 /// Helper class that consolidates option contexts for instantiating generators.
 class DartdocGeneratorOptionContext extends DartdocOptionContext {
