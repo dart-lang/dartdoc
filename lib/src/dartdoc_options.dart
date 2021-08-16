@@ -1215,21 +1215,11 @@ class DartdocOptionContext extends DartdocOptionContextBase
   // TODO(jcollins-g): Allow passing in structured data to initialize a
   // [DartdocOptionContext]'s arguments instead of having to parse strings
   // via optionSet.
-  /// If [entity] is null, assume this is the initialization case and use
-  /// the inputDir flag to determine the context.
   DartdocOptionContext(
       this.optionSet, Resource resource, ResourceProvider resourceProvider) {
-    if (resource == null) {
-      var current = resourceProvider.pathContext.current;
-      String inputDir =
-          optionSet['inputDir'].valueAt(resourceProvider.getFolder(current)) ??
-              current;
-      context = resourceProvider.getFolder(inputDir);
-    } else {
-      context = resourceProvider.getFolder(resourceProvider.pathContext
-          .canonicalize(
-              resource is File ? resource.parent2.path : resource.path));
-    }
+    context = resourceProvider.getFolder(resourceProvider.pathContext
+        .canonicalize(
+        resource is File ? resource.parent2.path : resource.path));
   }
 
   /// Build a DartdocOptionContext from an analyzer element (using its source
