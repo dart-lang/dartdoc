@@ -914,11 +914,6 @@ Future<List<Map>> _buildFlutterDocs(
     ['get'],
     workingDirectory: path.join(flutterPath, 'dev', 'tools'),
   );
-  await flutterRepo.launcher.runStreamed(
-    flutterRepo.cachePub,
-    ['get'],
-    workingDirectory: path.join(flutterPath, 'dev', 'snippets'),
-  );
   // TODO(jcollins-g): flutter's dart SDK pub tries to precompile the universe
   // when using -spath.  Why?
   await flutterRepo.launcher.runStreamed(flutterRepo.cachePub,
