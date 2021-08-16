@@ -1,1 +1,1 @@
-echo this is not dart
+@echo this is not dart
