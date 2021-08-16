@@ -15,6 +15,7 @@ import 'package:test/test.dart';
 import 'package:yaml/yaml.dart';
 
 final Directory _testPackageDir = Directory('testing/test_package');
+final Directory _toolExecutableDir = Directory('testing/tool_executables');
 
 void main() {
   ToolConfiguration toolMap;
@@ -50,10 +51,9 @@ void main() {
     }
     expect(result?.exitCode, equals(0));
     setupFile = File(path.join(tempDir.path, 'setup.stamp'));
-    // We use the Dart executable for our "non-dart" tool
-    // test, because it's the only executable that we know the
-    // exact location of that works on all platforms.
-    var nonDartExecutable = Platform.resolvedExecutable;
+    var nonDartName = Platform.isWindows ? 'non_dart.bat' : 'non_dart.sh';
+    var nonDartExecutable =
+        path.join(_toolExecutableDir.absolute.path, nonDartName);
     // Have to replace backslashes on Windows with double-backslashes, to
     // escape them for YAML parser.
     var yamlMap = '''
@@ -153,7 +153,7 @@ echo:
         toolErrorCallback: errorCallback,
       );
       expect(errors, isEmpty);
-      expect(result, isEmpty); // Output is on stderr.
+      expect(result, startsWith('this is not dart'));
     });
     test('can invoke a pre-snapshotted tool', () async {
       var result = await runner.run(
