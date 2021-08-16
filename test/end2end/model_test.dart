@@ -2259,13 +2259,19 @@ void main() {
       Class TypeParameterThings,
           TypeParameterThingsExtended,
           TypeParameterThingsExtendedQ;
-      Field aName, aThing;
+      Extension UnboundTypeTargetExtension;
+      Field aName, aThing, doesNotCrash;
       TypeParameter ATypeParam, BTypeParam, CTypeParam, DTypeParam, QTypeParam;
       Method aMethod, aMethodExtended, aMethodExtendedQ;
       Parameter aParam, anotherParam, typedParam;
       ModelFunction aTopLevelTypeParameterFunction;
 
       setUpAll(() {
+        UnboundTypeTargetExtension = fakeLibrary.extensions
+            .firstWhere((f) => f.name == 'UnboundTypeTargetExtension');
+        doesNotCrash = UnboundTypeTargetExtension.instanceFields
+            .firstWhere((f) => f.name == 'doesNotCrash');
+
         aTopLevelTypeParameterFunction = fakeLibrary.functions
             .firstWhere((f) => f.name == 'aTopLevelTypeParameterFunction');
         // TODO(jcollins-g): dart-lang/dartdoc#2704, HTML and type parameters
@@ -2306,6 +2312,11 @@ void main() {
             .firstWhere((m) => m.name == 'aMethod');
         QTypeParam = aMethodExtendedQ.typeParameters
             .firstWhere((p) => p.name == 'QTypeParam');
+      });
+
+      test('on extension targeting an unbound type', () {
+        expect(newLookup(UnboundTypeTargetExtension, 'doesNotCrash'),
+            equals(MatchingLinkResult(doesNotCrash)));
       });
 
       test('on inherited documentation', () {
