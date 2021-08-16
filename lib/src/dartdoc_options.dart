@@ -232,9 +232,9 @@ class ToolConfiguration {
         return isDartCommand;
       }
 
-      var executableRelatvePath = command.removeAt(0);
+      var executableRelativePath = command.removeAt(0);
       var executable = pathContext.canonicalize(
-          pathContext.join(canonicalYamlPath, executableRelatvePath));
+          pathContext.join(canonicalYamlPath, executableRelativePath));
       validateExecutable(executable);
       if (setupCommand != null) {
         var setupExecutableRelativePath = setupCommand.removeAt(0);
