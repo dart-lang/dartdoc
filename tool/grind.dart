@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+// @dart=2.9
+
 import 'dart:async';
 import 'dart:io' hide ProcessException;
 
@@ -315,6 +317,10 @@ void presubmit() => null;
 @Task('Run long tests, self-test dartdoc, and run the publish test')
 @Depends(presubmit, longTest, testDartdoc)
 void buildbot() => null;
+
+@Task('Run buildbot tests, but without publish test')
+@Depends(analyze, dartfmt, checkBuild, smokeTest, longTest, testDartdoc)
+void buildbotNoPublish() => null;
 
 @Task('Generate docs for the Dart SDK')
 Future buildSdkDocs() async {
