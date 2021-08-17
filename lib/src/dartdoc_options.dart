@@ -396,10 +396,10 @@ abstract class DartdocOption<T> {
 
   bool get _isDouble => _kDoubleVal is T;
 
-  DartdocOption<Object> _parent;
+  DartdocOption _parent;
 
   /// The parent of this DartdocOption, or null if this is the root.
-  DartdocOption<Object> get parent => _parent;
+  DartdocOption get parent => _parent;
 
   final Map<String, _YamlFileData> __yamlAtCanonicalPathCache = {};
 
@@ -424,16 +424,16 @@ abstract class DartdocOption<T> {
   /// Throw [DartdocFileMissing] with a detailed error message indicating where
   /// the error came from when a file or directory option is missing.
   void _onMissing(
-      _OptionValueWithContext<Object> valueWithContext, String missingFilename);
+      _OptionValueWithContext<T> valueWithContext, String missingFilename);
 
   /// Call [_onMissing] for every path that does not exist.
-  void _validatePaths(_OptionValueWithContext<Object> valueWithContext) {
+  void _validatePaths(_OptionValueWithContext<T> valueWithContext) {
     if (!mustExist) return;
     assert(isDir || isFile);
     List<String> resolvedPaths;
     var value = valueWithContext.value;
     if (value is String) {
-      resolvedPaths = [valueWithContext.resolvedValue];
+      resolvedPaths = [valueWithContext.resolvedValue as String];
     } else if (value is List<String>) {
       resolvedPaths = valueWithContext.resolvedValue as List;
     } else if (value is Map<String, String>) {
@@ -456,7 +456,7 @@ abstract class DartdocOption<T> {
 
   /// For a [List<String>] or [String] value, if [isDir] or [isFile] is set,
   /// resolve paths in value relative to canonicalPath.
-  T _handlePathsInContext(_OptionValueWithContext<Object> valueWithContext) {
+  T _handlePathsInContext(_OptionValueWithContext<T> valueWithContext) {
     if (valueWithContext?.value == null || !(isDir || isFile || isGlob)) {
       return valueWithContext?.value;
     }
@@ -472,15 +472,15 @@ abstract class DartdocOption<T> {
   ArgResults get _argResults => root.__argResults;
 
   /// Set the parent of this [DartdocOption].  Do not call more than once.
-  set parent(DartdocOption<Object> newParent) {
+  set parent(DartdocOption newParent) {
     assert(_parent == null);
     _parent = newParent;
   }
 
   /// The root [DartdocOption] containing this object, or [this] if the object
   /// has no parent.
-  DartdocOption<Object> get root {
-    DartdocOption<Object> p = this;
+  DartdocOption get root {
+    DartdocOption p = this;
     while (p.parent != null) {
       p = p.parent;
     }
@@ -490,7 +490,7 @@ abstract class DartdocOption<T> {
   /// All object names starting at the root.
   Iterable<String> get keys {
     var keyList = <String>[];
-    DartdocOption<Object> option = this;
+    DartdocOption option = this;
     while (option?.name != null) {
       keyList.add(option.name);
       option = option.parent;
@@ -499,7 +499,7 @@ abstract class DartdocOption<T> {
   }
 
   /// Direct children of this node, mapped by name.
-  final Map<String, DartdocOption<Object>> _children = {};
+  final Map<String, DartdocOption> _children = {};
 
   /// Return the calculated value of this option, given the directory as
   /// context.
@@ -531,7 +531,7 @@ abstract class DartdocOption<T> {
           resourceProvider.pathContext.basename(element.source.fullName))));
 
   /// Adds a DartdocOption to the children of this DartdocOption.
-  void add(DartdocOption<Object> option) {
+  void add(DartdocOption option) {
     if (_children.containsKey(option.name)) {
       throw DartdocOptionError(
           'Tried to add two children with the same name: ${option.name}');
@@ -545,7 +545,7 @@ abstract class DartdocOption<T> {
   void _onAdd() {}
 
   /// Adds a list of dartdoc options to the children of this DartdocOption.
-  void addAll(Iterable<DartdocOption<Object>> options) => options.forEach(add);
+  void addAll(Iterable<DartdocOption> options) => options.forEach(add);
 
   /// Get the immediate child of this node named [name].
   DartdocOption<dynamic> operator [](String name) {
@@ -553,7 +553,7 @@ abstract class DartdocOption<T> {
   }
 
   /// Apply the function [visit] to [this] and all children.
-  void traverse(void Function(DartdocOption<Object> option) visit) {
+  void traverse(void Function(DartdocOption option) visit) {
     visit(this);
     _children.values.forEach((d) => d.traverse(visit));
   }
@@ -590,7 +590,7 @@ class DartdocOptionFileSynth<T> extends DartdocOption<T>
 
   @override
   void _onMissing(
-      _OptionValueWithContext<Object> valueWithContext, String missingPath) {
+      _OptionValueWithContext<T> valueWithContext, String missingPath) {
     if (valueWithContext.definingFile != null) {
       _onMissingFromFiles(valueWithContext, missingPath);
     } else {
@@ -632,7 +632,7 @@ class DartdocOptionArgSynth<T> extends DartdocOption<T>
 
   @override
   void _onMissing(
-      _OptionValueWithContext<Object> valueWithContext, String missingPath) {
+      _OptionValueWithContext<T> valueWithContext, String missingPath) {
     _onMissingFromArgs(valueWithContext, missingPath);
   }
 
@@ -687,12 +687,12 @@ abstract class DartdocSyntheticOption<T> implements DartdocOption<T> {
   }
 
   @override
-  void _onMissing(_OptionValueWithContext<Object> valueWithContext,
-          String missingPath) =>
+  void _onMissing(
+          _OptionValueWithContext<T> valueWithContext, String missingPath) =>
       _onMissingFromSynthetic(valueWithContext, missingPath);
 
   void _onMissingFromSynthetic(
-      _OptionValueWithContext<Object> valueWithContext, String missingPath) {
+      _OptionValueWithContext<T> valueWithContext, String missingPath) {
     var description = 'Synthetic configuration option $name from <internal>';
     throw DartdocFileMissing(
         '$description, computed as ${valueWithContext.value}, resolves to '
@@ -700,7 +700,7 @@ abstract class DartdocSyntheticOption<T> implements DartdocOption<T> {
   }
 }
 
-typedef OptionGenerator = Future<List<DartdocOption<Object>>> Function(
+typedef OptionGenerator = Future<List<DartdocOption>> Function(
     PackageMetaProvider);
 
 /// A [DartdocOption] that only contains other [DartdocOption]s and is not an
@@ -734,13 +734,13 @@ class DartdocOptionSet extends DartdocOption<void> {
 
   /// Since we have no value, [_onMissing] does nothing.
   @override
-  void _onMissing(_OptionValueWithContext<Object> valueWithContext,
-      String missingFilename) {}
+  void _onMissing(
+      _OptionValueWithContext<void> valueWithContext, String missingFilename) {}
 
   /// Traverse skips this node, because it doesn't represent a real
   /// configuration object.
   @override
-  void traverse(void Function(DartdocOption<Object> option) visitor) {
+  void traverse(void Function(DartdocOption option) visitor) {
     _children.values.forEach((d) => d.traverse(visitor));
   }
 }
@@ -815,7 +815,7 @@ class DartdocOptionArgFile<T> extends DartdocOption<T>
 
   @override
   void _onMissing(
-      _OptionValueWithContext<Object> valueWithContext, String missingPath) {
+      _OptionValueWithContext<T> valueWithContext, String missingPath) {
     if (valueWithContext.definingFile != null) {
       _onMissingFromFiles(valueWithContext, missingPath);
     } else {
@@ -887,12 +887,12 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
   String get fieldName => keys.join('.');
 
   @override
-  void _onMissing(_OptionValueWithContext<Object> valueWithContext,
-          String missingPath) =>
+  void _onMissing(
+          _OptionValueWithContext<T> valueWithContext, String missingPath) =>
       _onMissingFromFiles(valueWithContext, missingPath);
 
   void _onMissingFromFiles(
-      _OptionValueWithContext<Object> valueWithContext, String missingPath) {
+      _OptionValueWithContext<T> valueWithContext, String missingPath) {
     var dartdocYaml = resourceProvider.pathContext.join(
         valueWithContext.canonicalDirectoryPath, valueWithContext.definingFile);
     throw DartdocFileMissing('Field $fieldName from $dartdocYaml, set to '
@@ -914,7 +914,7 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
   T _valueAtFromFiles(Folder dir) {
     var key = resourceProvider.pathContext.canonicalize(dir.path);
     if (!__valueAtFromFiles.containsKey(key)) {
-      _OptionValueWithContext<Object> valueWithContext;
+      _OptionValueWithContext<T> valueWithContext;
       if (parentDirOverridesChild) {
         valueWithContext = _valueAtFromFilesLastFound(dir);
       } else {
@@ -927,8 +927,8 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
 
   /// Searches all dartdoc_options files through parent directories, starting at
   /// [dir], for the option and returns one once found.
-  _OptionValueWithContext<Object> _valueAtFromFilesFirstFound(Folder folder) {
-    _OptionValueWithContext<Object> value;
+  _OptionValueWithContext<T> _valueAtFromFilesFirstFound(Folder folder) {
+    _OptionValueWithContext<T> value;
     for (var dir in folder.withAncestors) {
       value = _valueAtFromFile(dir);
       if (value != null) break;
@@ -939,8 +939,8 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
   /// Searches all dartdoc_options files for the option, and returns the value
   /// in the top-most parent directory `dartdoc_options.yaml` file it is
   /// mentioned in.
-  _OptionValueWithContext<Object> _valueAtFromFilesLastFound(Folder folder) {
-    _OptionValueWithContext<Object> value;
+  _OptionValueWithContext<T> _valueAtFromFilesLastFound(Folder folder) {
+    _OptionValueWithContext<T> value;
     for (var dir in folder.withAncestors) {
       var tmpValue = _valueAtFromFile(dir);
       if (tmpValue != null) value = tmpValue;
@@ -950,7 +950,7 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
 
   /// Returns null if not set in the YAML file in this directory (or its
   /// parents).
-  _OptionValueWithContext<Object> _valueAtFromFile(Folder dir) {
+  _OptionValueWithContext<T> _valueAtFromFile(Folder dir) {
     var yamlFileData = _yamlAtDirectory(dir);
     var contextPath = yamlFileData.canonicalDirectoryPath;
     Object yamlData = yamlFileData.data ?? {};
@@ -1081,12 +1081,12 @@ abstract class _DartdocArgOption<T> implements DartdocOption<T> {
   }
 
   @override
-  void _onMissing(_OptionValueWithContext<Object> valueWithContext,
-          String missingPath) =>
+  void _onMissing(
+          _OptionValueWithContext<T> valueWithContext, String missingPath) =>
       _onMissingFromArgs(valueWithContext, missingPath);
 
   void _onMissingFromArgs(
-      _OptionValueWithContext<Object> valueWithContext, String missingPath) {
+      _OptionValueWithContext<T> valueWithContext, String missingPath) {
     throw DartdocFileMissing(
         'Argument --$argName, set to ${valueWithContext.value}, resolves to '
         'missing path: "$missingPath"');
@@ -1096,7 +1096,7 @@ abstract class _DartdocArgOption<T> implements DartdocOption<T> {
   /// the [argParser] and the working directory from [_directoryCurrent].
   ///
   /// Throws [UnsupportedError] if [T] is not a supported type.
-  _OptionValueWithContext<Object> _valueAtFromArgsWithContext() {
+  _OptionValueWithContext<T> _valueAtFromArgsWithContext() {
     if (!_argResults.wasParsed(argName)) return null;
 
     T retval;
@@ -1356,7 +1356,7 @@ class DartdocOptionContext extends DartdocOptionContextBase
 
 /// Instantiate dartdoc's configuration file and options parser with the
 /// given command line arguments.
-Future<List<DartdocOption<Object>>> createDartdocOptions(
+Future<List<DartdocOption>> createDartdocOptions(
   PackageMetaProvider packageMetaProvider,
 ) async {
   var resourceProvider = packageMetaProvider.resourceProvider;
