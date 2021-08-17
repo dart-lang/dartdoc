@@ -2,14 +2,20 @@ import 'dart:io' show stderr, exitCode;
 
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:args/args.dart';
-import 'package:dartdoc/dartdoc.dart';
+import 'package:dartdoc/dartdoc.dart' show dartdocVersion, programName;
+import 'package:dartdoc/src/dartdoc_options.dart';
+import 'package:dartdoc/src/generator/generator.dart';
 import 'package:dartdoc/src/logging.dart';
+import 'package:dartdoc/src/package_meta.dart';
 
 /// Helper class that consolidates option contexts for instantiating generators.
 class DartdocGeneratorOptionContext extends DartdocOptionContext {
   DartdocGeneratorOptionContext(
       DartdocOptionSet optionSet, Folder? dir, ResourceProvider resourceProvider)
       : super(optionSet, dir, resourceProvider);
+  DartdocGeneratorOptionContext.fromDefaultContextLocation(
+      DartdocOptionSet optionSet, ResourceProvider resourceProvider)
+      : super.fromDefaultContextLocation(optionSet, resourceProvider);
 
   /// Returns the joined contents of any 'header' files specified in options.
   late final String header = _joinCustomTextFiles(optionSet['header'].valueAt(context));
@@ -46,6 +52,9 @@ class DartdocProgramOptionContext extends DartdocGeneratorOptionContext
   DartdocProgramOptionContext(
       DartdocOptionSet optionSet, Folder? dir, ResourceProvider resourceProvider)
       : super(optionSet, dir, resourceProvider);
+  DartdocProgramOptionContext.fromDefaultContextLocation(
+      DartdocOptionSet optionSet, ResourceProvider resourceProvider)
+      : super.fromDefaultContextLocation(optionSet, resourceProvider);
 
   bool get generateDocs => optionSet['generateDocs'].valueAt(context);
   bool get help => optionSet['help'].valueAt(context);
@@ -107,8 +116,8 @@ Future<DartdocProgramOptionContext?> parseOptions(
 
   DartdocProgramOptionContext config;
   try {
-    config = DartdocProgramOptionContext(
-        optionSet, null, packageMetaProvider.resourceProvider);
+    config = DartdocProgramOptionContext.fromDefaultContextLocation(
+        optionSet, packageMetaProvider.resourceProvider);
   } on DartdocOptionError catch (e) {
     stderr.writeln(' fatal error: ${e.message}');
     stderr.writeln('');
