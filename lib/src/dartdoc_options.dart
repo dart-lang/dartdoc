@@ -1219,7 +1219,7 @@ class DartdocOptionContext extends DartdocOptionContextBase
       this.optionSet, Resource resource, ResourceProvider resourceProvider) {
     context = resourceProvider.getFolder(resourceProvider.pathContext
         .canonicalize(
-        resource is File ? resource.parent2.path : resource.path));
+            resource is File ? resource.parent2.path : resource.path));
   }
 
   /// Build a DartdocOptionContext from an analyzer element (using its source
