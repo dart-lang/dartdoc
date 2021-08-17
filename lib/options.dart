@@ -64,6 +64,9 @@ class DartdocProgramOptionContext extends DartdocGeneratorOptionContext
   DartdocProgramOptionContext(
       DartdocOptionSet optionSet, Folder dir, ResourceProvider resourceProvider)
       : super(optionSet, dir, resourceProvider);
+  DartdocProgramOptionContext.fromDefaultContextLocation(
+      DartdocOptionSet optionSet, ResourceProvider resourceProvider)
+      : super.fromDefaultContextLocation(optionSet, resourceProvider);
 
   bool get generateDocs => optionSet['generateDocs'].valueAt(context);
   bool get help => optionSet['help'].valueAt(context);
@@ -125,8 +128,8 @@ Future<DartdocProgramOptionContext> parseOptions(
 
   DartdocProgramOptionContext config;
   try {
-    config = DartdocProgramOptionContext(
-        optionSet, null, packageMetaProvider.resourceProvider);
+    config = DartdocProgramOptionContext.fromDefaultContextLocation(
+        optionSet, packageMetaProvider.resourceProvider);
   } on DartdocOptionError catch (e) {
     stderr.writeln(' fatal error: ${e.message}');
     stderr.writeln('');
