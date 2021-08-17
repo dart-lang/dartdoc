@@ -14,6 +14,10 @@ class DartdocGeneratorOptionContext extends DartdocOptionContext {
       DartdocOptionSet optionSet, Folder dir, ResourceProvider resourceProvider)
       : super(optionSet, dir, resourceProvider);
 
+  DartdocGeneratorOptionContext.fromDefaultContextLocation(
+      DartdocOptionSet optionSet, ResourceProvider resourceProvider)
+      : super.fromDefaultContextLocation(optionSet, resourceProvider);
+
   // TODO(migration): Make late final with initializer when Null Safe.
   String _header;
 

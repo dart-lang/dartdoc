@@ -435,7 +435,7 @@ abstract class DartdocOption<T> {
     if (value is String) {
       resolvedPaths = [valueWithContext.resolvedValue as String];
     } else if (value is List<String>) {
-      resolvedPaths = valueWithContext.resolvedValue as List;
+      resolvedPaths = valueWithContext.resolvedValue as List<String>;
     } else if (value is Map<String, String>) {
       resolvedPaths = (valueWithContext.resolvedValue as Map).values.toList();
     } else {
@@ -1215,11 +1215,23 @@ class DartdocOptionContext extends DartdocOptionContextBase
   // TODO(jcollins-g): Allow passing in structured data to initialize a
   // [DartdocOptionContext]'s arguments instead of having to parse strings
   // via optionSet.
-  DartdocOptionContext(
-      this.optionSet, Resource resource, ResourceProvider resourceProvider) {
+  DartdocOptionContext(this.optionSet, Resource contextLocation,
+      ResourceProvider resourceProvider) {
+    assert(contextLocation != null);
     context = resourceProvider.getFolder(resourceProvider.pathContext
-        .canonicalize(
-            resource is File ? resource.parent2.path : resource.path));
+        .canonicalize(contextLocation is File
+            ? contextLocation.parent2.path
+            : contextLocation.path));
+  }
+
+  /// Build a DartdocOptionContext via the 'inputDir' command line option.
+  DartdocOptionContext.fromDefaultContextLocation(
+      this.optionSet, ResourceProvider resourceProvider) {
+    var current = resourceProvider.pathContext.current;
+    String inputDir =
+        optionSet['inputDir'].valueAt(resourceProvider.getFolder(current)) ??
+            current;
+    context = resourceProvider.getFolder(inputDir);
   }
 
   /// Build a DartdocOptionContext from an analyzer element (using its source
