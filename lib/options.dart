@@ -10,18 +10,20 @@ import 'package:dartdoc/src/package_meta.dart';
 
 /// Helper class that consolidates option contexts for instantiating generators.
 class DartdocGeneratorOptionContext extends DartdocOptionContext {
-  DartdocGeneratorOptionContext(
-      DartdocOptionSet optionSet, Folder? dir, ResourceProvider resourceProvider)
+  DartdocGeneratorOptionContext(DartdocOptionSet optionSet, Folder? dir,
+      ResourceProvider resourceProvider)
       : super(optionSet, dir, resourceProvider);
   DartdocGeneratorOptionContext.fromDefaultContextLocation(
       DartdocOptionSet optionSet, ResourceProvider resourceProvider)
       : super.fromDefaultContextLocation(optionSet, resourceProvider);
 
   /// Returns the joined contents of any 'header' files specified in options.
-  late final String header = _joinCustomTextFiles(optionSet['header'].valueAt(context));
+  late final String header =
+      _joinCustomTextFiles(optionSet['header'].valueAt(context));
 
   /// Returns the joined contents of any 'footer' files specified in options.
-  late final String footer = _joinCustomTextFiles(optionSet['footer'].valueAt(context));
+  late final String footer =
+      _joinCustomTextFiles(optionSet['footer'].valueAt(context));
 
   /// Returns the joined contents of any 'footer-text' files specified in
   /// options.
@@ -49,8 +51,8 @@ class DartdocGeneratorOptionContext extends DartdocOptionContext {
 
 class DartdocProgramOptionContext extends DartdocGeneratorOptionContext
     with LoggingContext {
-  DartdocProgramOptionContext(
-      DartdocOptionSet optionSet, Folder? dir, ResourceProvider resourceProvider)
+  DartdocProgramOptionContext(DartdocOptionSet optionSet, Folder? dir,
+      ResourceProvider resourceProvider)
       : super(optionSet, dir, resourceProvider);
   DartdocProgramOptionContext.fromDefaultContextLocation(
       DartdocOptionSet optionSet, ResourceProvider resourceProvider)
