@@ -1,5 +1,3 @@
-// @dart=2.9
-
 import 'dart:io' show stderr, exitCode;
 
 import 'package:analyzer/file_system/file_system.dart';
@@ -12,34 +10,24 @@ import 'package:dartdoc/src/package_meta.dart';
 
 /// Helper class that consolidates option contexts for instantiating generators.
 class DartdocGeneratorOptionContext extends DartdocOptionContext {
-  DartdocGeneratorOptionContext(
-      DartdocOptionSet optionSet, Folder dir, ResourceProvider resourceProvider)
+  DartdocGeneratorOptionContext(DartdocOptionSet optionSet, Folder? dir,
+      ResourceProvider resourceProvider)
       : super(optionSet, dir, resourceProvider);
-
   DartdocGeneratorOptionContext.fromDefaultContextLocation(
       DartdocOptionSet optionSet, ResourceProvider resourceProvider)
       : super.fromDefaultContextLocation(optionSet, resourceProvider);
 
-  // TODO(migration): Make late final with initializer when Null Safe.
-  String _header;
-
   /// Returns the joined contents of any 'header' files specified in options.
-  String get header =>
-      _header ??= _joinCustomTextFiles(optionSet['header'].valueAt(context));
-
-  // TODO(migration): Make late final with initializer when Null Safe.
-  String _footer;
+  late final String header =
+      _joinCustomTextFiles(optionSet['header'].valueAt(context));
 
   /// Returns the joined contents of any 'footer' files specified in options.
-  String get footer =>
-      _footer ??= _joinCustomTextFiles(optionSet['footer'].valueAt(context));
-
-  // TODO(migration): Make late final with initializer when Null Safe.
-  String _footerText;
+  late final String footer =
+      _joinCustomTextFiles(optionSet['footer'].valueAt(context));
 
   /// Returns the joined contents of any 'footer-text' files specified in
   /// options.
-  String get footerText => _footerText ??=
+  late final String footerText =
       _joinCustomTextFiles(optionSet['footerText'].valueAt(context));
 
   String _joinCustomTextFiles(Iterable<String> paths) => paths
@@ -63,8 +51,8 @@ class DartdocGeneratorOptionContext extends DartdocOptionContext {
 
 class DartdocProgramOptionContext extends DartdocGeneratorOptionContext
     with LoggingContext {
-  DartdocProgramOptionContext(
-      DartdocOptionSet optionSet, Folder dir, ResourceProvider resourceProvider)
+  DartdocProgramOptionContext(DartdocOptionSet optionSet, Folder? dir,
+      ResourceProvider resourceProvider)
       : super(optionSet, dir, resourceProvider);
   DartdocProgramOptionContext.fromDefaultContextLocation(
       DartdocOptionSet optionSet, ResourceProvider resourceProvider)
@@ -91,10 +79,10 @@ Future<List<DartdocOption<bool>>> createDartdocProgramOptions(
   ];
 }
 
-Future<DartdocProgramOptionContext> parseOptions(
+Future<DartdocProgramOptionContext?> parseOptions(
   PackageMetaProvider packageMetaProvider,
   List<String> arguments, {
-  OptionGenerator additionalOptions,
+  OptionGenerator? additionalOptions,
 }) async {
   var optionSet = await DartdocOptionSet.fromOptionGenerators(
       'dartdoc',
