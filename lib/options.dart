@@ -10,8 +10,8 @@ import 'package:dartdoc/src/package_meta.dart';
 
 /// Helper class that consolidates option contexts for instantiating generators.
 class DartdocGeneratorOptionContext extends DartdocOptionContext {
-  DartdocGeneratorOptionContext(DartdocOptionSet optionSet, Folder? dir,
-      ResourceProvider resourceProvider)
+  DartdocGeneratorOptionContext(
+      DartdocOptionSet optionSet, Folder dir, ResourceProvider resourceProvider)
       : super(optionSet, dir, resourceProvider);
   DartdocGeneratorOptionContext.fromDefaultContextLocation(
       DartdocOptionSet optionSet, ResourceProvider resourceProvider)
@@ -51,8 +51,8 @@ class DartdocGeneratorOptionContext extends DartdocOptionContext {
 
 class DartdocProgramOptionContext extends DartdocGeneratorOptionContext
     with LoggingContext {
-  DartdocProgramOptionContext(DartdocOptionSet optionSet, Folder? dir,
-      ResourceProvider resourceProvider)
+  DartdocProgramOptionContext(
+      DartdocOptionSet optionSet, Folder dir, ResourceProvider resourceProvider)
       : super(optionSet, dir, resourceProvider);
   DartdocProgramOptionContext.fromDefaultContextLocation(
       DartdocOptionSet optionSet, ResourceProvider resourceProvider)
@@ -84,7 +84,7 @@ Future<DartdocProgramOptionContext?> parseOptions(
   List<String> arguments, {
   OptionGenerator? additionalOptions,
 }) async {
-  var optionSet = await DartdocOptionSet.fromOptionGenerators(
+  var optionRoot = await DartdocOptionRoot.fromOptionGenerators(
       'dartdoc',
       [
         createDartdocOptions,
@@ -96,22 +96,22 @@ Future<DartdocProgramOptionContext?> parseOptions(
       packageMetaProvider);
 
   try {
-    optionSet.parseArguments(arguments);
+    optionRoot.parseArguments(arguments);
   } on FormatException catch (e) {
     stderr.writeln(' fatal error: ${e.message}');
     stderr.writeln('');
-    _printUsage(optionSet.argParser);
+    _printUsage(optionRoot.argParser);
     // Do not use exit() as this bypasses --pause-isolates-on-exit
     exitCode = 64;
     return null;
   }
-  if (optionSet['help'].valueAtCurrent()) {
-    _printHelp(optionSet.argParser);
+  if (optionRoot['help'].valueAtCurrent()) {
+    _printHelp(optionRoot.argParser);
     exitCode = 0;
     return null;
   }
-  if (optionSet['version'].valueAtCurrent()) {
-    _printVersion(optionSet.argParser);
+  if (optionRoot['version'].valueAtCurrent()) {
+    _printVersion(optionRoot.argParser);
     exitCode = 0;
     return null;
   }
@@ -119,12 +119,12 @@ Future<DartdocProgramOptionContext?> parseOptions(
   DartdocProgramOptionContext config;
   try {
     config = DartdocProgramOptionContext.fromDefaultContextLocation(
-        optionSet, packageMetaProvider.resourceProvider);
+        optionRoot, packageMetaProvider.resourceProvider);
   } on DartdocOptionError catch (e) {
     stderr.writeln(' fatal error: ${e.message}');
     stderr.writeln('');
     await stderr.flush();
-    _printUsage(optionSet.argParser);
+    _printUsage(optionRoot.argParser);
     exitCode = 64;
     return null;
   }

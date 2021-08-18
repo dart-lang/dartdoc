@@ -53,7 +53,7 @@ void main() {
         sdkFolder,
         defaultSdk: mockSdk,
       );
-      var optionSet = await DartdocOptionSet.fromOptionGenerators(
+      var optionSet = await DartdocOptionRoot.fromOptionGenerators(
           'dartdoc', [createDartdocOptions], packageMetaProvider);
       optionSet.parseArguments([]);
       packageConfigProvider = FakePackageConfigProvider();

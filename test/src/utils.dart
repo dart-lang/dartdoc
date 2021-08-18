@@ -36,7 +36,7 @@ final Folder testPackageToolError = _resourceProvider.getFolder(_pathContext
 /// [DartdocOptionSet] based on the current working directory.
 Future<DartdocOptionContext> contextFromArgv(
     List<String> argv, PackageMetaProvider packageMetaProvider) async {
-  var optionSet = await DartdocOptionSet.fromOptionGenerators(
+  var optionSet = await DartdocOptionRoot.fromOptionGenerators(
       'dartdoc', [createDartdocOptions], packageMetaProvider);
   optionSet.parseArguments(argv);
   return DartdocOptionContext.fromDefaultContextLocation(

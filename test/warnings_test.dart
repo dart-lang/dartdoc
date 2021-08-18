@@ -56,7 +56,7 @@ dartdoc:
   });
 
   setUp(() async {
-    optionSet = await DartdocOptionSet.fromOptionGenerators(
+    optionSet = await DartdocOptionRoot.fromOptionGenerators(
         'dartdoc', [createDartdocOptions], pubPackageMetaProvider);
   });
 

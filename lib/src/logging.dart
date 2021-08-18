@@ -145,7 +145,7 @@ Future<List<DartdocOption<Object>>> createLoggingOptions(
         negatable: true),
     DartdocOptionArgSynth<bool>('quiet',
         (DartdocSyntheticOption<Object> option, Folder dir) {
-      if (option.root['generateDocs']?.valueAt(dir) == false) {
+      if (option.parent['generateDocs'].valueAt(dir) == false) {
         return true;
       }
       return false;
