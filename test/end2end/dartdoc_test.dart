@@ -57,8 +57,8 @@ Future<DartdocGeneratorOptionContext> _generatorContextFromArgv(
       ],
       pubPackageMetaProvider);
   optionSet.parseArguments(argv);
-  return DartdocGeneratorOptionContext(
-      optionSet, null, pubPackageMetaProvider.resourceProvider);
+  return DartdocGeneratorOptionContext.fromDefaultContextLocation(
+      optionSet, pubPackageMetaProvider.resourceProvider);
 }
 
 class DartdocLoggingOptionContext extends DartdocGeneratorOptionContext
