@@ -44,5 +44,9 @@ elif [ "$DARTDOC_BOT" = "sdk-analyzer" ]; then
   pub run grinder test-with-analyzer-sdk
 else
   echo "Running main dartdoc bot"
-  pub run grinder buildbot
+  if ! echo "${DART_VERSION}" | grep -q dev ; then
+    pub run grinder buildbot-non-dev
+  else
+    pub run grinder buildbot
+  fi
 fi

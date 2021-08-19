@@ -316,6 +316,10 @@ void presubmit() => null;
 @Depends(presubmit, longTest, testDartdoc)
 void buildbot() => null;
 
+@Task('Run buildbot tests but skip the build test as dev can make it unstable')
+@Depends(analyze, dartfmt, tryPublish, smokeTest, longTest, testDartdoc)
+void buildbotNonDev() => null;
+
 @Task('Generate docs for the Dart SDK')
 Future buildSdkDocs() async {
   log('building SDK docs');
