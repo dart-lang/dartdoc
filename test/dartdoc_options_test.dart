@@ -43,10 +43,10 @@ class ConvertedOption {
 void main() {
   var resourceProvider = pubPackageMetaProvider.resourceProvider;
 
-  DartdocOptionSet dartdocOptionSetFiles;
-  DartdocOptionSet dartdocOptionSetArgs;
-  DartdocOptionSet dartdocOptionSetAll;
-  DartdocOptionSet dartdocOptionSetSynthetic;
+  DartdocOptionRoot dartdocOptionSetFiles;
+  DartdocOptionRoot dartdocOptionSetArgs;
+  DartdocOptionRoot dartdocOptionSetAll;
+  DartdocOptionRoot dartdocOptionSetSynthetic;
   Folder tempDir;
   Folder firstDir;
   Folder secondDir;
@@ -59,7 +59,7 @@ void main() {
   File firstExisting;
 
   setUpAll(() {
-    dartdocOptionSetSynthetic = DartdocOptionSet('dartdoc', resourceProvider);
+    dartdocOptionSetSynthetic = DartdocOptionRoot('dartdoc', resourceProvider);
     dartdocOptionSetSynthetic.add(
         DartdocOptionArgFile<int>('mySpecialInteger', 91, resourceProvider));
     dartdocOptionSetSynthetic.add(
@@ -86,7 +86,7 @@ void main() {
       return (option.root['vegetableLoader'].valueAt(dir) as List).first;
     }, resourceProvider, optionIs: OptionKind.file));
 
-    dartdocOptionSetFiles = DartdocOptionSet('dartdoc', resourceProvider);
+    dartdocOptionSetFiles = DartdocOptionRoot('dartdoc', resourceProvider);
     dartdocOptionSetFiles.add(DartdocOptionFileOnly<List<String>>(
         'categoryOrder', [], resourceProvider));
     dartdocOptionSetFiles
@@ -122,7 +122,7 @@ void main() {
       convertYamlToType: ConvertedOption.fromYamlMap,
     ));
 
-    dartdocOptionSetArgs = DartdocOptionSet('dartdoc', resourceProvider);
+    dartdocOptionSetArgs = DartdocOptionRoot('dartdoc', resourceProvider);
     dartdocOptionSetArgs.add(DartdocOptionArgOnly<bool>(
         'cauliflowerSystem', false, resourceProvider));
     dartdocOptionSetArgs.add(DartdocOptionArgOnly<String>(
@@ -152,7 +152,7 @@ void main() {
         'unimportantFile', 'whatever', resourceProvider,
         optionIs: OptionKind.file));
 
-    dartdocOptionSetAll = DartdocOptionSet('dartdoc', resourceProvider);
+    dartdocOptionSetAll = DartdocOptionRoot('dartdoc', resourceProvider);
     dartdocOptionSetAll.add(DartdocOptionArgFile<List<String>>(
         'categoryOrder', [], resourceProvider));
     dartdocOptionSetAll.add(

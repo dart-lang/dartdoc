@@ -41,23 +41,28 @@ Future<List<DartdocOption<Object>>> createPackageWarningOptions(
     // packages they don't control.
     DartdocOptionArgOnly<List<String>>(
         'allowWarningsInPackages', null, resourceProvider,
+        splitCommas: true,
         help:
             'Package names to display warnings for (ignore all others if set).'),
     DartdocOptionArgOnly<List<String>>(
         'allowErrorsInPackages', null, resourceProvider,
+        splitCommas: true,
         help: 'Package names to display errors for (ignore all others if set)'),
     DartdocOptionArgOnly<List<String>>(
         'ignoreWarningsInPackages', null, resourceProvider,
+        splitCommas: true,
         help: 'Package names to ignore warnings for.  Takes priority over '
             'allow-warnings-in-packages'),
     DartdocOptionArgOnly<List<String>>(
         'ignoreErrorsInPackages', null, resourceProvider,
+        splitCommas: true,
         help: 'Package names to ignore errors for. Takes priority over '
             'allow-errors-in-packages'),
     // Options for globally enabling/disabling warnings and errors across
     // packages.  Loaded from dartdoc_options.yaml, but command line arguments
     // will override.
     DartdocOptionArgFile<List<String>>('errors', null, resourceProvider,
+        splitCommas: true,
         help: 'Additional warning names to force as errors.  Specify an empty '
                 'list to force defaults (overriding dartdoc_options.yaml)\nDefaults:\n' +
             (packageWarningDefinitions.values
@@ -68,6 +73,7 @@ Future<List<DartdocOption<Object>>> createPackageWarningOptions(
                 .map((d) => '   ${d.warningName}: ${d.shortHelp}')
                 .join('\n')),
     DartdocOptionArgFile<List<String>>('ignore', null, resourceProvider,
+        splitCommas: true,
         help: 'Additional warning names to ignore.  Specify an empty list to '
                 'force defaults (overriding dartdoc_options.yaml).\nDefaults:\n' +
             (packageWarningDefinitions.values
@@ -78,6 +84,7 @@ Future<List<DartdocOption<Object>>> createPackageWarningOptions(
                 .map((d) => '   ${d.warningName}: ${d.shortHelp}')
                 .join('\n')),
     DartdocOptionArgFile<List<String>>('warnings', null, resourceProvider,
+        splitCommas: true,
         help:
             'Additional warning names to show as warnings (instead of error or '
                     'ignore, if not warning by default).\nDefaults:\n' +

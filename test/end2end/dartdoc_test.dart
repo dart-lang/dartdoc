@@ -49,7 +49,7 @@ final Folder _testPackageExperiments =
 /// the '--input' flag.
 Future<DartdocGeneratorOptionContext> _generatorContextFromArgv(
     List<String> argv) async {
-  var optionSet = await DartdocOptionSet.fromOptionGenerators(
+  var optionSet = await DartdocOptionRoot.fromOptionGenerators(
       'dartdoc',
       [
         createDartdocOptions,
@@ -73,8 +73,10 @@ void main() {
     Folder tempDir;
 
     setUpAll(() async {
-      var optionSet = await DartdocOptionSet.fromOptionGenerators(
-          'dartdoc', [createLoggingOptions], pubPackageMetaProvider);
+      var optionSet = await DartdocOptionRoot.fromOptionGenerators(
+          'dartdoc',
+          [createDartdocProgramOptions, createLoggingOptions],
+          pubPackageMetaProvider);
       optionSet.parseArguments([]);
       startLogging(DartdocLoggingOptionContext(
           optionSet,

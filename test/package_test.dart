@@ -40,7 +40,7 @@ void main() {
     resourceProvider = packageMetaProvider.resourceProvider;
     sdkFolder = packageMetaProvider.defaultSdkDir;
 
-    optionSet = await DartdocOptionSet.fromOptionGenerators(
+    optionSet = await DartdocOptionRoot.fromOptionGenerators(
         'dartdoc', [createDartdocOptions], packageMetaProvider);
     packageConfigProvider = utils.getTestPackageConfigProvider(sdkFolder.path);
   });
