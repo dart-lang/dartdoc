@@ -18,7 +18,9 @@ Run `pub global activate dartdoc` to install the latest version of dartdoc compa
 
 ## Generating docs
 
-Run `dartdoc` from the root directory of a package.  Here is an example of dartdoc documenting itself:
+Run `dartdoc` from the root directory of a package.  Your package must analyze without errors
+with `dart analyze` or `flutter analyze` as appropriate.  Here is an example of dartdoc documenting
+itself:
 
 ```
 $ dartdoc
