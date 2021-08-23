@@ -2153,6 +2153,41 @@ void main() {
       return newLookupResult;
     }
 
+    group('Linking for generalized typedef cases works', () {
+      Library generalizedTypedefs;
+      Typedef T0, T2, T5, T8;
+      Class C2;
+
+      setUpAll(() {
+        generalizedTypedefs = packageGraph.libraries
+            .firstWhere((l) => l.name == 'generalized_typedefs');
+        T0 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T0');
+        T2 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T2');
+        T5 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T5');
+        T8 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T8');
+        C2 = generalizedTypedefs.classes.firstWhere((c) => c.name == 'C2');
+      });
+
+      test('Verify basic ability to link anything', () {
+        expect(bothLookup(T0, 'C2'), equals(MatchingLinkResult(C2)));
+        expect(bothLookup(T2, 'C2'), equals(MatchingLinkResult(C2)));
+        expect(bothLookup(T5, 'C2'), equals(MatchingLinkResult(C2)));
+        expect(bothLookup(T8, 'C2'), equals(MatchingLinkResult(C2)));
+      });
+
+      test('Verify ability to link to type parameters', () {
+        var T2X = T2.typeParameters.firstWhere((t) => t.name == 'X');
+        expect(bothLookup(T2, 'X'), equals(MatchingLinkResult(T2X)));
+        var T5X = T5.typeParameters.firstWhere((t) => t.name == 'X');
+        expect(bothLookup(T5, 'X'), equals(MatchingLinkResult(T5X)));
+      });
+
+      test('Verify ability to link to parameters', () {
+        var T5name = T5.parameters.firstWhere((t) => t.name == 'name');
+        expect(bothLookup(T5, 'name'), equals(MatchingLinkResult(T5name)));
+      });
+    });
+
     group('Linking for complex inheritance and reexport cases', () {
       Library base, extending, local_scope, two_exports;
       Class BaseWithMembers, ExtendingAgain;
