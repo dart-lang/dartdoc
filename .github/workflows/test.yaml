@@ -28,6 +28,14 @@ jobs:
           - os: windows-latest
             sdk: dev
             job: nnbd
+        exclude:
+            # Do not try to run flutter against the "stable" sdk,
+            # it is unlikely to work and produces uninteresting
+            # results.
+          - sdk: stable
+            job: flutter
+          - sdk: stable
+            job: sdk-analyzer
 
     steps:
       - name: Configure git
