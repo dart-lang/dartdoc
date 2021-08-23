@@ -414,8 +414,7 @@ abstract class DartdocOption<T> {
     } else if (value is List<String>) {
       resolvedPaths = valueWithContext.resolvedValue as List<String>;
     } else if (value is Map<String, String>) {
-      resolvedPaths = (valueWithContext.resolvedValue as Map).values.toList()
-          as List<String>;
+      resolvedPaths = [...(valueWithContext.resolvedValue as Map).values];
     } else {
       assert(
           false,
@@ -662,7 +661,7 @@ class DartdocOptionRoot extends DartdocOptionSet {
   DartdocOptionRoot(String name, ResourceProvider resourceProvider)
       : super(name, resourceProvider);
 
-  late final ArgParser __argParser =
+  late final ArgParser _argParser =
       ArgParser(usageLineLength: _usageLineLength);
 
   /// Asynchronous factory that is the main entry point to initialize Dartdoc
@@ -683,7 +682,7 @@ class DartdocOptionRoot extends DartdocOptionSet {
     return optionSet;
   }
 
-  ArgParser get argParser => __argParser;
+  ArgParser get argParser => _argParser;
 
   /// Initialized via [_parseArguments].
   late ArgResults __argResults;
