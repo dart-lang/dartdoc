@@ -76,6 +76,7 @@ class Accessor extends ModelElement implements EnclosedElement {
 
   @override
   String computeDocumentationComment() {
+    String docComment;
     if (isSynthetic) {
       // If we're a setter, only display something if we have something different than the getter.
       // TODO(jcollins-g): modify analyzer to do this itself?
@@ -85,12 +86,17 @@ class Accessor extends ModelElement implements EnclosedElement {
               definingCombo.hasGetter &&
               definingCombo.getter.documentationComment !=
                   definingCombo.documentationComment)) {
-        return stripComments(definingCombo.documentationComment);
+        docComment = definingCombo.documentationComment;
       } else {
-        return '';
+        docComment = '';
       }
+    } else {
+      docComment = super.computeDocumentationComment();
     }
-    return stripComments(super.computeDocumentationComment());
+    if (docComment != null) {
+      return stripComments(docComment);
+    }
+    return null;
   }
 
   @override

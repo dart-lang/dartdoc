@@ -1388,12 +1388,12 @@ Future<List<DartdocOption>> createDartdocOptions(
         negatable: true),
     // This could be a ArgOnly, but trying to not provide too many ways
     // to set the flutter root.
-    DartdocOptionSyntheticOnly<String>(
-        'flutterRoot',
-        (DartdocSyntheticOption<String> option, Folder dir) => resourceProvider
-            .pathContext
-            .resolveTildePath(Platform.environment['FLUTTER_ROOT']),
-        resourceProvider,
+    DartdocOptionSyntheticOnly<String?>('flutterRoot',
+        (DartdocSyntheticOption<String?> option, Folder dir) {
+      var envFlutterRoot = Platform.environment['FLUTTER_ROOT'];
+      if (envFlutterRoot == null) return null;
+      return resourceProvider.pathContext.resolveTildePath(envFlutterRoot);
+    }, resourceProvider,
         optionIs: OptionKind.dir,
         help: 'Root of the Flutter SDK, specified from environment.',
         mustExist: true),
