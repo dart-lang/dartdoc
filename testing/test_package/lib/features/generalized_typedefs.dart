@@ -10,6 +10,8 @@ library generalized_typedefs;
 
 typedef T0 = void;
 typedef T1 = Function;
+
+/// [List], [String]
 typedef T2<X> = List<X>;
 typedef T3<X, Y> = Map<X, Y>;
 typedef T4 = void Function();

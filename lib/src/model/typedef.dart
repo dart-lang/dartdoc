@@ -71,8 +71,12 @@ class Typedef extends ModelElement
   Map<String, CommentReferable> get referenceChildren {
     if (_referenceChildren == null) {
       _referenceChildren = {};
-      _referenceChildren
-          .addEntriesIfAbsent(parameters.explicitOnCollisionWith(this));
+
+      // Only consider parameters if this is a function typedef.
+      if (isCallable) {
+        _referenceChildren
+            .addEntriesIfAbsent(parameters.explicitOnCollisionWith(this));
+      }
       _referenceChildren
           .addEntriesIfAbsent(typeParameters.explicitOnCollisionWith(this));
     }
