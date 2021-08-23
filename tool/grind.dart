@@ -1062,7 +1062,8 @@ final _generatedFilesList = <String>[
   'src/generator/html_resources.g.dart',
   'src/generator/templates.aot_renderers_for_html.dart',
   'src/generator/templates.aot_renderers_for_md.dart',
-  'src/generator/templates.runtime_renderers.dart',
+  // TODO(jcollins-g): https://github.com/dart-lang/dartdoc/issues/2751
+  //'src/generator/templates.runtime_renderers.dart',
   'src/version.dart',
   '../test/mustachio/foo.dart',
 ].map((s) => path.joinAll(path.posix.split(s)));

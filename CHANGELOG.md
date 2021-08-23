@@ -1,3 +1,12 @@
+## 2.0.0
+* BREAKING CHANGE: changes to dartdoc options API
+  to prepare for NNBD migration (#2745, #2744).
+* Fix unbound type reference in extension method comment
+  reference creating a null dereference (#2741, #2740)
+* Update to analyzer 2.0. (#2734)
+* Fix comment references on generic typedefs in new
+  lookup code. (#2755, #2756)
+
 ## 1.0.2
 
 * Fix where extensions header in library sidebar linked to the
