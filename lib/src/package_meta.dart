@@ -28,7 +28,7 @@ class PackageMetaFailure extends DartdocFailure {
 
 /// For each list in this list, at least one of the given paths must exist
 /// for this to be detected as an SDK.
-final List<List<String>> __sdkDirFilePathsPosix = [
+final List<List<String>> _sdkDirFilePathsPosix = [
   ['bin/dart.bat', 'bin/dart.exe', 'bin/dart'],
   ['bin/pub.bat', 'bin/pub'],
   ['lib/core/core.dart'],
@@ -156,19 +156,19 @@ abstract class PubPackageMeta extends PackageMeta {
       : super(dir, resourceProvider);
 
   static late final List<List<String>> _sdkDirFilePaths = () {
-    var __sdkDirFilePaths = <List<String>>[];
+    var pathsToReturn = <List<String>>[];
     if (Platform.isWindows) {
-      for (var paths in __sdkDirFilePathsPosix) {
+      for (var paths in _sdkDirFilePathsPosix) {
         var windowsPaths = [
           for (var path in paths)
             p.joinAll(p.Context(style: p.Style.posix).split(path)),
         ];
-        __sdkDirFilePaths.add(windowsPaths);
+        pathsToReturn.add(windowsPaths);
       }
     } else {
-      __sdkDirFilePaths = __sdkDirFilePathsPosix;
+      pathsToReturn = _sdkDirFilePathsPosix;
     }
-    return __sdkDirFilePaths;
+    return pathsToReturn;
   }();
 
   static final _sdkDirParent = <String, Folder?>{};

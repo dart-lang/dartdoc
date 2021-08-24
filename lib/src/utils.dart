@@ -15,8 +15,9 @@ Iterable<String> stripCommonWhitespace(String str) sync* {
     if (line.isNotEmpty) {
       final match = leadingWhiteSpace.firstMatch(line);
       if (match != null) {
-        if (minimumSeen == null || match.group(1)!.length < minimumSeen) {
-          minimumSeen = match.group(1)!.length;
+        var groupLength = match.group(1)!.length;
+        if (minimumSeen == null || groupLength < minimumSeen) {
+          minimumSeen = groupLength;
         }
       }
     }
