@@ -72,6 +72,8 @@ class Constructor extends ModelElement
 
   @Deprecated(
       // TODO(jcollins-g): This, in retrospect, seems like a bad idea.
+      // We should disambiguate the two concepts (default and unnamed) and
+      // allow both if useful.
       'Renamed to `isUnnamedConstructor`; this getter with the old name will '
       'be removed as early as Dartdoc 1.0.0')
   bool get isDefaultConstructor => isUnnamedConstructor;

@@ -26,7 +26,7 @@ typedef At = A;
 typedef Bt = B;
 typedef Ct = C;
 
-/// [Dt.new] should be a thing.
+/// [Dt.new] and [D.new] should be a thing.
 abstract class D<T extends String> {}
 
 typedef Dt = D;
