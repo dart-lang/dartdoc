@@ -12,6 +12,7 @@ import 'dart:io';
 
 import 'package:analyzer/dart/element/type.dart';
 import 'package:async/async.dart';
+import 'package:dartdoc/src/matching_link_result.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
@@ -20,6 +21,7 @@ import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
 import '../src/utils.dart' as utils;
+import '../src/utils.dart';
 
 final _testPackageGraphExperimentsMemo = AsyncMemoizer<PackageGraph>();
 Future<PackageGraph> get _testPackageGraphExperiments =>
@@ -75,10 +77,107 @@ void main() {
       VersionRange(min: Version.parse('2.14.0-0'), includeMin: true);
   final _tripleShiftAllowed =
       VersionRange(min: Version.parse('2.14.0-0'), includeMin: true);
+  final _constructorTearoffsAllowed =
+      VersionRange(min: Version.parse('2.15.0-0'), includeMin: true);
 
   // Experimental features not yet enabled by default.  Move tests out of this
   // block when the feature is enabled by default.
   group('Experiments', () {
+    group('constructor-tearoffs', () {
+      Library constructorTearoffs;
+      Class A, B, C, D, E, F;
+      Mixin M;
+      Typedef At, Bt, Ct, Et, Ft, NotAClass;
+      Constructor Anew, Bnew, Cnew, Dnew, Enew, Fnew;
+
+      setUpAll(() async {
+        constructorTearoffs = (await _testPackageGraphExperiments)
+            .libraries
+            .firstWhere((l) => l.name == 'constructor_tearoffs');
+        A = constructorTearoffs.classes.firstWhere((c) => c.name == 'A');
+        B = constructorTearoffs.classes.firstWhere((c) => c.name == 'B');
+        C = constructorTearoffs.classes.firstWhere((c) => c.name == 'C');
+        D = constructorTearoffs.classes.firstWhere((c) => c.name == 'D');
+        E = constructorTearoffs.classes.firstWhere((c) => c.name == 'E');
+        F = constructorTearoffs.classes.firstWhere((c) => c.name == 'F');
+        M = constructorTearoffs.mixins.firstWhere((m) => m.name == 'M');
+        At = constructorTearoffs.typedefs.firstWhere((t) => t.name == 'At');
+        Bt = constructorTearoffs.typedefs.firstWhere((t) => t.name == 'Bt');
+        Ct = constructorTearoffs.typedefs.firstWhere((t) => t.name == 'Ct');
+        Et = constructorTearoffs.typedefs.firstWhere((t) => t.name == 'Et');
+        Ft = constructorTearoffs.typedefs.firstWhere((t) => t.name == 'Ft');
+        NotAClass = constructorTearoffs.typedefs
+            .firstWhere((t) => t.name == 'NotAClass');
+        Anew = A.unnamedConstructor;
+        Bnew = B.unnamedConstructor;
+        Cnew = C.unnamedConstructor;
+        Dnew = D.unnamedConstructor;
+        Enew = E.unnamedConstructor;
+        Fnew = F.unnamedConstructor;
+      });
+
+      test('smoke test', () {
+        expect(A, isNotNull);
+        expect(B, isNotNull);
+        expect(C, isNotNull);
+        expect(D, isNotNull);
+        expect(E, isNotNull);
+        expect(F, isNotNull);
+        expect(M, isNotNull);
+        expect(At, isNotNull);
+        expect(Bt, isNotNull);
+        expect(Ct, isNotNull);
+        expect(Et, isNotNull);
+        expect(Ft, isNotNull);
+        expect(NotAClass, isNotNull);
+        expect(Anew, isNotNull);
+        expect(Bnew, isNotNull);
+        expect(Cnew, isNotNull);
+        expect(Dnew, isNotNull);
+        expect(Enew, isNotNull);
+        expect(Fnew, isNotNull);
+      });
+
+      test('reference regression', () {
+        expect(newLookup(constructorTearoffs, 'A.A'),
+            equals(MatchingLinkResult(Anew)));
+        expect(newLookup(constructorTearoffs, 'new A()'),
+            equals(MatchingLinkResult(Anew)));
+        expect(newLookup(constructorTearoffs, 'A()'),
+            equals(MatchingLinkResult(Anew)));
+        expect(newLookup(constructorTearoffs, 'B.B'),
+            equals(MatchingLinkResult(Bnew)));
+        expect(newLookup(constructorTearoffs, 'new B()'),
+            equals(MatchingLinkResult(Bnew)));
+        expect(newLookup(constructorTearoffs, 'B()'),
+            equals(MatchingLinkResult(Bnew)));
+        expect(newLookup(constructorTearoffs, 'C.C'),
+            equals(MatchingLinkResult(Cnew)));
+        expect(newLookup(constructorTearoffs, 'new C()'),
+            equals(MatchingLinkResult(Cnew)));
+        expect(newLookup(constructorTearoffs, 'C()'),
+            equals(MatchingLinkResult(Cnew)));
+        expect(newLookup(constructorTearoffs, 'D.D'),
+            equals(MatchingLinkResult(Dnew)));
+        expect(newLookup(constructorTearoffs, 'new D()'),
+            equals(MatchingLinkResult(Dnew)));
+        expect(newLookup(constructorTearoffs, 'D()'),
+            equals(MatchingLinkResult(Dnew)));
+        expect(newLookup(constructorTearoffs, 'E.E'),
+            equals(MatchingLinkResult(Enew)));
+        expect(newLookup(constructorTearoffs, 'new E()'),
+            equals(MatchingLinkResult(Enew)));
+        expect(newLookup(constructorTearoffs, 'E()'),
+            equals(MatchingLinkResult(Enew)));
+        expect(newLookup(constructorTearoffs, 'F.F'),
+            equals(MatchingLinkResult(Fnew)));
+        expect(newLookup(constructorTearoffs, 'new F()'),
+            equals(MatchingLinkResult(Fnew)));
+        expect(newLookup(constructorTearoffs, 'F()'),
+            equals(MatchingLinkResult(Fnew)));
+      });
+    }, skip: !_constructorTearoffsAllowed.allows(utils.platformVersion));
+
     group('triple-shift', () {
       Library tripleShift;
       Class C, E, F;

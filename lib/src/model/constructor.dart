@@ -67,9 +67,11 @@ class Constructor extends ModelElement
   @override
   bool get isConst => element.isConst;
 
-  bool get isUnnamedConstructor => name == enclosingElement.name;
+  bool get isUnnamedConstructor =>
+      name == enclosingElement.name || name == '${enclosingElement.name}.new';
 
   @Deprecated(
+      // TODO(jcollins-g): This, in retrospect, seems like a bad idea.
       'Renamed to `isUnnamedConstructor`; this getter with the old name will '
       'be removed as early as Dartdoc 1.0.0')
   bool get isDefaultConstructor => isUnnamedConstructor;
@@ -144,5 +146,5 @@ class Constructor extends ModelElement
 
   @override
   String get referenceName =>
-      element.name == '' ? enclosingElement.name : element.name;
+      isUnnamedConstructor ? enclosingElement.name : element.name;
 }

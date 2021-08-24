@@ -9,7 +9,6 @@ import 'dart:io';
 import 'package:analyzer/source/line_info.dart';
 import 'package:async/async.dart';
 import 'package:dartdoc/src/element_type.dart';
-import 'package:dartdoc/src/markdown_processor.dart';
 import 'package:dartdoc/src/matching_link_result.dart';
 import 'package:dartdoc/src/model/feature.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -25,6 +24,7 @@ import 'package:dartdoc/src/warnings.dart';
 import 'package:test/test.dart';
 
 import '../src/utils.dart' as utils;
+import '../src/utils.dart';
 
 final _testPackageGraphMemo = AsyncMemoizer<PackageGraph>();
 Future<PackageGraph> get testPackageGraph async =>
@@ -2124,35 +2124,6 @@ void main() {
   // Put linkage tests here; rendering tests should go to the appropriate
   // [Class], [Extension], etc groups.
   group('Comment References link tests', () {
-    /// For comparison purposes, return an equivalent [MatchingLinkResult]
-    /// for the defining element returned.  May return [originalResult].
-    /// We do this to eliminate canonicalization effects from comparison,
-    /// as the original lookup code returns canonicalized results and the
-    /// new lookup code is only guaranteed to return equivalent results.
-    MatchingLinkResult definingLinkResult(MatchingLinkResult originalResult) {
-      if (originalResult.commentReferable?.element != null) {
-        return MatchingLinkResult(
-            ModelElement.fromElement(originalResult.commentReferable.element,
-                originalResult.commentReferable.packageGraph),
-            warn: originalResult.warn);
-      }
-      return originalResult;
-    }
-
-    MatchingLinkResult originalLookup(Warnable element, String codeRef) =>
-        definingLinkResult(getMatchingLinkElement(element, codeRef,
-            enhancedReferenceLookup: false));
-    MatchingLinkResult newLookup(Warnable element, String codeRef) =>
-        definingLinkResult(getMatchingLinkElement(element, codeRef,
-            enhancedReferenceLookup: true));
-
-    MatchingLinkResult bothLookup(Warnable element, String codeRef) {
-      var originalLookupResult = originalLookup(element, codeRef);
-      var newLookupResult = newLookup(element, codeRef);
-      expect(newLookupResult.isEquivalentTo(originalLookupResult), isTrue);
-      return newLookupResult;
-    }
-
     group('Linking for generalized typedef cases works', () {
       Library generalizedTypedefs;
       Typedef T0, T2, T5, T8;
