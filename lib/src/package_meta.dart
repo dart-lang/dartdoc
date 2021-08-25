@@ -342,12 +342,13 @@ class _FilePackageMeta extends PubPackageMeta {
     List<String> parameters;
     if (requiresFlutter) {
       binPath = p.join(flutterRoot, 'bin', 'flutter');
+      if (Platform.isWindows) binPath += '.bat';
       parameters = ['pub', 'get'];
     } else {
       binPath = p.join(p.dirname(Platform.resolvedExecutable), 'dart');
+      if (Platform.isWindows) binPath += '.exe';
       parameters = ['pub', 'get'];
     }
-    if (Platform.isWindows) binPath += '.bat';
 
     var result =
         Process.runSync(binPath, parameters, workingDirectory: dir.path);
