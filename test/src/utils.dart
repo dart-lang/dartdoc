@@ -134,7 +134,8 @@ Folder writeMockSdkFiles(MockSdk mockSdk) {
 void _writeMockSdkBinFiles(Folder root) {
   var sdkBinFolder = root.getChildAssumingFolder('bin');
   sdkBinFolder.getChildAssumingFile('dart').writeAsStringSync('');
-  sdkBinFolder.getChildAssumingFile('pub').writeAsStringSync('');
+  var sdkIncludeFolder = root.getChildAssumingFolder('include');
+  sdkIncludeFolder.getChildAssumingFile('dart_version.h').writeAsStringSync('');
 }
 
 /// Writes a package named [packageName], with [resourceProvider], to the
