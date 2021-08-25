@@ -10,8 +10,8 @@ library dartdoc.model_special_cases_test;
 
 import 'dart:io';
 
-import 'package:analyzer/dart/element/type.dart';
 import 'package:async/async.dart';
+import 'package:dartdoc/src/matching_link_result.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
@@ -20,6 +20,7 @@ import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
 import '../src/utils.dart' as utils;
+import '../src/utils.dart';
 
 final _testPackageGraphExperimentsMemo = AsyncMemoizer<PackageGraph>();
 Future<PackageGraph> get _testPackageGraphExperiments =>
@@ -71,132 +72,106 @@ void main() {
   // ExperimentalFeature.experimentalReleaseVersion as these are set to null
   // even when partial analyzer implementations are available, and are often
   // set too high after release.
-  final _genericMetadataAllowed =
-      VersionRange(min: Version.parse('2.14.0-0'), includeMin: true);
-  final _tripleShiftAllowed =
-      VersionRange(min: Version.parse('2.14.0-0'), includeMin: true);
+  final _constructorTearoffsAllowed =
+      VersionRange(min: Version.parse('2.15.0-0'), includeMin: true);
 
   // Experimental features not yet enabled by default.  Move tests out of this
   // block when the feature is enabled by default.
   group('Experiments', () {
-    group('triple-shift', () {
-      Library tripleShift;
-      Class C, E, F;
-      Extension ShiftIt;
-      Operator classShift, extensionShift;
-      Field constantTripleShifted;
+    group('constructor-tearoffs', () {
+      Library constructorTearoffs;
+      Class A, B, C, D, E, F;
+      Mixin M;
+      Typedef At, Bt, Ct, Et, Ft, NotAClass;
+      Constructor Anew, Bnew, Cnew, Dnew, Enew, Fnew;
 
       setUpAll(() async {
-        tripleShift = (await _testPackageGraphExperiments)
+        constructorTearoffs = (await _testPackageGraphExperiments)
             .libraries
-            .firstWhere((l) => l.name == 'triple_shift');
-        C = tripleShift.classes.firstWhere((c) => c.name == 'C');
-        E = tripleShift.classes.firstWhere((c) => c.name == 'E');
-        F = tripleShift.classes.firstWhere((c) => c.name == 'F');
-        ShiftIt = tripleShift.extensions.firstWhere((e) => e.name == 'ShiftIt');
-        classShift =
-            C.instanceOperators.firstWhere((o) => o.name.contains('>>>'));
-        extensionShift =
-            ShiftIt.instanceOperators.firstWhere((o) => o.name.contains('>>>'));
-        constantTripleShifted = C.constantFields
-            .firstWhere((f) => f.name == 'constantTripleShifted');
+            .firstWhere((l) => l.name == 'constructor_tearoffs');
+        A = constructorTearoffs.classes.firstWhere((c) => c.name == 'A');
+        B = constructorTearoffs.classes.firstWhere((c) => c.name == 'B');
+        C = constructorTearoffs.classes.firstWhere((c) => c.name == 'C');
+        D = constructorTearoffs.classes.firstWhere((c) => c.name == 'D');
+        E = constructorTearoffs.classes.firstWhere((c) => c.name == 'E');
+        F = constructorTearoffs.classes.firstWhere((c) => c.name == 'F');
+        M = constructorTearoffs.mixins.firstWhere((m) => m.name == 'M');
+        At = constructorTearoffs.typedefs.firstWhere((t) => t.name == 'At');
+        Bt = constructorTearoffs.typedefs.firstWhere((t) => t.name == 'Bt');
+        Ct = constructorTearoffs.typedefs.firstWhere((t) => t.name == 'Ct');
+        Et = constructorTearoffs.typedefs.firstWhere((t) => t.name == 'Et');
+        Ft = constructorTearoffs.typedefs.firstWhere((t) => t.name == 'Ft');
+        NotAClass = constructorTearoffs.typedefs
+            .firstWhere((t) => t.name == 'NotAClass');
+        Anew = A.unnamedConstructor;
+        Bnew = B.unnamedConstructor;
+        Cnew = C.unnamedConstructor;
+        Dnew = D.unnamedConstructor;
+        Enew = E.unnamedConstructor;
+        Fnew = F.unnamedConstructor;
       });
 
-      test('constants with triple shift render correctly', () {
-        expect(constantTripleShifted.constantValue, equals('3 &gt;&gt;&gt; 5'));
+      test('smoke test', () {
+        expect(A, isNotNull);
+        expect(B, isNotNull);
+        expect(C, isNotNull);
+        expect(D, isNotNull);
+        expect(E, isNotNull);
+        expect(F, isNotNull);
+        expect(M, isNotNull);
+        expect(At, isNotNull);
+        expect(Bt, isNotNull);
+        expect(Ct, isNotNull);
+        expect(Et, isNotNull);
+        expect(Ft, isNotNull);
+        expect(NotAClass, isNotNull);
+        expect(Anew, isNotNull);
+        expect(Bnew, isNotNull);
+        expect(Cnew, isNotNull);
+        expect(Dnew, isNotNull);
+        expect(Enew, isNotNull);
+        expect(Fnew, isNotNull);
       });
 
-      test('operators exist and are named correctly', () {
-        expect(classShift.name, equals('operator >>>'));
-        expect(extensionShift.name, equals('operator >>>'));
+      test('reference regression', () {
+        expect(newLookup(constructorTearoffs, 'A.A'),
+            equals(MatchingLinkResult(Anew)));
+        expect(newLookup(constructorTearoffs, 'new A()'),
+            equals(MatchingLinkResult(Anew)));
+        expect(newLookup(constructorTearoffs, 'A()'),
+            equals(MatchingLinkResult(Anew)));
+        expect(newLookup(constructorTearoffs, 'B.B'),
+            equals(MatchingLinkResult(Bnew)));
+        expect(newLookup(constructorTearoffs, 'new B()'),
+            equals(MatchingLinkResult(Bnew)));
+        expect(newLookup(constructorTearoffs, 'B()'),
+            equals(MatchingLinkResult(Bnew)));
+        expect(newLookup(constructorTearoffs, 'C.C'),
+            equals(MatchingLinkResult(Cnew)));
+        expect(newLookup(constructorTearoffs, 'new C()'),
+            equals(MatchingLinkResult(Cnew)));
+        expect(newLookup(constructorTearoffs, 'C()'),
+            equals(MatchingLinkResult(Cnew)));
+        expect(newLookup(constructorTearoffs, 'D.D'),
+            equals(MatchingLinkResult(Dnew)));
+        expect(newLookup(constructorTearoffs, 'new D()'),
+            equals(MatchingLinkResult(Dnew)));
+        expect(newLookup(constructorTearoffs, 'D()'),
+            equals(MatchingLinkResult(Dnew)));
+        expect(newLookup(constructorTearoffs, 'E.E'),
+            equals(MatchingLinkResult(Enew)));
+        expect(newLookup(constructorTearoffs, 'new E()'),
+            equals(MatchingLinkResult(Enew)));
+        expect(newLookup(constructorTearoffs, 'E()'),
+            equals(MatchingLinkResult(Enew)));
+        expect(newLookup(constructorTearoffs, 'F.F'),
+            equals(MatchingLinkResult(Fnew)));
+        expect(newLookup(constructorTearoffs, 'new F()'),
+            equals(MatchingLinkResult(Fnew)));
+        expect(newLookup(constructorTearoffs, 'F()'),
+            equals(MatchingLinkResult(Fnew)));
       });
-
-      test(
-          'inheritance and overriding of triple shift operators works correctly',
-          () {
-        var tripleShiftE =
-            E.instanceOperators.firstWhere((o) => o.name.contains('>>>'));
-        var tripleShiftF =
-            F.instanceOperators.firstWhere((o) => o.name.contains('>>>'));
-
-        expect(tripleShiftE.isInherited, isTrue);
-        expect(tripleShiftE.canonicalModelElement, equals(classShift));
-        expect(tripleShiftE.modelType.returnType.name, equals('C'));
-        expect(tripleShiftF.isInherited, isFalse);
-        expect(tripleShiftF.modelType.returnType.name, equals('F'));
-      });
-    }, skip: !_tripleShiftAllowed.allows(utils.platformVersion));
-
-    group('generic metadata', () {
-      Library genericMetadata;
-      TopLevelVariable f;
-      Typedef F;
-      Class C;
-      Method mp, mn;
-
-      setUpAll(() async {
-        genericMetadata = (await _testPackageGraphExperiments)
-            .libraries
-            .firstWhere((l) => l.name == 'generic_metadata');
-        F = genericMetadata.typedefs.firstWhere((t) => t.name == 'F');
-        f = genericMetadata.properties.firstWhere((p) => p.name == 'f');
-        C = genericMetadata.classes.firstWhere((c) => c.name == 'C');
-        mp = C.instanceMethods.firstWhere((m) => m.name == 'mp');
-        mn = C.instanceMethods.firstWhere((m) => m.name == 'mn');
-      });
-
-      test(
-          'Verify annotations and their type arguments render on type parameters for typedefs',
-          () {
-        expect((F.aliasedType as FunctionType).typeFormals.first.metadata,
-            isNotEmpty);
-        expect((F.aliasedType as FunctionType).parameters.first.metadata,
-            isNotEmpty);
-        // TODO(jcollins-g): add rendering verification once we have data from
-        // analyzer.
-      }, skip: 'dart-lang/sdk#46064');
-
-      test('Verify type arguments on annotations renders, including parameters',
-          () {
-        var ab0 =
-            '@<a href="%%__HTMLBASE_dartdoc_internal__%%generic_metadata/A-class.html">A</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="%%__HTMLBASE_dartdoc_internal__%%generic_metadata/B.html">B</a></span>&gt;</span>(0)';
-
-        expect(genericMetadata.annotations.first.linkedNameWithParameters,
-            equals(ab0));
-        expect(f.annotations.first.linkedNameWithParameters, equals(ab0));
-        expect(C.annotations.first.linkedNameWithParameters, equals(ab0));
-        expect(
-            C.typeParameters.first.annotations.first.linkedNameWithParameters,
-            equals(ab0));
-        expect(
-            mp.parameters
-                .map((p) => p.annotations.first.linkedNameWithParameters),
-            everyElement(equals(ab0)));
-        expect(
-            mn.parameters
-                .map((p) => p.annotations.first.linkedNameWithParameters),
-            everyElement(equals(ab0)));
-
-        expect(genericMetadata.features.map((f) => f.linkedNameWithParameters),
-            contains(ab0));
-        expect(
-            f.features.map((f) => f.linkedNameWithParameters), contains(ab0));
-        expect(
-            C.features.map((f) => f.linkedNameWithParameters), contains(ab0));
-        expect(
-            C.typeParameters.first.features
-                .map((f) => f.linkedNameWithParameters),
-            contains(ab0));
-        expect(
-            mp.parameters
-                .map((p) => p.features.map((f) => f.linkedNameWithParameters)),
-            everyElement(contains(ab0)));
-        expect(
-            mn.parameters
-                .map((p) => p.features.map((f) => f.linkedNameWithParameters)),
-            everyElement(contains(ab0)));
-      });
-    }, skip: !_genericMetadataAllowed.allows(utils.platformVersion));
+    }, skip: !_constructorTearoffsAllowed.allows(utils.platformVersion));
   });
 
   group('HTML Injection when allowed', () {

@@ -10,16 +10,21 @@ import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/memory_file_system.dart';
 import 'package:analyzer/src/test_utilities/mock_sdk.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
+import 'package:dartdoc/src/markdown_processor.dart';
+import 'package:dartdoc/src/matching_link_result.dart';
+import 'package:dartdoc/src/model/model_element.dart';
 import 'package:dartdoc/src/model/package_builder.dart';
 import 'package:dartdoc/src/model/package_graph.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
+import 'package:dartdoc/src/warnings.dart';
 import 'package:pub_semver/pub_semver.dart';
+import 'package:test/expect.dart';
 
 /// The number of public libraries in testing/test_package, minus 2 for
 /// the excluded libraries listed in the initializers for _testPackageGraphMemo
 /// and minus 1 for the <nodoc> tag in the 'excluded' library.
-const int kTestPackagePublicLibraries = 24;
+const int kTestPackagePublicLibraries = 27;
 
 final _resourceProvider = pubPackageMetaProvider.resourceProvider;
 final _pathContext = _resourceProvider.pathContext;
@@ -189,4 +194,33 @@ two:lib/
       Uri.file('$projectRoot${resourceProvider.pathContext.separator}'));
 
   return projectFolder;
+}
+
+/// For comparison purposes, return an equivalent [MatchingLinkResult]
+/// for the defining element returned.  May return [originalResult].
+/// We do this to eliminate canonicalization effects from comparison,
+/// as the original lookup code returns canonicalized results and the
+/// new lookup code is only guaranteed to return equivalent results.
+MatchingLinkResult definingLinkResult(MatchingLinkResult originalResult) {
+  if (originalResult.commentReferable?.element != null) {
+    return MatchingLinkResult(
+        ModelElement.fromElement(originalResult.commentReferable.element,
+            originalResult.commentReferable.packageGraph),
+        warn: originalResult.warn);
+  }
+  return originalResult;
+}
+
+MatchingLinkResult originalLookup(Warnable element, String codeRef) =>
+    definingLinkResult(getMatchingLinkElement(element, codeRef,
+        enhancedReferenceLookup: false));
+MatchingLinkResult newLookup(Warnable element, String codeRef) =>
+    definingLinkResult(getMatchingLinkElement(element, codeRef,
+        enhancedReferenceLookup: true));
+
+MatchingLinkResult bothLookup(Warnable element, String codeRef) {
+  var originalLookupResult = originalLookup(element, codeRef);
+  var newLookupResult = newLookup(element, codeRef);
+  expect(newLookupResult.isEquivalentTo(originalLookupResult), isTrue);
+  return newLookupResult;
 }

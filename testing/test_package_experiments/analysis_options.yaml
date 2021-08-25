@@ -5,3 +5,4 @@ analyzer:
     - nonfunction-type-aliases
     - triple-shift
     - generic-metadata
+    - constructor-tearoffs

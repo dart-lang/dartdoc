@@ -6,10 +6,10 @@ library dartdoc.model_test;
 
 import 'dart:io';
 
+import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/source/line_info.dart';
 import 'package:async/async.dart';
 import 'package:dartdoc/src/element_type.dart';
-import 'package:dartdoc/src/markdown_processor.dart';
 import 'package:dartdoc/src/matching_link_result.dart';
 import 'package:dartdoc/src/model/feature.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -24,14 +24,13 @@ import 'package:dartdoc/src/special_elements.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:test/test.dart';
 
-import '../src/utils.dart' as utils;
+import '../src/utils.dart'
+    show bootBasicPackage, bothLookup, kTestPackagePublicLibraries, newLookup;
 
 final _testPackageGraphMemo = AsyncMemoizer<PackageGraph>();
 Future<PackageGraph> get testPackageGraph async =>
-    _testPackageGraphMemo.runOnce(() => utils.bootBasicPackage(
-        'testing/test_package',
-        pubPackageMetaProvider,
-        PhysicalPackageConfigProvider(),
+    _testPackageGraphMemo.runOnce(() => bootBasicPackage('testing/test_package',
+        pubPackageMetaProvider, PhysicalPackageConfigProvider(),
         excludeLibraries: ['css', 'code_in_comments'],
         additionalArguments: ['--no-link-to-remote']));
 
@@ -92,6 +91,121 @@ void main() {
         packageGraph.libraries.firstWhere((lib) => lib.name == 'two_exports');
     baseClassLib =
         packageGraph.libraries.firstWhere((lib) => lib.name == 'base_class');
+  });
+
+  group('triple-shift', () {
+    Library tripleShift;
+    Class C, E, F;
+    Extension ShiftIt;
+    Operator classShift, extensionShift;
+    Field constantTripleShifted;
+
+    setUpAll(() async {
+      tripleShift = (await testPackageGraph)
+          .libraries
+          .firstWhere((l) => l.name == 'triple_shift');
+      C = tripleShift.classes.firstWhere((c) => c.name == 'C');
+      E = tripleShift.classes.firstWhere((c) => c.name == 'E');
+      F = tripleShift.classes.firstWhere((c) => c.name == 'F');
+      ShiftIt = tripleShift.extensions.firstWhere((e) => e.name == 'ShiftIt');
+      classShift =
+          C.instanceOperators.firstWhere((o) => o.name.contains('>>>'));
+      extensionShift =
+          ShiftIt.instanceOperators.firstWhere((o) => o.name.contains('>>>'));
+      constantTripleShifted =
+          C.constantFields.firstWhere((f) => f.name == 'constantTripleShifted');
+    });
+
+    test('constants with triple shift render correctly', () {
+      expect(constantTripleShifted.constantValue, equals('3 &gt;&gt;&gt; 5'));
+    });
+
+    test('operators exist and are named correctly', () {
+      expect(classShift.name, equals('operator >>>'));
+      expect(extensionShift.name, equals('operator >>>'));
+    });
+
+    test('inheritance and overriding of triple shift operators works correctly',
+        () {
+      var tripleShiftE =
+          E.instanceOperators.firstWhere((o) => o.name.contains('>>>'));
+      var tripleShiftF =
+          F.instanceOperators.firstWhere((o) => o.name.contains('>>>'));
+
+      expect(tripleShiftE.isInherited, isTrue);
+      expect(tripleShiftE.canonicalModelElement, equals(classShift));
+      expect(tripleShiftE.modelType.returnType.name, equals('C'));
+      expect(tripleShiftF.isInherited, isFalse);
+      expect(tripleShiftF.modelType.returnType.name, equals('F'));
+    });
+  });
+
+  group('generic metadata', () {
+    Library genericMetadata;
+    TopLevelVariable f;
+    Typedef F;
+    Class C;
+    Method mp, mn;
+
+    setUpAll(() async {
+      genericMetadata = (await testPackageGraph)
+          .libraries
+          .firstWhere((l) => l.name == 'generic_metadata');
+      F = genericMetadata.typedefs.firstWhere((t) => t.name == 'F');
+      f = genericMetadata.properties.firstWhere((p) => p.name == 'f');
+      C = genericMetadata.classes.firstWhere((c) => c.name == 'C');
+      mp = C.instanceMethods.firstWhere((m) => m.name == 'mp');
+      mn = C.instanceMethods.firstWhere((m) => m.name == 'mn');
+    });
+
+    test(
+        'Verify annotations and their type arguments render on type parameters for typedefs',
+        () {
+      expect((F.aliasedType as FunctionType).typeFormals.first.metadata,
+          isNotEmpty);
+      expect((F.aliasedType as FunctionType).parameters.first.metadata,
+          isNotEmpty);
+      // TODO(jcollins-g): add rendering verification once we have data from
+      // analyzer.
+    }, skip: 'dart-lang/sdk#46064');
+
+    test('Verify type arguments on annotations renders, including parameters',
+        () {
+      var ab0 =
+          '@<a href="%%__HTMLBASE_dartdoc_internal__%%generic_metadata/A-class.html">A</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="%%__HTMLBASE_dartdoc_internal__%%generic_metadata/B.html">B</a></span>&gt;</span>(0)';
+
+      expect(genericMetadata.annotations.first.linkedNameWithParameters,
+          equals(ab0));
+      expect(f.annotations.first.linkedNameWithParameters, equals(ab0));
+      expect(C.annotations.first.linkedNameWithParameters, equals(ab0));
+      expect(C.typeParameters.first.annotations.first.linkedNameWithParameters,
+          equals(ab0));
+      expect(
+          mp.parameters
+              .map((p) => p.annotations.first.linkedNameWithParameters),
+          everyElement(equals(ab0)));
+      expect(
+          mn.parameters
+              .map((p) => p.annotations.first.linkedNameWithParameters),
+          everyElement(equals(ab0)));
+
+      expect(genericMetadata.features.map((f) => f.linkedNameWithParameters),
+          contains(ab0));
+      expect(f.features.map((f) => f.linkedNameWithParameters), contains(ab0));
+      expect(C.features.map((f) => f.linkedNameWithParameters), contains(ab0));
+      expect(
+          C.typeParameters.first.features
+              .map((f) => f.linkedNameWithParameters),
+          contains(ab0));
+      expect(
+          mp.parameters
+              .map((p) => p.features.map((f) => f.linkedNameWithParameters)),
+          everyElement(contains(ab0)));
+      expect(
+          mn.parameters
+              .map((p) => p.features.map((f) => f.linkedNameWithParameters)),
+          everyElement(contains(ab0)));
+    });
   });
 
   group('generalized typedefs', () {
@@ -671,7 +785,7 @@ void main() {
           packageGraph
               .localPackages.first.defaultCategory.publicLibraries.length,
           // Only 5 libraries have categories, the rest belong in default.
-          equals(utils.kTestPackagePublicLibraries - 5));
+          equals(kTestPackagePublicLibraries - 5));
     });
 
     // TODO consider moving these to a separate suite
@@ -2124,35 +2238,6 @@ void main() {
   // Put linkage tests here; rendering tests should go to the appropriate
   // [Class], [Extension], etc groups.
   group('Comment References link tests', () {
-    /// For comparison purposes, return an equivalent [MatchingLinkResult]
-    /// for the defining element returned.  May return [originalResult].
-    /// We do this to eliminate canonicalization effects from comparison,
-    /// as the original lookup code returns canonicalized results and the
-    /// new lookup code is only guaranteed to return equivalent results.
-    MatchingLinkResult definingLinkResult(MatchingLinkResult originalResult) {
-      if (originalResult.commentReferable?.element != null) {
-        return MatchingLinkResult(
-            ModelElement.fromElement(originalResult.commentReferable.element,
-                originalResult.commentReferable.packageGraph),
-            warn: originalResult.warn);
-      }
-      return originalResult;
-    }
-
-    MatchingLinkResult originalLookup(Warnable element, String codeRef) =>
-        definingLinkResult(getMatchingLinkElement(element, codeRef,
-            enhancedReferenceLookup: false));
-    MatchingLinkResult newLookup(Warnable element, String codeRef) =>
-        definingLinkResult(getMatchingLinkElement(element, codeRef,
-            enhancedReferenceLookup: true));
-
-    MatchingLinkResult bothLookup(Warnable element, String codeRef) {
-      var originalLookupResult = originalLookup(element, codeRef);
-      var newLookupResult = newLookup(element, codeRef);
-      expect(newLookupResult.isEquivalentTo(originalLookupResult), isTrue);
-      return newLookupResult;
-    }
-
     group('Linking for generalized typedef cases works', () {
       Library generalizedTypedefs;
       Typedef T0, T2, T5, T8;
