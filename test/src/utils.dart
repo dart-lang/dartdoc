@@ -19,7 +19,6 @@ import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:pub_semver/pub_semver.dart';
-import 'package:test/expect.dart';
 
 /// The number of public libraries in testing/test_package, minus 2 for
 /// the excluded libraries listed in the initializers for _testPackageGraphMemo
@@ -212,16 +211,6 @@ MatchingLinkResult definingLinkResult(MatchingLinkResult originalResult) {
   return originalResult;
 }
 
-MatchingLinkResult originalLookup(Warnable element, String codeRef) =>
-    definingLinkResult(getMatchingLinkElement(element, codeRef,
-        enhancedReferenceLookup: false));
-MatchingLinkResult newLookup(Warnable element, String codeRef) =>
-    definingLinkResult(getMatchingLinkElement(element, codeRef,
-        enhancedReferenceLookup: true));
+MatchingLinkResult referenceLookup(Warnable element, String codeRef) =>
+    definingLinkResult(getMatchingLinkElement(element, codeRef));
 
-MatchingLinkResult bothLookup(Warnable element, String codeRef) {
-  var originalLookupResult = originalLookup(element, codeRef);
-  var newLookupResult = newLookup(element, codeRef);
-  expect(newLookupResult.isEquivalentTo(originalLookupResult), isTrue);
-  return newLookupResult;
-}

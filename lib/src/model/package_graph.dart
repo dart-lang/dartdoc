@@ -464,20 +464,6 @@ class PackageGraph with CommentReferable, Nameable {
       case PackageWarning.missingCodeBlockLanguage:
         warningMessage = 'missing code block language: $message';
         break;
-      case PackageWarning.referenceLookupFoundWithNew:
-        warningMessage = 'reference lookup found with new: $message';
-        referredFromPrefix = 'from documentation for symbol';
-        break;
-      case PackageWarning.referenceLookupMissingWithNew:
-        warningMessage =
-            'reference lookup found only in old lookup code: $message';
-        referredFromPrefix = 'from documentation for symbol';
-        break;
-      case PackageWarning.referenceLookupDiffersWithNew:
-        warningMessage =
-            'reference lookup resolution differs between lookup implementations:  $message';
-        referredFromPrefix = 'from documentation for symbol';
-        break;
     }
 
     var messageParts = <String>[warningMessage];

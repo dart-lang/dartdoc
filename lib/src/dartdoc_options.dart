@@ -1291,9 +1291,6 @@ class DartdocOptionContext extends DartdocOptionContextBase
   List<String> get excludePackages =>
       optionSet['excludePackages'].valueAt(context);
 
-  bool get enhancedReferenceLookup =>
-      optionSet['enhancedReferenceLookup'].valueAt(context);
-
   String get flutterRoot => optionSet['flutterRoot'].valueAt(context);
 
   bool get hideSdkText => optionSet['hideSdkText'].valueAt(context);
@@ -1427,17 +1424,6 @@ Future<List<DartdocOption>> createDartdocOptions(
         help: 'Library names to ignore.', splitCommas: true),
     DartdocOptionArgOnly<List<String>>('excludePackages', [], resourceProvider,
         help: 'Package names to ignore.', splitCommas: true),
-    DartdocOptionArgFile<bool>(
-        'enhancedReferenceLookup', true, resourceProvider,
-        hide: true,
-        help:
-            'Use the new comment reference lookup system instead of the legacy '
-            'version.  Please file a bug referencing this flag if you have to '
-            'change it to false -- this flag and associated behavior will '
-            'disappear in a future version.',
-        negatable: true),
-    // This could be a ArgOnly, but trying to not provide too many ways
-    // to set the flutter root.
     DartdocOptionSyntheticOnly<String>(
         'flutterRoot',
         (DartdocSyntheticOption<String> option, Folder dir) => resourceProvider

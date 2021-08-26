@@ -25,7 +25,7 @@ import 'package:dartdoc/src/warnings.dart';
 import 'package:test/test.dart';
 
 import '../src/utils.dart'
-    show bootBasicPackage, bothLookup, kTestPackagePublicLibraries, newLookup;
+    show bootBasicPackage, referenceLookup, kTestPackagePublicLibraries;
 
 final _testPackageGraphMemo = AsyncMemoizer<PackageGraph>();
 Future<PackageGraph> get testPackageGraph async =>
@@ -2254,22 +2254,22 @@ void main() {
       });
 
       test('Verify basic ability to link anything', () {
-        expect(bothLookup(T0, 'C2'), equals(MatchingLinkResult(C2)));
-        expect(bothLookup(T2, 'C2'), equals(MatchingLinkResult(C2)));
-        expect(bothLookup(T5, 'C2'), equals(MatchingLinkResult(C2)));
-        expect(bothLookup(T8, 'C2'), equals(MatchingLinkResult(C2)));
+        expect(referenceLookup(T0, 'C2'), equals(MatchingLinkResult(C2)));
+        expect(referenceLookup(T2, 'C2'), equals(MatchingLinkResult(C2)));
+        expect(referenceLookup(T5, 'C2'), equals(MatchingLinkResult(C2)));
+        expect(referenceLookup(T8, 'C2'), equals(MatchingLinkResult(C2)));
       });
 
       test('Verify ability to link to type parameters', () {
         var T2X = T2.typeParameters.firstWhere((t) => t.name == 'X');
-        expect(bothLookup(T2, 'X'), equals(MatchingLinkResult(T2X)));
+        expect(referenceLookup(T2, 'X'), equals(MatchingLinkResult(T2X)));
         var T5X = T5.typeParameters.firstWhere((t) => t.name == 'X');
-        expect(bothLookup(T5, 'X'), equals(MatchingLinkResult(T5X)));
+        expect(referenceLookup(T5, 'X'), equals(MatchingLinkResult(T5X)));
       });
 
       test('Verify ability to link to parameters', () {
         var T5name = T5.parameters.firstWhere((t) => t.name == 'name');
-        expect(bothLookup(T5, 'name'), equals(MatchingLinkResult(T5name)));
+        expect(referenceLookup(T5, 'name'), equals(MatchingLinkResult(T5name)));
       });
     });
 
@@ -2326,49 +2326,43 @@ void main() {
       });
 
       test('Grandparent override in container members', () {
-        // Original lookup fails unless the variable is reexported via other
-        // means, but to do that would not be testing the same case on both.
-        expect(newLookup(aField, 'aNotReexportedVariable'),
+        expect(referenceLookup(aField, 'aNotReexportedVariable'),
             equals(MatchingLinkResult(aNotReexportedVariable)));
 
         // Verify that documentationFrom cases work.  Just having the doc
         // in the base class is enough to trigger [documentationFrom] and this
         // feature.
-        expect(bothLookup(anotherField, 'aNotReexportedVariable'),
+        expect(referenceLookup(anotherField, 'aNotReexportedVariable'),
             equals(MatchingLinkResult(aNotReexportedVariable)));
       });
 
       // TODO(jcollins-g): dart-lang/dartdoc#2698
       test('Linking for static/constructor inheritance across libraries', () {
-        expect(bothLookup(ExtendingAgain, 'aStaticField'),
+        expect(referenceLookup(ExtendingAgain, 'aStaticField'),
             equals(MatchingLinkResult(aStaticField)));
-        expect(bothLookup(ExtendingAgain, 'aStaticMethod'),
+        expect(referenceLookup(ExtendingAgain, 'aStaticMethod'),
             equals(MatchingLinkResult(aStaticMethod)));
-        expect(bothLookup(ExtendingAgain, 'aConstructor'),
+        expect(referenceLookup(ExtendingAgain, 'aConstructor'),
             equals(MatchingLinkResult(aConstructor)));
       });
 
       test('Linking for inherited field from reexport context', () {
-        // While this can work in the old code at times, it is using the
-        // analyzer and the new test harness can't leverage the analyzer
-        // when testing the old lookup code.
-        expect(newLookup(aField, 'anotherNotReexportedVariable'),
+        expect(referenceLookup(aField, 'anotherNotReexportedVariable'),
             equals(MatchingLinkResult(anotherNotReexportedVariable)));
       });
 
       // TODO(jcollins-g): dart-lang/dartdoc#2696
       test('Allow non-explicit export namespace linking', () {
         expect(
-            bothLookup(BaseWithMembers, 'aSymbolOnlyAvailableInExportContext'),
+            referenceLookup(BaseWithMembers, 'aSymbolOnlyAvailableInExportContext'),
             equals(MatchingLinkResult(aSymbolOnlyAvailableInExportContext)));
       });
 
       test('Link to definingLibrary for class rather than its export context',
           () {
-        // This is an improvement over the original.
-        expect(newLookup(ExtendingAgain, 'someConflictingNameSymbol'),
+        expect(referenceLookup(ExtendingAgain, 'someConflictingNameSymbol'),
             equals(MatchingLinkResult(someConflictingNameSymbol)));
-        expect(newLookup(two_exports, 'someConflictingNameSymbol'),
+        expect(referenceLookup(two_exports, 'someConflictingNameSymbol'),
             equals(MatchingLinkResult(someConflictingNameSymbolTwoExports)));
       });
     });
@@ -2433,56 +2427,54 @@ void main() {
       });
 
       test('on extension targeting an unbound type', () {
-        expect(newLookup(UnboundTypeTargetExtension, 'doesNotCrash'),
+        expect(referenceLookup(UnboundTypeTargetExtension, 'doesNotCrash'),
             equals(MatchingLinkResult(doesNotCrash)));
       });
 
       test('on inherited documentation', () {
-        expect(newLookup(aMethodExtended, 'ATypeParam'),
+        expect(referenceLookup(aMethodExtended, 'ATypeParam'),
             equals(MatchingLinkResult(ATypeParam)));
-        expect(newLookup(aMethodExtended, 'BTypeParam'),
+        expect(referenceLookup(aMethodExtended, 'BTypeParam'),
             equals(MatchingLinkResult(BTypeParam)));
-        expect(newLookup(aMethodExtended, 'CTypeParam'),
+        expect(referenceLookup(aMethodExtended, 'CTypeParam'),
             equals(MatchingLinkResult(CTypeParam)));
         // Disallowed, because Q does not exist where the docs originated from.
         // The old code forgave this most of the time.
-        expect(newLookup(aMethodExtended, 'QTypeParam'),
+        expect(referenceLookup(aMethodExtended, 'QTypeParam'),
             equals(MatchingLinkResult(null)));
 
         // We get an inverse situation on the extendedQ class.
-        expect(newLookup(aMethodExtendedQ, 'ATypeParam'),
+        expect(referenceLookup(aMethodExtendedQ, 'ATypeParam'),
             equals(MatchingLinkResult(null)));
-        expect(newLookup(aMethodExtendedQ, 'BTypeParam'),
+        expect(referenceLookup(aMethodExtendedQ, 'BTypeParam'),
             equals(MatchingLinkResult(null)));
-        expect(newLookup(aMethodExtendedQ, 'CTypeParam'),
+        expect(referenceLookup(aMethodExtendedQ, 'CTypeParam'),
             equals(MatchingLinkResult(null)));
-        expect(newLookup(aMethodExtendedQ, 'QTypeParam'),
+        expect(referenceLookup(aMethodExtendedQ, 'QTypeParam'),
             equals(MatchingLinkResult(QTypeParam)));
       });
 
       test('on classes', () {
-        expect(bothLookup(TypeParameterThings, 'ATypeParam'),
+        expect(referenceLookup(TypeParameterThings, 'ATypeParam'),
             equals(MatchingLinkResult(ATypeParam)));
-        expect(bothLookup(TypeParameterThings, 'BTypeParam'),
+        expect(referenceLookup(TypeParameterThings, 'BTypeParam'),
             equals(MatchingLinkResult(BTypeParam)));
-        expect(bothLookup(aName, 'ATypeParam'),
+        expect(referenceLookup(aName, 'ATypeParam'),
             equals(MatchingLinkResult(ATypeParam)));
-        expect(bothLookup(aThing, 'BTypeParam'),
+        expect(referenceLookup(aThing, 'BTypeParam'),
             equals(MatchingLinkResult(BTypeParam)));
-        expect(bothLookup(aMethod, 'CTypeParam'),
+        expect(referenceLookup(aMethod, 'CTypeParam'),
             equals(MatchingLinkResult(CTypeParam)));
-        expect(bothLookup(aParam, 'ATypeParam'),
+        expect(referenceLookup(aParam, 'ATypeParam'),
             equals(MatchingLinkResult(ATypeParam)));
-        // Original didn't handle this case properly and popped out to higher
-        // levels.
-        expect(newLookup(anotherParam, 'CTypeParam'),
+        expect(referenceLookup(anotherParam, 'CTypeParam'),
             equals(MatchingLinkResult(CTypeParam)));
       });
 
       test('on top level methods', () {
-        expect(bothLookup(aTopLevelTypeParameterFunction, 'DTypeParam'),
+        expect(referenceLookup(aTopLevelTypeParameterFunction, 'DTypeParam'),
             equals(MatchingLinkResult(DTypeParam)));
-        expect(bothLookup(typedParam, 'DTypeParam'),
+        expect(referenceLookup(typedParam, 'DTypeParam'),
             equals(MatchingLinkResult(DTypeParam)));
       });
     });
@@ -2661,32 +2653,32 @@ void main() {
               .parameters
               .firstWhere((p) => p.name == 'fParamC');
 
-          expect(bothLookup(aSetterWithFunctionParameter, 'fParam.fParamA'),
+          expect(referenceLookup(aSetterWithFunctionParameter, 'fParam.fParamA'),
               equals(MatchingLinkResult(fParamA)));
-          expect(bothLookup(aSetterWithFunctionParameter, 'fParam.fParamB'),
+          expect(referenceLookup(aSetterWithFunctionParameter, 'fParam.fParamB'),
               equals(MatchingLinkResult(fParamB)));
-          expect(bothLookup(aSetterWithFunctionParameter, 'fParam.fParamC'),
+          expect(referenceLookup(aSetterWithFunctionParameter, 'fParam.fParamC'),
               equals(MatchingLinkResult(fParamC)));
         });
 
         test('in class scope overridden by fields', () {
-          expect(bothLookup(FactoryConstructorThings, 'aName'),
+          expect(referenceLookup(FactoryConstructorThings, 'aName'),
               equals(MatchingLinkResult(aNameField)));
           var anotherNameField = FactoryConstructorThings.allFields
               .firstWhere((f) => f.name == 'anotherName');
-          expect(bothLookup(FactoryConstructorThings, 'anotherName'),
+          expect(referenceLookup(FactoryConstructorThings, 'anotherName'),
               equals(MatchingLinkResult(anotherNameField)));
-          expect(bothLookup(FactoryConstructorThings, 'yetAnotherName'),
+          expect(referenceLookup(FactoryConstructorThings, 'yetAnotherName'),
               equals(MatchingLinkResult(yetAnotherNameField)));
-          expect(bothLookup(FactoryConstructorThings, 'initViaFieldFormal'),
+          expect(referenceLookup(FactoryConstructorThings, 'initViaFieldFormal'),
               equals(MatchingLinkResult(initViaFieldFormal)));
-          expect(bothLookup(FactoryConstructorThings, 'redHerring'),
+          expect(referenceLookup(FactoryConstructorThings, 'redHerring'),
               equals(MatchingLinkResult(redHerring)));
         });
 
         test('in class scope overridden by constructors when specified', () {
           expect(
-              bothLookup(FactoryConstructorThings,
+              referenceLookup(FactoryConstructorThings,
                   'new FactoryConstructorThings.anotherName'),
               equals(MatchingLinkResult(anotherName)));
         });
@@ -2695,53 +2687,51 @@ void main() {
             'in default constructor scope referring to a field formal parameter',
             () {
           expect(
-              newLookup(factoryConstructorThingsDefault, 'initViaFieldFormal'),
+              referenceLookup(factoryConstructorThingsDefault, 'initViaFieldFormal'),
               equals(MatchingLinkResult(initViaFieldFormal)));
         });
 
         test('in factory constructor scope referring to parameters', () {
-          expect(newLookup(anotherName, 'aName'),
+          expect(referenceLookup(anotherName, 'aName'),
               equals(MatchingLinkResult(aName)));
-          expect(bothLookup(anotherName, 'anotherName'),
+          expect(referenceLookup(anotherName, 'anotherName'),
               equals(MatchingLinkResult(anotherNameParameter)));
-          expect(bothLookup(anotherName, 'anotherDifferentName'),
+          expect(referenceLookup(anotherName, 'anotherDifferentName'),
               equals(MatchingLinkResult(anotherDifferentName)));
-          expect(bothLookup(anotherName, 'differentName'),
+          expect(referenceLookup(anotherName, 'differentName'),
               equals(MatchingLinkResult(differentName)));
-          expect(bothLookup(anotherName, 'redHerring'),
+          expect(referenceLookup(anotherName, 'redHerring'),
               equals(MatchingLinkResult(redHerring)));
         });
 
         test('in factory constructor scope referring to constructors', () {
           // A bare constructor reference is OK because there is no conflict.
-          expect(bothLookup(anotherName, 'anotherConstructor'),
+          expect(referenceLookup(anotherName, 'anotherConstructor'),
               equals(MatchingLinkResult(anotherConstructor)));
           // A conflicting constructor has to be explicit.
           expect(
-              bothLookup(
+              referenceLookup(
                   anotherName, 'new FactoryConstructorThings.anotherName'),
               equals(MatchingLinkResult(anotherName)));
         });
 
         test('in method scope referring to parameters and variables', () {
-          expect(bothLookup(aMethod, 'yetAnotherName'),
+          expect(referenceLookup(aMethod, 'yetAnotherName'),
               equals(MatchingLinkResult(yetAnotherName)));
-          expect(bothLookup(aMethod, 'FactoryConstructorThings.yetAnotherName'),
+          expect(referenceLookup(aMethod, 'FactoryConstructorThings.yetAnotherName'),
               equals(MatchingLinkResult(yetAnotherNameField)));
           expect(
-              bothLookup(
+              referenceLookup(
                   aMethod, 'FactoryConstructorThings.anotherName.anotherName'),
               equals(MatchingLinkResult(anotherNameParameter)));
-          expect(bothLookup(aMethod, 'aName'),
+          expect(referenceLookup(aMethod, 'aName'),
               equals(MatchingLinkResult(aNameField)));
         });
       });
 
       test('Referring to a renamed library directly works', () {
-        // The new code forwards from the prefix, so doesn't quite work the
-        // same as the old for an equality comparison via [MatchingLinkResult].
         expect(
-            (bothLookup(aFunctionUsingRenamedLib, 'renamedLib').commentReferable
+            (referenceLookup(aFunctionUsingRenamedLib, 'renamedLib').commentReferable
                     as ModelElement)
                 .canonicalModelElement,
             equals(mylibpub));
@@ -2749,21 +2739,18 @@ void main() {
 
       test('Referring to libraries and packages with the same name is fine',
           () {
-        expect(bothLookup(Apple, 'Dart'), equals(MatchingLinkResult(Dart)));
-        // New feature: allow disambiguation if you really want to specify a package.
-        expect(newLookup(Apple, 'package:Dart'),
+        expect(referenceLookup(Apple, 'Dart'), equals(MatchingLinkResult(Dart)));
+        expect(referenceLookup(Apple, 'package:Dart'),
             equals(MatchingLinkResult(DartPackage)));
       });
 
       test('Verify basic linking inside a constructor', () {
-        // Field formal parameters worked sometimes by accident in the old code,
-        // but should work reliably now.
-        expect(newLookup(aNonDefaultConstructor, 'initializeMe'),
+        expect(referenceLookup(aNonDefaultConstructor, 'initializeMe'),
             equals(MatchingLinkResult(initializeMe)));
-        expect(newLookup(aNonDefaultConstructor, 'aNonDefaultConstructor'),
+        expect(referenceLookup(aNonDefaultConstructor, 'aNonDefaultConstructor'),
             equals(MatchingLinkResult(aNonDefaultConstructor)));
         expect(
-            bothLookup(aNonDefaultConstructor,
+            referenceLookup(aNonDefaultConstructor,
                 'BaseForDocComments.aNonDefaultConstructor'),
             equals(MatchingLinkResult(aNonDefaultConstructor)));
       });
@@ -2771,130 +2758,125 @@ void main() {
       test(
           'Verify that constructors do not override member fields unless explicitly specified',
           () {
-        expect(bothLookup(baseForDocComments, 'aConstructorShadowed'),
+        expect(referenceLookup(baseForDocComments, 'aConstructorShadowed'),
             equals(MatchingLinkResult(aConstructorShadowedField)));
         expect(
-            bothLookup(
+            referenceLookup(
                 baseForDocComments, 'BaseForDocComments.aConstructorShadowed'),
             equals(MatchingLinkResult(aConstructorShadowedField)));
         expect(
-            bothLookup(baseForDocComments,
+            referenceLookup(baseForDocComments,
                 'new BaseForDocComments.aConstructorShadowed'),
             equals(MatchingLinkResult(aConstructorShadowed)));
       });
 
       test('Deprecated lookup styles still function', () {
-        // dart-lang/dartdoc#2683
-        // We can't check the old code this way as this is one of the few
-        // cases in the old code where it relies on the analyzer's resolution of
-        // the doc comment -- the test harness can't do that for the old code.
-        expect(newLookup(baseForDocComments, 'aPrefix.UseResult'),
+        expect(referenceLookup(baseForDocComments, 'aPrefix.UseResult'),
             equals(MatchingLinkResult(metaUseResult)));
       });
 
       test('Verify basic linking inside class', () {
         expect(
-            bothLookup(
+            referenceLookup(
                 baseForDocComments, 'BaseForDocComments.BaseForDocComments'),
             equals(MatchingLinkResult(defaultConstructor)));
 
         // We don't want the parameter on the default constructor, here.
-        expect(bothLookup(fakeLibrary, 'BaseForDocComments.somethingShadowy'),
+        expect(referenceLookup(fakeLibrary, 'BaseForDocComments.somethingShadowy'),
             equals(MatchingLinkResult(somethingShadowy)));
-        expect(bothLookup(baseForDocComments, 'somethingShadowy'),
+        expect(referenceLookup(baseForDocComments, 'somethingShadowy'),
             equals(MatchingLinkResult(somethingShadowy)));
 
         // Allow specific reference if necessary
         expect(
-            newLookup(baseForDocComments,
+            referenceLookup(baseForDocComments,
                 'BaseForDocComments.BaseForDocComments.somethingShadowy'),
             equals(MatchingLinkResult(somethingShadowyParameter)));
 
-        expect(bothLookup(doAwesomeStuff, 'aNonDefaultConstructor'),
+        expect(referenceLookup(doAwesomeStuff, 'aNonDefaultConstructor'),
             equals(MatchingLinkResult(aNonDefaultConstructor)));
 
         expect(
-            bothLookup(
+            referenceLookup(
                 doAwesomeStuff, 'BaseForDocComments.aNonDefaultConstructor'),
             equals(MatchingLinkResult(aNonDefaultConstructor)));
 
-        expect(bothLookup(doAwesomeStuff, 'this'),
+        expect(referenceLookup(doAwesomeStuff, 'this'),
             equals(MatchingLinkResult(baseForDocComments)));
 
-        expect(bothLookup(doAwesomeStuff, 'value'),
+        expect(referenceLookup(doAwesomeStuff, 'value'),
             equals(MatchingLinkResult(doAwesomeStuffParam)));
 
         // Parent class of [doAwesomeStuff].
-        expect(bothLookup(doAwesomeStuff, 'BaseForDocComments'),
+        expect(referenceLookup(doAwesomeStuff, 'BaseForDocComments'),
             equals(MatchingLinkResult(baseForDocComments)));
 
         // Top level constants in the same library as [doAwesomeStuff].
-        expect(bothLookup(doAwesomeStuff, 'NAME_WITH_TWO_UNDERSCORES'),
+        expect(referenceLookup(doAwesomeStuff, 'NAME_WITH_TWO_UNDERSCORES'),
             equals(MatchingLinkResult(nameWithTwoUnderscores)));
-        expect(bothLookup(doAwesomeStuff, 'NAME_SINGLEUNDERSCORE'),
+        expect(referenceLookup(doAwesomeStuff, 'NAME_SINGLEUNDERSCORE'),
             equals(MatchingLinkResult(nameWithSingleUnderscore)));
 
         // Top level class from [dart:core].
-        expect(bothLookup(doAwesomeStuff, 'String'),
+        expect(referenceLookup(doAwesomeStuff, 'String'),
             equals(MatchingLinkResult(string)));
 
         // Another method in the same class.
-        expect(bothLookup(doAwesomeStuff, 'anotherMethod'),
+        expect(referenceLookup(doAwesomeStuff, 'anotherMethod'),
             equals(MatchingLinkResult(anotherMethod)));
 
         // A top level function in this library.
-        expect(bothLookup(doAwesomeStuff, 'topLevelFunction'),
+        expect(referenceLookup(doAwesomeStuff, 'topLevelFunction'),
             equals(MatchingLinkResult(topLevelFunction)));
 
         // A top level function in another library imported into this library.
-        expect(bothLookup(doAwesomeStuff, 'function1'),
+        expect(referenceLookup(doAwesomeStuff, 'function1'),
             equals(MatchingLinkResult(function1)));
 
         // A class in another library imported into this library.
-        expect(bothLookup(doAwesomeStuff, 'Apple'),
+        expect(referenceLookup(doAwesomeStuff, 'Apple'),
             equals(MatchingLinkResult(Apple)));
 
         // A top level constant in this library sharing the same name as a name in another library.
-        expect(bothLookup(doAwesomeStuff, 'incorrectDocReference'),
+        expect(referenceLookup(doAwesomeStuff, 'incorrectDocReference'),
             equals(MatchingLinkResult(incorrectDocReference)));
 
         // A top level constant in another library.
-        expect(bothLookup(doAwesomeStuff, 'incorrectDocReferenceFromEx'),
+        expect(referenceLookup(doAwesomeStuff, 'incorrectDocReferenceFromEx'),
             equals(MatchingLinkResult(incorrectDocReferenceFromEx)));
 
         // A prefixed constant in another library.
-        expect(bothLookup(doAwesomeStuff, 'css.theOnlyThingInTheLibrary'),
+        expect(referenceLookup(doAwesomeStuff, 'css.theOnlyThingInTheLibrary'),
             equals(MatchingLinkResult(theOnlyThingInTheLibrary)));
 
         // A name that exists in this package but is not imported.
-        expect(bothLookup(doAwesomeStuff, 'doesStuff'),
+        expect(referenceLookup(doAwesomeStuff, 'doesStuff'),
             equals(MatchingLinkResult(doesStuff)));
 
         // A name of a class from an import of a library that exported that name.
-        expect(bothLookup(doAwesomeStuff, 'BaseClass'),
+        expect(referenceLookup(doAwesomeStuff, 'BaseClass'),
             equals(MatchingLinkResult(BaseClass)));
 
         // A bracket operator within this class.
-        expect(bothLookup(doAwesomeStuff, 'operator []'),
+        expect(referenceLookup(doAwesomeStuff, 'operator []'),
             equals(MatchingLinkResult(bracketOperator)));
 
         // A bracket operator in another class.
-        // Doesn't work in older lookup code.
-        expect(newLookup(doAwesomeStuff, 'SpecialList.operator []'),
+        expect(referenceLookup(doAwesomeStuff, 'SpecialList.operator []'),
             equals(MatchingLinkResult(bracketOperatorOtherClass)));
 
         // Reference containing a type parameter.
-        expect(bothLookup(doAwesomeStuff, 'ExtraSpecialList<Object>'),
+        expect(referenceLookup(doAwesomeStuff, 'ExtraSpecialList<Object>'),
             equals(MatchingLinkResult(ExtraSpecialList)));
 
         // Reference to an inherited member.
         expect(
-            bothLookup(
+            referenceLookup(
                 doAwesomeStuff, 'ClassWithUnusualProperties.forInheriting'),
             equals(MatchingLinkResult(forInheriting)));
 
         // Reference to an inherited member in another library via class name.
-        expect(bothLookup(doAwesomeStuff, 'ExtendedBaseReexported.action'),
+        expect(referenceLookup(doAwesomeStuff, 'ExtendedBaseReexported.action'),
             equals(MatchingLinkResult(action)));
       });
 
