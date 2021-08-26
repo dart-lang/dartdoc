@@ -3357,20 +3357,6 @@ class _Renderer_Container extends RendererBase<Container> {
                         parent: r));
                   },
                 ),
-                'allModelElementsByNamePart': Property(
-                  getValue: (CT_ c) => c.allModelElementsByNamePart,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Map<String, List<ModelElement>>'),
-                  isNullValue: (CT_ c) => c.allModelElementsByNamePart == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(
-                        c.allModelElementsByNamePart, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['Map']);
-                  },
-                ),
                 'constantFields': Property(
                   getValue: (CT_ c) => c.constantFields,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -7457,19 +7443,6 @@ class _Renderer_Library extends RendererBase<Library> {
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     renderSimple(c.modelElementsMap, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['HashMap']);
-                  },
-                ),
-                'modelElementsNameMap': Property(
-                  getValue: (CT_ c) => c.modelElementsNameMap,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames,
-                          'HashMap<String, Set<ModelElement>>'),
-                  isNullValue: (CT_ c) => c.modelElementsNameMap == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.modelElementsNameMap, ast, r.template, sink,
                         parent: r, getters: _invisibleGetters['HashMap']);
                   },
                 ),
@@ -14803,6 +14776,7 @@ const _invisibleGetters = {
   'DartType': {
     'hashCode',
     'runtimeType',
+    'alias',
     'aliasArguments',
     'aliasElement',
     'displayName',
@@ -14842,7 +14816,6 @@ const _invisibleGetters = {
     'examplePathPrefix',
     'exclude',
     'excludePackages',
-    'enhancedReferenceLookup',
     'flutterRoot',
     'hideSdkText',
     'include',
@@ -15112,6 +15085,7 @@ const _invisibleGetters = {
   'LibraryElement': {
     'hashCode',
     'runtimeType',
+    'accessibleExtensions',
     'definingCompilationUnit',
     'entryPoint',
     'exportedLibraries',
@@ -15239,7 +15213,6 @@ const _invisibleGetters = {
     'implementors',
     'documentedExtensions',
     'extensions',
-    'findRefElementCache',
     'defaultPackageName',
     'defaultPackage',
     'hasFooterVersion',
