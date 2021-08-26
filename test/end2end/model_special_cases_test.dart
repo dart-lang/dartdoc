@@ -171,6 +171,15 @@ void main() {
         expect(newLookup(constructorTearoffs, 'F()'),
             equals(MatchingLinkResult(Fnew)));
       });
+
+      test('.new works on classes', () {
+        expect(newLookup(constructorTearoffs, 'A.new'), equals(MatchingLinkResult(Anew)));
+        expect(newLookup(constructorTearoffs, 'B.new'), equals(MatchingLinkResult(Bnew)));
+        expect(newLookup(constructorTearoffs, 'C.new'), equals(MatchingLinkResult(Cnew)));
+        expect(newLookup(constructorTearoffs, 'D.new'), equals(MatchingLinkResult(Dnew)));
+        expect(newLookup(constructorTearoffs, 'E.new'), equals(MatchingLinkResult(Enew)));
+        expect(newLookup(constructorTearoffs, 'F.new'), equals(MatchingLinkResult(Fnew)));
+      });
     }, skip: !_constructorTearoffsAllowed.allows(utils.platformVersion));
   });
 

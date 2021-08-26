@@ -59,3 +59,6 @@ typedef NotAClass = Function;
 /// Mixins don't have constructors either, so disallow `M.new`.
 mixin M<T> on C {
 }
+
+/// [Fc.new] and [Fc.Fc] should refer to the same thing.
+const Fc = F<List>.new;
