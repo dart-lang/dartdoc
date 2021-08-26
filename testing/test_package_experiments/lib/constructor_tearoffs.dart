@@ -60,5 +60,11 @@ typedef NotAClass = Function;
 mixin M<T> on C {
 }
 
-/// [Fc.new] and [Fc.Fc] should refer to the same thing.
+/// Constants should render their values correctly even with type parameters.
+const Dc = D<String>.new;
+
+final Ec = E.new;
+
+/// Constants should render their values correctly.
+/// Also, [Fc.new] and [Fc.Fc] should refer to the same thing.
 const Fc = F<List>.new;

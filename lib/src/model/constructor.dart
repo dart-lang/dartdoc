@@ -69,7 +69,8 @@ class Constructor extends ModelElement
 
   bool get isUnnamedConstructor => name == enclosingElement.name;
 
-  bool get isDefaultConstructor => name == '${enclosingElement.name}.new' || isUnnamedConstructor;
+  bool get isDefaultConstructor =>
+      name == '${enclosingElement.name}.new' || isUnnamedConstructor;
 
   bool get isFactory => element.isFactory;
 

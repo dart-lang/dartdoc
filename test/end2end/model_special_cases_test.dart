@@ -173,12 +173,18 @@ void main() {
       });
 
       test('.new works on classes', () {
-        expect(newLookup(constructorTearoffs, 'A.new'), equals(MatchingLinkResult(Anew)));
-        expect(newLookup(constructorTearoffs, 'B.new'), equals(MatchingLinkResult(Bnew)));
-        expect(newLookup(constructorTearoffs, 'C.new'), equals(MatchingLinkResult(Cnew)));
-        expect(newLookup(constructorTearoffs, 'D.new'), equals(MatchingLinkResult(Dnew)));
-        expect(newLookup(constructorTearoffs, 'E.new'), equals(MatchingLinkResult(Enew)));
-        expect(newLookup(constructorTearoffs, 'F.new'), equals(MatchingLinkResult(Fnew)));
+        expect(referenceLookup(constructorTearoffs, 'A.new'),
+            equals(MatchingLinkResult(Anew)));
+        expect(referenceLookup(constructorTearoffs, 'B.new'),
+            equals(MatchingLinkResult(Bnew)));
+        expect(referenceLookup(constructorTearoffs, 'C.new'),
+            equals(MatchingLinkResult(Cnew)));
+        expect(referenceLookup(constructorTearoffs, 'D.new'),
+            equals(MatchingLinkResult(Dnew)));
+        expect(referenceLookup(constructorTearoffs, 'E.new'),
+            equals(MatchingLinkResult(Enew)));
+        expect(referenceLookup(constructorTearoffs, 'F.new'),
+            equals(MatchingLinkResult(Fnew)));
       });
     }, skip: !_constructorTearoffsAllowed.allows(utils.platformVersion));
   });
