@@ -579,26 +579,6 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     return name;
   }
 
-  /*late final*/ HashMap<String, Set<ModelElement>> _modelElementsNameMap;
-
-  /// Map of [fullyQualifiedNameWithoutLibrary] to all matching [ModelElement]s
-  /// in this library.  Used for legacy code reference lookups.
-  HashMap<String, Set<ModelElement>> get modelElementsNameMap {
-    if (_modelElementsNameMap == null) {
-      _modelElementsNameMap = HashMap<String, Set<ModelElement>>();
-      allModelElements.forEach((ModelElement modelElement) {
-        // [definingLibrary] may be null if [element] has been imported or
-        // exported with a non-normalized URI, like "src//a.dart".
-        if (modelElement.definingLibrary == null) return;
-        _modelElementsNameMap
-            .putIfAbsent(
-                modelElement.fullyQualifiedNameWithoutLibrary, () => {})
-            .add(modelElement);
-      });
-    }
-    return _modelElementsNameMap;
-  }
-
   /*late final*/ HashMap<Element, Set<ModelElement>> _modelElementsMap;
 
   HashMap<Element, Set<ModelElement>> get modelElementsMap {
