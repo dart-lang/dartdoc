@@ -1853,8 +1853,6 @@ void main() {
       expect(GenericMixin.characterLocation, isNotNull);
     });
 
-
-
     test('Verify inheritance/mixin structure and type inference', () {
       expect(
           TypeInferenceMixedIn.mixedInTypes
@@ -2351,7 +2349,8 @@ void main() {
       // TODO(jcollins-g): dart-lang/dartdoc#2696
       test('Allow non-explicit export namespace linking', () {
         expect(
-            referenceLookup(BaseWithMembers, 'aSymbolOnlyAvailableInExportContext'),
+            referenceLookup(
+                BaseWithMembers, 'aSymbolOnlyAvailableInExportContext'),
             equals(MatchingLinkResult(aSymbolOnlyAvailableInExportContext)));
       });
 
@@ -2650,11 +2649,14 @@ void main() {
               .parameters
               .firstWhere((p) => p.name == 'fParamC');
 
-          expect(referenceLookup(aSetterWithFunctionParameter, 'fParam.fParamA'),
+          expect(
+              referenceLookup(aSetterWithFunctionParameter, 'fParam.fParamA'),
               equals(MatchingLinkResult(fParamA)));
-          expect(referenceLookup(aSetterWithFunctionParameter, 'fParam.fParamB'),
+          expect(
+              referenceLookup(aSetterWithFunctionParameter, 'fParam.fParamB'),
               equals(MatchingLinkResult(fParamB)));
-          expect(referenceLookup(aSetterWithFunctionParameter, 'fParam.fParamC'),
+          expect(
+              referenceLookup(aSetterWithFunctionParameter, 'fParam.fParamC'),
               equals(MatchingLinkResult(fParamC)));
         });
 
@@ -2667,7 +2669,8 @@ void main() {
               equals(MatchingLinkResult(anotherNameField)));
           expect(referenceLookup(FactoryConstructorThings, 'yetAnotherName'),
               equals(MatchingLinkResult(yetAnotherNameField)));
-          expect(referenceLookup(FactoryConstructorThings, 'initViaFieldFormal'),
+          expect(
+              referenceLookup(FactoryConstructorThings, 'initViaFieldFormal'),
               equals(MatchingLinkResult(initViaFieldFormal)));
           expect(referenceLookup(FactoryConstructorThings, 'redHerring'),
               equals(MatchingLinkResult(redHerring)));
@@ -2684,7 +2687,8 @@ void main() {
             'in default constructor scope referring to a field formal parameter',
             () {
           expect(
-              referenceLookup(factoryConstructorThingsDefault, 'initViaFieldFormal'),
+              referenceLookup(
+                  factoryConstructorThingsDefault, 'initViaFieldFormal'),
               equals(MatchingLinkResult(initViaFieldFormal)));
         });
 
@@ -2715,7 +2719,9 @@ void main() {
         test('in method scope referring to parameters and variables', () {
           expect(referenceLookup(aMethod, 'yetAnotherName'),
               equals(MatchingLinkResult(yetAnotherName)));
-          expect(referenceLookup(aMethod, 'FactoryConstructorThings.yetAnotherName'),
+          expect(
+              referenceLookup(
+                  aMethod, 'FactoryConstructorThings.yetAnotherName'),
               equals(MatchingLinkResult(yetAnotherNameField)));
           expect(
               referenceLookup(
@@ -2728,15 +2734,16 @@ void main() {
 
       test('Referring to a renamed library directly works', () {
         expect(
-            (referenceLookup(aFunctionUsingRenamedLib, 'renamedLib').commentReferable
-                    as ModelElement)
+            (referenceLookup(aFunctionUsingRenamedLib, 'renamedLib')
+                    .commentReferable as ModelElement)
                 .canonicalModelElement,
             equals(mylibpub));
       });
 
       test('Referring to libraries and packages with the same name is fine',
           () {
-        expect(referenceLookup(Apple, 'Dart'), equals(MatchingLinkResult(Dart)));
+        expect(
+            referenceLookup(Apple, 'Dart'), equals(MatchingLinkResult(Dart)));
         expect(referenceLookup(Apple, 'package:Dart'),
             equals(MatchingLinkResult(DartPackage)));
       });
@@ -2744,7 +2751,8 @@ void main() {
       test('Verify basic linking inside a constructor', () {
         expect(referenceLookup(aNonDefaultConstructor, 'initializeMe'),
             equals(MatchingLinkResult(initializeMe)));
-        expect(referenceLookup(aNonDefaultConstructor, 'aNonDefaultConstructor'),
+        expect(
+            referenceLookup(aNonDefaultConstructor, 'aNonDefaultConstructor'),
             equals(MatchingLinkResult(aNonDefaultConstructor)));
         expect(
             referenceLookup(aNonDefaultConstructor,
@@ -2779,7 +2787,8 @@ void main() {
             equals(MatchingLinkResult(defaultConstructor)));
 
         // We don't want the parameter on the default constructor, here.
-        expect(referenceLookup(fakeLibrary, 'BaseForDocComments.somethingShadowy'),
+        expect(
+            referenceLookup(fakeLibrary, 'BaseForDocComments.somethingShadowy'),
             equals(MatchingLinkResult(somethingShadowy)));
         expect(referenceLookup(baseForDocComments, 'somethingShadowy'),
             equals(MatchingLinkResult(somethingShadowy)));

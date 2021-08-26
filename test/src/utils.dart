@@ -213,4 +213,3 @@ MatchingLinkResult definingLinkResult(MatchingLinkResult originalResult) {
 
 MatchingLinkResult referenceLookup(Warnable element, String codeRef) =>
     definingLinkResult(getMatchingLinkElement(element, codeRef));
-
