@@ -27,8 +27,9 @@ class PackageMetaFailure extends DartdocFailure {
 }
 
 /// For each list in this list, at least one of the given paths must exist
-/// for this to be detected as an SDK.  Update [_writeMockSdkBinFiles].
-final List<List<String>> __sdkDirFilePathsPosix = [
+/// for this to be detected as an SDK.  Update [_writeMockSdkBinFiles] in
+/// `test/src/utils.dart` if removing any entries here.
+const List<List<String>> _sdkDirFilePathsPosix = [
   ['bin/dart.bat', 'bin/dart.exe', 'bin/dart'],
   ['include/dart_version.h'],
   ['lib/core/core.dart'],
@@ -161,7 +162,7 @@ abstract class PubPackageMeta extends PackageMeta {
     if (__sdkDirFilePaths == null) {
       __sdkDirFilePaths = [];
       if (Platform.isWindows) {
-        for (var paths in __sdkDirFilePathsPosix) {
+        for (var paths in _sdkDirFilePathsPosix) {
           var windowsPaths = [
             for (var path in paths)
               p.joinAll(p.Context(style: p.Style.posix).split(path)),
@@ -169,7 +170,7 @@ abstract class PubPackageMeta extends PackageMeta {
           __sdkDirFilePaths.add(windowsPaths);
         }
       } else {
-        __sdkDirFilePaths = __sdkDirFilePathsPosix;
+        __sdkDirFilePaths = _sdkDirFilePathsPosix;
       }
     }
     return __sdkDirFilePaths;
