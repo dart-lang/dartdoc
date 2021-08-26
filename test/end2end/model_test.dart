@@ -1853,10 +1853,7 @@ void main() {
       expect(GenericMixin.characterLocation, isNotNull);
     });
 
-    test('Verify mixin member is available in findRefElementCache', () {
-      expect(packageGraph.findRefElementCache['GenericMixin.mixinMember'],
-          isNotEmpty);
-    });
+
 
     test('Verify inheritance/mixin structure and type inference', () {
       expect(

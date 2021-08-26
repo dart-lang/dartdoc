@@ -198,25 +198,6 @@ class PackageGraph with CommentReferable, Nameable {
     return _extensions;
   }
 
-  HashMap<String, Set<ModelElement>> _findRefElementCache;
-  HashMap<String, Set<ModelElement>> get findRefElementCache {
-    if (_findRefElementCache == null) {
-      assert(packageGraph.allLibrariesAdded);
-      _findRefElementCache = HashMap<String, Set<ModelElement>>();
-      for (final modelElement
-          in utils.filterHasCanonical(packageGraph.allModelElements)) {
-        _findRefElementCache
-            .putIfAbsent(
-                modelElement.fullyQualifiedNameWithoutLibrary, () => {})
-            .add(modelElement);
-        _findRefElementCache
-            .putIfAbsent(modelElement.fullyQualifiedName, () => {})
-            .add(modelElement);
-      }
-    }
-    return _findRefElementCache;
-  }
-
   // All library objects related to this package; a superset of _libraries.
   // Keyed by [LibraryElement.Source.fullName] to resolve multiple URIs
   // referring to the same location to the same [Library].  This isn't how
