@@ -27,10 +27,11 @@ class PackageMetaFailure extends DartdocFailure {
 }
 
 /// For each list in this list, at least one of the given paths must exist
-/// for this to be detected as an SDK.
-final List<List<String>> _sdkDirFilePathsPosix = [
+/// for this to be detected as an SDK.  Update [_writeMockSdkBinFiles] in
+/// `test/src/utils.dart` if removing any entries here.
+const List<List<String>> _sdkDirFilePathsPosix = [
   ['bin/dart.bat', 'bin/dart.exe', 'bin/dart'],
-  ['bin/pub.bat', 'bin/pub'],
+  ['include/dart_version.h'],
   ['lib/core/core.dart'],
 ];
 
@@ -330,12 +331,13 @@ class _FilePackageMeta extends PubPackageMeta {
     List<String> parameters;
     if (requiresFlutter) {
       binPath = p.join(flutterRoot, 'bin', 'flutter');
+      if (Platform.isWindows) binPath += '.bat';
       parameters = ['pub', 'get'];
     } else {
-      binPath = p.join(p.dirname(Platform.resolvedExecutable), 'pub');
-      parameters = ['get'];
+      binPath = p.join(p.dirname(Platform.resolvedExecutable), 'dart');
+      if (Platform.isWindows) binPath += '.exe';
+      parameters = ['pub', 'get'];
     }
-    if (Platform.isWindows) binPath += '.bat';
 
     var result =
         Process.runSync(binPath, parameters, workingDirectory: dir.path);

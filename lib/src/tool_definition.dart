@@ -111,8 +111,8 @@ class DartToolDefinition extends ToolDefinition {
     assert(args[0] == command.first);
     // Set up flags to create a new snapshot, if needed, and use the first run
     // as the training run.
-    SnapshotCache.createInstance(_resourceProvider);
-    var snapshot = SnapshotCache.instance.getSnapshot(command.first);
+    var snapshotCache = SnapshotCache.instanceFor(_resourceProvider);
+    var snapshot = snapshotCache.getSnapshot(command.first);
     var snapshotFile = snapshot._snapshotFile;
     var snapshotPath =
         _resourceProvider.pathContext.absolute(snapshotFile.path);
@@ -214,11 +214,11 @@ class _Snapshot {
   void _snapshotCompleted() => _snapshotCompleter.complete();
 }
 
-/// A singleton that keeps track of cached snapshot files. The [dispose]
+/// A class that keeps track of cached snapshot files. The [dispose]
 /// function must be called before process exit to clean up snapshots in the
 /// cache.
 class SnapshotCache {
-  static SnapshotCache _instance;
+  static final _instances = <ResourceProvider, SnapshotCache>{};
 
   final Folder snapshotCache;
   final ResourceProvider _resourceProvider;
@@ -229,10 +229,12 @@ class SnapshotCache {
       : snapshotCache =
             _resourceProvider.createSystemTemp('dartdoc_snapshot_cache_');
 
-  static SnapshotCache get instance => _instance;
-
-  static SnapshotCache createInstance(ResourceProvider resourceProvider) =>
-      _instance ??= SnapshotCache._(resourceProvider);
+  /// Returns a [SnapshotCache] for a given [ResourceProvider], creating one
+  /// only if one doesn't exist yet for the given [ResourceProvider].
+  factory SnapshotCache.instanceFor(ResourceProvider resourceProvider) {
+    return _instances.putIfAbsent(
+        resourceProvider, () => SnapshotCache._(resourceProvider));
+  }
 
   _Snapshot getSnapshot(String toolPath) {
     if (snapshots.containsKey(toolPath)) {
@@ -245,7 +247,7 @@ class SnapshotCache {
   }
 
   void dispose() {
-    _instance = null;
+    _instances.remove(_resourceProvider);
     if (snapshotCache != null && snapshotCache.exists) {
       return snapshotCache.delete();
     }

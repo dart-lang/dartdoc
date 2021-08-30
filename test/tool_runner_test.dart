@@ -97,7 +97,8 @@ echo:
   tearDownAll(() {
     tempDir?.deleteSync(recursive: true);
     tracker?.dispose();
-    SnapshotCache.instance?.dispose();
+    SnapshotCache.instanceFor(pubPackageMetaProvider.resourceProvider)
+        .dispose();
     setupFile = null;
     tempDir = null;
   });

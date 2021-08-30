@@ -22,7 +22,7 @@ import 'package:test/test.dart';
 import '../src/utils.dart';
 
 final _experimentPackageAllowed =
-    VersionRange(min: Version.parse('2.14.0-0'), includeMin: true);
+    VersionRange(min: Version.parse('2.15.0-0'), includeMin: true);
 
 final _resourceProvider = pubPackageMetaProvider.resourceProvider;
 final _pathContext = _resourceProvider.pathContext;

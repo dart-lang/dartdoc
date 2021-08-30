@@ -157,7 +157,7 @@ class PubPackageBuilder implements PackageBuilder {
     var analysisContext = contextCollection.contextFor(config.inputDir);
     var session = analysisContext.currentSession;
     // Allow dart source files with inappropriate suffixes (#1897).
-    final library = await session.getResolvedLibrary2(filePath);
+    final library = await session.getResolvedLibrary(filePath);
     if (library is ResolvedLibraryResult) {
       final libraryElement = library.element;
       var restoredUri = libraryElement.source.uri.toString();
