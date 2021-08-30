@@ -315,7 +315,7 @@ abstract class ModelElement extends Canonicalization
       if (e.aliasedType is FunctionType) {
         return FunctionTypedef(e, library, packageGraph);
       }
-      return Typedef(e, library, packageGraph);
+      return ClassTypedef(e, library, packageGraph);
     }
     if (e is ConstructorElement) {
       return Constructor(e, library, packageGraph);
