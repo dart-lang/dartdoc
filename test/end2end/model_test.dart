@@ -2236,7 +2236,7 @@ void main() {
     group('Linking for generalized typedef cases works', () {
       Library generalizedTypedefs;
       Typedef T0, T2, T5, T8;
-      Class C2;
+      Class C1, C2;
       Field C1a;
 
       setUpAll(() {
@@ -2246,8 +2246,9 @@ void main() {
         T2 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T2');
         T5 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T5');
         T8 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T8');
+        C1 = generalizedTypedefs.classes.firstWhere((c) => c.name == 'C1');
         C2 = generalizedTypedefs.classes.firstWhere((c) => c.name == 'C2');
-        C1a = C2.allFields.firstWhere((f) => f.name == 'a');
+        C1a = C1.allFields.firstWhere((f) => f.name == 'a');
       });
 
       test('Verify basic ability to link anything', () {
