@@ -9,7 +9,7 @@ import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/typedef_renderer.dart';
 
-class Typedef extends ModelElement
+abstract class Typedef extends ModelElement
     with TypeParameters, Categorization
     implements EnclosedElement {
   Typedef(TypeAliasElement element, Library library, PackageGraph packageGraph)
@@ -40,6 +40,8 @@ class Typedef extends ModelElement
   @override
   String get filePath => '${library.dirName}/$fileName';
 
+  /// Helper for mustache templates, which can't do casting themselves
+  /// without this.
   FunctionTypedef get asCallable => this as FunctionTypedef;
 
   @override
@@ -65,34 +67,73 @@ class Typedef extends ModelElement
 
   TypedefRenderer get _renderer => packageGraph.rendererFactory.typedefRenderer;
 
-  Map<String, CommentReferable> _referenceChildren;
+  @override
+  Iterable<CommentReferable> get referenceParents => [definingLibrary];
 
+  Map<String, CommentReferable> _referenceChildren;
   @override
   Map<String, CommentReferable> get referenceChildren {
     if (_referenceChildren == null) {
       _referenceChildren = {};
-
-      // Only consider parameters if this is a function typedef.
-      if (isCallable) {
-        _referenceChildren
-            .addEntriesIfAbsent(parameters.explicitOnCollisionWith(this));
-      }
       _referenceChildren
           .addEntriesIfAbsent(typeParameters.explicitOnCollisionWith(this));
     }
     return _referenceChildren;
   }
+}
+
+/// A typedef referring to a non-function typedef that is nevertheless not
+/// referring to a defined class.  An example is a typedef alias for `void` or
+/// for `Function` itself.
+class GeneralizedTypedef extends Typedef {
+  GeneralizedTypedef(
+      TypeAliasElement element, Library library, PackageGraph packageGraph)
+      : super(element, library, packageGraph) {
+    assert(!isCallable);
+  }
+}
+
+/// A typedef referring to a non-function, defined type.
+class ClassTypedef extends Typedef {
+  ClassTypedef(
+      TypeAliasElement element, Library library, PackageGraph packageGraph)
+      : super(element, library, packageGraph) {
+    assert(!isCallable);
+    assert(modelType.modelElement is Class);
+  }
 
   @override
-  Iterable<CommentReferable> get referenceParents => [definingLibrary];
+  DefinedElementType get modelType => super.modelType;
+
+  @override
+  Map<String, CommentReferable> get referenceChildren {
+    if (_referenceChildren == null) {
+      _referenceChildren = super.referenceChildren;
+      _referenceChildren
+          .addEntriesIfAbsent(modelType.modelElement.referenceChildren.entries);
+    }
+    return _referenceChildren;
+  }
 }
 
 /// A typedef referring to a function type.
 class FunctionTypedef extends Typedef {
   FunctionTypedef(
       TypeAliasElement element, Library library, PackageGraph packageGraph)
-      : super(element, library, packageGraph);
+      : super(element, library, packageGraph) {
+    assert(isCallable);
+  }
 
   @override
   Callable get modelType => super.modelType;
+
+  @override
+  Map<String, CommentReferable> get referenceChildren {
+    if (_referenceChildren == null) {
+      _referenceChildren = super.referenceChildren;
+      _referenceChildren
+          .addEntriesIfAbsent(parameters.explicitOnCollisionWith(this));
+    }
+    return _referenceChildren;
+  }
 }
