@@ -157,14 +157,12 @@ class _IterableBlockParser extends md.BlockParser {
   }
 }
 
-/// Return false if the passed [referable] is a default [Constructor],
+/// Return false if the passed [referable] is an unnamed [Constructor],
 /// or if it is shadowing another type of element, or is a parameter of
 /// one of the above.
-bool _rejectDefaultAndShadowingConstructors(CommentReferable referable) {
+bool _rejectUnnamedAndShadowingConstructors(CommentReferable referable) {
   if (referable is Constructor) {
-    if (referable.name == referable.enclosingElement.name) {
-      return false;
-    }
+    if (referable.isUnnamedConstructor) return false;
     if (referable.enclosingElement
         .referenceChildren[referable.name.split('.').last] is! Constructor) {
       return false;
@@ -191,12 +189,12 @@ MatchingLinkResult _getMatchingLinkElementCommentReferable(
   bool Function(CommentReferable) filter;
   bool Function(CommentReferable) allowTree;
 
-  // Constructor references are pretty ambiguous by nature since they are
+  // Constructor references are pretty ambiguous by nature since they can be
   // declared with the same name as the class they are constructing, and even
   // if they don't use field-formal parameters, sometimes have parameters
   // named the same as members.
   // Maybe clean this up with inspiration from constructor tear-off syntax?
-  if (commentReference.allowDefaultConstructor) {
+  if (commentReference.allowUnnamedConstructor) {
     // Neither reject, nor require, a default constructor in the event
     // the comment reference structure implies one.  (We can not require it
     // in case a library name is the same as a member class name and the class
@@ -212,12 +210,12 @@ MatchingLinkResult _getMatchingLinkElementCommentReferable(
     // Trailing parens indicate we are looking for a callable.
     filter = _requireCallable;
   } else {
-    // Without hints, reject default constructors and their parameters to force
+    // Without hints, reject unnamed constructors and their parameters to force
     // resolution to the class.
-    filter = _rejectDefaultAndShadowingConstructors;
+    filter = _rejectUnnamedAndShadowingConstructors;
 
-    if (!commentReference.allowDefaultConstructorParameter) {
-      allowTree = _rejectDefaultAndShadowingConstructors;
+    if (!commentReference.allowUnnamedConstructorParameter) {
+      allowTree = _rejectUnnamedAndShadowingConstructors;
     }
   }
 

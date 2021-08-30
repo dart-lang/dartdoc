@@ -70,10 +70,15 @@ class Class extends Container
     return _unnamedConstructor;
   }
 
-  @Deprecated(
-      'Renamed to `unnamedConstructor`; this getter with the old name will be '
-      'removed as early as Dartdoc 1.0.0')
-  Constructor get defaultConstructor => unnamedConstructor;
+  Constructor _defaultConstructor;
+
+  /// With constructor tearoffs, this is no longer equivalent to the unnamed
+  /// constructor and assumptions based on that are incorrect.
+  Constructor get defaultConstructor {
+    _defaultConstructor ??= unnamedConstructor ??
+        constructors.firstWhere((c) => c.isDefaultConstructor);
+    return _defaultConstructor;
+  }
 
   @override
   Iterable<Method> get instanceMethods =>
@@ -613,8 +618,11 @@ class Class extends Container
     for (var constructor in source) {
       yield MapEntry(constructor.referenceName, constructor);
       yield MapEntry(
-          '${constructor.enclosingElement.name}.${constructor.referenceName}',
+          '${constructor.enclosingElement.referenceName}.${constructor.referenceName}',
           constructor);
+      if (constructor.isDefaultConstructor) {
+        yield MapEntry('new', constructor);
+      }
     }
   }
 

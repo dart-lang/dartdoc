@@ -232,11 +232,16 @@ void updateThirdParty() async {
 }
 
 @Task('Analyze dartdoc to ensure there are no errors and warnings')
+@Depends(analyzeTestPackages)
 void analyze() async {
   await SubprocessLauncher('analyze').runStreamed(
     sdkBin('dartanalyzer'),
     ['--fatal-infos', '--options', 'analysis_options_presubmit.yaml', '.'],
   );
+}
+
+@Task('Analyze the test packages')
+void analyzeTestPackages() async {
   var testPackagePaths = [testPackage.path];
   if (Platform.version.contains('dev')) {
     testPackagePaths.add(testPackageExperiments.path);

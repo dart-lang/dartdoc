@@ -8,12 +8,10 @@ import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/comment_references/parser.dart';
 
 abstract class ModelCommentReference {
-  /// Does the structure of the reference itself imply a possible default
+  /// Does the structure of the reference itself imply a possible unnamed
   /// constructor?
-  // TODO(jcollins-g): rewrite/discard this once default constructor tear-off
-  // design process is complete.
-  bool get allowDefaultConstructor;
-  bool get allowDefaultConstructorParameter;
+  bool get allowUnnamedConstructor;
+  bool get allowUnnamedConstructorParameter;
   String get codeRef;
   bool get hasConstructorHint;
   bool get hasCallableHint;
@@ -34,42 +32,45 @@ abstract class ModelCommentReference {
 /// information needed for Dartdoc.  Drops link to the [CommentReference]
 /// and [ResourceProvider] after construction.
 class _ModelCommentReferenceImpl implements ModelCommentReference {
-  bool _allowDefaultConstructor;
+  bool _allowUnnamedConstructor;
 
   void _initAllowCache() {
     var referencePieces = parsed.whereType<IdentifierNode>().toList();
-    _allowDefaultConstructor = false;
-    _allowDefaultConstructorParameter = false;
+    _allowUnnamedConstructor = false;
+    _allowUnnamedConstructorParameter = false;
     if (referencePieces.length >= 2) {
       IdentifierNode nodeLast;
       for (var f in referencePieces) {
         if (f.text == nodeLast?.text) {
           if (identical(referencePieces.last, f)) {
-            _allowDefaultConstructor = true;
+            _allowUnnamedConstructor = true;
           } else {
-            _allowDefaultConstructorParameter = true;
+            _allowUnnamedConstructorParameter = true;
           }
         }
         nodeLast = f;
+      }
+      if (referencePieces.last.text == 'new') {
+        _allowUnnamedConstructor = true;
       }
     }
   }
 
   @override
-  bool get allowDefaultConstructor {
-    if (_allowDefaultConstructor == null) {
+  bool get allowUnnamedConstructor {
+    if (_allowUnnamedConstructor == null) {
       _initAllowCache();
     }
-    return _allowDefaultConstructor;
+    return _allowUnnamedConstructor;
   }
 
-  bool _allowDefaultConstructorParameter;
+  bool _allowUnnamedConstructorParameter;
   @override
-  bool get allowDefaultConstructorParameter {
-    if (_allowDefaultConstructorParameter == null) {
+  bool get allowUnnamedConstructorParameter {
+    if (_allowUnnamedConstructorParameter == null) {
       _initAllowCache();
     }
-    return _allowDefaultConstructorParameter;
+    return _allowUnnamedConstructorParameter;
   }
 
   @override
