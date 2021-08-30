@@ -2237,6 +2237,7 @@ void main() {
       Library generalizedTypedefs;
       Typedef T0, T2, T5, T8;
       Class C2;
+      Field C1a;
 
       setUpAll(() {
         generalizedTypedefs = packageGraph.libraries
@@ -2246,6 +2247,7 @@ void main() {
         T5 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T5');
         T8 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T8');
         C2 = generalizedTypedefs.classes.firstWhere((c) => c.name == 'C2');
+        C1a = C2.allFields.firstWhere((f) => f.name == 'a');
       });
 
       test('Verify basic ability to link anything', () {
@@ -2265,6 +2267,12 @@ void main() {
       test('Verify ability to link to parameters', () {
         var T5name = T5.parameters.firstWhere((t) => t.name == 'name');
         expect(referenceLookup(T5, 'name'), equals(MatchingLinkResult(T5name)));
+      });
+
+      test('Verify ability to link to class members of aliased classes', () {
+        expect(referenceLookup(generalizedTypedefs, 'T8.a'),
+            equals(MatchingLinkResult(C1a)));
+        expect(referenceLookup(T8, 'a'), equals(MatchingLinkResult(C1a)));
       });
     });
 
