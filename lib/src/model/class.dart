@@ -73,9 +73,7 @@ class Class extends Container
   Constructor _defaultConstructor;
 
   /// With constructor tearoffs, this is no longer equivalent to the unnamed
-  /// constructor and assumptions based on that are incorrect.   Default
-  /// constructors can be named, and there may not be an unnamed constructor
-  /// if the default constructor is declared with `.new`.
+  /// constructor and assumptions based on that are incorrect.
   Constructor get defaultConstructor {
     _defaultConstructor ??= unnamedConstructor ??
         constructors.firstWhere((c) => c.isDefaultConstructor);
