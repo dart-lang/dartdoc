@@ -177,7 +177,7 @@ class ToolRunner {
       // find out where their script was coming from as an absolute path on the
       // filesystem.
       envWithInput['DART_SNAPSHOT_CACHE'] = pathContext.absolute(
-          SnapshotCache.createInstance(resourceProvider).snapshotCache.path);
+          SnapshotCache.instanceFor(resourceProvider).snapshotCache.path);
       if (toolDefinition.setupCommand != null) {
         envWithInput['DART_SETUP_COMMAND'] = toolDefinition.setupCommand[0];
       }

@@ -204,21 +204,6 @@ abstract class Container extends ModelElement with TypeParameters {
     return member;
   }
 
-  Map<String, List<ModelElement>> _allModelElementsByNamePart;
-
-  /// Helper for `_MarkdownCommentReference._getResultsForClass`.
-  Map<String, List<ModelElement>> get allModelElementsByNamePart {
-    if (_allModelElementsByNamePart == null) {
-      _allModelElementsByNamePart = {};
-      for (var me in allModelElements) {
-        _allModelElementsByNamePart.update(
-            me.namePart, (List<ModelElement> v) => v..add(me),
-            ifAbsent: () => <ModelElement>[me]);
-      }
-    }
-    return _allModelElementsByNamePart;
-  }
-
   bool get hasPublicStaticFields => publicStaticFieldsSorted.isNotEmpty;
 
   Iterable<Field> get publicStaticFields =>

@@ -33,7 +33,7 @@ abstract class ElementType extends Privacy with CommentReferable, Nameable {
         f.element.kind == ElementKind.DYNAMIC ||
         f.element.kind == ElementKind.NEVER) {
       if (f is FunctionType) {
-        if (f.aliasElement != null) {
+        if (f.alias?.element != null) {
           return AliasedFunctionTypeElementType(
               f, library, packageGraph, returnedFrom);
         }
@@ -46,14 +46,14 @@ abstract class ElementType extends Privacy with CommentReferable, Nameable {
       // In that case it is an actual type alias of some kind (generic
       // or otherwise.   Here however aliasElement signals that this is a
       // type referring to an alias.
-      if (f is! TypeAliasElement && f.aliasElement != null) {
+      if (f is! TypeAliasElement && f.alias?.element != null) {
         return AliasedElementType(
             f, library, packageGraph, element, returnedFrom);
       }
       assert(f is ParameterizedType || f is TypeParameterType);
       // TODO(jcollins-g): strip out all the cruft that's accumulated
       // here for non-generic type aliases.
-      var isGenericTypeAlias = f.aliasElement != null && f is! InterfaceType;
+      var isGenericTypeAlias = f.alias?.element != null && f is! InterfaceType;
       if (f is FunctionType) {
         assert(f is ParameterizedType);
         // This is an indication we have an extremely out of date analyzer....
@@ -190,8 +190,8 @@ class AliasedFunctionTypeElementType extends FunctionTypeElementType
   AliasedFunctionTypeElementType(FunctionType f, Library library,
       PackageGraph packageGraph, ElementType returnedFrom)
       : super(f, library, packageGraph, returnedFrom) {
-    assert(type.aliasElement != null);
-    assert(type.aliasArguments != null);
+    assert(type.alias?.element != null);
+    assert(type.alias?.typeArguments != null);
   }
 
   @override
@@ -222,18 +222,18 @@ class ParameterizedElementType extends DefinedElementType with Rendered {
 /// A [ElementType] whose underlying type was referrred to by a type alias.
 mixin Aliased implements ElementType {
   @override
-  String get name => type.aliasElement.name;
+  String get name => type.alias.element.name;
 
   @override
   bool get isTypedef => true;
 
   ModelElement _aliasElement;
   ModelElement get aliasElement => _aliasElement ??=
-      ModelElement.fromElement(type.aliasElement, packageGraph);
+      ModelElement.fromElement(type.alias.element, packageGraph);
 
   Iterable<ElementType> _aliasArguments;
   Iterable<ElementType> get aliasArguments =>
-      _aliasArguments ??= type.aliasArguments
+      _aliasArguments ??= type.alias.typeArguments
           .map((f) => ElementType.from(f, library, packageGraph))
           .toList(growable: false);
 }
@@ -242,7 +242,7 @@ class AliasedElementType extends ParameterizedElementType with Aliased {
   AliasedElementType(ParameterizedType type, Library library,
       PackageGraph packageGraph, ModelElement element, ElementType returnedFrom)
       : super(type, library, packageGraph, element, returnedFrom) {
-    assert(type.aliasElement != null);
+    assert(type.alias?.element != null);
   }
 
   @override
@@ -431,7 +431,7 @@ class CallableElementType extends DefinedElementType with Rendered, Callable {
   Iterable<ElementType> _typeArguments;
   @override
   Iterable<ElementType> get typeArguments =>
-      _typeArguments ??= (type.aliasArguments ?? [])
+      _typeArguments ??= (type.alias?.typeArguments ?? [])
           .map((f) => ElementType.from(f, library, packageGraph))
           .toList(growable: false);
 }
