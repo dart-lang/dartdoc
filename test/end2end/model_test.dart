@@ -4851,7 +4851,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
   group('Implementors', () {
     Class apple;
     Class b;
-    List<Class> implA, implC;
+    List<InheritingContainer> implA, implC;
 
     setUpAll(() {
       apple = exLibrary.classes.firstWhere((c) => c.name == 'Apple');

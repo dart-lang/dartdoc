@@ -29,7 +29,8 @@ import 'package:meta/meta.dart';
 /// **has** : boolean getters indicating whether the underlying getters are
 /// empty.  Mostly for the templating system.
 /// **all** : Referring to all children.
-abstract class Container extends ModelElement with TypeParameters {
+abstract class Container extends ModelElement
+    with Categorization, TypeParameters {
   Container(Element element, Library library, PackageGraph packageGraph)
       : super(element, library, packageGraph);
 
@@ -65,6 +66,13 @@ abstract class Container extends ModelElement with TypeParameters {
         staticMethods,
       ]);
 
+  List<ModelElement> _allCanonicalModelElements;
+
+  List<ModelElement> get allCanonicalModelElements {
+    return (_allCanonicalModelElements ??=
+        allModelElements.where((e) => e.isCanonical).toList());
+  }
+
   /// All methods, including operators and statics, declared as part of this
   /// [Container].  [declaredMethods] must be the union of [instanceMethods],
   /// [staticMethods], and [instanceOperators].
@@ -83,9 +91,10 @@ abstract class Container extends ModelElement with TypeParameters {
   /// Whether all instance operators are inherited.
   bool get publicInheritedInstanceOperators => false;
 
-  bool get hasPublicConstructors;
+  /// Override if this is [Constructable].
+  bool get hasPublicConstructors => false;
 
-  Iterable<Constructor> get publicConstructorsSorted;
+  Iterable<Constructor> get publicConstructorsSorted => [];
 
   @nonVirtual
   bool get hasPublicInstanceMethods =>

@@ -11,9 +11,9 @@ class Operator extends Method {
   Operator(MethodElement element, Library library, PackageGraph packageGraph)
       : super(element, library, packageGraph);
 
-  Operator.inherited(MethodElement element, Class enclosingClass,
+  Operator.inherited(MethodElement element, Container enclosingContainer,
       Library library, PackageGraph packageGraph, {Member originalMember})
-      : super.inherited(element, enclosingClass, library, packageGraph,
+      : super.inherited(element, enclosingContainer, library, packageGraph,
             originalMember: originalMember);
 
   @override

@@ -1437,7 +1437,7 @@ String _renderCategory_partial_footer_12(_i1.CategoryTemplateData context0) {
   return buffer.toString();
 }
 
-String renderClass<T extends _i4.Class>(_i1.ClassTemplateData<T> context0) {
+String renderClass(_i1.ClassTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write(_renderClass_partial_head_0(context0));
   buffer.writeln();
@@ -1821,8 +1821,7 @@ String renderClass<T extends _i4.Class>(_i1.ClassTemplateData<T> context0) {
   return buffer.toString();
 }
 
-String _renderClass_partial_head_0<T extends _i4.Class>(
-    _i1.ClassTemplateData<T> context0) {
+String _renderClass_partial_head_0(_i1.ClassTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<!DOCTYPE html>
 <html lang="en">
@@ -1975,8 +1974,8 @@ String _renderClass_partial_head_0<T extends _i4.Class>(
   return buffer.toString();
 }
 
-String _renderClass_partial_source_link_1<T extends _i4.Class>(
-    _i4.Class context1, _i1.ClassTemplateData<T> context0) {
+String _renderClass_partial_source_link_1(
+    _i4.Class context1, _i1.ClassTemplateData context0) {
   final buffer = StringBuffer();
   if (context1.hasSourceHref == true) {
     buffer.writeln();
@@ -1990,8 +1989,8 @@ String _renderClass_partial_source_link_1<T extends _i4.Class>(
   return buffer.toString();
 }
 
-String _renderClass_partial_feature_set_2<T extends _i4.Class>(
-    _i4.Class context1, _i1.ClassTemplateData<T> context0) {
+String _renderClass_partial_feature_set_2(
+    _i4.Class context1, _i1.ClassTemplateData context0) {
   final buffer = StringBuffer();
   if (context1.hasFeatureSet == true) {
     var context2 = context1.displayedLanguageFeatures;
@@ -2007,8 +2006,8 @@ String _renderClass_partial_feature_set_2<T extends _i4.Class>(
   return buffer.toString();
 }
 
-String _renderClass_partial_categorization_3<T extends _i4.Class>(
-    _i4.Class context1, _i1.ClassTemplateData<T> context0) {
+String _renderClass_partial_categorization_3(
+    _i4.Class context1, _i1.ClassTemplateData context0) {
   final buffer = StringBuffer();
   if (context1.hasCategoryNames == true) {
     var context2 = context1.displayedCategories;
@@ -2024,8 +2023,8 @@ String _renderClass_partial_categorization_3<T extends _i4.Class>(
   return buffer.toString();
 }
 
-String _renderClass_partial_documentation_4<T extends _i4.Class>(
-    _i4.Class context1, _i1.ClassTemplateData<T> context0) {
+String _renderClass_partial_documentation_4(
+    _i4.Class context1, _i1.ClassTemplateData context0) {
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
     buffer.writeln();
@@ -2042,8 +2041,8 @@ String _renderClass_partial_documentation_4<T extends _i4.Class>(
   return buffer.toString();
 }
 
-String _renderClass_partial_property_5<T extends _i4.Class>(
-    _i9.Field context2, _i4.Class context1, _i1.ClassTemplateData<T> context0) {
+String _renderClass_partial_property_5(
+    _i9.Field context2, _i4.Class context1, _i1.ClassTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
   buffer.writeEscaped(context2.htmlId.toString());
@@ -2085,9 +2084,8 @@ String _renderClass_partial_property_5<T extends _i4.Class>(
   return buffer.toString();
 }
 
-String __renderClass_partial_property_5_partial_categorization_0<
-        T extends _i4.Class>(
-    _i9.Field context2, _i4.Class context1, _i1.ClassTemplateData<T> context0) {
+String __renderClass_partial_property_5_partial_categorization_0(
+    _i9.Field context2, _i4.Class context1, _i1.ClassTemplateData context0) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
     var context3 = context2.displayedCategories;
@@ -2103,8 +2101,8 @@ String __renderClass_partial_property_5_partial_categorization_0<
   return buffer.toString();
 }
 
-String __renderClass_partial_property_5_partial_features_1<T extends _i4.Class>(
-    _i9.Field context2, _i4.Class context1, _i1.ClassTemplateData<T> context0) {
+String __renderClass_partial_property_5_partial_features_1(
+    _i9.Field context2, _i4.Class context1, _i1.ClassTemplateData context0) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
     buffer.write('''<div class="features">''');
@@ -2116,10 +2114,8 @@ String __renderClass_partial_property_5_partial_features_1<T extends _i4.Class>(
   return buffer.toString();
 }
 
-String _renderClass_partial_callable_6<T extends _i4.Class>(
-    _i10.Method context2,
-    _i4.Class context1,
-    _i1.ClassTemplateData<T> context0) {
+String _renderClass_partial_callable_6(
+    _i10.Method context2, _i4.Class context1, _i1.ClassTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
   buffer.writeEscaped(context2.htmlId.toString());
@@ -2169,9 +2165,8 @@ String _renderClass_partial_callable_6<T extends _i4.Class>(
   return buffer.toString();
 }
 
-String __renderClass_partial_callable_6_partial_categorization_0<
-        T extends _i4.Class>(_i10.Method context2, _i4.Class context1,
-    _i1.ClassTemplateData<T> context0) {
+String __renderClass_partial_callable_6_partial_categorization_0(
+    _i10.Method context2, _i4.Class context1, _i1.ClassTemplateData context0) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
     var context3 = context2.displayedCategories;
@@ -2187,10 +2182,8 @@ String __renderClass_partial_callable_6_partial_categorization_0<
   return buffer.toString();
 }
 
-String __renderClass_partial_callable_6_partial_features_1<T extends _i4.Class>(
-    _i10.Method context2,
-    _i4.Class context1,
-    _i1.ClassTemplateData<T> context0) {
+String __renderClass_partial_callable_6_partial_features_1(
+    _i10.Method context2, _i4.Class context1, _i1.ClassTemplateData context0) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
     buffer.write('''<div class="features">''');
@@ -2202,8 +2195,8 @@ String __renderClass_partial_callable_6_partial_features_1<T extends _i4.Class>(
   return buffer.toString();
 }
 
-String _renderClass_partial_constant_7<T extends _i4.Class>(
-    _i9.Field context2, _i4.Class context1, _i1.ClassTemplateData<T> context0) {
+String _renderClass_partial_constant_7(
+    _i9.Field context2, _i4.Class context1, _i1.ClassTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
   buffer.writeEscaped(context2.htmlId.toString());
@@ -2245,9 +2238,8 @@ String _renderClass_partial_constant_7<T extends _i4.Class>(
   return buffer.toString();
 }
 
-String __renderClass_partial_constant_7_partial_categorization_0<
-        T extends _i4.Class>(
-    _i9.Field context2, _i4.Class context1, _i1.ClassTemplateData<T> context0) {
+String __renderClass_partial_constant_7_partial_categorization_0(
+    _i9.Field context2, _i4.Class context1, _i1.ClassTemplateData context0) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
     var context3 = context2.displayedCategories;
@@ -2263,8 +2255,8 @@ String __renderClass_partial_constant_7_partial_categorization_0<
   return buffer.toString();
 }
 
-String __renderClass_partial_constant_7_partial_features_1<T extends _i4.Class>(
-    _i9.Field context2, _i4.Class context1, _i1.ClassTemplateData<T> context0) {
+String __renderClass_partial_constant_7_partial_features_1(
+    _i9.Field context2, _i4.Class context1, _i1.ClassTemplateData context0) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
     buffer.write('''<div class="features">''');
@@ -2276,8 +2268,7 @@ String __renderClass_partial_constant_7_partial_features_1<T extends _i4.Class>(
   return buffer.toString();
 }
 
-String _renderClass_partial_search_sidebar_8<T extends _i4.Class>(
-    _i1.ClassTemplateData<T> context0) {
+String _renderClass_partial_search_sidebar_8(_i1.ClassTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<header id="header-search-sidebar" class="hidden-l">
   <form class="search-sidebar" role="search">
@@ -2340,8 +2331,7 @@ String _renderClass_partial_search_sidebar_8<T extends _i4.Class>(
   return buffer.toString();
 }
 
-String _renderClass_partial_footer_9<T extends _i4.Class>(
-    _i1.ClassTemplateData<T> context0) {
+String _renderClass_partial_footer_9(_i1.ClassTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''</main>
 
@@ -7831,44 +7821,26 @@ String renderMixin(_i1.MixinTemplateData context0) {
         </dd>''');
       }
       buffer.writeln();
-      if (context2.hasPublicMixedInTypes == true) {
+      if (context2.hasPublicImplementors == true) {
         buffer.writeln();
         buffer.write('''
-        <dt>Mixes-in</dt>
-        <dd><ul class="comma-separated mixin-relationships">''');
-        var context9 = context2.publicMixedInTypes;
+        <dt>Mixin Applications</dt>
+        <dd>
+          <ul class="comma-separated mixin-relationships">''');
+        var context9 = context2.publicImplementorsSorted;
         if (context9 != null) {
           for (var context10 in context9) {
             buffer.writeln();
             buffer.write('''
-          <li>''');
+            <li>''');
             buffer.write(context10.linkedName.toString());
             buffer.write('''</li>''');
           }
         }
         buffer.writeln();
         buffer.write('''
-        </ul></dd>''');
-      }
-      buffer.writeln();
-      if (context2.hasPublicImplementors == true) {
-        buffer.writeln();
-        buffer.write('''
-        <dt>Implemented by</dt>
-        <dd><ul class="comma-separated mixin-relationships">''');
-        var context11 = context2.publicImplementorsSorted;
-        if (context11 != null) {
-          for (var context12 in context11) {
-            buffer.writeln();
-            buffer.write('''
-          <li>''');
-            buffer.write(context12.linkedName.toString());
-            buffer.write('''</li>''');
-          }
-        }
-        buffer.writeln();
-        buffer.write('''
-        </ul></dd>''');
+          </ul>
+        </dd>''');
       }
       buffer.writeln();
       if (context2.hasAnnotations == true) {
@@ -7876,66 +7848,19 @@ String renderMixin(_i1.MixinTemplateData context0) {
         buffer.write('''
         <dt>Annotations</dt>
         <dd><ul class="annotation-list mixin-relationships">''');
-        var context13 = context2.annotations;
-        if (context13 != null) {
-          for (var context14 in context13) {
+        var context11 = context2.annotations;
+        if (context11 != null) {
+          for (var context12 in context11) {
             buffer.writeln();
             buffer.write('''
           <li>''');
-            buffer.write(context14.linkedNameWithParameters.toString());
+            buffer.write(context12.linkedNameWithParameters.toString());
             buffer.write('''</li>''');
           }
         }
         buffer.writeln();
         buffer.write('''
         </ul></dd>''');
-      }
-      buffer.writeln();
-      buffer.write('''
-      </dl>
-    </section>''');
-    }
-    buffer.writeln();
-    if (context2.hasPublicConstructors == true) {
-      buffer.writeln();
-      buffer.write('''
-    <section class="summary offset-anchor" id="constructors">
-      <h2>Constructors</h2>
-
-      <dl class="constructor-summary-list">''');
-      var context15 = context2.publicConstructorsSorted;
-      if (context15 != null) {
-        for (var context16 in context15) {
-          buffer.writeln();
-          buffer.write('''
-        <dt id="''');
-          buffer.writeEscaped(context16.htmlId.toString());
-          buffer.write('''" class="callable">
-          <span class="name">''');
-          buffer.write(context16.linkedName.toString());
-          buffer.write('''</span><span class="signature">(''');
-          buffer.write(context16.linkedParams.toString());
-          buffer.write(''')</span>
-        </dt>
-        <dd>
-          ''');
-          buffer.write(context16.oneLineDoc.toString());
-          buffer.write(' ');
-          buffer.write(context16.extendedDocLink.toString());
-          if (context16.isConst == true) {
-            buffer.writeln();
-            buffer.write('''
-          <div class="constructor-modifier features">const</div>''');
-          }
-          if (context16.isFactory == true) {
-            buffer.writeln();
-            buffer.write('''
-          <div class="constructor-modifier features">factory</div>''');
-          }
-          buffer.writeln();
-          buffer.write('''
-        </dd>''');
-        }
       }
       buffer.writeln();
       buffer.write('''
@@ -7954,12 +7879,12 @@ String renderMixin(_i1.MixinTemplateData context0) {
       <h2>Properties</h2>
 
       <dl class="properties">''');
-      var context17 = context2.publicInstanceFields;
-      if (context17 != null) {
-        for (var context18 in context17) {
+      var context13 = context2.publicInstanceFields;
+      if (context13 != null) {
+        for (var context14 in context13) {
           buffer.write('\n        ');
           buffer.write(
-              _renderMixin_partial_property_5(context18, context2, context0));
+              _renderMixin_partial_property_5(context14, context2, context0));
         }
       }
       buffer.writeln();
@@ -7978,12 +7903,12 @@ String renderMixin(_i1.MixinTemplateData context0) {
       buffer.write('''" id="instance-methods">
       <h2>Methods</h2>
       <dl class="callables">''');
-      var context19 = context2.publicInstanceMethods;
-      if (context19 != null) {
-        for (var context20 in context19) {
+      var context15 = context2.publicInstanceMethods;
+      if (context15 != null) {
+        for (var context16 in context15) {
           buffer.write('\n        ');
           buffer.write(
-              _renderMixin_partial_callable_6(context20, context2, context0));
+              _renderMixin_partial_callable_6(context16, context2, context0));
         }
       }
       buffer.writeln();
@@ -8002,12 +7927,12 @@ String renderMixin(_i1.MixinTemplateData context0) {
       buffer.write('''" id="operators">
       <h2>Operators</h2>
       <dl class="callables">''');
-      var context21 = context2.publicInstanceOperatorsSorted;
-      if (context21 != null) {
-        for (var context22 in context21) {
+      var context17 = context2.publicInstanceOperatorsSorted;
+      if (context17 != null) {
+        for (var context18 in context17) {
           buffer.write('\n        ');
           buffer.write(
-              _renderMixin_partial_callable_6(context22, context2, context0));
+              _renderMixin_partial_callable_6(context18, context2, context0));
         }
       }
       buffer.writeln();
@@ -8023,12 +7948,12 @@ String renderMixin(_i1.MixinTemplateData context0) {
       <h2>Static Properties</h2>
 
       <dl class="properties">''');
-      var context23 = context2.publicVariableStaticFieldsSorted;
-      if (context23 != null) {
-        for (var context24 in context23) {
+      var context19 = context2.publicVariableStaticFieldsSorted;
+      if (context19 != null) {
+        for (var context20 in context19) {
           buffer.write('\n        ');
           buffer.write(
-              _renderMixin_partial_property_5(context24, context2, context0));
+              _renderMixin_partial_property_5(context20, context2, context0));
         }
       }
       buffer.writeln();
@@ -8043,12 +7968,12 @@ String renderMixin(_i1.MixinTemplateData context0) {
     <section class="summary offset-anchor" id="static-methods">
       <h2>Static Methods</h2>
       <dl class="callables">''');
-      var context25 = context2.publicStaticMethods;
-      if (context25 != null) {
-        for (var context26 in context25) {
+      var context21 = context2.publicStaticMethods;
+      if (context21 != null) {
+        for (var context22 in context21) {
           buffer.write('\n        ');
           buffer.write(
-              _renderMixin_partial_callable_6(context26, context2, context0));
+              _renderMixin_partial_callable_6(context22, context2, context0));
         }
       }
       buffer.writeln();
@@ -8064,12 +7989,12 @@ String renderMixin(_i1.MixinTemplateData context0) {
       <h2>Constants</h2>
 
       <dl class="properties">''');
-      var context27 = context2.publicConstantFieldsSorted;
-      if (context27 != null) {
-        for (var context28 in context27) {
+      var context23 = context2.publicConstantFieldsSorted;
+      if (context23 != null) {
+        for (var context24 in context23) {
           buffer.write('\n        ');
           buffer.write(
-              _renderMixin_partial_constant_7(context28, context2, context0));
+              _renderMixin_partial_constant_7(context24, context2, context0));
         }
       }
       buffer.writeln();

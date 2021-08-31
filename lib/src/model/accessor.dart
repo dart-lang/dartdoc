@@ -157,17 +157,19 @@ class Accessor extends ModelElement implements EnclosedElement {
 class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
   /// Factory will return an [ContainerAccessor] with isInherited = true
   /// if [element] is in [inheritedAccessors].
-  factory ContainerAccessor.from(PropertyAccessorElement element,
-      Set<PropertyAccessorElement> inheritedAccessors, Class enclosingClass) {
+  factory ContainerAccessor.from(
+      PropertyAccessorElement element,
+      Set<PropertyAccessorElement> inheritedAccessors,
+      Container enclosingContainer) {
     ContainerAccessor accessor;
     if (element == null) return null;
     if (inheritedAccessors.contains(element)) {
       accessor = ModelElement.from(
-          element, enclosingClass.library, enclosingClass.packageGraph,
-          enclosingContainer: enclosingClass);
+          element, enclosingContainer.library, enclosingContainer.packageGraph,
+          enclosingContainer: enclosingContainer);
     } else {
       accessor = ModelElement.from(
-          element, enclosingClass.library, enclosingClass.packageGraph);
+          element, enclosingContainer.library, enclosingContainer.packageGraph);
     }
     return accessor;
   }
