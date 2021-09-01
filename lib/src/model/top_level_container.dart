@@ -51,7 +51,10 @@ abstract class TopLevelContainer implements Nameable {
   Iterable<Class> get publicClasses => model_utils.filterNonPublic(classes);
 
   List<Class> _publicClassesSorted;
-  Iterable<Class> get publicClassesSorted =>
+  // TODO(jcollins-g):  Setting this type parameter to `Container` magically
+  // fixes a number of type problems in the AOT compiler, but I am mystified as
+  // to why that should be the case.
+  Iterable<Container> get publicClassesSorted =>
       _publicClassesSorted ??= publicClasses.toList()..sort(byName);
 
   Iterable<Extension> get publicExtensions =>

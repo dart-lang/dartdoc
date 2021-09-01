@@ -16,7 +16,7 @@
 ## Classes
 
 {{#library.publicClassesSorted}}
-{{>class}}
+{{>container}}
 
 {{/library.publicClassesSorted}}
 {{/library.hasPublicClasses}}
@@ -70,7 +70,7 @@
 ## Enums
 
 {{#library.publicEnumsSorted}}
-{{>class}}
+{{>container}}
 
 {{/library.publicEnumsSorted}}
 {{/library.hasPublicEnums}}
@@ -88,7 +88,7 @@
 ## Exceptions / Errors
 
 {{#library.publicExceptionsSorted}}
-{{>class}}
+{{>container}}
 
 {{/library.publicExceptionsSorted}}
 {{/library.hasPublicExceptions}}

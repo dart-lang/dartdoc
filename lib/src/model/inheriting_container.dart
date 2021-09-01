@@ -289,11 +289,9 @@ abstract class InheritingContainer extends Container
           // [packageGraph.specialClasses] is not available yet.
           bool _isDartCoreObject(ClassElement e) =>
               e.name == 'Object' && e.library.name == 'dart.core';
-          if (!(inheritanceChainElements
+          assert(inheritanceChainElements
                   .contains(imap[nameObj].enclosingElement) ||
-              _isDartCoreObject(imap[nameObj].enclosingElement))) {
-            print('wtf');
-          }
+              _isDartCoreObject(imap[nameObj].enclosingElement));
 
           // If the concrete object from [InheritanceManager3.getInheritedConcreteMap2]
           // is farther from this class in the inheritance chain than the one

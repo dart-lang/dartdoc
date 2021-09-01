@@ -214,13 +214,13 @@ class Class extends InheritingContainer with Constructable {
   @override
   String get kind => 'class';
 
+  List<InheritingContainer> _inheritanceChain;
+
   /// Not the same as superChain as it may include mixins.
   /// It's really not even the same as ordinary Dart inheritance, either,
   /// because we pretend that interfaces are part of the inheritance chain
   /// to include them in the set of things we might link to for documentation
   /// purposes in abstract classes.
-  List<InheritingContainer> _inheritanceChain;
-
   @override
   List<InheritingContainer> get inheritanceChain {
     if (_inheritanceChain == null) {

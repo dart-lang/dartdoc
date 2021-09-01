@@ -7,9 +7,25 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/enum_field_renderer.dart';
 
-class Enum extends Class {
+class Enum extends InheritingContainer {
   Enum(ClassElement element, Library library, PackageGraph packageGraph)
       : super(element, library, packageGraph);
+
+  List<InheritingContainer> _inheritanceChain;
+
+  @override
+  List<InheritingContainer> get inheritanceChain {
+    if (_inheritanceChain == null) {
+      _inheritanceChain = [];
+      _inheritanceChain.add(this);
+
+      for (var c
+          in superChain.map((e) => (e.modelElement as InheritingContainer))) {
+        _inheritanceChain.addAll(c.inheritanceChain);
+      }
+    }
+    return _inheritanceChain.toList(growable: false);
+  }
 
   @override
   String get kind => 'enum';
@@ -64,7 +80,7 @@ class EnumField extends Field {
     assert(!(canonicalLibrary == null || canonicalEnclosingContainer == null));
     assert(canonicalLibrary == library);
     assert(canonicalEnclosingContainer == enclosingElement);
-    return '${package.baseHref}${enclosingElement.library.dirName}/${(enclosingElement as Class).fileName}';
+    return '${package.baseHref}${enclosingElement.library.dirName}/${enclosingElement.fileName}';
   }
 
   @override

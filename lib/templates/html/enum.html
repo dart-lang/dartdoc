@@ -33,15 +33,6 @@
         </dd>
         {{/hasPublicInterfaces}}
 
-        {{#hasPublicMixedInTypes}}
-        <dt>Mixed in types</dt>
-        <dd><ul class="comma-separated eNum-relationships">
-          {{#publicMixedInTypes}}
-          <li>{{{linkedName}}}</li>
-          {{/publicMixedInTypes}}
-        </ul></dd>
-        {{/hasPublicMixedInTypes}}
-
         {{#hasPublicImplementors}}
         <dt>Implementers</dt>
         <dd><ul class="comma-separated eNum-relationships">
@@ -74,29 +65,6 @@
       </dl>
     </section>
     {{/hasPublicConstantFields}}
-
-    {{#hasPublicConstructors}}
-    <section class="summary offset-anchor" id="constructors">
-      <h2>Constructors</h2>
-
-      <dl class="constructor-summary-list">
-        {{#publicConstructorsSorted}}
-        <dt id="{{htmlId}}" class="callable">
-          <span class="name">{{{linkedName}}}</span><span class="signature">({{{ linkedParams }}})</span>
-        </dt>
-        <dd>
-          {{{ oneLineDoc }}} {{{ extendedDocLink }}}
-          {{#isConst}}
-          <div class="constructor-modifier features">const</div>
-          {{/isConst}}
-          {{#isFactory}}
-          <div class="constructor-modifier features">factory</div>
-          {{/isFactory}}
-        </dd>
-        {{/publicConstructorsSorted}}
-      </dl>
-    </section>
-    {{/hasPublicConstructors}}
 
     {{#hasPublicInstanceFields}}
     <section class="summary offset-anchor{{ #publicInheritedInstanceFields }} inherited{{ /publicInheritedInstanceFields }}" id="instance-properties">

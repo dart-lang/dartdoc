@@ -127,10 +127,4 @@ class Extension extends Container implements EnclosedElement {
       ...super.referenceChildren,
     };
   }
-
-  @override
-  bool get hasPublicConstructors => false;
-
-  @override
-  Iterable<Constructor> get publicConstructorsSorted => [];
 }
