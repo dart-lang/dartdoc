@@ -11,19 +11,22 @@ import 'package:dartdoc/src/model_utils.dart' as model_utils;
 import 'package:dartdoc/src/special_elements.dart';
 
 /// Implements the Dart 2.1 "mixin" style of mixin declarations.
-class Mixin extends InheritingContainer {
+class Mixin extends InheritingContainer with TypeInterfaces {
   Mixin(ClassElement element, Library library, PackageGraph packageGraph)
-      : super(element, library, packageGraph) {
-    assert(element.interfaces.isEmpty);
-  }
+      : super(element, library, packageGraph);
+
   List<ParameterizedElementType> _superclassConstraints;
 
   /// Returns a list of superclass constraints for this mixin.
   Iterable<ParameterizedElementType> get superclassConstraints {
-    _superclassConstraints ??= element.superclassConstraints
-        .map<ParameterizedElementType>(
-            (InterfaceType i) => ElementType.from(i, library, packageGraph))
-        .toList();
+    _superclassConstraints ??= [
+      ...element.superclassConstraints
+          .map<ParameterizedElementType>(
+              (InterfaceType i) => ElementType.from(i, library, packageGraph))
+          .where((t) =>
+              t.modelElement !=
+              packageGraph.specialClasses[SpecialClass.object])
+    ];
     return _superclassConstraints;
   }
 
@@ -51,11 +54,9 @@ class Mixin extends InheritingContainer {
       _inheritanceChain.add(this);
 
       // Mix-in interfaces come before other interfaces.
-      _inheritanceChain.addAll(superclassConstraints
-          .expand((ParameterizedElementType i) =>
-              (i.modelElement as InheritingContainer).inheritanceChain)
-          .where((InheritingContainer c) =>
-              c != packageGraph.specialClasses[SpecialClass.object]));
+      _inheritanceChain.addAll(superclassConstraints.expand(
+          (ParameterizedElementType i) =>
+              (i.modelElement as InheritingContainer).inheritanceChain));
     }
     return _inheritanceChain.toList(growable: false);
   }

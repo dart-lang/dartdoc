@@ -11,7 +11,9 @@ import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/src/dart/ast/utilities.dart';
-import 'package:dartdoc/dartdoc.dart';
+import 'package:dartdoc/dartdoc.dart' show DartdocFailure;
+import 'package:dartdoc/src/model/inheriting_container.dart';
+import 'package:dartdoc/src/model/model.dart';
 import 'package:glob/glob.dart';
 import 'package:path/path.dart' as path;
 
@@ -91,10 +93,11 @@ Iterable<T> filterNonPublic<T extends Privacy>(Iterable<T> privacyItems) {
 
 /// Finds canonical classes for all classes in the iterable, if possible.
 /// If a canonical class can not be found, returns the original class.
-Iterable<InheritingContainer> findCanonicalFor(
-    Iterable<InheritingContainer> containers) {
+Iterable<TypeInterfaces> findCanonicalFor(Iterable<TypeInterfaces> containers) {
   return containers.map((c) =>
-      c.packageGraph.findCanonicalModelElementFor(c.element) as Class ?? c);
+      c.packageGraph.findCanonicalModelElementFor(c.element)
+          as TypeInterfaces ??
+      c);
 }
 
 /// Uses direct file access to get the contents of a file.  Cached.

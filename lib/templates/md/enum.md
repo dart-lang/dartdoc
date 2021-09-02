@@ -21,22 +21,6 @@
 - {{{name}}}
 {{/hasPublicSuperChainReversed}}
 
-{{#hasPublicInterfaces}}
-**Implemented types**
-
-{{#publicInterfaces}}
-- {{{linkedName}}}
-{{/publicInterfaces}}
-{{/hasPublicInterfaces}}
-
-{{#hasPublicImplementors}}
-**Implementers**
-
-{{#publicImplementorsSorted}}
-- {{{linkedName}}}
-{{/publicImplementorsSorted}}
-{{/hasPublicImplementors}}
-
 {{#hasAnnotations}}
 **Annotations**
 

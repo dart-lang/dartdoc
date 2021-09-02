@@ -2829,60 +2829,18 @@ String renderEnum(_i1.EnumTemplateData context0) {
         </ul></dd>''');
       }
       buffer.writeln();
-      if (context2.hasPublicInterfaces == true) {
-        buffer.writeln();
-        buffer.write('''
-        <dt>Implemented types</dt>
-        <dd>
-          <ul class="comma-separated eNum-relationships">''');
-        var context5 = context2.publicInterfaces;
-        if (context5 != null) {
-          for (var context6 in context5) {
-            buffer.writeln();
-            buffer.write('''
-            <li>''');
-            buffer.write(context6.linkedName.toString());
-            buffer.write('''</li>''');
-          }
-        }
-        buffer.writeln();
-        buffer.write('''
-          </ul>
-        </dd>''');
-      }
-      buffer.writeln();
-      if (context2.hasPublicImplementors == true) {
-        buffer.writeln();
-        buffer.write('''
-        <dt>Implementers</dt>
-        <dd><ul class="comma-separated eNum-relationships">''');
-        var context7 = context2.publicImplementorsSorted;
-        if (context7 != null) {
-          for (var context8 in context7) {
-            buffer.writeln();
-            buffer.write('''
-          <li>''');
-            buffer.write(context8.linkedName.toString());
-            buffer.write('''</li>''');
-          }
-        }
-        buffer.writeln();
-        buffer.write('''
-        </ul></dd>''');
-      }
-      buffer.writeln();
       if (context2.hasAnnotations == true) {
         buffer.writeln();
         buffer.write('''
         <dt>Annotations</dt>
         <dd><ul class="annotation-list eNum-relationships">''');
-        var context9 = context2.annotations;
-        if (context9 != null) {
-          for (var context10 in context9) {
+        var context5 = context2.annotations;
+        if (context5 != null) {
+          for (var context6 in context5) {
             buffer.writeln();
             buffer.write('''
           <li>''');
-            buffer.write(context10.linkedNameWithParameters.toString());
+            buffer.write(context6.linkedNameWithParameters.toString());
             buffer.write('''</li>''');
           }
         }
@@ -2903,12 +2861,12 @@ String renderEnum(_i1.EnumTemplateData context0) {
       <h2>Constants</h2>
 
       <dl class="properties">''');
-      var context11 = context2.publicConstantFieldsSorted;
-      if (context11 != null) {
-        for (var context12 in context11) {
+      var context7 = context2.publicConstantFieldsSorted;
+      if (context7 != null) {
+        for (var context8 in context7) {
           buffer.write('\n        ');
           buffer.write(
-              _renderEnum_partial_constant_5(context12, context2, context0));
+              _renderEnum_partial_constant_5(context8, context2, context0));
         }
       }
       buffer.writeln();
@@ -2928,12 +2886,12 @@ String renderEnum(_i1.EnumTemplateData context0) {
       <h2>Properties</h2>
 
       <dl class="properties">''');
-      var context13 = context2.publicInstanceFieldsSorted;
-      if (context13 != null) {
-        for (var context14 in context13) {
+      var context9 = context2.publicInstanceFieldsSorted;
+      if (context9 != null) {
+        for (var context10 in context9) {
           buffer.write('\n        ');
           buffer.write(
-              _renderEnum_partial_property_6(context14, context2, context0));
+              _renderEnum_partial_property_6(context10, context2, context0));
         }
       }
       buffer.writeln();
@@ -2952,12 +2910,12 @@ String renderEnum(_i1.EnumTemplateData context0) {
       buffer.write('''" id="instance-methods">
       <h2>Methods</h2>
       <dl class="callables">''');
-      var context15 = context2.publicInstanceMethodsSorted;
-      if (context15 != null) {
-        for (var context16 in context15) {
+      var context11 = context2.publicInstanceMethodsSorted;
+      if (context11 != null) {
+        for (var context12 in context11) {
           buffer.write('\n        ');
           buffer.write(
-              _renderEnum_partial_callable_7(context16, context2, context0));
+              _renderEnum_partial_callable_7(context12, context2, context0));
         }
       }
       buffer.writeln();
@@ -2976,12 +2934,12 @@ String renderEnum(_i1.EnumTemplateData context0) {
       buffer.write('''" id="operators">
       <h2>Operators</h2>
       <dl class="callables">''');
-      var context17 = context2.publicInstanceOperatorsSorted;
-      if (context17 != null) {
-        for (var context18 in context17) {
+      var context13 = context2.publicInstanceOperatorsSorted;
+      if (context13 != null) {
+        for (var context14 in context13) {
           buffer.write('\n        ');
           buffer.write(
-              _renderEnum_partial_callable_7(context18, context2, context0));
+              _renderEnum_partial_callable_7(context14, context2, context0));
         }
       }
       buffer.writeln();
@@ -2997,12 +2955,12 @@ String renderEnum(_i1.EnumTemplateData context0) {
       <h2>Static Properties</h2>
 
       <dl class="properties">''');
-      var context19 = context2.publicVariableStaticFieldsSorted;
-      if (context19 != null) {
-        for (var context20 in context19) {
+      var context15 = context2.publicVariableStaticFieldsSorted;
+      if (context15 != null) {
+        for (var context16 in context15) {
           buffer.write('\n        ');
           buffer.write(
-              _renderEnum_partial_property_6(context20, context2, context0));
+              _renderEnum_partial_property_6(context16, context2, context0));
         }
       }
       buffer.writeln();
@@ -3017,12 +2975,12 @@ String renderEnum(_i1.EnumTemplateData context0) {
     <section class="summary offset-anchor" id="static-methods">
       <h2>Static Methods</h2>
       <dl class="callables">''');
-      var context21 = context2.publicStaticMethodsSorted;
-      if (context21 != null) {
-        for (var context22 in context21) {
+      var context17 = context2.publicStaticMethodsSorted;
+      if (context17 != null) {
+        for (var context18 in context17) {
           buffer.write('\n        ');
           buffer.write(
-              _renderEnum_partial_callable_7(context22, context2, context0));
+              _renderEnum_partial_callable_7(context18, context2, context0));
         }
       }
       buffer.writeln();

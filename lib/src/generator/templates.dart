@@ -50,6 +50,7 @@ const _visibleTypes = {
   Category,
   Class,
   Constructor,
+  Constructable,
   DefinedElementType,
   Documentable,
   ElementType,
@@ -57,15 +58,18 @@ const _visibleTypes = {
   Extension,
   FeatureSet,
   FunctionTypeElementType,
+  InheritingContainer,
   LanguageFeature,
   Library,
   LibraryContainer,
   Method,
+  MixedInTypes,
   ModelElement,
   Package,
   // For getters like `isNotEmpty`; perhaps a smell, but currently in use.
   String,
   TopLevelVariable,
+  TypeInterfaces,
   TypeParameter,
 };
 

@@ -22,26 +22,6 @@
         </ul></dd>
         {{/hasPublicSuperChainReversed}}
 
-        {{#hasPublicInterfaces}}
-        <dt>Implemented types</dt>
-        <dd>
-          <ul class="comma-separated eNum-relationships">
-            {{#publicInterfaces}}
-            <li>{{{linkedName}}}</li>
-            {{/publicInterfaces}}
-          </ul>
-        </dd>
-        {{/hasPublicInterfaces}}
-
-        {{#hasPublicImplementors}}
-        <dt>Implementers</dt>
-        <dd><ul class="comma-separated eNum-relationships">
-          {{#publicImplementorsSorted}}
-          <li>{{{linkedName}}}</li>
-          {{/publicImplementorsSorted}}
-        </ul></dd>
-        {{/hasPublicImplementors}}
-
         {{#hasAnnotations}}
         <dt>Annotations</dt>
         <dd><ul class="annotation-list eNum-relationships">
