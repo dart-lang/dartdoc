@@ -182,7 +182,7 @@ class PackageGraph with CommentReferable, Nameable {
   /// is true.
   bool allExtensionsAdded = false;
 
-  Map<TypeInterfaces, List<TypeInterfaces>> get implementors {
+  Map<InheritingContainer, List<InheritingContainer>> get implementors {
     assert(allImplementorsAdded);
     return _implementors;
   }
@@ -220,10 +220,12 @@ class PackageGraph with CommentReferable, Nameable {
       HashMap<Tuple2<Element, Library>, Set<ModelElement>>();
 
   /// A mapping of the list of classes which implement each class.
-  final _implementors = LinkedHashMap<TypeInterfaces, List<TypeInterfaces>>(
-      equals: (TypeInterfaces a, TypeInterfaces b) =>
-          a.definingContainer == b.definingContainer,
-      hashCode: (TypeInterfaces clazz) => clazz.definingContainer.hashCode);
+  final _implementors =
+      LinkedHashMap<InheritingContainer, List<InheritingContainer>>(
+          equals: (InheritingContainer a, InheritingContainer b) =>
+              a.definingContainer == b.definingContainer,
+          hashCode: (InheritingContainer clazz) =>
+              clazz.definingContainer.hashCode);
 
   /// A list of extensions that exist in the package graph.
   final List<Extension> _extensions = [];

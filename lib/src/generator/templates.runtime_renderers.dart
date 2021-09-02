@@ -14009,13 +14009,6 @@ class _Renderer_TopLevelVariable extends RendererBase<TopLevelVariable> {
   }
 }
 
-void _render_TypeInterfaces(TypeInterfaces context, List<MustachioNode> ast,
-    Template template, StringSink sink,
-    {RendererBase<Object> parent}) {
-  var renderer = _Renderer_TypeInterfaces(context, parent, template, sink);
-  renderer.renderBlock(ast);
-}
-
 class _Renderer_TypeInterfaces extends RendererBase<TypeInterfaces> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends TypeInterfaces>() =>
@@ -14074,11 +14067,11 @@ class _Renderer_TypeInterfaces extends RendererBase<TypeInterfaces> {
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<TypeInterfaces>'),
+                          c, remainingNames, 'Iterable<InheritingContainer>'),
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.publicImplementors.map((e) =>
-                        _render_TypeInterfaces(e, ast, r.template, sink,
+                        _render_InheritingContainer(e, ast, r.template, sink,
                             parent: r));
                   },
                 ),
@@ -14087,11 +14080,11 @@ class _Renderer_TypeInterfaces extends RendererBase<TypeInterfaces> {
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<TypeInterfaces>'),
+                          c, remainingNames, 'Iterable<InheritingContainer>'),
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.publicImplementorsSorted.map((e) =>
-                        _render_TypeInterfaces(e, ast, r.template, sink,
+                        _render_InheritingContainer(e, ast, r.template, sink,
                             parent: r));
                   },
                 ),

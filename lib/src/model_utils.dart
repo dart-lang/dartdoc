@@ -93,10 +93,11 @@ Iterable<T> filterNonPublic<T extends Privacy>(Iterable<T> privacyItems) {
 
 /// Finds canonical classes for all classes in the iterable, if possible.
 /// If a canonical class can not be found, returns the original class.
-Iterable<TypeInterfaces> findCanonicalFor(Iterable<TypeInterfaces> containers) {
+Iterable<InheritingContainer> findCanonicalFor(
+    Iterable<InheritingContainer> containers) {
   return containers.map((c) =>
       c.packageGraph.findCanonicalModelElementFor(c.element)
-          as TypeInterfaces ??
+          as InheritingContainer ??
       c);
 }
 

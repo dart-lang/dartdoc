@@ -177,13 +177,13 @@ mixin TypeInterfaces on InheritingContainer {
   ///
   /// If this [InheritingContainer] has a private implementor, then that is
   /// counted as a proxy for any public implementors of that private container.
-  Iterable<TypeInterfaces> get publicImplementors {
-    var result = <TypeInterfaces>{};
-    var seen = <TypeInterfaces>{};
+  Iterable<InheritingContainer> get publicImplementors {
+    var result = <InheritingContainer>{};
+    var seen = <InheritingContainer>{};
 
     // Recursively adds [implementor] if public, or the implementors of
     // [implementor] if not.
-    void addToResult(TypeInterfaces implementor) {
+    void addToResult(InheritingContainer implementor) {
       if (seen.contains(implementor)) return;
       seen.add(implementor);
       if (implementor.isPublicAndPackageDocumented) {
@@ -201,9 +201,9 @@ mixin TypeInterfaces on InheritingContainer {
     return result;
   }
 
-  List<TypeInterfaces> _publicImplementorsSorted;
+  List<InheritingContainer> _publicImplementorsSorted;
 
-  Iterable<TypeInterfaces> get publicImplementorsSorted =>
+  Iterable<InheritingContainer> get publicImplementorsSorted =>
       _publicImplementorsSorted ??= publicImplementors.toList()..sort(byName);
 }
 
