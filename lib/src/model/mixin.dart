@@ -57,6 +57,16 @@ class Mixin extends InheritingContainer with TypeImplementing {
       _inheritanceChain.addAll(superclassConstraints.expand(
           (ParameterizedElementType i) =>
               (i.modelElement as InheritingContainer).inheritanceChain));
+
+      for (var c
+          in superChain.map((e) => (e.modelElement as InheritingContainer))) {
+        _inheritanceChain.addAll(c.inheritanceChain);
+      }
+
+      /// Interfaces need to come last, because classes in the superChain might
+      /// implement them even when they aren't mentioned.
+      _inheritanceChain.addAll(interfaces.expand(
+          (e) => (e.modelElement as InheritingContainer).inheritanceChain));
     }
     return _inheritanceChain.toList(growable: false);
   }
