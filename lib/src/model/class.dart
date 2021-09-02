@@ -16,7 +16,7 @@ import 'comment_referable.dart';
 /// **instance**: As with [Container], but also includes inherited children.
 /// **inherited**: Filtered getters giving only inherited children.
 class Class extends InheritingContainer
-    with Constructable, TypeInterfaces, MixedInTypes {
+    with Constructable, TypeImplementing, MixedInTypes {
   Class(ClassElement element, Library library, PackageGraph packageGraph)
       : super(element, library, packageGraph) {
     packageGraph.specialClasses.addSpecial(this);

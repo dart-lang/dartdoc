@@ -110,7 +110,7 @@ mixin MixedInTypes on InheritingContainer {
 
 /// Add the ability for an [InheritingContainer] to be implemented by other
 /// InheritingContainers and to reference what it itself implements.
-mixin TypeInterfaces on InheritingContainer {
+mixin TypeImplementing on InheritingContainer {
   List<DefinedElementType> _directInterfaces;
   List<DefinedElementType> get directInterfaces =>
       _directInterfaces ??
@@ -172,7 +172,7 @@ mixin TypeInterfaces on InheritingContainer {
   bool get hasPublicImplementors => publicImplementors.isNotEmpty;
 
   /// Returns all the "immediate" public implementors of this
-  /// [TypeInterfaces].  For a [Mixin], this is actually the mixin
+  /// [TypeImplementing].  For a [Mixin], this is actually the mixin
   /// applications using the [Mixin].
   ///
   /// If this [InheritingContainer] has a private implementor, then that is

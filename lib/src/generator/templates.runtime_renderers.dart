@@ -1577,7 +1577,7 @@ class _Renderer_Class extends RendererBase<Class> {
           () => {
                 ..._Renderer_InheritingContainer.propertyMap<CT_>(),
                 ..._Renderer_Constructable.propertyMap<CT_>(),
-                ..._Renderer_TypeInterfaces.propertyMap<CT_>(),
+                ..._Renderer_TypeImplementing.propertyMap<CT_>(),
                 ..._Renderer_MixedInTypes.propertyMap<CT_>(),
                 'allModelElements': Property(
                   getValue: (CT_ c) => c.allModelElements,
@@ -9050,7 +9050,7 @@ class _Renderer_Mixin extends RendererBase<Mixin> {
           CT_,
           () => {
                 ..._Renderer_InheritingContainer.propertyMap<CT_>(),
-                ..._Renderer_TypeInterfaces.propertyMap<CT_>(),
+                ..._Renderer_TypeImplementing.propertyMap<CT_>(),
                 'fileName': Property(
                   getValue: (CT_ c) => c.fileName,
                   renderVariable:
@@ -14009,9 +14009,10 @@ class _Renderer_TopLevelVariable extends RendererBase<TopLevelVariable> {
   }
 }
 
-class _Renderer_TypeInterfaces extends RendererBase<TypeInterfaces> {
+class _Renderer_TypeImplementing extends RendererBase<TypeImplementing> {
   static final Map<Type, Object> _propertyMapCache = {};
-  static Map<String, Property<CT_>> propertyMap<CT_ extends TypeInterfaces>() =>
+  static Map<String, Property<CT_>> propertyMap<
+          CT_ extends TypeImplementing>() =>
       _propertyMapCache.putIfAbsent(
           CT_,
           () => {
@@ -14103,14 +14104,14 @@ class _Renderer_TypeInterfaces extends RendererBase<TypeInterfaces> {
                 ),
               });
 
-  _Renderer_TypeInterfaces(TypeInterfaces context, RendererBase<Object> parent,
-      Template template, StringSink sink)
+  _Renderer_TypeImplementing(TypeImplementing context,
+      RendererBase<Object> parent, Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<TypeInterfaces> getProperty(String key) {
-    if (propertyMap<TypeInterfaces>().containsKey(key)) {
-      return propertyMap<TypeInterfaces>()[key];
+  Property<TypeImplementing> getProperty(String key) {
+    if (propertyMap<TypeImplementing>().containsKey(key)) {
+      return propertyMap<TypeImplementing>()[key];
     } else {
       return null;
     }
