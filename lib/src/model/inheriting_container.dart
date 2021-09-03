@@ -20,9 +20,9 @@ import 'package:meta/meta.dart';
 /// [hasModifier] override is not necessary for this mixin.
 mixin Constructable on InheritingContainer {
   List<Constructor> _constructors;
-  Iterable<Constructor> get constructors => _constructors ??= element
+  Iterable<Constructor> get constructors => _constructors ??= [...element
       .constructors
-      .map((e) => ModelElement.from(e, library, packageGraph) as Constructor);
+      .map((e) => ModelElement.from(e, library, packageGraph) as Constructor)];
 
   @override
   bool get hasPublicConstructors => publicConstructorsSorted.isNotEmpty;
