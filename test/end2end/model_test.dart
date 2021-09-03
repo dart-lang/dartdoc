@@ -1849,6 +1849,30 @@ void main() {
           .firstWhere((f) => f.name == 'overrideByModifierClass');
     });
 
+    test('computes interfaces and implementors correctly', () {
+      var ThingToImplementInMixin = fakeLibrary.publicClasses
+          .firstWhere((c) => c.name == 'ThingToImplementInMixin');
+      var MixedInImplementation = fakeLibrary.publicClasses
+          .firstWhere((c) => c.name == 'MixedInImplementation');
+      var MixInImplementation =
+          fakeLibrary.mixins.firstWhere((m) => m.name == 'MixInImplementation');
+      var mixinGetter = MixInImplementation.allFields
+          .firstWhere((f) => f.name == 'mixinGetter');
+
+      expect(ThingToImplementInMixin.hasModifiers, isTrue);
+      expect(MixInImplementation.hasModifiers, isTrue);
+      expect(MixedInImplementation.hasModifiers, isTrue);
+      expect(ThingToImplementInMixin.publicImplementors,
+          orderedEquals([MixInImplementation]));
+      expect(MixInImplementation.publicImplementors,
+          orderedEquals([MixedInImplementation]));
+      expect(
+          MixedInImplementation.allFields
+              .firstWhere((f) => f.name == 'mixinGetter')
+              .canonicalModelElement,
+          equals(mixinGetter));
+    });
+
     test('does have a line number and column', () {
       expect(GenericMixin.characterLocation, isNotNull);
     });
@@ -4860,7 +4884,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
   group('Implementors', () {
     Class apple;
     Class b;
-    List<Class> implA, implC;
+    List<InheritingContainer> implA, implC;
 
     setUpAll(() {
       apple = exLibrary.classes.firstWhere((c) => c.name == 'Apple');

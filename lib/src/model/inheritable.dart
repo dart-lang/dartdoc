@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:dartdoc/src/model/feature.dart';
+import 'package:dartdoc/src/model/inheriting_container.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/special_elements.dart';
 
@@ -45,13 +46,10 @@ mixin Inheritable on ContainerMember {
     if (canonicalEnclosingContainer is Extension) {
       return this;
     }
-    if (canonicalEnclosingContainer is Class) {
-      return (canonicalEnclosingContainer as Class)
-          ?.allCanonicalModelElements
-          ?.firstWhere(
-              (m) =>
-                  m.name == name && m.isPropertyAccessor == isPropertyAccessor,
-              orElse: () => null);
+    if (canonicalEnclosingContainer is Container) {
+      return canonicalEnclosingContainer.allCanonicalModelElements.firstWhere(
+          (m) => m.name == name && m.isPropertyAccessor == isPropertyAccessor,
+          orElse: () => null);
     }
     if (canonicalEnclosingContainer != null) {
       throw UnimplementedError('$canonicalEnclosingContainer: unknown type');
@@ -65,9 +63,9 @@ mixin Inheritable on ContainerMember {
       var searchElement = element.declaration;
       // TODO(jcollins-g): generate warning if an inherited element's definition
       // is in an intermediate non-canonical class in the inheritance chain?
-      Class previous;
-      Class previousNonSkippable;
-      Class found;
+      Container previous;
+      Container previousNonSkippable;
+      Container found;
       for (var c in inheritance.reversed) {
         // Filter out mixins.
         if (c.containsElement(searchElement)) {
@@ -79,7 +77,7 @@ mixin Inheritable on ContainerMember {
                 .memberByExample(this)
                 .canonicalEnclosingContainer;
           }
-          Class canonicalC =
+          Container canonicalC =
               packageGraph.findCanonicalModelElementFor(c.element);
           // TODO(jcollins-g): invert this lookup so traversal is recursive
           // starting from the ModelElement.
@@ -112,9 +110,10 @@ mixin Inheritable on ContainerMember {
     return super.computeCanonicalEnclosingContainer();
   }
 
-  List<Class> get inheritance {
-    var inheritance = <Class>[];
-    inheritance.addAll((enclosingElement as Class).inheritanceChain);
+  List<InheritingContainer> get inheritance {
+    var inheritance = <InheritingContainer>[];
+    inheritance
+        .addAll((enclosingElement as InheritingContainer).inheritanceChain);
     var object = packageGraph.specialClasses[SpecialClass.object];
     if (!inheritance.contains(definingEnclosingContainer) &&
         definingEnclosingContainer != null) {
@@ -146,7 +145,8 @@ mixin Inheritable on ContainerMember {
         _isOverride = false;
         return _isOverride;
       }
-      Class enclosingCanonical = enclosingElement.canonicalModelElement;
+      InheritingContainer enclosingCanonical =
+          enclosingElement.canonicalModelElement;
       // The container in which this element was defined, canonical if available.
       Container definingCanonical =
           definingEnclosingContainer.canonicalModelElement ??

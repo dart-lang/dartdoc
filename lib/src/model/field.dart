@@ -12,7 +12,7 @@ class Field extends ModelElement
     with GetterSetterCombo, ContainerMember, Inheritable
     implements EnclosedElement {
   bool _isInherited = false;
-  Container _enclosingClass;
+  Container _enclosingContainer;
   @override
   final ContainerAccessor getter;
   @override
@@ -28,14 +28,14 @@ class Field extends ModelElement
 
   factory Field.inherited(
       FieldElement element,
-      Class enclosingClass,
+      Container enclosingContainer,
       Library library,
       PackageGraph packageGraph,
       Accessor getter,
       Accessor setter) {
     var newField = Field(element, library, packageGraph, getter, setter);
     newField._isInherited = true;
-    newField._enclosingClass = enclosingClass;
+    newField._enclosingContainer = enclosingContainer;
     // Can't set _isInherited to true if this is the defining element, because
     // that would mean it isn't inherited.
     assert(newField.enclosingElement != newField.definingEnclosingContainer);
@@ -56,10 +56,10 @@ class Field extends ModelElement
   }
 
   @override
-  ModelElement get enclosingElement {
-    _enclosingClass ??=
+  Container get enclosingElement {
+    _enclosingContainer ??=
         ModelElement.from(field.enclosingElement, library, packageGraph);
-    return _enclosingClass;
+    return _enclosingContainer;
   }
 
   @override

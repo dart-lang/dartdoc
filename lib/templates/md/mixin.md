@@ -38,16 +38,8 @@
 {{/publicInterfaces}}
 {{/hasPublicInterfaces}}
 
-{{#hasPublicMixedInTypes}}
-**Mixed in types**
-
-{{#publicMixedInTypes}}
-- {{{linkedName}}}
-{{/publicMixedInTypes}}
-{{/hasPublicMixedInTypes}}
-
 {{#hasPublicImplementors}}
-**Implementers**
+**Mixin Applications**
 
 {{#publicImplementorsSorted}}
 - {{{linkedName}}}
@@ -62,18 +54,6 @@
 {{/annotations}}
 {{/hasAnnotations}}
 {{/hasModifiers}}
-
-{{#hasPublicConstructors}}
-## Constructors
-
-{{#publicConstructorsSorted}}
-{{{linkedName}}}({{{ linkedParams }}})
-
-{{{ oneLineDoc }}} {{{ extendedDocLink }}}  {{!two spaces intentional}}
-{{#isConst}}_const_{{/isConst}} {{#isFactory}}_factory_{{/isFactory}}
-
-{{/publicConstructorsSorted}}
-{{/hasPublicConstructors}}
 
 {{#hasPublicInstanceFields}}
 ## Properties

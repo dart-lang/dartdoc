@@ -22,6 +22,7 @@ export 'field.dart';
 export 'getter_setter_combo.dart';
 export 'indexable.dart';
 export 'inheritable.dart';
+export 'inheriting_container.dart';
 export 'library.dart';
 export 'library_container.dart';
 export 'locatable.dart';
