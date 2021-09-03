@@ -216,8 +216,17 @@ void main() {
       });
 
       test('negative tests', () {
+        // Mixins do not have constructors.
         expect(referenceLookup(constructorTearoffs, 'M.new'),
             equals(MatchingLinkResult(null)));
+        // These things aren't expressions, parentheses are still illegal.
+        expect(referenceLookup(constructorTearoffs, '(C).new'),
+            equals(MatchingLinkResult(null)));
+
+        // A bare new will still not work to reference constructors.
+        // TODO(jcollins-g): reconsider this if we remove "new" as a hint.
+        expect(referenceLookup(A, 'new'), equals(MatchingLinkResult(null)));
+        expect(referenceLookup(At, 'new'), equals(MatchingLinkResult(null)));
       });
     }, skip: !_constructorTearoffsAllowed.allows(utils.platformVersion));
   });
