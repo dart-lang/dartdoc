@@ -203,6 +203,22 @@ void main() {
         expect(referenceLookup(constructorTearoffs, 'Ft.new'),
             equals(MatchingLinkResult(Fnew)));
       });
+
+      test('we can use (ignored) type parameters in references', () {
+        expect(referenceLookup(E, 'D<String>.new'),
+            equals(MatchingLinkResult(Dnew)));
+        expect(referenceLookup(constructorTearoffs, 'F<T>.new'),
+            equals(MatchingLinkResult(Fnew)));
+        expect(
+            referenceLookup(
+                constructorTearoffs, 'F<InvalidThings, DoNotMatterHere>.new'),
+            equals(MatchingLinkResult(Fnew)));
+      });
+
+      test('negative tests', () {
+        expect(referenceLookup(constructorTearoffs, 'M.new'),
+            equals(MatchingLinkResult(null)));
+      });
     }, skip: !_constructorTearoffsAllowed.allows(utils.platformVersion));
   });
 
