@@ -1,4 +1,4 @@
-// Copyright (c) 2019, the Dart project authors. Please see the AUTHORS file
+// Copyright (c) 2021, the Dart project authors. Please see the AUTHORS file
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
@@ -13,17 +13,19 @@ import 'package:dartdoc/src/model_utils.dart' as model_utils;
 import 'package:dartdoc/src/quiver.dart' as quiver;
 import 'package:meta/meta.dart';
 
-/// An mixin to build an [InheritingContainer] capable of being constructed
+/// A mixin to build an [InheritingContainer] capable of being constructed
 /// with a direct call to a [Constructor] in Dart.
 ///
 /// Note that [Constructor]s are not considered to be modifiers so a
 /// [hasModifier] override is not necessary for this mixin.
 mixin Constructable on InheritingContainer {
-  Iterable<Constructor> get constructors => element.constructors
+  List<Constructor> _constructors;
+  Iterable<Constructor> get constructors => _constructors ??= element
+      .constructors
       .map((e) => ModelElement.from(e, library, packageGraph) as Constructor);
 
   @override
-  bool get hasPublicConstructors => publicConstructors.isNotEmpty;
+  bool get hasPublicConstructors => publicConstructorsSorted.isNotEmpty;
 
   @visibleForTesting
   Iterable<Constructor> get publicConstructors =>
@@ -222,18 +224,11 @@ abstract class InheritingContainer extends Container
   /// [ClassElement] is analogous to [InheritingContainer].
   ClassElement get element => super.element;
 
-  // TODO(srawlins): To make final, remove public getter, setter, rename to be
-  // public, and add `final` modifier.
-  DefinedElementType _supertype;
-  DefinedElementType get supertype => _supertype;
-
-  @Deprecated('Field intended to be final; setter will be removed as early as '
-      'Dartdoc 1.0.0')
-  set supertype(DefinedElementType value) => _supertype = value;
+  final DefinedElementType supertype;
 
   InheritingContainer(
       ClassElement element, Library library, PackageGraph packageGraph)
-      : _supertype = element.supertype?.element?.supertype == null
+      : supertype = element.supertype?.element?.supertype == null
             ? null
             : ElementType.from(element.supertype, library, packageGraph),
         super(element, library, packageGraph);
@@ -592,7 +587,6 @@ abstract class InheritingContainer extends Container
 
   List<TypeParameter> _typeParameters;
 
-  // a stronger hash?
   @override
   List<TypeParameter> get typeParameters {
     _typeParameters ??= element.typeParameters.map((f) {
