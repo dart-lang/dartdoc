@@ -3,7 +3,7 @@
   deleted interfaces in templates and a change in class hierarchy. (#2770)
 * The experimental 'constructor-tearoffs' feature has been partially
   implemented in dartdoc and should mostly work except constant
-  rendering. (#2655, #2770, #2768, #2766, #2763).
+  rendering. (#2655, #2772, #2770, #2768, #2766, #2763).
 * BREAKING CHANGE: The old lookup code has been deleted, along with the
   `--no-enhanced-reference-lookup` flag. (#2765)
 * Deprecated uses of pub have been removed. (#2764)
