@@ -2459,7 +2459,7 @@ String renderLibrary(_i1.LibraryTemplateData context0) {
         if (context9 != null) {
           for (var context10 in context9) {
             buffer.writeln();
-            buffer.write(_renderLibrary_partial_mixin_6(
+            buffer.write(_renderLibrary_partial_container_5(
                 context10, context8, context7, context0));
             buffer.writeln();
           }
@@ -2481,7 +2481,7 @@ String renderLibrary(_i1.LibraryTemplateData context0) {
         if (context13 != null) {
           for (var context14 in context13) {
             buffer.writeln();
-            buffer.write(_renderLibrary_partial_extension_7(
+            buffer.write(_renderLibrary_partial_extension_6(
                 context14, context12, context11, context0));
             buffer.writeln();
           }
@@ -2503,7 +2503,7 @@ String renderLibrary(_i1.LibraryTemplateData context0) {
         if (context17 != null) {
           for (var context18 in context17) {
             buffer.writeln();
-            buffer.write(_renderLibrary_partial_constant_8(
+            buffer.write(_renderLibrary_partial_constant_7(
                 context18, context16, context15, context0));
             buffer.writeln();
           }
@@ -2525,7 +2525,7 @@ String renderLibrary(_i1.LibraryTemplateData context0) {
         if (context21 != null) {
           for (var context22 in context21) {
             buffer.writeln();
-            buffer.write(_renderLibrary_partial_property_9(
+            buffer.write(_renderLibrary_partial_property_8(
                 context22, context20, context19, context0));
             buffer.writeln();
           }
@@ -2547,7 +2547,7 @@ String renderLibrary(_i1.LibraryTemplateData context0) {
         if (context25 != null) {
           for (var context26 in context25) {
             buffer.writeln();
-            buffer.write(_renderLibrary_partial_callable_10(
+            buffer.write(_renderLibrary_partial_callable_9(
                 context26, context24, context23, context0));
             buffer.writeln();
           }
@@ -2591,7 +2591,7 @@ String renderLibrary(_i1.LibraryTemplateData context0) {
         if (context33 != null) {
           for (var context34 in context33) {
             buffer.writeln();
-            buffer.write(_renderLibrary_partial_typedef_11(
+            buffer.write(_renderLibrary_partial_typedef_10(
                 context34, context32, context31, context0));
             buffer.writeln();
           }
@@ -2622,7 +2622,7 @@ String renderLibrary(_i1.LibraryTemplateData context0) {
     }
   }
   buffer.write('\n\n');
-  buffer.write(_renderLibrary_partial_footer_12(context0));
+  buffer.write(_renderLibrary_partial_footer_11(context0));
   buffer.writeln();
 
   return buffer.toString();
@@ -2744,48 +2744,7 @@ Categories:''');
   return buffer.toString();
 }
 
-String _renderLibrary_partial_mixin_6(_i16.Mixin context3, _i3.Library context2,
-    _i3.Library context1, _i1.LibraryTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''##### ''');
-  buffer.write(context3.linkedName.toString());
-  buffer.write(context3.linkedGenericParameters.toString());
-  buffer.writeln();
-  buffer.write(__renderLibrary_partial_mixin_6_partial_categorization_0(
-      context3, context2, context1, context0));
-  buffer.write('\n\n');
-  buffer.write(context3.oneLineDoc.toString());
-  buffer.write(' ');
-  buffer.write(context3.extendedDocLink.toString());
-  buffer.writeln();
-
-  return buffer.toString();
-}
-
-String __renderLibrary_partial_mixin_6_partial_categorization_0(
-    _i16.Mixin context3,
-    _i3.Library context2,
-    _i3.Library context1,
-    _i1.LibraryTemplateData context0) {
-  final buffer = StringBuffer();
-  if (context3.hasCategoryNames == true) {
-    buffer.writeln();
-    buffer.write('''
-Categories:''');
-    var context4 = context3.displayedCategories;
-    if (context4 != null) {
-      for (var context5 in context4) {
-        buffer.writeln();
-        buffer.write(context5.categoryLabel.toString());
-      }
-    }
-  }
-  buffer.writeln();
-
-  return buffer.toString();
-}
-
-String _renderLibrary_partial_extension_7(
+String _renderLibrary_partial_extension_6(
     _i13.Extension context3,
     _i3.Library context2,
     _i3.Library context1,
@@ -2794,7 +2753,7 @@ String _renderLibrary_partial_extension_7(
   buffer.write('''##### ''');
   buffer.write(context3.linkedName.toString());
   buffer.writeln();
-  buffer.write(__renderLibrary_partial_extension_7_partial_categorization_0(
+  buffer.write(__renderLibrary_partial_extension_6_partial_categorization_0(
       context3, context2, context1, context0));
   buffer.write('\n\n');
   buffer.write(context3.oneLineDoc.toString());
@@ -2805,7 +2764,7 @@ String _renderLibrary_partial_extension_7(
   return buffer.toString();
 }
 
-String __renderLibrary_partial_extension_7_partial_categorization_0(
+String __renderLibrary_partial_extension_6_partial_categorization_0(
     _i13.Extension context3,
     _i3.Library context2,
     _i3.Library context1,
@@ -2828,7 +2787,7 @@ Categories:''');
   return buffer.toString();
 }
 
-String _renderLibrary_partial_constant_8(
+String _renderLibrary_partial_constant_7(
     _i5.TopLevelVariable context3,
     _i3.Library context2,
     _i3.Library context1,
@@ -2839,7 +2798,7 @@ String _renderLibrary_partial_constant_8(
   buffer.write(''' const ''');
   buffer.write(context3.modelType.linkedName.toString());
   buffer.writeln();
-  buffer.write(__renderLibrary_partial_constant_8_partial_categorization_0(
+  buffer.write(__renderLibrary_partial_constant_7_partial_categorization_0(
       context3, context2, context1, context0));
   buffer.write('\n\n');
   buffer.write(context3.oneLineDoc.toString());
@@ -2847,14 +2806,14 @@ String _renderLibrary_partial_constant_8(
   buffer.write(context3.extendedDocLink.toString());
   buffer.write('  ');
   buffer.writeln();
-  buffer.write(__renderLibrary_partial_constant_8_partial_features_1(
+  buffer.write(__renderLibrary_partial_constant_7_partial_features_1(
       context3, context2, context1, context0));
   buffer.writeln();
 
   return buffer.toString();
 }
 
-String __renderLibrary_partial_constant_8_partial_categorization_0(
+String __renderLibrary_partial_constant_7_partial_categorization_0(
     _i5.TopLevelVariable context3,
     _i3.Library context2,
     _i3.Library context1,
@@ -2877,7 +2836,7 @@ Categories:''');
   return buffer.toString();
 }
 
-String __renderLibrary_partial_constant_8_partial_features_1(
+String __renderLibrary_partial_constant_7_partial_features_1(
     _i5.TopLevelVariable context3,
     _i3.Library context2,
     _i3.Library context1,
@@ -2893,7 +2852,7 @@ String __renderLibrary_partial_constant_8_partial_features_1(
   return buffer.toString();
 }
 
-String _renderLibrary_partial_property_9(
+String _renderLibrary_partial_property_8(
     _i5.TopLevelVariable context3,
     _i3.Library context2,
     _i3.Library context1,
@@ -2906,7 +2865,7 @@ String _renderLibrary_partial_property_9(
   buffer.write(' ');
   buffer.write(context3.modelType.linkedName.toString());
   buffer.writeln();
-  buffer.write(__renderLibrary_partial_property_9_partial_categorization_0(
+  buffer.write(__renderLibrary_partial_property_8_partial_categorization_0(
       context3, context2, context1, context0));
   buffer.write('\n\n');
   buffer.write(context3.oneLineDoc.toString());
@@ -2914,14 +2873,14 @@ String _renderLibrary_partial_property_9(
   buffer.write(context3.extendedDocLink.toString());
   buffer.write('  ');
   buffer.writeln();
-  buffer.write(__renderLibrary_partial_property_9_partial_features_1(
+  buffer.write(__renderLibrary_partial_property_8_partial_features_1(
       context3, context2, context1, context0));
   buffer.writeln();
 
   return buffer.toString();
 }
 
-String __renderLibrary_partial_property_9_partial_categorization_0(
+String __renderLibrary_partial_property_8_partial_categorization_0(
     _i5.TopLevelVariable context3,
     _i3.Library context2,
     _i3.Library context1,
@@ -2944,7 +2903,7 @@ Categories:''');
   return buffer.toString();
 }
 
-String __renderLibrary_partial_property_9_partial_features_1(
+String __renderLibrary_partial_property_8_partial_features_1(
     _i5.TopLevelVariable context3,
     _i3.Library context2,
     _i3.Library context1,
@@ -2960,7 +2919,7 @@ String __renderLibrary_partial_property_9_partial_features_1(
   return buffer.toString();
 }
 
-String _renderLibrary_partial_callable_10(
+String _renderLibrary_partial_callable_9(
     _i6.ModelFunctionTyped context3,
     _i3.Library context2,
     _i3.Library context1,
@@ -2974,7 +2933,7 @@ String _renderLibrary_partial_callable_10(
   buffer.write(''') ''');
   buffer.write(context3.modelType.returnType.linkedName.toString());
   buffer.writeln();
-  buffer.write(__renderLibrary_partial_callable_10_partial_categorization_0(
+  buffer.write(__renderLibrary_partial_callable_9_partial_categorization_0(
       context3, context2, context1, context0));
   buffer.write('\n\n');
   buffer.write(context3.oneLineDoc.toString());
@@ -2982,14 +2941,14 @@ String _renderLibrary_partial_callable_10(
   buffer.write(context3.extendedDocLink.toString());
   buffer.write('  ');
   buffer.writeln();
-  buffer.write(__renderLibrary_partial_callable_10_partial_features_1(
+  buffer.write(__renderLibrary_partial_callable_9_partial_features_1(
       context3, context2, context1, context0));
   buffer.writeln();
 
   return buffer.toString();
 }
 
-String __renderLibrary_partial_callable_10_partial_categorization_0(
+String __renderLibrary_partial_callable_9_partial_categorization_0(
     _i6.ModelFunctionTyped context3,
     _i3.Library context2,
     _i3.Library context1,
@@ -3012,7 +2971,7 @@ Categories:''');
   return buffer.toString();
 }
 
-String __renderLibrary_partial_callable_10_partial_features_1(
+String __renderLibrary_partial_callable_9_partial_features_1(
     _i6.ModelFunctionTyped context3,
     _i3.Library context2,
     _i3.Library context1,
@@ -3028,7 +2987,7 @@ String __renderLibrary_partial_callable_10_partial_features_1(
   return buffer.toString();
 }
 
-String _renderLibrary_partial_typedef_11(
+String _renderLibrary_partial_typedef_10(
     _i7.Typedef context3,
     _i3.Library context2,
     _i3.Library context1,
@@ -3045,7 +3004,7 @@ String _renderLibrary_partial_typedef_11(
       buffer.write(''' = ''');
       buffer.write(context4.modelType.linkedName.toString());
       buffer.write('\n    ');
-      buffer.write(__renderLibrary_partial_typedef_11_partial_categorization_0(
+      buffer.write(__renderLibrary_partial_typedef_10_partial_categorization_0(
           context4, context3, context2, context1, context0));
       buffer.write('\n\n    ');
       buffer.write(context4.oneLineDoc.toString());
@@ -3053,13 +3012,13 @@ String _renderLibrary_partial_typedef_11(
       buffer.write(context4.extendedDocLink.toString());
       buffer.write('  ');
       buffer.write('\n    ');
-      buffer.write(__renderLibrary_partial_typedef_11_partial_features_1(
+      buffer.write(__renderLibrary_partial_typedef_10_partial_features_1(
           context4, context3, context2, context1, context0));
     }
   }
   if (context3.isCallable != true) {
     buffer.write('\n  ');
-    buffer.write(__renderLibrary_partial_typedef_11_partial_type_2(
+    buffer.write(__renderLibrary_partial_typedef_10_partial_type_2(
         context3, context2, context1, context0));
   }
   buffer.writeln();
@@ -3067,7 +3026,7 @@ String _renderLibrary_partial_typedef_11(
   return buffer.toString();
 }
 
-String __renderLibrary_partial_typedef_11_partial_categorization_0(
+String __renderLibrary_partial_typedef_10_partial_categorization_0(
     _i7.FunctionTypedef context4,
     _i7.Typedef context3,
     _i3.Library context2,
@@ -3091,7 +3050,7 @@ Categories:''');
   return buffer.toString();
 }
 
-String __renderLibrary_partial_typedef_11_partial_features_1(
+String __renderLibrary_partial_typedef_10_partial_features_1(
     _i7.FunctionTypedef context4,
     _i7.Typedef context3,
     _i3.Library context2,
@@ -3108,7 +3067,7 @@ String __renderLibrary_partial_typedef_11_partial_features_1(
   return buffer.toString();
 }
 
-String __renderLibrary_partial_typedef_11_partial_type_2(
+String __renderLibrary_partial_typedef_10_partial_type_2(
     _i7.Typedef context3,
     _i3.Library context2,
     _i3.Library context1,
@@ -3121,7 +3080,7 @@ String __renderLibrary_partial_typedef_11_partial_type_2(
   buffer.write(context3.modelType.linkedName.toString());
   buffer.writeln();
   buffer.write(
-      ___renderLibrary_partial_typedef_11_partial_type_2_partial_categorization_0(
+      ___renderLibrary_partial_typedef_10_partial_type_2_partial_categorization_0(
           context3, context2, context1, context0));
   buffer.write('\n\n');
   buffer.write(context3.oneLineDoc.toString());
@@ -3130,7 +3089,7 @@ String __renderLibrary_partial_typedef_11_partial_type_2(
   buffer.write('  ');
   buffer.writeln();
   buffer.write(
-      ___renderLibrary_partial_typedef_11_partial_type_2_partial_features_1(
+      ___renderLibrary_partial_typedef_10_partial_type_2_partial_features_1(
           context3, context2, context1, context0));
   buffer.writeln();
 
@@ -3138,7 +3097,7 @@ String __renderLibrary_partial_typedef_11_partial_type_2(
 }
 
 String
-    ___renderLibrary_partial_typedef_11_partial_type_2_partial_categorization_0(
+    ___renderLibrary_partial_typedef_10_partial_type_2_partial_categorization_0(
         _i7.Typedef context3,
         _i3.Library context2,
         _i3.Library context1,
@@ -3161,7 +3120,7 @@ Categories:''');
   return buffer.toString();
 }
 
-String ___renderLibrary_partial_typedef_11_partial_type_2_partial_features_1(
+String ___renderLibrary_partial_typedef_10_partial_type_2_partial_features_1(
     _i7.Typedef context3,
     _i3.Library context2,
     _i3.Library context1,
@@ -3177,7 +3136,7 @@ String ___renderLibrary_partial_typedef_11_partial_type_2_partial_features_1(
   return buffer.toString();
 }
 
-String _renderLibrary_partial_footer_12(_i1.LibraryTemplateData context0) {
+String _renderLibrary_partial_footer_11(_i1.LibraryTemplateData context0) {
   final buffer = StringBuffer();
   buffer.writeln();
   buffer.write(context0.customInnerFooter.toString());
