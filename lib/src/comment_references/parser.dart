@@ -93,7 +93,7 @@ class CommentReferenceParser {
   /// ```text
   ///   <rawCommentReference> ::= <prefix>?<commentReference><suffix>?
   ///
-  ///   <commentReference> ::= (<packageName> '.')? (<libraryName> '.')? <dartdocIdentifier> <typeParameters> ('.' <identifier> <typeParameters>)*
+  ///   <commentReference> ::= (<packageName> '.')? (<libraryName> '.')? <dartdocIdentifier> <typeArguments> ('.' <identifier> <typeArguments>)*
   /// ```
   List<CommentReferenceNode> _parseRawCommentReference() {
     var children = <CommentReferenceNode>[];
@@ -121,16 +121,16 @@ class CommentReferenceParser {
       } else if (identifierResult.type ==
           _IdentifierResultType.parsedIdentifier) {
         children.add(identifierResult.node);
-        var typeParametersResult = _parseTypeParameters();
-        if (typeParametersResult.type == _TypeParametersResultType.endOfFile) {
+        var typeVariablesResult = _parseTypeVariables();
+        if (typeVariablesResult.type == _TypeVariablesResultType.endOfFile) {
           break;
-        } else if (typeParametersResult.type ==
-            _TypeParametersResultType.notTypeParameters) {
+        } else if (typeVariablesResult.type ==
+            _TypeVariablesResultType.notTypeVariables) {
           // Do nothing, _index has not moved.
           ;
-        } else if (typeParametersResult.type ==
-            _TypeParametersResultType.parsedTypeParameters) {
-          children.add(typeParametersResult.node);
+        } else if (typeVariablesResult.type ==
+            _TypeVariablesResultType.parsedTypeVariables) {
+          children.add(typeVariablesResult.node);
         }
       }
       if (_atEnd || _thisChar != $dot) {
@@ -247,20 +247,20 @@ class CommentReferenceParser {
         IdentifierNode(codeRef.substring(startIndex, _index)));
   }
 
-  /// Parse a list of type parameters.
+  /// Parse a list of type variables (arguments or parameters).
   ///
   /// Dartdoc isolates these where present and potentially valid, but we don't
   /// break them down.
-  _TypeParametersParseResult _parseTypeParameters() {
+  _TypeVariablesParseResult _parseTypeVariables() {
     if (_atEnd) {
-      return _TypeParametersParseResult.endOfFile;
+      return _TypeVariablesParseResult.endOfFile;
     }
     var startIndex = _index;
     if (_matchBraces($lt, $gt)) {
-      return _TypeParametersParseResult.ok(
-          TypeParametersNode(codeRef.substring(startIndex + 1, _index - 1)));
+      return _TypeVariablesParseResult.ok(
+          TypeVariablesNode(codeRef.substring(startIndex + 1, _index - 1)));
     }
-    return _TypeParametersParseResult.notIdentifier;
+    return _TypeVariablesParseResult.notIdentifier;
   }
 
   static const _callableHintSuffix = '()';
@@ -421,30 +421,30 @@ class _IdentifierParseResult {
       _IdentifierParseResult._(_IdentifierResultType.notIdentifier, null);
 }
 
-enum _TypeParametersResultType {
+enum _TypeVariablesResultType {
   endOfFile, // Found end of file instead of the beginning of a list of type
-  // parameters.
-  notTypeParameters, // Found something, but it isn't type parameters.
-  parsedTypeParameters, // Found type parameters.
+  // variables.
+  notTypeVariables, // Found something, but it isn't type variables.
+  parsedTypeVariables, // Found type variables.
 }
 
-class _TypeParametersParseResult {
-  final _TypeParametersResultType type;
+class _TypeVariablesParseResult {
+  final _TypeVariablesResultType type;
 
-  final TypeParametersNode node;
+  final TypeVariablesNode node;
 
-  const _TypeParametersParseResult._(this.type, this.node);
+  const _TypeVariablesParseResult._(this.type, this.node);
 
-  factory _TypeParametersParseResult.ok(TypeParametersNode node) =>
-      _TypeParametersParseResult._(
-          _TypeParametersResultType.parsedTypeParameters, node);
+  factory _TypeVariablesParseResult.ok(TypeVariablesNode node) =>
+      _TypeVariablesParseResult._(
+          _TypeVariablesResultType.parsedTypeVariables, node);
 
-  static const _TypeParametersParseResult endOfFile =
-      _TypeParametersParseResult._(_TypeParametersResultType.endOfFile, null);
+  static const _TypeVariablesParseResult endOfFile =
+      _TypeVariablesParseResult._(_TypeVariablesResultType.endOfFile, null);
 
-  static const _TypeParametersParseResult notIdentifier =
-      _TypeParametersParseResult._(
-          _TypeParametersResultType.notTypeParameters, null);
+  static const _TypeVariablesParseResult notIdentifier =
+      _TypeVariablesParseResult._(
+          _TypeVariablesResultType.notTypeVariables, null);
 }
 
 enum _SuffixResultType {
@@ -512,18 +512,18 @@ class IdentifierNode extends CommentReferenceNode {
   String toString() => 'Identifier["$text"]';
 }
 
-/// Represents one or more type parameters, may be
+/// Represents one or more type variables, may be
 /// comma separated.
-class TypeParametersNode extends CommentReferenceNode {
+class TypeVariablesNode extends CommentReferenceNode {
   @override
 
   /// Note that this will contain commas, spaces, and other text, as
-  /// generally type parameters are a form of junk that comment references
+  /// generally type variables are a form of junk that comment references
   /// should ignore.
   final String text;
 
-  TypeParametersNode(this.text);
+  TypeVariablesNode(this.text);
 
   @override
-  String toString() => 'TypeParametersNode["$text"]';
+  String toString() => 'TypeVariablesNode["$text"]';
 }
