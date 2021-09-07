@@ -25,7 +25,7 @@
 ## Mixins
 
 {{#library.publicMixinsSorted}}
-{{>mixin}}
+{{>container}}
 
 {{/library.publicMixinsSorted}}
 {{/library.hasPublicMixins}}
