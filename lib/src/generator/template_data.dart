@@ -175,34 +175,51 @@ class LibraryTemplateData extends TemplateData<Library>
 }
 
 /// Template data for Dart 2.1-style mixin declarations.
-class MixinTemplateData extends ClassTemplateData<Mixin> {
-  final Mixin mixin;
-
+class MixinTemplateData extends InheritingContainerTemplateData<Mixin> {
   MixinTemplateData(
       TemplateOptions htmlOptions,
       PackageGraph packageGraph,
       Library library,
-      this.mixin,
+      Mixin mixin,
       LibrarySidebar _sidebarForLibrary,
       ContainerSidebar _sidebarForContainer)
       : super(htmlOptions, packageGraph, library, mixin, _sidebarForLibrary,
             _sidebarForContainer);
 
+  Mixin get mixin => clazz;
+
   @override
   Mixin get self => mixin;
 }
 
+/// Template data for Dart classes.
+class ClassTemplateData extends InheritingContainerTemplateData<Class> {
+  ClassTemplateData(
+      TemplateOptions htmlOptions,
+      PackageGraph packageGraph,
+      Library library,
+      Class clazz,
+      LibrarySidebar _sidebarForLibrary,
+      ContainerSidebar _sidebarForContainer)
+      : super(htmlOptions, packageGraph, library, clazz, _sidebarForLibrary,
+            _sidebarForContainer);
+
+  @override
+  Class get clazz => super.clazz;
+}
+
 /// Base template data class for [Class], [Enum], and [Mixin].
-class ClassTemplateData<T extends Class> extends TemplateData<T>
+abstract class InheritingContainerTemplateData<T extends InheritingContainer>
+    extends TemplateData<T>
     implements TemplateDataWithLibrary<T>, TemplateDataWithContainer<T> {
-  final Class clazz;
+  final InheritingContainer clazz;
   @override
   final Library library;
   Class _objectType;
   final LibrarySidebar _sidebarForLibrary;
   final ContainerSidebar _sidebarForContainer;
 
-  ClassTemplateData(
+  InheritingContainerTemplateData(
       TemplateOptions htmlOptions,
       PackageGraph packageGraph,
       this.library,
@@ -337,7 +354,7 @@ class ConstructorTemplateData extends TemplateData<Constructor>
       'for the Dart programming language.';
 }
 
-class EnumTemplateData extends ClassTemplateData<Enum> {
+class EnumTemplateData extends InheritingContainerTemplateData<Enum> {
   EnumTemplateData(
       TemplateOptions htmlOptions,
       PackageGraph packageGraph,

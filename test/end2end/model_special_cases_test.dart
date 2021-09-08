@@ -188,6 +188,23 @@ void main() {
         expect(referenceLookup(constructorTearoffs, 'F.new'),
             equals(MatchingLinkResult(Fnew)));
       });
+
+      test('.new works on typedefs', () {
+        expect(referenceLookup(constructorTearoffs, 'At.new'),
+            equals(MatchingLinkResult(Anew)));
+        expect(referenceLookup(constructorTearoffs, 'Bt.new'),
+            equals(MatchingLinkResult(Bnew)));
+        expect(referenceLookup(constructorTearoffs, 'Ct.new'),
+            equals(MatchingLinkResult(Cnew)));
+        expect(referenceLookup(constructorTearoffs, 'Dt.new'),
+            equals(MatchingLinkResult(Dnew)));
+        expect(referenceLookup(constructorTearoffs, 'Et.new'),
+            equals(MatchingLinkResult(Enew)));
+        expect(referenceLookup(constructorTearoffs, 'Fstring.new'),
+            equals(MatchingLinkResult(Fnew)));
+        expect(referenceLookup(constructorTearoffs, 'Ft.new'),
+            equals(MatchingLinkResult(Fnew)));
+      });
     }, skip: !_constructorTearoffsAllowed.allows(utils.platformVersion));
   });
 

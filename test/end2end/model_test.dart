@@ -1851,6 +1851,30 @@ void main() {
           .firstWhere((f) => f.name == 'overrideByModifierClass');
     });
 
+    test('computes interfaces and implementors correctly', () {
+      var ThingToImplementInMixin = fakeLibrary.publicClasses
+          .firstWhere((c) => c.name == 'ThingToImplementInMixin');
+      var MixedInImplementation = fakeLibrary.publicClasses
+          .firstWhere((c) => c.name == 'MixedInImplementation');
+      var MixInImplementation =
+          fakeLibrary.mixins.firstWhere((m) => m.name == 'MixInImplementation');
+      var mixinGetter = MixInImplementation.allFields
+          .firstWhere((f) => f.name == 'mixinGetter');
+
+      expect(ThingToImplementInMixin.hasModifiers, isTrue);
+      expect(MixInImplementation.hasModifiers, isTrue);
+      expect(MixedInImplementation.hasModifiers, isTrue);
+      expect(ThingToImplementInMixin.publicImplementors,
+          orderedEquals([MixInImplementation]));
+      expect(MixInImplementation.publicImplementors,
+          orderedEquals([MixedInImplementation]));
+      expect(
+          MixedInImplementation.allFields
+              .firstWhere((f) => f.name == 'mixinGetter')
+              .canonicalModelElement,
+          equals(mixinGetter));
+    });
+
     test('does have a line number and column', () {
       expect(GenericMixin.characterLocation, isNotNull);
     });
@@ -2238,7 +2262,8 @@ void main() {
     group('Linking for generalized typedef cases works', () {
       Library generalizedTypedefs;
       Typedef T0, T2, T5, T8;
-      Class C2;
+      Class C1, C2;
+      Field C1a;
 
       setUpAll(() {
         generalizedTypedefs = packageGraph.libraries
@@ -2247,7 +2272,9 @@ void main() {
         T2 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T2');
         T5 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T5');
         T8 = generalizedTypedefs.typedefs.firstWhere((a) => a.name == 'T8');
+        C1 = generalizedTypedefs.classes.firstWhere((c) => c.name == 'C1');
         C2 = generalizedTypedefs.classes.firstWhere((c) => c.name == 'C2');
+        C1a = C1.allFields.firstWhere((f) => f.name == 'a');
       });
 
       test('Verify basic ability to link anything', () {
@@ -2267,6 +2294,12 @@ void main() {
       test('Verify ability to link to parameters', () {
         var T5name = T5.parameters.firstWhere((t) => t.name == 'name');
         expect(referenceLookup(T5, 'name'), equals(MatchingLinkResult(T5name)));
+      });
+
+      test('Verify ability to link to class members of aliased classes', () {
+        expect(referenceLookup(generalizedTypedefs, 'T8.a'),
+            equals(MatchingLinkResult(C1a)));
+        expect(referenceLookup(T8, 'a'), equals(MatchingLinkResult(C1a)));
       });
     });
 
@@ -4853,7 +4886,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
   group('Implementors', () {
     Class apple;
     Class b;
-    List<Class> implA, implC;
+    List<InheritingContainer> implA, implC;
 
     setUpAll(() {
       apple = exLibrary.classes.firstWhere((c) => c.name == 'Apple');

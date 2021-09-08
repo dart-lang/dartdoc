@@ -21,30 +21,6 @@
 - {{{name}}}
 {{/hasPublicSuperChainReversed}}
 
-{{#hasPublicInterfaces}}
-**Implemented types**
-
-{{#publicInterfaces}}
-- {{{linkedName}}}
-{{/publicInterfaces}}
-{{/hasPublicInterfaces}}
-
-{{#hasPublicMixedInTypes}}
-**Mixed in types**
-
-{{#publicMixedInTypes}}
-- {{{linkedName}}}
-{{/publicMixedInTypes}}
-{{/hasPublicMixedInTypes}}
-
-{{#hasPublicImplementors}}
-**Implementers**
-
-{{#publicImplementorsSorted}}
-- {{{linkedName}}}
-{{/publicImplementorsSorted}}
-{{/hasPublicImplementors}}
-
 {{#hasAnnotations}}
 **Annotations**
 
@@ -62,18 +38,6 @@
 
 {{/publicConstantFieldsSorted}}
 {{/hasPublicConstantFields}}
-
-{{#hasPublicConstructors}}
-## Constructors
-
-{{#publicConstructorsSorted}}
-{{{linkedName}}}({{{ linkedParams }}})
-
-{{{ oneLineDoc }}} {{{ extendedDocLink }}}  {{!two spaces intentional}}
-{{#isConst}}_const_{{/isConst}} {{#isFactory}}_factory_{{/isFactory}}
-
-{{/publicConstructorsSorted}}
-{{/hasPublicConstructors}}
 
 {{#hasPublicInstanceFields}}
 ## Properties

@@ -100,6 +100,7 @@ class PackageGraph with CommentReferable, Nameable {
     for (var package in documentedPackages) {
       for (var library in package.libraries) {
         _addToImplementors(library.allClasses);
+        _addToImplementors(library.mixins);
         _extensions.addAll(library.extensions);
       }
       if (package.isLocal && !package.hasPublicLibraries) {
@@ -183,7 +184,7 @@ class PackageGraph with CommentReferable, Nameable {
   /// is true.
   bool allExtensionsAdded = false;
 
-  Map<Class, List<Class>> get implementors {
+  Map<InheritingContainer, List<InheritingContainer>> get implementors {
     assert(allImplementorsAdded);
     return _implementors;
   }
@@ -221,9 +222,12 @@ class PackageGraph with CommentReferable, Nameable {
       HashMap<Tuple2<Element, Library>, Set<ModelElement>>();
 
   /// A mapping of the list of classes which implement each class.
-  final _implementors = LinkedHashMap<Class, List<Class>>(
-      equals: (Class a, Class b) => a.definingClass == b.definingClass,
-      hashCode: (Class clazz) => clazz.definingClass.hashCode);
+  final _implementors =
+      LinkedHashMap<InheritingContainer, List<InheritingContainer>>(
+          equals: (InheritingContainer a, InheritingContainer b) =>
+              a.definingContainer == b.definingContainer,
+          hashCode: (InheritingContainer clazz) =>
+              clazz.definingContainer.hashCode);
 
   /// A list of extensions that exist in the package graph.
   final List<Extension> _extensions = [];
@@ -585,15 +589,16 @@ class PackageGraph with CommentReferable, Nameable {
     return hrefMap;
   }
 
-  void _addToImplementors(Iterable<Class> classes) {
+  void _addToImplementors(Iterable<InheritingContainer> containers) {
     assert(!allImplementorsAdded);
 
-    // Private classes may not be included in [classes], but may still be
+    // Private containers may not be included in documentation, but may still be
     // necessary links in the implementation chain. They are added here as they
-    // are found, then processed after [classes].
-    var privates = <Class>[];
+    // are found, then processed after [containers].
+    var privates = <InheritingContainer>[];
 
-    void checkAndAddClass(Class implemented, Class implementor) {
+    void checkAndAddContainer(
+        InheritingContainer implemented, InheritingContainer implementor) {
       if (!implemented.isPublic) {
         privates.add(implemented);
       }
@@ -607,22 +612,24 @@ class PackageGraph with CommentReferable, Nameable {
       }
     }
 
-    void addImplementor(Class clazz) {
-      for (var type in clazz.mixedInTypes) {
-        checkAndAddClass(type.modelElement, clazz);
-      }
+    void addImplementor(InheritingContainer clazz) {
       if (clazz.supertype != null) {
-        checkAndAddClass(clazz.supertype.modelElement, clazz);
+        checkAndAddContainer(clazz.supertype.modelElement, clazz);
       }
-      for (var type in clazz.interfaces) {
-        checkAndAddClass(type.modelElement, clazz);
+      if (clazz is Class) {
+        for (var type in clazz.mixedInTypes) {
+          checkAndAddContainer(type.modelElement, clazz);
+        }
+        for (var type in clazz.interfaces) {
+          checkAndAddContainer(type.modelElement, clazz);
+        }
       }
       for (var type in clazz.publicInterfaces) {
-        checkAndAddClass(type.modelElement, clazz);
+        checkAndAddContainer(type.modelElement, clazz);
       }
     }
 
-    classes.forEach(addImplementor);
+    containers.forEach(addImplementor);
 
     // [privates] may grow while processing; use a for loop, rather than a
     // for-each loop, to avoid concurrent modification errors.
