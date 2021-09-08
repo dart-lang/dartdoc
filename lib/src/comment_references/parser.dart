@@ -96,7 +96,7 @@ class CommentReferenceParser {
   /// ```text
   ///   <rawCommentReference> ::= <prefix>?<commentReference><suffix>?
   ///
-  ///   <commentReference> ::= (<packageName> '.')? (<libraryName> '.')? <dartdocIdentifier> ('.' <identifier>)*
+  ///   <commentReference> ::= (<packageName> '.')? (<libraryName> '.')? <dartdocIdentifier> <typeArguments> ('.' <identifier> <typeArguments>)*
   /// ```
   List<CommentReferenceNode> _parseRawCommentReference() {
     var children = <CommentReferenceNode>[];
@@ -124,6 +124,17 @@ class CommentReferenceParser {
       } else if (identifierResult.type ==
           _IdentifierResultType.parsedIdentifier) {
         children.add(identifierResult.node);
+        var typeVariablesResult = _parseTypeVariables();
+        if (typeVariablesResult.type == _TypeVariablesResultType.endOfFile) {
+          break;
+        } else if (typeVariablesResult.type ==
+            _TypeVariablesResultType.notTypeVariables) {
+          // Do nothing, _index has not moved.
+          ;
+        } else if (typeVariablesResult.type ==
+            _TypeVariablesResultType.parsedTypeVariables) {
+          children.add(typeVariablesResult.node);
+        }
       }
       if (_atEnd || _thisChar != $dot) {
         break;
@@ -239,6 +250,22 @@ class CommentReferenceParser {
         IdentifierNode(codeRef.substring(startIndex, _index)));
   }
 
+  /// Parse a list of type variables (arguments or parameters).
+  ///
+  /// Dartdoc isolates these where present and potentially valid, but we don't
+  /// break them down.
+  _TypeVariablesParseResult _parseTypeVariables() {
+    if (_atEnd) {
+      return _TypeVariablesParseResult.endOfFile;
+    }
+    var startIndex = _index;
+    if (_matchBraces($lt, $gt)) {
+      return _TypeVariablesParseResult.ok(
+          TypeVariablesNode(codeRef.substring(startIndex + 1, _index - 1)));
+    }
+    return _TypeVariablesParseResult.notIdentifier;
+  }
+
   static const _callableHintSuffix = '()';
 
   /// ```text
@@ -270,7 +297,7 @@ class CommentReferenceParser {
     if ((_thisChar == $exclamation || _thisChar == $question) && _nextAtEnd) {
       return _SuffixParseResult.junk;
     }
-    if (_matchBraces($lparen, $rparen) || _matchBraces($lt, $gt)) {
+    if (_matchBraces($lparen, $rparen)) {
       return _SuffixParseResult.junk;
     }
 
@@ -334,8 +361,10 @@ class CommentReferenceParser {
     while (!_atEnd) {
       if (_thisChar == startChar) braceCount++;
       if (_thisChar == endChar) braceCount--;
-      ++_index;
-      if (braceCount == 0) return true;
+      _index++;
+      if (braceCount == 0) {
+        return true;
+      }
     }
     _index = startIndex;
     return false;
@@ -393,6 +422,32 @@ class _IdentifierParseResult {
 
   static const _IdentifierParseResult notIdentifier =
       _IdentifierParseResult._(_IdentifierResultType.notIdentifier, null);
+}
+
+enum _TypeVariablesResultType {
+  endOfFile, // Found end of file instead of the beginning of a list of type
+  // variables.
+  notTypeVariables, // Found something, but it isn't type variables.
+  parsedTypeVariables, // Found type variables.
+}
+
+class _TypeVariablesParseResult {
+  final _TypeVariablesResultType type;
+
+  final TypeVariablesNode node;
+
+  const _TypeVariablesParseResult._(this.type, this.node);
+
+  factory _TypeVariablesParseResult.ok(TypeVariablesNode node) =>
+      _TypeVariablesParseResult._(
+          _TypeVariablesResultType.parsedTypeVariables, node);
+
+  static const _TypeVariablesParseResult endOfFile =
+      _TypeVariablesParseResult._(_TypeVariablesResultType.endOfFile, null);
+
+  static const _TypeVariablesParseResult notIdentifier =
+      _TypeVariablesParseResult._(
+          _TypeVariablesResultType.notTypeVariables, null);
 }
 
 enum _SuffixResultType {
@@ -458,4 +513,20 @@ class IdentifierNode extends CommentReferenceNode {
 
   @override
   String toString() => 'Identifier["$text"]';
+}
+
+/// Represents one or more type variables, may be
+/// comma separated.
+class TypeVariablesNode extends CommentReferenceNode {
+  @override
+
+  /// Note that this will contain commas, spaces, and other text, as
+  /// generally type variables are a form of junk that comment references
+  /// should ignore.
+  final String text;
+
+  TypeVariablesNode(this.text);
+
+  @override
+  String toString() => 'TypeVariablesNode["$text"]';
 }

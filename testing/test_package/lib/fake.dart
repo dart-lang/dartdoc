@@ -472,6 +472,17 @@ class ABaseClass {}
 
 class ATypeTakingClassMixedIn extends ABaseClass with ATypeTakingClass<void> {}
 
+abstract class ThingToImplementInMixin {
+  bool get mixinGetter;
+}
+
+mixin MixInImplementation implements ThingToImplementInMixin {
+  @override
+  bool get mixinGetter => true;
+}
+
+class MixedInImplementation with MixInImplementation {}
+
 /// Names are actually wrong in this class, but when we extend it,
 /// they are correct.
 class ImplicitProperties {

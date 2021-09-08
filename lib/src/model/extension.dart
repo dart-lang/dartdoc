@@ -12,9 +12,7 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/quiver.dart' as quiver;
 
 /// Extension methods
-class Extension extends Container
-    with Categorization
-    implements EnclosedElement {
+class Extension extends Container implements EnclosedElement {
   ElementType extendedType;
 
   Extension(
@@ -131,10 +129,4 @@ class Extension extends Container
       ...super.referenceChildren,
     };
   }
-
-  @override
-  bool get hasPublicConstructors => false;
-
-  @override
-  Iterable<Constructor> get publicConstructorsSorted => [];
 }

@@ -42,22 +42,15 @@
         </dd>
         {{/hasPublicInterfaces}}
 
-        {{#hasPublicMixedInTypes}}
-        <dt>Mixes-in</dt>
-        <dd><ul class="comma-separated mixin-relationships">
-          {{#publicMixedInTypes}}
-          <li>{{{linkedName}}}</li>
-          {{/publicMixedInTypes}}
-        </ul></dd>
-        {{/hasPublicMixedInTypes}}
-
         {{#hasPublicImplementors}}
-        <dt>Implemented by</dt>
-        <dd><ul class="comma-separated mixin-relationships">
-          {{#publicImplementorsSorted}}
-          <li>{{{linkedName}}}</li>
-          {{/publicImplementorsSorted}}
-        </ul></dd>
+        <dt>Mixin Applications</dt>
+        <dd>
+          <ul class="comma-separated mixin-relationships">
+            {{#publicImplementorsSorted}}
+            <li>{{{linkedName}}}</li>
+            {{/publicImplementorsSorted}}
+          </ul>
+        </dd>
         {{/hasPublicImplementors}}
 
         {{#hasAnnotations}}
@@ -71,29 +64,6 @@
       </dl>
     </section>
     {{/hasModifiers}}
-
-    {{#hasPublicConstructors}}
-    <section class="summary offset-anchor" id="constructors">
-      <h2>Constructors</h2>
-
-      <dl class="constructor-summary-list">
-        {{#publicConstructorsSorted}}
-        <dt id="{{htmlId}}" class="callable">
-          <span class="name">{{{linkedName}}}</span><span class="signature">({{{ linkedParams }}})</span>
-        </dt>
-        <dd>
-          {{{ oneLineDoc }}} {{{ extendedDocLink }}}
-          {{#isConst}}
-          <div class="constructor-modifier features">const</div>
-          {{/isConst}}
-          {{#isFactory}}
-          <div class="constructor-modifier features">factory</div>
-          {{/isFactory}}
-        </dd>
-        {{/publicConstructorsSorted}}
-      </dl>
-    </section>
-    {{/hasPublicConstructors}}
 
     {{#hasPublicInstanceFields}}
     <section class="summary offset-anchor{{ #publicInheritedInstanceFields }} inherited{{ /publicInheritedInstanceFields }}" id="instance-properties">

@@ -83,6 +83,18 @@ void main() {
           ['ThisThingy', '[]', 'parameter']);
     });
 
+    test('Check that embedded types within tearoff-like constructs parse', () {
+      expectParseEquivalent('this<stuff>.isValid', ['this', 'isValid']);
+      expectParseEquivalent(
+          'this<stuff, is, also>.isValid', ['this', 'isValid']);
+      expectParseEquivalent('this<stuff<that<is, real>, complicated>>.isValid',
+          ['this', 'isValid']);
+      expectParseError('this<stuff.isntValid');
+      expectParseError('this<stuff>, notBeingValid>.isntValid');
+      expectParseError('(AndThisMayBeValidDart.butIt).isntValidInReferences');
+      expectParseError('<NotActually>.valid');
+    });
+
     test('Basic negative tests', () {
       expectParseError(r'.');
       expectParseError(r'');

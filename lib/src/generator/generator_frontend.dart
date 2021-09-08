@@ -170,14 +170,6 @@ class GeneratorFrontEnd implements Generator {
           indexAccumulator.add(mixin);
           _generatorBackend.generateMixin(writer, packageGraph, lib, mixin);
 
-          for (var constructor in filterNonDocumented(mixin.constructors)) {
-            if (!constructor.isCanonical) continue;
-
-            indexAccumulator.add(constructor);
-            _generatorBackend.generateConstructor(
-                writer, packageGraph, lib, mixin, constructor);
-          }
-
           for (var constant in filterNonDocumented(mixin.constantFields)) {
             if (!constant.isCanonical) continue;
             indexAccumulator.add(constant);

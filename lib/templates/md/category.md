@@ -18,7 +18,7 @@
 ## Classes
 
 {{#publicClassesSorted}}
-{{>class}}
+{{>container}}
 
 {{/publicClassesSorted}}
 {{/hasPublicClasses}}
@@ -27,7 +27,7 @@
 ## Mixins
 
 {{#publicMixinsSorted}}
-{{>mixin}}
+{{>container}}
 
 {{/publicMixinsSorted}}
 {{/hasPublicMixins}}
@@ -63,7 +63,7 @@
 ## Enums
 
 {{#publicEnumsSorted}}
-{{>class}}
+{{>container}}
 
 {{/publicEnumsSorted}}
 {{/hasPublicEnums}}
@@ -81,7 +81,7 @@
 ## Exceptions / Errors
 
 {{#publicExceptionsSorted}}
-{{>class}}
+{{>container}}
 
 {{/publicExceptionsSorted}}
 {{/hasPublicExceptions}}

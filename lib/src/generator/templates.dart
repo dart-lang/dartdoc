@@ -59,6 +59,7 @@ const _visibleTypes = {
   Extension,
   FeatureSet,
   FunctionTypeElementType,
+  InheritingContainer,
   LanguageFeature,
   Library,
   LibraryContainer,
@@ -74,7 +75,7 @@ const _visibleTypes = {
 /// The collection of [Template] objects
 abstract class Templates {
   String renderCategory(CategoryTemplateData context);
-  String renderClass<T extends Class>(ClassTemplateData<T> context);
+  String renderClass<T extends Class>(ClassTemplateData context);
   String renderConstructor(ConstructorTemplateData context);
   String renderEnum(EnumTemplateData context);
   String renderError(PackageTemplateData context);
@@ -125,7 +126,7 @@ class HtmlAotTemplates implements Templates {
       aot_renderers_for_html.renderCategory(context);
 
   @override
-  String renderClass<T extends Class>(ClassTemplateData<T> context) =>
+  String renderClass<T extends Class>(ClassTemplateData context) =>
       aot_renderers_for_html.renderClass(context);
 
   @override
@@ -193,7 +194,7 @@ class MarkdownAotTemplates implements Templates {
       aot_renderers_for_md.renderCategory(context);
 
   @override
-  String renderClass<T extends Class>(ClassTemplateData<T> context) =>
+  String renderClass<T extends Class>(ClassTemplateData context) =>
       aot_renderers_for_md.renderClass(context);
 
   @override
@@ -262,7 +263,7 @@ class RuntimeTemplates implements Templates {
       runtime_renderers.renderCategory(context, _categoryTemplate);
 
   @override
-  String renderClass<T extends Class>(ClassTemplateData<T> context) =>
+  String renderClass<T extends Class>(ClassTemplateData context) =>
       runtime_renderers.renderClass(context, _classTemplate);
 
   @override

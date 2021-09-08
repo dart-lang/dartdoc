@@ -188,6 +188,48 @@ void main() {
         expect(referenceLookup(constructorTearoffs, 'F.new'),
             equals(MatchingLinkResult(Fnew)));
       });
+
+      test('.new works on typedefs', () {
+        expect(referenceLookup(constructorTearoffs, 'At.new'),
+            equals(MatchingLinkResult(Anew)));
+        expect(referenceLookup(constructorTearoffs, 'Bt.new'),
+            equals(MatchingLinkResult(Bnew)));
+        expect(referenceLookup(constructorTearoffs, 'Ct.new'),
+            equals(MatchingLinkResult(Cnew)));
+        expect(referenceLookup(constructorTearoffs, 'Dt.new'),
+            equals(MatchingLinkResult(Dnew)));
+        expect(referenceLookup(constructorTearoffs, 'Et.new'),
+            equals(MatchingLinkResult(Enew)));
+        expect(referenceLookup(constructorTearoffs, 'Fstring.new'),
+            equals(MatchingLinkResult(Fnew)));
+        expect(referenceLookup(constructorTearoffs, 'Ft.new'),
+            equals(MatchingLinkResult(Fnew)));
+      });
+
+      test('we can use (ignored) type parameters in references', () {
+        expect(referenceLookup(E, 'D<String>.new'),
+            equals(MatchingLinkResult(Dnew)));
+        expect(referenceLookup(constructorTearoffs, 'F<T>.new'),
+            equals(MatchingLinkResult(Fnew)));
+        expect(
+            referenceLookup(
+                constructorTearoffs, 'F<InvalidThings, DoNotMatterHere>.new'),
+            equals(MatchingLinkResult(Fnew)));
+      });
+
+      test('negative tests', () {
+        // Mixins do not have constructors.
+        expect(referenceLookup(constructorTearoffs, 'M.new'),
+            equals(MatchingLinkResult(null)));
+        // These things aren't expressions, parentheses are still illegal.
+        expect(referenceLookup(constructorTearoffs, '(C).new'),
+            equals(MatchingLinkResult(null)));
+
+        // A bare new will still not work to reference constructors.
+        // TODO(jcollins-g): reconsider this if we remove "new" as a hint.
+        expect(referenceLookup(A, 'new'), equals(MatchingLinkResult(null)));
+        expect(referenceLookup(At, 'new'), equals(MatchingLinkResult(null)));
+      });
     }, skip: !_constructorTearoffsAllowed.allows(utils.platformVersion));
   });
 
