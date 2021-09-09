@@ -9,7 +9,7 @@ in the Dart ecosystem.
 
 The Dart team builds docs for the [Dart API reference](https://api.dart.dev/)
 with each new version of the SDK, via
-[this script](https://github.com/dart-lang/sdk/blob/master/tools/bots/dart_sdk.py).
+[this script](https://github.com/dart-lang/sdk/blob/main/tools/bots/dart_sdk.py).
 Look for `BuildDartdocAPIDocs`.
 
 ## Flutter
