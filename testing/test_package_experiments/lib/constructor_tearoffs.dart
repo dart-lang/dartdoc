@@ -76,4 +76,6 @@ const aTearOffNonDefaultConstructorInt = F<int>.alternative;
 const aTearOffDefaultConstructorArgs = F<String>.new;
 
 const aTearOffDefaultConstructorTypedef = Fstring.new;
-const aTearOffDefaultConstructorArgsTypedef = Ft<String>.new;
+
+// TODO(jcollins-g): does not work @ analyzer 2.2
+//const aTearOffDefaultConstructorArgsTypedef = Ft<String>.new;
