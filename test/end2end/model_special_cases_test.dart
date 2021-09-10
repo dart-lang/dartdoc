@@ -228,6 +228,52 @@ void main() {
         expect(referenceLookup(A, 'new'), equals(MatchingLinkResult(null)));
         expect(referenceLookup(At, 'new'), equals(MatchingLinkResult(null)));
       });
+
+      test('constant rendering', () {
+        TopLevelVariable aFunc,
+            aFuncParams,
+            aTearOffDefaultConstructor,
+            aTearOffNonDefaultConstructor,
+            aTearOffNonDefaultConstructorInt,
+            aTearOffDefaultConstructorArgs;
+        TopLevelVariable aTearOffDefaultConstructorTypedef,
+            aTearOffDefaultConstructorArgsTypedef;
+        aFunc =
+            constructorTearoffs.constants.firstWhere((c) => c.name == 'aFunc');
+        aFuncParams = constructorTearoffs.constants
+            .firstWhere((c) => c.name == 'aFuncParams');
+        aTearOffDefaultConstructor = constructorTearoffs.constants
+            .firstWhere((c) => c.name == 'aTearOffDefaultConstructor');
+        aTearOffNonDefaultConstructor = constructorTearoffs.constants
+            .firstWhere((c) => c.name == 'aTearOffNonDefaultConstructor');
+        aTearOffNonDefaultConstructorInt = constructorTearoffs.constants
+            .firstWhere((c) => c.name == 'aTearOffNonDefaultConstructorInt');
+        aTearOffDefaultConstructorArgs = constructorTearoffs.constants
+            .firstWhere((c) => c.name == 'aTearOffDefaultConstructorArgs');
+        aTearOffDefaultConstructorTypedef = constructorTearoffs.constants
+            .firstWhere((c) => c.name == 'aTearOffDefaultConstructorTypedef');
+        aTearOffDefaultConstructorArgsTypedef = constructorTearoffs.constants
+            .firstWhere(
+                (c) => c.name == 'aTearOffDefaultConstructorArgsTypedef');
+
+        expect(aFunc.constantValue, equals('func'));
+        expect(aFuncParams.constantValue, equals('funcTypeParams'));
+        // Does not work @ analyzer 2.2
+        //expect(aFuncWithArgs.constantValue, equals('funcTypeParams&lt;String, int&gt;'));
+
+        expect(aTearOffDefaultConstructor.constantValue, equals('F.new'));
+        expect(aTearOffNonDefaultConstructor.constantValue,
+            equals('F.alternative'));
+        expect(aTearOffNonDefaultConstructorInt.constantValue,
+            equals('F&lt;int&gt;.alternative'));
+        expect(aTearOffDefaultConstructorArgs.constantValue,
+            equals('F&lt;String&gt;.new'));
+
+        expect(aTearOffDefaultConstructorTypedef.constantValue,
+            equals('Fstring.new'));
+        expect(aTearOffDefaultConstructorArgsTypedef.constantValue,
+            equals('Ft&lt;String&gt;.new'));
+      });
     }, skip: !_constructorTearoffsAllowed.allows(utils.platformVersion));
   });
 

@@ -46,6 +46,8 @@ class F<T> {
   F() {
     print('I too am a valid constructor invocation with this feature.');
   }
+
+  F.alternative() {}
 }
 
 typedef Ft = F;
@@ -59,3 +61,19 @@ typedef NotAClass = Function;
 /// Mixins don't have constructors either, so disallow `M.new`.
 mixin M<T> on C {
 }
+
+void func() {}
+void funcTypeParams<T extends String, U extends num>(T something, U different) {}
+
+const aFunc = func;
+const aFuncParams = funcTypeParams;
+// TODO(jcollins-g): does not work @ analyzer 2.2
+//const aFuncWithArgs = funcTypeParams<String, int>;
+
+const aTearOffDefaultConstructor = F.new;
+const aTearOffNonDefaultConstructor = F.alternative;
+const aTearOffNonDefaultConstructorInt = F<int>.alternative;
+const aTearOffDefaultConstructorArgs = F<String>.new;
+
+const aTearOffDefaultConstructorTypedef = Fstring.new;
+const aTearOffDefaultConstructorArgsTypedef = Ft<String>.new;
