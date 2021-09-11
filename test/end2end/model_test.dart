@@ -93,6 +93,16 @@ void main() {
         packageGraph.libraries.firstWhere((lib) => lib.name == 'base_class');
   });
 
+  group('PackageMeta and PackageGraph integration', () {
+    test('PackageMeta error messages generate correctly', () {
+      var message = packageGraph.packageMetaProvider
+          .getMessageForMissingPackageMeta(
+              fakeLibrary.element, packageGraph.config);
+      expect(message, contains('fake.dart'));
+      expect(message, contains('pub global activate dartdoc'));
+    });
+  });
+
   group('triple-shift', () {
     Library tripleShift;
     Class C, E, F;

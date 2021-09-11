@@ -44,13 +44,14 @@ void main() {
       sdkFolder = utils.writeMockSdkFiles(mockSdk);
 
       packageMetaProvider = PackageMetaProvider(
-        PubPackageMeta.fromElement,
-        PubPackageMeta.fromFilename,
-        PubPackageMeta.fromDir,
-        resourceProvider,
-        sdkFolder,
-        defaultSdk: mockSdk,
-      );
+          PubPackageMeta.fromElement,
+          PubPackageMeta.fromFilename,
+          PubPackageMeta.fromDir,
+          resourceProvider,
+          sdkFolder,
+          defaultSdk: mockSdk,
+          messageForMissingPackageMeta:
+              PubPackageMeta.messageForMissingPackageMeta);
       var optionSet = await DartdocOptionSet.fromOptionGenerators(
           'dartdoc', [createDartdocOptions], packageMetaProvider);
       optionSet.parseArguments([]);
