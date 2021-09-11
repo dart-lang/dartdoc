@@ -10,7 +10,7 @@ import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/generated/source_io.dart';
-import 'package:dartdoc/dartdoc.dart';
+import 'package:dartdoc/dartdoc.dart' show DartdocFailure;
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
