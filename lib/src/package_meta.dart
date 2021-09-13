@@ -44,7 +44,8 @@ final PackageMetaProvider pubPackageMetaProvider = PackageMetaProvider(
         .getFile(PhysicalResourceProvider.INSTANCE.pathContext
             .absolute(Platform.resolvedExecutable))
         .parent2
-        .parent2);
+        .parent2,
+    messageForMissingPackageMeta: PubPackageMeta.messageForMissingPackageMeta);
 
 /// Sets the supported way of constructing [PackageMeta] objects.
 ///
@@ -63,15 +64,32 @@ class PackageMetaProvider {
       _fromElement;
   final PackageMeta Function(String, ResourceProvider) _fromFilename;
   final PackageMeta Function(Folder, ResourceProvider) _fromDir;
+  final String Function(LibraryElement, DartdocOptionContext)
+      _messageForMissingPackageMeta;
 
   PackageMeta fromElement(LibraryElement library, String s) =>
       _fromElement(library, s, resourceProvider);
+
   PackageMeta fromFilename(String s) => _fromFilename(s, resourceProvider);
+
   PackageMeta fromDir(Folder dir) => _fromDir(dir, resourceProvider);
+
+  String getMessageForMissingPackageMeta(
+          LibraryElement library, DartdocOptionContext optionContext) =>
+      _messageForMissingPackageMeta(library, optionContext);
 
   PackageMetaProvider(this._fromElement, this._fromFilename, this._fromDir,
       this.resourceProvider, this.defaultSdkDir,
-      {this.defaultSdk});
+      {this.defaultSdk,
+      Function(LibraryElement, DartdocOptionContext)
+          messageForMissingPackageMeta})
+      : _messageForMissingPackageMeta = messageForMissingPackageMeta ??
+            _defaultMessageForMissingPackageMeta;
+
+  static String _defaultMessageForMissingPackageMeta(
+      LibraryElement library, DartdocOptionContext optionContext) {
+    return 'Unknown package for library: ${library.source.fullName}';
+  }
 }
 
 /// Describes a single package in the context of `dartdoc`.
@@ -253,6 +271,17 @@ abstract class PubPackageMeta extends PackageMeta {
       _packageMetaCache[pathContext.absolute(folder.path)] = packageMeta;
     }
     return _packageMetaCache[pathContext.absolute(folder.path)];
+  }
+
+  /// Create a helpful user error message for a case where a package can not
+  /// be found.
+  static String messageForMissingPackageMeta(
+      LibraryElement library, DartdocOptionContext optionContext) {
+    var libraryString = library.librarySource.fullName;
+    var dartOrFlutter = optionContext.flutterRoot == null ? 'dart' : 'flutter';
+    return 'Unknown package for library: $libraryString.  Consider `$dartOrFlutter pub get` and/or '
+        '`$dartOrFlutter pub global deactivate dartdoc` followed by `$dartOrFlutter pub global activate dartdoc` to fix. '
+        'Also, be sure that `$dartOrFlutter analyze` completes without errors.';
   }
 
   @override

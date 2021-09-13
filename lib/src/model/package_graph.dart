@@ -10,6 +10,7 @@ import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/generated/source_io.dart';
+import 'package:dartdoc/dartdoc.dart' show DartdocFailure;
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
@@ -63,6 +64,10 @@ class PackageGraph with CommentReferable, Nameable {
     var libraryElement = resolvedLibrary.element;
     var packageMeta =
         packageMetaProvider.fromElement(libraryElement, config.sdkDir);
+    if (packageMeta == null) {
+      throw DartdocFailure(packageMetaProvider.getMessageForMissingPackageMeta(
+          libraryElement, config));
+    }
     var lib = Library.fromLibraryResult(
         resolvedLibrary, this, Package.fromPackageMeta(packageMeta, this));
     packageMap[packageMeta.name].libraries.add(lib);
