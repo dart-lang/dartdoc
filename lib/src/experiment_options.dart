@@ -6,7 +6,7 @@
 
 ///
 /// Implementation of Dart language experiment option handling for dartdoc.
-/// See https://github.com/dart-lang/sdk/blob/master/docs/process/experimental-flags.md.
+/// See https://github.com/dart-lang/sdk/blob/main/docs/process/experimental-flags.md.
 ///
 library dartdoc.experiment_options;
 
