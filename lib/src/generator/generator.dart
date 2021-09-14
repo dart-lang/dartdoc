@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
-
 /// A library containing an abstract documentation generator.
 library dartdoc.generator;
 
@@ -45,7 +43,7 @@ abstract class Generator {
   Future<void> generate(PackageGraph packageGraph, FileWriter writer);
 }
 
-Future<List<DartdocOption<Object>>> createGeneratorOptions(
+Future<List<DartdocOption>> createGeneratorOptions(
     PackageMetaProvider packageMetaProvider) async {
   var resourceProvider = packageMetaProvider.resourceProvider;
   return [
@@ -73,16 +71,16 @@ Future<List<DartdocOption<Object>>> createGeneratorOptions(
             'Generates `index.json` with indentation and newlines. The file is '
             'larger, but it\'s also easier to diff.',
         negatable: false),
-    DartdocOptionArgFile<String>('favicon', null, resourceProvider,
+    DartdocOptionArgFile<String?>('favicon', null, resourceProvider,
         optionIs: OptionKind.file,
         help: 'A path to a favicon for the generated docs.',
         mustExist: true),
-    DartdocOptionArgOnly<String>('relCanonicalPrefix', null, resourceProvider,
+    DartdocOptionArgOnly<String?>('relCanonicalPrefix', null, resourceProvider,
         help:
             'If provided, add a rel="canonical" prefixed with provided value. '
             'Consider using if building many versions of the docs for public '
             'SEO; learn more at https://goo.gl/gktN6F.'),
-    DartdocOptionArgOnly<String>('templatesDir', null, resourceProvider,
+    DartdocOptionArgOnly<String?>('templatesDir', null, resourceProvider,
         optionIs: OptionKind.dir,
         mustExist: true,
         hide: true,
