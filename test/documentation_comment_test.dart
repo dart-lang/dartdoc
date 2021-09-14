@@ -52,6 +52,8 @@ void main() {
         resourceProvider,
         sdkFolder,
         defaultSdk: mockSdk,
+        messageForMissingPackageMeta:
+            PubPackageMeta.messageForMissingPackageMeta,
       );
       var optionSet = await DartdocOptionRoot.fromOptionGenerators(
           'dartdoc', [createDartdocOptions], packageMetaProvider);

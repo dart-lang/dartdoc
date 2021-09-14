@@ -95,6 +95,7 @@ PackageMetaProvider get testPackageMetaProvider {
     resourceProvider,
     sdkFolder,
     defaultSdk: mockSdk,
+    messageForMissingPackageMeta: PubPackageMeta.messageForMissingPackageMeta,
   );
 }
 

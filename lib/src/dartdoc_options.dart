@@ -1240,7 +1240,7 @@ class DartdocOptionContext extends DartdocOptionContextBase
   List<String> get excludePackages =>
       optionSet['excludePackages'].valueAt(context);
 
-  String get flutterRoot => optionSet['flutterRoot'].valueAt(context);
+  String? get flutterRoot => optionSet['flutterRoot'].valueAt(context);
 
   bool get hideSdkText => optionSet['hideSdkText'].valueAt(context);
 
