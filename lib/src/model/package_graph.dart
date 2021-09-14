@@ -20,6 +20,8 @@ import 'package:dartdoc/src/package_meta.dart'
     show PackageMeta, PackageMetaProvider;
 import 'package:dartdoc/src/render/renderer_factory.dart';
 import 'package:dartdoc/src/special_elements.dart';
+import 'package:dartdoc/src/tool_definition.dart';
+import 'package:dartdoc/src/tool_runner.dart';
 import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/warnings.dart';
 
@@ -35,6 +37,16 @@ class PackageGraph with CommentReferable, Nameable {
     // Make sure the default package exists, even if it has no libraries.
     // This can happen for packages that only contain embedder SDKs.
     Package.fromPackageMeta(packageMeta, this);
+  }
+
+  Future<void> dispose() async {
+    // Clear out any cached tool snapshots and temporary directories.
+    // TODO(jcollins-g): Consider ownership change for these objects
+    // so they are tied to PackageGraph instead of being global.
+    return Future.wait(<Future>[
+      SnapshotCache.instanceFor(config.resourceProvider).dispose(),
+      ToolTempFileTracker.instanceFor(config.resourceProvider).dispose(),
+    ]);
   }
 
   @override

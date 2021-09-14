@@ -23,8 +23,6 @@ import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/matching_link_result.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
-import 'package:dartdoc/src/tool_definition.dart';
-import 'package:dartdoc/src/tool_runner.dart';
 import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/utils.dart';
 import 'package:dartdoc/src/version.dart';
@@ -261,10 +259,8 @@ class Dartdoc {
       logInfo('Success! Docs generated into $outDirPath');
       return dartdocResults;
     } finally {
-      // Clear out any cached tool snapshots and temporary directories.
-      SnapshotCache.instanceFor(config.resourceProvider).dispose();
       // ignore: unawaited_futures
-      ToolTempFileTracker.instance?.dispose();
+      packageGraph.dispose();
     }
   }
 
