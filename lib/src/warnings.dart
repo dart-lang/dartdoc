@@ -405,7 +405,7 @@ class PackageWarningOptions {
           .forEach((PackageWarning kind) => newOptions.ignore(kind));
     }
     if (allowErrorsInPackages != null &&
-        !allowWarningsInPackages.contains(packageMeta.name)) {
+        !allowErrorsInPackages.contains(packageMeta.name)) {
       PackageWarning.values
           .forEach((PackageWarning kind) => newOptions.ignore(kind));
     }
