@@ -450,7 +450,7 @@ abstract class DartdocOption<T> {
 
   /// To avoid accessing early, call [add] on the option's parent before
   /// looking up unless this is a [DartdocRootOption].
-  late final DartdocOption parent;
+  late final DartdocOption<dynamic> parent;
 
   /// The [DartdocOptionRoot] containing this object.
   DartdocOptionRoot get root {
@@ -519,6 +519,9 @@ abstract class DartdocOption<T> {
   DartdocOption<dynamic> operator [](String name) {
     return _children[name]!;
   }
+
+  /// Get the immediate child of this node named [name] as a [DartdocOption<U>].
+  DartdocOption<U> getAs<U>(String name) => _children[name] as DartdocOption<U>;
 
   /// Apply the function [visit] to [this] and all children.
   void traverse(void Function(DartdocOption option) visit) {
