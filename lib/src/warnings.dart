@@ -531,14 +531,15 @@ class PackageWarningCounter {
 
   /// Adds the warning to the counter, and writes out the fullMessage string
   /// if configured to do so.
-  void addWarning(Warnable element, PackageWarning kind, String message,
+  void addWarning(Warnable? element, PackageWarning kind, String message,
       String fullMessage) {
     assert(!hasWarning(element, kind, message));
     // TODO(jcollins-g): Make addWarning not accept nulls for element.
     PackageWarningOptionContext config =
-        element.config ?? packageGraph.defaultPackage.config;
+        element?.config ?? packageGraph.defaultPackage.config;
     PackageWarningMode? warningMode;
-    if (!config.allowNonLocalWarnings && !(element.package.isLocal ?? true)) {
+    var isLocal = element?.package.isLocal ?? true;
+    if (!config.allowNonLocalWarnings && !isLocal) {
       warningMode = PackageWarningMode.ignore;
     } else {
       warningMode = config.packageWarningOptions.getMode(kind);
