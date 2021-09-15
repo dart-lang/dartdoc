@@ -549,12 +549,14 @@ class PackageWarningCounter {
     } else if (warningMode == PackageWarningMode.error) {
       _errorCount += 1;
     }
-    _countedWarnings
-        .putIfAbsent(element.element, () => {})
-        .putIfAbsent(kind, () => {})
-        .add(message);
-    _writeWarning(kind, warningMode, config.verboseWarnings,
-        element.fullyQualifiedName, fullMessage);
+    if (element != null) {
+      _countedWarnings
+          .putIfAbsent(element.element, () => {})
+          .putIfAbsent(kind, () => {})
+          .add(message);
+      _writeWarning(kind, warningMode, config.verboseWarnings,
+          element.fullyQualifiedName, fullMessage);
+    }
   }
 
   @override
