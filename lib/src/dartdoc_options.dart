@@ -516,7 +516,7 @@ abstract class DartdocOption<T> {
   void addAll(Iterable<DartdocOption> options) => options.forEach(add);
 
   /// Get the immediate child of this node named [name].
-  DartdocOption<dynamic> operator [](String name) {
+  DartdocOption operator [](String name) {
     return _children[name]!;
   }
 
