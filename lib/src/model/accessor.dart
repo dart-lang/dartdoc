@@ -100,10 +100,12 @@ class Accessor extends ModelElement implements EnclosedElement {
   }
 
   @override
-  void warn(PackageWarning kind,
-      {String message,
-      Iterable<Locatable> referredFrom,
-      Iterable<String> extendedDebug}) {
+  void warn(
+    PackageWarning kind, {
+    String message,
+    Iterable<Locatable> referredFrom = const [],
+    Iterable<String> extendedDebug = const [],
+  }) {
     enclosingCombo.warn(kind,
         message: message,
         referredFrom: referredFrom,
