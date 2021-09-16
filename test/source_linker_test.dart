@@ -53,6 +53,7 @@ void main() {
             excludes: [],
             lineNumber: 20,
             revision: '12345',
+            sourceFileName: 'path/to/file.dart',
           ).href();
       expect(sourceLinkerHref, throwsA(TypeMatcher<DartdocOptionError>()));
     });
