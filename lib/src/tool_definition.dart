@@ -244,7 +244,7 @@ class SnapshotCache {
     return snapshots[toolPath];
   }
 
-  Future<void> dispose() {
+  void dispose() {
     _instances.remove(_resourceProvider);
     if (snapshotCache != null && snapshotCache.exists) {
       snapshotCache.delete();

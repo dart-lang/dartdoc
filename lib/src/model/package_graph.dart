@@ -39,14 +39,12 @@ class PackageGraph with CommentReferable, Nameable {
     Package.fromPackageMeta(packageMeta, this);
   }
 
-  Future<void> dispose() async {
+  void dispose() {
     // Clear out any cached tool snapshots and temporary directories.
     // TODO(jcollins-g): Consider ownership change for these objects
     // so they are tied to PackageGraph instead of being global.
-    return Future.wait(<Future>[
-      SnapshotCache.instanceFor(config.resourceProvider).dispose(),
-      ToolTempFileTracker.instanceFor(config.resourceProvider).dispose(),
-    ]);
+    SnapshotCache.instanceFor(config.resourceProvider).dispose();
+    ToolTempFileTracker.instanceFor(config.resourceProvider).dispose();
   }
 
   @override

@@ -44,9 +44,9 @@ class ToolTempFileTracker {
   }
 
   /// Call once no more files are to be created.
-  Future<void> dispose() async {
+  void dispose() {
     if (temporaryDirectory.exists) {
-      return temporaryDirectory.delete();
+      temporaryDirectory.delete();
     }
   }
 }

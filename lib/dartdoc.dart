@@ -192,12 +192,15 @@ class Dartdoc {
 
   Stream<String> get onCheckProgress => _onCheckProgress.stream;
 
+  @Deprecated('Will be removed in 4.0.0. '
+      'Use the return value from generateDocsBase instead.')
   PackageGraph packageGraph;
 
   @visibleForTesting
   Future<DartdocResults> generateDocsBase() async {
     var stopwatch = Stopwatch()..start();
-    packageGraph = await packageBuilder.buildPackageGraph();
+    var packageGraph = await packageBuilder.buildPackageGraph();
+    this.packageGraph = packageGraph;
     var seconds = stopwatch.elapsedMilliseconds / 1000.0;
     var libs = packageGraph.libraries.length;
     logInfo("Initialized dartdoc with $libs librar${libs == 1 ? 'y' : 'ies'} "
@@ -241,10 +244,11 @@ class Dartdoc {
   /// thrown if dartdoc fails in an expected way, for example if there is an
   /// analysis error in the code.
   Future<DartdocResults> generateDocs() async {
+    DartdocResults dartdocResults;
     try {
       logInfo('Documenting ${config.topLevelPackageMeta}...');
 
-      var dartdocResults = await generateDocsBase();
+      dartdocResults = await generateDocsBase();
       if (dartdocResults.packageGraph.localPublicLibraries.isEmpty) {
         logWarning('dartdoc could not find any libraries to document');
       }
@@ -259,8 +263,7 @@ class Dartdoc {
       logInfo('Success! Docs generated into $outDirPath');
       return dartdocResults;
     } finally {
-      // ignore: unawaited_futures
-      packageGraph.dispose();
+      dartdocResults?.packageGraph?.dispose();
     }
   }
 
