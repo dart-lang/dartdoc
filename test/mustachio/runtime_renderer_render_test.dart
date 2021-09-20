@@ -571,10 +571,8 @@ line 1, column 9 of ${fooTemplateFile.path}: Failed to resolve 's2' as a propert
     var barTemplateFile = getFile('/project/src/bar.mustache');
     expect(
         () async => await Template.parse(barTemplateFile),
-        throwsA(const TypeMatcher<FileSystemException>().having(
-            (e) => e.message,
-            'message',
-            contains('"${barTemplateFile.path}" does not exist.'))));
+        throwsA(const TypeMatcher<FileSystemException>()
+            .having((e) => e.message, 'message', contains('does not exist.'))));
   });
 
   test('Template parser throws when it cannot read a partial', () async {
