@@ -448,7 +448,6 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
       if (returnType is InterfaceType) {
         _writeProperty(renderer, property, returnType);
       } else if (returnType is TypeParameterType &&
-          //returnType.bound != null &&
           !returnType.bound.isDynamic) {
         _writeProperty(renderer, property, returnType.bound as InterfaceType);
       }
