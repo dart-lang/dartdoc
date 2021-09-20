@@ -29,11 +29,7 @@ elif [ "$DARTDOC_BOT" = "flutter" ]; then
   pub run grinder validate-flutter-docs
 elif [ "$DARTDOC_BOT" = "packages" ]; then
   echo "Running packages dartdoc bot"
-  if [ ${DART_VERSION} != 2.2.0 ] ; then
-    PACKAGE_NAME=angular PACKAGE_VERSION=">=5.1.0" DARTDOC_PARAMS="--include=angular,angular.security" pub run grinder build-pub-package
-  else
-    PACKAGE_NAME=angular PACKAGE_VERSION=">=5.0.0-beta <5.1.0" DARTDOC_PARAMS="--include=angular,angular.security" pub run grinder build-pub-package
-  fi
+  PACKAGE_NAME=angular PACKAGE_VERSION=">=7.0.0" DARTDOC_PARAMS="--include=angular" pub run grinder build-pub-package
   PACKAGE_NAME=access PACKAGE_VERSION=">=1.0.1+2" pub run grinder build-pub-package
   # Negative test for flutter_plugin_tools, make sure right error message is displayed.
   PACKAGE_NAME=flutter_plugin_tools PACKAGE_VERSION=">=0.0.14+1" pub run grinder build-pub-package 2>&1 | grep "warning: package:flutter_plugin_tools has no documentable libraries"

@@ -573,24 +573,26 @@ line 1, column 9 of ${fooTemplateFile.path}: Failed to resolve 's2' as a propert
     var barTemplateFile = getFile('/project/src/bar.mustache');
     expect(
         () async => await Template.parse(barTemplateFile),
-        throwsA(const TypeMatcher<FileSystemException>().having(
-            (e) => e.message,
-            'message',
-            contains('"${barTemplateFile.path}" does not exist.'))));
+        throwsA(const TypeMatcher<FileSystemException>()
+            .having((e) => e.message, 'message', contains('does not exist.'))));
   });
 
   test('Template parser throws when it cannot read a partial', () async {
     var barTemplateFile = getFile('/project/src/bar.mustache')
       ..writeAsStringSync('Text {{#foo}}{{>missing.mustache}}{{/foo}}');
-    var missingTemplateFile = getFile('/project/src/missing.mustache');
     expect(
         () async => await Template.parse(barTemplateFile),
-        throwsA(const TypeMatcher<MustachioResolutionError>()
-            .having((e) => e.message, 'message', contains('''
-line 1, column 14 of ${barTemplateFile.path}: FileSystemException (File "${missingTemplateFile.path}" does not exist.) when reading partial:
+        throwsA(const TypeMatcher<MustachioResolutionError>().having(
+            (e) => e.message,
+            'message',
+            allOf(
+                contains('''
+line 1, column 14 of ${barTemplateFile.path}: FileSystemException'''),
+                contains('''does not exist.'''),
+                contains('''when reading partial:
   ╷
 1 │ Text {{#foo}}{{>missing.mustache}}{{/foo}}
   │              ^^^^^^^^^^^^^^^^^^^^^
-'''))));
+''')))));
   });
 }
