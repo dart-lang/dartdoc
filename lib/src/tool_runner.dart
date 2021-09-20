@@ -25,13 +25,11 @@ class ToolTempFileTracker {
       : temporaryDirectory =
             resourceProvider.createSystemTemp('dartdoc_tools_');
 
-  static ToolTempFileTracker _instance;
+  static final Map<ResourceProvider, ToolTempFileTracker> _instances = {};
 
-  static ToolTempFileTracker get instance => _instance;
-
-  static ToolTempFileTracker createInstance(
-          ResourceProvider resourceProvider) =>
-      _instance ??= ToolTempFileTracker._(resourceProvider);
+  static ToolTempFileTracker instanceFor(ResourceProvider resourceProvider) =>
+      _instances.putIfAbsent(
+          resourceProvider, () => ToolTempFileTracker._(resourceProvider));
 
   int _temporaryFileCount = 0;
 
@@ -46,9 +44,9 @@ class ToolTempFileTracker {
   }
 
   /// Call once no more files are to be created.
-  Future<void> dispose() async {
+  void dispose() {
     if (temporaryDirectory.exists) {
-      return temporaryDirectory.delete();
+      temporaryDirectory.delete();
     }
   }
 }
@@ -219,8 +217,8 @@ class ToolRunner {
     // file before running the tool synchronously.
 
     // Write the content to a temp file.
-    var tmpFile = ToolTempFileTracker.createInstance(resourceProvider)
-        .createTemporaryFile();
+    var tmpFile =
+        ToolTempFileTracker.instanceFor(resourceProvider).createTemporaryFile();
     tmpFile.writeAsStringSync(content);
     return pathContext.absolute(tmpFile.path);
   }
