@@ -5,7 +5,6 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:dartdoc/src/element_type.dart';
-import 'package:dartdoc/src/model/class.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/extension_target.dart';
 import 'package:dartdoc/src/model/model.dart';
