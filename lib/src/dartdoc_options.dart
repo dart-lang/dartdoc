@@ -242,7 +242,7 @@ class ToolConfiguration {
             setupCommand;
       }
       newToolDefinitions[name] = ToolDefinition.fromCommand(
-          [executable] + command, setupCommand, description, resourceProvider,
+          [executable] + command, setupCommand ?? const [], description, resourceProvider,
           compileArgs: compileArgs ?? const []);
     }
     return ToolConfiguration._(newToolDefinitions, resourceProvider);

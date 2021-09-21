@@ -23,8 +23,8 @@ class ToolDefinition {
   /// A list containing the command and options to setup phase for this tool.
   /// The first argument in the command is the tool executable, and will have
   /// its path evaluated relative to the `dartdoc_options.yaml` location. May
-  /// be null or empty, in which case it will be ignored at setup time.
-  final List<String>? setupCommand;
+  /// be empty, in which case it will be ignored at setup time.
+  final List<String> setupCommand;
 
   /// A description of the defined tool. Must not be null.
   final String description;
@@ -43,7 +43,7 @@ class ToolDefinition {
   /// given.
   factory ToolDefinition.fromCommand(
       List<String> command,
-      List<String>? setupCommand,
+      List<String> setupCommand,
       String description,
       ResourceProvider resourceProvider,
       {List<String>? compileArgs}) {
@@ -68,10 +68,9 @@ class ToolDefinition {
 
   @override
   String toString() {
-    var setupCommand = this.setupCommand;
     final commandString =
         '${this is DartToolDefinition ? '(Dart) ' : ''}"${command.join(' ')}"';
-    if (setupCommand == null) {
+    if (setupCommand.isEmpty) {
       return '$runtimeType: $commandString ($description)';
     } else {
       return '$runtimeType: $commandString, with setup command '
@@ -140,7 +139,7 @@ class DartToolDefinition extends ToolDefinition {
     }
   }
 
-  DartToolDefinition(List<String> command, List<String>? setupCommand,
+  DartToolDefinition(List<String> command, List<String> setupCommand,
       String description, this._resourceProvider,
       {this.compileArgs = const []})
       : super(command, setupCommand, description);
