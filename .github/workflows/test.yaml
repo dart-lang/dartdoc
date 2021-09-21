@@ -39,13 +39,11 @@ jobs:
 
     steps:
       - name: Set current date as env variable
-          id: get-date
-          run: |
-            echo "::set-output name=date::$(/bin/date -u "+%Y%m%d")"
+          run: echo "date=$(date -u '+%Y%m%d')" >> $GITHUB_ENV
           shell: bash
-      - name: Cache grinder's clean flutter
-        if: matrix.job == 'flutter'
+      - name: Cache clean flutter
         uses: actions/cache@v2
+        if: matrix.job == 'flutter'
         env:
           # Increment version to invalidate bad/obsolete caches.
           cache-name: cache-grinder-flutter-v1
@@ -53,8 +51,8 @@ jobs:
           path: ~/.dartdoc_grinder
           key: ${{ runner.os }}-test-${{ env.cache-name }}-${{ env.date }}
       - name: Cache .pub-cache
-        if: matrix.job == 'flutter'
         uses: actions/cache@v2
+        if: matrix.job == 'flutter'
         env:
           # Increment version to invalidate bad/obsolete caches.
           cache-name: cache-dart-pub-v1
