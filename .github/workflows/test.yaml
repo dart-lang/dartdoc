@@ -38,8 +38,9 @@ jobs:
             job: sdk-analyzer
 
     steps:
-      - name: Set current date as env variable
-          run: echo "date=$(date -u '+%Y%m%d')" >> $GITHUB_ENV
+      - name: Store current date
+          id: date
+          run: echo "::set-output name=today::$(date +'%Y-%m-%d')"
           shell: bash
       - name: Cache clean flutter
         uses: actions/cache@v2
@@ -49,7 +50,7 @@ jobs:
           cache-name: cache-grinder-flutter-v1
         with:
           path: ~/.dartdoc_grinder
-          key: ${{ runner.os }}-test-${{ env.cache-name }}-${{ env.date }}
+          key: ${{ runner.os }}-test-${{ env.cache-name }}-${{ steps.date.outputs.today }}
       - name: Cache .pub-cache
         uses: actions/cache@v2
         if: matrix.job == 'flutter'
@@ -58,7 +59,7 @@ jobs:
           cache-name: cache-dart-pub-v1
         with:
           path: ~/.pub-cache
-          key: ${{ runner.os }}-test-${{ env.cache-name }}-${{ env.date }}
+          key: ${{ runner.os }}-test-${{ env.cache-name }}-${{ steps.date.outputs.today }}
       - name: Configure git
         if: runner.os == 'Windows'
         run: git config --global core.autocrlf input
