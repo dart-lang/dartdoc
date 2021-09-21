@@ -38,10 +38,10 @@ jobs:
             job: sdk-analyzer
 
     steps:
-      - name: Store current date
-          id: date
-          run: echo "::set-output name=today::$(date +'%Y-%m-%d')"
-          shell: bash
+      - name: Store date
+        id: date
+        run: echo "::set-output name=today::$(date +'%Y-%m-%d')"
+        shell: bash
       - name: Cache clean flutter
         uses: actions/cache@v2
         if: matrix.job == 'flutter'
