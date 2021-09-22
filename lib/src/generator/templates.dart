@@ -27,8 +27,9 @@
 library dartdoc.templates;
 
 import 'package:analyzer/file_system/file_system.dart';
-import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/options.dart';
+import 'package:dartdoc/src/element_type.dart';
+import 'package:dartdoc/src/failure.dart';
 import 'package:dartdoc/src/generator/resource_loader.dart';
 import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/src/generator/templates.aot_renderers_for_html.dart'
@@ -40,6 +41,7 @@ import 'package:dartdoc/src/generator/templates.runtime_renderers.dart'
 import 'package:dartdoc/src/model/annotation.dart';
 import 'package:dartdoc/src/model/feature_set.dart';
 import 'package:dartdoc/src/model/language_feature.dart';
+import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/mustachio/annotations.dart';
 import 'package:dartdoc/src/mustachio/renderer_base.dart';
 import 'package:meta/meta.dart';

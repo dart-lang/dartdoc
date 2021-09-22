@@ -88,7 +88,7 @@ Future<FlutterRepo> get cleanFlutterRepo async {
           int.parse(lastSynced.readAsStringSync()));
     }
     if (lastSyncedTime == null ||
-        DateTime.now().difference(lastSyncedTime) > Duration(hours: 4)) {
+        DateTime.now().difference(lastSyncedTime) > Duration(hours: 24)) {
       // Rebuild the repository.
       if (cleanFlutterDir.existsSync()) {
         cleanFlutterDir.deleteSync(recursive: true);
@@ -185,7 +185,12 @@ final Directory flutterDirDevTools =
 Map<String, String> _createThrowawayPubCache() {
   var pubCache = Directory.systemTemp.createTempSync('pubcache');
   var pubCacheBin = Directory(path.join(pubCache.path, 'bin'));
-  pubCacheBin.createSync();
+  var defaultCache = Directory(defaultPubCache);
+  if (defaultCache.existsSync()) {
+    copy(defaultCache, pubCache);
+  } else {
+    pubCacheBin.createSync();
+  }
   return Map.fromIterables([
     'PUB_CACHE',
     'PATH'
@@ -873,11 +878,6 @@ class FlutterRepo {
     await launcher.runStreamed(
       bin,
       ['--version'],
-      workingDirectory: flutterPath,
-    );
-    await launcher.runStreamed(
-      bin,
-      ['precache'],
       workingDirectory: flutterPath,
     );
     await launcher.runStreamed(

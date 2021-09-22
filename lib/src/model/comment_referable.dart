@@ -11,7 +11,8 @@ import 'dart:core';
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/scope.dart';
-import 'package:dartdoc/dartdoc.dart';
+import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/model/package_graph.dart';
 import 'package:meta/meta.dart';
 
 class ReferenceChildrenLookup {
