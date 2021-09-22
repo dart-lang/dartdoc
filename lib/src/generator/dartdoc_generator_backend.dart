@@ -3,12 +3,14 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/file_system/file_system.dart';
-import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/options.dart';
+import 'package:dartdoc/src/generator/generator.dart';
 import 'package:dartdoc/src/generator/generator_frontend.dart';
 import 'package:dartdoc/src/generator/generator_utils.dart' as generator_util;
 import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/src/generator/templates.dart';
+import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/version.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:path/path.dart' as path show Context;
 
@@ -39,7 +41,7 @@ class DartdocGeneratorBackendOptions implements TemplateOptions {
   DartdocGeneratorBackendOptions.fromContext(
       DartdocGeneratorOptionContext context)
       : relCanonicalPrefix = context.relCanonicalPrefix,
-        toolVersion = dartdocVersion,
+        toolVersion = packageVersion,
         favicon = context.favicon,
         prettyIndexJson = context.prettyIndexJson,
         useBaseHref = context.useBaseHref,

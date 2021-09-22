@@ -15,6 +15,7 @@ import 'dart:io' show Platform, exitCode, stderr;
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/options.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
+import 'package:dartdoc/src/failure.dart';
 import 'package:dartdoc/src/generator/empty_generator.dart';
 import 'package:dartdoc/src/generator/generator.dart';
 import 'package:dartdoc/src/generator/html_generator.dart';
@@ -525,17 +526,6 @@ class Dartdoc {
       ),
     );
   }
-}
-
-/// This class is returned if dartdoc fails in an expected way (for instance, if
-/// there is an analysis error in the library).
-class DartdocFailure {
-  final String message;
-
-  DartdocFailure(this.message);
-
-  @override
-  String toString() => message;
 }
 
 /// The results of a [Dartdoc.generateDocs] call.
