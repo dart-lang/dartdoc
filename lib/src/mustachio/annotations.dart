@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
-
 // See the Mustachio README at tool/mustachio/README.md for high-level
 // documentation.
 
@@ -95,7 +93,7 @@ class RendererSpec {
 
   final String standardMdTemplate;
 
-  final Map<TemplateFormat, Uri> standardTemplateUris;
+  final Map<TemplateFormat, Uri?> standardTemplateUris;
 
   RendererSpec(
     this.name,
@@ -111,8 +109,8 @@ class RendererSpec {
   /// Parses a URI from a String which comes from a const annotation object.
   ///
   /// The String value may be the literal value, 'null'.
-  static Uri _parseUriFromAnnotation(String unparsed) =>
-      unparsed == 'null' || unparsed == null ? null : Uri.parse(unparsed);
+  static Uri? _parseUriFromAnnotation(String unparsed) =>
+      unparsed == 'null' ? null : Uri.parse(unparsed);
 
   ClassElement get contextElement => contextType.element;
 }

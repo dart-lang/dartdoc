@@ -2,14 +2,13 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
-
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/dart/element/type_provider.dart';
 import 'package:analyzer/dart/element/type_system.dart';
 import 'package:build/build.dart';
 import 'package:code_builder/code_builder.dart';
+import 'package:collection/collection.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:dartdoc/src/mustachio/annotations.dart';
 import 'package:dartdoc/src/mustachio/parser.dart';
@@ -118,7 +117,7 @@ class _AotCompiler {
     String rendererName,
     AssetId templateAssetId,
     _BuildData buildData, {
-    List<_VariableLookup> contextStack,
+    List<_VariableLookup> contextStack = const [],
   }) async {
     var template = await buildData._buildStep.readAsString(templateAssetId);
     var syntaxTree = MustachioParser(template, templateAssetId.uri).parse();
@@ -133,9 +132,9 @@ class _AotCompiler {
     this._templateAssetId,
     this._syntaxTree,
     this._buildData, {
-    List<_VariableLookup> contextStack,
-  })  : _contextStack = _rename(contextStack ?? []),
-        _contextNameCounter = contextStack?.length ?? 0;
+    required List<_VariableLookup> contextStack,
+  })  : _contextStack = _rename(contextStack),
+        _contextNameCounter = contextStack.length;
 
   /// Returns a copy of [original], replacing each variable's name with
   /// `context0` through `contextN` for `N` variables.
@@ -172,15 +171,16 @@ class _AotCompiler {
     var typeParameters = <TypeReference>[];
     for (var context in _contextStack) {
       for (var typeParameter in context.type.element.typeParameters) {
-        if (typeParameter.bound == null) {
+        var bound = typeParameter.bound;
+        if (bound == null) {
           typeParameters
               .add(TypeReference((b) => b..symbol = typeParameter.name));
         } else {
-          var bound = typeParameter.bound.element;
-          var boundUri = await _elementUri(bound);
+          var boundElement = bound.element!;
+          var boundUri = await _elementUri(boundElement);
           typeParameters.add(TypeReference((b) => b
             ..symbol = typeParameter.name
-            ..bound = refer(bound.name, boundUri)));
+            ..bound = refer(boundElement.name!, boundUri)));
         }
       }
     }
@@ -222,12 +222,13 @@ return buffer.toString();
 
   /// Returns the URI of [element] for use in generated import directives.
   Future<String> _elementUri(Element element) async {
-    if (element.library.isInSdk) {
-      return element.library.source.uri.toString();
+    var libraryElement = element.library!;
+    if (libraryElement.isInSdk) {
+      return libraryElement.source.uri.toString();
     }
 
     var typeAssetId =
-        await _buildData._buildStep.resolver.assetIdForElement(element.library);
+        await _buildData._buildStep.resolver.assetIdForElement(libraryElement);
     if (typeAssetId.path.startsWith('lib/')) {
       return typeAssetId.uri.toString();
     } else {
@@ -298,9 +299,8 @@ class _BlockCompiler {
     path.add('_$fileName.$extension');
     var partialAssetId = AssetId.resolve(Uri.parse(path.join('/')),
         from: _templateCompiler._templateAssetId);
-    var partialRenderer = _templateCompiler._partialCompilers.firstWhere(
-        (p) => p._templateAssetId == partialAssetId,
-        orElse: () => null);
+    var partialRenderer = _templateCompiler._partialCompilers
+        .firstWhereOrNull((p) => p._templateAssetId == partialAssetId);
     if (partialRenderer == null) {
       var sanitizedKey = node.key.replaceAll('.', '_').replaceAll('/', '_');
       var name = '${partialBaseName}_'
@@ -324,11 +324,6 @@ class _BlockCompiler {
   /// Compiles [node] into a renderer's Dart source.
   Future<void> _compileSection(Section node) async {
     var variableLookup = _lookUpGetter(node);
-    if (variableLookup == null) {
-      throw MustachioResolutionError(node.keySpan.message(
-          "Failed to resolve '${node.key}' as a property on the context type:"
-          '$contextType'));
-    }
     if (variableLookup.type.isDartCoreBool) {
       // Conditional block.
       await _compileConditionalSection(variableLookup, node.children,
@@ -382,8 +377,8 @@ class _BlockCompiler {
       // determine that the inner type of the loop is, for example,
       // `Future<int>`.
       var iterableElement = typeProvider.iterableElement;
-      var iterableType = variableLookup.type.asInstanceOf(iterableElement);
-      var innerContextType = iterableType.typeArguments.first;
+      var iterableType = variableLookup.type.asInstanceOf(iterableElement)!;
+      var innerContextType = iterableType.typeArguments.first as InterfaceType;
       var innerContext = _VariableLookup(innerContextType, newContextName);
       _contextStack.push(innerContext);
       await _compile(block);
@@ -449,7 +444,7 @@ class _BlockCompiler {
         type = getter.returnType;
         contextChain = '$contextChain.$secondaryKey';
       }
-      return _VariableLookup(type, contextChain);
+      return _VariableLookup(type as InterfaceType, contextChain);
     }
 
     var contextTypes = [

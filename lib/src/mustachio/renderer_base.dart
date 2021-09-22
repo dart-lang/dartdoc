@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
-
 // See the Mustachio README at tool/mustachio/README.md for high-level
 // documentation.
 
@@ -48,9 +46,9 @@ class Template {
   final Map<File, Template> partialTemplates;
 
   Template._(
-      {@required this.ast,
-      @required this.partials,
-      @required this.partialTemplates});
+      {required this.ast,
+      required this.partials,
+      required this.partialTemplates});
 
   /// Parses [file] as a Mustache template, returning a [Template].
   ///
@@ -69,8 +67,8 @@ class Template {
   /// the directory containing `p1.html`, not relative to the top-level
   /// template), as `/foo/partials/p2.html`.
   static Future<Template> parse(File file,
-      {PartialResolver partialResolver,
-      @internal Map<File, Template> partialTemplates}) async {
+      {PartialResolver? partialResolver,
+      @internal Map<File, Template>? partialTemplates}) async {
     partialTemplates ??= <File, Template>{};
     if (partialResolver == null) {
       var pathContext = file.provider.pathContext;
@@ -113,7 +111,7 @@ class Template {
         if (!partials.containsKey(key)) {
           partials[key] = await partialResolver(key);
         }
-        var partialFile = partials[key];
+        var partialFile = partials[key]!;
         if (!partialTemplates.containsKey(partialFile)) {
           try {
             var partialTemplate = await Template.parse(partialFile,
@@ -139,7 +137,7 @@ abstract class RendererBase<T> {
   final T context;
 
   /// The renderer of the parent context, if any, otherwise `null`.
-  final RendererBase parent;
+  final RendererBase? parent;
 
   /// The current template being rendered.
   ///
@@ -165,12 +163,12 @@ abstract class RendererBase<T> {
   void write(String text) => sink.write(text);
 
   String get contextChainString =>
-      parent == null ? '$T' : '${parent.contextChainString} > $T';
+      parent == null ? '$T' : '${parent!.contextChainString} > $T';
 
   /// Returns the [Property] on this renderer named [name].
   ///
   /// If no property named [name] exists for this renderer, `null` is returned.
-  Property<T> getProperty(String key);
+  Property<T>? getProperty(String key);
 
   /// Resolves [names] into one or more field accesses, returning the result as
   /// a String.
@@ -186,8 +184,8 @@ abstract class RendererBase<T> {
     var firstName = names.first;
     try {
       var property = getProperty(firstName);
+      var remainingNames = [...names.skip(1)];
       if (property != null) {
-        var remainingNames = [...names.skip(1)];
         try {
           return property.renderVariable(context, property, remainingNames);
         } on PartialMustachioResolutionError catch (e) {
@@ -205,7 +203,7 @@ abstract class RendererBase<T> {
     }
 
     if (parent != null) {
-      return parent.getFields(node);
+      return parent!.getFields(node);
     } else {
       throw MustachioResolutionError(node.keySpan.message(
           "Failed to resolve '${names.first}' as a property on any types in the "
@@ -242,21 +240,22 @@ abstract class RendererBase<T> {
             "Failed to resolve '$key' as a property on any types in the "
             'current context'));
       } else {
-        return parent.section(node);
+        return parent!.section(node);
       }
     }
 
-    if (property.getBool != null) {
-      var boolResult = property.getBool(context);
+    var getBool = property.getBool;
+    if (getBool != null) {
+      var boolResult = getBool(context);
       if ((boolResult && !node.invert) || (!boolResult && node.invert)) {
         renderBlock(node.children);
       }
       return;
     }
 
-    if (property.renderIterable != null) {
-      var renderedIterable =
-          property.renderIterable(context, this, node.children, sink);
+    var renderIterable = property.renderIterable;
+    if (renderIterable != null) {
+      var renderedIterable = renderIterable(context, this, node.children, sink);
       if (node.invert && renderedIterable.isEmpty) {
         // An inverted section is rendered with the current context.
         renderBlock(node.children);
@@ -270,17 +269,18 @@ abstract class RendererBase<T> {
 
     // If this section is not a conditional or repeated section, it is a value
     // section, regardless of type.
-    if (node.invert && property.isNullValue(context)) {
+    var isNullValue = property.isNullValue!;
+    if (node.invert && isNullValue(context)) {
       renderBlock(node.children);
-    } else if (!node.invert && !property.isNullValue(context)) {
-      property.renderValue(context, this, node.children, sink);
+    } else if (!node.invert && !isNullValue(context)) {
+      property.renderValue!(context, this, node.children, sink);
     }
   }
 
   void partial(Partial node) {
     var key = node.key;
     var partialFile = template.partials[key];
-    var partialTemplate = template.partialTemplates[partialFile];
+    var partialTemplate = template.partialTemplates[partialFile]!;
     var outerTemplate = _template;
     _template = partialTemplate;
     renderBlock(partialTemplate.ast);
@@ -289,8 +289,13 @@ abstract class RendererBase<T> {
 }
 
 String renderSimple(
-    Object context, List<MustachioNode> ast, Template template, StringSink sink,
-    {@required RendererBase parent, Set<String> getters}) {
+  Object context,
+  List<MustachioNode> ast,
+  Template template,
+  StringSink sink, {
+  required RendererBase<Object> parent,
+  required Set<String> getters,
+}) {
   var renderer = SimpleRenderer(context, parent, template, sink, getters);
   renderer.renderBlock(ast);
   return renderer.sink.toString();
@@ -307,7 +312,7 @@ class SimpleRenderer extends RendererBase<Object> {
             invisibleGetters: invisibleGetters);
 
   @override
-  Property<Object> getProperty(String key) {
+  Property<Object>? getProperty(String key) {
     if (_invisibleGetters.contains(key)) {
       throw MustachioResolutionError(_failedKeyVisibilityMessage(key));
     } else {
@@ -324,7 +329,7 @@ class SimpleRenderer extends RendererBase<Object> {
     } else if (_invisibleGetters.contains(firstName)) {
       throw MustachioResolutionError(_failedKeyVisibilityMessage(firstName));
     } else if (parent != null) {
-      return parent.getFields(node);
+      return parent!.getFields(node);
     } else {
       return 'null';
     }
@@ -345,34 +350,32 @@ class SimpleRenderer extends RendererBase<Object> {
 @immutable
 class Property<T> {
   /// Gets the value of this property on the object [context].
-  final Object /*?*/ Function(T context) /*!*/ getValue;
+  final Object? Function(T context) getValue;
 
-  final String /*!*/ Function(
-      T, Property<T>, List<String> /*!*/) /*?*/ renderVariable;
+  final String Function(T, Property<T>, List<String>) renderVariable;
 
   /// Gets the bool value (true or false, never null) of this property on the
   /// object [context].
-  final bool /*!*/ Function(T context) /*?*/ getBool;
+  final bool Function(T context)? getBool;
 
-  final Iterable<void> /*!*/ Function(
-          T, RendererBase<T>, List<MustachioNode> /*!*/, StringSink /*!*/) /*?*/
-      renderIterable;
+  final Iterable<void> Function(
+      T, RendererBase<T>, List<MustachioNode>, StringSink)? renderIterable;
 
-  final bool /*!*/ Function(T) /*?*/ isNullValue;
+  final bool Function(T)? isNullValue;
 
-  final void /*!*/ Function(T, RendererBase<T>, List<MustachioNode> /*!*/,
-      StringSink /*!*/) /*?*/ renderValue;
+  final void Function(T, RendererBase<T>, List<MustachioNode>, StringSink)?
+      renderValue;
 
   Property(
-      {@required this.getValue,
-      this.renderVariable,
+      {required this.getValue,
+      required this.renderVariable,
       this.getBool,
       this.renderIterable,
       this.isNullValue,
       this.renderValue});
 
-  String /*!*/ renderSimpleVariable(
-      T c, List<String> /*!*/ remainingNames, String /*!*/ typeString) {
+  String renderSimpleVariable(
+      T c, List<String> remainingNames, String typeString) {
     if (remainingNames.isEmpty) {
       return getValue(c).toString();
     } else {
@@ -421,7 +424,7 @@ class _MustachioResolutionErrorWithoutSpan extends Error {
 extension MapExtensions<T> on Map<String, Property<T>> {
   Property<T> getValue(String name) {
     if (containsKey(name)) {
-      return this[name];
+      return this[name]!;
     } else {
       throw PartialMustachioResolutionError(name, T);
     }
