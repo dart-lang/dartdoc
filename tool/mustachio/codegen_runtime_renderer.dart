@@ -549,10 +549,8 @@ renderIterable:
         String renderCall;
         if (renderFunctionName == null) {
           var typeName = getterType.element.name;
-          if (getterType is InterfaceType) {
-            _invisibleGetters.putIfAbsent(
-                typeName, () => getterType.element.allAccessorNames);
-          }
+          _invisibleGetters.putIfAbsent(
+              typeName, () => getterType.element.allAccessorNames);
           renderCall =
               'renderSimple(c.$getterName, ast, r.template, sink, parent: r, '
               "getters: _invisibleGetters['$typeName'])";
