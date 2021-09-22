@@ -8,10 +8,15 @@ import 'dart:async';
 
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/memory_file_system.dart';
-import 'package:dartdoc/dartdoc.dart';
+import 'package:dartdoc/dartdoc.dart' show Dartdoc, DartdocFileWriter;
 import 'package:dartdoc/options.dart';
+import 'package:dartdoc/src/dartdoc_options.dart';
+import 'package:dartdoc/src/generator/generator.dart';
 import 'package:dartdoc/src/generator/html_generator.dart';
 import 'package:dartdoc/src/io_utils.dart';
+import 'package:dartdoc/src/model/package_builder.dart';
+import 'package:dartdoc/src/package_config_provider.dart';
+import 'package:dartdoc/src/package_meta.dart';
 import 'package:test/test.dart';
 
 /// Convenience factory to build a [DartdocGeneratorOptionContext] and associate

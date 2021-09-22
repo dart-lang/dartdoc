@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:dartdoc/dartdoc.dart';
+import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/render/category_renderer.dart';
 import 'package:dartdoc/src/render/documentation_renderer.dart';
 import 'package:dartdoc/src/render/element_type_renderer.dart';
