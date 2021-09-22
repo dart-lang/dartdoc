@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'package:collection/collection.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 typedef ContainerSidebar = String Function(
@@ -234,7 +235,7 @@ abstract class InheritingContainerTemplateData<T extends InheritingContainer>
 
   @override
   T get self => clazz;
-  String get linkedObjectType => objectType.linkedName;
+  String get linkedObjectType => objectType?.linkedName ?? 'Object';
   @override
   String get title =>
       '${clazz.name} ${clazz.kind} - ${library.name} library - Dart API';
@@ -251,15 +252,15 @@ abstract class InheritingContainerTemplateData<T extends InheritingContainer>
   @override
   String get htmlBase => '../';
 
-  Class get objectType {
+  Class? get objectType {
     if (_objectType != null) {
       return _objectType!;
     }
 
     var dc = _packageGraph.libraries
-        .firstWhere((it) => it.name == 'dart:core', orElse: () => null);
+        .firstWhereOrNull((it) => it.name == 'dart:core');
 
-    return _objectType = dc.getClassByName('Object');
+    return _objectType = dc?.getClassByName('Object');
   }
 }
 
