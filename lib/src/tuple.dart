@@ -1,7 +1,5 @@
 // Copied from source at github.com/kseo/tuple/blob/470ed3aeb/lib/src/tuple.dart
 
-// @dart=2.9
-
 // Original copyright:
 // Copyright (c) 2014, the tuple project authors. Please see the AUTHORS
 // file for details. All rights reserved. Use of this source code is governed
