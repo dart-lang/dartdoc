@@ -5,7 +5,6 @@
 // @dart=2.9
 
 import 'package:dartdoc/src/model/feature.dart';
-import 'package:dartdoc/src/model/inheriting_container.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/special_elements.dart';
 

@@ -1,3 +1,15 @@
+## 3.1.0
+* This version supports the Dart language feature constructor tearoffs,
+  pending completion by other tools.
+* Allow embedded type parameters in comment references. (#2772)
+* Add testing for constructor tearoff constant rendering.  (#2780)
+* Do not crash on package not found, instead provide a more useful
+  explanation for users. (#2781, #2778)
+* `--allow-warnings-in-packages` no longer also applies to errors.
+  The `--allow-errors-in-packages` flag should now work as intended.
+  (#2785)
+* Some additional deprecations preparing for NNBD. (#2784)
+
 ## 3.0.0
 * BREAKING CHANGE: Refactor of Class, Enum, and Mixin types result in some
   deleted interfaces in templates and a change in class hierarchy. (#2770)

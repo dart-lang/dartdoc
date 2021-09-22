@@ -5,7 +5,6 @@
 // @dart=2.9
 
 import 'package:analyzer/dart/element/element.dart';
-import 'package:dartdoc/src/model/inheriting_container.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 import 'comment_referable.dart';

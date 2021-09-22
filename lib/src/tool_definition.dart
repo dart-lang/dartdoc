@@ -240,9 +240,8 @@ class SnapshotCache {
   void dispose() {
     _instances.remove(_resourceProvider);
     if (snapshotCache.exists) {
-      return snapshotCache.delete();
+      snapshotCache.delete();
     }
-    return null;
   }
 }
 
