@@ -4,12 +4,14 @@
 
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/memory_file_system.dart';
-import 'package:dartdoc/dartdoc.dart';
+import 'package:dartdoc/dartdoc.dart' show DartdocFileWriter;
 import 'package:dartdoc/src/generator/generator_frontend.dart';
 import 'package:dartdoc/src/generator/html_generator.dart';
 import 'package:dartdoc/src/generator/html_resources.g.dart';
 import 'package:dartdoc/src/generator/resource_loader.dart';
 import 'package:dartdoc/src/generator/templates.dart';
+import 'package:dartdoc/src/package_config_provider.dart';
+import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
