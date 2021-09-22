@@ -179,7 +179,8 @@ class ToolRunner {
       ..._substituteInArgs(args, envWithInput),
     ];
 
-    if (toolDefinition.setupCommand.isNotEmpty && !toolDefinition.setupComplete) {
+    if (toolDefinition.setupCommand.isNotEmpty &&
+        !toolDefinition.setupComplete) {
       await _runSetup(
           toolName, toolDefinition, envWithInput, toolErrorCallback);
     }
