@@ -88,7 +88,7 @@ echo:
     // yaml map (which would fail on a missing executable), or a file is deleted
     // during execution,it might, so we test it.
     toolMap.tools.addAll({
-      'missing': ToolDefinition(['/a/missing/executable'], null, 'missing'),
+      'missing': ToolDefinition(['/a/missing/executable'], [], 'missing'),
     });
 
     runner = ToolRunner(toolMap);
