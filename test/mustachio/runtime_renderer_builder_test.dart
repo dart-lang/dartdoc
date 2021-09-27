@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
-
 @Timeout.factor(2)
 import 'dart:convert';
 import 'package:analyzer/dart/element/element.dart';
@@ -14,7 +12,7 @@ import 'package:test/test.dart';
 import 'builder_test_base.dart';
 
 void main() {
-  InMemoryAssetWriter writer;
+  late InMemoryAssetWriter writer;
 
   Future<LibraryElement> resolveGeneratedLibrary() async {
     var rendererAsset = AssetId('foo', 'lib/foo.runtime_renderers.dart');
@@ -29,8 +27,8 @@ void main() {
   });
 
   group('builds a renderer class', () {
-    LibraryElement renderersLibrary;
-    String generatedContent;
+    late final LibraryElement renderersLibrary;
+    late final String generatedContent;
 
     // Builders are fairly expensive (about 4 seconds per `testBuilder` call),
     // so this [setUpAll] saves significant time over [setUp].
@@ -56,7 +54,7 @@ class Baz {}
 ''');
       renderersLibrary = await resolveGeneratedLibrary();
       var rendererAsset = AssetId('foo', 'lib/foo.runtime_renderers.dart');
-      generatedContent = utf8.decode(writer.assets[rendererAsset]);
+      generatedContent = utf8.decode(writer.assets[rendererAsset]!);
     });
 
     test('for a class which implicitly extends Object', () {
@@ -179,7 +177,7 @@ import 'package:mustachio/annotations.dart';
   });
 
   group('builds a renderer class for a generic type', () {
-    String generatedContent;
+    late final String generatedContent;
 
     // Builders are fairly expensive (about 4 seconds per `testBuilder` call),
     // so this [setUpAll] saves significant time over [setUp].
@@ -198,7 +196,7 @@ library foo;
 import 'package:mustachio/annotations.dart';
 ''');
       var rendererAsset = AssetId('foo', 'lib/foo.runtime_renderers.dart');
-      generatedContent = utf8.decode(writer.assets[rendererAsset]);
+      generatedContent = utf8.decode(writer.assets[rendererAsset]!);
     });
 
     test('with a corresponding public API function', () async {
@@ -241,19 +239,19 @@ class Baz {}
 ''');
     var renderersLibrary = await resolveGeneratedLibrary();
 
-    var fooRenderFunction = renderersLibrary.getTopLevelFunction('renderFoo');
+    var fooRenderFunction = renderersLibrary.getTopLevelFunction('renderFoo')!;
     expect(fooRenderFunction.typeParameters, hasLength(1));
-    var fBound = fooRenderFunction.typeParameters.single.bound;
+    var fBound = fooRenderFunction.typeParameters.single.bound!;
     expect(fBound.getDisplayString(withNullability: false), equals('num'));
 
-    var fooRendererClass = renderersLibrary.getType('_Renderer_Foo');
+    var fooRendererClass = renderersLibrary.getType('_Renderer_Foo')!;
     expect(fooRendererClass.typeParameters, hasLength(1));
-    var cBound = fooRenderFunction.typeParameters.single.bound;
+    var cBound = fooRenderFunction.typeParameters.single.bound!;
     expect(cBound.getDisplayString(withNullability: false), equals('num'));
   });
 
   group('does not generate a renderer', () {
-    LibraryElement renderersLibrary;
+    late final LibraryElement renderersLibrary;
 
     setUpAll(() async {
       writer = InMemoryAssetWriter();
