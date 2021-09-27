@@ -57,6 +57,12 @@ abstract class Map<K, V> extends Object {
 
 class Null extends Object {}
 
+abstract class Enum {
+  int get index;
+
+  String get _name;
+}
+
 abstract class num implements Comparable<num> {
   num operator %(num other);
   num operator *(num other);

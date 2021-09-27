@@ -11,7 +11,11 @@ import 'dart:core';
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/scope.dart';
-import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/model/accessor.dart';
+import 'package:dartdoc/src/model/container.dart';
+import 'package:dartdoc/src/model/library.dart';
+import 'package:dartdoc/src/model/model_element.dart';
+import 'package:dartdoc/src/model/nameable.dart';
 import 'package:dartdoc/src/model/package_graph.dart';
 import 'package:meta/meta.dart';
 
