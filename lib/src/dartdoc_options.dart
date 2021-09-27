@@ -338,7 +338,7 @@ class _OptionValueWithContext<T> {
 ///
 /// Use via implementations [DartdocOptionSet], [DartdocOptionArgFile],
 /// [DartdocOptionArgOnly], and [DartdocOptionFileOnly].
-abstract class DartdocOption<T> {
+abstract class DartdocOption<T extends Object> {
   /// This is the value returned if we couldn't find one otherwise.
   final T defaultsTo;
 

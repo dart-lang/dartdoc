@@ -162,12 +162,13 @@ const Matcher doesExist = _DoesExist();
 class _DoesExist extends Matcher {
   const _DoesExist();
   @override
-  bool matches(Object item, Map matchState) => (item as Resource).exists;
+  bool matches(Object item, Map<Object, Object> matchState) =>
+      (item as Resource).exists;
   @override
   Description describe(Description description) => description.add('exists');
   @override
   Description describeMismatch(Object item, Description mismatchDescription,
-      Map matchState, bool verbose) {
+      Map<Object, Object> matchState, bool verbose) {
     if (item is! File && item is! Folder) {
       return mismatchDescription
           .addDescriptionOf(item)
