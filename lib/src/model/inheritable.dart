@@ -114,9 +114,15 @@ mixin Inheritable on ContainerMember {
     inheritance
         .addAll((enclosingElement as InheritingContainer).inheritanceChain);
     var object = packageGraph.specialClasses[SpecialClass.object];
+    var enumClass = packageGraph.specialClasses[SpecialClass.enumClass];
     if (!inheritance.contains(definingEnclosingContainer) &&
         definingEnclosingContainer != null) {
-      assert(definingEnclosingContainer == object);
+      assert(definingEnclosingContainer == object || definingEnclosingContainer == enumClass);
+    }
+    // There are some magical accessors that can come from dart:core's
+    // `Enum` but aren't mentioned by the inheritance manager.
+    if (definingEnclosingContainer == enumClass && !inheritance.contains(enumClass)) {
+      inheritance.add(enumClass);
     }
     // Unless the code explicitly extends dart-core's Object, we won't get
     // an entry here.  So add it.

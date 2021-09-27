@@ -10,6 +10,8 @@ analyzer:
     ### Extra ignores for presubmit
     deprecated_member_use: ignore
     deprecated_member_use_from_same_package: ignore
+    ### Temporary, remove and fix ASAP
+    unnecessary_import: ignore
   language:
     strict-raw-types: true
   exclude:

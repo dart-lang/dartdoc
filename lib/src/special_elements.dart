@@ -23,6 +23,9 @@ enum SpecialClass {
 
   /// From dart:core, pragma
   pragma,
+
+  /// From dart:core, Enum
+  enumClass,
 }
 
 /// A declaration of a special [Class] and how to find it.
@@ -70,6 +73,8 @@ class _SpecialClassDefinition {
 const Map<String, _SpecialClassDefinition> _specialClassDefinitions = {
   'Object': _SpecialClassDefinition(
       SpecialClass.object, 'Object', 'dart.core', 'dart:core'),
+  'Enum': _SpecialClassDefinition(SpecialClass.enumClass, 'Enum',
+      'dart.core', 'dart:core'),
   'Interceptor': _SpecialClassDefinition(SpecialClass.interceptor,
       'Interceptor', '_interceptors', 'dart:_interceptors',
       required: false),
