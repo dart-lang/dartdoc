@@ -73,8 +73,8 @@ class _SpecialClassDefinition {
 const Map<String, _SpecialClassDefinition> _specialClassDefinitions = {
   'Object': _SpecialClassDefinition(
       SpecialClass.object, 'Object', 'dart.core', 'dart:core'),
-  'Enum': _SpecialClassDefinition(SpecialClass.enumClass, 'Enum',
-      'dart.core', 'dart:core'),
+  'Enum': _SpecialClassDefinition(
+      SpecialClass.enumClass, 'Enum', 'dart.core', 'dart:core'),
   'Interceptor': _SpecialClassDefinition(SpecialClass.interceptor,
       'Interceptor', '_interceptors', 'dart:_interceptors',
       required: false),

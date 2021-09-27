@@ -12,7 +12,6 @@ class Enum extends InheritingContainer with TypeImplementing {
   Enum(ClassElement element, Library library, PackageGraph packageGraph)
       : super(element, library, packageGraph);
 
-
   List<InheritingContainer> _inheritanceChain;
   @override
   List<InheritingContainer> get inheritanceChain {
@@ -26,9 +25,10 @@ class Enum extends InheritingContainer with TypeImplementing {
       }
 
       _inheritanceChain.addAll(interfaces.expand(
-              (e) => (e.modelElement as InheritingContainer).inheritanceChain));
+          (e) => (e.modelElement as InheritingContainer).inheritanceChain));
 
-      assert(_inheritanceChain.contains(packageGraph.specialClasses[SpecialClass.enumClass]));
+      assert(_inheritanceChain
+          .contains(packageGraph.specialClasses[SpecialClass.enumClass]));
     }
     return _inheritanceChain.toList(growable: false);
   }
