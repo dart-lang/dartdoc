@@ -27,8 +27,30 @@ void main() {
         isEmpty);
   }
 
+  group('StringTrie tests', () {
+    test('test partials', () {
+      var trie = StringTrie()..addWord('longerString');
+      expect(trie.match('l'), equals(-1));
+      expect(trie.match('longerStringWithExtras'), equals(12));
+      expect(trie.match('longerString'), equals(12));
+      expect(trie.match('prefix-longerString'), equals(-1));
+    });
+
+    test('substrings', () {
+      var trie = StringTrie();
+      trie.addWord('aString');
+      trie.addWord('aStr');
+      trie.addWord('a');
+      expect(trie.match('a'), equals(1));
+      expect(trie.match('aS'), equals(1));
+      expect(trie.match('aStr'), equals(4));
+      expect(trie.match('aStringTwo'), equals(7));
+    });
+  });
+
   group('Basic comment reference parsing', () {
     test('Check that basic references parse', () {
+      expectParseEquivalent('Funvas.u', ['Funvas', 'u']);
       expectParseEquivalent('valid', ['valid']);
       expectParseEquivalent('new valid', ['valid'], constructorHint: true);
       expectParseEquivalent('valid()', ['valid'], callableHint: true);
