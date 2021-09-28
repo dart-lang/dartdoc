@@ -526,7 +526,7 @@ abstract class DartdocOption<T extends Object?> {
     return _children[name]!;
   }
 
-  /// Get the immediate child of this node named [name] as a [DartdocOption<dynamic>].
+  /// Get the immediate child of this node named [name] and its value at [dir].
   U getValueAs<U extends Object?>(String name, Folder dir) =>
       _children[name]?.valueAt(dir) as U;
 
