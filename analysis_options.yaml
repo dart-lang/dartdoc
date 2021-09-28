@@ -7,6 +7,8 @@ analyzer:
     todo: ignore
     unused_import: warning
     unused_shown_name: warning
+  language:
+    strict-raw-types: true
   exclude:
     - 'doc/**'
     - 'lib/src/third_party/pkg/**'

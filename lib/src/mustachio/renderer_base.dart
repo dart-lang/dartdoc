@@ -132,12 +132,12 @@ class Template {
 }
 
 /// The base class for a generated Mustache renderer.
-abstract class RendererBase<T> {
+abstract class RendererBase<T extends Object?> {
   /// The context object which this renderer can render.
   final T context;
 
   /// The renderer of the parent context, if any, otherwise `null`.
-  final RendererBase? parent;
+  final RendererBase<Object?>? parent;
 
   /// The current template being rendered.
   ///
@@ -289,13 +289,8 @@ abstract class RendererBase<T> {
 }
 
 String renderSimple(
-  Object context,
-  List<MustachioNode> ast,
-  Template template,
-  StringSink sink, {
-  required RendererBase<Object> parent,
-  required Set<String> getters,
-}) {
+    Object context, List<MustachioNode> ast, Template template, StringSink sink,
+    {required RendererBase<Object> parent, required Set<String> getters}) {
   var renderer = SimpleRenderer(context, parent, template, sink, getters);
   renderer.renderBlock(ast);
   return renderer.sink.toString();

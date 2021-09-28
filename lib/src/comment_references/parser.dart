@@ -39,15 +39,22 @@ class StringTrie {
   /// Does [this] node represent a valid entry in the trie?
   bool valid = false;
 
-  /// Greedily match on the string trie.  Returns the index of the first
-  /// non-operator character if valid, otherwise -1.
-  int match(String toMatch, [int index = 0]) {
-    if (index < 0 || index >= toMatch.length) return valid ? index : 1;
+  /// Greedily match on the string trie starting at the given index.  Returns
+  /// the index of the first non-operator character if a match is valid,
+  /// otherwise -1.
+  int match(String toMatch, [int index = 0, int lastValid = -1]) {
+    if (index < 0 || index > toMatch.length) {
+      return lastValid;
+    }
+    if (index == toMatch.length) {
+      return valid ? index : lastValid;
+    }
     var matchChar = toMatch.codeUnitAt(index);
     if (children.containsKey(matchChar)) {
-      return children[matchChar].match(toMatch, index + 1);
+      lastValid = valid ? index : lastValid;
+      return children[matchChar].match(toMatch, index + 1, lastValid);
     }
-    return valid ? index : -1;
+    return valid ? index : lastValid;
   }
 
   void addWord(String toAdd) {
