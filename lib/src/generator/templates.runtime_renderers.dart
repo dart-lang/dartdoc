@@ -5,8 +5,7 @@
 
 // ignore_for_file: camel_case_types, deprecated_member_use_from_same_package
 // ignore_for_file: unused_import
-// @dart=2.9
-import 'package:dartdoc/dartdoc.dart';
+import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/src/model/annotation.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
@@ -14,6 +13,7 @@ import 'package:dartdoc/src/model/extension_target.dart';
 import 'package:dartdoc/src/model/feature.dart';
 import 'package:dartdoc/src/model/feature_set.dart';
 import 'package:dartdoc/src/model/language_feature.dart';
+import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/mustachio/parser.dart';
 import 'package:dartdoc/src/mustachio/renderer_base.dart';
 import 'package:dartdoc/src/warnings.dart';
@@ -4229,6 +4229,7 @@ class _Renderer_Enum extends RendererBase<Enum> {
           CT_,
           () => {
                 ..._Renderer_InheritingContainer.propertyMap<CT_>(),
+                ..._Renderer_TypeImplementing.propertyMap<CT_>(),
                 'inheritanceChain': Property(
                   getValue: (CT_ c) => c.inheritanceChain,
                   renderVariable: (CT_ c, Property<CT_> self,

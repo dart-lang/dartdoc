@@ -13,7 +13,7 @@ import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/src/dart/ast/utilities.dart';
-import 'package:dartdoc/dartdoc.dart' show DartdocFailure;
+import 'package:dartdoc/src/failure.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:glob/glob.dart';
 import 'package:path/path.dart' as path;

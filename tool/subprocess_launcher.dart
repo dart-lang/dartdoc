@@ -27,7 +27,9 @@ class CoverageSubprocessLauncher extends SubprocessLauncher {
       Platform.environment.containsKey('COVERAGE_TOKEN');
 
   /// A list of all coverage results picked up by all launchers.
-  static List<Future<Iterable<Map>>> coverageResults = [];
+  // TODO(srawlins): Refactor this to one or more type aliases once the feature
+  // is enabled.
+  static List<Future<Iterable<Map<Object, Object>>>> coverageResults = [];
 
   static Directory _tempDir;
   static Directory get tempDir {
@@ -73,7 +75,8 @@ class CoverageSubprocessLauncher extends SubprocessLauncher {
   }
 
   @override
-  Future<Iterable<Map>> runStreamed(String executable, List<String> arguments,
+  Future<Iterable<Map<Object, Object>>> runStreamed(
+      String executable, List<String> arguments,
       {String workingDirectory,
       Map<String, String> environment,
       bool includeParentEnvironment = true,
@@ -94,7 +97,7 @@ class CoverageSubprocessLauncher extends SubprocessLauncher {
       }
     }
 
-    Completer<Iterable<Map>> coverageResult;
+    Completer<Iterable<Map<Object, Object>>> coverageResult;
 
     if (coverageEnabled) {
       coverageResult = Completer();
@@ -170,21 +173,22 @@ class SubprocessLauncher {
   /// Windows (though some of the bashisms will no longer make sense).
   /// TODO(jcollins-g): refactor to return a stream of stderr/stdout lines
   ///                   and their associated JSON objects.
-  Future<Iterable<Map>> runStreamed(String executable, List<String> arguments,
+  Future<Iterable<Map<Object, Object>>> runStreamed(
+      String executable, List<String> arguments,
       {String workingDirectory,
       Map<String, String> environment,
       bool includeParentEnvironment = true,
       void Function(String) perLine}) async {
     environment ??= {};
     environment.addAll(environmentDefaults);
-    List<Map> jsonObjects;
+    List<Map<Object, Object>> jsonObjects;
 
     /// Allow us to pretend we didn't pass the JSON flag in to dartdoc by
     /// printing what dartdoc would have printed without it, yet storing
     /// json objects into [jsonObjects].
     Iterable<String> jsonCallback(String line) {
       if (perLine != null) perLine(line);
-      Map result;
+      Map<Object, Object> result;
       try {
         result = json.decoder.convert(line);
       } on FormatException {

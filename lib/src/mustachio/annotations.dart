@@ -20,7 +20,7 @@ class Renderer {
   final Symbol name;
 
   /// The type of the context type, specified as the [Context] type argument.
-  final Context context;
+  final Context<Object> context;
 
   /// The unparsed, string form of the URI of the _standard_ HTML template.
   ///
