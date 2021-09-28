@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
-
 @Timeout.factor(4)
 import 'dart:convert';
 import 'package:analyzer/dart/element/element.dart';
@@ -14,7 +12,7 @@ import 'package:test/test.dart';
 import 'builder_test_base.dart';
 
 void main() {
-  InMemoryAssetWriter writer;
+  late InMemoryAssetWriter writer;
 
   Future<LibraryElement> resolveGeneratedLibrary() async {
     var rendererAsset = AssetId('foo', 'lib/foo.aot_renderers_for_html.dart');
@@ -65,7 +63,7 @@ library foo;
 import 'package:mustachio/annotations.dart';
 ''');
     var rendererAsset = AssetId('foo', 'lib/foo.aot_renderers_for_html.dart');
-    var generatedContent = utf8.decode(writer.assets[rendererAsset]);
+    var generatedContent = utf8.decode(writer.assets[rendererAsset]!);
     expect(
         generatedContent, contains('String renderFoo<T>(_i1.Foo<T> context0)'));
   });
@@ -87,7 +85,7 @@ import 'package:mustachio/annotations.dart';
       },
     );
     var rendererAsset = AssetId('foo', 'lib/foo.aot_renderers_for_html.dart');
-    var generatedContent = utf8.decode(writer.assets[rendererAsset]);
+    var generatedContent = utf8.decode(writer.assets[rendererAsset]!);
     expect(
         generatedContent,
         contains(
@@ -102,9 +100,9 @@ class Baz {}
 ''');
     var renderersLibrary = await resolveGeneratedLibrary();
 
-    var fooRenderFunction = renderersLibrary.getTopLevelFunction('renderFoo');
+    var fooRenderFunction = renderersLibrary.getTopLevelFunction('renderFoo')!;
     expect(fooRenderFunction.typeParameters, hasLength(1));
-    var fBound = fooRenderFunction.typeParameters.single.bound;
+    var fBound = fooRenderFunction.typeParameters.single.bound!;
     expect(fBound.getDisplayString(withNullability: false), equals('num'));
   });
 }
