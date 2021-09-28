@@ -8,13 +8,13 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/enum_field_renderer.dart';
+import 'package:dartdoc/src/special_elements.dart';
 
-class Enum extends InheritingContainer {
+class Enum extends InheritingContainer with TypeImplementing {
   Enum(ClassElement element, Library library, PackageGraph packageGraph)
       : super(element, library, packageGraph);
 
   List<InheritingContainer> _inheritanceChain;
-
   @override
   List<InheritingContainer> get inheritanceChain {
     if (_inheritanceChain == null) {
@@ -25,6 +25,12 @@ class Enum extends InheritingContainer {
           in superChain.map((e) => (e.modelElement as InheritingContainer))) {
         _inheritanceChain.addAll(c.inheritanceChain);
       }
+
+      _inheritanceChain.addAll(interfaces.expand(
+          (e) => (e.modelElement as InheritingContainer).inheritanceChain));
+
+      assert(_inheritanceChain
+          .contains(packageGraph.specialClasses[SpecialClass.enumClass]));
     }
     return _inheritanceChain.toList(growable: false);
   }

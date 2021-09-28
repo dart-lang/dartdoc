@@ -90,7 +90,7 @@ Future<FlutterRepo> get cleanFlutterRepo async {
           int.parse(lastSynced.readAsStringSync()));
     }
     if (lastSyncedTime == null ||
-        DateTime.now().difference(lastSyncedTime) > Duration(hours: 4)) {
+        DateTime.now().difference(lastSyncedTime) > Duration(hours: 24)) {
       // Rebuild the repository.
       if (cleanFlutterDir.existsSync()) {
         cleanFlutterDir.deleteSync(recursive: true);
@@ -187,7 +187,12 @@ final Directory flutterDirDevTools =
 Map<String, String> _createThrowawayPubCache() {
   var pubCache = Directory.systemTemp.createTempSync('pubcache');
   var pubCacheBin = Directory(path.join(pubCache.path, 'bin'));
-  pubCacheBin.createSync();
+  var defaultCache = Directory(defaultPubCache);
+  if (defaultCache.existsSync()) {
+    copy(defaultCache, pubCache);
+  } else {
+    pubCacheBin.createSync();
+  }
   return Map.fromIterables([
     'PUB_CACHE',
     'PATH'
@@ -328,7 +333,7 @@ void buildbot() => null;
 void buildbotNoPublish() => null;
 
 @Task('Generate docs for the Dart SDK')
-Future buildSdkDocs() async {
+Future<void> buildSdkDocs() async {
   log('building SDK docs');
   await _buildSdkDocs(sdkDocsDir.path, Future.value(Directory.current.path));
 }
@@ -427,8 +432,11 @@ class WarningsCollection {
 }
 
 /// Returns a map of warning texts to the number of times each has been seen.
-WarningsCollection jsonMessageIterableToWarnings(Iterable<Map> messageIterable,
-    String tempPath, String pubDir, String branch) {
+WarningsCollection jsonMessageIterableToWarnings(
+    Iterable<Map<Object, Object>> messageIterable,
+    String tempPath,
+    String pubDir,
+    String branch) {
   var warningTexts = WarningsCollection(tempPath, pubDir, branch);
   if (messageIterable == null) return warningTexts;
   for (Map<String, dynamic> message in messageIterable) {
@@ -443,13 +451,13 @@ WarningsCollection jsonMessageIterableToWarnings(Iterable<Map> messageIterable,
 }
 
 @Task('Display delta in SDK warnings')
-Future compareSdkWarnings() async {
+Future<void> compareSdkWarnings() async {
   var originalDartdocSdkDocs =
       Directory.systemTemp.createTempSync('dartdoc-comparison-sdkdocs');
-  Future originalDartdoc = createComparisonDartdoc();
-  Future currentDartdocSdkBuild = _buildSdkDocs(
+  var originalDartdoc = createComparisonDartdoc();
+  var currentDartdocSdkBuild = _buildSdkDocs(
       sdkDocsDir.path, Future.value(Directory.current.path), 'current');
-  Future originalDartdocSdkBuild =
+  var originalDartdocSdkBuild =
       _buildSdkDocs(originalDartdocSdkDocs.path, originalDartdoc, 'original');
   var currentDartdocWarnings = jsonMessageIterableToWarnings(
       await currentDartdocSdkBuild, sdkDocsDir.absolute.path, null, 'HEAD');
@@ -541,7 +549,8 @@ Future<void> testWithAnalyzerSdk() async {
       workingDirectory: sdkDartdoc);
 }
 
-Future<List<Map>> _buildSdkDocs(String sdkDocsPath, Future<String> futureCwd,
+Future<List<Map<Object, Object>>> _buildSdkDocs(
+    String sdkDocsPath, Future<String> futureCwd,
     [String label]) async {
   label ??= '';
   if (label != '') label = '-$label';
@@ -563,15 +572,16 @@ Future<List<Map>> _buildSdkDocs(String sdkDocsPath, Future<String> futureCwd,
       workingDirectory: cwd);
 }
 
-Future<List<Map>> _buildTestPackageDocs(String outputDir, String cwd,
+Future<List<Map<Object, Object>>> _buildTestPackageDocs(
+    String outputDir, String cwd,
     {List<String> params, String label = '', String testPackagePath}) async {
   if (label != '') label = '-$label';
   testPackagePath ??= testPackage.absolute.path;
   params ??= [];
   var launcher = SubprocessLauncher('build-test-package-docs$label');
-  Future testPackagePubGet = launcher.runStreamed(sdkBin('pub'), ['get'],
+  var testPackagePubGet = launcher.runStreamed(sdkBin('pub'), ['get'],
       workingDirectory: testPackagePath);
-  Future dartdocPubGet =
+  var dartdocPubGet =
       launcher.runStreamed(sdkBin('pub'), ['get'], workingDirectory: cwd);
   await Future.wait([testPackagePubGet, dartdocPubGet]);
   return await launcher.runStreamed(
@@ -688,12 +698,12 @@ Future<void> serveSdkDocs() async {
 Future<void> compareFlutterWarnings() async {
   var originalDartdocFlutter =
       Directory.systemTemp.createTempSync('dartdoc-comparison-flutter');
-  Future originalDartdoc = createComparisonDartdoc();
+  var originalDartdoc = createComparisonDartdoc();
   var envCurrent = _createThrowawayPubCache();
   var envOriginal = _createThrowawayPubCache();
-  Future currentDartdocFlutterBuild = _buildFlutterDocs(flutterDir.path,
+  var currentDartdocFlutterBuild = _buildFlutterDocs(flutterDir.path,
       Future.value(Directory.current.path), envCurrent, 'docs-current');
-  Future originalDartdocFlutterBuild = _buildFlutterDocs(
+  var originalDartdocFlutterBuild = _buildFlutterDocs(
       originalDartdocFlutter.path,
       originalDartdoc,
       envOriginal,
@@ -715,7 +725,7 @@ Future<void> compareFlutterWarnings() async {
   if (Platform.environment['SERVE_FLUTTER'] == '1') {
     var launcher = SubprocessLauncher('serve-flutter-docs');
     await launcher.runStreamed(sdkBin('pub'), ['get']);
-    Future original = launcher.runStreamed(sdkBin('pub'), [
+    var original = launcher.runStreamed(sdkBin('pub'), [
       'global',
       'run',
       'dhttpd',
@@ -724,7 +734,7 @@ Future<void> compareFlutterWarnings() async {
       '--path',
       path.join(originalDartdocFlutter.absolute.path, 'dev', 'docs', 'doc'),
     ]);
-    Future current = launcher.runStreamed(sdkBin('pub'), [
+    var current = launcher.runStreamed(sdkBin('pub'), [
       'global',
       'run',
       'dhttpd',
@@ -878,11 +888,6 @@ class FlutterRepo {
     );
     await launcher.runStreamed(
       bin,
-      ['precache'],
-      workingDirectory: flutterPath,
-    );
-    await launcher.runStreamed(
-      bin,
       ['update-packages'],
       workingDirectory: flutterPath,
     );
@@ -915,7 +920,7 @@ class FlutterRepo {
   SubprocessLauncher launcher;
 }
 
-Future<List<Map>> _buildFlutterDocs(
+Future<List<Map<Object, Object>>> _buildFlutterDocs(
     String flutterPath, Future<String> futureCwd, Map<String, String> env,
     [String label]) async {
   var flutterRepo = await FlutterRepo.copyFromExistingFlutterRepo(

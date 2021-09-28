@@ -145,7 +145,7 @@ class _TaskQueueItem<T> {
 /// the number of simultaneous tasks.
 ///
 /// The tasks return results of type T.
-class TaskQueue<T> {
+class TaskQueue<T extends Object> {
   /// Creates a task queue with a maximum number of simultaneous jobs.
   /// The [maxJobs] parameter defaults to the number of CPU cores on the
   /// system.

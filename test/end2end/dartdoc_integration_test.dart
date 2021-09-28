@@ -10,7 +10,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:mirrors';
 
-import 'package:dartdoc/dartdoc.dart';
+import 'package:dartdoc/src/package_meta.dart';
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 

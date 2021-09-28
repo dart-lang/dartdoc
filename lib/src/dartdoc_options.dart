@@ -20,9 +20,10 @@ import 'dart:io' show Platform, stdout;
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:args/args.dart';
-import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/experiment_options.dart';
+import 'package:dartdoc/src/failure.dart';
 import 'package:dartdoc/src/io_utils.dart';
+import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/source_linker.dart';
 import 'package:dartdoc/src/tool_definition.dart';
 import 'package:dartdoc/src/tool_runner.dart';
@@ -335,7 +336,7 @@ class _OptionValueWithContext<T> {
 ///
 /// Use via implementations [DartdocOptionSet], [DartdocOptionArgFile],
 /// [DartdocOptionArgOnly], and [DartdocOptionFileOnly].
-abstract class DartdocOption<T> {
+abstract class DartdocOption<T extends Object?> {
   /// This is the value returned if we couldn't find one otherwise.
   final T? defaultsTo;
 
@@ -457,7 +458,7 @@ abstract class DartdocOption<T> {
 
   /// The [DartdocOptionRoot] containing this object.
   DartdocOptionRoot get root {
-    DartdocOption p = this;
+    DartdocOption<dynamic> p = this;
     while (p is! DartdocOptionRoot) {
       p = p.parent;
     }
@@ -467,7 +468,7 @@ abstract class DartdocOption<T> {
   /// All object names starting at the root.
   Iterable<String> get keys {
     var keyList = <String>[];
-    DartdocOption option = this;
+    DartdocOption<dynamic> option = this;
     while (option is! DartdocOptionRoot) {
       keyList.add(option.name);
       option = option.parent;
@@ -490,10 +491,12 @@ abstract class DartdocOption<T> {
   /// type.  If [mustExist] is true, will throw [DartdocFileMissing] for command
   /// line parameters and file paths in config files that don't point to
   /// corresponding files or directories.
-  T? valueAt(Folder dir);
+  // TODO(jcollins-g): use of dynamic.  https://github.com/dart-lang/dartdoc/issues/2814
+  dynamic valueAt(Folder dir);
 
   /// Calls [valueAt] with the working directory at the start of the program.
-  T? valueAtCurrent() => valueAt(_directoryCurrent);
+  // TODO(jcollins-g): use of dynamic.  https://github.com/dart-lang/dartdoc/issues/2814
+  dynamic valueAtCurrent() => valueAt(_directoryCurrent);
 
   late final Folder _directoryCurrent =
       resourceProvider.getFolder(_directoryCurrentPath);
@@ -523,8 +526,9 @@ abstract class DartdocOption<T> {
     return _children[name]!;
   }
 
-  /// Get the immediate child of this node named [name] as a [DartdocOption<U>].
-  DartdocOption<U> getAs<U>(String name) => _children[name] as DartdocOption<U>;
+  /// Get the immediate child of this node named [name] and its value at [dir].
+  U getValueAs<U extends Object?>(String name, Folder dir) =>
+      _children[name]?.valueAt(dir) as U;
 
   /// Apply the function [visit] to [this] and all children.
   void traverse(void Function(DartdocOption option) visit) {
