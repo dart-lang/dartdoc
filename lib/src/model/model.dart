@@ -28,7 +28,7 @@ export 'library_container.dart';
 export 'locatable.dart';
 export 'method.dart';
 export 'mixin.dart';
-export 'model_element.dart';
+export 'model_element.dart' hide needsPrecacheRegExp;
 export 'model_function.dart';
 export 'model_node.dart';
 export 'nameable.dart';

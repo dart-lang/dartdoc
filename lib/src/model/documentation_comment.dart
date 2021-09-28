@@ -1,6 +1,8 @@
 import 'package:args/args.dart';
 import 'package:crypto/crypto.dart' as crypto;
-import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/model/documentable.dart';
+import 'package:dartdoc/src/model/locatable.dart';
+import 'package:dartdoc/src/model/source_code_mixin.dart';
 import 'package:dartdoc/src/render/model_element_renderer.dart';
 import 'package:dartdoc/src/utils.dart';
 import 'package:dartdoc/src/warnings.dart';
@@ -22,6 +24,8 @@ final _basicToolPattern = RegExp(
     multiLine: true);
 
 final _examplePattern = RegExp(r'{@example\s+([^}]+)}');
+
+final RegExp needsPrecacheRegExp = RegExp(r'{@(template|tool|inject-html)');
 
 /// Features for processing directives in a documentation comment.
 ///
@@ -706,5 +710,60 @@ mixin DocumentationComment
                 'A fenced code block in Markdown should have a language specified');
       }
     });
+  }
+
+  /// Returns the documentation for this literal element unless
+  /// [config.dropTextFrom] indicates it should not be returned.  Macro
+  /// definitions are stripped, but macros themselves are not injected.  This
+  /// is a two stage process to avoid ordering problems.
+  String _documentationLocal;
+
+  String get documentationLocal =>
+      _documentationLocal ??= _buildDocumentationLocal();
+
+  /// Unconditionally precache local documentation.
+  ///
+  /// Use only in factory for [PackageGraph].
+  Future<void> precacheLocalDocs() async {
+    _documentationLocal = await _buildDocumentationBase();
+  }
+
+  String _rawDocs;
+
+  String _buildDocumentationLocal() => _buildDocumentationBaseSync();
+
+  /// Override this to add more features to the documentation builder in a
+  /// subclass.
+  String buildDocumentationAddition(String docs) => docs ??= '';
+
+  /// Separate from _buildDocumentationLocal for overriding.
+  String _buildDocumentationBaseSync() {
+    assert(_rawDocs == null,
+        'reentrant calls to _buildDocumentation* not allowed');
+    // Do not use the sync method if we need to evaluate tools or templates.
+    assert(!isCanonical ||
+        !needsPrecacheRegExp.hasMatch(documentationComment ?? ''));
+    if (config.dropTextFrom.contains(element.library.name)) {
+      _rawDocs = '';
+    } else {
+      _rawDocs = processCommentWithoutTools(documentationComment ?? '');
+    }
+    _rawDocs = buildDocumentationAddition(_rawDocs);
+    return _rawDocs;
+  }
+
+  /// Separate from _buildDocumentationLocal for overriding.  Can only be
+  /// used as part of [PackageGraph.setUpPackageGraph].
+  Future<String> _buildDocumentationBase() async {
+    assert(_rawDocs == null,
+        'reentrant calls to _buildDocumentation* not allowed');
+    // Do not use the sync method if we need to evaluate tools or templates.
+    if (config.dropTextFrom.contains(element.library.name)) {
+      _rawDocs = '';
+    } else {
+      _rawDocs = await processComment(documentationComment ?? '');
+    }
+    _rawDocs = buildDocumentationAddition(_rawDocs);
+    return _rawDocs;
   }
 }

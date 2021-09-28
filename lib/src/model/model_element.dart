@@ -36,6 +36,7 @@ import 'package:path/path.dart' as path show Context;
 
 /// This doc may need to be processed in case it has a template or html
 /// fragment.
+@Deprecated('Use version in documentation_comment.dart.')
 final RegExp needsPrecacheRegExp = RegExp(r'{@(template|tool|inject-html)');
 
 final _htmlInjectRegExp = RegExp(r'<dartdoc-html>([a-f0-9]+)</dartdoc-html>');
@@ -118,7 +119,6 @@ abstract class ModelElement extends Canonicalization
   final Member /*?*/ _originalMember;
   final Library /*?*/ _library;
 
-  String _rawDocs;
   Documentation __documentation;
   UnmodifiableListView<Parameter> _parameters;
   String _linkedName;
@@ -545,52 +545,6 @@ abstract class ModelElement extends Canonicalization
       return [this];
     }
   }
-
-  String _buildDocumentationLocal() => _buildDocumentationBaseSync();
-
-  /// Override this to add more features to the documentation builder in a
-  /// subclass.
-  String buildDocumentationAddition(String docs) => docs ??= '';
-
-  /// Separate from _buildDocumentationLocal for overriding.
-  String _buildDocumentationBaseSync() {
-    assert(_rawDocs == null,
-        'reentrant calls to _buildDocumentation* not allowed');
-    // Do not use the sync method if we need to evaluate tools or templates.
-    assert(!isCanonical ||
-        !needsPrecacheRegExp.hasMatch(documentationComment ?? ''));
-    if (config.dropTextFrom.contains(element.library.name)) {
-      _rawDocs = '';
-    } else {
-      _rawDocs = processCommentWithoutTools(documentationComment ?? '');
-    }
-    _rawDocs = buildDocumentationAddition(_rawDocs);
-    return _rawDocs;
-  }
-
-  /// Separate from _buildDocumentationLocal for overriding.  Can only be
-  /// used as part of [PackageGraph.setUpPackageGraph].
-  Future<String> _buildDocumentationBase() async {
-    assert(_rawDocs == null,
-        'reentrant calls to _buildDocumentation* not allowed');
-    // Do not use the sync method if we need to evaluate tools or templates.
-    if (config.dropTextFrom.contains(element.library.name)) {
-      _rawDocs = '';
-    } else {
-      _rawDocs = await processComment(documentationComment ?? '');
-    }
-    _rawDocs = buildDocumentationAddition(_rawDocs);
-    return _rawDocs;
-  }
-
-  /// Returns the documentation for this literal element unless
-  /// [config.dropTextFrom] indicates it should not be returned.  Macro
-  /// definitions are stripped, but macros themselves are not injected.  This
-  /// is a two stage process to avoid ordering problems.
-  String _documentationLocal;
-
-  String get documentationLocal =>
-      _documentationLocal ??= _buildDocumentationLocal();
 
   /// Returns the docs, stripped of their leading comments syntax.
   @override
@@ -1021,13 +975,6 @@ abstract class ModelElement extends Canonicalization
 
   @override
   String computeDocumentationComment() => element.documentationComment;
-
-  /// Unconditionally precache local documentation.
-  ///
-  /// Use only in factory for [PackageGraph].
-  Future<void> precacheLocalDocs() async {
-    _documentationLocal = await _buildDocumentationBase();
-  }
 
   Documentation get _documentation {
     if (__documentation != null) return __documentation;
