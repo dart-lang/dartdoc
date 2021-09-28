@@ -2,14 +2,10 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
-
 import 'dart:convert';
 
-import 'package:analyzer/dart/element/type.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/parameter.dart';
-import 'package:meta/meta.dart' as meta;
 
 /// Render HTML in an extended vertical format using <ol> tag.
 class ParameterRendererHtmlList extends ParameterRendererHtml {
@@ -136,7 +132,7 @@ abstract class ParameterRenderer {
 
   void _renderLinkedParameterSublist(
       List<Parameter> parameters, StringBuffer output,
-      {@meta.required bool trailingComma,
+      {required bool trailingComma,
       String openBracket = '',
       String closeBracket = '',
       bool showMetadata = true,
@@ -164,8 +160,8 @@ abstract class ParameterRenderer {
 
   String _renderParam(
     Parameter param, {
-    @meta.required String prefix,
-    @meta.required String suffix,
+    required String prefix,
+    required String suffix,
     bool showMetadata = true,
     bool showNames = true,
   }) {
@@ -195,8 +191,7 @@ abstract class ParameterRenderer {
       buf.write(typeName(returnTypeName));
       if (showNames) {
         buf.write(' ${parameterName(param.name)}');
-      } else if (paramModelType.isTypedef ||
-          paramModelType.type is FunctionType) {
+      } else {
         buf.write(' ${parameterName(paramModelType.name)}');
       }
       if (!paramModelType.isTypedef && paramModelType is DefinedElementType) {
@@ -208,7 +203,7 @@ abstract class ParameterRenderer {
         buf.write(')');
         buf.write(paramModelType.nullabilitySuffix);
       }
-      if (!paramModelType.isTypedef && paramModelType.type is FunctionType) {
+      if (!paramModelType.isTypedef) {
         buf.write('(');
         buf.write(renderLinkedParams(paramModelType.parameters,
             showMetadata: showMetadata, showNames: showNames));

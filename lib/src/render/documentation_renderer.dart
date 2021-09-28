@@ -2,16 +2,13 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
-
 import 'package:html/parser.dart' show parse;
 import 'package:markdown/markdown.dart' as md;
-import 'package:meta/meta.dart';
 
 abstract class DocumentationRenderer {
   DocumentationRenderResult render(
     List<md.Node> nodes, {
-    @required bool processFullDocs,
+    required bool processFullDocs,
   });
 }
 
@@ -21,7 +18,7 @@ class DocumentationRendererHtml implements DocumentationRenderer {
   @override
   DocumentationRenderResult render(
     List<md.Node> nodes, {
-    @required bool processFullDocs,
+    required bool processFullDocs,
   }) {
     if (nodes.isEmpty) {
       return DocumentationRenderResult.empty;
@@ -51,11 +48,12 @@ class DocumentationRendererHtml implements DocumentationRenderer {
     if (processFullDocs) {
       // `trim` fixes an issue with line ending differences between Mac and
       // Windows.
-      asHtml = asHtmlDocument.body.innerHtml?.trim();
+      asHtml = (asHtmlDocument.body?.innerHtml ?? '').trim();
     }
-    var asOneLiner = asHtmlDocument.body.children.isEmpty
+    var children = asHtmlDocument.body?.children ?? [];
+    var asOneLiner = children.isEmpty
         ? ''
-        : asHtmlDocument.body.children.first.innerHtml;
+        : children.first.innerHtml;
 
     return DocumentationRenderResult(asHtml: asHtml, asOneLiner: asOneLiner);
   }
@@ -68,5 +66,5 @@ class DocumentationRenderResult {
   final String asOneLiner;
 
   const DocumentationRenderResult(
-      {@required this.asHtml, @required this.asOneLiner});
+      {required this.asHtml, required this.asOneLiner});
 }

@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
-
 import 'package:dartdoc/src/render/language_feature_renderer.dart';
 
 const Map<String, String> _featureDescriptions = {
@@ -18,11 +16,11 @@ const Map<String, String> _featureUrls = {
 /// the user that the documentation should be specially interpreted.
 class LanguageFeature {
   /// The description of this language feature.
-  String get featureDescription => _featureDescriptions[name];
+  String? get featureDescription => _featureDescriptions[name];
 
   /// A URL containing more information about this feature or `null` if there
   /// is none.
-  String /*?*/ get featureUrl => _featureUrls[name];
+  String? get featureUrl => _featureUrls[name];
 
   /// The rendered label for this language feature.
   String get featureLabel => _featureRenderer.renderLanguageFeatureLabel(this);
