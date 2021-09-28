@@ -51,9 +51,7 @@ class DocumentationRendererHtml implements DocumentationRenderer {
       asHtml = (asHtmlDocument.body?.innerHtml ?? '').trim();
     }
     var children = asHtmlDocument.body?.children ?? [];
-    var asOneLiner = children.isEmpty
-        ? ''
-        : children.first.innerHtml;
+    var asOneLiner = children.isEmpty ? '' : children.first.innerHtml;
 
     return DocumentationRenderResult(asHtml: asHtml, asOneLiner: asOneLiner);
   }
