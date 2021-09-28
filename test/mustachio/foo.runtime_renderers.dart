@@ -5,6 +5,7 @@
 
 // ignore_for_file: camel_case_types, deprecated_member_use_from_same_package
 // ignore_for_file: unused_import
+// @dart=2.9
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/src/model/annotation.dart';

@@ -380,7 +380,7 @@ class PackageWarningOptions {
     // Interpret errors/warnings/ignore options.  In the event of conflict,
     // warning overrides error and ignore overrides warning.
     var errorsForDir =
-        option.parent.getAs<List<String>?>('errors').valueAt(dir) ?? [];
+        option.parent.getValueAs<List<String>?>('errors', dir) ?? [];
     for (var warningName in errorsForDir) {
       var packageWarnings = packageWarningsByName[warningName];
       if (packageWarnings != null) {
@@ -388,7 +388,7 @@ class PackageWarningOptions {
       }
     }
     var warningsForDir =
-        option.parent.getAs<List<String>?>('warnings').valueAt(dir) ?? [];
+        option.parent.getValueAs<List<String>?>('warnings', dir) ?? [];
     for (var warningName in warningsForDir) {
       var packageWarnings = packageWarningsByName[warningName];
       if (packageWarnings != null) {
@@ -396,7 +396,7 @@ class PackageWarningOptions {
       }
     }
     var ignoredForDir =
-        option.parent.getAs<List<String>?>('ignore').valueAt(dir) ?? [];
+        option.parent.getValueAs<List<String>?>('ignore', dir) ?? [];
     for (var warningName in ignoredForDir) {
       var packageWarnings = packageWarningsByName[warningName];
       if (packageWarnings != null) {
@@ -405,18 +405,14 @@ class PackageWarningOptions {
     }
 
     // Check whether warnings are allowed at all in this package.
-    var allowWarningsInPackages = option.parent
-        .getAs<List<String>?>('allowWarningsInPackages')
-        .valueAt(dir);
-    var allowErrorsInPackages = option.parent
-        .getAs<List<String>?>('allowErrorsInPackages')
-        .valueAt(dir);
+    var allowWarningsInPackages =
+        option.parent.getValueAs<List<String>?>('allowWarningsInPackages', dir);
+    var allowErrorsInPackages =
+        option.parent.getValueAs<List<String>?>('allowErrorsInPackages', dir);
     var ignoreWarningsInPackages = option.parent
-        .getAs<List<String>?>('ignoreWarningsInPackages')
-        .valueAt(dir);
-    var ignoreErrorsInPackages = option.parent
-        .getAs<List<String>?>('ignoreErrorsInPackages')
-        .valueAt(dir);
+        .getValueAs<List<String>?>('ignoreWarningsInPackages', dir);
+    var ignoreErrorsInPackages =
+        option.parent.getValueAs<List<String>?>('ignoreErrorsInPackages', dir);
     if (allowWarningsInPackages != null &&
         !allowWarningsInPackages.contains(packageMeta.name)) {
       PackageWarning.values

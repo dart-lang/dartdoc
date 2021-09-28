@@ -491,9 +491,11 @@ abstract class DartdocOption<T extends Object?> {
   /// type.  If [mustExist] is true, will throw [DartdocFileMissing] for command
   /// line parameters and file paths in config files that don't point to
   /// corresponding files or directories.
+  // TODO(jcollins-g): use of dynamic.  https://github.com/dart-lang/dartdoc/issues/2814
   dynamic valueAt(Folder dir);
 
   /// Calls [valueAt] with the working directory at the start of the program.
+  // TODO(jcollins-g): use of dynamic.  https://github.com/dart-lang/dartdoc/issues/2814
   dynamic valueAtCurrent() => valueAt(_directoryCurrent);
 
   late final Folder _directoryCurrent =
@@ -525,7 +527,8 @@ abstract class DartdocOption<T extends Object?> {
   }
 
   /// Get the immediate child of this node named [name] as a [DartdocOption<dynamic>].
-  DartdocOption<U> getAs<U extends Object?>(String name) => _children[name] as DartdocOption<U>;
+  U getValueAs<U extends Object?>(String name, Folder dir) =>
+      _children[name]?.valueAt(dir) as U;
 
   /// Apply the function [visit] to [this] and all children.
   void traverse(void Function(DartdocOption option) visit) {
