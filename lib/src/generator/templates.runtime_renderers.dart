@@ -3928,6 +3928,26 @@ class _Renderer_DocumentationComment
                         parent: r);
                   },
                 ),
+                'documentationLocal': Property(
+                  getValue: (CT_ c) => c.documentationLocal,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        _Renderer_String.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(self.getValue(c),
+                        nextProperty, [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => c.documentationLocal == null,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    _render_String(c.documentationLocal, ast, r.template, sink,
+                        parent: r);
+                  },
+                ),
                 'fullyQualifiedNameWithoutLibrary': Property(
                   getValue: (CT_ c) => c.fullyQualifiedNameWithoutLibrary,
                   renderVariable:
@@ -3970,6 +3990,13 @@ class _Renderer_DocumentationComment
                         parent: r,
                         getters: _invisibleGetters['ModelElementRenderer']);
                   },
+                ),
+                'needsPrecache': Property(
+                  getValue: (CT_ c) => c.needsPrecache,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.needsPrecache == true,
                 ),
                 'pathContext': Property(
                   getValue: (CT_ c) => c.pathContext,
@@ -4229,6 +4256,7 @@ class _Renderer_Enum extends RendererBase<Enum> {
           CT_,
           () => {
                 ..._Renderer_InheritingContainer.propertyMap<CT_>(),
+                ..._Renderer_TypeImplementing.propertyMap<CT_>(),
                 'inheritanceChain': Property(
                   getValue: (CT_ c) => c.inheritanceChain,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -9479,26 +9507,6 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                     return c.documentationFrom.map((e) => _render_ModelElement(
                         e, ast, r.template, sink,
                         parent: r));
-                  },
-                ),
-                'documentationLocal': Property(
-                  getValue: (CT_ c) => c.documentationLocal,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_String.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(self.getValue(c),
-                        nextProperty, [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => c.documentationLocal == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.documentationLocal, ast, r.template, sink,
-                        parent: r);
                   },
                 ),
                 'element': Property(
