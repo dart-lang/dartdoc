@@ -37,23 +37,8 @@ final RegExp _needsPrecacheRegExp = RegExp(r'{@(template|tool|inject-html)');
 /// entrypoints.
 mixin DocumentationComment
     on Documentable, Warnable, Locatable, SourceCodeMixin {
-  /// The documentation comment on the Element may be null, so memoization
-  /// cannot rely on the null-ness of [_documentationComment], it must be
-  /// more explicit.
-  bool _documentationCommentComputed = false;
-  String _documentationComment;
 
-  String get documentationComment {
-    if (_documentationCommentComputed == false) {
-      _documentationComment = computeDocumentationComment();
-      _documentationCommentComputed = true;
-    }
-    return _documentationComment;
-  }
-
-  /// Implement to derive the raw documentation comment string from the
-  /// analyzer.
-  String computeDocumentationComment();
+  String get documentationComment;
 
   /// Returns true if the raw documentation comment has a nodoc indication.
   bool get hasNodoc {

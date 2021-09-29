@@ -957,8 +957,13 @@ abstract class ModelElement extends Canonicalization
     return _parameters;
   }
 
+  bool _documentationCommentComputed = false;
+  String _documentationComment;
   @override
-  String computeDocumentationComment() => element.documentationComment;
+  String get documentationComment => _documentationCommentComputed ? _documentationComment : _documentationComment ??= () {
+    _documentationCommentComputed = true;
+    return element.documentationComment;
+  } ();
 
   Documentation get _elementDocumentation {
     if (__documentation != null) return __documentation;
@@ -967,7 +972,6 @@ abstract class ModelElement extends Canonicalization
   }
 
   String _sourceCode;
-
   @override
   String get sourceCode {
     return _sourceCode ??=
