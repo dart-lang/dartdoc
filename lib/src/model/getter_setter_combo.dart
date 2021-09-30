@@ -158,7 +158,20 @@ mixin GetterSetterCombo on ModelElement {
     return _oneLineDoc;
   }
 
-  String get getterSetterDocumentationComment {
+  bool _documentationCommentComputed = false;
+  String _documentationComment;
+  @override
+  String get documentationComment => _documentationCommentComputed
+      ? _documentationComment
+      : _documentationComment ??= () {
+          _documentationCommentComputed = true;
+          var docs = _getterSetterDocumentationComment();
+          if (docs.isEmpty) return element.documentationComment;
+          return docs;
+        }();
+
+  /// Derive a synthetic documentation comment using the documentation from
+  String _getterSetterDocumentationComment() {
     var buffer = StringBuffer();
 
     // Check for synthetic before public, always, or stack overflow.

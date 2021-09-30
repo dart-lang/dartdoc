@@ -40,8 +40,8 @@ final RegExp _needsPrecacheRegExp = RegExp(r'{@(template|tool|inject-html)');
 /// entrypoints.
 mixin DocumentationComment
     on Documentable, Warnable, Locatable, SourceCodeMixin {
-
   List<DocumentationComment> _documentationFrom;
+
   /// Returns the ModelElement(s) from which we will get documentation.
   /// Can be more than one if this is a Field composing documentation from
   /// multiple Accessors.
@@ -50,20 +50,21 @@ mixin DocumentationComment
   /// to find docs, if the current class doesn't have docs
   /// for this element.
   @override
-  List<DocumentationComment> get documentationFrom => _documentationFrom ??= () {
-    if (documentationComment == null &&
-        this is Inheritable &&
-        (this as Inheritable).overriddenElement != null) {
-      return (this as Inheritable).overriddenElement.documentationFrom;
-    } else if (this is Inheritable && (this as Inheritable).isInherited) {
-      var thisInheritable = (this as Inheritable);
-      var fromThis = ModelElement.fromElement(
-          element, thisInheritable.definingEnclosingContainer.packageGraph);
-      return fromThis.documentationFrom;
-    } else {
-      return [this];
-    }
-  } ();
+  List<DocumentationComment> get documentationFrom =>
+      _documentationFrom ??= () {
+        if (documentationComment == null &&
+            this is Inheritable &&
+            (this as Inheritable).overriddenElement != null) {
+          return (this as Inheritable).overriddenElement.documentationFrom;
+        } else if (this is Inheritable && (this as Inheritable).isInherited) {
+          var thisInheritable = (this as Inheritable);
+          var fromThis = ModelElement.fromElement(
+              element, thisInheritable.definingEnclosingContainer.packageGraph);
+          return fromThis.documentationFrom;
+        } else {
+          return [this];
+        }
+      }();
 
   String _documentationAsHtml;
   @override

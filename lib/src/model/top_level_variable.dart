@@ -77,16 +77,6 @@ class TopLevelVariable extends ModelElement
   @override
   Set<Feature> get features => {...super.features, ...comboFeatures};
 
-  bool _documentationCommentComputed = false;
-  String _documentationComment;
-  @override
-  String get documentationComment => _documentationCommentComputed ? _documentationComment : _documentationComment ??= () {
-    _documentationCommentComputed = true;
-    var docs = getterSetterDocumentationComment;
-    if (docs.isEmpty) return _variable.documentationComment;
-    return docs;
-  } ();
-
   @override
   String get fileName => '${isConst ? '$name-constant' : name}.$fileType';
 

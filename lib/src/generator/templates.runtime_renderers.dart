@@ -5244,27 +5244,6 @@ class _Renderer_Field extends RendererBase<Field> {
                         parent: r);
                   },
                 ),
-                'documentationComment': Property(
-                  getValue: (CT_ c) => c.documentationComment,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_String.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(self.getValue(c),
-                        nextProperty, [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => c.documentationComment == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_String(
-                        c.documentationComment, ast, r.template, sink,
-                        parent: r);
-                  },
-                ),
                 'enclosingElement': Property(
                   getValue: (CT_ c) => c.enclosingElement,
                   renderVariable:
@@ -5954,6 +5933,27 @@ class _Renderer_GetterSetterCombo extends RendererBase<GetterSetterCombo> {
                         parent: r);
                   },
                 ),
+                'documentationComment': Property(
+                  getValue: (CT_ c) => c.documentationComment,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        _Renderer_String.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(self.getValue(c),
+                        nextProperty, [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => c.documentationComment == null,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    _render_String(
+                        c.documentationComment, ast, r.template, sink,
+                        parent: r);
+                  },
+                ),
                 'documentationFrom': Property(
                   getValue: (CT_ c) => c.documentationFrom,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -6015,28 +6015,6 @@ class _Renderer_GetterSetterCombo extends RendererBase<GetterSetterCombo> {
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.getterSetterBothAvailable == true,
-                ),
-                'getterSetterDocumentationComment': Property(
-                  getValue: (CT_ c) => c.getterSetterDocumentationComment,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_String.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(self.getValue(c),
-                        nextProperty, [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) =>
-                      c.getterSetterDocumentationComment == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.getterSetterDocumentationComment, ast,
-                        r.template, sink,
-                        parent: r);
-                  },
                 ),
                 'hasAccessorsWithDocs': Property(
                   getValue: (CT_ c) => c.hasAccessorsWithDocs,
@@ -13873,27 +13851,6 @@ class _Renderer_TopLevelVariable extends RendererBase<TopLevelVariable> {
                         parent: r);
                   },
                 ),
-                'documentationComment': Property(
-                  getValue: (CT_ c) => c.documentationComment,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_String.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(self.getValue(c),
-                        nextProperty, [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => c.documentationComment == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_String(
-                        c.documentationComment, ast, r.template, sink,
-                        parent: r);
-                  },
-                ),
                 'enclosingElement': Property(
                   getValue: (CT_ c) => c.enclosingElement,
                   renderVariable:
@@ -15522,7 +15479,7 @@ const _invisibleGetters = {
     'hasAccessorsWithDocs',
     'getterSetterBothAvailable',
     'oneLineDoc',
-    'getterSetterDocumentationComment',
+    'documentationComment',
     'modelType',
     'isCallable',
     'hasParameters',

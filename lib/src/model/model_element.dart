@@ -104,7 +104,6 @@ abstract class ModelElement extends Canonicalization
   final Member /*?*/ _originalMember;
   final Library /*?*/ _library;
 
-
   UnmodifiableListView<Parameter> _parameters;
   String _linkedName;
 
@@ -491,7 +490,6 @@ abstract class ModelElement extends Canonicalization
   ModelElement get canonicalModelElement =>
       _canonicalModelElement ??= buildCanonicalModelElement();
 
-
   bool get hasSourceHref => sourceHref.isNotEmpty;
   String _sourceHref;
 
@@ -642,7 +640,6 @@ abstract class ModelElement extends Canonicalization
     return injectMacros(
         documentationFrom.map((e) => e.documentationLocal).join('<p>'));
   }
-
 
   @override
   Element get element => _element;
@@ -928,7 +925,6 @@ abstract class ModelElement extends Canonicalization
     return _sourceCode ??=
         _sourceCodeRenderer.renderSourceCode(super.sourceCode);
   }
-
 
   @override
   int compareTo(dynamic other) {
