@@ -1,7 +1,10 @@
 import 'package:args/args.dart';
 import 'package:crypto/crypto.dart' as crypto;
 import 'package:dartdoc/src/model/documentable.dart';
+import 'package:dartdoc/src/model/documentation.dart';
+import 'package:dartdoc/src/model/inheritable.dart';
 import 'package:dartdoc/src/model/locatable.dart';
+import 'package:dartdoc/src/model/model_element.dart';
 import 'package:dartdoc/src/model/source_code_mixin.dart';
 import 'package:dartdoc/src/render/model_element_renderer.dart';
 import 'package:dartdoc/src/utils.dart';
@@ -37,6 +40,45 @@ final RegExp _needsPrecacheRegExp = RegExp(r'{@(template|tool|inject-html)');
 /// entrypoints.
 mixin DocumentationComment
     on Documentable, Warnable, Locatable, SourceCodeMixin {
+
+  List<DocumentationComment> _documentationFrom;
+  /// Returns the ModelElement(s) from which we will get documentation.
+  /// Can be more than one if this is a Field composing documentation from
+  /// multiple Accessors.
+  ///
+  /// This getter will walk up the inheritance hierarchy
+  /// to find docs, if the current class doesn't have docs
+  /// for this element.
+  @override
+  List<DocumentationComment> get documentationFrom => _documentationFrom ??= () {
+    if (documentationComment == null &&
+        this is Inheritable &&
+        (this as Inheritable).overriddenElement != null) {
+      return (this as Inheritable).overriddenElement.documentationFrom;
+    } else if (this is Inheritable && (this as Inheritable).isInherited) {
+      var thisInheritable = (this as Inheritable);
+      var fromThis = ModelElement.fromElement(
+          element, thisInheritable.definingEnclosingContainer.packageGraph);
+      return fromThis.documentationFrom;
+    } else {
+      return [this];
+    }
+  } ();
+
+  String _documentationAsHtml;
+  @override
+  String get documentationAsHtml {
+    if (_documentationAsHtml != null) return _documentationAsHtml;
+    _documentationAsHtml = _injectHtmlFragments(elementDocumentation.asHtml);
+    return _documentationAsHtml;
+  }
+
+  Documentation _elementDocumentation;
+  Documentation get elementDocumentation {
+    if (_elementDocumentation != null) return _elementDocumentation;
+    _elementDocumentation = Documentation.forElement(this);
+    return _elementDocumentation;
+  }
 
   String get documentationComment;
 
@@ -794,7 +836,7 @@ mixin DocumentationComment
   ///
   /// And the HTML fragment will not have been processed or changed by Markdown,
   /// but just injected verbatim.
-  String injectHtmlFragments(String rawDocs) {
+  String _injectHtmlFragments(String rawDocs) {
     if (!config.injectHtml) return rawDocs;
 
     return rawDocs.replaceAllMapped(_htmlInjectRegExp, (match) {

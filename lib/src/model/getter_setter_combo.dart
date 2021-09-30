@@ -109,10 +109,10 @@ mixin GetterSetterCombo on ModelElement {
   @override
   bool get isPublic => hasPublicGetter || hasPublicSetter;
 
-  List<ModelElement> _documentationFrom;
+  List<DocumentationComment> _documentationFrom;
 
   @override
-  List<ModelElement> get documentationFrom {
+  List<DocumentationComment> get documentationFrom {
     if (_documentationFrom == null) {
       _documentationFrom = [];
       if (hasPublicGetter) {
@@ -122,7 +122,7 @@ mixin GetterSetterCombo on ModelElement {
       }
       if (_documentationFrom.isEmpty ||
           _documentationFrom.every((e) => e.documentationComment == '')) {
-        _documentationFrom = computeDocumentationFrom;
+        _documentationFrom = super.documentationFrom;
       }
     }
     return _documentationFrom;

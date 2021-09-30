@@ -68,6 +68,27 @@ class _Renderer_Accessor extends RendererBase<Accessor> {
                         getters: _invisibleGetters['GetterSetterCombo']);
                   },
                 ),
+                'documentationComment': Property(
+                  getValue: (CT_ c) => c.documentationComment,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        _Renderer_String.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(self.getValue(c),
+                        nextProperty, [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => c.documentationComment == null,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    _render_String(
+                        c.documentationComment, ast, r.template, sink,
+                        parent: r);
+                  },
+                ),
                 'element': Property(
                   getValue: (CT_ c) => c.element,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -3907,6 +3928,26 @@ class _Renderer_DocumentationComment
       _propertyMapCache.putIfAbsent(
           CT_,
           () => {
+                'documentationAsHtml': Property(
+                  getValue: (CT_ c) => c.documentationAsHtml,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        _Renderer_String.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(self.getValue(c),
+                        nextProperty, [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => c.documentationAsHtml == null,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    _render_String(c.documentationAsHtml, ast, r.template, sink,
+                        parent: r);
+                  },
+                ),
                 'documentationComment': Property(
                   getValue: (CT_ c) => c.documentationComment,
                   renderVariable:
@@ -3928,6 +3969,20 @@ class _Renderer_DocumentationComment
                         parent: r);
                   },
                 ),
+                'documentationFrom': Property(
+                  getValue: (CT_ c) => c.documentationFrom,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'List<DocumentationComment>'),
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    return c.documentationFrom.map((e) => renderSimple(
+                        e, ast, r.template, sink,
+                        parent: r,
+                        getters: _invisibleGetters['DocumentationComment']));
+                  },
+                ),
                 'documentationLocal': Property(
                   getValue: (CT_ c) => c.documentationLocal,
                   renderVariable:
@@ -3946,6 +4001,19 @@ class _Renderer_DocumentationComment
                       List<MustachioNode> ast, StringSink sink) {
                     _render_String(c.documentationLocal, ast, r.template, sink,
                         parent: r);
+                  },
+                ),
+                'elementDocumentation': Property(
+                  getValue: (CT_ c) => c.elementDocumentation,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'Documentation'),
+                  isNullValue: (CT_ c) => c.elementDocumentation == null,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    renderSimple(c.elementDocumentation, ast, r.template, sink,
+                        parent: r, getters: _invisibleGetters['Documentation']);
                   },
                 ),
                 'fullyQualifiedNameWithoutLibrary': Property(
@@ -5176,6 +5244,27 @@ class _Renderer_Field extends RendererBase<Field> {
                         parent: r);
                   },
                 ),
+                'documentationComment': Property(
+                  getValue: (CT_ c) => c.documentationComment,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        _Renderer_String.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(self.getValue(c),
+                        nextProperty, [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => c.documentationComment == null,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    _render_String(
+                        c.documentationComment, ast, r.template, sink,
+                        parent: r);
+                  },
+                ),
                 'enclosingElement': Property(
                   getValue: (CT_ c) => c.enclosingElement,
                   renderVariable:
@@ -5870,12 +5959,13 @@ class _Renderer_GetterSetterCombo extends RendererBase<GetterSetterCombo> {
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
-                          c, remainingNames, 'List<ModelElement>'),
+                          c, remainingNames, 'List<DocumentationComment>'),
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    return c.documentationFrom.map((e) => _render_ModelElement(
+                    return c.documentationFrom.map((e) => renderSimple(
                         e, ast, r.template, sink,
-                        parent: r));
+                        parent: r,
+                        getters: _invisibleGetters['DocumentationComment']));
                   },
                 ),
                 'enclosingElement': Property(
@@ -9397,19 +9487,6 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                         getters: _invisibleGetters['CompilationUnitElement']);
                   },
                 ),
-                'computeDocumentationFrom': Property(
-                  getValue: (CT_ c) => c.computeDocumentationFrom,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'List<ModelElement>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.computeDocumentationFrom.map((e) =>
-                        _render_ModelElement(e, ast, r.template, sink,
-                            parent: r));
-                  },
-                ),
                 'config': Property(
                   getValue: (CT_ c) => c.config,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -9476,8 +9553,8 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                         parent: r);
                   },
                 ),
-                'documentationAsHtml': Property(
-                  getValue: (CT_ c) => c.documentationAsHtml,
+                'documentationComment': Property(
+                  getValue: (CT_ c) => c.documentationComment,
                   renderVariable:
                       (CT_ c, Property<CT_> self, List<String> remainingNames) {
                     if (remainingNames.isEmpty) {
@@ -9489,24 +9566,12 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                     return nextProperty.renderVariable(self.getValue(c),
                         nextProperty, [...remainingNames.skip(1)]);
                   },
-                  isNullValue: (CT_ c) => c.documentationAsHtml == null,
+                  isNullValue: (CT_ c) => c.documentationComment == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.documentationAsHtml, ast, r.template, sink,
+                    _render_String(
+                        c.documentationComment, ast, r.template, sink,
                         parent: r);
-                  },
-                ),
-                'documentationFrom': Property(
-                  getValue: (CT_ c) => c.documentationFrom,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'List<ModelElement>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.documentationFrom.map((e) => _render_ModelElement(
-                        e, ast, r.template, sink,
-                        parent: r));
                   },
                 ),
                 'element': Property(
@@ -13808,6 +13873,27 @@ class _Renderer_TopLevelVariable extends RendererBase<TopLevelVariable> {
                         parent: r);
                   },
                 ),
+                'documentationComment': Property(
+                  getValue: (CT_ c) => c.documentationComment,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        _Renderer_String.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(self.getValue(c),
+                        nextProperty, [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => c.documentationComment == null,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    _render_String(
+                        c.documentationComment, ast, r.template, sink,
+                        parent: r);
+                  },
+                ),
                 'enclosingElement': Property(
                   getValue: (CT_ c) => c.enclosingElement,
                   renderVariable:
@@ -15207,6 +15293,27 @@ const _invisibleGetters = {
     'useBaseHref'
   },
   'DocumentLocation': {'hashCode', 'runtimeType', 'index'},
+  'Documentation': {
+    'hashCode',
+    'runtimeType',
+    'hasExtendedDocs',
+    'asHtml',
+    'asOneLiner',
+    'commentRefs'
+  },
+  'DocumentationComment': {
+    'documentationFrom',
+    'documentationAsHtml',
+    'elementDocumentation',
+    'documentationComment',
+    'hasNodoc',
+    'sourceFileName',
+    'fullyQualifiedNameWithoutLibrary',
+    'pathContext',
+    'modelElementRenderer',
+    'documentationLocal',
+    'needsPrecache'
+  },
   'Element': {
     'hashCode',
     'runtimeType',

@@ -104,7 +104,7 @@ abstract class ModelElement extends Canonicalization
   final Member /*?*/ _originalMember;
   final Library /*?*/ _library;
 
-  Documentation __documentation;
+
   UnmodifiableListView<Parameter> _parameters;
   String _linkedName;
 
@@ -491,14 +491,6 @@ abstract class ModelElement extends Canonicalization
   ModelElement get canonicalModelElement =>
       _canonicalModelElement ??= buildCanonicalModelElement();
 
-  List<ModelElement> _documentationFrom;
-
-  // TODO(jcollins-g): untangle when mixins can call super
-  @override
-  List<ModelElement> get documentationFrom {
-    _documentationFrom ??= computeDocumentationFrom;
-    return _documentationFrom;
-  }
 
   bool get hasSourceHref => sourceHref.isNotEmpty;
   String _sourceHref;
@@ -506,29 +498,6 @@ abstract class ModelElement extends Canonicalization
   String get sourceHref {
     _sourceHref ??= SourceLinker.fromElement(this).href();
     return _sourceHref;
-  }
-
-  /// Returns the ModelElement(s) from which we will get documentation.
-  /// Can be more than one if this is a Field composing documentation from
-  /// multiple Accessors.
-  ///
-  /// This getter will walk up the inheritance hierarchy
-  /// to find docs, if the current class doesn't have docs
-  /// for this element.
-  List<ModelElement> get computeDocumentationFrom {
-    if (documentationComment == null &&
-        _canOverride &&
-        this is Inheritable &&
-        (this as Inheritable).overriddenElement != null) {
-      return (this as Inheritable).overriddenElement.documentationFrom;
-    } else if (this is Inheritable && (this as Inheritable).isInherited) {
-      var thisInheritable = (this as Inheritable);
-      var fromThis = ModelElement.fromElement(
-          element, thisInheritable.definingEnclosingContainer.packageGraph);
-      return fromThis.documentationFrom;
-    } else {
-      return [this];
-    }
   }
 
   Library get definingLibrary {
@@ -674,13 +643,6 @@ abstract class ModelElement extends Canonicalization
         documentationFrom.map((e) => e.documentationLocal).join('<p>'));
   }
 
-  String _documentationAsHtml;
-  @override
-  String get documentationAsHtml {
-    if (_documentationAsHtml != null) return _documentationAsHtml;
-    _documentationAsHtml = injectHtmlFragments(_elementDocumentation.asHtml);
-    return _documentationAsHtml;
-  }
 
   @override
   Element get element => _element;
@@ -762,7 +724,7 @@ abstract class ModelElement extends Canonicalization
 
   @override
   bool get hasExtendedDocumentation =>
-      href != null && _elementDocumentation.hasExtendedDocs;
+      href != null && elementDocumentation.hasExtendedDocs;
 
   bool get hasParameters => parameters.isNotEmpty;
 
@@ -867,7 +829,7 @@ abstract class ModelElement extends Canonicalization
   String get name => _name ??= element.name;
 
   @override
-  String get oneLineDoc => _elementDocumentation.asOneLiner;
+  String get oneLineDoc => elementDocumentation.asOneLiner;
 
   Member get originalMember => _originalMember;
 
@@ -957,19 +919,8 @@ abstract class ModelElement extends Canonicalization
     return _parameters;
   }
 
-  bool _documentationCommentComputed = false;
-  String _documentationComment;
   @override
-  String get documentationComment => _documentationCommentComputed ? _documentationComment : _documentationComment ??= () {
-    _documentationCommentComputed = true;
-    return element.documentationComment;
-  } ();
-
-  Documentation get _elementDocumentation {
-    if (__documentation != null) return __documentation;
-    __documentation = Documentation.forElement(this);
-    return __documentation;
-  }
+  String get documentationComment => element.documentationComment;
 
   String _sourceCode;
   @override
@@ -978,8 +929,6 @@ abstract class ModelElement extends Canonicalization
         _sourceCodeRenderer.renderSourceCode(super.sourceCode);
   }
 
-  bool get _canOverride =>
-      element is ClassMemberElement || element is PropertyAccessorElement;
 
   @override
   int compareTo(dynamic other) {
