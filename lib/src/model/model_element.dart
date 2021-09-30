@@ -917,10 +917,10 @@ abstract class ModelElement extends Canonicalization
   }
 
   @override
-  String get documentationComment => element.documentationComment;
+  String /*!*/ get documentationComment => element.documentationComment ?? '';
 
   @override
-  bool get hasDocumentationComment => element.documentationComment == null;
+  bool get hasDocumentationComment => element.documentationComment != null;
 
   String _sourceCode;
   @override

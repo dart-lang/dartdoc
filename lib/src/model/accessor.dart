@@ -85,40 +85,42 @@ class Accessor extends ModelElement implements EnclosedElement {
           return stripComments(super.documentationComment);
         }();
 
-  String __syntheticDocumentationComment;
+  String /*!*/ __syntheticDocumentationComment;
 
   /// Build a documentation comment for this accessor assuming it is synthetic.
   /// Value here is not useful if [isSynthetic] is false.
-  String get _syntheticDocumentationComment =>
+  String /*!*/ get _syntheticDocumentationComment =>
       __syntheticDocumentationComment ??= () {
-        // If we're a setter, and a getter exists, do not add synthetic
-        // documentation if the combo's documentation is actually derived
-        // from that getter.
-        bool _comboDocsAreIndependent() {
-          if (isSetter && definingCombo.hasGetter) {
-            if (definingCombo.getter.isSynthetic ||
-                !definingCombo.documentationFrom.contains(this)) {
-              return true;
-            }
-          }
-          return false;
+        if (_hasSyntheticDocumentationComment) {
+          return definingCombo.documentationComment ?? '';
         }
-
-        if ( // If this is a getter, assume we want synthetic documentation.
-            isGetter ||
-                // If the definingCombo has a nodoc tag, we want synthetic documentation
-                // for a synthetic accessor just in case it is inherited somewhere
-                // down the line due to split inheritance.
-                definingCombo.hasNodoc ||
-                _comboDocsAreIndependent()) {
-          return definingCombo.documentationComment;
-        }
-        return null;
+        return '';
       }();
+
+  /// If this is a getter, assume we want synthetic documentation.
+  /// If the definingCombo has a nodoc tag, we want synthetic documentation
+  /// for a synthetic accessor just in case it is inherited somewhere
+  /// down the line due to split inheritance.
+  bool get _hasSyntheticDocumentationComment =>
+      (isGetter || definingCombo.hasNodoc || _comboDocsAreIndependent()) &&
+      definingCombo.hasDocumentationComment;
+
+  // If we're a setter, and a getter exists, do not add synthetic
+  // documentation if the combo's documentation is actually derived
+  // from that getter.
+  bool _comboDocsAreIndependent() {
+    if (isSetter && definingCombo.hasGetter) {
+      if (definingCombo.getter.isSynthetic ||
+          !definingCombo.documentationFrom.contains(this)) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   @override
   bool get hasDocumentationComment => isSynthetic
-      ? _syntheticDocumentationComment != null
+      ? _hasSyntheticDocumentationComment
       : element.documentationComment != null;
 
   @override

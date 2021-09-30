@@ -52,7 +52,7 @@ mixin DocumentationComment
   @override
   List<DocumentationComment> get documentationFrom =>
       _documentationFrom ??= () {
-        if (documentationComment == null &&
+        if (!hasDocumentationComment &&
             this is Inheritable &&
             (this as Inheritable).overriddenElement != null) {
           return (this as Inheritable).overriddenElement.documentationFrom;
@@ -81,7 +81,7 @@ mixin DocumentationComment
     return _elementDocumentation;
   }
 
-  String get documentationComment;
+  String /*!*/ get documentationComment;
 
   /// True if [this] has a synthetic/inherited or local documentation
   /// comment.  False otherwise.
@@ -89,7 +89,7 @@ mixin DocumentationComment
 
   /// Returns true if the raw documentation comment has a nodoc indication.
   bool get hasNodoc {
-    if (documentationComment != null &&
+    if (hasDocumentationComment &&
         (documentationComment.contains('@nodoc') ||
             documentationComment.contains('<nodoc>'))) {
       return true;
