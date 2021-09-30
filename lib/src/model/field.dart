@@ -136,13 +136,6 @@ class Field extends ModelElement
     return allFeatures;
   }
 
-  @override
-  String computeDocumentationComment() {
-    var docs = getterSetterDocumentationComment;
-    if (docs.isEmpty) return field.documentationComment;
-    return docs;
-  }
-
   FieldElement get field => (element as FieldElement);
 
   @override

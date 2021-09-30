@@ -73,7 +73,7 @@ mixin ContainerMember on ModelElement implements EnclosedElement {
     // TODO(jcollins-g): split Field documentation up between accessors
     // and resolve the pieces with different scopes.  dart-lang/dartdoc#2693.
     // Until then, just pretend we're handling this correctly.
-    yield documentationFrom.first.definingLibrary;
+    yield (documentationFrom.first as ModelElement).definingLibrary;
     // TODO(jcollins-g): Wean users off of depending on canonical library
     // resolution. dart-lang/dartdoc#2696
     if (canonicalLibrary != null) yield canonicalLibrary;

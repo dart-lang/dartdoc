@@ -72,24 +72,29 @@ class Accessor extends ModelElement implements EnclosedElement {
     return _sourceCode;
   }
 
+  bool _documentationCommentComputed = false;
+  String _documentationComment;
   @override
-  String computeDocumentationComment() {
-    if (isSynthetic) {
-      // If we're a setter, only display something if we have something different than the getter.
-      // TODO(jcollins-g): modify analyzer to do this itself?
-      if (isGetter ||
-          definingCombo.hasNodoc ||
-          (isSetter &&
-              definingCombo.hasGetter &&
-              definingCombo.getter.documentationComment !=
-                  definingCombo.documentationComment)) {
-        return stripComments(definingCombo.documentationComment);
-      } else {
-        return '';
-      }
-    }
-    return stripComments(super.computeDocumentationComment());
-  }
+  String get documentationComment => _documentationCommentComputed
+      ? _documentationComment
+      : _documentationComment ??= () {
+          _documentationCommentComputed = true;
+          if (isSynthetic) {
+            // If we're a setter, only display something if we have something different than the getter.
+            // TODO(jcollins-g): modify analyzer to do this itself?
+            if (isGetter ||
+                definingCombo.hasNodoc ||
+                (isSetter &&
+                    definingCombo.hasGetter &&
+                    definingCombo.getter.documentationComment !=
+                        definingCombo.documentationComment)) {
+              return stripComments(definingCombo.documentationComment);
+            } else {
+              return '';
+            }
+          }
+          return stripComments(super.documentationComment);
+        }();
 
   @override
   void warn(PackageWarning kind,
