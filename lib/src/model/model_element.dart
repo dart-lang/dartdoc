@@ -34,20 +34,6 @@ import 'package:dartdoc/src/warnings.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path show Context;
 
-/// This doc may need to be processed in case it has a template or html
-/// fragment.
-final RegExp needsPrecacheRegExp = RegExp(r'{@(template|tool|inject-html)');
-
-final _htmlInjectRegExp = RegExp(r'<dartdoc-html>([a-f0-9]+)</dartdoc-html>');
-@Deprecated('Public variable intended to be private; will be removed as early '
-    'as Dartdoc 1.0.0')
-RegExp get htmlInjectRegExp => _htmlInjectRegExp;
-
-final _macroRegExp = RegExp(r'{@macro\s+([^}]+)}');
-@Deprecated('Public variable intended to be private; will be removed as early '
-    'as Dartdoc 1.0.0')
-RegExp get macroRegExp => _macroRegExp;
-
 // TODO(jcollins-g): Implement resolution per ECMA-408 4th edition, page 39 #22.
 /// Resolves this very rare case incorrectly by picking the closest element in
 /// the inheritance and interface chains from the analyzer.
@@ -118,7 +104,6 @@ abstract class ModelElement extends Canonicalization
   final Member /*?*/ _originalMember;
   final Library /*?*/ _library;
 
-  String _rawDocs;
   Documentation __documentation;
   UnmodifiableListView<Parameter> _parameters;
   String _linkedName;
@@ -546,59 +531,6 @@ abstract class ModelElement extends Canonicalization
     }
   }
 
-  String _buildDocumentationLocal() => _buildDocumentationBaseSync();
-
-  /// Override this to add more features to the documentation builder in a
-  /// subclass.
-  String buildDocumentationAddition(String docs) => docs ??= '';
-
-  /// Separate from _buildDocumentationLocal for overriding.
-  String _buildDocumentationBaseSync() {
-    assert(_rawDocs == null,
-        'reentrant calls to _buildDocumentation* not allowed');
-    // Do not use the sync method if we need to evaluate tools or templates.
-    assert(!isCanonical ||
-        !needsPrecacheRegExp.hasMatch(documentationComment ?? ''));
-    if (config.dropTextFrom.contains(element.library.name)) {
-      _rawDocs = '';
-    } else {
-      _rawDocs = processCommentWithoutTools(documentationComment ?? '');
-    }
-    _rawDocs = buildDocumentationAddition(_rawDocs);
-    return _rawDocs;
-  }
-
-  /// Separate from _buildDocumentationLocal for overriding.  Can only be
-  /// used as part of [PackageGraph.setUpPackageGraph].
-  Future<String> _buildDocumentationBase() async {
-    assert(_rawDocs == null,
-        'reentrant calls to _buildDocumentation* not allowed');
-    // Do not use the sync method if we need to evaluate tools or templates.
-    if (config.dropTextFrom.contains(element.library.name)) {
-      _rawDocs = '';
-    } else {
-      _rawDocs = await processComment(documentationComment ?? '');
-    }
-    _rawDocs = buildDocumentationAddition(_rawDocs);
-    return _rawDocs;
-  }
-
-  /// Returns the documentation for this literal element unless
-  /// [config.dropTextFrom] indicates it should not be returned.  Macro
-  /// definitions are stripped, but macros themselves are not injected.  This
-  /// is a two stage process to avoid ordering problems.
-  String _documentationLocal;
-
-  String get documentationLocal =>
-      _documentationLocal ??= _buildDocumentationLocal();
-
-  /// Returns the docs, stripped of their leading comments syntax.
-  @override
-  String get documentation {
-    return _injectMacros(
-        documentationFrom.map((e) => e.documentationLocal).join('<p>'));
-  }
-
   Library get definingLibrary {
     var library = packageGraph.findButDoNotCreateLibraryFor(element);
     if (library == null) {
@@ -735,13 +667,19 @@ abstract class ModelElement extends Canonicalization
     return i.enclosingElement == i.canonicalEnclosingContainer;
   }
 
-  String _htmlDocumentation;
+  /// Returns the docs, stripped of their leading comments syntax.
+  @override
+  String get documentation {
+    return injectMacros(
+        documentationFrom.map((e) => e.documentationLocal).join('<p>'));
+  }
 
+  String _documentationAsHtml;
   @override
   String get documentationAsHtml {
-    if (_htmlDocumentation != null) return _htmlDocumentation;
-    _htmlDocumentation = _injectHtmlFragments(_documentation.asHtml);
-    return _htmlDocumentation;
+    if (_documentationAsHtml != null) return _documentationAsHtml;
+    _documentationAsHtml = injectHtmlFragments(_elementDocumentation.asHtml);
+    return _documentationAsHtml;
   }
 
   @override
@@ -824,7 +762,7 @@ abstract class ModelElement extends Canonicalization
 
   @override
   bool get hasExtendedDocumentation =>
-      href != null && _documentation.hasExtendedDocs;
+      href != null && _elementDocumentation.hasExtendedDocs;
 
   bool get hasParameters => parameters.isNotEmpty;
 
@@ -929,7 +867,7 @@ abstract class ModelElement extends Canonicalization
   String get name => _name ??= element.name;
 
   @override
-  String get oneLineDoc => _documentation.asOneLiner;
+  String get oneLineDoc => _elementDocumentation.asOneLiner;
 
   Member get originalMember => _originalMember;
 
@@ -1022,14 +960,7 @@ abstract class ModelElement extends Canonicalization
   @override
   String computeDocumentationComment() => element.documentationComment;
 
-  /// Unconditionally precache local documentation.
-  ///
-  /// Use only in factory for [PackageGraph].
-  Future<void> precacheLocalDocs() async {
-    _documentationLocal = await _buildDocumentationBase();
-  }
-
-  Documentation get _documentation {
+  Documentation get _elementDocumentation {
     if (__documentation != null) return __documentation;
     __documentation = Documentation.forElement(this);
     return __documentation;
@@ -1086,88 +1017,5 @@ abstract class ModelElement extends Canonicalization
     }
 
     return modelElementRenderer.renderLinkedName(this);
-  }
-
-  /// Replace &lt;<dartdoc-html>[digest]</dartdoc-html>&gt; in API comments with
-  /// the contents of the HTML fragment earlier defined by the
-  /// &#123;@inject-html&#125; directive. The [digest] is a SHA1 of the contents
-  /// of the HTML fragment, automatically generated upon parsing the
-  /// &#123;@inject-html&#125; directive.
-  ///
-  /// This markup is generated and inserted by [_stripHtmlAndAddToIndex] when it
-  /// removes the HTML fragment in preparation for markdown processing. It isn't
-  /// meant to be used at a user level.
-  ///
-  /// Example:
-  ///
-  /// You place the fragment in a dartdoc comment:
-  ///
-  ///     Some comments
-  ///     &#123;@inject-html&#125;
-  ///     &lt;p&gt;[HTML contents!]&lt;/p&gt;
-  ///     &#123;@endtemplate&#125;
-  ///     More comments
-  ///
-  /// and [_stripHtmlAndAddToIndex] will replace your HTML fragment with this:
-  ///
-  ///     Some comments
-  ///     &lt;dartdoc-html&gt;4cc02f877240bf69855b4c7291aba8a16e5acce0&lt;/dartdoc-html&gt;
-  ///     More comments
-  ///
-  /// Which will render in the final HTML output as:
-  ///
-  ///     Some comments
-  ///     &lt;p&gt;[HTML contents!]&lt;/p&gt;
-  ///     More comments
-  ///
-  /// And the HTML fragment will not have been processed or changed by Markdown,
-  /// but just injected verbatim.
-  String _injectHtmlFragments(String rawDocs) {
-    if (!config.injectHtml) return rawDocs;
-
-    return rawDocs.replaceAllMapped(_htmlInjectRegExp, (match) {
-      var fragment = packageGraph.getHtmlFragment(match[1]);
-      if (fragment == null) {
-        warn(PackageWarning.unknownHtmlFragment, message: match[1]);
-      }
-      return fragment;
-    });
-  }
-
-  /// Replace &#123;@macro ...&#125; in API comments with the contents of the macro
-  ///
-  /// Syntax:
-  ///
-  ///     &#123;@macro NAME&#125;
-  ///
-  /// Example:
-  ///
-  /// You define the template in any comment for a documentable entity like:
-  ///
-  ///     &#123;@template foo&#125;
-  ///     Foo contents!
-  ///     &#123;@endtemplate&#125;
-  ///
-  /// and them somewhere use it like this:
-  ///
-  ///     Some comments
-  ///     &#123;@macro foo&#125;
-  ///     More comments
-  ///
-  /// Which will render
-  ///
-  ///     Some comments
-  ///     Foo contents!
-  ///     More comments
-  ///
-  String _injectMacros(String rawDocs) {
-    return rawDocs.replaceAllMapped(_macroRegExp, (match) {
-      var macro = packageGraph.getMacro(match[1]);
-      if (macro == null) {
-        warn(PackageWarning.unknownMacro, message: match[1]);
-      }
-      macro = processCommentDirectives(macro ?? '');
-      return macro;
-    });
   }
 }
