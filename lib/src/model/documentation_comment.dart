@@ -83,6 +83,10 @@ mixin DocumentationComment
 
   String get documentationComment;
 
+  /// True if [this] has a synthetic/inherited or local documentation
+  /// comment.  False otherwise.
+  bool get hasDocumentationComment;
+
   /// Returns true if the raw documentation comment has a nodoc indication.
   bool get hasNodoc {
     if (documentationComment != null &&

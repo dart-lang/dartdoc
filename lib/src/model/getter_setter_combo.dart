@@ -170,35 +170,43 @@ mixin GetterSetterCombo on ModelElement {
           return docs;
         }();
 
+  @override
+  bool get hasDocumentationComment =>
+      _getterSetterDocumentationComment.isEmpty &&
+      element.documentationComment == null;
+
+  String __getterSetterDocumentationComment;
+
   /// Derive a synthetic documentation comment using the documentation from
-  String get _getterSetterDocumentationComment {
-    var buffer = StringBuffer();
+  String get _getterSetterDocumentationComment =>
+      __getterSetterDocumentationComment ??= () {
+        var buffer = StringBuffer();
 
-    // Check for synthetic before public, always, or stack overflow.
-    if (hasGetter && !getter.isSynthetic && getter.isPublic) {
-      assert(getter.documentationFrom.length == 1);
-      // We have to check against dropTextFrom here since documentationFrom
-      // doesn't yield the real elements for GetterSetterCombos.
-      if (!config.dropTextFrom
-          .contains(getter.documentationFrom.first.element.library.name)) {
-        var docs = getter.documentationFrom.first.documentationComment;
-        if (docs != null) buffer.write(docs);
-      }
-    }
-
-    if (hasSetter && !setter.isSynthetic && setter.isPublic) {
-      assert(setter.documentationFrom.length == 1);
-      if (!config.dropTextFrom
-          .contains(setter.documentationFrom.first.element.library.name)) {
-        var docs = setter.documentationFrom.first.documentationComment;
-        if (docs != null) {
-          if (buffer.isNotEmpty) buffer.write('\n\n');
-          buffer.write(docs);
+        // Check for synthetic before public, always, or stack overflow.
+        if (hasGetter && !getter.isSynthetic && getter.isPublic) {
+          assert(getter.documentationFrom.length == 1);
+          // We have to check against dropTextFrom here since documentationFrom
+          // doesn't yield the real elements for GetterSetterCombos.
+          if (!config.dropTextFrom
+              .contains(getter.documentationFrom.first.element.library.name)) {
+            var docs = getter.documentationFrom.first.documentationComment;
+            if (docs != null) buffer.write(docs);
+          }
         }
-      }
-    }
-    return buffer.toString();
-  }
+
+        if (hasSetter && !setter.isSynthetic && setter.isPublic) {
+          assert(setter.documentationFrom.length == 1);
+          if (!config.dropTextFrom
+              .contains(setter.documentationFrom.first.element.library.name)) {
+            var docs = setter.documentationFrom.first.documentationComment;
+            if (docs != null) {
+              if (buffer.isNotEmpty) buffer.write('\n\n');
+              buffer.write(docs);
+            }
+          }
+        }
+        return buffer.toString();
+      }();
 
   ElementType get modelType {
     if (hasGetter) return getter.modelType.returnType;
