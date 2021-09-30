@@ -770,7 +770,7 @@ mixin DocumentationComment
 
   /// Override this to add more features to the documentation builder in a
   /// subclass.
-  String buildDocumentationAddition(String docs) => docs ??= '';
+  String buildDocumentationAddition(String docs) => docs ?? '';
 
   /// Separate from _buildDocumentationLocal for overriding.
   String _buildDocumentationBaseSync() {
