@@ -24,7 +24,7 @@ yet in the issue tracker, start by opening an issue. Thanks!
 2. When a change is user-facing, please add a new entry to the [changelog](https://github.com/dart-lang/dartdoc/blob/master/CHANGELOG.md)
 3. Please include a test for your change.  `dartdoc` has both `package:test`-style unittests as well as integration tests.  To run the unittests, use `grind test`.
 4. For major changes, run `grind compare-sdk-warnings` and `grind compare-flutter-warnings`, and include the summary results in your pull request.
-5. Be sure to format your Dart code using `dartfmt -w`, otherwise travis will complain.
+5. Be sure to format your Dart code using `dart format`, otherwise travis will complain.
 6. Use `grind presubmit` before creating a pull request to quickly check for common problems.
 7. Post your change via a pull request for review and integration!
 
