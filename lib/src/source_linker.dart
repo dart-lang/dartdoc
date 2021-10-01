@@ -12,9 +12,6 @@ import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
 
 final _uriTemplateRegExp = RegExp(r'(%[frl]%)');
-@Deprecated('Public variable intended to be private; will be removed as early '
-    'as Dartdoc 1.0.0')
-RegExp get uriTemplateRegexp => _uriTemplateRegExp;
 
 abstract class SourceLinkerOptionContext implements DartdocOptionContextBase {
   List<String> get linkToSourceExcludes =>

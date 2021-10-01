@@ -15,10 +15,6 @@ import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path show Context;
 import 'package:pub_semver/pub_semver.dart';
 
-@Deprecated('Public variable intended to be private; will be removed as early '
-    'as Dartdoc 1.0.0')
-RegExp get substituteNameVersion => Package._substituteNameVersion;
-
 // All hrefs are emitted as relative paths from the output root. We are unable
 // to compute them from the page we are generating, and many properties computed
 // using hrefs are memoized anyway. To build complete relative hrefs, we emit
@@ -30,11 +26,6 @@ RegExp get substituteNameVersion => Package._substituteNameVersion;
 // might reasonably exist normally.
 @internal
 const String htmlBasePlaceholder = '\%\%__HTMLBASE_dartdoc_internal__\%\%';
-
-@Deprecated('Public variable intended to be private; will be removed as early '
-    'as Dartdoc 1.0.0')
-// ignore: non_constant_identifier_names
-const String HTMLBASE_PLACEHOLDER = htmlBasePlaceholder;
 
 /// A [LibraryContainer] that contains [Library] objects related to a particular
 /// package.
@@ -141,10 +132,6 @@ class Package extends LibraryContainer
   bool get hasExtendedDocumentation => hasDocumentation;
 
   File /*?*/ _documentationFile;
-
-  @Deprecated(
-      'Instead use [documentationFile] which will be `null` if this package does not have one.')
-  bool get hasDocumentationFile => documentationFile != null;
 
   File /*?*/ get documentationFile =>
       _documentationFile ??= packageMeta.getReadmeContents();
