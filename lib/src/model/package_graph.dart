@@ -123,7 +123,7 @@ class PackageGraph with CommentReferable, Nameable {
 
     Iterable<Future<void>> precacheOneElement(ModelElement m) sync* {
       for (var d
-          in m.documentationFrom.where((d) => d.documentationComment != null)) {
+          in m.documentationFrom.where((d) => d.hasDocumentationComment)) {
         if (d.needsPrecache && !precachedElements.contains(d)) {
           precachedElements.add(d);
           yield d.precacheLocalDocs();

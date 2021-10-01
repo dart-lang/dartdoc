@@ -165,6 +165,13 @@ class _Renderer_Accessor extends RendererBase<Accessor> {
                         parent: r);
                   },
                 ),
+                'hasDocumentationComment': Property(
+                  getValue: (CT_ c) => c.hasDocumentationComment,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.hasDocumentationComment == true,
+                ),
                 'href': Property(
                   getValue: (CT_ c) => c.href,
                   renderVariable:
@@ -4018,6 +4025,13 @@ class _Renderer_DocumentationComment
                         parent: r);
                   },
                 ),
+                'hasDocumentationComment': Property(
+                  getValue: (CT_ c) => c.hasDocumentationComment,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.hasDocumentationComment == true,
+                ),
                 'hasNodoc': Property(
                   getValue: (CT_ c) => c.hasNodoc,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -6002,6 +6016,13 @@ class _Renderer_GetterSetterCombo extends RendererBase<GetterSetterCombo> {
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.hasAccessorsWithDocs == true,
+                ),
+                'hasDocumentationComment': Property(
+                  getValue: (CT_ c) => c.hasDocumentationComment,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.hasDocumentationComment == true,
                 ),
                 'hasExplicitGetter': Property(
                   getValue: (CT_ c) => c.hasExplicitGetter,
@@ -9719,6 +9740,13 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.hasDocumentation == true,
+                ),
+                'hasDocumentationComment': Property(
+                  getValue: (CT_ c) => c.hasDocumentationComment,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.hasDocumentationComment == true,
                 ),
                 'hasExtendedDocumentation': Property(
                   getValue: (CT_ c) => c.hasExtendedDocumentation,
@@ -15224,6 +15252,7 @@ const _invisibleGetters = {
     'documentationAsHtml',
     'elementDocumentation',
     'documentationComment',
+    'hasDocumentationComment',
     'hasNodoc',
     'sourceFileName',
     'fullyQualifiedNameWithoutLibrary',
@@ -15441,6 +15470,7 @@ const _invisibleGetters = {
     'getterSetterBothAvailable',
     'oneLineDoc',
     'documentationComment',
+    'hasDocumentationComment',
     'modelType',
     'isCallable',
     'hasParameters',
