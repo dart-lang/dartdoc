@@ -38,7 +38,7 @@ jobs:
             job: sdk-analyzer
             # TODO(jcollins-g): Delete exception as 2.15 beta 2 gets underway
           - sdk: beta
-            job: sdk
+            job: sdk-docs
 
     steps:
       - name: Store date
