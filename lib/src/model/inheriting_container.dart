@@ -359,11 +359,6 @@ abstract class InheritingContainer extends Container
       .map((et) => (et.modelElement as InheritingContainer))
       .contains(other);
 
-  @Deprecated(
-      'Public method intended to be private; will be removed as early as '
-      'Dartdoc 1.0.0')
-  bool isInheritingFrom(InheritingContainer other) => _isInheritingFrom(other);
-
   DefinedElementType _modelType;
 
   @override
