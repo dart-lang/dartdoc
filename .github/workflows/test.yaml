@@ -36,6 +36,9 @@ jobs:
             job: flutter
           - sdk: beta
             job: sdk-analyzer
+            # TODO(jcollins-g): Delete exception as 2.15 beta 2 gets underway
+          - sdk: beta
+            job: sdk-docs
 
     steps:
       - name: Store date
