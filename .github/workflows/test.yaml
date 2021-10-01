@@ -36,6 +36,10 @@ jobs:
             job: flutter
           - sdk: stable
             job: sdk-analyzer
+          - sdk: stable
+            job: main
+          - sdk: stable
+            job: sdk-docs
 
     steps:
       - name: Store date
