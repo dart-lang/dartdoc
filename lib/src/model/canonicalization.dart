@@ -26,7 +26,7 @@ abstract class Canonicalization implements Locatable, Documentable {
   }
 
   ScoredCandidate _scoreElementWithLibrary(Library lib) {
-    var scoredCandidate = ScoredCandidate(this, lib);
+    var scoredCandidate = ScoredCandidate(lib);
     Iterable<String> resplit(Set<String> items) sync* {
       for (var item in items) {
         for (var subItem in item.split('_')) {
@@ -70,12 +70,6 @@ abstract class Canonicalization implements Locatable, Documentable {
         scoreBoost, 'element location parts start with parts of name');
     return scoredCandidate;
   }
-
-  @Deprecated(
-      'Public method intended to be private; will be removed as early as '
-      'Dartdoc 1.0.0')
-  ScoredCandidate scoreElementWithLibrary(Library lib) =>
-      _scoreElementWithLibrary(lib);
 }
 
 /// This class represents the score for a particular element; how likely
@@ -83,31 +77,13 @@ abstract class Canonicalization implements Locatable, Documentable {
 class ScoredCandidate implements Comparable<ScoredCandidate> {
   final List<String> _reasons = [];
 
-  @Deprecated(
-      'Public field intended to be private; will be removed as early as '
-      'Dartdoc 1.0.0')
-  List<String> get reasons => _reasons;
-
-  @Deprecated(
-      'Public field intended to be private; will be removed as early as '
-      'Dartdoc 1.0.0')
-  set reasons(List<String> value) => reasons = value;
-
-  /// The canonicalization element being scored.
-  final Canonicalization _element;
-
-  @Deprecated(
-      'Public getter intended to be private; will be removed as early as '
-      'Dartdoc 1.0.0')
-  Canonicalization get element => _element;
-
   final Library library;
 
   /// The score accumulated so far.  Higher means it is more likely that this
   /// is the intended canonical Library.
   double score = 0.0;
 
-  ScoredCandidate(this._element, this.library);
+  ScoredCandidate(this.library);
 
   void _alterScore(double scoreDelta, String reason) {
     score += scoreDelta;
@@ -116,12 +92,6 @@ class ScoredCandidate implements Comparable<ScoredCandidate> {
           "$reason (${scoreDelta >= 0 ? '+' : ''}${scoreDelta.toStringAsPrecision(4)})");
     }
   }
-
-  @Deprecated(
-      'Public method intended to be private; will be removed as early as '
-      'Dartdoc 1.0.0')
-  void alterScore(double scoreDelta, String reason) =>
-      _alterScore(scoreDelta, reason);
 
   @override
   int compareTo(ScoredCandidate other) {

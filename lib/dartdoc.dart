@@ -141,20 +141,6 @@ class Dartdoc {
   // ignore: unnecessary_getters_setters
   set generator(Generator newGenerator) => _generator = newGenerator;
 
-  /// An asynchronous factory method that builds Dartdoc's file writers
-  /// and returns a Dartdoc object with them.
-  @Deprecated('Prefer fromContext() instead')
-  static Future<Dartdoc> withDefaultGenerators(
-    DartdocGeneratorOptionContext config,
-    PackageBuilder packageBuilder,
-  ) async {
-    return Dartdoc._(
-      config,
-      await initHtmlGenerator(config),
-      packageBuilder,
-    );
-  }
-
   /// Asynchronous factory method that builds Dartdoc with an empty generator.
   static Future<Dartdoc> withEmptyGenerator(
     DartdocOptionContext config,
@@ -193,15 +179,10 @@ class Dartdoc {
 
   Stream<String> get onCheckProgress => _onCheckProgress.stream;
 
-  @Deprecated('Will be removed in 4.0.0. '
-      'Use the return value from generateDocsBase instead.')
-  PackageGraph packageGraph;
-
   @visibleForTesting
   Future<DartdocResults> generateDocsBase() async {
     var stopwatch = Stopwatch()..start();
     var packageGraph = await packageBuilder.buildPackageGraph();
-    this.packageGraph = packageGraph;
     var seconds = stopwatch.elapsedMilliseconds / 1000.0;
     var libs = packageGraph.libraries.length;
     logInfo("Initialized dartdoc with $libs librar${libs == 1 ? 'y' : 'ies'} "
