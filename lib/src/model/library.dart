@@ -112,13 +112,6 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     ]);
   }
 
-  @Deprecated(
-      'Public method intended to be private; will be removed as early as '
-      'Dartdoc 1.0.0')
-  static Iterable<Element> getDefinedElements(
-          CompilationUnitElement compilationUnit) =>
-      _getDefinedElements(compilationUnit);
-
   /// Allow scope for Libraries.
   @override
   Scope get scope => element.scope;
@@ -170,12 +163,6 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     }).toList();
     return __allOriginalModelElementNames;
   }
-
-  @Deprecated(
-      'Public getter intended to be private; will be removed as early as '
-      'Dartdoc 1.0.0')
-  Iterable<String> get allOriginalModelElementNames =>
-      _allOriginalModelElementNames;
 
   @override
   CharacterLocation get characterLocation {
