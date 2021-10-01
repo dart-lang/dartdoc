@@ -53,17 +53,6 @@ class PackageGraph with CommentReferable, Nameable {
   @override
   Element get element => null;
 
-  @Deprecated('Use with [PackageGraph.uninitialized] instead')
-  // ignore: non_constant_identifier_names
-  factory PackageGraph.UninitializedPackageGraph(
-          DartdocOptionContext config,
-          DartSdk sdk,
-          bool hasEmbedderSdk,
-          RendererFactory rendererFactory,
-          PackageMetaProvider packageMetaProvider) =>
-      PackageGraph.uninitialized(
-          config, sdk, hasEmbedderSdk, rendererFactory, packageMetaProvider);
-
   /// Call during initialization to add a library to this [PackageGraph].
   ///
   /// Libraries added in this manner are assumed to be part of documented

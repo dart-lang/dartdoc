@@ -8,10 +8,6 @@ final RegExp _categoryRegExp = RegExp(
     r'[ ]*{@(api|category|subCategory|image|samples) (.+?)}[ ]*\n?',
     multiLine: true);
 
-@Deprecated('Public variable intended to be private; will be removed as early '
-    'as Dartdoc 1.0.0')
-RegExp get categoryRegexp => _categoryRegExp;
-
 /// Mixin implementing dartdoc categorization for ModelElements.
 abstract class Categorization implements ModelElement {
   @override

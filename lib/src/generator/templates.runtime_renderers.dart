@@ -1145,26 +1145,6 @@ class _Renderer_Category extends RendererBase<Category> {
                         parent: r);
                   },
                 ),
-                'fileType': Property(
-                  getValue: (CT_ c) => c.fileType,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_String.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(self.getValue(c),
-                        nextProperty, [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => c.fileType == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.fileType, ast, r.template, sink,
-                        parent: r);
-                  },
-                ),
                 'fullyQualifiedName': Property(
                   getValue: (CT_ c) => c.fullyQualifiedName,
                   renderVariable:
@@ -7394,18 +7374,6 @@ class _Renderer_Library extends RendererBase<Library> {
                         parent: r));
                   },
                 ),
-                'allOriginalModelElementNames': Property(
-                  getValue: (CT_ c) => c.allOriginalModelElementNames,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<String>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.allOriginalModelElementNames.map((e) =>
-                        _render_String(e, ast, r.template, sink, parent: r));
-                  },
-                ),
                 'canonicalFor': Property(
                   getValue: (CT_ c) => c.canonicalFor,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -11224,13 +11192,6 @@ class _Renderer_Package extends RendererBase<Package> {
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.hasDocumentation == true,
                 ),
-                'hasDocumentationFile': Property(
-                  getValue: (CT_ c) => c.hasDocumentationFile,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasDocumentationFile == true,
-                ),
                 'hasDocumentedCategories': Property(
                   getValue: (CT_ c) => c.hasDocumentedCategories,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -11622,7 +11583,7 @@ class _Renderer_Package extends RendererBase<Package> {
   }
 }
 
-String renderIndex(PackageTemplateData context, Template template) {
+String renderError(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -11824,7 +11785,7 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
   }
 }
 
-String renderError(PackageTemplateData context, Template template) {
+String renderIndex(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
