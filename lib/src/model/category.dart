@@ -27,29 +27,17 @@ class Category extends Nameable
         Indexable
     implements Documentable {
   /// All libraries in [libraries] must come from [package].
-  // TODO(srawlins): To make final, remove public getter, setter, rename to be
-  // public, and add `final` modifier.
-  Package _package;
+  final Package _package;
 
   @override
   Package get package => _package;
 
-  @Deprecated('Field intended to be final; setter will be removed as early as '
-      'Dartdoc 1.0.0')
-  set package(Package value) => _package = value;
-
   final String _name;
 
-  // TODO(srawlins): To make final, remove public getter, setter, rename to be
-  // public, and add `final` modifier.
-  DartdocOptionContext _config;
+  final DartdocOptionContext _config;
 
   @override
   DartdocOptionContext get config => _config;
-
-  @Deprecated('Field intended to be final; setter will be removed as early as '
-      'Dartdoc 1.0.0')
-  set config(DartdocOptionContext value) => _config = value;
 
   final Set<Categorization> _allItems = {};
 
@@ -141,11 +129,6 @@ class Category extends Nameable
   String get fullyQualifiedName => name;
 
   String get _fileType => package.fileType;
-
-  @Deprecated(
-      'Public field intended to be private; will be removed as early as '
-      'Dartdoc 1.0.0')
-  String get fileType => _fileType;
 
   String get filePath => 'topics/$name-topic.$_fileType';
 

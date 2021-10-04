@@ -106,17 +106,6 @@ String getFileNameFor(String name) =>
     '${name.replaceAll(_libraryNameRegExp, '-')}.html';
 
 final _libraryNameRegExp = RegExp('[.:]');
-@Deprecated('Public variable intended to be private; will be removed as early '
-    'as Dartdoc 1.0.0')
-RegExp get libraryNameRegexp => _libraryNameRegExp;
-
-@Deprecated('Public variable intended to be private; will be removed as early '
-    'as Dartdoc 1.0.0')
-final RegExp partOfRegexp = RegExp('part of ');
-
-@Deprecated('Public variable intended to be private; will be removed as early '
-    'as Dartdoc 1.0.0')
-final RegExp newLinePartOfRegexp = RegExp('\npart of ');
 
 typedef TaskQueueClosure<T> = Future<T> Function();
 

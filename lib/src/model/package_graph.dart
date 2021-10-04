@@ -55,17 +55,6 @@ class PackageGraph with CommentReferable, Nameable {
   @override
   Element get element => null;
 
-  @Deprecated('Use with [PackageGraph.uninitialized] instead')
-  // ignore: non_constant_identifier_names
-  factory PackageGraph.UninitializedPackageGraph(
-          DartdocOptionContext config,
-          DartSdk sdk,
-          bool hasEmbedderSdk,
-          RendererFactory rendererFactory,
-          PackageMetaProvider packageMetaProvider) =>
-      PackageGraph.uninitialized(
-          config, sdk, hasEmbedderSdk, rendererFactory, packageMetaProvider);
-
   /// Call during initialization to add a library to this [PackageGraph].
   ///
   /// Libraries added in this manner are assumed to be part of documented
@@ -136,9 +125,8 @@ class PackageGraph with CommentReferable, Nameable {
 
     Iterable<Future<void>> precacheOneElement(ModelElement m) sync* {
       for (var d
-          in m.documentationFrom.where((d) => d.documentationComment != null)) {
-        if (needsPrecacheRegExp.hasMatch(d.documentationComment) &&
-            !precachedElements.contains(d)) {
+          in m.documentationFrom.where((d) => d.hasDocumentationComment)) {
+        if (d.needsPrecache && !precachedElements.contains(d)) {
           precachedElements.add(d);
           yield d.precacheLocalDocs();
           logProgress(d.name);

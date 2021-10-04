@@ -56,7 +56,7 @@ class EnumField extends Field {
   String get constantValueBase => _fieldRenderer.renderValue(this);
 
   @override
-  List<ModelElement> get documentationFrom {
+  List<DocumentationComment> get documentationFrom {
     if (name == 'values' || name == 'index') return [this];
     return super.documentationFrom;
   }

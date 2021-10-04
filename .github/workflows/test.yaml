@@ -19,7 +19,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        sdk: [dev, beta]
+        sdk: [dev, stable]
         job: [nnbd, flutter, sdk-analyzer, packages, sdk-docs]
         include:
           - os: macos-latest
@@ -32,10 +32,12 @@ jobs:
             # Do not try to run flutter against the "stable" sdk,
             # it is unlikely to work and produces uninteresting
             # results.
-          - sdk: beta
+          - sdk: stable
             job: flutter
-          - sdk: beta
+          - sdk: stable
             job: sdk-analyzer
+          - sdk: stable
+            job: sdk-docs
 
     steps:
       - name: Store date

@@ -632,7 +632,7 @@ void main() {
         () {
       // Verify setup of the test is correct.
       expect(invokeToolParentDoc.isCanonical, isTrue);
-      expect(invokeToolParentDoc.documentationComment, isNull);
+      expect(invokeToolParentDoc.hasDocumentationComment, isFalse);
       // Error message here might look strange due to toString() on Methods, but if this
       // fails that means we don't have the correct invokeToolParentDoc instance.
       expect(invokeToolParentDoc.documentationFrom,
