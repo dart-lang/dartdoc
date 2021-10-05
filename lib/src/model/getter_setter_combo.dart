@@ -111,10 +111,10 @@ mixin GetterSetterCombo on ModelElement {
   @override
   bool get isPublic => hasPublicGetter || hasPublicSetter;
 
-  List<ModelElement> _documentationFrom;
+  List<DocumentationComment> _documentationFrom;
 
   @override
-  List<ModelElement> get documentationFrom {
+  List<DocumentationComment> get documentationFrom {
     if (_documentationFrom == null) {
       _documentationFrom = [];
       if (hasPublicGetter) {
@@ -124,7 +124,7 @@ mixin GetterSetterCombo on ModelElement {
       }
       if (_documentationFrom.isEmpty ||
           _documentationFrom.every((e) => e.documentationComment == '')) {
-        _documentationFrom = computeDocumentationFrom;
+        _documentationFrom = super.documentationFrom;
       }
     }
     return _documentationFrom;
@@ -160,34 +160,56 @@ mixin GetterSetterCombo on ModelElement {
     return _oneLineDoc;
   }
 
-  String get getterSetterDocumentationComment {
-    var buffer = StringBuffer();
+  bool _documentationCommentComputed = false;
+  String _documentationComment;
+  @override
+  String /*!*/ get documentationComment => _documentationCommentComputed
+      ? _documentationComment
+      : _documentationComment ??= () {
+          _documentationCommentComputed = true;
+          var docs = _getterSetterDocumentationComment;
+          if (docs.isEmpty) return element.documentationComment ?? '';
+          return docs;
+        }();
 
-    // Check for synthetic before public, always, or stack overflow.
-    if (hasGetter && !getter.isSynthetic && getter.isPublic) {
-      assert(getter.documentationFrom.length == 1);
-      // We have to check against dropTextFrom here since documentationFrom
-      // doesn't yield the real elements for GetterSetterCombos.
-      if (!config.dropTextFrom
-          .contains(getter.documentationFrom.first.element.library.name)) {
-        var docs = getter.documentationFrom.first.documentationComment;
-        if (docs != null) buffer.write(docs);
-      }
-    }
+  @override
+  bool get hasDocumentationComment =>
+      _getterSetterDocumentationComment.isNotEmpty ||
+      element.documentationComment != null;
 
-    if (hasSetter && !setter.isSynthetic && setter.isPublic) {
-      assert(setter.documentationFrom.length == 1);
-      if (!config.dropTextFrom
-          .contains(setter.documentationFrom.first.element.library.name)) {
-        var docs = setter.documentationFrom.first.documentationComment;
-        if (docs != null) {
-          if (buffer.isNotEmpty) buffer.write('\n\n');
-          buffer.write(docs);
+  String __getterSetterDocumentationComment;
+
+  /// Derive a documentation comment for the combo by copying documentation
+  /// from the [getter] and/or [setter].
+  String /*!*/ get _getterSetterDocumentationComment =>
+      __getterSetterDocumentationComment ??= () {
+        var buffer = StringBuffer();
+
+        // Check for synthetic before public, always, or stack overflow.
+        if (hasGetter && !getter.isSynthetic && getter.isPublic) {
+          assert(getter.documentationFrom.length == 1);
+          var fromGetter = getter.documentationFrom.first;
+          // We have to check against dropTextFrom here since documentationFrom
+          // doesn't yield the real elements for GetterSetterCombos.
+          if (!config.dropTextFrom.contains(fromGetter.element.library.name)) {
+            if (fromGetter.hasDocumentationComment) {
+              buffer.write(fromGetter.documentationComment);
+            }
+          }
         }
-      }
-    }
-    return buffer.toString();
-  }
+
+        if (hasSetter && !setter.isSynthetic && setter.isPublic) {
+          assert(setter.documentationFrom.length == 1);
+          var fromSetter = setter.documentationFrom.first;
+          if (!config.dropTextFrom.contains(fromSetter.element.library.name)) {
+            if (fromSetter.hasDocumentationComment) {
+              if (buffer.isNotEmpty) buffer.write('\n\n');
+              buffer.write(fromSetter.documentationComment);
+            }
+          }
+        }
+        return buffer.toString();
+      }();
 
   ElementType get modelType {
     if (hasGetter) return getter.modelType.returnType;
