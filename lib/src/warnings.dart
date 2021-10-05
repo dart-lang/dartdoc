@@ -283,9 +283,9 @@ const Map<PackageWarning, PackageWarningDefinition> packageWarningDefinitions =
 /// with an analyzer [element].
 mixin Warnable implements Canonicalization, CommentReferable {
   @override
-  Element get element;
+  Element? get element;
 
-  Warnable get enclosingElement;
+  Warnable? get enclosingElement;
 
   Package get package;
 
@@ -449,7 +449,7 @@ class PackageWarningOptions {
 }
 
 class PackageWarningCounter {
-  final Map<Element, Map<PackageWarning, Set<String>>> _countedWarnings = {};
+  final Map<Element?, Map<PackageWarning, Set<String>>> _countedWarnings = {};
   final _items = <Jsonable>[];
   final _displayedWarningCounts = <PackageWarning, int>{};
   final PackageGraph packageGraph;
@@ -466,7 +466,7 @@ class PackageWarningCounter {
 
   /// An unmodifiable map view of all counted warnings related by their element,
   /// warning type, and message.
-  UnmodifiableMapView<Element, Map<PackageWarning, Set<String>>>
+  UnmodifiableMapView<Element?, Map<PackageWarning, Set<String>>>
       get countedWarnings => UnmodifiableMapView(_countedWarnings);
 
   PackageWarningCounter(this.packageGraph);
