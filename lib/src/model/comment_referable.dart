@@ -16,7 +16,6 @@ import 'package:dartdoc/src/model/container.dart';
 import 'package:dartdoc/src/model/library.dart';
 import 'package:dartdoc/src/model/model_element_builder.dart';
 import 'package:dartdoc/src/model/nameable.dart';
-import 'package:dartdoc/src/model/package_graph.dart';
 import 'package:meta/meta.dart';
 
 class ReferenceChildrenLookup {
@@ -79,7 +78,6 @@ extension CommentReferableEntryBuilder on Map<String, CommentReferable> {
 
 /// Support comment reference lookups on a Nameable object.
 mixin CommentReferable implements Nameable, ModelBuilderInterface {
-  PackageGraph packageGraph;
 
   /// For any [CommentReferable] where an analyzer [Scope] exists (or can
   /// be constructed), implement this.  This will take priority over

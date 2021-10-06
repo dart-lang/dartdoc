@@ -369,6 +369,7 @@ class _Renderer_Annotation extends RendererBase<Annotation> {
           CT_,
           () => {
                 ..._Renderer_Feature.propertyMap<CT_>(),
+                ..._Renderer_ModelBuilder.propertyMap<CT_>(),
                 'annotation': Property(
                   getValue: (CT_ c) => c.annotation,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -868,6 +869,7 @@ class _Renderer_Category extends RendererBase<Category> {
                 ..._Renderer_LibraryContainer.propertyMap<CT_>(),
                 ..._Renderer_TopLevelContainer.propertyMap<CT_>(),
                 ..._Renderer_Indexable.propertyMap<CT_>(),
+                ..._Renderer_ModelBuilder.propertyMap<CT_>(),
                 'canonicalLibrary': Property(
                   getValue: (CT_ c) => c.canonicalLibrary,
                   renderVariable:
@@ -1927,19 +1929,6 @@ class _Renderer_CommentReferable extends RendererBase<CommentReferable> {
                       List<MustachioNode> ast, StringSink sink) {
                     _render_Library(c.library, ast, r.template, sink,
                         parent: r);
-                  },
-                ),
-                'packageGraph': Property(
-                  getValue: (CT_ c) => c.packageGraph,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'PackageGraph'),
-                  isNullValue: (CT_ c) => c.packageGraph == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.packageGraph, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['PackageGraph']);
                   },
                 ),
                 'referenceChildren': Property(
@@ -4124,6 +4113,7 @@ class _Renderer_ElementType extends RendererBase<ElementType> {
                 ..._Renderer_Privacy.propertyMap<CT_>(),
                 ..._Renderer_CommentReferable.propertyMap<CT_>(),
                 ..._Renderer_Nameable.propertyMap<CT_>(),
+                ..._Renderer_ModelBuilder.propertyMap<CT_>(),
                 'canHaveParameters': Property(
                   getValue: (CT_ c) => c.canHaveParameters,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -9323,6 +9313,55 @@ class _Renderer_MixinTemplateData extends RendererBase<MixinTemplateData> {
   }
 }
 
+class _Renderer_ModelBuilder extends RendererBase<ModelBuilder> {
+  static final Map<Type, Object> _propertyMapCache = {};
+  static Map<String, Property<CT_>> propertyMap<CT_ extends ModelBuilder>() =>
+      _propertyMapCache.putIfAbsent(
+          CT_,
+          () => {
+                'modelBuilder': Property(
+                  getValue: (CT_ c) => c.modelBuilder,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'ModelElementBuilder'),
+                  isNullValue: (CT_ c) => c.modelBuilder == null,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    renderSimple(c.modelBuilder, ast, r.template, sink,
+                        parent: r,
+                        getters: _invisibleGetters['ModelElementBuilder']);
+                  },
+                ),
+                'packageGraph': Property(
+                  getValue: (CT_ c) => c.packageGraph,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'PackageGraph'),
+                  isNullValue: (CT_ c) => c.packageGraph == null,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    renderSimple(c.packageGraph, ast, r.template, sink,
+                        parent: r, getters: _invisibleGetters['PackageGraph']);
+                  },
+                ),
+              });
+
+  _Renderer_ModelBuilder(ModelBuilder context, RendererBase<Object> parent,
+      Template template, StringSink sink)
+      : super(context, parent, template, sink);
+
+  @override
+  Property<ModelBuilder> getProperty(String key) {
+    if (propertyMap<ModelBuilder>().containsKey(key)) {
+      return propertyMap<ModelBuilder>()[key];
+    } else {
+      return null;
+    }
+  }
+}
+
 void _render_ModelElement(ModelElement context, List<MustachioNode> ast,
     Template template, StringSink sink,
     {RendererBase<Object> parent}) {
@@ -9346,6 +9385,7 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                 ..._Renderer_Indexable.propertyMap<CT_>(),
                 ..._Renderer_FeatureSet.propertyMap<CT_>(),
                 ..._Renderer_DocumentationComment.propertyMap<CT_>(),
+                ..._Renderer_ModelBuilder.propertyMap<CT_>(),
                 'allParameters': Property(
                   getValue: (CT_ c) => c.allParameters,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -10827,6 +10867,7 @@ class _Renderer_Package extends RendererBase<Package> {
                 ..._Renderer_Canonicalization.propertyMap<CT_>(),
                 ..._Renderer_Warnable.propertyMap<CT_>(),
                 ..._Renderer_CommentReferable.propertyMap<CT_>(),
+                ..._Renderer_ModelBuilder.propertyMap<CT_>(),
                 'allLibraries': Property(
                   getValue: (CT_ c) => c.allLibraries,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -15126,7 +15167,6 @@ const _invisibleGetters = {
     'unnamedConstructor'
   },
   'CommentReferable': {
-    'packageGraph',
     'scope',
     'href',
     'referenceChildren',
@@ -15601,6 +15641,7 @@ const _invisibleGetters = {
     'substitution'
   },
   'MethodElement': {'hashCode', 'runtimeType', 'declaration'},
+  'ModelElementBuilder': {'hashCode', 'runtimeType'},
   'ModelElementRenderer': {'hashCode', 'runtimeType'},
   'ModelNode': {
     'hashCode',
