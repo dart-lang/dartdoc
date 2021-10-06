@@ -59,22 +59,29 @@ ModelElement resolveMultiplyInheritedElement(
       enclosingContainer: enclosingClass);
 }
 
-
 class ModelElementBuilderImpl implements ModelElementBuilder {
   final PackageGraph _packageGraph;
 
   ModelElementBuilderImpl(this._packageGraph);
 
   @override
-  ModelElement from(Element e, Library library, {Container enclosingContainer}) => ModelElement._from(e, library, _packageGraph, enclosingContainer: enclosingContainer);
+  ModelElement from(Element e, Library library,
+          {Container enclosingContainer}) =>
+      ModelElement._from(e, library, _packageGraph,
+          enclosingContainer: enclosingContainer);
 
   @override
-  ModelElement fromElement(Element e) => ModelElement._fromElement(e, _packageGraph);
+  ModelElement fromElement(Element e) =>
+      ModelElement._fromElement(e, _packageGraph);
 
   @override
-  ModelElement fromPropertyInducingElement(Element e, Library l, {Container enclosingContainer, Accessor getter, Accessor setter}) => ModelElement._fromPropertyInducingElement(e, l, _packageGraph, enclosingContainer: enclosingContainer, getter: getter, setter: setter);
+  ModelElement fromPropertyInducingElement(Element e, Library l,
+          {Container enclosingContainer, Accessor getter, Accessor setter}) =>
+      ModelElement._fromPropertyInducingElement(e, l, _packageGraph,
+          enclosingContainer: enclosingContainer,
+          getter: getter,
+          setter: setter);
 }
-
 
 /// This class is the foundation of Dartdoc's model for source code.
 ///
@@ -927,8 +934,8 @@ abstract class ModelElement extends Canonicalization
           }
         }
         _parameters = UnmodifiableListView(params
-            .map(
-                (p) => ModelElement._from(p, library, packageGraph) as Parameter)
+            .map((p) =>
+                ModelElement._from(p, library, packageGraph) as Parameter)
             .toList(growable: false));
       }
     }

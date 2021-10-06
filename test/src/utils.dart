@@ -204,7 +204,8 @@ two:lib/
 MatchingLinkResult definingLinkResult(MatchingLinkResult originalResult) {
   if (originalResult.commentReferable?.element != null) {
     return MatchingLinkResult(
-        originalResult.commentReferable.modelBuilder.fromElement(originalResult.commentReferable.element),
+        originalResult.commentReferable.modelBuilder
+            .fromElement(originalResult.commentReferable.element),
         warn: originalResult.warn);
   }
   return originalResult;

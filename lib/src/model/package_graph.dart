@@ -854,14 +854,11 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     } else {
       if (lib != null) {
         if (e is PropertyInducingElement) {
-          var getter = e.getter != null
-              ? modelBuilder.from(e.getter, lib)
-              : null;
-          var setter = e.setter != null
-              ? modelBuilder.from(e.setter, lib)
-              : null;
-          modelElement = modelBuilder.fromPropertyInducingElement(
-              e, lib,
+          var getter =
+              e.getter != null ? modelBuilder.from(e.getter, lib) : null;
+          var setter =
+              e.setter != null ? modelBuilder.from(e.setter, lib) : null;
+          modelElement = modelBuilder.fromPropertyInducingElement(e, lib,
               getter: getter, setter: setter);
         } else {
           modelElement = modelBuilder.from(e, lib);

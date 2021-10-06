@@ -37,13 +37,11 @@ class ModelFunctionTypedef extends ModelFunctionTyped {
 class ModelFunctionTyped extends ModelElement
     with TypeParameters
     implements EnclosedElement {
-
   List<TypeParameter> _typeParameters;
   @override
   List<TypeParameter> get typeParameters => _typeParameters ??= <TypeParameter>[
-    for (var p in element.typeParameters)
-      modelBuilder.from(p, library),
-  ];
+        for (var p in element.typeParameters) modelBuilder.from(p, library),
+      ];
 
   ModelFunctionTyped(
       FunctionTypedElement element, Library library, PackageGraph packageGraph)

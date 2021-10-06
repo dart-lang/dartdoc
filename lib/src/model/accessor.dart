@@ -200,8 +200,8 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
           element, enclosingContainer.library,
           enclosingContainer: enclosingContainer);
     } else {
-      accessor = enclosingContainer.packageGraph.modelBuilder.from(
-          element, enclosingContainer.library);
+      accessor = enclosingContainer.packageGraph.modelBuilder
+          .from(element, enclosingContainer.library);
     }
     return accessor;
   }

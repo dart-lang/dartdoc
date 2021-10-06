@@ -20,8 +20,8 @@ import 'package:meta/meta.dart';
 mixin Constructable on InheritingContainer {
   List<Constructor> _constructors;
   Iterable<Constructor> get constructors => _constructors ??= [
-        ...element.constructors.map(
-            (e) => modelBuilder.from(e, library) as Constructor)
+        ...element.constructors
+            .map((e) => modelBuilder.from(e, library) as Constructor)
       ];
 
   @override
@@ -309,8 +309,7 @@ abstract class InheritingContainer extends Container
       }).toSet();
 
       for (var e in inheritedMethodElements) {
-        Method m = modelBuilder.from(e, library,
-            enclosingContainer: this);
+        Method m = modelBuilder.from(e, library, enclosingContainer: this);
         _inheritedMethods.add(m);
       }
     }
@@ -336,8 +335,7 @@ abstract class InheritingContainer extends Container
             !operatorNames.contains(e.name));
       }).toSet();
       for (var e in inheritedOperatorElements) {
-        Operator o = modelBuilder.from(e, library,
-            enclosingContainer: this);
+        Operator o = modelBuilder.from(e, library, enclosingContainer: this);
         _inheritedOperators.add(o);
       }
     }
@@ -524,10 +522,25 @@ abstract class InheritingContainer extends Container
       PropertyAccessorElement setterElement,
       Set<PropertyAccessorElement> inheritedAccessors,
       [FieldElement f]) {
-    var getter =
-        ContainerAccessor.from(getterElement, inheritedAccessors, this);
-    var setter =
-        ContainerAccessor.from(setterElement, inheritedAccessors, this);
+    /// Return an [ContainerAccessor] with isInherited = true
+    /// if [element] is in [inheritedAccessors].
+    ContainerAccessor containerAccessorFrom(
+        PropertyAccessorElement element,
+        Set<PropertyAccessorElement> inheritedAccessors,
+        Container enclosingContainer) {
+      ContainerAccessor accessor;
+      if (element == null) return null;
+      if (inheritedAccessors.contains(element)) {
+        accessor = modelBuilder.from(element, enclosingContainer.library,
+            enclosingContainer: enclosingContainer);
+      } else {
+        accessor = modelBuilder.from(element, enclosingContainer.library);
+      }
+      return accessor;
+    }
+
+    var getter = containerAccessorFrom(getterElement, inheritedAccessors, this);
+    var setter = containerAccessorFrom(setterElement, inheritedAccessors, this);
     // Rebind getterElement/setterElement as ModelElement.from can resolve
     // MultiplyInheritedExecutableElements or resolve Members.
     getterElement = getter?.element;

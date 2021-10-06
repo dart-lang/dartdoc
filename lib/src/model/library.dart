@@ -148,16 +148,13 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
         if (e.hasSetter) {
           setter = modelBuilder.fromElement(e.setter.element);
         }
-        return modelBuilder.fromPropertyInducingElement(
-                e.element,
-                modelBuilder.fromElement(e.element.library),
-                getter: getter,
-                setter: setter)
+        return modelBuilder
+            .fromPropertyInducingElement(
+                e.element, modelBuilder.fromElement(e.element.library),
+                getter: getter, setter: setter)
             .fullyQualifiedName;
       }
-      return modelBuilder.fromElement(
-              e.element)
-          .fullyQualifiedName;
+      return modelBuilder.fromElement(e.element).fullyQualifiedName;
     }).toList();
     return __allOriginalModelElementNames;
   }
@@ -526,8 +523,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
         if (element.setter != null) {
           setter = modelBuilder.from(element.setter, this);
         }
-        var me = modelBuilder.fromPropertyInducingElement(
-            element, this,
+        var me = modelBuilder.fromPropertyInducingElement(element, this,
             getter: getter, setter: setter);
         _variables.add(me);
       }

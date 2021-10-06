@@ -41,10 +41,9 @@ class Annotation extends Feature with ModelBuilder {
         _modelType =
             ElementType.from(annotatedWith.returnType, library, packageGraph);
       } else if (annotatedWith is PropertyAccessorElement) {
-        _modelType =
-            (modelBuilder.fromElement(annotatedWith.variable)
-                    as GetterSetterCombo)
-                .modelType;
+        _modelType = (modelBuilder.fromElement(annotatedWith.variable)
+                as GetterSetterCombo)
+            .modelType;
       } else {
         assert(false,
             'non-callable element used as annotation?: ${annotation.element}');

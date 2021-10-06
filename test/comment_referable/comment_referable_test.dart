@@ -14,7 +14,8 @@ const _separator = '.';
 
 abstract class Base extends Nameable with CommentReferable {
   @override
-  ModelElementBuilder get modelBuilder => throw UnimplementedError('');
+  ModelElementBuilder get modelBuilder =>
+      throw UnimplementedError('not needed for this test');
 
   List<Base> children;
 

@@ -15,7 +15,8 @@ import 'package:dartdoc/src/render/element_type_renderer.dart';
 
 /// Base class representing a type in Dartdoc.  It wraps a [DartType], and
 /// may link to a [ModelElement].
-abstract class ElementType extends Privacy with CommentReferable, Nameable, ModelBuilder {
+abstract class ElementType extends Privacy
+    with CommentReferable, Nameable, ModelBuilder {
   final DartType _type;
   @override
   final PackageGraph packageGraph;
@@ -162,7 +163,6 @@ class UndefinedElementType extends ElementType {
 
   @override
   Iterable<CommentReferable> get referenceGrandparentOverrides => null;
-
 }
 
 /// A FunctionType that does not have an underpinning Element.
@@ -228,8 +228,8 @@ mixin Aliased implements ElementType, ModelBuilderInterface {
   bool get isTypedef => true;
 
   ModelElement _aliasElement;
-  ModelElement get aliasElement => _aliasElement ??=
-      modelBuilder.fromElement(type.alias.element);
+  ModelElement get aliasElement =>
+      _aliasElement ??= modelBuilder.fromElement(type.alias.element);
 
   Iterable<ElementType> _aliasArguments;
   Iterable<ElementType> get aliasArguments =>

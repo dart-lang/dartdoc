@@ -26,10 +26,9 @@ class Prefix extends ModelElement implements EnclosedElement {
   // TODO(jcollins-g): consider connecting PrefixElement to the imported library
   // in analyzer?
   Library get associatedLibrary =>
-      _associatedLibrary ??= modelBuilder.fromElement(
-          library.element.imports
-              .firstWhere((i) => i.prefix == element)
-              .importedLibrary);
+      _associatedLibrary ??= modelBuilder.fromElement(library.element.imports
+          .firstWhere((i) => i.prefix == element)
+          .importedLibrary);
 
   @override
   Library get canonicalModelElement => associatedLibrary.canonicalLibrary;
