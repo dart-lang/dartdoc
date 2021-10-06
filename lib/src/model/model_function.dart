@@ -44,7 +44,7 @@ class ModelFunctionTyped extends ModelElement
       FunctionTypedElement element, Library library, PackageGraph packageGraph)
       : typeParameters = <TypeParameter>[
           for (var p in element.typeParameters)
-            ModelElement.from(p, library, packageGraph),
+            ModelElement._fromParameters(p, library, packageGraph),
         ],
         super(element, library, packageGraph);
 

@@ -142,12 +142,12 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
         Accessor getter;
         Accessor setter;
         if (e.hasGetter) {
-          getter = ModelElement.fromElement(e.getter.element, packageGraph);
+          getter = ModelElement._fromElement(e.getter.element, packageGraph);
         }
         if (e.hasSetter) {
-          setter = ModelElement.fromElement(e.setter.element, packageGraph);
+          setter = ModelElement._fromElement(e.setter.element, packageGraph);
         }
-        return ModelElement.fromPropertyInducingElement(
+        return ModelElement._fromPropertyInducingElement(
                 e.element,
                 packageGraph.findButDoNotCreateLibraryFor(e.element),
                 packageGraph,
@@ -155,7 +155,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
                 setter: setter)
             .fullyQualifiedName;
       }
-      return ModelElement.from(
+      return ModelElement._fromParameters(
               e.element,
               packageGraph.findButDoNotCreateLibraryFor(e.element),
               packageGraph)
@@ -190,7 +190,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   Iterable<Extension> get extensions {
     _extensions ??= _exportedAndLocalElements
         .whereType<ExtensionElement>()
-        .map((e) => ModelElement.from(e, this, packageGraph) as Extension)
+        .map((e) => ModelElement._fromParameters(e, this, packageGraph) as Extension)
         .toList(growable: false);
     return _extensions;
   }
@@ -277,7 +277,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
         if (i.prefix?.name != null && i.importedLibrary != null) {
           _prefixToLibrary
               .putIfAbsent(i.prefix?.name, () => {})
-              .add(ModelElement.from(i.importedLibrary, library, packageGraph));
+              .add(ModelElement._fromParameters(i.importedLibrary, library, packageGraph));
         }
       }
     }
@@ -347,7 +347,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     _enums ??= _exportedAndLocalElements
         .whereType<ClassElement>()
         .where((element) => element.isEnum)
-        .map((e) => ModelElement.from(e, this, packageGraph) as Enum)
+        .map((e) => ModelElement._fromParameters(e, this, packageGraph) as Enum)
         .toList(growable: false);
     return _enums;
   }
@@ -359,7 +359,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     _mixins ??= _exportedAndLocalElements
         .whereType<ClassElement>()
         .where((ClassElement c) => c.isMixin)
-        .map((e) => ModelElement.from(e, this, packageGraph) as Mixin)
+        .map((e) => ModelElement._fromParameters(e, this, packageGraph) as Mixin)
         .toList(growable: false);
     return _mixins;
   }
@@ -385,7 +385,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   List<ModelFunction> get functions {
     _functions ??=
         _exportedAndLocalElements.whereType<FunctionElement>().map((e) {
-      return ModelElement.from(e, this, packageGraph) as ModelFunction;
+      return ModelElement._fromParameters(e, this, packageGraph) as ModelFunction;
     }).toList(growable: false);
     return _functions;
   }
@@ -486,7 +486,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   List<Typedef> get typedefs {
     _typedefs ??= _exportedAndLocalElements
         .whereType<TypeAliasElement>()
-        .map((e) => ModelElement.from(e, this, packageGraph) as Typedef)
+        .map((e) => ModelElement._fromParameters(e, this, packageGraph) as Typedef)
         .toList(growable: false);
     return _typedefs;
   }
@@ -499,7 +499,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     _classes ??= _exportedAndLocalElements
         .whereType<ClassElement>()
         .where((e) => !e.isMixin && !e.isEnum)
-        .map((e) => ModelElement.from(e, this, packageGraph) as Class)
+        .map((e) => ModelElement._fromParameters(e, this, packageGraph) as Class)
         .toList(growable: false);
     return _classes;
   }
@@ -522,13 +522,13 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
       for (var element in elements) {
         Accessor getter;
         if (element.getter != null) {
-          getter = ModelElement.from(element.getter, this, packageGraph);
+          getter = ModelElement._fromParameters(element.getter, this, packageGraph);
         }
         Accessor setter;
         if (element.setter != null) {
-          setter = ModelElement.from(element.setter, this, packageGraph);
+          setter = ModelElement._fromParameters(element.setter, this, packageGraph);
         }
-        var me = ModelElement.fromPropertyInducingElement(
+        var me = ModelElement._fromPropertyInducingElement(
             element, this, packageGraph,
             getter: getter, setter: setter);
         _variables.add(me);
@@ -633,7 +633,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
       _referenceChildren = {};
       var definedNamesModelElements = element
           .exportNamespace.definedNames.values
-          .map((v) => ModelElement.fromElement(v, packageGraph));
+          .map((v) => ModelElement._fromElement(v, packageGraph));
       _referenceChildren.addEntries(
           definedNamesModelElements.whereNotType<Accessor>().generateEntries());
       /*

@@ -15,7 +15,7 @@ class TypeParameter extends ModelElement {
 
   @override
   ModelElement get enclosingElement => (element.enclosingElement != null)
-      ? ModelElement.from(element.enclosingElement, library, packageGraph)
+      ? ModelElement._fromParameters(element.enclosingElement, library, packageGraph)
       : null;
 
   @override

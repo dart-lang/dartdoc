@@ -147,7 +147,7 @@ mixin CommentReferable implements Nameable {
       bool Function(CommentReferable) filter) {
     var resultElement = scope.lookupPreferGetter(referenceLookup.lookup);
     if (resultElement == null) return null;
-    var result = ModelElement.fromElement(resultElement, packageGraph);
+    var result = ModelElement._fromElement(resultElement, packageGraph);
     if (result is Accessor) {
       result = (result as Accessor).enclosingCombo;
     }

@@ -15,6 +15,7 @@ import 'package:dartdoc/src/failure.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/model/model_element_builder.dart';
 import 'package:dartdoc/src/model_utils.dart' as utils;
 import 'package:dartdoc/src/package_meta.dart'
     show PackageMeta, PackageMetaProvider;
@@ -25,7 +26,7 @@ import 'package:dartdoc/src/tool_runner.dart';
 import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/warnings.dart';
 
-class PackageGraph with CommentReferable, Nameable {
+class PackageGraph with CommentReferable, Nameable implements ModelBuilderInterface {
   PackageGraph.uninitialized(
     this.config,
     this.sdk,
@@ -771,7 +772,7 @@ class PackageGraph with CommentReferable, Nameable {
       // (TODO:keertip) Find a better way to exclude members of extensions
       //  when libraries are specified using the "--include" flag
       if (lib?.isDocumented == true) {
-        return ModelElement.from(e, lib, packageGraph);
+        return ModelElement._fromParameters(e, lib, packageGraph);
       }
     }
     // TODO(jcollins-g): Special cases are pretty large here.  Refactor to split
@@ -854,16 +855,16 @@ class PackageGraph with CommentReferable, Nameable {
       if (lib != null) {
         if (e is PropertyInducingElement) {
           var getter = e.getter != null
-              ? ModelElement.from(e.getter, lib, packageGraph)
+              ? ModelElement._fromParameters(e.getter, lib, packageGraph)
               : null;
           var setter = e.setter != null
-              ? ModelElement.from(e.setter, lib, packageGraph)
+              ? ModelElement._fromParameters(e.setter, lib, packageGraph)
               : null;
-          modelElement = ModelElement.fromPropertyInducingElement(
+          modelElement = ModelElement._fromPropertyInducingElement(
               e, lib, packageGraph,
               getter: getter, setter: setter);
         } else {
-          modelElement = ModelElement.from(e, lib, packageGraph);
+          modelElement = ModelElement._fromParameters(e, lib, packageGraph);
         }
       }
       assert(modelElement is! Inheritable);
@@ -1047,4 +1048,8 @@ class PackageGraph with CommentReferable, Nameable {
 
   @override
   Iterable<CommentReferable> get referenceParents => [];
+
+  ModelElementBuilder _modelBuilder;
+  @override
+  ModelElementBuilder get modelBuilder => _modelBuilder ??= ModelElementBuilderImpl(this);
 }

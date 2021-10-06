@@ -205,7 +205,7 @@ two:lib/
 MatchingLinkResult definingLinkResult(MatchingLinkResult originalResult) {
   if (originalResult.commentReferable?.element != null) {
     return MatchingLinkResult(
-        ModelElement.fromElement(originalResult.commentReferable.element,
+        ModelElement._fromElement(originalResult.commentReferable.element,
             originalResult.commentReferable.packageGraph),
         warn: originalResult.warn);
   }

@@ -28,7 +28,7 @@ class Annotation extends Feature {
   /// Return the linked name of the annotation.
   @override
   String get linkedName => annotation.element is PropertyAccessorElement
-      ? ModelElement.fromElement(annotation.element, packageGraph).linkedName
+      ? modelBuilder.fromElement(annotation.element).linkedName
       // TODO(jcollins-g): consider linking to constructor instead of type?
       : modelType.linkedName;
 
@@ -41,7 +41,7 @@ class Annotation extends Feature {
             ElementType.from(annotatedWith.returnType, library, packageGraph);
       } else if (annotatedWith is PropertyAccessorElement) {
         _modelType =
-            (ModelElement.fromElement(annotatedWith.variable, packageGraph)
+            (ModelElement._fromElement(annotatedWith.variable, packageGraph)
                     as GetterSetterCombo)
                 .modelType;
       } else {

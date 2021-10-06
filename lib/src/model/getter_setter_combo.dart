@@ -63,7 +63,7 @@ mixin GetterSetterCombo on ModelElement {
       warn(PackageWarning.missingConstantConstructor, message: constructorName);
       return original;
     }
-    Constructor target = ModelElement.fromElement(staticElement, packageGraph);
+    Constructor target = ModelElement._fromElement(staticElement, packageGraph);
     Class targetClass = target.enclosingElement;
     // TODO(jcollins-g): this logic really should be integrated into Constructor,
     // but that's not trivial because of linkedName's usage.

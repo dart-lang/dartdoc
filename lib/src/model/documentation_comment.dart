@@ -58,7 +58,7 @@ mixin DocumentationComment
           return (this as Inheritable).overriddenElement.documentationFrom;
         } else if (this is Inheritable && (this as Inheritable).isInherited) {
           var thisInheritable = (this as Inheritable);
-          var fromThis = ModelElement.fromElement(
+          var fromThis = ModelElement._fromElement(
               element, thisInheritable.definingEnclosingContainer.packageGraph);
           return fromThis.documentationFrom;
         } else {

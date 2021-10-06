@@ -33,7 +33,7 @@ class Method extends ModelElement
 
   void _calcTypeParameters() {
     typeParameters = element.typeParameters.map((f) {
-      return ModelElement.from(f, library, packageGraph) as TypeParameter;
+      return ModelElement._fromParameters(f, library, packageGraph) as TypeParameter;
     }).toList();
   }
 
@@ -53,7 +53,7 @@ class Method extends ModelElement
   @override
   ModelElement get enclosingElement {
     _enclosingContainer ??=
-        ModelElement.from(element.enclosingElement, library, packageGraph);
+        ModelElement._fromParameters(element.enclosingElement, library, packageGraph);
     return _enclosingContainer;
   }
 
@@ -111,7 +111,7 @@ class Method extends ModelElement
       Element e = t.getMethod(element.name);
       if (e != null) {
         assert(e.enclosingElement is ClassElement);
-        return ModelElement.fromElement(e, packageGraph);
+        return ModelElement._fromElement(e, packageGraph);
       }
     }
     return null;

@@ -20,7 +20,7 @@ class Parameter extends ModelElement implements EnclosedElement {
 
   @override
   ModelElement get enclosingElement => (element.enclosingElement != null)
-      ? ModelElement.from(element.enclosingElement, library, packageGraph)
+      ? ModelElement._fromParameters(element.enclosingElement, library, packageGraph)
       : null;
 
   bool get hasDefaultValue {
