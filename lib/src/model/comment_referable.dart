@@ -78,7 +78,6 @@ extension CommentReferableEntryBuilder on Map<String, CommentReferable> {
 
 /// Support comment reference lookups on a Nameable object.
 mixin CommentReferable implements Nameable, ModelBuilderInterface {
-
   /// For any [CommentReferable] where an analyzer [Scope] exists (or can
   /// be constructed), implement this.  This will take priority over
   /// lookups via [referenceChildren].  Can be cached.
