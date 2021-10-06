@@ -21,7 +21,7 @@ mixin Constructable on InheritingContainer {
   List<Constructor> _constructors;
   Iterable<Constructor> get constructors => _constructors ??= [
         ...element.constructors.map(
-            (e) => ModelElement._fromParameters(e, library, packageGraph) as Constructor)
+            (e) => modelBuilder.from(e, library) as Constructor)
       ];
 
   @override
@@ -264,7 +264,7 @@ abstract class InheritingContainer extends Container
 
   /// Returns the [InheritingContainer] with the library in which [element] is defined.
   InheritingContainer get definingContainer =>
-      ModelElement._fromParameters(element, definingLibrary, packageGraph);
+      modelBuilder.from(element, definingLibrary);
 
   /// Returns the library that encloses this element.
   @override
@@ -309,7 +309,7 @@ abstract class InheritingContainer extends Container
       }).toSet();
 
       for (var e in inheritedMethodElements) {
-        Method m = ModelElement._fromParameters(e, library, packageGraph,
+        Method m = modelBuilder.from(e, library,
             enclosingContainer: this);
         _inheritedMethods.add(m);
       }
@@ -336,7 +336,7 @@ abstract class InheritingContainer extends Container
             !operatorNames.contains(e.name));
       }).toSet();
       for (var e in inheritedOperatorElements) {
-        Operator o = ModelElement._fromParameters(e, library, packageGraph,
+        Operator o = modelBuilder.from(e, library,
             enclosingContainer: this);
         _inheritedOperators.add(o);
       }
@@ -559,14 +559,14 @@ abstract class InheritingContainer extends Container
     if ((getter == null || getter.isInherited) &&
         (setter == null || setter.isInherited)) {
       // Field is 100% inherited.
-      field = ModelElement._fromPropertyInducingElement(f, library, packageGraph,
+      field = modelBuilder.fromPropertyInducingElement(f, library,
           enclosingContainer: this, getter: getter, setter: setter);
     } else {
       // Field is <100% inherited (could be half-inherited).
       // TODO(jcollins-g): Navigation is probably still confusing for
       // half-inherited fields when traversing the inheritance tree.  Make
       // this better, somehow.
-      field = ModelElement._fromPropertyInducingElement(f, library, packageGraph,
+      field = modelBuilder.fromPropertyInducingElement(f, library,
           getter: getter, setter: setter);
     }
     _allFields.add(field);
@@ -577,7 +577,7 @@ abstract class InheritingContainer extends Container
   @override
   Iterable<Method> get declaredMethods =>
       _declaredMethods ??= element.methods.map((e) {
-        return ModelElement._fromParameters(e, library, packageGraph) as Method;
+        return modelBuilder.from(e, library) as Method;
       });
 
   List<TypeParameter> _typeParameters;
@@ -585,8 +585,8 @@ abstract class InheritingContainer extends Container
   @override
   List<TypeParameter> get typeParameters {
     _typeParameters ??= element.typeParameters.map((f) {
-      var lib = Library(f.enclosingElement.library, packageGraph);
-      return ModelElement._fromParameters(f, lib, packageGraph) as TypeParameter;
+      var lib = modelBuilder.fromElement(f.enclosingElement.library);
+      return modelBuilder.from(f, lib) as TypeParameter;
     }).toList();
     return _typeParameters;
   }

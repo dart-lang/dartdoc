@@ -114,12 +114,9 @@ abstract class ModelElement extends Canonicalization
         SourceCodeMixin,
         Indexable,
         FeatureSet,
-        DocumentationComment
-    implements Comparable<ModelElement>, Documentable, ModelBuilderInterface {
-  ModelElementBuilder _modelElementBuilder;
-  @override
-  ModelElementBuilder get modelBuilder => _modelElementBuilder ??= ModelElementBuilderImpl(packageGraph);
-
+        DocumentationComment,
+        ModelBuilder
+    implements Comparable<ModelElement>, Documentable {
   final Element _element;
 
   // TODO(jcollins-g): This really wants a "member that has a type" class.
@@ -293,7 +290,7 @@ abstract class ModelElement extends Canonicalization
     }
     assert(e is! MultiplyDefinedElement);
     if (e is LibraryElement) {
-      return Library(e, packageGraph);
+      return packageGraph.findButDoNotCreateLibraryFor(e);
     }
     if (e is PrefixElement) {
       return Prefix(e, library, packageGraph);

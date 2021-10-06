@@ -14,7 +14,7 @@ import 'package:analyzer/dart/element/scope.dart';
 import 'package:dartdoc/src/model/accessor.dart';
 import 'package:dartdoc/src/model/container.dart';
 import 'package:dartdoc/src/model/library.dart';
-import 'package:dartdoc/src/model/model_element.dart';
+import 'package:dartdoc/src/model/model_element_builder.dart';
 import 'package:dartdoc/src/model/nameable.dart';
 import 'package:dartdoc/src/model/package_graph.dart';
 import 'package:meta/meta.dart';
@@ -78,7 +78,7 @@ extension CommentReferableEntryBuilder on Map<String, CommentReferable> {
 }
 
 /// Support comment reference lookups on a Nameable object.
-mixin CommentReferable implements Nameable {
+mixin CommentReferable implements Nameable, ModelBuilderInterface {
   PackageGraph packageGraph;
 
   /// For any [CommentReferable] where an analyzer [Scope] exists (or can
@@ -147,7 +147,7 @@ mixin CommentReferable implements Nameable {
       bool Function(CommentReferable) filter) {
     var resultElement = scope.lookupPreferGetter(referenceLookup.lookup);
     if (resultElement == null) return null;
-    var result = ModelElement._fromElement(resultElement, packageGraph);
+    var result = modelBuilder.fromElement(resultElement);
     if (result is Accessor) {
       result = (result as Accessor).enclosingCombo;
     }

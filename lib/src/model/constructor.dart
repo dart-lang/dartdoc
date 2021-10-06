@@ -36,7 +36,7 @@ class Constructor extends ModelElement
 
   @override
   ModelElement get enclosingElement =>
-      ModelElement._fromParameters(element.enclosingElement, library, packageGraph);
+      modelBuilder.from(element.enclosingElement, library);
 
   @override
   String get filePath =>
@@ -131,7 +131,7 @@ class Constructor extends ModelElement
       _referenceChildren.addEntries(allParameters.map((param) {
         var paramElement = param.element;
         if (paramElement is FieldFormalParameterElement) {
-          return ModelElement._fromElement(paramElement.field, packageGraph);
+          return modelBuilder.fromElement(paramElement.field);
         }
         return param;
       }).generateEntries());

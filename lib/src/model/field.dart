@@ -58,7 +58,7 @@ class Field extends ModelElement
   @override
   Container get enclosingElement {
     _enclosingContainer ??=
-        ModelElement._fromParameters(field.enclosingElement, library, packageGraph);
+        modelBuilder.from(field.enclosingElement, library);
     return _enclosingContainer;
   }
 

@@ -22,7 +22,7 @@ mixin ContainerMember on ModelElement implements EnclosedElement {
 
   Container get definingEnclosingContainer {
     _definingEnclosingContainer ??=
-        ModelElement._fromElement(element.enclosingElement, packageGraph);
+        modelBuilder.fromElement(element.enclosingElement);
     return _definingEnclosingContainer;
   }
 

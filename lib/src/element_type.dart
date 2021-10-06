@@ -15,7 +15,7 @@ import 'package:dartdoc/src/render/element_type_renderer.dart';
 
 /// Base class representing a type in Dartdoc.  It wraps a [DartType], and
 /// may link to a [ModelElement].
-abstract class ElementType extends Privacy with CommentReferable, Nameable, ModelBuilderInterface {
+abstract class ElementType extends Privacy with CommentReferable, Nameable, ModelBuilder {
   final DartType _type;
   @override
   final PackageGraph packageGraph;
@@ -112,10 +112,6 @@ abstract class ElementType extends Privacy with CommentReferable, Nameable, Mode
   String toString() => '$type';
 
   DartType get type => _type;
-
-  ModelElementBuilder _modelBuilder;
-  @override
-  ModelElementBuilder get modelBuilder => _modelBuilder ??= ModelElementBuilderImpl(packageGraph);
 }
 
 /// An [ElementType] that isn't pinned to an Element (or one that is, but whose

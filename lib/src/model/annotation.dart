@@ -7,14 +7,15 @@ import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/feature.dart';
 import 'package:dartdoc/src/model/getter_setter_combo.dart';
 import 'package:dartdoc/src/model/library.dart';
-import 'package:dartdoc/src/model/model_element.dart';
+import 'package:dartdoc/src/model/model_element_builder.dart';
 import 'package:dartdoc/src/model/package_graph.dart';
 
 /// Represents a Dart annotation, attached to an element in the source code with
 /// `@`.
-class Annotation extends Feature {
+class Annotation extends Feature with ModelBuilder {
   final ElementAnnotation annotation;
   final Library library;
+  @override
   final PackageGraph packageGraph;
 
   Annotation(this.annotation, this.library, this.packageGraph)
@@ -41,7 +42,7 @@ class Annotation extends Feature {
             ElementType.from(annotatedWith.returnType, library, packageGraph);
       } else if (annotatedWith is PropertyAccessorElement) {
         _modelType =
-            (ModelElement._fromElement(annotatedWith.variable, packageGraph)
+            (modelBuilder.fromElement(annotatedWith.variable)
                     as GetterSetterCombo)
                 .modelType;
       } else {

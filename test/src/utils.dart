@@ -12,7 +12,6 @@ import 'package:analyzer/src/test_utilities/mock_sdk.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/markdown_processor.dart';
 import 'package:dartdoc/src/matching_link_result.dart';
-import 'package:dartdoc/src/model/model_element.dart';
 import 'package:dartdoc/src/model/package_builder.dart';
 import 'package:dartdoc/src/model/package_graph.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
@@ -205,8 +204,7 @@ two:lib/
 MatchingLinkResult definingLinkResult(MatchingLinkResult originalResult) {
   if (originalResult.commentReferable?.element != null) {
     return MatchingLinkResult(
-        ModelElement._fromElement(originalResult.commentReferable.element,
-            originalResult.commentReferable.packageGraph),
+        originalResult.commentReferable.modelBuilder.fromElement(originalResult.commentReferable.element),
         warn: originalResult.warn);
   }
   return originalResult;
