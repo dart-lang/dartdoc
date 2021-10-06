@@ -59,7 +59,7 @@ ModelElement resolveMultiplyInheritedElement(
       enclosingContainer: enclosingClass);
 }
 
-class ModelElementBuilderImpl implements ModelElementBuilder {
+class ModelElementBuilderImpl implements ModelObjectBuilder {
   final PackageGraph _packageGraph;
 
   ModelElementBuilderImpl(this._packageGraph);

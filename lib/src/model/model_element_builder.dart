@@ -10,7 +10,7 @@ import 'package:dartdoc/src/model/model_element.dart';
 import 'package:dartdoc/src/model/package_graph.dart';
 import 'package:meta/meta.dart';
 
-abstract class ModelElementBuilder {
+abstract class ModelObjectBuilder {
   ModelElement from(Element e, Library library, {Container enclosingContainer});
 
   ModelElement fromElement(Element e);
@@ -24,7 +24,7 @@ abstract class ModelElementBuilder {
 abstract class ModelBuilderInterface {
   /// Override implementations in unit tests to avoid requiring literal
   /// [ModelElement]s.
-  ModelElementBuilder get modelBuilder;
+  ModelObjectBuilder get modelBuilder;
 }
 
 /// Default implementation of the ModelBuilderInterface, requiring a
@@ -32,8 +32,8 @@ abstract class ModelBuilderInterface {
 mixin ModelBuilder implements ModelBuilderInterface {
   PackageGraph get packageGraph;
 
-  ModelElementBuilder _modelBuilder;
+  ModelObjectBuilder _modelBuilder;
   @override
-  ModelElementBuilder get modelBuilder =>
+  ModelObjectBuilder get modelBuilder =>
       _modelBuilder ??= ModelElementBuilderImpl(packageGraph);
 }

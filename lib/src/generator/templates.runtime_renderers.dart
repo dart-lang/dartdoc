@@ -14,7 +14,7 @@ import 'package:dartdoc/src/model/feature.dart';
 import 'package:dartdoc/src/model/feature_set.dart';
 import 'package:dartdoc/src/model/language_feature.dart';
 import 'package:dartdoc/src/model/model.dart';
-import 'package:dartdoc/src/model/model_element_builder.dart';
+import 'package:dartdoc/src/model/model_object_builder.dart';
 import 'package:dartdoc/src/mustachio/parser.dart';
 import 'package:dartdoc/src/mustachio/renderer_base.dart';
 import 'package:dartdoc/src/warnings.dart';
@@ -9325,13 +9325,13 @@ class _Renderer_ModelBuilder extends RendererBase<ModelBuilder> {
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
-                          c, remainingNames, 'ModelElementBuilder'),
+                          c, remainingNames, 'ModelObjectBuilder'),
                   isNullValue: (CT_ c) => c.modelBuilder == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     renderSimple(c.modelBuilder, ast, r.template, sink,
                         parent: r,
-                        getters: _invisibleGetters['ModelElementBuilder']);
+                        getters: _invisibleGetters['ModelObjectBuilder']);
                   },
                 ),
                 'packageGraph': Property(
@@ -11625,7 +11625,7 @@ class _Renderer_Package extends RendererBase<Package> {
   }
 }
 
-String renderError(PackageTemplateData context, Template template) {
+String renderIndex(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -11827,7 +11827,7 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
   }
 }
 
-String renderIndex(PackageTemplateData context, Template template) {
+String renderError(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -15642,7 +15642,6 @@ const _invisibleGetters = {
     'substitution'
   },
   'MethodElement': {'hashCode', 'runtimeType', 'declaration'},
-  'ModelElementBuilder': {'hashCode', 'runtimeType'},
   'ModelElementRenderer': {'hashCode', 'runtimeType'},
   'ModelNode': {
     'hashCode',
@@ -15652,6 +15651,7 @@ const _invisibleGetters = {
     'resourceProvider',
     'sourceCode'
   },
+  'ModelObjectBuilder': {'hashCode', 'runtimeType'},
   'PackageGraph': {
     'hashCode',
     'runtimeType',
