@@ -14,7 +14,7 @@ import 'package:analyzer/dart/element/scope.dart';
 import 'package:dartdoc/src/model/accessor.dart';
 import 'package:dartdoc/src/model/container.dart';
 import 'package:dartdoc/src/model/library.dart';
-import 'package:dartdoc/src/model/model_element_builder.dart';
+import 'package:dartdoc/src/model/model_object_builder.dart';
 import 'package:dartdoc/src/model/nameable.dart';
 import 'package:meta/meta.dart';
 
