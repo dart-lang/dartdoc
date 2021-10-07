@@ -109,5 +109,5 @@ class Parameter extends ModelElement implements EnclosedElement {
 
   ElementType _modelType;
   ElementType get modelType => _modelType ??=
-      ElementType.from((originalMember ?? element).type, library, packageGraph);
+      modelBuilder.typeFrom((originalMember ?? element).type, library);
 }

@@ -79,7 +79,7 @@ class Constructor extends ModelElement
 
   Callable _modelType;
   Callable get modelType =>
-      _modelType ??= ElementType.from(element.type, library, packageGraph);
+      _modelType ??= modelBuilder.typeFrom(element.type, library);
 
   String _name;
 

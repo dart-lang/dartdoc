@@ -21,8 +21,8 @@ abstract class Typedef extends ModelElement
   TypeAliasElement get element => super.element;
 
   ElementType _modelType;
-  ElementType get modelType => _modelType ??=
-      ElementType.from(element.aliasedType, library, packageGraph);
+  ElementType get modelType =>
+      _modelType ??= modelBuilder.typeFrom(element.aliasedType, library);
 
   @override
   Library get enclosingElement => library;

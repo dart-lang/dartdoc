@@ -39,7 +39,7 @@ class Accessor extends ModelElement implements EnclosedElement {
 
   Callable _modelType;
   Callable get modelType => _modelType ??=
-      ElementType.from((originalMember ?? element).type, library, packageGraph);
+      modelBuilder.typeFrom((originalMember ?? element).type, library);
 
   bool get isSynthetic => element.isSynthetic;
 
@@ -137,8 +137,8 @@ class Accessor extends ModelElement implements EnclosedElement {
   @override
   ModelElement get enclosingElement {
     if (element.enclosingElement is CompilationUnitElement) {
-      return packageGraph.findButDoNotCreateLibraryFor(
-          element.enclosingElement.enclosingElement);
+      return modelBuilder
+          .fromElement(element.enclosingElement.enclosingElement);
     }
 
     return modelBuilder.from(element.enclosingElement, library);
