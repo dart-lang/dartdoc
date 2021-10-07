@@ -6,12 +6,17 @@ library dartdoc.comment_reference_test;
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
+import 'package:dartdoc/src/model/model_object_builder.dart';
 import 'package:dartdoc/src/model/nameable.dart';
 import 'package:test/test.dart';
 
 const _separator = '.';
 
 abstract class Base extends Nameable with CommentReferable {
+  @override
+  ModelObjectBuilder get modelBuilder =>
+      throw UnimplementedError('not needed for this test');
+
   List<Base> children;
 
   Base parent;

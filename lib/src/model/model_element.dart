@@ -22,6 +22,7 @@ import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/feature.dart';
 import 'package:dartdoc/src/model/feature_set.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/model/model_object_builder.dart';
 import 'package:dartdoc/src/model/prefix.dart';
 import 'package:dartdoc/src/model_utils.dart' as utils;
 import 'package:dartdoc/src/render/model_element_renderer.dart';
@@ -43,7 +44,7 @@ ModelElement resolveMultiplyInheritedElement(
     PackageGraph packageGraph,
     Class enclosingClass) {
   var inheritables = e.inheritedElements
-      .map((ee) => ModelElement.fromElement(ee, packageGraph) as Inheritable);
+      .map((ee) => ModelElement._fromElement(ee, packageGraph) as Inheritable);
   Inheritable foundInheritable;
   var lowIndex = enclosingClass.inheritanceChain.length;
   for (var inheritable in inheritables) {
@@ -54,8 +55,32 @@ ModelElement resolveMultiplyInheritedElement(
       lowIndex = index;
     }
   }
-  return ModelElement.from(foundInheritable.element, library, packageGraph,
+  return ModelElement._from(foundInheritable.element, library, packageGraph,
       enclosingContainer: enclosingClass);
+}
+
+class ModelElementBuilderImpl implements ModelObjectBuilder {
+  final PackageGraph _packageGraph;
+
+  ModelElementBuilderImpl(this._packageGraph);
+
+  @override
+  ModelElement from(Element e, Library library,
+          {Container enclosingContainer}) =>
+      ModelElement._from(e, library, _packageGraph,
+          enclosingContainer: enclosingContainer);
+
+  @override
+  ModelElement fromElement(Element e) =>
+      ModelElement._fromElement(e, _packageGraph);
+
+  @override
+  ModelElement fromPropertyInducingElement(Element e, Library l,
+          {Container enclosingContainer, Accessor getter, Accessor setter}) =>
+      ModelElement._fromPropertyInducingElement(e, l, _packageGraph,
+          enclosingContainer: enclosingContainer,
+          getter: getter,
+          setter: setter);
 }
 
 /// This class is the foundation of Dartdoc's model for source code.
@@ -96,7 +121,8 @@ abstract class ModelElement extends Canonicalization
         SourceCodeMixin,
         Indexable,
         FeatureSet,
-        DocumentationComment
+        DocumentationComment,
+        ModelBuilder
     implements Comparable<ModelElement>, Documentable {
   final Element _element;
 
@@ -111,25 +137,25 @@ abstract class ModelElement extends Canonicalization
       [this._originalMember]);
 
   /// Creates a [ModelElement] from [e].
-  factory ModelElement.fromElement(Element e, PackageGraph p) {
+  factory ModelElement._fromElement(Element e, PackageGraph p) {
     var lib = p.findButDoNotCreateLibraryFor(e);
     if (e is PropertyInducingElement) {
       var getter =
-          e.getter != null ? ModelElement.from(e.getter, lib, p) : null;
+          e.getter != null ? ModelElement._from(e.getter, lib, p) : null;
       var setter =
-          e.setter != null ? ModelElement.from(e.setter, lib, p) : null;
-      return ModelElement.fromPropertyInducingElement(e, lib, p,
+          e.setter != null ? ModelElement._from(e.setter, lib, p) : null;
+      return ModelElement._fromPropertyInducingElement(e, lib, p,
           getter: getter, setter: setter);
     }
-    return ModelElement.from(e, lib, p);
+    return ModelElement._from(e, lib, p);
   }
 
   /// Creates a  [ModelElement] from [PropertyInducingElement] [e].
   ///
   /// Do not construct any ModelElements except from this constructor or
-  /// [ModelElement.from]. Specify [enclosingContainer]
+  /// [ModelElement._from]. Specify [enclosingContainer]
   /// if and only if this is to be an inherited or extended object.
-  factory ModelElement.fromPropertyInducingElement(
+  factory ModelElement._fromPropertyInducingElement(
       PropertyInducingElement e, Library library, PackageGraph packageGraph,
       {Container enclosingContainer,
       @required Accessor getter,
@@ -189,7 +215,7 @@ abstract class ModelElement extends Canonicalization
   /// Creates a [ModelElement] from a non-property-inducing [e].
   ///
   /// Do not construct any ModelElements except from this constructor or
-  /// [ModelElement.fromPropertyInducingElement]. Specify [enclosingContainer]
+  /// [ModelElement._fromPropertyInducingElement]. Specify [enclosingContainer]
   /// if and only if this is to be an inherited or extended object.
   // TODO(jcollins-g): this way of using the optional parameter is messy,
   // clean that up.
@@ -197,7 +223,7 @@ abstract class ModelElement extends Canonicalization
   // TODO(jcollins-g): Allow e to be null and drop extraneous null checks.
   // TODO(jcollins-g): Auto-vivify element's defining library for library
   // parameter when given a null.
-  factory ModelElement.from(
+  factory ModelElement._from(
       Element e, Library library, PackageGraph packageGraph,
       {Container enclosingContainer}) {
     assert(packageGraph != null);
@@ -231,7 +257,7 @@ abstract class ModelElement extends Canonicalization
       return packageGraph.allConstructedModelElements[key];
     }
 
-    var newModelElement = ModelElement._from(e, library, packageGraph,
+    var newModelElement = ModelElement._fromParameters(e, library, packageGraph,
         enclosingContainer: enclosingContainer, originalMember: originalMember);
 
     if (enclosingContainer != null) assert(newModelElement is Inheritable);
@@ -242,8 +268,8 @@ abstract class ModelElement extends Canonicalization
     return newModelElement;
   }
 
-  /// Caches a newly-created [ModelElement] from [ModelElement.from] or
-  /// [ModelElement.fromPropertyInducingElement].
+  /// Caches a newly-created [ModelElement] from [ModelElement._from] or
+  /// [ModelElement._fromPropertyInducingElement].
   static void _cacheNewModelElement(
       Element e, ModelElement newModelElement, Library library,
       {Container enclosingContainer}) {
@@ -262,7 +288,7 @@ abstract class ModelElement extends Canonicalization
     }
   }
 
-  static ModelElement _from(
+  static ModelElement _fromParameters(
       Element e, Library library, PackageGraph packageGraph,
       {Container enclosingContainer, Member originalMember}) {
     if (e is MultiplyInheritedExecutableElement) {
@@ -271,7 +297,7 @@ abstract class ModelElement extends Canonicalization
     }
     assert(e is! MultiplyDefinedElement);
     if (e is LibraryElement) {
-      return Library(e, packageGraph);
+      return packageGraph.findButDoNotCreateLibraryFor(e);
     }
     if (e is PrefixElement) {
       return Prefix(e, library, packageGraph);
@@ -598,7 +624,7 @@ abstract class ModelElement extends Canonicalization
     }
 
     // Start with our top-level element.
-    var warnable = ModelElement.fromElement(topLevelElement, packageGraph);
+    var warnable = ModelElement._fromElement(topLevelElement, packageGraph);
     // Heuristic scoring to determine which library a human likely
     // considers this element to be primarily 'from', and therefore,
     // canonical.  Still warn if the heuristic isn't that confident.
@@ -888,7 +914,7 @@ abstract class ModelElement extends Canonicalization
       List<ParameterElement> params;
 
       if (element is TypeAliasElement) {
-        _parameters = ModelElement.fromElement(
+        _parameters = ModelElement._fromElement(
                 (element as TypeAliasElement).aliasedElement, packageGraph)
             .parameters;
       } else {
@@ -908,8 +934,8 @@ abstract class ModelElement extends Canonicalization
           }
         }
         _parameters = UnmodifiableListView(params
-            .map(
-                (p) => ModelElement.from(p, library, packageGraph) as Parameter)
+            .map((p) =>
+                ModelElement._from(p, library, packageGraph) as Parameter)
             .toList(growable: false));
       }
     }

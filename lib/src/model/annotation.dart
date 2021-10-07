@@ -7,14 +7,15 @@ import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/feature.dart';
 import 'package:dartdoc/src/model/getter_setter_combo.dart';
 import 'package:dartdoc/src/model/library.dart';
-import 'package:dartdoc/src/model/model_element.dart';
+import 'package:dartdoc/src/model/model_object_builder.dart';
 import 'package:dartdoc/src/model/package_graph.dart';
 
 /// Represents a Dart annotation, attached to an element in the source code with
 /// `@`.
-class Annotation extends Feature {
+class Annotation extends Feature with ModelBuilder {
   final ElementAnnotation annotation;
   final Library library;
+  @override
   final PackageGraph packageGraph;
 
   Annotation(this.annotation, this.library, this.packageGraph)
@@ -28,7 +29,7 @@ class Annotation extends Feature {
   /// Return the linked name of the annotation.
   @override
   String get linkedName => annotation.element is PropertyAccessorElement
-      ? ModelElement.fromElement(annotation.element, packageGraph).linkedName
+      ? modelBuilder.fromElement(annotation.element).linkedName
       // TODO(jcollins-g): consider linking to constructor instead of type?
       : modelType.linkedName;
 
@@ -40,10 +41,9 @@ class Annotation extends Feature {
         _modelType =
             ElementType.from(annotatedWith.returnType, library, packageGraph);
       } else if (annotatedWith is PropertyAccessorElement) {
-        _modelType =
-            (ModelElement.fromElement(annotatedWith.variable, packageGraph)
-                    as GetterSetterCombo)
-                .modelType;
+        _modelType = (modelBuilder.fromElement(annotatedWith.variable)
+                as GetterSetterCombo)
+            .modelType;
       } else {
         assert(false,
             'non-callable element used as annotation?: ${annotation.element}');

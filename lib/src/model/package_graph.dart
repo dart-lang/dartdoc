@@ -15,6 +15,7 @@ import 'package:dartdoc/src/failure.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/model/model_object_builder.dart';
 import 'package:dartdoc/src/model_utils.dart' as utils;
 import 'package:dartdoc/src/package_meta.dart'
     show PackageMeta, PackageMetaProvider;
@@ -25,7 +26,7 @@ import 'package:dartdoc/src/tool_runner.dart';
 import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/warnings.dart';
 
-class PackageGraph with CommentReferable, Nameable {
+class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   PackageGraph.uninitialized(
     this.config,
     this.sdk,
@@ -767,11 +768,11 @@ class PackageGraph with CommentReferable, Nameable {
     ModelElement modelElement;
     // For elements defined in extensions, they are canonical.
     if (e?.enclosingElement is ExtensionElement) {
-      lib ??= Library(e.enclosingElement.library, packageGraph);
+      lib ??= modelBuilder.fromElement(e.enclosingElement.library);
       // (TODO:keertip) Find a better way to exclude members of extensions
       //  when libraries are specified using the "--include" flag
       if (lib?.isDocumented == true) {
-        return ModelElement.from(e, lib, packageGraph);
+        return modelBuilder.from(e, lib);
       }
     }
     // TODO(jcollins-g): Special cases are pretty large here.  Refactor to split
@@ -853,17 +854,14 @@ class PackageGraph with CommentReferable, Nameable {
     } else {
       if (lib != null) {
         if (e is PropertyInducingElement) {
-          var getter = e.getter != null
-              ? ModelElement.from(e.getter, lib, packageGraph)
-              : null;
-          var setter = e.setter != null
-              ? ModelElement.from(e.setter, lib, packageGraph)
-              : null;
-          modelElement = ModelElement.fromPropertyInducingElement(
-              e, lib, packageGraph,
+          var getter =
+              e.getter != null ? modelBuilder.from(e.getter, lib) : null;
+          var setter =
+              e.setter != null ? modelBuilder.from(e.setter, lib) : null;
+          modelElement = modelBuilder.fromPropertyInducingElement(e, lib,
               getter: getter, setter: setter);
         } else {
-          modelElement = ModelElement.from(e, lib, packageGraph);
+          modelElement = modelBuilder.from(e, lib);
         }
       }
       assert(modelElement is! Inheritable);

@@ -4,7 +4,6 @@ import 'package:dartdoc/src/model/documentable.dart';
 import 'package:dartdoc/src/model/documentation.dart';
 import 'package:dartdoc/src/model/inheritable.dart';
 import 'package:dartdoc/src/model/locatable.dart';
-import 'package:dartdoc/src/model/model_element.dart';
 import 'package:dartdoc/src/model/source_code_mixin.dart';
 import 'package:dartdoc/src/render/model_element_renderer.dart';
 import 'package:dartdoc/src/utils.dart';
@@ -57,9 +56,7 @@ mixin DocumentationComment
             (this as Inheritable).overriddenElement != null) {
           return (this as Inheritable).overriddenElement.documentationFrom;
         } else if (this is Inheritable && (this as Inheritable).isInherited) {
-          var thisInheritable = (this as Inheritable);
-          var fromThis = ModelElement.fromElement(
-              element, thisInheritable.definingEnclosingContainer.packageGraph);
+          var fromThis = modelBuilder.fromElement(element);
           return fromThis.documentationFrom;
         } else {
           return [this];
