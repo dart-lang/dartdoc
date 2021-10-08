@@ -4,8 +4,8 @@
 
 /// A documentation generator for Dart.
 ///
-/// Library interface is currently under heavy construction and may change
-/// drastically between minor revisions.
+/// Library interface is still experimental.
+@experimental
 library dartdoc;
 
 import 'dart:async';

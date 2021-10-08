@@ -100,7 +100,7 @@ class Method extends ModelElement
 
   Callable _modelType;
   Callable get modelType => _modelType ??=
-      ElementType.from((originalMember ?? element).type, library, packageGraph);
+      modelBuilder.typeFrom((originalMember ?? element).type, library);
 
   @override
   Method get overriddenElement {
