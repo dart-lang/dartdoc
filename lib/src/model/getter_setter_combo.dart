@@ -9,7 +9,8 @@ import 'package:analyzer/dart/ast/ast.dart'
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/source/line_info.dart';
 // ignore: implementation_imports
-import 'package:analyzer/src/dart/element/element.dart' show ConstVariableElement;
+import 'package:analyzer/src/dart/element/element.dart'
+    show ConstVariableElement;
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/annotation.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';

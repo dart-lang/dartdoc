@@ -402,6 +402,7 @@ class PackageWarningOptions {
     void ignoreWarning(PackageWarning kind) {
       newOptions.ignore(kind);
     }
+
     if (allowWarningsInPackages != null &&
         !allowWarningsInPackages.contains(packageMeta.name)) {
       PackageWarning.values.forEach(ignoreWarning);

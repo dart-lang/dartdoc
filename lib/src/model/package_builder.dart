@@ -11,9 +11,11 @@ import 'package:analyzer/file_system/file_system.dart';
 // ignore: implementation_imports
 import 'package:analyzer/src/context/builder.dart' show EmbedderYamlLocator;
 // ignore: implementation_imports
-import 'package:analyzer/src/dart/analysis/analysis_context_collection.dart' show AnalysisContextCollectionImpl;
+import 'package:analyzer/src/dart/analysis/analysis_context_collection.dart'
+    show AnalysisContextCollectionImpl;
 // ignore: implementation_imports
-import 'package:analyzer/src/dart/sdk/sdk.dart' show EmbedderSdk, FolderBasedDartSdk;
+import 'package:analyzer/src/dart/sdk/sdk.dart'
+    show EmbedderSdk, FolderBasedDartSdk;
 // ignore: implementation_imports
 import 'package:analyzer/src/generated/engine.dart' show AnalysisOptionsImpl;
 // ignore: implementation_imports

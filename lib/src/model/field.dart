@@ -81,8 +81,7 @@ class Field extends ModelElement
   /// Returns true if the FieldElement is covariant, or if the first parameter
   /// for the setter is covariant.
   @override
-  bool get isCovariant =>
-      setter?.isCovariant == true || field.isCovariant;
+  bool get isCovariant => setter?.isCovariant == true || field.isCovariant;
 
   @override
   bool get isFinal {

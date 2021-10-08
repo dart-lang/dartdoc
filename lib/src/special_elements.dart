@@ -111,7 +111,8 @@ class SpecialClasses {
 
   /// Throw an [AssertionError] if not all required specials are found.
   void assertSpecials() {
-    for (var classDefinition in _specialClassDefinitions.values.where((d) => d.required)) {
+    for (var classDefinition
+        in _specialClassDefinitions.values.where((d) => d.required)) {
       assert(_specialClass.containsKey(classDefinition.specialClass));
     }
   }

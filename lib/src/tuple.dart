@@ -48,7 +48,10 @@ class Tuple3<T1, T2, T3> {
 
   @override
   bool operator ==(Object other) =>
-      other is Tuple3 && other.item1 == item1 && other.item2 == item2 && other.item3 == item3;
+      other is Tuple3 &&
+      other.item1 == item1 &&
+      other.item2 == item2 &&
+      other.item3 == item3;
 
   @override
   int get hashCode =>
