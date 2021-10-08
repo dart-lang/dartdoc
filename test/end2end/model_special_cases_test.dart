@@ -311,6 +311,7 @@ void main() {
       expect(injectSimpleHtml.documentationAsHtml,
           contains('   <div style="opacity: 0.5;">[HtmlInjection]</div>'));
     });
+
     test('can inject HTML from tool', () {
       var envLine = RegExp(r'^Env: \{', multiLine: true);
       expect(envLine.allMatches(injectHtmlFromTool.documentation).length,

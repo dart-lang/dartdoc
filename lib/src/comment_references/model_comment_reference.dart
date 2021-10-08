@@ -51,10 +51,10 @@ class _ModelCommentReferenceImpl implements ModelCommentReference {
           }
         }
       }
-    }
-    // e.g. [C.new], which may be the unnamed constructor
-    if (referencePieces.isNotEmpty && referencePieces.last.text == 'new') {
-      _allowUnnamedConstructor = true;
+      // e.g. [C.new], which may be the unnamed constructor
+      if (referencePieces.isNotEmpty && referencePieces.last.text == 'new') {
+        _allowUnnamedConstructor = true;
+      }
     }
   }
 
