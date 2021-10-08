@@ -16,9 +16,8 @@ import 'package:analyzer/dart/element/scope.dart';
 import 'package:dartdoc/src/model/accessor.dart';
 import 'package:dartdoc/src/model/container.dart';
 import 'package:dartdoc/src/model/library.dart';
-import 'package:dartdoc/src/model/model_element.dart';
+import 'package:dartdoc/src/model/model_object_builder.dart';
 import 'package:dartdoc/src/model/nameable.dart';
-import 'package:dartdoc/src/model/package_graph.dart';
 import 'package:meta/meta.dart';
 
 class ReferenceChildrenLookup {
@@ -73,16 +72,15 @@ extension CommentReferableEntryGenerators on Iterable<CommentReferable> {
 extension CommentReferableEntryBuilder on Map<String, CommentReferable> {
   /// Like [Map.putIfAbsent] except works on an iterable of entries.
   void addEntriesIfAbsent(
-          Iterable<MapEntry<String, CommentReferable>> entries) =>
-      entries.forEach((e) {
-        if (!containsKey(e.key)) this[e.key] = e.value;
-      });
+      Iterable<MapEntry<String, CommentReferable>> entries) {
+    for (var entry in entries) {
+      if (!containsKey(entry.key)) this[entry.key] = entry.value;
+    }
+  }
 }
 
 /// Support comment reference lookups on a Nameable object.
-mixin CommentReferable implements Nameable {
-  PackageGraph packageGraph;
-
+mixin CommentReferable implements Nameable, ModelBuilderInterface {
   /// For any [CommentReferable] where an analyzer [Scope] exists (or can
   /// be constructed), implement this.  This will take priority over
   /// lookups via [referenceChildren].  Can be cached.
@@ -149,7 +147,7 @@ mixin CommentReferable implements Nameable {
       bool Function(CommentReferable) filter) {
     var resultElement = scope.lookupPreferGetter(referenceLookup.lookup);
     if (resultElement == null) return null;
-    var result = ModelElement.fromElement(resultElement, packageGraph);
+    var result = modelBuilder.fromElement(resultElement);
     if (result is Accessor) {
       result = (result as Accessor).enclosingCombo;
     }

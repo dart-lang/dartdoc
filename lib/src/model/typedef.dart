@@ -23,8 +23,8 @@ abstract class Typedef extends ModelElement
   TypeAliasElement get element => super.element;
 
   ElementType _modelType;
-  ElementType get modelType => _modelType ??=
-      ElementType.from(element.aliasedType, library, packageGraph);
+  ElementType get modelType =>
+      _modelType ??= modelBuilder.typeFrom(element.aliasedType, library);
 
   @override
   Library get enclosingElement => library;
@@ -64,7 +64,7 @@ abstract class Typedef extends ModelElement
 
   @override
   List<TypeParameter> get typeParameters => element.typeParameters.map((f) {
-        return ModelElement.from(f, library, packageGraph) as TypeParameter;
+        return modelBuilder.from(f, library) as TypeParameter;
       }).toList();
 
   TypedefRenderer get _renderer => packageGraph.rendererFactory.typedefRenderer;

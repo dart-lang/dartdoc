@@ -11,6 +11,7 @@ import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/model/model_object_builder.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:meta/meta.dart';
@@ -27,12 +28,18 @@ import 'package:pub_semver/pub_semver.dart';
 // Unlikely to be mistaken for an identifier, html tag, or something else that
 // might reasonably exist normally.
 @internal
-const String htmlBasePlaceholder = '\%\%__HTMLBASE_dartdoc_internal__\%\%';
+const String htmlBasePlaceholder = r'%%__HTMLBASE_dartdoc_internal__%%';
 
 /// A [LibraryContainer] that contains [Library] objects related to a particular
 /// package.
 class Package extends LibraryContainer
-    with Nameable, Locatable, Canonicalization, Warnable, CommentReferable
+    with
+        Nameable,
+        Locatable,
+        Canonicalization,
+        Warnable,
+        CommentReferable,
+        ModelBuilder
     implements Privacy, Documentable {
   String _name;
   PackageGraph _packageGraph;

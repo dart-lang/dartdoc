@@ -1,6 +1,6 @@
-// WARNING: This file is auto-generated. Do not taunt.
+// WARNING: This file is auto-generated. Do not edit.
 
-const List<String> resource_names = [
+const List<String> resourceNames = [
   'package:dartdoc/resources/favicon.png',
   'package:dartdoc/resources/github.css',
   'package:dartdoc/resources/highlight.pack.js',

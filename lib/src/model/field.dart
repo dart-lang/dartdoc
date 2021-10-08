@@ -5,7 +5,6 @@
 // @dart=2.9
 
 import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/src/dart/element/element.dart';
 import 'package:dartdoc/src/model/feature.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/source_code_renderer.dart';
@@ -59,8 +58,7 @@ class Field extends ModelElement
 
   @override
   Container get enclosingElement {
-    _enclosingContainer ??=
-        ModelElement.from(field.enclosingElement, library, packageGraph);
+    _enclosingContainer ??= modelBuilder.from(field.enclosingElement, library);
     return _enclosingContainer;
   }
 
@@ -85,8 +83,7 @@ class Field extends ModelElement
   /// Returns true if the FieldElement is covariant, or if the first parameter
   /// for the setter is covariant.
   @override
-  bool get isCovariant =>
-      setter?.isCovariant == true || (field as FieldElementImpl).isCovariant;
+  bool get isCovariant => setter?.isCovariant == true || field.isCovariant;
 
   @override
   bool get isFinal {
