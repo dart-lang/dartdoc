@@ -70,10 +70,11 @@ extension CommentReferableEntryGenerators on Iterable<CommentReferable> {
 extension CommentReferableEntryBuilder on Map<String, CommentReferable> {
   /// Like [Map.putIfAbsent] except works on an iterable of entries.
   void addEntriesIfAbsent(
-          Iterable<MapEntry<String, CommentReferable>> entries) =>
-      entries.forEach((e) {
-        if (!containsKey(e.key)) this[e.key] = e.value;
-      });
+      Iterable<MapEntry<String, CommentReferable>> entries) {
+    for (var entry in entries) {
+      if (!containsKey(entry.key)) this[entry.key] = entry.value;
+    }
+  }
 }
 
 /// Support comment reference lookups on a Nameable object.

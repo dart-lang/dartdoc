@@ -8,7 +8,9 @@ import 'package:analyzer/dart/ast/ast.dart'
     show Expression, InstanceCreationExpression;
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/source/line_info.dart';
-import 'package:analyzer/src/dart/element/element.dart';
+// ignore: implementation_imports
+import 'package:analyzer/src/dart/element/element.dart'
+    show ConstVariableElement;
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/annotation.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
@@ -68,7 +70,7 @@ mixin GetterSetterCombo on ModelElement {
     // TODO(jcollins-g): this logic really should be integrated into Constructor,
     // but that's not trivial because of linkedName's usage.
     if (targetClass.name == target.name) {
-      return original.replaceAll(constructorName, '${target.linkedName}');
+      return original.replaceAll(constructorName, target.linkedName);
     }
     return original.replaceAll('${targetClass.name}.${target.name}',
         '${targetClass.linkedName}.${target.linkedName}');
@@ -147,10 +149,10 @@ mixin GetterSetterCombo on ModelElement {
       } else {
         var buffer = StringBuffer();
         if (hasPublicGetter && getter.oneLineDoc.isNotEmpty) {
-          buffer.write('${getter.oneLineDoc}');
+          buffer.write(getter.oneLineDoc);
         }
         if (hasPublicSetter && setter.oneLineDoc.isNotEmpty) {
-          buffer.write('${getterSetterBothAvailable ? "" : setter.oneLineDoc}');
+          buffer.write(getterSetterBothAvailable ? "" : setter.oneLineDoc);
         }
         _oneLineDoc = buffer.toString();
       }

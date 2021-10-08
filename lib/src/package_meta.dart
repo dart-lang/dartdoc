@@ -10,7 +10,8 @@ import 'dart:io' show Platform, Process;
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
-import 'package:analyzer/src/generated/sdk.dart';
+// ignore: implementation_imports
+import 'package:analyzer/src/generated/sdk.dart' show DartSdk;
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/failure.dart';
 import 'package:meta/meta.dart';

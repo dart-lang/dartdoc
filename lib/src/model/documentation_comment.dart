@@ -393,7 +393,7 @@ mixin DocumentationComment
 
   /// Matches YouTube IDs from supported YouTube URLs.
   static final _validYouTubeUrlPattern =
-      RegExp('https://www\.youtube\.com/watch\\?v=([^&]+)\$');
+      RegExp(r'https://www\.youtube\.com/watch\?v=([^&]+)$');
 
   /// An argument parser used in [_injectYouTube] to parse a `{@youtube}`
   /// directive.
@@ -736,14 +736,14 @@ mixin DocumentationComment
         firstOfPair.add(results[i]);
       }
     }
-    firstOfPair.forEach((element) {
+    for (var element in firstOfPair) {
       final result = element.group(2).trim();
       if (result.isEmpty) {
         warn(PackageWarning.missingCodeBlockLanguage,
             message:
                 'A fenced code block in Markdown should have a language specified');
       }
-    });
+    }
   }
 
   /// Returns the documentation for this literal element unless

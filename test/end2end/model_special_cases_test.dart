@@ -1,6 +1,7 @@
 // Copyright (c) 2019, the Dart project authors.  Please see the AUTHORS file
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
+// ignore_for_file: non_constant_identifier_names
 
 /// This test library handles checks against the model for configurations
 /// that require different PackageGraph configurations.  Since those
@@ -299,8 +300,9 @@ void main() {
           .firstWhere((m) => m.name == 'injectSimpleHtml');
       injectHtmlFromTool = htmlInjection.instanceMethods
           .firstWhere((m) => m.name == 'injectHtmlFromTool');
-      injectionPackageGraph.allLocalModelElements
-          .forEach((m) => m.documentation);
+      for (var modelElement in injectionPackageGraph.allLocalModelElements) {
+        modelElement.documentation;
+      }
     });
 
     test('can inject HTML', () {

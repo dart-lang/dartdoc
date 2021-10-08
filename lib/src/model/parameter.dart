@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/dart/element/element.dart';
+// ignore: implementation_imports
 import 'package:analyzer/src/dart/element/member.dart' show ParameterMember;
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
@@ -61,8 +62,8 @@ class Parameter extends ModelElement implements EnclosedElement {
   int get hashCode => element == null ? 0 : element.hashCode;
 
   @override
-  bool operator ==(Object object) =>
-      object is Parameter && (element.type == object.element.type);
+  bool operator ==(Object other) =>
+      other is Parameter && (element.type == other.element.type);
 
   bool get isCovariant => element.isCovariant;
 

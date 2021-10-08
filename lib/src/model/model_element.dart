@@ -10,7 +10,7 @@ import 'dart:convert';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart' show FunctionType;
 import 'package:analyzer/source/line_info.dart';
-import 'package:analyzer/src/dart/element/element.dart';
+// ignore: implementation_imports
 import 'package:analyzer/src/dart/element/member.dart'
     show ExecutableMember, Member;
 import 'package:collection/collection.dart';
@@ -229,7 +229,7 @@ abstract class ModelElement extends Canonicalization
     assert(library != null ||
         e is ParameterElement ||
         e is TypeParameterElement ||
-        e is GenericFunctionTypeElementImpl ||
+        e is GenericFunctionTypeElement ||
         e.kind == ElementKind.DYNAMIC ||
         e.kind == ElementKind.NEVER);
 

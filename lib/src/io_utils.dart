@@ -12,8 +12,10 @@ import 'dart:io' as io;
 
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
-import 'package:analyzer/src/generated/sdk.dart';
-import 'package:analyzer/src/test_utilities/mock_sdk.dart';
+// ignore: implementation_imports
+import 'package:analyzer/src/generated/sdk.dart' show SdkLibrary;
+// ignore: implementation_imports
+import 'package:analyzer/src/test_utilities/mock_sdk.dart' show MockSdkLibrary;
 import 'package:path/path.dart' as path show Context;
 
 Encoding utf8AllowMalformed = Utf8Codec(allowMalformed: true);

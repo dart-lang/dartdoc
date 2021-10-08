@@ -556,7 +556,9 @@ abstract class DartdocOption<T extends Object> {
   /// Apply the function [visit] to [this] and all children.
   void traverse(void Function(DartdocOption option) visit) {
     visit(this);
-    _children.values.forEach((d) => d.traverse(visit));
+    for (var value in _children.values) {
+      value.traverse(visit);
+    }
   }
 }
 
@@ -731,7 +733,7 @@ class DartdocOptionSet extends DartdocOption<void> {
 
   /// [DartdocOptionSet] always has the null value.
   @override
-  void valueAt(Folder dir) => null;
+  void valueAt(Folder dir) {}
 
   /// Since we have no value, [_onMissing] does nothing.
   @override
@@ -742,7 +744,9 @@ class DartdocOptionSet extends DartdocOption<void> {
   /// configuration object.
   @override
   void traverse(void Function(DartdocOption option) visitor) {
-    _children.values.forEach((d) => d.traverse(visitor));
+    for (var value in _children.values) {
+      value.traverse(visitor);
+    }
   }
 }
 
@@ -1033,7 +1037,9 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
         }
       }
     }
-    canonicalPaths.forEach((p) => _yamlAtCanonicalPathCache[p] = yamlData);
+    for (var canonicalPath in canonicalPaths) {
+      _yamlAtCanonicalPathCache[canonicalPath] = yamlData;
+    }
     return yamlData;
   }
 }
@@ -1137,7 +1143,7 @@ abstract class _DartdocArgOption<T> implements DartdocOption<T> {
   /// 'something-bar-over-the-hill' (with default skip).
   /// This allows argument names to reflect nested structure.
   static String _keysToArgName(Iterable<String> keys, [int skip = 1]) {
-    var argName = "${keys.skip(skip).join('-')}";
+    var argName = keys.skip(skip).join('-');
     argName = argName.replaceAll('_', '-');
     // Do not consume the lowercase character after the uppercase one, to handle
     // two character words.

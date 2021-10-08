@@ -29,8 +29,9 @@ class FunctionTypeElementTypeRendererHtml
   @override
   String renderLinkedName(FunctionTypeElementType elementType) {
     var buf = StringBuffer();
-    buf.write('${elementType.returnType.linkedName} ');
-    buf.write('${elementType.nameWithGenerics}');
+    buf.write(elementType.returnType.linkedName);
+    buf.write(' ');
+    buf.write(elementType.nameWithGenerics);
     buf.write('<span class="signature">(');
     buf.write(
         ParameterRendererHtml().renderLinkedParams(elementType.parameters));
@@ -203,8 +204,9 @@ class FunctionTypeElementTypeRendererMd
   @override
   String renderLinkedName(FunctionTypeElementType elementType) {
     var buf = StringBuffer();
-    buf.write('${elementType.returnType.linkedName} ');
-    buf.write('${elementType.nameWithGenerics}');
+    buf.write(elementType.returnType.linkedName);
+    buf.write(' ');
+    buf.write(elementType.nameWithGenerics);
     buf.write('(');
     buf.write(ParameterRendererMd().renderLinkedParams(elementType.parameters));
     buf.write(')');

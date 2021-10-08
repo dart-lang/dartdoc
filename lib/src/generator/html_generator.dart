@@ -59,7 +59,7 @@ class HtmlGeneratorBackend extends DartdocGeneratorBackend {
   }
 
   Future<void> _copyResources(FileWriter writer) async {
-    for (var resourcePath in resources.resource_names) {
+    for (var resourcePath in resources.resourceNames) {
       if (!resourcePath.startsWith(_dartdocResourcePrefix)) {
         throw StateError('Resource paths must start with '
             '$_dartdocResourcePrefix, encountered $resourcePath');

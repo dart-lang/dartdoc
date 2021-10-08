@@ -17,7 +17,7 @@ abstract class Base extends Nameable with CommentReferable {
   ModelObjectBuilder get modelBuilder =>
       throw UnimplementedError('not needed for this test');
 
-  List<Base> children;
+  List<Base> get children;
 
   Base parent;
 
@@ -99,10 +99,11 @@ class TopChild extends Child {
   final String name;
   @override
   final List<GenericChild> children;
+  final Top _parent;
   @override
-  final Top parent;
+  Top get parent => _parent;
 
-  TopChild(this.name, this.children, this.parent);
+  TopChild(this.name, this.children, this._parent);
 
   @override
   Map<String, CommentReferable> get referenceChildren =>
@@ -117,10 +118,11 @@ class GenericChild extends Child {
   final String name;
   @override
   final List<GenericChild> children;
+  final Base _parent;
   @override
-  final Base parent;
+  Base get parent => _parent;
 
-  GenericChild(this.name, this.children, this.parent);
+  GenericChild(this.name, this.children, this._parent);
 
   @override
   Map<String, CommentReferable> get referenceChildren =>
