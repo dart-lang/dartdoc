@@ -80,7 +80,7 @@ class RuntimeRenderersBuilder {
 // files in the tool/mustachio/ directory.
 
 // ignore_for_file: camel_case_types, deprecated_member_use_from_same_package
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: non_constant_identifier_names, unnecessary_string_escapes
 // ignore_for_file: unused_import
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/generator/template_data.dart';

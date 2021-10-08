@@ -4,14 +4,16 @@
 
 import 'dart:collection';
 
-import 'package:analyzer/dart/ast/ast.dart' hide CommentReference;
+import 'package:analyzer/dart/ast/ast.dart' show CompilationUnit;
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/scope.dart';
 import 'package:analyzer/dart/element/type_system.dart';
 import 'package:analyzer/dart/element/visitor.dart';
 import 'package:analyzer/source/line_info.dart';
-import 'package:analyzer/src/dart/element/inheritance_manager3.dart';
-import 'package:analyzer/src/generated/sdk.dart';
+// ignore: implementation_imports
+import 'package:analyzer/src/dart/element/inheritance_manager3.dart' show InheritanceManager3;
+// ignore: implementation_imports
+import 'package:analyzer/src/generated/sdk.dart' show SdkLibrary;
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -31,26 +33,22 @@ class _HashableChildLibraryElementVisitor
   void visitElement(Element element) {
     libraryProcessor(element);
     super.visitElement(element);
-    return null;
   }
 
   @override
   void visitExportElement(ExportElement element) {
     // [ExportElement]s are not always hashable; skip them.
-    return null;
   }
 
   @override
   void visitImportElement(ImportElement element) {
     // [ImportElement]s are not always hashable; skip them.
-    return null;
   }
 
   @override
   void visitParameterElement(ParameterElement element) {
     // [ParameterElement]s without names do not provide sufficiently distinct
     // hashes / comparison, so just skip them all. (dart-lang/sdk#30146)
-    return null;
   }
 }
 
@@ -595,11 +593,11 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
         }),
       ]);
       _modelElementsMap = HashMap<Element, Set<ModelElement>>();
-      results.forEach((modelElement) {
+      for (var modelElement in results) {
         _modelElementsMap
             .putIfAbsent(modelElement.element, () => {})
             .add(modelElement);
-      });
+      }
       _modelElementsMap.putIfAbsent(element, () => {}).add(this);
     }
     return _modelElementsMap;

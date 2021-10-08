@@ -300,8 +300,9 @@ void main() {
           .firstWhere((m) => m.name == 'injectSimpleHtml');
       injectHtmlFromTool = htmlInjection.instanceMethods
           .firstWhere((m) => m.name == 'injectHtmlFromTool');
-      injectionPackageGraph.allLocalModelElements
-          .forEach((m) => m.documentation);
+      for (var modelElement in injectionPackageGraph.allLocalModelElements) {
+        modelElement.documentation;
+      }
     });
 
     test('can inject HTML', () {

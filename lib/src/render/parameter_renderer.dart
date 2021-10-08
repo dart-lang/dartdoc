@@ -14,7 +14,7 @@ class ParameterRendererHtmlList extends ParameterRendererHtml {
   const ParameterRendererHtmlList();
 
   @override
-  String listItem(String listItem) => '<li>$listItem</li>\n';
+  String listItem(String item) => '<li>$item</li>\n';
   @override
   // TODO(jcollins-g): consider comma separated lists and more advanced css.
   String orderedList(String listItems) =>
@@ -26,7 +26,7 @@ class ParameterRendererHtml extends ParameterRenderer {
   const ParameterRendererHtml();
 
   @override
-  String listItem(String listItem) => listItem;
+  String listItem(String item) => item;
   @override
   String orderedList(String listItems) => listItems;
   @override
@@ -41,8 +41,8 @@ class ParameterRendererHtml extends ParameterRenderer {
   }
 
   @override
-  String parameter(String parameter, String htmlId) =>
-      '<span class="parameter" id="$htmlId">$parameter</span>';
+  String parameter(String parameter, String id) =>
+      '<span class="parameter" id="$id">$parameter</span>';
   @override
   String parameterName(String parameterName) =>
       '<span class="parameter-name">$parameterName</span>';

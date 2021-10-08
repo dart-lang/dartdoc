@@ -234,7 +234,7 @@ void main() {
 
       var outFile = File(path.join(tempDir.path, 'index.html'));
       var footerRegex =
-          RegExp('<footer>(.*\s*?\n?)+?</footer>', multiLine: true);
+          RegExp(r'<footer>(.*\s*?\n?)+?</footer>', multiLine: true);
       // get footer, check for version number
       var m = footerRegex.firstMatch(outFile.readAsStringSync());
       var version = RegExp(r'(\d+\.)?(\d+\.)?(\*|\d+)');

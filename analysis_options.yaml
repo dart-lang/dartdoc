@@ -1,6 +1,6 @@
 # Change analysis_options.yaml and analysis_options_presubmit.yaml
 # together.
-include: package:lints/core.yaml
+include: package:lints/recommended.yaml
 
 analyzer:
   errors:

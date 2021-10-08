@@ -132,12 +132,11 @@ class CommentReferenceParser {
         if (typeVariablesResult.type == _TypeVariablesResultType.endOfFile) {
           break;
         } else if (typeVariablesResult.type ==
-            _TypeVariablesResultType.notTypeVariables) {
-          // Do nothing, _index has not moved.
-          ;
-        } else if (typeVariablesResult.type ==
             _TypeVariablesResultType.parsedTypeVariables) {
           children.add(typeVariablesResult.node);
+        } else {
+          assert(typeVariablesResult.type ==
+              _TypeVariablesResultType.notTypeVariables);
         }
       }
       if (_atEnd || _thisChar != $dot) {

@@ -370,7 +370,7 @@ class Dartdoc {
     var indexPath = path.joinAll([origin, 'index.html']);
     var file = config.resourceProvider.getFile(fullPath);
     if (!file.exists) {
-      return null;
+      return;
     }
     var decoder = JsonDecoder();
     List<Object> jsonData = decoder.convert(file.readAsStringSync());
@@ -415,7 +415,7 @@ class Dartdoc {
       // Remove so that we properly count that the file doesn't exist for
       // the orphan check.
       visited.remove(fullPath);
-      return null;
+      return;
     }
     visited.add(fullPath);
     var stringLinks = stringLinksAndHref.item1;

@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/dart/element/element.dart';
+// ignore: implementation_imports
 import 'package:analyzer/src/dart/element/member.dart' show Member;
 import 'package:dartdoc/src/comment_references/parser.dart';
 import 'package:dartdoc/src/model/model.dart';

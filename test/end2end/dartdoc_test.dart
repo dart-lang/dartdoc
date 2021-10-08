@@ -236,7 +236,7 @@ void main() {
       expect(
           useSomethingInAnotherPackage.modelType.linkedName,
           matches(
-              '<a href=\"https://pub.dev/documentation/meta/[^\"]*/meta/Required-class.html\">Required</a>'));
+              r'<a href="https://pub.dev/documentation/meta/[^"]*/meta/Required-class.html">Required</a>'));
       var stringLink = RegExp(
           'https://api.dart.dev/(dev|stable|edge|be|beta)/${Platform.version.split(' ').first}/dart-core/String-class.html">String</a>');
       expect(useSomethingInTheSdk.modelType.linkedName, contains(stringLink));

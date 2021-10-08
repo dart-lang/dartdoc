@@ -26,7 +26,7 @@ import 'package:pub_semver/pub_semver.dart';
 // Unlikely to be mistaken for an identifier, html tag, or something else that
 // might reasonably exist normally.
 @internal
-const String htmlBasePlaceholder = '\%\%__HTMLBASE_dartdoc_internal__\%\%';
+const String htmlBasePlaceholder = r'%%__HTMLBASE_dartdoc_internal__%%';
 
 /// A [LibraryContainer] that contains [Library] objects related to a particular
 /// package.

@@ -22,8 +22,8 @@ class Tuple2<T1, T2> {
   String toString() => '[$item1, $item2]';
 
   @override
-  bool operator ==(Object o) =>
-      o is Tuple2 && o.item1 == item1 && o.item2 == item2;
+  bool operator ==(Object other) =>
+      other is Tuple2 && other.item1 == item1 && other.item2 == item2;
 
   @override
   int get hashCode => quiver.hash2(item1.hashCode, item2.hashCode);
@@ -47,8 +47,8 @@ class Tuple3<T1, T2, T3> {
   String toString() => '[$item1, $item2, $item3]';
 
   @override
-  bool operator ==(Object o) =>
-      o is Tuple3 && o.item1 == item1 && o.item2 == item2 && o.item3 == item3;
+  bool operator ==(Object other) =>
+      other is Tuple3 && other.item1 == item1 && other.item2 == item2 && other.item3 == item3;
 
   @override
   int get hashCode =>
@@ -76,12 +76,12 @@ class Tuple4<T1, T2, T3, T4> {
   String toString() => '[$item1, $item2, $item3, $item4]';
 
   @override
-  bool operator ==(Object o) =>
-      o is Tuple4 &&
-      o.item1 == item1 &&
-      o.item2 == item2 &&
-      o.item3 == item3 &&
-      o.item4 == item4;
+  bool operator ==(Object other) =>
+      other is Tuple4 &&
+      other.item1 == item1 &&
+      other.item2 == item2 &&
+      other.item3 == item3 &&
+      other.item4 == item4;
 
   @override
   int get hashCode => quiver.hash4(

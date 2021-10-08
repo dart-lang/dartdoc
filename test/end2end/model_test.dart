@@ -1,6 +1,7 @@
 // Copyright (c) 2015, the Dart project authors.  Please see the AUTHORS file
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
+
 // ignore_for_file: non_constant_identifier_names
 
 library dartdoc.model_test;
@@ -458,7 +459,7 @@ void main() {
       expect(
           complexNullableMembers.nameWithGenerics,
           equals(
-              'ComplexNullableMembers&lt;<wbr><span class=\"type-parameter\">T extends String?</span>&gt;'));
+              'ComplexNullableMembers&lt;<wbr><span class="type-parameter">T extends String?</span>&gt;'));
       expect(
           aComplexType.modelType.linkedName,
           equals(
@@ -484,7 +485,7 @@ void main() {
       expect(
           nullableField.modelType.linkedName,
           equals(
-              'Iterable<span class=\"signature\">&lt;<wbr><span class=\"type-parameter\">BigInt</span>&gt;</span>?'));
+              'Iterable<span class="signature">&lt;<wbr><span class="type-parameter">BigInt</span>&gt;</span>?'));
       expect(
           methodWithNullables.linkedParams,
           equals(
@@ -623,7 +624,9 @@ void main() {
           .firstWhere((m) => m.name == 'invokeToolParentDoc');
       invokeToolParentDocOriginal = ImplementingClassForTool.instanceMethods
           .firstWhere((m) => m.name == 'invokeToolParentDoc');
-      packageGraph.allLocalModelElements.forEach((m) => m.documentation);
+      for (var modelElement in packageGraph.allLocalModelElements) {
+        modelElement.documentation;
+      }
     });
 
     test(
@@ -4174,7 +4177,6 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
         expect(location.columnNumber, greaterThanOrEqualTo(0));
       }
 
-      ;
       var simpleProperty =
           fakeLibrary.properties.firstWhere((p) => p.name == 'simpleProperty');
       expectValidLocation(simpleProperty.getter.characterLocation);
@@ -4266,12 +4268,11 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test(
         'Verify that combos with a generic typedef modelType can render correctly',
         () {
-      // TODO(jcollins-g): After analyzer 2.0.0, this can be `isEmpty`.
-      expect(genericTypedefCombo.modelType.typeArguments, isNotNull);
+      expect(genericTypedefCombo.modelType.typeArguments, isEmpty);
       expect(
           genericTypedefCombo.modelType.linkedName,
           equals(
-              '<a href=\"%%__HTMLBASE_dartdoc_internal__%%fake/NewGenericTypedef.html\">NewGenericTypedef</a>'));
+              '<a href="%%__HTMLBASE_dartdoc_internal__%%fake/NewGenericTypedef.html">NewGenericTypedef</a>'));
     });
 
     test('Verify that final and late show up (or not) appropriately', () {
@@ -5106,8 +5107,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('Traditional accessors are not terminated with semicolon', () {
       expect(implicitGetterExplicitSetter.setter.sourceCode.trim(),
-          endsWith('\{\}'));
-      expect(explicitGetterSetter.setter.sourceCode.trim(), endsWith('\{\}'));
+          endsWith('{}'));
+      expect(explicitGetterSetter.setter.sourceCode.trim(), endsWith('{}'));
     });
 
     test('Whole declaration is visible when declaration spans many lines', () {

@@ -11,10 +11,10 @@ import 'package:dartdoc/src/model_utils.dart';
 /// it were.
 class EmptyGenerator extends Generator {
   @override
-  Future<void> generate(PackageGraph _packageGraph, FileWriter writer) {
-    logProgress(_packageGraph.defaultPackage.documentationAsHtml);
-    for (var package in {_packageGraph.defaultPackage}
-      ..addAll(_packageGraph.localPackages)) {
+  Future<void> generate(PackageGraph packageGraph, FileWriter writer) {
+    logProgress(packageGraph.defaultPackage.documentationAsHtml);
+    for (var package in {packageGraph.defaultPackage}
+      ..addAll(packageGraph.localPackages)) {
       for (var category in filterNonDocumented(package.categories)) {
         logProgress(category.documentationAsHtml);
       }

@@ -399,25 +399,24 @@ class PackageWarningOptions {
         option.parent['ignoreWarningsInPackages'].valueAt(dir);
     List<String> ignoreErrorsInPackages =
         option.parent['ignoreErrorsInPackages'].valueAt(dir);
+    void ignoreWarning(PackageWarning kind) {
+      newOptions.ignore(kind);
+    }
     if (allowWarningsInPackages != null &&
         !allowWarningsInPackages.contains(packageMeta.name)) {
-      PackageWarning.values
-          .forEach((PackageWarning kind) => newOptions.ignore(kind));
+      PackageWarning.values.forEach(ignoreWarning);
     }
     if (allowErrorsInPackages != null &&
         !allowErrorsInPackages.contains(packageMeta.name)) {
-      PackageWarning.values
-          .forEach((PackageWarning kind) => newOptions.ignore(kind));
+      PackageWarning.values.forEach(ignoreWarning);
     }
     if (ignoreWarningsInPackages != null &&
         ignoreWarningsInPackages.contains(packageMeta.name)) {
-      PackageWarning.values
-          .forEach((PackageWarning kind) => newOptions.ignore(kind));
+      PackageWarning.values.forEach(ignoreWarning);
     }
     if (ignoreErrorsInPackages != null &&
         ignoreErrorsInPackages.contains(packageMeta.name)) {
-      PackageWarning.values
-          .forEach((PackageWarning kind) => newOptions.ignore(kind));
+      PackageWarning.values.forEach(ignoreWarning);
     }
     return newOptions;
   }

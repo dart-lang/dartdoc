@@ -249,7 +249,6 @@ class SnapshotCache {
     if (snapshotCache != null && snapshotCache.exists) {
       snapshotCache.delete();
     }
-    return null;
   }
 }
 

@@ -220,7 +220,7 @@ class SubprocessLauncher {
       }).join(' '));
       stderr.write(' ');
     }
-    stderr.write('$executable');
+    stderr.write(executable);
     if (arguments.isNotEmpty) {
       for (var arg in arguments) {
         if (arg.contains(_quotables)) {
