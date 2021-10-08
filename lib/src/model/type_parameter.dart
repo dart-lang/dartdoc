@@ -36,7 +36,7 @@ class TypeParameter extends ModelElement {
     if (_boundType == null) {
       var bound = element.bound;
       if (bound != null) {
-        _boundType = ElementType.from(bound, library, packageGraph);
+        _boundType = modelBuilder.typeFrom(bound, library);
       }
     }
     return _boundType;

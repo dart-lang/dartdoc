@@ -96,8 +96,7 @@ mixin MixedInTypes on InheritingContainer {
       _mixedInTypes ??
       [
         ...element.mixins
-            .map<DefinedElementType>(
-                (f) => ElementType.from(f, library, packageGraph))
+            .map<DefinedElementType>((f) => modelBuilder.typeFrom(f, library))
             .where((mixin) => mixin != null)
       ];
 
@@ -118,8 +117,7 @@ mixin TypeImplementing on InheritingContainer {
       _directInterfaces ??
       [
         ...element.interfaces
-            .map<DefinedElementType>(
-                (f) => ElementType.from(f, library, packageGraph))
+            .map<DefinedElementType>((f) => modelBuilder.typeFrom(f, library))
             .toList(growable: false)
       ];
 
@@ -224,14 +222,15 @@ abstract class InheritingContainer extends Container
   /// [ClassElement] is analogous to [InheritingContainer].
   ClassElement get element => super.element;
 
-  final DefinedElementType supertype;
+  DefinedElementType _supertype;
+  DefinedElementType get supertype =>
+      _supertype ??= element.supertype?.element?.supertype == null
+          ? null
+          : modelBuilder.typeFrom(element.supertype, library);
 
   InheritingContainer(
       ClassElement element, Library library, PackageGraph packageGraph)
-      : supertype = element.supertype?.element?.supertype == null
-            ? null
-            : ElementType.from(element.supertype, library, packageGraph),
-        super(element, library, packageGraph);
+      : super(element, library, packageGraph);
 
   @override
   Iterable<Method> get instanceMethods =>
@@ -361,7 +360,7 @@ abstract class InheritingContainer extends Container
 
   @override
   DefinedElementType get modelType =>
-      _modelType ??= ElementType.from(element.thisType, library, packageGraph);
+      _modelType ??= modelBuilder.typeFrom(element.thisType, library);
 
   /// Not the same as superChain as it may include mixins.
   /// It's really not even the same as ordinary Dart inheritance, either,
@@ -381,8 +380,8 @@ abstract class InheritingContainer extends Container
         if ((parent.type as InterfaceType)?.superclass?.superclass == null) {
           parent = null;
         } else {
-          parent = ElementType.from(
-              (parent.type as InterfaceType).superclass, library, packageGraph);
+          parent = modelBuilder.typeFrom(
+              (parent.type as InterfaceType).superclass, library);
         }
       } else {
         parent = (parent.modelElement as Class).supertype;

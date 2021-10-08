@@ -38,8 +38,7 @@ class Annotation extends Feature with ModelBuilder {
     if (_modelType == null) {
       var annotatedWith = annotation.element;
       if (annotatedWith is ConstructorElement) {
-        _modelType =
-            ElementType.from(annotatedWith.returnType, library, packageGraph);
+        _modelType = modelBuilder.typeFrom(annotatedWith.returnType, library);
       } else if (annotatedWith is PropertyAccessorElement) {
         _modelType = (modelBuilder.fromElement(annotatedWith.variable)
                 as GetterSetterCombo)

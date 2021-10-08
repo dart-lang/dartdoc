@@ -13,6 +13,15 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model/model_object_builder.dart';
 import 'package:dartdoc/src/render/element_type_renderer.dart';
 
+mixin ElementTypeBuilderImpl implements ElementTypeBuilder {
+  PackageGraph get packageGraph;
+
+  @override
+  ElementType typeFrom(DartType f, Library library,
+          {ElementType returnedFrom}) =>
+      ElementType._from(f, library, packageGraph, returnedFrom: returnedFrom);
+}
+
 /// Base class representing a type in Dartdoc.  It wraps a [DartType], and
 /// may link to a [ModelElement].
 abstract class ElementType extends Privacy
@@ -26,7 +35,7 @@ abstract class ElementType extends Privacy
 
   ElementType(this._type, this.library, this.packageGraph, this.returnedFrom);
 
-  factory ElementType.from(
+  factory ElementType._from(
       DartType f, Library library, PackageGraph packageGraph,
       {ElementType returnedFrom}) {
     if (f.element == null ||
@@ -215,7 +224,7 @@ class ParameterizedElementType extends DefinedElementType with Rendered {
   @override
   Iterable<ElementType> get typeArguments =>
       _typeArguments ??= type.typeArguments
-          .map((f) => ElementType.from(f, library, packageGraph))
+          .map((f) => modelBuilder.typeFrom(f, library))
           .toList(growable: false);
 }
 
@@ -234,7 +243,7 @@ mixin Aliased implements ElementType, ModelBuilderInterface {
   Iterable<ElementType> _aliasArguments;
   Iterable<ElementType> get aliasArguments =>
       _aliasArguments ??= type.alias.typeArguments
-          .map((f) => ElementType.from(f, library, packageGraph))
+          .map((f) => modelBuilder.typeFrom(f, library))
           .toList(growable: false);
 }
 
@@ -381,7 +390,7 @@ mixin Callable implements ElementType {
 
   ElementType _returnType;
   ElementType get returnType {
-    _returnType ??= ElementType.from(type.returnType, library, packageGraph);
+    _returnType ??= modelBuilder.typeFrom(type.returnType, library);
     return _returnType;
   }
 
@@ -432,7 +441,7 @@ class CallableElementType extends DefinedElementType with Rendered, Callable {
   @override
   Iterable<ElementType> get typeArguments =>
       _typeArguments ??= (type.alias?.typeArguments ?? [])
-          .map((f) => ElementType.from(f, library, packageGraph))
+          .map((f) => modelBuilder.typeFrom(f, library))
           .toList(growable: false);
 }
 

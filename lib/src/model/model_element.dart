@@ -59,25 +59,23 @@ ModelElement resolveMultiplyInheritedElement(
       enclosingContainer: enclosingClass);
 }
 
-class ModelElementBuilderImpl implements ModelObjectBuilder {
-  final PackageGraph _packageGraph;
-
-  ModelElementBuilderImpl(this._packageGraph);
+mixin ModelElementBuilderImpl implements ModelElementBuilder {
+  PackageGraph get packageGraph;
 
   @override
   ModelElement from(Element e, Library library,
           {Container enclosingContainer}) =>
-      ModelElement._from(e, library, _packageGraph,
+      ModelElement._from(e, library, packageGraph,
           enclosingContainer: enclosingContainer);
 
   @override
   ModelElement fromElement(Element e) =>
-      ModelElement._fromElement(e, _packageGraph);
+      ModelElement._fromElement(e, packageGraph);
 
   @override
   ModelElement fromPropertyInducingElement(Element e, Library l,
           {Container enclosingContainer, Accessor getter, Accessor setter}) =>
-      ModelElement._fromPropertyInducingElement(e, l, _packageGraph,
+      ModelElement._fromPropertyInducingElement(e, l, packageGraph,
           enclosingContainer: enclosingContainer,
           getter: getter,
           setter: setter);
@@ -150,7 +148,7 @@ abstract class ModelElement extends Canonicalization
     return ModelElement._from(e, lib, p);
   }
 
-  /// Creates a  [ModelElement] from [PropertyInducingElement] [e].
+  /// Creates a [ModelElement] from [PropertyInducingElement] [e].
   ///
   /// Do not construct any ModelElements except from this constructor or
   /// [ModelElement._from]. Specify [enclosingContainer]
@@ -525,7 +523,7 @@ abstract class ModelElement extends Canonicalization
   }
 
   Library get definingLibrary {
-    var library = packageGraph.findButDoNotCreateLibraryFor(element);
+    Library library = modelBuilder.fromElement(element.library);
     if (library == null) {
       warn(PackageWarning.noDefiningLibraryFound);
     }

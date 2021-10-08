@@ -252,7 +252,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
       importedExportedLibraryElements.addAll(element.importedLibraries);
       importedExportedLibraryElements.addAll(element.exportedLibraries);
       for (var l in importedExportedLibraryElements) {
-        var lib = packageGraph.findButDoNotCreateLibraryFor(l);
+        var lib = modelBuilder.fromElement(l) as Library;
         _importedExportedLibraries.add(lib);
         _importedExportedLibraries.addAll(lib.importedExportedLibraries);
       }
