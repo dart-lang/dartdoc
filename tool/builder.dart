@@ -11,9 +11,9 @@ import 'package:glob/glob.dart';
 import 'package:path/path.dart' as path;
 
 String _resourcesFile(Iterable<String> packagePaths) => '''
-// WARNING: This file is auto-generated. Do not taunt.
+// WARNING: This file is auto-generated. Do not edit.
 
-const List<String> resource_names = [
+const List<String> resourceNames = [
 ${packagePaths.map((p) => "  '$p'").join(',\n')}
 ];
 ''';

@@ -1,6 +1,6 @@
 # Change analysis_options.yaml and analysis_options_presubmit.yaml
 # together.
-include: package:pedantic/analysis_options.1.11.0.yaml
+include: package:lints/recommended.yaml
 
 analyzer:
   errors:
@@ -19,45 +19,19 @@ analyzer:
     - 'testing/test_package_export_error/**'
 linter:
   rules:
-    - always_declare_return_types
-    - avoid_dynamic_calls
-    - avoid_single_cascade_in_expression_statements
-    - avoid_unused_constructor_parameters
-    - annotate_overrides
-    - avoid_init_to_null
-    - directives_ordering
-    - no_adjacent_strings_in_list
-    - package_api_docs
-    - prefer_final_fields
-    - prefer_initializing_formals
-    - prefer_void_to_null
-    - slash_for_doc_comments
-    - type_annotate_public_apis
-    #    - unnecessary_brace_in_string_interps
+    always_declare_return_types: true
+    annotate_overrides: true
+    avoid_dynamic_calls: true
+    avoid_single_cascade_in_expression_statements: true
+    avoid_unused_constructor_parameters: true
+    avoid_init_to_null: true
+    directives_ordering: true
+    no_adjacent_strings_in_list: true
+    package_api_docs: true
+    prefer_final_fields: true
+    prefer_initializing_formals: true
+    prefer_void_to_null: true
+    slash_for_doc_comments: true
+    type_annotate_public_apis: true
     # Work in progress canonical score lints
-    - avoid_empty_else
-    - avoid_relative_lib_imports
-    - avoid_shadowing_type_parameters
-    - await_only_futures
-    - camel_case_extensions
-    - camel_case_types
-    - curly_braces_in_flow_control_structures
-    - empty_catches
-    - file_names
-    - hash_and_equals
-    - iterable_contains_unrelated_type
-    - list_remove_unrelated_type
-    - no_duplicate_case_values
-    #    - non_constant_identifier_names
-    - package_prefixed_library_names
-    - prefer_generic_function_type_aliases
-    - prefer_is_empty
-    - prefer_is_not_empty
-    - prefer_iterable_whereType
-    - prefer_typing_uninitialized_variables
-    - provide_deprecation_message
-    - unawaited_futures
-    - unnecessary_overrides
-    - unrelated_type_equality_checks
-    - valid_regexps
-    - void_checks
+    unawaited_futures: true

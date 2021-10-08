@@ -1,3 +1,15 @@
+## 4.0.0
+* BREAKING CHANGE: Refactors to support NNBD and adapt to new analyzer 
+  changes are technically semver breaking.   If you make extensive use of
+  the `documentationComment` getter on `ModelElement` or other deep
+  structural elements in dartdoc or custom templates, they could break
+  dependent code.  (#2819, #2818, #2817, #2806, #2798)
+* BREAKING CHANGE: Remove a large number of long-standing deprecated
+  symbols in dartdoc. (#2821)
+* Fix a problem where certain comment reference strings could
+  crash the parser. (#2813, #2808)
+* Fix an assert in canonicalization for enums. (#2812)
+
 ## 3.1.0
 * This version supports the Dart language feature constructor tearoffs,
   pending completion by other tools.

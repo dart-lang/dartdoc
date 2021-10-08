@@ -12,11 +12,22 @@ import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/model/model_object_builder.dart';
 import 'package:dartdoc/src/render/element_type_renderer.dart';
+
+mixin ElementTypeBuilderImpl implements ElementTypeBuilder {
+  PackageGraph get packageGraph;
+
+  @override
+  ElementType typeFrom(DartType f, Library library,
+          {ElementType returnedFrom}) =>
+      ElementType._from(f, library, packageGraph, returnedFrom: returnedFrom);
+}
 
 /// Base class representing a type in Dartdoc.  It wraps a [DartType], and
 /// may link to a [ModelElement].
-abstract class ElementType extends Privacy with CommentReferable, Nameable {
+abstract class ElementType extends Privacy
+    with CommentReferable, Nameable, ModelBuilder {
   final DartType _type;
   @override
   final PackageGraph packageGraph;
@@ -26,7 +37,7 @@ abstract class ElementType extends Privacy with CommentReferable, Nameable {
 
   ElementType(this._type, this.library, this.packageGraph, this.returnedFrom);
 
-  factory ElementType.from(
+  factory ElementType._from(
       DartType f, Library library, PackageGraph packageGraph,
       {ElementType returnedFrom}) {
     if (f.element == null ||
@@ -41,7 +52,7 @@ abstract class ElementType extends Privacy with CommentReferable, Nameable {
       }
       return UndefinedElementType(f, library, packageGraph, returnedFrom);
     } else {
-      var element = ModelElement.fromElement(f.element, packageGraph);
+      var element = packageGraph.modelBuilder.fromElement(f.element);
       // [TypeAliasElement.aliasElement] has different implications.
       // In that case it is an actual type alias of some kind (generic
       // or otherwise.   Here however aliasElement signals that this is a
@@ -174,7 +185,7 @@ class FunctionTypeElementType extends UndefinedElementType
 
   /// An unmodifiable list of this function element's type parameters.
   List<TypeParameter> get typeFormals => type.typeFormals
-      .map((p) => ModelElement.from(p, library, packageGraph) as TypeParameter)
+      .map((p) => packageGraph.modelBuilder.from(p, library) as TypeParameter)
       .toList(growable: false);
 
   @override
@@ -215,12 +226,12 @@ class ParameterizedElementType extends DefinedElementType with Rendered {
   @override
   Iterable<ElementType> get typeArguments =>
       _typeArguments ??= type.typeArguments
-          .map((f) => ElementType.from(f, library, packageGraph))
+          .map((f) => modelBuilder.typeFrom(f, library))
           .toList(growable: false);
 }
 
 /// A [ElementType] whose underlying type was referrred to by a type alias.
-mixin Aliased implements ElementType {
+mixin Aliased implements ElementType, ModelBuilderInterface {
   @override
   String get name => type.alias.element.name;
 
@@ -228,13 +239,13 @@ mixin Aliased implements ElementType {
   bool get isTypedef => true;
 
   ModelElement _aliasElement;
-  ModelElement get aliasElement => _aliasElement ??=
-      ModelElement.fromElement(type.alias.element, packageGraph);
+  ModelElement get aliasElement =>
+      _aliasElement ??= modelBuilder.fromElement(type.alias.element);
 
   Iterable<ElementType> _aliasArguments;
   Iterable<ElementType> get aliasArguments =>
       _aliasArguments ??= type.alias.typeArguments
-          .map((f) => ElementType.from(f, library, packageGraph))
+          .map((f) => modelBuilder.typeFrom(f, library))
           .toList(growable: false);
 }
 
@@ -376,12 +387,12 @@ abstract class DefinedElementType extends ElementType {
 /// unless it is an alias reference.
 mixin Callable implements ElementType {
   List<Parameter> get parameters => type.parameters
-      .map((p) => ModelElement.from(p, library, packageGraph) as Parameter)
+      .map((p) => modelBuilder.from(p, library) as Parameter)
       .toList(growable: false);
 
   ElementType _returnType;
   ElementType get returnType {
-    _returnType ??= ElementType.from(type.returnType, library, packageGraph);
+    _returnType ??= modelBuilder.typeFrom(type.returnType, library);
     return _returnType;
   }
 
@@ -432,7 +443,7 @@ class CallableElementType extends DefinedElementType with Rendered, Callable {
   @override
   Iterable<ElementType> get typeArguments =>
       _typeArguments ??= (type.alias?.typeArguments ?? [])
-          .map((f) => ElementType.from(f, library, packageGraph))
+          .map((f) => modelBuilder.typeFrom(f, library))
           .toList(growable: false);
 }
 

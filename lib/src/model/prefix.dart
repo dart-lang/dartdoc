@@ -6,7 +6,6 @@
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/scope.dart';
-import 'package:analyzer/src/dart/element/element.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 
 import '../../dartdoc.dart';
@@ -28,11 +27,9 @@ class Prefix extends ModelElement implements EnclosedElement {
   // TODO(jcollins-g): consider connecting PrefixElement to the imported library
   // in analyzer?
   Library get associatedLibrary =>
-      _associatedLibrary ??= ModelElement.fromElement(
-          library.element.imports
-              .firstWhere((i) => i.prefix == element)
-              .importedLibrary,
-          packageGraph);
+      _associatedLibrary ??= modelBuilder.fromElement(library.element.imports
+          .firstWhere((i) => i.prefix == element)
+          .importedLibrary);
 
   @override
   Library get canonicalModelElement => associatedLibrary.canonicalLibrary;
@@ -41,7 +38,7 @@ class Prefix extends ModelElement implements EnclosedElement {
   Scope get scope => element.scope;
 
   @override
-  PrefixElementImpl get element => super.element;
+  PrefixElement get element => super.element;
 
   @override
   ModelElement get enclosingElement => library;
@@ -51,8 +48,7 @@ class Prefix extends ModelElement implements EnclosedElement {
       throw UnimplementedError('prefixes have no generated files in dartdoc');
 
   @override
-  String get href =>
-      canonicalModelElement == null ? null : canonicalModelElement.href;
+  String get href => canonicalModelElement?.href;
 
   @override
   String get kind => 'prefix';

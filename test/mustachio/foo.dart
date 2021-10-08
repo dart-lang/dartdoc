@@ -17,6 +17,7 @@ class Foo extends FooBase<Baz> {
   bool b1;
   List<int> l1;
   @override
+  // ignore: overridden_fields
   Baz baz;
   Property1 p1;
   int length;

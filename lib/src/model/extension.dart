@@ -18,8 +18,7 @@ class Extension extends Container implements EnclosedElement {
   Extension(
       ExtensionElement element, Library library, PackageGraph packageGraph)
       : super(element, library, packageGraph) {
-    extendedType =
-        ElementType.from(_extension.extendedType, library, packageGraph);
+    extendedType = modelBuilder.typeFrom(_extension.extendedType, library);
   }
 
   /// Detect if this extension applies to every object.
@@ -57,7 +56,7 @@ class Extension extends Container implements EnclosedElement {
   @override
   List<Method> get declaredMethods {
     _methods ??= _extension.methods.map((e) {
-      return ModelElement.from(e, library, packageGraph) as Method;
+      return modelBuilder.from(e, library) as Method;
     }).toList(growable: false);
     return _methods;
   }
@@ -77,7 +76,7 @@ class Extension extends Container implements EnclosedElement {
       if (f.setter != null) {
         setter = ContainerAccessor(f.setter, library, packageGraph);
       }
-      return ModelElement.fromPropertyInducingElement(f, library, packageGraph,
+      return modelBuilder.fromPropertyInducingElement(f, library,
           getter: getter, setter: setter) as Field;
     }).toList(growable: false);
     return _declaredFields;
@@ -89,8 +88,8 @@ class Extension extends Container implements EnclosedElement {
   @override
   List<TypeParameter> get typeParameters {
     _typeParameters ??= _extension.typeParameters.map((f) {
-      var lib = Library(f.enclosingElement.library, packageGraph);
-      return ModelElement.from(f, lib, packageGraph) as TypeParameter;
+      var lib = modelBuilder.fromElement(f.enclosingElement.library);
+      return modelBuilder.from(f, lib) as TypeParameter;
     }).toList();
     return _typeParameters;
   }

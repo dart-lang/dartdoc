@@ -307,7 +307,7 @@ void dartfmt() async {
     if (filesToFix.isNotEmpty) {
       fail(
           'dart format found files needing reformatting. Use this command to reformat:\n'
-          'dart format ${filesToFix.map((f) => "\'$f\'").join(' ')}');
+          'dart format ${filesToFix.map((f) => "'$f'").join(' ')}');
     }
   } else {
     log('Skipping dartfmt check, requires latest dev version of SDK');
@@ -322,15 +322,15 @@ void dartfmt() async {
   tryPublish,
   smokeTest,
 )
-void presubmit() => null;
+void presubmit() {}
 
 @Task('Run long tests, self-test dartdoc, and run the publish test')
 @Depends(presubmit, longTest, testDartdoc)
-void buildbot() => null;
+void buildbot() {}
 
 @Task('Run buildbot tests, but without publish test')
 @Depends(analyze, dartfmt, checkBuild, smokeTest, longTest, testDartdoc)
-void buildbotNoPublish() => null;
+void buildbotNoPublish() {}
 
 @Task('Generate docs for the Dart SDK')
 Future<void> buildSdkDocs() async {
@@ -403,12 +403,16 @@ class WarningsCollection {
     if (onlyOriginal.isNotEmpty) {
       printBuffer.writeln(
           '*** $title : ${onlyOriginal.length} warnings from $branch, missing in ${current.branch}:');
-      onlyOriginal.forEach((key) => printBuffer.writeln(_fromKey(key)));
+      for (var key in onlyOriginal) {
+        printBuffer.writeln(_fromKey(key));
+      }
     }
     if (onlyCurrent.isNotEmpty) {
       printBuffer.writeln(
           '*** $title : ${onlyCurrent.length} new warnings in ${current.branch}, missing in $branch');
-      onlyCurrent.forEach((key) => printBuffer.writeln(current._fromKey(key)));
+      for (var key in onlyCurrent) {
+        printBuffer.writeln(current._fromKey(key));
+      }
     }
     if (quantityChangedOuts.isNotEmpty) {
       printBuffer.writeln('*** $title : Identical warning quantity changed');
@@ -563,7 +567,7 @@ Future<List<Map<Object, Object>>> _buildSdkDocs(
         '--enable-asserts',
         path.join('bin', 'dartdoc.dart'),
         '--output',
-        '$sdkDocsPath',
+        sdkDocsPath,
         '--sdk-docs',
         '--json',
         '--show-progress',
@@ -660,7 +664,7 @@ Future<void> startTestPackageDocsServer() async {
     '--port',
     '8002',
     '--path',
-    '${testPackageDocsDir.absolute.path}',
+    testPackageDocsDir.absolute.path,
   ]);
 }
 
@@ -690,7 +694,7 @@ Future<void> serveSdkDocs() async {
     '--port',
     '8000',
     '--path',
-    '${sdkDocsDir.path}',
+    sdkDocsDir.path,
   ]);
 }
 
@@ -837,7 +841,7 @@ $analyzerOptions
         '--link-to-remote',
         '--show-progress',
         '--enable-experiment',
-        '${languageExperiments.join(",")}',
+        languageExperiments.join(","),
         ...extraDartdocParameters,
       ],
       workingDirectory: languageTestPackageDir.absolute.path);
@@ -1144,7 +1148,9 @@ Future<void> test() async {
 @Task('Clean up pub data from test directories')
 Future<void> clean() async {
   var toDelete = nonRootPubData;
-  toDelete.forEach((e) => e.deleteSync(recursive: true));
+  for (var e in toDelete) {
+    e.deleteSync(recursive: true);
+  }
 }
 
 Iterable<FileSystemEntity> get nonRootPubData {

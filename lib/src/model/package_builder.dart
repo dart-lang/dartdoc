@@ -10,12 +10,20 @@ import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
-import 'package:analyzer/src/context/builder.dart';
-import 'package:analyzer/src/dart/analysis/analysis_context_collection.dart';
-import 'package:analyzer/src/dart/sdk/sdk.dart';
-import 'package:analyzer/src/generated/engine.dart';
-import 'package:analyzer/src/generated/java_io.dart';
-import 'package:analyzer/src/generated/sdk.dart';
+// ignore: implementation_imports
+import 'package:analyzer/src/context/builder.dart' show EmbedderYamlLocator;
+// ignore: implementation_imports
+import 'package:analyzer/src/dart/analysis/analysis_context_collection.dart'
+    show AnalysisContextCollectionImpl;
+// ignore: implementation_imports
+import 'package:analyzer/src/dart/sdk/sdk.dart'
+    show EmbedderSdk, FolderBasedDartSdk;
+// ignore: implementation_imports
+import 'package:analyzer/src/generated/engine.dart' show AnalysisOptionsImpl;
+// ignore: implementation_imports
+import 'package:analyzer/src/generated/java_io.dart' show JavaFile;
+// ignore: implementation_imports
+import 'package:analyzer/src/generated/sdk.dart' show DartSdk;
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart' hide Package;

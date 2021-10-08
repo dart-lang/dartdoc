@@ -6,6 +6,7 @@
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/source/line_info.dart';
+// ignore: implementation_imports
 import 'package:analyzer/src/dart/element/member.dart' show ExecutableMember;
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
@@ -35,7 +36,7 @@ class Method extends ModelElement
 
   void _calcTypeParameters() {
     typeParameters = element.typeParameters.map((f) {
-      return ModelElement.from(f, library, packageGraph) as TypeParameter;
+      return modelBuilder.from(f, library) as TypeParameter;
     }).toList();
   }
 
@@ -55,7 +56,7 @@ class Method extends ModelElement
   @override
   ModelElement get enclosingElement {
     _enclosingContainer ??=
-        ModelElement.from(element.enclosingElement, library, packageGraph);
+        modelBuilder.from(element.enclosingElement, library);
     return _enclosingContainer;
   }
 
@@ -101,7 +102,7 @@ class Method extends ModelElement
 
   Callable _modelType;
   Callable get modelType => _modelType ??=
-      ElementType.from((originalMember ?? element).type, library, packageGraph);
+      modelBuilder.typeFrom((originalMember ?? element).type, library);
 
   @override
   Method get overriddenElement {
@@ -113,7 +114,7 @@ class Method extends ModelElement
       Element e = t.getMethod(element.name);
       if (e != null) {
         assert(e.enclosingElement is ClassElement);
-        return ModelElement.fromElement(e, packageGraph);
+        return modelBuilder.fromElement(e);
       }
     }
     return null;
