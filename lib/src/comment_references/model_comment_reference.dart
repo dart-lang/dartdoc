@@ -3,8 +3,6 @@
 // BSD-style license that can be found in the LICENSE file.
 //
 
-// @dart=2.9
-
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
@@ -19,7 +17,7 @@ abstract class ModelCommentReference {
   bool get hasConstructorHint;
   bool get hasCallableHint;
   List<String> get referenceBy;
-  Element get staticElement;
+  Element? get staticElement;
 
   /// Construct a [ModelCommentReference] using the analyzer AST.
   factory ModelCommentReference(
@@ -35,45 +33,47 @@ abstract class ModelCommentReference {
 /// information needed for Dartdoc.  Drops link to the [CommentReference]
 /// and [ResourceProvider] after construction.
 class _ModelCommentReferenceImpl implements ModelCommentReference {
-  bool _allowUnnamedConstructor;
-
   void _initAllowCache() {
     var referencePieces = parsed.whereType<IdentifierNode>().toList();
     _allowUnnamedConstructor = false;
     _allowUnnamedConstructorParameter = false;
     if (referencePieces.length >= 2) {
-      IdentifierNode nodeLast;
-      for (var f in referencePieces) {
-        if (f.text == nodeLast?.text) {
-          if (identical(referencePieces.last, f)) {
+      for (var i = 0; i <= referencePieces.length - 2; i++) {
+        if (referencePieces[i].text == referencePieces[i + 1].text) {
+          if (i + 2 == referencePieces.length) {
+            // This looks like an old-style reference to an unnamed
+            // constructor, e.g. [lib_name.C.C].
             _allowUnnamedConstructor = true;
           } else {
+            // This could be a reference to a parameter or type parameter of
+            // an unnamed/new-declared constructor.
             _allowUnnamedConstructorParameter = true;
           }
         }
-        nodeLast = f;
       }
-      if (referencePieces.last.text == 'new') {
+      // e.g. [C.new], which may be the unnamed constructor
+      if (referencePieces.isNotEmpty && referencePieces.last.text == 'new') {
         _allowUnnamedConstructor = true;
       }
     }
   }
 
+  bool? _allowUnnamedConstructor;
   @override
   bool get allowUnnamedConstructor {
     if (_allowUnnamedConstructor == null) {
       _initAllowCache();
     }
-    return _allowUnnamedConstructor;
+    return _allowUnnamedConstructor!;
   }
 
-  bool _allowUnnamedConstructorParameter;
+  bool? _allowUnnamedConstructorParameter;
   @override
   bool get allowUnnamedConstructorParameter {
     if (_allowUnnamedConstructorParameter == null) {
       _initAllowCache();
     }
-    return _allowUnnamedConstructorParameter;
+    return _allowUnnamedConstructorParameter!;
   }
 
   @override
@@ -96,7 +96,7 @@ class _ModelCommentReferenceImpl implements ModelCommentReference {
       .toList(growable: false);
 
   @override
-  final Element staticElement;
+  final Element? staticElement;
 
   _ModelCommentReferenceImpl(
       CommentReference ref, ResourceProvider resourceProvider)
@@ -120,7 +120,6 @@ class _ModelCommentReferenceImpl implements ModelCommentReference {
         .substring(ref.offset - token.offset, ref.end - token.offset);
   }
 
-  List<CommentReferenceNode> _parsed;
-  List<CommentReferenceNode> get parsed =>
-      _parsed ??= CommentReferenceParser(codeRef).parse();
+  late final List<CommentReferenceNode> parsed =
+      CommentReferenceParser(codeRef).parse();
 }

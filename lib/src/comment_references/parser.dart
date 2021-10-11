@@ -3,8 +3,6 @@
 // BSD-style license that can be found in the LICENSE file.
 //
 
-// @dart=2.9
-
 import 'package:charcode/charcode.dart';
 import 'package:meta/meta.dart';
 
@@ -52,7 +50,7 @@ class StringTrie {
     var matchChar = toMatch.codeUnitAt(index);
     if (children.containsKey(matchChar)) {
       lastValid = valid ? index : lastValid;
-      return children[matchChar].match(toMatch, index + 1, lastValid);
+      return children[matchChar]!.match(toMatch, index + 1, lastValid);
     }
     return valid ? index : lastValid;
   }
@@ -61,22 +59,19 @@ class StringTrie {
     var currentTrie = this;
     for (var i in toAdd.codeUnits) {
       currentTrie.children.putIfAbsent(i, () => StringTrie());
-      currentTrie = currentTrie.children[i];
+      currentTrie = currentTrie.children[i]!;
     }
     currentTrie.valid = true;
   }
 }
 
-StringTrie _operatorParseTrie;
-StringTrie get operatorParseTrie {
-  if (_operatorParseTrie == null) {
-    _operatorParseTrie = StringTrie();
-    for (var name in operatorNames.keys) {
-      _operatorParseTrie.addWord(name);
-    }
+late final StringTrie operatorParseTrie = () {
+  var _operatorParseTrie = StringTrie();
+  for (var name in operatorNames.keys) {
+    _operatorParseTrie.addWord(name);
   }
   return _operatorParseTrie;
-}
+}();
 
 /// A parser for comment references.
 // TODO(jcollins-g): align with [CommentReference] from analyzer AST.
@@ -114,7 +109,7 @@ class CommentReferenceParser {
       return [];
     }
     if (prefixResult.type == _PrefixResultType.parsedConstructorHint) {
-      children.add(prefixResult.node);
+      children.add(prefixResult.node!);
     }
     // [_PrefixResultType.junk] and [_PrefixResultType.missing] we can skip.
 
@@ -130,13 +125,13 @@ class CommentReferenceParser {
         break;
       } else if (identifierResult.type ==
           _IdentifierResultType.parsedIdentifier) {
-        children.add(identifierResult.node);
+        children.add(identifierResult.node!);
         var typeVariablesResult = _parseTypeVariables();
         if (typeVariablesResult.type == _TypeVariablesResultType.endOfFile) {
           break;
         } else if (typeVariablesResult.type ==
             _TypeVariablesResultType.parsedTypeVariables) {
-          children.add(typeVariablesResult.node);
+          children.add(typeVariablesResult.node!);
         } else {
           assert(typeVariablesResult.type ==
               _TypeVariablesResultType.notTypeVariables);
@@ -154,7 +149,7 @@ class CommentReferenceParser {
       // Invalid trailing junk; reject the reference.
       return [];
     } else if (suffixResult.type == _SuffixResultType.parsedCallableHint) {
-      children.add(suffixResult.node);
+      children.add(suffixResult.node!);
     }
 
     // [_SuffixResultType.junk] or [_SuffixResultType.missing] we can skip.
@@ -209,7 +204,7 @@ class CommentReferenceParser {
   /// Advances the index forward to the end of the operator if one is
   /// present and returns the operator's name.  Otherwise, leaves _index
   /// unchanged and returns null.
-  String _tryParseOperator() {
+  String? _tryParseOperator() {
     var tryIndex = _index;
     if (tryIndex + _operatorKeyword.length < codeRef.length &&
         codeRef.substring(tryIndex, tryIndex + _operatorKeyword.length) ==
@@ -318,7 +313,6 @@ class CommentReferenceParser {
   bool _tryMatchLiteral(String characters,
       {bool acceptTrailingWhitespace = true,
       bool requireTrailingNonidentifier = false}) {
-    assert(acceptTrailingWhitespace != null);
     if (characters.length + _index > _referenceLength) return false;
     int startIndex;
     for (startIndex = _index;
@@ -388,7 +382,7 @@ enum _PrefixResultType {
 class _PrefixParseResult {
   final _PrefixResultType type;
 
-  final CommentReferenceNode node;
+  final CommentReferenceNode? node;
 
   const _PrefixParseResult._(this.type, this.node);
 
@@ -416,7 +410,7 @@ enum _IdentifierResultType {
 class _IdentifierParseResult {
   final _IdentifierResultType type;
 
-  final IdentifierNode node;
+  final IdentifierNode? node;
 
   const _IdentifierParseResult._(this.type, this.node);
 
@@ -440,7 +434,7 @@ enum _TypeVariablesResultType {
 class _TypeVariablesParseResult {
   final _TypeVariablesResultType type;
 
-  final TypeVariablesNode node;
+  final TypeVariablesNode? node;
 
   const _TypeVariablesParseResult._(this.type, this.node);
 
@@ -467,7 +461,7 @@ enum _SuffixResultType {
 class _SuffixParseResult {
   final _SuffixResultType type;
 
-  final CommentReferenceNode node;
+  final CommentReferenceNode? node;
 
   const _SuffixParseResult._(this.type, this.node);
 
