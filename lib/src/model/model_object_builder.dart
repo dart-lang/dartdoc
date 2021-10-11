@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
-
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:dartdoc/src/element_type.dart';
@@ -51,8 +49,7 @@ class ModelObjectBuilderImpl extends ModelObjectBuilder
 mixin ModelBuilder implements ModelBuilderInterface {
   PackageGraph get packageGraph;
 
-  ModelObjectBuilder _modelBuilder;
   @override
-  ModelObjectBuilder get modelBuilder =>
-      _modelBuilder ??= ModelObjectBuilderImpl(packageGraph);
+  late final ModelObjectBuilder modelBuilder =
+      ModelObjectBuilderImpl(packageGraph);
 }
