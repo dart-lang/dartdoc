@@ -32,7 +32,7 @@ abstract class Base extends Nameable with CommentReferable {
           {bool Function(CommentReferable) allowTree,
           bool Function(CommentReferable) filter}) =>
       referenceBy(value.split(_separator),
-          allowTree: allowTree, filter: filter);
+          allowTree: allowTree ?? (_) => true, filter: filter ?? (_) => true);
 
   @override
   Element get element => throw UnimplementedError();
