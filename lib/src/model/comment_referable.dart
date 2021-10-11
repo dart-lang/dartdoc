@@ -166,7 +166,7 @@ mixin CommentReferable implements Nameable, ModelBuilderInterface {
       ReferenceChildrenLookup referenceLookup, CommentReferable result,
       {required bool Function(CommentReferable?) allowTree,
       required bool Function(CommentReferable?) filter}) {
-    CommentReferable? returnValue;
+    CommentReferable? returnValue = result;
     if (referenceLookup.remaining.isNotEmpty) {
       if (allowTree(result)) {
         returnValue = result.referenceBy(referenceLookup.remaining,

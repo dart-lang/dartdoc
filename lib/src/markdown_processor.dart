@@ -220,7 +220,8 @@ MatchingLinkResult _getMatchingLinkElementCommentReferable(
       allowTree = _rejectUnnamedAndShadowingConstructors;
     }
   }
-
+  allowTree ??= (_) => true;
+  filter ??= (_) => true;
   var lookupResult = warnable.referenceBy(commentReference.referenceBy,
       allowTree: allowTree, filter: filter);
 
