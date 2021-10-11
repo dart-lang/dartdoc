@@ -286,9 +286,9 @@ void showWarningsForGenericsOutsideSquareBracketsBlocks(
       PackageWarningMode.ignore) {
     for (var position in findFreeHangingGenericsPositions(text)) {
       var priorContext =
-          '${text.substring(max(position - maxPriorContext, 0), position)}';
+          text.substring(max(position - maxPriorContext, 0), position);
       var postContext =
-          '${text.substring(position, min(position + maxPostContext, text.length))}';
+          text.substring(position, min(position + maxPostContext, text.length));
       priorContext = priorContext.replaceAll(allBeforeFirstNewline, '');
       postContext = postContext.replaceAll(allAfterLastNewline, '');
       var errorMessage = '$priorContext$postContext';

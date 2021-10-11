@@ -6,6 +6,7 @@
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/source/line_info.dart';
+// ignore: implementation_imports
 import 'package:analyzer/src/dart/element/member.dart' show ExecutableMember;
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
@@ -41,7 +42,7 @@ class Accessor extends ModelElement implements EnclosedElement {
 
   Callable _modelType;
   Callable get modelType => _modelType ??=
-      ElementType.from((originalMember ?? element).type, library, packageGraph);
+      modelBuilder.typeFrom((originalMember ?? element).type, library);
 
   bool get isSynthetic => element.isSynthetic;
 
@@ -53,7 +54,7 @@ class Accessor extends ModelElement implements EnclosedElement {
   GetterSetterCombo get definingCombo {
     if (_definingCombo == null) {
       var variable = element.variable;
-      _definingCombo = ModelElement.fromElement(variable, packageGraph);
+      _definingCombo = modelBuilder.fromElement(variable);
       assert(_definingCombo != null, 'Unable to find defining combo');
     }
     return _definingCombo;
@@ -141,11 +142,11 @@ class Accessor extends ModelElement implements EnclosedElement {
   @override
   ModelElement get enclosingElement {
     if (element.enclosingElement is CompilationUnitElement) {
-      return packageGraph.findButDoNotCreateLibraryFor(
-          element.enclosingElement.enclosingElement);
+      return modelBuilder
+          .fromElement(element.enclosingElement.enclosingElement);
     }
 
-    return ModelElement.from(element.enclosingElement, library, packageGraph);
+    return modelBuilder.from(element.enclosingElement, library);
   }
 
   @override
@@ -200,12 +201,12 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
     ContainerAccessor accessor;
     if (element == null) return null;
     if (inheritedAccessors.contains(element)) {
-      accessor = ModelElement.from(
-          element, enclosingContainer.library, enclosingContainer.packageGraph,
+      accessor = enclosingContainer.packageGraph.modelBuilder.from(
+          element, enclosingContainer.library,
           enclosingContainer: enclosingContainer);
     } else {
-      accessor = ModelElement.from(
-          element, enclosingContainer.library, enclosingContainer.packageGraph);
+      accessor = enclosingContainer.packageGraph.modelBuilder
+          .from(element, enclosingContainer.library);
     }
     return accessor;
   }
@@ -265,7 +266,7 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
           if (accessor != null) {
             accessor = accessor.declaration;
             InheritingContainer parentContainer =
-                ModelElement.fromElement(t.element, packageGraph);
+                modelBuilder.fromElement(t.element);
             var possibleFields = <Field>[];
             possibleFields.addAll(parentContainer.instanceFields);
             possibleFields.addAll(parentContainer.staticFields);

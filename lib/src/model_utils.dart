@@ -12,7 +12,8 @@ import 'dart:io' show Platform;
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
-import 'package:analyzer/src/dart/ast/utilities.dart';
+// ignore: implementation_imports
+import 'package:analyzer/src/dart/ast/utilities.dart' show NodeLocator2;
 import 'package:dartdoc/src/failure.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:glob/glob.dart';
@@ -117,7 +118,7 @@ String getFileContentsFor(Element e, ResourceProvider resourceProvider) {
   return _fileContents[location];
 }
 
-final RegExp slashes = RegExp('[\/]');
+final RegExp slashes = RegExp(r'[\/]');
 bool hasPrivateName(Element e) {
   if (e.name == null) return false;
 

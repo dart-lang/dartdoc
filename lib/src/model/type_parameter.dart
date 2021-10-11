@@ -17,7 +17,7 @@ class TypeParameter extends ModelElement {
 
   @override
   ModelElement get enclosingElement => (element.enclosingElement != null)
-      ? ModelElement.from(element.enclosingElement, library, packageGraph)
+      ? modelBuilder.from(element.enclosingElement, library)
       : null;
 
   @override
@@ -38,7 +38,7 @@ class TypeParameter extends ModelElement {
     if (_boundType == null) {
       var bound = element.bound;
       if (bound != null) {
-        _boundType = ElementType.from(bound, library, packageGraph);
+        _boundType = modelBuilder.typeFrom(bound, library);
       }
     }
     return _boundType;

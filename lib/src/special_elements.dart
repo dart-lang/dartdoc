@@ -12,7 +12,8 @@
 library dartdoc.special_elements;
 
 import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/src/generated/sdk.dart';
+// ignore: implementation_imports
+import 'package:analyzer/src/generated/sdk.dart' show DartSdk;
 import 'package:dartdoc/src/model/model.dart';
 
 /// Which of the [SpecialClasses] to get.
@@ -112,9 +113,10 @@ class SpecialClasses {
 
   /// Throw an [AssertionError] if not all required specials are found.
   void assertSpecials() {
-    _specialClassDefinitions.values.forEach((_SpecialClassDefinition d) {
-      if (d.required) assert(_specialClass.containsKey(d.specialClass));
-    });
+    for (var classDefinition
+        in _specialClassDefinitions.values.where((d) => d.required)) {
+      assert(_specialClass.containsKey(classDefinition.specialClass));
+    }
   }
 
   Class operator [](SpecialClass specialClass) => _specialClass[specialClass];

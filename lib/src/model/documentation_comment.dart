@@ -6,7 +6,6 @@ import 'package:dartdoc/src/model/documentable.dart';
 import 'package:dartdoc/src/model/documentation.dart';
 import 'package:dartdoc/src/model/inheritable.dart';
 import 'package:dartdoc/src/model/locatable.dart';
-import 'package:dartdoc/src/model/model_element.dart';
 import 'package:dartdoc/src/model/source_code_mixin.dart';
 import 'package:dartdoc/src/render/model_element_renderer.dart';
 import 'package:dartdoc/src/utils.dart';
@@ -59,9 +58,7 @@ mixin DocumentationComment
             (this as Inheritable).overriddenElement != null) {
           return (this as Inheritable).overriddenElement.documentationFrom;
         } else if (this is Inheritable && (this as Inheritable).isInherited) {
-          var thisInheritable = (this as Inheritable);
-          var fromThis = ModelElement.fromElement(
-              element, thisInheritable.definingEnclosingContainer.packageGraph);
+          var fromThis = modelBuilder.fromElement(element);
           return fromThis.documentationFrom;
         } else {
           return [this];
@@ -77,11 +74,8 @@ mixin DocumentationComment
   }
 
   Documentation _elementDocumentation;
-  Documentation get elementDocumentation {
-    if (_elementDocumentation != null) return _elementDocumentation;
-    _elementDocumentation = Documentation.forElement(this);
-    return _elementDocumentation;
-  }
+  Documentation get elementDocumentation =>
+      _elementDocumentation ??= Documentation.forElement(this);
 
   String /*!*/ get documentationComment;
 
@@ -398,7 +392,7 @@ mixin DocumentationComment
 
   /// Matches YouTube IDs from supported YouTube URLs.
   static final _validYouTubeUrlPattern =
-      RegExp('https://www\.youtube\.com/watch\\?v=([^&]+)\$');
+      RegExp(r'https://www\.youtube\.com/watch\?v=([^&]+)$');
 
   /// An argument parser used in [_injectYouTube] to parse a `{@youtube}`
   /// directive.
@@ -741,14 +735,14 @@ mixin DocumentationComment
         firstOfPair.add(results[i]);
       }
     }
-    firstOfPair.forEach((element) {
+    for (var element in firstOfPair) {
       final result = element.group(2).trim();
       if (result.isEmpty) {
         warn(PackageWarning.missingCodeBlockLanguage,
             message:
                 'A fenced code block in Markdown should have a language specified');
       }
-    });
+    }
   }
 
   /// Returns the documentation for this literal element unless

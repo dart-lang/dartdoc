@@ -69,6 +69,7 @@ Future<String> compileTemplatesToRenderers(
 // non-bool, non-Iterable field is non-null.
 // ignore_for_file: unused_local_variable
 // @dart=2.9
+// ignore_for_file: non_constant_identifier_names, unnecessary_string_escapes
 
 ${library.accept(DartEmitter.scoped(orderDirectives: true))}
 ''');

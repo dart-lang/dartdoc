@@ -9,6 +9,7 @@
 library dartdoc.experiment_options;
 
 import 'package:analyzer/file_system/file_system.dart';
+// ignore: implementation_imports
 import 'package:analyzer/src/dart/analysis/experiments.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 
