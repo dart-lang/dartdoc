@@ -1963,12 +1963,13 @@ class _Renderer_CommentReferable extends RendererBase<CommentReferable> {
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
                           c, remainingNames, 'Iterable<CommentReferable>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
+                  isNullValue: (CT_ c) =>
+                      c.referenceGrandparentOverrides == null,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    return c.referenceGrandparentOverrides.map((e) =>
-                        renderSimple(e, ast, r.template, sink,
-                            parent: r,
-                            getters: _invisibleGetters['CommentReferable']));
+                    renderSimple(
+                        c.referenceGrandparentOverrides, ast, r.template, sink,
+                        parent: r, getters: _invisibleGetters['Iterable']);
                   },
                 ),
                 'referenceName': Property(
@@ -10761,18 +10762,6 @@ class _Renderer_Object extends RendererBase<Object> {
                         parent: r, getters: _invisibleGetters['int']);
                   },
                 ),
-                'runtimeType': Property(
-                  getValue: (CT_ c) => c.runtimeType,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'Type'),
-                  isNullValue: (CT_ c) => c.runtimeType == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.runtimeType, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['Type']);
-                  },
-                ),
               });
 
   _Renderer_Object(Object context, RendererBase<Object> parent,
@@ -15598,6 +15587,17 @@ const _invisibleGetters = {
     'overriddenDepth'
   },
   'InheritanceManager3': {'hashCode', 'runtimeType'},
+  'Iterable': {
+    'hashCode',
+    'runtimeType',
+    'iterator',
+    'length',
+    'isEmpty',
+    'isNotEmpty',
+    'first',
+    'last',
+    'single'
+  },
   'LibraryElement': {
     'hashCode',
     'runtimeType',
@@ -15888,7 +15888,6 @@ const _invisibleGetters = {
     'customFooterContent',
     'customInnerFooterText'
   },
-  'Type': {'hashCode', 'runtimeType'},
   'TypeAliasElement': {
     'hashCode',
     'runtimeType',
