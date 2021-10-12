@@ -11,6 +11,7 @@ library constructor_tearoffs;
 
 abstract class A {
   final int number;
+
   /// Even though this is abstract, dartdoc should still allow referring to
   /// [A.new].
   A.new(this.number);
@@ -59,11 +60,11 @@ typedef Fstring = F<String>;
 typedef NotAClass = Function;
 
 /// Mixins don't have constructors either, so disallow `M.new`.
-mixin M<T> on C {
-}
+mixin M<T> on C {}
 
 void func() {}
-void funcTypeParams<T extends String, U extends num>(T something, U different) {}
+void funcTypeParams<T extends String, U extends num>(
+    T something, U different) {}
 
 const aFunc = func;
 const aFuncParams = funcTypeParams;

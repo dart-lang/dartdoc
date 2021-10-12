@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
-
 /// Utility code to convert markdown comments to html.
 library dartdoc.markdown_processor;
 
@@ -162,7 +160,7 @@ class _IterableBlockParser extends md.BlockParser {
 /// Return false if the passed [referable] is an unnamed [Constructor],
 /// or if it is shadowing another type of element, or is a parameter of
 /// one of the above.
-bool _rejectUnnamedAndShadowingConstructors(CommentReferable referable) {
+bool _rejectUnnamedAndShadowingConstructors(CommentReferable? referable) {
   if (referable is Constructor) {
     if (referable.isUnnamedConstructor) return false;
     if (referable.enclosingElement
@@ -175,11 +173,11 @@ bool _rejectUnnamedAndShadowingConstructors(CommentReferable referable) {
 
 /// Return false unless the passed [referable] represents a callable object.
 /// Allows constructors but does not require them.
-bool _requireCallable(CommentReferable referable) =>
+bool _requireCallable(CommentReferable? referable) =>
     referable is ModelElement && referable.isCallable;
 
 /// Return false unless the passed [referable] represents a constructor.
-bool _requireConstructor(CommentReferable referable) =>
+bool _requireConstructor(CommentReferable? referable) =>
     referable is Constructor;
 
 /// Implements _getMatchingLinkElement via [CommentReferable.referenceBy].
@@ -188,8 +186,8 @@ MatchingLinkResult _getMatchingLinkElementCommentReferable(
   var commentReference =
       warnable.commentRefs[codeRef] ?? ModelCommentReference.synthetic(codeRef);
 
-  bool Function(CommentReferable) filter;
-  bool Function(CommentReferable) allowTree;
+  late final bool Function(CommentReferable?) filter;
+  late final bool Function(CommentReferable?) allowTree;
 
   // Constructor references are pretty ambiguous by nature since they can be
   // declared with the same name as the class they are constructing, and even
@@ -197,31 +195,33 @@ MatchingLinkResult _getMatchingLinkElementCommentReferable(
   // named the same as members.
   // Maybe clean this up with inspiration from constructor tear-off syntax?
   if (commentReference.allowUnnamedConstructor) {
+    allowTree = (_) => true;
     // Neither reject, nor require, a default constructor in the event
     // the comment reference structure implies one.  (We can not require it
     // in case a library name is the same as a member class name and the class
     // is the intended lookup).   For example, [FooClass.FooClass] structurally
     // "looks like" a default constructor, so we should allow it here.
-    filter = commentReference.hasCallableHint ? _requireCallable : null;
+    filter = commentReference.hasCallableHint ? _requireCallable : (_) => true;
   } else if (commentReference.hasConstructorHint &&
       commentReference.hasCallableHint) {
+    allowTree = (_) => true;
     // This takes precedence over the callable hint if both are present --
     // pick a constructor if and only constructor if we see `new`.
     filter = _requireConstructor;
   } else if (commentReference.hasCallableHint) {
+    allowTree = (_) => true;
     // Trailing parens indicate we are looking for a callable.
     filter = _requireCallable;
   } else {
+    if (!commentReference.allowUnnamedConstructorParameter) {
+      allowTree = _rejectUnnamedAndShadowingConstructors;
+    } else {
+      allowTree = (_) => true;
+    }
     // Without hints, reject unnamed constructors and their parameters to force
     // resolution to the class.
     filter = _rejectUnnamedAndShadowingConstructors;
-
-    if (!commentReference.allowUnnamedConstructorParameter) {
-      allowTree = _rejectUnnamedAndShadowingConstructors;
-    }
   }
-  allowTree ??= (_) => true;
-  filter ??= (_) => true;
   var lookupResult = warnable.referenceBy(commentReference.referenceBy,
       allowTree: allowTree, filter: filter);
 
@@ -239,7 +239,10 @@ md.Node _makeLinkNode(String codeRef, Warnable warnable) {
       if (linkedElement is ModelElement && linkedElement.isDeprecated) {
         anchor.attributes['class'] = 'deprecated';
       }
-      anchor.attributes['href'] = linkedElement.href;
+      var href = linkedElement.href;
+      if (href != null) {
+        anchor.attributes['href'] = href;
+      }
       return anchor;
     }
     // else this would be linkedElement.linkedName, but link bodies are slightly
@@ -250,9 +253,8 @@ md.Node _makeLinkNode(String codeRef, Warnable warnable) {
       // current element.
       warnable.warn(PackageWarning.unresolvedDocReference,
           message: codeRef,
-          referredFrom: warnable.documentationIsLocal
-              ? null
-              : warnable.documentationFrom);
+          referredFrom:
+              warnable.documentationIsLocal ? [] : warnable.documentationFrom);
     }
   }
 
@@ -328,8 +330,8 @@ Iterable<int> findFreeHangingGenericsPositions(String string) sync* {
 }
 
 class MarkdownDocument extends md.Document {
-  factory MarkdownDocument.withElementLinkResolver(Canonicalization element) {
-    md.Node /*?*/ linkResolver(String name, [String /*?*/ _]) {
+  factory MarkdownDocument.withElementLinkResolver(Warnable element) {
+    md.Node? linkResolver(String name, [String? _]) {
       if (name.isEmpty) {
         return null;
       }
@@ -343,11 +345,11 @@ class MarkdownDocument extends md.Document {
   }
 
   MarkdownDocument(
-      {Iterable<md.BlockSyntax> blockSyntaxes,
-      Iterable<md.InlineSyntax> inlineSyntaxes,
-      md.ExtensionSet extensionSet,
-      md.Resolver linkResolver,
-      md.Resolver imageLinkResolver})
+      {Iterable<md.BlockSyntax>? blockSyntaxes,
+      Iterable<md.InlineSyntax>? inlineSyntaxes,
+      md.ExtensionSet? extensionSet,
+      md.Resolver? linkResolver,
+      md.Resolver? imageLinkResolver})
       : super(
             blockSyntaxes: blockSyntaxes,
             inlineSyntaxes: inlineSyntaxes,
@@ -362,7 +364,7 @@ class MarkdownDocument extends md.Document {
       String text, bool processFullText) {
     var hasExtendedContent = false;
     var lines = LineSplitter.split(text).toList();
-    md.Node firstNode;
+    md.Node? firstNode;
     var nodes = <md.Node>[];
     for (var node in _IterableBlockParser(lines, this).parseLinesGenerator()) {
       if (firstNode != null) {
@@ -387,7 +389,7 @@ class MarkdownDocument extends md.Document {
         nodes.insertAll(i, inlineNodes);
         i += inlineNodes.length - 1;
       } else if (node is md.Element && node.children != null) {
-        _parseInlineContent(node.children);
+        _parseInlineContent(node.children!);
       }
     }
   }
@@ -407,7 +409,7 @@ class _InlineCodeSyntax extends md.InlineSyntax {
 
   @override
   bool onMatch(md.InlineParser parser, Match match) {
-    var element = md.Element.text('code', _htmlEscape.convert(match[1] /*!*/));
+    var element = md.Element.text('code', _htmlEscape.convert(match[1]!));
     parser.addNode(element);
     return true;
   }
@@ -416,7 +418,7 @@ class _InlineCodeSyntax extends md.InlineSyntax {
 class _AutolinkWithoutScheme extends md.AutolinkSyntax {
   @override
   bool onMatch(md.InlineParser parser, Match match) {
-    var url = match[1] /*!*/;
+    var url = match[1]!;
     var text = _htmlEscape.convert(url).replaceFirst(_hideSchemes, '');
     var anchor = md.Element.text('a', text);
     anchor.attributes['href'] = url;
