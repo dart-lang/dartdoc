@@ -54,9 +54,6 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   @override
   String get name => null;
 
-  @override
-  Element get element => null;
-
   /// Call during initialization to add a library to this [PackageGraph].
   ///
   /// Libraries added in this manner are assumed to be part of documented

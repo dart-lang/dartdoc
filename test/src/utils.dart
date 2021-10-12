@@ -204,11 +204,12 @@ two:lib/
 /// as the original lookup code returns canonicalized results and the
 /// new lookup code is only guaranteed to return equivalent results.
 MatchingLinkResult definingLinkResult(MatchingLinkResult originalResult) {
-  if (originalResult.commentReferable?.element != null) {
-    return MatchingLinkResult(
-        originalResult.commentReferable.modelBuilder
-            .fromElement(originalResult.commentReferable.element),
-        warn: originalResult.warn);
+  var definingReferable =
+      originalResult.commentReferable?.definingCommentReferable;
+
+  if (definingReferable != null &&
+      definingReferable != originalResult.commentReferable) {
+    return MatchingLinkResult(definingReferable, warn: originalResult.warn);
   }
   return originalResult;
 }

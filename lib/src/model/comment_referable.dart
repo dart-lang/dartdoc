@@ -225,6 +225,9 @@ mixin CommentReferable implements Nameable, ModelBuilderInterface {
   // TODO(jcollins-g): Eliminate need for this in markdown_processor.
   Library? get library => null;
 
-  // TODO(jcollins-g): Eliminate need for this in markdown_processor.
-  Element? get element;
+  @internal
+
+  /// For testing / comparison only, get the comment referable from where this
+  /// [ElementType] was defined.  Override where an [Element] is available.
+  CommentReferable get definingCommentReferable => this;
 }

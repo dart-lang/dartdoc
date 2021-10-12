@@ -996,4 +996,10 @@ abstract class ModelElement extends Canonicalization
 
     return modelElementRenderer.renderLinkedName(this);
   }
+
+  @internal
+  @override
+  CommentReferable get definingCommentReferable => element == null
+      ? super.definingCommentReferable
+      : modelBuilder.fromElement(element);
 }
