@@ -10,7 +10,7 @@ typedef ContainerSidebar = String Function(
 typedef LibrarySidebar = String Function(Library, TemplateDataWithLibrary);
 
 abstract class TemplateOptions {
-  String get relCanonicalPrefix;
+  String? get relCanonicalPrefix;
   String get toolVersion;
   bool get useBaseHref;
   String get customHeaderContent;
@@ -46,7 +46,7 @@ abstract class TemplateData<T extends Documentable> {
   String get htmlBase;
   T get self;
   String get version => htmlOptions.toolVersion;
-  String get relCanonicalPrefix => htmlOptions.relCanonicalPrefix;
+  String? get relCanonicalPrefix => htmlOptions.relCanonicalPrefix;
   bool get useBaseHref => htmlOptions.useBaseHref;
 
   String get bareHref {

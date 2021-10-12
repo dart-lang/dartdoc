@@ -20,7 +20,7 @@ abstract class FileWriter {
   /// Writes [content] to a file at [filePath].
   ///
   /// If a file is to be overwritten, a warning will be reported on [element].
-  void write(String filePath, String content, {Warnable element});
+  void write(String filePath, String content, {Warnable? element});
 
   /// Writes [content] to a file at [filePath].
   ///

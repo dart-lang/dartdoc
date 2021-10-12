@@ -36,13 +36,13 @@ class DartdocGeneratorOptionContext extends DartdocOptionContext {
 
   bool get prettyIndexJson => optionSet['prettyIndexJson'].valueAt(context);
 
-  String get favicon => optionSet['favicon'].valueAt(context);
+  String? get favicon => optionSet['favicon'].valueAt(context);
 
   String get relCanonicalPrefix =>
       optionSet['relCanonicalPrefix'].valueAt(context);
 
   /// The 'templatesDir' Dartdoc option if one was specified; otherwise `null`.
-  String get templatesDir => optionSet['templatesDir'].valueAt(context);
+  String? get templatesDir => optionSet['templatesDir'].valueAt(context);
 
   // TODO(jdkoren): duplicated temporarily so that GeneratorContext is enough for configuration.
   @override

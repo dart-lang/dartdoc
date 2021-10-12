@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
-
 library dartdoc.html_generator;
 
 import 'package:analyzer/file_system/file_system.dart';
@@ -41,7 +39,7 @@ class HtmlGeneratorBackend extends DartdocGeneratorBackend {
   void generatePackage(FileWriter writer, PackageGraph graph, Package package) {
     super.generatePackage(writer, graph, package);
     // We have to construct the data again. This only happens once per package.
-    TemplateData data = PackageTemplateData(options, graph, package);
+    var data = PackageTemplateData(options, graph, package);
     var content = templates.renderError(data);
     write(writer, '__404error.html', data, content);
   }
@@ -49,9 +47,10 @@ class HtmlGeneratorBackend extends DartdocGeneratorBackend {
   @override
   Future<void> generateAdditionalFiles(FileWriter writer) async {
     await _copyResources(writer);
-    if (options.favicon != null) {
+    var favicon = options.favicon;
+    if (favicon != null) {
       // Allow overwrite of favicon.
-      var bytes = resourceProvider.getFile(options.favicon).readAsBytesSync();
+      var bytes = resourceProvider.getFile(favicon).readAsBytesSync();
       writer.writeBytes(
         resourceProvider.pathContext.join('static-assets', 'favicon.png'),
         bytes,
