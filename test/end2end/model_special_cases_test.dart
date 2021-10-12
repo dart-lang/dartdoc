@@ -289,7 +289,7 @@ void main() {
           pubPackageMetaProvider,
           PhysicalPackageConfigProvider(),
           excludeLibraries: ['css', 'code_in_comments', 'excluded'],
-          additionalArguments: ['--inject-html']);
+          additionalArguments: ['--inject-html', '--no-sanitize-html']);
 
       injectionExLibrary =
           injectionPackageGraph.libraries.firstWhere((lib) => lib.name == 'ex');

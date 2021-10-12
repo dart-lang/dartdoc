@@ -1311,6 +1311,8 @@ class DartdocOptionContext extends DartdocOptionContextBase
 
   bool get injectHtml => optionSet['injectHtml'].valueAt(context);
 
+  bool get sanitizeHtml => optionSet['sanitizeHtml'].valueAt(context);
+
   bool get excludeFooterVersion =>
       optionSet['excludeFooterVersion'].valueAt(context);
 
@@ -1460,6 +1462,10 @@ Future<List<DartdocOption>> createDartdocOptions(
     DartdocOptionArgOnly<bool>('injectHtml', false, resourceProvider,
         help: 'Allow the use of the {@inject-html} directive to inject raw '
             'HTML into dartdoc output.'),
+    DartdocOptionArgOnly<bool>('sanitizeHtml', true, resourceProvider,
+        negatable: true,
+        help: 'Sanitize HTML generated from markdown, {@tool} and '
+            '{@inject-html} directives.'),
     DartdocOptionArgOnly<String>(
         'input', resourceProvider.pathContext.current, resourceProvider,
         optionIs: OptionKind.dir,
