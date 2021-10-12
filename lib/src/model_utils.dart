@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
-
 library dartdoc.model_utils;
 
 import 'dart:convert';
@@ -28,11 +26,11 @@ final Map<String, String> _fileContents = <String, String>{};
 /// On windows, globs are assumed to use absolute Windows paths with drive
 /// letters in combination with globs, e.g. `C:\foo\bar\*.txt`.  `fullName`
 /// also is assumed to have a drive letter.
-bool matchGlobs(List<String> globs, String fullName, {bool isWindows}) {
-  isWindows ??= Platform.isWindows;
+bool matchGlobs(List<String> globs, String fullName, {bool? isWindows}) {
+  var windows = isWindows ?? Platform.isWindows;
   var filteredGlobs = <String>[];
 
-  if (isWindows) {
+  if (windows) {
     // TODO(jcollins-g): port this special casing to the glob package.
     var fullNameDriveLetter = _driveLetterMatcher.stringMatch(fullName);
     if (fullNameDriveLetter == null) {
@@ -55,20 +53,18 @@ bool matchGlobs(List<String> globs, String fullName, {bool isWindows}) {
   }
 
   return filteredGlobs.any((g) =>
-      Glob(g, context: isWindows ? path.windows : path.posix)
-          .matches(fullName));
+      Glob(g, context: windows ? path.windows : path.posix).matches(fullName));
 }
 
 /// Returns the [AstNode] for a given [Element].
 ///
 /// Uses a precomputed map of [element.source.fullName] to [CompilationUnit]
 /// to avoid linear traversal in [ResolvedLibraryElementImpl.getElementDeclaration].
-AstNode getAstNode(
+AstNode? getAstNode(
     Element element, Map<String, CompilationUnit> compilationUnitMap) {
-  if (element?.source?.fullName != null &&
-      !element.isSynthetic &&
-      element.nameOffset != -1) {
-    var unit = compilationUnitMap[element.source.fullName];
+  var fullName = element.source?.fullName;
+  if (fullName != null && !element.isSynthetic && element.nameOffset != -1) {
+    var unit = compilationUnitMap[fullName];
     if (unit != null) {
       var locator = NodeLocator2(element.nameOffset);
       return (locator.searchWithin(unit)?.parent);
@@ -100,6 +96,8 @@ Iterable<InheritingContainer> findCanonicalFor(
   return containers.map((c) =>
       c.packageGraph.findCanonicalModelElementFor(c.element)
           as InheritingContainer ??
+      // FIXME(nnbd) : remove ignore after package_graph is migrated
+      // ignore: dead_null_aware_expression
       c);
 }
 
@@ -109,9 +107,9 @@ Iterable<InheritingContainer> findCanonicalFor(
 /// allowed in some environments, so avoid using this.
 // TODO(jcollins-g): consider deprecating this and the `--include-source`
 // feature that uses it now that source code linking is possible.
-String getFileContentsFor(Element e, ResourceProvider resourceProvider) {
-  var location = e.source.fullName;
-  if (!_fileContents.containsKey(location)) {
+String? getFileContentsFor(Element e, ResourceProvider resourceProvider) {
+  var location = e.source?.fullName;
+  if (location != null && !_fileContents.containsKey(location)) {
     var contents = resourceProvider.getFile(location).readAsStringSync();
     _fileContents.putIfAbsent(location, () => contents);
   }
@@ -120,15 +118,17 @@ String getFileContentsFor(Element e, ResourceProvider resourceProvider) {
 
 final RegExp slashes = RegExp(r'[\/]');
 bool hasPrivateName(Element e) {
-  if (e.name == null) return false;
+  var elementName = e.name;
+  if (elementName == null) return false;
 
-  if (e.name.startsWith('_')) {
+  if (elementName.startsWith('_')) {
     return true;
   }
   // GenericFunctionTypeElements have the name we care about in the enclosing
   // element.
   if (e is GenericFunctionTypeElement) {
-    if (e.enclosingElement.name.startsWith('_')) {
+    var enclosingElementName = e.enclosingElement?.name;
+    if (enclosingElementName != null && enclosingElementName.startsWith('_')) {
       return true;
     }
   }
@@ -139,11 +139,14 @@ bool hasPrivateName(Element e) {
     return true;
   }
   if (e is LibraryElement) {
-    var locationParts = e.location.components[0].split(slashes);
-    // TODO(jcollins-g): Implement real cross package detection
-    if (locationParts.length >= 2 &&
-        locationParts[0].startsWith('package:') &&
-        locationParts[1] == 'src') return true;
+    var elementLocation = e.location;
+    if (elementLocation != null) {
+      var locationParts = elementLocation.components[0].split(slashes);
+      // TODO(jcollins-g): Implement real cross package detection
+      if (locationParts.length >= 2 &&
+          locationParts[0].startsWith('package:') &&
+          locationParts[1] == 'src') return true;
+    }
   }
   return false;
 }
