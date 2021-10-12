@@ -1883,16 +1883,26 @@ class _Renderer_CommentReferable extends RendererBase<CommentReferable> {
       _propertyMapCache.putIfAbsent(
           CT_,
           () => {
-                'element': Property(
-                  getValue: (CT_ c) => c.element,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'Element'),
-                  isNullValue: (CT_ c) => c.element == null,
+                'definingCommentReferable': Property(
+                  getValue: (CT_ c) => c.definingCommentReferable,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        _Renderer_CommentReferable.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(self.getValue(c),
+                        nextProperty, [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => c.definingCommentReferable == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.element, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['Element']);
+                    renderSimple(
+                        c.definingCommentReferable, ast, r.template, sink,
+                        parent: r,
+                        getters: _invisibleGetters['CommentReferable']);
                   },
                 ),
                 'href': Property(
@@ -3556,6 +3566,28 @@ class _Renderer_DefinedElementType extends RendererBase<DefinedElementType> {
           CT_,
           () => {
                 ..._Renderer_ElementType.propertyMap<CT_>(),
+                'definingCommentReferable': Property(
+                  getValue: (CT_ c) => c.definingCommentReferable,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        _Renderer_CommentReferable.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(self.getValue(c),
+                        nextProperty, [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => c.definingCommentReferable == null,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    renderSimple(
+                        c.definingCommentReferable, ast, r.template, sink,
+                        parent: r,
+                        getters: _invisibleGetters['CommentReferable']);
+                  },
+                ),
                 'element': Property(
                   getValue: (CT_ c) => c.element,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -9511,6 +9543,28 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                         getters: _invisibleGetters['DartdocOptionContext']);
                   },
                 ),
+                'definingCommentReferable': Property(
+                  getValue: (CT_ c) => c.definingCommentReferable,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        _Renderer_CommentReferable.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(self.getValue(c),
+                        nextProperty, [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => c.definingCommentReferable == null,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    renderSimple(
+                        c.definingCommentReferable, ast, r.template, sink,
+                        parent: r,
+                        getters: _invisibleGetters['CommentReferable']);
+                  },
+                ),
                 'definingLibrary': Property(
                   getValue: (CT_ c) => c.definingLibrary,
                   renderVariable:
@@ -15177,7 +15231,7 @@ const _invisibleGetters = {
     'referenceGrandparentOverrides',
     'referenceName',
     'library',
-    'element'
+    'definingCommentReferable'
   },
   'CompilationUnitElement': {
     'hashCode',
@@ -15672,7 +15726,6 @@ const _invisibleGetters = {
     'sdk',
     'allLibrariesAdded',
     'name',
-    'element',
     'implementors',
     'documentedExtensions',
     'extensions',

@@ -6,7 +6,6 @@
 
 library dartdoc.comment_reference_test;
 
-import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model_object_builder.dart';
 import 'package:dartdoc/src/model/nameable.dart';
@@ -33,9 +32,6 @@ abstract class Base extends Nameable with CommentReferable {
           bool Function(CommentReferable) filter}) =>
       referenceBy(value.split(_separator),
           allowTree: allowTree ?? (_) => true, filter: filter ?? (_) => true);
-
-  @override
-  Element get element => throw UnimplementedError();
 
   @override
   Iterable<CommentReferable> get referenceGrandparentOverrides => null;
