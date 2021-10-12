@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
-
 import 'dart:convert';
 
 import 'package:collection/collection.dart';
@@ -79,10 +77,12 @@ String generateSearchIndexJson(
   return encoder.convert(indexItems);
 }
 
-int _sortElementRepresentations(Map<String, Object> a, Map<String, Object> b) {
-  final value = compareNatural(a['qualifiedName'], b['qualifiedName']);
+int _sortElementRepresentations(
+    Map<String, Object?> a, Map<String, Object?> b) {
+  final value = compareNatural(
+      a['qualifiedName'] as String, b['qualifiedName'] as String);
   if (value == 0) {
-    return compareNatural(a['type'], b['type']);
+    return compareNatural(a['type'] as String, b['type'] as String);
   }
   return value;
 }

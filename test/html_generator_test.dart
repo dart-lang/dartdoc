@@ -7,6 +7,10 @@
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/memory_file_system.dart';
 import 'package:dartdoc/dartdoc.dart' show DartdocFileWriter;
+import 'package:dartdoc/options.dart';
+import 'package:dartdoc/src/dartdoc_options.dart';
+import 'package:dartdoc/src/generator/dartdoc_generator_backend.dart';
+import 'package:dartdoc/src/generator/generator.dart';
 import 'package:dartdoc/src/generator/generator_frontend.dart';
 import 'package:dartdoc/src/generator/html_generator.dart';
 import 'package:dartdoc/src/generator/html_resources.g.dart';
@@ -101,8 +105,22 @@ void main() {
           'resources/$resource', 'CONTENT');
     }
 
+    var optionRoot = await DartdocOptionRoot.fromOptionGenerators(
+        'dartdoc',
+        [
+          createDartdocOptions,
+          createGeneratorOptions,
+        ],
+        packageMetaProvider);
+    optionRoot.parseArguments([]);
+
+    var defaultContext =
+        DartdocGeneratorOptionContext.fromDefaultContextLocation(
+            optionRoot, resourceProvider);
+    var options = DartdocGeneratorBackendOptions.fromContext(defaultContext);
+
     generator = GeneratorFrontEnd(
-        HtmlGeneratorBackend(null, templates, resourceProvider));
+        HtmlGeneratorBackend(options, templates, resourceProvider));
 
     projectRoot = utils.writePackage(
         'my_package', resourceProvider, packageConfigProvider);

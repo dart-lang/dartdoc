@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
-
 @Renderer(#renderCategory, Context<CategoryTemplateData>(), 'category',
     visibleTypes: _visibleTypes)
 @Renderer(#renderClass, Context<ClassTemplateData>(), 'class')
@@ -46,7 +44,6 @@ import 'package:dartdoc/src/model/language_feature.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/mustachio/annotations.dart';
 import 'package:dartdoc/src/mustachio/renderer_base.dart';
-import 'package:meta/meta.dart';
 
 const _visibleTypes = {
   Annotation,
@@ -348,7 +345,7 @@ class RuntimeTemplates implements Templates {
 
   /// Creates a [Templates] from a custom set of template files, found in [dir].
   static Future<Templates> _create(Folder dir, String format,
-      {@required ResourceProvider resourceProvider}) async {
+      {required ResourceProvider resourceProvider}) async {
     Future<Template> loadTemplate(String templatePath) async {
       var templateFile = dir.getChildAssumingFile('$templatePath.$format');
       if (!templateFile.exists) {

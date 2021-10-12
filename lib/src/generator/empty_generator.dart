@@ -1,5 +1,3 @@
-// @dart=2.9
-
 library dartdoc.empty_generator;
 
 import 'package:dartdoc/src/dartdoc_options.dart';
@@ -26,7 +24,7 @@ class EmptyGenerator extends Generator {
             .forEach((m) => logProgress(m.documentationAsHtml));
       }
     }
-    return null;
+    return Future.value(null);
   }
 }
 

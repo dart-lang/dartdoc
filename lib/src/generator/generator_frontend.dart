@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
-
 import 'package:dartdoc/src/generator/generator.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -18,9 +16,11 @@ class GeneratorFrontEnd implements Generator {
   GeneratorFrontEnd(this._generatorBackend);
 
   @override
-  Future<void> generate(PackageGraph packageGraph, FileWriter writer) async {
+  Future<void> generate(PackageGraph? packageGraph, FileWriter writer) async {
     var indexElements = <Indexable>[];
-    _generateDocs(packageGraph, writer, indexElements);
+    if (packageGraph != null) {
+      _generateDocs(packageGraph, writer, indexElements);
+    }
     await _generatorBackend.generateAdditionalFiles(writer);
 
     var categories = indexElements
@@ -35,8 +35,6 @@ class GeneratorFrontEnd implements Generator {
   /// elements.
   void _generateDocs(PackageGraph packageGraph, FileWriter writer,
       List<Indexable> indexAccumulator) {
-    if (packageGraph == null) return;
-
     _generatorBackend.generatePackage(
         writer, packageGraph, packageGraph.defaultPackage);
 

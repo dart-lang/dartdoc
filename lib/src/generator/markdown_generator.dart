@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
-
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/options.dart';
 import 'package:dartdoc/src/generator/dartdoc_generator_backend.dart';
@@ -36,7 +34,7 @@ class MarkdownGeneratorBackend extends DartdocGeneratorBackend {
   void generatePackage(FileWriter writer, PackageGraph graph, Package package) {
     super.generatePackage(writer, graph, package);
     // We have to construct the data again. This only happens once per package.
-    TemplateData data = PackageTemplateData(options, graph, package);
+    PackageTemplateData data = PackageTemplateData(options, graph, package);
     var content = templates.renderError(data);
     write(writer, '__404error.md', data, content);
   }
