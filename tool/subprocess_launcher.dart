@@ -69,7 +69,7 @@ class CoverageSubprocessLauncher extends SubprocessLauncher {
   }
 
   @override
-  Future<Iterable<Map<Object, Object>>> runStreamed(
+  Future<Iterable<Map<String, Object>>> runStreamed(
       String executable, List<String> arguments,
       {String? workingDirectory,
       Map<String, String>? environment,
@@ -166,7 +166,7 @@ class SubprocessLauncher {
   /// Windows (though some of the bashisms will no longer make sense).
   /// TODO(jcollins-g): refactor to return a stream of stderr/stdout lines
   ///                   and their associated JSON objects.
-  Future<Iterable<Map<Object, Object>>> runStreamed(
+  Future<Iterable<Map<String, Object>>> runStreamed(
       String executable, List<String> arguments,
       {String? workingDirectory,
       Map<String, String>? environment,
@@ -175,14 +175,14 @@ class SubprocessLauncher {
     environment = {}
       ..addAll(environmentDefaults)
       ..addAll(environment ?? {});
-    List<Map<Object, Object>> jsonObjects = [];
+    List<Map<String, Object>> jsonObjects = [];
 
     /// Allow us to pretend we didn't pass the JSON flag in to dartdoc by
     /// printing what dartdoc would have printed without it, yet storing
     /// json objects into [jsonObjects].
     Iterable<String> jsonCallback(String line) {
       if (perLine != null) perLine(line);
-      Map<Object, Object>? result;
+      Map<String, Object>? result;
       try {
         result = json.decoder.convert(line);
       } on FormatException {
