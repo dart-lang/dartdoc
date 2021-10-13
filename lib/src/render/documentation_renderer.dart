@@ -50,6 +50,11 @@ class DocumentationRendererHtml implements DocumentationRenderer {
 
     if (sanitizeHtml) {
       _sanitize(asHtmlFragment);
+    } else {
+      // Never allow scripts!
+      for (var s in asHtmlFragment.querySelectorAll('script')) {
+        s.remove();
+      }
     }
 
     var asHtml = '';
@@ -82,9 +87,6 @@ bool _allowClassName(String className) =>
 
 Iterable<String> _addLinkRel(String uri) {
   final u = Uri.tryParse(uri);
-  if (u == null || !['http', 'https', 'mailto'].contains(u.scheme)) {
-    return ['nofollow'];
-  }
   if (u.host.isNotEmpty) {
     // TODO(jonasfj): Consider allowing non-ugc links for trusted sites.
     return ['ugc'];

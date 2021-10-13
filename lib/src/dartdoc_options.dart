@@ -1462,8 +1462,8 @@ Future<List<DartdocOption>> createDartdocOptions(
     DartdocOptionArgOnly<bool>('injectHtml', false, resourceProvider,
         help: 'Allow the use of the {@inject-html} directive to inject raw '
             'HTML into dartdoc output.'),
-    DartdocOptionArgOnly<bool>('sanitizeHtml', true, resourceProvider,
-        negatable: true,
+    DartdocOptionArgOnly<bool>('sanitizeHtml', false, resourceProvider,
+        hide: true,
         help: 'Sanitize HTML generated from markdown, {@tool} and '
             '{@inject-html} directives.'),
     DartdocOptionArgOnly<String>(
