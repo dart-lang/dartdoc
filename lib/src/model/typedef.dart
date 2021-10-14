@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
+
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
@@ -14,20 +14,20 @@ import 'package:dartdoc/src/render/typedef_renderer.dart';
 abstract class Typedef extends ModelElement
     with TypeParameters, Categorization
     implements EnclosedElement {
-  Typedef(TypeAliasElement element, Library library, PackageGraph packageGraph)
+  Typedef(TypeAliasElement element, Library? library, PackageGraph packageGraph)
       : super(element, library, packageGraph);
 
-  DartType get aliasedType => element.aliasedType;
+  DartType get aliasedType => element!.aliasedType;
 
   @override
-  TypeAliasElement get element => super.element;
+  TypeAliasElement? get element => super.element as TypeAliasElement?;
 
-  ElementType _modelType;
+  ElementType? _modelType;
   ElementType get modelType =>
-      _modelType ??= modelBuilder.typeFrom(element.aliasedType, library);
+      _modelType ??= modelBuilder.typeFrom(element!.aliasedType, library!);
 
   @override
-  Library get enclosingElement => library;
+  Library? get enclosingElement => library;
 
   @override
   String get nameWithGenerics => '$name${super.genericParameters}';
@@ -40,14 +40,14 @@ abstract class Typedef extends ModelElement
       _renderer.renderLinkedGenericParameters(this);
 
   @override
-  String get filePath => '${library.dirName}/$fileName';
+  String get filePath => '${library!.dirName}/$fileName';
 
   /// Helper for mustache templates, which can't do casting themselves
   /// without this.
   FunctionTypedef get asCallable => this as FunctionTypedef;
 
   @override
-  String get href {
+  String? get href {
     if (!identical(canonicalModelElement, this)) {
       return canonicalModelElement?.href;
     }
@@ -63,8 +63,8 @@ abstract class Typedef extends ModelElement
   String get kind => 'typedef';
 
   @override
-  List<TypeParameter> get typeParameters => element.typeParameters.map((f) {
-        return modelBuilder.from(f, library) as TypeParameter;
+  List<TypeParameter> get typeParameters => element!.typeParameters.map((f) {
+        return modelBuilder.from(f, library!) as TypeParameter;
       }).toList();
 
   TypedefRenderer get _renderer => packageGraph.rendererFactory.typedefRenderer;
@@ -72,15 +72,15 @@ abstract class Typedef extends ModelElement
   @override
   Iterable<CommentReferable> get referenceParents => [definingLibrary];
 
-  Map<String, CommentReferable> _referenceChildren;
+  Map<String, CommentReferable>? _referenceChildren;
   @override
   Map<String, CommentReferable> get referenceChildren {
     if (_referenceChildren == null) {
       _referenceChildren = {};
-      _referenceChildren
+      _referenceChildren!
           .addEntriesIfAbsent(typeParameters.explicitOnCollisionWith(this));
     }
-    return _referenceChildren;
+    return _referenceChildren!;
   }
 }
 
@@ -89,7 +89,7 @@ abstract class Typedef extends ModelElement
 /// for `Function` itself.
 class GeneralizedTypedef extends Typedef {
   GeneralizedTypedef(
-      TypeAliasElement element, Library library, PackageGraph packageGraph)
+      TypeAliasElement element, Library? library, PackageGraph packageGraph)
       : super(element, library, packageGraph) {
     assert(!isCallable);
   }
@@ -98,44 +98,44 @@ class GeneralizedTypedef extends Typedef {
 /// A typedef referring to a non-function, defined type.
 class ClassTypedef extends Typedef {
   ClassTypedef(
-      TypeAliasElement element, Library library, PackageGraph packageGraph)
+      TypeAliasElement element, Library? library, PackageGraph packageGraph)
       : super(element, library, packageGraph) {
     assert(!isCallable);
     assert(modelType.modelElement is Class);
   }
 
   @override
-  DefinedElementType get modelType => super.modelType;
+  DefinedElementType get modelType => super.modelType as DefinedElementType;
 
   @override
   Map<String, CommentReferable> get referenceChildren {
     if (_referenceChildren == null) {
       _referenceChildren = super.referenceChildren;
-      _referenceChildren
+      _referenceChildren!
           .addEntriesIfAbsent(modelType.modelElement.referenceChildren.entries);
     }
-    return _referenceChildren;
+    return _referenceChildren!;
   }
 }
 
 /// A typedef referring to a function type.
 class FunctionTypedef extends Typedef {
   FunctionTypedef(
-      TypeAliasElement element, Library library, PackageGraph packageGraph)
+      TypeAliasElement element, Library? library, PackageGraph packageGraph)
       : super(element, library, packageGraph) {
     assert(isCallable);
   }
 
   @override
-  Callable get modelType => super.modelType;
+  Callable get modelType => super.modelType as Callable;
 
   @override
   Map<String, CommentReferable> get referenceChildren {
     if (_referenceChildren == null) {
       _referenceChildren = super.referenceChildren;
-      _referenceChildren
-          .addEntriesIfAbsent(parameters.explicitOnCollisionWith(this));
+      _referenceChildren!
+          .addEntriesIfAbsent(parameters!.explicitOnCollisionWith(this));
     }
-    return _referenceChildren;
+    return _referenceChildren!;
   }
 }

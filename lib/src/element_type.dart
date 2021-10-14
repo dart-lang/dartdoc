@@ -260,8 +260,7 @@ class AliasedElementType extends ParameterizedElementType with Aliased {
   ParameterizedType get type;
 
   /// Parameters, if available, for the underlying typedef.
-  List<Parameter> get aliasedParameters =>
-      modelElement.isCallable ? modelElement.parameters : [];
+  late final List<Parameter> aliasedParameters = modelElement.isCallable ? modelElement.parameters : [];
 
   @override
   ElementTypeRenderer<AliasedElementType> get _renderer =>
@@ -298,7 +297,7 @@ abstract class DefinedElementType extends ElementType {
       this.modelElement, ElementType? returnedFrom)
       : super(type, library, packageGraph, returnedFrom);
 
-  Element get element => modelElement.element;
+  Element get element => modelElement.element!;
 
   @override
   String get name => type.element!.name!;
@@ -372,7 +371,7 @@ abstract class DefinedElementType extends ElementType {
       modelElement.referenceParents;
 
   @override
-  Iterable<CommentReferable> get referenceGrandparentOverrides =>
+  Iterable<CommentReferable>? get referenceGrandparentOverrides =>
       modelElement.referenceGrandparentOverrides;
 
   @internal

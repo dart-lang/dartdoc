@@ -2,8 +2,9 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
 
+
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:dartdoc/src/model/feature.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/special_elements.dart';
@@ -33,24 +34,23 @@ mixin Inheritable on ContainerMember {
   @override
   Set<Feature> get features => {
         ...super.features,
-        if (isOverride) Feature.overrideFeature,
+        if (isOverride!) Feature.overrideFeature,
         if (isInherited) Feature.inherited,
         if (isCovariant) Feature.covariant,
       };
 
   @override
-  Library get canonicalLibrary => canonicalEnclosingContainer?.canonicalLibrary;
+  Library? get canonicalLibrary => canonicalEnclosingContainer?.canonicalLibrary;
 
   @override
-  ModelElement buildCanonicalModelElement() {
+  ModelElement? buildCanonicalModelElement() {
     // TODO(jcollins-g): factor out extension logic into [Extendable]
     if (canonicalEnclosingContainer is Extension) {
       return this;
     }
     if (canonicalEnclosingContainer is Container) {
-      return canonicalEnclosingContainer.allCanonicalModelElements.firstWhere(
-          (m) => m.name == name && m.isPropertyAccessor == isPropertyAccessor,
-          orElse: () => null);
+      return canonicalEnclosingContainer!.allCanonicalModelElements.firstWhereOrNull(
+          (m) => m.name == name && m.isPropertyAccessor == isPropertyAccessor);
     }
     if (canonicalEnclosingContainer != null) {
       throw UnimplementedError('$canonicalEnclosingContainer: unknown type');
@@ -59,27 +59,27 @@ mixin Inheritable on ContainerMember {
   }
 
   @override
-  Container computeCanonicalEnclosingContainer() {
+  Container? computeCanonicalEnclosingContainer() {
     if (isInherited) {
-      var searchElement = element.declaration;
+      var searchElement = element!.declaration;
       // TODO(jcollins-g): generate warning if an inherited element's definition
       // is in an intermediate non-canonical class in the inheritance chain?
-      Container previous;
-      Container previousNonSkippable;
-      Container found;
+      Container? previous;
+      Container? previousNonSkippable;
+      Container? found;
       for (var c in inheritance.reversed) {
         // Filter out mixins.
-        if (c.containsElement(searchElement)) {
-          if ((packageGraph.inheritThrough.contains(previous) &&
+        if (c!.containsElement(searchElement)) {
+          if ((packageGraph.inheritThrough!.contains(previous) &&
                   c != definingEnclosingContainer) ||
-              (packageGraph.inheritThrough.contains(c) &&
+              (packageGraph.inheritThrough!.contains(c) &&
                   c == definingEnclosingContainer)) {
-            return previousNonSkippable
+            return previousNonSkippable!
                 .memberByExample(this)
                 .canonicalEnclosingContainer;
           }
-          Container canonicalC =
-              packageGraph.findCanonicalModelElementFor(c.element);
+          Container? canonicalC =
+              packageGraph.findCanonicalModelElementFor(c.element) as Container?;
           // TODO(jcollins-g): invert this lookup so traversal is recursive
           // starting from the ModelElement.
           if (canonicalC != null) {
@@ -90,14 +90,14 @@ mixin Inheritable on ContainerMember {
           }
         }
         previous = c;
-        if (!packageGraph.inheritThrough.contains(c)) {
+        if (!packageGraph.inheritThrough!.contains(c)) {
           previousNonSkippable = c;
         }
       }
       // This is still OK because we're never supposed to cloak public
       // classes.
-      if (definingEnclosingContainer.isCanonical &&
-          definingEnclosingContainer.isPublic) {
+      if (definingEnclosingContainer!.isCanonical &&
+          definingEnclosingContainer!.isPublic!) {
         assert(definingEnclosingContainer == found);
       }
       if (found != null) {
@@ -106,13 +106,13 @@ mixin Inheritable on ContainerMember {
     } else if (!isInherited && definingEnclosingContainer is! Extension) {
       // TODO(jcollins-g): factor out extension logic into [Extendable].
       return packageGraph
-          .findCanonicalModelElementFor(element.enclosingElement);
+          .findCanonicalModelElementFor(element!.enclosingElement) as Container?;
     }
     return super.computeCanonicalEnclosingContainer();
   }
 
-  List<InheritingContainer> get inheritance {
-    var inheritance = <InheritingContainer>[];
+  List<InheritingContainer?> get inheritance {
+    var inheritance = <InheritingContainer?>[];
     inheritance
         .addAll((enclosingElement as InheritingContainer).inheritanceChain);
     var object = packageGraph.specialClasses[SpecialClass.object];
@@ -129,12 +129,12 @@ mixin Inheritable on ContainerMember {
     return inheritance;
   }
 
-  Inheritable get overriddenElement;
+  Inheritable? get overriddenElement;
 
-  bool _isOverride;
+  bool? _isOverride;
 
   /// True if this [Inheritable] is overriding a superclass.
-  bool get isOverride {
+  bool? get isOverride {
     if (_isOverride == null) {
       // The canonical version of the enclosing element -- not canonicalEnclosingElement,
       // as that is the element enclosing the canonical version of this element,
@@ -146,11 +146,11 @@ mixin Inheritable on ContainerMember {
         _isOverride = false;
         return _isOverride;
       }
-      InheritingContainer enclosingCanonical =
-          enclosingElement.canonicalModelElement;
+      InheritingContainer? enclosingCanonical =
+          enclosingElement!.canonicalModelElement as InheritingContainer?;
       // The container in which this element was defined, canonical if available.
-      Container definingCanonical =
-          definingEnclosingContainer.canonicalModelElement ??
+      Container? definingCanonical =
+          definingEnclosingContainer!.canonicalModelElement as Container? ??
               definingEnclosingContainer;
       // The canonical version of the element we're overriding, if available.
       var overriddenCanonical =
@@ -164,22 +164,22 @@ mixin Inheritable on ContainerMember {
           enclosingCanonical == definingCanonical &&
           // If the overridden element isn't public, we shouldn't be an
           // override in most cases.  Approximation until #1623 is fixed.
-          overriddenCanonical.isPublic;
-      assert(!(_isOverride && isInherited));
+          overriddenCanonical!.isPublic!;
+      assert(!(_isOverride! && isInherited));
     }
     return _isOverride;
   }
 
-  int _overriddenDepth;
+  int? _overriddenDepth;
 
   @override
-  int get overriddenDepth {
+  int? get overriddenDepth {
     if (_overriddenDepth == null) {
       _overriddenDepth = 0;
-      var e = this;
+      Inheritable e = this;
       while (e.overriddenElement != null) {
         _overriddenDepth += 1;
-        e = e.overriddenElement;
+        e = e.overriddenElement!;
       }
     }
     return _overriddenDepth;

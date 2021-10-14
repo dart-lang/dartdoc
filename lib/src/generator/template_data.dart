@@ -51,7 +51,8 @@ abstract class TemplateData<T extends Documentable> {
 
   String get bareHref {
     if (self is Indexable) {
-      return (self as Indexable).href.replaceAll(htmlBasePlaceholder, '');
+      var selfHref = (self as Indexable).href ?? '';
+      return selfHref.replaceAll(htmlBasePlaceholder, '');
     }
     return '';
   }

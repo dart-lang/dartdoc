@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
+
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/scope.dart';
@@ -17,38 +17,38 @@ import '../../dartdoc.dart';
 class Prefix extends ModelElement implements EnclosedElement {
   /// [library] is the library the prefix is defined in, not the [Library]
   /// referred to by the [PrefixElement].
-  Prefix(PrefixElement element, Library library, PackageGraph packageGraph)
+  Prefix(PrefixElement element, Library? library, PackageGraph packageGraph)
       : super(element, library, packageGraph);
 
   @override
   bool get isCanonical => false;
 
-  Library _associatedLibrary;
+  Library? _associatedLibrary;
   // TODO(jcollins-g): consider connecting PrefixElement to the imported library
   // in analyzer?
   Library get associatedLibrary =>
-      _associatedLibrary ??= modelBuilder.fromElement(library.element.imports
+      (_associatedLibrary ??= modelBuilder.fromElement(library!.element!.imports
           .firstWhere((i) => i.prefix == element)
-          .importedLibrary);
+          .importedLibrary!) as Library?)!;
 
   @override
-  Library get canonicalModelElement => associatedLibrary.canonicalLibrary;
+  Library? get canonicalModelElement => associatedLibrary.canonicalLibrary;
 
   @override
-  Scope get scope => element.scope;
+  Scope get scope => element!.scope;
 
   @override
-  PrefixElement get element => super.element;
+  PrefixElement? get element => super.element as PrefixElement?;
 
   @override
-  ModelElement get enclosingElement => library;
+  ModelElement? get enclosingElement => library;
 
   @override
   String get filePath =>
       throw UnimplementedError('prefixes have no generated files in dartdoc');
 
   @override
-  String get href => canonicalModelElement?.href;
+  String? get href => canonicalModelElement?.href;
 
   @override
   String get kind => 'prefix';

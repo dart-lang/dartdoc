@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
+
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/element_type.dart';
@@ -16,31 +16,31 @@ import 'package:dartdoc/src/model/package_graph.dart';
 /// `@`.
 class Annotation extends Feature with ModelBuilder {
   final ElementAnnotation annotation;
-  final Library library;
+  final Library? library;
   @override
   final PackageGraph packageGraph;
 
   Annotation(this.annotation, this.library, this.packageGraph)
-      : super(annotation.element.name);
+      : super(annotation.element!.name);
 
-  String _linkedNameWithParameters;
+  String? _linkedNameWithParameters;
   @override
   String get linkedNameWithParameters => _linkedNameWithParameters ??=
       packageGraph.rendererFactory.featureRenderer.renderAnnotation(this);
 
   /// Return the linked name of the annotation.
   @override
-  String get linkedName => annotation.element is PropertyAccessorElement
-      ? modelBuilder.fromElement(annotation.element).linkedName
+  String? get linkedName => annotation.element is PropertyAccessorElement
+      ? modelBuilder.fromElement(annotation.element!).linkedName
       // TODO(jcollins-g): consider linking to constructor instead of type?
-      : modelType.linkedName;
+      : modelType!.linkedName;
 
-  ElementType _modelType;
-  ElementType get modelType {
+  ElementType? _modelType;
+  ElementType? get modelType {
     if (_modelType == null) {
       var annotatedWith = annotation.element;
       if (annotatedWith is ConstructorElement) {
-        _modelType = modelBuilder.typeFrom(annotatedWith.returnType, library);
+        _modelType = modelBuilder.typeFrom(annotatedWith.returnType, library!);
       } else if (annotatedWith is PropertyAccessorElement) {
         _modelType = (modelBuilder.fromElement(annotatedWith.variable)
                 as GetterSetterCombo)
@@ -53,8 +53,8 @@ class Annotation extends Feature with ModelBuilder {
     return _modelType;
   }
 
-  String _parameterText;
-  String get parameterText {
+  String? _parameterText;
+  String? get parameterText {
     // TODO(srawlins): Attempt to revive constructor arguments in an annotation,
     // akin to source_gen's Reviver, in order to link to inner components. For
     // example, in `@Foo(const Bar(), baz: <Baz>[Baz.one, Baz.two])`, link to
@@ -70,7 +70,7 @@ class Annotation extends Feature with ModelBuilder {
 
   @override
   bool get isPublic =>
-      modelType.isPublic &&
+      modelType!.isPublic! &&
       modelType is DefinedElementType &&
       !packageGraph.invisibleAnnotations
           .contains((modelType as DefinedElementType).modelElement);

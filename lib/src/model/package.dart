@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
+
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
@@ -44,7 +44,7 @@ class Package extends LibraryContainer
   String _name;
   PackageGraph _packageGraph;
 
-  final Map<String, Category> _nameToCategory = {};
+  final Map<String?, Category> _nameToCategory = {};
 
   // Creates a package, if necessary, and adds it to the [packageGraph].
   factory Package.fromPackageMeta(
@@ -63,10 +63,10 @@ class Package extends LibraryContainer
     // before allLibrariesAdded is true.
     assert(
         !(expectNonLocal &&
-            packageGraph.packageMap[packageName].documentedWhere ==
+            packageGraph.packageMap[packageName]!.documentedWhere ==
                 DocumentLocation.local),
         'Found more libraries to document after allLibrariesAdded was set to true');
-    return packageGraph.packageMap[packageName];
+    return packageGraph.packageMap[packageName]!;
   }
 
   Package._(this._name, this._packageGraph, this._packageMeta);
@@ -75,14 +75,14 @@ class Package extends LibraryContainer
   bool get isCanonical => true;
 
   @override
-  Library get canonicalLibrary => null;
+  Library? get canonicalLibrary => null;
 
   /// Number of times we have invoked a tool for this package.
   int toolInvocationIndex = 0;
 
   // The animation IDs that have already been used, indexed by the [href] of the
   // object that contains them.
-  Map<String, Set<String>> usedAnimationIdsByHref = {};
+  Map<String?, Set<String>> usedAnimationIdsByHref = {};
 
   /// Pieces of the location, split to remove 'package:' and slashes.
   @override
@@ -106,24 +106,24 @@ class Package extends LibraryContainer
 
   /// Return true if the code has defined non-default categories for libraries
   /// in this package.
-  bool get hasCategories => categories.isNotEmpty;
+  bool get hasCategories => categories!.isNotEmpty;
 
-  LibraryContainer get defaultCategory => nameToCategory[null];
+  LibraryContainer? get defaultCategory => nameToCategory[null];
 
-  String _documentationAsHtml;
+  String? _documentationAsHtml;
 
   @override
-  String get documentationAsHtml {
+  String? get documentationAsHtml {
     if (_documentationAsHtml != null) return _documentationAsHtml;
     _documentationAsHtml = Documentation.forElement(this).asHtml;
 
     return _documentationAsHtml;
   }
 
-  String /*?*/ _documentation;
+  String? _documentation;
 
   @override
-  String get documentation {
+  String? get documentation {
     if (_documentation == null) {
       final docFile = documentationFile;
       if (docFile != null) {
@@ -140,9 +140,9 @@ class Package extends LibraryContainer
   @override
   bool get hasExtendedDocumentation => hasDocumentation;
 
-  File /*?*/ _documentationFile;
+  File? _documentationFile;
 
-  File /*?*/ get documentationFile =>
+  File? get documentationFile =>
       _documentationFile ??= packageMeta.getReadmeContents();
 
   @override
@@ -153,22 +153,22 @@ class Package extends LibraryContainer
       isFirstPackage || documentedWhere != DocumentLocation.missing;
 
   @override
-  Warnable get enclosingElement => null;
+  Warnable? get enclosingElement => null;
 
-  bool _isPublic;
+  bool? _isPublic;
 
   @override
-  bool get isPublic {
+  bool? get isPublic {
     _isPublic ??= libraries.any((l) => l.isPublic);
     return _isPublic;
   }
 
-  bool _isLocal;
+  bool? _isLocal;
 
   /// Return true if this is the default package, this is part of an embedder
   /// SDK, or if [DartdocOptionContext.autoIncludeDependencies] is true -- but
   /// only if the package was not excluded on the command line.
-  bool get isLocal {
+  bool? get isLocal {
     _isLocal ??= (
             // Document as local if this is the default package.
             packageMeta == packageGraph.packageMeta ||
@@ -180,7 +180,7 @@ class Package extends LibraryContainer
                     packageMeta.isSdk &&
                     libraries.any((l) => _pathContext.isWithin(
                         packageGraph.packageMeta.dir.path,
-                        (l.element.source.fullName))) ||
+                        (l.element!.source.fullName))) ||
                 // autoIncludeDependencies means everything is local.
                 packageGraph.config.autoIncludeDependencies) &&
         // Regardless of the above rules, do not document as local if
@@ -189,18 +189,18 @@ class Package extends LibraryContainer
     return _isLocal;
   }
 
-  /* late */ DocumentLocation _documentedWhere;
+  late DocumentLocation _documentedWhere;
 
   DocumentLocation get documentedWhere {
     if (_documentedWhere == null) {
-      if (isLocal) {
-        if (isPublic) {
+      if (isLocal!) {
+        if (isPublic!) {
           _documentedWhere = DocumentLocation.local;
         }
       } else {
-        if (config.linkToRemote &&
-            config.linkToUrl.isNotEmpty &&
-            isPublic &&
+        if (config!.linkToRemote &&
+            config!.linkToUrl.isNotEmpty &&
+            isPublic! &&
             !packageGraph.config.isPackageExcluded(name)) {
           _documentedWhere = DocumentLocation.remote;
         } else {
@@ -216,7 +216,7 @@ class Package extends LibraryContainer
 
   String get filePath => 'index.$fileType';
 
-  String _fileType;
+  String? _fileType;
 
   String get fileType {
     // TODO(jdkoren): Provide a way to determine file type of a remote package's
@@ -226,31 +226,31 @@ class Package extends LibraryContainer
     // from pub.dev, and we know that all of those use html docs.
     return _fileType ??= (package.documentedWhere == DocumentLocation.remote)
         ? 'html'
-        : config.format;
+        : config!.format;
   }
 
   @override
   String get fullyQualifiedName => 'package:$name';
 
-  String _baseHref;
+  String? _baseHref;
 
-  String get baseHref {
+  String? get baseHref {
     if (_baseHref != null) {
       return _baseHref;
     }
 
     if (documentedWhere == DocumentLocation.remote) {
       _baseHref = _remoteBaseHref;
-      if (!_baseHref.endsWith('/')) _baseHref = '$_baseHref/';
+      if (!_baseHref!.endsWith('/')) _baseHref = '$_baseHref/';
     } else {
-      _baseHref = config.useBaseHref ? '' : htmlBasePlaceholder;
+      _baseHref = config!.useBaseHref ? '' : htmlBasePlaceholder;
     }
 
     return _baseHref;
   }
 
   String get _remoteBaseHref {
-    return config.linkToUrl.replaceAllMapped(_substituteNameVersion, (m) {
+    return config!.linkToUrl.replaceAllMapped(_substituteNameVersion, (m) {
       switch (m.group(1)) {
         // Return the prerelease tag of the release if a prerelease, or 'stable'
         // otherwise.  Mostly coded around the Dart SDK's use of dev/stable, but
@@ -309,48 +309,44 @@ class Package extends LibraryContainer
   }
 
   /// A map of category name to the category itself.
-  Map<String, Category> get nameToCategory {
+  Map<String?, Category> get nameToCategory {
     if (_nameToCategory.isEmpty) {
-      Category categoryFor(String category) {
+      Category? categoryFor(String? category) {
         _nameToCategory.putIfAbsent(
-            category, () => Category(category, this, config));
+            category, () => Category(category!, this, config!));
         return _nameToCategory[category];
       }
 
-      _nameToCategory[null] = Category(null, this, config);
+      _nameToCategory[null] = Category(null, this, config!);
       for (var c in libraries.expand(
           (l) => l.allCanonicalModelElements.whereType<Categorization>())) {
         if (c.hasCategoryNames) {
-          for (var category in c.categoryNames) {
-            categoryFor(category).addItem(c);
+          for (var category in c.categoryNames!) {
+            categoryFor(category)!.addItem(c);
           }
         } else {
           // Add to the default category.
-          categoryFor(null).addItem(c);
+          categoryFor(null)!.addItem(c);
         }
       }
     }
     return _nameToCategory;
   }
 
-  List<Category> _categories;
-
-  List<Category> get categories {
-    _categories ??= nameToCategory.values.where((c) => c.name != null).toList()
-      ..sort();
-    return _categories;
-  }
+  late final List<Category> categories = () {
+    return nameToCategory.values.toList()..sort();
+  } ();
 
   Iterable<Category> get categoriesWithPublicLibraries =>
-      categories.where((c) => c.publicLibraries.isNotEmpty);
+      categories!.where((c) => c.publicLibraries.isNotEmpty);
 
   Iterable<Category> get documentedCategories =>
-      categories.where((c) => c.isDocumented);
+      categories!.where((c) => c.isDocumented);
 
   Iterable<Category> get documentedCategoriesSorted {
     // Category display order is configurable; leave the category order
     // as defined if the order is specified.
-    if (config.categoryOrder.isEmpty) {
+    if (config!.categoryOrder.isEmpty) {
       return documentedCategories;
     }
     return documentedCategories.toList()..sort(byName);
@@ -358,13 +354,13 @@ class Package extends LibraryContainer
 
   bool get hasDocumentedCategories => documentedCategories.isNotEmpty;
 
-  DartdocOptionContext _config;
+  DartdocOptionContext? _config;
 
   @override
-  DartdocOptionContext get config {
+  DartdocOptionContext? get config {
     _config ??= DartdocOptionContext.fromContext(
         packageGraph.config,
-        packageGraph.resourceProvider.getFolder(packagePath),
+        packageGraph.resourceProvider.getFolder(packagePath!),
         packageGraph.resourceProvider);
     return _config;
   }
@@ -378,9 +374,9 @@ class Package extends LibraryContainer
   @override
   bool get isSdk => packageMeta.isSdk;
 
-  String _packagePath;
+  String? _packagePath;
 
-  String get packagePath {
+  String? get packagePath {
     _packagePath ??= _pathContext.canonicalize(packageMeta.dir.path);
     return _packagePath;
   }
@@ -392,25 +388,25 @@ class Package extends LibraryContainer
   PackageMeta get packageMeta => _packageMeta;
 
   @override
-  Element get element => null;
+  Element? get element => null;
 
   @override
-  List<String> get containerOrder => config.packageOrder;
+  List<String?> get containerOrder => config!.packageOrder;
 
-  Map<String, CommentReferable> _referenceChildren;
+  Map<String, CommentReferable>? _referenceChildren;
   @override
   Map<String, CommentReferable> get referenceChildren {
     if (_referenceChildren == null) {
       _referenceChildren = {};
-      _referenceChildren.addEntries(publicLibrariesSorted.generateEntries());
+      _referenceChildren!.addEntries(publicLibrariesSorted.generateEntries());
       // Do not override any preexisting data, and insert based on the
       // public library sort order.
       // TODO(jcollins-g): warn when results require package-global
       // lookups like this.
-      _referenceChildren.addEntriesIfAbsent(
+      _referenceChildren!.addEntriesIfAbsent(
           publicLibrariesSorted.expand((l) => l.referenceChildren.entries));
     }
-    return _referenceChildren;
+    return _referenceChildren!;
   }
 
   @override

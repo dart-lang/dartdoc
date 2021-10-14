@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
+
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/element_type.dart';
@@ -12,33 +12,33 @@ import 'package:dartdoc/src/render/type_parameters_renderer.dart';
 
 class TypeParameter extends ModelElement {
   TypeParameter(
-      TypeParameterElement element, Library library, PackageGraph packageGraph)
+      TypeParameterElement element, Library? library, PackageGraph packageGraph)
       : super(element, library, packageGraph);
 
   @override
-  ModelElement get enclosingElement => (element.enclosingElement != null)
-      ? modelBuilder.from(element.enclosingElement, library)
+  ModelElement? get enclosingElement => (element!.enclosingElement != null)
+      ? modelBuilder.from(element!.enclosingElement!, library!)
       : null;
 
   @override
   String get filePath =>
-      '${enclosingElement.library.dirName}/${enclosingElement.name}/$name';
+      '${enclosingElement!.library!.dirName}/${enclosingElement!.name}/$name';
 
   @override
 
   /// [TypeParameter]s don't have documentation pages.
-  String get href => null;
+  String? get href => null;
 
   @override
   String get kind => 'type parameter';
 
-  ElementType _boundType;
+  ElementType? _boundType;
 
-  ElementType get boundType {
+  ElementType? get boundType {
     if (_boundType == null) {
-      var bound = element.bound;
+      var bound = element!.bound;
       if (bound != null) {
-        _boundType = modelBuilder.typeFrom(bound, library);
+        _boundType = modelBuilder.typeFrom(bound, library!);
       }
     }
     return _boundType;
@@ -47,46 +47,46 @@ class TypeParameter extends ModelElement {
   @override
   bool get hasParameters => false;
 
-  String _name;
+  String? _name;
 
   @override
-  String get name {
-    _name ??= element.bound != null
-        ? '${element.name} extends ${boundType.nameWithGenerics}'
-        : element.name;
+  String? get name {
+    _name ??= element!.bound != null
+        ? '${element!.name} extends ${boundType!.nameWithGenerics}'
+        : element!.name;
     return _name;
   }
 
-  String _linkedName;
+  String? _linkedName;
 
   @override
-  String get linkedName {
-    _linkedName ??= element.bound != null
-        ? '${element.name} extends ${boundType.linkedName}'
-        : element.name;
+  String? get linkedName {
+    _linkedName ??= element!.bound != null
+        ? '${element!.name} extends ${boundType!.linkedName}'
+        : element!.name;
     return _linkedName;
   }
 
-  Map<String, CommentReferable> _referenceChildren;
+  Map<String?, CommentReferable?>? _referenceChildren;
 
   @override
-  Map<String, CommentReferable> get referenceChildren {
+  Map<String?, CommentReferable?> get referenceChildren {
     if (_referenceChildren == null) {
       _referenceChildren = {};
       if (boundType != null) {
-        _referenceChildren[boundType.name] = boundType;
+        _referenceChildren![boundType!.name] = boundType;
       }
     }
-    return _referenceChildren;
+    return _referenceChildren!;
   }
 
   @override
-  Iterable<CommentReferable> get referenceParents => [enclosingElement];
+  Iterable<CommentReferable?> get referenceParents => [enclosingElement];
   @override
-  TypeParameterElement get element => super.element;
+  TypeParameterElement? get element => super.element as TypeParameterElement?;
 
   @override
-  String get referenceName => element.name;
+  String get referenceName => element!.name;
 }
 
 mixin TypeParameters implements ModelElement {
@@ -94,7 +94,7 @@ mixin TypeParameters implements ModelElement {
 
   String get nameWithLinkedGenerics => '$name$linkedGenericParameters';
 
-  bool get hasGenericParameters => typeParameters.isNotEmpty;
+  bool get hasGenericParameters => typeParameters!.isNotEmpty;
 
   String get genericParameters =>
       _typeParametersRenderer.renderGenericParameters(this);
@@ -102,7 +102,7 @@ mixin TypeParameters implements ModelElement {
   String get linkedGenericParameters =>
       _typeParametersRenderer.renderLinkedGenericParameters(this);
 
-  List<TypeParameter> get typeParameters;
+  List<TypeParameter>? get typeParameters;
 
   TypeParametersRenderer get _typeParametersRenderer =>
       packageGraph.rendererFactory.typeParametersRenderer;

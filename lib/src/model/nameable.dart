@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
+
 
 import 'package:collection/collection.dart';
 
@@ -15,30 +15,30 @@ abstract class Nameable {
 
   String get fullyQualifiedName => name;
 
-  Set<String> _namePieces;
-  Set<String> get namePieces {
+  Set<String>? _namePieces;
+  Set<String>? get namePieces {
     _namePieces ??= {
-      ...name.split(locationSplitter).where((s) => s.isNotEmpty)
+      ...name!.split(locationSplitter).where((s) => s.isNotEmpty)
     };
     return _namePieces;
   }
 
-  String _namePart;
+  String? _namePart;
 
   /// Utility getter/cache for `_MarkdownCommentReference._getResultsForClass`.
-  String get namePart {
+  String? get namePart {
     // TODO(jcollins-g): This should really be the same as 'name', but isn't
     // because of accessors and operators.
-    _namePart ??= fullyQualifiedName.split('.').last;
+    _namePart ??= fullyQualifiedName!.split('.').last;
     return _namePart;
   }
 
   @override
-  String toString() => name;
+  String toString() => name!;
 }
 
 int byName(Nameable a, Nameable b) {
-  var stringCompare = compareAsciiLowerCaseNatural(a.name, b.name);
+  var stringCompare = compareAsciiLowerCaseNatural(a.name!, b.name!);
   if (stringCompare == 0) {
     return a.hashCode.compareTo(b.hashCode);
   }

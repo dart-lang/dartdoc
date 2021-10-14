@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
+
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/source/line_info.dart';
@@ -14,12 +14,12 @@ class Constructor extends ModelElement
     with TypeParameters, ContainerMember
     implements EnclosedElement {
   Constructor(
-      ConstructorElement element, Library library, PackageGraph packageGraph)
+      ConstructorElement element, Library? library, PackageGraph packageGraph)
       : super(element, library, packageGraph);
 
   @override
-  CharacterLocation get characterLocation {
-    if (element.isSynthetic) {
+  CharacterLocation? get characterLocation {
+    if (element!.isSynthetic) {
       // Make warnings for a synthetic constructor refer to somewhere reasonable
       // since a synthetic constructor has no definition independent of the
       // parent class.
@@ -29,20 +29,20 @@ class Constructor extends ModelElement
   }
 
   @override
-  ConstructorElement get element => super.element;
+  ConstructorElement? get element => super.element as ConstructorElement?;
 
   @override
   // TODO(jcollins-g): Revisit this when dart-lang/sdk#31517 is implemented.
-  List<TypeParameter> get typeParameters =>
+  List<TypeParameter>? get typeParameters =>
       (enclosingElement as Class).typeParameters;
 
   @override
   ModelElement get enclosingElement =>
-      modelBuilder.from(element.enclosingElement, library);
+      modelBuilder.from(element!.enclosingElement, library!);
 
   @override
   String get filePath =>
-      '${enclosingElement.library.dirName}/${enclosingElement.name}/$fileName';
+      '${enclosingElement.library!.dirName}/${enclosingElement.name}/$fileName';
 
   String get fullKind {
     if (isConst) return 'const $kind';
@@ -53,11 +53,11 @@ class Constructor extends ModelElement
   @override
   String get fullyQualifiedName {
     if (isUnnamedConstructor) return super.fullyQualifiedName;
-    return '${library.name}.$name';
+    return '${library!.name}.$name';
   }
 
   @override
-  String get href {
+  String? get href {
     if (!identical(canonicalModelElement, this)) {
       return canonicalModelElement?.href;
     }
@@ -67,82 +67,71 @@ class Constructor extends ModelElement
   }
 
   @override
-  bool get isConst => element.isConst;
+  bool get isConst => element!.isConst;
 
   bool get isUnnamedConstructor => name == enclosingElement.name;
 
   bool get isDefaultConstructor =>
       name == '${enclosingElement.name}.new' || isUnnamedConstructor;
 
-  bool get isFactory => element.isFactory;
+  bool get isFactory => element!.isFactory;
 
   @override
   String get kind => 'constructor';
 
-  Callable _modelType;
+  Callable? _modelType;
   Callable get modelType =>
-      _modelType ??= modelBuilder.typeFrom(element.type, library);
-
-  String _name;
+      (_modelType ??= modelBuilder.typeFrom(element!.type, library!) as Callable?)!;
 
   @override
-  String get name {
-    if (_name == null) {
-      // TODO(jcollins-g): After the old lookup code is retired, rationalize
-      // [name] around the conventions used in referenceChildren and replace
-      // code there and elsewhere with simple references to the name.
-      var constructorName = element.name;
-      if (constructorName.isEmpty) {
-        _name = enclosingElement.name;
-      } else {
-        _name = '${enclosingElement.name}.$constructorName';
-      }
+  late final String name = () {
+    // TODO(jcollins-g): After the old lookup code is retired, rationalize
+    // [name] around the conventions used in referenceChildren and replace
+    // code there and elsewhere with simple references to the name.
+    var constructorName = element!.name;
+    if (constructorName.isEmpty) {
+      return enclosingElement.name;
     }
-    return _name;
-  }
+    return '${enclosingElement.name}.$constructorName';
+  } ();
 
-  String _nameWithGenerics;
 
   @override
-  String get nameWithGenerics {
-    if (_nameWithGenerics == null) {
-      var constructorName = element.name;
+  late final String nameWithGenerics = () {
+      var constructorName = element!.name;
       if (constructorName.isEmpty) {
-        _nameWithGenerics = '${enclosingElement.name}$genericParameters';
-      } else {
-        _nameWithGenerics =
+        return '${enclosingElement.name}$genericParameters';
+      }
+        return
             '${enclosingElement.name}$genericParameters.$constructorName';
-      }
-    }
-    return _nameWithGenerics;
-  }
+  } ();
 
-  String get shortName {
-    if (name.contains('.')) {
-      return name.substring(element.enclosingElement.name.length + 1);
+  String? get shortName {
+    if (name!.contains('.')) {
+      return name!.substring(element!.enclosingElement.name.length + 1);
     } else {
       return name;
     }
   }
 
-  Map<String, CommentReferable> _referenceChildren;
+  Map<String, CommentReferable>? _referenceChildren;
   @override
   Map<String, CommentReferable> get referenceChildren {
     if (_referenceChildren == null) {
       _referenceChildren = {};
-      _referenceChildren.addEntries(allParameters.map((param) {
+      _referenceChildren!.addEntries(allParameters!.map((param) {
         var paramElement = param.element;
         if (paramElement is FieldFormalParameterElement) {
-          return modelBuilder.fromElement(paramElement.field);
+          return modelBuilder.fromElement(paramElement.field!);
         }
         return param;
       }).generateEntries());
-      _referenceChildren.addEntries(typeParameters.generateEntries());
+      _referenceChildren!.addEntries(typeParameters!.generateEntries());
     }
-    return _referenceChildren;
+    return _referenceChildren!;
   }
 
   @override
   String get referenceName =>
-      isUnnamedConstructor ? enclosingElement.name : element.name;
+      isUnnamedConstructor ? enclosingElement.name! : element!.name;
 }

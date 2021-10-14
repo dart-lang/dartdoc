@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
+
 
 import 'package:dartdoc/src/model/language_feature.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -11,7 +11,7 @@ import 'package:dartdoc/src/model/model.dart';
 /// the user interpretation of the interface.
 mixin FeatureSet {
   PackageGraph get packageGraph;
-  Library get library;
+  Library? get library;
 
   /// A list of language features that both apply to this [ModelElement] and
   /// make sense to display in context.
@@ -28,5 +28,5 @@ mixin FeatureSet {
 
   // TODO(jcollins-g): This is an approximation and not strictly true for
   // inheritance/reexports.
-  bool get isNullSafety => library.isNullSafety;
+  bool get isNullSafety => library!.isNullSafety;
 }

@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
+
 
 import 'package:dartdoc/src/comment_references/model_comment_reference.dart';
 import 'package:dartdoc/src/markdown_processor.dart';
@@ -15,18 +15,18 @@ class Documentation {
 
   Documentation.forElement(this._element);
 
-  bool _hasExtendedDocs;
+  bool? _hasExtendedDocs;
 
-  bool get hasExtendedDocs {
+  bool? get hasExtendedDocs {
     if (_hasExtendedDocs == null) {
       _renderDocumentation(_element.isCanonical && _asHtml == null);
     }
     return _hasExtendedDocs;
   }
 
-  String _asHtml;
+  String? _asHtml;
 
-  String get asHtml {
+  String? get asHtml {
     if (_asHtml == null) {
       assert(_asOneLiner == null || _element.isCanonical);
       _renderDocumentation(true);
@@ -34,9 +34,9 @@ class Documentation {
     return _asHtml;
   }
 
-  String _asOneLiner;
+  String? _asOneLiner;
 
-  String get asOneLiner {
+  String? get asOneLiner {
     if (_asOneLiner == null) {
       assert(_asHtml == null);
       _renderDocumentation(_element.isCanonical);
@@ -44,7 +44,7 @@ class Documentation {
     return _asOneLiner;
   }
 
-  Map<String, ModelCommentReference> get commentRefs => _element.commentRefs;
+  Map<String, ModelCommentReference>? get commentRefs => _element.commentRefs;
 
   void _renderDocumentation(bool processFullDocs) {
     var parseResult = _parseDocumentation(processFullDocs);
@@ -70,8 +70,8 @@ class Documentation {
     if (text == null || text.isEmpty) {
       return DocumentationParseResult.empty;
     }
-    showWarningsForGenericsOutsideSquareBracketsBlocks(text, _element);
-    var document = MarkdownDocument.withElementLinkResolver(_element);
+    showWarningsForGenericsOutsideSquareBracketsBlocks(text, _element as Warnable);
+    var document = MarkdownDocument.withElementLinkResolver(_element as Warnable);
     return document.parseMarkdownText(text, processFullDocs);
   }
 

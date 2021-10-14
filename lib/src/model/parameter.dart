@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
+
 
 import 'package:analyzer/dart/element/element.dart';
 // ignore: implementation_imports
@@ -13,22 +13,22 @@ import 'package:dartdoc/src/model/model.dart';
 
 class Parameter extends ModelElement implements EnclosedElement {
   Parameter(
-      ParameterElement element, Library library, PackageGraph packageGraph,
-      {ParameterMember originalMember})
+      ParameterElement element, Library? library, PackageGraph packageGraph,
+      {ParameterMember? originalMember})
       : super(element, library, packageGraph, originalMember);
-  String get defaultValue {
+  String? get defaultValue {
     if (!hasDefaultValue) return null;
-    return element.defaultValueCode;
+    return element!.defaultValueCode;
   }
 
   @override
-  ModelElement get enclosingElement => (element.enclosingElement != null)
-      ? modelBuilder.from(element.enclosingElement, library)
+  ModelElement? get enclosingElement => (element!.enclosingElement != null)
+      ? modelBuilder.from(element!.enclosingElement!, library!)
       : null;
 
   bool get hasDefaultValue {
-    return element.defaultValueCode != null &&
-        element.defaultValueCode.isNotEmpty;
+    return element!.defaultValueCode != null &&
+        element!.defaultValueCode!.isNotEmpty;
   }
 
   @override
@@ -37,19 +37,19 @@ class Parameter extends ModelElement implements EnclosedElement {
   }
 
   @override
-  String get href => null;
+  String? get href => null;
 
   @override
   String get htmlId {
-    if (element.enclosingElement != null) {
-      var enclosingName = element.enclosingElement.name;
-      if (element.enclosingElement is GenericFunctionTypeElement) {
+    if (element!.enclosingElement != null) {
+      var enclosingName = element!.enclosingElement!.name;
+      if (element!.enclosingElement is GenericFunctionTypeElement) {
         // TODO(jcollins-g): Drop when GenericFunctionTypeElement populates name.
         // Also, allowing null here is allowed as a workaround for
         // dart-lang/sdk#32005.
-        for (var e = element.enclosingElement;
+        for (var e = element!.enclosingElement!;
             e.enclosingElement != null;
-            e = e.enclosingElement) {
+            e = e.enclosingElement!) {
           enclosingName = e.name;
           if (enclosingName != null && enclosingName.isNotEmpty) break;
         }
@@ -65,23 +65,23 @@ class Parameter extends ModelElement implements EnclosedElement {
 
   @override
   bool operator ==(Object other) =>
-      other is Parameter && (element.type == other.element.type);
+      other is Parameter && (element!.type == other.element!.type);
 
-  bool get isCovariant => element.isCovariant;
+  bool get isCovariant => element!.isCovariant;
 
-  bool get isRequiredPositional => element.isRequiredPositional;
+  bool get isRequiredPositional => element!.isRequiredPositional;
 
-  bool get isNamed => element.isNamed;
+  bool get isNamed => element!.isNamed;
 
-  bool get isOptionalPositional => element.isOptionalPositional;
+  bool get isOptionalPositional => element!.isOptionalPositional;
 
   /// Only true if this is a required named parameter.
-  bool get isRequiredNamed => element.isRequiredNamed;
+  bool get isRequiredNamed => element!.isRequiredNamed;
 
   @override
   String get kind => 'parameter';
 
-  Map<String, CommentReferable> _referenceChildren;
+  Map<String, CommentReferable>? _referenceChildren;
 
   @override
   Map<String, CommentReferable> get referenceChildren {
@@ -89,28 +89,28 @@ class Parameter extends ModelElement implements EnclosedElement {
       _referenceChildren = {};
       var _modelType = modelType;
       if (_modelType is Callable) {
-        _referenceChildren.addEntriesIfAbsent(
+        _referenceChildren!.addEntriesIfAbsent(
             _modelType.parameters.explicitOnCollisionWith(this));
       }
-      _referenceChildren.addEntriesIfAbsent(
+      _referenceChildren!.addEntriesIfAbsent(
           modelType.typeArguments.explicitOnCollisionWith(this));
       if (_modelType is Callable) {
-        _referenceChildren.addEntriesIfAbsent(
+        _referenceChildren!.addEntriesIfAbsent(
             _modelType.returnType.typeArguments.explicitOnCollisionWith(this));
       }
     }
-    return _referenceChildren;
+    return _referenceChildren!;
   }
 
   @override
-  Iterable<CommentReferable> get referenceParents => [enclosingElement];
+  Iterable<CommentReferable?> get referenceParents => [enclosingElement];
   @override
-  ParameterElement get element => super.element;
+  ParameterElement? get element => super.element as ParameterElement?;
 
   @override
-  ParameterMember get originalMember => super.originalMember;
+  ParameterMember? get originalMember => super.originalMember as ParameterMember?;
 
-  ElementType _modelType;
+  ElementType? _modelType;
   ElementType get modelType => _modelType ??=
-      modelBuilder.typeFrom((originalMember ?? element).type, library);
+      modelBuilder.typeFrom((originalMember ?? element)!.type, library!);
 }

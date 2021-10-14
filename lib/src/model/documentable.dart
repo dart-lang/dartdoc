@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
+
 
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
@@ -13,15 +13,15 @@ import 'model.dart';
 /// Bridges the gap between model elements and packages,
 /// both of which have documentation.
 abstract class Documentable extends Nameable {
-  String get documentation;
+  String? get documentation;
 
-  String get documentationAsHtml;
+  String? get documentationAsHtml;
 
   bool get hasDocumentation;
 
   bool get hasExtendedDocumentation;
 
-  String get oneLineDoc;
+  String? get oneLineDoc;
 
   PackageGraph get packageGraph;
 
@@ -29,7 +29,7 @@ abstract class Documentable extends Nameable {
 
   DartdocOptionContext get config;
 
-  String get href;
+  String? get href;
 
   String get kind;
 }
@@ -47,16 +47,16 @@ enum DocumentLocation {
 mixin MarkdownFileDocumentation implements Documentable, Canonicalization {
   DocumentLocation get documentedWhere;
 
-  Documentation __documentation;
+  Documentation? __documentation;
 
-  Documentation get _documentation {
+  Documentation? get _documentation {
     if (__documentation != null) return __documentation;
     __documentation = Documentation.forElement(this);
     return __documentation;
   }
 
   @override
-  String get documentationAsHtml => _documentation.asHtml;
+  String? get documentationAsHtml => _documentation!.asHtml;
 
   @override
   String get documentation {
@@ -78,9 +78,9 @@ mixin MarkdownFileDocumentation implements Documentable, Canonicalization {
   bool get isDocumented;
 
   @override
-  String get oneLineDoc => __documentation.asOneLiner;
+  String? get oneLineDoc => __documentation!.asOneLiner;
 
-  File get documentationFile;
+  File? get documentationFile;
 
   @override
   String get location => '(${documentationFile.path})';

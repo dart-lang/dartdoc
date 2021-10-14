@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
+
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
@@ -14,18 +14,18 @@ class TopLevelVariable extends ModelElement
     with GetterSetterCombo, Categorization
     implements EnclosedElement {
   @override
-  final Accessor getter;
+  final Accessor? getter;
   @override
-  final Accessor setter;
+  final Accessor? setter;
 
   TopLevelVariable(TopLevelVariableElement element, Library library,
       PackageGraph packageGraph, this.getter, this.setter)
       : super(element, library, packageGraph) {
     if (getter != null) {
-      getter.enclosingCombo = this;
+      getter!.enclosingCombo = this;
     }
     if (setter != null) {
-      setter.enclosingCombo = this;
+      setter!.enclosingCombo = this;
     }
   }
 
@@ -44,13 +44,13 @@ class TopLevelVariable extends ModelElement
   }
 
   @override
-  ModelElement get enclosingElement => library;
+  ModelElement? get enclosingElement => library;
 
   @override
-  String get filePath => '${library.dirName}/$fileName';
+  String get filePath => '${library!.dirName}/$fileName';
 
   @override
-  String get href {
+  String? get href {
     if (!identical(canonicalModelElement, this)) {
       return canonicalModelElement?.href;
     }
@@ -60,18 +60,18 @@ class TopLevelVariable extends ModelElement
   }
 
   @override
-  bool get isConst => _variable.isConst;
+  bool get isConst => _variable!.isConst;
 
   @override
   bool get isFinal {
     /// isFinal returns true for the variable even if it has an explicit getter
     /// (which means we should not document it as "final").
     if (hasExplicitGetter) return false;
-    return _variable.isFinal;
+    return _variable!.isFinal;
   }
 
   @override
-  bool get isLate => isFinal && _variable.isLate;
+  bool get isLate => isFinal && _variable!.isLate;
 
   @override
   String get kind => isConst ? 'top-level constant' : 'top-level property';
@@ -82,7 +82,7 @@ class TopLevelVariable extends ModelElement
   @override
   String get fileName => '${isConst ? '$name-constant' : name}.$fileType';
 
-  TopLevelVariableElement get _variable => (element as TopLevelVariableElement);
+  TopLevelVariableElement? get _variable => (element as TopLevelVariableElement?);
 
   @override
   Iterable<CommentReferable> get referenceParents => [definingLibrary];

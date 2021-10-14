@@ -2,15 +2,15 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
+
 
 import 'package:dartdoc/src/model/model.dart';
 
 /// Something able to be indexed.
 abstract class Indexable implements Nameable {
-  String get href;
+  String? get href;
 
   String get kind;
 
-  int get overriddenDepth => 0;
+  int? get overriddenDepth => 0;
 }
