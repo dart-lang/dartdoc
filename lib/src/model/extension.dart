@@ -86,12 +86,12 @@ class Extension extends Container implements EnclosedElement {
 
   // a stronger hash?
   @override
-  List<TypeParameter>? get typeParameters {
+  List<TypeParameter> get typeParameters {
     _typeParameters ??= _extension!.typeParameters.map((f) {
       var lib = modelBuilder.fromElement(f.enclosingElement!.library!);
       return modelBuilder.from(f, lib as Library) as TypeParameter;
     }).toList();
-    return _typeParameters;
+    return _typeParameters!;
   }
 
   List<ModelElement>? _allModelElements;

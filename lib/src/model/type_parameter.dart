@@ -16,9 +16,7 @@ class TypeParameter extends ModelElement {
       : super(element, library, packageGraph);
 
   @override
-  ModelElement? get enclosingElement => (element!.enclosingElement != null)
-      ? modelBuilder.from(element!.enclosingElement!, library!)
-      : null;
+  ModelElement get enclosingElement => modelBuilder.from(element!.enclosingElement!, library!);
 
   @override
   String get filePath =>
@@ -47,41 +45,30 @@ class TypeParameter extends ModelElement {
   @override
   bool get hasParameters => false;
 
-  String? _name;
-
   @override
-  String? get name {
-    _name ??= element!.bound != null
+  late final String name = element!.bound != null
         ? '${element!.name} extends ${boundType!.nameWithGenerics}'
         : element!.name;
-    return _name;
-  }
 
   String? _linkedName;
 
   @override
-  String? get linkedName {
+  String get linkedName {
     _linkedName ??= element!.bound != null
         ? '${element!.name} extends ${boundType!.linkedName}'
         : element!.name;
-    return _linkedName;
-  }
-
-  Map<String?, CommentReferable?>? _referenceChildren;
-
-  @override
-  Map<String?, CommentReferable?> get referenceChildren {
-    if (_referenceChildren == null) {
-      _referenceChildren = {};
-      if (boundType != null) {
-        _referenceChildren![boundType!.name] = boundType;
-      }
-    }
-    return _referenceChildren!;
+    return _linkedName!;
   }
 
   @override
-  Iterable<CommentReferable?> get referenceParents => [enclosingElement];
+  late final Map<String, CommentReferable> referenceChildren = () {
+    var boundType = this.boundType;
+    if (boundType == null) return <String, CommentReferable>{};
+    return <String, CommentReferable>{boundType.name: boundType};
+  } ();
+
+  @override
+  Iterable<CommentReferable> get referenceParents => [enclosingElement];
   @override
   TypeParameterElement? get element => super.element as TypeParameterElement?;
 
@@ -102,7 +89,7 @@ mixin TypeParameters implements ModelElement {
   String get linkedGenericParameters =>
       _typeParametersRenderer.renderLinkedGenericParameters(this);
 
-  List<TypeParameter>? get typeParameters;
+  List<TypeParameter> get typeParameters;
 
   TypeParametersRenderer get _typeParametersRenderer =>
       packageGraph.rendererFactory.typeParametersRenderer;

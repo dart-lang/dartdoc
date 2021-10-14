@@ -588,12 +588,12 @@ abstract class InheritingContainer extends Container
   List<TypeParameter>? _typeParameters;
 
   @override
-  List<TypeParameter>? get typeParameters {
+  List<TypeParameter> get typeParameters {
     _typeParameters ??= element!.typeParameters.map((f) {
       var lib = modelBuilder.fromElement(f.enclosingElement!.library!);
       return modelBuilder.from(f, lib as Library) as TypeParameter;
     }).toList();
-    return _typeParameters;
+    return _typeParameters!;
   }
 
   Iterable<Field>? _instanceFields;

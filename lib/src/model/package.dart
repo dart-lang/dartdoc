@@ -155,13 +155,8 @@ class Package extends LibraryContainer
   @override
   Warnable? get enclosingElement => null;
 
-  bool? _isPublic;
-
   @override
-  bool? get isPublic {
-    _isPublic ??= libraries.any((l) => l.isPublic);
-    return _isPublic;
-  }
+  late final bool isPublic = libraries.any((l) => l.isPublic);
 
   bool? _isLocal;
 
@@ -354,16 +349,11 @@ class Package extends LibraryContainer
 
   bool get hasDocumentedCategories => documentedCategories.isNotEmpty;
 
-  DartdocOptionContext? _config;
-
   @override
-  DartdocOptionContext? get config {
-    _config ??= DartdocOptionContext.fromContext(
+  late final DartdocOptionContext config = DartdocOptionContext.fromContext(
         packageGraph.config,
         packageGraph.resourceProvider.getFolder(packagePath!),
         packageGraph.resourceProvider);
-    return _config;
-  }
 
   /// Is this the package at the top of the list?  We display the first
   /// package specially (with "Libraries" rather than the package name).

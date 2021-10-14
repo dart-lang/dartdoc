@@ -51,7 +51,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   }
 
   @override
-  String? get name => null;
+  String get name => '';
 
   /// Call during initialization to add a library to this [PackageGraph].
   ///
@@ -269,7 +269,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   Map<Source?, SdkLibrary>? get sdkLibrarySources {
     if (_sdkLibrarySources == null) {
       _sdkLibrarySources = {};
-      for (var lib in sdk?.sdkLibraries) {
+      for (var lib in sdk.sdkLibraries) {
         _sdkLibrarySources![sdk.mapDartUri(lib.shortName)] = lib;
       }
     }
@@ -882,10 +882,6 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   /// set of canonical Libraries).
   Library findOrCreateLibraryFor(DartDocResolvedLibrary resolvedLibrary) {
     final libraryElement = resolvedLibrary.library;
-    // can be null if e is for dynamic
-    if (libraryElement == null) {
-      return null;
-    }
     var foundLibrary = findButDoNotCreateLibraryFor(libraryElement);
     if (foundLibrary != null) return foundLibrary;
 

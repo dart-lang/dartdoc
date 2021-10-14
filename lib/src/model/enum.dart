@@ -92,7 +92,7 @@ class EnumField extends Field {
   }
 
   @override
-  String? get linkedName => name;
+  String get linkedName => name;
 
   @override
   bool get isCanonical {

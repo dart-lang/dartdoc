@@ -503,7 +503,7 @@ class PackageWarningCounter {
       _items.add(_JsonWarning(type, kind, fullMessage, entry));
     }
     for (var item in _items) {
-      logWarning(item);
+      logWarning(item.toString());
     }
     _items.clear();
   }
@@ -534,7 +534,7 @@ class PackageWarningCounter {
     PackageWarningOptionContext config =
         element?.config ?? packageGraph.defaultPackage.config;
     PackageWarningMode? warningMode;
-    var isLocal = element?.package.isLocal ?? true;
+    var isLocal = element?.package?.isLocal ?? true;
     if (!config.allowNonLocalWarnings && !isLocal) {
       warningMode = PackageWarningMode.ignore;
     } else {

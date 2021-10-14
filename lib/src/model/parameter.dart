@@ -22,9 +22,7 @@ class Parameter extends ModelElement implements EnclosedElement {
   }
 
   @override
-  ModelElement? get enclosingElement => (element!.enclosingElement != null)
-      ? modelBuilder.from(element!.enclosingElement!, library!)
-      : null;
+  ModelElement get enclosingElement => modelBuilder.from(element!.enclosingElement!, library!);
 
   bool get hasDefaultValue {
     return element!.defaultValueCode != null &&
@@ -103,7 +101,7 @@ class Parameter extends ModelElement implements EnclosedElement {
   }
 
   @override
-  Iterable<CommentReferable?> get referenceParents => [enclosingElement];
+  Iterable<CommentReferable> get referenceParents => [enclosingElement];
   @override
   ParameterElement? get element => super.element as ParameterElement?;
 

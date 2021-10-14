@@ -57,10 +57,7 @@ class Field extends ModelElement
   }
 
   @override
-  Container? get enclosingElement {
-    _enclosingContainer ??= modelBuilder.from(field!.enclosingElement, library!) as Container?;
-    return _enclosingContainer;
-  }
+  Container get enclosingElement => modelBuilder.from(field!.enclosingElement, library) as Container;
 
   @override
   String get filePath =>
@@ -166,6 +163,10 @@ class Field extends ModelElement
     }
     return _sourceCode;
   }
+
+  Library get library => super.library!;
+
+  Package get package => super.package!;
 
   @override
   Inheritable? get overriddenElement => null;

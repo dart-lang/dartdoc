@@ -35,6 +35,7 @@ import 'package:dartdoc/src/quiver.dart' as quiver;
 import 'package:dartdoc/src/render/renderer_factory.dart';
 import 'package:dartdoc/src/special_elements.dart';
 import 'package:meta/meta.dart';
+import 'package:package_config/package_config.dart';
 import 'package:path/path.dart' as path show Context;
 
 /// Everything you need to instantiate a PackageGraph object for documenting.

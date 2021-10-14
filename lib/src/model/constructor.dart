@@ -33,7 +33,7 @@ class Constructor extends ModelElement
 
   @override
   // TODO(jcollins-g): Revisit this when dart-lang/sdk#31517 is implemented.
-  List<TypeParameter>? get typeParameters =>
+  List<TypeParameter> get typeParameters =>
       (enclosingElement as Class).typeParameters;
 
   @override

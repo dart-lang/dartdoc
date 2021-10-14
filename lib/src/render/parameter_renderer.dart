@@ -225,7 +225,7 @@ abstract class ParameterRenderer {
 
     if (param.hasDefaultValue) {
       buf.write(' = ');
-      buf.write(defaultValue(param.defaultValue));
+      buf.write(defaultValue(param.defaultValue!));
     }
 
     buf.write(suffix);

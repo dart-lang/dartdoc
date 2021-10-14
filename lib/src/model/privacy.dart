@@ -6,5 +6,5 @@
 
 /// Classes implementing this have a public/private distinction.
 abstract class Privacy {
-  bool? get isPublic;
+  bool get isPublic;
 }

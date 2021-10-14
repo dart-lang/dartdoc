@@ -30,7 +30,7 @@ class Annotation extends Feature with ModelBuilder {
 
   /// Return the linked name of the annotation.
   @override
-  String? get linkedName => annotation.element is PropertyAccessorElement
+  String get linkedName => annotation.element is PropertyAccessorElement
       ? modelBuilder.fromElement(annotation.element!).linkedName
       // TODO(jcollins-g): consider linking to constructor instead of type?
       : modelType!.linkedName;
@@ -54,7 +54,7 @@ class Annotation extends Feature with ModelBuilder {
   }
 
   String? _parameterText;
-  String? get parameterText {
+  String get parameterText {
     // TODO(srawlins): Attempt to revive constructor arguments in an annotation,
     // akin to source_gen's Reviver, in order to link to inner components. For
     // example, in `@Foo(const Bar(), baz: <Baz>[Baz.one, Baz.two])`, link to
@@ -65,7 +65,7 @@ class Annotation extends Feature with ModelBuilder {
       _parameterText =
           source.substring(startIndex == -1 ? source.length : startIndex);
     }
-    return _parameterText;
+    return _parameterText!;
   }
 
   @override

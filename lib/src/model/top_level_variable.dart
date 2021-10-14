@@ -85,5 +85,11 @@ class TopLevelVariable extends ModelElement
   TopLevelVariableElement? get _variable => (element as TopLevelVariableElement?);
 
   @override
+  Package get package => super.package!;
+
+  @override
+  Library get library => super.library!;
+
+  @override
   Iterable<CommentReferable> get referenceParents => [definingLibrary];
 }

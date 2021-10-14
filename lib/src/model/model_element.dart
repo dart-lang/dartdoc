@@ -819,11 +819,12 @@ abstract class ModelElement extends Canonicalization
   String get kind;
 
   @override
+  // FIXME(nnbd): library should not have to be nullable just because of dynamic
   Library? get library => _library;
 
-  String? get linkedName {
+  String get linkedName {
     _linkedName ??= _calculateLinkedName();
-    return _linkedName;
+    return _linkedName!;
   }
 
   @visibleForTesting
@@ -865,6 +866,7 @@ abstract class ModelElement extends Canonicalization
   PackageGraph get packageGraph => _packageGraph;
 
   @override
+  // FIXME(nnbd): package should not have to be nullable just because of dynamic
   Package? get package => library?.package;
 
   bool get isPublicAndPackageDocumented => isPublic! && package?.isDocumented == true;
