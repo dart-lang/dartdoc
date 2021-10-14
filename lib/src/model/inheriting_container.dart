@@ -24,7 +24,7 @@ mixin Constructable on InheritingContainer {
   List<Constructor>? _constructors;
   Iterable<Constructor> get constructors => _constructors ??= [
         ...element!.constructors
-            .map((e) => modelBuilder.from(e, library!) as Constructor)
+            .map((e) => modelBuilder.from(e, library) as Constructor)
       ];
 
   @override
@@ -99,7 +99,7 @@ mixin MixedInTypes on InheritingContainer {
       _mixedInTypes ??
       [
         ...element!.mixins
-            .map<DefinedElementType>((f) => modelBuilder.typeFrom(f, library!) as DefinedElementType)
+            .map<DefinedElementType>((f) => modelBuilder.typeFrom(f, library) as DefinedElementType)
             .where((mixin) => mixin != null)
       ];
 
@@ -120,7 +120,7 @@ mixin TypeImplementing on InheritingContainer {
       _directInterfaces ??
       [
         ...element!.interfaces
-            .map<DefinedElementType>((f) => modelBuilder.typeFrom(f, library!) as DefinedElementType)
+            .map<DefinedElementType>((f) => modelBuilder.typeFrom(f, library) as DefinedElementType)
             .toList(growable: false)
       ];
 
@@ -227,9 +227,9 @@ abstract class InheritingContainer extends Container
 
   DefinedElementType? _supertype;
   DefinedElementType? get supertype =>
-      _supertype ??= element!.supertype?.element?.supertype == null
+      _supertype ??= element!.supertype?.element.supertype == null
           ? null
-          : modelBuilder.typeFrom(element!.supertype!, library!) as DefinedElementType?;
+          : modelBuilder.typeFrom(element!.supertype!, library) as DefinedElementType?;
 
   InheritingContainer(
       ClassElement element, Library? library, PackageGraph packageGraph)
@@ -245,7 +245,7 @@ abstract class InheritingContainer extends Container
 
   @override
   Iterable<Operator> get instanceOperators =>
-      quiver.concat([super.instanceOperators!, inheritedOperators!]);
+      quiver.concat([super.instanceOperators, inheritedOperators!]);
 
   @override
   bool get publicInheritedInstanceOperators =>
@@ -258,7 +258,7 @@ abstract class InheritingContainer extends Container
     _allModelElements ??= List.from(
         quiver.concat<ModelElement>([
           super.allModelElements!,
-          typeParameters!,
+          typeParameters,
         ]),
         growable: false);
     return _allModelElements;
@@ -273,7 +273,7 @@ abstract class InheritingContainer extends Container
   ModelElement? get enclosingElement => library;
 
   @override
-  String get filePath => '${library!.dirName}/$fileName';
+  String get filePath => '${library.dirName}/$fileName';
 
   String get fullkind => kind;
 
@@ -301,7 +301,7 @@ abstract class InheritingContainer extends Container
       }).toSet();
 
       for (var e in inheritedMethodElements) {
-        Method m = modelBuilder.from(e!, library!, enclosingContainer: this) as Method;
+        Method m = modelBuilder.from(e!, library, enclosingContainer: this) as Method;
         _inheritedMethods!.add(m);
       }
     }
@@ -319,7 +319,7 @@ abstract class InheritingContainer extends Container
   Iterable<Operator>? get inheritedOperators {
     if (_inheritedOperators == null) {
       _inheritedOperators = [];
-      var operatorNames = declaredOperators!.map((o) => o.element!.name).toSet();
+      var operatorNames = declaredOperators.map((o) => o.element!.name).toSet();
 
       var inheritedOperatorElements = _inheritedElements!.where((e) {
         return (e is MethodElement &&
@@ -327,7 +327,7 @@ abstract class InheritingContainer extends Container
             !operatorNames.contains(e.name));
       }).toSet();
       for (var e in inheritedOperatorElements) {
-        Operator o = modelBuilder.from(e!, library!, enclosingContainer: this) as Operator;
+        Operator o = modelBuilder.from(e!, library, enclosingContainer: this) as Operator;
         _inheritedOperators!.add(o);
       }
     }
@@ -342,7 +342,7 @@ abstract class InheritingContainer extends Container
       model_utils.filterNonPublic(inheritedFields);
 
   @override
-  bool get isCanonical => super.isCanonical && isPublic!;
+  bool get isCanonical => super.isCanonical && isPublic;
 
   /// Returns true if [other] is a parent class for this class.
   bool _isInheritingFrom(InheritingContainer? other) => superChain
@@ -353,7 +353,7 @@ abstract class InheritingContainer extends Container
 
   @override
   DefinedElementType get modelType =>
-      (_modelType ??= modelBuilder.typeFrom(element!.thisType, library!) as DefinedElementType?)!;
+      (_modelType ??= modelBuilder.typeFrom(element!.thisType, library) as DefinedElementType?)!;
 
   /// Not the same as superChain as it may include mixins.
   /// It's really not even the same as ordinary Dart inheritance, either,
@@ -370,11 +370,11 @@ abstract class InheritingContainer extends Container
       if (parent.type is InterfaceType) {
         // Avoid adding [Object] to the superChain (_supertype already has this
         // check)
-        if ((parent.type as InterfaceType)?.superclass?.superclass == null) {
+        if ((parent.type as InterfaceType).superclass?.superclass == null) {
           parent = null;
         } else {
           parent = modelBuilder.typeFrom(
-              (parent.type as InterfaceType).superclass!, library!) as DefinedElementType?;
+              (parent.type as InterfaceType).superclass!, library) as DefinedElementType?;
         }
       } else {
         parent = (parent.modelElement as Class).supertype;
@@ -523,10 +523,10 @@ abstract class InheritingContainer extends Container
       ContainerAccessor accessor;
       if (element == null) return null;
       if (inheritedAccessors.contains(element)) {
-        accessor = modelBuilder.from(element, enclosingContainer.library!,
+        accessor = modelBuilder.from(element, enclosingContainer.library,
             enclosingContainer: enclosingContainer) as ContainerAccessor;
       } else {
-        accessor = modelBuilder.from(element, enclosingContainer.library!) as ContainerAccessor;
+        accessor = modelBuilder.from(element, enclosingContainer.library) as ContainerAccessor;
       }
       return accessor;
     }
@@ -564,14 +564,14 @@ abstract class InheritingContainer extends Container
     if ((getter == null || getter.isInherited) &&
         (setter == null || setter.isInherited)) {
       // Field is 100% inherited.
-      field = modelBuilder.fromPropertyInducingElement(f!, library!,
+      field = modelBuilder.fromPropertyInducingElement(f!, library,
           enclosingContainer: this, getter: getter!, setter: setter!) as Field;
     } else {
       // Field is <100% inherited (could be half-inherited).
       // TODO(jcollins-g): Navigation is probably still confusing for
       // half-inherited fields when traversing the inheritance tree.  Make
       // this better, somehow.
-      field = modelBuilder.fromPropertyInducingElement(f!, library!,
+      field = modelBuilder.fromPropertyInducingElement(f!, library,
           getter: getter!, setter: setter!) as Field;
     }
     _allFields!.add(field);
@@ -582,7 +582,7 @@ abstract class InheritingContainer extends Container
   @override
   Iterable<Method> get declaredMethods =>
       _declaredMethods ??= element!.methods.map((e) {
-        return modelBuilder.from(e, library!) as Method;
+        return modelBuilder.from(e, library) as Method;
       });
 
   List<TypeParameter>? _typeParameters;

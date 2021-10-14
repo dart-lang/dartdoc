@@ -56,13 +56,13 @@ class Extension extends Container implements EnclosedElement {
   @override
   List<Method>? get declaredMethods {
     _methods ??= _extension!.methods.map((e) {
-      return modelBuilder.from(e, library!) as Method;
+      return modelBuilder.from(e, library) as Method;
     }).toList(growable: false);
     return _methods;
   }
 
   @override
-  String get name => super.name ?? '';
+  String get name => super.name;
 
   List<Field>? _declaredFields;
 
@@ -76,7 +76,7 @@ class Extension extends Container implements EnclosedElement {
       if (f.setter != null) {
         setter = ContainerAccessor(f.setter, library, packageGraph);
       }
-      return modelBuilder.fromPropertyInducingElement(f, library!,
+      return modelBuilder.fromPropertyInducingElement(f, library,
           getter: getter, setter: setter) as Field;
     }).toList(growable: false);
     return _declaredFields;
@@ -100,14 +100,14 @@ class Extension extends Container implements EnclosedElement {
     _allModelElements ??= List.from(
         quiver.concat<ModelElement>([
           super.allModelElements!,
-          typeParameters!,
+          typeParameters,
         ]),
         growable: false);
     return _allModelElements;
   }
 
   @override
-  String get filePath => '${library!.dirName}/$fileName';
+  String get filePath => '${library.dirName}/$fileName';
 
   Map<String, CommentReferable>? _referenceChildren;
   @override

@@ -97,7 +97,7 @@ mixin Inheritable on ContainerMember {
       // This is still OK because we're never supposed to cloak public
       // classes.
       if (definingEnclosingContainer!.isCanonical &&
-          definingEnclosingContainer!.isPublic!) {
+          definingEnclosingContainer!.isPublic) {
         assert(definingEnclosingContainer == found);
       }
       if (found != null) {
@@ -164,7 +164,7 @@ mixin Inheritable on ContainerMember {
           enclosingCanonical == definingCanonical &&
           // If the overridden element isn't public, we shouldn't be an
           // override in most cases.  Approximation until #1623 is fixed.
-          overriddenCanonical!.isPublic!;
+          overriddenCanonical!.isPublic;
       assert(!(_isOverride! && isInherited));
     }
     return _isOverride;

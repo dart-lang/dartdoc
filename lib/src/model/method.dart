@@ -125,7 +125,7 @@ class Method extends ModelElement
   Map<String, CommentReferable>? _referenceChildren;
   @override
   Map<String, CommentReferable> get referenceChildren {
-    var from = documentationFrom!.first as Method;
+    var from = documentationFrom.first as Method;
     if (!identical(this, from)) {
       return from.referenceChildren;
     }

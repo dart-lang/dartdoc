@@ -6,9 +6,7 @@ import 'package:crypto/crypto.dart' as crypto;
 import 'package:dartdoc/src/model/documentable.dart';
 import 'package:dartdoc/src/model/documentation.dart';
 import 'package:dartdoc/src/model/inheritable.dart';
-import 'package:dartdoc/src/model/library.dart';
 import 'package:dartdoc/src/model/locatable.dart';
-import 'package:dartdoc/src/model/package.dart';
 import 'package:dartdoc/src/model/source_code_mixin.dart';
 import 'package:dartdoc/src/render/model_element_renderer.dart';
 import 'package:dartdoc/src/utils.dart';
@@ -142,7 +140,7 @@ mixin DocumentationComment
     return docs;
   }
 
-  String get sourceFileName;
+  String? get sourceFileName;
 
   String? get fullyQualifiedNameWithoutLibrary;
 
@@ -257,7 +255,7 @@ mixin DocumentationComment
   /// ## Content to send to tool.
   /// 2018-09-18T21:15+00:00
   Future<String> _evaluateTools(String rawDocs) async {
-    if (!config!.allowTools) {
+    if (!config.allowTools) {
       return rawDocs;
     }
     var invocationIndex = 0;
@@ -273,7 +271,7 @@ mixin DocumentationComment
       // Count the number of invocations of tools in this dartdoc block,
       // so that tools can differentiate different blocks from each other.
       invocationIndex++;
-      return await config!.tools.runner.run(args, content: basicMatch[2]!,
+      return await config.tools.runner.run(args, content: basicMatch[2]!,
           toolErrorCallback: (String message) async {
         warn(PackageWarning.toolError, message: message);
       }, environment: _toolsEnvironment(invocationIndex: invocationIndex) as Map<String, String>);
@@ -287,7 +285,7 @@ mixin DocumentationComment
       'SOURCE_COLUMN': characterLocation?.columnNumber.toString(),
       if (sourceFileName != null && package?.packagePath != null)
         'SOURCE_PATH':
-            pathContext.relative(sourceFileName, from: package!.packagePath),
+            pathContext.relative(sourceFileName!, from: package!.packagePath),
       'PACKAGE_PATH': package?.packagePath,
       'PACKAGE_NAME': package?.name,
       'LIBRARY_NAME': library?.fullyQualifiedName,
@@ -386,9 +384,9 @@ mixin DocumentationComment
       var ext = pathContext.extension(src);
       file = pathContext.join(dir, '$basename-$region$ext$fragExtension');
     }
-    args['file'] = config!.examplePathPrefix == null
+    args['file'] = config.examplePathPrefix == null
         ? file
-        : pathContext.join(config!.examplePathPrefix, file);
+        : pathContext.join(config.examplePathPrefix, file);
     return args;
   }
 
@@ -643,7 +641,7 @@ mixin DocumentationComment
   ///     &#123;@end-inject-html&#125;
   ///
   String _stripHtmlAndAddToIndex(String rawDocs) {
-    if (!config!.injectHtml) return rawDocs;
+    if (!config.injectHtml) return rawDocs;
     return rawDocs.replaceAllMapped(_htmlPattern, (match) {
       var fragment = match[1]!;
       var digest = crypto.sha1.convert(fragment.codeUnits).toString();
@@ -770,7 +768,7 @@ mixin DocumentationComment
 
   bool? _needsPrecache;
   bool get needsPrecache => _needsPrecache ??=
-      _needsPrecacheRegExp.hasMatch(documentationComment ?? '');
+      _needsPrecacheRegExp.hasMatch(documentationComment);
 
   String? _rawDocs;
 
@@ -786,10 +784,10 @@ mixin DocumentationComment
         'reentrant calls to _buildDocumentation* not allowed');
     // Do not use the sync method if we need to evaluate tools or templates.
     assert(!isCanonical || !needsPrecache);
-    if (config!.dropTextFrom.contains(element!.library!.name)) {
+    if (config.dropTextFrom.contains(element!.library!.name)) {
       _rawDocs = '';
     } else {
-      _rawDocs = _processCommentWithoutTools(documentationComment ?? '');
+      _rawDocs = _processCommentWithoutTools(documentationComment);
     }
     _rawDocs = buildDocumentationAddition(_rawDocs);
     return _rawDocs;
@@ -801,10 +799,10 @@ mixin DocumentationComment
     assert(_rawDocs == null,
         'reentrant calls to _buildDocumentation* not allowed');
     // Do not use the sync method if we need to evaluate tools or templates.
-    if (config!.dropTextFrom.contains(element!.library!.name)) {
+    if (config.dropTextFrom.contains(element!.library!.name)) {
       _rawDocs = '';
     } else {
-      _rawDocs = await processComment(documentationComment ?? '');
+      _rawDocs = await processComment(documentationComment);
     }
     _rawDocs = buildDocumentationAddition(_rawDocs);
     return _rawDocs;
@@ -845,7 +843,7 @@ mixin DocumentationComment
   /// And the HTML fragment will not have been processed or changed by Markdown,
   /// but just injected verbatim.
   String? _injectHtmlFragments(String? rawDocs) {
-    if (!config!.injectHtml) return rawDocs;
+    if (!config.injectHtml) return rawDocs;
 
     return rawDocs!.replaceAllMapped(_htmlInjectRegExp, (match) {
       var fragment = packageGraph.getHtmlFragment(match[1])!;

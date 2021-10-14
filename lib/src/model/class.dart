@@ -42,7 +42,7 @@ class Class extends InheritingContainer
   String get fileName => '$name-class.$fileType';
 
   @override
-  String get filePath => '${library!.dirName}/$fileName';
+  String get filePath => '${library.dirName}/$fileName';
 
   @override
   String get fullkind {
@@ -57,7 +57,7 @@ class Class extends InheritingContainer
     }
     assert(canonicalLibrary != null);
     assert(canonicalLibrary == library);
-    var packageBaseHref = package?.baseHref;
+    var packageBaseHref = package.baseHref;
     if (packageBaseHref != null) {
       return '$packageBaseHref$filePath';
     }
@@ -67,7 +67,7 @@ class Class extends InheritingContainer
   bool get isAbstract => element!.isAbstract;
 
   @override
-  bool get isCanonical => super.isCanonical && isPublic!;
+  bool get isCanonical => super.isCanonical && isPublic;
 
   bool get isErrorOrException {
     bool _doCheck(ClassElement element) {

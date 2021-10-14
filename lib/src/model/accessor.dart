@@ -32,7 +32,7 @@ class Accessor extends ModelElement implements EnclosedElement {
     if (element!.nameOffset < 0) {
       assert(element!.isSynthetic, 'Invalid offset for non-synthetic element');
       // TODO(jcollins-g): switch to [element.nonSynthetic] after analyzer 1.8
-      return enclosingCombo!.characterLocation;
+      return enclosingCombo.characterLocation;
     }
     return super.characterLocation;
   }
@@ -95,7 +95,7 @@ class Accessor extends ModelElement implements EnclosedElement {
   /// Value here is not useful if [isSynthetic] is false.
   late final String _syntheticDocumentationComment = () {
         if (_hasSyntheticDocumentationComment) {
-          return definingCombo!.documentationComment ?? '';
+          return definingCombo!.documentationComment;
         }
         return '';
       } ();
@@ -114,7 +114,7 @@ class Accessor extends ModelElement implements EnclosedElement {
   bool _comboDocsAreIndependent() {
     if (isSetter && definingCombo!.hasGetter) {
       if (definingCombo!.getter!.isSynthetic ||
-          !definingCombo!.documentationFrom!.contains(this)) {
+          !definingCombo!.documentationFrom.contains(this)) {
         return true;
       }
     }
@@ -133,7 +133,7 @@ class Accessor extends ModelElement implements EnclosedElement {
     Iterable<Locatable> referredFrom = const [],
     Iterable<String> extendedDebug = const [],
   }) {
-    enclosingCombo!.warn(kind,
+    enclosingCombo.warn(kind,
         message: message,
         referredFrom: referredFrom,
         extendedDebug: extendedDebug);
@@ -150,14 +150,14 @@ class Accessor extends ModelElement implements EnclosedElement {
   }
 
   @override
-  String? get filePath => enclosingCombo!.filePath;
+  String? get filePath => enclosingCombo.filePath;
 
   @override
-  bool get isCanonical => enclosingCombo!.isCanonical;
+  bool get isCanonical => enclosingCombo.isCanonical;
 
   @override
   String? get href {
-    return enclosingCombo!.href;
+    return enclosingCombo.href;
   }
 
   bool get isGetter => element!.isGetter;
@@ -180,14 +180,14 @@ class Accessor extends ModelElement implements EnclosedElement {
   /// Accessors should never be participating directly in comment reference
   /// lookups.
   Map<String, CommentReferable> get referenceChildren =>
-      enclosingCombo!.referenceChildren;
+      enclosingCombo.referenceChildren;
 
   @override
 
   /// Accessors should never be participating directly in comment reference
   /// lookups.
   Iterable<CommentReferable> get referenceParents =>
-      enclosingCombo!.referenceParents;
+      enclosingCombo.referenceParents;
 }
 
 /// A getter or setter that is a member of a [Container].
@@ -201,7 +201,7 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
     if (_isEnumSynthetic) return enclosingElement!.characterLocation;
     // TODO(jcollins-g): Remove the enclosingCombo case below once
     // https://github.com/dart-lang/sdk/issues/46154 is fixed.
-    if (enclosingCombo is EnumField) return enclosingCombo!.characterLocation;
+    if (enclosingCombo is EnumField) return enclosingCombo.characterLocation;
     return super.characterLocation;
   }
 
@@ -209,7 +209,7 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
   bool _isInherited = false;
 
   @override
-  bool get isCovariant => isSetter && parameters!.first.isCovariant;
+  bool get isCovariant => isSetter && parameters.first.isCovariant;
 
   ContainerAccessor(PropertyAccessorElement? element, Library? library,
       PackageGraph packageGraph)

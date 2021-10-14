@@ -79,7 +79,7 @@ class ModelFunctionTyped extends ModelElement
       _referenceChildren!
           .addEntriesIfAbsent(typeParameters.explicitOnCollisionWith(this));
       _referenceChildren!
-          .addEntriesIfAbsent(parameters!.explicitOnCollisionWith(this));
+          .addEntriesIfAbsent(parameters.explicitOnCollisionWith(this));
     }
     return _referenceChildren!;
   }

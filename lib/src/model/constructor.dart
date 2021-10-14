@@ -97,8 +97,8 @@ class Constructor extends ModelElement
   } ();
 
   String? get shortName {
-    if (name!.contains('.')) {
-      return name!.substring(element!.enclosingElement.name.length + 1);
+    if (name.contains('.')) {
+      return name.substring(element!.enclosingElement.name.length + 1);
     } else {
       return name;
     }
@@ -116,12 +116,12 @@ class Constructor extends ModelElement
         }
         return param;
       }).generateEntries());
-      _referenceChildren!.addEntries(typeParameters!.generateEntries());
+      _referenceChildren!.addEntries(typeParameters.generateEntries());
     }
     return _referenceChildren!;
   }
 
   @override
   String get referenceName =>
-      isUnnamedConstructor ? enclosingElement.name! : element!.name;
+      isUnnamedConstructor ? enclosingElement.name: element!.name;
 }

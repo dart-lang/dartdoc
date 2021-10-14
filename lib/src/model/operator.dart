@@ -23,7 +23,7 @@ class Operator extends Method {
   String get fileName {
     var actualName = super.name;
     if (operatorNames.containsKey(actualName)) {
-      actualName = 'operator_${operatorNames[actualName!]}';
+      actualName = 'operator_${operatorNames[actualName]}';
     }
     return '$actualName.$fileType';
   }
@@ -44,5 +44,5 @@ class Operator extends Method {
   }
 
   @override
-  String get referenceName => super.name!;
+  String get referenceName => super.name;
 }

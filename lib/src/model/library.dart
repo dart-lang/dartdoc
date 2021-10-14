@@ -117,21 +117,21 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
   /// Allow scope for Libraries.
   @override
-  Scope get scope => element!.scope;
+  Scope get scope => element.scope;
 
   List<String>? __allOriginalModelElementNames;
 
   /// Return true if this library is in a package configured to be treated as
   /// as using Null safety and itself uses Null safety.
-  bool get _allowsNullSafety => element!.isNonNullableByDefault;
+  bool get _allowsNullSafety => element.isNonNullableByDefault;
 
   /// Return true if this library should be documented as using Null safety.
   /// A library may use Null safety but not documented that way.
   @override
   bool get isNullSafety =>
-      config!.enableExperiment.contains('non-nullable') && _allowsNullSafety;
+      config.enableExperiment.contains('non-nullable') && _allowsNullSafety;
 
-  bool get isInSdk => element!.isInSdk;
+  bool get isInSdk => element.isInSdk;
 
   /// [allModelElements] resolved to their original names.
   ///
@@ -163,7 +163,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
   @override
   CharacterLocation? get characterLocation {
-    if (element!.nameOffset == -1) {
+    if (element.nameOffset == -1) {
       assert(isAnonymous,
           'Only anonymous libraries are allowed to have no declared location');
       return CharacterLocation(1, 1);
@@ -173,41 +173,36 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
   @override
   CompilationUnitElement get compilationUnitElement =>
-      element!.definingCompilationUnit;
+      element.definingCompilationUnit;
 
   @override
-  Iterable<Class> get classes => allClasses!.where((c) => !c.isErrorOrException);
+  Iterable<Class> get classes => allClasses.where((c) => !c.isErrorOrException);
 
   @override
   LibraryElement get element => super.element as LibraryElement;
 
-  late final List<Extension> _extensions;
-
   @override
-  Iterable<Extension> get extensions {
-    _extensions ??= _exportedAndLocalElements
+  late final Iterable<Extension> extensions = _exportedAndLocalElements
         .whereType<ExtensionElement>()
         .map((e) => modelBuilder.from(e, this) as Extension)
         .toList(growable: false);
-    return _extensions;
-  }
 
   SdkLibrary? get sdkLib {
-    if (packageGraph.sdkLibrarySources!.containsKey(element!.librarySource)) {
-      return packageGraph.sdkLibrarySources![element!.librarySource];
+    if (packageGraph.sdkLibrarySources!.containsKey(element.librarySource)) {
+      return packageGraph.sdkLibrarySources![element.librarySource];
     }
     return null;
   }
 
   @override
   bool get isPublic {
-    if (!super.isPublic!) return false;
+    if (!super.isPublic) return false;
     if (sdkLib != null &&
         (sdkLib!.isInternal || !isSdkLibraryDocumented(sdkLib!))) {
       return false;
     }
-    if (config!.isLibraryExcluded(name) ||
-        config!.isLibraryExcluded(element!.librarySource.uri.toString())) {
+    if (config.isLibraryExcluded(name) ||
+        config.isLibraryExcluded(element.librarySource.uri.toString())) {
       return false;
     }
     return true;
@@ -251,8 +246,8 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     if (_importedExportedLibraries == null) {
       _importedExportedLibraries = {};
       var importedExportedLibraryElements = <LibraryElement>{};
-      importedExportedLibraryElements.addAll(element!.importedLibraries);
-      importedExportedLibraryElements.addAll(element!.exportedLibraries);
+      importedExportedLibraryElements.addAll(element.importedLibraries);
+      importedExportedLibraryElements.addAll(element.exportedLibraries);
       for (var l in importedExportedLibraryElements) {
         var lib = modelBuilder.fromElement(l) as Library;
         _importedExportedLibraries.add(lib);
@@ -269,7 +264,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     if (_prefixToLibrary == null) {
       _prefixToLibrary = {};
       // It is possible to have overlapping prefixes.
-      for (var i in element!.imports) {
+      for (var i in element.imports) {
         var prefixName = i.prefix?.name;
         // Ignore invalid imports.
         if (prefixName != null && i.importedLibrary != null) {
@@ -367,7 +362,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   @override
   List<Class> get exceptions {
     _exceptions ??=
-        allClasses!.where((c) => c.isErrorOrException).toList(growable: false);
+        allClasses.where((c) => c.isErrorOrException).toList(growable: false);
     return _exceptions;
   }
 
@@ -399,7 +394,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     return _inheritanceManager;
   }
 
-  bool get isAnonymous => element!.name == null || element!.name.isEmpty;
+  bool get isAnonymous => element.name == null || element.name.isEmpty;
 
   @override
   String get kind => 'library';
@@ -412,18 +407,18 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   @override
   String get name {
     if (_name == null) {
-      var source = element!.source;
+      var source = element.source;
 
       if (source.uri.isScheme('dart')) {
         // There are inconsistencies in library naming + URIs for the dart
         // internal libraries; rationalize them here.
         if (source.uri.toString().contains('/')) {
-          _name = element!.name.replaceFirst('dart.', 'dart:');
+          _name = element.name.replaceFirst('dart.', 'dart:');
         } else {
           _name = source.uri.toString();
         }
-      } else if (element!.name != null && element!.name.isNotEmpty) {
-        _name = element!.name;
+      } else if (element.name != null && element.name.isNotEmpty) {
+        _name = element.name;
       } else {
         _name = pathContext.basename(source.fullName);
         if (_name.endsWith('.dart')) {
@@ -445,7 +440,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   /// 'lib') are the same, but this will include slashes and possibly colons
   /// for anonymous libraries in subdirectories or other packages.
   String get nameFromPath {
-    _nameFromPath ??= _getNameFromPath(element!, package, _restoredUri);
+    _nameFromPath ??= _getNameFromPath(element, package, _restoredUri);
     return _nameFromPath;
   }
 
@@ -457,8 +452,8 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
   PackageMeta? get packageMeta {
     _packageMeta ??= packageGraph.packageMetaProvider.fromElement(
-      element!,
-      config!.sdkDir,
+      element,
+      config.sdkDir,
     );
     return _packageMeta;
   }
@@ -484,7 +479,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     return _typedefs;
   }
 
-  TypeSystem get typeSystem => element!.typeSystem;
+  TypeSystem get typeSystem => element.typeSystem;
 
 
   late final List<Class> allClasses = _exportedAndLocalElements
@@ -494,7 +489,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
         .toList(growable: false);
 
   Class? getClassByName(String name) {
-    return allClasses!.firstWhereOrNull((it) => it.name == name);
+    return allClasses.firstWhereOrNull((it) => it.name == name);
   }
 
   late final List<TopLevelVariable> _variables;
@@ -560,7 +555,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     if (_modelElementsMap == null) {
       var results = quiver.concat(<Iterable<ModelElement>>[
         library.constants,
-        library.functions!,
+        library.functions,
         library.properties,
         library.typedefs,
         library.extensions.expand((e) {
@@ -569,7 +564,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
             e.allModelElements!
           ]);
         }),
-        library.allClasses!.expand((c) {
+        library.allClasses.expand((c) {
           return quiver.concat([
             [c],
             c.allModelElements!
@@ -594,7 +589,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
             .putIfAbsent(modelElement.element!, () => {})
             .add(modelElement);
       }
-      _modelElementsMap.putIfAbsent(element!, () => {}).add(this);
+      _modelElementsMap.putIfAbsent(element, () => {}).add(this);
     }
     return _modelElementsMap;
   }
@@ -619,8 +614,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   Map<String, CommentReferable> get referenceChildren {
     if (_referenceChildren == null) {
       _referenceChildren = {};
-      var definedNamesModelElements = element!
-          .exportNamespace.definedNames.values
+      var definedNamesModelElements = element.exportNamespace.definedNames.values
           .map((v) => modelBuilder.fromElement(v));
       _referenceChildren!.addEntries(
           definedNamesModelElements.whereNotType<Accessor>().generateEntries());

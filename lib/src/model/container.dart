@@ -69,7 +69,7 @@ abstract class Container extends ModelElement
   Iterable<ModelElement>? get allModelElements => quiver.concat([
         instanceMethods,
         instanceFields,
-        instanceOperators!,
+        instanceOperators,
         instanceAccessors,
         staticFields,
         staticAccessors,
@@ -133,7 +133,7 @@ abstract class Container extends ModelElement
 
   @nonVirtual
   Iterable<Operator> get publicInstanceOperators =>
-      model_utils.filterNonPublic(instanceOperators!);
+      model_utils.filterNonPublic(instanceOperators);
 
   List<Operator>? _publicInstanceOperatorsSorted;
   List<Operator> get publicInstanceOperatorsSorted =>
@@ -280,7 +280,7 @@ abstract class Container extends ModelElement
         // here to wean people off the habit of unscoped parameter references.
         if (modelElement.hasParameters) {
           _referenceChildren!
-              .addEntriesIfAbsent(modelElement.parameters!.generateEntries());
+              .addEntriesIfAbsent(modelElement.parameters.generateEntries());
         }
       }
       _referenceChildren!['this'] = this;

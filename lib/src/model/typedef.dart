@@ -24,7 +24,7 @@ abstract class Typedef extends ModelElement
 
   ElementType? _modelType;
   ElementType get modelType =>
-      _modelType ??= modelBuilder.typeFrom(element!.aliasedType, library!);
+      _modelType ??= modelBuilder.typeFrom(element!.aliasedType, library);
 
   @override
   Library? get enclosingElement => library;
@@ -40,7 +40,7 @@ abstract class Typedef extends ModelElement
       _renderer.renderLinkedGenericParameters(this);
 
   @override
-  String get filePath => '${library!.dirName}/$fileName';
+  String get filePath => '${library.dirName}/$fileName';
 
   /// Helper for mustache templates, which can't do casting themselves
   /// without this.
@@ -70,7 +70,7 @@ abstract class Typedef extends ModelElement
 
   @override
   List<TypeParameter> get typeParameters => element!.typeParameters.map((f) {
-        return modelBuilder.from(f, library!) as TypeParameter;
+        return modelBuilder.from(f, library) as TypeParameter;
       }).toList();
 
   TypedefRenderer get _renderer => packageGraph.rendererFactory.typedefRenderer;
@@ -140,7 +140,7 @@ class FunctionTypedef extends Typedef {
     if (_referenceChildren == null) {
       _referenceChildren = super.referenceChildren;
       _referenceChildren!
-          .addEntriesIfAbsent(parameters!.explicitOnCollisionWith(this));
+          .addEntriesIfAbsent(parameters.explicitOnCollisionWith(this));
     }
     return _referenceChildren!;
   }

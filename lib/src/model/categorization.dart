@@ -110,7 +110,7 @@ abstract class Categorization implements ModelElement {
 
   @override
   Iterable<Category?>? get displayedCategories {
-    if (config!.showUndocumentedCategories) return categories;
+    if (config.showUndocumentedCategories) return categories;
     return categories!.where((c) => c!.isDocumented);
   }
 

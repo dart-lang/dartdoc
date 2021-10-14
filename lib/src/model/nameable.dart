@@ -18,7 +18,7 @@ abstract class Nameable {
   Set<String>? _namePieces;
   Set<String>? get namePieces {
     _namePieces ??= {
-      ...name!.split(locationSplitter).where((s) => s.isNotEmpty)
+      ...name.split(locationSplitter).where((s) => s.isNotEmpty)
     };
     return _namePieces;
   }
@@ -29,16 +29,16 @@ abstract class Nameable {
   String? get namePart {
     // TODO(jcollins-g): This should really be the same as 'name', but isn't
     // because of accessors and operators.
-    _namePart ??= fullyQualifiedName!.split('.').last;
+    _namePart ??= fullyQualifiedName.split('.').last;
     return _namePart;
   }
 
   @override
-  String toString() => name!;
+  String toString() => name;
 }
 
 int byName(Nameable a, Nameable b) {
-  var stringCompare = compareAsciiLowerCaseNatural(a.name!, b.name!);
+  var stringCompare = compareAsciiLowerCaseNatural(a.name, b.name);
   if (stringCompare == 0) {
     return a.hashCode.compareTo(b.hashCode);
   }

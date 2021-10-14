@@ -12,7 +12,7 @@ abstract class Locatable {
 
   /// True if documentationFrom contains only one item, [this].
   bool get documentationIsLocal =>
-      documentationFrom!.length == 1 && identical(documentationFrom!.first, this);
+      documentationFrom.length == 1 && identical(documentationFrom.first, this);
 
   String get fullyQualifiedName;
 

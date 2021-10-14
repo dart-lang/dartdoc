@@ -68,14 +68,14 @@ mixin ContainerMember on ModelElement implements EnclosedElement {
       // references are resolved wrt documentation inheritance,
       // that has to be resolved in the source by not inheriting
       // documentation.
-      [enclosingElement as Container, documentationFrom!.first.enclosingElement as Container];
+      [enclosingElement as Container, documentationFrom.first.enclosingElement as Container];
 
   @override
   Iterable<Library> get referenceGrandparentOverrides sync* {
     // TODO(jcollins-g): split Field documentation up between accessors
     // and resolve the pieces with different scopes.  dart-lang/dartdoc#2693.
     // Until then, just pretend we're handling this correctly.
-    yield (documentationFrom!.first as ModelElement).definingLibrary;
+    yield (documentationFrom.first as ModelElement).definingLibrary;
     // TODO(jcollins-g): Wean users off of depending on canonical library
     // resolution. dart-lang/dartdoc#2696
     if (canonicalLibrary != null) yield canonicalLibrary!;

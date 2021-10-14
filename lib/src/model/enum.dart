@@ -88,7 +88,7 @@ class EnumField extends Field {
     assert(!(canonicalLibrary == null || canonicalEnclosingContainer == null));
     assert(canonicalLibrary == library);
     assert(canonicalEnclosingContainer == enclosingElement);
-    return '${package.baseHref}${enclosingElement!.library!.dirName}/${enclosingElement!.fileName}';
+    return '${package.baseHref}${enclosingElement.library.dirName}/${enclosingElement.fileName}';
   }
 
   @override
@@ -115,10 +115,10 @@ class EnumField extends Field {
   Inheritable? get overriddenElement => null;
 
   @override
-  Package get package => super.package!;
+  Package get package => super.package;
 
   @override
-  Library get library => super.library!;
+  Library get library => super.library;
 
   EnumFieldRenderer get _fieldRenderer =>
       packageGraph.rendererFactory.enumFieldRenderer;

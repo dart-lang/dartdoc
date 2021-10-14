@@ -106,7 +106,7 @@ class Package extends LibraryContainer
 
   /// Return true if the code has defined non-default categories for libraries
   /// in this package.
-  bool get hasCategories => categories!.isNotEmpty;
+  bool get hasCategories => categories.isNotEmpty;
 
   LibraryContainer? get defaultCategory => nameToCategory[null];
 
@@ -175,7 +175,7 @@ class Package extends LibraryContainer
                     packageMeta.isSdk &&
                     libraries.any((l) => _pathContext.isWithin(
                         packageGraph.packageMeta.dir.path,
-                        (l.element!.source.fullName))) ||
+                        (l.element.source.fullName))) ||
                 // autoIncludeDependencies means everything is local.
                 packageGraph.config.autoIncludeDependencies) &&
         // Regardless of the above rules, do not document as local if
@@ -189,13 +189,13 @@ class Package extends LibraryContainer
   DocumentLocation get documentedWhere {
     if (_documentedWhere == null) {
       if (isLocal!) {
-        if (isPublic!) {
+        if (isPublic) {
           _documentedWhere = DocumentLocation.local;
         }
       } else {
-        if (config!.linkToRemote &&
-            config!.linkToUrl.isNotEmpty &&
-            isPublic! &&
+        if (config.linkToRemote &&
+            config.linkToUrl.isNotEmpty &&
+            isPublic&&
             !packageGraph.config.isPackageExcluded(name)) {
           _documentedWhere = DocumentLocation.remote;
         } else {
@@ -221,7 +221,7 @@ class Package extends LibraryContainer
     // from pub.dev, and we know that all of those use html docs.
     return _fileType ??= (package.documentedWhere == DocumentLocation.remote)
         ? 'html'
-        : config!.format;
+        : config.format;
   }
 
   @override
@@ -238,14 +238,14 @@ class Package extends LibraryContainer
       _baseHref = _remoteBaseHref;
       if (!_baseHref!.endsWith('/')) _baseHref = '$_baseHref/';
     } else {
-      _baseHref = config!.useBaseHref ? '' : htmlBasePlaceholder;
+      _baseHref = config.useBaseHref ? '' : htmlBasePlaceholder;
     }
 
     return _baseHref;
   }
 
   String get _remoteBaseHref {
-    return config!.linkToUrl.replaceAllMapped(_substituteNameVersion, (m) {
+    return config.linkToUrl.replaceAllMapped(_substituteNameVersion, (m) {
       switch (m.group(1)) {
         // Return the prerelease tag of the release if a prerelease, or 'stable'
         // otherwise.  Mostly coded around the Dart SDK's use of dev/stable, but
@@ -308,11 +308,11 @@ class Package extends LibraryContainer
     if (_nameToCategory.isEmpty) {
       Category? categoryFor(String? category) {
         _nameToCategory.putIfAbsent(
-            category, () => Category(category!, this, config!));
+            category, () => Category(category!, this, config));
         return _nameToCategory[category];
       }
 
-      _nameToCategory[null] = Category(null, this, config!);
+      _nameToCategory[null] = Category(null, this, config);
       for (var c in libraries.expand(
           (l) => l.allCanonicalModelElements.whereType<Categorization>())) {
         if (c.hasCategoryNames) {
@@ -333,15 +333,15 @@ class Package extends LibraryContainer
   } ();
 
   Iterable<Category> get categoriesWithPublicLibraries =>
-      categories!.where((c) => c.publicLibraries.isNotEmpty);
+      categories.where((c) => c.publicLibraries.isNotEmpty);
 
   Iterable<Category> get documentedCategories =>
-      categories!.where((c) => c.isDocumented);
+      categories.where((c) => c.isDocumented);
 
   Iterable<Category> get documentedCategoriesSorted {
     // Category display order is configurable; leave the category order
     // as defined if the order is specified.
-    if (config!.categoryOrder.isEmpty) {
+    if (config.categoryOrder.isEmpty) {
       return documentedCategories;
     }
     return documentedCategories.toList()..sort(byName);
@@ -381,7 +381,7 @@ class Package extends LibraryContainer
   Element? get element => null;
 
   @override
-  List<String?> get containerOrder => config!.packageOrder;
+  List<String?> get containerOrder => config.packageOrder;
 
   Map<String, CommentReferable>? _referenceChildren;
   @override

@@ -20,7 +20,7 @@ class TypeParameter extends ModelElement {
 
   @override
   String get filePath =>
-      '${enclosingElement!.library!.dirName}/${enclosingElement!.name}/$name';
+      '${enclosingElement.library!.dirName}/${enclosingElement.name}/$name';
 
   @override
 
@@ -81,7 +81,7 @@ mixin TypeParameters implements ModelElement {
 
   String get nameWithLinkedGenerics => '$name$linkedGenericParameters';
 
-  bool get hasGenericParameters => typeParameters!.isNotEmpty;
+  bool get hasGenericParameters => typeParameters.isNotEmpty;
 
   String get genericParameters =>
       _typeParametersRenderer.renderGenericParameters(this);

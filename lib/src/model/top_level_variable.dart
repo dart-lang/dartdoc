@@ -47,7 +47,7 @@ class TopLevelVariable extends ModelElement
   ModelElement? get enclosingElement => library;
 
   @override
-  String get filePath => '${library!.dirName}/$fileName';
+  String get filePath => '${library.dirName}/$fileName';
 
   @override
   String? get href {

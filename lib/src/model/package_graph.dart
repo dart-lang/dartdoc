@@ -101,7 +101,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     // are picked up.
     for (var package in documentedPackages) {
       for (var library in package.libraries) {
-        _addToImplementors(library.allClasses!);
+        _addToImplementors(library.allClasses);
         _addToImplementors(library.mixins);
         _extensions.addAll(library.extensions);
       }
@@ -123,17 +123,17 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
 
     Iterable<Future<void>> precacheOneElement(ModelElement m) sync* {
       for (var d
-          in m.documentationFrom!.where((d) => d.hasDocumentationComment)) {
+          in m.documentationFrom.where((d) => d.hasDocumentationComment)) {
         if (d.needsPrecache && !precachedElements.contains(d)) {
           precachedElements.add(d as ModelElement);
           yield d.precacheLocalDocs();
-          logProgress(d.name!);
+          logProgress(d.name);
           // TopLevelVariables get their documentation from getters and setters,
           // so should be precached if either has a template.
           if (m is TopLevelVariable && !precachedElements.contains(m)) {
             precachedElements.add(m);
             yield m.precacheLocalDocs();
-            logProgress(d.name!);
+            logProgress(d.name);
           }
         }
       }
@@ -320,7 +320,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       // If we don't have an element, we need a message to disambiguate.
       assert(message != null);
     }
-    if (packageWarningCounter!.hasWarning(warnable, kind, message)) {
+    if (packageWarningCounter.hasWarning(warnable, kind, message)) {
       return;
     }
     // Some kinds of warnings it is OK to drop if we're not documenting them.
@@ -470,7 +470,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     }
     var fullMessage = messageParts.join('\n    ');
 
-    packageWarningCounter!.addWarning(warnable, kind, message, fullMessage);
+    packageWarningCounter.addWarning(warnable, kind, message, fullMessage);
   }
 
   String _safeWarnableName(Locatable? locatable) {
@@ -497,7 +497,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
                   "$packageName, packages: ${packages.map((p) => p.name).join(',')}");
         }
       }
-      _publicPackages = packages.where((p) => p.isPublic!).toList()..sort();
+      _publicPackages = packages.where((p) => p.isPublic).toList()..sort();
     }
     return _publicPackages;
   }
@@ -598,7 +598,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
 
     void checkAndAddContainer(
         InheritingContainer implemented, InheritingContainer implementor) {
-      if (!implemented.isPublic!) {
+      if (!implemented.isPublic) {
         privates.add(implemented);
       }
       implemented = implemented.canonicalModelElement as InheritingContainer? ?? implemented;
@@ -804,7 +804,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
         var combos =
             matches.whereType<Accessor>().map((a) => a.enclosingCombo).toList();
         matches.addAll(combos);
-        assert(combos.every((c) => c!.isCanonical));
+        assert(combos.every((c) => c.isCanonical));
       }
 
       // This is for situations where multiple classes may actually be canonical

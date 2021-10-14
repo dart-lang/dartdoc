@@ -72,7 +72,7 @@ mixin GetterSetterCombo on ModelElement {
     // TODO(jcollins-g): this logic really should be integrated into Constructor,
     // but that's not trivial because of linkedName's usage.
     if (targetClass.name == target.name) {
-      return original.replaceAll(constructorName, target.linkedName!);
+      return original.replaceAll(constructorName, target.linkedName);
     }
     return original.replaceAll('${targetClass.name}.${target.name}',
         '${targetClass.linkedName}.${target.linkedName}');
@@ -106,9 +106,9 @@ mixin GetterSetterCombo on ModelElement {
   String get constantValueBase =>
       _constantValueBase ??= _buildConstantValueBase();
 
-  bool get hasPublicGetter => hasGetter && getter!.isPublic!;
+  bool get hasPublicGetter => hasGetter && getter!.isPublic;
 
-  bool get hasPublicSetter => hasSetter && setter!.isPublic!;
+  bool get hasPublicSetter => hasSetter && setter!.isPublic;
 
   @override
   bool get isPublic => hasPublicGetter || hasPublicSetter;
@@ -118,9 +118,9 @@ mixin GetterSetterCombo on ModelElement {
   late final List<DocumentationComment> documentationFrom = () {
     var toReturn = <DocumentationComment>[];
     if (hasPublicGetter) {
-      toReturn.addAll(getter!.documentationFrom!);
+      toReturn.addAll(getter!.documentationFrom);
     } else if (hasPublicSetter) {
-      toReturn.addAll(setter!.documentationFrom!);
+      toReturn.addAll(setter!.documentationFrom);
     }
     if (toReturn.isEmpty ||
         toReturn.every((e) => e.documentationComment == '')) {
@@ -185,22 +185,22 @@ mixin GetterSetterCombo on ModelElement {
         var buffer = StringBuffer();
 
         // Check for synthetic before public, always, or stack overflow.
-        if (hasGetter && !getter!.isSynthetic && getter!.isPublic!) {
-          assert(getter!.documentationFrom!.length == 1);
-          var fromGetter = getter!.documentationFrom!.first;
+        if (hasGetter && !getter!.isSynthetic && getter!.isPublic) {
+          assert(getter!.documentationFrom.length == 1);
+          var fromGetter = getter!.documentationFrom.first;
           // We have to check against dropTextFrom here since documentationFrom
           // doesn't yield the real elements for GetterSetterCombos.
-          if (!config!.dropTextFrom.contains(fromGetter.element!.library!.name)) {
+          if (!config.dropTextFrom.contains(fromGetter.element!.library!.name)) {
             if (fromGetter.hasDocumentationComment) {
               buffer.write(fromGetter.documentationComment);
             }
           }
         }
 
-        if (hasSetter && !setter!.isSynthetic && setter!.isPublic!) {
-          assert(setter!.documentationFrom!.length == 1);
-          var fromSetter = setter!.documentationFrom!.first;
-          if (!config!.dropTextFrom.contains(fromSetter.element!.library!.name)) {
+        if (hasSetter && !setter!.isSynthetic && setter!.isPublic) {
+          assert(setter!.documentationFrom.length == 1);
+          var fromSetter = setter!.documentationFrom.first;
+          if (!config.dropTextFrom.contains(fromSetter.element!.library!.name)) {
             if (fromSetter.hasDocumentationComment) {
               if (buffer.isNotEmpty) buffer.write('\n\n');
               buffer.write(fromSetter.documentationComment);
@@ -212,7 +212,7 @@ mixin GetterSetterCombo on ModelElement {
 
   ElementType get modelType {
     if (hasGetter) return getter!.modelType.returnType;
-    return setter!.parameters!.first.modelType;
+    return setter!.parameters.first.modelType;
   }
 
   @override
@@ -267,7 +267,7 @@ mixin GetterSetterCombo on ModelElement {
     if (_referenceChildren == null) {
       _referenceChildren = {};
       if (hasParameters) {
-        _referenceChildren!.addEntries(parameters!.explicitOnCollisionWith(this));
+        _referenceChildren!.addEntries(parameters.explicitOnCollisionWith(this));
       }
       _referenceChildren!
           .addEntries(modelType.typeArguments.explicitOnCollisionWith(this));

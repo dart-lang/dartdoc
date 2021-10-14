@@ -414,11 +414,11 @@ abstract class ModelElement extends Canonicalization
         return false;
       }
       if (enclosingElement is Class &&
-          !(enclosingElement as Class).isPublic!) {
+          !(enclosingElement as Class).isPublic) {
         return false;
       }
       if (enclosingElement is Extension &&
-          !(enclosingElement as Extension).isPublic!) {
+          !(enclosingElement as Extension).isPublic) {
         return false;
       }
       return utils.hasPublicName(element!) && !hasNodoc!;
@@ -451,7 +451,7 @@ abstract class ModelElement extends Canonicalization
 
   @override
   late final DartdocOptionContext config = DartdocOptionContext.fromContextElement(
-        packageGraph.config, library!.element!, packageGraph.resourceProvider);
+        packageGraph.config, library!.element, packageGraph.resourceProvider);
 
   Set<String>? _locationPieces;
 
@@ -542,13 +542,13 @@ abstract class ModelElement extends Canonicalization
       // just shortcut them out.
       if (!utils.hasPublicName(element!)) {
         _canonicalLibrary = null;
-      } else if (!packageGraph.localPublicLibraries!.contains(definingLibrary)) {
+      } else if (!packageGraph.localPublicLibraries.contains(definingLibrary)) {
         _canonicalLibrary = _searchForCanonicalLibrary();
       } else {
         _canonicalLibrary = definingLibrary;
       }
       // Only pretend when not linking to remote packages.
-      if (this is Inheritable && !config!.linkToRemote) {
+      if (this is Inheritable && !config.linkToRemote) {
         if ((this as Inheritable).isInherited &&
             _canonicalLibrary == null &&
             packageGraph.publicLibraries!.contains(library)) {
@@ -590,7 +590,7 @@ abstract class ModelElement extends Canonicalization
             l.isPublic && l.package.documentedWhere != DocumentLocation.missing)
         .where((l) {
       var lookup =
-          l.element!.exportNamespace.definedNames[topLevelElement?.name!];
+          l.element.exportNamespace.definedNames[topLevelElement?.name!];
       if (lookup is PropertyAccessorElement) {
         lookup = lookup.variable;
       }
@@ -630,7 +630,7 @@ abstract class ModelElement extends Canonicalization
     var highestScore = scoredCandidates.last.score;
     var confidence = highestScore - secondHighestScore;
 
-    if (confidence < config!.ambiguousReexportScorerMinConfidence) {
+    if (confidence < config.ambiguousReexportScorerMinConfidence) {
       var libraryNames = candidateLibraries.map((l) => l.name);
       var message = '$libraryNames -> ${candidateLibraries.last.name} '
           '(confidence ${confidence.toStringAsPrecision(4)})';
@@ -643,7 +643,7 @@ abstract class ModelElement extends Canonicalization
 
   @override
   bool get isCanonical {
-    if (!isPublic!) return false;
+    if (!isPublic) return false;
     if (library != canonicalLibrary) return false;
     // If there's no inheritance to deal with, we're done.
     if (this is! Inheritable) return true;
@@ -658,7 +658,7 @@ abstract class ModelElement extends Canonicalization
   @override
   String get documentation {
     return injectMacros(
-        documentationFrom!.map((e) => e.documentationLocal).join('<p>'));
+        documentationFrom.map((e) => e.documentationLocal).join('<p>'));
   }
 
   @override
@@ -743,7 +743,7 @@ abstract class ModelElement extends Canonicalization
   bool get hasExtendedDocumentation =>
       href != null && elementDocumentation.hasExtendedDocs!;
 
-  bool get hasParameters => parameters!.isNotEmpty;
+  bool get hasParameters => parameters.isNotEmpty;
 
   /// If canonicalLibrary (or canonicalEnclosingElement, for Inheritable
   /// subclasses) is null, href should be null.
@@ -793,7 +793,7 @@ abstract class ModelElement extends Canonicalization
   }
 
   @override
-  bool get isDocumented => isCanonical && isPublic!;
+  bool get isDocumented => isCanonical && isPublic;
 
   bool get isExecutable => element is ExecutableElement;
 
@@ -841,16 +841,16 @@ abstract class ModelElement extends Canonicalization
   SourceCodeRenderer get _sourceCodeRenderer =>
       packageGraph.rendererFactory.sourceCodeRenderer;
 
-  String get linkedParams => _parameterRenderer.renderLinkedParams(parameters!);
+  String get linkedParams => _parameterRenderer.renderLinkedParams(parameters);
 
   String get linkedParamsLines =>
-      _parameterRendererDetailed.renderLinkedParams(parameters!).trim();
+      _parameterRendererDetailed.renderLinkedParams(parameters).trim();
 
   String? get linkedParamsNoMetadata =>
-      _parameterRenderer.renderLinkedParams(parameters!, showMetadata: false);
+      _parameterRenderer.renderLinkedParams(parameters, showMetadata: false);
 
   String get linkedParamsNoMetadataOrNames => _parameterRenderer
-      .renderLinkedParams(parameters!, showMetadata: false, showNames: false);
+      .renderLinkedParams(parameters, showMetadata: false, showNames: false);
 
   @override
   String get name => element!.name!;
@@ -869,7 +869,7 @@ abstract class ModelElement extends Canonicalization
   // FIXME(nnbd): package should not have to be nullable just because of dynamic
   Package? get package => library?.package;
 
-  bool get isPublicAndPackageDocumented => isPublic! && package?.isDocumented == true;
+  bool get isPublicAndPackageDocumented => isPublic&& package?.isDocumented == true;
 
   List<Parameter>? _allParameters;
 
@@ -881,9 +881,9 @@ abstract class ModelElement extends Canonicalization
       var newParameters = <Parameter>{};
       if (this is GetterSetterCombo &&
           (this as GetterSetterCombo).setter != null) {
-        newParameters.addAll((this as GetterSetterCombo).setter!.parameters!);
+        newParameters.addAll((this as GetterSetterCombo).setter!.parameters);
       } else {
-        if (isCallable) newParameters.addAll(parameters!);
+        if (isCallable) newParameters.addAll(parameters);
       }
       // TODO(jcollins-g): This part probably belongs in [ElementType].
       while (newParameters.isNotEmpty) {
@@ -960,7 +960,7 @@ abstract class ModelElement extends Canonicalization
   @override
   int compareTo(dynamic other) {
     if (other is ModelElement) {
-      return name!.toLowerCase().compareTo(other.name!.toLowerCase());
+      return name.toLowerCase().compareTo(other.name.toLowerCase());
     } else {
       return 0;
     }
@@ -974,7 +974,7 @@ abstract class ModelElement extends Canonicalization
     fqName ??= e.name;
 
     if (e is! EnclosedElement || e.enclosingElement == null) {
-      return fqName!;
+      return fqName;
     }
 
     return _buildFullyQualifiedName(
@@ -984,7 +984,7 @@ abstract class ModelElement extends Canonicalization
   String _calculateLinkedName() {
     // If we're calling this with an empty name, we probably have the wrong
     // element associated with a ModelElement or there's an analysis bug.
-    assert(name!.isNotEmpty ||
+    assert(name.isNotEmpty ||
         element?.kind == ElementKind.DYNAMIC ||
         element?.kind == ElementKind.NEVER ||
         this is ModelFunction);
@@ -993,7 +993,7 @@ abstract class ModelElement extends Canonicalization
       if (isPublicAndPackageDocumented) {
         warn(PackageWarning.noCanonicalFound);
       }
-      return htmlEscape.convert(name!);
+      return htmlEscape.convert(name);
     }
 
     return modelElementRenderer.renderLinkedName(this);

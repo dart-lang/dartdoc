@@ -70,7 +70,7 @@ class Annotation extends Feature with ModelBuilder {
 
   @override
   bool get isPublic =>
-      modelType!.isPublic! &&
+      modelType!.isPublic&&
       modelType is DefinedElementType &&
       !packageGraph.invisibleAnnotations
           .contains((modelType as DefinedElementType).modelElement);
