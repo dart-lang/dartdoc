@@ -278,7 +278,7 @@ class Package extends LibraryContainer
           return packageMeta.version;
         default:
           assert(false, 'Unsupported case: ${m.group(1)}');
-          return null;
+          return '';
       }
     });
   }

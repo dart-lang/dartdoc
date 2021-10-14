@@ -113,24 +113,21 @@ mixin GetterSetterCombo on ModelElement {
   @override
   bool get isPublic => hasPublicGetter || hasPublicSetter;
 
-  List<DocumentationComment>? _documentationFrom;
 
   @override
-  List<DocumentationComment>? get documentationFrom {
-    if (_documentationFrom == null) {
-      _documentationFrom = [];
-      if (hasPublicGetter) {
-        _documentationFrom!.addAll(getter!.documentationFrom!);
-      } else if (hasPublicSetter) {
-        _documentationFrom!.addAll(setter!.documentationFrom!);
-      }
-      if (_documentationFrom!.isEmpty ||
-          _documentationFrom!.every((e) => e.documentationComment == '')) {
-        _documentationFrom = super.documentationFrom;
-      }
+  late final List<DocumentationComment> documentationFrom = () {
+    var toReturn = <DocumentationComment>[];
+    if (hasPublicGetter) {
+      toReturn.addAll(getter!.documentationFrom!);
+    } else if (hasPublicSetter) {
+      toReturn.addAll(setter!.documentationFrom!);
     }
-    return _documentationFrom;
-  }
+    if (toReturn.isEmpty ||
+        toReturn.every((e) => e.documentationComment == '')) {
+      toReturn = super.documentationFrom;
+    }
+    return toReturn;
+  } ();
 
   bool get hasAccessorsWithDocs =>
       (hasPublicGetter && !getter!.isSynthetic && getter!.hasDocumentation ||
@@ -225,7 +222,7 @@ mixin GetterSetterCombo on ModelElement {
   bool get hasParameters => hasSetter;
 
   @override
-  List<Parameter>? get parameters => setter!.parameters;
+  List<Parameter> get parameters => setter!.parameters;
 
   @override
   String? get linkedParamsNoMetadata {

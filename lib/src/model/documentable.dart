@@ -62,7 +62,7 @@ mixin MarkdownFileDocumentation implements Documentable, Canonicalization {
   String get documentation {
     final docFile = documentationFile;
     return docFile == null
-        ? null
+        ? ''
         : packageGraph.resourceProvider
             .readAsMalformedAllowedStringSync(docFile);
   }
@@ -71,8 +71,7 @@ mixin MarkdownFileDocumentation implements Documentable, Canonicalization {
   bool get hasDocumentation => documentation?.isNotEmpty == true;
 
   @override
-  bool get hasExtendedDocumentation =>
-      documentation != null && documentation.isNotEmpty;
+  bool get hasExtendedDocumentation => documentation.isNotEmpty;
 
   @override
   bool get isDocumented;
@@ -83,7 +82,7 @@ mixin MarkdownFileDocumentation implements Documentable, Canonicalization {
   File? get documentationFile;
 
   @override
-  String get location => '(${documentationFile.path})';
+  String get location => '(${documentationFile?.path})';
 
   @override
   Set<String> get locationPieces => <String>{location};

@@ -57,7 +57,7 @@ String generateSearchIndexJson(
       'overriddenDepth': indexable.overriddenDepth,
     };
     if (indexable is ModelElement) {
-      data['packageName'] = indexable.package.name;
+      data['packageName'] = indexable.package?.name;
     }
     if (indexable is EnclosedElement) {
       final ee = indexable as EnclosedElement;

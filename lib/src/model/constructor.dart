@@ -57,16 +57,6 @@ class Constructor extends ModelElement
   }
 
   @override
-  String? get href {
-    if (!identical(canonicalModelElement, this)) {
-      return canonicalModelElement?.href;
-    }
-    assert(canonicalLibrary != null);
-    assert(canonicalLibrary == library);
-    return '${package.baseHref}$filePath';
-  }
-
-  @override
   bool get isConst => element!.isConst;
 
   bool get isUnnamedConstructor => name == enclosingElement.name;

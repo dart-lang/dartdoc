@@ -101,7 +101,7 @@ abstract class Categorization implements ModelElement {
 
   Iterable<Category?>? get categories {
     _categories ??= categoryNames!
-        .map((n) => package.nameToCategory[n])
+        .map((n) => package?.nameToCategory[n])
         .where((c) => c != null)
         .toList()
       ..sort();

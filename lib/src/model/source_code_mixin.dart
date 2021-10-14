@@ -17,7 +17,7 @@ abstract class SourceCodeMixin implements Documentable {
 
   bool get hasSourceCode => config!.includeSource && sourceCode!.isNotEmpty;
 
-  Library get library;
+  Library? get library;
 
   String? get sourceCode => modelNode == null ? '' : modelNode!.sourceCode;
 }

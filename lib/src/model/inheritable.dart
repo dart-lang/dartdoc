@@ -170,18 +170,14 @@ mixin Inheritable on ContainerMember {
     return _isOverride;
   }
 
-  int? _overriddenDepth;
-
   @override
-  int? get overriddenDepth {
-    if (_overriddenDepth == null) {
-      _overriddenDepth = 0;
-      Inheritable e = this;
-      while (e.overriddenElement != null) {
-        _overriddenDepth += 1;
-        e = e.overriddenElement!;
-      }
+  late final int overriddenDepth = () {
+    var depth = 0;
+    Inheritable e = this;
+    while (e.overriddenElement != null) {
+      depth += 1;
+      e = e.overriddenElement!;
     }
-    return _overriddenDepth;
-  }
+    return depth;
+  } ();
 }

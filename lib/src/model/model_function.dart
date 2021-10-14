@@ -33,7 +33,7 @@ class ModelFunctionTypedef extends ModelFunctionTyped {
       : super(element, library, packageGraph);
 
   @override
-  String? get name => element!.enclosingElement!.name;
+  String get name => element!.enclosingElement!.name!;
 }
 
 class ModelFunctionTyped extends ModelElement
@@ -83,6 +83,9 @@ class ModelFunctionTyped extends ModelElement
     }
     return _referenceChildren!;
   }
+
+  @override
+  Package get package => super.package!;
 
   @override
   Iterable<CommentReferable> get referenceParents => [definingLibrary];

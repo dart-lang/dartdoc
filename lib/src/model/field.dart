@@ -68,13 +68,8 @@ class Field extends ModelElement
 
   @override
   String? get href {
-    if (!identical(canonicalModelElement, this)) {
-      return canonicalModelElement?.href;
-    }
-    assert(canonicalLibrary != null);
-    assert(canonicalEnclosingContainer == enclosingElement);
-    assert(canonicalLibrary == library);
-    return '${package.baseHref}$filePath';
+    assert(!identical(canonicalModelElement, this) || canonicalEnclosingContainer == enclosingElement);
+    return super.href;
   }
 
   @override

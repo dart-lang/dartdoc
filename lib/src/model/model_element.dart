@@ -14,7 +14,7 @@ import 'package:analyzer/dart/element/type.dart' show FunctionType;
 import 'package:analyzer/source/line_info.dart';
 // ignore: implementation_imports
 import 'package:analyzer/src/dart/element/member.dart'
-    show ExecutableMember, Member;
+    show ExecutableMember, Member, ParameterMember;
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/comment_references/model_comment_reference.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
@@ -424,38 +424,34 @@ abstract class ModelElement extends Canonicalization
       return utils.hasPublicName(element!) && !hasNodoc!;
   } ();
 
-  Map<String, ModelCommentReference>? _commentRefs;
   @override
-  Map<String, ModelCommentReference>? get commentRefs {
-    if (_commentRefs == null) {
-      _commentRefs = {};
-      for (var from in documentationFrom!) {
-        var checkReferences = <ModelElement?>[from as ModelElement?];
+  late final Map<String, ModelCommentReference> commentRefs = () {
+    var _commentRefs = <String, ModelCommentReference>{};
+    for (var from in documentationFrom) {
+      if (from is ModelElement) {
+        var checkReferences = [from];
         if (from is Accessor) {
           checkReferences.add(from.enclosingCombo);
         }
         for (var e in checkReferences) {
           // Some elements don't have modelNodes or aren't traversed by
           // the element visitor, or both.
-          assert(e is Parameter || e!.modelNode != null);
-          _commentRefs!.addAll({
-            for (var r in e!.modelNode?.commentRefs ?? <ModelCommentReference>[])
+          assert(e is Parameter || e.modelNode != null);
+          _commentRefs.addAll({
+            for (var r in e.modelNode?.commentRefs ??
+                <ModelCommentReference>[])
               r.codeRef: r
           });
         }
       }
     }
     return _commentRefs;
-  }
+  } ();
 
-  DartdocOptionContext? _config;
 
   @override
-  DartdocOptionContext? get config {
-    _config ??= DartdocOptionContext.fromContextElement(
+  late final DartdocOptionContext config = DartdocOptionContext.fromContextElement(
         packageGraph.config, library!.element!, packageGraph.resourceProvider);
-    return _config;
-  }
 
   Set<String>? _locationPieces;
 
@@ -690,7 +686,7 @@ abstract class ModelElement extends Canonicalization
 
   String get fileName => '$name.$fileType';
 
-  String get fileType => package.fileType;
+  String get fileType => package!.fileType;
 
   String? get filePath;
 
@@ -752,7 +748,18 @@ abstract class ModelElement extends Canonicalization
   /// If canonicalLibrary (or canonicalEnclosingElement, for Inheritable
   /// subclasses) is null, href should be null.
   @override
-  String? get href;
+  String? get href {
+    if (!identical(canonicalModelElement, this)) {
+      return canonicalModelElement?.href;
+    }
+    assert(canonicalLibrary != null);
+    assert(canonicalLibrary == library);
+    var packageBaseHref = package?.baseHref;
+    if (packageBaseHref != null) {
+      return '$packageBaseHref$filePath';
+    }
+    return null;
+  }
 
   String? get htmlId => name;
 
@@ -812,7 +819,7 @@ abstract class ModelElement extends Canonicalization
   String get kind;
 
   @override
-  Library get library => _library;
+  Library? get library => _library;
 
   String? get linkedName {
     _linkedName ??= _calculateLinkedName();
@@ -858,9 +865,9 @@ abstract class ModelElement extends Canonicalization
   PackageGraph get packageGraph => _packageGraph;
 
   @override
-  Package get package => library?.package;
+  Package? get package => library?.package;
 
-  bool get isPublicAndPackageDocumented => isPublic! && package.isDocumented;
+  bool get isPublicAndPackageDocumented => isPublic! && package?.isDocumented == true;
 
   List<Parameter>? _allParameters;
 

@@ -57,7 +57,11 @@ class Class extends InheritingContainer
     }
     assert(canonicalLibrary != null);
     assert(canonicalLibrary == library);
-    return '${package.baseHref}$filePath';
+    var packageBaseHref = package?.baseHref;
+    if (packageBaseHref != null) {
+      return '$packageBaseHref$filePath';
+    }
+    return null;
   }
 
   bool get isAbstract => element!.isAbstract;

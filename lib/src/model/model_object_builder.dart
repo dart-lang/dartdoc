@@ -22,8 +22,8 @@ abstract class ModelElementBuilder {
 
   ModelElement fromPropertyInducingElement(Element e, Library l,
       {Container enclosingContainer,
-      @required Accessor getter,
-      @required Accessor setter});
+      required Accessor? getter,
+      required Accessor? setter});
 }
 
 abstract class ElementTypeBuilder {

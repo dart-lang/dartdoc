@@ -6,7 +6,7 @@
 
 import 'package:analyzer/dart/element/element.dart';
 // ignore: implementation_imports
-import 'package:analyzer/src/dart/element/member.dart' show Member;
+import 'package:analyzer/src/dart/element/member.dart' show ExecutableMember, Member;
 import 'package:dartdoc/src/comment_references/parser.dart';
 import 'package:dartdoc/src/model/model.dart';
 

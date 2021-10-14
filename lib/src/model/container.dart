@@ -36,6 +36,10 @@ abstract class Container extends ModelElement
   Container(Element element, Library? library, PackageGraph packageGraph)
       : super(element, library, packageGraph);
 
+  /// Containers must have associated libraries.
+  @override
+  Library get library => super.library!;
+
   // TODO(jcollins-g): Implement a ContainerScope that flattens supertypes?
   @override
   Scope? get scope => null;

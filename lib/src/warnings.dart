@@ -286,7 +286,7 @@ mixin Warnable implements Canonicalization, CommentReferable {
 
   Warnable? get enclosingElement;
 
-  Package get package;
+  Package? get package;
 
   void warn(
     PackageWarning kind, {

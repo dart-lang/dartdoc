@@ -56,7 +56,7 @@ class EnumField extends Field {
   String get constantValueBase => _fieldRenderer.renderValue(this);
 
   @override
-  List<DocumentationComment>? get documentationFrom {
+  List<DocumentationComment> get documentationFrom {
     if (name == 'values' || name == 'index') return [this];
     return super.documentationFrom;
   }
@@ -113,6 +113,12 @@ class EnumField extends Field {
 
   @override
   Inheritable? get overriddenElement => null;
+
+  @override
+  Package get package => super.package!;
+
+  @override
+  Library get library => super.library!;
 
   EnumFieldRenderer get _fieldRenderer =>
       packageGraph.rendererFactory.enumFieldRenderer;

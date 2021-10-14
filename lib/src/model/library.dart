@@ -270,10 +270,11 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
       _prefixToLibrary = {};
       // It is possible to have overlapping prefixes.
       for (var i in element!.imports) {
+        var prefixName = i.prefix?.name;
         // Ignore invalid imports.
-        if (i.prefix?.name != null && i.importedLibrary != null) {
+        if (prefixName != null && i.importedLibrary != null) {
           _prefixToLibrary
-              .putIfAbsent(i.prefix?.name, () => {})
+              .putIfAbsent(prefixName, () => {})
               .add(modelBuilder.from(i.importedLibrary!, library) as Library);
         }
       }

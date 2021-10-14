@@ -285,16 +285,6 @@ abstract class InheritingContainer extends Container
 
   bool get hasPublicSuperChainReversed => publicSuperChainReversed.isNotEmpty;
 
-  @override
-  String? get href {
-    if (!identical(canonicalModelElement, this)) {
-      return canonicalModelElement?.href;
-    }
-    assert(canonicalLibrary != null);
-    assert(canonicalLibrary == library);
-    return '${package.baseHref}$filePath';
-  }
-
   /*lazy final*/
   List<Method>? _inheritedMethods;
 

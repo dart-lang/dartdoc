@@ -71,13 +71,8 @@ class Method extends ModelElement
 
   @override
   String? get href {
-    if (!identical(canonicalModelElement, this)) {
-      return canonicalModelElement?.href;
-    }
-    assert(!(canonicalLibrary == null || canonicalEnclosingContainer == null));
-    assert(canonicalLibrary == library);
-    assert(canonicalEnclosingContainer == enclosingElement);
-    return '${package.baseHref}$filePath';
+    assert(!identical(canonicalModelElement, this) || canonicalEnclosingContainer == enclosingElement);
+    return super.href;
   }
 
   @override

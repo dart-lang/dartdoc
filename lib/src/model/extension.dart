@@ -69,7 +69,7 @@ class Extension extends Container implements EnclosedElement {
   @override
   List<Field>? get declaredFields {
     _declaredFields ??= _extension!.fields.map((f) {
-      Accessor getter, setter;
+      Accessor? getter, setter;
       if (f.getter != null) {
         getter = ContainerAccessor(f.getter, library, packageGraph);
       }
@@ -108,16 +108,6 @@ class Extension extends Container implements EnclosedElement {
 
   @override
   String get filePath => '${library!.dirName}/$fileName';
-
-  @override
-  String? get href {
-    if (!identical(canonicalModelElement, this)) {
-      return canonicalModelElement?.href;
-    }
-    assert(canonicalLibrary != null);
-    assert(canonicalLibrary == library);
-    return '${package.baseHref}$filePath';
-  }
 
   Map<String, CommentReferable>? _referenceChildren;
   @override
