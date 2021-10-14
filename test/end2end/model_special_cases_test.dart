@@ -284,10 +284,13 @@ void main() {
     Library exLibrary;
 
     setUpAll(() async {
-      packageGraph = await utils.bootBasicPackage('testing/test_package',
-          pubPackageMetaProvider, PhysicalPackageConfigProvider(),
-          excludeLibraries: ['css', 'code_in_comments', 'excluded'],
-          additionalArguments: ['--sanitize-html']);
+      packageGraph = await utils.bootBasicPackage(
+        'testing/test_package_sanitize_html',
+        pubPackageMetaProvider,
+        PhysicalPackageConfigProvider(),
+        excludeLibraries: ['css', 'code_in_comments', 'excluded'],
+        additionalArguments: ['--sanitize-html'],
+      );
 
       exLibrary = packageGraph.libraries.firstWhere((lib) => lib.name == 'ex');
 
