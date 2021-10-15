@@ -50,11 +50,6 @@ class DocumentationRendererHtml implements DocumentationRenderer {
 
     if (sanitizeHtml) {
       _sanitize(asHtmlFragment);
-    } else {
-      // Never allow scripts!
-      for (var s in asHtmlFragment.querySelectorAll('script')) {
-        s.remove();
-      }
     }
 
     var asHtml = '';
