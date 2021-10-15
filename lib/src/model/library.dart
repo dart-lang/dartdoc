@@ -208,14 +208,9 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     return true;
   }
 
-  late final List<TopLevelVariable> _constants;
-
   @override
-  Iterable<TopLevelVariable> get constants {
-    _constants ??=
+  late final Iterable<TopLevelVariable> constants =
         _getVariables().where((v) => v.isConst).toList(growable: false);
-    return _constants;
-  }
 
   late final Set<Library> _packageImportedExportedLibraries;
 
@@ -290,14 +285,14 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     return _dirName;
   }
 
-  late final Set<String> _canonicalFor;
+  late final Set<String>? _canonicalFor;
 
   Set<String> get canonicalFor {
     if (_canonicalFor == null) {
       // TODO(jcollins-g): restructure to avoid using side effects.
       buildDocumentationAddition(documentationComment);
     }
-    return _canonicalFor;
+    return _canonicalFor!;
   }
 
   static final _canonicalRegExp = RegExp(r'{@canonicalFor\s([^}]+)}');
@@ -333,38 +328,23 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   @override
   ModelElement? get enclosingElement => null;
 
-  late final List<Enum> _enums;
-
   @override
-  List<Enum> get enums {
-    _enums ??= _exportedAndLocalElements
+  late final List<Enum> enums  = _exportedAndLocalElements
         .whereType<ClassElement>()
         .where((element) => element.isEnum)
         .map((e) => modelBuilder.from(e, this) as Enum)
         .toList(growable: false);
-    return _enums;
-  }
-
-  late final List<Mixin> _mixins;
 
   @override
-  List<Mixin> get mixins {
-    _mixins ??= _exportedAndLocalElements
+  late final List<Mixin> mixins  =
+        _exportedAndLocalElements
         .whereType<ClassElement>()
         .where((ClassElement c) => c.isMixin)
         .map((e) => modelBuilder.from(e, this) as Mixin)
         .toList(growable: false);
-    return _mixins;
-  }
-
-  late final List<Class> _exceptions;
 
   @override
-  List<Class> get exceptions {
-    _exceptions ??=
-        allClasses.where((c) => c.isErrorOrException).toList(growable: false);
-    return _exceptions;
-  }
+  late final List<Class> exceptions = allClasses.where((c) => c.isErrorOrException).toList(growable: false);
 
   @override
   String get fileName => '$dirName-library.$fileType';
@@ -430,7 +410,6 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     return _name;
   }
 
-  late final String _nameFromPath;
 
   /// Generate a name for this library based on its location.
   ///
@@ -439,10 +418,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   /// the name calculation.  Simple cases (such as an anonymous library in
   /// 'lib') are the same, but this will include slashes and possibly colons
   /// for anonymous libraries in subdirectories or other packages.
-  String get nameFromPath {
-    _nameFromPath ??= _getNameFromPath(element, package, _restoredUri);
-    return _nameFromPath;
-  }
+  late final String nameFromPath = _getNameFromPath(element, package, _restoredUri);
 
   /// The name of the package we were defined in.
   String get packageName => packageMeta?.name ?? '';
@@ -458,26 +434,15 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     return _packageMeta;
   }
 
-  late final List<TopLevelVariable> _properties;
-
   /// All variables ("properties") except constants.
   @override
-  Iterable<TopLevelVariable> get properties {
-    _properties ??=
-        _getVariables().where((v) => !v.isConst).toList(growable: false);
-    return _properties;
-  }
-
-  late final List<Typedef> _typedefs;
+  late final Iterable<TopLevelVariable> properties = _getVariables().where((v) => !v.isConst).toList(growable: false);
 
   @override
-  List<Typedef> get typedefs {
-    _typedefs ??= _exportedAndLocalElements
+  late final List<Typedef> typedefs = _exportedAndLocalElements
         .whereType<TypeAliasElement>()
         .map((e) => modelBuilder.from(e, this) as Typedef)
         .toList(growable: false);
-    return _typedefs;
-  }
 
   TypeSystem get typeSystem => element.typeSystem;
 
@@ -594,20 +559,13 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     return _modelElementsMap;
   }
 
-  late final List<ModelElement> _allModelElements;
-
-  Iterable<ModelElement> get allModelElements {
-    return _allModelElements ??= [
+  late final Iterable<ModelElement> allModelElements = [
       for (var modelElements in modelElementsMap.values) ...modelElements,
     ];
-  }
 
-  late final List<ModelElement> _allCanonicalModelElements;
 
-  Iterable<ModelElement> get allCanonicalModelElements {
-    return (_allCanonicalModelElements ??=
-        allModelElements.where((e) => e.isCanonical).toList());
-  }
+  late final Iterable<ModelElement> allCanonicalModelElements  =
+        allModelElements.where((e) => e.isCanonical).toList();
 
   Map<String, CommentReferable>? _referenceChildren;
   @override

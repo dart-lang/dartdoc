@@ -725,7 +725,7 @@ abstract class ModelElement extends Canonicalization
       assert(lineInfo != null,
           'No lineInfo data available for element: $fullyQualifiedName');
       if (element!.nameOffset >= 0) {
-        _characterLocation = lineInfo?.getLocation(element!.nameOffset);
+        _characterLocation = lineInfo.getLocation(element!.nameOffset);
       }
     }
     return _characterLocation;
@@ -737,7 +737,7 @@ abstract class ModelElement extends Canonicalization
   bool get hasAnnotations => annotations.isNotEmpty;
 
   @override
-  bool get hasDocumentation => documentation?.isNotEmpty == true;
+  bool get hasDocumentation => documentation.isNotEmpty == true;
 
   @override
   bool get hasExtendedDocumentation =>
@@ -776,8 +776,8 @@ abstract class ModelElement extends Canonicalization
 
       // The getter or the setter might be null – so the stored value may be
       // `true`, `false`, or `null`
-      var getterDeprecated = pie.getter?.metadata?.any((a) => a.isDeprecated);
-      var setterDeprecated = pie.setter?.metadata?.any((a) => a.isDeprecated);
+      var getterDeprecated = pie.getter?.metadata.any((a) => a.isDeprecated);
+      var setterDeprecated = pie.setter?.metadata.any((a) => a.isDeprecated);
 
       var deprecatedValues =
           [getterDeprecated, setterDeprecated].where((a) => a != null).toList();

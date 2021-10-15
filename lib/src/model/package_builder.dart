@@ -34,7 +34,6 @@ import 'package:dartdoc/src/package_meta.dart'
 import 'package:dartdoc/src/quiver.dart' as quiver;
 import 'package:dartdoc/src/render/renderer_factory.dart';
 import 'package:dartdoc/src/special_elements.dart';
-import 'package:meta/meta.dart';
 import 'package:package_config/package_config.dart';
 import 'package:path/path.dart' as path show Context;
 
@@ -83,15 +82,11 @@ class PubPackageBuilder implements PackageBuilder {
     return newGraph;
   }
 
-  late final DartSdk _sdk;
 
-  DartSdk get sdk {
-    _sdk ??= packageMetaProvider.defaultSdk ??
+  late final DartSdk sdk = packageMetaProvider.defaultSdk ??
         FolderBasedDartSdk(
             resourceProvider, resourceProvider.getFolder(config.sdkDir));
 
-    return _sdk;
-  }
 
   EmbedderSdk? _embedderSdk;
 
@@ -383,7 +378,7 @@ class PubPackageBuilder implements PackageBuilder {
   Iterable<String> get _embedderSdkUris {
     if (config.topLevelPackageMeta.isSdk) return [];
 
-    return embedderSdk?.urlMappings?.keys ?? [];
+    return embedderSdk?.urlMappings.keys ?? [];
   }
 
   Future<void> getLibraries(PackageGraph uninitializedPackageGraph) async {

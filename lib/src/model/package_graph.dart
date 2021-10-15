@@ -874,7 +874,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   /// set of canonical Libraries).
   Library? findButDoNotCreateLibraryFor(Element e) {
     // This is just a cache to avoid creating lots of libraries over and over.
-    return allLibraries[e.library?.source?.fullName];
+    return allLibraries[e.library?.source.fullName];
   }
 
   /// This is used when we might need a Library object that isn't actually

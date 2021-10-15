@@ -26,7 +26,7 @@ class ModelNode {
   static List<ModelCommentReference> _commentRefsFor(
       AstNode? node, ResourceProvider resourceProvider) {
     if (node is AnnotatedNode &&
-        node?.documentationComment?.references != null) {
+        node.documentationComment?.references != null) {
       return [
         for (var m in node.documentationComment!.references)
           ModelCommentReference(m, resourceProvider),

@@ -371,7 +371,7 @@ class Package extends LibraryContainer
     return _packagePath;
   }
 
-  String get version => packageMeta.version ?? '0.0.0-unknown';
+  String get version => packageMeta.version;
 
   final PackageMeta _packageMeta;
 

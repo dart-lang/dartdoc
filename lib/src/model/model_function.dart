@@ -19,7 +19,7 @@ class ModelFunction extends ModelFunctionTyped with Categorization {
   bool get isStatic => element!.isStatic;
 
   @override
-  String get name => element!.name ?? '';
+  String get name => element!.name;
 
   @override
   FunctionElement? get element => super.element as FunctionElement?;
