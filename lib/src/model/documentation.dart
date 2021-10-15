@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-
-
 import 'package:dartdoc/src/comment_references/model_comment_reference.dart';
 import 'package:dartdoc/src/markdown_processor.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -71,8 +69,10 @@ class Documentation {
     if (text == null || text.isEmpty) {
       return DocumentationParseResult.empty;
     }
-    showWarningsForGenericsOutsideSquareBracketsBlocks(text, _element as Warnable);
-    var document = MarkdownDocument.withElementLinkResolver(_element as Warnable);
+    showWarningsForGenericsOutsideSquareBracketsBlocks(
+        text, _element as Warnable);
+    var document =
+        MarkdownDocument.withElementLinkResolver(_element as Warnable);
     return document.parseMarkdownText(text, processFullDocs);
   }
 

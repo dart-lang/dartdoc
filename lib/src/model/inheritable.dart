@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-
-
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:dartdoc/src/model/feature.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -40,7 +38,8 @@ mixin Inheritable on ContainerMember {
       };
 
   @override
-  Library? get canonicalLibrary => canonicalEnclosingContainer?.canonicalLibrary;
+  Library? get canonicalLibrary =>
+      canonicalEnclosingContainer?.canonicalLibrary;
 
   @override
   ModelElement? buildCanonicalModelElement() {
@@ -49,8 +48,9 @@ mixin Inheritable on ContainerMember {
       return this;
     }
     if (canonicalEnclosingContainer is Container) {
-      return canonicalEnclosingContainer!.allCanonicalModelElements.firstWhereOrNull(
-          (m) => m.name == name && m.isPropertyAccessor == isPropertyAccessor);
+      return canonicalEnclosingContainer!.allCanonicalModelElements
+          .firstWhereOrNull((m) =>
+              m.name == name && m.isPropertyAccessor == isPropertyAccessor);
     }
     if (canonicalEnclosingContainer != null) {
       throw UnimplementedError('$canonicalEnclosingContainer: unknown type');
@@ -78,8 +78,8 @@ mixin Inheritable on ContainerMember {
                 .memberByExample(this)
                 .canonicalEnclosingContainer;
           }
-          Container? canonicalC =
-              packageGraph.findCanonicalModelElementFor(c.element) as Container?;
+          Container? canonicalC = packageGraph
+              .findCanonicalModelElementFor(c.element) as Container?;
           // TODO(jcollins-g): invert this lookup so traversal is recursive
           // starting from the ModelElement.
           if (canonicalC != null) {
@@ -105,8 +105,8 @@ mixin Inheritable on ContainerMember {
       }
     } else if (!isInherited && definingEnclosingContainer is! Extension) {
       // TODO(jcollins-g): factor out extension logic into [Extendable].
-      return packageGraph
-          .findCanonicalModelElementFor(element!.enclosingElement) as Container?;
+      return packageGraph.findCanonicalModelElementFor(
+          element!.enclosingElement) as Container?;
     }
     return super.computeCanonicalEnclosingContainer();
   }
@@ -179,5 +179,5 @@ mixin Inheritable on ContainerMember {
       e = e.overriddenElement!;
     }
     return depth;
-  } ();
+  }();
 }

@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-
-
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:collection/collection.dart' show IterableExtension;
@@ -42,8 +40,8 @@ mixin Constructable on InheritingContainer {
 
   Constructor? _unnamedConstructor;
   Constructor? get unnamedConstructor {
-    _unnamedConstructor ??= constructors
-        .firstWhereOrNull((c) => c.isUnnamedConstructor);
+    _unnamedConstructor ??=
+        constructors.firstWhereOrNull((c) => c.isUnnamedConstructor);
     return _unnamedConstructor;
   }
 
@@ -99,7 +97,8 @@ mixin MixedInTypes on InheritingContainer {
       _mixedInTypes ??
       [
         ...element!.mixins
-            .map<DefinedElementType>((f) => modelBuilder.typeFrom(f, library) as DefinedElementType)
+            .map<DefinedElementType>(
+                (f) => modelBuilder.typeFrom(f, library) as DefinedElementType)
             .where((mixin) => mixin != null)
       ];
 
@@ -120,7 +119,8 @@ mixin TypeImplementing on InheritingContainer {
       _directInterfaces ??
       [
         ...element!.interfaces
-            .map<DefinedElementType>((f) => modelBuilder.typeFrom(f, library) as DefinedElementType)
+            .map<DefinedElementType>(
+                (f) => modelBuilder.typeFrom(f, library) as DefinedElementType)
             .toList(growable: false)
       ];
 
@@ -229,7 +229,8 @@ abstract class InheritingContainer extends Container
   DefinedElementType? get supertype =>
       _supertype ??= element!.supertype?.element.supertype == null
           ? null
-          : modelBuilder.typeFrom(element!.supertype!, library) as DefinedElementType?;
+          : modelBuilder.typeFrom(element!.supertype!, library)
+              as DefinedElementType?;
 
   InheritingContainer(
       ClassElement element, Library? library, PackageGraph packageGraph)
@@ -301,7 +302,8 @@ abstract class InheritingContainer extends Container
       }).toSet();
 
       for (var e in inheritedMethodElements) {
-        Method m = modelBuilder.from(e!, library, enclosingContainer: this) as Method;
+        Method m =
+            modelBuilder.from(e!, library, enclosingContainer: this) as Method;
         _inheritedMethods!.add(m);
       }
     }
@@ -327,7 +329,8 @@ abstract class InheritingContainer extends Container
             !operatorNames.contains(e.name));
       }).toSet();
       for (var e in inheritedOperatorElements) {
-        Operator o = modelBuilder.from(e!, library, enclosingContainer: this) as Operator;
+        Operator o = modelBuilder.from(e!, library, enclosingContainer: this)
+            as Operator;
         _inheritedOperators!.add(o);
       }
     }
@@ -353,7 +356,8 @@ abstract class InheritingContainer extends Container
 
   @override
   DefinedElementType get modelType =>
-      (_modelType ??= modelBuilder.typeFrom(element!.thisType, library) as DefinedElementType?)!;
+      (_modelType ??= modelBuilder.typeFrom(element!.thisType, library)
+          as DefinedElementType?)!;
 
   /// Not the same as superChain as it may include mixins.
   /// It's really not even the same as ordinary Dart inheritance, either,
@@ -374,7 +378,8 @@ abstract class InheritingContainer extends Container
           parent = null;
         } else {
           parent = modelBuilder.typeFrom(
-              (parent.type as InterfaceType).superclass!, library) as DefinedElementType?;
+                  (parent.type as InterfaceType).superclass!, library)
+              as DefinedElementType?;
         }
       } else {
         parent = (parent.modelElement as Class).supertype;
@@ -428,15 +433,16 @@ abstract class InheritingContainer extends Container
               e.name == 'Object' && e.library.name == 'dart.core';
           assert(inheritanceChainElements
                   .contains(imap[nameObj]!.enclosingElement) ||
-              _isDartCoreObject(imap[nameObj]!.enclosingElement as ClassElement));
+              _isDartCoreObject(
+                  imap[nameObj]!.enclosingElement as ClassElement));
 
           // If the concrete object from [InheritanceManager3.getInheritedConcreteMap2]
           // is farther from this class in the inheritance chain than the one
           // provided by InheritedMap2, prefer InheritedMap2.  This
           // correctly accounts for intermediate abstract classes that have
           // method/field implementations.
-          if (inheritanceChainElements
-                  .indexOf(combinedMap[nameObj.name]!.enclosingElement as ClassElement?) <
+          if (inheritanceChainElements.indexOf(combinedMap[nameObj.name]!
+                  .enclosingElement as ClassElement?) <
               inheritanceChainElements
                   .indexOf(imap[nameObj]!.enclosingElement as ClassElement?)) {
             combinedMap[nameObj.name] = imap[nameObj];
@@ -473,13 +479,13 @@ abstract class InheritingContainer extends Container
       for (var f in element!.fields) {
         var getterElement = f.getter;
         if (getterElement == null && accessorMap.containsKey(f.name)) {
-          getterElement = accessorMap[f.name]!
-              .firstWhereOrNull((e) => e.isGetter);
+          getterElement =
+              accessorMap[f.name]!.firstWhereOrNull((e) => e.isGetter);
         }
         var setterElement = f.setter;
         if (setterElement == null && accessorMap.containsKey(f.name)) {
-          setterElement = accessorMap[f.name]!
-              .firstWhereOrNull((e) => e.isSetter);
+          setterElement =
+              accessorMap[f.name]!.firstWhereOrNull((e) => e.isSetter);
         }
         _addSingleField(
             getterElement, setterElement, inheritedAccessorElements, f);
@@ -490,10 +496,8 @@ abstract class InheritingContainer extends Container
       // anything in cls._fields.
       for (var fieldName in accessorMap.keys) {
         var elements = accessorMap[fieldName]!.toList();
-        var getterElement =
-            elements.firstWhereOrNull((e) => e.isGetter);
-        var setterElement =
-            elements.firstWhereOrNull((e) => e.isSetter);
+        var getterElement = elements.firstWhereOrNull((e) => e.isGetter);
+        var setterElement = elements.firstWhereOrNull((e) => e.isSetter);
         _addSingleField(
             getterElement, setterElement, inheritedAccessorElements);
       }
@@ -526,7 +530,8 @@ abstract class InheritingContainer extends Container
         accessor = modelBuilder.from(element, enclosingContainer.library,
             enclosingContainer: enclosingContainer) as ContainerAccessor;
       } else {
-        accessor = modelBuilder.from(element, enclosingContainer.library) as ContainerAccessor;
+        accessor = modelBuilder.from(element, enclosingContainer.library)
+            as ContainerAccessor;
       }
       return accessor;
     }
@@ -552,8 +557,8 @@ abstract class InheritingContainer extends Container
         // for this single Field we're trying to compose.  Pick the one closest
         // to this class on the inheritance chain.
         if (setter!.enclosingElement is Class &&
-            (setter.enclosingElement as Class)
-                ._isInheritingFrom(getter!.enclosingElement as InheritingContainer?)) {
+            (setter.enclosingElement as Class)._isInheritingFrom(
+                getter!.enclosingElement as InheritingContainer?)) {
           f = setterElement!.variable as FieldElement?;
         } else {
           f = getterElement!.variable as FieldElement?;

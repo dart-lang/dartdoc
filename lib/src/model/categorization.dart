@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-
-
 import 'package:dartdoc/src/model/model.dart';
 
 final RegExp _categoryRegExp = RegExp(
@@ -96,7 +94,6 @@ abstract class Categorization implements ModelElement {
     return _samples;
   }
 
-
   Iterable<Category?>? _categories;
 
   Iterable<Category?>? get categories {
@@ -115,10 +112,11 @@ abstract class Categorization implements ModelElement {
   }
 
   bool? _hasCategorization;
+
   /// True if categories, subcategories, a documentation icon, or samples were
   /// declared.
-  late final bool hasCategorization  = () {
+  late final bool hasCategorization = () {
     if (_hasCategorization == null) documentationLocal;
     return _hasCategorization!;
-  } ();
+  }();
 }

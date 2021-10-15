@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-
-
 /// The models used to represent Dart code.
 library dartdoc.models;
 
@@ -50,8 +48,8 @@ ModelElement resolveMultiplyInheritedElement(
   late Inheritable foundInheritable;
   var lowIndex = enclosingClass.inheritanceChain.length;
   for (var inheritable in inheritables) {
-    var index =
-        enclosingClass.inheritanceChain.indexOf(inheritable.enclosingElement as InheritingContainer?);
+    var index = enclosingClass.inheritanceChain
+        .indexOf(inheritable.enclosingElement as InheritingContainer?);
     if (index < lowIndex) {
       foundInheritable = inheritable;
       lowIndex = index;
@@ -76,8 +74,11 @@ mixin ModelElementBuilderImpl implements ModelElementBuilder {
 
   @override
   ModelElement fromPropertyInducingElement(Element e, Library l,
-          {Container? enclosingContainer, Accessor? getter, Accessor? setter}) =>
-      ModelElement._fromPropertyInducingElement(e as PropertyInducingElement, l, packageGraph,
+          {Container? enclosingContainer,
+          Accessor? getter,
+          Accessor? setter}) =>
+      ModelElement._fromPropertyInducingElement(
+          e as PropertyInducingElement, l, packageGraph,
           enclosingContainer: enclosingContainer,
           getter: getter,
           setter: setter);
@@ -129,7 +130,6 @@ abstract class ModelElement extends Canonicalization
   // TODO(jcollins-g): This really wants a "member that has a type" class.
   final Member? _originalMember;
   final Library? _library;
-
 
   String? _linkedName;
 
@@ -185,12 +185,14 @@ abstract class ModelElement extends Canonicalization
           newModelElement =
               EnumField.forConstant(index, e, library, packageGraph, getter);
         } else if (e.enclosingElement is ExtensionElement) {
-          newModelElement = Field(e, library, packageGraph, getter as ContainerAccessor?, setter as ContainerAccessor?);
+          newModelElement = Field(e, library, packageGraph,
+              getter as ContainerAccessor?, setter as ContainerAccessor?);
         } else if (e.enclosingElement is ClassElement &&
             (e.enclosingElement as ClassElement).isEnum) {
           newModelElement = EnumField(e, library, packageGraph, getter, setter);
         } else {
-          newModelElement = Field(e, library, packageGraph, getter as ContainerAccessor?, setter as ContainerAccessor?);
+          newModelElement = Field(e, library, packageGraph,
+              getter as ContainerAccessor?, setter as ContainerAccessor?);
         }
       } else {
         // EnumFields can't be inherited, so this case is simpler.
@@ -254,11 +256,13 @@ abstract class ModelElement extends Canonicalization
     var key =
         Tuple3<Element, Library?, Container?>(e, library, enclosingContainer);
     if (packageGraph.allConstructedModelElements.containsKey(key)) {
-      return packageGraph.allConstructedModelElements[key as Tuple3<Element, Library, Container?>]!;
+      return packageGraph.allConstructedModelElements[
+          key as Tuple3<Element, Library, Container?>]!;
     }
 
     var newModelElement = ModelElement._fromParameters(e, library, packageGraph,
-        enclosingContainer: enclosingContainer, originalMember: originalMember)!;
+        enclosingContainer: enclosingContainer,
+        originalMember: originalMember)!;
 
     if (enclosingContainer != null) assert(newModelElement is Inheritable);
     _cacheNewModelElement(e, newModelElement, library,
@@ -401,28 +405,28 @@ abstract class ModelElement extends Canonicalization
   Iterable<Annotation> get annotations => _annotations ??= element!.metadata
       .whereNot((m) =>
           m.element == null ||
-          packageGraph.specialClasses[SpecialClass.pragma]!.element!.constructors
+          packageGraph
+              .specialClasses[SpecialClass.pragma]!.element!.constructors
               .contains(m.element))
       .map((m) => Annotation(m, library, packageGraph));
 
   @override
   late final bool isPublic = () {
-      if (name == '') {
-        return false;
-      }
-      if (this is! Library && (library == null || !library!.isPublic)) {
-        return false;
-      }
-      if (enclosingElement is Class &&
-          !(enclosingElement as Class).isPublic) {
-        return false;
-      }
-      if (enclosingElement is Extension &&
-          !(enclosingElement as Extension).isPublic) {
-        return false;
-      }
-      return utils.hasPublicName(element!) && !hasNodoc!;
-  } ();
+    if (name == '') {
+      return false;
+    }
+    if (this is! Library && (library == null || !library!.isPublic)) {
+      return false;
+    }
+    if (enclosingElement is Class && !(enclosingElement as Class).isPublic) {
+      return false;
+    }
+    if (enclosingElement is Extension &&
+        !(enclosingElement as Extension).isPublic) {
+      return false;
+    }
+    return utils.hasPublicName(element!) && !hasNodoc!;
+  }();
 
   @override
   late final Map<String, ModelCommentReference> commentRefs = () {
@@ -438,20 +442,19 @@ abstract class ModelElement extends Canonicalization
           // the element visitor, or both.
           assert(e is Parameter || e.modelNode != null);
           _commentRefs.addAll({
-            for (var r in e.modelNode?.commentRefs ??
-                <ModelCommentReference>[])
+            for (var r in e.modelNode?.commentRefs ?? <ModelCommentReference>[])
               r.codeRef: r
           });
         }
       }
     }
     return _commentRefs;
-  } ();
-
+  }();
 
   @override
-  late final DartdocOptionContext config = DartdocOptionContext.fromContextElement(
-        packageGraph.config, library!.element, packageGraph.resourceProvider);
+  late final DartdocOptionContext config =
+      DartdocOptionContext.fromContextElement(
+          packageGraph.config, library!.element, packageGraph.resourceProvider);
 
   Set<String>? _locationPieces;
 
@@ -869,7 +872,8 @@ abstract class ModelElement extends Canonicalization
   // FIXME(nnbd): package should not have to be nullable just because of dynamic
   Package? get package => library?.package;
 
-  bool get isPublicAndPackageDocumented => isPublic&& package?.isDocumented == true;
+  bool get isPublicAndPackageDocumented =>
+      isPublic && package?.isDocumented == true;
 
   List<Parameter>? _allParameters;
 
@@ -917,7 +921,7 @@ abstract class ModelElement extends Canonicalization
 
     if (element is TypeAliasElement) {
       return ModelElement._fromElement(
-          (element as TypeAliasElement).aliasedElement!, packageGraph)
+              (element as TypeAliasElement).aliasedElement!, packageGraph)
           .parameters;
     }
     List<ParameterElement>? params;
@@ -939,10 +943,9 @@ abstract class ModelElement extends Canonicalization
 
     return <Parameter>[
       ...params!
-        .map((p) =>
-            ModelElement._from(p, library, packageGraph) as Parameter)
+          .map((p) => ModelElement._from(p, library, packageGraph) as Parameter)
     ];
-  } ();
+  }();
 
   @override
   String get documentationComment => element!.documentationComment ?? '';
@@ -977,8 +980,8 @@ abstract class ModelElement extends Canonicalization
       return fqName;
     }
 
-    return _buildFullyQualifiedName(
-        e.enclosingElement as ModelElement?, '${e.enclosingElement!.name}.$fqName');
+    return _buildFullyQualifiedName(e.enclosingElement as ModelElement?,
+        '${e.enclosingElement!.name}.$fqName');
   }
 
   String _calculateLinkedName() {

@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-
-
 import 'dart:convert';
 
 import 'package:analyzer/dart/ast/ast.dart'
@@ -113,7 +111,6 @@ mixin GetterSetterCombo on ModelElement {
   @override
   bool get isPublic => hasPublicGetter || hasPublicSetter;
 
-
   @override
   late final List<DocumentationComment> documentationFrom = () {
     var toReturn = <DocumentationComment>[];
@@ -127,7 +124,7 @@ mixin GetterSetterCombo on ModelElement {
       toReturn = super.documentationFrom;
     }
     return toReturn;
-  } ();
+  }();
 
   bool get hasAccessorsWithDocs =>
       (hasPublicGetter && !getter!.isSynthetic && getter!.hasDocumentation ||
@@ -190,7 +187,8 @@ mixin GetterSetterCombo on ModelElement {
           var fromGetter = getter!.documentationFrom.first;
           // We have to check against dropTextFrom here since documentationFrom
           // doesn't yield the real elements for GetterSetterCombos.
-          if (!config.dropTextFrom.contains(fromGetter.element!.library!.name)) {
+          if (!config.dropTextFrom
+              .contains(fromGetter.element!.library!.name)) {
             if (fromGetter.hasDocumentationComment) {
               buffer.write(fromGetter.documentationComment);
             }
@@ -200,7 +198,8 @@ mixin GetterSetterCombo on ModelElement {
         if (hasSetter && !setter!.isSynthetic && setter!.isPublic) {
           assert(setter!.documentationFrom.length == 1);
           var fromSetter = setter!.documentationFrom.first;
-          if (!config.dropTextFrom.contains(fromSetter.element!.library!.name)) {
+          if (!config.dropTextFrom
+              .contains(fromSetter.element!.library!.name)) {
             if (fromSetter.hasDocumentationComment) {
               if (buffer.isNotEmpty) buffer.write('\n\n');
               buffer.write(fromSetter.documentationComment);
@@ -267,7 +266,8 @@ mixin GetterSetterCombo on ModelElement {
     if (_referenceChildren == null) {
       _referenceChildren = {};
       if (hasParameters) {
-        _referenceChildren!.addEntries(parameters.explicitOnCollisionWith(this));
+        _referenceChildren!
+            .addEntries(parameters.explicitOnCollisionWith(this));
       }
       _referenceChildren!
           .addEntries(modelType.typeArguments.explicitOnCollisionWith(this));

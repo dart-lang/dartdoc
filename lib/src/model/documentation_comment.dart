@@ -1,5 +1,3 @@
-
-
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:args/args.dart';
 import 'package:crypto/crypto.dart' as crypto;
@@ -274,7 +272,9 @@ mixin DocumentationComment
       return await config.tools.runner.run(args, content: basicMatch[2]!,
           toolErrorCallback: (String message) async {
         warn(PackageWarning.toolError, message: message);
-      }, environment: _toolsEnvironment(invocationIndex: invocationIndex) as Map<String, String>);
+      },
+          environment: _toolsEnvironment(invocationIndex: invocationIndex)
+              as Map<String, String>);
     });
   }
 
@@ -336,7 +336,8 @@ mixin DocumentationComment
           replacement = replacement.replaceFirst('```', '```$lang');
         }
       } else {
-        var filePath = element!.source!.fullName.substring(dirPath?.length ?? -1 + 1);
+        var filePath =
+            element!.source!.fullName.substring(dirPath?.length ?? -1 + 1);
 
         // TODO(srawlins): If a file exists at the location without the
         // appended 'md' extension, note this.
@@ -767,8 +768,8 @@ mixin DocumentationComment
   }
 
   bool? _needsPrecache;
-  bool get needsPrecache => _needsPrecache ??=
-      _needsPrecacheRegExp.hasMatch(documentationComment);
+  bool get needsPrecache =>
+      _needsPrecache ??= _needsPrecacheRegExp.hasMatch(documentationComment);
 
   String? _rawDocs;
 

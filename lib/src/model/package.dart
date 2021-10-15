@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-
-
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/comment_references/model_comment_reference.dart';
@@ -195,7 +193,7 @@ class Package extends LibraryContainer
       } else {
         if (config.linkToRemote &&
             config.linkToUrl.isNotEmpty &&
-            isPublic&&
+            isPublic &&
             !packageGraph.config.isPackageExcluded(name)) {
           _documentedWhere = DocumentLocation.remote;
         } else {
@@ -330,7 +328,7 @@ class Package extends LibraryContainer
 
   late final List<Category> categories = () {
     return nameToCategory.values.toList()..sort();
-  } ();
+  }();
 
   Iterable<Category> get categoriesWithPublicLibraries =>
       categories.where((c) => c.publicLibraries.isNotEmpty);
@@ -351,9 +349,9 @@ class Package extends LibraryContainer
 
   @override
   late final DartdocOptionContext config = DartdocOptionContext.fromContext(
-        packageGraph.config,
-        packageGraph.resourceProvider.getFolder(packagePath!),
-        packageGraph.resourceProvider);
+      packageGraph.config,
+      packageGraph.resourceProvider.getFolder(packagePath!),
+      packageGraph.resourceProvider);
 
   /// Is this the package at the top of the list?  We display the first
   /// package specially (with "Libraries" rather than the package name).

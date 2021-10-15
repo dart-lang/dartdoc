@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-
-
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:dartdoc/src/element_type.dart';
@@ -22,8 +20,8 @@ class Mixin extends InheritingContainer with TypeImplementing {
   Iterable<ParameterizedElementType>? get superclassConstraints {
     _superclassConstraints ??= [
       ...element!.superclassConstraints
-          .map<ParameterizedElementType>(
-              (InterfaceType i) => modelBuilder.typeFrom(i, library) as ParameterizedElementType)
+          .map<ParameterizedElementType>((InterfaceType i) =>
+              modelBuilder.typeFrom(i, library) as ParameterizedElementType)
           .where((t) =>
               t.modelElement !=
               packageGraph.specialClasses[SpecialClass.object])

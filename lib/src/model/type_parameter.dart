@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-
-
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
@@ -16,7 +14,8 @@ class TypeParameter extends ModelElement {
       : super(element, library, packageGraph);
 
   @override
-  ModelElement get enclosingElement => modelBuilder.from(element!.enclosingElement!, library!);
+  ModelElement get enclosingElement =>
+      modelBuilder.from(element!.enclosingElement!, library!);
 
   @override
   String get filePath =>
@@ -47,8 +46,8 @@ class TypeParameter extends ModelElement {
 
   @override
   late final String name = element!.bound != null
-        ? '${element!.name} extends ${boundType!.nameWithGenerics}'
-        : element!.name;
+      ? '${element!.name} extends ${boundType!.nameWithGenerics}'
+      : element!.name;
 
   String? _linkedName;
 
@@ -65,7 +64,7 @@ class TypeParameter extends ModelElement {
     var boundType = this.boundType;
     if (boundType == null) return <String, CommentReferable>{};
     return <String, CommentReferable>{boundType.name: boundType};
-  } ();
+  }();
 
   @override
   Iterable<CommentReferable> get referenceParents => [enclosingElement];

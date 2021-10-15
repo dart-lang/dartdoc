@@ -260,7 +260,8 @@ class AliasedElementType extends ParameterizedElementType with Aliased {
   ParameterizedType get type;
 
   /// Parameters, if available, for the underlying typedef.
-  late final List<Parameter> aliasedParameters = modelElement.isCallable ? modelElement.parameters : [];
+  late final List<Parameter> aliasedParameters =
+      modelElement.isCallable ? modelElement.parameters : [];
 
   @override
   ElementTypeRenderer<AliasedElementType> get _renderer =>

@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-
-
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/feature.dart';
@@ -70,7 +68,7 @@ class Annotation extends Feature with ModelBuilder {
 
   @override
   bool get isPublic =>
-      modelType!.isPublic&&
+      modelType!.isPublic &&
       modelType is DefinedElementType &&
       !packageGraph.invisibleAnnotations
           .contains((modelType as DefinedElementType).modelElement);

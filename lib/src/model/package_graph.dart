@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-
-
 import 'dart:collection';
 
 import 'package:analyzer/dart/ast/ast.dart' hide CommentReference;
@@ -212,7 +210,8 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   final allLibraries = <String, Library>{};
 
   /// All ModelElements constructed for this package; a superset of [allModelElements].
-  final HashMap<Tuple3<Element, Library, Container?>, ModelElement?> allConstructedModelElements =
+  final HashMap<Tuple3<Element, Library, Container?>, ModelElement?>
+      allConstructedModelElements =
       HashMap<Tuple3<Element, Library, Container>, ModelElement?>();
 
   /// Anything that might be inheritable, place here for later lookup.
@@ -282,7 +281,8 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   bool _localDocumentationBuilt = false;
 
   /// Keep track of warnings.
-  late final PackageWarningCounter packageWarningCounter = PackageWarningCounter(this);
+  late final PackageWarningCounter packageWarningCounter =
+      PackageWarningCounter(this);
 
   final Set<Tuple3<Element?, PackageWarning, String?>> _warnAlreadySeen = {};
 
@@ -601,7 +601,8 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       if (!implemented.isPublic) {
         privates.add(implemented);
       }
-      implemented = implemented.canonicalModelElement as InheritingContainer? ?? implemented;
+      implemented = implemented.canonicalModelElement as InheritingContainer? ??
+          implemented;
       _implementors.putIfAbsent(implemented, () => []);
       var list = _implementors[implemented]!;
       // TODO(srawlins): This would be more efficient if we created a
@@ -613,7 +614,8 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
 
     void addImplementor(InheritingContainer clazz) {
       if (clazz.supertype != null) {
-        checkAndAddContainer(clazz.supertype!.modelElement as InheritingContainer, clazz);
+        checkAndAddContainer(
+            clazz.supertype!.modelElement as InheritingContainer, clazz);
       }
       if (clazz is Class) {
         for (var type in clazz.mixedInTypes) {
@@ -662,9 +664,9 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   }
 
   late final Iterable<Library> localPublicLibraries = () {
-      assert(allLibrariesAdded);
-      return utils.filterNonPublic(localLibraries!).toList();
-  } ();
+    assert(allLibrariesAdded);
+    return utils.filterNonPublic(localLibraries!).toList();
+  }();
 
   Set<Class?>? _inheritThrough;
 
@@ -761,7 +763,8 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     ModelElement? modelElement;
     // For elements defined in extensions, they are canonical.
     if (e?.enclosingElement is ExtensionElement) {
-      lib ??= modelBuilder.fromElement(e!.enclosingElement!.library!) as Library?;
+      lib ??=
+          modelBuilder.fromElement(e!.enclosingElement!.library!) as Library?;
       // (TODO:keertip) Find a better way to exclude members of extensions
       //  when libraries are specified using the "--include" flag
       if (lib?.isDocumented == true) {
@@ -781,22 +784,28 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       var keyWithClass = Tuple4<Element?, Library?, Class?, ModelElement?>(
           e, lib, preferredClass as Class?, null);
       if (allConstructedModelElements.containsKey(key)) {
-        candidates.add(allConstructedModelElements[key as Tuple3<Element, Library, Container?>]);
+        candidates.add(allConstructedModelElements[
+            key as Tuple3<Element, Library, Container?>]);
       }
       if (allConstructedModelElements.containsKey(keyWithClass)) {
-        candidates.add(allConstructedModelElements[keyWithClass as Tuple3<Element, Library, Container?>]);
+        candidates.add(allConstructedModelElements[
+            keyWithClass as Tuple3<Element, Library, Container?>]);
       }
       if (candidates.isEmpty && allInheritableElements.containsKey(iKey)) {
-        candidates
-            .addAll(allInheritableElements[iKey as Tuple2<Element, Library>]!.where((me) => me.isCanonical));
+        candidates.addAll(
+            allInheritableElements[iKey as Tuple2<Element, Library>]!
+                .where((me) => me.isCanonical));
       }
-      Class? canonicalClass = findCanonicalModelElementFor(e!.enclosingElement) as Class?;
+      Class? canonicalClass =
+          findCanonicalModelElementFor(e!.enclosingElement) as Class?;
       if (canonicalClass != null) {
         candidates.addAll(canonicalClass.allCanonicalModelElements.where((m) {
           return m.element == e;
         }));
       }
-      var matches = <ModelElement?>{...candidates.where((me) => me!.isCanonical)};
+      var matches = <ModelElement?>{
+        ...candidates.where((me) => me!.isCanonical)
+      };
 
       // It's possible to find accessors but no combos.  Be sure that if we
       // have Accessors, we find their combos too.

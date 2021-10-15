@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-
-
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/source/line_info.dart';
 // ignore: implementation_imports
@@ -71,7 +69,8 @@ class Method extends ModelElement
 
   @override
   String? get href {
-    assert(!identical(canonicalModelElement, this) || canonicalEnclosingContainer == enclosingElement);
+    assert(!identical(canonicalModelElement, this) ||
+        canonicalEnclosingContainer == enclosingElement);
     return super.href;
   }
 
@@ -93,11 +92,12 @@ class Method extends ModelElement
   String get kind => 'method';
 
   @override
-  ExecutableMember? get originalMember => super.originalMember as ExecutableMember?;
+  ExecutableMember? get originalMember =>
+      super.originalMember as ExecutableMember?;
 
   Callable? _modelType;
-  Callable get modelType => (_modelType ??=
-      modelBuilder.typeFrom((originalMember ?? element)!.type, library!) as Callable?)!;
+  Callable get modelType => (_modelType ??= modelBuilder.typeFrom(
+      (originalMember ?? element)!.type, library!) as Callable?)!;
 
   @override
   Method? get overriddenElement {

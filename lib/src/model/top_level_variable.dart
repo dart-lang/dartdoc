@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-
-
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/feature.dart';
@@ -82,7 +80,8 @@ class TopLevelVariable extends ModelElement
   @override
   String get fileName => '${isConst ? '$name-constant' : name}.$fileType';
 
-  TopLevelVariableElement? get _variable => (element as TopLevelVariableElement?);
+  TopLevelVariableElement? get _variable =>
+      (element as TopLevelVariableElement?);
 
   @override
   Package get package => super.package!;

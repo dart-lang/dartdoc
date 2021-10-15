@@ -226,6 +226,7 @@ mixin CommentReferable implements Nameable, ModelBuilderInterface {
   Library? get library => null;
 
   @internal
+
   /// For testing / comparison only, get the comment referable from where this
   /// [ElementType] was defined.  Override where an [Element] is available.
   CommentReferable get definingCommentReferable => this;

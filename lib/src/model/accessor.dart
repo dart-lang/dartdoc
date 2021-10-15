@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-
-
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/source/line_info.dart';
 // ignore: implementation_imports
@@ -38,14 +36,16 @@ class Accessor extends ModelElement implements EnclosedElement {
   }
 
   @override
-  PropertyAccessorElement? get element => super.element as PropertyAccessorElement?;
+  PropertyAccessorElement? get element =>
+      super.element as PropertyAccessorElement?;
 
   @override
-  ExecutableMember? get originalMember => super.originalMember as ExecutableMember?;
+  ExecutableMember? get originalMember =>
+      super.originalMember as ExecutableMember?;
 
   Callable? _modelType;
-  Callable get modelType => (_modelType ??=
-      modelBuilder.typeFrom((originalMember ?? element)!.type, library!) as Callable?)!;
+  Callable get modelType => (_modelType ??= modelBuilder.typeFrom(
+      (originalMember ?? element)!.type, library!) as Callable?)!;
 
   bool get isSynthetic => element!.isSynthetic;
 
@@ -94,11 +94,11 @@ class Accessor extends ModelElement implements EnclosedElement {
   /// Build a documentation comment for this accessor assuming it is synthetic.
   /// Value here is not useful if [isSynthetic] is false.
   late final String _syntheticDocumentationComment = () {
-        if (_hasSyntheticDocumentationComment) {
-          return definingCombo!.documentationComment;
-        }
-        return '';
-      } ();
+    if (_hasSyntheticDocumentationComment) {
+      return definingCombo!.documentationComment;
+    }
+    return '';
+  }();
 
   /// If this is a getter, assume we want synthetic documentation.
   /// If the definingCombo has a nodoc tag, we want synthetic documentation
@@ -242,8 +242,9 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
       var parent = element!.enclosingElement;
       if (parent is ClassElement) {
         for (var t in parent.allSupertypes) {
-          Element? accessor =
-              isGetter ? t.getGetter(element!.name) : t.getSetter(element!.name);
+          Element? accessor = isGetter
+              ? t.getGetter(element!.name)
+              : t.getSetter(element!.name);
           if (accessor != null) {
             accessor = accessor.declaration;
             InheritingContainer parentContainer =
@@ -252,8 +253,8 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
             possibleFields.addAll(parentContainer.instanceFields);
             possibleFields.addAll(parentContainer.staticFields);
             var fieldName = accessor!.name!.replaceFirst('=', '');
-            var foundField = possibleFields.firstWhereOrNull(
-                (f) => f.element!.name == fieldName);
+            var foundField = possibleFields
+                .firstWhereOrNull((f) => f.element!.name == fieldName);
             if (foundField != null) {
               if (isGetter) {
                 _overriddenElement = foundField.getter;

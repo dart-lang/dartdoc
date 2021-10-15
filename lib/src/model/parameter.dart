@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-
-
 import 'package:analyzer/dart/element/element.dart';
 // ignore: implementation_imports
 import 'package:analyzer/src/dart/element/member.dart' show ParameterMember;
@@ -22,7 +20,8 @@ class Parameter extends ModelElement implements EnclosedElement {
   }
 
   @override
-  ModelElement get enclosingElement => modelBuilder.from(element!.enclosingElement!, library!);
+  ModelElement get enclosingElement =>
+      modelBuilder.from(element!.enclosingElement!, library!);
 
   bool get hasDefaultValue {
     return element!.defaultValueCode != null &&
@@ -106,7 +105,8 @@ class Parameter extends ModelElement implements EnclosedElement {
   ParameterElement? get element => super.element as ParameterElement?;
 
   @override
-  ParameterMember? get originalMember => super.originalMember as ParameterMember?;
+  ParameterMember? get originalMember =>
+      super.originalMember as ParameterMember?;
 
   ElementType? _modelType;
   ElementType get modelType => _modelType ??=

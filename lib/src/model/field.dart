@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-
-
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/model/feature.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -34,7 +32,8 @@ class Field extends ModelElement
       PackageGraph packageGraph,
       Accessor? getter,
       Accessor? setter) {
-    var newField = Field(element, library, packageGraph, getter as ContainerAccessor?, setter as ContainerAccessor?);
+    var newField = Field(element, library, packageGraph,
+        getter as ContainerAccessor?, setter as ContainerAccessor?);
     newField._isInherited = true;
     newField._enclosingContainer = enclosingContainer;
     // Can't set _isInherited to true if this is the defining element, because
@@ -57,7 +56,8 @@ class Field extends ModelElement
   }
 
   @override
-  Container get enclosingElement => modelBuilder.from(field!.enclosingElement, library) as Container;
+  Container get enclosingElement =>
+      modelBuilder.from(field!.enclosingElement, library) as Container;
 
   @override
   String get filePath =>
@@ -65,7 +65,8 @@ class Field extends ModelElement
 
   @override
   String? get href {
-    assert(!identical(canonicalModelElement, this) || canonicalEnclosingContainer == enclosingElement);
+    assert(!identical(canonicalModelElement, this) ||
+        canonicalEnclosingContainer == enclosingElement);
     return super.href;
   }
 

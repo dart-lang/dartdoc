@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-
-
 import 'dart:async';
 
 import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
@@ -82,11 +80,9 @@ class PubPackageBuilder implements PackageBuilder {
     return newGraph;
   }
 
-
   late final DartSdk sdk = packageMetaProvider.defaultSdk ??
-        FolderBasedDartSdk(
-            resourceProvider, resourceProvider.getFolder(config.sdkDir));
-
+      FolderBasedDartSdk(
+          resourceProvider, resourceProvider.getFolder(config.sdkDir));
 
   EmbedderSdk? _embedderSdk;
 
@@ -256,7 +252,8 @@ class PubPackageBuilder implements PackageBuilder {
 
     if (autoIncludeDependencies) {
       var info = await (packageConfigProvider
-          .findPackageConfig(resourceProvider.getFolder(basePackageDir)) as FutureOr<PackageConfig>);
+              .findPackageConfig(resourceProvider.getFolder(basePackageDir))
+          as FutureOr<PackageConfig>);
       for (var package in info.packages) {
         if (!filterExcludes || !config.exclude.contains(package.name)) {
           packageDirs.add(_pathContext.dirname(

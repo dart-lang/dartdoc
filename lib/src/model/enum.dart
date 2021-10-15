@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-
-
 // TODO(jcollins-g): Consider Enum as subclass of Container?
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -46,11 +44,13 @@ class EnumField extends Field {
 
   EnumField(FieldElement element, Library library, PackageGraph packageGraph,
       Accessor? getter, Accessor? setter)
-      : super(element, library, packageGraph, getter as ContainerAccessor?, setter as ContainerAccessor?);
+      : super(element, library, packageGraph, getter as ContainerAccessor?,
+            setter as ContainerAccessor?);
 
   EnumField.forConstant(this.index, FieldElement element, Library library,
       PackageGraph packageGraph, Accessor? getter)
-      : super(element, library, packageGraph, getter as ContainerAccessor?, null);
+      : super(
+            element, library, packageGraph, getter as ContainerAccessor?, null);
 
   @override
   String get constantValueBase => _fieldRenderer.renderValue(this);

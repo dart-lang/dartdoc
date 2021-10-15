@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-
-
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/source/line_info.dart';
 import 'package:dartdoc/src/element_type.dart';
@@ -70,8 +68,8 @@ class Constructor extends ModelElement
   String get kind => 'constructor';
 
   Callable? _modelType;
-  Callable get modelType =>
-      (_modelType ??= modelBuilder.typeFrom(element!.type, library!) as Callable?)!;
+  Callable get modelType => (_modelType ??=
+      modelBuilder.typeFrom(element!.type, library!) as Callable?)!;
 
   @override
   late final String name = () {
@@ -83,18 +81,16 @@ class Constructor extends ModelElement
       return enclosingElement.name;
     }
     return '${enclosingElement.name}.$constructorName';
-  } ();
-
+  }();
 
   @override
   late final String nameWithGenerics = () {
-      var constructorName = element!.name;
-      if (constructorName.isEmpty) {
-        return '${enclosingElement.name}$genericParameters';
-      }
-        return
-            '${enclosingElement.name}$genericParameters.$constructorName';
-  } ();
+    var constructorName = element!.name;
+    if (constructorName.isEmpty) {
+      return '${enclosingElement.name}$genericParameters';
+    }
+    return '${enclosingElement.name}$genericParameters.$constructorName';
+  }();
 
   String? get shortName {
     if (name.contains('.')) {
@@ -123,5 +119,5 @@ class Constructor extends ModelElement
 
   @override
   String get referenceName =>
-      isUnnamedConstructor ? enclosingElement.name: element!.name;
+      isUnnamedConstructor ? enclosingElement.name : element!.name;
 }

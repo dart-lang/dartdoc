@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-
-
 import 'dart:collection';
 
 import 'package:analyzer/dart/ast/ast.dart' show CompilationUnit;
@@ -151,8 +149,8 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
           setter = modelBuilder.fromElement(e.setter!.element!) as Accessor;
         }
         return modelBuilder
-            .fromPropertyInducingElement(
-                e.element!, modelBuilder.fromElement(e.element!.library!) as Library,
+            .fromPropertyInducingElement(e.element!,
+                modelBuilder.fromElement(e.element!.library!) as Library,
                 getter: getter, setter: setter)
             .fullyQualifiedName;
       }
@@ -183,9 +181,9 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
   @override
   late final Iterable<Extension> extensions = _exportedAndLocalElements
-        .whereType<ExtensionElement>()
-        .map((e) => modelBuilder.from(e, this) as Extension)
-        .toList(growable: false);
+      .whereType<ExtensionElement>()
+      .map((e) => modelBuilder.from(e, this) as Extension)
+      .toList(growable: false);
 
   SdkLibrary? get sdkLib {
     if (packageGraph.sdkLibrarySources!.containsKey(element.librarySource)) {
@@ -210,7 +208,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
   @override
   late final Iterable<TopLevelVariable> constants =
-        _getVariables().where((v) => v.isConst).toList(growable: false);
+      _getVariables().where((v) => v.isConst).toList(growable: false);
 
   late final Set<Library> _packageImportedExportedLibraries;
 
@@ -329,22 +327,22 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   ModelElement? get enclosingElement => null;
 
   @override
-  late final List<Enum> enums  = _exportedAndLocalElements
-        .whereType<ClassElement>()
-        .where((element) => element.isEnum)
-        .map((e) => modelBuilder.from(e, this) as Enum)
-        .toList(growable: false);
+  late final List<Enum> enums = _exportedAndLocalElements
+      .whereType<ClassElement>()
+      .where((element) => element.isEnum)
+      .map((e) => modelBuilder.from(e, this) as Enum)
+      .toList(growable: false);
 
   @override
-  late final List<Mixin> mixins  =
-        _exportedAndLocalElements
-        .whereType<ClassElement>()
-        .where((ClassElement c) => c.isMixin)
-        .map((e) => modelBuilder.from(e, this) as Mixin)
-        .toList(growable: false);
+  late final List<Mixin> mixins = _exportedAndLocalElements
+      .whereType<ClassElement>()
+      .where((ClassElement c) => c.isMixin)
+      .map((e) => modelBuilder.from(e, this) as Mixin)
+      .toList(growable: false);
 
   @override
-  late final List<Class> exceptions = allClasses.where((c) => c.isErrorOrException).toList(growable: false);
+  late final List<Class> exceptions =
+      allClasses.where((c) => c.isErrorOrException).toList(growable: false);
 
   @override
   String get fileName => '$dirName-library.$fileType';
@@ -354,9 +352,9 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
   @override
   late final List<ModelFunction> functions =
-        _exportedAndLocalElements.whereType<FunctionElement>().map((e) {
-      return modelBuilder.from(e, this) as ModelFunction;
-    }).toList(growable: false);
+      _exportedAndLocalElements.whereType<FunctionElement>().map((e) {
+    return modelBuilder.from(e, this) as ModelFunction;
+  }).toList(growable: false);
 
   @override
   String? get href {
@@ -410,7 +408,6 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     return _name;
   }
 
-
   /// Generate a name for this library based on its location.
   ///
   /// nameFromPath provides filename collision-proofing for anonymous libraries
@@ -418,7 +415,8 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   /// the name calculation.  Simple cases (such as an anonymous library in
   /// 'lib') are the same, but this will include slashes and possibly colons
   /// for anonymous libraries in subdirectories or other packages.
-  late final String nameFromPath = _getNameFromPath(element, package, _restoredUri);
+  late final String nameFromPath =
+      _getNameFromPath(element, package, _restoredUri);
 
   /// The name of the package we were defined in.
   String get packageName => packageMeta?.name ?? '';
@@ -436,22 +434,22 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
   /// All variables ("properties") except constants.
   @override
-  late final Iterable<TopLevelVariable> properties = _getVariables().where((v) => !v.isConst).toList(growable: false);
+  late final Iterable<TopLevelVariable> properties =
+      _getVariables().where((v) => !v.isConst).toList(growable: false);
 
   @override
   late final List<Typedef> typedefs = _exportedAndLocalElements
-        .whereType<TypeAliasElement>()
-        .map((e) => modelBuilder.from(e, this) as Typedef)
-        .toList(growable: false);
+      .whereType<TypeAliasElement>()
+      .map((e) => modelBuilder.from(e, this) as Typedef)
+      .toList(growable: false);
 
   TypeSystem get typeSystem => element.typeSystem;
 
-
   late final List<Class> allClasses = _exportedAndLocalElements
-        .whereType<ClassElement>()
-        .where((e) => !e.isMixin && !e.isEnum)
-        .map((e) => modelBuilder.from(e, this) as Class)
-        .toList(growable: false);
+      .whereType<ClassElement>()
+      .where((e) => !e.isMixin && !e.isEnum)
+      .map((e) => modelBuilder.from(e, this) as Class)
+      .toList(growable: false);
 
   Class? getClassByName(String name) {
     return allClasses.firstWhereOrNull((it) => it.name == name);
@@ -560,19 +558,19 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   }
 
   late final Iterable<ModelElement> allModelElements = [
-      for (var modelElements in modelElementsMap.values) ...modelElements,
-    ];
+    for (var modelElements in modelElementsMap.values) ...modelElements,
+  ];
 
-
-  late final Iterable<ModelElement> allCanonicalModelElements  =
-        allModelElements.where((e) => e.isCanonical).toList();
+  late final Iterable<ModelElement> allCanonicalModelElements =
+      allModelElements.where((e) => e.isCanonical).toList();
 
   Map<String, CommentReferable>? _referenceChildren;
   @override
   Map<String, CommentReferable> get referenceChildren {
     if (_referenceChildren == null) {
       _referenceChildren = {};
-      var definedNamesModelElements = element.exportNamespace.definedNames.values
+      var definedNamesModelElements = element
+          .exportNamespace.definedNames.values
           .map((v) => modelBuilder.fromElement(v));
       _referenceChildren!.addEntries(
           definedNamesModelElements.whereNotType<Accessor>().generateEntries());

@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-
-
 import 'package:dartdoc/src/model/feature.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:meta/meta.dart';
@@ -50,12 +48,12 @@ mixin ContainerMember on ModelElement implements EnclosedElement {
   Container? computeCanonicalEnclosingContainer() {
     // TODO(jcollins-g): move Extension specific code to [Extendable]
     if (enclosingElement is Extension && enclosingElement!.isDocumented) {
-      return packageGraph
-          .findCanonicalModelElementFor(enclosingElement!.element) as Container?;
+      return packageGraph.findCanonicalModelElementFor(
+          enclosingElement!.element) as Container?;
     }
     if (enclosingElement is! Extension) {
-      return packageGraph
-          .findCanonicalModelElementFor(element!.enclosingElement) as Container?;
+      return packageGraph.findCanonicalModelElementFor(
+          element!.enclosingElement) as Container?;
     }
     return null;
   }
@@ -68,7 +66,10 @@ mixin ContainerMember on ModelElement implements EnclosedElement {
       // references are resolved wrt documentation inheritance,
       // that has to be resolved in the source by not inheriting
       // documentation.
-      [enclosingElement as Container, documentationFrom.first.enclosingElement as Container];
+      [
+        enclosingElement as Container,
+        documentationFrom.first.enclosingElement as Container
+      ];
 
   @override
   Iterable<Library> get referenceGrandparentOverrides sync* {
