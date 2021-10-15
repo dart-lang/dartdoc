@@ -60,7 +60,10 @@ class Extension extends Container implements EnclosedElement {
   }
 
   @override
-  String get name => super.name;
+  ExtensionElement get element => super.element as ExtensionElement;
+
+  @override
+  String get name => element.name == null ? '' : super.name;
 
   List<Field>? _declaredFields;
 

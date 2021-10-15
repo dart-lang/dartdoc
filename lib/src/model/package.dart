@@ -156,53 +156,42 @@ class Package extends LibraryContainer
   @override
   late final bool isPublic = libraries.any((l) => l.isPublic);
 
-  bool? _isLocal;
-
   /// Return true if this is the default package, this is part of an embedder
   /// SDK, or if [DartdocOptionContext.autoIncludeDependencies] is true -- but
   /// only if the package was not excluded on the command line.
-  bool? get isLocal {
-    _isLocal ??= (
-            // Document as local if this is the default package.
-            packageMeta == packageGraph.packageMeta ||
-                // Assume we want to document an embedded SDK as local if
-                // it has libraries defined in the default package.
-                // TODO(jcollins-g): Handle case where embedder SDKs can be
-                // assembled from multiple locations?
-                packageGraph.hasEmbedderSdk &&
-                    packageMeta.isSdk &&
-                    libraries.any((l) => _pathContext.isWithin(
-                        packageGraph.packageMeta.dir.path,
-                        (l.element.source.fullName))) ||
-                // autoIncludeDependencies means everything is local.
-                packageGraph.config.autoIncludeDependencies) &&
-        // Regardless of the above rules, do not document as local if
-        // we excluded this package by name.
-        !packageGraph.config.isPackageExcluded(name);
-    return _isLocal;
-  }
+  late final bool isLocal = (
+          // Document as local if this is the default package.
+          packageMeta == packageGraph.packageMeta ||
+              // Assume we want to document an embedded SDK as local if
+              // it has libraries defined in the default package.
+              // TODO(jcollins-g): Handle case where embedder SDKs can be
+              // assembled from multiple locations?
+              packageGraph.hasEmbedderSdk &&
+                  packageMeta.isSdk &&
+                  libraries.any((l) => _pathContext.isWithin(
+                      packageGraph.packageMeta.dir.path,
+                      (l.element.source.fullName))) ||
+              // autoIncludeDependencies means everything is local.
+              packageGraph.config.autoIncludeDependencies) &&
+      // Regardless of the above rules, do not document as local if
+      // we excluded this package by name.
+      !packageGraph.config.isPackageExcluded(name);
 
-  late DocumentLocation _documentedWhere;
-
-  DocumentLocation get documentedWhere {
-    if (_documentedWhere == null) {
-      if (isLocal!) {
-        if (isPublic) {
-          _documentedWhere = DocumentLocation.local;
-        }
-      } else {
-        if (config.linkToRemote &&
-            config.linkToUrl.isNotEmpty &&
-            isPublic &&
-            !packageGraph.config.isPackageExcluded(name)) {
-          _documentedWhere = DocumentLocation.remote;
-        } else {
-          _documentedWhere = DocumentLocation.missing;
-        }
+  late final DocumentLocation documentedWhere = () {
+    if (isLocal) {
+      if (isPublic) {
+        return DocumentLocation.local;
       }
+      assert(false, 'Local non public package?');
     }
-    return _documentedWhere;
-  }
+    if (config.linkToRemote &&
+        config.linkToUrl.isNotEmpty &&
+        isPublic &&
+        !packageGraph.config.isPackageExcluded(name)) {
+      return DocumentLocation.remote;
+    }
+    return DocumentLocation.missing;
+  }();
 
   @override
   String get enclosingName => packageGraph.defaultPackageName;
@@ -327,7 +316,7 @@ class Package extends LibraryContainer
   }
 
   late final List<Category> categories = () {
-    return nameToCategory.values.toList()..sort();
+    return nameToCategory.values.where((c) => c.name.isNotEmpty).toList()..sort();
   }();
 
   Iterable<Category> get categoriesWithPublicLibraries =>

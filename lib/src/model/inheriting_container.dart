@@ -570,14 +570,14 @@ abstract class InheritingContainer extends Container
         (setter == null || setter.isInherited)) {
       // Field is 100% inherited.
       field = modelBuilder.fromPropertyInducingElement(f!, library,
-          enclosingContainer: this, getter: getter!, setter: setter!) as Field;
+          enclosingContainer: this, getter: getter, setter: setter) as Field;
     } else {
       // Field is <100% inherited (could be half-inherited).
       // TODO(jcollins-g): Navigation is probably still confusing for
       // half-inherited fields when traversing the inheritance tree.  Make
       // this better, somehow.
       field = modelBuilder.fromPropertyInducingElement(f!, library,
-          getter: getter!, setter: setter!) as Field;
+          getter: getter, setter: setter) as Field;
     }
     _allFields!.add(field);
   }

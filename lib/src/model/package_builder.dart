@@ -60,7 +60,7 @@ class PubPackageBuilder implements PackageBuilder {
             'Top level package requires Flutter but FLUTTER_ROOT environment variable not set');
       }
       if (config.topLevelPackageMeta.needsPubGet) {
-        config.topLevelPackageMeta.runPubGet(config.flutterRoot!);
+        config.topLevelPackageMeta.runPubGet(config.flutterRoot);
       }
     }
 
@@ -96,8 +96,8 @@ class PubPackageBuilder implements PackageBuilder {
 
   ResourceProvider get resourceProvider => packageMetaProvider.resourceProvider;
 
+  /// Do not call more than once for a given PackageBuilder.
   Future<void> _calculatePackageMap() async {
-    assert(_packageMap == null);
     _packageMap = <String, List<Folder>>{};
     Folder cwd = resourceProvider.getResource(config.inputDir) as Folder;
     var info = await packageConfigProvider

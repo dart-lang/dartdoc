@@ -80,6 +80,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     findOrCreateLibraryFor(resolvedLibrary);
   }
 
+
   /// Call after all libraries are added.
   Future<void> initializePackageGraph() async {
     allLibrariesAdded = true;
@@ -103,7 +104,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
         _addToImplementors(library.mixins);
         _extensions.addAll(library.extensions);
       }
-      if (package.isLocal! && !package.hasPublicLibraries) {
+      if (package.isLocal && !package.hasPublicLibraries) {
         package.warn(PackageWarning.noDocumentableLibrariesInPackage);
       }
     }
@@ -504,7 +505,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
 
   /// Local packages are to be documented locally vs. remote or not at all.
   List<Package> get localPackages =>
-      publicPackages!.where((p) => p.isLocal!).toList();
+      publicPackages!.where((p) => p.isLocal).toList();
 
   /// Documented packages are documented somewhere (local or remote).
   Iterable<Package> get documentedPackages =>

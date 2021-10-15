@@ -11,7 +11,7 @@ class Field extends ModelElement
     with GetterSetterCombo, ContainerMember, Inheritable
     implements EnclosedElement {
   bool _isInherited = false;
-  Container? _enclosingContainer;
+  late final Container _enclosingContainer;
   @override
   final ContainerAccessor? getter;
   @override
@@ -56,8 +56,9 @@ class Field extends ModelElement
   }
 
   @override
-  Container get enclosingElement =>
-      modelBuilder.from(field!.enclosingElement, library) as Container;
+  Container get enclosingElement => isInherited
+      ? _enclosingContainer
+      : modelBuilder.from(field!.enclosingElement, library) as Container;
 
   @override
   String get filePath =>

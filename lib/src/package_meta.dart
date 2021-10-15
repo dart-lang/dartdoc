@@ -133,7 +133,7 @@ abstract class PackageMeta {
 
   bool get requiresFlutter;
 
-  void runPubGet(String flutterRoot);
+  void runPubGet(String? flutterRoot);
 
   String get name;
 
@@ -355,10 +355,13 @@ class _FilePackageMeta extends PubPackageMeta {
       .exists);
 
   @override
-  void runPubGet(String flutterRoot) {
+  void runPubGet(String? flutterRoot) {
     String binPath;
     List<String> parameters;
     if (requiresFlutter) {
+      if (flutterRoot == null) {
+        throw DartdocFailure('Package requires flutter but FLUTTER_ROOT unset');
+      }
       binPath = p.join(flutterRoot, 'bin', 'flutter');
       if (Platform.isWindows) binPath += '.bat';
       parameters = ['pub', 'get'];
@@ -459,7 +462,7 @@ class _SdkMeta extends PubPackageMeta {
   bool get isSdk => true;
 
   @override
-  void runPubGet(String flutterRoot) {
+  void runPubGet(String? flutterRoot) {
     throw 'unsupported operation';
   }
 

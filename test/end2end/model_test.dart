@@ -1049,7 +1049,7 @@ void main() {
 
     test('can import other libraries with unusual URIs', () {
       expect(
-          fakeLibrary.importedExportedLibraries
+          fakeLibrary.importedExportedLibrariesLocal
               .where((l) => l.name == 'import_unusual'),
           isNotEmpty);
     });
