@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
-
 /// Handling for special elements within Dart.  When identified these
 /// may alter the interpretation and documentation generated for other
 /// [ModelElement]s.
@@ -60,7 +58,7 @@ class _SpecialClassDefinition {
   /// Get the filename for the Dart Library where this [ModelElement]
   /// is declared, or `null` if its URI does not denote a library in
   /// the specified SDK.
-  String /*?*/ getSpecialFilename(DartSdk sdk) =>
+  String? getSpecialFilename(DartSdk sdk) =>
       sdk.mapDartUri(specialFileUri)?.fullName;
 
   bool matchesClass(Class modelClass) {
@@ -90,7 +88,7 @@ const Map<String, _SpecialClassDefinition> _specialClassDefinitions = {
 /// classes.
 Set<String> specialLibraryFiles(DartSdk sdk) => _specialClassDefinitions.values
     .map((_SpecialClassDefinition d) => d.getSpecialFilename(sdk))
-    .where((String s) => s != null)
+    .whereType<String>()
     .toSet();
 
 /// Class for managing special [Class] objects inside Dartdoc.
@@ -102,7 +100,7 @@ class SpecialClasses {
   /// Add a class object that could be special.
   void addSpecial(Class aClass) {
     if (_specialClassDefinitions.containsKey(aClass.name)) {
-      var d = _specialClassDefinitions[aClass.name];
+      var d = _specialClassDefinitions[aClass.name]!;
       if (d.matchesClass(aClass)) {
         assert(!_specialClass.containsKey(d.specialClass) ||
             _specialClass[d.specialClass] == aClass);
@@ -119,5 +117,5 @@ class SpecialClasses {
     }
   }
 
-  Class operator [](SpecialClass specialClass) => _specialClass[specialClass];
+  Class? operator [](SpecialClass specialClass) => _specialClass[specialClass];
 }
