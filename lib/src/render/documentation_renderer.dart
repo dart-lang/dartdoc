@@ -69,7 +69,7 @@ class DocumentationRendererHtml implements DocumentationRenderer {
 class DocumentationRenderResult {
   static const empty = DocumentationRenderResult(asHtml: '', asOneLiner: '');
 
-  final String /*?*/ asHtml;
+  final String asHtml;
   final String asOneLiner;
 
   const DocumentationRenderResult(
@@ -107,7 +107,7 @@ void _sanitize(dom.Node node) {
       final href = node.attributes['href'];
       if (href != null) {
         final rels = _addLinkRel(href);
-        if (rels != null && rels.isNotEmpty) {
+        if (rels.isNotEmpty) {
           node.attributes['rel'] = rels.join(' ');
         }
       }
