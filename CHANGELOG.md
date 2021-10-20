@@ -1,6 +1,12 @@
-## 4.1.0-dev
+## 4.1.0
+* The library interface is now explicitly marked as experimental via meta.
 * Experimental feature: HTML output from markdown rendering, `{@tool}` and
   `{@inject-html}` is sanitized when hidden option `--sanitize-html` is passed.
+* Refactor of ModelElement and ElementType constructors.  Technically breaking
+  but known users of the API do not attempt to construct these types by hand.
+  (#2828, #2829)
+* Move to recommended set of hints in linter and correct some small errors
+  in regexps. (#2833)
 
 ## 4.0.0
 * BREAKING CHANGE: Refactors to support NNBD and adapt to new analyzer 
