@@ -178,11 +178,8 @@ class Package extends LibraryContainer
       !packageGraph.config.isPackageExcluded(name);
 
   late final DocumentLocation documentedWhere = () {
-    if (isLocal) {
-      if (isPublic) {
-        return DocumentLocation.local;
-      }
-      assert(false, 'Local non public package?');
+    if (isLocal && isPublic) {
+      return DocumentLocation.local;
     }
     if (config.linkToRemote &&
         config.linkToUrl.isNotEmpty &&

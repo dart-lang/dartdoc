@@ -299,7 +299,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     // don't allow warnings we're already working on to get in there.
     _warnAlreadySeen.add(newEntry);
     _warnOnElement(warnable, kind,
-        message: message!,
+        message: message ?? '',
         referredFrom: referredFrom,
         extendedDebug: extendedDebug);
     _warnAlreadySeen.remove(newEntry);

@@ -388,16 +388,16 @@ class _FilePackageMeta extends PubPackageMeta {
   }
 
   @override
-  String get name => _pubspec['name'];
+  String get name => _pubspec['name'] ?? '';
 
   @override
-  String get version => _pubspec['version'];
+  String get version => _pubspec['version'] ?? '0.0.0-unknown';
 
   @override
-  String get description => _pubspec['description'];
+  String get description => _pubspec['description'] ?? '';
 
   @override
-  String get homepage => _pubspec['homepage'];
+  String get homepage => _pubspec['homepage'] ?? '';
 
   @override
   bool get requiresFlutter =>
