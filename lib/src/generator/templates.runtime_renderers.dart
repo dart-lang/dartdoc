@@ -7628,18 +7628,6 @@ class _Renderer_Library extends RendererBase<Library> {
                     _render_String(c.href, ast, r.template, sink, parent: r);
                   },
                 ),
-                'importedExportedLibraries': Property(
-                  getValue: (CT_ c) => c.importedExportedLibraries,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Set<Library>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.importedExportedLibraries.map((e) =>
-                        _render_Library(e, ast, r.template, sink, parent: r));
-                  },
-                ),
                 'inheritanceManager': Property(
                   getValue: (CT_ c) => c.inheritanceManager,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -7803,18 +7791,6 @@ class _Renderer_Library extends RendererBase<Library> {
                       List<MustachioNode> ast, StringSink sink) {
                     _render_Package(c.package, ast, r.template, sink,
                         parent: r);
-                  },
-                ),
-                'packageImportedExportedLibraries': Property(
-                  getValue: (CT_ c) => c.packageImportedExportedLibraries,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Set<Library>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.packageImportedExportedLibraries.map((e) =>
-                        _render_Library(e, ast, r.template, sink, parent: r));
                   },
                 ),
                 'packageMeta': Property(
