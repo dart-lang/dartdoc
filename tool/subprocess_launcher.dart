@@ -14,9 +14,7 @@ import 'package:path/path.dart' as p;
 class CoverageSubprocessLauncher extends SubprocessLauncher {
   CoverageSubprocessLauncher(String context, [Map<String, String>? environment])
       : super(
-            context,
-            (environment ?? {})
-              ..addAll({'DARTDOC_COVERAGE_DATA': tempDir.path}));
+            context, {...?environment, 'DARTDOC_COVERAGE_DATA': tempDir.path});
 
   static int nextRun = 0;
 
