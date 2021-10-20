@@ -1,3 +1,7 @@
+## 4.1.0-dev
+* Experimental feature: HTML output from markdown rendering, `{@tool}` and
+  `{@inject-html}` is sanitized when hidden option `--sanitize-html` is passed.
+
 ## 4.0.0
 * BREAKING CHANGE: Refactors to support NNBD and adapt to new analyzer 
   changes are technically semver breaking.   If you make extensive use of

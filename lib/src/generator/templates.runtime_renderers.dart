@@ -15260,6 +15260,7 @@ const _invisibleGetters = {
     'includeExternal',
     'includeSource',
     'injectHtml',
+    'sanitizeHtml',
     'excludeFooterVersion',
     'tools',
     'inputDir',
