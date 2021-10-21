@@ -553,7 +553,7 @@ Future<void> testWithAnalyzerSdk() async {
       workingDirectory: sdkDartdoc);
 }
 
-Future<List<Map<Object, Object>>> _buildSdkDocs(
+Future<Iterable<Map<String, Object>>> _buildSdkDocs(
     String sdkDocsPath, Future<String> futureCwd,
     [String label]) async {
   label ??= '';
@@ -576,7 +576,7 @@ Future<List<Map<Object, Object>>> _buildSdkDocs(
       workingDirectory: cwd);
 }
 
-Future<List<Map<Object, Object>>> _buildTestPackageDocs(
+Future<Iterable<Map<String, Object>>> _buildTestPackageDocs(
     String outputDir, String cwd,
     {List<String> params, String label = '', String testPackagePath}) async {
   if (label != '') label = '-$label';
@@ -924,7 +924,7 @@ class FlutterRepo {
   SubprocessLauncher launcher;
 }
 
-Future<List<Map<Object, Object>>> _buildFlutterDocs(
+Future<Iterable<Map<String, Object>>> _buildFlutterDocs(
     String flutterPath, Future<String> futureCwd, Map<String, String> env,
     [String label]) async {
   var flutterRepo = await FlutterRepo.copyFromExistingFlutterRepo(
