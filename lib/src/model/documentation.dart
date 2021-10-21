@@ -52,8 +52,9 @@ class Documentation {
     }
     _hasExtendedDocs = parseResult.hasExtendedDocs;
 
-    var renderResult =
-        _renderer.render(parseResult.nodes, processFullDocs: processFullDocs);
+    var renderResult = _renderer.render(parseResult.nodes,
+        processFullDocs: processFullDocs,
+        sanitizeHtml: _element.config.sanitizeHtml);
 
     if (processFullDocs) {
       _asHtml = renderResult.asHtml;
