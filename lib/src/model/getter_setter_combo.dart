@@ -111,6 +111,9 @@ mixin GetterSetterCombo on ModelElement {
   @override
   bool get isPublic => hasPublicGetter || hasPublicSetter;
 
+  List<DocumentationComment> get _superDocumentationFrom =>
+      super.documentationFrom;
+
   @override
   late final List<DocumentationComment> documentationFrom = () {
     var toReturn = <DocumentationComment>[];
@@ -121,7 +124,10 @@ mixin GetterSetterCombo on ModelElement {
     }
     if (toReturn.isEmpty ||
         toReturn.every((e) => e.documentationComment == '')) {
-      toReturn = super.documentationFrom;
+      // TODO(jcollins-g): Remove indirection once analyzer realizes super is
+      // allowed from from inside a late final variable's anonymous closure call
+      // (sdk >= 2.15.0-239.0.dev, but possibly earlier dev versions too).
+      toReturn = _superDocumentationFrom;
     }
     return toReturn;
   }();
