@@ -337,7 +337,7 @@ mixin DocumentationComment
         }
       } else {
         var filePath =
-            element!.source!.fullName.substring(dirPath?.length ?? -1 + 1);
+            element!.source!.fullName.substring((dirPath?.length ?? -1) + 1);
 
         // TODO(srawlins): If a file exists at the location without the
         // appended 'md' extension, note this.

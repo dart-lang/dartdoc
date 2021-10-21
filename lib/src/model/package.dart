@@ -154,14 +154,16 @@ class Package extends LibraryContainer
   Warnable? get enclosingElement => null;
 
   @override
-  late final bool isPublic = libraries.any((l) => l.isPublic);
+  /// If we have public libraries, this is the default package, or we are
+  /// auto-including dependencies, this package is public.
+  late final bool isPublic = libraries.any((l) => l.isPublic) || _isLocalPublicByDefault;
 
   /// Return true if this is the default package, this is part of an embedder
   /// SDK, or if [DartdocOptionContext.autoIncludeDependencies] is true -- but
   /// only if the package was not excluded on the command line.
   late final bool isLocal = (
           // Document as local if this is the default package.
-          packageMeta == packageGraph.packageMeta ||
+          _isLocalPublicByDefault ||
               // Assume we want to document an embedded SDK as local if
               // it has libraries defined in the default package.
               // TODO(jcollins-g): Handle case where embedder SDKs can be
@@ -170,13 +172,19 @@ class Package extends LibraryContainer
                   packageMeta.isSdk &&
                   libraries.any((l) => _pathContext.isWithin(
                       packageGraph.packageMeta.dir.path,
-                      (l.element.source.fullName))) ||
-              // autoIncludeDependencies means everything is local.
-              packageGraph.config.autoIncludeDependencies) &&
+                      (l.element.source.fullName)))) &&
       // Regardless of the above rules, do not document as local if
       // we excluded this package by name.
-      !packageGraph.config.isPackageExcluded(name);
+      !_isExcluded;
 
+  /// True if the global config excludes this package by name.
+  late final bool _isExcluded = packageGraph.config.isPackageExcluded(name);
+  /// True if this is the package being documented by default, or the
+  /// global config indicates we are auto-including dependencies.
+  late final bool _isLocalPublicByDefault = (packageMeta == packageGraph.packageMeta || packageGraph.config.autoIncludeDependencies);
+
+  /// Returns the location of documentation for this package, for linkToRemote
+  /// and canonicalization decision making.
   late final DocumentLocation documentedWhere = () {
     if (isLocal && isPublic) {
       return DocumentLocation.local;
