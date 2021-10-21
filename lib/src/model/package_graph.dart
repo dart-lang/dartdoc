@@ -747,7 +747,6 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   /// This doesn't know anything about [PackageGraph.inheritThrough] and probably
   /// shouldn't, so using it with [Inheritable]s without special casing is
   /// not advised.
-  // FIXME(nnbd): remove null check ignore in model_utils after migration
   ModelElement? findCanonicalModelElementFor(Element? e,
       {Container? preferredClass}) {
     assert(allLibrariesAdded);
