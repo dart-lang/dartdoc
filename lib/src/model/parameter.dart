@@ -108,7 +108,6 @@ class Parameter extends ModelElement implements EnclosedElement {
   ParameterMember? get originalMember =>
       super.originalMember as ParameterMember?;
 
-  ElementType? _modelType;
-  ElementType get modelType => _modelType ??=
+  late final ElementType modelType =
       modelBuilder.typeFrom((originalMember ?? element)!.type, library!);
 }

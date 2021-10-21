@@ -338,9 +338,7 @@ class PubPackageBuilder implements PackageBuilder {
     for (var file in files) {
       var fileContext = DartdocOptionContext.fromContext(config,
           config.resourceProvider.getFile(file), config.resourceProvider);
-      if (fileContext.includeExternal != null) {
-        yield* fileContext.includeExternal;
-      }
+      yield* fileContext.includeExternal;
     }
   }
 

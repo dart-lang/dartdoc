@@ -1246,7 +1246,7 @@ class DartdocOptionContext extends DartdocOptionContextBase
 
   List<String> get dropTextFrom => optionSet['dropTextFrom'].valueAt(context);
 
-  String get examplePathPrefix =>
+  String? get examplePathPrefix =>
       optionSet['examplePathPrefix'].valueAt(context);
 
   // TODO(srawlins): This memoization saved a lot of time in unit testing, but

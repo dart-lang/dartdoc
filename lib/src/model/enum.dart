@@ -114,12 +114,6 @@ class EnumField extends Field {
   @override
   Inheritable? get overriddenElement => null;
 
-  @override
-  Package get package => super.package;
-
-  @override
-  Library get library => super.library;
-
   EnumFieldRenderer get _fieldRenderer =>
       packageGraph.rendererFactory.enumFieldRenderer;
 }

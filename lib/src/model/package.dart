@@ -91,8 +91,7 @@ class Package extends LibraryContainer
   /// non-documented libraries unless they are all referenced by documented ones.
   final Set<Library> allLibraries = {};
 
-  bool get hasHomepage =>
-      packageMeta.homepage != null && packageMeta.homepage.isNotEmpty;
+  bool get hasHomepage => packageMeta.homepage.isNotEmpty;
 
   String get homepage => packageMeta.homepage;
 
@@ -154,9 +153,11 @@ class Package extends LibraryContainer
   Warnable? get enclosingElement => null;
 
   @override
+
   /// If we have public libraries, this is the default package, or we are
   /// auto-including dependencies, this package is public.
-  late final bool isPublic = libraries.any((l) => l.isPublic) || _isLocalPublicByDefault;
+  late final bool isPublic =
+      libraries.any((l) => l.isPublic) || _isLocalPublicByDefault;
 
   /// Return true if this is the default package, this is part of an embedder
   /// SDK, or if [DartdocOptionContext.autoIncludeDependencies] is true -- but
@@ -179,9 +180,12 @@ class Package extends LibraryContainer
 
   /// True if the global config excludes this package by name.
   late final bool _isExcluded = packageGraph.config.isPackageExcluded(name);
+
   /// True if this is the package being documented by default, or the
   /// global config indicates we are auto-including dependencies.
-  late final bool _isLocalPublicByDefault = (packageMeta == packageGraph.packageMeta || packageGraph.config.autoIncludeDependencies);
+  late final bool _isLocalPublicByDefault =
+      (packageMeta == packageGraph.packageMeta ||
+          packageGraph.config.autoIncludeDependencies);
 
   /// Returns the location of documentation for this package, for linkToRemote
   /// and canonicalization decision making.
@@ -321,7 +325,8 @@ class Package extends LibraryContainer
   }
 
   late final List<Category> categories = () {
-    return nameToCategory.values.where((c) => c.name.isNotEmpty).toList()..sort();
+    return nameToCategory.values.where((c) => c.name.isNotEmpty).toList()
+      ..sort();
   }();
 
   Iterable<Category> get categoriesWithPublicLibraries =>

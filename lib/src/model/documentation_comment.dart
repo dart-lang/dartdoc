@@ -385,9 +385,10 @@ mixin DocumentationComment
       var ext = pathContext.extension(src);
       file = pathContext.join(dir, '$basename-$region$ext$fragExtension');
     }
-    args['file'] = config.examplePathPrefix == null
+    var examplePathPrefix = config.examplePathPrefix;
+    args['file'] = examplePathPrefix == null
         ? file
-        : pathContext.join(config.examplePathPrefix, file);
+        : pathContext.join(examplePathPrefix, file);
     return args;
   }
 
@@ -847,9 +848,10 @@ mixin DocumentationComment
     if (!config.injectHtml) return rawDocs;
 
     return rawDocs!.replaceAllMapped(_htmlInjectRegExp, (match) {
-      var fragment = packageGraph.getHtmlFragment(match[1])!;
+      var fragment = packageGraph.getHtmlFragment(match[1]);
       if (fragment == null) {
         warn(PackageWarning.unknownHtmlFragment, message: match[1]);
+        return '';
       }
       return fragment;
     });

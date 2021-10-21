@@ -16,7 +16,7 @@ class Extension extends Container implements EnclosedElement {
   Extension(
       ExtensionElement element, Library library, PackageGraph packageGraph)
       : super(element, library, packageGraph) {
-    extendedType = modelBuilder.typeFrom(_extension!.extendedType, library);
+    extendedType = modelBuilder.typeFrom(element.extendedType, library);
   }
 
   /// Detect if this extension applies to every object.
@@ -44,8 +44,6 @@ class Extension extends Container implements EnclosedElement {
   @override
   ModelElement? get enclosingElement => library;
 
-  ExtensionElement? get _extension => (element as ExtensionElement?);
-
   @override
   String get kind => 'extension';
 
@@ -53,7 +51,7 @@ class Extension extends Container implements EnclosedElement {
 
   @override
   List<Method>? get declaredMethods {
-    _methods ??= _extension!.methods.map((e) {
+    _methods ??= element.methods.map((e) {
       return modelBuilder.from(e, library) as Method;
     }).toList(growable: false);
     return _methods;
@@ -69,7 +67,7 @@ class Extension extends Container implements EnclosedElement {
 
   @override
   List<Field>? get declaredFields {
-    _declaredFields ??= _extension!.fields.map((f) {
+    _declaredFields ??= element.fields.map((f) {
       Accessor? getter, setter;
       if (f.getter != null) {
         getter = ContainerAccessor(f.getter, library, packageGraph);
@@ -88,7 +86,7 @@ class Extension extends Container implements EnclosedElement {
   // a stronger hash?
   @override
   List<TypeParameter> get typeParameters {
-    _typeParameters ??= _extension!.typeParameters.map((f) {
+    _typeParameters ??= element.typeParameters.map((f) {
       var lib = modelBuilder.fromElement(f.enclosingElement!.library!);
       return modelBuilder.from(f, lib as Library) as TypeParameter;
     }).toList();

@@ -96,10 +96,8 @@ mixin MixedInTypes on InheritingContainer {
   List<DefinedElementType> get mixedInTypes =>
       _mixedInTypes ??
       [
-        ...element!.mixins
-            .map<DefinedElementType>(
-                (f) => modelBuilder.typeFrom(f, library) as DefinedElementType)
-            .where((mixin) => mixin != null)
+        ...element!.mixins.map<DefinedElementType>(
+            (f) => modelBuilder.typeFrom(f, library) as DefinedElementType)
       ];
 
   bool get hasPublicMixedInTypes => publicMixedInTypes.isNotEmpty;
@@ -399,16 +397,6 @@ abstract class InheritingContainer extends Container
   List<ExecutableElement?>? get _inheritedElements {
     if (__inheritedElements == null) {
       if (element!.isDartCoreObject) {
-        return __inheritedElements = <ExecutableElement>[];
-      }
-
-      if (definingLibrary == null) {
-        // [definingLibrary] may be null if [element] has been imported or
-        // exported with a non-normalized URI, like "src//a.dart".
-        // TODO(srawlins): It would be nice to allow references from such
-        // libraries, but for now, PackageGraph.allLibraries is a Map with
-        // LibraryElement keys, which include [Element.location] in their
-        // `==` calculation; I think we should not key off of Elements.
         return __inheritedElements = <ExecutableElement>[];
       }
 

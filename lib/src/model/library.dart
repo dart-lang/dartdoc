@@ -74,7 +74,6 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   factory Library.fromLibraryResult(DartDocResolvedLibrary resolvedLibrary,
       PackageGraph packageGraph, Package package) {
     var element = resolvedLibrary.result.element;
-    if (element == null) throw ArgumentError.notNull('element');
 
     // Initialize [packageGraph]'s cache of [ModelNode]s for relevant
     // elements in this library.
@@ -215,12 +214,15 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   @visibleForTesting
   late final Set<Library> importedExportedLibrariesLocal = () {
     var _importedExportedLibraries = <Library>{};
-    for (var l in <LibraryElement>{...element.importedLibraries, ...element.exportedLibraries}) {
+    for (var l in <LibraryElement>{
+      ...element.importedLibraries,
+      ...element.exportedLibraries
+    }) {
       var lib = modelBuilder.fromElement(l) as Library;
       _importedExportedLibraries.add(lib);
     }
     return _importedExportedLibraries;
-  } ();
+  }();
 
   /// Map of import prefixes ('import "foo" as prefix;') to [Library].
   late final Map<String, Set<Library>> prefixToLibrary = () {
@@ -236,16 +238,16 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
       }
     }
     return prefixToLibrary;
-  } ();
+  }();
 
   late final String dirName = () {
-      var _dirName = name;
-      if (isAnonymous) {
-        _dirName = nameFromPath;
-      }
-      _dirName = _dirName.replaceAll(':', '-').replaceAll('/', '_');
-      return _dirName;
-  } ();
+    var _dirName = name;
+    if (isAnonymous) {
+      _dirName = nameFromPath;
+    }
+    _dirName = _dirName.replaceAll(':', '-').replaceAll('/', '_');
+    return _dirName;
+  }();
 
   Set<String>? _canonicalFor;
 
@@ -336,7 +338,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     return _inheritanceManager;
   }
 
-  bool get isAnonymous => element.name == null || element.name.isEmpty;
+  bool get isAnonymous => element.name.isEmpty;
 
   @override
   String get kind => 'library';

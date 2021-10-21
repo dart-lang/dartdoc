@@ -80,7 +80,6 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     findOrCreateLibraryFor(resolvedLibrary);
   }
 
-
   /// Call after all libraries are added.
   Future<void> initializePackageGraph() async {
     allLibrariesAdded = true;
@@ -319,7 +318,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       }
     } else {
       // If we don't have an element, we need a message to disambiguate.
-      assert(message != null);
+      assert(message.isNotEmpty);
     }
     if (packageWarningCounter.hasWarning(warnable, kind, message)) {
       return;
@@ -753,7 +752,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       {Container? preferredClass}) {
     assert(allLibrariesAdded);
     var lib = findCanonicalLibraryFor(e);
-    if (preferredClass != null && preferredClass is Container) {
+    if (preferredClass != null) {
       Container? canonicalClass =
           findCanonicalModelElementFor(preferredClass.element) as Container?;
       if (canonicalClass != null) preferredClass = canonicalClass;
@@ -819,9 +818,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
 
       // This is for situations where multiple classes may actually be canonical
       // for an inherited element whose defining Class is not canonical.
-      if (matches.length > 1 &&
-          preferredClass != null &&
-          preferredClass is Class) {
+      if (matches.length > 1 && preferredClass != null) {
         // Search for matches inside our superchain.
         var superChain = preferredClass.superChain
             .map((et) => et.modelElement)

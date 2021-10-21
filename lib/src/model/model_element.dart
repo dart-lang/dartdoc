@@ -160,10 +160,6 @@ abstract class ModelElement extends Canonicalization
       {Container? enclosingContainer,
       required Accessor? getter,
       required Accessor? setter}) {
-    assert(packageGraph != null);
-    assert(e != null);
-    assert(library != null);
-
     // TODO(jcollins-g): Refactor object model to instantiate 'ModelMembers'
     //                   for members?
     if (e is Member) {
@@ -228,8 +224,6 @@ abstract class ModelElement extends Canonicalization
   factory ModelElement._from(
       Element e, Library? library, PackageGraph packageGraph,
       {Container? enclosingContainer}) {
-    assert(packageGraph != null);
-    assert(e != null);
     assert(library != null ||
         e is ParameterElement ||
         e is TypeParameterElement ||
@@ -522,11 +516,15 @@ abstract class ModelElement extends Canonicalization
   }
 
   Library get definingLibrary {
-    Library library = modelBuilder.fromElement(element!.library!) as Library;
+    Library? library = modelBuilder.fromElement(element!.library!) as Library?;
     if (library == null) {
       warn(PackageWarning.noDefiningLibraryFound);
     }
-    return library;
+    Library? fallback;
+    if (enclosingElement is ModelElement) {
+      fallback = (enclosingElement as ModelElement).definingLibrary;
+    }
+    return library ?? fallback ?? this.library!;
   }
 
   Library? _canonicalLibrary;
@@ -569,9 +567,6 @@ abstract class ModelElement extends Canonicalization
   }
 
   Library? _searchForCanonicalLibrary() {
-    if (definingLibrary == null) {
-      return null;
-    }
     var thisAndExported = definingLibrary.exportedInLibraries;
 
     if (thisAndExported == null) {
@@ -721,14 +716,14 @@ abstract class ModelElement extends Canonicalization
   @override
   CharacterLocation? get characterLocation {
     if (!_characterLocationIsSet) {
-      var lineInfo = compilationUnitElement!.lineInfo!;
+      var lineInfo = compilationUnitElement!.lineInfo;
       _characterLocationIsSet = true;
       assert(element!.nameOffset >= 0,
           'Invalid location data for element: $fullyQualifiedName');
       assert(lineInfo != null,
           'No lineInfo data available for element: $fullyQualifiedName');
       if (element!.nameOffset >= 0) {
-        _characterLocation = lineInfo.getLocation(element!.nameOffset);
+        _characterLocation = lineInfo?.getLocation(element!.nameOffset);
       }
     }
     return _characterLocation;
