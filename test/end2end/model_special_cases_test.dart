@@ -277,6 +277,58 @@ void main() {
     }, skip: !_constructorTearoffsAllowed.allows(utils.platformVersion));
   });
 
+  group('HTML is sanitized when enabled', () {
+    Class classWithHtml;
+    Method blockHtml;
+    Method inlineHtml;
+
+    PackageGraph packageGraph;
+    Library exLibrary;
+
+    setUpAll(() async {
+      packageGraph = await utils.bootBasicPackage(
+        'testing/test_package_sanitize_html',
+        pubPackageMetaProvider,
+        PhysicalPackageConfigProvider(),
+        excludeLibraries: ['css', 'code_in_comments', 'excluded'],
+        additionalArguments: ['--sanitize-html'],
+      );
+
+      exLibrary = packageGraph.libraries.firstWhere((lib) => lib.name == 'ex');
+
+      classWithHtml =
+          exLibrary.classes.firstWhere((c) => c.name == 'SanitizableHtml');
+      blockHtml = classWithHtml.instanceMethods
+          .firstWhere((m) => m.name == 'blockHtml');
+      inlineHtml = classWithHtml.instanceMethods
+          .firstWhere((m) => m.name == 'inlineHtml');
+      for (var modelElement in packageGraph.allLocalModelElements) {
+        modelElement.documentation;
+      }
+    });
+
+    test('can have inline HTML', () {
+      expect(inlineHtml.documentationAsHtml, contains('<small>'));
+    });
+
+    test('can have block HTML', () {
+      expect(blockHtml.documentationAsHtml, contains('<h1>'));
+    });
+
+    test('will add rel=ugc for outgoing links', () {
+      expect(inlineHtml.documentationAsHtml,
+          contains('<a href="https://example.com" rel="ugc">'));
+    });
+
+    test('removes bad inline HTML', () {
+      expect(inlineHtml.documentationAsHtml, isNot(contains('bad-idea')));
+    });
+
+    test('removes bad block HTML', () {
+      expect(blockHtml.documentationAsHtml, isNot(contains('bad-idea')));
+    });
+  });
+
   group('HTML Injection when allowed', () {
     Class htmlInjection;
     Method injectSimpleHtml;
