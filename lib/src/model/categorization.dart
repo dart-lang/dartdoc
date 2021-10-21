@@ -96,19 +96,19 @@ abstract class Categorization implements ModelElement {
 
   Iterable<Category?>? _categories;
 
-  Iterable<Category?>? get categories {
+  Iterable<Category?> get categories {
     _categories ??= categoryNames!
         .map((n) => package?.nameToCategory[n])
         .where((c) => c != null)
         .toList()
       ..sort();
-    return _categories;
+    return _categories!;
   }
 
   @override
-  Iterable<Category?>? get displayedCategories {
+  Iterable<Category?> get displayedCategories {
     if (config.showUndocumentedCategories) return categories;
-    return categories!.where((c) => c!.isDocumented);
+    return categories.where((c) => c!.isDocumented);
   }
 
   bool? _hasCategorization;

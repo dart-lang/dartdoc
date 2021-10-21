@@ -22,7 +22,6 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart' show PackageMeta;
 import 'package:dartdoc/src/quiver.dart' as quiver;
 import 'package:dartdoc/src/warnings.dart';
-import 'package:meta/meta.dart';
 
 /// Find all hashable children of a given element that are defined in the
 /// [LibraryElement] given at initialization.
@@ -209,20 +208,6 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   @override
   late final Iterable<TopLevelVariable> constants =
       _variables.where((v) => v.isConst).toList(growable: false);
-
-  /// Returns all libraries directly imported or exported by this library.
-  @visibleForTesting
-  late final Set<Library> importedExportedLibrariesLocal = () {
-    var _importedExportedLibraries = <Library>{};
-    for (var l in <LibraryElement>{
-      ...element.importedLibraries,
-      ...element.exportedLibraries
-    }) {
-      var lib = modelBuilder.fromElement(l) as Library;
-      _importedExportedLibraries.add(lib);
-    }
-    return _importedExportedLibraries;
-  }();
 
   /// Map of import prefixes ('import "foo" as prefix;') to [Library].
   late final Map<String, Set<Library>> prefixToLibrary = () {

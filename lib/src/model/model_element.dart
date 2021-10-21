@@ -379,7 +379,7 @@ abstract class ModelElement extends Canonicalization
   bool get hasCategoryNames => false;
 
   // Stub for mustache.
-  Iterable<Category?>? get displayedCategories => [];
+  Iterable<Category?> get displayedCategories => [];
 
   Set<Library>? get exportedInLibraries {
     return library!.packageGraph.libraryElementReexportedBy[element!.library!];
