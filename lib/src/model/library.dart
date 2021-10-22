@@ -198,8 +198,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   @override
   bool get isPublic {
     if (!super.isPublic) return false;
-    if (sdkLib != null &&
-        (sdkLib.isInternal || !sdkLib.isDocumented)) {
+    if (sdkLib != null && (sdkLib.isInternal || !sdkLib.isDocumented)) {
       return false;
     }
     if (config.isLibraryExcluded(name) ||
