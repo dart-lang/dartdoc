@@ -4,6 +4,7 @@
 
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/memory_file_system.dart';
+import 'package:analyzer/src/dart/sdk/sdk.dart';
 import 'package:analyzer/src/test_utilities/mock_sdk.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -18,8 +19,6 @@ void main() {
   MemoryResourceProvider resourceProvider;
   PackageMetaProvider packageMetaProvider;
   FakePackageConfigProvider packageConfigProvider;
-  MockSdk mockSdk;
-  Folder sdkFolder;
   Folder projectRoot;
   String projectPath;
   var packageName = 'my_package';
@@ -40,16 +39,22 @@ void main() {
   group('documentation_comment tests', () {
     setUp(() async {
       resourceProvider = MemoryResourceProvider();
-      mockSdk = MockSdk(resourceProvider: resourceProvider);
-      sdkFolder = utils.writeMockSdkFiles(mockSdk);
+      final sdkRoot = resourceProvider.getFolder(
+        resourceProvider.convertPath('/sdk'),
+      );
+      createMockSdk(
+        resourceProvider: resourceProvider,
+        root: sdkRoot,
+      );
+      utils.writeMockSdkFiles(sdkRoot);
 
       packageMetaProvider = PackageMetaProvider(
           PubPackageMeta.fromElement,
           PubPackageMeta.fromFilename,
           PubPackageMeta.fromDir,
           resourceProvider,
-          sdkFolder,
-          defaultSdk: mockSdk,
+          sdkRoot,
+          defaultSdk: FolderBasedDartSdk(resourceProvider, sdkRoot),
           messageForMissingPackageMeta:
               PubPackageMeta.messageForMissingPackageMeta);
       var optionSet = await DartdocOptionSet.fromOptionGenerators(
@@ -59,7 +64,7 @@ void main() {
       // To build the package graph, we always ask package_config for a
       // [PackageConfig] for the SDK directory. Put a dummy entry in.
       packageConfigProvider.addPackageToConfigFor(
-          sdkFolder.path, 'analyzer', Uri.file('/sdk/pkg/analyzer/'));
+          sdkRoot.path, 'analyzer', Uri.file('/sdk/pkg/analyzer/'));
 
       projectRoot = utils.writePackage(
           packageName, resourceProvider, packageConfigProvider);

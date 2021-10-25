@@ -1,4 +1,5 @@
 ## 4.1.0
+* Move to analyzer 2.7.0. (#2845)
 * The library interface is now explicitly marked as experimental via meta.
 * Experimental feature: HTML output from markdown rendering, `{@tool}` and
   `{@inject-html}` is sanitized when hidden option `--sanitize-html` is passed.
