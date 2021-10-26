@@ -142,10 +142,10 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
         Accessor? getter;
         Accessor? setter;
         if (e.hasGetter) {
-          getter = modelBuilder.fromElement(e.getter!.element!) as Accessor;
+          getter = modelBuilder.fromElement(e.getter!.element) as Accessor;
         }
         if (e.hasSetter) {
-          setter = modelBuilder.fromElement(e.setter!.element!) as Accessor;
+          setter = modelBuilder.fromElement(e.setter!.element) as Accessor;
         }
         return modelBuilder
             .fromPropertyInducingElement(e.element!,

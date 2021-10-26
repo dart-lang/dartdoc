@@ -16,7 +16,7 @@ import 'package:dartdoc/src/warnings.dart';
 
 /// Getters and setters.
 class Accessor extends ModelElement implements EnclosedElement {
-  /// The combo ([Field] or [TopLevelVariable] containing this accessor.
+  /// The combo ([Field] or [TopLevelVariable]) containing this accessor.
   /// Initialized by the combo's constructor.
   late final GetterSetterCombo enclosingCombo;
 
@@ -27,8 +27,8 @@ class Accessor extends ModelElement implements EnclosedElement {
 
   @override
   CharacterLocation? get characterLocation {
-    if (element!.nameOffset < 0) {
-      assert(element!.isSynthetic, 'Invalid offset for non-synthetic element');
+    if (element.nameOffset < 0) {
+      assert(element.isSynthetic, 'Invalid offset for non-synthetic element');
       // TODO(jcollins-g): switch to [element.nonSynthetic] after analyzer 1.8
       return enclosingCombo.characterLocation;
     }
@@ -36,32 +36,24 @@ class Accessor extends ModelElement implements EnclosedElement {
   }
 
   @override
-  PropertyAccessorElement? get element =>
-      super.element as PropertyAccessorElement?;
+  PropertyAccessorElement get element =>
+      super.element as PropertyAccessorElement;
 
   @override
   ExecutableMember? get originalMember =>
       super.originalMember as ExecutableMember?;
 
-  Callable? _modelType;
-  Callable get modelType => (_modelType ??= modelBuilder.typeFrom(
-      (originalMember ?? element)!.type, library!) as Callable?)!;
+  late final Callable modelType = modelBuilder.typeFrom(
+      (originalMember ?? element).type, library) as Callable;
 
-  bool get isSynthetic => element!.isSynthetic;
+  bool get isSynthetic => element.isSynthetic;
 
   SourceCodeRenderer get _sourceCodeRenderer =>
       packageGraph.rendererFactory.sourceCodeRenderer;
 
-  GetterSetterCombo? _definingCombo;
   // The [enclosingCombo] where this element was defined.
-  GetterSetterCombo? get definingCombo {
-    if (_definingCombo == null) {
-      var variable = element!.variable;
-      _definingCombo = modelBuilder.fromElement(variable) as GetterSetterCombo?;
-      assert(_definingCombo != null, 'Unable to find defining combo');
-    }
-    return _definingCombo;
-  }
+  late final GetterSetterCombo definingCombo =
+      modelBuilder.fromElement(element.variable) as GetterSetterCombo;
 
   String? _sourceCode;
 
@@ -70,7 +62,7 @@ class Accessor extends ModelElement implements EnclosedElement {
     if (_sourceCode == null) {
       if (isSynthetic) {
         _sourceCode = _sourceCodeRenderer.renderSourceCode(
-            packageGraph.getModelNodeFor(definingCombo!.element)!.sourceCode!);
+            packageGraph.getModelNodeFor(definingCombo.element)!.sourceCode!);
       } else {
         _sourceCode = super.sourceCode;
       }
@@ -95,7 +87,7 @@ class Accessor extends ModelElement implements EnclosedElement {
   /// Value here is not useful if [isSynthetic] is false.
   late final String _syntheticDocumentationComment = () {
     if (_hasSyntheticDocumentationComment) {
-      return definingCombo!.documentationComment;
+      return definingCombo.documentationComment;
     }
     return '';
   }();
@@ -105,16 +97,16 @@ class Accessor extends ModelElement implements EnclosedElement {
   /// for a synthetic accessor just in case it is inherited somewhere
   /// down the line due to split inheritance.
   bool get _hasSyntheticDocumentationComment =>
-      (isGetter || definingCombo!.hasNodoc! || _comboDocsAreIndependent()) &&
-      definingCombo!.hasDocumentationComment;
+      (isGetter || definingCombo.hasNodoc! || _comboDocsAreIndependent()) &&
+      definingCombo.hasDocumentationComment;
 
   // If we're a setter, and a getter exists, do not add synthetic
   // documentation if the combo's documentation is actually derived
   // from that getter.
   bool _comboDocsAreIndependent() {
-    if (isSetter && definingCombo!.hasGetter) {
-      if (definingCombo!.getter!.isSynthetic ||
-          !definingCombo!.documentationFrom.contains(this)) {
+    if (isSetter && definingCombo.hasGetter) {
+      if (definingCombo.getter!.isSynthetic ||
+          !definingCombo.documentationFrom.contains(this)) {
         return true;
       }
     }
@@ -124,7 +116,7 @@ class Accessor extends ModelElement implements EnclosedElement {
   @override
   bool get hasDocumentationComment => isSynthetic
       ? _hasSyntheticDocumentationComment
-      : element!.documentationComment != null;
+      : element.documentationComment != null;
 
   @override
   void warn(
@@ -141,12 +133,12 @@ class Accessor extends ModelElement implements EnclosedElement {
 
   @override
   ModelElement? get enclosingElement {
-    if (element!.enclosingElement is CompilationUnitElement) {
+    if (element.enclosingElement is CompilationUnitElement) {
       return modelBuilder
-          .fromElement(element!.enclosingElement.enclosingElement!);
+          .fromElement(element.enclosingElement.enclosingElement!);
     }
 
-    return modelBuilder.from(element!.enclosingElement, library!);
+    return modelBuilder.from(element.enclosingElement, library);
   }
 
   @override
@@ -160,9 +152,9 @@ class Accessor extends ModelElement implements EnclosedElement {
     return enclosingCombo.href;
   }
 
-  bool get isGetter => element!.isGetter;
+  bool get isGetter => element.isGetter;
 
-  bool get isSetter => element!.isSetter;
+  bool get isSetter => element.isSetter;
 
   @override
   String get kind => 'accessor';
@@ -174,6 +166,9 @@ class Accessor extends ModelElement implements EnclosedElement {
     _namePart ??= super.namePart!.split('=').first;
     return _namePart;
   }
+
+  @override
+  Library get library => super.library!;
 
   @override
 
@@ -239,12 +234,11 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
     assert(packageGraph.allLibrariesAdded);
     if (!_overriddenElementIsSet) {
       _overriddenElementIsSet = true;
-      var parent = element!.enclosingElement;
+      var parent = element.enclosingElement;
       if (parent is ClassElement) {
         for (var t in parent.allSupertypes) {
-          Element? accessor = isGetter
-              ? t.getGetter(element!.name)
-              : t.getSetter(element!.name);
+          Element? accessor =
+              isGetter ? t.getGetter(element.name) : t.getSetter(element.name);
           if (accessor != null) {
             accessor = accessor.declaration;
             InheritingContainer parentContainer =

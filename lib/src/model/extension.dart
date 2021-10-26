@@ -11,33 +11,32 @@ import 'package:dartdoc/src/quiver.dart' as quiver;
 
 /// Extension methods
 class Extension extends Container implements EnclosedElement {
-  ElementType? extendedType;
+  late final ElementType extendedType =
+      modelBuilder.typeFrom(element.extendedType, library);
 
   Extension(
       ExtensionElement element, Library library, PackageGraph packageGraph)
-      : super(element, library, packageGraph) {
-    extendedType = modelBuilder.typeFrom(element.extendedType, library);
-  }
+      : super(element, library, packageGraph);
 
   /// Detect if this extension applies to every object.
   bool get alwaysApplies =>
-      extendedType!.instantiatedType.isDynamic ||
-      extendedType!.instantiatedType.isVoid ||
-      extendedType!.instantiatedType.isDartCoreObject;
+      extendedType.instantiatedType.isDynamic ||
+      extendedType.instantiatedType.isVoid ||
+      extendedType.instantiatedType.isDartCoreObject;
 
   bool couldApplyTo<T extends ExtensionTarget>(T c) =>
       _couldApplyTo(c.modelType as DefinedElementType);
 
   /// Return true if this extension could apply to [t].
   bool _couldApplyTo(DefinedElementType t) {
-    if (extendedType!.instantiatedType.isDynamic ||
-        extendedType!.instantiatedType.isVoid) {
+    if (extendedType.instantiatedType.isDynamic ||
+        extendedType.instantiatedType.isVoid) {
       return true;
     }
-    return t.instantiatedType == extendedType!.instantiatedType ||
-        (t.instantiatedType.element == extendedType!.instantiatedType.element &&
-            extendedType!.isSubtypeOf(t)) ||
-        extendedType!.isBoundSupertypeTo(t);
+    return t.instantiatedType == extendedType.instantiatedType ||
+        (t.instantiatedType.element == extendedType.instantiatedType.element &&
+            extendedType.isSubtypeOf(t)) ||
+        extendedType.isBoundSupertypeTo(t);
   }
 
   /// Returns the library that encloses this element.
@@ -112,7 +111,7 @@ class Extension extends Container implements EnclosedElement {
   @override
   Map<String, CommentReferable> get referenceChildren {
     return _referenceChildren ??= {
-      ...extendedType!.referenceChildren,
+      ...extendedType.referenceChildren,
       // Override extendedType entries with local items.
       ...super.referenceChildren,
     };
