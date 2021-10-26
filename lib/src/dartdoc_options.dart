@@ -1431,14 +1431,10 @@ Future<List<DartdocOption>> createDartdocOptions(
         mustExist: true),
     DartdocOptionSyntheticOnly<String>('inputDir',
         (DartdocSyntheticOption<String> option, Folder dir) {
-      late String inputDirDefault;
       if (option.parent['sdkDocs'].valueAt(dir)) {
-        inputDirDefault = option.parent['sdkDir'].valueAt(dir);
-      } else {
-        inputDirDefault = option.parent['input'].valueAt(dir);
+        return option.parent['sdkDir'].valueAt(dir);
       }
-      return resourceProvider.pathContext
-          .canonicalizeWithTilde(inputDirDefault);
+      return option.parent['input'].valueAt(dir);
     }, resourceProvider,
         help: 'Path to source directory (with override if --sdk-docs)',
         optionIs: OptionKind.dir,
