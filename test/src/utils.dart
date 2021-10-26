@@ -10,6 +10,7 @@ import 'dart:io';
 
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/memory_file_system.dart';
+import 'package:analyzer/src/dart/sdk/sdk.dart';
 import 'package:analyzer/src/test_utilities/mock_sdk.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/markdown_processor.dart';
@@ -84,50 +85,35 @@ PackageConfigProvider getTestPackageConfigProvider(String sdkPath) {
 /// Returns a [PackageMetaProvider] using a [MemoryResourceProvider].
 PackageMetaProvider get testPackageMetaProvider {
   var resourceProvider = MemoryResourceProvider();
-  var mockSdk = MockSdk(resourceProvider: resourceProvider);
-  var sdkFolder = writeMockSdkFiles(mockSdk);
+  final sdkRoot = resourceProvider.getFolder(
+    resourceProvider.convertPath('/sdk'),
+  );
+  createMockSdk(
+    resourceProvider: resourceProvider,
+    root: sdkRoot,
+  );
+  writeMockSdkFiles(sdkRoot);
 
   return PackageMetaProvider(
     PubPackageMeta.fromElement,
     PubPackageMeta.fromFilename,
     PubPackageMeta.fromDir,
     resourceProvider,
-    sdkFolder,
-    defaultSdk: mockSdk,
+    sdkRoot,
+    defaultSdk: FolderBasedDartSdk(resourceProvider, sdkRoot),
     messageForMissingPackageMeta: PubPackageMeta.messageForMissingPackageMeta,
   );
 }
 
-/// Writes [mockSdk] to disk at both its original path, and its canonicalized
-/// path (they may be different on Windows).
+/// Writes additional files for a mock SDK.
 ///
 /// Included is a "version" file and an "api_readme.md" file.
-Folder writeMockSdkFiles(MockSdk mockSdk) {
-  var resourceProvider = mockSdk.resourceProvider;
-  var pathContext = resourceProvider.pathContext;
-
-  // The [MockSdk] only works in non-canonicalized paths, which include
-  // "C:\sdk", on Windows. However, dartdoc works almost exclusively with
-  // canonical paths ("c:\sdk"). Copy all MockSdk files to the canonicalized
-  // path.
-  for (var l in mockSdk.sdkLibraries) {
-    var p = l.path;
-    resourceProvider
-        .getFile(pathContext.canonicalize(p))
-        .writeAsStringSync(resourceProvider.getFile(p).readAsStringSync());
-  }
-  var sdkFolder = resourceProvider.getFolder(
-      pathContext.canonicalize(resourceProvider.convertPath(sdkRoot)))
-    ..create();
+void writeMockSdkFiles(Folder sdkFolder) {
   sdkFolder.getChildAssumingFile('version').writeAsStringSync('2.9.0');
   sdkFolder.getChildAssumingFile('api_readme.md').writeAsStringSync(
       'Welcome to the [Dart](https://dart.dev/) API reference documentation');
 
   _writeMockSdkBinFiles(sdkFolder);
-  _writeMockSdkBinFiles(
-      resourceProvider.getFolder(resourceProvider.convertPath(sdkRoot)));
-
-  return sdkFolder;
 }
 
 /// Dartdoc has a few indicator files it uses to verify that a directory
