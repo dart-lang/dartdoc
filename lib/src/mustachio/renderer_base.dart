@@ -269,10 +269,9 @@ abstract class RendererBase<T extends Object?> {
 
     // If this section is not a conditional or repeated section, it is a value
     // section, regardless of type.
-    var isNullValue = property.isNullValue!;
-    if (node.invert && isNullValue(context)) {
+    if (node.invert && property.isNullValue(context)) {
       renderBlock(node.children);
-    } else if (!node.invert && !isNullValue(context)) {
+    } else if (!node.invert && !property.isNullValue(context)) {
       property.renderValue!(context, this, node.children, sink);
     }
   }
@@ -356,7 +355,7 @@ class Property<T> {
   final Iterable<void> Function(
       T, RendererBase<T>, List<MustachioNode>, StringSink)? renderIterable;
 
-  final bool Function(T)? isNullValue;
+  final bool Function(T) isNullValue;
 
   final void Function(T, RendererBase<T>, List<MustachioNode>, StringSink)?
       renderValue;
@@ -366,8 +365,9 @@ class Property<T> {
       required this.renderVariable,
       this.getBool,
       this.renderIterable,
-      this.isNullValue,
-      this.renderValue});
+      bool Function(T)? isNullValue,
+      this.renderValue})
+      : isNullValue = (isNullValue ?? (_) => false);
 
   String renderSimpleVariable(
       T c, List<String> remainingNames, String typeString) {

@@ -3,7 +3,6 @@
 // BSD-style license that can be found in the LICENSE file.
 
 // @dart=2.9
-
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/memory_file_system.dart';
 import 'package:dartdoc/src/mustachio/renderer_base.dart';
@@ -39,62 +38,71 @@ void main() {
 
   test('property map contains valid bool Properties', () {
     var propertyMap = Renderer_Foo.propertyMap();
-    expect(propertyMap['b1'].getValue, isNotNull);
-    expect(propertyMap['b1'].renderVariable, isNotNull);
-    expect(propertyMap['b1'].getBool, isNotNull);
-    expect(propertyMap['b1'].renderIterable, isNull);
-    expect(propertyMap['b1'].isNullValue, isNull);
-    expect(propertyMap['b1'].renderValue, isNull);
+    var b1 = propertyMap['b1'] /*!*/;
+    expect(b1.getValue, isNotNull);
+    expect(b1.renderVariable, isNotNull);
+    expect(b1.getBool, isNotNull);
+    expect(b1.renderIterable, isNull);
+    expect(b1.isNullValue, isNotNull);
+    expect(b1.renderValue, isNull);
   });
 
   test('property map contains valid Iterable Properties', () {
     var propertyMap = Renderer_Foo.propertyMap();
-    expect(propertyMap['l1'].getValue, isNotNull);
-    expect(propertyMap['l1'].renderVariable, isNotNull);
-    expect(propertyMap['l1'].getBool, isNull);
-    expect(propertyMap['l1'].renderIterable, isNotNull);
-    expect(propertyMap['l1'].isNullValue, isNull);
-    expect(propertyMap['l1'].renderValue, isNull);
+    var l1 = propertyMap['l1'] /*!*/;
+    expect(l1.getValue, isNotNull);
+    expect(l1.renderVariable, isNotNull);
+    expect(l1.getBool, isNull);
+    expect(l1.renderIterable, isNotNull);
+    expect(l1.isNullValue, isNotNull);
+    expect(l1.renderValue, isNull);
   });
 
   test('property map contains valid non-bool, non-Iterable Properties', () {
     var propertyMap = Renderer_Foo.propertyMap();
-    expect(propertyMap['s1'].getValue, isNotNull);
-    expect(propertyMap['s1'].renderVariable, isNotNull);
-    expect(propertyMap['s1'].getBool, isNull);
-    expect(propertyMap['s1'].renderIterable, isNull);
-    expect(propertyMap['s1'].isNullValue, isNotNull);
-    expect(propertyMap['s1'].renderValue, isNotNull);
+    var s1 = propertyMap['s1'] /*!*/;
+    expect(s1.getValue, isNotNull);
+    expect(s1.renderVariable, isNotNull);
+    expect(s1.getBool, isNull);
+    expect(s1.renderIterable, isNull);
+    expect(s1.isNullValue, isNotNull);
+    expect(s1.renderValue, isNotNull);
   });
 
   test('Property returns a field value by name', () {
     var propertyMap = Renderer_Foo.propertyMap();
     var foo = Foo()..s1 = 'hello';
-    expect(propertyMap['s1'].getValue(foo), equals('hello'));
+    expect(propertyMap['s1'] /*!*/ .getValue(foo), equals('hello'));
   });
 
   test('Property returns a bool field value by name', () {
     var propertyMap = Renderer_Foo.propertyMap();
     var foo = Foo()..b1 = true;
-    expect(propertyMap['b1'].getBool(foo), isTrue);
+    expect(propertyMap['b1'] /*!*/ .getBool /*!*/ (foo), isTrue);
   });
 
   test('isNullValue returns true when a value is null', () {
     var propertyMap = Renderer_Foo.propertyMap();
     var foo = Foo()..length = null;
-    expect(propertyMap['length'].isNullValue(foo), isTrue);
+    expect(propertyMap['length'] /*!*/ .isNullValue(foo), isTrue);
   });
 
   test('isNullValue returns false when a value is not null', () {
     var propertyMap = Renderer_Foo.propertyMap();
     var foo = Foo()..s1 = 'hello';
-    expect(propertyMap['s1'].isNullValue(foo), isFalse);
+    expect(propertyMap['s1'] /*!*/ .isNullValue(foo), isFalse);
+  });
+
+  test('isNullValue returns false for a non-nullable field', () {
+    var propertyMap = Renderer_Foo.propertyMap();
+    var foo = Foo()..b1 = true;
+    expect(propertyMap['b1'] /*!*/ .isNullValue(foo), isFalse);
   });
 
   test('Property returns false for a null bool field value', () {
-    var propertyMap = Renderer_Foo.propertyMap();
-    var foo = Foo()..b1 = null;
-    expect(propertyMap['b1'].getBool(foo), isFalse);
+    var propertyMap = Renderer_Bar.propertyMap();
+    var bar = Bar()..l1 = null;
+    expect(propertyMap['l1'] /*!*/ .getBool /*!*/ (bar), isFalse);
   });
 
   test('Renderer renders a non-bool variable node, escaped', () async {
@@ -318,7 +326,7 @@ void main() {
       ..writeAsStringSync('Text {{#bar}}{{bar.foo.baz.bar.foo.s1}}{{/bar}}');
     var baz = Baz()..bar = (Bar()..foo = (Foo()..s1 = 'hello'));
     var bazTemplate = await Template.parse(bazTemplateFile);
-    baz.bar.foo.baz = baz;
+    baz.bar /*!*/ .foo /*!*/ .baz = baz;
     expect(renderBaz(baz, bazTemplate), equals('Text hello'));
   });
 
