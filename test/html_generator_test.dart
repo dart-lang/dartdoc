@@ -25,156 +25,165 @@ import 'package:test/test.dart';
 import 'src/utils.dart' as utils;
 
 void main() {
-  MemoryResourceProvider resourceProvider;
-  p.Context pathContext;
+  group('HTML generator tests', () {
+    MemoryResourceProvider resourceProvider;
+    p.Context pathContext;
 
-  PackageMetaProvider packageMetaProvider;
-  FakePackageConfigProvider packageConfigProvider;
+    PackageMetaProvider packageMetaProvider;
+    FakePackageConfigProvider packageConfigProvider;
 
-  final Templates templates = HtmlAotTemplates();
-  GeneratorFrontEnd generator;
-  DartdocFileWriter writer;
+    final Templates templates = HtmlAotTemplates();
+    GeneratorFrontEnd generator;
+    DartdocFileWriter writer;
 
-  Folder projectRoot;
-  String projectPath;
+    Folder projectRoot;
+    String projectPath;
 
-  setUp(() async {
-    packageMetaProvider = utils.testPackageMetaProvider;
-    resourceProvider = packageMetaProvider.resourceProvider;
-    pathContext = resourceProvider.pathContext;
-    packageConfigProvider = utils
-        .getTestPackageConfigProvider(packageMetaProvider.defaultSdkDir.path);
-    for (var template in [
-      '_accessor_getter',
-      '_accessor_setter',
-      '_callable',
-      '_callable_multiline',
-      '_categorization',
-      '_class',
-      '_constant',
-      '_documentation',
-      '_extension',
-      '_features',
-      '_feature_set',
-      '_footer',
-      '_head',
-      '_library',
-      '_mixin',
-      '_name_summary',
-      '_packages',
-      '_property',
-      '_search_sidebar',
-      '_sidebar_for_category',
-      '_sidebar_for_container',
-      '_sidebar_for_library',
-      '_source_code',
-      '_source_link',
-      '_type',
-      '_typedef',
-      '_type_multiline',
-      '_typedef_multiline',
-      '404error',
-      'category',
-      'class',
-      'constructor',
-      'enum',
-      'extension',
-      'function',
-      'index',
-      'library',
-      'method',
-      'mixin',
-      'property',
-      'top_level_property',
-      'typedef',
-    ]) {
-      await resourceProvider.writeDartdocResource(
-          'templates/html/$template.html', 'CONTENT');
-    }
+    setUp(() async {
+      packageMetaProvider = utils.testPackageMetaProvider;
+      resourceProvider = packageMetaProvider.resourceProvider;
+      pathContext = resourceProvider.pathContext;
+      packageConfigProvider = utils
+          .getTestPackageConfigProvider(packageMetaProvider.defaultSdkDir.path);
+      for (var template in [
+        '_accessor_getter',
+        '_accessor_setter',
+        '_callable',
+        '_callable_multiline',
+        '_categorization',
+        '_class',
+        '_constant',
+        '_documentation',
+        '_extension',
+        '_features',
+        '_feature_set',
+        '_footer',
+        '_head',
+        '_library',
+        '_mixin',
+        '_name_summary',
+        '_packages',
+        '_property',
+        '_search_sidebar',
+        '_sidebar_for_category',
+        '_sidebar_for_container',
+        '_sidebar_for_library',
+        '_source_code',
+        '_source_link',
+        '_type',
+        '_typedef',
+        '_type_multiline',
+        '_typedef_multiline',
+        '404error',
+        'category',
+        'class',
+        'constructor',
+        'enum',
+        'extension',
+        'function',
+        'index',
+        'library',
+        'method',
+        'mixin',
+        'property',
+        'top_level_property',
+        'typedef',
+      ]) {
+        await resourceProvider.writeDartdocResource(
+            'templates/html/$template.html', 'CONTENT');
+      }
 
-    for (var resource in [
-      'favicon.png',
-      'github.css',
-      'highlight.pack.js',
-      'play_button.svg',
-      'readme.md',
-      'script.js',
-      'styles.css',
-    ]) {
-      await resourceProvider.writeDartdocResource(
-          'resources/$resource', 'CONTENT');
-    }
+      for (var resource in [
+        'favicon.png',
+        'github.css',
+        'highlight.pack.js',
+        'play_button.svg',
+        'readme.md',
+        'script.js',
+        'styles.css',
+      ]) {
+        await resourceProvider.writeDartdocResource(
+            'resources/$resource', 'CONTENT');
+      }
 
-    var optionRoot = await DartdocOptionRoot.fromOptionGenerators(
-        'dartdoc',
-        [
-          createDartdocOptions,
-          createGeneratorOptions,
-        ],
-        packageMetaProvider);
-    optionRoot.parseArguments([]);
+      var optionRoot = await DartdocOptionRoot.fromOptionGenerators(
+          'dartdoc',
+          [
+            createDartdocOptions,
+            createGeneratorOptions,
+          ],
+          packageMetaProvider);
+      optionRoot.parseArguments([]);
 
-    var defaultContext =
-        DartdocGeneratorOptionContext.fromDefaultContextLocation(
-            optionRoot, resourceProvider);
-    var options = DartdocGeneratorBackendOptions.fromContext(defaultContext);
+      var defaultContext =
+          DartdocGeneratorOptionContext.fromDefaultContextLocation(
+              optionRoot, resourceProvider);
+      var options = DartdocGeneratorBackendOptions.fromContext(defaultContext);
 
-    generator = GeneratorFrontEnd(
-        HtmlGeneratorBackend(options, templates, resourceProvider));
+      generator = GeneratorFrontEnd(
+          HtmlGeneratorBackend(options, templates, resourceProvider));
 
-    projectRoot = utils.writePackage(
-        'my_package', resourceProvider, packageConfigProvider);
-    projectPath = projectRoot.path;
-    var outputPath = projectRoot.getChildAssumingFolder('doc').path;
-    writer = DartdocFileWriter(outputPath, resourceProvider);
+      projectRoot = utils.writePackage(
+          'my_package', resourceProvider, packageConfigProvider);
+      projectPath = projectRoot.path;
+      var outputPath = projectRoot.getChildAssumingFolder('doc').path;
+      writer = DartdocFileWriter(outputPath, resourceProvider);
+    });
+
+    File getConvertedFile(String path) =>
+        resourceProvider.getFile(resourceProvider.convertPath(path));
+
+    tearDown(() {
+      projectRoot = null;
+      projectPath = null;
+      clearPackageMetaCache();
+    });
+
+    test('a null package has some assets', () async {
+      await generator.generate(null, writer);
+      var outputPath = projectRoot.getChildAssumingFolder('doc').path;
+      var output = resourceProvider
+          .getFolder(pathContext.join(outputPath, 'static-assets'));
+      expect(output, doesExist);
+
+      for (var resource in resourceNames.map((r) =>
+          pathContext.relative(Uri.parse(r).path, from: 'dartdoc/resources'))) {
+        expect(
+            resourceProvider.getFile(pathContext.join(output.path, resource)),
+            doesExist);
+      }
+    });
+
+    test('libraries with no duplicates are not warned about', () async {
+      getConvertedFile('$projectPath/lib/a.dart')
+          .writeAsStringSync('library a;');
+      getConvertedFile('$projectPath/lib/b.dart')
+          .writeAsStringSync('library b;');
+      var packageGraph = await utils.bootBasicPackage(
+          projectPath, packageMetaProvider, packageConfigProvider);
+      await generator.generate(packageGraph, writer);
+
+      expect(packageGraph.packageWarningCounter.errorCount, 0);
+    }, onPlatform: {'windows': Skip('Test does not work on Windows (#2446)')});
+
+    test('libraries with duplicate names are warned about', () async {
+      getConvertedFile('$projectPath/lib/a.dart')
+          .writeAsStringSync('library a;');
+      getConvertedFile('$projectPath/lib/b.dart')
+          .writeAsStringSync('library a;');
+      var packageGraph = await utils.bootBasicPackage(
+          projectPath, packageMetaProvider, packageConfigProvider);
+      await generator.generate(packageGraph, writer);
+
+      var expectedPath = pathContext.join('a', 'a-library.html');
+      expect(
+          packageGraph.localPublicLibraries,
+          anyElement((l) => packageGraph.packageWarningCounter
+              .hasWarning(l, PackageWarning.duplicateFile, expectedPath)));
+    }, onPlatform: {'windows': Skip('Test does not work on Windows (#2446)')});
+  }, onPlatform: {
+    'windows': Skip('Tests do not work on Windows after NNBD conversion')
   });
-
-  File getConvertedFile(String path) =>
-      resourceProvider.getFile(resourceProvider.convertPath(path));
-
-  tearDown(() {
-    projectRoot = null;
-    projectPath = null;
-    clearPackageMetaCache();
-  });
-
-  test('a null package has some assets', () async {
-    await generator.generate(null, writer);
-    var outputPath = projectRoot.getChildAssumingFolder('doc').path;
-    var output = resourceProvider
-        .getFolder(pathContext.join(outputPath, 'static-assets'));
-    expect(output, doesExist);
-
-    for (var resource in resourceNames.map((r) =>
-        pathContext.relative(Uri.parse(r).path, from: 'dartdoc/resources'))) {
-      expect(resourceProvider.getFile(pathContext.join(output.path, resource)),
-          doesExist);
-    }
-  });
-
-  test('libraries with no duplicates are not warned about', () async {
-    getConvertedFile('$projectPath/lib/a.dart').writeAsStringSync('library a;');
-    getConvertedFile('$projectPath/lib/b.dart').writeAsStringSync('library b;');
-    var packageGraph = await utils.bootBasicPackage(
-        projectPath, packageMetaProvider, packageConfigProvider);
-    await generator.generate(packageGraph, writer);
-
-    expect(packageGraph.packageWarningCounter.errorCount, 0);
-  }, onPlatform: {'windows': Skip('Test does not work on Windows (#2446)')});
-
-  test('libraries with duplicate names are warned about', () async {
-    getConvertedFile('$projectPath/lib/a.dart').writeAsStringSync('library a;');
-    getConvertedFile('$projectPath/lib/b.dart').writeAsStringSync('library a;');
-    var packageGraph = await utils.bootBasicPackage(
-        projectPath, packageMetaProvider, packageConfigProvider);
-    await generator.generate(packageGraph, writer);
-
-    var expectedPath = pathContext.join('a', 'a-library.html');
-    expect(
-        packageGraph.localPublicLibraries,
-        anyElement((l) => packageGraph.packageWarningCounter
-            .hasWarning(l, PackageWarning.duplicateFile, expectedPath)));
-  }, onPlatform: {'windows': Skip('Test does not work on Windows (#2446)')});
 }
 
 const Matcher doesExist = _DoesExist();

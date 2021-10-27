@@ -16,7 +16,6 @@ import 'package:analyzer/src/dart/element/inheritance_manager3.dart'
 // ignore: implementation_imports
 import 'package:analyzer/src/generated/sdk.dart' show SdkLibrary;
 import 'package:collection/collection.dart' show IterableExtension;
-import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart' show PackageMeta;
@@ -194,8 +193,8 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   @override
   bool get isPublic {
     if (!super.isPublic) return false;
-    if (sdkLib != null &&
-        (sdkLib!.isInternal || !isSdkLibraryDocumented(sdkLib!))) {
+    var sdkLib = this.sdkLib;
+    if (sdkLib != null && (sdkLib.isInternal || !sdkLib.isDocumented)) {
       return false;
     }
     if (config.isLibraryExcluded(name) ||
