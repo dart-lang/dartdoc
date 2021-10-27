@@ -471,7 +471,7 @@ World
         () => renderFoo(foo, fooTemplate),
         throwsA(const TypeMatcher<MustachioResolutionError>()
             .having((e) => e.message, 'message', contains('''
-line 1, column 8 of ${fooTemplateFile.path}: Failed to resolve 's2' as a property on any types in the context chain: Foo
+line 1, column 8 of ${fooTemplateFile.path}: Failed to resolve 's2' as a property on any types in the context chain: Foo?
   ╷
 1 │ Text {{s2}}
   │        ^^
@@ -506,8 +506,8 @@ line 1, column 9 of ${fooTemplateFile.path}: Failed to resolve 's2' as a propert
             (e) => e.message,
             'message',
             contains("Failed to resolve 'x' on Foo while resolving [x] as a "
-                'property chain on any types in the context chain: Bar, after '
-                "first resolving 'foo' to a property on Bar"))));
+                'property chain on any types in the context chain: Bar?, after '
+                "first resolving 'foo' to a property on Bar?"))));
   });
 
   test('Renderer throws when it cannot resolve a multi-name section key',

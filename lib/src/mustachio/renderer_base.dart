@@ -289,16 +289,16 @@ abstract class RendererBase<T extends Object?> {
 }
 
 String renderSimple(
-    Object context, List<MustachioNode> ast, Template template, StringSink sink,
+    Object? context, List<MustachioNode> ast, Template template, StringSink sink,
     {required RendererBase<Object> parent, required Set<String> getters}) {
   var renderer = SimpleRenderer(context, parent, template, sink, getters);
   renderer.renderBlock(ast);
   return renderer.sink.toString();
 }
 
-class SimpleRenderer extends RendererBase<Object> {
+class SimpleRenderer extends RendererBase<Object?> {
   SimpleRenderer(
-    Object context,
+    Object? context,
     RendererBase<Object> parent,
     Template template,
     StringSink sink,
