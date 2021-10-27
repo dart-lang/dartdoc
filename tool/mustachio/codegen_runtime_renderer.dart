@@ -337,7 +337,8 @@ import '${p.basename(_sourceUri.path)}';
   void _buildRenderer(_RendererInfo renderer,
       {required bool buildOnlyPublicFunction}) {
     var typeName = renderer._typeName;
-    var typeWithVariablesNullable = '$typeName${renderer._typeVariablesString}?';
+    var typeWithVariablesNullable =
+        '$typeName${renderer._typeVariablesString}?';
     var typeWithVariables = '$typeName${renderer._typeVariablesString}';
 
     if (renderer.publicApiFunctionName != null) {
@@ -379,7 +380,8 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
         Template template, StringSink sink)
       : super(context, parent, template, sink);
 ''');
-    var propertyMapTypeArguments = renderer._typeArgumentsStringWith(typeWithVariables);
+    var propertyMapTypeArguments =
+        renderer._typeArgumentsStringWith(typeWithVariables);
     var propertyMapName = 'propertyMap$propertyMapTypeArguments';
     // Write out `getProperty`.
     _buffer.writeln('''
@@ -561,8 +563,12 @@ renderIterable:
           renderCall =
               '$renderFunctionName(c.$getterName, ast, r.template, sink, parent: r)';
         }
+        var nullValueGetter =
+            getterType.nullabilitySuffix == NullabilitySuffix.none
+                ? 'false'
+                : 'c.$getterName == null';
         _buffer.writeln('''
-isNullValue: ($_contextTypeVariable c) => c.$getterName == null,
+isNullValue: ($_contextTypeVariable c) => $nullValueGetter,
 
 renderValue:
     ($_contextTypeVariable c, RendererBase<$_contextTypeVariable> r,
@@ -662,7 +668,8 @@ class _RendererInfo {
 
   String _renderSingleType(DartType tp) {
     var displayString = tp.getDisplayString(withNullability: false);
-    var nullabilitySuffix = tp.nullabilitySuffix == NullabilitySuffix.question ? '?' : '';
+    var nullabilitySuffix =
+        tp.nullabilitySuffix == NullabilitySuffix.question ? '?' : '';
     return '$displayString$nullabilitySuffix';
   }
 

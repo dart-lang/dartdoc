@@ -27,7 +27,7 @@ void main() {
 
   test('property map contains all public getters', () {
     var propertyMap = Renderer_Foo.propertyMap();
-    expect(propertyMap.keys, hasLength(8));
+    expect(propertyMap.keys, hasLength(7));
     expect(propertyMap['b1'], isNotNull);
     expect(propertyMap['s1'], isNotNull);
     expect(propertyMap['l1'], isNotNull);
@@ -35,7 +35,6 @@ void main() {
     expect(propertyMap['p1'], isNotNull);
     expect(propertyMap['length'], isNotNull);
     expect(propertyMap['hashCode'], isNotNull);
-    expect(propertyMap['runtimeType'], isNotNull);
   });
 
   test('property map contains valid bool Properties', () {
@@ -82,8 +81,8 @@ void main() {
 
   test('isNullValue returns true when a value is null', () {
     var propertyMap = Renderer_Foo.propertyMap();
-    var foo = Foo()..s1 = null;
-    expect(propertyMap['s1'].isNullValue(foo), isTrue);
+    var foo = Foo()..length = null;
+    expect(propertyMap['length'].isNullValue(foo), isTrue);
   });
 
   test('isNullValue returns false when a value is not null', () {
@@ -226,9 +225,9 @@ void main() {
 
   test('Renderer renders a null value section node as blank', () async {
     var fooTemplateFile = getFile('/project/foo.mustache')
-      ..writeAsStringSync('Text {{#s1}}"{{.}}" ({{length}}){{/s1}}');
+      ..writeAsStringSync('Text {{#length}}"{{.}}" ({{length}}){{/length}}');
     var fooTemplate = await Template.parse(fooTemplateFile);
-    var foo = Foo()..s1 = null;
+    var foo = Foo()..length = null;
     expect(renderFoo(foo, fooTemplate), equals('Text '));
   });
 
@@ -242,9 +241,9 @@ void main() {
 
   test('Renderer renders an inverted null value section node', () async {
     var fooTemplateFile = getFile('/project/foo.mustache')
-      ..writeAsStringSync('Text {{^s1}}Section{{/s1}}');
+      ..writeAsStringSync('Text {{^length}}Section{{/length}}');
     var fooTemplate = await Template.parse(fooTemplateFile);
-    var foo = Foo()..s1 = null;
+    var foo = Foo()..length = null;
     expect(renderFoo(foo, fooTemplate), equals('Text Section'));
   });
 

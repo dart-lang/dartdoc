@@ -139,14 +139,16 @@ class Baz {}
 '''));
     });
 
-    test('with a property map with a non-bool, non-Iterable property', () {
+    test(
+        'with a property map with a non-bool, non-Iterable, non-nullable property',
+        () {
       expect(generatedContent, contains('''
                 's1': Property(
                   getValue: (CT_ c) => c.s1,
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(c, remainingNames, 'String'),
-                  isNullValue: (CT_ c) => c.s1 == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     renderSimple(c.s1, ast, r.template, sink,
@@ -207,7 +209,8 @@ import 'package:mustachio/annotations.dart';
     test('with a corresponding render function', () async {
       expect(
           generatedContent,
-          contains('void _render_Foo<T>(Foo<T>? context, List<MustachioNode> ast, Template template,\n'
+          contains(
+              'void _render_Foo<T>(Foo<T>? context, List<MustachioNode> ast, Template template,\n'
               '    StringSink sink,\n'));
     });
 

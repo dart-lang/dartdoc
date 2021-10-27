@@ -265,7 +265,7 @@ class Renderer_Foo extends RendererBase<Foo?> {
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(c, remainingNames, 'String'),
-                  isNullValue: (CT_ c) => c.s1 == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     renderSimple(c.s1, ast, r.template, sink,
@@ -310,6 +310,12 @@ class Renderer_FooBase<T extends Object> extends RendererBase<FooBase<T>?> {
                             self.getValue(c) as Object,
                             nextProperty,
                             [...remainingNames.skip(1)]);
+                      },
+                      isNullValue: (CT_ c) => false,
+                      renderValue: (CT_ c, RendererBase<CT_> r,
+                          List<MustachioNode> ast, StringSink sink) {
+                        renderSimple(c.baz, ast, r.template, sink,
+                            parent: r, getters: _invisibleGetters['Object']!);
                       },
                     ),
                   }) as Map<String, Property<CT_>>;
@@ -382,23 +388,11 @@ class Renderer_Object extends RendererBase<Object?> {
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(c, remainingNames, 'int'),
-                  isNullValue: (CT_ c) => c.hashCode == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     renderSimple(c.hashCode, ast, r.template, sink,
                         parent: r, getters: _invisibleGetters['int']!);
-                  },
-                ),
-                'runtimeType': Property(
-                  getValue: (CT_ c) => c.runtimeType,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'Type'),
-                  isNullValue: (CT_ c) => c.runtimeType == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.runtimeType, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['Type']!);
                   },
                 ),
               }) as Map<String, Property<CT_>>;
@@ -554,6 +548,7 @@ class Renderer_Property3 extends RendererBase<Property3?> {
 }
 
 const _invisibleGetters = {
+  'Object': {'hashCode', 'runtimeType'},
   'String': {
     'hashCode',
     'runtimeType',
@@ -563,7 +558,6 @@ const _invisibleGetters = {
     'codeUnits',
     'runes'
   },
-  'Type': {'hashCode', 'runtimeType'},
   'int': {
     'hashCode',
     'runtimeType',
