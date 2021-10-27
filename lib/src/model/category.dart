@@ -32,7 +32,7 @@ class Category extends Nameable
   @override
   Package get package => _package;
 
-  final String _name;
+  final String? _name;
 
   final DartdocOptionContext _config;
 
@@ -95,7 +95,7 @@ class Category extends Nameable
   String get name => categoryDefinition.displayName;
 
   @override
-  String get sortKey => _name;
+  String get sortKey => _name ?? '<default>';
 
   @override
   List<String> get containerOrder => config.categoryOrder;

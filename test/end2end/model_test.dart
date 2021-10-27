@@ -9,6 +9,7 @@ library dartdoc.model_test;
 
 import 'dart:io';
 
+import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/source/line_info.dart';
 import 'package:async/async.dart';
@@ -1048,10 +1049,19 @@ void main() {
     });
 
     test('can import other libraries with unusual URIs', () {
-      expect(
-          fakeLibrary.importedExportedLibraries
-              .where((l) => l.name == 'import_unusual'),
-          isNotEmpty);
+      final Set<Library> fakeLibraryImportedExported = () {
+        var _importedExportedLibraries = <Library>{};
+        for (var l in <LibraryElement>{
+          ...fakeLibrary.element.importedLibraries,
+          ...fakeLibrary.element.exportedLibraries
+        }) {
+          var lib = packageGraph.modelBuilder.fromElement(l) as Library;
+          _importedExportedLibraries.add(lib);
+        }
+        return _importedExportedLibraries;
+      }();
+      expect(fakeLibraryImportedExported.any((l) => l.name == 'import_unusual'),
+          isTrue);
     });
 
     test('@canonicalFor directive works', () {

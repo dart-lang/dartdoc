@@ -43,6 +43,7 @@ abstract class ElementType extends Privacy
     if (fElement == null ||
         fElement.kind == ElementKind.DYNAMIC ||
         fElement.kind == ElementKind.NEVER) {
+      // [UndefinedElementType]s.
       if (f is FunctionType) {
         if (f.alias?.element != null) {
           return AliasedFunctionTypeElementType(
@@ -51,43 +52,42 @@ abstract class ElementType extends Privacy
         return FunctionTypeElementType(f, library, packageGraph, returnedFrom);
       }
       return UndefinedElementType(f, library, packageGraph, returnedFrom);
-    } else {
-      var element = packageGraph.modelBuilder.fromElement(fElement);
-      // [TypeAliasElement.aliasElement] has different implications.
-      // In that case it is an actual type alias of some kind (generic
-      // or otherwise.   Here however aliasElement signals that this is a
-      // type referring to an alias.
-      if (f is! TypeAliasElement && f.alias?.element != null) {
-        return AliasedElementType(f as ParameterizedType, library, packageGraph,
-            element, returnedFrom);
-      }
-      assert(f is ParameterizedType || f is TypeParameterType);
-      // TODO(jcollins-g): strip out all the cruft that's accumulated
-      // here for non-generic type aliases.
-      var isGenericTypeAlias = f.alias?.element != null && f is! InterfaceType;
-      if (f is FunctionType) {
-        assert(f is ParameterizedType);
-        // This is an indication we have an extremely out of date analyzer....
-        assert(
-            !isGenericTypeAlias, 'should never occur: out of date analyzer?');
-        // And finally, delete this case and its associated class
-        // after https://dart-review.googlesource.com/c/sdk/+/201520
-        // is in all published versions of analyzer this version of dartdoc
-        // is compatible with.
-        return CallableElementType(
-            f, library, packageGraph, element, returnedFrom);
-      } else if (isGenericTypeAlias) {
-        return GenericTypeAliasElementType(f as TypeParameterType, library,
-            packageGraph, element, returnedFrom);
-      }
-      if (f is TypeParameterType) {
-        return TypeParameterElementType(
-            f, library, packageGraph, element, returnedFrom);
-      }
-      assert(f is ParameterizedType);
-      return ParameterizedElementType(
+    }
+    // [DefinedElementType]s.
+    var element = packageGraph.modelBuilder.fromElement(fElement);
+    // [TypeAliasElement.aliasElement] has different implications.
+    // In that case it is an actual type alias of some kind (generic
+    // or otherwise.   Here however aliasElement signals that this is a
+    // type referring to an alias.
+    if (f is! TypeAliasElement && f.alias?.element != null) {
+      return AliasedElementType(
           f as ParameterizedType, library, packageGraph, element, returnedFrom);
     }
+    assert(f is ParameterizedType || f is TypeParameterType);
+    // TODO(jcollins-g): strip out all the cruft that's accumulated
+    // here for non-generic type aliases.
+    var isGenericTypeAlias = f.alias?.element != null && f is! InterfaceType;
+    if (f is FunctionType) {
+      assert(f is ParameterizedType);
+      // This is an indication we have an extremely out of date analyzer....
+      assert(!isGenericTypeAlias, 'should never occur: out of date analyzer?');
+      // And finally, delete this case and its associated class
+      // after https://dart-review.googlesource.com/c/sdk/+/201520
+      // is in all published versions of analyzer this version of dartdoc
+      // is compatible with.
+      return CallableElementType(
+          f, library, packageGraph, element, returnedFrom);
+    } else if (isGenericTypeAlias) {
+      return GenericTypeAliasElementType(
+          f as TypeParameterType, library, packageGraph, element, returnedFrom);
+    }
+    if (f is TypeParameterType) {
+      return TypeParameterElementType(
+          f, library, packageGraph, element, returnedFrom);
+    }
+    assert(f is ParameterizedType);
+    return ParameterizedElementType(
+        f as ParameterizedType, library, packageGraph, element, returnedFrom);
   }
 
   bool get canHaveParameters => false;
@@ -260,7 +260,7 @@ class AliasedElementType extends ParameterizedElementType with Aliased {
   ParameterizedType get type;
 
   /// Parameters, if available, for the underlying typedef.
-  List<Parameter> get aliasedParameters =>
+  late final List<Parameter> aliasedParameters =
       modelElement.isCallable ? modelElement.parameters : [];
 
   @override
@@ -298,7 +298,7 @@ abstract class DefinedElementType extends ElementType {
       this.modelElement, ElementType? returnedFrom)
       : super(type, library, packageGraph, returnedFrom);
 
-  Element get element => modelElement.element;
+  Element get element => modelElement.element!;
 
   @override
   String get name => type.element!.name!;
@@ -372,7 +372,7 @@ abstract class DefinedElementType extends ElementType {
       modelElement.referenceParents;
 
   @override
-  Iterable<CommentReferable> get referenceGrandparentOverrides =>
+  Iterable<CommentReferable>? get referenceGrandparentOverrides =>
       modelElement.referenceGrandparentOverrides;
 
   @internal

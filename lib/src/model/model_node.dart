@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
-
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
@@ -17,27 +15,27 @@ class ModelNode {
   final Element element;
   final ResourceProvider resourceProvider;
 
-  final AstNode _sourceNode;
+  final AstNode? _sourceNode;
 
-  ModelNode(AstNode sourceNode, this.element, this.resourceProvider)
+  ModelNode(AstNode? sourceNode, this.element, this.resourceProvider)
       : _sourceNode = sourceNode,
         commentRefs = _commentRefsFor(sourceNode, resourceProvider);
 
   static List<ModelCommentReference> _commentRefsFor(
-      AstNode node, ResourceProvider resourceProvider) {
+      AstNode? node, ResourceProvider resourceProvider) {
     if (node is AnnotatedNode &&
-        node?.documentationComment?.references != null) {
+        node.documentationComment?.references != null) {
       return [
-        for (var m in node.documentationComment.references)
+        for (var m in node.documentationComment!.references)
           ModelCommentReference(m, resourceProvider),
       ];
     }
     return [];
   }
 
-  String _sourceCode;
+  String? _sourceCode;
 
-  String get sourceCode {
+  String? get sourceCode {
     if (_sourceCode == null) {
       if (_sourceNode?.offset != null) {
         var enclosingSourceNode = _sourceNode;
@@ -46,12 +44,12 @@ class ModelNode {
         /// In this case, it is either a [FieldDeclaration] or
         /// [TopLevelVariableDeclaration]. (#2401)
         if (_sourceNode is VariableDeclaration) {
-          enclosingSourceNode = _sourceNode.parent.parent;
+          enclosingSourceNode = _sourceNode!.parent!.parent;
           assert(enclosingSourceNode is FieldDeclaration ||
               enclosingSourceNode is TopLevelVariableDeclaration);
         }
 
-        var sourceEnd = enclosingSourceNode.end;
+        var sourceEnd = enclosingSourceNode!.end;
         var sourceOffset = enclosingSourceNode.offset;
 
         var contents =
@@ -60,7 +58,7 @@ class ModelNode {
         var i = sourceOffset;
         while (i > 0) {
           i -= 1;
-          if (contents[i] == '\n' || contents[i] == '\r') {
+          if (contents![i] == '\n' || contents[i] == '\r') {
             i += 1;
             break;
           }
@@ -68,7 +66,7 @@ class ModelNode {
 
         // Trim the common indent from the source snippet.
         var start = sourceOffset - (sourceOffset - i);
-        var source = contents.substring(start, sourceEnd);
+        var source = contents!.substring(start, sourceEnd);
 
         source = model_utils.stripIndentFromSource(source);
         source = model_utils.stripDartdocCommentsFromSource(source);

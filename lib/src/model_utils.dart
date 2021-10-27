@@ -95,9 +95,7 @@ Iterable<InheritingContainer> findCanonicalFor(
     Iterable<InheritingContainer> containers) {
   return containers.map((c) =>
       c.packageGraph.findCanonicalModelElementFor(c.element)
-          as InheritingContainer ??
-      // FIXME(nnbd) : remove ignore after package_graph is migrated
-      // ignore: dead_null_aware_expression
+          as InheritingContainer? ??
       c);
 }
 

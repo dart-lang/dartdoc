@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
-
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/model.dart';
 
@@ -13,17 +11,17 @@ mixin ExtensionTarget on ModelElement {
   bool get hasModifiers;
 
   bool get hasPotentiallyApplicableExtensions =>
-      potentiallyApplicableExtensions.isNotEmpty;
+      potentiallyApplicableExtensions!.isNotEmpty;
 
-  List<Extension> _potentiallyApplicableExtensions;
+  List<Extension>? _potentiallyApplicableExtensions;
 
   /// The set of potentiallyApplicableExtensions, for display in templates.
   ///
   /// This is defined as those extensions where an instantiation of the type
   /// defined by [element] can exist where this extension applies, not including
   /// any extension that applies to every type.
-  Iterable<Extension> get potentiallyApplicableExtensions {
-    _potentiallyApplicableExtensions ??= packageGraph.documentedExtensions
+  Iterable<Extension>? get potentiallyApplicableExtensions {
+    _potentiallyApplicableExtensions ??= packageGraph.documentedExtensions!
         .where((e) => !e.alwaysApplies)
         .where((e) => e.couldApplyTo(this))
         .toList(growable: false);
@@ -33,5 +31,5 @@ mixin ExtensionTarget on ModelElement {
   ElementType get modelType;
 
   List<Extension> get potentiallyApplicableExtensionsSorted =>
-      potentiallyApplicableExtensions.toList()..sort(byName);
+      potentiallyApplicableExtensions!.toList()..sort(byName);
 }

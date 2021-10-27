@@ -2,19 +2,17 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
-
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/model/privacy.dart';
 
 int byFeatureOrdering(Feature a, Feature b) {
   if (a.sortGroup < b.sortGroup) return -1;
   if (a.sortGroup > b.sortGroup) return 1;
-  return compareAsciiLowerCaseNatural(a.name, b.name);
+  return compareAsciiLowerCaseNatural(a.name!, b.name!);
 }
 
 class ElementFeatureNotFoundError extends Error {
-  final String message;
+  final String? message;
 
   ElementFeatureNotFoundError([this.message]);
 
@@ -25,7 +23,7 @@ class ElementFeatureNotFoundError extends Error {
 /// A "feature" includes both explicit annotations in code (e.g. `deprecated`)
 /// as well as others added by the documentation system (`read-write`);
 class Feature implements Privacy {
-  final String _name;
+  final String? _name;
 
   /// Do not use this except in subclasses, prefer const members of this
   /// class instead.
@@ -33,14 +31,14 @@ class Feature implements Privacy {
 
   final String featurePrefix = '';
 
-  String get name => _name;
+  String? get name => _name;
 
-  String get linkedName => name;
+  String? get linkedName => name;
 
-  String get linkedNameWithParameters => linkedName;
+  String? get linkedNameWithParameters => linkedName;
 
   @override
-  bool get isPublic => !name.startsWith('_');
+  bool get isPublic => !name!.startsWith('_');
 
   /// Numerical sort group for this feature.
   /// Less than zero will sort before custom annotations.

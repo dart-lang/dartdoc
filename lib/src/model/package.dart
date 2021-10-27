@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
-
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/comment_references/model_comment_reference.dart';
@@ -44,7 +42,7 @@ class Package extends LibraryContainer
   String _name;
   PackageGraph _packageGraph;
 
-  final Map<String, Category> _nameToCategory = {};
+  final Map<String?, Category> _nameToCategory = {};
 
   // Creates a package, if necessary, and adds it to the [packageGraph].
   factory Package.fromPackageMeta(
@@ -63,10 +61,10 @@ class Package extends LibraryContainer
     // before allLibrariesAdded is true.
     assert(
         !(expectNonLocal &&
-            packageGraph.packageMap[packageName].documentedWhere ==
+            packageGraph.packageMap[packageName]!.documentedWhere ==
                 DocumentLocation.local),
         'Found more libraries to document after allLibrariesAdded was set to true');
-    return packageGraph.packageMap[packageName];
+    return packageGraph.packageMap[packageName]!;
   }
 
   Package._(this._name, this._packageGraph, this._packageMeta);
@@ -75,14 +73,14 @@ class Package extends LibraryContainer
   bool get isCanonical => true;
 
   @override
-  Library get canonicalLibrary => null;
+  Library? get canonicalLibrary => null;
 
   /// Number of times we have invoked a tool for this package.
   int toolInvocationIndex = 0;
 
   // The animation IDs that have already been used, indexed by the [href] of the
   // object that contains them.
-  Map<String, Set<String>> usedAnimationIdsByHref = {};
+  Map<String?, Set<String>> usedAnimationIdsByHref = {};
 
   /// Pieces of the location, split to remove 'package:' and slashes.
   @override
@@ -93,8 +91,7 @@ class Package extends LibraryContainer
   /// non-documented libraries unless they are all referenced by documented ones.
   final Set<Library> allLibraries = {};
 
-  bool get hasHomepage =>
-      packageMeta.homepage != null && packageMeta.homepage.isNotEmpty;
+  bool get hasHomepage => packageMeta.homepage.isNotEmpty;
 
   String get homepage => packageMeta.homepage;
 
@@ -108,22 +105,22 @@ class Package extends LibraryContainer
   /// in this package.
   bool get hasCategories => categories.isNotEmpty;
 
-  LibraryContainer get defaultCategory => nameToCategory[null];
+  LibraryContainer? get defaultCategory => nameToCategory[null];
 
-  String _documentationAsHtml;
+  String? _documentationAsHtml;
 
   @override
-  String get documentationAsHtml {
+  String? get documentationAsHtml {
     if (_documentationAsHtml != null) return _documentationAsHtml;
     _documentationAsHtml = Documentation.forElement(this).asHtml;
 
     return _documentationAsHtml;
   }
 
-  String /*?*/ _documentation;
+  String? _documentation;
 
   @override
-  String get documentation {
+  String? get documentation {
     if (_documentation == null) {
       final docFile = documentationFile;
       if (docFile != null) {
@@ -140,9 +137,9 @@ class Package extends LibraryContainer
   @override
   bool get hasExtendedDocumentation => hasDocumentation;
 
-  File /*?*/ _documentationFile;
+  File? _documentationFile;
 
-  File /*?*/ get documentationFile =>
+  File? get documentationFile =>
       _documentationFile ??= packageMeta.getReadmeContents();
 
   @override
@@ -153,70 +150,64 @@ class Package extends LibraryContainer
       isFirstPackage || documentedWhere != DocumentLocation.missing;
 
   @override
-  Warnable get enclosingElement => null;
-
-  bool _isPublic;
+  Warnable? get enclosingElement => null;
 
   @override
-  bool get isPublic {
-    _isPublic ??= libraries.any((l) => l.isPublic);
-    return _isPublic;
-  }
 
-  bool _isLocal;
+  /// If we have public libraries, this is the default package, or we are
+  /// auto-including dependencies, this package is public.
+  late final bool isPublic =
+      libraries.any((l) => l.isPublic) || _isLocalPublicByDefault;
 
   /// Return true if this is the default package, this is part of an embedder
   /// SDK, or if [DartdocOptionContext.autoIncludeDependencies] is true -- but
   /// only if the package was not excluded on the command line.
-  bool get isLocal {
-    _isLocal ??= (
-            // Document as local if this is the default package.
-            packageMeta == packageGraph.packageMeta ||
-                // Assume we want to document an embedded SDK as local if
-                // it has libraries defined in the default package.
-                // TODO(jcollins-g): Handle case where embedder SDKs can be
-                // assembled from multiple locations?
-                packageGraph.hasEmbedderSdk &&
-                    packageMeta.isSdk &&
-                    libraries.any((l) => _pathContext.isWithin(
-                        packageGraph.packageMeta.dir.path,
-                        (l.element.source.fullName))) ||
-                // autoIncludeDependencies means everything is local.
-                packageGraph.config.autoIncludeDependencies) &&
-        // Regardless of the above rules, do not document as local if
-        // we excluded this package by name.
-        !packageGraph.config.isPackageExcluded(name);
-    return _isLocal;
-  }
+  late final bool isLocal = (
+          // Document as local if this is the default package.
+          _isLocalPublicByDefault ||
+              // Assume we want to document an embedded SDK as local if
+              // it has libraries defined in the default package.
+              // TODO(jcollins-g): Handle case where embedder SDKs can be
+              // assembled from multiple locations?
+              packageGraph.hasEmbedderSdk &&
+                  packageMeta.isSdk &&
+                  libraries.any((l) => _pathContext.isWithin(
+                      packageGraph.packageMeta.dir.path,
+                      (l.element.source.fullName)))) &&
+      // Regardless of the above rules, do not document as local if
+      // we excluded this package by name.
+      !_isExcluded;
 
-  /* late */ DocumentLocation _documentedWhere;
+  /// True if the global config excludes this package by name.
+  late final bool _isExcluded = packageGraph.config.isPackageExcluded(name);
 
-  DocumentLocation get documentedWhere {
-    if (_documentedWhere == null) {
-      if (isLocal) {
-        if (isPublic) {
-          _documentedWhere = DocumentLocation.local;
-        }
-      } else {
-        if (config.linkToRemote &&
-            config.linkToUrl.isNotEmpty &&
-            isPublic &&
-            !packageGraph.config.isPackageExcluded(name)) {
-          _documentedWhere = DocumentLocation.remote;
-        } else {
-          _documentedWhere = DocumentLocation.missing;
-        }
-      }
+  /// True if this is the package being documented by default, or the
+  /// global config indicates we are auto-including dependencies.
+  late final bool _isLocalPublicByDefault =
+      (packageMeta == packageGraph.packageMeta ||
+          packageGraph.config.autoIncludeDependencies);
+
+  /// Returns the location of documentation for this package, for linkToRemote
+  /// and canonicalization decision making.
+  late final DocumentLocation documentedWhere = () {
+    if (isLocal && isPublic) {
+      return DocumentLocation.local;
     }
-    return _documentedWhere;
-  }
+    if (config.linkToRemote &&
+        config.linkToUrl.isNotEmpty &&
+        isPublic &&
+        !packageGraph.config.isPackageExcluded(name)) {
+      return DocumentLocation.remote;
+    }
+    return DocumentLocation.missing;
+  }();
 
   @override
   String get enclosingName => packageGraph.defaultPackageName;
 
   String get filePath => 'index.$fileType';
 
-  String _fileType;
+  String? _fileType;
 
   String get fileType {
     // TODO(jdkoren): Provide a way to determine file type of a remote package's
@@ -232,16 +223,16 @@ class Package extends LibraryContainer
   @override
   String get fullyQualifiedName => 'package:$name';
 
-  String _baseHref;
+  String? _baseHref;
 
-  String get baseHref {
+  String? get baseHref {
     if (_baseHref != null) {
       return _baseHref;
     }
 
     if (documentedWhere == DocumentLocation.remote) {
       _baseHref = _remoteBaseHref;
-      if (!_baseHref.endsWith('/')) _baseHref = '$_baseHref/';
+      if (!_baseHref!.endsWith('/')) _baseHref = '$_baseHref/';
     } else {
       _baseHref = config.useBaseHref ? '' : htmlBasePlaceholder;
     }
@@ -278,7 +269,7 @@ class Package extends LibraryContainer
           return packageMeta.version;
         default:
           assert(false, 'Unsupported case: ${m.group(1)}');
-          return null;
+          return '';
       }
     });
   }
@@ -309,11 +300,11 @@ class Package extends LibraryContainer
   }
 
   /// A map of category name to the category itself.
-  Map<String, Category> get nameToCategory {
+  Map<String?, Category> get nameToCategory {
     if (_nameToCategory.isEmpty) {
-      Category categoryFor(String category) {
+      Category? categoryFor(String? category) {
         _nameToCategory.putIfAbsent(
-            category, () => Category(category, this, config));
+            category, () => Category(category!, this, config));
         return _nameToCategory[category];
       }
 
@@ -321,25 +312,22 @@ class Package extends LibraryContainer
       for (var c in libraries.expand(
           (l) => l.allCanonicalModelElements.whereType<Categorization>())) {
         if (c.hasCategoryNames) {
-          for (var category in c.categoryNames) {
-            categoryFor(category).addItem(c);
+          for (var category in c.categoryNames!) {
+            categoryFor(category)!.addItem(c);
           }
         } else {
           // Add to the default category.
-          categoryFor(null).addItem(c);
+          categoryFor(null)!.addItem(c);
         }
       }
     }
     return _nameToCategory;
   }
 
-  List<Category> _categories;
-
-  List<Category> get categories {
-    _categories ??= nameToCategory.values.where((c) => c.name != null).toList()
+  late final List<Category> categories = () {
+    return nameToCategory.values.where((c) => c.name.isNotEmpty).toList()
       ..sort();
-    return _categories;
-  }
+  }();
 
   Iterable<Category> get categoriesWithPublicLibraries =>
       categories.where((c) => c.publicLibraries.isNotEmpty);
@@ -358,16 +346,11 @@ class Package extends LibraryContainer
 
   bool get hasDocumentedCategories => documentedCategories.isNotEmpty;
 
-  DartdocOptionContext _config;
-
   @override
-  DartdocOptionContext get config {
-    _config ??= DartdocOptionContext.fromContext(
-        packageGraph.config,
-        packageGraph.resourceProvider.getFolder(packagePath),
-        packageGraph.resourceProvider);
-    return _config;
-  }
+  late final DartdocOptionContext config = DartdocOptionContext.fromContext(
+      packageGraph.config,
+      packageGraph.resourceProvider.getFolder(packagePath!),
+      packageGraph.resourceProvider);
 
   /// Is this the package at the top of the list?  We display the first
   /// package specially (with "Libraries" rather than the package name).
@@ -378,39 +361,39 @@ class Package extends LibraryContainer
   @override
   bool get isSdk => packageMeta.isSdk;
 
-  String _packagePath;
+  String? _packagePath;
 
-  String get packagePath {
+  String? get packagePath {
     _packagePath ??= _pathContext.canonicalize(packageMeta.dir.path);
     return _packagePath;
   }
 
-  String get version => packageMeta.version ?? '0.0.0-unknown';
+  String get version => packageMeta.version;
 
   final PackageMeta _packageMeta;
 
   PackageMeta get packageMeta => _packageMeta;
 
   @override
-  Element get element => null;
+  Element? get element => null;
 
   @override
-  List<String> get containerOrder => config.packageOrder;
+  List<String?> get containerOrder => config.packageOrder;
 
-  Map<String, CommentReferable> _referenceChildren;
+  Map<String, CommentReferable>? _referenceChildren;
   @override
   Map<String, CommentReferable> get referenceChildren {
     if (_referenceChildren == null) {
       _referenceChildren = {};
-      _referenceChildren.addEntries(publicLibrariesSorted.generateEntries());
+      _referenceChildren!.addEntries(publicLibrariesSorted.generateEntries());
       // Do not override any preexisting data, and insert based on the
       // public library sort order.
       // TODO(jcollins-g): warn when results require package-global
       // lookups like this.
-      _referenceChildren.addEntriesIfAbsent(
+      _referenceChildren!.addEntriesIfAbsent(
           publicLibrariesSorted.expand((l) => l.referenceChildren.entries));
     }
-    return _referenceChildren;
+    return _referenceChildren!;
   }
 
   @override

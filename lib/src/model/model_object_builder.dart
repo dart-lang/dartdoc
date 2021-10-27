@@ -10,7 +10,6 @@ import 'package:dartdoc/src/model/container.dart';
 import 'package:dartdoc/src/model/library.dart';
 import 'package:dartdoc/src/model/model_element.dart';
 import 'package:dartdoc/src/model/package_graph.dart';
-import 'package:meta/meta.dart';
 
 abstract class ModelObjectBuilder
     implements ModelElementBuilder, ElementTypeBuilder {}
@@ -22,8 +21,8 @@ abstract class ModelElementBuilder {
 
   ModelElement fromPropertyInducingElement(Element e, Library l,
       {Container enclosingContainer,
-      @required Accessor getter,
-      @required Accessor setter});
+      required Accessor? getter,
+      required Accessor? setter});
 }
 
 abstract class ElementTypeBuilder {

@@ -210,7 +210,7 @@ abstract class ParameterRenderer {
         buf.write(')');
         buf.write(paramModelType.nullabilitySuffix);
       }
-    } else if (param.modelType != null) {
+    } else {
       var linkedTypeName = paramModelType.linkedName;
       if (linkedTypeName.isNotEmpty) {
         buf.write(typeName(linkedTypeName));
@@ -225,7 +225,7 @@ abstract class ParameterRenderer {
 
     if (param.hasDefaultValue) {
       buf.write(' = ');
-      buf.write(defaultValue(param.defaultValue));
+      buf.write(defaultValue(param.defaultValue!));
     }
 
     buf.write(suffix);

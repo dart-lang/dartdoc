@@ -58,8 +58,8 @@ class DartdocFileMissing extends DartdocOptionError {
 /// the 'categories' keyword in the options file, and populated by the
 /// [CategoryConfiguration] class.
 class CategoryDefinition {
-  /// Internal name of the category.
-  final String name;
+  /// Internal name of the category, or null for the default category.
+  final String? name;
 
   /// Displayed name of the category in docs, or null if there is none.
   final String? _displayName;
@@ -71,7 +71,7 @@ class CategoryDefinition {
   CategoryDefinition(this.name, this._displayName, this.documentationMarkdown);
 
   /// Returns the [_displayName], if available, or else simply [name].
-  String get displayName => _displayName ?? name;
+  String get displayName => _displayName ?? name ?? '';
 }
 
 /// A configuration class that can interpret category definitions from a YAML
@@ -1246,7 +1246,7 @@ class DartdocOptionContext extends DartdocOptionContextBase
 
   List<String> get dropTextFrom => optionSet['dropTextFrom'].valueAt(context);
 
-  String get examplePathPrefix =>
+  String? get examplePathPrefix =>
       optionSet['examplePathPrefix'].valueAt(context);
 
   // TODO(srawlins): This memoization saved a lot of time in unit testing, but

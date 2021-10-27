@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
-
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -15,7 +13,7 @@ class NeverType extends ModelElement {
   /// `Never` is not a real object, and so we can't document it, so there
   /// can be nothing canonical for it.
   @override
-  ModelElement get canonicalModelElement => null;
+  ModelElement? get canonicalModelElement => null;
 
   @override
   ModelElement get enclosingElement => throw UnsupportedError('');
@@ -23,7 +21,7 @@ class NeverType extends ModelElement {
   /// And similarly, even if someone references it directly it can have
   /// no hyperlink.
   @override
-  String get href => null;
+  String? get href => null;
 
   @override
   String get kind => 'Never';
@@ -32,7 +30,7 @@ class NeverType extends ModelElement {
   String get linkedName => 'Never';
 
   @override
-  String get filePath => null;
+  String? get filePath => null;
 
   @override
   Map<String, CommentReferable> get referenceChildren => {};

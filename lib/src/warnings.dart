@@ -165,6 +165,24 @@ const Map<PackageWarning, PackageWarningDefinition> packageWarningDefinitions =
       'no-defining-library-found',
       'The defining library for an element could not be found; the library may '
           'be imported or exported with a non-standard URI',
+      longHelp: [
+        'For non-canonicalized import or export paths, dartdoc can sometimes lose ',
+        'track of the defining library for an element.  If this happens, canonicalization',
+        'will assume that reexported elements are defined somewhere it deems "reasonable", ',
+        'defaulting first to the enclosing context\'s definingLibrary if available, ',
+        'or the library is is visible in.  This can lead to confusing documentation ',
+        'structure that implies duplicate code where none exists.',
+        '',
+        'To correct this, canonicalize all paths in the import or export chain',
+        'making this symbol visible.',
+        '',
+        "For example: 'change  `import 'package:dartdoc/src/model/../model/extension_target.dart';`",
+        "to  `import 'package:dartdoc/src/model/extension_target.dart';`",
+        "or `import 'src/../src/foo.dart';`",
+        "to `import 'src/foo.dart';",
+        "or `import 'package:dartdoc//lib//foo.dart';",
+        "to `import 'package:dartdoc/lib/foo.dart';",
+      ],
       defaultWarningMode: PackageWarningMode.error),
   PackageWarning.notImplemented: PackageWarningDefinition(
       PackageWarning.notImplemented,
@@ -286,7 +304,7 @@ mixin Warnable implements Canonicalization, CommentReferable {
 
   Warnable? get enclosingElement;
 
-  Package get package;
+  Package? get package;
 
   void warn(
     PackageWarning kind, {
@@ -503,7 +521,7 @@ class PackageWarningCounter {
       _items.add(_JsonWarning(type, kind, fullMessage, entry));
     }
     for (var item in _items) {
-      logWarning(item);
+      logWarning(item.toString());
     }
     _items.clear();
   }
@@ -534,7 +552,7 @@ class PackageWarningCounter {
     PackageWarningOptionContext config =
         element?.config ?? packageGraph.defaultPackage.config;
     PackageWarningMode? warningMode;
-    var isLocal = element?.package.isLocal ?? true;
+    var isLocal = element?.package?.isLocal ?? true;
     if (!config.allowNonLocalWarnings && !isLocal) {
       warningMode = PackageWarningMode.ignore;
     } else {

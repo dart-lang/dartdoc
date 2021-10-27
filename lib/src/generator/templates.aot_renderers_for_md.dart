@@ -712,12 +712,10 @@ String renderClass(_i1.ClassTemplateData context0) {
 ''');
         var context11 = context2.potentiallyApplicableExtensions;
         if (context11 != null) {
-          for (var context12 in context11) {
-            buffer.writeln();
-            buffer.write('''
+          buffer.writeln();
+          buffer.write('''
 - ''');
-            buffer.write(context12.linkedName.toString());
-          }
+          buffer.write(context2.linkedName.toString());
         }
       }
       buffer.writeln();
@@ -726,13 +724,13 @@ String renderClass(_i1.ClassTemplateData context0) {
         buffer.write('''
 **Annotations**
 ''');
-        var context13 = context2.annotations;
-        if (context13 != null) {
-          for (var context14 in context13) {
+        var context12 = context2.annotations;
+        if (context12 != null) {
+          for (var context13 in context12) {
             buffer.writeln();
             buffer.write('''
 - ''');
-            buffer.write(context14.linkedNameWithParameters.toString());
+            buffer.write(context13.linkedNameWithParameters.toString());
           }
         }
       }
@@ -743,25 +741,25 @@ String renderClass(_i1.ClassTemplateData context0) {
       buffer.write('''
 ## Constructors
 ''');
-      var context15 = context2.publicConstructorsSorted;
-      if (context15 != null) {
-        for (var context16 in context15) {
+      var context14 = context2.publicConstructorsSorted;
+      if (context14 != null) {
+        for (var context15 in context14) {
           buffer.writeln();
-          buffer.write(context16.linkedName.toString());
+          buffer.write(context15.linkedName.toString());
           buffer.write(''' (''');
-          buffer.write(context16.linkedParams.toString());
+          buffer.write(context15.linkedParams.toString());
           buffer.write(''')
 
 ''');
-          buffer.write(context16.oneLineDoc.toString());
+          buffer.write(context15.oneLineDoc.toString());
           buffer.write(' ');
-          buffer.write(context16.extendedDocLink.toString());
+          buffer.write(context15.extendedDocLink.toString());
           buffer.write('  ');
-          if (context16.isConst == true) {
+          if (context15.isConst == true) {
             buffer.write('''_const_''');
           }
           buffer.write(' ');
-          if (context16.isFactory == true) {
+          if (context15.isFactory == true) {
             buffer.write('''_factory_''');
           }
           buffer.writeln();
@@ -774,12 +772,12 @@ String renderClass(_i1.ClassTemplateData context0) {
       buffer.write('''
 ## Properties
 ''');
-      var context17 = context2.publicInstanceFieldsSorted;
-      if (context17 != null) {
-        for (var context18 in context17) {
+      var context16 = context2.publicInstanceFieldsSorted;
+      if (context16 != null) {
+        for (var context17 in context16) {
           buffer.writeln();
           buffer.write(
-              _renderClass_partial_property_5(context18, context2, context0));
+              _renderClass_partial_property_5(context17, context2, context0));
           buffer.writeln();
         }
       }
@@ -790,12 +788,12 @@ String renderClass(_i1.ClassTemplateData context0) {
       buffer.write('''
 ## Methods
 ''');
-      var context19 = context2.publicInstanceMethodsSorted;
-      if (context19 != null) {
-        for (var context20 in context19) {
+      var context18 = context2.publicInstanceMethodsSorted;
+      if (context18 != null) {
+        for (var context19 in context18) {
           buffer.writeln();
           buffer.write(
-              _renderClass_partial_callable_6(context20, context2, context0));
+              _renderClass_partial_callable_6(context19, context2, context0));
           buffer.writeln();
         }
       }
@@ -806,12 +804,12 @@ String renderClass(_i1.ClassTemplateData context0) {
       buffer.write('''
 ## Operators
 ''');
-      var context21 = context2.publicInstanceOperatorsSorted;
-      if (context21 != null) {
-        for (var context22 in context21) {
+      var context20 = context2.publicInstanceOperatorsSorted;
+      if (context20 != null) {
+        for (var context21 in context20) {
           buffer.writeln();
           buffer.write(
-              _renderClass_partial_callable_6(context22, context2, context0));
+              _renderClass_partial_callable_6(context21, context2, context0));
           buffer.writeln();
         }
       }
@@ -822,12 +820,12 @@ String renderClass(_i1.ClassTemplateData context0) {
       buffer.write('''
 ## Static Properties
 ''');
-      var context23 = context2.publicVariableStaticFieldsSorted;
-      if (context23 != null) {
-        for (var context24 in context23) {
+      var context22 = context2.publicVariableStaticFieldsSorted;
+      if (context22 != null) {
+        for (var context23 in context22) {
           buffer.writeln();
           buffer.write(
-              _renderClass_partial_property_5(context24, context2, context0));
+              _renderClass_partial_property_5(context23, context2, context0));
           buffer.writeln();
         }
       }
@@ -838,12 +836,12 @@ String renderClass(_i1.ClassTemplateData context0) {
       buffer.write('''
 ## Static Methods
 ''');
-      var context25 = context2.publicStaticMethodsSorted;
-      if (context25 != null) {
-        for (var context26 in context25) {
+      var context24 = context2.publicStaticMethodsSorted;
+      if (context24 != null) {
+        for (var context25 in context24) {
           buffer.writeln();
           buffer.write(
-              _renderClass_partial_callable_6(context26, context2, context0));
+              _renderClass_partial_callable_6(context25, context2, context0));
           buffer.writeln();
         }
       }
@@ -854,12 +852,12 @@ String renderClass(_i1.ClassTemplateData context0) {
       buffer.write('''
 ## Constants
 ''');
-      var context27 = context2.publicConstantFieldsSorted;
-      if (context27 != null) {
-        for (var context28 in context27) {
+      var context26 = context2.publicConstantFieldsSorted;
+      if (context26 != null) {
+        for (var context27 in context26) {
           buffer.writeln();
           buffer.write(
-              _renderClass_partial_constant_7(context28, context2, context0));
+              _renderClass_partial_constant_7(context27, context2, context0));
           buffer.writeln();
         }
       }
