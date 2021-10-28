@@ -365,6 +365,8 @@ class Property<T> {
       required this.renderVariable,
       this.getBool,
       this.renderIterable,
+      // TODO(jcollins-g): consider making this required or emitting warnings
+      // if called on a non-nullable?
       bool Function(T)? isNullValue,
       this.renderValue})
       : isNullValue = (isNullValue ?? (_) => false);
