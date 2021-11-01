@@ -5,6 +5,7 @@
 import 'dart:collection';
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/dart/element/type_provider.dart';
 import 'package:analyzer/dart/element/type_system.dart';
@@ -81,7 +82,6 @@ class RuntimeRenderersBuilder {
 // ignore_for_file: camel_case_types, deprecated_member_use_from_same_package
 // ignore_for_file: non_constant_identifier_names, unnecessary_string_escapes
 // ignore_for_file: unused_import
-// @dart=2.9
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/src/model/annotation.dart';
@@ -337,12 +337,14 @@ import '${p.basename(_sourceUri.path)}';
   void _buildRenderer(_RendererInfo renderer,
       {required bool buildOnlyPublicFunction}) {
     var typeName = renderer._typeName;
+    var typeWithVariablesNullable =
+        '$typeName${renderer._typeVariablesString}?';
     var typeWithVariables = '$typeName${renderer._typeVariablesString}';
 
     if (renderer.publicApiFunctionName != null) {
       _buffer.writeln('''
 String ${renderer.publicApiFunctionName}${renderer._typeParametersString}(
-    $typeWithVariables context, Template template) {
+    $typeWithVariablesNullable context, Template template) {
   var buffer = StringBuffer();
   ${renderer._renderFunctionName}(context, template.ast, template, buffer);
   return buffer.toString();
@@ -356,9 +358,9 @@ String ${renderer.publicApiFunctionName}${renderer._typeParametersString}(
     if (renderer.includeRenderFunction) {
       _buffer.writeln('''
 void ${renderer._renderFunctionName}${renderer._typeParametersString}(
-    $typeWithVariables context, List<MustachioNode> ast,
+    $typeWithVariablesNullable context, List<MustachioNode> ast,
     Template template, StringSink sink,
-    {RendererBase<Object> parent}) {
+    {RendererBase<Object>? parent}) {
   var renderer = ${renderer._rendererClassName}(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
@@ -368,22 +370,23 @@ void ${renderer._renderFunctionName}${renderer._typeParametersString}(
     // Write out the renderer class.
     _buffer.write('''
 class ${renderer._rendererClassName}${renderer._typeParametersString}
-    extends RendererBase<$typeWithVariables> {
+    extends RendererBase<$typeWithVariablesNullable> {
 ''');
     _writePropertyMap(renderer);
     // Write out the constructor.
     _buffer.writeln('''
   ${renderer._rendererClassName}(
-        $typeWithVariables context, RendererBase<Object> parent,
+        $typeWithVariablesNullable context, RendererBase<Object>? parent,
         Template template, StringSink sink)
       : super(context, parent, template, sink);
 ''');
-    var propertyMapTypeArguments = renderer._typeArgumentsStringWith(typeName);
+    var propertyMapTypeArguments =
+        renderer._typeArgumentsStringWith(typeWithVariables);
     var propertyMapName = 'propertyMap$propertyMapTypeArguments';
     // Write out `getProperty`.
     _buffer.writeln('''
   @override
-  Property<$typeWithVariables> getProperty(String key) {
+  Property<$typeWithVariablesNullable>? getProperty(String key) {
     if ($propertyMapName().containsKey(key)) {
       return $propertyMapName()[key];
     } else {
@@ -455,7 +458,7 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
         _writeProperty(renderer, property, returnType.bound as InterfaceType);
       }
     }
-    _buffer.writeln('});');
+    _buffer.writeln('}) as Map<String, Property<$_contextTypeVariable>>;');
     _buffer.writeln('');
   }
 
@@ -473,7 +476,7 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
         .writeln('getValue: ($_contextTypeVariable c) => c.${property.name},');
 
     var getterName = property.name;
-
+    var getterTypeString = getterType.getDisplayString(withNullability: false);
     // Only add a `getProperties` function, which returns the property map for
     // [getterType], if [getterType] is a renderable type.
     if (_typeToRendererClassName.containsKey(getterType.element)) {
@@ -487,14 +490,13 @@ renderVariable:
   var name = remainingNames.first;
   var nextProperty = $rendererClassName.propertyMap().getValue(name);
   return nextProperty.renderVariable(
-      self.getValue(c), nextProperty, [...remainingNames.skip(1)]);
+      self.getValue(c) as $getterTypeString, nextProperty, [...remainingNames.skip(1)]);
 },
 ''');
     } else {
       // [getterType] does not have a full renderer, so we just render a simple
       // variable, with no opportunity to access fields on [getterType].
-      var getterTypeString =
-          getterType.getDisplayString(withNullability: false);
+
       _buffer.writeln('''
 renderVariable:
     ($_contextTypeVariable c, Property<CT_> self, List<String> remainingNames) =>
@@ -527,7 +529,7 @@ renderVariable:
                   typeName, () => innerType.element.allAccessorNames);
             }
             renderCall = 'renderSimple(e, ast, r.template, sink, parent: r, '
-                "getters: _invisibleGetters['$typeName'])";
+                "getters: _invisibleGetters['$typeName']!)";
           } else {
             renderCall =
                 '$renderFunctionName(e, ast, r.template, sink, parent: r)';
@@ -556,13 +558,17 @@ renderIterable:
               typeName, () => getterType.element.allAccessorNames);
           renderCall =
               'renderSimple(c.$getterName, ast, r.template, sink, parent: r, '
-              "getters: _invisibleGetters['$typeName'])";
+              "getters: _invisibleGetters['$typeName']!)";
         } else {
           renderCall =
               '$renderFunctionName(c.$getterName, ast, r.template, sink, parent: r)';
         }
+        var nullValueGetter =
+            getterType.nullabilitySuffix == NullabilitySuffix.none
+                ? 'false'
+                : 'c.$getterName == null';
         _buffer.writeln('''
-isNullValue: ($_contextTypeVariable c) => c.$getterName == null,
+isNullValue: ($_contextTypeVariable c) => $nullValueGetter,
 
 renderValue:
     ($_contextTypeVariable c, RendererBase<$_contextTypeVariable> r,
@@ -660,12 +666,21 @@ class _RendererInfo {
   String _typeParametersStringWith(String extra) =>
       _contextClass.typeParametersStringWith(extra);
 
+  String _renderSingleType(DartType tp) {
+    var displayString = tp.getDisplayString(withNullability: false);
+    var nullabilitySuffix =
+        tp.nullabilitySuffix == NullabilitySuffix.question ? '?' : '';
+    return '$displayString$nullabilitySuffix';
+  }
+
   /// Returns the type arguments of the context type, and [extra], as they
   /// appear in a list of generics.
   String _typeArgumentsStringWith(String extra) {
     return asGenerics([
       ..._contextClass.thisType.typeArguments
-          .map((tp) => tp.getDisplayString(withNullability: false)),
+          // withNullability will give star types, we actually want nullable or
+          // non-nullable only for generation.
+          .map(_renderSingleType),
       extra,
     ]);
   }
