@@ -100,7 +100,9 @@ class CommentReferenceParser {
   /// ```text
   ///   <rawCommentReference> ::= <prefix>?<commentReference><suffix>?
   ///
-  ///   <commentReference> ::= (<packageName> '.')? (<libraryName> '.')? <dartdocIdentifier> <typeArguments> ('.' <identifier> <typeArguments>)*
+  ///   <commentReference> ::= <globalScopeReference>? <dartdocIdentifier> <typeArguments>? ('.' <identifier> <typeArguments>?)*
+  ///
+  ///   <globalScopeReference> ::= (<packageName> '.')? (<libraryName> '.')
   /// ```
   List<CommentReferenceNode> _parseRawCommentReference() {
     var children = <CommentReferenceNode>[];
