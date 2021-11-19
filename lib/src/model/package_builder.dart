@@ -19,8 +19,6 @@ import 'package:analyzer/src/dart/sdk/sdk.dart'
 // ignore: implementation_imports
 import 'package:analyzer/src/generated/engine.dart' show AnalysisOptionsImpl;
 // ignore: implementation_imports
-import 'package:analyzer/src/generated/java_io.dart' show JavaFile;
-// ignore: implementation_imports
 import 'package:analyzer/src/generated/sdk.dart' show DartSdk;
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/logging.dart';
@@ -149,16 +147,18 @@ class PubPackageBuilder implements PackageBuilder {
   /// If [filePath] is not a library, returns null.
   Future<DartDocResolvedLibrary> processLibrary(String filePath) async {
     var name = filePath;
-    var directoryCurrentPath = resourceProvider.pathContext.current;
+    var pathContext = resourceProvider.pathContext;
+    var directoryCurrentPath = pathContext.current;
 
     if (name.startsWith(directoryCurrentPath)) {
       name = name.substring(directoryCurrentPath.length);
-      if (name.startsWith(resourceProvider.pathContext.separator)) {
+      if (name.startsWith(pathContext.separator)) {
         name = name.substring(1);
       }
     }
-    var javaFile = JavaFile(filePath).getAbsoluteFile();
-    filePath = javaFile.getPath();
+
+    // TODO(scheglov) Do we need this? Maybe the argument is already valid?
+    filePath = pathContext.normalize(pathContext.absolute(filePath));
 
     var analysisContext = contextCollection.contextFor(config.inputDir);
     var session = analysisContext.currentSession;
