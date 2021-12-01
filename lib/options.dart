@@ -51,7 +51,7 @@ class DartdocGeneratorOptionContext extends DartdocOptionContext {
   String get relCanonicalPrefix =>
       optionSet['relCanonicalPrefix'].valueAt(context);
 
-  /// The 'templatesDir' Dartdoc option if one was specified; otherwise `null`.
+  /// The 'templatesDir' dartdoc option if one was specified; otherwise `null`.
   String get templatesDir => optionSet['templatesDir'].valueAt(context);
 
   // TODO(jdkoren): duplicated temporarily so that GeneratorContext is enough for configuration.
