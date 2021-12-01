@@ -12,22 +12,25 @@ String _resourcesFile(Iterable<String> packagePaths) => '''
 // WARNING: This file is auto-generated. Do not edit.
 
 const List<String> resourceNames = [
-${packagePaths.map((p) => "  '$p'").join(',\n')}
+${packagePaths.map((p) => "  '$p',").join('\n')}
 ];
 ''';
 
 class ResourceBuilder implements Builder {
   final BuilderOptions builderOptions;
+
   ResourceBuilder(this.builderOptions);
 
-  static final _allResources = Glob('lib/resources/**');
+  static const _resourcesPath = 'lib/resources';
+
   @override
   Future<void> build(BuildStep buildStep) async {
-    var packagePaths = <String>[];
-    await for (AssetId asset in buildStep.findAssets(_allResources)) {
-      packagePaths.add(asset.uri.toString());
-    }
-    packagePaths.sort();
+    var resourceAssets =
+        await buildStep.findAssets(Glob('$_resourcesPath/**')).toList();
+    var packagePaths = [
+      for (var asset in resourceAssets)
+        path.url.relative(asset.path, from: _resourcesPath),
+    ]..sort();
     await buildStep.writeAsString(
         AssetId(buildStep.inputId.package,
             path.url.join('lib', 'src', 'generator', 'html_resources.g.dart')),

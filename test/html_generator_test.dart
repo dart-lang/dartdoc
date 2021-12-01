@@ -125,8 +125,7 @@ void main() {
         .getFolder(pathContext.join(outputPath, 'static-assets'));
     expect(output, doesExist);
 
-    for (var resource in resourceNames.map((r) =>
-        pathContext.relative(Uri.parse(r).path, from: 'dartdoc/resources'))) {
+    for (var resource in resourceNames) {
       expect(resourceProvider.getFile(pathContext.join(output.path, resource)),
           doesExist);
     }

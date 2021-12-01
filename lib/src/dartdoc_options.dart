@@ -1543,6 +1543,8 @@ Future<List<DartdocOption>> createDartdocOptions(
         help:
             'A list of package names to place first when grouping libraries in '
             'packages. Unmentioned packages are sorted after these.'),
+    DartdocOptionArgOnly<String>('resourcesDir', null, resourceProvider,
+        help: "An absolute path to dartdoc's resources directory.", hide: true),
     DartdocOptionArgOnly<bool>('sdkDocs', false, resourceProvider,
         help: 'Generate ONLY the docs for the Dart SDK.'),
     DartdocOptionArgSynth<String>('sdkDir',
