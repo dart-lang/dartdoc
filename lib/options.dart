@@ -58,7 +58,7 @@ class DartdocGeneratorOptionContext extends DartdocOptionContext {
   @override
   bool get useBaseHref => optionSet['useBaseHref'].valueAt(context);
 
-  /// The 'resourcesDir' Dartdoc option if one was specified; otherwise `null`.
+  /// The 'resourcesDir' dartdoc option if one was specified; otherwise `null`.
   String /*?*/ get resourcesDir => optionSet['resourcesDir'].valueAt(context);
 }
 
