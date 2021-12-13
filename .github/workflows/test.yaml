@@ -38,6 +38,10 @@ jobs:
             job: sdk-analyzer
           - sdk: stable
             job: sdk-docs
+            # Skip dev sdk-analyzer until dart_style has analyzer 3.0.0.
+            # See https://github.com/dart-lang/dartdoc/runs/4493620139?check_suite_focus=true
+          - sdk: dev
+            job: sdk-analyzer
 
     steps:
       - name: Store date
