@@ -20,7 +20,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         sdk: [dev, stable]
-        job: [main, flutter, packages, sdk-docs]
+        job: [main, flutter, sdk-analyzer, packages, sdk-docs]
         include:
           - os: macos-latest
             sdk: dev
@@ -34,8 +34,8 @@ jobs:
             # results.
           - sdk: stable
             job: flutter
-            #- sdk: stable
-            #  job: sdk-analyzer
+          - sdk: stable
+            job: sdk-analyzer
           - sdk: stable
             job: sdk-docs
 

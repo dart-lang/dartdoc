@@ -23,7 +23,6 @@ analyzer:
 linter:
   rules:
     always_declare_return_types: true
-    annotate_overrides: true
     avoid_dynamic_calls: true
     avoid_single_cascade_in_expression_statements: true
     avoid_unused_constructor_parameters: true
