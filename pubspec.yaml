@@ -38,5 +38,9 @@ dev_dependencies:
   lints: ^1.0.1
   test: ^1.19.0
 
+dependency_overrides:
+  dart_style:
+    git: https://github.com/dart-lang/dart_style
+
 executables:
   dartdoc: null
