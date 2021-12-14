@@ -259,7 +259,7 @@ void analyzeTestPackages() async {
     );
     await SubprocessLauncher('analyze-test-package').runStreamed(
       sdkBin('dart'),
-      ['analyze'],
+      ['analyze', 'bin', 'examples', 'lib'],
       workingDirectory: testPackagePath,
     );
   }
