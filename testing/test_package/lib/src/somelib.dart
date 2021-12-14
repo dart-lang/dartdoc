@@ -18,11 +18,13 @@ class ExtendedBaseReexported extends BaseReexported {}
 
 /// A private extension.
 extension _Unseen on Object {
+  // ignore: unused_element
   void doYouSeeMe() {}
 }
 
 /// An extension without a name
 extension on List {
+  // ignore: unused_element
   void somethingNew() {}
 }
 

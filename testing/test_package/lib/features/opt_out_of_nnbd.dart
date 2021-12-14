@@ -6,4 +6,5 @@
 
 library opt_out_of_nnbd;
 
+// ignore: dead_code
 String notOptedIn = false ? 'hi' : null;
