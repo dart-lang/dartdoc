@@ -34,8 +34,8 @@ jobs:
             # results.
           - sdk: stable
             job: flutter
-            - sdk: stable
-              job: sdk-analyzer
+          - sdk: stable
+            job: sdk-analyzer
           - sdk: stable
             job: sdk-docs
 
