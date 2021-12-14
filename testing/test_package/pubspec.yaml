@@ -6,6 +6,7 @@ dependencies:
   meta: ^1.4.0
   args: ^1.5.0
   test_package_imported:
+    # ignore: invalid_dependency
     path: "../test_package_imported"
 environment:
   sdk: '>=2.14.0-0 <3.0.0'
