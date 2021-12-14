@@ -15,6 +15,7 @@ void set nullableSetter(String? value) {
 }
 
 /// This should have return type of `Future?`.
+// ignore: unnecessary_question_mark
 dynamic? oddAsyncFunction() async {}
 
 /// This should also have return type of `Future?`.

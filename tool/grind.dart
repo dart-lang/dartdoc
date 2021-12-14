@@ -258,8 +258,10 @@ void analyzeTestPackages() async {
       workingDirectory: testPackagePath,
     );
     await SubprocessLauncher('analyze-test-package').runStreamed(
-      sdkBin('dartanalyzer'),
-      ['.'],
+      sdkBin('dart'),
+      // TODO(srawlins): Analyze the whole directory by ignoring the pubspec
+      // reports.
+      ['analyze', 'lib'],
       workingDirectory: testPackagePath,
     );
   }
