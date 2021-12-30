@@ -38,7 +38,7 @@ class DartdocGeneratorBackendOptions implements TemplateOptions {
   @override
   final String customInnerFooterText;
 
-  final String /*?*/ resourcesDir;
+  final String? resourcesDir;
 
   DartdocGeneratorBackendOptions.fromContext(
       DartdocGeneratorOptionContext context)
