@@ -54,21 +54,4 @@ void main() {
       expect(ab, [1, 2, 3, 4, 5, 6]);
     });
   });
-
-  group('hash', () {
-    test('hash2 should return an int', () {
-      var h = Object.hash('123', 456);
-      expect(h, isA<int>());
-    });
-
-    test('hash3 should return an int', () {
-      var h = Object.hash('123', 456, true);
-      expect(h, isA<int>());
-    });
-
-    test('hash4 should return an int', () {
-      var h = Object.hash('123', 456, true, []);
-      expect(h, isA<int>());
-    });
-  });
 }
