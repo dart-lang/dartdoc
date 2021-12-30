@@ -52,7 +52,7 @@ class HtmlGeneratorBackend extends DartdocGeneratorBackend {
       // Allow overwrite of favicon.
       var bytes = resourceProvider.getFile(favicon).readAsBytesSync();
       writer.writeBytes(
-        resourceProvider.pathContext.join('static-assets', 'favicon.png'),
+        _pathJoin('static-assets', 'favicon.png'),
         bytes,
         allowOverwrite: true,
       );
@@ -60,18 +60,20 @@ class HtmlGeneratorBackend extends DartdocGeneratorBackend {
   }
 
   Future<void> _copyResources(FileWriter writer) async {
-    for (var resourcePath in resources.resourceNames) {
-      if (!resourcePath.startsWith(_dartdocResourcePrefix)) {
-        throw StateError('Resource paths must start with '
-            '$_dartdocResourcePrefix, encountered $resourcePath');
-      }
-      var destFileName = resourcePath.substring(_dartdocResourcePrefix.length);
-      var destFilePath =
-          resourceProvider.pathContext.join('static-assets', destFileName);
-      writer.writeBytes(destFilePath,
-          await resourceProvider.loadResourceAsBytes(resourcePath));
+    var resourcesDir = options.resourcesDir ??
+        (await resourceProvider.getResourceFolder(_dartdocResourcePrefix)).path;
+    for (var resourceFileName in resources.resourceNames) {
+      var destinationPath = _pathJoin('static-assets', resourceFileName);
+      var sourcePath = _pathJoin(resourcesDir, resourceFileName);
+      writer.writeBytes(
+        destinationPath,
+        resourceProvider.getFile(sourcePath).readAsBytesSync(),
+      );
     }
   }
 
-  static const _dartdocResourcePrefix = 'package:dartdoc/resources/';
+  String _pathJoin(String a, String b) =>
+      resourceProvider.pathContext.join(a, b);
+
+  static const _dartdocResourcePrefix = 'package:dartdoc/resources';
 }
