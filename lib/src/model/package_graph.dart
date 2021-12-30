@@ -999,7 +999,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
             ])
         .generateEntries());
 
-    return referenceChildren;
+    return children;
   }();
 
   @override
