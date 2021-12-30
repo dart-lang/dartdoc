@@ -177,7 +177,7 @@ abstract class ModelElement extends Canonicalization
     if (e is FieldElement) {
       if (enclosingContainer == null) {
         if (e.isEnumConstant) {
-          var index = e.computeConstantValue()!.getField(e.name)!.toIntValue();
+          var index = e.computeConstantValue()!.getField('index')!.toIntValue();
           newModelElement =
               EnumField.forConstant(index, e, library, packageGraph, getter);
         } else if (e.enclosingElement is ExtensionElement) {

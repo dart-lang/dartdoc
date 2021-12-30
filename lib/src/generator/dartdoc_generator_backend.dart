@@ -38,6 +38,8 @@ class DartdocGeneratorBackendOptions implements TemplateOptions {
   @override
   final String customInnerFooterText;
 
+  final String /*?*/ resourcesDir;
+
   DartdocGeneratorBackendOptions.fromContext(
       DartdocGeneratorOptionContext context)
       : relCanonicalPrefix = context.relCanonicalPrefix,
@@ -47,7 +49,8 @@ class DartdocGeneratorBackendOptions implements TemplateOptions {
         useBaseHref = context.useBaseHref,
         customHeaderContent = context.header,
         customFooterContent = context.footer,
-        customInnerFooterText = context.footerText;
+        customInnerFooterText = context.footerText,
+        resourcesDir = context.resourcesDir;
 }
 
 class SidebarGenerator<T extends TemplateData> {
