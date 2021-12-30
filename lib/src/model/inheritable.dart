@@ -70,9 +70,9 @@ mixin Inheritable on ContainerMember {
       for (var c in inheritance.reversed) {
         // Filter out mixins.
         if (c!.containsElement(searchElement)) {
-          if ((packageGraph.inheritThrough!.contains(previous) &&
+          if ((packageGraph.inheritThrough.contains(previous) &&
                   c != definingEnclosingContainer) ||
-              (packageGraph.inheritThrough!.contains(c) &&
+              (packageGraph.inheritThrough.contains(c) &&
                   c == definingEnclosingContainer)) {
             return previousNonSkippable!
                 .memberByExample(this)
@@ -90,7 +90,7 @@ mixin Inheritable on ContainerMember {
           }
         }
         previous = c;
-        if (!packageGraph.inheritThrough!.contains(c)) {
+        if (!packageGraph.inheritThrough.contains(c)) {
           previousNonSkippable = c;
         }
       }

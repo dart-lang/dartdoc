@@ -10,7 +10,7 @@ import 'package:analyzer/file_system/file_system.dart';
 // ignore: implementation_imports
 import 'package:analyzer/src/generated/sdk.dart' show DartSdk, SdkLibrary;
 // ignore: implementation_imports
-import 'package:analyzer/src/generated/source_io.dart' show Source;
+import 'package:analyzer/src/generated/source.dart' show Source;
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/failure.dart';
 import 'package:dartdoc/src/logging.dart';
@@ -137,7 +137,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       }
     }
 
-    for (var m in allModelElements!) {
+    for (var m in allModelElements) {
       // Skip if there is a canonicalModelElement somewhere else we can run this
       // for and we won't need a one line document that is precached.
       // Not the same as allCanonicalModelElements since we need to run
@@ -188,12 +188,8 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     return _implementors;
   }
 
-  List<Extension>? _documentedExtensions;
-  Iterable<Extension>? get documentedExtensions {
-    _documentedExtensions ??=
-        utils.filterNonDocumented(extensions).toList(growable: false);
-    return _documentedExtensions;
-  }
+  late final Iterable<Extension> documentedExtensions =
+      utils.filterNonDocumented(extensions).toList(growable: false);
 
   Iterable<Extension> get extensions {
     assert(allExtensionsAdded);
@@ -244,10 +240,8 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   /// PackageMeta Provider for building [PackageMeta]s.
   final PackageMetaProvider packageMetaProvider;
 
-  Package? _defaultPackage;
-
-  Package get defaultPackage =>
-      _defaultPackage ??= Package.fromPackageMeta(packageMeta, this);
+  late final Package defaultPackage =
+      Package.fromPackageMeta(packageMeta, this);
 
   final bool hasEmbedderSdk;
 
@@ -263,17 +257,9 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
 
   final DartSdk sdk;
 
-  Map<Source?, SdkLibrary>? _sdkLibrarySources;
-
-  Map<Source?, SdkLibrary>? get sdkLibrarySources {
-    if (_sdkLibrarySources == null) {
-      _sdkLibrarySources = {};
-      for (var lib in sdk.sdkLibraries) {
-        _sdkLibrarySources![sdk.mapDartUri(lib.shortName)] = lib;
-      }
-    }
-    return _sdkLibrarySources;
-  }
+  late final Map<Source?, SdkLibrary> sdkLibrarySources = {
+    for (var lib in sdk.sdkLibraries) sdk.mapDartUri(lib.shortName): lib
+  };
 
   final Map<String, String> _macros = {};
   final Map<String, String> _htmlFragments = {};
@@ -311,9 +297,10 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     if (warnable != null) {
       // This sort of warning is only applicable to top level elements.
       if (kind == PackageWarning.ambiguousReexport) {
-        while (warnable!.enclosingElement is! Library &&
-            warnable.enclosingElement != null) {
-          warnable = warnable.enclosingElement;
+        var enclosingElement = warnable.enclosingElement;
+        while (enclosingElement != null && enclosingElement is! Library) {
+          warnable = enclosingElement;
+          enclosingElement = warnable.enclosingElement;
         }
       }
     } else {
@@ -341,7 +328,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
 
     var warnablePrefix = 'from';
     var referredFromPrefix = 'referred to by';
-    String? warningMessage;
+    String warningMessage;
     switch (kind) {
       case PackageWarning.noCanonicalFound:
         // Fix these warnings by adding libraries with --include, or by using
@@ -452,7 +439,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
         break;
     }
 
-    var messageParts = <String?>[warningMessage];
+    var messageParts = <String>[warningMessage];
     if (warnable != null) {
       messageParts.add('$warnablePrefix $warnableName: ${warnable.location}');
     }
@@ -483,28 +470,22 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
 
   List<Package> get packages => packageMap.values.toList();
 
-  List<Package>? _publicPackages;
-
-  List<Package>? get publicPackages {
-    if (_publicPackages == null) {
-      assert(allLibrariesAdded);
-      // Help the user if they pass us a package that doesn't exist.
-      for (var packageName in config.packageOrder) {
-        if (!packages.map((p) => p.name).contains(packageName)) {
-          warnOnElement(
-              null, PackageWarning.packageOrderGivesMissingPackageName,
-              message:
-                  "$packageName, packages: ${packages.map((p) => p.name).join(',')}");
-        }
+  late final List<Package> publicPackages = () {
+    assert(allLibrariesAdded);
+    // Help the user if they pass us a package that doesn't exist.
+    for (var packageName in config.packageOrder) {
+      if (!packages.map((p) => p.name).contains(packageName)) {
+        warnOnElement(null, PackageWarning.packageOrderGivesMissingPackageName,
+            message:
+                "$packageName, packages: ${packages.map((p) => p.name).join(',')}");
       }
-      _publicPackages = packages.where((p) => p.isPublic).toList()..sort();
     }
-    return _publicPackages;
-  }
+    return packages.where((p) => p.isPublic).toList()..sort();
+  }();
 
   /// Local packages are to be documented locally vs. remote or not at all.
   List<Package> get localPackages =>
-      publicPackages!.where((p) => p.isLocal).toList();
+      publicPackages.where((p) => p.isLocal).toList();
 
   /// Documented packages are documented somewhere (local or remote).
   Iterable<Package> get documentedPackages =>
@@ -550,7 +531,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       _lastSizeOfAllLibraries = allLibraries.keys.length;
       _libraryElementReexportedBy = <LibraryElement, Set<Library>>{};
       _reexportsTagged = {};
-      for (var library in publicLibraries!) {
+      for (var library in publicLibraries) {
         _tagReexportsFor(library, library.element);
       }
     }
@@ -574,7 +555,8 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       if (modelElement is Dynamic) continue;
       // TODO: see [Accessor.enclosingCombo]
       if (modelElement is Accessor) continue;
-      final href = modelElement!.href;
+      if (modelElement == null) continue;
+      final href = modelElement.href;
       if (href == null) continue;
 
       hrefMap.putIfAbsent(href, () => {}).add(modelElement);
@@ -603,8 +585,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       }
       implemented = implemented.canonicalModelElement as InheritingContainer? ??
           implemented;
-      _implementors.putIfAbsent(implemented, () => []);
-      var list = _implementors[implemented]!;
+      var list = _implementors.putIfAbsent(implemented, () => []);
       // TODO(srawlins): This would be more efficient if we created a
       // SplayTreeSet keyed off of `.element`.
       if (!list.any((l) => l.element == implementor.element)) {
@@ -613,9 +594,10 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     }
 
     void addImplementor(InheritingContainer clazz) {
-      if (clazz.supertype != null) {
+      var supertype = clazz.supertype;
+      if (supertype != null) {
         checkAndAddContainer(
-            clazz.supertype!.modelElement as InheritingContainer, clazz);
+            supertype.modelElement as InheritingContainer, clazz);
       }
       if (clazz is Class) {
         for (var type in clazz.mixedInTypes) {
@@ -642,53 +624,44 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   Iterable<Library> get libraries =>
       packages.expand((p) => p.libraries).toList()..sort();
 
-  List<Library>? _publicLibraries;
+  late final Iterable<Library> publicLibraries = () {
+    assert(allLibrariesAdded);
+    return utils.filterNonPublic(libraries).toList();
+  }();
 
-  Iterable<Library>? get publicLibraries {
-    if (_publicLibraries == null) {
-      assert(allLibrariesAdded);
-      _publicLibraries = utils.filterNonPublic(libraries).toList();
-    }
-    return _publicLibraries;
-  }
-
-  List<Library>? _localLibraries;
-
-  Iterable<Library>? get localLibraries {
-    if (_localLibraries == null) {
-      assert(allLibrariesAdded);
-      _localLibraries = localPackages.expand((p) => p.libraries).toList()
-        ..sort();
-    }
-    return _localLibraries;
-  }
+  late final Iterable<Library> localLibraries = () {
+    assert(allLibrariesAdded);
+    return localPackages.expand((p) => p.libraries).toList()..sort();
+  }();
 
   late final Iterable<Library> localPublicLibraries = () {
     assert(allLibrariesAdded);
-    return utils.filterNonPublic(localLibraries!).toList();
+    return utils.filterNonPublic(localLibraries).toList();
   }();
-
-  Set<Class?>? _inheritThrough;
 
   /// Return the set of [Class]es objects should inherit through if they
   /// show up in the inheritance chain.  Do not call before interceptorElement is
   /// found.  Add classes here if they are similar to Interceptor in that they
   /// are to be ignored even when they are the implementors of [Inheritable]s,
   /// and the class these inherit from should instead claim implementation.
-  Set<Class?>? get inheritThrough {
-    if (_inheritThrough == null) {
-      _inheritThrough = {};
-      _inheritThrough!.add(specialClasses[SpecialClass.interceptor]);
+  late final Set<Class> inheritThrough = () {
+    var interceptorSpecialClass = specialClasses[SpecialClass.interceptor];
+    if (interceptorSpecialClass == null) {
+      return const <Class>{};
     }
-    return _inheritThrough;
-  }
 
-  Set<Class?>? _invisibleAnnotations;
+    return {interceptorSpecialClass};
+  }();
 
-  /// Returns the set of [Class] objects that are similar to pragma
+  /// The set of [Class] objects that are similar to pragma
   /// in that we should never count them as documentable annotations.
-  Set<Class?> get invisibleAnnotations =>
-      _invisibleAnnotations ??= {specialClasses[SpecialClass.pragma]};
+  late final Set<Class> invisibleAnnotations = () {
+    var pragmaSpecialClass = specialClasses[SpecialClass.pragma];
+    if (pragmaSpecialClass == null) {
+      return const <Class>{};
+    }
+    return {pragmaSpecialClass};
+  }();
 
   bool isAnnotationVisible(Class clazz) =>
       !invisibleAnnotations.contains(clazz);
@@ -728,7 +701,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       return _canonicalLibraryFor[e];
     }
     _canonicalLibraryFor[e] = null;
-    for (var library in publicLibraries!) {
+    for (var library in publicLibraries) {
       if (library.modelElementsMap.containsKey(searchElement)) {
         for (var modelElement in library.modelElementsMap[searchElement!]!) {
           if (modelElement.isCanonical) {
@@ -759,36 +732,39 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     if (lib == null && preferredClass != null) {
       lib = findCanonicalLibraryFor(preferredClass.element);
     }
-    ModelElement? modelElement;
     // For elements defined in extensions, they are canonical.
-    if (e?.enclosingElement is ExtensionElement) {
-      lib ??=
-          modelBuilder.fromElement(e!.enclosingElement!.library!) as Library?;
+    var enclosingElement = e?.enclosingElement;
+    if (enclosingElement is ExtensionElement) {
+      lib ??= modelBuilder.fromElement(enclosingElement.library) as Library?;
       // (TODO:keertip) Find a better way to exclude members of extensions
       //  when libraries are specified using the "--include" flag
       if (lib?.isDocumented == true) {
         return modelBuilder.from(e!, lib!);
       }
     }
+    ModelElement? modelElement;
     // TODO(jcollins-g): Special cases are pretty large here.  Refactor to split
     // out into helpers.
     // TODO(jcollins-g): The data structures should be changed to eliminate guesswork
     // with member elements.
-    if (e is ClassMemberElement || e is PropertyAccessorElement) {
-      e = e!.declaration;
-      var candidates = <ModelElement?>{};
-      var iKey = Tuple2<Element?, Library?>(e, lib);
+    var declaration = e?.declaration;
+    if (declaration != null &&
+        (e is ClassMemberElement || e is PropertyAccessorElement)) {
+      e = declaration;
+      var candidates = <ModelElement>{};
+      var iKey = Tuple2<Element, Library?>(e, lib);
       var key =
-          Tuple4<Element?, Library?, Class?, ModelElement?>(e, lib, null, null);
-      var keyWithClass = Tuple4<Element?, Library?, Class?, ModelElement?>(
+          Tuple4<Element, Library?, Class?, ModelElement?>(e, lib, null, null);
+      var keyWithClass = Tuple4<Element, Library?, Class?, ModelElement?>(
           e, lib, preferredClass as Class?, null);
-      if (allConstructedModelElements.containsKey(key)) {
-        candidates.add(allConstructedModelElements[
-            key as Tuple3<Element, Library, Container?>]);
+      var constructedWithKey = allConstructedModelElements[key];
+      if (constructedWithKey != null) {
+        candidates.add(constructedWithKey);
       }
-      if (allConstructedModelElements.containsKey(keyWithClass)) {
-        candidates.add(allConstructedModelElements[
-            keyWithClass as Tuple3<Element, Library, Container?>]);
+      var constructedWithKeyWithClass =
+          allConstructedModelElements[keyWithClass];
+      if (constructedWithKeyWithClass != null) {
+        candidates.add(constructedWithKeyWithClass);
       }
       if (candidates.isEmpty && allInheritableElements.containsKey(iKey)) {
         candidates.addAll(
@@ -796,15 +772,13 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
                 .where((me) => me.isCanonical));
       }
       Class? canonicalClass =
-          findCanonicalModelElementFor(e!.enclosingElement) as Class?;
+          findCanonicalModelElementFor(e.enclosingElement) as Class?;
       if (canonicalClass != null) {
         candidates.addAll(canonicalClass.allCanonicalModelElements.where((m) {
           return m.element == e;
         }));
       }
-      var matches = <ModelElement?>{
-        ...candidates.where((me) => me!.isCanonical)
-      };
+      var matches = <ModelElement>{...candidates.where((me) => me.isCanonical)};
 
       // It's possible to find accessors but no combos.  Be sure that if we
       // have Accessors, we find their combos too.
@@ -901,62 +875,47 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     return foundLibrary;
   }
 
-  List<ModelElement>? _allModelElements;
-
-  Iterable<ModelElement>? get allModelElements {
+  late final Iterable<ModelElement> allModelElements = () {
     assert(allLibrariesAdded);
-    if (_allModelElements == null) {
-      _allModelElements = [];
-      var packagesToDo = packages.toSet();
-      var completedPackages = <Package>{};
-      while (packagesToDo.length > completedPackages.length) {
-        packagesToDo.difference(completedPackages).forEach((Package p) {
-          var librariesToDo = p.allLibraries.toSet();
-          var completedLibraries = <Library>{};
-          while (librariesToDo.length > completedLibraries.length) {
-            librariesToDo
-                .difference(completedLibraries)
-                .forEach((Library library) {
-              _allModelElements!.addAll(library.allModelElements);
-              completedLibraries.add(library);
-            });
-            librariesToDo.addAll(p.allLibraries);
-          }
-          completedPackages.add(p);
-        });
-        packagesToDo.addAll(packages);
-      }
+    var allElements = <ModelElement>[];
+    var packagesToDo = packages.toSet();
+    var completedPackages = <Package>{};
+    while (packagesToDo.length > completedPackages.length) {
+      packagesToDo.difference(completedPackages).forEach((Package p) {
+        var librariesToDo = p.allLibraries.toSet();
+        var completedLibraries = <Library>{};
+        while (librariesToDo.length > completedLibraries.length) {
+          librariesToDo
+              .difference(completedLibraries)
+              .forEach((Library library) {
+            allElements.addAll(library.allModelElements);
+            completedLibraries.add(library);
+          });
+          librariesToDo.addAll(p.allLibraries);
+        }
+        completedPackages.add(p);
+      });
+      packagesToDo.addAll(packages);
     }
-    return _allModelElements;
-  }
 
-  List<ModelElement>? _allLocalModelElements;
+    return allElements;
+  }();
 
-  Iterable<ModelElement>? get allLocalModelElements {
-    assert(allLibrariesAdded);
-    if (_allLocalModelElements == null) {
-      _allLocalModelElements = [];
-      for (var library in localLibraries!) {
-        _allLocalModelElements!.addAll(library.allModelElements);
-      }
-    }
-    return _allLocalModelElements;
-  }
+  late final Iterable<ModelElement> allLocalModelElements = [
+    for (var library in localLibraries) ...library.allModelElements
+  ];
 
-  List<ModelElement>? _allCanonicalModelElements;
-
-  Iterable<ModelElement> get allCanonicalModelElements {
-    return _allCanonicalModelElements ??=
-        allLocalModelElements!.where((e) => e.isCanonical).toList();
-  }
+  late final Iterable<ModelElement> allCanonicalModelElements =
+      allLocalModelElements.where((e) => e.isCanonical).toList();
 
   /// Glob lookups can be expensive.  Cache per filename.
   final _configSetsNodocFor = HashMap<String, bool>();
 
   /// Given an element's location, look up the nodoc configuration data and
   /// determine whether to unconditionally treat the element as "nodoc".
-  bool? configSetsNodocFor(String fullName) {
-    if (!_configSetsNodocFor.containsKey(fullName)) {
+  bool configSetsNodocFor(String fullName) {
+    var noDocForName = _configSetsNodocFor[fullName];
+    if (noDocForName == null) {
       var file = resourceProvider.getFile(fullName);
       // Direct lookup instead of generating a custom context will save some
       // cycles.  We can't use the element's [DartdocOptionContext] because that
@@ -964,14 +923,18 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       // for nodoc's semantics.  Looking up the defining element just to pull
       // a context is again, slow.
       List<String> globs = config.optionSet['nodoc'].valueAt(file.parent2);
-      _configSetsNodocFor[fullName] = utils.matchGlobs(globs, fullName);
+      noDocForName = utils.matchGlobs(globs, fullName);
+      _configSetsNodocFor[fullName] = noDocForName;
     }
-    return _configSetsNodocFor[fullName];
+    return noDocForName;
   }
 
   String? getMacro(String? name) {
     assert(_localDocumentationBuilt);
-    return _macros[name!];
+    if (name == null) {
+      return null;
+    }
+    return _macros[name];
   }
 
   void addMacro(String name, String content) {
@@ -985,7 +948,10 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
 
   String? getHtmlFragment(String? name) {
     assert(_localDocumentationBuilt);
-    return _htmlFragments[name!];
+    if (name == null) {
+      return null;
+    }
+    return _htmlFragments[name];
   }
 
   void addHtmlFragment(String name, String content) {
@@ -997,46 +963,44 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     _htmlFragments[name] = content;
   }
 
-  Map<String, CommentReferable>? _referenceChildren;
   @override
-  Map<String, CommentReferable> get referenceChildren {
-    if (_referenceChildren == null) {
-      _referenceChildren = {};
-      // We have to use a stable order or otherwise references depending
-      // on ambiguous resolution (see below) will change where they
-      // resolve based on internal implementation details.
-      var sortedPackages = packages.toList()..sort(byName);
-      var sortedDocumentedPackages = documentedPackages.toList()..sort(byName);
-      // Packages are the top priority.
-      _referenceChildren!.addEntries(sortedPackages.generateEntries());
+  late final Map<String, CommentReferable> referenceChildren = () {
+    var children = <String, CommentReferable>{};
+    // We have to use a stable order or otherwise references depending
+    // on ambiguous resolution (see below) will change where they
+    // resolve based on internal implementation details.
+    var sortedPackages = packages.toList()..sort(byName);
+    var sortedDocumentedPackages = documentedPackages.toList()..sort(byName);
+    // Packages are the top priority.
+    children.addEntries(sortedPackages.generateEntries());
 
-      // Libraries are next.
-      // TODO(jcollins-g): Warn about directly referencing libraries out of
-      // scope?  Doing this is always going to be ambiguous and potentially
-      // confusing.
-      _referenceChildren!.addEntriesIfAbsent(sortedDocumentedPackages
-          .expand((p) => p.publicLibrariesSorted)
-          .generateEntries());
+    // Libraries are next.
+    // TODO(jcollins-g): Warn about directly referencing libraries out of
+    // scope?  Doing this is always going to be ambiguous and potentially
+    // confusing.
+    children.addEntriesIfAbsent(sortedDocumentedPackages
+        .expand((p) => p.publicLibrariesSorted)
+        .generateEntries());
 
-      // TODO(jcollins-g): Warn about directly referencing top level items
-      // out of scope?  Doing this will be even more ambiguous and
-      // potentially confusing than doing so with libraries.
-      _referenceChildren!.addEntriesIfAbsent(sortedDocumentedPackages
-          .expand((p) => p.publicLibrariesSorted)
-          .expand((l) => [
-                ...l.publicConstants,
-                ...l.publicFunctions,
-                ...l.publicProperties,
-                ...l.publicTypedefs,
-                ...l.publicExtensions,
-                ...l.publicClasses,
-                ...l.publicEnums,
-                ...l.publicMixins
-              ])
-          .generateEntries());
-    }
-    return _referenceChildren!;
-  }
+    // TODO(jcollins-g): Warn about directly referencing top level items
+    // out of scope?  Doing this will be even more ambiguous and
+    // potentially confusing than doing so with libraries.
+    children.addEntriesIfAbsent(sortedDocumentedPackages
+        .expand((p) => p.publicLibrariesSorted)
+        .expand((l) => [
+              ...l.publicConstants,
+              ...l.publicFunctions,
+              ...l.publicProperties,
+              ...l.publicTypedefs,
+              ...l.publicExtensions,
+              ...l.publicClasses,
+              ...l.publicEnums,
+              ...l.publicMixins
+            ])
+        .generateEntries());
+
+    return referenceChildren;
+  }();
 
   @override
   Iterable<CommentReferable> get referenceParents => [];
