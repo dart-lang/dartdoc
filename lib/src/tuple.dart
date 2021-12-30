@@ -5,8 +5,6 @@
 // file for details. All rights reserved. Use of this source code is governed
 // by a BSD-style license that can be found in the LICENSE file.
 
-import 'package:dartdoc/src/quiver.dart' as quiver;
-
 /// Represents a 2-tuple, or pair.
 class Tuple2<T1, T2> {
   /// Returns the first item of the tuple
@@ -26,7 +24,7 @@ class Tuple2<T1, T2> {
       other is Tuple2 && other.item1 == item1 && other.item2 == item2;
 
   @override
-  int get hashCode => quiver.hash2(item1.hashCode, item2.hashCode);
+  int get hashCode => Object.hash(item1, item2);
 }
 
 /// Represents a 3-tuple, or triple.
@@ -54,8 +52,7 @@ class Tuple3<T1, T2, T3> {
       other.item3 == item3;
 
   @override
-  int get hashCode =>
-      quiver.hash3(item1.hashCode, item2.hashCode, item3.hashCode);
+  int get hashCode => Object.hash(item1, item2, item3);
 }
 
 /// Represents a 4-tuple, or quadruple.
@@ -87,6 +84,5 @@ class Tuple4<T1, T2, T3, T4> {
       other.item4 == item4;
 
   @override
-  int get hashCode => quiver.hash4(
-      item1.hashCode, item2.hashCode, item3.hashCode, item4.hashCode);
+  int get hashCode => Object.hash(item1, item2, item3, item4);
 }

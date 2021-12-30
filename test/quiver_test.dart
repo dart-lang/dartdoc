@@ -57,17 +57,17 @@ void main() {
 
   group('hash', () {
     test('hash2 should return an int', () {
-      var h = hash2('123', 456);
+      var h = Object.hash('123', 456);
       expect(h, isA<int>());
     });
 
     test('hash3 should return an int', () {
-      var h = hash3('123', 456, true);
+      var h = Object.hash('123', 456, true);
       expect(h, isA<int>());
     });
 
     test('hash4 should return an int', () {
-      var h = hash4('123', 456, true, []);
+      var h = Object.hash('123', 456, true, []);
       expect(h, isA<int>());
     });
   });
