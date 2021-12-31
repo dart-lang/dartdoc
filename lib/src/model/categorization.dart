@@ -55,11 +55,11 @@ abstract class Categorization implements ModelElement {
 
   /// Either a set of strings containing all declared subcategories for this symbol,
   /// or 'null' if none were declared.
-  late final List<String>? subCategoryNames = () {
+  List<String>? get subCategoryNames {
     // TODO(jcollins-g): avoid side-effect dependency
     if (_subCategoryNames == null) documentationLocal;
     return _subCategoryNames;
-  }();
+  }
 
   @override
   bool get hasCategoryNames => categoryNames?.isNotEmpty ?? false;
@@ -67,33 +67,33 @@ abstract class Categorization implements ModelElement {
 
   /// Either a set of strings containing all declared categories for this symbol,
   /// or 'null' if none were declared.
-  late final List<String>? categoryNames = () {
+  List<String>? get categoryNames {
     // TODO(jcollins-g): avoid side-effect dependency
     if (_categoryNames == null) documentationLocal;
     return _categoryNames;
-  }();
+  }
 
   bool get hasImage => image!.isNotEmpty;
   String? _image;
 
   /// Either a URI to a defined image,
   /// or 'null' if one was not declared.
-  late final String? image = () {
+  String? get image {
     // TODO(jcollins-g): avoid side-effect dependency
     if (_image == null) documentationLocal;
     return _image;
-  }();
+  }
 
   bool get hasSamples => samples?.isNotEmpty ?? false;
   String? _samples;
 
   /// Either a URI to documentation with samples,
   /// or 'null' if one was not declared.
-  late final String? samples = () {
+  String? get samples {
     // TODO(jcollins-g): avoid side-effect dependency
     if (_samples == null) documentationLocal;
     return _samples;
-  }();
+  }
 
   late final Iterable<Category> categories = () {
     var categoryNames = this.categoryNames;
