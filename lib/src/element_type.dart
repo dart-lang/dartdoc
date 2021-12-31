@@ -227,7 +227,7 @@ class ParameterizedElementType extends DefinedElementType with Rendered {
       .toList(growable: false);
 }
 
-/// A [ElementType] whose underlying type was referrred to by a type alias.
+/// A [ElementType] whose underlying type was referred to by a type alias.
 mixin Aliased implements ElementType, ModelBuilderInterface {
   late final Element typeAliasElement = type.alias!.element;
 
