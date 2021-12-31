@@ -404,7 +404,7 @@ abstract class ModelElement extends Canonicalization
 
   @override
   late final bool isPublic = () {
-    if (name == '') {
+    if (name.isEmpty) {
       return false;
     }
     if (this is! Library && (library == null || !library!.isPublic)) {
@@ -417,7 +417,7 @@ abstract class ModelElement extends Canonicalization
         !(enclosingElement as Extension).isPublic) {
       return false;
     }
-    return utils.hasPublicName(element!) && !hasNodoc!;
+    return utils.hasPublicName(element!) && !hasNodoc;
   }();
 
   @override
@@ -543,7 +543,7 @@ abstract class ModelElement extends Canonicalization
       if (this is Inheritable && !config.linkToRemote) {
         if ((this as Inheritable).isInherited &&
             _canonicalLibrary == null &&
-            packageGraph.publicLibraries!.contains(library)) {
+            packageGraph.publicLibraries.contains(library)) {
           // In the event we've inherited a field from an object that isn't
           // directly reexported, we may need to pretend we are canonical for
           // this.
@@ -553,7 +553,7 @@ abstract class ModelElement extends Canonicalization
       _canonicalLibraryIsSet = true;
     }
     assert(_canonicalLibrary == null ||
-        packageGraph.publicLibraries!.contains(_canonicalLibrary));
+        packageGraph.publicLibraries.contains(_canonicalLibrary));
     return _canonicalLibrary;
   }
 

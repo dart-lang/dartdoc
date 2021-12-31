@@ -90,7 +90,7 @@ class Accessor extends ModelElement implements EnclosedElement {
   /// for a synthetic accessor just in case it is inherited somewhere
   /// down the line due to split inheritance.
   bool get _hasSyntheticDocumentationComment =>
-      (isGetter || definingCombo.hasNodoc! || _comboDocsAreIndependent()) &&
+      (isGetter || definingCombo.hasNodoc || _comboDocsAreIndependent()) &&
       definingCombo.hasDocumentationComment;
 
   // If we're a setter, and a getter exists, do not add synthetic
