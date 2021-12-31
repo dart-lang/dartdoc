@@ -427,7 +427,7 @@ String _renderCategory_partial_library_2(_i3.Library context2,
     _i2.Category context1, _i1.CategoryTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context2.htmlId?.toString());
+  buffer.writeEscaped(context2.htmlId.toString());
   buffer.write('''">
   <span class="name">''');
   buffer.write(context2.linkedName.toString());
@@ -472,7 +472,7 @@ String _renderCategory_partial_container_3(_i4.Container context2,
     _i2.Category context1, _i1.CategoryTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context2.htmlId?.toString());
+  buffer.writeEscaped(context2.htmlId.toString());
   buffer.write('''">
   <span class="name ''');
   if (context2.isDeprecated == true) {
@@ -521,7 +521,7 @@ String _renderCategory_partial_constant_4(_i5.TopLevelVariable context2,
     _i2.Category context1, _i1.CategoryTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context2.htmlId?.toString());
+  buffer.writeEscaped(context2.htmlId.toString());
   buffer.write('''" class="constant">
   <span class="name ''');
   if (context2.isDeprecated == true) {
@@ -596,7 +596,7 @@ String _renderCategory_partial_property_5(_i5.TopLevelVariable context2,
     _i2.Category context1, _i1.CategoryTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context2.htmlId?.toString());
+  buffer.writeEscaped(context2.htmlId.toString());
   buffer.write('''" class="property''');
   if (context2.isInherited == true) {
     buffer.write(''' inherited''');
@@ -671,7 +671,7 @@ String _renderCategory_partial_callable_6(_i6.ModelFunctionTyped context2,
     _i2.Category context1, _i1.CategoryTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context2.htmlId?.toString());
+  buffer.writeEscaped(context2.htmlId.toString());
   buffer.write('''" class="callable''');
   if (context2.isInherited == true) {
     buffer.write(''' inherited''');
@@ -758,7 +758,7 @@ String _renderCategory_partial_typedef_7(_i7.Typedef context2,
     buffer.writeln();
     buffer.write('''
   <dt id="''');
-    buffer.writeEscaped(context3.htmlId?.toString());
+    buffer.writeEscaped(context3.htmlId.toString());
     buffer.write('''" class="callable''');
     if (context3.isInherited == true) {
       buffer.write(''' inherited''');
@@ -847,7 +847,7 @@ String __renderCategory_partial_typedef_7_partial_type_2(_i7.Typedef context2,
     _i2.Category context1, _i1.CategoryTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context2.htmlId?.toString());
+  buffer.writeEscaped(context2.htmlId.toString());
   buffer.write('''" class="''');
   if (context2.isInherited == true) {
     buffer.write(''' inherited''');
@@ -1442,7 +1442,7 @@ String renderClass(_i1.ClassTemplateData context0) {
       buffer.writeln();
       buffer.write('''
         <dt id="''');
-      buffer.writeEscaped(context16.htmlId?.toString());
+      buffer.writeEscaped(context16.htmlId.toString());
       buffer.write('''" class="callable">
           <span class="name">''');
       buffer.write(context16.linkedName.toString());
@@ -1786,7 +1786,7 @@ String _renderClass_partial_source_link_1(
     buffer.writeln();
     buffer.write('''
   <div id="external-links" class="btn-group"><a title="View source code" class="source-link" href="''');
-    buffer.write(context1.sourceHref?.toString());
+    buffer.write(context1.sourceHref.toString());
     buffer.write('''"><i class="material-icons">description</i></a></div>''');
   }
   buffer.writeln();
@@ -1846,7 +1846,7 @@ String _renderClass_partial_property_5(
     _i9.Field context2, _i8.Class context1, _i1.ClassTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context2.htmlId?.toString());
+  buffer.writeEscaped(context2.htmlId.toString());
   buffer.write('''" class="property''');
   if (context2.isInherited == true) {
     buffer.write(''' inherited''');
@@ -1917,7 +1917,7 @@ String _renderClass_partial_callable_6(
     _i10.Method context2, _i8.Class context1, _i1.ClassTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context2.htmlId?.toString());
+  buffer.writeEscaped(context2.htmlId.toString());
   buffer.write('''" class="callable''');
   if (context2.isInherited == true) {
     buffer.write(''' inherited''');
@@ -1996,7 +1996,7 @@ String _renderClass_partial_constant_7(
     _i9.Field context2, _i8.Class context1, _i1.ClassTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context2.htmlId?.toString());
+  buffer.writeEscaped(context2.htmlId.toString());
   buffer.write('''" class="constant">
   <span class="name ''');
   if (context2.isDeprecated == true) {
@@ -2421,7 +2421,7 @@ String _renderConstructor_partial_source_link_1(
     buffer.writeln();
     buffer.write('''
   <div id="external-links" class="btn-group"><a title="View source code" class="source-link" href="''');
-    buffer.write(context1.sourceHref?.toString());
+    buffer.write(context1.sourceHref.toString());
     buffer.write('''"><i class="material-icons">description</i></a></div>''');
   }
   buffer.writeln();
@@ -2471,7 +2471,7 @@ String _renderConstructor_partial_source_code_4(
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">''');
-    buffer.write(context1.sourceCode?.toString());
+    buffer.write(context1.sourceCode.toString());
     buffer.write('''</code></pre>
 </section>''');
   }
@@ -2979,7 +2979,7 @@ String _renderEnum_partial_source_link_1(
     buffer.writeln();
     buffer.write('''
   <div id="external-links" class="btn-group"><a title="View source code" class="source-link" href="''');
-    buffer.write(context1.sourceHref?.toString());
+    buffer.write(context1.sourceHref.toString());
     buffer.write('''"><i class="material-icons">description</i></a></div>''');
   }
   buffer.writeln();
@@ -3039,7 +3039,7 @@ String _renderEnum_partial_constant_5(
     _i9.Field context2, _i12.Enum context1, _i1.EnumTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context2.htmlId?.toString());
+  buffer.writeEscaped(context2.htmlId.toString());
   buffer.write('''" class="constant">
   <span class="name ''');
   if (context2.isDeprecated == true) {
@@ -3110,7 +3110,7 @@ String _renderEnum_partial_property_6(
     _i9.Field context2, _i12.Enum context1, _i1.EnumTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context2.htmlId?.toString());
+  buffer.writeEscaped(context2.htmlId.toString());
   buffer.write('''" class="property''');
   if (context2.isInherited == true) {
     buffer.write(''' inherited''');
@@ -3181,7 +3181,7 @@ String _renderEnum_partial_callable_7(
     _i10.Method context2, _i12.Enum context1, _i1.EnumTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context2.htmlId?.toString());
+  buffer.writeEscaped(context2.htmlId.toString());
   buffer.write('''" class="callable''');
   if (context2.isInherited == true) {
     buffer.write(''' inherited''');
@@ -4080,7 +4080,7 @@ String _renderExtension_partial_source_link_1<T extends _i13.Extension>(
     buffer.writeln();
     buffer.write('''
   <div id="external-links" class="btn-group"><a title="View source code" class="source-link" href="''');
-    buffer.write(context1.sourceHref?.toString());
+    buffer.write(context1.sourceHref.toString());
     buffer.write('''"><i class="material-icons">description</i></a></div>''');
   }
   buffer.writeln();
@@ -4142,7 +4142,7 @@ String _renderExtension_partial_property_5<T extends _i13.Extension>(
     _i1.ExtensionTemplateData<T> context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context2.htmlId?.toString());
+  buffer.writeEscaped(context2.htmlId.toString());
   buffer.write('''" class="property''');
   if (context2.isInherited == true) {
     buffer.write(''' inherited''');
@@ -4217,7 +4217,7 @@ String _renderExtension_partial_callable_6<T extends _i13.Extension>(
     _i1.ExtensionTemplateData<T> context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context2.htmlId?.toString());
+  buffer.writeEscaped(context2.htmlId.toString());
   buffer.write('''" class="callable''');
   if (context2.isInherited == true) {
     buffer.write(''' inherited''');
@@ -4300,7 +4300,7 @@ String _renderExtension_partial_constant_7<T extends _i13.Extension>(
     _i1.ExtensionTemplateData<T> context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context2.htmlId?.toString());
+  buffer.writeEscaped(context2.htmlId.toString());
   buffer.write('''" class="constant">
   <span class="name ''');
   if (context2.isDeprecated == true) {
@@ -4701,7 +4701,7 @@ String _renderFunction_partial_source_link_1(
     buffer.writeln();
     buffer.write('''
   <div id="external-links" class="btn-group"><a title="View source code" class="source-link" href="''');
-    buffer.write(context1.sourceHref?.toString());
+    buffer.write(context1.sourceHref.toString());
     buffer.write('''"><i class="material-icons">description</i></a></div>''');
   }
   buffer.writeln();
@@ -4825,7 +4825,7 @@ String _renderFunction_partial_source_code_6(
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">''');
-    buffer.write(context1.sourceCode?.toString());
+    buffer.write(context1.sourceCode.toString());
     buffer.write('''</code></pre>
 </section>''');
   }
@@ -5206,7 +5206,7 @@ String _renderIndex_partial_library_2(
     _i1.PackageTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context3.htmlId?.toString());
+  buffer.writeEscaped(context3.htmlId.toString());
   buffer.write('''">
   <span class="name">''');
   buffer.write(context3.linkedName.toString());
@@ -5831,7 +5831,7 @@ String _renderLibrary_partial_source_link_1(
     buffer.writeln();
     buffer.write('''
   <div id="external-links" class="btn-group"><a title="View source code" class="source-link" href="''');
-    buffer.write(context1.sourceHref?.toString());
+    buffer.write(context1.sourceHref.toString());
     buffer.write('''"><i class="material-icons">description</i></a></div>''');
   }
   buffer.writeln();
@@ -5894,7 +5894,7 @@ String _renderLibrary_partial_container_5(
     _i1.LibraryTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context3.htmlId?.toString());
+  buffer.writeEscaped(context3.htmlId.toString());
   buffer.write('''">
   <span class="name ''');
   if (context3.isDeprecated == true) {
@@ -5947,7 +5947,7 @@ String _renderLibrary_partial_extension_6(
     _i1.LibraryTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context3.htmlId?.toString());
+  buffer.writeEscaped(context3.htmlId.toString());
   buffer.write('''">
     <span class="name ''');
   if (context3.isDeprecated == true) {
@@ -6000,7 +6000,7 @@ String _renderLibrary_partial_constant_7(
     _i1.LibraryTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context3.htmlId?.toString());
+  buffer.writeEscaped(context3.htmlId.toString());
   buffer.write('''" class="constant">
   <span class="name ''');
   if (context3.isDeprecated == true) {
@@ -6080,7 +6080,7 @@ String _renderLibrary_partial_property_8(
     _i1.LibraryTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context3.htmlId?.toString());
+  buffer.writeEscaped(context3.htmlId.toString());
   buffer.write('''" class="property''');
   if (context3.isInherited == true) {
     buffer.write(''' inherited''');
@@ -6160,7 +6160,7 @@ String _renderLibrary_partial_callable_9(
     _i1.LibraryTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context3.htmlId?.toString());
+  buffer.writeEscaped(context3.htmlId.toString());
   buffer.write('''" class="callable''');
   if (context3.isInherited == true) {
     buffer.write(''' inherited''');
@@ -6252,7 +6252,7 @@ String _renderLibrary_partial_typedef_10(
     buffer.writeln();
     buffer.write('''
   <dt id="''');
-    buffer.writeEscaped(context4.htmlId?.toString());
+    buffer.writeEscaped(context4.htmlId.toString());
     buffer.write('''" class="callable''');
     if (context4.isInherited == true) {
       buffer.write(''' inherited''');
@@ -6346,7 +6346,7 @@ String __renderLibrary_partial_typedef_10_partial_type_2(
     _i1.LibraryTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context3.htmlId?.toString());
+  buffer.writeEscaped(context3.htmlId.toString());
   buffer.write('''" class="''');
   if (context3.isInherited == true) {
     buffer.write(''' inherited''');
@@ -6826,7 +6826,7 @@ String _renderMethod_partial_source_link_1(
     buffer.writeln();
     buffer.write('''
   <div id="external-links" class="btn-group"><a title="View source code" class="source-link" href="''');
-    buffer.write(context1.sourceHref?.toString());
+    buffer.write(context1.sourceHref.toString());
     buffer.write('''"><i class="material-icons">description</i></a></div>''');
   }
   buffer.writeln();
@@ -6948,7 +6948,7 @@ String _renderMethod_partial_source_code_6(
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">''');
-    buffer.write(context1.sourceCode?.toString());
+    buffer.write(context1.sourceCode.toString());
     buffer.write('''</code></pre>
 </section>''');
   }
@@ -7512,7 +7512,7 @@ String _renderMixin_partial_source_link_1(
     buffer.writeln();
     buffer.write('''
   <div id="external-links" class="btn-group"><a title="View source code" class="source-link" href="''');
-    buffer.write(context1.sourceHref?.toString());
+    buffer.write(context1.sourceHref.toString());
     buffer.write('''"><i class="material-icons">description</i></a></div>''');
   }
   buffer.writeln();
@@ -7572,7 +7572,7 @@ String _renderMixin_partial_property_5(
     _i9.Field context2, _i16.Mixin context1, _i1.MixinTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context2.htmlId?.toString());
+  buffer.writeEscaped(context2.htmlId.toString());
   buffer.write('''" class="property''');
   if (context2.isInherited == true) {
     buffer.write(''' inherited''');
@@ -7643,7 +7643,7 @@ String _renderMixin_partial_callable_6(
     _i10.Method context2, _i16.Mixin context1, _i1.MixinTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context2.htmlId?.toString());
+  buffer.writeEscaped(context2.htmlId.toString());
   buffer.write('''" class="callable''');
   if (context2.isInherited == true) {
     buffer.write(''' inherited''');
@@ -7722,7 +7722,7 @@ String _renderMixin_partial_constant_7(
     _i9.Field context2, _i16.Mixin context1, _i1.MixinTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context2.htmlId?.toString());
+  buffer.writeEscaped(context2.htmlId.toString());
   buffer.write('''" class="constant">
   <span class="name ''');
   if (context2.isDeprecated == true) {
@@ -8135,7 +8135,7 @@ String _renderProperty_partial_source_link_1(
     buffer.writeln();
     buffer.write('''
   <div id="external-links" class="btn-group"><a title="View source code" class="source-link" href="''');
-    buffer.write(context1.sourceHref?.toString());
+    buffer.write(context1.sourceHref.toString());
     buffer.write('''"><i class="material-icons">description</i></a></div>''');
   }
   buffer.writeln();
@@ -8215,7 +8215,7 @@ String _renderProperty_partial_source_code_6(
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">''');
-    buffer.write(context1.sourceCode?.toString());
+    buffer.write(context1.sourceCode.toString());
     buffer.write('''</code></pre>
 </section>''');
   }
@@ -8330,7 +8330,7 @@ String __renderProperty_partial_accessor_getter_7_partial_source_code_3(
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">''');
-    buffer.write(context2.sourceCode?.toString());
+    buffer.write(context2.sourceCode.toString());
     buffer.write('''</code></pre>
 </section>''');
   }
@@ -8446,7 +8446,7 @@ String __renderProperty_partial_accessor_setter_8_partial_source_code_3(
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">''');
-    buffer.write(context2.sourceCode?.toString());
+    buffer.write(context2.sourceCode.toString());
     buffer.write('''</code></pre>
 </section>''');
   }
@@ -9197,7 +9197,7 @@ String _renderTopLevelProperty_partial_source_link_1(
     buffer.writeln();
     buffer.write('''
   <div id="external-links" class="btn-group"><a title="View source code" class="source-link" href="''');
-    buffer.write(context1.sourceHref?.toString());
+    buffer.write(context1.sourceHref.toString());
     buffer.write('''"><i class="material-icons">description</i></a></div>''');
   }
   buffer.writeln();
@@ -9292,7 +9292,7 @@ String _renderTopLevelProperty_partial_source_code_7(
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">''');
-    buffer.write(context1.sourceCode?.toString());
+    buffer.write(context1.sourceCode.toString());
     buffer.write('''</code></pre>
 </section>''');
   }
@@ -9410,7 +9410,7 @@ String __renderTopLevelProperty_partial_accessor_getter_8_partial_source_code_3(
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">''');
-    buffer.write(context2.sourceCode?.toString());
+    buffer.write(context2.sourceCode.toString());
     buffer.write('''</code></pre>
 </section>''');
   }
@@ -9529,7 +9529,7 @@ String __renderTopLevelProperty_partial_accessor_setter_9_partial_source_code_3(
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">''');
-    buffer.write(context2.sourceCode?.toString());
+    buffer.write(context2.sourceCode.toString());
     buffer.write('''</code></pre>
 </section>''');
   }
@@ -9871,7 +9871,7 @@ String _renderTypedef_partial_source_link_1(
     buffer.writeln();
     buffer.write('''
   <div id="external-links" class="btn-group"><a title="View source code" class="source-link" href="''');
-    buffer.write(context1.sourceHref?.toString());
+    buffer.write(context1.sourceHref.toString());
     buffer.write('''"><i class="material-icons">description</i></a></div>''');
   }
   buffer.writeln();
@@ -10038,7 +10038,7 @@ String _renderTypedef_partial_source_code_6(
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">''');
-    buffer.write(context1.sourceCode?.toString());
+    buffer.write(context1.sourceCode.toString());
     buffer.write('''</code></pre>
 </section>''');
   }

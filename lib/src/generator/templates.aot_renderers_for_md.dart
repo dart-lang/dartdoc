@@ -822,7 +822,7 @@ String _renderClass_partial_source_link_1(
     buffer.writeln();
     buffer.write('''
 [view source](''');
-    buffer.write(context1.sourceHref?.toString());
+    buffer.write(context1.sourceHref.toString());
     buffer.write(''')''');
   }
   buffer.writeln();
@@ -1118,7 +1118,7 @@ String _renderConstructor_partial_source_link_1(
     buffer.writeln();
     buffer.write('''
 [view source](''');
-    buffer.write(context1.sourceHref?.toString());
+    buffer.write(context1.sourceHref.toString());
     buffer.write(''')''');
   }
   buffer.writeln();
@@ -1163,7 +1163,7 @@ String _renderConstructor_partial_source_code_4(
 
 ```dart
 ''');
-    buffer.write(context1.sourceCode?.toString());
+    buffer.write(context1.sourceCode.toString());
     buffer.writeln();
     buffer.write('''
 ```''');
@@ -1346,7 +1346,7 @@ String _renderEnum_partial_source_link_1(
     buffer.writeln();
     buffer.write('''
 [view source](''');
-    buffer.write(context1.sourceHref?.toString());
+    buffer.write(context1.sourceHref.toString());
     buffer.write(''')''');
   }
   buffer.writeln();
@@ -1706,7 +1706,7 @@ String _renderExtension_partial_source_link_1<T extends _i13.Extension>(
     buffer.writeln();
     buffer.write('''
 [view source](''');
-    buffer.write(context1.sourceHref?.toString());
+    buffer.write(context1.sourceHref.toString());
     buffer.write(''')''');
   }
   buffer.writeln();
@@ -1999,7 +1999,7 @@ String _renderFunction_partial_source_link_1(
     buffer.writeln();
     buffer.write('''
 [view source](''');
-    buffer.write(context1.sourceHref?.toString());
+    buffer.write(context1.sourceHref.toString());
     buffer.write(''')''');
   }
   buffer.writeln();
@@ -2109,7 +2109,7 @@ String _renderFunction_partial_source_code_6(
 
 ```dart
 ''');
-    buffer.write(context1.sourceCode?.toString());
+    buffer.write(context1.sourceCode.toString());
     buffer.writeln();
     buffer.write('''
 ```''');
@@ -2427,7 +2427,7 @@ String _renderLibrary_partial_source_link_1(
     buffer.writeln();
     buffer.write('''
 [view source](''');
-    buffer.write(context1.sourceHref?.toString());
+    buffer.write(context1.sourceHref.toString());
     buffer.write(''')''');
   }
   buffer.writeln();
@@ -2959,7 +2959,7 @@ String _renderMethod_partial_source_link_1(
     buffer.writeln();
     buffer.write('''
 [view source](''');
-    buffer.write(context1.sourceHref?.toString());
+    buffer.write(context1.sourceHref.toString());
     buffer.write(''')''');
   }
   buffer.writeln();
@@ -3064,7 +3064,7 @@ String _renderMethod_partial_source_code_6(
 
 ```dart
 ''');
-    buffer.write(context1.sourceCode?.toString());
+    buffer.write(context1.sourceCode.toString());
     buffer.writeln();
     buffer.write('''
 ```''');
@@ -3290,7 +3290,7 @@ String _renderMixin_partial_source_link_1(
     buffer.writeln();
     buffer.write('''
 [view source](''');
-    buffer.write(context1.sourceHref?.toString());
+    buffer.write(context1.sourceHref.toString());
     buffer.write(''')''');
   }
   buffer.writeln();
@@ -3587,7 +3587,7 @@ String _renderProperty_partial_source_link_1(
     buffer.writeln();
     buffer.write('''
 [view source](''');
-    buffer.write(context1.sourceHref?.toString());
+    buffer.write(context1.sourceHref.toString());
     buffer.write(''')''');
   }
   buffer.writeln();
@@ -3663,7 +3663,7 @@ String _renderProperty_partial_source_code_6(
 
 ```dart
 ''');
-    buffer.write(context1.sourceCode?.toString());
+    buffer.write(context1.sourceCode.toString());
     buffer.writeln();
     buffer.write('''
 ```''');
@@ -3763,7 +3763,7 @@ String __renderProperty_partial_accessor_getter_7_partial_source_code_3(
 
 ```dart
 ''');
-    buffer.write(context2.sourceCode?.toString());
+    buffer.write(context2.sourceCode.toString());
     buffer.writeln();
     buffer.write('''
 ```''');
@@ -3863,7 +3863,7 @@ String __renderProperty_partial_accessor_setter_8_partial_source_code_3(
 
 ```dart
 ''');
-    buffer.write(context2.sourceCode?.toString());
+    buffer.write(context2.sourceCode.toString());
     buffer.writeln();
     buffer.write('''
 ```''');
@@ -3971,7 +3971,7 @@ String _renderTopLevelProperty_partial_source_link_1(
     buffer.writeln();
     buffer.write('''
 [view source](''');
-    buffer.write(context1.sourceHref?.toString());
+    buffer.write(context1.sourceHref.toString());
     buffer.write(''')''');
   }
   buffer.writeln();
@@ -4065,7 +4065,7 @@ String _renderTopLevelProperty_partial_source_code_7(
 
 ```dart
 ''');
-    buffer.write(context1.sourceCode?.toString());
+    buffer.write(context1.sourceCode.toString());
     buffer.writeln();
     buffer.write('''
 ```''');
@@ -4168,7 +4168,7 @@ String __renderTopLevelProperty_partial_accessor_getter_8_partial_source_code_3(
 
 ```dart
 ''');
-    buffer.write(context2.sourceCode?.toString());
+    buffer.write(context2.sourceCode.toString());
     buffer.writeln();
     buffer.write('''
 ```''');
@@ -4271,7 +4271,7 @@ String __renderTopLevelProperty_partial_accessor_setter_9_partial_source_code_3(
 
 ```dart
 ''');
-    buffer.write(context2.sourceCode?.toString());
+    buffer.write(context2.sourceCode.toString());
     buffer.writeln();
     buffer.write('''
 ```''');
@@ -4340,7 +4340,7 @@ String _renderTypedef_partial_source_link_1(
     buffer.writeln();
     buffer.write('''
 [view source](''');
-    buffer.write(context1.sourceHref?.toString());
+    buffer.write(context1.sourceHref.toString());
     buffer.write(''')''');
   }
   buffer.writeln();
@@ -4479,7 +4479,7 @@ String _renderTypedef_partial_source_code_6(
 
 ```dart
 ''');
-    buffer.write(context1.sourceCode?.toString());
+    buffer.write(context1.sourceCode.toString());
     buffer.writeln();
     buffer.write('''
 ```''');
