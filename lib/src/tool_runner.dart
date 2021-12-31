@@ -139,7 +139,8 @@ class ToolRunner {
 
   Future<String> _run(List<String> args,
       {required ToolErrorCallback toolErrorCallback,
-      required Map<String, String> environment, String content = ''}) async {
+      required Map<String, String> environment,
+      String content = ''}) async {
     assert(args.isNotEmpty);
     var toolName = args.removeAt(0);
     if (!toolConfiguration.tools.containsKey(toolName)) {
