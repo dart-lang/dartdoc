@@ -68,7 +68,6 @@ Future<String> compileTemplatesToRenderers(
 // the variable is not used; generally when the section is checking if a
 // non-bool, non-Iterable field is non-null.
 // ignore_for_file: unused_local_variable
-// @dart=2.9
 // ignore_for_file: non_constant_identifier_names, unnecessary_string_escapes
 
 ${library.accept(DartEmitter.scoped(orderDirectives: true))}
@@ -154,8 +153,7 @@ class _AotCompiler {
 
   Future<List<Method>> _compileToRenderer() async {
     if (_contextStack.isEmpty) {
-      var contextName = 'context0';
-      var contextVariable = _VariableLookup(_contextType, contextName);
+      var contextVariable = _VariableLookup(_contextType, 'context0');
       _contextStack.push(contextVariable);
       _contextNameCounter++;
     }
@@ -361,16 +359,24 @@ class _BlockCompiler {
   Future<void> _compileRepeatedSection(
       _VariableLookup variableLookup, List<MustachioNode> block,
       {bool invert = false}) async {
+    var variableIsPotentiallyNullable =
+        typeSystem.isPotentiallyNullable(variableLookup.type);
     var variableAccess = variableLookup.name;
     if (invert) {
-      writeln('if ($variableAccess?.isEmpty ?? true) {');
+      if (variableIsPotentiallyNullable) {
+        writeln('if ($variableAccess?.isEmpty ?? true) {');
+      } else {
+        writeln('if ($variableAccess.isEmpty) {');
+      }
       await _compile(block);
       writeln('}');
     } else {
       var variableAccessResult = getNewContextName();
       writeln('var $variableAccessResult = $variableAccess;');
       var newContextName = getNewContextName();
-      writeln('if ($variableAccessResult != null) {');
+      if (variableIsPotentiallyNullable) {
+        writeln('if ($variableAccessResult != null) {');
+      }
       writeln('  for (var $newContextName in $variableAccessResult) {');
       // If [loopType] is something like `C<int>` where
       // `class C<T> implements Queue<Future<T>>`, we need the [ClassElement]
@@ -385,7 +391,9 @@ class _BlockCompiler {
       await _compile(block);
       _contextStack.pop();
       writeln('  }');
-      writeln('}');
+      if (variableIsPotentiallyNullable) {
+        writeln('}');
+      }
     }
   }
 
@@ -394,6 +402,8 @@ class _BlockCompiler {
       _VariableLookup variableLookup, List<MustachioNode> block,
       {bool invert = false}) async {
     var variableAccess = variableLookup.name;
+    var variableIsPotentiallyNullable =
+        typeSystem.isPotentiallyNullable(variableLookup.type);
     if (invert) {
       writeln('if ($variableAccess == null) {');
       await _compile(block);
@@ -401,12 +411,18 @@ class _BlockCompiler {
     } else {
       var innerContextName = getNewContextName();
       writeln('var $innerContextName = $variableAccess;');
-      writeln('if ($innerContextName != null) {');
-      var innerContext = _VariableLookup(variableLookup.type, innerContextName);
+      if (variableIsPotentiallyNullable) {
+        writeln('if ($innerContextName != null) {');
+      }
+      var innerContext = _VariableLookup(
+          typeSystem.promoteToNonNull(variableLookup.type) as InterfaceType,
+          innerContextName);
       _contextStack.push(innerContext);
       await _compile(block);
       _contextStack.pop();
-      writeln('}');
+      if (variableIsPotentiallyNullable) {
+        writeln('}');
+      }
     }
   }
 
@@ -429,12 +445,18 @@ class _BlockCompiler {
         continue;
       }
 
-      var type = getter.returnType;
-      var contextChain = '${context.name}.$primaryName';
+      var type = getter.returnType as InterfaceType;
+      var contextChain = typeSystem.isPotentiallyNullable(context.type)
+          // This is imperfect; the idea is that in our templates, we may have
+          // `{{foo.bar.baz}}` and `foo.bar` may be nullably typed. Mustache
+          // (and Mustachio) does not have a null-aware property access
+          // operator, nor a null-check operator. This code translates
+          // `foo.bar.baz` to `foo.bar!.baz` for nullable `foo.bar`.
+          ? '${context.name}!.$primaryName'
+          : '${context.name}.$primaryName';
       var remainingNames = [...key.skip(1)];
       for (var secondaryKey in remainingNames) {
-        getter = (type as InterfaceType)
-            .lookUpGetter2(secondaryKey, type.element.library);
+        getter = type.lookUpGetter2(secondaryKey, type.element.library);
         if (getter == null) {
           throw MustachioResolutionError(node.keySpan.message(
               "Failed to resolve '$secondaryKey' on ${context.type} while "
@@ -442,10 +464,12 @@ class _BlockCompiler {
               'the context chain: $contextChain, after first resolving '
               "'$primaryName' to a property on $type"));
         }
-        type = getter.returnType;
-        contextChain = '$contextChain.$secondaryKey';
+        contextChain = typeSystem.isPotentiallyNullable(type)
+            ? '$contextChain!.$secondaryKey'
+            : '$contextChain.$secondaryKey';
+        type = getter.returnType as InterfaceType;
       }
-      return _VariableLookup(type as InterfaceType, contextChain);
+      return _VariableLookup(type, contextChain);
     }
 
     var contextTypes = [
@@ -491,11 +515,12 @@ class _BlockCompiler {
   /// The result is HTML-escaped if [escape] is true.
   void _writeGetter(_VariableLookup variableLookup, {bool escape = true}) {
     var variableAccess = variableLookup.name;
-    if (escape) {
-      writeln('buffer.writeEscaped($variableAccess.toString());');
-    } else {
-      writeln('buffer.write($variableAccess.toString());');
-    }
+    var toString = typeSystem.isPotentiallyNullable(variableLookup.type)
+        ? '$variableAccess!.toString()'
+        : '$variableAccess.toString()';
+    writeln(escape
+        ? 'buffer.writeEscaped($toString);'
+        : 'buffer.write($toString);');
   }
 }
 

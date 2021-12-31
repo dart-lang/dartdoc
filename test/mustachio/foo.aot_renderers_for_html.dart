@@ -7,7 +7,6 @@
 // the variable is not used; generally when the section is checking if a
 // non-bool, non-Iterable field is non-null.
 // ignore_for_file: unused_local_variable
-// @dart=2.9
 // ignore_for_file: non_constant_identifier_names, unnecessary_string_escapes
 
 import 'dart:convert' as _i2;
@@ -37,13 +36,11 @@ String renderFoo(_i1.Foo context0) {
   buffer.write('''
     l1:''');
   var context1 = context0.l1;
-  if (context1 != null) {
-    for (var context2 in context1) {
-      buffer.write('''item: ''');
-      buffer.writeEscaped(context2.toString());
-    }
+  for (var context2 in context1) {
+    buffer.write('''item: ''');
+    buffer.writeEscaped(context2.toString());
   }
-  if (context0.l1?.isEmpty ?? true) {
+  if (context0.l1.isEmpty) {
     buffer.write('''no items''');
   }
   buffer.writeln();
@@ -54,7 +51,7 @@ String renderFoo(_i1.Foo context0) {
     buffer.writeln();
     buffer.write('''
     Baz has a ''');
-    buffer.writeEscaped(context3.bar.s2.toString());
+    buffer.writeEscaped(context3.bar!.s2!.toString());
   }
   if (context0.baz == null) {
     buffer.write('''baz is null''');
