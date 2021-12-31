@@ -460,7 +460,7 @@ String __renderCategory_partial_library_2_partial_categorization_0(
     var context3 = context2.displayedCategories;
     for (var context4 in context3) {
       buffer.write('\n    ');
-      buffer.write(context4!.categoryLabel.toString());
+      buffer.write(context4.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -509,7 +509,7 @@ String __renderCategory_partial_container_3_partial_categorization_0(
     var context3 = context2.displayedCategories;
     for (var context4 in context3) {
       buffer.write('\n    ');
-      buffer.write(context4!.categoryLabel.toString());
+      buffer.write(context4.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -569,7 +569,7 @@ String __renderCategory_partial_constant_4_partial_categorization_0(
     var context3 = context2.displayedCategories;
     for (var context4 in context3) {
       buffer.write('\n    ');
-      buffer.write(context4!.categoryLabel.toString());
+      buffer.write(context4.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -644,7 +644,7 @@ String __renderCategory_partial_property_5_partial_categorization_0(
     var context3 = context2.displayedCategories;
     for (var context4 in context3) {
       buffer.write('\n    ');
-      buffer.write(context4!.categoryLabel.toString());
+      buffer.write(context4.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -819,7 +819,7 @@ String __renderCategory_partial_typedef_7_partial_categorization_0(
     var context4 = context3.displayedCategories;
     for (var context5 in context4) {
       buffer.write('\n    ');
-      buffer.write(context5!.categoryLabel.toString());
+      buffer.write(context5.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -906,7 +906,7 @@ String
     var context3 = context2.displayedCategories;
     for (var context4 in context3) {
       buffer.write('\n    ');
-      buffer.write(context4!.categoryLabel.toString());
+      buffer.write(context4.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -1816,7 +1816,7 @@ String _renderClass_partial_categorization_3(
     var context2 = context1.displayedCategories;
     for (var context3 in context2) {
       buffer.write('\n    ');
-      buffer.write(context3!.categoryLabel.toString());
+      buffer.write(context3.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -3009,7 +3009,7 @@ String _renderEnum_partial_categorization_3(
     var context2 = context1.displayedCategories;
     for (var context3 in context2) {
       buffer.write('\n    ');
-      buffer.write(context3!.categoryLabel.toString());
+      buffer.write(context3.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -4110,7 +4110,7 @@ String _renderExtension_partial_categorization_3<T extends _i13.Extension>(
     var context2 = context1.displayedCategories;
     for (var context3 in context2) {
       buffer.write('\n    ');
-      buffer.write(context3!.categoryLabel.toString());
+      buffer.write(context3.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -4731,7 +4731,7 @@ String _renderFunction_partial_categorization_3(
     var context2 = context1.displayedCategories;
     for (var context3 in context2) {
       buffer.write('\n    ');
-      buffer.write(context3!.categoryLabel.toString());
+      buffer.write(context3.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -5240,7 +5240,7 @@ String __renderIndex_partial_library_2_partial_categorization_0(
     var context4 = context3.displayedCategories;
     for (var context5 in context4) {
       buffer.write('\n    ');
-      buffer.write(context5!.categoryLabel.toString());
+      buffer.write(context5.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -5861,7 +5861,7 @@ String _renderLibrary_partial_categorization_3(
     var context2 = context1.displayedCategories;
     for (var context3 in context2) {
       buffer.write('\n    ');
-      buffer.write(context3!.categoryLabel.toString());
+      buffer.write(context3.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -5932,7 +5932,7 @@ String __renderLibrary_partial_container_5_partial_categorization_0(
     var context4 = context3.displayedCategories;
     for (var context5 in context4) {
       buffer.write('\n    ');
-      buffer.write(context5!.categoryLabel.toString());
+      buffer.write(context5.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -5985,7 +5985,7 @@ String __renderLibrary_partial_extension_6_partial_categorization_0(
     var context4 = context3.displayedCategories;
     for (var context5 in context4) {
       buffer.write('\n    ');
-      buffer.write(context5!.categoryLabel.toString());
+      buffer.write(context5.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -6049,7 +6049,7 @@ String __renderLibrary_partial_constant_7_partial_categorization_0(
     var context4 = context3.displayedCategories;
     for (var context5 in context4) {
       buffer.write('\n    ');
-      buffer.write(context5!.categoryLabel.toString());
+      buffer.write(context5.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -6129,7 +6129,7 @@ String __renderLibrary_partial_property_8_partial_categorization_0(
     var context4 = context3.displayedCategories;
     for (var context5 in context4) {
       buffer.write('\n    ');
-      buffer.write(context5!.categoryLabel.toString());
+      buffer.write(context5.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -6314,7 +6314,7 @@ String __renderLibrary_partial_typedef_10_partial_categorization_0(
     var context5 = context4.displayedCategories;
     for (var context6 in context5) {
       buffer.write('\n    ');
-      buffer.write(context6!.categoryLabel.toString());
+      buffer.write(context6.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -6406,7 +6406,7 @@ String
     var context4 = context3.displayedCategories;
     for (var context5 in context4) {
       buffer.write('\n    ');
-      buffer.write(context5!.categoryLabel.toString());
+      buffer.write(context5.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -7542,7 +7542,7 @@ String _renderMixin_partial_categorization_3(
     var context2 = context1.displayedCategories;
     for (var context3 in context2) {
       buffer.write('\n    ');
-      buffer.write(context3!.categoryLabel.toString());
+      buffer.write(context3.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -9227,7 +9227,7 @@ String _renderTopLevelProperty_partial_categorization_3(
     var context2 = context1.displayedCategories;
     for (var context3 in context2) {
       buffer.write('\n    ');
-      buffer.write(context3!.categoryLabel.toString());
+      buffer.write(context3.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -9901,7 +9901,7 @@ String _renderTypedef_partial_categorization_3(
     var context2 = context1.displayedCategories;
     for (var context3 in context2) {
       buffer.write('\n    ');
-      buffer.write(context3!.categoryLabel.toString());
+      buffer.write(context3.categoryLabel.toString());
     }
   }
   buffer.writeln();

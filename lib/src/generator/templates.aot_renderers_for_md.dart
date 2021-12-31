@@ -243,7 +243,7 @@ Categories:''');
     var context3 = context2.displayedCategories;
     for (var context4 in context3) {
       buffer.writeln();
-      buffer.write(context4!.categoryLabel.toString());
+      buffer.write(context4.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -286,7 +286,7 @@ Categories:''');
     var context3 = context2.displayedCategories;
     for (var context4 in context3) {
       buffer.writeln();
-      buffer.write(context4!.categoryLabel.toString());
+      buffer.write(context4.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -346,7 +346,7 @@ Categories:''');
     var context3 = context2.displayedCategories;
     for (var context4 in context3) {
       buffer.writeln();
-      buffer.write(context4!.categoryLabel.toString());
+      buffer.write(context4.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -477,7 +477,7 @@ Categories:''');
     var context4 = context3.displayedCategories;
     for (var context5 in context4) {
       buffer.writeln();
-      buffer.write(context5!.categoryLabel.toString());
+      buffer.write(context5.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -540,7 +540,7 @@ Categories:''');
     var context3 = context2.displayedCategories;
     for (var context4 in context3) {
       buffer.writeln();
-      buffer.write(context4!.categoryLabel.toString());
+      buffer.write(context4.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -840,7 +840,7 @@ Categories:''');
     var context2 = context1.displayedCategories;
     for (var context3 in context2) {
       buffer.writeln();
-      buffer.write(context3!.categoryLabel.toString());
+      buffer.write(context3.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -1724,7 +1724,7 @@ Categories:''');
     var context2 = context1.displayedCategories;
     for (var context3 in context2) {
       buffer.writeln();
-      buffer.write(context3!.categoryLabel.toString());
+      buffer.write(context3.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -2017,7 +2017,7 @@ Categories:''');
     var context2 = context1.displayedCategories;
     for (var context3 in context2) {
       buffer.writeln();
-      buffer.write(context3!.categoryLabel.toString());
+      buffer.write(context3.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -2445,7 +2445,7 @@ Categories:''');
     var context2 = context1.displayedCategories;
     for (var context3 in context2) {
       buffer.writeln();
-      buffer.write(context3!.categoryLabel.toString());
+      buffer.write(context3.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -2514,7 +2514,7 @@ Categories:''');
     var context4 = context3.displayedCategories;
     for (var context5 in context4) {
       buffer.writeln();
-      buffer.write(context5!.categoryLabel.toString());
+      buffer.write(context5.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -2555,7 +2555,7 @@ Categories:''');
     var context4 = context3.displayedCategories;
     for (var context5 in context4) {
       buffer.writeln();
-      buffer.write(context5!.categoryLabel.toString());
+      buffer.write(context5.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -2602,7 +2602,7 @@ Categories:''');
     var context4 = context3.displayedCategories;
     for (var context5 in context4) {
       buffer.writeln();
-      buffer.write(context5!.categoryLabel.toString());
+      buffer.write(context5.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -2667,7 +2667,7 @@ Categories:''');
     var context4 = context3.displayedCategories;
     for (var context5 in context4) {
       buffer.writeln();
-      buffer.write(context5!.categoryLabel.toString());
+      buffer.write(context5.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -2808,7 +2808,7 @@ Categories:''');
     var context5 = context4.displayedCategories;
     for (var context6 in context5) {
       buffer.writeln();
-      buffer.write(context6!.categoryLabel.toString());
+      buffer.write(context6.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -2876,7 +2876,7 @@ Categories:''');
     var context4 = context3.displayedCategories;
     for (var context5 in context4) {
       buffer.writeln();
-      buffer.write(context5!.categoryLabel.toString());
+      buffer.write(context5.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -3308,7 +3308,7 @@ Categories:''');
     var context2 = context1.displayedCategories;
     for (var context3 in context2) {
       buffer.writeln();
-      buffer.write(context3!.categoryLabel.toString());
+      buffer.write(context3.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -3989,7 +3989,7 @@ Categories:''');
     var context2 = context1.displayedCategories;
     for (var context3 in context2) {
       buffer.writeln();
-      buffer.write(context3!.categoryLabel.toString());
+      buffer.write(context3.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -4358,7 +4358,7 @@ Categories:''');
     var context2 = context1.displayedCategories;
     for (var context3 in context2) {
       buffer.writeln();
-      buffer.write(context3!.categoryLabel.toString());
+      buffer.write(context3.categoryLabel.toString());
     }
   }
   buffer.writeln();
