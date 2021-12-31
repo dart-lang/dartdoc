@@ -50,12 +50,12 @@ Future<String> compileTemplatesToRenderers(
         ..returns = refer('void')
         ..name = 'writeEscaped'
         ..requiredParameters.add(Parameter((b) => b
-          ..type = refer('String')
+          ..type = refer('String?')
           ..name = 'value'))
         ..body = refer('write').call([
           refer('htmlEscape', 'dart:convert')
               .property('convert')
-              .call([refer('value')])
+              .call([refer("value ?? ''")])
         ]).statement))));
   });
   return DartFormatter().format('''
@@ -516,7 +516,7 @@ class _BlockCompiler {
   void _writeGetter(_VariableLookup variableLookup, {bool escape = true}) {
     var variableAccess = variableLookup.name;
     var toString = typeSystem.isPotentiallyNullable(variableLookup.type)
-        ? '$variableAccess!.toString()'
+        ? '$variableAccess?.toString()'
         : '$variableAccess.toString()';
     writeln(escape
         ? 'buffer.writeEscaped($toString);'

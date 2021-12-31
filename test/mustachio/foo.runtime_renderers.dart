@@ -265,7 +265,7 @@ class Renderer_Foo extends RendererBase<Foo?> {
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(c, remainingNames, 'String'),
-                  isNullValue: (CT_ c) => false,
+                  isNullValue: (CT_ c) => c.s1 == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     renderSimple(c.s1, ast, r.template, sink,

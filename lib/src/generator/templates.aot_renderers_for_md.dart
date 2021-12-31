@@ -189,7 +189,7 @@ String _renderCategory_partial_documentation_1(
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
     buffer.writeln();
-    buffer.write(context1.documentationAsHtml!.toString());
+    buffer.write(context1.documentationAsHtml?.toString());
   }
   buffer.writeln();
 
@@ -203,7 +203,7 @@ String _renderCategory_partial_library_2(_i3.Library context2,
   buffer.write(context2.linkedName.toString());
   if (context2.isDocumented == true) {
     buffer.writeln();
-    buffer.write(context2.oneLineDoc!.toString());
+    buffer.write(context2.oneLineDoc?.toString());
     buffer.write(' ');
     buffer.write(context2.extendedDocLink.toString());
     buffer.writeln();
@@ -223,7 +223,7 @@ String _renderCategory_partial_container_3(_i4.Container context2,
   buffer.write(__renderCategory_partial_container_3_partial_categorization_0(
       context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context2.oneLineDoc!.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.writeln();
@@ -262,7 +262,7 @@ String _renderCategory_partial_constant_4(_i5.TopLevelVariable context2,
   buffer.write(__renderCategory_partial_constant_4_partial_categorization_0(
       context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context2.oneLineDoc!.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('  ');
@@ -322,7 +322,7 @@ String _renderCategory_partial_property_5(_i5.TopLevelVariable context2,
   buffer.write(__renderCategory_partial_property_5_partial_categorization_0(
       context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context2.oneLineDoc!.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('  ');
@@ -376,14 +376,14 @@ String _renderCategory_partial_callable_6(_i6.ModelFunctionTyped context2,
   buffer.write(context2.linkedName.toString());
   buffer.write(context2.linkedGenericParameters.toString());
   buffer.write('''(''');
-  buffer.write(context2.linkedParamsNoMetadata!.toString());
+  buffer.write(context2.linkedParamsNoMetadata?.toString());
   buffer.write(''') ''');
   buffer.write(context2.modelType.returnType.linkedName.toString());
   buffer.writeln();
   buffer.write(__renderCategory_partial_callable_6_partial_categorization_0(
       context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context2.oneLineDoc!.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('  ');
@@ -446,7 +446,7 @@ String _renderCategory_partial_typedef_7(_i7.Typedef context2,
     buffer.write(__renderCategory_partial_typedef_7_partial_categorization_0(
         context3, context2, context1, context0));
     buffer.write('\n\n    ');
-    buffer.write(context3.oneLineDoc!.toString());
+    buffer.write(context3.oneLineDoc?.toString());
     buffer.write(' ');
     buffer.write(context3.extendedDocLink.toString());
     buffer.write('  ');
@@ -514,7 +514,7 @@ String __renderCategory_partial_typedef_7_partial_type_2(_i7.Typedef context2,
       ___renderCategory_partial_typedef_7_partial_type_2_partial_categorization_0(
           context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context2.oneLineDoc!.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('  ');
@@ -702,7 +702,7 @@ String renderClass(_i1.ClassTemplateData context0) {
       buffer.write(''')
 
 ''');
-      buffer.write(context15.oneLineDoc!.toString());
+      buffer.write(context15.oneLineDoc?.toString());
       buffer.write(' ');
       buffer.write(context15.extendedDocLink.toString());
       buffer.write('  ');
@@ -822,7 +822,7 @@ String _renderClass_partial_source_link_1(
     buffer.writeln();
     buffer.write('''
 [view source](''');
-    buffer.write(context1.sourceHref!.toString());
+    buffer.write(context1.sourceHref?.toString());
     buffer.write(''')''');
   }
   buffer.writeln();
@@ -868,7 +868,7 @@ String _renderClass_partial_documentation_4(
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
     buffer.writeln();
-    buffer.write(context1.documentationAsHtml!.toString());
+    buffer.write(context1.documentationAsHtml?.toString());
   }
   buffer.writeln();
 
@@ -888,7 +888,7 @@ String _renderClass_partial_property_5(
   buffer.write(__renderClass_partial_property_5_partial_categorization_0(
       context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context2.oneLineDoc!.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('  ');
@@ -938,14 +938,14 @@ String _renderClass_partial_callable_6(
   buffer.write(context2.linkedName.toString());
   buffer.write(context2.linkedGenericParameters.toString());
   buffer.write('''(''');
-  buffer.write(context2.linkedParamsNoMetadata!.toString());
+  buffer.write(context2.linkedParamsNoMetadata?.toString());
   buffer.write(''') ''');
   buffer.write(context2.modelType.returnType.linkedName.toString());
   buffer.writeln();
   buffer.write(__renderClass_partial_callable_6_partial_categorization_0(
       context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context2.oneLineDoc!.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('  ');
@@ -999,7 +999,7 @@ String _renderClass_partial_constant_7(
   buffer.write(__renderClass_partial_constant_7_partial_categorization_0(
       context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context2.oneLineDoc!.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('  ');
@@ -1118,7 +1118,7 @@ String _renderConstructor_partial_source_link_1(
     buffer.writeln();
     buffer.write('''
 [view source](''');
-    buffer.write(context1.sourceHref!.toString());
+    buffer.write(context1.sourceHref?.toString());
     buffer.write(''')''');
   }
   buffer.writeln();
@@ -1146,7 +1146,7 @@ String _renderConstructor_partial_documentation_3(
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
     buffer.writeln();
-    buffer.write(context1.documentationAsHtml!.toString());
+    buffer.write(context1.documentationAsHtml?.toString());
   }
   buffer.writeln();
 
@@ -1163,7 +1163,7 @@ String _renderConstructor_partial_source_code_4(
 
 ```dart
 ''');
-    buffer.write(context1.sourceCode!.toString());
+    buffer.write(context1.sourceCode?.toString());
     buffer.writeln();
     buffer.write('''
 ```''');
@@ -1346,7 +1346,7 @@ String _renderEnum_partial_source_link_1(
     buffer.writeln();
     buffer.write('''
 [view source](''');
-    buffer.write(context1.sourceHref!.toString());
+    buffer.write(context1.sourceHref?.toString());
     buffer.write(''')''');
   }
   buffer.writeln();
@@ -1374,7 +1374,7 @@ String _renderEnum_partial_documentation_3(
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
     buffer.writeln();
-    buffer.write(context1.documentationAsHtml!.toString());
+    buffer.write(context1.documentationAsHtml?.toString());
   }
   buffer.writeln();
 
@@ -1392,7 +1392,7 @@ String _renderEnum_partial_constant_4(
   buffer.write(__renderEnum_partial_constant_4_partial_categorization_0(
       context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context2.oneLineDoc!.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('  ');
@@ -1448,7 +1448,7 @@ String _renderEnum_partial_property_5(
   buffer.write(__renderEnum_partial_property_5_partial_categorization_0(
       context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context2.oneLineDoc!.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('  ');
@@ -1498,14 +1498,14 @@ String _renderEnum_partial_callable_6(
   buffer.write(context2.linkedName.toString());
   buffer.write(context2.linkedGenericParameters.toString());
   buffer.write('''(''');
-  buffer.write(context2.linkedParamsNoMetadata!.toString());
+  buffer.write(context2.linkedParamsNoMetadata?.toString());
   buffer.write(''') ''');
   buffer.write(context2.modelType.returnType.linkedName.toString());
   buffer.writeln();
   buffer.write(__renderEnum_partial_callable_6_partial_categorization_0(
       context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context2.oneLineDoc!.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('  ');
@@ -1706,7 +1706,7 @@ String _renderExtension_partial_source_link_1<T extends _i13.Extension>(
     buffer.writeln();
     buffer.write('''
 [view source](''');
-    buffer.write(context1.sourceHref!.toString());
+    buffer.write(context1.sourceHref?.toString());
     buffer.write(''')''');
   }
   buffer.writeln();
@@ -1752,7 +1752,7 @@ String _renderExtension_partial_documentation_4<T extends _i13.Extension>(
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
     buffer.writeln();
-    buffer.write(context1.documentationAsHtml!.toString());
+    buffer.write(context1.documentationAsHtml?.toString());
   }
   buffer.writeln();
 
@@ -1774,7 +1774,7 @@ String _renderExtension_partial_property_5<T extends _i13.Extension>(
   buffer.write(__renderExtension_partial_property_5_partial_categorization_0(
       context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context2.oneLineDoc!.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('  ');
@@ -1828,14 +1828,14 @@ String _renderExtension_partial_callable_6<T extends _i13.Extension>(
   buffer.write(context2.linkedName.toString());
   buffer.write(context2.linkedGenericParameters.toString());
   buffer.write('''(''');
-  buffer.write(context2.linkedParamsNoMetadata!.toString());
+  buffer.write(context2.linkedParamsNoMetadata?.toString());
   buffer.write(''') ''');
   buffer.write(context2.modelType.returnType.linkedName.toString());
   buffer.writeln();
   buffer.write(__renderExtension_partial_callable_6_partial_categorization_0(
       context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context2.oneLineDoc!.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('  ');
@@ -1893,7 +1893,7 @@ String _renderExtension_partial_constant_7<T extends _i13.Extension>(
   buffer.write(__renderExtension_partial_constant_7_partial_categorization_0(
       context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context2.oneLineDoc!.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('  ');
@@ -1999,7 +1999,7 @@ String _renderFunction_partial_source_link_1(
     buffer.writeln();
     buffer.write('''
 [view source](''');
-    buffer.write(context1.sourceHref!.toString());
+    buffer.write(context1.sourceHref?.toString());
     buffer.write(''')''');
   }
   buffer.writeln();
@@ -2092,7 +2092,7 @@ String _renderFunction_partial_documentation_5(
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
     buffer.writeln();
-    buffer.write(context1.documentationAsHtml!.toString());
+    buffer.write(context1.documentationAsHtml?.toString());
   }
   buffer.writeln();
 
@@ -2109,7 +2109,7 @@ String _renderFunction_partial_source_code_6(
 
 ```dart
 ''');
-    buffer.write(context1.sourceCode!.toString());
+    buffer.write(context1.sourceCode?.toString());
     buffer.writeln();
     buffer.write('''
 ```''');
@@ -2202,7 +2202,7 @@ String _renderIndex_partial_documentation_1(
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
     buffer.writeln();
-    buffer.write(context1.documentationAsHtml!.toString());
+    buffer.write(context1.documentationAsHtml?.toString());
   }
   buffer.writeln();
 
@@ -2219,7 +2219,7 @@ String _renderIndex_partial_library_2(
   buffer.write(context3.linkedName.toString());
   if (context3.isDocumented == true) {
     buffer.writeln();
-    buffer.write(context3.oneLineDoc!.toString());
+    buffer.write(context3.oneLineDoc?.toString());
     buffer.write(' ');
     buffer.write(context3.extendedDocLink.toString());
     buffer.writeln();
@@ -2427,7 +2427,7 @@ String _renderLibrary_partial_source_link_1(
     buffer.writeln();
     buffer.write('''
 [view source](''');
-    buffer.write(context1.sourceHref!.toString());
+    buffer.write(context1.sourceHref?.toString());
     buffer.write(''')''');
   }
   buffer.writeln();
@@ -2473,7 +2473,7 @@ String _renderLibrary_partial_documentation_4(
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
     buffer.writeln();
-    buffer.write(context1.documentationAsHtml!.toString());
+    buffer.write(context1.documentationAsHtml?.toString());
   }
   buffer.writeln();
 
@@ -2493,7 +2493,7 @@ String _renderLibrary_partial_container_5(
   buffer.write(__renderLibrary_partial_container_5_partial_categorization_0(
       context3, context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context3.oneLineDoc!.toString());
+  buffer.write(context3.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context3.extendedDocLink.toString());
   buffer.writeln();
@@ -2534,7 +2534,7 @@ String _renderLibrary_partial_extension_6(
   buffer.write(__renderLibrary_partial_extension_6_partial_categorization_0(
       context3, context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context3.oneLineDoc!.toString());
+  buffer.write(context3.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context3.extendedDocLink.toString());
   buffer.writeln();
@@ -2577,7 +2577,7 @@ String _renderLibrary_partial_constant_7(
   buffer.write(__renderLibrary_partial_constant_7_partial_categorization_0(
       context3, context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context3.oneLineDoc!.toString());
+  buffer.write(context3.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context3.extendedDocLink.toString());
   buffer.write('  ');
@@ -2642,7 +2642,7 @@ String _renderLibrary_partial_property_8(
   buffer.write(__renderLibrary_partial_property_8_partial_categorization_0(
       context3, context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context3.oneLineDoc!.toString());
+  buffer.write(context3.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context3.extendedDocLink.toString());
   buffer.write('  ');
@@ -2701,14 +2701,14 @@ String _renderLibrary_partial_callable_9(
   buffer.write(context3.linkedName.toString());
   buffer.write(context3.linkedGenericParameters.toString());
   buffer.write('''(''');
-  buffer.write(context3.linkedParamsNoMetadata!.toString());
+  buffer.write(context3.linkedParamsNoMetadata?.toString());
   buffer.write(''') ''');
   buffer.write(context3.modelType.returnType.linkedName.toString());
   buffer.writeln();
   buffer.write(__renderLibrary_partial_callable_9_partial_categorization_0(
       context3, context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context3.oneLineDoc!.toString());
+  buffer.write(context3.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context3.extendedDocLink.toString());
   buffer.write('  ');
@@ -2776,7 +2776,7 @@ String _renderLibrary_partial_typedef_10(
     buffer.write(__renderLibrary_partial_typedef_10_partial_categorization_0(
         context4, context3, context2, context1, context0));
     buffer.write('\n\n    ');
-    buffer.write(context4.oneLineDoc!.toString());
+    buffer.write(context4.oneLineDoc?.toString());
     buffer.write(' ');
     buffer.write(context4.extendedDocLink.toString());
     buffer.write('  ');
@@ -2849,7 +2849,7 @@ String __renderLibrary_partial_typedef_10_partial_type_2(
       ___renderLibrary_partial_typedef_10_partial_type_2_partial_categorization_0(
           context3, context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context3.oneLineDoc!.toString());
+  buffer.write(context3.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context3.extendedDocLink.toString());
   buffer.write('  ');
@@ -2959,7 +2959,7 @@ String _renderMethod_partial_source_link_1(
     buffer.writeln();
     buffer.write('''
 [view source](''');
-    buffer.write(context1.sourceHref!.toString());
+    buffer.write(context1.sourceHref?.toString());
     buffer.write(''')''');
   }
   buffer.writeln();
@@ -3047,7 +3047,7 @@ String _renderMethod_partial_documentation_5(
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
     buffer.writeln();
-    buffer.write(context1.documentationAsHtml!.toString());
+    buffer.write(context1.documentationAsHtml?.toString());
   }
   buffer.writeln();
 
@@ -3064,7 +3064,7 @@ String _renderMethod_partial_source_code_6(
 
 ```dart
 ''');
-    buffer.write(context1.sourceCode!.toString());
+    buffer.write(context1.sourceCode?.toString());
     buffer.writeln();
     buffer.write('''
 ```''');
@@ -3290,7 +3290,7 @@ String _renderMixin_partial_source_link_1(
     buffer.writeln();
     buffer.write('''
 [view source](''');
-    buffer.write(context1.sourceHref!.toString());
+    buffer.write(context1.sourceHref?.toString());
     buffer.write(''')''');
   }
   buffer.writeln();
@@ -3336,7 +3336,7 @@ String _renderMixin_partial_documentation_4(
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
     buffer.writeln();
-    buffer.write(context1.documentationAsHtml!.toString());
+    buffer.write(context1.documentationAsHtml?.toString());
   }
   buffer.writeln();
 
@@ -3356,7 +3356,7 @@ String _renderMixin_partial_property_5(
   buffer.write(__renderMixin_partial_property_5_partial_categorization_0(
       context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context2.oneLineDoc!.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('  ');
@@ -3406,14 +3406,14 @@ String _renderMixin_partial_callable_6(
   buffer.write(context2.linkedName.toString());
   buffer.write(context2.linkedGenericParameters.toString());
   buffer.write('''(''');
-  buffer.write(context2.linkedParamsNoMetadata!.toString());
+  buffer.write(context2.linkedParamsNoMetadata?.toString());
   buffer.write(''') ''');
   buffer.write(context2.modelType.returnType.linkedName.toString());
   buffer.writeln();
   buffer.write(__renderMixin_partial_callable_6_partial_categorization_0(
       context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context2.oneLineDoc!.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('  ');
@@ -3467,7 +3467,7 @@ String _renderMixin_partial_constant_7(
   buffer.write(__renderMixin_partial_constant_7_partial_categorization_0(
       context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context2.oneLineDoc!.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('  ');
@@ -3587,7 +3587,7 @@ String _renderProperty_partial_source_link_1(
     buffer.writeln();
     buffer.write('''
 [view source](''');
-    buffer.write(context1.sourceHref!.toString());
+    buffer.write(context1.sourceHref?.toString());
     buffer.write(''')''');
   }
   buffer.writeln();
@@ -3646,7 +3646,7 @@ String _renderProperty_partial_documentation_5(
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
     buffer.writeln();
-    buffer.write(context1.documentationAsHtml!.toString());
+    buffer.write(context1.documentationAsHtml?.toString());
   }
   buffer.writeln();
 
@@ -3663,7 +3663,7 @@ String _renderProperty_partial_source_code_6(
 
 ```dart
 ''');
-    buffer.write(context1.sourceCode!.toString());
+    buffer.write(context1.sourceCode?.toString());
     buffer.writeln();
     buffer.write('''
 ```''');
@@ -3744,7 +3744,7 @@ String __renderProperty_partial_accessor_getter_7_partial_documentation_2(
   final buffer = StringBuffer();
   if (context2.hasDocumentation == true) {
     buffer.writeln();
-    buffer.write(context2.documentationAsHtml!.toString());
+    buffer.write(context2.documentationAsHtml?.toString());
   }
   buffer.writeln();
 
@@ -3763,7 +3763,7 @@ String __renderProperty_partial_accessor_getter_7_partial_source_code_3(
 
 ```dart
 ''');
-    buffer.write(context2.sourceCode!.toString());
+    buffer.write(context2.sourceCode?.toString());
     buffer.writeln();
     buffer.write('''
 ```''');
@@ -3783,7 +3783,7 @@ String _renderProperty_partial_accessor_setter_8(
         __renderProperty_partial_accessor_setter_8_partial_name_summary_0(
             context2, context1, context0));
     buffer.write('''(''');
-    buffer.write(context2.linkedParamsNoMetadata!.toString());
+    buffer.write(context2.linkedParamsNoMetadata?.toString());
     buffer.write(''')  ''');
     buffer.writeln();
     buffer.write(__renderProperty_partial_accessor_setter_8_partial_features_1(
@@ -3844,7 +3844,7 @@ String __renderProperty_partial_accessor_setter_8_partial_documentation_2(
   final buffer = StringBuffer();
   if (context2.hasDocumentation == true) {
     buffer.writeln();
-    buffer.write(context2.documentationAsHtml!.toString());
+    buffer.write(context2.documentationAsHtml?.toString());
   }
   buffer.writeln();
 
@@ -3863,7 +3863,7 @@ String __renderProperty_partial_accessor_setter_8_partial_source_code_3(
 
 ```dart
 ''');
-    buffer.write(context2.sourceCode!.toString());
+    buffer.write(context2.sourceCode?.toString());
     buffer.writeln();
     buffer.write('''
 ```''');
@@ -3971,7 +3971,7 @@ String _renderTopLevelProperty_partial_source_link_1(
     buffer.writeln();
     buffer.write('''
 [view source](''');
-    buffer.write(context1.sourceHref!.toString());
+    buffer.write(context1.sourceHref?.toString());
     buffer.write(''')''');
   }
   buffer.writeln();
@@ -4048,7 +4048,7 @@ String _renderTopLevelProperty_partial_documentation_6(
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
     buffer.writeln();
-    buffer.write(context1.documentationAsHtml!.toString());
+    buffer.write(context1.documentationAsHtml?.toString());
   }
   buffer.writeln();
 
@@ -4065,7 +4065,7 @@ String _renderTopLevelProperty_partial_source_code_7(
 
 ```dart
 ''');
-    buffer.write(context1.sourceCode!.toString());
+    buffer.write(context1.sourceCode?.toString());
     buffer.writeln();
     buffer.write('''
 ```''');
@@ -4149,7 +4149,7 @@ String
   final buffer = StringBuffer();
   if (context2.hasDocumentation == true) {
     buffer.writeln();
-    buffer.write(context2.documentationAsHtml!.toString());
+    buffer.write(context2.documentationAsHtml?.toString());
   }
   buffer.writeln();
 
@@ -4168,7 +4168,7 @@ String __renderTopLevelProperty_partial_accessor_getter_8_partial_source_code_3(
 
 ```dart
 ''');
-    buffer.write(context2.sourceCode!.toString());
+    buffer.write(context2.sourceCode?.toString());
     buffer.writeln();
     buffer.write('''
 ```''');
@@ -4188,7 +4188,7 @@ String _renderTopLevelProperty_partial_accessor_setter_9(
         __renderTopLevelProperty_partial_accessor_setter_9_partial_name_summary_0(
             context2, context1, context0));
     buffer.write('''(''');
-    buffer.write(context2.linkedParamsNoMetadata!.toString());
+    buffer.write(context2.linkedParamsNoMetadata?.toString());
     buffer.write(''')  ''');
     buffer.writeln();
     buffer.write(
@@ -4252,7 +4252,7 @@ String
   final buffer = StringBuffer();
   if (context2.hasDocumentation == true) {
     buffer.writeln();
-    buffer.write(context2.documentationAsHtml!.toString());
+    buffer.write(context2.documentationAsHtml?.toString());
   }
   buffer.writeln();
 
@@ -4271,7 +4271,7 @@ String __renderTopLevelProperty_partial_accessor_setter_9_partial_source_code_3(
 
 ```dart
 ''');
-    buffer.write(context2.sourceCode!.toString());
+    buffer.write(context2.sourceCode?.toString());
     buffer.writeln();
     buffer.write('''
 ```''');
@@ -4340,7 +4340,7 @@ String _renderTypedef_partial_source_link_1(
     buffer.writeln();
     buffer.write('''
 [view source](''');
-    buffer.write(context1.sourceHref!.toString());
+    buffer.write(context1.sourceHref?.toString());
     buffer.write(''')''');
   }
   buffer.writeln();
@@ -4462,7 +4462,7 @@ String _renderTypedef_partial_documentation_5(
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
     buffer.writeln();
-    buffer.write(context1.documentationAsHtml!.toString());
+    buffer.write(context1.documentationAsHtml?.toString());
   }
   buffer.writeln();
 
@@ -4479,7 +4479,7 @@ String _renderTypedef_partial_source_code_6(
 
 ```dart
 ''');
-    buffer.write(context1.sourceCode!.toString());
+    buffer.write(context1.sourceCode?.toString());
     buffer.writeln();
     buffer.write('''
 ```''');
@@ -4501,7 +4501,7 @@ String _renderTypedef_partial_footer_7(_i1.TypedefTemplateData context0) {
 }
 
 extension on StringBuffer {
-  void writeEscaped(String value) {
-    write(_i19.htmlEscape.convert(value));
+  void writeEscaped(String? value) {
+    write(_i19.htmlEscape.convert(value ?? ''));
   }
 }

@@ -286,7 +286,7 @@ String _renderCategory_partial_head_0(_i1.CategoryTemplateData context0) {
     buffer.writeln();
     buffer.write('''
   <link rel="canonical" href="''');
-    buffer.write(context0.relCanonicalPrefix!.toString());
+    buffer.write(context0.relCanonicalPrefix?.toString());
     buffer.write('''/''');
     buffer.write(context0.bareHref.toString());
     buffer.write('''">''');
@@ -352,7 +352,7 @@ String _renderCategory_partial_head_0(_i1.CategoryTemplateData context0) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context4.href!.toString());
+    buffer.write(context4.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context4.name.toString());
     buffer.write('''</a></li>''');
@@ -362,7 +362,7 @@ String _renderCategory_partial_head_0(_i1.CategoryTemplateData context0) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context6.href!.toString());
+    buffer.write(context6.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context6.name.toString());
     if (context6.hasGenericParameters == true) {
@@ -383,7 +383,7 @@ String _renderCategory_partial_head_0(_i1.CategoryTemplateData context0) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context0.homepage!.toString());
+    buffer.write(context0.homepage?.toString());
     buffer.write('''">''');
     buffer.write(context0.layoutTitle.toString());
     buffer.write('''</a></li>''');
@@ -413,7 +413,7 @@ String _renderCategory_partial_documentation_1(
     buffer.write('''
 <section class="desc markdown">
   ''');
-    buffer.write(context1.documentationAsHtml!.toString());
+    buffer.write(context1.documentationAsHtml?.toString());
     buffer.writeln();
     buffer.write('''
 </section>''');
@@ -427,7 +427,7 @@ String _renderCategory_partial_library_2(_i3.Library context2,
     _i2.Category context1, _i1.CategoryTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context2.htmlId!.toString());
+  buffer.writeEscaped(context2.htmlId?.toString());
   buffer.write('''">
   <span class="name">''');
   buffer.write(context2.linkedName.toString());
@@ -439,7 +439,7 @@ String _renderCategory_partial_library_2(_i3.Library context2,
 </dt>
 <dd>''');
   if (context2.isDocumented == true) {
-    buffer.write(context2.oneLineDoc!.toString());
+    buffer.write(context2.oneLineDoc?.toString());
     buffer.write(' ');
     buffer.write(context2.extendedDocLink.toString());
   }
@@ -472,7 +472,7 @@ String _renderCategory_partial_container_3(_i4.Container context2,
     _i2.Category context1, _i1.CategoryTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context2.htmlId!.toString());
+  buffer.writeEscaped(context2.htmlId?.toString());
   buffer.write('''">
   <span class="name ''');
   if (context2.isDeprecated == true) {
@@ -489,7 +489,7 @@ String _renderCategory_partial_container_3(_i4.Container context2,
 </dt>
 <dd>
   ''');
-  buffer.write(context2.oneLineDoc!.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.writeln();
@@ -521,7 +521,7 @@ String _renderCategory_partial_constant_4(_i5.TopLevelVariable context2,
     _i2.Category context1, _i1.CategoryTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context2.htmlId!.toString());
+  buffer.writeEscaped(context2.htmlId?.toString());
   buffer.write('''" class="constant">
   <span class="name ''');
   if (context2.isDeprecated == true) {
@@ -541,7 +541,7 @@ String _renderCategory_partial_constant_4(_i5.TopLevelVariable context2,
 </dt>
 <dd>
   ''');
-  buffer.write(context2.oneLineDoc!.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('\n  ');
@@ -596,7 +596,7 @@ String _renderCategory_partial_property_5(_i5.TopLevelVariable context2,
     _i2.Category context1, _i1.CategoryTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context2.htmlId!.toString());
+  buffer.writeEscaped(context2.htmlId?.toString());
   buffer.write('''" class="property''');
   if (context2.isInherited == true) {
     buffer.write(''' inherited''');
@@ -621,7 +621,7 @@ String _renderCategory_partial_property_5(_i5.TopLevelVariable context2,
   }
   buffer.write('''>
   ''');
-  buffer.write(context2.oneLineDoc!.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('\n  ');
@@ -671,7 +671,7 @@ String _renderCategory_partial_callable_6(_i6.ModelFunctionTyped context2,
     _i2.Category context1, _i1.CategoryTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context2.htmlId!.toString());
+  buffer.writeEscaped(context2.htmlId?.toString());
   buffer.write('''" class="callable''');
   if (context2.isInherited == true) {
     buffer.write(''' inherited''');
@@ -686,7 +686,7 @@ String _renderCategory_partial_callable_6(_i6.ModelFunctionTyped context2,
   buffer.write('''</span>''');
   buffer.write(context2.linkedGenericParameters.toString());
   buffer.write('''<span class="signature">(<wbr>''');
-  buffer.write(context2.linkedParamsNoMetadata!.toString());
+  buffer.write(context2.linkedParamsNoMetadata?.toString());
   buffer.write(''')
     <span class="returntype parameter">&#8594; ''');
   buffer.write(context2.modelType.returnType.linkedName.toString());
@@ -704,7 +704,7 @@ String _renderCategory_partial_callable_6(_i6.ModelFunctionTyped context2,
   }
   buffer.write('''>
   ''');
-  buffer.write(context2.oneLineDoc!.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('\n  ');
@@ -758,7 +758,7 @@ String _renderCategory_partial_typedef_7(_i7.Typedef context2,
     buffer.writeln();
     buffer.write('''
   <dt id="''');
-    buffer.writeEscaped(context3.htmlId!.toString());
+    buffer.writeEscaped(context3.htmlId?.toString());
     buffer.write('''" class="callable''');
     if (context3.isInherited == true) {
       buffer.write(''' inherited''');
@@ -789,7 +789,7 @@ String _renderCategory_partial_typedef_7(_i7.Typedef context2,
     }
     buffer.write('''>
     ''');
-    buffer.write(context3.oneLineDoc!.toString());
+    buffer.write(context3.oneLineDoc?.toString());
     buffer.write(' ');
     buffer.write(context3.extendedDocLink.toString());
     buffer.write('\n    ');
@@ -847,7 +847,7 @@ String __renderCategory_partial_typedef_7_partial_type_2(_i7.Typedef context2,
     _i2.Category context1, _i1.CategoryTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context2.htmlId!.toString());
+  buffer.writeEscaped(context2.htmlId?.toString());
   buffer.write('''" class="''');
   if (context2.isInherited == true) {
     buffer.write(''' inherited''');
@@ -881,7 +881,7 @@ String __renderCategory_partial_typedef_7_partial_type_2(_i7.Typedef context2,
   }
   buffer.write('''>
   ''');
-  buffer.write(context2.oneLineDoc!.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('\n  ');
@@ -944,7 +944,7 @@ String _renderCategory_partial_search_sidebar_8(
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context2.href!.toString());
+    buffer.write(context2.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context2.name.toString());
     buffer.write('''</a></li>''');
@@ -954,7 +954,7 @@ String _renderCategory_partial_search_sidebar_8(
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context4.href!.toString());
+    buffer.write(context4.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context4.name.toString());
     if (context4.hasGenericParameters == true) {
@@ -975,7 +975,7 @@ String _renderCategory_partial_search_sidebar_8(
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context0.homepage!.toString());
+    buffer.write(context0.homepage?.toString());
     buffer.write('''">''');
     buffer.write(context0.layoutTitle.toString());
     buffer.write('''</a></li>''');
@@ -1064,7 +1064,7 @@ String _renderCategory_partial_sidebar_for_category_10(
     buffer.writeln();
     buffer.write('''
   <li class="section-title"><a href="''');
-    buffer.write(context0.self.href!.toString());
+    buffer.write(context0.self.href?.toString());
     buffer.write('''#libraries">Libraries</a></li>''');
     var context2 = context0.self;
     var context3 = context2.publicLibrariesSorted;
@@ -1082,7 +1082,7 @@ String _renderCategory_partial_sidebar_for_category_10(
     buffer.writeln();
     buffer.write('''
   <li class="section-title"><a href="''');
-    buffer.write(context0.self.href!.toString());
+    buffer.write(context0.self.href?.toString());
     buffer.write('''#mixins">Mixins</a></li>''');
     var context6 = context0.self;
     var context7 = context6.publicMixinsSorted;
@@ -1100,7 +1100,7 @@ String _renderCategory_partial_sidebar_for_category_10(
     buffer.writeln();
     buffer.write('''
   <li class="section-title"><a href="''');
-    buffer.write(context0.self.href!.toString());
+    buffer.write(context0.self.href?.toString());
     buffer.write('''#classes">Classes</a></li>''');
     var context10 = context0.self;
     var context11 = context10.publicClassesSorted;
@@ -1118,7 +1118,7 @@ String _renderCategory_partial_sidebar_for_category_10(
     buffer.writeln();
     buffer.write('''
   <li class="section-title"><a href="''');
-    buffer.write(context0.self.href!.toString());
+    buffer.write(context0.self.href?.toString());
     buffer.write('''#constants">Constants</a></li>''');
     var context14 = context0.self;
     var context15 = context14.publicConstantsSorted;
@@ -1136,7 +1136,7 @@ String _renderCategory_partial_sidebar_for_category_10(
     buffer.writeln();
     buffer.write('''
   <li class="section-title"><a href="''');
-    buffer.write(context0.self.href!.toString());
+    buffer.write(context0.self.href?.toString());
     buffer.write('''#properties">Properties</a></li>''');
     var context18 = context0.self;
     var context19 = context18.publicPropertiesSorted;
@@ -1154,7 +1154,7 @@ String _renderCategory_partial_sidebar_for_category_10(
     buffer.writeln();
     buffer.write('''
   <li class="section-title"><a href="''');
-    buffer.write(context0.self.href!.toString());
+    buffer.write(context0.self.href?.toString());
     buffer.write('''#functions">Functions</a></li>''');
     var context22 = context0.self;
     var context23 = context22.publicFunctionsSorted;
@@ -1172,7 +1172,7 @@ String _renderCategory_partial_sidebar_for_category_10(
     buffer.writeln();
     buffer.write('''
   <li class="section-title"><a href="''');
-    buffer.write(context0.self.href!.toString());
+    buffer.write(context0.self.href?.toString());
     buffer.write('''#enums">Enums</a></li>''');
     var context26 = context0.self;
     var context27 = context26.publicEnumsSorted;
@@ -1190,7 +1190,7 @@ String _renderCategory_partial_sidebar_for_category_10(
     buffer.writeln();
     buffer.write('''
   <li class="section-title"><a href="''');
-    buffer.write(context0.self.href!.toString());
+    buffer.write(context0.self.href?.toString());
     buffer.write('''#typedefs">Typedefs</a></li>''');
     var context30 = context0.self;
     var context31 = context30.publicTypedefsSorted;
@@ -1208,7 +1208,7 @@ String _renderCategory_partial_sidebar_for_category_10(
     buffer.writeln();
     buffer.write('''
   <li class="section-title"><a href="''');
-    buffer.write(context0.self.href!.toString());
+    buffer.write(context0.self.href?.toString());
     buffer.write('''#exceptions">Exceptions</a></li>''');
     var context34 = context0.self;
     var context35 = context34.publicExceptionsSorted;
@@ -1442,7 +1442,7 @@ String renderClass(_i1.ClassTemplateData context0) {
       buffer.writeln();
       buffer.write('''
         <dt id="''');
-      buffer.writeEscaped(context16.htmlId!.toString());
+      buffer.writeEscaped(context16.htmlId?.toString());
       buffer.write('''" class="callable">
           <span class="name">''');
       buffer.write(context16.linkedName.toString());
@@ -1452,7 +1452,7 @@ String renderClass(_i1.ClassTemplateData context0) {
         </dt>
         <dd>
           ''');
-      buffer.write(context16.oneLineDoc!.toString());
+      buffer.write(context16.oneLineDoc?.toString());
       buffer.write(' ');
       buffer.write(context16.extendedDocLink.toString());
       if (context16.isConst == true) {
@@ -1660,7 +1660,7 @@ String _renderClass_partial_head_0(_i1.ClassTemplateData context0) {
     buffer.writeln();
     buffer.write('''
   <link rel="canonical" href="''');
-    buffer.write(context0.relCanonicalPrefix!.toString());
+    buffer.write(context0.relCanonicalPrefix?.toString());
     buffer.write('''/''');
     buffer.write(context0.bareHref.toString());
     buffer.write('''">''');
@@ -1726,7 +1726,7 @@ String _renderClass_partial_head_0(_i1.ClassTemplateData context0) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context4.href!.toString());
+    buffer.write(context4.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context4.name.toString());
     buffer.write('''</a></li>''');
@@ -1736,7 +1736,7 @@ String _renderClass_partial_head_0(_i1.ClassTemplateData context0) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context6.href!.toString());
+    buffer.write(context6.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context6.name.toString());
     if (context6.hasGenericParameters == true) {
@@ -1757,7 +1757,7 @@ String _renderClass_partial_head_0(_i1.ClassTemplateData context0) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context0.homepage!.toString());
+    buffer.write(context0.homepage?.toString());
     buffer.write('''">''');
     buffer.write(context0.layoutTitle.toString());
     buffer.write('''</a></li>''');
@@ -1786,7 +1786,7 @@ String _renderClass_partial_source_link_1(
     buffer.writeln();
     buffer.write('''
   <div id="external-links" class="btn-group"><a title="View source code" class="source-link" href="''');
-    buffer.write(context1.sourceHref!.toString());
+    buffer.write(context1.sourceHref?.toString());
     buffer.write('''"><i class="material-icons">description</i></a></div>''');
   }
   buffer.writeln();
@@ -1832,7 +1832,7 @@ String _renderClass_partial_documentation_4(
     buffer.write('''
 <section class="desc markdown">
   ''');
-    buffer.write(context1.documentationAsHtml!.toString());
+    buffer.write(context1.documentationAsHtml?.toString());
     buffer.writeln();
     buffer.write('''
 </section>''');
@@ -1846,7 +1846,7 @@ String _renderClass_partial_property_5(
     _i9.Field context2, _i8.Class context1, _i1.ClassTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context2.htmlId!.toString());
+  buffer.writeEscaped(context2.htmlId?.toString());
   buffer.write('''" class="property''');
   if (context2.isInherited == true) {
     buffer.write(''' inherited''');
@@ -1871,7 +1871,7 @@ String _renderClass_partial_property_5(
   }
   buffer.write('''>
   ''');
-  buffer.write(context2.oneLineDoc!.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('\n  ');
@@ -1917,7 +1917,7 @@ String _renderClass_partial_callable_6(
     _i10.Method context2, _i8.Class context1, _i1.ClassTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context2.htmlId!.toString());
+  buffer.writeEscaped(context2.htmlId?.toString());
   buffer.write('''" class="callable''');
   if (context2.isInherited == true) {
     buffer.write(''' inherited''');
@@ -1932,7 +1932,7 @@ String _renderClass_partial_callable_6(
   buffer.write('''</span>''');
   buffer.write(context2.linkedGenericParameters.toString());
   buffer.write('''<span class="signature">(<wbr>''');
-  buffer.write(context2.linkedParamsNoMetadata!.toString());
+  buffer.write(context2.linkedParamsNoMetadata?.toString());
   buffer.write(''')
     <span class="returntype parameter">&#8594; ''');
   buffer.write(context2.modelType.returnType.linkedName.toString());
@@ -1950,7 +1950,7 @@ String _renderClass_partial_callable_6(
   }
   buffer.write('''>
   ''');
-  buffer.write(context2.oneLineDoc!.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('\n  ');
@@ -1996,7 +1996,7 @@ String _renderClass_partial_constant_7(
     _i9.Field context2, _i8.Class context1, _i1.ClassTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context2.htmlId!.toString());
+  buffer.writeEscaped(context2.htmlId?.toString());
   buffer.write('''" class="constant">
   <span class="name ''');
   if (context2.isDeprecated == true) {
@@ -2016,7 +2016,7 @@ String _renderClass_partial_constant_7(
 </dt>
 <dd>
   ''');
-  buffer.write(context2.oneLineDoc!.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('\n  ');
@@ -2077,7 +2077,7 @@ String _renderClass_partial_search_sidebar_8(_i1.ClassTemplateData context0) {
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context2.href!.toString());
+    buffer.write(context2.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context2.name.toString());
     buffer.write('''</a></li>''');
@@ -2087,7 +2087,7 @@ String _renderClass_partial_search_sidebar_8(_i1.ClassTemplateData context0) {
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context4.href!.toString());
+    buffer.write(context4.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context4.name.toString());
     if (context4.hasGenericParameters == true) {
@@ -2108,7 +2108,7 @@ String _renderClass_partial_search_sidebar_8(_i1.ClassTemplateData context0) {
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context0.homepage!.toString());
+    buffer.write(context0.homepage?.toString());
     buffer.write('''">''');
     buffer.write(context0.layoutTitle.toString());
     buffer.write('''</a></li>''');
@@ -2295,7 +2295,7 @@ String _renderConstructor_partial_head_0(_i1.ConstructorTemplateData context0) {
     buffer.writeln();
     buffer.write('''
   <link rel="canonical" href="''');
-    buffer.write(context0.relCanonicalPrefix!.toString());
+    buffer.write(context0.relCanonicalPrefix?.toString());
     buffer.write('''/''');
     buffer.write(context0.bareHref.toString());
     buffer.write('''">''');
@@ -2361,7 +2361,7 @@ String _renderConstructor_partial_head_0(_i1.ConstructorTemplateData context0) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context4.href!.toString());
+    buffer.write(context4.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context4.name.toString());
     buffer.write('''</a></li>''');
@@ -2371,7 +2371,7 @@ String _renderConstructor_partial_head_0(_i1.ConstructorTemplateData context0) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context6.href!.toString());
+    buffer.write(context6.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context6.name.toString());
     if (context6.hasGenericParameters == true) {
@@ -2392,7 +2392,7 @@ String _renderConstructor_partial_head_0(_i1.ConstructorTemplateData context0) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context0.homepage!.toString());
+    buffer.write(context0.homepage?.toString());
     buffer.write('''">''');
     buffer.write(context0.layoutTitle.toString());
     buffer.write('''</a></li>''');
@@ -2421,7 +2421,7 @@ String _renderConstructor_partial_source_link_1(
     buffer.writeln();
     buffer.write('''
   <div id="external-links" class="btn-group"><a title="View source code" class="source-link" href="''');
-    buffer.write(context1.sourceHref!.toString());
+    buffer.write(context1.sourceHref?.toString());
     buffer.write('''"><i class="material-icons">description</i></a></div>''');
   }
   buffer.writeln();
@@ -2452,7 +2452,7 @@ String _renderConstructor_partial_documentation_3(
     buffer.write('''
 <section class="desc markdown">
   ''');
-    buffer.write(context1.documentationAsHtml!.toString());
+    buffer.write(context1.documentationAsHtml?.toString());
     buffer.writeln();
     buffer.write('''
 </section>''');
@@ -2471,7 +2471,7 @@ String _renderConstructor_partial_source_code_4(
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">''');
-    buffer.write(context1.sourceCode!.toString());
+    buffer.write(context1.sourceCode?.toString());
     buffer.write('''</code></pre>
 </section>''');
   }
@@ -2495,7 +2495,7 @@ String _renderConstructor_partial_search_sidebar_5(
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context2.href!.toString());
+    buffer.write(context2.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context2.name.toString());
     buffer.write('''</a></li>''');
@@ -2505,7 +2505,7 @@ String _renderConstructor_partial_search_sidebar_5(
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context4.href!.toString());
+    buffer.write(context4.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context4.name.toString());
     if (context4.hasGenericParameters == true) {
@@ -2526,7 +2526,7 @@ String _renderConstructor_partial_search_sidebar_5(
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context0.homepage!.toString());
+    buffer.write(context0.homepage?.toString());
     buffer.write('''">''');
     buffer.write(context0.layoutTitle.toString());
     buffer.write('''</a></li>''');
@@ -2853,7 +2853,7 @@ String _renderEnum_partial_head_0(_i1.EnumTemplateData context0) {
     buffer.writeln();
     buffer.write('''
   <link rel="canonical" href="''');
-    buffer.write(context0.relCanonicalPrefix!.toString());
+    buffer.write(context0.relCanonicalPrefix?.toString());
     buffer.write('''/''');
     buffer.write(context0.bareHref.toString());
     buffer.write('''">''');
@@ -2919,7 +2919,7 @@ String _renderEnum_partial_head_0(_i1.EnumTemplateData context0) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context4.href!.toString());
+    buffer.write(context4.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context4.name.toString());
     buffer.write('''</a></li>''');
@@ -2929,7 +2929,7 @@ String _renderEnum_partial_head_0(_i1.EnumTemplateData context0) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context6.href!.toString());
+    buffer.write(context6.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context6.name.toString());
     if (context6.hasGenericParameters == true) {
@@ -2950,7 +2950,7 @@ String _renderEnum_partial_head_0(_i1.EnumTemplateData context0) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context0.homepage!.toString());
+    buffer.write(context0.homepage?.toString());
     buffer.write('''">''');
     buffer.write(context0.layoutTitle.toString());
     buffer.write('''</a></li>''');
@@ -2979,7 +2979,7 @@ String _renderEnum_partial_source_link_1(
     buffer.writeln();
     buffer.write('''
   <div id="external-links" class="btn-group"><a title="View source code" class="source-link" href="''');
-    buffer.write(context1.sourceHref!.toString());
+    buffer.write(context1.sourceHref?.toString());
     buffer.write('''"><i class="material-icons">description</i></a></div>''');
   }
   buffer.writeln();
@@ -3025,7 +3025,7 @@ String _renderEnum_partial_documentation_4(
     buffer.write('''
 <section class="desc markdown">
   ''');
-    buffer.write(context1.documentationAsHtml!.toString());
+    buffer.write(context1.documentationAsHtml?.toString());
     buffer.writeln();
     buffer.write('''
 </section>''');
@@ -3039,7 +3039,7 @@ String _renderEnum_partial_constant_5(
     _i9.Field context2, _i12.Enum context1, _i1.EnumTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context2.htmlId!.toString());
+  buffer.writeEscaped(context2.htmlId?.toString());
   buffer.write('''" class="constant">
   <span class="name ''');
   if (context2.isDeprecated == true) {
@@ -3059,7 +3059,7 @@ String _renderEnum_partial_constant_5(
 </dt>
 <dd>
   ''');
-  buffer.write(context2.oneLineDoc!.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('\n  ');
@@ -3110,7 +3110,7 @@ String _renderEnum_partial_property_6(
     _i9.Field context2, _i12.Enum context1, _i1.EnumTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context2.htmlId!.toString());
+  buffer.writeEscaped(context2.htmlId?.toString());
   buffer.write('''" class="property''');
   if (context2.isInherited == true) {
     buffer.write(''' inherited''');
@@ -3135,7 +3135,7 @@ String _renderEnum_partial_property_6(
   }
   buffer.write('''>
   ''');
-  buffer.write(context2.oneLineDoc!.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('\n  ');
@@ -3181,7 +3181,7 @@ String _renderEnum_partial_callable_7(
     _i10.Method context2, _i12.Enum context1, _i1.EnumTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context2.htmlId!.toString());
+  buffer.writeEscaped(context2.htmlId?.toString());
   buffer.write('''" class="callable''');
   if (context2.isInherited == true) {
     buffer.write(''' inherited''');
@@ -3196,7 +3196,7 @@ String _renderEnum_partial_callable_7(
   buffer.write('''</span>''');
   buffer.write(context2.linkedGenericParameters.toString());
   buffer.write('''<span class="signature">(<wbr>''');
-  buffer.write(context2.linkedParamsNoMetadata!.toString());
+  buffer.write(context2.linkedParamsNoMetadata?.toString());
   buffer.write(''')
     <span class="returntype parameter">&#8594; ''');
   buffer.write(context2.modelType.returnType.linkedName.toString());
@@ -3214,7 +3214,7 @@ String _renderEnum_partial_callable_7(
   }
   buffer.write('''>
   ''');
-  buffer.write(context2.oneLineDoc!.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('\n  ');
@@ -3270,7 +3270,7 @@ String _renderEnum_partial_search_sidebar_8(_i1.EnumTemplateData context0) {
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context2.href!.toString());
+    buffer.write(context2.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context2.name.toString());
     buffer.write('''</a></li>''');
@@ -3280,7 +3280,7 @@ String _renderEnum_partial_search_sidebar_8(_i1.EnumTemplateData context0) {
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context4.href!.toString());
+    buffer.write(context4.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context4.name.toString());
     if (context4.hasGenericParameters == true) {
@@ -3301,7 +3301,7 @@ String _renderEnum_partial_search_sidebar_8(_i1.EnumTemplateData context0) {
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context0.homepage!.toString());
+    buffer.write(context0.homepage?.toString());
     buffer.write('''">''');
     buffer.write(context0.layoutTitle.toString());
     buffer.write('''</a></li>''');
@@ -3440,7 +3440,7 @@ String _renderError_partial_head_0(_i1.PackageTemplateData context0) {
     buffer.writeln();
     buffer.write('''
   <link rel="canonical" href="''');
-    buffer.write(context0.relCanonicalPrefix!.toString());
+    buffer.write(context0.relCanonicalPrefix?.toString());
     buffer.write('''/''');
     buffer.write(context0.bareHref.toString());
     buffer.write('''">''');
@@ -3506,7 +3506,7 @@ String _renderError_partial_head_0(_i1.PackageTemplateData context0) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context4.href!.toString());
+    buffer.write(context4.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context4.name.toString());
     buffer.write('''</a></li>''');
@@ -3516,7 +3516,7 @@ String _renderError_partial_head_0(_i1.PackageTemplateData context0) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context6.href!.toString());
+    buffer.write(context6.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context6.name.toString());
     if (context6.hasGenericParameters == true) {
@@ -3573,7 +3573,7 @@ String _renderError_partial_search_sidebar_1(_i1.PackageTemplateData context0) {
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context2.href!.toString());
+    buffer.write(context2.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context2.name.toString());
     buffer.write('''</a></li>''');
@@ -3583,7 +3583,7 @@ String _renderError_partial_search_sidebar_1(_i1.PackageTemplateData context0) {
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context4.href!.toString());
+    buffer.write(context4.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context4.name.toString());
     if (context4.hasGenericParameters == true) {
@@ -3954,7 +3954,7 @@ String _renderExtension_partial_head_0<T extends _i13.Extension>(
     buffer.writeln();
     buffer.write('''
   <link rel="canonical" href="''');
-    buffer.write(context0.relCanonicalPrefix!.toString());
+    buffer.write(context0.relCanonicalPrefix?.toString());
     buffer.write('''/''');
     buffer.write(context0.bareHref.toString());
     buffer.write('''">''');
@@ -4020,7 +4020,7 @@ String _renderExtension_partial_head_0<T extends _i13.Extension>(
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context4.href!.toString());
+    buffer.write(context4.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context4.name.toString());
     buffer.write('''</a></li>''');
@@ -4030,7 +4030,7 @@ String _renderExtension_partial_head_0<T extends _i13.Extension>(
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context6.href!.toString());
+    buffer.write(context6.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context6.name.toString());
     if (context6.hasGenericParameters == true) {
@@ -4051,7 +4051,7 @@ String _renderExtension_partial_head_0<T extends _i13.Extension>(
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context0.homepage!.toString());
+    buffer.write(context0.homepage?.toString());
     buffer.write('''">''');
     buffer.write(context0.layoutTitle.toString());
     buffer.write('''</a></li>''');
@@ -4080,7 +4080,7 @@ String _renderExtension_partial_source_link_1<T extends _i13.Extension>(
     buffer.writeln();
     buffer.write('''
   <div id="external-links" class="btn-group"><a title="View source code" class="source-link" href="''');
-    buffer.write(context1.sourceHref!.toString());
+    buffer.write(context1.sourceHref?.toString());
     buffer.write('''"><i class="material-icons">description</i></a></div>''');
   }
   buffer.writeln();
@@ -4126,7 +4126,7 @@ String _renderExtension_partial_documentation_4<T extends _i13.Extension>(
     buffer.write('''
 <section class="desc markdown">
   ''');
-    buffer.write(context1.documentationAsHtml!.toString());
+    buffer.write(context1.documentationAsHtml?.toString());
     buffer.writeln();
     buffer.write('''
 </section>''');
@@ -4142,7 +4142,7 @@ String _renderExtension_partial_property_5<T extends _i13.Extension>(
     _i1.ExtensionTemplateData<T> context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context2.htmlId!.toString());
+  buffer.writeEscaped(context2.htmlId?.toString());
   buffer.write('''" class="property''');
   if (context2.isInherited == true) {
     buffer.write(''' inherited''');
@@ -4167,7 +4167,7 @@ String _renderExtension_partial_property_5<T extends _i13.Extension>(
   }
   buffer.write('''>
   ''');
-  buffer.write(context2.oneLineDoc!.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('\n  ');
@@ -4217,7 +4217,7 @@ String _renderExtension_partial_callable_6<T extends _i13.Extension>(
     _i1.ExtensionTemplateData<T> context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context2.htmlId!.toString());
+  buffer.writeEscaped(context2.htmlId?.toString());
   buffer.write('''" class="callable''');
   if (context2.isInherited == true) {
     buffer.write(''' inherited''');
@@ -4232,7 +4232,7 @@ String _renderExtension_partial_callable_6<T extends _i13.Extension>(
   buffer.write('''</span>''');
   buffer.write(context2.linkedGenericParameters.toString());
   buffer.write('''<span class="signature">(<wbr>''');
-  buffer.write(context2.linkedParamsNoMetadata!.toString());
+  buffer.write(context2.linkedParamsNoMetadata?.toString());
   buffer.write(''')
     <span class="returntype parameter">&#8594; ''');
   buffer.write(context2.modelType.returnType.linkedName.toString());
@@ -4250,7 +4250,7 @@ String _renderExtension_partial_callable_6<T extends _i13.Extension>(
   }
   buffer.write('''>
   ''');
-  buffer.write(context2.oneLineDoc!.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('\n  ');
@@ -4300,7 +4300,7 @@ String _renderExtension_partial_constant_7<T extends _i13.Extension>(
     _i1.ExtensionTemplateData<T> context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context2.htmlId!.toString());
+  buffer.writeEscaped(context2.htmlId?.toString());
   buffer.write('''" class="constant">
   <span class="name ''');
   if (context2.isDeprecated == true) {
@@ -4320,7 +4320,7 @@ String _renderExtension_partial_constant_7<T extends _i13.Extension>(
 </dt>
 <dd>
   ''');
-  buffer.write(context2.oneLineDoc!.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('\n  ');
@@ -4384,7 +4384,7 @@ String _renderExtension_partial_search_sidebar_8<T extends _i13.Extension>(
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context2.href!.toString());
+    buffer.write(context2.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context2.name.toString());
     buffer.write('''</a></li>''');
@@ -4394,7 +4394,7 @@ String _renderExtension_partial_search_sidebar_8<T extends _i13.Extension>(
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context4.href!.toString());
+    buffer.write(context4.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context4.name.toString());
     if (context4.hasGenericParameters == true) {
@@ -4415,7 +4415,7 @@ String _renderExtension_partial_search_sidebar_8<T extends _i13.Extension>(
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context0.homepage!.toString());
+    buffer.write(context0.homepage?.toString());
     buffer.write('''">''');
     buffer.write(context0.layoutTitle.toString());
     buffer.write('''</a></li>''');
@@ -4575,7 +4575,7 @@ String _renderFunction_partial_head_0(_i1.FunctionTemplateData context0) {
     buffer.writeln();
     buffer.write('''
   <link rel="canonical" href="''');
-    buffer.write(context0.relCanonicalPrefix!.toString());
+    buffer.write(context0.relCanonicalPrefix?.toString());
     buffer.write('''/''');
     buffer.write(context0.bareHref.toString());
     buffer.write('''">''');
@@ -4641,7 +4641,7 @@ String _renderFunction_partial_head_0(_i1.FunctionTemplateData context0) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context4.href!.toString());
+    buffer.write(context4.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context4.name.toString());
     buffer.write('''</a></li>''');
@@ -4651,7 +4651,7 @@ String _renderFunction_partial_head_0(_i1.FunctionTemplateData context0) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context6.href!.toString());
+    buffer.write(context6.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context6.name.toString());
     if (context6.hasGenericParameters == true) {
@@ -4672,7 +4672,7 @@ String _renderFunction_partial_head_0(_i1.FunctionTemplateData context0) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context0.homepage!.toString());
+    buffer.write(context0.homepage?.toString());
     buffer.write('''">''');
     buffer.write(context0.layoutTitle.toString());
     buffer.write('''</a></li>''');
@@ -4701,7 +4701,7 @@ String _renderFunction_partial_source_link_1(
     buffer.writeln();
     buffer.write('''
   <div id="external-links" class="btn-group"><a title="View source code" class="source-link" href="''');
-    buffer.write(context1.sourceHref!.toString());
+    buffer.write(context1.sourceHref?.toString());
     buffer.write('''"><i class="material-icons">description</i></a></div>''');
   }
   buffer.writeln();
@@ -4806,7 +4806,7 @@ String _renderFunction_partial_documentation_5(
     buffer.write('''
 <section class="desc markdown">
   ''');
-    buffer.write(context1.documentationAsHtml!.toString());
+    buffer.write(context1.documentationAsHtml?.toString());
     buffer.writeln();
     buffer.write('''
 </section>''');
@@ -4825,7 +4825,7 @@ String _renderFunction_partial_source_code_6(
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">''');
-    buffer.write(context1.sourceCode!.toString());
+    buffer.write(context1.sourceCode?.toString());
     buffer.write('''</code></pre>
 </section>''');
   }
@@ -4849,7 +4849,7 @@ String _renderFunction_partial_search_sidebar_7(
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context2.href!.toString());
+    buffer.write(context2.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context2.name.toString());
     buffer.write('''</a></li>''');
@@ -4859,7 +4859,7 @@ String _renderFunction_partial_search_sidebar_7(
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context4.href!.toString());
+    buffer.write(context4.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context4.name.toString());
     if (context4.hasGenericParameters == true) {
@@ -4880,7 +4880,7 @@ String _renderFunction_partial_search_sidebar_7(
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context0.homepage!.toString());
+    buffer.write(context0.homepage?.toString());
     buffer.write('''">''');
     buffer.write(context0.layoutTitle.toString());
     buffer.write('''</a></li>''');
@@ -5062,7 +5062,7 @@ String _renderIndex_partial_head_0(_i1.PackageTemplateData context0) {
     buffer.writeln();
     buffer.write('''
   <link rel="canonical" href="''');
-    buffer.write(context0.relCanonicalPrefix!.toString());
+    buffer.write(context0.relCanonicalPrefix?.toString());
     buffer.write('''/''');
     buffer.write(context0.bareHref.toString());
     buffer.write('''">''');
@@ -5128,7 +5128,7 @@ String _renderIndex_partial_head_0(_i1.PackageTemplateData context0) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context4.href!.toString());
+    buffer.write(context4.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context4.name.toString());
     buffer.write('''</a></li>''');
@@ -5138,7 +5138,7 @@ String _renderIndex_partial_head_0(_i1.PackageTemplateData context0) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context6.href!.toString());
+    buffer.write(context6.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context6.name.toString());
     if (context6.hasGenericParameters == true) {
@@ -5189,7 +5189,7 @@ String _renderIndex_partial_documentation_1(
     buffer.write('''
 <section class="desc markdown">
   ''');
-    buffer.write(context1.documentationAsHtml!.toString());
+    buffer.write(context1.documentationAsHtml?.toString());
     buffer.writeln();
     buffer.write('''
 </section>''');
@@ -5206,7 +5206,7 @@ String _renderIndex_partial_library_2(
     _i1.PackageTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context3.htmlId!.toString());
+  buffer.writeEscaped(context3.htmlId?.toString());
   buffer.write('''">
   <span class="name">''');
   buffer.write(context3.linkedName.toString());
@@ -5218,7 +5218,7 @@ String _renderIndex_partial_library_2(
 </dt>
 <dd>''');
   if (context3.isDocumented == true) {
-    buffer.write(context3.oneLineDoc!.toString());
+    buffer.write(context3.oneLineDoc?.toString());
     buffer.write(' ');
     buffer.write(context3.extendedDocLink.toString());
   }
@@ -5262,7 +5262,7 @@ String _renderIndex_partial_search_sidebar_3(_i1.PackageTemplateData context0) {
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context2.href!.toString());
+    buffer.write(context2.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context2.name.toString());
     buffer.write('''</a></li>''');
@@ -5272,7 +5272,7 @@ String _renderIndex_partial_search_sidebar_3(_i1.PackageTemplateData context0) {
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context4.href!.toString());
+    buffer.write(context4.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context4.name.toString());
     if (context4.hasGenericParameters == true) {
@@ -5705,7 +5705,7 @@ String _renderLibrary_partial_head_0(_i1.LibraryTemplateData context0) {
     buffer.writeln();
     buffer.write('''
   <link rel="canonical" href="''');
-    buffer.write(context0.relCanonicalPrefix!.toString());
+    buffer.write(context0.relCanonicalPrefix?.toString());
     buffer.write('''/''');
     buffer.write(context0.bareHref.toString());
     buffer.write('''">''');
@@ -5771,7 +5771,7 @@ String _renderLibrary_partial_head_0(_i1.LibraryTemplateData context0) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context4.href!.toString());
+    buffer.write(context4.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context4.name.toString());
     buffer.write('''</a></li>''');
@@ -5781,7 +5781,7 @@ String _renderLibrary_partial_head_0(_i1.LibraryTemplateData context0) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context6.href!.toString());
+    buffer.write(context6.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context6.name.toString());
     if (context6.hasGenericParameters == true) {
@@ -5802,7 +5802,7 @@ String _renderLibrary_partial_head_0(_i1.LibraryTemplateData context0) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context0.homepage!.toString());
+    buffer.write(context0.homepage?.toString());
     buffer.write('''">''');
     buffer.write(context0.layoutTitle.toString());
     buffer.write('''</a></li>''');
@@ -5831,7 +5831,7 @@ String _renderLibrary_partial_source_link_1(
     buffer.writeln();
     buffer.write('''
   <div id="external-links" class="btn-group"><a title="View source code" class="source-link" href="''');
-    buffer.write(context1.sourceHref!.toString());
+    buffer.write(context1.sourceHref?.toString());
     buffer.write('''"><i class="material-icons">description</i></a></div>''');
   }
   buffer.writeln();
@@ -5877,7 +5877,7 @@ String _renderLibrary_partial_documentation_4(
     buffer.write('''
 <section class="desc markdown">
   ''');
-    buffer.write(context1.documentationAsHtml!.toString());
+    buffer.write(context1.documentationAsHtml?.toString());
     buffer.writeln();
     buffer.write('''
 </section>''');
@@ -5894,7 +5894,7 @@ String _renderLibrary_partial_container_5(
     _i1.LibraryTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context3.htmlId!.toString());
+  buffer.writeEscaped(context3.htmlId?.toString());
   buffer.write('''">
   <span class="name ''');
   if (context3.isDeprecated == true) {
@@ -5911,7 +5911,7 @@ String _renderLibrary_partial_container_5(
 </dt>
 <dd>
   ''');
-  buffer.write(context3.oneLineDoc!.toString());
+  buffer.write(context3.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context3.extendedDocLink.toString());
   buffer.writeln();
@@ -5947,7 +5947,7 @@ String _renderLibrary_partial_extension_6(
     _i1.LibraryTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context3.htmlId!.toString());
+  buffer.writeEscaped(context3.htmlId?.toString());
   buffer.write('''">
     <span class="name ''');
   if (context3.isDeprecated == true) {
@@ -5963,7 +5963,7 @@ String _renderLibrary_partial_extension_6(
 </dt>
 <dd>
     ''');
-  buffer.write(context3.oneLineDoc!.toString());
+  buffer.write(context3.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context3.extendedDocLink.toString());
   buffer.writeln();
@@ -6000,7 +6000,7 @@ String _renderLibrary_partial_constant_7(
     _i1.LibraryTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context3.htmlId!.toString());
+  buffer.writeEscaped(context3.htmlId?.toString());
   buffer.write('''" class="constant">
   <span class="name ''');
   if (context3.isDeprecated == true) {
@@ -6020,7 +6020,7 @@ String _renderLibrary_partial_constant_7(
 </dt>
 <dd>
   ''');
-  buffer.write(context3.oneLineDoc!.toString());
+  buffer.write(context3.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context3.extendedDocLink.toString());
   buffer.write('\n  ');
@@ -6080,7 +6080,7 @@ String _renderLibrary_partial_property_8(
     _i1.LibraryTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context3.htmlId!.toString());
+  buffer.writeEscaped(context3.htmlId?.toString());
   buffer.write('''" class="property''');
   if (context3.isInherited == true) {
     buffer.write(''' inherited''');
@@ -6105,7 +6105,7 @@ String _renderLibrary_partial_property_8(
   }
   buffer.write('''>
   ''');
-  buffer.write(context3.oneLineDoc!.toString());
+  buffer.write(context3.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context3.extendedDocLink.toString());
   buffer.write('\n  ');
@@ -6160,7 +6160,7 @@ String _renderLibrary_partial_callable_9(
     _i1.LibraryTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context3.htmlId!.toString());
+  buffer.writeEscaped(context3.htmlId?.toString());
   buffer.write('''" class="callable''');
   if (context3.isInherited == true) {
     buffer.write(''' inherited''');
@@ -6175,7 +6175,7 @@ String _renderLibrary_partial_callable_9(
   buffer.write('''</span>''');
   buffer.write(context3.linkedGenericParameters.toString());
   buffer.write('''<span class="signature">(<wbr>''');
-  buffer.write(context3.linkedParamsNoMetadata!.toString());
+  buffer.write(context3.linkedParamsNoMetadata?.toString());
   buffer.write(''')
     <span class="returntype parameter">&#8594; ''');
   buffer.write(context3.modelType.returnType.linkedName.toString());
@@ -6193,7 +6193,7 @@ String _renderLibrary_partial_callable_9(
   }
   buffer.write('''>
   ''');
-  buffer.write(context3.oneLineDoc!.toString());
+  buffer.write(context3.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context3.extendedDocLink.toString());
   buffer.write('\n  ');
@@ -6252,7 +6252,7 @@ String _renderLibrary_partial_typedef_10(
     buffer.writeln();
     buffer.write('''
   <dt id="''');
-    buffer.writeEscaped(context4.htmlId!.toString());
+    buffer.writeEscaped(context4.htmlId?.toString());
     buffer.write('''" class="callable''');
     if (context4.isInherited == true) {
       buffer.write(''' inherited''');
@@ -6283,7 +6283,7 @@ String _renderLibrary_partial_typedef_10(
     }
     buffer.write('''>
     ''');
-    buffer.write(context4.oneLineDoc!.toString());
+    buffer.write(context4.oneLineDoc?.toString());
     buffer.write(' ');
     buffer.write(context4.extendedDocLink.toString());
     buffer.write('\n    ');
@@ -6346,7 +6346,7 @@ String __renderLibrary_partial_typedef_10_partial_type_2(
     _i1.LibraryTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context3.htmlId!.toString());
+  buffer.writeEscaped(context3.htmlId?.toString());
   buffer.write('''" class="''');
   if (context3.isInherited == true) {
     buffer.write(''' inherited''');
@@ -6380,7 +6380,7 @@ String __renderLibrary_partial_typedef_10_partial_type_2(
   }
   buffer.write('''>
   ''');
-  buffer.write(context3.oneLineDoc!.toString());
+  buffer.write(context3.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context3.extendedDocLink.toString());
   buffer.write('\n  ');
@@ -6445,7 +6445,7 @@ String _renderLibrary_partial_search_sidebar_11(
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context2.href!.toString());
+    buffer.write(context2.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context2.name.toString());
     buffer.write('''</a></li>''');
@@ -6455,7 +6455,7 @@ String _renderLibrary_partial_search_sidebar_11(
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context4.href!.toString());
+    buffer.write(context4.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context4.name.toString());
     if (context4.hasGenericParameters == true) {
@@ -6476,7 +6476,7 @@ String _renderLibrary_partial_search_sidebar_11(
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context0.homepage!.toString());
+    buffer.write(context0.homepage?.toString());
     buffer.write('''">''');
     buffer.write(context0.layoutTitle.toString());
     buffer.write('''</a></li>''');
@@ -6700,7 +6700,7 @@ String _renderMethod_partial_head_0(_i1.MethodTemplateData context0) {
     buffer.writeln();
     buffer.write('''
   <link rel="canonical" href="''');
-    buffer.write(context0.relCanonicalPrefix!.toString());
+    buffer.write(context0.relCanonicalPrefix?.toString());
     buffer.write('''/''');
     buffer.write(context0.bareHref.toString());
     buffer.write('''">''');
@@ -6766,7 +6766,7 @@ String _renderMethod_partial_head_0(_i1.MethodTemplateData context0) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context4.href!.toString());
+    buffer.write(context4.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context4.name.toString());
     buffer.write('''</a></li>''');
@@ -6776,7 +6776,7 @@ String _renderMethod_partial_head_0(_i1.MethodTemplateData context0) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context6.href!.toString());
+    buffer.write(context6.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context6.name.toString());
     if (context6.hasGenericParameters == true) {
@@ -6797,7 +6797,7 @@ String _renderMethod_partial_head_0(_i1.MethodTemplateData context0) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context0.homepage!.toString());
+    buffer.write(context0.homepage?.toString());
     buffer.write('''">''');
     buffer.write(context0.layoutTitle.toString());
     buffer.write('''</a></li>''');
@@ -6826,7 +6826,7 @@ String _renderMethod_partial_source_link_1(
     buffer.writeln();
     buffer.write('''
   <div id="external-links" class="btn-group"><a title="View source code" class="source-link" href="''');
-    buffer.write(context1.sourceHref!.toString());
+    buffer.write(context1.sourceHref?.toString());
     buffer.write('''"><i class="material-icons">description</i></a></div>''');
   }
   buffer.writeln();
@@ -6929,7 +6929,7 @@ String _renderMethod_partial_documentation_5(
     buffer.write('''
 <section class="desc markdown">
   ''');
-    buffer.write(context1.documentationAsHtml!.toString());
+    buffer.write(context1.documentationAsHtml?.toString());
     buffer.writeln();
     buffer.write('''
 </section>''');
@@ -6948,7 +6948,7 @@ String _renderMethod_partial_source_code_6(
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">''');
-    buffer.write(context1.sourceCode!.toString());
+    buffer.write(context1.sourceCode?.toString());
     buffer.write('''</code></pre>
 </section>''');
   }
@@ -6971,7 +6971,7 @@ String _renderMethod_partial_search_sidebar_7(_i1.MethodTemplateData context0) {
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context2.href!.toString());
+    buffer.write(context2.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context2.name.toString());
     buffer.write('''</a></li>''');
@@ -6981,7 +6981,7 @@ String _renderMethod_partial_search_sidebar_7(_i1.MethodTemplateData context0) {
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context4.href!.toString());
+    buffer.write(context4.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context4.name.toString());
     if (context4.hasGenericParameters == true) {
@@ -7002,7 +7002,7 @@ String _renderMethod_partial_search_sidebar_7(_i1.MethodTemplateData context0) {
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context0.homepage!.toString());
+    buffer.write(context0.homepage?.toString());
     buffer.write('''">''');
     buffer.write(context0.layoutTitle.toString());
     buffer.write('''</a></li>''');
@@ -7386,7 +7386,7 @@ String _renderMixin_partial_head_0(_i1.MixinTemplateData context0) {
     buffer.writeln();
     buffer.write('''
   <link rel="canonical" href="''');
-    buffer.write(context0.relCanonicalPrefix!.toString());
+    buffer.write(context0.relCanonicalPrefix?.toString());
     buffer.write('''/''');
     buffer.write(context0.bareHref.toString());
     buffer.write('''">''');
@@ -7452,7 +7452,7 @@ String _renderMixin_partial_head_0(_i1.MixinTemplateData context0) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context4.href!.toString());
+    buffer.write(context4.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context4.name.toString());
     buffer.write('''</a></li>''');
@@ -7462,7 +7462,7 @@ String _renderMixin_partial_head_0(_i1.MixinTemplateData context0) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context6.href!.toString());
+    buffer.write(context6.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context6.name.toString());
     if (context6.hasGenericParameters == true) {
@@ -7483,7 +7483,7 @@ String _renderMixin_partial_head_0(_i1.MixinTemplateData context0) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context0.homepage!.toString());
+    buffer.write(context0.homepage?.toString());
     buffer.write('''">''');
     buffer.write(context0.layoutTitle.toString());
     buffer.write('''</a></li>''');
@@ -7512,7 +7512,7 @@ String _renderMixin_partial_source_link_1(
     buffer.writeln();
     buffer.write('''
   <div id="external-links" class="btn-group"><a title="View source code" class="source-link" href="''');
-    buffer.write(context1.sourceHref!.toString());
+    buffer.write(context1.sourceHref?.toString());
     buffer.write('''"><i class="material-icons">description</i></a></div>''');
   }
   buffer.writeln();
@@ -7558,7 +7558,7 @@ String _renderMixin_partial_documentation_4(
     buffer.write('''
 <section class="desc markdown">
   ''');
-    buffer.write(context1.documentationAsHtml!.toString());
+    buffer.write(context1.documentationAsHtml?.toString());
     buffer.writeln();
     buffer.write('''
 </section>''');
@@ -7572,7 +7572,7 @@ String _renderMixin_partial_property_5(
     _i9.Field context2, _i16.Mixin context1, _i1.MixinTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context2.htmlId!.toString());
+  buffer.writeEscaped(context2.htmlId?.toString());
   buffer.write('''" class="property''');
   if (context2.isInherited == true) {
     buffer.write(''' inherited''');
@@ -7597,7 +7597,7 @@ String _renderMixin_partial_property_5(
   }
   buffer.write('''>
   ''');
-  buffer.write(context2.oneLineDoc!.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('\n  ');
@@ -7643,7 +7643,7 @@ String _renderMixin_partial_callable_6(
     _i10.Method context2, _i16.Mixin context1, _i1.MixinTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context2.htmlId!.toString());
+  buffer.writeEscaped(context2.htmlId?.toString());
   buffer.write('''" class="callable''');
   if (context2.isInherited == true) {
     buffer.write(''' inherited''');
@@ -7658,7 +7658,7 @@ String _renderMixin_partial_callable_6(
   buffer.write('''</span>''');
   buffer.write(context2.linkedGenericParameters.toString());
   buffer.write('''<span class="signature">(<wbr>''');
-  buffer.write(context2.linkedParamsNoMetadata!.toString());
+  buffer.write(context2.linkedParamsNoMetadata?.toString());
   buffer.write(''')
     <span class="returntype parameter">&#8594; ''');
   buffer.write(context2.modelType.returnType.linkedName.toString());
@@ -7676,7 +7676,7 @@ String _renderMixin_partial_callable_6(
   }
   buffer.write('''>
   ''');
-  buffer.write(context2.oneLineDoc!.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('\n  ');
@@ -7722,7 +7722,7 @@ String _renderMixin_partial_constant_7(
     _i9.Field context2, _i16.Mixin context1, _i1.MixinTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
-  buffer.writeEscaped(context2.htmlId!.toString());
+  buffer.writeEscaped(context2.htmlId?.toString());
   buffer.write('''" class="constant">
   <span class="name ''');
   if (context2.isDeprecated == true) {
@@ -7742,7 +7742,7 @@ String _renderMixin_partial_constant_7(
 </dt>
 <dd>
   ''');
-  buffer.write(context2.oneLineDoc!.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('\n  ');
@@ -7803,7 +7803,7 @@ String _renderMixin_partial_search_sidebar_8(_i1.MixinTemplateData context0) {
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context2.href!.toString());
+    buffer.write(context2.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context2.name.toString());
     buffer.write('''</a></li>''');
@@ -7813,7 +7813,7 @@ String _renderMixin_partial_search_sidebar_8(_i1.MixinTemplateData context0) {
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context4.href!.toString());
+    buffer.write(context4.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context4.name.toString());
     if (context4.hasGenericParameters == true) {
@@ -7834,7 +7834,7 @@ String _renderMixin_partial_search_sidebar_8(_i1.MixinTemplateData context0) {
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context0.homepage!.toString());
+    buffer.write(context0.homepage?.toString());
     buffer.write('''">''');
     buffer.write(context0.layoutTitle.toString());
     buffer.write('''</a></li>''');
@@ -8009,7 +8009,7 @@ String _renderProperty_partial_head_0(_i1.PropertyTemplateData context0) {
     buffer.writeln();
     buffer.write('''
   <link rel="canonical" href="''');
-    buffer.write(context0.relCanonicalPrefix!.toString());
+    buffer.write(context0.relCanonicalPrefix?.toString());
     buffer.write('''/''');
     buffer.write(context0.bareHref.toString());
     buffer.write('''">''');
@@ -8075,7 +8075,7 @@ String _renderProperty_partial_head_0(_i1.PropertyTemplateData context0) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context4.href!.toString());
+    buffer.write(context4.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context4.name.toString());
     buffer.write('''</a></li>''');
@@ -8085,7 +8085,7 @@ String _renderProperty_partial_head_0(_i1.PropertyTemplateData context0) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context6.href!.toString());
+    buffer.write(context6.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context6.name.toString());
     if (context6.hasGenericParameters == true) {
@@ -8106,7 +8106,7 @@ String _renderProperty_partial_head_0(_i1.PropertyTemplateData context0) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context0.homepage!.toString());
+    buffer.write(context0.homepage?.toString());
     buffer.write('''">''');
     buffer.write(context0.layoutTitle.toString());
     buffer.write('''</a></li>''');
@@ -8135,7 +8135,7 @@ String _renderProperty_partial_source_link_1(
     buffer.writeln();
     buffer.write('''
   <div id="external-links" class="btn-group"><a title="View source code" class="source-link" href="''');
-    buffer.write(context1.sourceHref!.toString());
+    buffer.write(context1.sourceHref?.toString());
     buffer.write('''"><i class="material-icons">description</i></a></div>''');
   }
   buffer.writeln();
@@ -8196,7 +8196,7 @@ String _renderProperty_partial_documentation_5(
     buffer.write('''
 <section class="desc markdown">
   ''');
-    buffer.write(context1.documentationAsHtml!.toString());
+    buffer.write(context1.documentationAsHtml?.toString());
     buffer.writeln();
     buffer.write('''
 </section>''');
@@ -8215,7 +8215,7 @@ String _renderProperty_partial_source_code_6(
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">''');
-    buffer.write(context1.sourceCode!.toString());
+    buffer.write(context1.sourceCode?.toString());
     buffer.write('''</code></pre>
 </section>''');
   }
@@ -8309,7 +8309,7 @@ String __renderProperty_partial_accessor_getter_7_partial_documentation_2(
     buffer.write('''
 <section class="desc markdown">
   ''');
-    buffer.write(context2.documentationAsHtml!.toString());
+    buffer.write(context2.documentationAsHtml?.toString());
     buffer.writeln();
     buffer.write('''
 </section>''');
@@ -8330,7 +8330,7 @@ String __renderProperty_partial_accessor_getter_7_partial_source_code_3(
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">''');
-    buffer.write(context2.sourceCode!.toString());
+    buffer.write(context2.sourceCode?.toString());
     buffer.write('''</code></pre>
 </section>''');
   }
@@ -8355,7 +8355,7 @@ String _renderProperty_partial_accessor_setter_8(
         __renderProperty_partial_accessor_setter_8_partial_name_summary_0(
             context2, context1, context0));
     buffer.write('''<span class="signature">(<wbr>''');
-    buffer.write(context2.linkedParamsNoMetadata!.toString());
+    buffer.write(context2.linkedParamsNoMetadata?.toString());
     buffer.write(''')</span>
   ''');
     buffer.write(__renderProperty_partial_accessor_setter_8_partial_features_1(
@@ -8425,7 +8425,7 @@ String __renderProperty_partial_accessor_setter_8_partial_documentation_2(
     buffer.write('''
 <section class="desc markdown">
   ''');
-    buffer.write(context2.documentationAsHtml!.toString());
+    buffer.write(context2.documentationAsHtml?.toString());
     buffer.writeln();
     buffer.write('''
 </section>''');
@@ -8446,7 +8446,7 @@ String __renderProperty_partial_accessor_setter_8_partial_source_code_3(
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">''');
-    buffer.write(context2.sourceCode!.toString());
+    buffer.write(context2.sourceCode?.toString());
     buffer.write('''</code></pre>
 </section>''');
   }
@@ -8470,7 +8470,7 @@ String _renderProperty_partial_search_sidebar_9(
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context2.href!.toString());
+    buffer.write(context2.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context2.name.toString());
     buffer.write('''</a></li>''');
@@ -8480,7 +8480,7 @@ String _renderProperty_partial_search_sidebar_9(
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context4.href!.toString());
+    buffer.write(context4.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context4.name.toString());
     if (context4.hasGenericParameters == true) {
@@ -8501,7 +8501,7 @@ String _renderProperty_partial_search_sidebar_9(
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context0.homepage!.toString());
+    buffer.write(context0.homepage?.toString());
     buffer.write('''">''');
     buffer.write(context0.layoutTitle.toString());
     buffer.write('''</a></li>''');
@@ -8576,7 +8576,7 @@ String renderSidebarForContainer<T extends _i18.Documentable>(
       buffer.writeln();
       buffer.write('''
     <li class="section-title"><a href="''');
-      buffer.write(context1.href!.toString());
+      buffer.write(context1.href?.toString());
       buffer.write('''#constructors">Constructors</a></li>''');
       var context2 = context1.publicConstructorsSorted;
       for (var context3 in context2) {
@@ -8587,9 +8587,9 @@ String renderSidebarForContainer<T extends _i18.Documentable>(
           buffer.write(''' class="deprecated"''');
         }
         buffer.write(''' href="''');
-        buffer.write(context3.href!.toString());
+        buffer.write(context3.href?.toString());
         buffer.write('''">''');
-        buffer.writeEscaped(context3.shortName!.toString());
+        buffer.writeEscaped(context3.shortName?.toString());
         buffer.write('''</a></li>''');
       }
     }
@@ -8600,7 +8600,7 @@ String renderSidebarForContainer<T extends _i18.Documentable>(
       buffer.writeln();
       buffer.write('''
     <li class="section-title"><a href="''');
-      buffer.write(context1.href!.toString());
+      buffer.write(context1.href?.toString());
       buffer.write('''#constants">Constants</a></li>''');
       var context4 = context1.publicConstantFieldsSorted;
       for (var context5 in context4) {
@@ -8623,7 +8623,7 @@ String renderSidebarForContainer<T extends _i18.Documentable>(
       }
       buffer.write('''">
       <a href="''');
-      buffer.write(context1.href!.toString());
+      buffer.write(context1.href?.toString());
       buffer.write('''#instance-properties">Properties</a>
     </li>''');
       var context6 = context1.publicInstanceFieldsSorted;
@@ -8648,7 +8648,7 @@ String renderSidebarForContainer<T extends _i18.Documentable>(
         buffer.write(''' inherited''');
       }
       buffer.write('''"><a href="''');
-      buffer.write(context1.href!.toString());
+      buffer.write(context1.href?.toString());
       buffer.write('''#instance-methods">Methods</a></li>''');
       var context8 = context1.publicInstanceMethodsSorted;
       for (var context9 in context8) {
@@ -8672,7 +8672,7 @@ String renderSidebarForContainer<T extends _i18.Documentable>(
         buffer.write(''' inherited''');
       }
       buffer.write('''"><a href="''');
-      buffer.write(context1.href!.toString());
+      buffer.write(context1.href?.toString());
       buffer.write('''#operators">Operators</a></li>''');
       var context10 = context1.publicInstanceOperatorsSorted;
       for (var context11 in context10) {
@@ -8694,7 +8694,7 @@ String renderSidebarForContainer<T extends _i18.Documentable>(
       buffer.writeln();
       buffer.write('''
     <li class="section-title"> <a href="''');
-      buffer.write(context1.href!.toString());
+      buffer.write(context1.href?.toString());
       buffer.write('''#instance-properties">Properties</a>
     </li>''');
       var context12 = context1.publicInstanceFieldsSorted;
@@ -8711,7 +8711,7 @@ String renderSidebarForContainer<T extends _i18.Documentable>(
       buffer.writeln();
       buffer.write('''
     <li class="section-title"><a href="''');
-      buffer.write(context1.href!.toString());
+      buffer.write(context1.href?.toString());
       buffer.write('''#instance-methods">Methods</a></li>''');
       var context14 = context1.publicInstanceMethodsSorted;
       for (var context15 in context14) {
@@ -8727,7 +8727,7 @@ String renderSidebarForContainer<T extends _i18.Documentable>(
       buffer.writeln();
       buffer.write('''
     <li class="section-title"><a href="''');
-      buffer.write(context1.href!.toString());
+      buffer.write(context1.href?.toString());
       buffer.write('''#operators">Operators</a></li>''');
       var context16 = context1.publicInstanceOperatorsSorted;
       for (var context17 in context16) {
@@ -8745,7 +8745,7 @@ String renderSidebarForContainer<T extends _i18.Documentable>(
       buffer.writeln();
       buffer.write('''
     <li class="section-title"><a href="''');
-      buffer.write(context1.href!.toString());
+      buffer.write(context1.href?.toString());
       buffer.write('''#static-properties">Static properties</a></li>''');
       var context18 = context1.publicVariableStaticFieldsSorted;
       for (var context19 in context18) {
@@ -8761,7 +8761,7 @@ String renderSidebarForContainer<T extends _i18.Documentable>(
       buffer.writeln();
       buffer.write('''
     <li class="section-title"><a href="''');
-      buffer.write(context1.href!.toString());
+      buffer.write(context1.href?.toString());
       buffer.write('''#static-methods">Static methods</a></li>''');
       var context20 = context1.publicStaticMethodsSorted;
       for (var context21 in context20) {
@@ -8777,7 +8777,7 @@ String renderSidebarForContainer<T extends _i18.Documentable>(
       buffer.writeln();
       buffer.write('''
     <li class="section-title"><a href="''');
-      buffer.write(context1.href!.toString());
+      buffer.write(context1.href?.toString());
       buffer.write('''#constants">Constants</a></li>''');
       var context22 = context1.publicConstantFieldsSorted;
       for (var context23 in context22) {
@@ -8806,7 +8806,7 @@ String renderSidebarForLibrary<T extends _i18.Documentable>(
     buffer.writeln();
     buffer.write('''
   <li class="section-title"><a href="''');
-    buffer.write(context1.href!.toString());
+    buffer.write(context1.href?.toString());
     buffer.write('''#classes">Classes</a></li>''');
     var context2 = context1.publicClassesSorted;
     for (var context3 in context2) {
@@ -8822,7 +8822,7 @@ String renderSidebarForLibrary<T extends _i18.Documentable>(
     buffer.writeln();
     buffer.write('''
   <li class="section-title"><a href="''');
-    buffer.write(context1.href!.toString());
+    buffer.write(context1.href?.toString());
     buffer.write('''#extensions">Extensions</a></li>''');
     var context4 = context1.publicExtensionsSorted;
     for (var context5 in context4) {
@@ -8838,7 +8838,7 @@ String renderSidebarForLibrary<T extends _i18.Documentable>(
     buffer.writeln();
     buffer.write('''
   <li class="section-title"><a href="''');
-    buffer.write(context1.href!.toString());
+    buffer.write(context1.href?.toString());
     buffer.write('''#mixins">Mixins</a></li>''');
     var context6 = context1.publicMixinsSorted;
     for (var context7 in context6) {
@@ -8854,7 +8854,7 @@ String renderSidebarForLibrary<T extends _i18.Documentable>(
     buffer.writeln();
     buffer.write('''
   <li class="section-title"><a href="''');
-    buffer.write(context1.href!.toString());
+    buffer.write(context1.href?.toString());
     buffer.write('''#constants">Constants</a></li>''');
     var context8 = context1.publicConstantsSorted;
     for (var context9 in context8) {
@@ -8870,7 +8870,7 @@ String renderSidebarForLibrary<T extends _i18.Documentable>(
     buffer.writeln();
     buffer.write('''
   <li class="section-title"><a href="''');
-    buffer.write(context1.href!.toString());
+    buffer.write(context1.href?.toString());
     buffer.write('''#properties">Properties</a></li>''');
     var context10 = context1.publicPropertiesSorted;
     for (var context11 in context10) {
@@ -8886,7 +8886,7 @@ String renderSidebarForLibrary<T extends _i18.Documentable>(
     buffer.writeln();
     buffer.write('''
   <li class="section-title"><a href="''');
-    buffer.write(context1.href!.toString());
+    buffer.write(context1.href?.toString());
     buffer.write('''#functions">Functions</a></li>''');
     var context12 = context1.publicFunctionsSorted;
     for (var context13 in context12) {
@@ -8902,7 +8902,7 @@ String renderSidebarForLibrary<T extends _i18.Documentable>(
     buffer.writeln();
     buffer.write('''
   <li class="section-title"><a href="''');
-    buffer.write(context1.href!.toString());
+    buffer.write(context1.href?.toString());
     buffer.write('''#enums">Enums</a></li>''');
     var context14 = context1.publicEnumsSorted;
     for (var context15 in context14) {
@@ -8918,7 +8918,7 @@ String renderSidebarForLibrary<T extends _i18.Documentable>(
     buffer.writeln();
     buffer.write('''
   <li class="section-title"><a href="''');
-    buffer.write(context1.href!.toString());
+    buffer.write(context1.href?.toString());
     buffer.write('''#typedefs">Typedefs</a></li>''');
     var context16 = context1.publicTypedefsSorted;
     for (var context17 in context16) {
@@ -8934,7 +8934,7 @@ String renderSidebarForLibrary<T extends _i18.Documentable>(
     buffer.writeln();
     buffer.write('''
   <li class="section-title"><a href="''');
-    buffer.write(context1.href!.toString());
+    buffer.write(context1.href?.toString());
     buffer.write('''#exceptions">Exceptions</a></li>''');
     var context18 = context1.publicExceptionsSorted;
     for (var context19 in context18) {
@@ -9071,7 +9071,7 @@ String _renderTopLevelProperty_partial_head_0(
     buffer.writeln();
     buffer.write('''
   <link rel="canonical" href="''');
-    buffer.write(context0.relCanonicalPrefix!.toString());
+    buffer.write(context0.relCanonicalPrefix?.toString());
     buffer.write('''/''');
     buffer.write(context0.bareHref.toString());
     buffer.write('''">''');
@@ -9137,7 +9137,7 @@ String _renderTopLevelProperty_partial_head_0(
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context4.href!.toString());
+    buffer.write(context4.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context4.name.toString());
     buffer.write('''</a></li>''');
@@ -9147,7 +9147,7 @@ String _renderTopLevelProperty_partial_head_0(
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context6.href!.toString());
+    buffer.write(context6.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context6.name.toString());
     if (context6.hasGenericParameters == true) {
@@ -9168,7 +9168,7 @@ String _renderTopLevelProperty_partial_head_0(
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context0.homepage!.toString());
+    buffer.write(context0.homepage?.toString());
     buffer.write('''">''');
     buffer.write(context0.layoutTitle.toString());
     buffer.write('''</a></li>''');
@@ -9197,7 +9197,7 @@ String _renderTopLevelProperty_partial_source_link_1(
     buffer.writeln();
     buffer.write('''
   <div id="external-links" class="btn-group"><a title="View source code" class="source-link" href="''');
-    buffer.write(context1.sourceHref!.toString());
+    buffer.write(context1.sourceHref?.toString());
     buffer.write('''"><i class="material-icons">description</i></a></div>''');
   }
   buffer.writeln();
@@ -9273,7 +9273,7 @@ String _renderTopLevelProperty_partial_documentation_6(
     buffer.write('''
 <section class="desc markdown">
   ''');
-    buffer.write(context1.documentationAsHtml!.toString());
+    buffer.write(context1.documentationAsHtml?.toString());
     buffer.writeln();
     buffer.write('''
 </section>''');
@@ -9292,7 +9292,7 @@ String _renderTopLevelProperty_partial_source_code_7(
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">''');
-    buffer.write(context1.sourceCode!.toString());
+    buffer.write(context1.sourceCode?.toString());
     buffer.write('''</code></pre>
 </section>''');
   }
@@ -9389,7 +9389,7 @@ String
     buffer.write('''
 <section class="desc markdown">
   ''');
-    buffer.write(context2.documentationAsHtml!.toString());
+    buffer.write(context2.documentationAsHtml?.toString());
     buffer.writeln();
     buffer.write('''
 </section>''');
@@ -9410,7 +9410,7 @@ String __renderTopLevelProperty_partial_accessor_getter_8_partial_source_code_3(
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">''');
-    buffer.write(context2.sourceCode!.toString());
+    buffer.write(context2.sourceCode?.toString());
     buffer.write('''</code></pre>
 </section>''');
   }
@@ -9435,7 +9435,7 @@ String _renderTopLevelProperty_partial_accessor_setter_9(
         __renderTopLevelProperty_partial_accessor_setter_9_partial_name_summary_0(
             context2, context1, context0));
     buffer.write('''<span class="signature">(<wbr>''');
-    buffer.write(context2.linkedParamsNoMetadata!.toString());
+    buffer.write(context2.linkedParamsNoMetadata?.toString());
     buffer.write(''')</span>
   ''');
     buffer.write(
@@ -9508,7 +9508,7 @@ String
     buffer.write('''
 <section class="desc markdown">
   ''');
-    buffer.write(context2.documentationAsHtml!.toString());
+    buffer.write(context2.documentationAsHtml?.toString());
     buffer.writeln();
     buffer.write('''
 </section>''');
@@ -9529,7 +9529,7 @@ String __renderTopLevelProperty_partial_accessor_setter_9_partial_source_code_3(
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">''');
-    buffer.write(context2.sourceCode!.toString());
+    buffer.write(context2.sourceCode?.toString());
     buffer.write('''</code></pre>
 </section>''');
   }
@@ -9553,7 +9553,7 @@ String _renderTopLevelProperty_partial_search_sidebar_10(
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context2.href!.toString());
+    buffer.write(context2.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context2.name.toString());
     buffer.write('''</a></li>''');
@@ -9563,7 +9563,7 @@ String _renderTopLevelProperty_partial_search_sidebar_10(
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context4.href!.toString());
+    buffer.write(context4.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context4.name.toString());
     if (context4.hasGenericParameters == true) {
@@ -9584,7 +9584,7 @@ String _renderTopLevelProperty_partial_search_sidebar_10(
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context0.homepage!.toString());
+    buffer.write(context0.homepage?.toString());
     buffer.write('''">''');
     buffer.write(context0.layoutTitle.toString());
     buffer.write('''</a></li>''');
@@ -9745,7 +9745,7 @@ String _renderTypedef_partial_head_0(_i1.TypedefTemplateData context0) {
     buffer.writeln();
     buffer.write('''
   <link rel="canonical" href="''');
-    buffer.write(context0.relCanonicalPrefix!.toString());
+    buffer.write(context0.relCanonicalPrefix?.toString());
     buffer.write('''/''');
     buffer.write(context0.bareHref.toString());
     buffer.write('''">''');
@@ -9811,7 +9811,7 @@ String _renderTypedef_partial_head_0(_i1.TypedefTemplateData context0) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context4.href!.toString());
+    buffer.write(context4.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context4.name.toString());
     buffer.write('''</a></li>''');
@@ -9821,7 +9821,7 @@ String _renderTypedef_partial_head_0(_i1.TypedefTemplateData context0) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context6.href!.toString());
+    buffer.write(context6.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context6.name.toString());
     if (context6.hasGenericParameters == true) {
@@ -9842,7 +9842,7 @@ String _renderTypedef_partial_head_0(_i1.TypedefTemplateData context0) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context0.homepage!.toString());
+    buffer.write(context0.homepage?.toString());
     buffer.write('''">''');
     buffer.write(context0.layoutTitle.toString());
     buffer.write('''</a></li>''');
@@ -9871,7 +9871,7 @@ String _renderTypedef_partial_source_link_1(
     buffer.writeln();
     buffer.write('''
   <div id="external-links" class="btn-group"><a title="View source code" class="source-link" href="''');
-    buffer.write(context1.sourceHref!.toString());
+    buffer.write(context1.sourceHref?.toString());
     buffer.write('''"><i class="material-icons">description</i></a></div>''');
   }
   buffer.writeln();
@@ -10019,7 +10019,7 @@ String _renderTypedef_partial_documentation_5(
     buffer.write('''
 <section class="desc markdown">
   ''');
-    buffer.write(context1.documentationAsHtml!.toString());
+    buffer.write(context1.documentationAsHtml?.toString());
     buffer.writeln();
     buffer.write('''
 </section>''');
@@ -10038,7 +10038,7 @@ String _renderTypedef_partial_source_code_6(
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">''');
-    buffer.write(context1.sourceCode!.toString());
+    buffer.write(context1.sourceCode?.toString());
     buffer.write('''</code></pre>
 </section>''');
   }
@@ -10062,7 +10062,7 @@ String _renderTypedef_partial_search_sidebar_7(
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context2.href!.toString());
+    buffer.write(context2.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context2.name.toString());
     buffer.write('''</a></li>''');
@@ -10072,7 +10072,7 @@ String _renderTypedef_partial_search_sidebar_7(
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context4.href!.toString());
+    buffer.write(context4.href?.toString());
     buffer.write('''">''');
     buffer.writeEscaped(context4.name.toString());
     if (context4.hasGenericParameters == true) {
@@ -10093,7 +10093,7 @@ String _renderTypedef_partial_search_sidebar_7(
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context0.homepage!.toString());
+    buffer.write(context0.homepage?.toString());
     buffer.write('''">''');
     buffer.write(context0.layoutTitle.toString());
     buffer.write('''</a></li>''');
@@ -10158,7 +10158,7 @@ String _renderTypedef_partial_footer_8(_i1.TypedefTemplateData context0) {
 }
 
 extension on StringBuffer {
-  void writeEscaped(String value) {
-    write(_i19.htmlEscape.convert(value));
+  void writeEscaped(String? value) {
+    write(_i19.htmlEscape.convert(value ?? ''));
   }
 }
