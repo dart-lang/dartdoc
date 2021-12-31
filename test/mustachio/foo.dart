@@ -11,7 +11,7 @@ class FooBase<T extends Object> {
 }
 
 class Foo extends FooBase<Baz> {
-  String s1 = '';
+  String? s1 = '';
   bool b1 = false;
   List<int> l1 = [];
   @override
