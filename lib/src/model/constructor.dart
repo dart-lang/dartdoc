@@ -105,7 +105,7 @@ class Constructor extends ModelElement
   Map<String, CommentReferable> get referenceChildren {
     if (_referenceChildren == null) {
       _referenceChildren = {};
-      _referenceChildren!.addEntries(allParameters!.map((param) {
+      _referenceChildren!.addEntries(allParameters.map((param) {
         var paramElement = param.element;
         if (paramElement is FieldFormalParameterElement) {
           return modelBuilder.fromElement(paramElement.field!);

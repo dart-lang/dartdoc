@@ -131,8 +131,6 @@ abstract class ModelElement extends Canonicalization
   final Member? _originalMember;
   final Library? _library;
 
-  String? _linkedName;
-
   ModelElement(this._element, this._library, this._packageGraph,
       [this._originalMember]);
 
@@ -157,9 +155,9 @@ abstract class ModelElement extends Canonicalization
   /// if and only if this is to be an inherited or extended object.
   factory ModelElement._fromPropertyInducingElement(
       PropertyInducingElement e, Library library, PackageGraph packageGraph,
-      {Container? enclosingContainer,
-      required Accessor? getter,
-      required Accessor? setter}) {
+      {required Accessor? getter,
+      required Accessor? setter,
+      Container? enclosingContainer}) {
     // TODO(jcollins-g): Refactor object model to instantiate 'ModelMembers'
     //                   for members?
     if (e is Member) {
@@ -169,8 +167,9 @@ abstract class ModelElement extends Canonicalization
     // Return the cached ModelElement if it exists.
     var key =
         Tuple3<Element, Library, Container?>(e, library, enclosingContainer);
-    if (packageGraph.allConstructedModelElements.containsKey(key)) {
-      return packageGraph.allConstructedModelElements[key]!;
+    var cachedModelElement = packageGraph.allConstructedModelElements[key];
+    if (cachedModelElement != null) {
+      return cachedModelElement;
     }
 
     ModelElement? newModelElement;
@@ -249,9 +248,9 @@ abstract class ModelElement extends Canonicalization
     // Return the cached ModelElement if it exists.
     var key =
         Tuple3<Element, Library?, Container?>(e, library, enclosingContainer);
-    if (packageGraph.allConstructedModelElements.containsKey(key)) {
-      return packageGraph.allConstructedModelElements[
-          key as Tuple3<Element, Library, Container?>]!;
+    var cachedModelElement = packageGraph.allConstructedModelElements[key];
+    if (cachedModelElement != null) {
+      return cachedModelElement;
     }
 
     var newModelElement = ModelElement._fromParameters(e, library, packageGraph,
@@ -385,11 +384,10 @@ abstract class ModelElement extends Canonicalization
     return library!.packageGraph.libraryElementReexportedBy[element!.library!];
   }
 
-  ModelNode? _modelNode;
+  late final ModelNode? _modelNode = packageGraph.getModelNodeFor(element);
 
   @override
-  ModelNode? get modelNode =>
-      _modelNode ??= packageGraph.getModelNodeFor(element);
+  ModelNode? get modelNode => _modelNode;
 
   Iterable<Annotation>? _annotations;
   // Skips over annotations with null elements or that are otherwise
@@ -406,7 +404,7 @@ abstract class ModelElement extends Canonicalization
 
   @override
   late final bool isPublic = () {
-    if (name == '') {
+    if (name.isEmpty) {
       return false;
     }
     if (this is! Library && (library == null || !library!.isPublic)) {
@@ -419,7 +417,7 @@ abstract class ModelElement extends Canonicalization
         !(enclosingElement as Extension).isPublic) {
       return false;
     }
-    return utils.hasPublicName(element!) && !hasNodoc!;
+    return utils.hasPublicName(element!) && !hasNodoc;
   }();
 
   @override
@@ -450,16 +448,15 @@ abstract class ModelElement extends Canonicalization
       DartdocOptionContext.fromContextElement(
           packageGraph.config, library!.element, packageGraph.resourceProvider);
 
-  Set<String>? _locationPieces;
+  late final Set<String> _locationPieces = Set.from(element!.location
+      .toString()
+      .split(locationSplitter)
+      .where((s) => s.isNotEmpty));
 
   @override
-  Set<String> get locationPieces =>
-      _locationPieces ??= Set.from(element!.location
-          .toString()
-          .split(locationSplitter)
-          .where((s) => s.isNotEmpty));
+  Set<String> get locationPieces => _locationPieces;
 
-  static final Set<String> _specialFeatures = {
+  static const Set<String> _specialFeatures = {
     // Replace the @override annotation with a feature that explicitly
     // indicates whether an override has occurred.
     'override',
@@ -501,19 +498,13 @@ abstract class ModelElement extends Canonicalization
         preferredClass: preferredClass);
   }
 
-  ModelElement? _canonicalModelElement;
-  // Returns the canonical ModelElement for this ModelElement, or null
-  // if there isn't one.
-  ModelElement? get canonicalModelElement =>
-      _canonicalModelElement ??= buildCanonicalModelElement();
+  // The canonical ModelElement for this ModelElement,
+  // or null if there isn't one.
+  late final ModelElement? canonicalModelElement = buildCanonicalModelElement();
 
-  bool get hasSourceHref => sourceHref!.isNotEmpty;
-  String? _sourceHref;
+  bool get hasSourceHref => sourceHref.isNotEmpty;
 
-  String? get sourceHref {
-    _sourceHref ??= SourceLinker.fromElement(this).href();
-    return _sourceHref;
-  }
+  late final String sourceHref = SourceLinker.fromElement(this).href();
 
   Library get definingLibrary {
     Library? library = modelBuilder.fromElement(element!.library!) as Library?;
@@ -552,7 +543,7 @@ abstract class ModelElement extends Canonicalization
       if (this is Inheritable && !config.linkToRemote) {
         if ((this as Inheritable).isInherited &&
             _canonicalLibrary == null &&
-            packageGraph.publicLibraries!.contains(library)) {
+            packageGraph.publicLibraries.contains(library)) {
           // In the event we've inherited a field from an object that isn't
           // directly reexported, we may need to pretend we are canonical for
           // this.
@@ -562,7 +553,7 @@ abstract class ModelElement extends Canonicalization
       _canonicalLibraryIsSet = true;
     }
     assert(_canonicalLibrary == null ||
-        packageGraph.publicLibraries!.contains(_canonicalLibrary));
+        packageGraph.publicLibraries.contains(_canonicalLibrary));
     return _canonicalLibrary;
   }
 
@@ -698,14 +689,12 @@ abstract class ModelElement extends Canonicalization
     return (_fullyQualifiedName ??= _buildFullyQualifiedName());
   }
 
-  String? _fullyQualifiedNameWithoutLibrary;
+  late final String _fullyQualifiedNameWithoutLibrary =
+      fullyQualifiedName.replaceFirst('${library!.fullyQualifiedName}.', '');
+
   @override
-  String? get fullyQualifiedNameWithoutLibrary {
-    // Remember, periods are legal in library names.
-    _fullyQualifiedNameWithoutLibrary ??=
-        fullyQualifiedName.replaceFirst('${library!.fullyQualifiedName}.', '');
-    return _fullyQualifiedNameWithoutLibrary;
-  }
+  String get fullyQualifiedNameWithoutLibrary =>
+      _fullyQualifiedNameWithoutLibrary;
 
   @override
   String get sourceFileName => element!.source!.fullName;
@@ -722,8 +711,9 @@ abstract class ModelElement extends Canonicalization
           'Invalid location data for element: $fullyQualifiedName');
       assert(lineInfo != null,
           'No lineInfo data available for element: $fullyQualifiedName');
-      if (element!.nameOffset >= 0) {
-        _characterLocation = lineInfo?.getLocation(element!.nameOffset);
+      var nameOffset = element!.nameOffset;
+      if (nameOffset >= 0) {
+        _characterLocation = lineInfo?.getLocation(nameOffset);
       }
     }
     return _characterLocation;
@@ -759,7 +749,7 @@ abstract class ModelElement extends Canonicalization
     return null;
   }
 
-  String? get htmlId => name;
+  String get htmlId => name;
 
   bool get isAsynchronous =>
       isExecutable && (element as ExecutableElement).isAsynchronous;
@@ -778,14 +768,14 @@ abstract class ModelElement extends Canonicalization
       var setterDeprecated = pie.setter?.metadata.any((a) => a.isDeprecated);
 
       var deprecatedValues =
-          [getterDeprecated, setterDeprecated].where((a) => a != null).toList();
+          [getterDeprecated, setterDeprecated].whereNotNull().toList();
 
       // At least one of these should be non-null. Otherwise things are weird
       assert(deprecatedValues.isNotEmpty);
 
       // If there are both a setter and getter, only show the property as
       // deprecated if both are deprecated.
-      return deprecatedValues.every((d) => d!);
+      return deprecatedValues.every((d) => d);
     }
     return element!.metadata.any((a) => a.isDeprecated);
   }
@@ -820,10 +810,7 @@ abstract class ModelElement extends Canonicalization
   // FIXME(nnbd): library should not have to be nullable just because of dynamic
   Library? get library => _library;
 
-  String get linkedName {
-    _linkedName ??= _calculateLinkedName();
-    return _linkedName!;
-  }
+  late final String linkedName = _calculateLinkedName();
 
   @visibleForTesting
   @override
@@ -870,40 +857,35 @@ abstract class ModelElement extends Canonicalization
   bool get isPublicAndPackageDocumented =>
       isPublic && package?.isDocumented == true;
 
-  List<Parameter>? _allParameters;
-
   // TODO(jcollins-g): This is in the wrong place.  Move parts to
   // [GetterSetterCombo], elsewhere as appropriate?
-  List<Parameter>? get allParameters {
-    if (_allParameters == null) {
-      var recursedParameters = <Parameter>{};
-      var newParameters = <Parameter>{};
-      if (this is GetterSetterCombo &&
-          (this as GetterSetterCombo).setter != null) {
-        newParameters.addAll((this as GetterSetterCombo).setter!.parameters);
-      } else {
-        if (isCallable) newParameters.addAll(parameters);
-      }
-      // TODO(jcollins-g): This part probably belongs in [ElementType].
-      while (newParameters.isNotEmpty) {
-        recursedParameters.addAll(newParameters);
-        newParameters.clear();
-        for (var p in recursedParameters) {
-          var parameterModelType = p.modelType;
-          if (parameterModelType is Callable) {
-            newParameters.addAll(parameterModelType.parameters
-                .where((pm) => !recursedParameters.contains(pm)));
-          }
-          if (parameterModelType is AliasedElementType) {
-            newParameters.addAll(parameterModelType.aliasedParameters
-                .where((pm) => !recursedParameters.contains(pm)));
-          }
+  late final List<Parameter> allParameters = () {
+    var recursedParameters = <Parameter>{};
+    var newParameters = <Parameter>{};
+    if (this is GetterSetterCombo &&
+        (this as GetterSetterCombo).setter != null) {
+      newParameters.addAll((this as GetterSetterCombo).setter!.parameters);
+    } else {
+      if (isCallable) newParameters.addAll(parameters);
+    }
+    // TODO(jcollins-g): This part probably belongs in [ElementType].
+    while (newParameters.isNotEmpty) {
+      recursedParameters.addAll(newParameters);
+      newParameters.clear();
+      for (var p in recursedParameters) {
+        var parameterModelType = p.modelType;
+        if (parameterModelType is Callable) {
+          newParameters.addAll(parameterModelType.parameters
+              .where((pm) => !recursedParameters.contains(pm)));
+        }
+        if (parameterModelType is AliasedElementType) {
+          newParameters.addAll(parameterModelType.aliasedParameters
+              .where((pm) => !recursedParameters.contains(pm)));
         }
       }
-      _allParameters = recursedParameters.toList();
     }
-    return _allParameters;
-  }
+    return recursedParameters.toList();
+  }();
 
   @override
   path.Context get pathContext => packageGraph.resourceProvider.pathContext;
@@ -937,8 +919,8 @@ abstract class ModelElement extends Canonicalization
     }
 
     return <Parameter>[
-      ...params!
-          .map((p) => ModelElement._from(p, library, packageGraph) as Parameter)
+      ...?params?.map(
+          (p) => ModelElement._from(p, library, packageGraph) as Parameter)
     ];
   }();
 
@@ -948,12 +930,11 @@ abstract class ModelElement extends Canonicalization
   @override
   bool get hasDocumentationComment => element!.documentationComment != null;
 
-  String? _sourceCode;
+  late final String _sourceCode =
+      _sourceCodeRenderer.renderSourceCode(super.sourceCode);
+
   @override
-  String? get sourceCode {
-    return _sourceCode ??=
-        _sourceCodeRenderer.renderSourceCode(super.sourceCode!);
-  }
+  String get sourceCode => _sourceCode;
 
   @override
   int compareTo(dynamic other) {
@@ -971,12 +952,13 @@ abstract class ModelElement extends Canonicalization
     e ??= this;
     fqName ??= e.name;
 
-    if (e is! EnclosedElement || e.enclosingElement == null) {
+    var enclosingElement = e.enclosingElement;
+    if (e is! EnclosedElement || enclosingElement == null) {
       return fqName;
     }
 
-    return _buildFullyQualifiedName(e.enclosingElement as ModelElement?,
-        '${e.enclosingElement!.name}.$fqName');
+    return _buildFullyQualifiedName(
+        enclosingElement as ModelElement?, '${enclosingElement.name}.$fqName');
   }
 
   String _calculateLinkedName() {
@@ -999,7 +981,10 @@ abstract class ModelElement extends Canonicalization
 
   @internal
   @override
-  CommentReferable get definingCommentReferable => element == null
-      ? super.definingCommentReferable
-      : modelBuilder.fromElement(element!);
+  CommentReferable get definingCommentReferable {
+    var element = this.element;
+    return element == null
+        ? super.definingCommentReferable
+        : modelBuilder.fromElement(element);
+  }
 }

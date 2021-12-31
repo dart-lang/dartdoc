@@ -138,8 +138,8 @@ class SubprocessLauncher {
 
   // from flutter:dev/tools/dartdoc.dart, modified
   static Future<void> _printStream(Stream<List<int>> stream, Stdout output,
-      {String prefix = '',
-      required Iterable<String> Function(String line) filter}) {
+      {required Iterable<String> Function(String line) filter,
+      String prefix = ''}) {
     return stream
         .transform(utf8.decoder)
         .transform(const LineSplitter())
