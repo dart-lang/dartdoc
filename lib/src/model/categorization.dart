@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'package:collection/collection.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 final RegExp _categoryRegExp = RegExp(
@@ -49,66 +50,68 @@ abstract class Categorization implements ModelElement {
     return rawDocs;
   }
 
-  bool get hasSubCategoryNames => subCategoryNames!.isNotEmpty;
+  bool get hasSubCategoryNames => subCategoryNames?.isNotEmpty ?? false;
   List<String>? _subCategoryNames;
 
   /// Either a set of strings containing all declared subcategories for this symbol,
-  /// or a set containing Null if none were declared.
-  List<String>? get subCategoryNames {
+  /// or 'null' if none were declared.
+  late final List<String>? subCategoryNames = () {
     // TODO(jcollins-g): avoid side-effect dependency
     if (_subCategoryNames == null) documentationLocal;
     return _subCategoryNames;
-  }
+  }();
 
   @override
-  bool get hasCategoryNames => categoryNames!.isNotEmpty;
+  bool get hasCategoryNames => categoryNames?.isNotEmpty ?? false;
   List<String>? _categoryNames;
 
   /// Either a set of strings containing all declared categories for this symbol,
-  /// or a set containing Null if none were declared.
-  List<String>? get categoryNames {
+  /// or 'null' if none were declared.
+  late final List<String>? categoryNames = () {
     // TODO(jcollins-g): avoid side-effect dependency
     if (_categoryNames == null) documentationLocal;
     return _categoryNames;
-  }
+  }();
 
   bool get hasImage => image!.isNotEmpty;
   String? _image;
 
-  /// Either a URI to a defined image, or the empty string if none
-  /// was declared.
-  String? get image {
+  /// Either a URI to a defined image,
+  /// or 'null' if one was not declared.
+  late final String? image = () {
     // TODO(jcollins-g): avoid side-effect dependency
     if (_image == null) documentationLocal;
     return _image;
-  }
+  }();
 
-  bool get hasSamples => samples!.isNotEmpty;
+  bool get hasSamples => samples?.isNotEmpty ?? false;
   String? _samples;
 
-  /// Either a URI to documentation with samples, or the empty string if none
-  /// was declared.
-  String? get samples {
+  /// Either a URI to documentation with samples,
+  /// or 'null' if one was not declared.
+  late final String? samples = () {
     // TODO(jcollins-g): avoid side-effect dependency
     if (_samples == null) documentationLocal;
     return _samples;
-  }
+  }();
 
-  Iterable<Category?>? _categories;
+  late final Iterable<Category> categories = () {
+    var categoryNames = this.categoryNames;
+    if (categoryNames == null) {
+      return <Category>[];
+    }
 
-  Iterable<Category?> get categories {
-    _categories ??= categoryNames!
+    return categoryNames
         .map((n) => package?.nameToCategory[n])
-        .where((c) => c != null)
+        .whereNotNull()
         .toList()
       ..sort();
-    return _categories!;
-  }
+  }();
 
   @override
-  Iterable<Category?> get displayedCategories {
+  Iterable<Category> get displayedCategories {
     if (config.showUndocumentedCategories) return categories;
-    return categories.where((c) => c!.isDocumented);
+    return categories.where((c) => c.isDocumented);
   }
 
   bool? _hasCategorization;
@@ -117,6 +120,6 @@ abstract class Categorization implements ModelElement {
   /// declared.
   late final bool hasCategorization = () {
     if (_hasCategorization == null) documentationLocal;
-    return _hasCategorization!;
+    return _hasCategorization ?? false;
   }();
 }
