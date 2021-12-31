@@ -562,7 +562,7 @@ class _KeyParseResult {
   final List<String> names;
 
   /// The source span from where this key was parsed, if this represents a
-  /// parsed key, othwerwise `null`.
+  /// parsed key, otherwise `null`.
   final SourceSpan? span;
 
   const _KeyParseResult._(this.type, this.names, {this.span});

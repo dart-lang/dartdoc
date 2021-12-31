@@ -81,7 +81,7 @@ class ToolDefinition {
   Future<ToolStateForArgs> toolStateForArgs(String toolName, List<String> args,
       {required ToolErrorCallback toolErrorCallback}) async {
     var commandPath = args.removeAt(0);
-    return ToolStateForArgs(commandPath, args, null);
+    return ToolStateForArgs(commandPath, args);
   }
 }
 
@@ -124,7 +124,7 @@ class DartToolDefinition extends ToolDefinition {
             ...compileArgs,
             ...args,
           ],
-          snapshot._snapshotCompleted);
+          onProcessComplete: snapshot._snapshotCompleted);
     } else {
       await snapshot._snapshotValid();
       if (!snapshotFile.exists) {
@@ -135,7 +135,7 @@ class DartToolDefinition extends ToolDefinition {
         // replace the first argument with the path to the snapshot.
         args[0] = snapshotPath;
       }
-      return ToolStateForArgs(_resourceProvider.resolvedExecutable, args, null);
+      return ToolStateForArgs(_resourceProvider.resolvedExecutable, args);
     }
   }
 
@@ -227,13 +227,15 @@ class SnapshotCache {
   }
 
   _Snapshot getSnapshot(String toolPath) {
-    if (snapshots.containsKey(toolPath)) {
-      return snapshots[toolPath]!;
+    var toolSnapshot = snapshots[toolPath];
+    if (toolSnapshot != null) {
+      return toolSnapshot;
     }
-    snapshots[toolPath] =
+    toolSnapshot =
         _Snapshot(snapshotCache, toolPath, _serial, _resourceProvider);
+    snapshots[toolPath] = toolSnapshot;
     _serial++;
-    return snapshots[toolPath]!;
+    return toolSnapshot;
   }
 
   void dispose() {
@@ -249,5 +251,5 @@ class ToolStateForArgs {
   final List<String> args;
   final void Function()? onProcessComplete;
 
-  ToolStateForArgs(this.commandPath, this.args, this.onProcessComplete);
+  ToolStateForArgs(this.commandPath, this.args, {this.onProcessComplete});
 }

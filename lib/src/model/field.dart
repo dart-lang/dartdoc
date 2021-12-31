@@ -137,34 +137,31 @@ class Field extends ModelElement
   SourceCodeRenderer get _sourceCodeRenderer =>
       packageGraph.rendererFactory.sourceCodeRenderer;
 
-  String? _sourceCode;
+  late final String _sourceCode = () {
+    // We could use a set to figure the dupes out, but that would lose ordering.
+    var fieldSourceCode = modelNode?.sourceCode ?? '';
+    var getterSourceCode = getter?.sourceCode ?? '';
+    var setterSourceCode = setter?.sourceCode ?? '';
+    var buffer = StringBuffer();
+    if (fieldSourceCode.isNotEmpty) {
+      fieldSourceCode = _sourceCodeRenderer.renderSourceCode(fieldSourceCode);
+      buffer.write(fieldSourceCode);
+    }
+    if (buffer.isNotEmpty) buffer.write('\n\n');
+    if (fieldSourceCode != getterSourceCode) {
+      if (getterSourceCode != setterSourceCode) {
+        buffer.write(getterSourceCode);
+        if (buffer.isNotEmpty) buffer.write('\n\n');
+      }
+    }
+    if (fieldSourceCode != setterSourceCode) {
+      buffer.write(setterSourceCode);
+    }
+    return buffer.toString();
+  }();
 
   @override
-  String? get sourceCode {
-    if (_sourceCode == null) {
-      // We could use a set to figure the dupes out, but that would lose ordering.
-      var fieldSourceCode = modelNode!.sourceCode ?? '';
-      var getterSourceCode = getter?.sourceCode ?? '';
-      var setterSourceCode = setter?.sourceCode ?? '';
-      var buffer = StringBuffer();
-      if (fieldSourceCode.isNotEmpty) {
-        fieldSourceCode = _sourceCodeRenderer.renderSourceCode(fieldSourceCode);
-        buffer.write(fieldSourceCode);
-      }
-      if (buffer.isNotEmpty) buffer.write('\n\n');
-      if (fieldSourceCode != getterSourceCode) {
-        if (getterSourceCode != setterSourceCode) {
-          buffer.write(getterSourceCode);
-          if (buffer.isNotEmpty) buffer.write('\n\n');
-        }
-      }
-      if (fieldSourceCode != setterSourceCode) {
-        buffer.write(setterSourceCode);
-      }
-      _sourceCode = buffer.toString();
-    }
-    return _sourceCode;
-  }
+  String get sourceCode => _sourceCode;
 
   @override
   Library get library => super.library!;
