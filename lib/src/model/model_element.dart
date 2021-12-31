@@ -384,11 +384,10 @@ abstract class ModelElement extends Canonicalization
     return library!.packageGraph.libraryElementReexportedBy[element!.library!];
   }
 
-  ModelNode? _modelNode;
+  late final ModelNode? _modelNode = packageGraph.getModelNodeFor(element);
 
   @override
-  ModelNode? get modelNode =>
-      _modelNode ??= packageGraph.getModelNodeFor(element);
+  ModelNode? get modelNode => _modelNode;
 
   Iterable<Annotation>? _annotations;
   // Skips over annotations with null elements or that are otherwise
@@ -690,14 +689,12 @@ abstract class ModelElement extends Canonicalization
     return (_fullyQualifiedName ??= _buildFullyQualifiedName());
   }
 
-  String? _fullyQualifiedNameWithoutLibrary;
+  late final String _fullyQualifiedNameWithoutLibrary =
+      fullyQualifiedName.replaceFirst('${library!.fullyQualifiedName}.', '');
+
   @override
-  String? get fullyQualifiedNameWithoutLibrary {
-    // Remember, periods are legal in library names.
-    _fullyQualifiedNameWithoutLibrary ??=
-        fullyQualifiedName.replaceFirst('${library!.fullyQualifiedName}.', '');
-    return _fullyQualifiedNameWithoutLibrary;
-  }
+  String get fullyQualifiedNameWithoutLibrary =>
+      _fullyQualifiedNameWithoutLibrary;
 
   @override
   String get sourceFileName => element!.source!.fullName;
