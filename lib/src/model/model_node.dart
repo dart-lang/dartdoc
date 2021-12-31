@@ -33,49 +33,42 @@ class ModelNode {
     return [];
   }
 
-  String? _sourceCode;
+  late final String sourceCode = () {
+    var enclosingSourceNode = _sourceNode;
+    if (enclosingSourceNode == null) {
+      return '';
+    }
 
-  String? get sourceCode {
-    if (_sourceCode == null) {
-      if (_sourceNode?.offset != null) {
-        var enclosingSourceNode = _sourceNode;
+    /// Get a node higher up the syntax tree that includes the semicolon.
+    /// In this case, it is either a [FieldDeclaration] or
+    /// [TopLevelVariableDeclaration]. (#2401)
+    if (enclosingSourceNode is VariableDeclaration) {
+      enclosingSourceNode = enclosingSourceNode.parent!.parent;
+      assert(enclosingSourceNode is FieldDeclaration ||
+          enclosingSourceNode is TopLevelVariableDeclaration);
+    }
 
-        /// Get a node higher up the syntax tree that includes the semicolon.
-        /// In this case, it is either a [FieldDeclaration] or
-        /// [TopLevelVariableDeclaration]. (#2401)
-        if (_sourceNode is VariableDeclaration) {
-          enclosingSourceNode = _sourceNode!.parent!.parent;
-          assert(enclosingSourceNode is FieldDeclaration ||
-              enclosingSourceNode is TopLevelVariableDeclaration);
-        }
+    var sourceEnd = enclosingSourceNode!.end;
+    var sourceOffset = enclosingSourceNode.offset;
 
-        var sourceEnd = enclosingSourceNode!.end;
-        var sourceOffset = enclosingSourceNode.offset;
-
-        var contents =
-            model_utils.getFileContentsFor(element, resourceProvider);
-        // Find the start of the line, so that we can line up all the indents.
-        var i = sourceOffset;
-        while (i > 0) {
-          i -= 1;
-          if (contents![i] == '\n' || contents[i] == '\r') {
-            i += 1;
-            break;
-          }
-        }
-
-        // Trim the common indent from the source snippet.
-        var start = sourceOffset - (sourceOffset - i);
-        var source = contents!.substring(start, sourceEnd);
-
-        source = model_utils.stripIndentFromSource(source);
-        source = model_utils.stripDartdocCommentsFromSource(source);
-
-        _sourceCode = source.trim();
-      } else {
-        _sourceCode = '';
+    var contents = model_utils.getFileContentsFor(element, resourceProvider)!;
+    // Find the start of the line, so that we can line up all the indents.
+    var i = sourceOffset;
+    while (i > 0) {
+      i -= 1;
+      if (contents[i] == '\n' || contents[i] == '\r') {
+        i += 1;
+        break;
       }
     }
-    return _sourceCode;
-  }
+
+    // Trim the common indent from the source snippet.
+    var start = sourceOffset - (sourceOffset - i);
+    var source = contents.substring(start, sourceEnd);
+
+    source = model_utils.stripIndentFromSource(source);
+    source = model_utils.stripDartdocCommentsFromSource(source);
+
+    return source.trim();
+  }();
 }

@@ -133,7 +133,7 @@ class Method extends ModelElement
       _referenceChildren = {};
       _referenceChildren!.addEntriesIfAbsent([
         ...typeParameters.explicitOnCollisionWith(this),
-        ...allParameters!.explicitOnCollisionWith(this),
+        ...allParameters.explicitOnCollisionWith(this),
         ...modelType.typeArguments.explicitOnCollisionWith(this),
         ...modelType.returnType.typeArguments.explicitOnCollisionWith(this),
       ]);
