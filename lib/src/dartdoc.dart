@@ -352,7 +352,7 @@ class Dartdoc {
     var stringLinks = links
         .map((link) => link.attributes['href'])
         .whereType<String>()
-        .where((href) => href != '')
+        .where((href) => href.isNotEmpty)
         .toList();
 
     return Tuple2(stringLinks, baseHref);
