@@ -376,7 +376,7 @@ class _Renderer_Accessor extends RendererBase<Accessor?> {
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
-                  isNullValue: (CT_ c) => c.sourceCode == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_String(c.sourceCode, ast, r.template, sink,
@@ -5872,7 +5872,7 @@ class _Renderer_Field extends RendererBase<Field?> {
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
-                  isNullValue: (CT_ c) => c.sourceCode == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_String(c.sourceCode, ast, r.template, sink,
@@ -9930,11 +9930,10 @@ class _Renderer_ModelElement extends RendererBase<ModelElement?> {
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
                           c, remainingNames, 'List<Parameter>'),
-                  isNullValue: (CT_ c) => c.allParameters == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.allParameters, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['List']!);
+                    return c.allParameters.map((e) =>
+                        _render_Parameter(e, ast, r.template, sink, parent: r));
                   },
                 ),
                 'annotations': Property(
@@ -10339,8 +10338,7 @@ class _Renderer_ModelElement extends RendererBase<ModelElement?> {
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
-                  isNullValue: (CT_ c) =>
-                      c.fullyQualifiedNameWithoutLibrary == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_String(c.fullyQualifiedNameWithoutLibrary, ast,
@@ -10440,7 +10438,7 @@ class _Renderer_ModelElement extends RendererBase<ModelElement?> {
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
-                  isNullValue: (CT_ c) => c.htmlId == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_String(c.htmlId, ast, r.template, sink, parent: r);
@@ -10881,7 +10879,7 @@ class _Renderer_ModelElement extends RendererBase<ModelElement?> {
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
-                  isNullValue: (CT_ c) => c.sourceCode == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_String(c.sourceCode, ast, r.template, sink,
@@ -10925,7 +10923,7 @@ class _Renderer_ModelElement extends RendererBase<ModelElement?> {
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
-                  isNullValue: (CT_ c) => c.sourceHref == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_String(c.sourceHref, ast, r.template, sink,
@@ -13339,7 +13337,7 @@ class _Renderer_SourceCodeMixin extends RendererBase<SourceCodeMixin?> {
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
-                  isNullValue: (CT_ c) => c.sourceCode == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_String(c.sourceCode, ast, r.template, sink,
