@@ -157,9 +157,9 @@ abstract class ModelElement extends Canonicalization
   /// if and only if this is to be an inherited or extended object.
   factory ModelElement._fromPropertyInducingElement(
       PropertyInducingElement e, Library library, PackageGraph packageGraph,
-      {Container? enclosingContainer,
-      required Accessor? getter,
-      required Accessor? setter}) {
+      {required Accessor? getter,
+      required Accessor? setter,
+      Container? enclosingContainer}) {
     // TODO(jcollins-g): Refactor object model to instantiate 'ModelMembers'
     //                   for members?
     if (e is Member) {

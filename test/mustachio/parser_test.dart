@@ -426,9 +426,9 @@ void _expectText(MustachioNode node, Object matcher,
 void _expectVariable(
   MustachioNode node,
   Object matcher, {
-  bool escape = true,
   required int spanStart,
   required int spanEnd,
+  bool escape = true,
   int? keySpanStart,
   int? keySpanEnd,
 }) {
@@ -459,9 +459,9 @@ void _expectVariable(
 void _expectSection(
   MustachioNode node,
   Object matcher, {
-  bool invert = false,
   required int spanStart,
   required int spanEnd,
+  bool invert = false,
   int? keySpanStart,
   int? keySpanEnd,
 }) {

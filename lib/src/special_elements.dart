@@ -99,12 +99,12 @@ class SpecialClasses {
 
   /// Add a class object that could be special.
   void addSpecial(Class aClass) {
-    if (_specialClassDefinitions.containsKey(aClass.name)) {
-      var d = _specialClassDefinitions[aClass.name]!;
-      if (d.matchesClass(aClass)) {
-        assert(!_specialClass.containsKey(d.specialClass) ||
-            _specialClass[d.specialClass] == aClass);
-        _specialClass[d.specialClass] = aClass;
+    var def = _specialClassDefinitions[aClass.name];
+    if (def != null) {
+      if (def.matchesClass(aClass)) {
+        assert(!_specialClass.containsKey(def.specialClass) ||
+            _specialClass[def.specialClass] == aClass);
+        _specialClass[def.specialClass] = aClass;
       }
     }
   }
