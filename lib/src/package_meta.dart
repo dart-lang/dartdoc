@@ -4,7 +4,6 @@
 
 library dartdoc.package_meta;
 
-import 'dart:convert';
 import 'dart:io' show Platform, Process;
 
 import 'package:analyzer/dart/element/element.dart';
@@ -20,9 +19,7 @@ import 'package:yaml/yaml.dart';
 
 import 'logging.dart';
 
-Map<String, PackageMeta?> _packageMetaCache = {};
-
-Encoding utf8AllowMalformed = Utf8Codec(allowMalformed: true);
+final Map<String, PackageMeta?> _packageMetaCache = {};
 
 class PackageMetaFailure extends DartdocFailure {
   PackageMetaFailure(String message) : super(message);
@@ -174,7 +171,7 @@ abstract class PubPackageMeta extends PackageMeta {
   PubPackageMeta(Folder dir, ResourceProvider resourceProvider)
       : super(dir, resourceProvider);
 
-  static late final List<List<String>> _sdkDirFilePaths = () {
+  static final List<List<String>> _sdkDirFilePaths = () {
     var pathsToReturn = <List<String>>[];
     if (Platform.isWindows) {
       for (var paths in _sdkDirFilePathsPosix) {

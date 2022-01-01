@@ -184,8 +184,8 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
       .toList(growable: false);
 
   SdkLibrary? get sdkLib {
-    if (packageGraph.sdkLibrarySources!.containsKey(element.librarySource)) {
-      return packageGraph.sdkLibrarySources![element.librarySource];
+    if (packageGraph.sdkLibrarySources.containsKey(element.librarySource)) {
+      return packageGraph.sdkLibrarySources[element.librarySource];
     }
     return null;
   }

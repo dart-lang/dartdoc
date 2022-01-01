@@ -48,9 +48,10 @@ class StringTrie {
       return valid ? index : lastValid;
     }
     var matchChar = toMatch.codeUnitAt(index);
-    if (children.containsKey(matchChar)) {
+    var matchedChild = children[matchChar];
+    if (matchedChild != null) {
       lastValid = valid ? index : lastValid;
-      return children[matchChar]!.match(toMatch, index + 1, lastValid);
+      return matchedChild.match(toMatch, index + 1, lastValid);
     }
     return valid ? index : lastValid;
   }
@@ -65,7 +66,7 @@ class StringTrie {
   }
 }
 
-late final StringTrie operatorParseTrie = () {
+final StringTrie operatorParseTrie = () {
   var _operatorParseTrie = StringTrie();
   for (var name in operatorNames.keys) {
     _operatorParseTrie.addWord(name);

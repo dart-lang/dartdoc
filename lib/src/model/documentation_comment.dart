@@ -83,7 +83,7 @@ mixin DocumentationComment
   bool get hasDocumentationComment;
 
   /// Returns true if the raw documentation comment has a nodoc indication.
-  bool? get hasNodoc {
+  bool get hasNodoc {
     if (hasDocumentationComment &&
         (documentationComment.contains('@nodoc') ||
             documentationComment.contains('<nodoc>'))) {

@@ -21,7 +21,7 @@ mixin ExtensionTarget on ModelElement {
   /// defined by [element] can exist where this extension applies, not including
   /// any extension that applies to every type.
   Iterable<Extension>? get potentiallyApplicableExtensions {
-    _potentiallyApplicableExtensions ??= packageGraph.documentedExtensions!
+    _potentiallyApplicableExtensions ??= packageGraph.documentedExtensions
         .where((e) => !e.alwaysApplies)
         .where((e) => e.couldApplyTo(this))
         .toList(growable: false);

@@ -849,7 +849,7 @@ $analyzerOptions
         '--link-to-remote',
         '--show-progress',
         '--enable-experiment',
-        languageExperiments.join(","),
+        languageExperiments.join(','),
         ...extraDartdocParameters,
       ],
       workingDirectory: languageTestPackageDir.absolute.path);
