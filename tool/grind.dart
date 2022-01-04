@@ -105,16 +105,16 @@ Future<FlutterRepo> get cleanFlutterRepo async {
   return repoCompleter.future;
 }
 
-late final String _dartdocDocsPath = createTempSync('dartdoc').path;
+final String _dartdocDocsPath = createTempSync('dartdoc').path;
 
-late final Directory _sdkDocsDir = createTempSync('sdkdocs');
+final Directory _sdkDocsDir = createTempSync('sdkdocs').absolute;
 
 Directory cleanFlutterDir = Directory(path.join(
     path.context.resolveTildePath('~/.dartdoc_grinder'), 'cleanFlutter'));
 
-late final Directory _flutterDir = createTempSync('flutter');
+final Directory _flutterDir = createTempSync('flutter');
 
-late final Directory _languageTestPackageDir =
+final Directory _languageTestPackageDir =
     createTempSync('languageTestPackageDir');
 
 Directory get testPackage =>
@@ -126,29 +126,29 @@ Directory get testPackageExperiments =>
 Directory get pluginPackage => Directory(path
     .joinAll(['testing', 'flutter_packages', 'test_package_flutter_plugin']));
 
-late final Directory _testPackageDocsDir = createTempSync('test_package');
+final Directory _testPackageDocsDir = createTempSync('test_package');
 
-late final Directory _testPackageExperimentsDocsDir =
+final Directory _testPackageExperimentsDocsDir =
     createTempSync('test_package_experiments');
 
-late final String _pluginPackageDocsPath =
+final String _pluginPackageDocsPath =
     createTempSync('test_package_flutter_plugin').path;
 
 /// Version of dartdoc we should use when making comparisons.
 String get dartdocOriginalBranch {
-  var branch = 'master';
-  if (Platform.environment.containsKey('DARTDOC_ORIGINAL')) {
-    branch = Platform.environment['DARTDOC_ORIGINAL']!;
+  var branch = Platform.environment['DARTDOC_ORIGINAL'];
+  if (branch == null) {
+    return 'master';
+  } else {
     log('using branch/tag: $branch for comparison from \$DARTDOC_ORIGINAL');
+    return branch;
   }
-  return branch;
 }
 
 final _whitespacePattern = RegExp(r'\s+');
 
-late final List<String> _extraDartdocParameters = [
-  if (Platform.environment.containsKey('DARTDOC_PARAMS'))
-    ...Platform.environment['DARTDOC_PARAMS']!.split(_whitespacePattern),
+final List<String> _extraDartdocParameters = [
+  ...?Platform.environment['DARTDOC_PARAMS']?.split(_whitespacePattern),
 ];
 
 final Directory flutterDirDevTools =
@@ -326,8 +326,9 @@ class WarningsCollection {
 
   String _toKey(String text) {
     var key = text.replaceAll(tempDir, kTempDirReplacement);
+    var pubCachePath = this.pubCachePath;
     if (pubCachePath != null) {
-      key = key.replaceAll(pubCachePath!, kPubCachePathReplacement);
+      key = key.replaceAll(pubCachePath, kPubCachePathReplacement);
     }
     return key;
   }
@@ -342,8 +343,7 @@ class WarningsCollection {
 
   void add(String text) {
     var key = _toKey(text);
-    warningKeyCounts.putIfAbsent(key, () => 0);
-    warningKeyCounts[key] = warningKeyCounts[key]! + 1;
+    warningKeyCounts.update(key, (e) => e + 1, ifAbsent: () => 1);
   }
 
   /// Output formatter for comparing warnings.  [this] is the original.
@@ -437,7 +437,7 @@ Future<void> compareSdkWarnings() async {
   var originalDartdocSdkBuild =
       _buildSdkDocs(originalDartdocSdkDocs.path, originalDartdoc, 'original');
   var currentDartdocWarnings = jsonMessageIterableToWarnings(
-      await currentDartdocSdkBuild, _sdkDocsDir.absolute.path, null, 'HEAD');
+      await currentDartdocSdkBuild, _sdkDocsDir.path, null, 'HEAD');
   var originalDartdocWarnings = jsonMessageIterableToWarnings(
       await originalDartdocSdkBuild,
       originalDartdocSdkDocs.absolute.path,
@@ -999,7 +999,6 @@ Future<String> _buildPubPackageDocs(
 @Task(
     'Build an arbitrary pub package based on PACKAGE_NAME and PACKAGE_VERSION environment variables')
 Future<String> buildPubPackage() async {
-  assert(Platform.environment.containsKey('PACKAGE_NAME'));
   var packageName = Platform.environment['PACKAGE_NAME']!;
   var version = Platform.environment['PACKAGE_VERSION'];
   return _buildPubPackageDocs(
