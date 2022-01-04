@@ -39,7 +39,7 @@ extension on Scope {
 
 /// A set of utility methods for helping build
 /// [CommentReferable.referenceChildren] out of collections of other
-/// [CommmentReferable]s.
+/// [CommentReferable]s.
 extension CommentReferableEntryGenerators on Iterable<CommentReferable> {
   /// Creates ordinary references except if there is a conflict with
   /// [referable], it will generate a [MapEntry] using [referable]'s

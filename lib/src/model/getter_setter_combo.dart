@@ -154,7 +154,7 @@ mixin GetterSetterCombo on ModelElement {
           buffer.write(getter!.oneLineDoc);
         }
         if (hasPublicSetter && setter!.oneLineDoc!.isNotEmpty) {
-          buffer.write(getterSetterBothAvailable ? "" : setter!.oneLineDoc);
+          buffer.write(getterSetterBothAvailable ? '' : setter!.oneLineDoc);
         }
         _oneLineDoc = buffer.toString();
       }

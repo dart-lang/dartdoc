@@ -1467,13 +1467,15 @@ Future<List<DartdocOption>> createDartdocOptions(
           // ignore: unnecessary_null_comparison
           if (inSdk != null) {
             Map<String, String> sdks = option.parent['sdks'].valueAt(dir);
-            if (sdks.containsKey(inSdk)) return sdks[inSdk]!;
+            var inSdkVal = sdks[inSdk];
+            if (inSdkVal != null) return inSdkVal;
           }
           var hostedAt = packageMeta.hostedAt;
           // ignore: unnecessary_null_comparison
           if (hostedAt != null) {
             Map<String, String> hostMap = option.parent['hosted'].valueAt(dir);
-            if (hostMap.containsKey(hostedAt)) return hostMap[hostedAt]!;
+            var hostedAtVal = hostMap[hostedAt];
+            if (hostedAtVal != null) return hostedAtVal;
           }
           return '';
         }, resourceProvider, help: 'Url to use for this particular package.'),

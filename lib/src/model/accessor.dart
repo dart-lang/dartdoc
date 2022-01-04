@@ -55,20 +55,13 @@ class Accessor extends ModelElement implements EnclosedElement {
   late final GetterSetterCombo definingCombo =
       modelBuilder.fromElement(element.variable) as GetterSetterCombo;
 
-  String? _sourceCode;
+  late final String _sourceCode = isSynthetic
+      ? _sourceCodeRenderer.renderSourceCode(
+          packageGraph.getModelNodeFor(definingCombo.element)!.sourceCode)
+      : super.sourceCode;
 
   @override
-  String? get sourceCode {
-    if (_sourceCode == null) {
-      if (isSynthetic) {
-        _sourceCode = _sourceCodeRenderer.renderSourceCode(
-            packageGraph.getModelNodeFor(definingCombo.element)!.sourceCode!);
-      } else {
-        _sourceCode = super.sourceCode;
-      }
-    }
-    return _sourceCode;
-  }
+  String get sourceCode => _sourceCode;
 
   bool _documentationCommentComputed = false;
   String? _documentationComment;
@@ -97,7 +90,7 @@ class Accessor extends ModelElement implements EnclosedElement {
   /// for a synthetic accessor just in case it is inherited somewhere
   /// down the line due to split inheritance.
   bool get _hasSyntheticDocumentationComment =>
-      (isGetter || definingCombo.hasNodoc! || _comboDocsAreIndependent()) &&
+      (isGetter || definingCombo.hasNodoc || _comboDocsAreIndependent()) &&
       definingCombo.hasDocumentationComment;
 
   // If we're a setter, and a getter exists, do not add synthetic

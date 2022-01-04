@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
-
 import 'package:dartdoc/src/quiver.dart';
 import 'package:test/test.dart';
 
@@ -28,20 +26,6 @@ void main() {
             [-1, -2, -3]
           ]),
           [1, 2, 3, -1, -2, -3]);
-    });
-
-    test('should throw for null input', () {
-      expect(() => concat(null), throwsNoSuchMethodError);
-    });
-
-    test('should throw if any input is null', () {
-      expect(
-          () => concat([
-                [1, 2],
-                null,
-                [3, 4]
-              ]).toList(),
-          throwsNoSuchMethodError);
     });
 
     test('should reflectchanges in the inputs', () {
