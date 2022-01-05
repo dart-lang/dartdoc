@@ -124,7 +124,7 @@ abstract class PackageMeta {
 
   /// Returns 'Dart' or 'Flutter' (preferentially, 'Flutter' when the answer is
   /// "both"), or null if this package is not part of a SDK.
-  String? sdkType(String flutterRootPath);
+  String? sdkType(String? flutterRootPath);
 
   bool get needsPubGet => false;
 

@@ -38,7 +38,7 @@ class DartdocGeneratorOptionContext extends DartdocOptionContext {
 
   String? get favicon => optionSet['favicon'].valueAt(context);
 
-  String get relCanonicalPrefix =>
+  String? get relCanonicalPrefix =>
       optionSet['relCanonicalPrefix'].valueAt(context);
 
   String? get templatesDir => optionSet['templatesDir'].valueAt(context);

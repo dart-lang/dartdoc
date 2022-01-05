@@ -256,7 +256,7 @@ class ToolConfiguration {
 /// A container class to keep track of where our yaml data came from.
 class _YamlFileData {
   /// The map from the yaml file.
-  final Map<Object, Object> data;
+  final Map<Object?, Object?> data;
 
   /// The path to the directory containing the yaml file.
   final String canonicalDirectoryPath;
@@ -1141,20 +1141,29 @@ abstract class _DartdocArgOption<T> implements DartdocOption<T> {
           help: help,
           hide: hide);
     } else if (_isListString || _isMapString) {
-      var defaultsToList = <String>[];
-      if (_isListString) {
-        defaultsToList = defaultsTo as List<String>;
+      if (defaultsTo == null) {
+        argParser.addMultiOption(argName,
+            abbr: abbr,
+            defaultsTo: null,
+            help: help,
+            hide: hide,
+            splitCommas: splitCommas);
       } else {
-        defaultsToList.addAll((defaultsTo as Map<String, String>)
-            .entries
-            .map((m) => '${m.key}::${m.value}'));
+        var defaultsToList = <String>[];
+        if (_isListString) {
+          defaultsToList = defaultsTo as List<String>;
+        } else {
+          defaultsToList.addAll((defaultsTo as Map<String, String>)
+              .entries
+              .map((m) => '${m.key}::${m.value}'));
+        }
+        argParser.addMultiOption(argName,
+            abbr: abbr,
+            defaultsTo: defaultsToList,
+            help: help,
+            hide: hide,
+            splitCommas: splitCommas);
       }
-      argParser.addMultiOption(argName,
-          abbr: abbr,
-          defaultsTo: defaultsToList,
-          help: help,
-          hide: hide,
-          splitCommas: splitCommas);
     } else {
       throw UnsupportedError('Type $T is not supported');
     }

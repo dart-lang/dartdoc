@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
-
 library dartdoc.package_utils_test;
 
 import 'package:dartdoc/src/io_utils.dart';
@@ -13,41 +11,34 @@ import 'package:test/test.dart';
 void main() {
   var resourceProvider = pubPackageMetaProvider.resourceProvider;
 
-  group('PackageMeta for a directory without a pubspec', () {
-    PackageMeta p;
-
-    setUp(() {
-      var d = resourceProvider.createSystemTemp('test_package_not_valid');
-      p = pubPackageMetaProvider.fromDir(d);
-    });
-
-    test('is not valid', () {
-      expect(p, isNull);
-    });
+  test('PackageMeta for a directory without a pubspec is not valid', () {
+    var d = resourceProvider.createSystemTemp('test_package_not_valid');
+    var p = pubPackageMetaProvider.fromDir(d);
+    expect(p, isNull);
   });
 
   group('PackageMeta for the test package', () {
-    PackageMeta p;
+    late PackageMeta p;
 
     setUp(() {
       p = pubPackageMetaProvider.fromDir(resourceProvider.getFolder(
           resourceProvider.pathContext.join(
               resourceProvider.pathContext.current,
               'testing',
-              'test_package')));
+              'test_package')))!;
     });
 
     test('readme with corrupt UTF-8 loads without throwing', () {
       expect(
           resourceProvider
-              .readAsMalformedAllowedStringSync(p.getReadmeContents()),
+              .readAsMalformedAllowedStringSync(p.getReadmeContents()!),
           contains('Here is some messed up UTF-8.\nÃf'));
     });
   });
 
   group('PackageMeta.fromDir for this package', () {
     var p = pubPackageMetaProvider.fromDir(
-        resourceProvider.getFolder(resourceProvider.pathContext.current));
+        resourceProvider.getFolder(resourceProvider.pathContext.current))!;
 
     test('has a name', () {
       expect(p.name, 'dartdoc');
@@ -77,7 +68,7 @@ void main() {
       expect(p.getReadmeContents(), isNotNull);
       expect(
           resourceProvider
-              .readAsMalformedAllowedStringSync(p.getReadmeContents()),
+              .readAsMalformedAllowedStringSync(p.getReadmeContents()!),
           contains(
               'Use `dartdoc` to generate HTML documentaton for your Dart package.'));
     });
@@ -86,7 +77,7 @@ void main() {
       expect(p.getLicenseContents(), isNotNull);
       expect(
           resourceProvider
-              .readAsMalformedAllowedStringSync(p.getLicenseContents()),
+              .readAsMalformedAllowedStringSync(p.getLicenseContents()!),
           contains('Copyright 2014, the Dart project authors.'));
     });
 
@@ -94,14 +85,14 @@ void main() {
       expect(p.getChangelogContents(), isNotNull);
       expect(
           resourceProvider
-              .readAsMalformedAllowedStringSync(p.getChangelogContents()),
+              .readAsMalformedAllowedStringSync(p.getChangelogContents()!),
           contains('## 0.2.2'));
     });
   });
 
   group('PackageMeta.fromSdk', () {
     var p =
-        pubPackageMetaProvider.fromDir(pubPackageMetaProvider.defaultSdkDir);
+        pubPackageMetaProvider.fromDir(pubPackageMetaProvider.defaultSdkDir)!;
 
     test('has a name', () {
       expect(p.name, 'Dart');
@@ -132,7 +123,7 @@ void main() {
       expect(p.getReadmeContents(), isNotNull);
       expect(
           resourceProvider
-              .readAsMalformedAllowedStringSync(p.getReadmeContents()),
+              .readAsMalformedAllowedStringSync(p.getReadmeContents()!),
           startsWith('Welcome'));
     });
 
