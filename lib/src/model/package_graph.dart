@@ -208,7 +208,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   /// All ModelElements constructed for this package; a superset of [allModelElements].
   final HashMap<Tuple3<Element, Library, Container?>, ModelElement?>
       allConstructedModelElements =
-      HashMap<Tuple3<Element, Library, Container>, ModelElement?>();
+      HashMap<Tuple3<Element, Library, Container?>, ModelElement?>();
 
   /// Anything that might be inheritable, place here for later lookup.
   final allInheritableElements =
@@ -832,7 +832,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
           var setter =
               e.setter != null ? modelBuilder.from(e.setter!, lib) : null;
           modelElement = modelBuilder.fromPropertyInducingElement(e, lib,
-              getter: getter as Accessor, setter: setter as Accessor);
+              getter: getter as Accessor?, setter: setter as Accessor?);
         } else {
           modelElement = modelBuilder.from(e!, lib);
         }

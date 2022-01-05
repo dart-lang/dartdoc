@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
-
 library dartdoc.io_utils_test;
 
 import 'package:dartdoc/src/io_utils.dart';
@@ -70,8 +68,8 @@ void main() {
       var completed = <int>{};
       var tracker = TaskQueue(maxJobs: 1);
       await tracker.add(() async => completed.add(0));
-      await tracker.add(() async => throw Exception()).catchError((e) {});
-      await tracker.add(() async => throw Exception()).catchError((e) {});
+      await tracker.add(() async => throw Exception()).catchError((e) => -1);
+      await tracker.add(() async => throw Exception()).catchError((e) => -1);
       await tracker.add(() async => completed.add(3));
       await tracker.tasksComplete;
       expect(completed.length, equals(2));
