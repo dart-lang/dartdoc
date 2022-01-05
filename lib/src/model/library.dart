@@ -233,9 +233,9 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     return _dirName;
   }();
 
-  Set<String>? _canonicalFor;
+  Set<String?>? _canonicalFor;
 
-  Set<String> get canonicalFor {
+  Set<String?> get canonicalFor {
     if (_canonicalFor == null) {
       // TODO(jcollins-g): restructure to avoid using side effects.
       buildDocumentationAddition(documentationComment);
@@ -268,7 +268,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     }
     // TODO(jcollins-g): warn if a macro/tool _does_ generate an unexpected
     // canonicalFor?
-    _canonicalFor ??= newCanonicalFor as Set<String>;
+    _canonicalFor ??= newCanonicalFor;
     return rawDocs;
   }
 

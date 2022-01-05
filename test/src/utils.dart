@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
-
 library test_utils;
 
 import 'dart:io';
@@ -132,7 +130,7 @@ void _writeMockSdkBinFiles(Folder root) {
 /// written if one is not provided via [pubspecContent].
 Folder writePackage(String packageName, MemoryResourceProvider resourceProvider,
     FakePackageConfigProvider packageConfigProvider,
-    {String pubspecContent}) {
+    {String? pubspecContent}) {
   pubspecContent ??= '''
 name: $packageName
 version: 0.0.1

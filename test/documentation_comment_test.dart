@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
-
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/memory_file_system.dart';
 import 'package:analyzer/src/dart/sdk/sdk.dart';
@@ -18,27 +16,26 @@ import 'package:test/test.dart';
 import 'src/utils.dart' as utils;
 
 void main() {
-  MemoryResourceProvider resourceProvider;
-  PackageMetaProvider packageMetaProvider;
-  FakePackageConfigProvider packageConfigProvider;
-  Folder projectRoot;
-  String projectPath;
-  var packageName = 'my_package';
-  PackageGraph packageGraph;
-  ModelElement libraryModel;
-
   Matcher hasInvalidParameterWarning(String message) =>
       _HasWarning(PackageWarning.invalidParameter, message);
 
   Matcher hasMissingExampleWarning(String message) =>
       _HasWarning(PackageWarning.missingExampleFile, message);
 
-  void expectNoWarnings() {
-    expect(packageGraph.packageWarningCounter.hasWarnings, isFalse);
-    expect(packageGraph.packageWarningCounter.countedWarnings, isEmpty);
-  }
-
   group('documentation_comment tests', () {
+    late MemoryResourceProvider resourceProvider;
+    late PackageMetaProvider packageMetaProvider;
+    late FakePackageConfigProvider packageConfigProvider;
+    late Folder projectRoot;
+    final packageName = 'my_package';
+    late PackageGraph packageGraph;
+    late ModelElement libraryModel;
+
+    void expectNoWarnings() {
+      expect(packageGraph.packageWarningCounter.hasWarnings, isFalse);
+      expect(packageGraph.packageWarningCounter.countedWarnings, isEmpty);
+    }
+
     setUp(() async {
       resourceProvider = MemoryResourceProvider();
       final sdkRoot = resourceProvider.getFolder(
@@ -71,7 +68,6 @@ void main() {
 
       projectRoot = utils.writePackage(
           packageName, resourceProvider, packageConfigProvider);
-      projectPath = projectRoot.path;
       projectRoot
           .getChildAssumingFolder('lib')
           .getChildAssumingFile('a.dart')
@@ -80,7 +76,7 @@ void main() {
 int x;
 ''');
       packageGraph = await utils.bootBasicPackage(
-          projectPath, packageMetaProvider, packageConfigProvider,
+          projectRoot.path, packageMetaProvider, packageConfigProvider,
           additionalArguments: []);
       libraryModel = packageGraph.defaultPackage.libraries.first;
     });
@@ -682,7 +678,7 @@ Text.
 
     test('processes @inject-html when enabled', () async {
       packageGraph = await utils.bootBasicPackage(
-          projectPath, packageMetaProvider, packageConfigProvider,
+          projectRoot.path, packageMetaProvider, packageConfigProvider,
           additionalArguments: ['--inject-html']);
       libraryModel = packageGraph.defaultPackage.libraries.first;
       var doc = await libraryModel.processComment('''
@@ -930,7 +926,7 @@ class _HasWarning extends Matcher {
   _HasWarning(this.kind, this.message);
 
   @override
-  bool matches(dynamic actual, Map<Object, Object> matchState) {
+  bool matches(Object? actual, Map<Object?, Object?> matchState) {
     if (actual is ModelElement) {
       return actual.packageGraph.packageWarningCounter
           .hasWarning(actual, kind, message);
@@ -944,8 +940,8 @@ class _HasWarning extends Matcher {
       description.add('Library to be warned with $kind and message:\n$message');
 
   @override
-  Description describeMismatch(dynamic actual, Description mismatchDescription,
-      Map<Object, Object> matchState, bool verbose) {
+  Description describeMismatch(Object? actual, Description mismatchDescription,
+      Map<Object?, Object?> matchState, bool verbose) {
     if (actual is ModelElement) {
       var warnings = actual
           .packageGraph.packageWarningCounter.countedWarnings[actual.element];

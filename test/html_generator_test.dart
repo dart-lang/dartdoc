@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
-
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/memory_file_system.dart';
 import 'package:dartdoc/dartdoc.dart' show DartdocFileWriter;
@@ -26,25 +24,26 @@ import 'src/utils.dart' as utils;
 
 void main() {
   group('HTML generator tests', () {
-    MemoryResourceProvider resourceProvider;
-    p.Context pathContext;
+    late MemoryResourceProvider resourceProvider;
+    late p.Context pathContext;
 
-    PackageMetaProvider packageMetaProvider;
-    FakePackageConfigProvider packageConfigProvider;
+    late PackageMetaProvider packageMetaProvider;
+    late FakePackageConfigProvider packageConfigProvider;
 
     final Templates templates = HtmlAotTemplates();
-    GeneratorFrontEnd generator;
-    DartdocFileWriter writer;
+    late GeneratorFrontEnd generator;
+    late DartdocFileWriter writer;
 
-    Folder projectRoot;
-    String projectPath;
+    late Folder projectRoot;
+    late String projectPath;
 
     setUp(() async {
       packageMetaProvider = utils.testPackageMetaProvider;
-      resourceProvider = packageMetaProvider.resourceProvider;
+      resourceProvider =
+          packageMetaProvider.resourceProvider as MemoryResourceProvider;
       pathContext = resourceProvider.pathContext;
-      packageConfigProvider = utils
-          .getTestPackageConfigProvider(packageMetaProvider.defaultSdkDir.path);
+      packageConfigProvider = utils.getTestPackageConfigProvider(
+          packageMetaProvider.defaultSdkDir.path) as FakePackageConfigProvider;
       for (var template in [
         '_accessor_getter',
         '_accessor_setter',
@@ -134,8 +133,6 @@ void main() {
         resourceProvider.getFile(resourceProvider.convertPath(path));
 
     tearDown(() {
-      projectRoot = null;
-      projectPath = null;
       clearPackageMetaCache();
     });
 
@@ -190,13 +187,13 @@ const Matcher doesExist = _DoesExist();
 class _DoesExist extends Matcher {
   const _DoesExist();
   @override
-  bool matches(Object item, Map<Object, Object> matchState) =>
+  bool matches(Object? item, Map<Object?, Object?> matchState) =>
       (item as Resource).exists;
   @override
   Description describe(Description description) => description.add('exists');
   @override
-  Description describeMismatch(Object item, Description mismatchDescription,
-      Map<Object, Object> matchState, bool verbose) {
+  Description describeMismatch(Object? item, Description mismatchDescription,
+      Map<Object?, Object?> matchState, bool verbose) {
     if (item is! File && item is! Folder) {
       return mismatchDescription
           .addDescriptionOf(item)
