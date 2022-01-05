@@ -1,5 +1,3 @@
-// @dart=2.9
-
 library reexport.somelib;
 
 class SomeClass {}
@@ -11,7 +9,7 @@ class YetAnotherClass {}
 class AUnicornClass {}
 
 class BaseReexported {
-  String action;
+  String? action;
 }
 
 class ExtendedBaseReexported extends BaseReexported {}

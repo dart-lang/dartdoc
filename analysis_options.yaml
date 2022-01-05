@@ -14,8 +14,12 @@ analyzer:
     - 'lib/src/third_party/pkg/**'
     - 'lib/templates/*.html'
     - 'pub.dartlang.org/**'
-    - 'testing/**'
+    # This package imports flutter, which is perhaps not found by the base `dart analyze` tool.
     - 'testing/flutter_packages/test_package_flutter_plugin/**'
+    # This package is meant to mock the sky_engine package.
+    - 'testing/sky_engine/**'
+    # These packages have compile-time errors.
+    - 'testing/test_package_bad/**'
     - 'testing/test_package_export_error/**'
 linter:
   rules:

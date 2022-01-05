@@ -1,5 +1,3 @@
-// @dart=2.9
-
 library test_package.tool;
 
 abstract class PrivateLibraryToolUser {

@@ -1,11 +1,9 @@
-// @dart=2.9
-
 library mixins_base;
 
 mixin AMixin {}
 
 class ThisClass {
-  String property;
+  String? property;
 }
 
 /// A class that extends another class with a new-style mixin, then is

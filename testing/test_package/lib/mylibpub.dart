@@ -1,5 +1,3 @@
-// @dart=2.9
-
 library mylibpub;
 
 void helperFunction(String message, int i) => print(message);

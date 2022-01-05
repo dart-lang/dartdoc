@@ -1,5 +1,3 @@
-// @dart=2.9
-
 import 'base_class.dart';
 
 class BoxConstraints extends Constraints {

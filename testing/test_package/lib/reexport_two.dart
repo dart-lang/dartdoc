@@ -4,8 +4,6 @@
 /// {@canonicalFor reexport.somelib.DocumentThisExtensionOnce}
 /// {@category Unreal}
 
-// @dart=2.9
-
 library reexport_two;
 
 // Intentionally create some duplicates via reexporting.
