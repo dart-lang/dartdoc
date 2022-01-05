@@ -7845,7 +7845,7 @@ class _Renderer_Library extends RendererBase<Library> {
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.canonicalFor.map((e) =>
-                        _render_String(e, ast, r.template, sink, parent: r));
+                        _render_String(e!, ast, r.template, sink, parent: r));
                   },
                 ),
                 'characterLocation': Property(
