@@ -337,14 +337,12 @@ import '${p.basename(_sourceUri.path)}';
   void _buildRenderer(_RendererInfo renderer,
       {required bool buildOnlyPublicFunction}) {
     var typeName = renderer._typeName;
-    var typeWithVariablesNullable =
-        '$typeName${renderer._typeVariablesString}?';
     var typeWithVariables = '$typeName${renderer._typeVariablesString}';
 
     if (renderer.publicApiFunctionName != null) {
       _buffer.writeln('''
 String ${renderer.publicApiFunctionName}${renderer._typeParametersString}(
-    $typeWithVariablesNullable context, Template template) {
+    $typeWithVariables context, Template template) {
   var buffer = StringBuffer();
   ${renderer._renderFunctionName}(context, template.ast, template, buffer);
   return buffer.toString();
@@ -358,7 +356,7 @@ String ${renderer.publicApiFunctionName}${renderer._typeParametersString}(
     if (renderer.includeRenderFunction) {
       _buffer.writeln('''
 void ${renderer._renderFunctionName}${renderer._typeParametersString}(
-    $typeWithVariablesNullable context, List<MustachioNode> ast,
+    $typeWithVariables context, List<MustachioNode> ast,
     Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = ${renderer._rendererClassName}(context, parent, template, sink);
@@ -370,13 +368,13 @@ void ${renderer._renderFunctionName}${renderer._typeParametersString}(
     // Write out the renderer class.
     _buffer.write('''
 class ${renderer._rendererClassName}${renderer._typeParametersString}
-    extends RendererBase<$typeWithVariablesNullable> {
+    extends RendererBase<$typeWithVariables> {
 ''');
     _writePropertyMap(renderer);
     // Write out the constructor.
     _buffer.writeln('''
   ${renderer._rendererClassName}(
-        $typeWithVariablesNullable context, RendererBase<Object>? parent,
+        $typeWithVariables context, RendererBase<Object>? parent,
         Template template, StringSink sink)
       : super(context, parent, template, sink);
 ''');
@@ -386,7 +384,7 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
     // Write out `getProperty`.
     _buffer.writeln('''
   @override
-  Property<$typeWithVariablesNullable>? getProperty(String key) {
+  Property<$typeWithVariables>? getProperty(String key) {
     if ($propertyMapName().containsKey(key)) {
       return $propertyMapName()[key];
     } else {
@@ -531,8 +529,9 @@ renderVariable:
             renderCall = 'renderSimple(e, ast, r.template, sink, parent: r, '
                 "getters: _invisibleGetters['$typeName']!)";
           } else {
+            var bang = _typeSystem.isPotentiallyNullable(innerType) ? '!' : '';
             renderCall =
-                '$renderFunctionName(e, ast, r.template, sink, parent: r)';
+                '$renderFunctionName(e$bang, ast, r.template, sink, parent: r)';
           }
           _buffer.writeln('''
 renderIterable:
@@ -560,8 +559,9 @@ renderIterable:
               'renderSimple(c.$getterName, ast, r.template, sink, parent: r, '
               "getters: _invisibleGetters['$typeName']!)";
         } else {
+          var bang = _typeSystem.isPotentiallyNullable(getterType) ? '!' : '';
           renderCall =
-              '$renderFunctionName(c.$getterName, ast, r.template, sink, parent: r)';
+              '$renderFunctionName(c.$getterName$bang, ast, r.template, sink, parent: r)';
         }
         var nullValueGetter =
             getterType.nullabilitySuffix == NullabilitySuffix.none

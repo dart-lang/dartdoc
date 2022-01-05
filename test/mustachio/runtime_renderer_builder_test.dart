@@ -62,13 +62,13 @@ class Baz {}
       expect(
           generatedContent,
           contains(
-              'class _Renderer_FooBase<T extends Baz> extends RendererBase<FooBase<T>?>'));
+              'class _Renderer_FooBase<T extends Baz> extends RendererBase<FooBase<T>>'));
     });
 
     test('for Object', () {
       // The renderer class for Object
       expect(generatedContent,
-          contains('class _Renderer_Object extends RendererBase<Object?> {'));
+          contains('class _Renderer_Object extends RendererBase<Object> {'));
     });
 
     test('for a class which is extended by a rendered class', () {
@@ -203,20 +203,19 @@ import 'package:mustachio/annotations.dart';
 
     test('with a corresponding public API function', () async {
       expect(generatedContent,
-          contains('String renderFoo<T>(Foo<T>? context, Template template)'));
+          contains('String renderFoo<T>(Foo<T> context, Template template)'));
     });
 
     test('with a corresponding render function', () async {
       expect(
           generatedContent,
-          contains(
-              'void _render_Foo<T>(Foo<T>? context, List<MustachioNode> ast, Template template,\n'
-              '    StringSink sink,\n'));
+          contains('void _render_Foo<T>(\n'
+              '    Foo<T> context, List<MustachioNode> ast, Template template, StringSink sink,\n'));
     });
 
     test('with a generic supertype type argument', () async {
       expect(generatedContent,
-          contains('class _Renderer_Foo<T> extends RendererBase<Foo<T>?>'));
+          contains('class _Renderer_Foo<T> extends RendererBase<Foo<T>>'));
     });
 
     test(

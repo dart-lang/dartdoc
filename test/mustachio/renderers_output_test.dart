@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
-
 library dartdoc.dartdoc_test;
 
 import 'dart:async';
@@ -86,8 +84,7 @@ void main() {
           if (aotResource.shortName == '.') continue;
           if (aotResource.shortName == '..') continue;
           if (aotResource.shortName == 'static-assets') continue;
-          expect(runtimeResource is Folder, true);
-          checkDirectories(aotResource, runtimeResource);
+          checkDirectories(aotResource, runtimeResource as Folder);
         } else if (aotResource is File) {
           expect(runtimeResource is File, true);
           var contentInAot = aotResource.readAsStringSync();

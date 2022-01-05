@@ -2,7 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/memory_file_system.dart';
 import 'package:dartdoc/src/mustachio/renderer_base.dart';
@@ -12,9 +11,9 @@ import 'foo.dart';
 import 'foo.runtime_renderers.dart';
 
 void main() {
-  /*late*/ MemoryResourceProvider resourceProvider;
+  late MemoryResourceProvider resourceProvider;
 
-  /*late*/ p.Context pathContext;
+  late p.Context pathContext;
 
   File getFile(String path) => resourceProvider
       .getFile(pathContext.canonicalize(resourceProvider.convertPath(path)));
@@ -38,7 +37,7 @@ void main() {
 
   test('property map contains valid bool Properties', () {
     var propertyMap = Renderer_Foo.propertyMap();
-    var b1 = propertyMap['b1'] /*!*/;
+    var b1 = propertyMap['b1']!;
     expect(b1.getValue, isNotNull);
     expect(b1.renderVariable, isNotNull);
     expect(b1.getBool, isNotNull);
@@ -49,7 +48,7 @@ void main() {
 
   test('property map contains valid Iterable Properties', () {
     var propertyMap = Renderer_Foo.propertyMap();
-    var l1 = propertyMap['l1'] /*!*/;
+    var l1 = propertyMap['l1']!;
     expect(l1.getValue, isNotNull);
     expect(l1.renderVariable, isNotNull);
     expect(l1.getBool, isNull);
@@ -60,7 +59,7 @@ void main() {
 
   test('property map contains valid non-bool, non-Iterable Properties', () {
     var propertyMap = Renderer_Foo.propertyMap();
-    var s1 = propertyMap['s1'] /*!*/;
+    var s1 = propertyMap['s1']!;
     expect(s1.getValue, isNotNull);
     expect(s1.renderVariable, isNotNull);
     expect(s1.getBool, isNull);
@@ -72,37 +71,37 @@ void main() {
   test('Property returns a field value by name', () {
     var propertyMap = Renderer_Foo.propertyMap();
     var foo = Foo()..s1 = 'hello';
-    expect(propertyMap['s1'] /*!*/ .getValue(foo), equals('hello'));
+    expect(propertyMap['s1']!.getValue(foo), equals('hello'));
   });
 
   test('Property returns a bool field value by name', () {
     var propertyMap = Renderer_Foo.propertyMap();
     var foo = Foo()..b1 = true;
-    expect(propertyMap['b1'] /*!*/ .getBool /*!*/ (foo), isTrue);
+    expect(propertyMap['b1']!.getBool!(foo), isTrue);
   });
 
   test('isNullValue returns true when a value is null', () {
     var propertyMap = Renderer_Foo.propertyMap();
     var foo = Foo()..length = null;
-    expect(propertyMap['length'] /*!*/ .isNullValue(foo), isTrue);
+    expect(propertyMap['length']!.isNullValue(foo), isTrue);
   });
 
   test('isNullValue returns false when a value is not null', () {
     var propertyMap = Renderer_Foo.propertyMap();
     var foo = Foo()..s1 = 'hello';
-    expect(propertyMap['s1'] /*!*/ .isNullValue(foo), isFalse);
+    expect(propertyMap['s1']!.isNullValue(foo), isFalse);
   });
 
   test('isNullValue returns false for a non-nullable field', () {
     var propertyMap = Renderer_Foo.propertyMap();
     var foo = Foo()..b1 = true;
-    expect(propertyMap['b1'] /*!*/ .isNullValue(foo), isFalse);
+    expect(propertyMap['b1']!.isNullValue(foo), isFalse);
   });
 
   test('Property returns false for a null bool field value', () {
     var propertyMap = Renderer_Bar.propertyMap();
     var bar = Bar()..l1 = null;
-    expect(propertyMap['l1'] /*!*/ .getBool /*!*/ (bar), isFalse);
+    expect(propertyMap['l1']!.getBool!(bar), isFalse);
   });
 
   test('Renderer renders a non-bool variable node, escaped', () async {
@@ -326,7 +325,7 @@ void main() {
       ..writeAsStringSync('Text {{#bar}}{{bar.foo.baz.bar.foo.s1}}{{/bar}}');
     var baz = Baz()..bar = (Bar()..foo = (Foo()..s1 = 'hello'));
     var bazTemplate = await Template.parse(bazTemplateFile);
-    baz.bar /*!*/ .foo /*!*/ .baz = baz;
+    baz.bar!.foo!.baz = baz;
     expect(renderBaz(baz, bazTemplate), equals('Text hello'));
   });
 
@@ -478,7 +477,7 @@ World
         () => renderFoo(foo, fooTemplate),
         throwsA(const TypeMatcher<MustachioResolutionError>()
             .having((e) => e.message, 'message', contains('''
-line 1, column 8 of ${fooTemplateFile.path}: Failed to resolve 's2' as a property on any types in the context chain: Foo?
+line 1, column 8 of ${fooTemplateFile.path}: Failed to resolve 's2' as a property on any types in the context chain: Foo
   ╷
 1 │ Text {{s2}}
   │        ^^
@@ -513,8 +512,8 @@ line 1, column 9 of ${fooTemplateFile.path}: Failed to resolve 's2' as a propert
             (e) => e.message,
             'message',
             contains("Failed to resolve 'x' on Foo while resolving [x] as a "
-                'property chain on any types in the context chain: Bar?, after '
-                "first resolving 'foo' to a property on Bar?"))));
+                'property chain on any types in the context chain: Bar, after '
+                "first resolving 'foo' to a property on Bar"))));
   });
 
   test('Renderer throws when it cannot resolve a multi-name section key',
