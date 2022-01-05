@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
-
 import 'dart:async';
 import 'dart:convert' show json, utf8;
 import 'dart:io';
@@ -62,9 +60,9 @@ class Property3 {
   String? s;
 }
 ''';
-  InMemoryAssetWriter writer;
-  Directory tempDir;
-  File renderScript;
+  late InMemoryAssetWriter writer;
+  late Directory tempDir;
+  late File renderScript;
 
   setUp(() {
     writer = InMemoryAssetWriter();
@@ -87,7 +85,7 @@ import 'package:mustachio/annotations.dart';
       additionalAssets: additionalAssets,
     );
     var rendererAsset = AssetId('foo', 'lib/foo.aot_renderers_for_html.dart');
-    var generatedContent = utf8.decode(writer.assets[rendererAsset]);
+    var generatedContent = utf8.decode(writer.assets[rendererAsset]!);
     renderScript.writeAsStringSync('''
 import 'dart:io';
 

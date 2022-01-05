@@ -21,20 +21,20 @@ import 'package:dartdoc/src/mustachio/renderer_base.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'foo.dart';
 
-String renderBar(Bar? context, Template template) {
+String renderBar(Bar context, Template template) {
   var buffer = StringBuffer();
   _render_Bar(context, template.ast, template, buffer);
   return buffer.toString();
 }
 
 void _render_Bar(
-    Bar? context, List<MustachioNode> ast, Template template, StringSink sink,
+    Bar context, List<MustachioNode> ast, Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = Renderer_Bar(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
 
-class Renderer_Bar extends RendererBase<Bar?> {
+class Renderer_Bar extends RendererBase<Bar> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends Bar>() =>
       _propertyMapCache.putIfAbsent(
@@ -57,7 +57,7 @@ class Renderer_Bar extends RendererBase<Bar?> {
                   isNullValue: (CT_ c) => c.baz == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_Baz(c.baz, ast, r.template, sink, parent: r);
+                    _render_Baz(c.baz!, ast, r.template, sink, parent: r);
                   },
                 ),
                 'foo': Property(
@@ -76,7 +76,7 @@ class Renderer_Bar extends RendererBase<Bar?> {
                   isNullValue: (CT_ c) => c.foo == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_Foo(c.foo, ast, r.template, sink, parent: r);
+                    _render_Foo(c.foo!, ast, r.template, sink, parent: r);
                   },
                 ),
                 'l1': Property(
@@ -100,12 +100,12 @@ class Renderer_Bar extends RendererBase<Bar?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  Renderer_Bar(Bar? context, RendererBase<Object>? parent, Template template,
+  Renderer_Bar(Bar context, RendererBase<Object>? parent, Template template,
       StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<Bar?>? getProperty(String key) {
+  Property<Bar>? getProperty(String key) {
     if (propertyMap<Bar>().containsKey(key)) {
       return propertyMap<Bar>()[key];
     } else {
@@ -114,20 +114,20 @@ class Renderer_Bar extends RendererBase<Bar?> {
   }
 }
 
-String renderBaz(Baz? context, Template template) {
+String renderBaz(Baz context, Template template) {
   var buffer = StringBuffer();
   _render_Baz(context, template.ast, template, buffer);
   return buffer.toString();
 }
 
 void _render_Baz(
-    Baz? context, List<MustachioNode> ast, Template template, StringSink sink,
+    Baz context, List<MustachioNode> ast, Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = Renderer_Baz(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
 
-class Renderer_Baz extends RendererBase<Baz?> {
+class Renderer_Baz extends RendererBase<Baz> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends Baz>() =>
       _propertyMapCache.putIfAbsent(
@@ -150,17 +150,17 @@ class Renderer_Baz extends RendererBase<Baz?> {
                   isNullValue: (CT_ c) => c.bar == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_Bar(c.bar, ast, r.template, sink, parent: r);
+                    _render_Bar(c.bar!, ast, r.template, sink, parent: r);
                   },
                 ),
               }) as Map<String, Property<CT_>>;
 
-  Renderer_Baz(Baz? context, RendererBase<Object>? parent, Template template,
+  Renderer_Baz(Baz context, RendererBase<Object>? parent, Template template,
       StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<Baz?>? getProperty(String key) {
+  Property<Baz>? getProperty(String key) {
     if (propertyMap<Baz>().containsKey(key)) {
       return propertyMap<Baz>()[key];
     } else {
@@ -169,20 +169,20 @@ class Renderer_Baz extends RendererBase<Baz?> {
   }
 }
 
-String renderFoo(Foo? context, Template template) {
+String renderFoo(Foo context, Template template) {
   var buffer = StringBuffer();
   _render_Foo(context, template.ast, template, buffer);
   return buffer.toString();
 }
 
 void _render_Foo(
-    Foo? context, List<MustachioNode> ast, Template template, StringSink sink,
+    Foo context, List<MustachioNode> ast, Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = Renderer_Foo(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
 
-class Renderer_Foo extends RendererBase<Foo?> {
+class Renderer_Foo extends RendererBase<Foo> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends Foo>() =>
       _propertyMapCache.putIfAbsent(
@@ -212,7 +212,7 @@ class Renderer_Foo extends RendererBase<Foo?> {
                   isNullValue: (CT_ c) => c.baz == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_Baz(c.baz, ast, r.template, sink, parent: r);
+                    _render_Baz(c.baz!, ast, r.template, sink, parent: r);
                   },
                 ),
                 'l1': Property(
@@ -257,7 +257,7 @@ class Renderer_Foo extends RendererBase<Foo?> {
                   isNullValue: (CT_ c) => c.p1 == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_Property1(c.p1, ast, r.template, sink, parent: r);
+                    _render_Property1(c.p1!, ast, r.template, sink, parent: r);
                   },
                 ),
                 's1': Property(
@@ -274,12 +274,12 @@ class Renderer_Foo extends RendererBase<Foo?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  Renderer_Foo(Foo? context, RendererBase<Object>? parent, Template template,
+  Renderer_Foo(Foo context, RendererBase<Object>? parent, Template template,
       StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<Foo?>? getProperty(String key) {
+  Property<Foo>? getProperty(String key) {
     if (propertyMap<Foo>().containsKey(key)) {
       return propertyMap<Foo>()[key];
     } else {
@@ -288,7 +288,7 @@ class Renderer_Foo extends RendererBase<Foo?> {
   }
 }
 
-class Renderer_FooBase<T extends Object> extends RendererBase<FooBase<T>?> {
+class Renderer_FooBase<T extends Object> extends RendererBase<FooBase<T>> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>>
       propertyMap<T extends Object, CT_ extends FooBase>() =>
@@ -320,12 +320,12 @@ class Renderer_FooBase<T extends Object> extends RendererBase<FooBase<T>?> {
                     ),
                   }) as Map<String, Property<CT_>>;
 
-  Renderer_FooBase(FooBase<T>? context, RendererBase<Object>? parent,
+  Renderer_FooBase(FooBase<T> context, RendererBase<Object>? parent,
       Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<FooBase<T>?>? getProperty(String key) {
+  Property<FooBase<T>>? getProperty(String key) {
     if (propertyMap<T, FooBase<T>>().containsKey(key)) {
       return propertyMap<T, FooBase<T>>()[key];
     } else {
@@ -334,7 +334,7 @@ class Renderer_FooBase<T extends Object> extends RendererBase<FooBase<T>?> {
   }
 }
 
-class Renderer_Mixin1 extends RendererBase<Mixin1?> {
+class Renderer_Mixin1 extends RendererBase<Mixin1> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends Mixin1>() =>
       _propertyMapCache.putIfAbsent(
@@ -358,17 +358,17 @@ class Renderer_Mixin1 extends RendererBase<Mixin1?> {
                   isNullValue: (CT_ c) => c.p3 == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_Property3(c.p3, ast, r.template, sink, parent: r);
+                    _render_Property3(c.p3!, ast, r.template, sink, parent: r);
                   },
                 ),
               }) as Map<String, Property<CT_>>;
 
-  Renderer_Mixin1(Mixin1? context, RendererBase<Object>? parent,
+  Renderer_Mixin1(Mixin1 context, RendererBase<Object>? parent,
       Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<Mixin1?>? getProperty(String key) {
+  Property<Mixin1>? getProperty(String key) {
     if (propertyMap<Mixin1>().containsKey(key)) {
       return propertyMap<Mixin1>()[key];
     } else {
@@ -377,7 +377,7 @@ class Renderer_Mixin1 extends RendererBase<Mixin1?> {
   }
 }
 
-class Renderer_Object extends RendererBase<Object?> {
+class Renderer_Object extends RendererBase<Object> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends Object>() =>
       _propertyMapCache.putIfAbsent(
@@ -397,12 +397,12 @@ class Renderer_Object extends RendererBase<Object?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  Renderer_Object(Object? context, RendererBase<Object>? parent,
+  Renderer_Object(Object context, RendererBase<Object>? parent,
       Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<Object?>? getProperty(String key) {
+  Property<Object>? getProperty(String key) {
     if (propertyMap<Object>().containsKey(key)) {
       return propertyMap<Object>()[key];
     } else {
@@ -411,14 +411,14 @@ class Renderer_Object extends RendererBase<Object?> {
   }
 }
 
-void _render_Property1(Property1? context, List<MustachioNode> ast,
+void _render_Property1(Property1 context, List<MustachioNode> ast,
     Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = Renderer_Property1(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
 
-class Renderer_Property1 extends RendererBase<Property1?> {
+class Renderer_Property1 extends RendererBase<Property1> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends Property1>() =>
       _propertyMapCache.putIfAbsent(
@@ -443,17 +443,17 @@ class Renderer_Property1 extends RendererBase<Property1?> {
                   isNullValue: (CT_ c) => c.p2 == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_Property2(c.p2, ast, r.template, sink, parent: r);
+                    _render_Property2(c.p2!, ast, r.template, sink, parent: r);
                   },
                 ),
               }) as Map<String, Property<CT_>>;
 
-  Renderer_Property1(Property1? context, RendererBase<Object>? parent,
+  Renderer_Property1(Property1 context, RendererBase<Object>? parent,
       Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<Property1?>? getProperty(String key) {
+  Property<Property1>? getProperty(String key) {
     if (propertyMap<Property1>().containsKey(key)) {
       return propertyMap<Property1>()[key];
     } else {
@@ -462,14 +462,14 @@ class Renderer_Property1 extends RendererBase<Property1?> {
   }
 }
 
-void _render_Property2(Property2? context, List<MustachioNode> ast,
+void _render_Property2(Property2 context, List<MustachioNode> ast,
     Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = Renderer_Property2(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
 
-class Renderer_Property2 extends RendererBase<Property2?> {
+class Renderer_Property2 extends RendererBase<Property2> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends Property2>() =>
       _propertyMapCache.putIfAbsent(
@@ -491,12 +491,12 @@ class Renderer_Property2 extends RendererBase<Property2?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  Renderer_Property2(Property2? context, RendererBase<Object>? parent,
+  Renderer_Property2(Property2 context, RendererBase<Object>? parent,
       Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<Property2?>? getProperty(String key) {
+  Property<Property2>? getProperty(String key) {
     if (propertyMap<Property2>().containsKey(key)) {
       return propertyMap<Property2>()[key];
     } else {
@@ -505,14 +505,14 @@ class Renderer_Property2 extends RendererBase<Property2?> {
   }
 }
 
-void _render_Property3(Property3? context, List<MustachioNode> ast,
+void _render_Property3(Property3 context, List<MustachioNode> ast,
     Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = Renderer_Property3(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
 
-class Renderer_Property3 extends RendererBase<Property3?> {
+class Renderer_Property3 extends RendererBase<Property3> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends Property3>() =>
       _propertyMapCache.putIfAbsent(
@@ -533,12 +533,12 @@ class Renderer_Property3 extends RendererBase<Property3?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  Renderer_Property3(Property3? context, RendererBase<Object>? parent,
+  Renderer_Property3(Property3 context, RendererBase<Object>? parent,
       Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<Property3?>? getProperty(String key) {
+  Property<Property3>? getProperty(String key) {
     if (propertyMap<Property3>().containsKey(key)) {
       return propertyMap<Property3>()[key];
     } else {

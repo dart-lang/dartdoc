@@ -342,7 +342,7 @@ class SimpleRenderer extends RendererBase<Object?> {
 /// An individual property of objects of type [T], including functions for
 /// rendering various types of Mustache nodes.
 @immutable
-class Property<T> {
+class Property<T extends Object?> {
   /// Gets the value of this property on the object [context].
   final Object? Function(T context) getValue;
 

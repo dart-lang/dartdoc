@@ -21,14 +21,14 @@ import 'package:dartdoc/src/mustachio/renderer_base.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'templates.dart';
 
-void _render_Accessor(Accessor? context, List<MustachioNode> ast,
+void _render_Accessor(Accessor context, List<MustachioNode> ast,
     Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = _Renderer_Accessor(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
 
-class _Renderer_Accessor extends RendererBase<Accessor?> {
+class _Renderer_Accessor extends RendererBase<Accessor> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends Accessor>() =>
       _propertyMapCache.putIfAbsent(
@@ -151,7 +151,7 @@ class _Renderer_Accessor extends RendererBase<Accessor?> {
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_ModelElement(
-                        c.enclosingElement, ast, r.template, sink,
+                        c.enclosingElement!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -173,7 +173,7 @@ class _Renderer_Accessor extends RendererBase<Accessor?> {
                   isNullValue: (CT_ c) => c.filePath == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.filePath, ast, r.template, sink,
+                    _render_String(c.filePath!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -202,7 +202,7 @@ class _Renderer_Accessor extends RendererBase<Accessor?> {
                   isNullValue: (CT_ c) => c.href == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.href, ast, r.template, sink, parent: r);
+                    _render_String(c.href!, ast, r.template, sink, parent: r);
                   },
                 ),
                 'isCanonical': Property(
@@ -316,7 +316,7 @@ class _Renderer_Accessor extends RendererBase<Accessor?> {
                   isNullValue: (CT_ c) => c.namePart == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.namePart, ast, r.template, sink,
+                    _render_String(c.namePart!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -385,12 +385,12 @@ class _Renderer_Accessor extends RendererBase<Accessor?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_Accessor(Accessor? context, RendererBase<Object>? parent,
+  _Renderer_Accessor(Accessor context, RendererBase<Object>? parent,
       Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<Accessor?>? getProperty(String key) {
+  Property<Accessor>? getProperty(String key) {
     if (propertyMap<Accessor>().containsKey(key)) {
       return propertyMap<Accessor>()[key];
     } else {
@@ -399,14 +399,14 @@ class _Renderer_Accessor extends RendererBase<Accessor?> {
   }
 }
 
-void _render_Annotation(Annotation? context, List<MustachioNode> ast,
+void _render_Annotation(Annotation context, List<MustachioNode> ast,
     Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = _Renderer_Annotation(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
 
-class _Renderer_Annotation extends RendererBase<Annotation?> {
+class _Renderer_Annotation extends RendererBase<Annotation> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends Annotation>() =>
       _propertyMapCache.putIfAbsent(
@@ -465,7 +465,7 @@ class _Renderer_Annotation extends RendererBase<Annotation?> {
                   isNullValue: (CT_ c) => c.library == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_Library(c.library, ast, r.template, sink,
+                    _render_Library(c.library!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -532,7 +532,7 @@ class _Renderer_Annotation extends RendererBase<Annotation?> {
                   isNullValue: (CT_ c) => c.modelType == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_ElementType(c.modelType, ast, r.template, sink,
+                    _render_ElementType(c.modelType!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -573,12 +573,12 @@ class _Renderer_Annotation extends RendererBase<Annotation?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_Annotation(Annotation? context, RendererBase<Object>? parent,
+  _Renderer_Annotation(Annotation context, RendererBase<Object>? parent,
       Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<Annotation?>? getProperty(String key) {
+  Property<Annotation>? getProperty(String key) {
     if (propertyMap<Annotation>().containsKey(key)) {
       return propertyMap<Annotation>()[key];
     } else {
@@ -587,14 +587,14 @@ class _Renderer_Annotation extends RendererBase<Annotation?> {
   }
 }
 
-void _render_Callable(Callable? context, List<MustachioNode> ast,
+void _render_Callable(Callable context, List<MustachioNode> ast,
     Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = _Renderer_Callable(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
 
-class _Renderer_Callable extends RendererBase<Callable?> {
+class _Renderer_Callable extends RendererBase<Callable> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends Callable>() =>
       _propertyMapCache.putIfAbsent(
@@ -671,12 +671,12 @@ class _Renderer_Callable extends RendererBase<Callable?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_Callable(Callable? context, RendererBase<Object>? parent,
+  _Renderer_Callable(Callable context, RendererBase<Object>? parent,
       Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<Callable?>? getProperty(String key) {
+  Property<Callable>? getProperty(String key) {
     if (propertyMap<Callable>().containsKey(key)) {
       return propertyMap<Callable>()[key];
     } else {
@@ -685,7 +685,7 @@ class _Renderer_Callable extends RendererBase<Callable?> {
   }
 }
 
-class _Renderer_Canonicalization extends RendererBase<Canonicalization?> {
+class _Renderer_Canonicalization extends RendererBase<Canonicalization> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<
           CT_ extends Canonicalization>() =>
@@ -711,7 +711,7 @@ class _Renderer_Canonicalization extends RendererBase<Canonicalization?> {
                   isNullValue: (CT_ c) => c.canonicalLibrary == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_Library(c.canonicalLibrary, ast, r.template, sink,
+                    _render_Library(c.canonicalLibrary!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -749,12 +749,12 @@ class _Renderer_Canonicalization extends RendererBase<Canonicalization?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_Canonicalization(Canonicalization? context,
+  _Renderer_Canonicalization(Canonicalization context,
       RendererBase<Object>? parent, Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<Canonicalization?>? getProperty(String key) {
+  Property<Canonicalization>? getProperty(String key) {
     if (propertyMap<Canonicalization>().containsKey(key)) {
       return propertyMap<Canonicalization>()[key];
     } else {
@@ -763,7 +763,7 @@ class _Renderer_Canonicalization extends RendererBase<Canonicalization?> {
   }
 }
 
-class _Renderer_Categorization extends RendererBase<Categorization?> {
+class _Renderer_Categorization extends RendererBase<Categorization> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends Categorization>() =>
       _propertyMapCache.putIfAbsent(
@@ -860,7 +860,7 @@ class _Renderer_Categorization extends RendererBase<Categorization?> {
                   isNullValue: (CT_ c) => c.image == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.image, ast, r.template, sink, parent: r);
+                    _render_String(c.image!, ast, r.template, sink, parent: r);
                   },
                 ),
                 'samples': Property(
@@ -881,7 +881,8 @@ class _Renderer_Categorization extends RendererBase<Categorization?> {
                   isNullValue: (CT_ c) => c.samples == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.samples, ast, r.template, sink, parent: r);
+                    _render_String(c.samples!, ast, r.template, sink,
+                        parent: r);
                   },
                 ),
                 'subCategoryNames': Property(
@@ -899,12 +900,12 @@ class _Renderer_Categorization extends RendererBase<Categorization?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_Categorization(Categorization? context,
-      RendererBase<Object>? parent, Template template, StringSink sink)
+  _Renderer_Categorization(Categorization context, RendererBase<Object>? parent,
+      Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<Categorization?>? getProperty(String key) {
+  Property<Categorization>? getProperty(String key) {
     if (propertyMap<Categorization>().containsKey(key)) {
       return propertyMap<Categorization>()[key];
     } else {
@@ -913,14 +914,14 @@ class _Renderer_Categorization extends RendererBase<Categorization?> {
   }
 }
 
-void _render_Category(Category? context, List<MustachioNode> ast,
+void _render_Category(Category context, List<MustachioNode> ast,
     Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = _Renderer_Category(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
 
-class _Renderer_Category extends RendererBase<Category?> {
+class _Renderer_Category extends RendererBase<Category> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends Category>() =>
       _propertyMapCache.putIfAbsent(
@@ -1276,7 +1277,7 @@ class _Renderer_Category extends RendererBase<Category?> {
                   isNullValue: (CT_ c) => c.href == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.href, ast, r.template, sink, parent: r);
+                    _render_String(c.href!, ast, r.template, sink, parent: r);
                   },
                 ),
                 'isCanonical': Property(
@@ -1479,12 +1480,12 @@ class _Renderer_Category extends RendererBase<Category?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_Category(Category? context, RendererBase<Object>? parent,
+  _Renderer_Category(Category context, RendererBase<Object>? parent,
       Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<Category?>? getProperty(String key) {
+  Property<Category>? getProperty(String key) {
     if (propertyMap<Category>().containsKey(key)) {
       return propertyMap<Category>()[key];
     } else {
@@ -1493,13 +1494,13 @@ class _Renderer_Category extends RendererBase<Category?> {
   }
 }
 
-String renderCategory(CategoryTemplateData? context, Template template) {
+String renderCategory(CategoryTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_CategoryTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
 }
 
-void _render_CategoryTemplateData(CategoryTemplateData? context,
+void _render_CategoryTemplateData(CategoryTemplateData context,
     List<MustachioNode> ast, Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer =
@@ -1508,7 +1509,7 @@ void _render_CategoryTemplateData(CategoryTemplateData? context,
 }
 
 class _Renderer_CategoryTemplateData
-    extends RendererBase<CategoryTemplateData?> {
+    extends RendererBase<CategoryTemplateData> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<
           CT_ extends CategoryTemplateData>() =>
@@ -1661,12 +1662,12 @@ class _Renderer_CategoryTemplateData
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_CategoryTemplateData(CategoryTemplateData? context,
+  _Renderer_CategoryTemplateData(CategoryTemplateData context,
       RendererBase<Object>? parent, Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<CategoryTemplateData?>? getProperty(String key) {
+  Property<CategoryTemplateData>? getProperty(String key) {
     if (propertyMap<CategoryTemplateData>().containsKey(key)) {
       return propertyMap<CategoryTemplateData>()[key];
     } else {
@@ -1676,13 +1677,13 @@ class _Renderer_CategoryTemplateData
 }
 
 void _render_Class(
-    Class? context, List<MustachioNode> ast, Template template, StringSink sink,
+    Class context, List<MustachioNode> ast, Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = _Renderer_Class(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
 
-class _Renderer_Class extends RendererBase<Class?> {
+class _Renderer_Class extends RendererBase<Class> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends Class>() =>
       _propertyMapCache.putIfAbsent(
@@ -1736,7 +1737,7 @@ class _Renderer_Class extends RendererBase<Class?> {
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_ModelElement(
-                        c.enclosingElement, ast, r.template, sink,
+                        c.enclosingElement!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -1837,7 +1838,7 @@ class _Renderer_Class extends RendererBase<Class?> {
                   isNullValue: (CT_ c) => c.href == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.href, ast, r.template, sink, parent: r);
+                    _render_String(c.href!, ast, r.template, sink, parent: r);
                   },
                 ),
                 'inheritanceChain': Property(
@@ -1849,7 +1850,7 @@ class _Renderer_Class extends RendererBase<Class?> {
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.inheritanceChain.map((e) =>
-                        _render_InheritingContainer(e, ast, r.template, sink,
+                        _render_InheritingContainer(e!, ast, r.template, sink,
                             parent: r));
                   },
                 ),
@@ -1916,12 +1917,12 @@ class _Renderer_Class extends RendererBase<Class?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_Class(Class? context, RendererBase<Object>? parent,
+  _Renderer_Class(Class context, RendererBase<Object>? parent,
       Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<Class?>? getProperty(String key) {
+  Property<Class>? getProperty(String key) {
     if (propertyMap<Class>().containsKey(key)) {
       return propertyMap<Class>()[key];
     } else {
@@ -1930,20 +1931,20 @@ class _Renderer_Class extends RendererBase<Class?> {
   }
 }
 
-String renderClass(ClassTemplateData? context, Template template) {
+String renderClass(ClassTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_ClassTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
 }
 
-void _render_ClassTemplateData(ClassTemplateData? context,
+void _render_ClassTemplateData(ClassTemplateData context,
     List<MustachioNode> ast, Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = _Renderer_ClassTemplateData(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
 
-class _Renderer_ClassTemplateData extends RendererBase<ClassTemplateData?> {
+class _Renderer_ClassTemplateData extends RendererBase<ClassTemplateData> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<
           CT_ extends ClassTemplateData>() =>
@@ -1975,12 +1976,12 @@ class _Renderer_ClassTemplateData extends RendererBase<ClassTemplateData?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_ClassTemplateData(ClassTemplateData? context,
+  _Renderer_ClassTemplateData(ClassTemplateData context,
       RendererBase<Object>? parent, Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<ClassTemplateData?>? getProperty(String key) {
+  Property<ClassTemplateData>? getProperty(String key) {
     if (propertyMap<ClassTemplateData>().containsKey(key)) {
       return propertyMap<ClassTemplateData>()[key];
     } else {
@@ -1989,7 +1990,7 @@ class _Renderer_ClassTemplateData extends RendererBase<ClassTemplateData?> {
   }
 }
 
-class _Renderer_CommentReferable extends RendererBase<CommentReferable?> {
+class _Renderer_CommentReferable extends RendererBase<CommentReferable> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<
           CT_ extends CommentReferable>() =>
@@ -2038,7 +2039,7 @@ class _Renderer_CommentReferable extends RendererBase<CommentReferable?> {
                   isNullValue: (CT_ c) => c.href == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.href, ast, r.template, sink, parent: r);
+                    _render_String(c.href!, ast, r.template, sink, parent: r);
                   },
                 ),
                 'library': Property(
@@ -2059,7 +2060,7 @@ class _Renderer_CommentReferable extends RendererBase<CommentReferable?> {
                   isNullValue: (CT_ c) => c.library == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_Library(c.library, ast, r.template, sink,
+                    _render_Library(c.library!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -2141,12 +2142,12 @@ class _Renderer_CommentReferable extends RendererBase<CommentReferable?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_CommentReferable(CommentReferable? context,
+  _Renderer_CommentReferable(CommentReferable context,
       RendererBase<Object>? parent, Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<CommentReferable?>? getProperty(String key) {
+  Property<CommentReferable>? getProperty(String key) {
     if (propertyMap<CommentReferable>().containsKey(key)) {
       return propertyMap<CommentReferable>()[key];
     } else {
@@ -2155,7 +2156,7 @@ class _Renderer_CommentReferable extends RendererBase<CommentReferable?> {
   }
 }
 
-class _Renderer_Constructable extends RendererBase<Constructable?> {
+class _Renderer_Constructable extends RendererBase<Constructable> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends Constructable>() =>
       _propertyMapCache.putIfAbsent(
@@ -2193,7 +2194,7 @@ class _Renderer_Constructable extends RendererBase<Constructable?> {
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_Constructor(
-                        c.defaultConstructor, ast, r.template, sink,
+                        c.defaultConstructor!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -2249,18 +2250,18 @@ class _Renderer_Constructable extends RendererBase<Constructable?> {
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_Constructor(
-                        c.unnamedConstructor, ast, r.template, sink,
+                        c.unnamedConstructor!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_Constructable(Constructable? context, RendererBase<Object>? parent,
+  _Renderer_Constructable(Constructable context, RendererBase<Object>? parent,
       Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<Constructable?>? getProperty(String key) {
+  Property<Constructable>? getProperty(String key) {
     if (propertyMap<Constructable>().containsKey(key)) {
       return propertyMap<Constructable>()[key];
     } else {
@@ -2269,14 +2270,14 @@ class _Renderer_Constructable extends RendererBase<Constructable?> {
   }
 }
 
-void _render_Constructor(Constructor? context, List<MustachioNode> ast,
+void _render_Constructor(Constructor context, List<MustachioNode> ast,
     Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = _Renderer_Constructor(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
 
-class _Renderer_Constructor extends RendererBase<Constructor?> {
+class _Renderer_Constructor extends RendererBase<Constructor> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends Constructor>() =>
       _propertyMapCache.putIfAbsent(
@@ -2569,7 +2570,7 @@ class _Renderer_Constructor extends RendererBase<Constructor?> {
                   isNullValue: (CT_ c) => c.shortName == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.shortName, ast, r.template, sink,
+                    _render_String(c.shortName!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -2588,12 +2589,12 @@ class _Renderer_Constructor extends RendererBase<Constructor?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_Constructor(Constructor? context, RendererBase<Object>? parent,
+  _Renderer_Constructor(Constructor context, RendererBase<Object>? parent,
       Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<Constructor?>? getProperty(String key) {
+  Property<Constructor>? getProperty(String key) {
     if (propertyMap<Constructor>().containsKey(key)) {
       return propertyMap<Constructor>()[key];
     } else {
@@ -2602,13 +2603,13 @@ class _Renderer_Constructor extends RendererBase<Constructor?> {
   }
 }
 
-String renderConstructor(ConstructorTemplateData? context, Template template) {
+String renderConstructor(ConstructorTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_ConstructorTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
 }
 
-void _render_ConstructorTemplateData(ConstructorTemplateData? context,
+void _render_ConstructorTemplateData(ConstructorTemplateData context,
     List<MustachioNode> ast, Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer =
@@ -2617,7 +2618,7 @@ void _render_ConstructorTemplateData(ConstructorTemplateData? context,
 }
 
 class _Renderer_ConstructorTemplateData
-    extends RendererBase<ConstructorTemplateData?> {
+    extends RendererBase<ConstructorTemplateData> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<
           CT_ extends ConstructorTemplateData>() =>
@@ -2870,12 +2871,12 @@ class _Renderer_ConstructorTemplateData
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_ConstructorTemplateData(ConstructorTemplateData? context,
+  _Renderer_ConstructorTemplateData(ConstructorTemplateData context,
       RendererBase<Object>? parent, Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<ConstructorTemplateData?>? getProperty(String key) {
+  Property<ConstructorTemplateData>? getProperty(String key) {
     if (propertyMap<ConstructorTemplateData>().containsKey(key)) {
       return propertyMap<ConstructorTemplateData>()[key];
     } else {
@@ -2884,14 +2885,14 @@ class _Renderer_ConstructorTemplateData
   }
 }
 
-void _render_Container(Container? context, List<MustachioNode> ast,
+void _render_Container(Container context, List<MustachioNode> ast,
     Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = _Renderer_Container(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
 
-class _Renderer_Container extends RendererBase<Container?> {
+class _Renderer_Container extends RendererBase<Container> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends Container>() =>
       _propertyMapCache.putIfAbsent(
@@ -3008,7 +3009,7 @@ class _Renderer_Container extends RendererBase<Container?> {
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_ModelElement(
-                        c.enclosingElement, ast, r.template, sink,
+                        c.enclosingElement!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -3521,12 +3522,12 @@ class _Renderer_Container extends RendererBase<Container?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_Container(Container? context, RendererBase<Object>? parent,
+  _Renderer_Container(Container context, RendererBase<Object>? parent,
       Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<Container?>? getProperty(String key) {
+  Property<Container>? getProperty(String key) {
     if (propertyMap<Container>().containsKey(key)) {
       return propertyMap<Container>()[key];
     } else {
@@ -3535,14 +3536,14 @@ class _Renderer_Container extends RendererBase<Container?> {
   }
 }
 
-void _render_ContainerAccessor(ContainerAccessor? context,
+void _render_ContainerAccessor(ContainerAccessor context,
     List<MustachioNode> ast, Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = _Renderer_ContainerAccessor(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
 
-class _Renderer_ContainerAccessor extends RendererBase<ContainerAccessor?> {
+class _Renderer_ContainerAccessor extends RendererBase<ContainerAccessor> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<
           CT_ extends ContainerAccessor>() =>
@@ -3584,7 +3585,8 @@ class _Renderer_ContainerAccessor extends RendererBase<ContainerAccessor?> {
                   isNullValue: (CT_ c) => c.enclosingElement == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_Container(c.enclosingElement, ast, r.template, sink,
+                    _render_Container(
+                        c.enclosingElement!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -3621,18 +3623,18 @@ class _Renderer_ContainerAccessor extends RendererBase<ContainerAccessor?> {
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_ContainerAccessor(
-                        c.overriddenElement, ast, r.template, sink,
+                        c.overriddenElement!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_ContainerAccessor(ContainerAccessor? context,
+  _Renderer_ContainerAccessor(ContainerAccessor context,
       RendererBase<Object>? parent, Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<ContainerAccessor?>? getProperty(String key) {
+  Property<ContainerAccessor>? getProperty(String key) {
     if (propertyMap<ContainerAccessor>().containsKey(key)) {
       return propertyMap<ContainerAccessor>()[key];
     } else {
@@ -3641,7 +3643,7 @@ class _Renderer_ContainerAccessor extends RendererBase<ContainerAccessor?> {
   }
 }
 
-class _Renderer_ContainerMember extends RendererBase<ContainerMember?> {
+class _Renderer_ContainerMember extends RendererBase<ContainerMember> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<
           CT_ extends ContainerMember>() =>
@@ -3667,7 +3669,7 @@ class _Renderer_ContainerMember extends RendererBase<ContainerMember?> {
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_Container(
-                        c.canonicalEnclosingContainer, ast, r.template, sink,
+                        c.canonicalEnclosingContainer!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -3690,7 +3692,7 @@ class _Renderer_ContainerMember extends RendererBase<ContainerMember?> {
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_Container(
-                        c.definingEnclosingContainer, ast, r.template, sink,
+                        c.definingEnclosingContainer!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -3740,12 +3742,12 @@ class _Renderer_ContainerMember extends RendererBase<ContainerMember?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_ContainerMember(ContainerMember? context,
+  _Renderer_ContainerMember(ContainerMember context,
       RendererBase<Object>? parent, Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<ContainerMember?>? getProperty(String key) {
+  Property<ContainerMember>? getProperty(String key) {
     if (propertyMap<ContainerMember>().containsKey(key)) {
       return propertyMap<ContainerMember>()[key];
     } else {
@@ -3754,14 +3756,14 @@ class _Renderer_ContainerMember extends RendererBase<ContainerMember?> {
   }
 }
 
-void _render_DefinedElementType(DefinedElementType? context,
+void _render_DefinedElementType(DefinedElementType context,
     List<MustachioNode> ast, Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = _Renderer_DefinedElementType(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
 
-class _Renderer_DefinedElementType extends RendererBase<DefinedElementType?> {
+class _Renderer_DefinedElementType extends RendererBase<DefinedElementType> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<
           CT_ extends DefinedElementType>() =>
@@ -3953,12 +3955,12 @@ class _Renderer_DefinedElementType extends RendererBase<DefinedElementType?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_DefinedElementType(DefinedElementType? context,
+  _Renderer_DefinedElementType(DefinedElementType context,
       RendererBase<Object>? parent, Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<DefinedElementType?>? getProperty(String key) {
+  Property<DefinedElementType>? getProperty(String key) {
     if (propertyMap<DefinedElementType>().containsKey(key)) {
       return propertyMap<DefinedElementType>()[key];
     } else {
@@ -3967,14 +3969,14 @@ class _Renderer_DefinedElementType extends RendererBase<DefinedElementType?> {
   }
 }
 
-void _render_Documentable(Documentable? context, List<MustachioNode> ast,
+void _render_Documentable(Documentable context, List<MustachioNode> ast,
     Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = _Renderer_Documentable(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
 
-class _Renderer_Documentable extends RendererBase<Documentable?> {
+class _Renderer_Documentable extends RendererBase<Documentable> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends Documentable>() =>
       _propertyMapCache.putIfAbsent(
@@ -4013,7 +4015,7 @@ class _Renderer_Documentable extends RendererBase<Documentable?> {
                   isNullValue: (CT_ c) => c.documentation == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.documentation, ast, r.template, sink,
+                    _render_String(c.documentation!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -4035,7 +4037,8 @@ class _Renderer_Documentable extends RendererBase<Documentable?> {
                   isNullValue: (CT_ c) => c.documentationAsHtml == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.documentationAsHtml, ast, r.template, sink,
+                    _render_String(
+                        c.documentationAsHtml!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -4071,7 +4074,7 @@ class _Renderer_Documentable extends RendererBase<Documentable?> {
                   isNullValue: (CT_ c) => c.href == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.href, ast, r.template, sink, parent: r);
+                    _render_String(c.href!, ast, r.template, sink, parent: r);
                   },
                 ),
                 'isDocumented': Property(
@@ -4120,7 +4123,7 @@ class _Renderer_Documentable extends RendererBase<Documentable?> {
                   isNullValue: (CT_ c) => c.oneLineDoc == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.oneLineDoc, ast, r.template, sink,
+                    _render_String(c.oneLineDoc!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -4139,12 +4142,12 @@ class _Renderer_Documentable extends RendererBase<Documentable?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_Documentable(Documentable? context, RendererBase<Object>? parent,
+  _Renderer_Documentable(Documentable context, RendererBase<Object>? parent,
       Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<Documentable?>? getProperty(String key) {
+  Property<Documentable>? getProperty(String key) {
     if (propertyMap<Documentable>().containsKey(key)) {
       return propertyMap<Documentable>()[key];
     } else {
@@ -4154,7 +4157,7 @@ class _Renderer_Documentable extends RendererBase<Documentable?> {
 }
 
 class _Renderer_DocumentationComment
-    extends RendererBase<DocumentationComment?> {
+    extends RendererBase<DocumentationComment> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<
           CT_ extends DocumentationComment>() =>
@@ -4179,7 +4182,8 @@ class _Renderer_DocumentationComment
                   isNullValue: (CT_ c) => c.documentationAsHtml == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.documentationAsHtml, ast, r.template, sink,
+                    _render_String(
+                        c.documentationAsHtml!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -4238,7 +4242,7 @@ class _Renderer_DocumentationComment
                   isNullValue: (CT_ c) => c.documentationLocal == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.documentationLocal, ast, r.template, sink,
+                    _render_String(c.documentationLocal!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -4275,7 +4279,7 @@ class _Renderer_DocumentationComment
                       c.fullyQualifiedNameWithoutLibrary == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.fullyQualifiedNameWithoutLibrary, ast,
+                    _render_String(c.fullyQualifiedNameWithoutLibrary!, ast,
                         r.template, sink,
                         parent: r);
                   },
@@ -4345,18 +4349,18 @@ class _Renderer_DocumentationComment
                   isNullValue: (CT_ c) => c.sourceFileName == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.sourceFileName, ast, r.template, sink,
+                    _render_String(c.sourceFileName!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_DocumentationComment(DocumentationComment? context,
+  _Renderer_DocumentationComment(DocumentationComment context,
       RendererBase<Object>? parent, Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<DocumentationComment?>? getProperty(String key) {
+  Property<DocumentationComment>? getProperty(String key) {
     if (propertyMap<DocumentationComment>().containsKey(key)) {
       return propertyMap<DocumentationComment>()[key];
     } else {
@@ -4365,14 +4369,14 @@ class _Renderer_DocumentationComment
   }
 }
 
-void _render_ElementType(ElementType? context, List<MustachioNode> ast,
+void _render_ElementType(ElementType context, List<MustachioNode> ast,
     Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = _Renderer_ElementType(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
 
-class _Renderer_ElementType extends RendererBase<ElementType?> {
+class _Renderer_ElementType extends RendererBase<ElementType> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends ElementType>() =>
       _propertyMapCache.putIfAbsent(
@@ -4527,7 +4531,7 @@ class _Renderer_ElementType extends RendererBase<ElementType?> {
                   isNullValue: (CT_ c) => c.returnedFrom == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_ElementType(c.returnedFrom, ast, r.template, sink,
+                    _render_ElementType(c.returnedFrom!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -4558,12 +4562,12 @@ class _Renderer_ElementType extends RendererBase<ElementType?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_ElementType(ElementType? context, RendererBase<Object>? parent,
+  _Renderer_ElementType(ElementType context, RendererBase<Object>? parent,
       Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<ElementType?>? getProperty(String key) {
+  Property<ElementType>? getProperty(String key) {
     if (propertyMap<ElementType>().containsKey(key)) {
       return propertyMap<ElementType>()[key];
     } else {
@@ -4573,13 +4577,13 @@ class _Renderer_ElementType extends RendererBase<ElementType?> {
 }
 
 void _render_Enum(
-    Enum? context, List<MustachioNode> ast, Template template, StringSink sink,
+    Enum context, List<MustachioNode> ast, Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = _Renderer_Enum(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
 
-class _Renderer_Enum extends RendererBase<Enum?> {
+class _Renderer_Enum extends RendererBase<Enum> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends Enum>() =>
       _propertyMapCache.putIfAbsent(
@@ -4596,7 +4600,7 @@ class _Renderer_Enum extends RendererBase<Enum?> {
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.inheritanceChain.map((e) =>
-                        _render_InheritingContainer(e, ast, r.template, sink,
+                        _render_InheritingContainer(e!, ast, r.template, sink,
                             parent: r));
                   },
                 ),
@@ -4623,12 +4627,12 @@ class _Renderer_Enum extends RendererBase<Enum?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_Enum(Enum? context, RendererBase<Object>? parent, Template template,
+  _Renderer_Enum(Enum context, RendererBase<Object>? parent, Template template,
       StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<Enum?>? getProperty(String key) {
+  Property<Enum>? getProperty(String key) {
     if (propertyMap<Enum>().containsKey(key)) {
       return propertyMap<Enum>()[key];
     } else {
@@ -4637,20 +4641,20 @@ class _Renderer_Enum extends RendererBase<Enum?> {
   }
 }
 
-String renderEnum(EnumTemplateData? context, Template template) {
+String renderEnum(EnumTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_EnumTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
 }
 
-void _render_EnumTemplateData(EnumTemplateData? context,
-    List<MustachioNode> ast, Template template, StringSink sink,
+void _render_EnumTemplateData(EnumTemplateData context, List<MustachioNode> ast,
+    Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = _Renderer_EnumTemplateData(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
 
-class _Renderer_EnumTemplateData extends RendererBase<EnumTemplateData?> {
+class _Renderer_EnumTemplateData extends RendererBase<EnumTemplateData> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>>
       propertyMap<CT_ extends EnumTemplateData>() =>
@@ -4703,12 +4707,12 @@ class _Renderer_EnumTemplateData extends RendererBase<EnumTemplateData?> {
                     ),
                   }) as Map<String, Property<CT_>>;
 
-  _Renderer_EnumTemplateData(EnumTemplateData? context,
+  _Renderer_EnumTemplateData(EnumTemplateData context,
       RendererBase<Object>? parent, Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<EnumTemplateData?>? getProperty(String key) {
+  Property<EnumTemplateData>? getProperty(String key) {
     if (propertyMap<EnumTemplateData>().containsKey(key)) {
       return propertyMap<EnumTemplateData>()[key];
     } else {
@@ -4717,14 +4721,14 @@ class _Renderer_EnumTemplateData extends RendererBase<EnumTemplateData?> {
   }
 }
 
-void _render_Extension(Extension? context, List<MustachioNode> ast,
+void _render_Extension(Extension context, List<MustachioNode> ast,
     Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = _Renderer_Extension(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
 
-class _Renderer_Extension extends RendererBase<Extension?> {
+class _Renderer_Extension extends RendererBase<Extension> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends Extension>() =>
       _propertyMapCache.putIfAbsent(
@@ -4810,7 +4814,7 @@ class _Renderer_Extension extends RendererBase<Extension?> {
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_ModelElement(
-                        c.enclosingElement, ast, r.template, sink,
+                        c.enclosingElement!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -4928,12 +4932,12 @@ class _Renderer_Extension extends RendererBase<Extension?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_Extension(Extension? context, RendererBase<Object>? parent,
+  _Renderer_Extension(Extension context, RendererBase<Object>? parent,
       Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<Extension?>? getProperty(String key) {
+  Property<Extension>? getProperty(String key) {
     if (propertyMap<Extension>().containsKey(key)) {
       return propertyMap<Extension>()[key];
     } else {
@@ -4942,7 +4946,7 @@ class _Renderer_Extension extends RendererBase<Extension?> {
   }
 }
 
-class _Renderer_ExtensionTarget extends RendererBase<ExtensionTarget?> {
+class _Renderer_ExtensionTarget extends RendererBase<ExtensionTarget> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<
           CT_ extends ExtensionTarget>() =>
@@ -5015,12 +5019,12 @@ class _Renderer_ExtensionTarget extends RendererBase<ExtensionTarget?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_ExtensionTarget(ExtensionTarget? context,
+  _Renderer_ExtensionTarget(ExtensionTarget context,
       RendererBase<Object>? parent, Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<ExtensionTarget?>? getProperty(String key) {
+  Property<ExtensionTarget>? getProperty(String key) {
     if (propertyMap<ExtensionTarget>().containsKey(key)) {
       return propertyMap<ExtensionTarget>()[key];
     } else {
@@ -5030,14 +5034,14 @@ class _Renderer_ExtensionTarget extends RendererBase<ExtensionTarget?> {
 }
 
 String renderExtension<T extends Extension>(
-    ExtensionTemplateData<T>? context, Template template) {
+    ExtensionTemplateData<T> context, Template template) {
   var buffer = StringBuffer();
   _render_ExtensionTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
 }
 
 void _render_ExtensionTemplateData<T extends Extension>(
-    ExtensionTemplateData<T>? context,
+    ExtensionTemplateData<T> context,
     List<MustachioNode> ast,
     Template template,
     StringSink sink,
@@ -5048,7 +5052,7 @@ void _render_ExtensionTemplateData<T extends Extension>(
 }
 
 class _Renderer_ExtensionTemplateData<T extends Extension>
-    extends RendererBase<ExtensionTemplateData<T>?> {
+    extends RendererBase<ExtensionTemplateData<T>> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<T extends Extension,
           CT_ extends ExtensionTemplateData>() =>
@@ -5289,12 +5293,12 @@ class _Renderer_ExtensionTemplateData<T extends Extension>
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_ExtensionTemplateData(ExtensionTemplateData<T>? context,
+  _Renderer_ExtensionTemplateData(ExtensionTemplateData<T> context,
       RendererBase<Object>? parent, Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<ExtensionTemplateData<T>?>? getProperty(String key) {
+  Property<ExtensionTemplateData<T>>? getProperty(String key) {
     if (propertyMap<T, ExtensionTemplateData<T>>().containsKey(key)) {
       return propertyMap<T, ExtensionTemplateData<T>>()[key];
     } else {
@@ -5303,7 +5307,7 @@ class _Renderer_ExtensionTemplateData<T extends Extension>
   }
 }
 
-class _Renderer_Feature extends RendererBase<Feature?> {
+class _Renderer_Feature extends RendererBase<Feature> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends Feature>() =>
       _propertyMapCache.putIfAbsent(
@@ -5357,7 +5361,7 @@ class _Renderer_Feature extends RendererBase<Feature?> {
                   isNullValue: (CT_ c) => c.linkedName == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.linkedName, ast, r.template, sink,
+                    _render_String(c.linkedName!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -5380,7 +5384,7 @@ class _Renderer_Feature extends RendererBase<Feature?> {
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_String(
-                        c.linkedNameWithParameters, ast, r.template, sink,
+                        c.linkedNameWithParameters!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -5402,7 +5406,7 @@ class _Renderer_Feature extends RendererBase<Feature?> {
                   isNullValue: (CT_ c) => c.name == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.name, ast, r.template, sink, parent: r);
+                    _render_String(c.name!, ast, r.template, sink, parent: r);
                   },
                 ),
                 'sortGroup': Property(
@@ -5419,12 +5423,12 @@ class _Renderer_Feature extends RendererBase<Feature?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_Feature(Feature? context, RendererBase<Object>? parent,
+  _Renderer_Feature(Feature context, RendererBase<Object>? parent,
       Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<Feature?>? getProperty(String key) {
+  Property<Feature>? getProperty(String key) {
     if (propertyMap<Feature>().containsKey(key)) {
       return propertyMap<Feature>()[key];
     } else {
@@ -5433,7 +5437,7 @@ class _Renderer_Feature extends RendererBase<Feature?> {
   }
 }
 
-class _Renderer_FeatureSet extends RendererBase<FeatureSet?> {
+class _Renderer_FeatureSet extends RendererBase<FeatureSet> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends FeatureSet>() =>
       _propertyMapCache.putIfAbsent(
@@ -5484,7 +5488,7 @@ class _Renderer_FeatureSet extends RendererBase<FeatureSet?> {
                   isNullValue: (CT_ c) => c.library == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_Library(c.library, ast, r.template, sink,
+                    _render_Library(c.library!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -5503,12 +5507,12 @@ class _Renderer_FeatureSet extends RendererBase<FeatureSet?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_FeatureSet(FeatureSet? context, RendererBase<Object>? parent,
+  _Renderer_FeatureSet(FeatureSet context, RendererBase<Object>? parent,
       Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<FeatureSet?>? getProperty(String key) {
+  Property<FeatureSet>? getProperty(String key) {
     if (propertyMap<FeatureSet>().containsKey(key)) {
       return propertyMap<FeatureSet>()[key];
     } else {
@@ -5518,13 +5522,13 @@ class _Renderer_FeatureSet extends RendererBase<FeatureSet?> {
 }
 
 void _render_Field(
-    Field? context, List<MustachioNode> ast, Template template, StringSink sink,
+    Field context, List<MustachioNode> ast, Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = _Renderer_Field(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
 
-class _Renderer_Field extends RendererBase<Field?> {
+class _Renderer_Field extends RendererBase<Field> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends Field>() =>
       _propertyMapCache.putIfAbsent(
@@ -5688,7 +5692,7 @@ class _Renderer_Field extends RendererBase<Field?> {
                   isNullValue: (CT_ c) => c.getter == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_ContainerAccessor(c.getter, ast, r.template, sink,
+                    _render_ContainerAccessor(c.getter!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -5710,7 +5714,7 @@ class _Renderer_Field extends RendererBase<Field?> {
                   isNullValue: (CT_ c) => c.href == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.href, ast, r.template, sink, parent: r);
+                    _render_String(c.href!, ast, r.template, sink, parent: r);
                   },
                 ),
                 'isConst': Property(
@@ -5853,7 +5857,7 @@ class _Renderer_Field extends RendererBase<Field?> {
                   isNullValue: (CT_ c) => c.setter == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_ContainerAccessor(c.setter, ast, r.template, sink,
+                    _render_ContainerAccessor(c.setter!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -5881,12 +5885,12 @@ class _Renderer_Field extends RendererBase<Field?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_Field(Field? context, RendererBase<Object>? parent,
+  _Renderer_Field(Field context, RendererBase<Object>? parent,
       Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<Field?>? getProperty(String key) {
+  Property<Field>? getProperty(String key) {
     if (propertyMap<Field>().containsKey(key)) {
       return propertyMap<Field>()[key];
     } else {
@@ -5895,13 +5899,13 @@ class _Renderer_Field extends RendererBase<Field?> {
   }
 }
 
-String renderFunction(FunctionTemplateData? context, Template template) {
+String renderFunction(FunctionTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_FunctionTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
 }
 
-void _render_FunctionTemplateData(FunctionTemplateData? context,
+void _render_FunctionTemplateData(FunctionTemplateData context,
     List<MustachioNode> ast, Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer =
@@ -5910,7 +5914,7 @@ void _render_FunctionTemplateData(FunctionTemplateData? context,
 }
 
 class _Renderer_FunctionTemplateData
-    extends RendererBase<FunctionTemplateData?> {
+    extends RendererBase<FunctionTemplateData> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<
           CT_ extends FunctionTemplateData>() =>
@@ -6108,12 +6112,12 @@ class _Renderer_FunctionTemplateData
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_FunctionTemplateData(FunctionTemplateData? context,
+  _Renderer_FunctionTemplateData(FunctionTemplateData context,
       RendererBase<Object>? parent, Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<FunctionTemplateData?>? getProperty(String key) {
+  Property<FunctionTemplateData>? getProperty(String key) {
     if (propertyMap<FunctionTemplateData>().containsKey(key)) {
       return propertyMap<FunctionTemplateData>()[key];
     } else {
@@ -6122,14 +6126,14 @@ class _Renderer_FunctionTemplateData
   }
 }
 
-void _render_FunctionTypedef(FunctionTypedef? context, List<MustachioNode> ast,
+void _render_FunctionTypedef(FunctionTypedef context, List<MustachioNode> ast,
     Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = _Renderer_FunctionTypedef(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
 
-class _Renderer_FunctionTypedef extends RendererBase<FunctionTypedef?> {
+class _Renderer_FunctionTypedef extends RendererBase<FunctionTypedef> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<
           CT_ extends FunctionTypedef>() =>
@@ -6174,12 +6178,12 @@ class _Renderer_FunctionTypedef extends RendererBase<FunctionTypedef?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_FunctionTypedef(FunctionTypedef? context,
+  _Renderer_FunctionTypedef(FunctionTypedef context,
       RendererBase<Object>? parent, Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<FunctionTypedef?>? getProperty(String key) {
+  Property<FunctionTypedef>? getProperty(String key) {
     if (propertyMap<FunctionTypedef>().containsKey(key)) {
       return propertyMap<FunctionTypedef>()[key];
     } else {
@@ -6188,7 +6192,7 @@ class _Renderer_FunctionTypedef extends RendererBase<FunctionTypedef?> {
   }
 }
 
-class _Renderer_GetterSetterCombo extends RendererBase<GetterSetterCombo?> {
+class _Renderer_GetterSetterCombo extends RendererBase<GetterSetterCombo> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<
           CT_ extends GetterSetterCombo>() =>
@@ -6391,7 +6395,7 @@ class _Renderer_GetterSetterCombo extends RendererBase<GetterSetterCombo?> {
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_ModelElement(
-                        c.enclosingElement, ast, r.template, sink,
+                        c.enclosingElement!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -6413,7 +6417,7 @@ class _Renderer_GetterSetterCombo extends RendererBase<GetterSetterCombo?> {
                   isNullValue: (CT_ c) => c.getter == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_Accessor(c.getter, ast, r.template, sink,
+                    _render_Accessor(c.getter!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -6548,7 +6552,7 @@ class _Renderer_GetterSetterCombo extends RendererBase<GetterSetterCombo?> {
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_String(
-                        c.linkedParamsNoMetadata, ast, r.template, sink,
+                        c.linkedParamsNoMetadata!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -6592,7 +6596,7 @@ class _Renderer_GetterSetterCombo extends RendererBase<GetterSetterCombo?> {
                   isNullValue: (CT_ c) => c.oneLineDoc == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.oneLineDoc, ast, r.template, sink,
+                    _render_String(c.oneLineDoc!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -6653,7 +6657,7 @@ class _Renderer_GetterSetterCombo extends RendererBase<GetterSetterCombo?> {
                   isNullValue: (CT_ c) => c.setter == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_Accessor(c.setter, ast, r.template, sink,
+                    _render_Accessor(c.setter!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -6666,12 +6670,12 @@ class _Renderer_GetterSetterCombo extends RendererBase<GetterSetterCombo?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_GetterSetterCombo(GetterSetterCombo? context,
+  _Renderer_GetterSetterCombo(GetterSetterCombo context,
       RendererBase<Object>? parent, Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<GetterSetterCombo?>? getProperty(String key) {
+  Property<GetterSetterCombo>? getProperty(String key) {
     if (propertyMap<GetterSetterCombo>().containsKey(key)) {
       return propertyMap<GetterSetterCombo>()[key];
     } else {
@@ -6680,7 +6684,7 @@ class _Renderer_GetterSetterCombo extends RendererBase<GetterSetterCombo?> {
   }
 }
 
-class _Renderer_Indexable extends RendererBase<Indexable?> {
+class _Renderer_Indexable extends RendererBase<Indexable> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends Indexable>() =>
       _propertyMapCache.putIfAbsent(
@@ -6705,7 +6709,7 @@ class _Renderer_Indexable extends RendererBase<Indexable?> {
                   isNullValue: (CT_ c) => c.href == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.href, ast, r.template, sink, parent: r);
+                    _render_String(c.href!, ast, r.template, sink, parent: r);
                   },
                 ),
                 'kind': Property(
@@ -6743,12 +6747,12 @@ class _Renderer_Indexable extends RendererBase<Indexable?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_Indexable(Indexable? context, RendererBase<Object>? parent,
+  _Renderer_Indexable(Indexable context, RendererBase<Object>? parent,
       Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<Indexable?>? getProperty(String key) {
+  Property<Indexable>? getProperty(String key) {
     if (propertyMap<Indexable>().containsKey(key)) {
       return propertyMap<Indexable>()[key];
     } else {
@@ -6757,7 +6761,7 @@ class _Renderer_Indexable extends RendererBase<Indexable?> {
   }
 }
 
-class _Renderer_Inheritable extends RendererBase<Inheritable?> {
+class _Renderer_Inheritable extends RendererBase<Inheritable> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends Inheritable>() =>
       _propertyMapCache.putIfAbsent(
@@ -6781,7 +6785,7 @@ class _Renderer_Inheritable extends RendererBase<Inheritable?> {
                   isNullValue: (CT_ c) => c.canonicalLibrary == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_Library(c.canonicalLibrary, ast, r.template, sink,
+                    _render_Library(c.canonicalLibrary!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -6807,7 +6811,7 @@ class _Renderer_Inheritable extends RendererBase<Inheritable?> {
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.inheritance.map((e) => _render_InheritingContainer(
-                        e, ast, r.template, sink,
+                        e!, ast, r.template, sink,
                         parent: r));
                   },
                 ),
@@ -6868,12 +6872,12 @@ class _Renderer_Inheritable extends RendererBase<Inheritable?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_Inheritable(Inheritable? context, RendererBase<Object>? parent,
+  _Renderer_Inheritable(Inheritable context, RendererBase<Object>? parent,
       Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<Inheritable?>? getProperty(String key) {
+  Property<Inheritable>? getProperty(String key) {
     if (propertyMap<Inheritable>().containsKey(key)) {
       return propertyMap<Inheritable>()[key];
     } else {
@@ -6882,14 +6886,14 @@ class _Renderer_Inheritable extends RendererBase<Inheritable?> {
   }
 }
 
-void _render_InheritingContainer(InheritingContainer? context,
+void _render_InheritingContainer(InheritingContainer context,
     List<MustachioNode> ast, Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = _Renderer_InheritingContainer(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
 
-class _Renderer_InheritingContainer extends RendererBase<InheritingContainer?> {
+class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<
           CT_ extends InheritingContainer>() =>
@@ -7016,7 +7020,7 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer?> {
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_ModelElement(
-                        c.enclosingElement, ast, r.template, sink,
+                        c.enclosingElement!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -7094,7 +7098,7 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer?> {
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.inheritanceChain.map((e) =>
-                        _render_InheritingContainer(e, ast, r.template, sink,
+                        _render_InheritingContainer(e!, ast, r.template, sink,
                             parent: r));
                   },
                 ),
@@ -7321,7 +7325,7 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer?> {
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_DefinedElementType(
-                        c.supertype, ast, r.template, sink,
+                        c.supertype!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -7340,12 +7344,12 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_InheritingContainer(InheritingContainer? context,
+  _Renderer_InheritingContainer(InheritingContainer context,
       RendererBase<Object>? parent, Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<InheritingContainer?>? getProperty(String key) {
+  Property<InheritingContainer>? getProperty(String key) {
     if (propertyMap<InheritingContainer>().containsKey(key)) {
       return propertyMap<InheritingContainer>()[key];
     } else {
@@ -7355,7 +7359,7 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer?> {
 }
 
 class _Renderer_InheritingContainerTemplateData<T extends InheritingContainer>
-    extends RendererBase<InheritingContainerTemplateData<T>?> {
+    extends RendererBase<InheritingContainerTemplateData<T>> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<T extends InheritingContainer,
           CT_ extends InheritingContainerTemplateData>() =>
@@ -7549,7 +7553,7 @@ class _Renderer_InheritingContainerTemplateData<T extends InheritingContainer>
                   isNullValue: (CT_ c) => c.objectType == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_Class(c.objectType, ast, r.template, sink,
+                    _render_Class(c.objectType!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -7644,14 +7648,14 @@ class _Renderer_InheritingContainerTemplateData<T extends InheritingContainer>
               }) as Map<String, Property<CT_>>;
 
   _Renderer_InheritingContainerTemplateData(
-      InheritingContainerTemplateData<T>? context,
+      InheritingContainerTemplateData<T> context,
       RendererBase<Object>? parent,
       Template template,
       StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<InheritingContainerTemplateData<T>?>? getProperty(String key) {
+  Property<InheritingContainerTemplateData<T>>? getProperty(String key) {
     if (propertyMap<T, InheritingContainerTemplateData<T>>().containsKey(key)) {
       return propertyMap<T, InheritingContainerTemplateData<T>>()[key];
     } else {
@@ -7660,14 +7664,14 @@ class _Renderer_InheritingContainerTemplateData<T extends InheritingContainer>
   }
 }
 
-void _render_LanguageFeature(LanguageFeature? context, List<MustachioNode> ast,
+void _render_LanguageFeature(LanguageFeature context, List<MustachioNode> ast,
     Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = _Renderer_LanguageFeature(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
 
-class _Renderer_LanguageFeature extends RendererBase<LanguageFeature?> {
+class _Renderer_LanguageFeature extends RendererBase<LanguageFeature> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<
           CT_ extends LanguageFeature>() =>
@@ -7693,7 +7697,7 @@ class _Renderer_LanguageFeature extends RendererBase<LanguageFeature?> {
                   isNullValue: (CT_ c) => c.featureDescription == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.featureDescription, ast, r.template, sink,
+                    _render_String(c.featureDescription!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -7737,7 +7741,7 @@ class _Renderer_LanguageFeature extends RendererBase<LanguageFeature?> {
                   isNullValue: (CT_ c) => c.featureUrl == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.featureUrl, ast, r.template, sink,
+                    _render_String(c.featureUrl!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -7764,12 +7768,12 @@ class _Renderer_LanguageFeature extends RendererBase<LanguageFeature?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_LanguageFeature(LanguageFeature? context,
+  _Renderer_LanguageFeature(LanguageFeature context,
       RendererBase<Object>? parent, Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<LanguageFeature?>? getProperty(String key) {
+  Property<LanguageFeature>? getProperty(String key) {
     if (propertyMap<LanguageFeature>().containsKey(key)) {
       return propertyMap<LanguageFeature>()[key];
     } else {
@@ -7778,14 +7782,14 @@ class _Renderer_LanguageFeature extends RendererBase<LanguageFeature?> {
   }
 }
 
-void _render_Library(Library? context, List<MustachioNode> ast,
+void _render_Library(Library context, List<MustachioNode> ast,
     Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = _Renderer_Library(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
 
-class _Renderer_Library extends RendererBase<Library?> {
+class _Renderer_Library extends RendererBase<Library> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends Library>() =>
       _propertyMapCache.putIfAbsent(
@@ -7841,7 +7845,7 @@ class _Renderer_Library extends RendererBase<Library?> {
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.canonicalFor.map((e) =>
-                        _render_String(e, ast, r.template, sink, parent: r));
+                        _render_String(e!, ast, r.template, sink, parent: r));
                   },
                 ),
                 'characterLocation': Property(
@@ -7952,7 +7956,7 @@ class _Renderer_Library extends RendererBase<Library?> {
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_ModelElement(
-                        c.enclosingElement, ast, r.template, sink,
+                        c.enclosingElement!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -8067,7 +8071,7 @@ class _Renderer_Library extends RendererBase<Library?> {
                   isNullValue: (CT_ c) => c.href == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.href, ast, r.template, sink, parent: r);
+                    _render_String(c.href!, ast, r.template, sink, parent: r);
                   },
                 ),
                 'inheritanceManager': Property(
@@ -8385,12 +8389,12 @@ class _Renderer_Library extends RendererBase<Library?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_Library(Library? context, RendererBase<Object>? parent,
+  _Renderer_Library(Library context, RendererBase<Object>? parent,
       Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<Library?>? getProperty(String key) {
+  Property<Library>? getProperty(String key) {
     if (propertyMap<Library>().containsKey(key)) {
       return propertyMap<Library>()[key];
     } else {
@@ -8399,14 +8403,14 @@ class _Renderer_Library extends RendererBase<Library?> {
   }
 }
 
-void _render_LibraryContainer(LibraryContainer? context,
-    List<MustachioNode> ast, Template template, StringSink sink,
+void _render_LibraryContainer(LibraryContainer context, List<MustachioNode> ast,
+    Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = _Renderer_LibraryContainer(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
 
-class _Renderer_LibraryContainer extends RendererBase<LibraryContainer?> {
+class _Renderer_LibraryContainer extends RendererBase<LibraryContainer> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<
           CT_ extends LibraryContainer>() =>
@@ -8423,7 +8427,7 @@ class _Renderer_LibraryContainer extends RendererBase<LibraryContainer?> {
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.containerOrder.map((e) =>
-                        _render_String(e, ast, r.template, sink, parent: r));
+                        _render_String(e!, ast, r.template, sink, parent: r));
                   },
                 ),
                 'enclosingName': Property(
@@ -8529,17 +8533,18 @@ class _Renderer_LibraryContainer extends RendererBase<LibraryContainer?> {
                   isNullValue: (CT_ c) => c.sortKey == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.sortKey, ast, r.template, sink, parent: r);
+                    _render_String(c.sortKey!, ast, r.template, sink,
+                        parent: r);
                   },
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_LibraryContainer(LibraryContainer? context,
+  _Renderer_LibraryContainer(LibraryContainer context,
       RendererBase<Object>? parent, Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<LibraryContainer?>? getProperty(String key) {
+  Property<LibraryContainer>? getProperty(String key) {
     if (propertyMap<LibraryContainer>().containsKey(key)) {
       return propertyMap<LibraryContainer>()[key];
     } else {
@@ -8548,20 +8553,20 @@ class _Renderer_LibraryContainer extends RendererBase<LibraryContainer?> {
   }
 }
 
-String renderLibrary(LibraryTemplateData? context, Template template) {
+String renderLibrary(LibraryTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_LibraryTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
 }
 
-void _render_LibraryTemplateData(LibraryTemplateData? context,
+void _render_LibraryTemplateData(LibraryTemplateData context,
     List<MustachioNode> ast, Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = _Renderer_LibraryTemplateData(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
 
-class _Renderer_LibraryTemplateData extends RendererBase<LibraryTemplateData?> {
+class _Renderer_LibraryTemplateData extends RendererBase<LibraryTemplateData> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<
           CT_ extends LibraryTemplateData>() =>
@@ -8736,12 +8741,12 @@ class _Renderer_LibraryTemplateData extends RendererBase<LibraryTemplateData?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_LibraryTemplateData(LibraryTemplateData? context,
+  _Renderer_LibraryTemplateData(LibraryTemplateData context,
       RendererBase<Object>? parent, Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<LibraryTemplateData?>? getProperty(String key) {
+  Property<LibraryTemplateData>? getProperty(String key) {
     if (propertyMap<LibraryTemplateData>().containsKey(key)) {
       return propertyMap<LibraryTemplateData>()[key];
     } else {
@@ -8750,7 +8755,7 @@ class _Renderer_LibraryTemplateData extends RendererBase<LibraryTemplateData?> {
   }
 }
 
-class _Renderer_Locatable extends RendererBase<Locatable?> {
+class _Renderer_Locatable extends RendererBase<Locatable> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends Locatable>() =>
       _propertyMapCache.putIfAbsent(
@@ -8817,7 +8822,7 @@ class _Renderer_Locatable extends RendererBase<Locatable?> {
                   isNullValue: (CT_ c) => c.href == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.href, ast, r.template, sink, parent: r);
+                    _render_String(c.href!, ast, r.template, sink, parent: r);
                   },
                 ),
                 'location': Property(
@@ -8844,12 +8849,12 @@ class _Renderer_Locatable extends RendererBase<Locatable?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_Locatable(Locatable? context, RendererBase<Object>? parent,
+  _Renderer_Locatable(Locatable context, RendererBase<Object>? parent,
       Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<Locatable?>? getProperty(String key) {
+  Property<Locatable>? getProperty(String key) {
     if (propertyMap<Locatable>().containsKey(key)) {
       return propertyMap<Locatable>()[key];
     } else {
@@ -8859,7 +8864,7 @@ class _Renderer_Locatable extends RendererBase<Locatable?> {
 }
 
 class _Renderer_MarkdownFileDocumentation
-    extends RendererBase<MarkdownFileDocumentation?> {
+    extends RendererBase<MarkdownFileDocumentation> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<
           CT_ extends MarkdownFileDocumentation>() =>
@@ -8906,7 +8911,8 @@ class _Renderer_MarkdownFileDocumentation
                   isNullValue: (CT_ c) => c.documentationAsHtml == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.documentationAsHtml, ast, r.template, sink,
+                    _render_String(
+                        c.documentationAsHtml!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -9009,18 +9015,18 @@ class _Renderer_MarkdownFileDocumentation
                   isNullValue: (CT_ c) => c.oneLineDoc == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.oneLineDoc, ast, r.template, sink,
+                    _render_String(c.oneLineDoc!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_MarkdownFileDocumentation(MarkdownFileDocumentation? context,
+  _Renderer_MarkdownFileDocumentation(MarkdownFileDocumentation context,
       RendererBase<Object>? parent, Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<MarkdownFileDocumentation?>? getProperty(String key) {
+  Property<MarkdownFileDocumentation>? getProperty(String key) {
     if (propertyMap<MarkdownFileDocumentation>().containsKey(key)) {
       return propertyMap<MarkdownFileDocumentation>()[key];
     } else {
@@ -9029,14 +9035,14 @@ class _Renderer_MarkdownFileDocumentation
   }
 }
 
-void _render_Method(Method? context, List<MustachioNode> ast, Template template,
-    StringSink sink,
+void _render_Method(
+    Method context, List<MustachioNode> ast, Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = _Renderer_Method(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
 
-class _Renderer_Method extends RendererBase<Method?> {
+class _Renderer_Method extends RendererBase<Method> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends Method>() =>
       _propertyMapCache.putIfAbsent(
@@ -9093,7 +9099,7 @@ class _Renderer_Method extends RendererBase<Method?> {
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_ModelElement(
-                        c.enclosingElement, ast, r.template, sink,
+                        c.enclosingElement!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -9172,7 +9178,7 @@ class _Renderer_Method extends RendererBase<Method?> {
                   isNullValue: (CT_ c) => c.href == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.href, ast, r.template, sink, parent: r);
+                    _render_String(c.href!, ast, r.template, sink, parent: r);
                   },
                 ),
                 'isCovariant': Property(
@@ -9278,7 +9284,7 @@ class _Renderer_Method extends RendererBase<Method?> {
                   isNullValue: (CT_ c) => c.overriddenElement == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_Method(c.overriddenElement, ast, r.template, sink,
+                    _render_Method(c.overriddenElement!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -9310,12 +9316,12 @@ class _Renderer_Method extends RendererBase<Method?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_Method(Method? context, RendererBase<Object>? parent,
+  _Renderer_Method(Method context, RendererBase<Object>? parent,
       Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<Method?>? getProperty(String key) {
+  Property<Method>? getProperty(String key) {
     if (propertyMap<Method>().containsKey(key)) {
       return propertyMap<Method>()[key];
     } else {
@@ -9324,20 +9330,20 @@ class _Renderer_Method extends RendererBase<Method?> {
   }
 }
 
-String renderMethod(MethodTemplateData? context, Template template) {
+String renderMethod(MethodTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_MethodTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
 }
 
-void _render_MethodTemplateData(MethodTemplateData? context,
+void _render_MethodTemplateData(MethodTemplateData context,
     List<MustachioNode> ast, Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = _Renderer_MethodTemplateData(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
 
-class _Renderer_MethodTemplateData extends RendererBase<MethodTemplateData?> {
+class _Renderer_MethodTemplateData extends RendererBase<MethodTemplateData> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<
           CT_ extends MethodTemplateData>() =>
@@ -9567,12 +9573,12 @@ class _Renderer_MethodTemplateData extends RendererBase<MethodTemplateData?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_MethodTemplateData(MethodTemplateData? context,
+  _Renderer_MethodTemplateData(MethodTemplateData context,
       RendererBase<Object>? parent, Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<MethodTemplateData?>? getProperty(String key) {
+  Property<MethodTemplateData>? getProperty(String key) {
     if (propertyMap<MethodTemplateData>().containsKey(key)) {
       return propertyMap<MethodTemplateData>()[key];
     } else {
@@ -9581,7 +9587,7 @@ class _Renderer_MethodTemplateData extends RendererBase<MethodTemplateData?> {
   }
 }
 
-class _Renderer_MixedInTypes extends RendererBase<MixedInTypes?> {
+class _Renderer_MixedInTypes extends RendererBase<MixedInTypes> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends MixedInTypes>() =>
       _propertyMapCache.putIfAbsent(
@@ -9629,12 +9635,12 @@ class _Renderer_MixedInTypes extends RendererBase<MixedInTypes?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_MixedInTypes(MixedInTypes? context, RendererBase<Object>? parent,
+  _Renderer_MixedInTypes(MixedInTypes context, RendererBase<Object>? parent,
       Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<MixedInTypes?>? getProperty(String key) {
+  Property<MixedInTypes>? getProperty(String key) {
     if (propertyMap<MixedInTypes>().containsKey(key)) {
       return propertyMap<MixedInTypes>()[key];
     } else {
@@ -9644,13 +9650,13 @@ class _Renderer_MixedInTypes extends RendererBase<MixedInTypes?> {
 }
 
 void _render_Mixin(
-    Mixin? context, List<MustachioNode> ast, Template template, StringSink sink,
+    Mixin context, List<MustachioNode> ast, Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = _Renderer_Mixin(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
 
-class _Renderer_Mixin extends RendererBase<Mixin?> {
+class _Renderer_Mixin extends RendererBase<Mixin> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends Mixin>() =>
       _propertyMapCache.putIfAbsent(
@@ -9703,7 +9709,7 @@ class _Renderer_Mixin extends RendererBase<Mixin?> {
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.inheritanceChain.map((e) =>
-                        _render_InheritingContainer(e, ast, r.template, sink,
+                        _render_InheritingContainer(e!, ast, r.template, sink,
                             parent: r));
                   },
                 ),
@@ -9757,12 +9763,12 @@ class _Renderer_Mixin extends RendererBase<Mixin?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_Mixin(Mixin? context, RendererBase<Object>? parent,
+  _Renderer_Mixin(Mixin context, RendererBase<Object>? parent,
       Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<Mixin?>? getProperty(String key) {
+  Property<Mixin>? getProperty(String key) {
     if (propertyMap<Mixin>().containsKey(key)) {
       return propertyMap<Mixin>()[key];
     } else {
@@ -9771,20 +9777,20 @@ class _Renderer_Mixin extends RendererBase<Mixin?> {
   }
 }
 
-String renderMixin(MixinTemplateData? context, Template template) {
+String renderMixin(MixinTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_MixinTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
 }
 
-void _render_MixinTemplateData(MixinTemplateData? context,
+void _render_MixinTemplateData(MixinTemplateData context,
     List<MustachioNode> ast, Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = _Renderer_MixinTemplateData(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
 
-class _Renderer_MixinTemplateData extends RendererBase<MixinTemplateData?> {
+class _Renderer_MixinTemplateData extends RendererBase<MixinTemplateData> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<
           CT_ extends MixinTemplateData>() =>
@@ -9837,12 +9843,12 @@ class _Renderer_MixinTemplateData extends RendererBase<MixinTemplateData?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_MixinTemplateData(MixinTemplateData? context,
+  _Renderer_MixinTemplateData(MixinTemplateData context,
       RendererBase<Object>? parent, Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<MixinTemplateData?>? getProperty(String key) {
+  Property<MixinTemplateData>? getProperty(String key) {
     if (propertyMap<MixinTemplateData>().containsKey(key)) {
       return propertyMap<MixinTemplateData>()[key];
     } else {
@@ -9851,7 +9857,7 @@ class _Renderer_MixinTemplateData extends RendererBase<MixinTemplateData?> {
   }
 }
 
-class _Renderer_ModelBuilder extends RendererBase<ModelBuilder?> {
+class _Renderer_ModelBuilder extends RendererBase<ModelBuilder> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends ModelBuilder>() =>
       _propertyMapCache.putIfAbsent(
@@ -9886,12 +9892,12 @@ class _Renderer_ModelBuilder extends RendererBase<ModelBuilder?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_ModelBuilder(ModelBuilder? context, RendererBase<Object>? parent,
+  _Renderer_ModelBuilder(ModelBuilder context, RendererBase<Object>? parent,
       Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<ModelBuilder?>? getProperty(String key) {
+  Property<ModelBuilder>? getProperty(String key) {
     if (propertyMap<ModelBuilder>().containsKey(key)) {
       return propertyMap<ModelBuilder>()[key];
     } else {
@@ -9900,14 +9906,14 @@ class _Renderer_ModelBuilder extends RendererBase<ModelBuilder?> {
   }
 }
 
-void _render_ModelElement(ModelElement? context, List<MustachioNode> ast,
+void _render_ModelElement(ModelElement context, List<MustachioNode> ast,
     Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = _Renderer_ModelElement(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
 
-class _Renderer_ModelElement extends RendererBase<ModelElement?> {
+class _Renderer_ModelElement extends RendererBase<ModelElement> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends ModelElement>() =>
       _propertyMapCache.putIfAbsent(
@@ -9967,7 +9973,7 @@ class _Renderer_ModelElement extends RendererBase<ModelElement?> {
                   isNullValue: (CT_ c) => c.canonicalLibrary == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_Library(c.canonicalLibrary, ast, r.template, sink,
+                    _render_Library(c.canonicalLibrary!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -9990,7 +9996,7 @@ class _Renderer_ModelElement extends RendererBase<ModelElement?> {
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_ModelElement(
-                        c.canonicalModelElement, ast, r.template, sink,
+                        c.canonicalModelElement!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -10105,7 +10111,7 @@ class _Renderer_ModelElement extends RendererBase<ModelElement?> {
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.displayedCategories.map((e) =>
-                        _render_Category(e, ast, r.template, sink, parent: r));
+                        _render_Category(e!, ast, r.template, sink, parent: r));
                   },
                 ),
                 'documentation': Property(
@@ -10275,7 +10281,7 @@ class _Renderer_ModelElement extends RendererBase<ModelElement?> {
                   isNullValue: (CT_ c) => c.filePath == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.filePath, ast, r.template, sink,
+                    _render_String(c.filePath!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -10420,7 +10426,7 @@ class _Renderer_ModelElement extends RendererBase<ModelElement?> {
                   isNullValue: (CT_ c) => c.href == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.href, ast, r.template, sink, parent: r);
+                    _render_String(c.href!, ast, r.template, sink, parent: r);
                   },
                 ),
                 'htmlId': Property(
@@ -10588,7 +10594,7 @@ class _Renderer_ModelElement extends RendererBase<ModelElement?> {
                   isNullValue: (CT_ c) => c.library == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_Library(c.library, ast, r.template, sink,
+                    _render_Library(c.library!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -10677,7 +10683,7 @@ class _Renderer_ModelElement extends RendererBase<ModelElement?> {
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_String(
-                        c.linkedParamsNoMetadata, ast, r.template, sink,
+                        c.linkedParamsNoMetadata!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -10789,7 +10795,7 @@ class _Renderer_ModelElement extends RendererBase<ModelElement?> {
                   isNullValue: (CT_ c) => c.oneLineDoc == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.oneLineDoc, ast, r.template, sink,
+                    _render_String(c.oneLineDoc!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -10823,7 +10829,7 @@ class _Renderer_ModelElement extends RendererBase<ModelElement?> {
                   isNullValue: (CT_ c) => c.package == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_Package(c.package, ast, r.template, sink,
+                    _render_Package(c.package!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -10932,12 +10938,12 @@ class _Renderer_ModelElement extends RendererBase<ModelElement?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_ModelElement(ModelElement? context, RendererBase<Object>? parent,
+  _Renderer_ModelElement(ModelElement context, RendererBase<Object>? parent,
       Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<ModelElement?>? getProperty(String key) {
+  Property<ModelElement>? getProperty(String key) {
     if (propertyMap<ModelElement>().containsKey(key)) {
       return propertyMap<ModelElement>()[key];
     } else {
@@ -10946,14 +10952,14 @@ class _Renderer_ModelElement extends RendererBase<ModelElement?> {
   }
 }
 
-void _render_ModelFunction(ModelFunction? context, List<MustachioNode> ast,
+void _render_ModelFunction(ModelFunction context, List<MustachioNode> ast,
     Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = _Renderer_ModelFunction(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
 
-class _Renderer_ModelFunction extends RendererBase<ModelFunction?> {
+class _Renderer_ModelFunction extends RendererBase<ModelFunction> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends ModelFunction>() =>
       _propertyMapCache.putIfAbsent(
@@ -11005,12 +11011,12 @@ class _Renderer_ModelFunction extends RendererBase<ModelFunction?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_ModelFunction(ModelFunction? context, RendererBase<Object>? parent,
+  _Renderer_ModelFunction(ModelFunction context, RendererBase<Object>? parent,
       Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<ModelFunction?>? getProperty(String key) {
+  Property<ModelFunction>? getProperty(String key) {
     if (propertyMap<ModelFunction>().containsKey(key)) {
       return propertyMap<ModelFunction>()[key];
     } else {
@@ -11019,14 +11025,14 @@ class _Renderer_ModelFunction extends RendererBase<ModelFunction?> {
   }
 }
 
-void _render_ModelFunctionTyped(ModelFunctionTyped? context,
+void _render_ModelFunctionTyped(ModelFunctionTyped context,
     List<MustachioNode> ast, Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = _Renderer_ModelFunctionTyped(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
 
-class _Renderer_ModelFunctionTyped extends RendererBase<ModelFunctionTyped?> {
+class _Renderer_ModelFunctionTyped extends RendererBase<ModelFunctionTyped> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<
           CT_ extends ModelFunctionTyped>() =>
@@ -11068,7 +11074,7 @@ class _Renderer_ModelFunctionTyped extends RendererBase<ModelFunctionTyped?> {
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_ModelElement(
-                        c.enclosingElement, ast, r.template, sink,
+                        c.enclosingElement!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -11112,7 +11118,7 @@ class _Renderer_ModelFunctionTyped extends RendererBase<ModelFunctionTyped?> {
                   isNullValue: (CT_ c) => c.href == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.href, ast, r.template, sink, parent: r);
+                    _render_String(c.href!, ast, r.template, sink, parent: r);
                   },
                 ),
                 'isInherited': Property(
@@ -11229,12 +11235,12 @@ class _Renderer_ModelFunctionTyped extends RendererBase<ModelFunctionTyped?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_ModelFunctionTyped(ModelFunctionTyped? context,
+  _Renderer_ModelFunctionTyped(ModelFunctionTyped context,
       RendererBase<Object>? parent, Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<ModelFunctionTyped?>? getProperty(String key) {
+  Property<ModelFunctionTyped>? getProperty(String key) {
     if (propertyMap<ModelFunctionTyped>().containsKey(key)) {
       return propertyMap<ModelFunctionTyped>()[key];
     } else {
@@ -11243,7 +11249,7 @@ class _Renderer_ModelFunctionTyped extends RendererBase<ModelFunctionTyped?> {
   }
 }
 
-class _Renderer_Nameable extends RendererBase<Nameable?> {
+class _Renderer_Nameable extends RendererBase<Nameable> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends Nameable>() =>
       _propertyMapCache.putIfAbsent(
@@ -11311,7 +11317,7 @@ class _Renderer_Nameable extends RendererBase<Nameable?> {
                   isNullValue: (CT_ c) => c.namePart == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.namePart, ast, r.template, sink,
+                    _render_String(c.namePart!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -11330,12 +11336,12 @@ class _Renderer_Nameable extends RendererBase<Nameable?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_Nameable(Nameable? context, RendererBase<Object>? parent,
+  _Renderer_Nameable(Nameable context, RendererBase<Object>? parent,
       Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<Nameable?>? getProperty(String key) {
+  Property<Nameable>? getProperty(String key) {
     if (propertyMap<Nameable>().containsKey(key)) {
       return propertyMap<Nameable>()[key];
     } else {
@@ -11344,7 +11350,7 @@ class _Renderer_Nameable extends RendererBase<Nameable?> {
   }
 }
 
-class _Renderer_Object extends RendererBase<Object?> {
+class _Renderer_Object extends RendererBase<Object> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends Object>() =>
       _propertyMapCache.putIfAbsent(
@@ -11364,12 +11370,12 @@ class _Renderer_Object extends RendererBase<Object?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_Object(Object? context, RendererBase<Object>? parent,
+  _Renderer_Object(Object context, RendererBase<Object>? parent,
       Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<Object?>? getProperty(String key) {
+  Property<Object>? getProperty(String key) {
     if (propertyMap<Object>().containsKey(key)) {
       return propertyMap<Object>()[key];
     } else {
@@ -11378,14 +11384,14 @@ class _Renderer_Object extends RendererBase<Object?> {
   }
 }
 
-void _render_Operator(Operator? context, List<MustachioNode> ast,
+void _render_Operator(Operator context, List<MustachioNode> ast,
     Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = _Renderer_Operator(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
 
-class _Renderer_Operator extends RendererBase<Operator?> {
+class _Renderer_Operator extends RendererBase<Operator> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends Operator>() =>
       _propertyMapCache.putIfAbsent(
@@ -11488,12 +11494,12 @@ class _Renderer_Operator extends RendererBase<Operator?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_Operator(Operator? context, RendererBase<Object>? parent,
+  _Renderer_Operator(Operator context, RendererBase<Object>? parent,
       Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<Operator?>? getProperty(String key) {
+  Property<Operator>? getProperty(String key) {
     if (propertyMap<Operator>().containsKey(key)) {
       return propertyMap<Operator>()[key];
     } else {
@@ -11502,14 +11508,14 @@ class _Renderer_Operator extends RendererBase<Operator?> {
   }
 }
 
-void _render_Package(Package? context, List<MustachioNode> ast,
+void _render_Package(Package context, List<MustachioNode> ast,
     Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = _Renderer_Package(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
 
-class _Renderer_Package extends RendererBase<Package?> {
+class _Renderer_Package extends RendererBase<Package> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends Package>() =>
       _propertyMapCache.putIfAbsent(
@@ -11552,7 +11558,7 @@ class _Renderer_Package extends RendererBase<Package?> {
                   isNullValue: (CT_ c) => c.baseHref == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.baseHref, ast, r.template, sink,
+                    _render_String(c.baseHref!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -11574,7 +11580,7 @@ class _Renderer_Package extends RendererBase<Package?> {
                   isNullValue: (CT_ c) => c.canonicalLibrary == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_Library(c.canonicalLibrary, ast, r.template, sink,
+                    _render_Library(c.canonicalLibrary!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -11638,7 +11644,7 @@ class _Renderer_Package extends RendererBase<Package?> {
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.containerOrder.map((e) =>
-                        _render_String(e, ast, r.template, sink, parent: r));
+                        _render_String(e!, ast, r.template, sink, parent: r));
                   },
                 ),
                 'defaultCategory': Property(
@@ -11660,7 +11666,7 @@ class _Renderer_Package extends RendererBase<Package?> {
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_LibraryContainer(
-                        c.defaultCategory, ast, r.template, sink,
+                        c.defaultCategory!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -11682,7 +11688,7 @@ class _Renderer_Package extends RendererBase<Package?> {
                   isNullValue: (CT_ c) => c.documentation == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.documentation, ast, r.template, sink,
+                    _render_String(c.documentation!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -11704,7 +11710,8 @@ class _Renderer_Package extends RendererBase<Package?> {
                   isNullValue: (CT_ c) => c.documentationAsHtml == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.documentationAsHtml, ast, r.template, sink,
+                    _render_String(
+                        c.documentationAsHtml!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -12190,7 +12197,7 @@ class _Renderer_Package extends RendererBase<Package?> {
                   isNullValue: (CT_ c) => c.packagePath == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.packagePath, ast, r.template, sink,
+                    _render_String(c.packagePath!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -12304,12 +12311,12 @@ class _Renderer_Package extends RendererBase<Package?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_Package(Package? context, RendererBase<Object>? parent,
+  _Renderer_Package(Package context, RendererBase<Object>? parent,
       Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<Package?>? getProperty(String key) {
+  Property<Package>? getProperty(String key) {
     if (propertyMap<Package>().containsKey(key)) {
       return propertyMap<Package>()[key];
     } else {
@@ -12318,20 +12325,20 @@ class _Renderer_Package extends RendererBase<Package?> {
   }
 }
 
-String renderIndex(PackageTemplateData? context, Template template) {
+String renderIndex(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
 }
 
-void _render_PackageTemplateData(PackageTemplateData? context,
+void _render_PackageTemplateData(PackageTemplateData context,
     List<MustachioNode> ast, Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = _Renderer_PackageTemplateData(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
 
-class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData?> {
+class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<
           CT_ extends PackageTemplateData>() =>
@@ -12520,12 +12527,12 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_PackageTemplateData(PackageTemplateData? context,
+  _Renderer_PackageTemplateData(PackageTemplateData context,
       RendererBase<Object>? parent, Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<PackageTemplateData?>? getProperty(String key) {
+  Property<PackageTemplateData>? getProperty(String key) {
     if (propertyMap<PackageTemplateData>().containsKey(key)) {
       return propertyMap<PackageTemplateData>()[key];
     } else {
@@ -12534,20 +12541,20 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData?> {
   }
 }
 
-String renderError(PackageTemplateData? context, Template template) {
+String renderError(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
 }
 
-void _render_Parameter(Parameter? context, List<MustachioNode> ast,
+void _render_Parameter(Parameter context, List<MustachioNode> ast,
     Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = _Renderer_Parameter(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
 
-class _Renderer_Parameter extends RendererBase<Parameter?> {
+class _Renderer_Parameter extends RendererBase<Parameter> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends Parameter>() =>
       _propertyMapCache.putIfAbsent(
@@ -12572,7 +12579,7 @@ class _Renderer_Parameter extends RendererBase<Parameter?> {
                   isNullValue: (CT_ c) => c.defaultValue == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.defaultValue, ast, r.template, sink,
+                    _render_String(c.defaultValue!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -12672,7 +12679,7 @@ class _Renderer_Parameter extends RendererBase<Parameter?> {
                   isNullValue: (CT_ c) => c.href == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.href, ast, r.template, sink, parent: r);
+                    _render_String(c.href!, ast, r.template, sink, parent: r);
                   },
                 ),
                 'htmlId': Property(
@@ -12817,12 +12824,12 @@ class _Renderer_Parameter extends RendererBase<Parameter?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_Parameter(Parameter? context, RendererBase<Object>? parent,
+  _Renderer_Parameter(Parameter context, RendererBase<Object>? parent,
       Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<Parameter?>? getProperty(String key) {
+  Property<Parameter>? getProperty(String key) {
     if (propertyMap<Parameter>().containsKey(key)) {
       return propertyMap<Parameter>()[key];
     } else {
@@ -12831,7 +12838,7 @@ class _Renderer_Parameter extends RendererBase<Parameter?> {
   }
 }
 
-void _render_ParameterizedElementType(ParameterizedElementType? context,
+void _render_ParameterizedElementType(ParameterizedElementType context,
     List<MustachioNode> ast, Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer =
@@ -12840,7 +12847,7 @@ void _render_ParameterizedElementType(ParameterizedElementType? context,
 }
 
 class _Renderer_ParameterizedElementType
-    extends RendererBase<ParameterizedElementType?> {
+    extends RendererBase<ParameterizedElementType> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>>
       propertyMap<CT_ extends ParameterizedElementType>() =>
@@ -12878,12 +12885,12 @@ class _Renderer_ParameterizedElementType
                     ),
                   }) as Map<String, Property<CT_>>;
 
-  _Renderer_ParameterizedElementType(ParameterizedElementType? context,
+  _Renderer_ParameterizedElementType(ParameterizedElementType context,
       RendererBase<Object>? parent, Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<ParameterizedElementType?>? getProperty(String key) {
+  Property<ParameterizedElementType>? getProperty(String key) {
     if (propertyMap<ParameterizedElementType>().containsKey(key)) {
       return propertyMap<ParameterizedElementType>()[key];
     } else {
@@ -12892,7 +12899,7 @@ class _Renderer_ParameterizedElementType
   }
 }
 
-class _Renderer_Privacy extends RendererBase<Privacy?> {
+class _Renderer_Privacy extends RendererBase<Privacy> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends Privacy>() =>
       _propertyMapCache.putIfAbsent(
@@ -12908,12 +12915,12 @@ class _Renderer_Privacy extends RendererBase<Privacy?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_Privacy(Privacy? context, RendererBase<Object>? parent,
+  _Renderer_Privacy(Privacy context, RendererBase<Object>? parent,
       Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<Privacy?>? getProperty(String key) {
+  Property<Privacy>? getProperty(String key) {
     if (propertyMap<Privacy>().containsKey(key)) {
       return propertyMap<Privacy>()[key];
     } else {
@@ -12922,13 +12929,13 @@ class _Renderer_Privacy extends RendererBase<Privacy?> {
   }
 }
 
-String renderProperty(PropertyTemplateData? context, Template template) {
+String renderProperty(PropertyTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PropertyTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
 }
 
-void _render_PropertyTemplateData(PropertyTemplateData? context,
+void _render_PropertyTemplateData(PropertyTemplateData context,
     List<MustachioNode> ast, Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer =
@@ -12937,7 +12944,7 @@ void _render_PropertyTemplateData(PropertyTemplateData? context,
 }
 
 class _Renderer_PropertyTemplateData
-    extends RendererBase<PropertyTemplateData?> {
+    extends RendererBase<PropertyTemplateData> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<
           CT_ extends PropertyTemplateData>() =>
@@ -13167,12 +13174,12 @@ class _Renderer_PropertyTemplateData
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_PropertyTemplateData(PropertyTemplateData? context,
+  _Renderer_PropertyTemplateData(PropertyTemplateData context,
       RendererBase<Object>? parent, Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<PropertyTemplateData?>? getProperty(String key) {
+  Property<PropertyTemplateData>? getProperty(String key) {
     if (propertyMap<PropertyTemplateData>().containsKey(key)) {
       return propertyMap<PropertyTemplateData>()[key];
     } else {
@@ -13181,7 +13188,7 @@ class _Renderer_PropertyTemplateData
   }
 }
 
-class _Renderer_Rendered extends RendererBase<Rendered?> {
+class _Renderer_Rendered extends RendererBase<Rendered> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends Rendered>() =>
       _propertyMapCache.putIfAbsent(
@@ -13233,12 +13240,12 @@ class _Renderer_Rendered extends RendererBase<Rendered?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_Rendered(Rendered? context, RendererBase<Object>? parent,
+  _Renderer_Rendered(Rendered context, RendererBase<Object>? parent,
       Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<Rendered?>? getProperty(String key) {
+  Property<Rendered>? getProperty(String key) {
     if (propertyMap<Rendered>().containsKey(key)) {
       return propertyMap<Rendered>()[key];
     } else {
@@ -13247,7 +13254,7 @@ class _Renderer_Rendered extends RendererBase<Rendered?> {
   }
 }
 
-class _Renderer_SourceCodeMixin extends RendererBase<SourceCodeMixin?> {
+class _Renderer_SourceCodeMixin extends RendererBase<SourceCodeMixin> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<
           CT_ extends SourceCodeMixin>() =>
@@ -13306,7 +13313,7 @@ class _Renderer_SourceCodeMixin extends RendererBase<SourceCodeMixin?> {
                   isNullValue: (CT_ c) => c.library == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_Library(c.library, ast, r.template, sink,
+                    _render_Library(c.library!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -13346,12 +13353,12 @@ class _Renderer_SourceCodeMixin extends RendererBase<SourceCodeMixin?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_SourceCodeMixin(SourceCodeMixin? context,
+  _Renderer_SourceCodeMixin(SourceCodeMixin context,
       RendererBase<Object>? parent, Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<SourceCodeMixin?>? getProperty(String key) {
+  Property<SourceCodeMixin>? getProperty(String key) {
     if (propertyMap<SourceCodeMixin>().containsKey(key)) {
       return propertyMap<SourceCodeMixin>()[key];
     } else {
@@ -13360,14 +13367,14 @@ class _Renderer_SourceCodeMixin extends RendererBase<SourceCodeMixin?> {
   }
 }
 
-void _render_String(String? context, List<MustachioNode> ast, Template template,
-    StringSink sink,
+void _render_String(
+    String context, List<MustachioNode> ast, Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = _Renderer_String(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
 
-class _Renderer_String extends RendererBase<String?> {
+class _Renderer_String extends RendererBase<String> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends String>() =>
       _propertyMapCache.putIfAbsent(
@@ -13438,12 +13445,12 @@ class _Renderer_String extends RendererBase<String?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_String(String? context, RendererBase<Object>? parent,
+  _Renderer_String(String context, RendererBase<Object>? parent,
       Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<String?>? getProperty(String key) {
+  Property<String>? getProperty(String key) {
     if (propertyMap<String>().containsKey(key)) {
       return propertyMap<String>()[key];
     } else {
@@ -13453,7 +13460,7 @@ class _Renderer_String extends RendererBase<String?> {
 }
 
 class _Renderer_TemplateData<T extends Documentable>
-    extends RendererBase<TemplateData<T>?> {
+    extends RendererBase<TemplateData<T>> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<T extends Documentable,
           CT_ extends TemplateData>() =>
@@ -13603,7 +13610,7 @@ class _Renderer_TemplateData<T extends Documentable>
                   isNullValue: (CT_ c) => c.homepage == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.homepage, ast, r.template, sink,
+                    _render_String(c.homepage!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -13749,7 +13756,7 @@ class _Renderer_TemplateData<T extends Documentable>
                   isNullValue: (CT_ c) => c.parent == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_Documentable(c.parent, ast, r.template, sink,
+                    _render_Documentable(c.parent!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -13771,7 +13778,7 @@ class _Renderer_TemplateData<T extends Documentable>
                   isNullValue: (CT_ c) => c.relCanonicalPrefix == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.relCanonicalPrefix, ast, r.template, sink,
+                    _render_String(c.relCanonicalPrefix!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -13848,12 +13855,12 @@ class _Renderer_TemplateData<T extends Documentable>
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_TemplateData(TemplateData<T>? context, RendererBase<Object>? parent,
+  _Renderer_TemplateData(TemplateData<T> context, RendererBase<Object>? parent,
       Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<TemplateData<T>?>? getProperty(String key) {
+  Property<TemplateData<T>>? getProperty(String key) {
     if (propertyMap<T, TemplateData<T>>().containsKey(key)) {
       return propertyMap<T, TemplateData<T>>()[key];
     } else {
@@ -13863,14 +13870,14 @@ class _Renderer_TemplateData<T extends Documentable>
 }
 
 String renderSidebarForContainer<T extends Documentable>(
-    TemplateDataWithContainer<T>? context, Template template) {
+    TemplateDataWithContainer<T> context, Template template) {
   var buffer = StringBuffer();
   _render_TemplateDataWithContainer(context, template.ast, template, buffer);
   return buffer.toString();
 }
 
 void _render_TemplateDataWithContainer<T extends Documentable>(
-    TemplateDataWithContainer<T>? context,
+    TemplateDataWithContainer<T> context,
     List<MustachioNode> ast,
     Template template,
     StringSink sink,
@@ -13881,7 +13888,7 @@ void _render_TemplateDataWithContainer<T extends Documentable>(
 }
 
 class _Renderer_TemplateDataWithContainer<T extends Documentable>
-    extends RendererBase<TemplateDataWithContainer<T>?> {
+    extends RendererBase<TemplateDataWithContainer<T>> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<T extends Documentable,
           CT_ extends TemplateDataWithContainer>() =>
@@ -13913,12 +13920,12 @@ class _Renderer_TemplateDataWithContainer<T extends Documentable>
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_TemplateDataWithContainer(TemplateDataWithContainer<T>? context,
+  _Renderer_TemplateDataWithContainer(TemplateDataWithContainer<T> context,
       RendererBase<Object>? parent, Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<TemplateDataWithContainer<T>?>? getProperty(String key) {
+  Property<TemplateDataWithContainer<T>>? getProperty(String key) {
     if (propertyMap<T, TemplateDataWithContainer<T>>().containsKey(key)) {
       return propertyMap<T, TemplateDataWithContainer<T>>()[key];
     } else {
@@ -13928,14 +13935,14 @@ class _Renderer_TemplateDataWithContainer<T extends Documentable>
 }
 
 String renderSidebarForLibrary<T extends Documentable>(
-    TemplateDataWithLibrary<T>? context, Template template) {
+    TemplateDataWithLibrary<T> context, Template template) {
   var buffer = StringBuffer();
   _render_TemplateDataWithLibrary(context, template.ast, template, buffer);
   return buffer.toString();
 }
 
 void _render_TemplateDataWithLibrary<T extends Documentable>(
-    TemplateDataWithLibrary<T>? context,
+    TemplateDataWithLibrary<T> context,
     List<MustachioNode> ast,
     Template template,
     StringSink sink,
@@ -13946,7 +13953,7 @@ void _render_TemplateDataWithLibrary<T extends Documentable>(
 }
 
 class _Renderer_TemplateDataWithLibrary<T extends Documentable>
-    extends RendererBase<TemplateDataWithLibrary<T>?> {
+    extends RendererBase<TemplateDataWithLibrary<T>> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<T extends Documentable,
           CT_ extends TemplateDataWithLibrary>() =>
@@ -13978,12 +13985,12 @@ class _Renderer_TemplateDataWithLibrary<T extends Documentable>
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_TemplateDataWithLibrary(TemplateDataWithLibrary<T>? context,
+  _Renderer_TemplateDataWithLibrary(TemplateDataWithLibrary<T> context,
       RendererBase<Object>? parent, Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<TemplateDataWithLibrary<T>?>? getProperty(String key) {
+  Property<TemplateDataWithLibrary<T>>? getProperty(String key) {
     if (propertyMap<T, TemplateDataWithLibrary<T>>().containsKey(key)) {
       return propertyMap<T, TemplateDataWithLibrary<T>>()[key];
     } else {
@@ -13992,7 +13999,7 @@ class _Renderer_TemplateDataWithLibrary<T extends Documentable>
   }
 }
 
-class _Renderer_TopLevelContainer extends RendererBase<TopLevelContainer?> {
+class _Renderer_TopLevelContainer extends RendererBase<TopLevelContainer> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<
           CT_ extends TopLevelContainer>() =>
@@ -14398,12 +14405,12 @@ class _Renderer_TopLevelContainer extends RendererBase<TopLevelContainer?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_TopLevelContainer(TopLevelContainer? context,
+  _Renderer_TopLevelContainer(TopLevelContainer context,
       RendererBase<Object>? parent, Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<TopLevelContainer?>? getProperty(String key) {
+  Property<TopLevelContainer>? getProperty(String key) {
     if (propertyMap<TopLevelContainer>().containsKey(key)) {
       return propertyMap<TopLevelContainer>()[key];
     } else {
@@ -14413,13 +14420,13 @@ class _Renderer_TopLevelContainer extends RendererBase<TopLevelContainer?> {
 }
 
 String renderTopLevelProperty(
-    TopLevelPropertyTemplateData? context, Template template) {
+    TopLevelPropertyTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_TopLevelPropertyTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
 }
 
-void _render_TopLevelPropertyTemplateData(TopLevelPropertyTemplateData? context,
+void _render_TopLevelPropertyTemplateData(TopLevelPropertyTemplateData context,
     List<MustachioNode> ast, Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer =
@@ -14428,7 +14435,7 @@ void _render_TopLevelPropertyTemplateData(TopLevelPropertyTemplateData? context,
 }
 
 class _Renderer_TopLevelPropertyTemplateData
-    extends RendererBase<TopLevelPropertyTemplateData?> {
+    extends RendererBase<TopLevelPropertyTemplateData> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<
           CT_ extends TopLevelPropertyTemplateData>() =>
@@ -14626,12 +14633,12 @@ class _Renderer_TopLevelPropertyTemplateData
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_TopLevelPropertyTemplateData(TopLevelPropertyTemplateData? context,
+  _Renderer_TopLevelPropertyTemplateData(TopLevelPropertyTemplateData context,
       RendererBase<Object>? parent, Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<TopLevelPropertyTemplateData?>? getProperty(String key) {
+  Property<TopLevelPropertyTemplateData>? getProperty(String key) {
     if (propertyMap<TopLevelPropertyTemplateData>().containsKey(key)) {
       return propertyMap<TopLevelPropertyTemplateData>()[key];
     } else {
@@ -14640,14 +14647,14 @@ class _Renderer_TopLevelPropertyTemplateData
   }
 }
 
-void _render_TopLevelVariable(TopLevelVariable? context,
-    List<MustachioNode> ast, Template template, StringSink sink,
+void _render_TopLevelVariable(TopLevelVariable context, List<MustachioNode> ast,
+    Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = _Renderer_TopLevelVariable(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
 
-class _Renderer_TopLevelVariable extends RendererBase<TopLevelVariable?> {
+class _Renderer_TopLevelVariable extends RendererBase<TopLevelVariable> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<
           CT_ extends TopLevelVariable>() =>
@@ -14698,7 +14705,7 @@ class _Renderer_TopLevelVariable extends RendererBase<TopLevelVariable?> {
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_ModelElement(
-                        c.enclosingElement, ast, r.template, sink,
+                        c.enclosingElement!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -14777,7 +14784,7 @@ class _Renderer_TopLevelVariable extends RendererBase<TopLevelVariable?> {
                   isNullValue: (CT_ c) => c.getter == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_Accessor(c.getter, ast, r.template, sink,
+                    _render_Accessor(c.getter!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -14799,7 +14806,7 @@ class _Renderer_TopLevelVariable extends RendererBase<TopLevelVariable?> {
                   isNullValue: (CT_ c) => c.href == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.href, ast, r.template, sink, parent: r);
+                    _render_String(c.href!, ast, r.template, sink, parent: r);
                   },
                 ),
                 'isConst': Property(
@@ -14927,18 +14934,18 @@ class _Renderer_TopLevelVariable extends RendererBase<TopLevelVariable?> {
                   isNullValue: (CT_ c) => c.setter == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_Accessor(c.setter, ast, r.template, sink,
+                    _render_Accessor(c.setter!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_TopLevelVariable(TopLevelVariable? context,
+  _Renderer_TopLevelVariable(TopLevelVariable context,
       RendererBase<Object>? parent, Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<TopLevelVariable?>? getProperty(String key) {
+  Property<TopLevelVariable>? getProperty(String key) {
     if (propertyMap<TopLevelVariable>().containsKey(key)) {
       return propertyMap<TopLevelVariable>()[key];
     } else {
@@ -14947,7 +14954,7 @@ class _Renderer_TopLevelVariable extends RendererBase<TopLevelVariable?> {
   }
 }
 
-class _Renderer_TypeImplementing extends RendererBase<TypeImplementing?> {
+class _Renderer_TypeImplementing extends RendererBase<TypeImplementing> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<
           CT_ extends TypeImplementing>() =>
@@ -15042,12 +15049,12 @@ class _Renderer_TypeImplementing extends RendererBase<TypeImplementing?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_TypeImplementing(TypeImplementing? context,
+  _Renderer_TypeImplementing(TypeImplementing context,
       RendererBase<Object>? parent, Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<TypeImplementing?>? getProperty(String key) {
+  Property<TypeImplementing>? getProperty(String key) {
     if (propertyMap<TypeImplementing>().containsKey(key)) {
       return propertyMap<TypeImplementing>()[key];
     } else {
@@ -15056,14 +15063,14 @@ class _Renderer_TypeImplementing extends RendererBase<TypeImplementing?> {
   }
 }
 
-void _render_TypeParameter(TypeParameter? context, List<MustachioNode> ast,
+void _render_TypeParameter(TypeParameter context, List<MustachioNode> ast,
     Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = _Renderer_TypeParameter(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
 
-class _Renderer_TypeParameter extends RendererBase<TypeParameter?> {
+class _Renderer_TypeParameter extends RendererBase<TypeParameter> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends TypeParameter>() =>
       _propertyMapCache.putIfAbsent(
@@ -15088,7 +15095,7 @@ class _Renderer_TypeParameter extends RendererBase<TypeParameter?> {
                   isNullValue: (CT_ c) => c.boundType == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_ElementType(c.boundType, ast, r.template, sink,
+                    _render_ElementType(c.boundType!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -15176,7 +15183,7 @@ class _Renderer_TypeParameter extends RendererBase<TypeParameter?> {
                   isNullValue: (CT_ c) => c.href == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.href, ast, r.template, sink, parent: r);
+                    _render_String(c.href!, ast, r.template, sink, parent: r);
                   },
                 ),
                 'kind': Property(
@@ -15294,12 +15301,12 @@ class _Renderer_TypeParameter extends RendererBase<TypeParameter?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_TypeParameter(TypeParameter? context, RendererBase<Object>? parent,
+  _Renderer_TypeParameter(TypeParameter context, RendererBase<Object>? parent,
       Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<TypeParameter?>? getProperty(String key) {
+  Property<TypeParameter>? getProperty(String key) {
     if (propertyMap<TypeParameter>().containsKey(key)) {
       return propertyMap<TypeParameter>()[key];
     } else {
@@ -15308,7 +15315,7 @@ class _Renderer_TypeParameter extends RendererBase<TypeParameter?> {
   }
 }
 
-class _Renderer_TypeParameters extends RendererBase<TypeParameters?> {
+class _Renderer_TypeParameters extends RendererBase<TypeParameters> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends TypeParameters>() =>
       _propertyMapCache.putIfAbsent(
@@ -15426,12 +15433,12 @@ class _Renderer_TypeParameters extends RendererBase<TypeParameters?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_TypeParameters(TypeParameters? context,
-      RendererBase<Object>? parent, Template template, StringSink sink)
+  _Renderer_TypeParameters(TypeParameters context, RendererBase<Object>? parent,
+      Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<TypeParameters?>? getProperty(String key) {
+  Property<TypeParameters>? getProperty(String key) {
     if (propertyMap<TypeParameters>().containsKey(key)) {
       return propertyMap<TypeParameters>()[key];
     } else {
@@ -15440,14 +15447,14 @@ class _Renderer_TypeParameters extends RendererBase<TypeParameters?> {
   }
 }
 
-void _render_Typedef(Typedef? context, List<MustachioNode> ast,
+void _render_Typedef(Typedef context, List<MustachioNode> ast,
     Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = _Renderer_Typedef(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
 
-class _Renderer_Typedef extends RendererBase<Typedef?> {
+class _Renderer_Typedef extends RendererBase<Typedef> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends Typedef>() =>
       _propertyMapCache.putIfAbsent(
@@ -15522,7 +15529,7 @@ class _Renderer_Typedef extends RendererBase<Typedef?> {
                   isNullValue: (CT_ c) => c.enclosingElement == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_Library(c.enclosingElement, ast, r.template, sink,
+                    _render_Library(c.enclosingElement!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -15588,7 +15595,7 @@ class _Renderer_Typedef extends RendererBase<Typedef?> {
                   isNullValue: (CT_ c) => c.href == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.href, ast, r.template, sink, parent: r);
+                    _render_String(c.href!, ast, r.template, sink, parent: r);
                   },
                 ),
                 'isInherited': Property(
@@ -15772,12 +15779,12 @@ class _Renderer_Typedef extends RendererBase<Typedef?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_Typedef(Typedef? context, RendererBase<Object>? parent,
+  _Renderer_Typedef(Typedef context, RendererBase<Object>? parent,
       Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<Typedef?>? getProperty(String key) {
+  Property<Typedef>? getProperty(String key) {
     if (propertyMap<Typedef>().containsKey(key)) {
       return propertyMap<Typedef>()[key];
     } else {
@@ -15786,20 +15793,20 @@ class _Renderer_Typedef extends RendererBase<Typedef?> {
   }
 }
 
-String renderTypedef(TypedefTemplateData? context, Template template) {
+String renderTypedef(TypedefTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_TypedefTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
 }
 
-void _render_TypedefTemplateData(TypedefTemplateData? context,
+void _render_TypedefTemplateData(TypedefTemplateData context,
     List<MustachioNode> ast, Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
   var renderer = _Renderer_TypedefTemplateData(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
 
-class _Renderer_TypedefTemplateData extends RendererBase<TypedefTemplateData?> {
+class _Renderer_TypedefTemplateData extends RendererBase<TypedefTemplateData> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<
           CT_ extends TypedefTemplateData>() =>
@@ -15996,12 +16003,12 @@ class _Renderer_TypedefTemplateData extends RendererBase<TypedefTemplateData?> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_TypedefTemplateData(TypedefTemplateData? context,
+  _Renderer_TypedefTemplateData(TypedefTemplateData context,
       RendererBase<Object>? parent, Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<TypedefTemplateData?>? getProperty(String key) {
+  Property<TypedefTemplateData>? getProperty(String key) {
     if (propertyMap<TypedefTemplateData>().containsKey(key)) {
       return propertyMap<TypedefTemplateData>()[key];
     } else {
@@ -16010,7 +16017,7 @@ class _Renderer_TypedefTemplateData extends RendererBase<TypedefTemplateData?> {
   }
 }
 
-class _Renderer_Warnable extends RendererBase<Warnable?> {
+class _Renderer_Warnable extends RendererBase<Warnable> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends Warnable>() =>
       _propertyMapCache.putIfAbsent(
@@ -16068,18 +16075,18 @@ class _Renderer_Warnable extends RendererBase<Warnable?> {
                   isNullValue: (CT_ c) => c.package == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_Package(c.package, ast, r.template, sink,
+                    _render_Package(c.package!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_Warnable(Warnable? context, RendererBase<Object>? parent,
+  _Renderer_Warnable(Warnable context, RendererBase<Object>? parent,
       Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<Warnable?>? getProperty(String key) {
+  Property<Warnable>? getProperty(String key) {
     if (propertyMap<Warnable>().containsKey(key)) {
       return propertyMap<Warnable>()[key];
     } else {
