@@ -25,7 +25,7 @@ class CoverageSubprocessLauncher extends SubprocessLauncher {
   /// A list of all coverage results picked up by all launchers.
   // TODO(srawlins): Refactor this to one or more type aliases once the feature
   // is enabled.
-  static List<Future<Iterable<Map<Object, Object>>>> coverageResults = [];
+  static List<Future<Iterable<Map<Object, Object?>>>> coverageResults = [];
 
   static Directory tempDir = () {
     var coverageData = Platform.environment['DARTDOC_COVERAGE_DATA'];
@@ -67,7 +67,7 @@ class CoverageSubprocessLauncher extends SubprocessLauncher {
   }
 
   @override
-  Future<Iterable<Map<String, Object>>> runStreamed(
+  Future<Iterable<Map<String, Object?>>> runStreamed(
       String executable, List<String> arguments,
       {String? workingDirectory,
       Map<String, String>? environment,
@@ -91,7 +91,7 @@ class CoverageSubprocessLauncher extends SubprocessLauncher {
       }
     }
 
-    Completer<Iterable<Map<Object, Object>>> coverageResult = Completer();
+    Completer<Iterable<Map<Object, Object?>>> coverageResult = Completer();
 
     if (coverageEnabled) {
       // This must be added before awaiting in this method.
@@ -164,7 +164,7 @@ class SubprocessLauncher {
   /// Windows (though some of the bashisms will no longer make sense).
   /// TODO(jcollins-g): refactor to return a stream of stderr/stdout lines
   ///                   and their associated JSON objects.
-  Future<Iterable<Map<String, Object>>> runStreamed(
+  Future<Iterable<Map<String, Object?>>> runStreamed(
       String executable, List<String> arguments,
       {String? workingDirectory,
       Map<String, String>? environment,
@@ -173,21 +173,23 @@ class SubprocessLauncher {
     environment = {}
       ..addAll(environmentDefaults)
       ..addAll(environment ?? {});
-    List<Map<String, Object>> jsonObjects = [];
+    List<Map<String, Object?>> jsonObjects = [];
 
     /// Allow us to pretend we didn't pass the JSON flag in to dartdoc by
     /// printing what dartdoc would have printed without it, yet storing
     /// json objects into [jsonObjects].
     Iterable<String> jsonCallback(String line) {
       if (perLine != null) perLine(line);
-      Map<String, Object>? result;
+      Map<String, Object?>? result;
       try {
         result = json.decoder.convert(line);
       } on FormatException {
         // Assume invalid JSON is actually a line of normal text.
-      } on TypeError {
+      } on TypeError catch (e, st) {
         // The convert function returns a String if there is no JSON in the
         // line.  Just ignore it and leave result null.
+        print(e);
+        print(st);
       }
       if (result != null) {
         jsonObjects.add(result);

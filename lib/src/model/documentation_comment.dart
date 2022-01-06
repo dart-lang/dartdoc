@@ -272,15 +272,13 @@ mixin DocumentationComment
       return await config.tools.runner.run(args, content: basicMatch[2]!,
           toolErrorCallback: (String message) async {
         warn(PackageWarning.toolError, message: message);
-      },
-          environment: _toolsEnvironment(invocationIndex: invocationIndex)
-              as Map<String, String>);
+      }, environment: _toolsEnvironment(invocationIndex: invocationIndex));
     });
   }
 
   /// The environment variables to use when running a tool.
-  Map<String, String?> _toolsEnvironment({required int invocationIndex}) {
-    return {
+  Map<String, String> _toolsEnvironment({required int invocationIndex}) {
+    var env = {
       'SOURCE_LINE': characterLocation?.lineNumber.toString(),
       'SOURCE_COLUMN': characterLocation?.columnNumber.toString(),
       if (sourceFileName != null && package?.packagePath != null)
@@ -292,7 +290,9 @@ mixin DocumentationComment
       'ELEMENT_NAME': fullyQualifiedNameWithoutLibrary,
       'INVOCATION_INDEX': invocationIndex.toString(),
       'PACKAGE_INVOCATION_INDEX': (package?.toolInvocationIndex++).toString(),
-    }..removeWhere((key, value) => value == null);
+    };
+    return (env..removeWhere((key, value) => value == null))
+        .cast<String, String>();
   }
 
   /// Replace &#123;@example ...&#125; in API comments with the content of named file.

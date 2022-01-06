@@ -30,7 +30,6 @@ import 'package:dartdoc/src/package_meta.dart'
 import 'package:dartdoc/src/quiver.dart' as quiver;
 import 'package:dartdoc/src/render/renderer_factory.dart';
 import 'package:dartdoc/src/special_elements.dart';
-import 'package:package_config/package_config.dart';
 import 'package:path/path.dart' as path show Context;
 
 /// Everything you need to instantiate a PackageGraph object for documenting.
@@ -251,9 +250,8 @@ class PubPackageBuilder implements PackageBuilder {
     var packageDirs = {basePackageDir};
 
     if (autoIncludeDependencies) {
-      var info = await (packageConfigProvider
-              .findPackageConfig(resourceProvider.getFolder(basePackageDir))
-          as FutureOr<PackageConfig>);
+      var info = (await packageConfigProvider
+          .findPackageConfig(resourceProvider.getFolder(basePackageDir)))!;
       for (var package in info.packages) {
         if (!filterExcludes || !config.exclude.contains(package.name)) {
           packageDirs.add(_pathContext.dirname(
