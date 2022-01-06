@@ -11,6 +11,4 @@
 ///   - 3.14
 /// ```
 
-// @dart=2.9
-
 library code_in_comments;

@@ -1,8 +1,6 @@
 /// a library. testing string escaping: `var s = 'a string'` <cool>
 /// {@category Real Libraries}
 
-// @dart=2.9
-
 library ex;
 
 import 'dart:async';
@@ -65,12 +63,12 @@ const List<String> PRETTY_COLORS = const <String>[
   'blue'
 ];
 @deprecated
-int deprecatedField;
+int deprecatedField = 1;
 
-double number;
+double number = 0.5;
 
 @deprecated
-int get deprecatedGetter => null;
+int? get deprecatedGetter => null;
 
 @deprecated
 void set deprecatedSetter(int value) {}
@@ -91,7 +89,7 @@ typedef String ParameterizedTypedef<T>(T msg, int foo);
 abstract class ParameterizedClass<T> {
   AnotherParameterizedClass<T> aInheritedMethod(int foo);
   ParameterizedTypedef<T> aInheritedTypedefReturningMethod();
-  AnotherParameterizedClass<T> aInheritedField;
+  AnotherParameterizedClass<T>? aInheritedField;
   AnotherParameterizedClass<T> get aInheritedGetter;
   ParameterizedClass<T> operator +(ParameterizedClass<T> other);
   set aInheritedSetter(AnotherParameterizedClass<T> thingToSet);
@@ -103,7 +101,7 @@ class AnotherParameterizedClass<B> {}
 abstract class TemplatedInterface<A> implements ParameterizedClass<List<int>> {
   AnotherParameterizedClass<List<int>> aMethodInterface(A value);
   ParameterizedTypedef<List<String>> aTypedefReturningMethodInterface();
-  AnotherParameterizedClass<Stream<List<int>>> aField;
+  AnotherParameterizedClass<Stream<List<int>>>? aField;
   AnotherParameterizedClass<Map<A, List<String>>> get aGetter;
   set aSetter(AnotherParameterizedClass<List<bool>> thingToSet);
 }
@@ -148,13 +146,13 @@ enum Animal {
 class Apple {
   static const int n = 5;
   static String string = 'hello';
-  String _s2;
+  String? _s2;
 
   /// The read-write field `m`.
   int m = 0;
 
   /// <nodoc> no docs
-  int notDocumented;
+  int? notDocumented;
 
   ///Constructor
   Apple();
@@ -171,12 +169,12 @@ class Apple {
   /**
    * The getter for `s`
    */
-  String get s => _s2;
+  String? get s => _s2;
 
   /**
    * The setter for `s`
    */
-  void set s(String something) {
+  void set s(String? something) {
     _s2 = something;
   }
 
@@ -200,7 +198,7 @@ class Apple {
 
   void paramFromExportLib(Helper helper) {}
 
-  void printMsg(String msg, [bool linebreak]) {}
+  void printMsg(String msg, [bool linebreak = false]) {}
 
   /**
    * fieldWithTypedef docs here
@@ -240,12 +238,12 @@ class B extends Apple with Cat {
    * The default value is `false` (compression disabled).
    * To enable, set `autoCompress` to `true`.
    */
-  bool autoCompress;
+  late bool autoCompress;
 
   /**
    * A list of Strings
    */
-  List<String> list;
+  List<String>? list;
 
   @override
   bool get isImplemented => false;
@@ -263,7 +261,7 @@ class B extends Apple with Cat {
     b * 2;
   }
 
-  void writeMsg(String msg, [String transformMsg(String origMsg, bool flag)]) {
+  void writeMsg(String msg, [String transformMsg(String origMsg, bool flag)?]) {
     // do nothing
   }
 
@@ -278,7 +276,7 @@ class RefsWithQsAndBangs {}
 class FieldAndCtorWithSameName {
   FieldAndCtorWithSameName.named();
 
-  int named;
+  int? named;
 }
 
 // Do NOT add a doc comment to C. Testing blank comments.
@@ -307,10 +305,10 @@ class ConstantCat implements Cat {
 
 /// implements [Cat], [E]
 class Dog implements Cat, E {
-  String name;
+  String? name;
 
   @deprecated
-  int deprecatedField;
+  int? deprecatedField;
 
   final int aFinalField = 42;
 
@@ -330,7 +328,7 @@ class Dog implements Cat, E {
   Dog.deprecatedCreate(this.name);
 
   @deprecated
-  int get deprecatedGetter => null;
+  int? get deprecatedGetter => null;
 
   @deprecated
   void set deprecatedSetter(int value) {}
@@ -343,7 +341,7 @@ class Dog implements Cat, E {
   @override
   operator ==(other) => other is Dog && name == other.name;
 
-  Dog operator +(Dog other) => Dog()..name = name + other.name;
+  Dog operator +(Dog other) => Dog()..name = name! + other.name!;
 
   foo() async => 42;
 
@@ -442,7 +440,7 @@ class Dog implements Cat, E {
 abstract class E {}
 
 class F<T extends String> extends Dog with _PrivateAbstractClass {
-  void methodWithGenericParam([List<Apple> msgs]) {}
+  void methodWithGenericParam([List<Apple>? msgs]) {}
 }
 
 class ForAnnotation {
@@ -471,7 +469,7 @@ class Klass {
 
   /// A shadowed method
   @override
-  toString() {}
+  toString() => '';
 
   /// A method with a custom annotation
   @aThingToDo('from', 'thing')
@@ -482,7 +480,7 @@ class MyError extends Error {}
 
 class MyErrorImplements implements Error {
   @override
-  StackTrace get stackTrace => null;
+  StackTrace? get stackTrace => null;
 }
 
 class MyException implements Exception {}
@@ -517,12 +515,12 @@ class SpecializedDuration extends Duration {}
  * class <nodoc>
  */
 class unDocumented {
-  String s;
+  String? s;
 }
 
 /// @nodoc
 class unDocumented2 {
-  String s;
+  String? s;
 }
 
 abstract class _PrivateAbstractClass {
@@ -615,7 +613,7 @@ extension AnExtension<Q> on WithGeneric<Q> {
 }
 
 class AnExtendableThing {
-  int aMember;
+  int? aMember;
 }
 
 extension SimpleStringExtension on AnExtendableThing {
@@ -638,7 +636,7 @@ extension FancyList<Z> on List<Z> {
   List<Z> operator -() => this.reversed.toList();
   List<List<Z>> split(int at) =>
       <List<Z>>[this.sublist(0, at), this.sublist(at)];
-  static List<Z> big() => List(1000000);
+  static List<Z?> big() => List.filled(100, null);
 }
 
 extension SymDiff<Q> on Set<Q> {
@@ -662,7 +660,7 @@ extension on Object {
 }
 
 extension StaticFieldExtension on Object {
-  static int aStatic;
+  static int? aStatic;
 }
 
 /// This class has nothing to do with [_Shhh], [FancyList], or [AnExtension.call],
@@ -675,12 +673,12 @@ class ToolPrintingMacroWhichInjectsHtml {
   /// {@template html-macro}
   /// {@inject-html}<div class="title">Title</div>{@end-inject-html}
   /// {@endtemplate}
-  int a;
+  int a = 1;
 
   /// Text.
   ///
   /// {@tool print_macro}
   /// Text for tool.
   /// {@end-tool}
-  int b;
+  int b = 2;
 }

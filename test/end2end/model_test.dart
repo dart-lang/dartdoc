@@ -936,7 +936,9 @@ void main() {
     });
 
     test('does not have a null safety label if not null safe', () {
-      expect(exLibrary.isNullSafety, isFalse);
+      var optOutLibrary = packageGraph.libraries
+          .firstWhere((lib) => lib.name == 'opt_out_of_nnbd');
+      expect(optOutLibrary.isNullSafety, isFalse);
     });
 
     test('has a line number and column', () {
@@ -3381,7 +3383,7 @@ void main() {
       expect(
           thisIsFutureOrT.modelType.returnType.linkedName,
           equals(
-              'FutureOr<span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span>'));
+              'FutureOr<span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span>?'));
     });
 
     test('function with a parameter having type FutureOr<Null>', () {
@@ -3417,7 +3419,7 @@ void main() {
     test('has source code', () {
       expect(topLevelFunction.sourceCode, startsWith('@deprecated'));
       expect(topLevelFunction.sourceCode, endsWith('''
-String topLevelFunction(int param1, bool param2, Cool coolBeans,
+String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     [double optionalPositional = 0.0]) {
   return null;
 }'''));
@@ -3486,15 +3488,19 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('parameterized type from field is correctly displayed', () {
       var aField = TemplatedInterface.instanceFields
           .singleWhere((f) => f.name == 'aField');
-      expect(aField.modelType.linkedName,
-          '<a href="${htmlBasePlaceholder}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">Stream<span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span></span>&gt;</span>');
+      expect(
+          aField.modelType.linkedName,
+          '<a href="${htmlBasePlaceholder}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a>'
+          '<span class="signature">&lt;<wbr><span class="type-parameter">Stream<span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span></span>&gt;</span>?');
     });
 
     test('parameterized type from inherited field is correctly displayed', () {
       var aInheritedField = TemplatedInterface.inheritedFields
           .singleWhere((f) => f.name == 'aInheritedField');
-      expect(aInheritedField.modelType.linkedName,
-          '<a href="${htmlBasePlaceholder}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
+      expect(
+          aInheritedField.modelType.linkedName,
+          '<a href="${htmlBasePlaceholder}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a>'
+          '<span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>?');
     });
 
     test(
@@ -3751,7 +3757,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('method source code indents correctly', () {
       expect(convertToMap.sourceCode,
-          'Map&lt;X, Y&gt; convertToMap() =&gt; null;');
+          'Map&lt;X, Y&gt;? convertToMap() =&gt; null;');
     });
   });
 
@@ -4283,7 +4289,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           genericTypedefCombo.modelType.linkedName,
           equals(
-              '<a href="%%__HTMLBASE_dartdoc_internal__%%fake/NewGenericTypedef.html">NewGenericTypedef</a>'));
+              '<a href="%%__HTMLBASE_dartdoc_internal__%%fake/NewGenericTypedef.html">NewGenericTypedef</a>?'));
     });
 
     test('Verify that final and late show up (or not) appropriately', () {
@@ -4323,7 +4329,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           complicatedReturn.modelType.linkedName,
           equals(
-              '<a href="${htmlBasePlaceholder}fake/ATypeTakingClass-class.html">ATypeTakingClass</a><span class="signature">&lt;<wbr><span class="type-parameter">String Function<span class="signature">(<span class="parameter" id="param-"><span class="type-annotation">int</span></span>)</span></span>&gt;</span>'));
+              '<a href="${htmlBasePlaceholder}fake/ATypeTakingClass-class.html">ATypeTakingClass</a>'
+              '<span class="signature">&lt;<wbr><span class="type-parameter">String Function<span class="signature">(<span class="parameter" id="param-"><span class="type-annotation">int</span></span>)</span></span>&gt;</span>?'));
     });
 
     test('@nodoc on simple property works', () {
@@ -4878,7 +4885,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('param with annotations', () {
       var method =
-          fakeLibrary.functions.firstWhere((f) => f.name == 'paintImage1');
+          fakeLibrary.functions.firstWhere((f) => f.name == 'paintImage2');
       var params =
           ParameterRendererHtml().renderLinkedParams(method.parameters);
       expect(
@@ -5104,16 +5111,18 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('Property fields are terminated with semicolon', () {
-      expect(finalProperty.sourceCode.trim(), endsWith('List&lt;int&gt;();'));
-      expect(simpleProperty.sourceCode.trim(), endsWith('List&lt;int&gt;();'));
+      expect(finalProperty.sourceCode.trim(),
+          endsWith('List&lt;int&gt;.filled(1, 1);'));
+      expect(simpleProperty.sourceCode.trim(),
+          endsWith('List&lt;int&gt;.filled(1, 1);'));
       expect(forInheriting.sourceCode.trim(), endsWith('forInheriting;'));
     });
 
     test('Arrow accessors are terminated with semicolon', () {
       expect(explicitGetterImplicitSetter.getter.sourceCode.trim(),
-          endsWith('List&lt;int&gt;();'));
+          endsWith('List&lt;int&gt;.filled(1, 1);'));
       expect(explicitGetterSetter.getter.sourceCode.trim(),
-          endsWith('List&lt;int&gt;();'));
+          endsWith('List&lt;int&gt;.filled(1, 1);'));
     });
 
     test('Traditional accessors are not terminated with semicolon', () {
@@ -5124,7 +5133,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('Whole declaration is visible when declaration spans many lines', () {
       expect(ensureWholeDeclarationIsVisible.sourceCode,
-          contains('List&lt;int&gt; '));
+          contains('List&lt;int&gt;? '));
     });
   });
 
