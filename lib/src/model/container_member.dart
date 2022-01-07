@@ -18,13 +18,8 @@ mixin ContainerMember on ModelElement implements EnclosedElement {
   // implemented.
   bool get isExtended => false;
 
-  Container? _definingEnclosingContainer;
-
-  Container? get definingEnclosingContainer {
-    _definingEnclosingContainer ??=
-        modelBuilder.fromElement(element!.enclosingElement!) as Container?;
-    return _definingEnclosingContainer;
-  }
+  late final Container definingEnclosingContainer =
+      modelBuilder.fromElement(element!.enclosingElement!) as Container;
 
   @override
   Set<Feature> get features => {

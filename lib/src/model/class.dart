@@ -21,16 +21,13 @@ class Class extends InheritingContainer
     packageGraph.specialClasses.addSpecial(this);
   }
 
-  List<ModelElement>? _allModelElements;
-
   @override
-  List<ModelElement>? get allModelElements {
-    _allModelElements ??= <ModelElement>[
-      ...super.allModelElements!,
-      ...constructors,
-    ];
-    return _allModelElements;
-  }
+  // TODO(srawlins): Figure out what we elsewhere in dartdoc.
+  // ignore: overridden_fields
+  late final List<ModelElement> allModelElements = [
+    ...super.allModelElements,
+    ...constructors,
+  ];
 
   /// Returns the library that encloses this element.
   @override
@@ -118,14 +115,14 @@ class Class extends InheritingContainer
 
   @override
   Iterable<Field> get instanceFields =>
-      _instanceFields ??= allFields!.where((f) => !f.isStatic);
+      _instanceFields ??= allFields.where((f) => !f.isStatic);
 
   @override
   bool get publicInheritedInstanceFields =>
       publicInstanceFields.every((f) => f.isInherited);
 
   @override
-  Iterable<Field> get constantFields => allFields!.where((f) => f.isConst);
+  Iterable<Field> get constantFields => allFields.where((f) => f.isConst);
 
   static Iterable<MapEntry<String, CommentReferable>> _constructorGenerator(
       Iterable<Constructor> source) sync* {
