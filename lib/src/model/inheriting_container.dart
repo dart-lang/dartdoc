@@ -236,7 +236,7 @@ abstract class InheritingContainer extends Container
 
   @override
   Iterable<Method> get instanceMethods =>
-      quiver.concat([super.instanceMethods, inheritedMethods!]);
+      quiver.concat([super.instanceMethods, inheritedMethods]);
 
   @override
   bool get publicInheritedInstanceMethods =>
@@ -244,24 +244,19 @@ abstract class InheritingContainer extends Container
 
   @override
   Iterable<Operator> get instanceOperators =>
-      quiver.concat([super.instanceOperators, inheritedOperators!]);
+      quiver.concat([super.instanceOperators, inheritedOperators]);
 
   @override
   bool get publicInheritedInstanceOperators =>
       publicInstanceOperators.every((f) => f.isInherited);
 
-  List<ModelElement>? _allModelElements;
-
   @override
-  List<ModelElement>? get allModelElements {
-    _allModelElements ??= List.from(
-        quiver.concat<ModelElement>([
-          super.allModelElements!,
-          typeParameters,
-        ]),
-        growable: false);
-    return _allModelElements;
-  }
+  late final List<ModelElement> allModelElements = List.of(
+      quiver.concat<ModelElement>([
+        super.allModelElements!,
+        typeParameters,
+      ]),
+      growable: false);
 
   /// Returns the [InheritingContainer] with the library in which [element] is defined.
   InheritingContainer get definingContainer =>
@@ -284,58 +279,40 @@ abstract class InheritingContainer extends Container
 
   bool get hasPublicSuperChainReversed => publicSuperChainReversed.isNotEmpty;
 
-  /*lazy final*/
-  List<Method>? _inheritedMethods;
+  late final Iterable<Method> inheritedMethods = () {
+    var methodNames = declaredMethods.map((m) => m.element!.name).toSet();
+    var inheritedMethodElements =
+        _inheritedElements!.whereType<MethodElement>().where((e) {
+      return (!e.isOperator &&
+          e is! PropertyAccessorElement &&
+          !methodNames.contains(e.name));
+    }).toSet();
 
-  Iterable<Method>? get inheritedMethods {
-    if (_inheritedMethods == null) {
-      _inheritedMethods = <Method>[];
-      var methodNames = declaredMethods.map((m) => m.element!.name).toSet();
-
-      var inheritedMethodElements = _inheritedElements!.where((e) {
-        return (e is MethodElement &&
-            !e.isOperator &&
-            e is! PropertyAccessorElement &&
-            !methodNames.contains(e.name));
-      }).toSet();
-
-      for (var e in inheritedMethodElements) {
-        Method m =
-            modelBuilder.from(e!, library, enclosingContainer: this) as Method;
-        _inheritedMethods!.add(m);
-      }
-    }
-    return _inheritedMethods;
-  }
+    return [
+      for (var e in inheritedMethodElements)
+        modelBuilder.from(e, library, enclosingContainer: this) as Method,
+    ];
+  }();
 
   Iterable<Method> get publicInheritedMethods =>
-      model_utils.filterNonPublic(inheritedMethods!);
+      model_utils.filterNonPublic(inheritedMethods);
 
   bool get hasPublicInheritedMethods => publicInheritedMethods.isNotEmpty;
 
-  /*lazy final*/
-  List<Operator>? _inheritedOperators;
+  late final List<Operator> inheritedOperators = () {
+    var operatorNames = declaredOperators.map((o) => o.element!.name).toSet();
+    var inheritedOperatorElements = _inheritedElements!
+        .whereType<MethodElement>()
+        .where((e) => (e.isOperator && !operatorNames.contains(e.name)))
+        .toSet();
 
-  Iterable<Operator>? get inheritedOperators {
-    if (_inheritedOperators == null) {
-      _inheritedOperators = [];
-      var operatorNames = declaredOperators.map((o) => o.element!.name).toSet();
+    return [
+      for (var e in inheritedOperatorElements)
+        modelBuilder.from(e, library, enclosingContainer: this) as Operator,
+    ];
+  }();
 
-      var inheritedOperatorElements = _inheritedElements!.where((e) {
-        return (e is MethodElement &&
-            e.isOperator &&
-            !operatorNames.contains(e.name));
-      }).toSet();
-      for (var e in inheritedOperatorElements) {
-        Operator o = modelBuilder.from(e!, library, enclosingContainer: this)
-            as Operator;
-        _inheritedOperators!.add(o);
-      }
-    }
-    return _inheritedOperators;
-  }
-
-  Iterable<Field> get inheritedFields => allFields!.where((f) => f.isInherited);
+  Iterable<Field> get inheritedFields => allFields.where((f) => f.isInherited);
 
   Iterable<DefinedElementType> get publicInterfaces => [];
 
@@ -445,63 +422,60 @@ abstract class InheritingContainer extends Container
     return __inheritedElements;
   }
 
-  List<Field>? _allFields;
+  late final List<Field> allFields = () {
+    var fields = <Field>[];
+    var inheritedAccessorElements = <PropertyAccessorElement>{}
+      ..addAll(_inheritedElements!.whereType<PropertyAccessorElement>());
 
-  List<Field>? get allFields {
-    if (_allFields == null) {
-      _allFields = [];
-      var inheritedAccessorElements = <PropertyAccessorElement>{}
-        ..addAll(_inheritedElements!.whereType<PropertyAccessorElement>());
-
-      // This structure keeps track of inherited accessors, allowing lookup
-      // by field name (stripping the '=' from setters).
-      var accessorMap = <String, List<PropertyAccessorElement>>{};
-      for (var accessorElement in inheritedAccessorElements) {
-        var name = accessorElement.name.replaceFirst('=', '');
-        accessorMap.putIfAbsent(name, () => []).add(accessorElement);
-      }
-
-      // For half-inherited fields, the analyzer only links the non-inherited
-      // to the [FieldElement].  Compose our [Field] class by hand by looking up
-      // inherited accessors that may be related.
-      for (var f in element!.fields) {
-        var getterElement = f.getter;
-        if (getterElement == null && accessorMap.containsKey(f.name)) {
-          getterElement =
-              accessorMap[f.name]!.firstWhereOrNull((e) => e.isGetter);
-        }
-        var setterElement = f.setter;
-        if (setterElement == null && accessorMap.containsKey(f.name)) {
-          setterElement =
-              accessorMap[f.name]!.firstWhereOrNull((e) => e.isSetter);
-        }
-        _addSingleField(
-            getterElement, setterElement, inheritedAccessorElements, f);
-        accessorMap.remove(f.name);
-      }
-
-      // Now we only have inherited accessors who aren't associated with
-      // anything in cls._fields.
-      for (var fieldName in accessorMap.keys) {
-        var elements = accessorMap[fieldName]!.toList();
-        var getterElement = elements.firstWhereOrNull((e) => e.isGetter);
-        var setterElement = elements.firstWhereOrNull((e) => e.isSetter);
-        _addSingleField(
-            getterElement, setterElement, inheritedAccessorElements);
-      }
+    // This structure keeps track of inherited accessors, allowing lookup
+    // by field name (stripping the '=' from setters).
+    var accessorMap = <String, List<PropertyAccessorElement>>{};
+    for (var accessorElement in inheritedAccessorElements) {
+      var name = accessorElement.name.replaceFirst('=', '');
+      accessorMap.putIfAbsent(name, () => []).add(accessorElement);
     }
-    return _allFields;
-  }
+
+    // For half-inherited fields, the analyzer only links the non-inherited
+    // to the [FieldElement].  Compose our [Field] class by hand by looking up
+    // inherited accessors that may be related.
+    for (var f in element!.fields) {
+      var getterElement = f.getter;
+      if (getterElement == null && accessorMap.containsKey(f.name)) {
+        getterElement =
+            accessorMap[f.name]!.firstWhereOrNull((e) => e.isGetter);
+      }
+      var setterElement = f.setter;
+      if (setterElement == null && accessorMap.containsKey(f.name)) {
+        setterElement =
+            accessorMap[f.name]!.firstWhereOrNull((e) => e.isSetter);
+      }
+      fields.add(_createSingleField(
+          getterElement, setterElement, inheritedAccessorElements, f));
+      accessorMap.remove(f.name);
+    }
+
+    // Now we only have inherited accessors who aren't associated with
+    // anything in cls._fields.
+    for (var fieldName in accessorMap.keys) {
+      var elements = accessorMap[fieldName]!.toList();
+      var getterElement = elements.firstWhereOrNull((e) => e.isGetter);
+      var setterElement = elements.firstWhereOrNull((e) => e.isSetter);
+      fields.add(_createSingleField(
+          getterElement, setterElement, inheritedAccessorElements));
+    }
+
+    return fields;
+  }();
 
   @override
-  Iterable<Field> get declaredFields => allFields!.where((f) => !f.isInherited);
+  Iterable<Field> get declaredFields => allFields.where((f) => !f.isInherited);
 
   /// Add a single Field to _fields.
   ///
   /// If [f] is not specified, pick the FieldElement from the PropertyAccessorElement
   /// whose enclosing class inherits from the other (defaulting to the getter)
   /// and construct a Field using that.
-  void _addSingleField(
+  Field _createSingleField(
       PropertyAccessorElement? getterElement,
       PropertyAccessorElement? setterElement,
       Set<PropertyAccessorElement> inheritedAccessors,
@@ -553,21 +527,19 @@ abstract class InheritingContainer extends Container
         }
       }
     }
-    Field field;
     if ((getter == null || getter.isInherited) &&
         (setter == null || setter.isInherited)) {
       // Field is 100% inherited.
-      field = modelBuilder.fromPropertyInducingElement(f!, library,
+      return modelBuilder.fromPropertyInducingElement(f!, library,
           enclosingContainer: this, getter: getter, setter: setter) as Field;
     } else {
       // Field is <100% inherited (could be half-inherited).
       // TODO(jcollins-g): Navigation is probably still confusing for
       // half-inherited fields when traversing the inheritance tree.  Make
       // this better, somehow.
-      field = modelBuilder.fromPropertyInducingElement(f!, library,
+      return modelBuilder.fromPropertyInducingElement(f!, library,
           getter: getter, setter: setter) as Field;
     }
-    _allFields!.add(field);
   }
 
   Iterable<Method>? _declaredMethods;
@@ -593,12 +565,12 @@ abstract class InheritingContainer extends Container
 
   @override
   Iterable<Field> get instanceFields =>
-      _instanceFields ??= allFields!.where((f) => !f.isStatic);
+      _instanceFields ??= allFields.where((f) => !f.isStatic);
 
   @override
   bool get publicInheritedInstanceFields =>
       publicInstanceFields.every((f) => f.isInherited);
 
   @override
-  Iterable<Field> get constantFields => allFields!.where((f) => f.isConst);
+  Iterable<Field> get constantFields => allFields.where((f) => f.isConst);
 }

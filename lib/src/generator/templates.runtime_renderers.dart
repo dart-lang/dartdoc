@@ -1699,11 +1699,11 @@ class _Renderer_Class extends RendererBase<Class> {
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
                           c, remainingNames, 'List<ModelElement>'),
-                  isNullValue: (CT_ c) => c.allModelElements == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.allModelElements, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['List']!);
+                    return c.allModelElements.map((e) => _render_ModelElement(
+                        e, ast, r.template, sink,
+                        parent: r));
                   },
                 ),
                 'constantFields': Property(
@@ -3688,11 +3688,11 @@ class _Renderer_ContainerMember extends RendererBase<ContainerMember> {
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
-                  isNullValue: (CT_ c) => c.definingEnclosingContainer == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_Container(
-                        c.definingEnclosingContainer!, ast, r.template, sink,
+                        c.definingEnclosingContainer, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -4741,11 +4741,11 @@ class _Renderer_Extension extends RendererBase<Extension> {
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
                           c, remainingNames, 'List<ModelElement>'),
-                  isNullValue: (CT_ c) => c.allModelElements == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.allModelElements, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['List']!);
+                    return c.allModelElements.map((e) => _render_ModelElement(
+                        e, ast, r.template, sink,
+                        parent: r));
                   },
                 ),
                 'alwaysApplies': Property(
@@ -6908,11 +6908,10 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
                           c, remainingNames, 'List<Field>'),
-                  isNullValue: (CT_ c) => c.allFields == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.allFields, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['List']!);
+                    return c.allFields.map((e) =>
+                        _render_Field(e, ast, r.template, sink, parent: r));
                   },
                 ),
                 'allModelElements': Property(
@@ -6921,11 +6920,11 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
                           c, remainingNames, 'List<ModelElement>'),
-                  isNullValue: (CT_ c) => c.allModelElements == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.allModelElements, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['List']!);
+                    return c.allModelElements.map((e) => _render_ModelElement(
+                        e, ast, r.template, sink,
+                        parent: r));
                   },
                 ),
                 'constantFields': Property(
@@ -7120,11 +7119,10 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
                           c, remainingNames, 'Iterable<Method>'),
-                  isNullValue: (CT_ c) => c.inheritedMethods == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.inheritedMethods, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['Iterable']!);
+                    return c.inheritedMethods.map((e) =>
+                        _render_Method(e, ast, r.template, sink, parent: r));
                   },
                 ),
                 'inheritedOperators': Property(
@@ -7132,12 +7130,11 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<Operator>'),
-                  isNullValue: (CT_ c) => c.inheritedOperators == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
+                          c, remainingNames, 'List<Operator>'),
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.inheritedOperators, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['Iterable']!);
+                    return c.inheritedOperators.map((e) =>
+                        _render_Operator(e, ast, r.template, sink, parent: r));
                   },
                 ),
                 'instanceFields': Property(

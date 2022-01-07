@@ -96,8 +96,8 @@ mixin Inheritable on ContainerMember {
       }
       // This is still OK because we're never supposed to cloak public
       // classes.
-      if (definingEnclosingContainer!.isCanonical &&
-          definingEnclosingContainer!.isPublic) {
+      if (definingEnclosingContainer.isCanonical &&
+          definingEnclosingContainer.isPublic) {
         assert(definingEnclosingContainer == found);
       }
       if (found != null) {
@@ -116,8 +116,7 @@ mixin Inheritable on ContainerMember {
     inheritance
         .addAll((enclosingElement as InheritingContainer).inheritanceChain);
     var object = packageGraph.specialClasses[SpecialClass.object];
-    if (!inheritance.contains(definingEnclosingContainer) &&
-        definingEnclosingContainer != null) {
+    if (!inheritance.contains(definingEnclosingContainer)) {
       assert(definingEnclosingContainer == object);
     }
     // Unless the code explicitly extends dart-core's Object, we won't get
@@ -150,7 +149,7 @@ mixin Inheritable on ContainerMember {
           enclosingElement!.canonicalModelElement as InheritingContainer?;
       // The container in which this element was defined, canonical if available.
       Container? definingCanonical =
-          definingEnclosingContainer!.canonicalModelElement as Container? ??
+          definingEnclosingContainer.canonicalModelElement as Container? ??
               definingEnclosingContainer;
       // The canonical version of the element we're overriding, if available.
       var overriddenCanonical =

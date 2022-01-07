@@ -92,17 +92,13 @@ class Extension extends Container implements EnclosedElement {
     return _typeParameters!;
   }
 
-  List<ModelElement>? _allModelElements;
   @override
-  List<ModelElement>? get allModelElements {
-    _allModelElements ??= List.from(
-        quiver.concat<ModelElement>([
-          super.allModelElements!,
-          typeParameters,
-        ]),
-        growable: false);
-    return _allModelElements;
-  }
+  late final List<ModelElement> allModelElements = List.of(
+      quiver.concat<ModelElement>([
+        super.allModelElements!,
+        typeParameters,
+      ]),
+      growable: false);
 
   @override
   String get filePath => '${library.dirName}/$fileName';

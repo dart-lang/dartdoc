@@ -457,16 +457,16 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
       ...library.properties,
       ...library.typedefs,
       ...library.extensions.expand((e) {
-        return [e, ...e.allModelElements!];
+        return [e, ...e.allModelElements];
       }),
       ...library.allClasses.expand((c) {
-        return [c, ...c.allModelElements!];
+        return [c, ...c.allModelElements];
       }),
       ...library.enums.expand((e) {
-        return [e, ...e.allModelElements!];
+        return [e, ...e.allModelElements];
       }),
       ...library.mixins.expand((m) {
-        return [m, ...m.allModelElements!];
+        return [m, ...m.allModelElements];
       }),
     ]) {
       _modelElementsMap
