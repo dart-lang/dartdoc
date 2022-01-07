@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// @dart=2.9
-
 /// Unit tests for lib/src/warnings.dart.
 library dartdoc.warnings_test;
 
@@ -16,9 +14,9 @@ import 'package:dartdoc/src/warnings.dart';
 import 'package:test/test.dart';
 
 void main() {
-  ResourceProvider resourceProvider = PhysicalResourceProvider.INSTANCE;
-  Folder testPackageOne, testPackageTwo, testPackageThree;
-  DartdocOptionSet optionSet;
+  var resourceProvider = PhysicalResourceProvider.INSTANCE;
+  late final Folder testPackageOne, testPackageTwo, testPackageThree;
+  late DartdocOptionSet optionSet;
 
   setUpAll(() {
     var tempDir = resourceProvider.createSystemTemp('warnings_test');

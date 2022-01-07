@@ -1071,34 +1071,35 @@ abstract class _DartdocArgOption<T> implements DartdocOption<T> {
   _OptionValueWithContext<T>? _valueAtFromArgsWithContext() {
     if (!_argResults.wasParsed(argName)) return null;
 
-    T retval;
     // Unlike in _DartdocFileOption, we throw here on inputs being invalid
     // rather than silently proceeding.  This is because the user presumably
     // typed something wrong on the command line and can therefore fix it.
     // dartdoc_option.yaml files from other packages may not be fully in the
     // user's control.
     if (_isBool || _isListString || _isString) {
-      retval = _argResults[argName];
+      return _OptionValueWithContext(
+          _argResults[argName], _directoryCurrentPath);
     } else if (_isInt) {
-      retval = int.tryParse(_argResults[argName]) as T;
-      if (retval == null) _throwErrorForTypes(_argResults[argName]);
+      var value = int.tryParse(_argResults[argName]);
+      if (value == null) _throwErrorForTypes(_argResults[argName]);
+      return _OptionValueWithContext(value as T, _directoryCurrentPath);
     } else if (_isDouble) {
-      retval = double.tryParse(_argResults[argName]) as T;
-      if (retval == null) _throwErrorForTypes(_argResults[argName]);
+      var value = double.tryParse(_argResults[argName]);
+      if (value == null) _throwErrorForTypes(_argResults[argName]);
+      return _OptionValueWithContext(value as T, _directoryCurrentPath);
     } else if (_isMapString) {
-      retval = <String, String>{} as T;
+      var value = <String, String>{};
       for (String pair in _argResults[argName]) {
         var pairList = pair.split('::');
         if (pairList.length != 2) {
           _throwErrorForTypes(pair);
         }
-        assert(pairList.length == 2);
-        (retval as Map<String, String>)[pairList.first] = pairList.last;
+        value[pairList.first] = pairList.last;
       }
+      return _OptionValueWithContext(value as T, _directoryCurrentPath);
     } else {
       throw UnsupportedError('Type $T is not supported');
     }
-    return _OptionValueWithContext(retval, _directoryCurrentPath);
   }
 
   /// The name of this option as a command line argument.
@@ -1130,7 +1131,7 @@ abstract class _DartdocArgOption<T> implements DartdocOption<T> {
     if (_isBool) {
       argParser.addFlag(argName,
           abbr: abbr,
-          defaultsTo: defaultsTo as bool,
+          defaultsTo: defaultsTo as bool?,
           help: help,
           hide: hide,
           negatable: negatable);

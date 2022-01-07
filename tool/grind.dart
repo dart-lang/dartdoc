@@ -411,12 +411,12 @@ class WarningsCollection {
 
 /// Returns a map of warning texts to the number of times each has been seen.
 WarningsCollection jsonMessageIterableToWarnings(
-    Iterable<Map<Object, Object>> messageIterable,
+    Iterable<Map<Object, Object?>> messageIterable,
     String tempPath,
     String? pubDir,
     String branch) {
   var warningTexts = WarningsCollection(tempPath, pubDir, branch);
-  for (Map<Object, Object> message in messageIterable) {
+  for (Map<Object, Object?> message in messageIterable) {
     if (message.containsKey('level') &&
         message['level'] == 'WARNING' &&
         message.containsKey('data')) {
@@ -532,7 +532,7 @@ Future<void> testWithAnalyzerSdk() async {
   }
 }
 
-Future<Iterable<Map<String, Object>>> _buildSdkDocs(
+Future<Iterable<Map<String, Object?>>> _buildSdkDocs(
     String sdkDocsPath, Future<String> futureCwd,
     [String label = '']) async {
   if (label != '') label = '-$label';
@@ -554,7 +554,7 @@ Future<Iterable<Map<String, Object>>> _buildSdkDocs(
       workingDirectory: cwd);
 }
 
-Future<Iterable<Map<String, Object>>> _buildTestPackageDocs(
+Future<Iterable<Map<String, Object?>>> _buildTestPackageDocs(
     String outputDir, String cwd,
     {List<String> params = const [],
     String label = '',
@@ -905,7 +905,7 @@ class FlutterRepo {
   }
 }
 
-Future<Iterable<Map<String, Object>>> _buildFlutterDocs(
+Future<Iterable<Map<String, Object?>>> _buildFlutterDocs(
     String flutterPath, Future<String> futureCwd, Map<String, String> env,
     [String? label]) async {
   var flutterRepo = await FlutterRepo.copyFromExistingFlutterRepo(
