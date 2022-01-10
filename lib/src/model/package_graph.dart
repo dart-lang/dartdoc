@@ -798,14 +798,14 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
         candidates
             .addAll(allInheritableElements[iKey].where((me) => me.isCanonical));
       }
-      if (e.enclosingElement is ClassElement) {
-        Class canonicalClass = findCanonicalModelElementFor(e.enclosingElement);
-        if (canonicalClass != null) {
-          candidates.addAll(canonicalClass.allCanonicalModelElements.where((m) {
-            return m.element == e;
-          }));
-        }
+
+      var canonicalClass = findCanonicalModelElementFor(e.enclosingElement);
+      if (canonicalClass is Class) {
+        candidates.addAll(canonicalClass.allCanonicalModelElements.where((m) {
+          return m.element == e;
+        }));
       }
+
       var matches = <ModelElement>{...candidates.where((me) => me.isCanonical)};
 
       // It's possible to find accessors but no combos.  Be sure that if we
