@@ -66,6 +66,7 @@ mixin GetterSetterCombo on ModelElement {
       return original;
     }
     Constructor target = modelBuilder.fromElement(staticElement);
+    if (target.enclosingElement is! Class) return original;
     Class targetClass = target.enclosingElement;
     // TODO(jcollins-g): this logic really should be integrated into Constructor,
     // but that's not trivial because of linkedName's usage.
