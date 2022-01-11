@@ -713,13 +713,13 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     return _canonicalLibraryFor[e];
   }
 
-  /// Tries to find a canonical ModelElement for this element.  If we know
-  /// this element is related to a particular class, pass preferredClass to
+  /// Tries to find a canonical ModelElement for this [e].  If we know
+  /// this element is related to a particular class, pass a [preferredClass] to
   /// disambiguate.
   ///
-  /// This doesn't know anything about [PackageGraph.inheritThrough] and probably
-  /// shouldn't, so using it with [Inheritable]s without special casing is
-  /// not advised.
+  /// This doesn't know anything about [PackageGraph.inheritThrough] and
+  /// probably shouldn't, so using it with [Inheritable]s without special casing
+  /// is not advised.
   ModelElement? findCanonicalModelElementFor(Element? e,
       {Container? preferredClass}) {
     assert(allLibrariesAdded);
@@ -771,13 +771,14 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
             allInheritableElements[iKey as Tuple2<Element, Library>]!
                 .where((me) => me.isCanonical));
       }
-      Class? canonicalClass =
-          findCanonicalModelElementFor(e.enclosingElement) as Class?;
-      if (canonicalClass != null) {
+
+      var canonicalClass = findCanonicalModelElementFor(e.enclosingElement);
+      if (canonicalClass is Class) {
         candidates.addAll(canonicalClass.allCanonicalModelElements.where((m) {
           return m.element == e;
         }));
       }
+
       var matches = <ModelElement>{...candidates.where((me) => me.isCanonical)};
 
       // It's possible to find accessors but no combos.  Be sure that if we

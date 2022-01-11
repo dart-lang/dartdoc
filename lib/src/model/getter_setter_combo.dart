@@ -65,8 +65,9 @@ mixin GetterSetterCombo on ModelElement {
       warn(PackageWarning.missingConstantConstructor, message: constructorName);
       return original;
     }
-    Constructor target = modelBuilder.fromElement(staticElement) as Constructor;
-    Class targetClass = target.enclosingElement as Class;
+    var target = modelBuilder.fromElement(staticElement) as Constructor;
+    if (target.enclosingElement is! Class) return original;
+    var targetClass = target.enclosingElement as Class;
     // TODO(jcollins-g): this logic really should be integrated into Constructor,
     // but that's not trivial because of linkedName's usage.
     if (targetClass.name == target.name) {
