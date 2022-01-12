@@ -16692,7 +16692,6 @@ const _invisibleGetters = {
     'resourceProvider',
     'pathContext',
     'isSdk',
-    'needsPubGet',
     'requiresFlutter',
     'name',
     'hostedAt',
