@@ -3,9 +3,9 @@ name: Test - NNBD branch
 on:
   # Run CI on pushes to the main branch, and on PRs against main.
   push:
-    branches: [ nnbd ]
+    branches: [ master ]
   pull_request:
-    branches: [ nnbd ]
+    branches: [ master ]
   schedule:
     - cron: 0 15 * * *
 
@@ -20,14 +20,14 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         sdk: [dev, stable]
-        job: [nnbd, flutter, sdk-analyzer, packages, sdk-docs]
+        job: [main, flutter, sdk-analyzer, packages, sdk-docs]
         include:
           - os: macos-latest
             sdk: dev
-            job: nnbd
+            job: main
           - os: windows-latest
             sdk: dev
-            job: nnbd
+            job: main
         exclude:
             # Do not try to run flutter against the "stable" sdk,
             # it is unlikely to work and produces uninteresting
@@ -76,8 +76,8 @@ jobs:
           DARTDOC_BOT: ${{ matrix.job }}
           #COVERAGE_TOKEN: true # this needs to be set to enable coverage
       - name: ${{ matrix.job }}
-        if: runner.os == 'Windows' && matrix.job == 'nnbd'
-        run: dart run grinder buildbot-no-publish
+        if: runner.os == 'Windows' && matrix.job == 'main'
+        run: dart run grinder buildbot
         env:
           DARTDOC_BOT: ${{ matrix.job }}
      # - id: coverage
