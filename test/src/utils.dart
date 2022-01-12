@@ -8,9 +8,11 @@ import 'dart:io';
 
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/memory_file_system.dart';
+import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:analyzer/src/dart/sdk/sdk.dart';
 import 'package:analyzer/src/test_utilities/mock_sdk.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
+import 'package:dartdoc/src/failure.dart';
 import 'package:dartdoc/src/markdown_processor.dart';
 import 'package:dartdoc/src/matching_link_result.dart';
 import 'package:dartdoc/src/model/package_builder.dart';
@@ -18,6 +20,7 @@ import 'package:dartdoc/src/model/package_graph.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/warnings.dart';
+import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
 
 /// The number of public libraries in testing/test_package, minus 2 for
@@ -45,14 +48,37 @@ Future<DartdocOptionContext> contextFromArgv(
       optionSet, pubPackageMetaProvider.resourceProvider);
 }
 
+void runPubGet(String dirPath) {
+  String binPath = p.join(p.dirname(Platform.resolvedExecutable), 'dart');
+  if (Platform.isWindows) {
+    binPath += '.exe';
+  }
+  var result = Process.runSync(
+    binPath,
+    ['pub', 'get'],
+    workingDirectory: dirPath,
+  );
+
+  if (result.exitCode != 0) {
+    var buf = StringBuffer();
+    buf.writeln('${result.stdout}');
+    buf.writeln('${result.stderr}');
+    throw DartdocFailure('pub get failed: ${buf.toString().trim()}');
+  }
+}
+
 Future<PackageGraph> bootBasicPackage(
     String dirPath,
     PackageMetaProvider packageMetaProvider,
     PackageConfigProvider packageConfigProvider,
     {List<String> excludeLibraries = const [],
     List<String> additionalArguments = const []}) async {
-  // TODO(devoncarew): Should this test method run 'pub get'?
   var resourceProvider = packageMetaProvider.resourceProvider;
+
+  if (resourceProvider == PhysicalResourceProvider.INSTANCE) {
+    runPubGet(dirPath);
+  }
+
   var dir = resourceProvider.getFolder(resourceProvider.pathContext
       .absolute(resourceProvider.pathContext.normalize(dirPath)));
   return PubPackageBuilder(
