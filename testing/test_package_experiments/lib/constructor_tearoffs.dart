@@ -51,7 +51,7 @@ class F<T> {
   F.alternative() {}
 }
 
-typedef Ft = F;
+typedef Ft<T> = F<T>;
 
 /// Referring to [Fstring.new] should be fine.
 typedef Fstring = F<String>;
@@ -68,8 +68,7 @@ void funcTypeParams<T extends String, U extends num>(
 
 const aFunc = func;
 const aFuncParams = funcTypeParams;
-// TODO(jcollins-g): does not work @ analyzer 2.2
-//const aFuncWithArgs = funcTypeParams<String, int>;
+const aFuncWithArgs = funcTypeParams<String, int>;
 
 const aTearOffDefaultConstructor = F.new;
 const aTearOffNonDefaultConstructor = F.alternative;
@@ -78,5 +77,4 @@ const aTearOffDefaultConstructorArgs = F<String>.new;
 
 const aTearOffDefaultConstructorTypedef = Fstring.new;
 
-// TODO(jcollins-g): does not work @ analyzer 2.2
-//const aTearOffDefaultConstructorArgsTypedef = Ft<String>.new;
+const aTearOffDefaultConstructorArgsTypedef = Ft<String>.new;
