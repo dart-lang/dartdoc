@@ -11,17 +11,17 @@ import 'package:dartdoc/src/special_elements.dart';
 
 /// Implements the Dart 2.1 "mixin" style of mixin declarations.
 class Mixin extends InheritingContainer with TypeImplementing {
-  Mixin(ClassElement element, Library library, PackageGraph packageGraph)
+  Mixin(ClassElement element, Library? library, PackageGraph packageGraph)
       : super(element, library, packageGraph);
 
-  List<ParameterizedElementType> _superclassConstraints;
+  List<ParameterizedElementType>? _superclassConstraints;
 
   /// Returns a list of superclass constraints for this mixin.
-  Iterable<ParameterizedElementType> get superclassConstraints {
+  Iterable<ParameterizedElementType>? get superclassConstraints {
     _superclassConstraints ??= [
-      ...element.superclassConstraints
-          .map<ParameterizedElementType>(
-              (InterfaceType i) => modelBuilder.typeFrom(i, library))
+      ...element!.superclassConstraints
+          .map<ParameterizedElementType>((InterfaceType i) =>
+              modelBuilder.typeFrom(i, library) as ParameterizedElementType)
           .where((t) =>
               t.modelElement !=
               packageGraph.specialClasses[SpecialClass.object])
@@ -33,7 +33,7 @@ class Mixin extends InheritingContainer with TypeImplementing {
       publicSuperclassConstraints.isNotEmpty;
 
   Iterable<ParameterizedElementType> get publicSuperclassConstraints =>
-      model_utils.filterNonPublic(superclassConstraints);
+      model_utils.filterNonPublic(superclassConstraints!);
 
   @override
   bool get hasModifiers => super.hasModifiers || hasPublicSuperclassConstraints;
@@ -44,29 +44,29 @@ class Mixin extends InheritingContainer with TypeImplementing {
   @override
   String get kind => 'mixin';
 
-  List<InheritingContainer> _inheritanceChain;
+  List<InheritingContainer?>? _inheritanceChain;
 
   @override
-  List<InheritingContainer> get inheritanceChain {
+  List<InheritingContainer?> get inheritanceChain {
     if (_inheritanceChain == null) {
       _inheritanceChain = [];
-      _inheritanceChain.add(this);
+      _inheritanceChain!.add(this);
 
       // Mix-in interfaces come before other interfaces.
-      _inheritanceChain.addAll(superclassConstraints.expand(
+      _inheritanceChain!.addAll(superclassConstraints!.expand(
           (ParameterizedElementType i) =>
               (i.modelElement as InheritingContainer).inheritanceChain));
 
       for (var c
           in superChain.map((e) => (e.modelElement as InheritingContainer))) {
-        _inheritanceChain.addAll(c.inheritanceChain);
+        _inheritanceChain!.addAll(c.inheritanceChain);
       }
 
       /// Interfaces need to come last, because classes in the superChain might
       /// implement them even when they aren't mentioned.
-      _inheritanceChain.addAll(interfaces.expand(
+      _inheritanceChain!.addAll(interfaces.expand(
           (e) => (e.modelElement as InheritingContainer).inheritanceChain));
     }
-    return _inheritanceChain.toList(growable: false);
+    return _inheritanceChain!.toList(growable: false);
   }
 }

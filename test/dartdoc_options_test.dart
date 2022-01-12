@@ -13,16 +13,16 @@ import 'package:test/test.dart';
 import 'package:yaml/yaml.dart';
 
 class ConvertedOption {
-  final String param1;
-  final String param2;
+  final String? param1;
+  final String? param2;
   final String myContextPath;
 
   ConvertedOption._(this.param1, this.param2, this.myContextPath);
 
   static ConvertedOption fromYamlMap(YamlMap yamlMap, String canonicalYamlPath,
       ResourceProvider resourceProvider) {
-    String p1;
-    String p2;
+    String? p1;
+    String? p2;
 
     for (var entry in yamlMap.entries) {
       switch (entry.key.toString()) {
@@ -41,23 +41,22 @@ class ConvertedOption {
 void main() {
   var resourceProvider = pubPackageMetaProvider.resourceProvider;
 
-  DartdocOptionSet dartdocOptionSetFiles;
-  DartdocOptionSet dartdocOptionSetArgs;
-  DartdocOptionSet dartdocOptionSetAll;
-  DartdocOptionSet dartdocOptionSetSynthetic;
-  Folder tempDir;
-  Folder firstDir;
-  Folder secondDir;
-  Folder secondDirFirstSub;
-  Folder secondDirSecondSub;
+  late final DartdocOptionRoot dartdocOptionSetFiles;
+  late final DartdocOptionRoot dartdocOptionSetArgs;
+  late final DartdocOptionRoot dartdocOptionSetAll;
+  late final DartdocOptionRoot dartdocOptionSetSynthetic;
+  late final Folder tempDir;
+  late final Folder firstDir;
+  late final Folder secondDir;
+  late final Folder secondDirFirstSub;
+  late final Folder secondDirSecondSub;
 
-  File dartdocOptionsOne;
-  File dartdocOptionsTwo;
-  File dartdocOptionsTwoFirstSub;
-  File firstExisting;
+  late final File dartdocOptionsOne;
+  late final File dartdocOptionsTwo;
+  late final File firstExisting;
 
   setUpAll(() {
-    dartdocOptionSetSynthetic = DartdocOptionSet('dartdoc', resourceProvider);
+    dartdocOptionSetSynthetic = DartdocOptionRoot('dartdoc', resourceProvider);
     dartdocOptionSetSynthetic.add(
         DartdocOptionArgFile<int>('mySpecialInteger', 91, resourceProvider));
     dartdocOptionSetSynthetic.add(
@@ -84,7 +83,7 @@ void main() {
       return (option.root['vegetableLoader'].valueAt(dir) as List).first;
     }, resourceProvider, optionIs: OptionKind.file));
 
-    dartdocOptionSetFiles = DartdocOptionSet('dartdoc', resourceProvider);
+    dartdocOptionSetFiles = DartdocOptionRoot('dartdoc', resourceProvider);
     dartdocOptionSetFiles.add(DartdocOptionFileOnly<List<String>>(
         'categoryOrder', [], resourceProvider));
     dartdocOptionSetFiles
@@ -96,31 +95,31 @@ void main() {
     dartdocOptionSetFiles.add(DartdocOptionFileOnly<List<String>>(
         'fileOptionList', [], resourceProvider,
         optionIs: OptionKind.file, mustExist: true));
-    dartdocOptionSetFiles.add(DartdocOptionFileOnly<String>(
+    dartdocOptionSetFiles.add(DartdocOptionFileOnly<String?>(
         'fileOption', null, resourceProvider,
         optionIs: OptionKind.file, mustExist: true));
     dartdocOptionSetFiles.add(DartdocOptionFileOnly<String>(
         'parentOverride', 'oops', resourceProvider,
         parentDirOverridesChild: true));
-    dartdocOptionSetFiles.add(DartdocOptionFileOnly<String>(
+    dartdocOptionSetFiles.add(DartdocOptionFileOnly<String?>(
         'nonCriticalFileOption', null, resourceProvider,
         optionIs: OptionKind.file));
     dartdocOptionSetFiles.add(DartdocOptionSet('nestedOption', resourceProvider)
       ..addAll([DartdocOptionFileOnly<bool>('flag', false, resourceProvider)]));
-    dartdocOptionSetFiles.add(DartdocOptionFileOnly<String>(
+    dartdocOptionSetFiles.add(DartdocOptionFileOnly<String?>(
         'dirOption', null, resourceProvider,
         optionIs: OptionKind.dir, mustExist: true));
-    dartdocOptionSetFiles.add(DartdocOptionFileOnly<String>(
+    dartdocOptionSetFiles.add(DartdocOptionFileOnly<String?>(
         'nonCriticalDirOption', null, resourceProvider,
         optionIs: OptionKind.dir));
-    dartdocOptionSetFiles.add(DartdocOptionFileOnly<ConvertedOption>(
+    dartdocOptionSetFiles.add(DartdocOptionFileOnly<ConvertedOption?>(
       'convertThisMap',
       null,
       resourceProvider,
       convertYamlToType: ConvertedOption.fromYamlMap,
     ));
 
-    dartdocOptionSetArgs = DartdocOptionSet('dartdoc', resourceProvider);
+    dartdocOptionSetArgs = DartdocOptionRoot('dartdoc', resourceProvider);
     dartdocOptionSetArgs.add(DartdocOptionArgOnly<bool>(
         'cauliflowerSystem', false, resourceProvider));
     dartdocOptionSetArgs.add(DartdocOptionArgOnly<String>(
@@ -150,7 +149,7 @@ void main() {
         'unimportantFile', 'whatever', resourceProvider,
         optionIs: OptionKind.file));
 
-    dartdocOptionSetAll = DartdocOptionSet('dartdoc', resourceProvider);
+    dartdocOptionSetAll = DartdocOptionRoot('dartdoc', resourceProvider);
     dartdocOptionSetAll.add(DartdocOptionArgFile<List<String>>(
         'categoryOrder', [], resourceProvider));
     dartdocOptionSetAll.add(
@@ -164,7 +163,7 @@ void main() {
         'mapOption', {'hi': 'there'}, resourceProvider));
     dartdocOptionSetAll.add(DartdocOptionArgFile<String>(
         'notInAnyFile', 'so there', resourceProvider));
-    dartdocOptionSetAll.add(DartdocOptionArgFile<String>(
+    dartdocOptionSetAll.add(DartdocOptionArgFile<String?>(
         'fileOption', null, resourceProvider,
         optionIs: OptionKind.file, mustExist: true));
     dartdocOptionSetAll.add(DartdocOptionArgFile<List<String>>(
@@ -200,7 +199,7 @@ void main() {
         .join(firstDir.path, 'dartdoc_options.yaml'));
     dartdocOptionsTwo = resourceProvider.getFile(resourceProvider.pathContext
         .join(secondDir.path, 'dartdoc_options.yaml'));
-    dartdocOptionsTwoFirstSub = resourceProvider.getFile(resourceProvider
+    var dartdocOptionsTwoFirstSub = resourceProvider.getFile(resourceProvider
         .pathContext
         .join(secondDirFirstSub.path, 'dartdoc_options.yaml'));
 
@@ -263,7 +262,7 @@ dartdoc:
           dartdocOptionSetSynthetic['vegetableLoaderChecked'].valueAt(firstDir),
           orderedEquals([path.canonicalize(firstExisting.path)]));
 
-      String errorMessage;
+      String? errorMessage;
       try {
         dartdocOptionSetSynthetic['vegetableLoaderChecked'].valueAt(tempDir);
       } on DartdocFileMissing catch (e) {
@@ -311,7 +310,7 @@ dartdoc:
         () {
       dartdocOptionSetAll
           .parseArguments(['--file-option', 'override-not-existing.dart']);
-      String errorMessage;
+      String? errorMessage;
       try {
         dartdocOptionSetAll['fileOption'].valueAt(firstDir);
       } on DartdocFileMissing catch (e) {
@@ -336,7 +335,7 @@ dartdoc:
 
     test('File errors still get passed through', () {
       dartdocOptionSetAll.parseArguments([]);
-      String errorMessage;
+      String? errorMessage;
       try {
         dartdocOptionSetAll['fileOption'].valueAt(secondDir);
       } on DartdocFileMissing catch (e) {
@@ -454,7 +453,7 @@ dartdoc:
     });
 
     test('DartdocOptionArgOnly checks file existence', () {
-      String errorMessage;
+      String? errorMessage;
       dartdocOptionSetArgs.parseArguments(['--single-file', 'not_found.txt']);
       try {
         dartdocOptionSetArgs['singleFile'].valueAt(tempDir);
@@ -472,7 +471,7 @@ dartdoc:
     });
 
     test('DartdocOptionArgOnly checks file existence on multi-options', () {
-      String errorMessage;
+      String? errorMessage;
       dartdocOptionSetArgs.parseArguments([
         '--files-flag',
         resourceProvider.pathContext.absolute(firstExisting.path),
@@ -569,7 +568,7 @@ dartdoc:
 
     test('DartdocOptionArgOnly throws on double type mismatch', () {
       dartdocOptionSetArgs.parseArguments(['--respawn-probability', 'unknown']);
-      String errorMessage;
+      String? errorMessage;
       try {
         dartdocOptionSetArgs['respawnProbability'].valueAt(tempDir);
       } on DartdocOptionError catch (e) {
@@ -585,7 +584,7 @@ dartdoc:
       dartdocOptionSetArgs.parseArguments(['--number-of-heads', '3.6']);
       expect(() => dartdocOptionSetArgs['number_of_heads'].valueAt(tempDir),
           throwsA(const TypeMatcher<DartdocOptionError>()));
-      String errorMessage;
+      String? errorMessage;
       try {
         dartdocOptionSetArgs['number_of_heads'].valueAt(tempDir);
       } on DartdocOptionError catch (e) {
@@ -600,7 +599,7 @@ dartdoc:
     test('DartdocOptionArgOnly throws on a map type mismatch', () {
       dartdocOptionSetArgs
           .parseArguments(['--a-fancy-map-variable', 'not a map']);
-      String errorMessage;
+      String? errorMessage;
       try {
         dartdocOptionSetArgs['aFancyMapVariable'].valueAt(tempDir);
       } on DartdocOptionError catch (e) {
@@ -626,7 +625,7 @@ dartdoc:
     });
 
     test('DartdocOptionSetFile checks file existence when appropriate', () {
-      String errorMessage;
+      String? errorMessage;
       try {
         dartdocOptionSetFiles['fileOptionList'].valueAt(secondDir);
       } on DartdocFileMissing catch (e) {
@@ -652,7 +651,7 @@ dartdoc:
     test(
         'DartdocOptionSetFile resolves paths for files relative to where they are declared',
         () {
-      String errorMessage;
+      String? errorMessage;
       try {
         dartdocOptionSetFiles['fileOption'].valueAt(secondDirFirstSub);
       } on DartdocFileMissing catch (e) {
@@ -679,7 +678,7 @@ dartdoc:
     test('DartdocOptionSetFile checks errors for directory options', () {
       expect(dartdocOptionSetFiles['dirOption'].valueAt(secondDir),
           equals(path.canonicalize(path.join(secondDir.path, 'firstSub'))));
-      String errorMessage;
+      String? errorMessage;
       try {
         dartdocOptionSetFiles['dirOption'].valueAt(firstDir);
       } on DartdocFileMissing catch (e) {

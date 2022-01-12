@@ -10,12 +10,11 @@ import '../tool/grind.dart' hide test;
 
 void main() {
   group('printWarningDelta', () {
-    WarningsCollection original, current;
-    WarningsCollection originalWithDirs, currentWithDirs;
+    late WarningsCollection original, current;
+
     setUp(() {
-      original =
-          WarningsCollection('/a/tempdir', '/pubcache/path', 'oldbranch');
-      original.add('originalwarning');
+      original = WarningsCollection('/a/tempdir', '/pubcache/path', 'oldbranch')
+        ..add('originalwarning');
       original.add('morewarning');
       original.add('duplicateoriginalwarning');
       original.add('duplicateoriginalwarning');
@@ -23,7 +22,10 @@ void main() {
       current.add('newwarning');
       current.add('morewarning');
       current.add('duplicateoriginalwarning');
-      originalWithDirs = WarningsCollection(
+    });
+
+    test('verify that paths are substituted when comparing warnings', () {
+      var originalWithDirs = WarningsCollection(
           '/a/tempdirFOO', '/pubcache/pathFOO', 'DirsOriginal');
       originalWithDirs.add(
           'originalWarning found in /a/tempdirFOO/some/subdir/program.dart!!!!');
@@ -33,7 +35,7 @@ void main() {
           'insufficent exclamation mark warning found in /pubcache/pathFOO/some/package/lib/thingy.dart.');
       originalWithDirs.add(
           'another originalWarning found in /a/tempdirFOO/some/subdir/program.dart');
-      currentWithDirs = WarningsCollection(
+      var currentWithDirs = WarningsCollection(
           '/a/tempdirBAR', '/pubcache/pathBAR', 'DirsCurrent');
       currentWithDirs.add(
           'originalWarning found in /a/tempdirBAR/some/subdir/program.dart!!!!');
@@ -43,9 +45,6 @@ void main() {
           'insufficent exclamation mark warning found in /pubcache/pathBAR/some/package/lib/thingy.dart.');
       currentWithDirs.add(
           'another originalWarning found in /a/tempdirBAR/some/other/subdir/program.dart');
-    });
-
-    test('verify that paths are substituted when comparing warnings', () {
       expect(
           originalWithDirs.getPrintableWarningDelta(
               'Dirs diff title', currentWithDirs),

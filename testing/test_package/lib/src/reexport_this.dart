@@ -1,5 +1,3 @@
-// @dart=2.9
-
 library reexport_this;
 
 /// {@template example:templateMemberTest}

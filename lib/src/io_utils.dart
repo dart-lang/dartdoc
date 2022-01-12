@@ -25,16 +25,16 @@ extension PathExtensions on path.Context {
   /// Return a resolved path including the home directory in place of tilde
   /// references.
   String resolveTildePath(String originalPath) {
-    if (originalPath == null || !originalPath.startsWith('~/')) {
+    if (!originalPath.startsWith('~/')) {
       return originalPath;
     }
 
     String homeDir;
 
     if (io.Platform.isWindows) {
-      homeDir = absolute(io.Platform.environment['USERPROFILE']);
+      homeDir = absolute(io.Platform.environment['USERPROFILE'] ?? '\'');
     } else {
-      homeDir = absolute(io.Platform.environment['HOME']);
+      homeDir = absolute(io.Platform.environment['HOME'] ?? '/');
     }
 
     return join(homeDir, originalPath.substring(2));
@@ -55,8 +55,7 @@ extension ResourceProviderExtensions on ResourceProvider {
     if (this is PhysicalResourceProvider) {
       return io.Platform.resolvedExecutable;
     } else {
-      // TODO(srawlins): Return what is needed for tests.
-      return null;
+      throw UnimplementedError('resolvedExecutable not implemented');
     }
   }
 
@@ -65,8 +64,7 @@ extension ResourceProviderExtensions on ResourceProvider {
       var mode = io.File(file.path).statSync().mode;
       return (0x1 & ((mode >> 6) | (mode >> 3) | mode)) != 0;
     } else {
-      // TODO(srawlins)
-      return false;
+      throw UnimplementedError('isExecutable not implemented');
     }
   }
 
@@ -101,8 +99,11 @@ final _libraryNameRegExp = RegExp('[.:]');
 
 typedef TaskQueueClosure<T> = Future<T> Function();
 
+void _defaultOnComplete() {}
+
 class _TaskQueueItem<T> {
-  _TaskQueueItem(this._closure, this._completer, {this.onComplete});
+  _TaskQueueItem(this._closure, this._completer,
+      {this.onComplete = _defaultOnComplete});
 
   final TaskQueueClosure<T> _closure;
   final Completer<T> _completer;
@@ -114,7 +115,7 @@ class _TaskQueueItem<T> {
     } catch (e) {
       _completer.completeError(e);
     } finally {
-      onComplete?.call();
+      onComplete.call();
     }
   }
 }
@@ -127,7 +128,7 @@ class TaskQueue<T extends Object> {
   /// Creates a task queue with a maximum number of simultaneous jobs.
   /// The [maxJobs] parameter defaults to the number of CPU cores on the
   /// system.
-  TaskQueue({int maxJobs})
+  TaskQueue({int? maxJobs})
       : maxJobs = maxJobs ?? io.Platform.numberOfProcessors;
 
   /// The maximum number of jobs that this queue will run simultaneously.

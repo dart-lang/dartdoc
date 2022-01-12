@@ -9,8 +9,6 @@
 /// fast.
 library dartdoc.model_special_cases_test;
 
-import 'dart:io';
-
 import 'package:async/async.dart';
 import 'package:dartdoc/src/matching_link_result.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -62,13 +60,6 @@ Future<PackageGraph> _bootSdkPackage() async {
 }
 
 void main() {
-  var sdkDir = pubPackageMetaProvider.defaultSdkDir;
-
-  if (sdkDir == null) {
-    print('Warning: unable to locate the Dart SDK.');
-    exit(1);
-  }
-
   // We can not use ExperimentalFeature.releaseVersion or even
   // ExperimentalFeature.experimentalReleaseVersion as these are set to null
   // even when partial analyzer implementations are available, and are often
@@ -80,11 +71,11 @@ void main() {
   // block when the feature is enabled by default.
   group('Experiments', () {
     group('constructor-tearoffs', () {
-      Library constructorTearoffs;
-      Class A, B, C, D, E, F;
-      Mixin M;
-      Typedef At, Bt, Ct, Et, Ft, NotAClass;
-      Constructor Anew, Bnew, Cnew, Dnew, Enew, Fnew;
+      late final Library constructorTearoffs;
+      late final Class A, B, C, D, E, F;
+      late final Mixin M;
+      late final Typedef At, Bt, Ct, Et, Ft, NotAClass;
+      late final Constructor Anew, Bnew, Cnew, Dnew, Enew, Fnew;
 
       setUpAll(() async {
         constructorTearoffs = (await _testPackageGraphExperiments)
@@ -104,12 +95,12 @@ void main() {
         Ft = constructorTearoffs.typedefs.firstWhere((t) => t.name == 'Ft');
         NotAClass = constructorTearoffs.typedefs
             .firstWhere((t) => t.name == 'NotAClass');
-        Anew = A.unnamedConstructor;
-        Bnew = B.unnamedConstructor;
-        Cnew = C.unnamedConstructor;
-        Dnew = D.unnamedConstructor;
-        Enew = E.unnamedConstructor;
-        Fnew = F.unnamedConstructor;
+        Anew = A.unnamedConstructor!;
+        Bnew = B.unnamedConstructor!;
+        Cnew = C.unnamedConstructor!;
+        Dnew = D.unnamedConstructor!;
+        Enew = E.unnamedConstructor!;
+        Fnew = F.unnamedConstructor!;
       });
 
       test('smoke test', () {
@@ -277,8 +268,8 @@ void main() {
 
   group('HTML is sanitized when enabled', () {
     Class classWithHtml;
-    Method blockHtml;
-    Method inlineHtml;
+    late final Method blockHtml;
+    late final Method inlineHtml;
 
     PackageGraph packageGraph;
     Library exLibrary;
@@ -329,11 +320,11 @@ void main() {
 
   group('HTML Injection when allowed', () {
     Class htmlInjection;
-    Method injectSimpleHtml;
-    Method injectHtmlFromTool;
+    late final Method injectSimpleHtml;
+    late final Method injectHtmlFromTool;
 
     PackageGraph injectionPackageGraph;
-    Library injectionExLibrary;
+    late final Library injectionExLibrary;
 
     setUpAll(() async {
       injectionPackageGraph = await utils.bootBasicPackage(
@@ -361,6 +352,7 @@ void main() {
       expect(injectSimpleHtml.documentationAsHtml,
           contains('   <div style="opacity: 0.5;">[HtmlInjection]</div>'));
     });
+
     test('can inject HTML from tool', () {
       var envLine = RegExp(r'^Env: \{', multiLine: true);
       expect(envLine.allMatches(injectHtmlFromTool.documentation).length,
@@ -394,7 +386,7 @@ void main() {
   });
 
   group('Missing and Remote', () {
-    PackageGraph ginormousPackageGraph;
+    late final PackageGraph ginormousPackageGraph;
 
     setUpAll(() async {
       ginormousPackageGraph = await _testPackageGraphGinormous;
@@ -427,7 +419,7 @@ void main() {
   });
 
   group('Category', () {
-    PackageGraph ginormousPackageGraph;
+    late final PackageGraph ginormousPackageGraph;
 
     setUpAll(() async {
       ginormousPackageGraph = await _testPackageGraphGinormous;
@@ -493,7 +485,7 @@ void main() {
   });
 
   group('Package', () {
-    PackageGraph sdkAsPackageGraph;
+    late final PackageGraph sdkAsPackageGraph;
 
     setUpAll(() async {
       sdkAsPackageGraph = await _testPackageGraphSdk;
@@ -513,7 +505,7 @@ void main() {
       // If this fails, EventTarget might have been changed to no longer
       // inherit from Interceptor.  If that's true, adjust test case to
       // another class that does.
-      expect(hashCode.inheritance.any((c) => c.name == 'Interceptor'), isTrue);
+      expect(hashCode.inheritance.any((c) => c?.name == 'Interceptor'), isTrue);
       // If EventTarget really does start implementing hashCode, this will
       // fail.
       expect(hashCode.href,

@@ -15,67 +15,63 @@ class Method extends ModelElement
     with ContainerMember, Inheritable, TypeParameters
     implements EnclosedElement {
   bool _isInherited = false;
-  Container _enclosingContainer;
+  Container? _enclosingContainer;
   @override
   List<TypeParameter> typeParameters = [];
 
-  Method(MethodElement element, Library library, PackageGraph packageGraph)
+  Method(MethodElement element, Library? library, PackageGraph packageGraph)
       : super(element, library, packageGraph) {
     _calcTypeParameters();
   }
 
   Method.inherited(MethodElement element, this._enclosingContainer,
-      Library library, PackageGraph packageGraph,
-      {ExecutableMember originalMember})
+      Library? library, PackageGraph packageGraph,
+      {ExecutableMember? originalMember})
       : super(element, library, packageGraph, originalMember) {
     _isInherited = true;
     _calcTypeParameters();
   }
 
   void _calcTypeParameters() {
-    typeParameters = element.typeParameters.map((f) {
-      return modelBuilder.from(f, library) as TypeParameter;
+    typeParameters = element!.typeParameters.map((f) {
+      return modelBuilder.from(f, library!) as TypeParameter;
     }).toList();
   }
 
   @override
-  CharacterLocation get characterLocation {
+  CharacterLocation? get characterLocation {
     if (enclosingElement is Enum && name == 'toString') {
       // The toString() method on Enums is special, treated as not having
       // a definition location by the analyzer yet not being inherited, either.
       // Just directly override our location with the Enum definition --
       // this is OK because Enums can not inherit from each other nor
       // have their definitions split between files.
-      return enclosingElement.characterLocation;
+      return enclosingElement!.characterLocation;
     }
     return super.characterLocation;
   }
 
   @override
-  ModelElement get enclosingElement {
+  ModelElement? get enclosingElement {
     _enclosingContainer ??=
-        modelBuilder.from(element.enclosingElement, library);
+        modelBuilder.from(element!.enclosingElement, library!) as Container?;
     return _enclosingContainer;
   }
 
   @override
   String get filePath =>
-      '${enclosingElement.library.dirName}/${enclosingElement.name}/$fileName';
+      '${enclosingElement!.library!.dirName}/${enclosingElement!.name}/$fileName';
 
   String get fullkind {
-    if (element.isAbstract) return 'abstract $kind';
+    if (element!.isAbstract) return 'abstract $kind';
     return kind;
   }
 
   @override
-  String get href {
-    if (!identical(canonicalModelElement, this)) {
-      return canonicalModelElement?.href;
-    }
-    assert(!(canonicalLibrary == null || canonicalEnclosingContainer == null));
-    assert(canonicalLibrary == library);
-    assert(canonicalEnclosingContainer == enclosingElement);
-    return '${package.baseHref}$filePath';
+  String? get href {
+    assert(!identical(canonicalModelElement, this) ||
+        canonicalEnclosingContainer == enclosingElement);
+    return super.href;
   }
 
   @override
@@ -90,42 +86,43 @@ class Method extends ModelElement
       };
 
   @override
-  bool get isStatic => element.isStatic;
+  bool get isStatic => element!.isStatic;
 
   @override
   String get kind => 'method';
 
   @override
-  ExecutableMember get originalMember => super.originalMember;
+  ExecutableMember? get originalMember =>
+      super.originalMember as ExecutableMember?;
 
-  Callable _modelType;
-  Callable get modelType => _modelType ??=
-      modelBuilder.typeFrom((originalMember ?? element).type, library);
+  Callable? _modelType;
+  Callable get modelType => (_modelType ??= modelBuilder.typeFrom(
+      (originalMember ?? element)!.type, library!) as Callable?)!;
 
   @override
-  Method get overriddenElement {
+  Method? get overriddenElement {
     if (_enclosingContainer is Extension) {
       return null;
     }
-    ClassElement parent = element.enclosingElement;
+    ClassElement parent = element!.enclosingElement as ClassElement;
     for (var t in parent.allSupertypes) {
-      Element e = t.getMethod(element.name);
+      Element? e = t.getMethod(element!.name);
       if (e != null) {
         assert(e.enclosingElement is ClassElement);
-        return modelBuilder.fromElement(e);
+        return modelBuilder.fromElement(e) as Method?;
       }
     }
     return null;
   }
 
   @override
-  MethodElement get element => super.element;
+  MethodElement? get element => super.element as MethodElement?;
 
   /// Methods can not be covariant; always returns false.
   @override
   bool get isCovariant => false;
 
-  Map<String, CommentReferable> _referenceChildren;
+  Map<String, CommentReferable>? _referenceChildren;
   @override
   Map<String, CommentReferable> get referenceChildren {
     var from = documentationFrom.first as Method;
@@ -134,13 +131,13 @@ class Method extends ModelElement
     }
     if (_referenceChildren == null) {
       _referenceChildren = {};
-      _referenceChildren.addEntriesIfAbsent([
+      _referenceChildren!.addEntriesIfAbsent([
         ...typeParameters.explicitOnCollisionWith(this),
         ...allParameters.explicitOnCollisionWith(this),
         ...modelType.typeArguments.explicitOnCollisionWith(this),
         ...modelType.returnType.typeArguments.explicitOnCollisionWith(this),
       ]);
     }
-    return _referenceChildren;
+    return _referenceChildren!;
   }
 }

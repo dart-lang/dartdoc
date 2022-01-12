@@ -4,7 +4,7 @@
 
 library dartdoc.comment_reference_test;
 
-import 'package:analyzer/dart/element/element.dart';
+import 'package:collection/collection.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model_object_builder.dart';
 import 'package:dartdoc/src/model/nameable.dart';
@@ -19,24 +19,22 @@ abstract class Base extends Nameable with CommentReferable {
 
   List<Base> get children;
 
-  Base parent;
+  Base? parent;
 
   /// Utility function to quickly build structures similar to [ModelElement]
   /// hierarchies in dartdoc in tests.
   /// Returns the added (or already existing) [Base].
   Base add(String newName);
 
-  T lookup<T extends CommentReferable>(String value,
-          {bool Function(CommentReferable) allowTree,
-          bool Function(CommentReferable) filter}) =>
-      referenceBy(value.split(_separator),
-          allowTree: allowTree, filter: filter);
+  CommentReferable? lookup<T extends CommentReferable?>(String value,
+      {bool Function(CommentReferable?)? allowTree,
+      bool Function(CommentReferable?)? filter}) {
+    return referenceBy(value.split(_separator),
+        allowTree: allowTree ?? (_) => true, filter: filter ?? (_) => true);
+  }
 
   @override
-  Element get element => throw UnimplementedError();
-
-  @override
-  Iterable<CommentReferable> get referenceGrandparentOverrides => null;
+  Iterable<CommentReferable>? get referenceGrandparentOverrides => null;
 }
 
 class Top extends Base {
@@ -51,13 +49,13 @@ class Top extends Base {
   Base add(String newName) {
     Base retval;
     var newNameSplit = newName.split(_separator).toList();
-    var parent = children.firstWhere((c) => c.name == newNameSplit.first,
-        orElse: () => null);
+    var parent = children.firstWhereOrNull((c) => c.name == newNameSplit.first);
     if (parent == null) {
       parent = TopChild(newNameSplit.last, [], this);
       children.add(parent);
       retval = parent;
     }
+    retval = parent;
     if (newNameSplit.length > 1) {
       retval = parent.add(newNameSplit.sublist(1).join(_separator));
     }
@@ -80,13 +78,13 @@ abstract class Child extends Base {
   Base add(String newName) {
     Base retval;
     var newNameSplit = newName.split(_separator).toList();
-    var child = children.firstWhere((c) => c.name == newNameSplit.first,
-        orElse: () => null);
+    var child = children.firstWhereOrNull((c) => c.name == newNameSplit.first);
     if (child == null) {
       child = GenericChild(newNameSplit.last, [], this);
       children.add(child);
-      retval = child;
     }
+
+    retval = child;
     if (newNameSplit.length > 1) {
       retval = child.add(newNameSplit.sublist(1).join(_separator));
     }
@@ -143,7 +141,7 @@ class GrandparentOverrider extends GenericChild {
 
 void main() {
   group('Basic comment reference lookups', () {
-    Top referable;
+    late Top referable;
 
     setUp(() {
       referable = Top('top', []);
@@ -159,10 +157,10 @@ void main() {
     });
 
     test('Check that basic lookups work', () {
-      expect(referable.lookup('lib1').name, equals('lib1'));
-      expect(referable.lookup('lib2').name, equals('lib2'));
-      expect(referable.lookup('lib1.class2.member1').name, equals('member1'));
-      expect(referable.lookup('lib2.class3').name, equals('class3'));
+      expect(referable.lookup('lib1')?.name, equals('lib1'));
+      expect(referable.lookup('lib2')?.name, equals('lib2'));
+      expect(referable.lookup('lib1.class2.member1')?.name, equals('member1'));
+      expect(referable.lookup('lib2.class3')?.name, equals('class3'));
     });
 
     test('Check that filters work', () {

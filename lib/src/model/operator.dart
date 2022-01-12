@@ -4,18 +4,19 @@
 
 import 'package:analyzer/dart/element/element.dart';
 // ignore: implementation_imports
-import 'package:analyzer/src/dart/element/member.dart' show Member;
+import 'package:analyzer/src/dart/element/member.dart'
+    show ExecutableMember, Member;
 import 'package:dartdoc/src/comment_references/parser.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 class Operator extends Method {
-  Operator(MethodElement element, Library library, PackageGraph packageGraph)
+  Operator(MethodElement element, Library? library, PackageGraph packageGraph)
       : super(element, library, packageGraph);
 
   Operator.inherited(MethodElement element, Container enclosingContainer,
-      Library library, PackageGraph packageGraph, {Member originalMember})
+      Library? library, PackageGraph packageGraph, {Member? originalMember})
       : super.inherited(element, enclosingContainer, library, packageGraph,
-            originalMember: originalMember);
+            originalMember: originalMember as ExecutableMember?);
 
   @override
   String get fileName {
@@ -28,7 +29,7 @@ class Operator extends Method {
 
   @override
   String get fullyQualifiedName =>
-      '${library.name}.${enclosingElement.name}.${super.name}';
+      '${library!.name}.${enclosingElement!.name}.${super.name}';
 
   @override
   bool get isOperator => true;

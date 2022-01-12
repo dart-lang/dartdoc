@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'package:collection/collection.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 typedef ContainerSidebar = String Function(
@@ -9,7 +10,7 @@ typedef ContainerSidebar = String Function(
 typedef LibrarySidebar = String Function(Library, TemplateDataWithLibrary);
 
 abstract class TemplateOptions {
-  String get relCanonicalPrefix;
+  String? get relCanonicalPrefix;
   String get toolVersion;
   bool get useBaseHref;
   String get customHeaderContent;
@@ -29,7 +30,7 @@ abstract class TemplateData<T extends Documentable> {
 
   List<Documentable> get navLinks;
   List<Container> get navLinksWithGenerics => [];
-  Documentable get parent {
+  Documentable? get parent {
     if (navLinksWithGenerics.isEmpty) {
       return navLinks.isNotEmpty ? navLinks.last : null;
     }
@@ -40,17 +41,18 @@ abstract class TemplateData<T extends Documentable> {
 
   bool get hasHomepage => false;
 
-  String get homepage => null;
+  String? get homepage => null;
 
   String get htmlBase;
   T get self;
   String get version => htmlOptions.toolVersion;
-  String get relCanonicalPrefix => htmlOptions.relCanonicalPrefix;
+  String? get relCanonicalPrefix => htmlOptions.relCanonicalPrefix;
   bool get useBaseHref => htmlOptions.useBaseHref;
 
   String get bareHref {
     if (self is Indexable) {
-      return (self as Indexable).href.replaceAll(htmlBasePlaceholder, '');
+      var selfHref = (self as Indexable).href ?? '';
+      return selfHref.replaceAll(htmlBasePlaceholder, '');
     }
     return '';
   }
@@ -210,10 +212,10 @@ class ClassTemplateData extends InheritingContainerTemplateData<Class> {
 abstract class InheritingContainerTemplateData<T extends InheritingContainer>
     extends TemplateData<T>
     implements TemplateDataWithLibrary<T>, TemplateDataWithContainer<T> {
-  final InheritingContainer clazz;
+  final T clazz;
   @override
   final Library library;
-  Class _objectType;
+  Class? _objectType;
   final LibrarySidebar _sidebarForLibrary;
   final ContainerSidebar _sidebarForContainer;
 
@@ -234,8 +236,7 @@ abstract class InheritingContainerTemplateData<T extends InheritingContainer>
 
   @override
   T get self => clazz;
-  String get linkedObjectType =>
-      objectType == null ? 'Object' : objectType.linkedName;
+  String get linkedObjectType => objectType?.linkedName ?? 'Object';
   @override
   String get title =>
       '${clazz.name} ${clazz.kind} - ${library.name} library - Dart API';
@@ -252,13 +253,13 @@ abstract class InheritingContainerTemplateData<T extends InheritingContainer>
   @override
   String get htmlBase => '../';
 
-  Class get objectType {
+  Class? get objectType {
     if (_objectType != null) {
-      return _objectType;
+      return _objectType!;
     }
 
     var dc = _packageGraph.libraries
-        .firstWhere((it) => it.name == 'dart:core', orElse: () => null);
+        .firstWhereOrNull((it) => it.name == 'dart:core');
 
     return _objectType = dc?.getClassByName('Object');
   }

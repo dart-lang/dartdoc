@@ -5,6 +5,7 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
 import 'package:build_test/build_test.dart';
+import 'package:collection/collection.dart';
 
 import '../../tool/mustachio/builder.dart';
 
@@ -55,7 +56,7 @@ Future<void> testMustachioBuilder(
   InMemoryAssetWriter writer,
   String sourceLibraryContent, {
   String libraryFrontMatter = libraryFrontMatter,
-  Map<String, String> additionalAssets,
+  Map<String, String> additionalAssets = const {},
 }) async {
   sourceLibraryContent = '''
 $libraryFrontMatter
@@ -72,15 +73,16 @@ $sourceLibraryContent
       'foo|lib/templates/md/bar.md': 'EMPTY',
       'foo|lib/templates/html/baz.html': 'EMPTY',
       'foo|lib/templates/md/baz.md': 'EMPTY',
-      ...?additionalAssets,
+      ...additionalAssets,
     },
     writer: writer,
   );
 }
 
 extension LibraryExtensions on LibraryElement {
-  /// Returns the top-level function in [this] library, named [name].
-  FunctionElement getTopLevelFunction(String name) => topLevelElements
+  /// Returns the top-level function in [this] library, named [name], or `null`
+  /// if no function is found.
+  FunctionElement? getTopLevelFunction(String name) => topLevelElements
       .whereType<FunctionElement>()
-      .firstWhere((element) => element.name == name, orElse: () => null);
+      .firstWhereOrNull((element) => element.name == name);
 }

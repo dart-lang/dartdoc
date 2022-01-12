@@ -28,20 +28,6 @@ void main() {
           [1, 2, 3, -1, -2, -3]);
     });
 
-    test('should throw for null input', () {
-      expect(() => concat(null), throwsNoSuchMethodError);
-    });
-
-    test('should throw if any input is null', () {
-      expect(
-          () => concat([
-                [1, 2],
-                null,
-                [3, 4]
-              ]).toList(),
-          throwsNoSuchMethodError);
-    });
-
     test('should reflectchanges in the inputs', () {
       var a = [1, 2];
       var b = [4, 5];
@@ -50,23 +36,6 @@ void main() {
       a.add(3);
       b.add(6);
       expect(ab, [1, 2, 3, 4, 5, 6]);
-    });
-  });
-
-  group('hash', () {
-    test('hash2 should return an int', () {
-      var h = hash2('123', 456);
-      expect(h, isA<int>());
-    });
-
-    test('hash3 should return an int', () {
-      var h = hash3('123', 456, true);
-      expect(h, isA<int>());
-    });
-
-    test('hash4 should return an int', () {
-      var h = hash4('123', 456, true, []);
-      expect(h, isA<int>());
     });
   });
 }

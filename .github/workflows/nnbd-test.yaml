@@ -1,11 +1,11 @@
-name: Test - NNBD branch
+name: Test
 
 on:
   # Run CI on pushes to the main branch, and on PRs against main.
   push:
-    branches: [ nnbd ]
+    branches: [ master ]
   pull_request:
-    branches: [ nnbd ]
+    branches: [ master ]
   schedule:
     - cron: 0 15 * * *
 
@@ -20,14 +20,14 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         sdk: [dev, stable]
-        job: [nnbd, flutter, sdk-analyzer, packages, sdk-docs]
+        job: [main, flutter, sdk-analyzer, packages, sdk-docs]
         include:
           - os: macos-latest
             sdk: dev
-            job: nnbd
+            job: main
           - os: windows-latest
             sdk: dev
-            job: nnbd
+            job: main
         exclude:
             # Do not try to run flutter against the "stable" sdk,
             # it is unlikely to work and produces uninteresting
@@ -35,36 +35,14 @@ jobs:
           - sdk: stable
             job: flutter
           - sdk: stable
-            job: sdk-docs
+            job: sdk-analyzer
 
     steps:
-      - name: Store date
-        id: date
-        run: echo "::set-output name=today::$(date +'%Y-%m-%d')"
-        shell: bash
-      - name: Cache clean flutter
-        uses: actions/cache@v2
-        if: matrix.job == 'flutter'
-        env:
-          # Increment version to invalidate bad/obsolete caches.
-          cache-name: cache-grinder-flutter-v1
-        with:
-          path: ~/.dartdoc_grinder
-          key: ${{ runner.os }}-test-${{ env.cache-name }}-${{ steps.date.outputs.today }}
-      - name: Cache .pub-cache
-        uses: actions/cache@v2
-        if: matrix.job == 'flutter'
-        env:
-          # Increment version to invalidate bad/obsolete caches.
-          cache-name: cache-dart-pub-v1
-        with:
-          path: ~/.pub-cache
-          key: ${{ runner.os }}-test-${{ env.cache-name }}-${{ steps.date.outputs.today }}
       - name: Configure git
         if: runner.os == 'Windows'
         run: git config --global core.autocrlf input
       - uses: actions/checkout@v2
-      - uses: dart-lang/setup-dart@v1.2
+      - uses: dart-lang/setup-dart@v1.0
         with:
           sdk: ${{ matrix.sdk }}
       - name: Install dependencies
@@ -76,8 +54,8 @@ jobs:
           DARTDOC_BOT: ${{ matrix.job }}
           #COVERAGE_TOKEN: true # this needs to be set to enable coverage
       - name: ${{ matrix.job }}
-        if: runner.os == 'Windows' && matrix.job == 'nnbd'
-        run: dart run grinder buildbot-no-publish
+        if: runner.os == 'Windows' && matrix.job == 'main'
+        run: dart run grinder buildbot
         env:
           DARTDOC_BOT: ${{ matrix.job }}
      # - id: coverage

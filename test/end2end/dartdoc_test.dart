@@ -1,7 +1,6 @@
 // Copyright (c) 2015, the Dart project authors.  Please see the AUTHORS file
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
-// ignore_for_file: non_constant_identifier_names
 
 library dartdoc.dartdoc_test;
 
@@ -58,7 +57,7 @@ final Folder _testPackageExperiments =
 /// the '--input' flag.
 Future<DartdocGeneratorOptionContext> _generatorContextFromArgv(
     List<String> argv) async {
-  var optionSet = await DartdocOptionSet.fromOptionGenerators(
+  var optionSet = await DartdocOptionRoot.fromOptionGenerators(
       'dartdoc',
       [
         createDartdocOptions,
@@ -79,11 +78,13 @@ class DartdocLoggingOptionContext extends DartdocGeneratorOptionContext
 
 void main() {
   group('dartdoc with generators', () {
-    Folder tempDir;
+    late Folder tempDir;
 
     setUpAll(() async {
-      var optionSet = await DartdocOptionSet.fromOptionGenerators(
-          'dartdoc', [createLoggingOptions], pubPackageMetaProvider);
+      var optionSet = await DartdocOptionRoot.fromOptionGenerators(
+          'dartdoc',
+          [createDartdocProgramOptions, createLoggingOptions],
+          pubPackageMetaProvider);
       optionSet.parseArguments([]);
       startLogging(DartdocLoggingOptionContext(
           optionSet,
@@ -113,15 +114,15 @@ void main() {
 
     group('Option handling', () {
       Dartdoc dartdoc;
-      DartdocResults results;
-      PackageGraph p;
-      Folder tempDir;
+      late DartdocResults results;
+      late PackageGraph packageGraph;
+      late Folder tempDir;
 
       setUpAll(() async {
         tempDir = _resourceProvider.createSystemTemp('dartdoc.test.');
         dartdoc = await buildDartdoc([], _testPackageOptions, tempDir);
         results = await dartdoc.generateDocsBase();
-        p = results.packageGraph;
+        packageGraph = results.packageGraph;
       });
 
       test('generator parameters', () async {
@@ -138,17 +139,17 @@ void main() {
       });
 
       test('examplePathPrefix', () async {
-        var UseAnExampleHere = p.allCanonicalModelElements
+        var classUseAnExampleHere = packageGraph.allCanonicalModelElements
             .whereType<Class>()
             .firstWhere((ModelElement c) => c.name == 'UseAnExampleHere');
         expect(
-            UseAnExampleHere.documentationAsHtml,
+            classUseAnExampleHere.documentationAsHtml,
             contains(
                 'An example of an example in an unusual example location.'));
       });
 
       test('includeExternal and showUndocumentedCategories', () async {
-        var withUndocumentedCategory = p.allCanonicalModelElements
+        var withUndocumentedCategory = packageGraph.allCanonicalModelElements
             .whereType<Class>()
             .firstWhere((ModelElement c) => c.name == 'UseAnExampleHere');
         expect(withUndocumentedCategory.isPublic, isTrue);
@@ -243,8 +244,8 @@ void main() {
     });
 
     group('validate basic doc generation', () {
-      DartdocResults results;
-      Folder tempDir;
+      late final DartdocResults results;
+      late final Folder tempDir;
 
       setUpAll(() async {
         tempDir = _resourceProvider.createSystemTemp('dartdoc.test.');
@@ -310,9 +311,10 @@ void main() {
       expect(p.libraries.map((lib) => lib.name).contains('dart:async'), isTrue);
       expect(p.libraries.map((lib) => lib.name).contains('dart:bear'), isTrue);
       expect(p.packageMap.length, equals(2));
+      var dartPackage = p.packageMap['Dart']!;
       // Things that do not override the core SDK belong in their own package.
-      expect(p.packageMap['Dart'].isSdk, isTrue);
-      expect(p.packageMap['sky_engine'].isSdk, isFalse);
+      expect(dartPackage.isSdk, isTrue);
+      expect(p.packageMap['sky_engine']!.isSdk, isFalse);
       // Should be true once dart-lang/sdk#32707 is fixed.
       //expect(
       //    p.publicLibraries,
@@ -320,11 +322,11 @@ void main() {
       //        (l.element as LibraryElement).isInSdk == l.packageMeta.isSdk));
       // Ensure that we actually parsed some source by checking for
       // the 'Bear' class.
-      var dart_bear = p.packageMap['Dart'].libraries
-          .firstWhere((lib) => lib.name == 'dart:bear');
+      var dartBear =
+          dartPackage.libraries.firstWhere((lib) => lib.name == 'dart:bear');
       expect(
-          dart_bear.allClasses.map((cls) => cls.name).contains('Bear'), isTrue);
-      expect(p.packageMap['Dart'].publicLibraries, hasLength(3));
+          dartBear.allClasses.map((cls) => cls.name).contains('Bear'), isTrue);
+      expect(dartPackage.publicLibraries, hasLength(3));
     });
 
     test('generate docs with custom templates', () async {

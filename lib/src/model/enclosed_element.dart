@@ -8,5 +8,5 @@ import 'package:dartdoc/src/model/model.dart';
 ///
 /// Libraries are not enclosed.
 abstract class EnclosedElement {
-  ModelElement get enclosingElement;
+  ModelElement? get enclosingElement;
 }

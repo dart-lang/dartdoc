@@ -7,7 +7,7 @@ import 'package:test/test.dart';
 
 void main() {
   group('HtmlTemplateRenderer', () {
-    HtmlLayoutRenderer renderer;
+    late HtmlLayoutRenderer renderer;
 
     setUpAll(() {
       renderer = HtmlLayoutRenderer();
@@ -25,7 +25,7 @@ void main() {
   });
 
   group('MdTemplateRenderer', () {
-    MdLayoutRenderer renderer;
+    late MdLayoutRenderer renderer;
 
     setUpAll(() {
       renderer = MdLayoutRenderer();

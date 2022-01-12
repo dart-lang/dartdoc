@@ -48,7 +48,7 @@ class MustachioParser {
   ///   [sectionKey], the end tag is treated as plain text, not a tag.
   /// * if [sectionKey] is null, the end tag is treated as plain text, not a
   ///   tag.
-  List<MustachioNode> _parseBlock({String /*?*/ sectionKey}) {
+  List<MustachioNode> _parseBlock({String? sectionKey}) {
     var children = <MustachioNode>[];
     var textStartIndex = _index;
     var textEndIndex = _index;
@@ -126,7 +126,7 @@ class MustachioParser {
             trimTextRight();
           }
           addTextNode(textStartIndex, textEndIndex);
-          children.add(result.node);
+          children.add(result.node!);
           textStartIndex = _index;
           continue;
         }
@@ -191,7 +191,7 @@ class MustachioParser {
   ///
   /// [_index] should be at the character immediately following the `>`
   /// character which opens a possible partial tag.
-  _TagParseResult _parsePartial({@required int tagStartIndex}) {
+  _TagParseResult _parsePartial({required int tagStartIndex}) {
     var startIndex = _index;
     int endIndex;
     while (true) {
@@ -227,7 +227,7 @@ class MustachioParser {
   /// [_index] should be at the character immediately following the `#`
   /// character which opens a possible section tag.
   _TagParseResult _parseSection(
-      {@required bool invert, @required int tagStartIndex}) {
+      {required bool invert, required int tagStartIndex}) {
     var parsedKey = _parseKey();
     if (parsedKey.type == _KeyParseResultType.notKey) {
       return _TagParseResult.notTag;
@@ -237,6 +237,7 @@ class MustachioParser {
 
     var children = _parseBlock(sectionKey: parsedKey.joinedNames);
     var span = _sourceFile.span(tagStartIndex, _index);
+    var parsedKeySpan = parsedKey.span!;
 
     if (parsedKey.names.length > 1) {
       // Desugar section with dots into nested sections.
@@ -250,7 +251,7 @@ class MustachioParser {
       // [three] section is the singular child node of the [two] section, and
       // the [two] section is the singular child of the [one] section.
       var lastName = parsedKey.names.last;
-      var keySpanEndOffset = parsedKey.span.end.offset;
+      var keySpanEndOffset = parsedKeySpan.end.offset;
       var lastNameSpan = _sourceFile.span(
           keySpanEndOffset - lastName.length, keySpanEndOffset);
       var section = Section([lastName], children,
@@ -260,7 +261,7 @@ class MustachioParser {
         // To find the start offset of the ith name, take the length of all of
         // the names 0 through `i - 1` re-joined with '.', and a final '.' at
         // the end.
-        var sectionKeyStartOffset = parsedKey.span.start.offset +
+        var sectionKeyStartOffset = parsedKeySpan.start.offset +
             (i == 0 ? 0 : parsedKey.names.take(i).join('.').length + 1);
         var keySpan = _sourceFile.span(
             sectionKeyStartOffset, sectionKeyStartOffset + sectionKey.length);
@@ -271,7 +272,7 @@ class MustachioParser {
     }
 
     return _TagParseResult.ok(Section(parsedKey.names, children,
-        invert: invert, span: span, keySpan: parsedKey.span));
+        invert: invert, span: span, keySpan: parsedKeySpan));
   }
 
   /// Tries to parse an end tag at [_index].
@@ -293,7 +294,7 @@ class MustachioParser {
   ///
   /// [_index] should be at the character immediately following the `{{`
   /// characters which open a possible variable tag.
-  _TagParseResult _parseVariable({@required int tagStartIndex}) {
+  _TagParseResult _parseVariable({required int tagStartIndex}) {
     var escape = true;
     if (_thisChar == $lbrace) {
       escape = false;
@@ -309,7 +310,7 @@ class MustachioParser {
 
     var span = _sourceFile.span(tagStartIndex, _index);
     return _TagParseResult.ok(Variable(parsedKey.names,
-        escape: escape, span: span, keySpan: parsedKey.span));
+        escape: escape, span: span, keySpan: parsedKey.span!));
   }
 
   /// Tries to parse a key at [_index].
@@ -434,7 +435,7 @@ class Text implements MustachioNode {
   @override
   final SourceSpan span;
 
-  Text(this.content, {@required this.span});
+  Text(this.content, {required this.span});
 
   @override
   String toString() => 'Text["$content"]';
@@ -455,7 +456,7 @@ class Variable with HasMultiNamedKey implements MustachioNode {
   final SourceSpan keySpan;
 
   Variable(this.key,
-      {@required this.escape, @required this.span, @required this.keySpan});
+      {required this.escape, required this.span, required this.keySpan});
 
   @override
   String toString() => 'Variable[$key, escape=$escape]';
@@ -479,7 +480,7 @@ class Section with HasMultiNamedKey implements MustachioNode {
   final SourceSpan keySpan;
 
   Section(this.key, this.children,
-      {@required this.invert, @required this.span, @required this.keySpan});
+      {required this.invert, required this.span, required this.keySpan});
 
   @override
   String toString() => 'Section[$key, invert=$invert]';
@@ -495,7 +496,7 @@ class Partial implements MustachioNode {
 
   final SourceSpan keySpan;
 
-  Partial(this.key, {@required this.span, @required this.keySpan});
+  Partial(this.key, {required this.span, required this.keySpan});
 }
 
 /// An enumeration of types of tag parse results.
@@ -517,10 +518,10 @@ class _TagParseResult {
   /// This field is `null` if EOF was reached, or if a tag was not parsed
   /// (perhaps it started out like a tag, but was malformed, and so is read as
   /// text).
-  final MustachioNode /*?*/ node;
+  final MustachioNode? node;
 
   /// The key of an end tag, if an end tag was parsed.
-  final String /*?*/ endTagKey;
+  final String? endTagKey;
 
   _TagParseResult(this.type, this.node, this.endTagKey);
 
@@ -561,13 +562,13 @@ class _KeyParseResult {
   final List<String> names;
 
   /// The source span from where this key was parsed, if this represents a
-  /// parsed key, othwerwise `null`.
-  final SourceSpan /*?*/ span;
+  /// parsed key, otherwise `null`.
+  final SourceSpan? span;
 
   const _KeyParseResult._(this.type, this.names, {this.span});
 
   factory _KeyParseResult(_KeyParseResultType type, String key,
-      {@required SourceSpan span}) {
+      {required SourceSpan span}) {
     if (key == '.') {
       return _KeyParseResult._(type, [key], span: span);
     } else {

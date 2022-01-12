@@ -16,11 +16,11 @@ const Map<String, String> _featureUrls = {
 /// the user that the documentation should be specially interpreted.
 class LanguageFeature {
   /// The description of this language feature.
-  String get featureDescription => _featureDescriptions[name];
+  String? get featureDescription => _featureDescriptions[name];
 
   /// A URL containing more information about this feature or `null` if there
   /// is none.
-  String /*?*/ get featureUrl => _featureUrls[name];
+  String? get featureUrl => _featureUrls[name];
 
   /// The rendered label for this language feature.
   String get featureLabel => _featureRenderer.renderLanguageFeatureLabel(this);

@@ -24,7 +24,7 @@ class EmptyGenerator extends Generator {
             .forEach((m) => logProgress(m.documentationAsHtml));
       }
     }
-    return null;
+    return Future.value(null);
   }
 }
 

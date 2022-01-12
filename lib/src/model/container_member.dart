@@ -18,13 +18,8 @@ mixin ContainerMember on ModelElement implements EnclosedElement {
   // implemented.
   bool get isExtended => false;
 
-  Container _definingEnclosingContainer;
-
-  Container get definingEnclosingContainer {
-    _definingEnclosingContainer ??=
-        modelBuilder.fromElement(element.enclosingElement);
-    return _definingEnclosingContainer;
-  }
+  late final Container definingEnclosingContainer =
+      modelBuilder.fromElement(element!.enclosingElement!) as Container;
 
   @override
   Set<Feature> get features => {
@@ -33,27 +28,27 @@ mixin ContainerMember on ModelElement implements EnclosedElement {
       };
 
   bool _canonicalEnclosingContainerIsSet = false;
-  Container _canonicalEnclosingContainer;
+  Container? _canonicalEnclosingContainer;
 
-  Container get canonicalEnclosingContainer {
+  Container? get canonicalEnclosingContainer {
     if (!_canonicalEnclosingContainerIsSet) {
       _canonicalEnclosingContainer = computeCanonicalEnclosingContainer();
       _canonicalEnclosingContainerIsSet = true;
       assert(_canonicalEnclosingContainer == null ||
-          _canonicalEnclosingContainer.isDocumented);
+          _canonicalEnclosingContainer!.isDocumented);
     }
     return _canonicalEnclosingContainer;
   }
 
-  Container computeCanonicalEnclosingContainer() {
+  Container? computeCanonicalEnclosingContainer() {
     // TODO(jcollins-g): move Extension specific code to [Extendable]
-    if (enclosingElement is Extension && enclosingElement.isDocumented) {
-      return packageGraph
-          .findCanonicalModelElementFor(enclosingElement.element);
+    if (enclosingElement is Extension && enclosingElement!.isDocumented) {
+      return packageGraph.findCanonicalModelElementFor(
+          enclosingElement!.element) as Container?;
     }
     if (enclosingElement is! Extension) {
-      return packageGraph
-          .findCanonicalModelElementFor(element.enclosingElement);
+      return packageGraph.findCanonicalModelElementFor(
+          element!.enclosingElement) as Container?;
     }
     return null;
   }
@@ -66,7 +61,10 @@ mixin ContainerMember on ModelElement implements EnclosedElement {
       // references are resolved wrt documentation inheritance,
       // that has to be resolved in the source by not inheriting
       // documentation.
-      [enclosingElement, documentationFrom.first.enclosingElement];
+      [
+        enclosingElement as Container,
+        documentationFrom.first.enclosingElement as Container
+      ];
 
   @override
   Iterable<Library> get referenceGrandparentOverrides sync* {
@@ -76,6 +74,6 @@ mixin ContainerMember on ModelElement implements EnclosedElement {
     yield (documentationFrom.first as ModelElement).definingLibrary;
     // TODO(jcollins-g): Wean users off of depending on canonical library
     // resolution. dart-lang/dartdoc#2696
-    if (canonicalLibrary != null) yield canonicalLibrary;
+    if (canonicalLibrary != null) yield canonicalLibrary!;
   }
 }

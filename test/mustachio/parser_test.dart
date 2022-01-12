@@ -1,3 +1,7 @@
+// Copyright (c) 2021, the Dart project authors.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
 import 'package:dartdoc/src/mustachio/parser.dart';
 import 'package:test/test.dart';
 
@@ -352,11 +356,11 @@ void main() {
     expect(ast, hasLength(2));
     _expectText(ast[0], equals('Text '));
     var section = ast[1] as Section;
-    _expectSection(section, equals(['key']));
+    _expectSection(section, equals(['key']), spanStart: 5, spanEnd: 49);
     expect(section.children, hasLength(3));
     _expectText(section.children[0], equals(' AA '));
     var innerSection = section.children[1] as Section;
-    _expectSection(innerSection, equals(['key']));
+    _expectSection(innerSection, equals(['key']), spanStart: 17, spanEnd: 37);
     expect(innerSection.children, hasLength(1));
     _expectText(innerSection.children[0], equals(' BB '));
   });
@@ -405,7 +409,7 @@ void main() {
 }
 
 void _expectText(MustachioNode node, Object matcher,
-    {int spanStart, int spanEnd}) {
+    {int? spanStart, int? spanEnd}) {
   expect(node, isA<Text>().having((e) => e.content, 'content', matcher));
   if (spanStart != null) {
     expect(
@@ -419,82 +423,94 @@ void _expectText(MustachioNode node, Object matcher,
   }
 }
 
-void _expectVariable(MustachioNode node, Object matcher,
-    {bool escape = true,
-    int spanStart,
-    int spanEnd,
-    int keySpanStart,
-    int keySpanEnd}) {
+void _expectVariable(
+  MustachioNode node,
+  Object matcher, {
+  required int spanStart,
+  required int spanEnd,
+  bool escape = true,
+  int? keySpanStart,
+  int? keySpanEnd,
+}) {
   expect(
       node,
       isA<Variable>()
           .having((e) => e.key, 'key', matcher)
           .having((e) => e.escape, 'escape', escape));
-  if (spanStart != null) {
-    var actualSpanStart = (node as Variable).span.start.offset;
-    _expectSpanOffset('Variable', 'start', actualSpanStart, spanStart);
-  }
-  if (spanEnd != null) {
-    var actualSpanEnd = (node as Variable).span.end.offset;
-    _expectSpanOffset('Variable', 'end', actualSpanEnd, spanEnd);
-  }
+  node as Variable;
+
+  var actualSpanStart = node.span.start.offset;
+  _expectSpanOffset('Variable', 'start', actualSpanStart, spanStart);
+
+  var actualSpanEnd = node.span.end.offset;
+  _expectSpanOffset('Variable', 'end', actualSpanEnd, spanEnd);
+
   if (keySpanStart != null) {
-    var actualKeySpanStart = (node as Variable).keySpan.start.offset;
+    var actualKeySpanStart = node.keySpan.start.offset;
     _expectSpanOffset(
         'Variable key', 'start', actualKeySpanStart, keySpanStart);
   }
   if (keySpanEnd != null) {
-    var actualKeySpanEnd = (node as Variable).keySpan.end.offset;
+    var actualKeySpanEnd = node.keySpan.end.offset;
     _expectSpanOffset('Variable key', 'end', actualKeySpanEnd, keySpanEnd);
   }
 }
 
-void _expectSection(MustachioNode node, Object matcher,
-    {bool invert = false,
-    int spanStart,
-    int spanEnd,
-    int keySpanStart,
-    int keySpanEnd}) {
+void _expectSection(
+  MustachioNode node,
+  Object matcher, {
+  required int spanStart,
+  required int spanEnd,
+  bool invert = false,
+  int? keySpanStart,
+  int? keySpanEnd,
+}) {
   expect(
       node,
       isA<Section>()
           .having((e) => e.key, 'key', matcher)
           .having((e) => e.invert, 'invert', invert));
-  if (spanStart != null) {
-    var actualSpanStart = (node as Section).span.start.offset;
-    _expectSpanOffset('Section', 'start', actualSpanStart, spanStart);
-  }
-  if (spanEnd != null) {
-    var actualSpanEnd = (node as Section).span.end.offset;
-    _expectSpanOffset('Section', 'end', actualSpanEnd, spanEnd);
-  }
+  node as Section;
+
+  var actualSpanStart = node.span.start.offset;
+  _expectSpanOffset('Section', 'start', actualSpanStart, spanStart);
+
+  var actualSpanEnd = node.span.end.offset;
+  _expectSpanOffset('Section', 'end', actualSpanEnd, spanEnd);
+
   if (keySpanStart != null) {
-    var actualKeySpanStart = (node as Section).keySpan.start.offset;
+    var actualKeySpanStart = node.keySpan.start.offset;
     _expectSpanOffset('Section key', 'start', actualKeySpanStart, keySpanStart);
   }
   if (keySpanEnd != null) {
-    var actualKeySpanEnd = (node as Section).keySpan.end.offset;
+    var actualKeySpanEnd = node.keySpan.end.offset;
     _expectSpanOffset('Section key', 'end', actualKeySpanEnd, keySpanEnd);
   }
 }
 
-void _expectPartial(MustachioNode node, Object matcher,
-    {int spanStart, int spanEnd, int keySpanStart, int keySpanEnd}) {
+void _expectPartial(
+  MustachioNode node,
+  Object matcher, {
+  required int spanStart,
+  required int spanEnd,
+  int? keySpanStart,
+  int? keySpanEnd,
+}) {
   expect(node, isA<Partial>().having((e) => e.key, 'key', matcher));
-  if (spanStart != null) {
-    var actualSpanStart = (node as Partial).span.start.offset;
-    _expectSpanOffset('Partial', 'start', actualSpanStart, spanStart);
-  }
-  if (spanEnd != null) {
-    var actualSpanEnd = (node as Partial).span.end.offset;
-    _expectSpanOffset('Partial', 'end', actualSpanEnd, spanEnd);
-  }
+  node as Partial;
+
+  var actualSpanStart = node.span.start.offset;
+  _expectSpanOffset('Partial', 'start', actualSpanStart, spanStart);
+
+  var actualSpanEnd = node.span.end.offset;
+  _expectSpanOffset('Partial', 'end', actualSpanEnd, spanEnd);
+
   if (keySpanStart != null) {
-    var actualKeySpanStart = (node as Partial).keySpan.start.offset;
+    var actualKeySpanStart = node.keySpan.start.offset;
     _expectSpanOffset('Partial key', 'start', actualKeySpanStart, keySpanStart);
   }
   if (keySpanEnd != null) {
-    var actualKeySpanEnd = (node as Partial).keySpan.end.offset;
+    var actualKeySpanEnd = node.keySpan.end.offset;
     _expectSpanOffset('Partial key', 'end', actualKeySpanEnd, keySpanEnd);
   }
 }

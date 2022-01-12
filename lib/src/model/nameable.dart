@@ -13,18 +13,18 @@ abstract class Nameable {
 
   String get fullyQualifiedName => name;
 
-  Set<String> _namePieces;
-  Set<String> get namePieces {
+  Set<String>? _namePieces;
+  Set<String>? get namePieces {
     _namePieces ??= {
       ...name.split(locationSplitter).where((s) => s.isNotEmpty)
     };
     return _namePieces;
   }
 
-  String _namePart;
+  String? _namePart;
 
   /// Utility getter/cache for `_MarkdownCommentReference._getResultsForClass`.
-  String get namePart {
+  String? get namePart {
     // TODO(jcollins-g): This should really be the same as 'name', but isn't
     // because of accessors and operators.
     _namePart ??= fullyQualifiedName.split('.').last;

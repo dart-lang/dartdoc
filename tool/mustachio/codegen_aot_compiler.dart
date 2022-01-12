@@ -8,6 +8,7 @@ import 'package:analyzer/dart/element/type_provider.dart';
 import 'package:analyzer/dart/element/type_system.dart';
 import 'package:build/build.dart';
 import 'package:code_builder/code_builder.dart';
+import 'package:collection/collection.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:dartdoc/src/mustachio/annotations.dart';
 import 'package:dartdoc/src/mustachio/parser.dart';
@@ -49,12 +50,12 @@ Future<String> compileTemplatesToRenderers(
         ..returns = refer('void')
         ..name = 'writeEscaped'
         ..requiredParameters.add(Parameter((b) => b
-          ..type = refer('String')
+          ..type = refer('String?')
           ..name = 'value'))
         ..body = refer('write').call([
           refer('htmlEscape', 'dart:convert')
               .property('convert')
-              .call([refer('value')])
+              .call([refer("value ?? ''")])
         ]).statement))));
   });
   return DartFormatter().format('''
@@ -116,7 +117,7 @@ class _AotCompiler {
     String rendererName,
     AssetId templateAssetId,
     _BuildData buildData, {
-    List<_VariableLookup> contextStack,
+    List<_VariableLookup> contextStack = const [],
   }) async {
     var template = await buildData._buildStep.readAsString(templateAssetId);
     var syntaxTree = MustachioParser(template, templateAssetId.uri).parse();
@@ -131,9 +132,9 @@ class _AotCompiler {
     this._templateAssetId,
     this._syntaxTree,
     this._buildData, {
-    List<_VariableLookup> contextStack,
-  })  : _contextStack = _rename(contextStack ?? []),
-        _contextNameCounter = contextStack?.length ?? 0;
+    required List<_VariableLookup> contextStack,
+  })  : _contextStack = _rename(contextStack),
+        _contextNameCounter = contextStack.length;
 
   /// Returns a copy of [original], replacing each variable's name with
   /// `context0` through `contextN` for `N` variables.
@@ -152,8 +153,7 @@ class _AotCompiler {
 
   Future<List<Method>> _compileToRenderer() async {
     if (_contextStack.isEmpty) {
-      var contextName = 'context0';
-      var contextVariable = _VariableLookup(_contextType, contextName);
+      var contextVariable = _VariableLookup(_contextType, 'context0');
       _contextStack.push(contextVariable);
       _contextNameCounter++;
     }
@@ -170,15 +170,16 @@ class _AotCompiler {
     var typeParameters = <TypeReference>[];
     for (var context in _contextStack) {
       for (var typeParameter in context.type.element.typeParameters) {
-        if (typeParameter.bound == null) {
+        var bound = typeParameter.bound;
+        if (bound == null) {
           typeParameters
               .add(TypeReference((b) => b..symbol = typeParameter.name));
         } else {
-          var bound = typeParameter.bound.element;
-          var boundUri = await _elementUri(bound);
+          var boundElement = bound.element!;
+          var boundUri = await _elementUri(boundElement);
           typeParameters.add(TypeReference((b) => b
             ..symbol = typeParameter.name
-            ..bound = refer(bound.name, boundUri)));
+            ..bound = refer(boundElement.name!, boundUri)));
         }
       }
     }
@@ -220,12 +221,13 @@ return buffer.toString();
 
   /// Returns the URI of [element] for use in generated import directives.
   Future<String> _elementUri(Element element) async {
-    if (element.library.isInSdk) {
-      return element.library.source.uri.toString();
+    var libraryElement = element.library!;
+    if (libraryElement.isInSdk) {
+      return libraryElement.source.uri.toString();
     }
 
     var typeAssetId =
-        await _buildData._buildStep.resolver.assetIdForElement(element.library);
+        await _buildData._buildStep.resolver.assetIdForElement(libraryElement);
     if (typeAssetId.path.startsWith('lib/')) {
       return typeAssetId.uri.toString();
     } else {
@@ -296,9 +298,8 @@ class _BlockCompiler {
     path.add('_$fileName.$extension');
     var partialAssetId = AssetId.resolve(Uri.parse(path.join('/')),
         from: _templateCompiler._templateAssetId);
-    var partialRenderer = _templateCompiler._partialCompilers.firstWhere(
-        (p) => p._templateAssetId == partialAssetId,
-        orElse: () => null);
+    var partialRenderer = _templateCompiler._partialCompilers
+        .firstWhereOrNull((p) => p._templateAssetId == partialAssetId);
     if (partialRenderer == null) {
       var sanitizedKey = node.key.replaceAll('.', '_').replaceAll('/', '_');
       var name = '${partialBaseName}_'
@@ -322,11 +323,6 @@ class _BlockCompiler {
   /// Compiles [node] into a renderer's Dart source.
   Future<void> _compileSection(Section node) async {
     var variableLookup = _lookUpGetter(node);
-    if (variableLookup == null) {
-      throw MustachioResolutionError(node.keySpan.message(
-          "Failed to resolve '${node.key}' as a property on the context type:"
-          '$contextType'));
-    }
     if (variableLookup.type.isDartCoreBool) {
       // Conditional block.
       await _compileConditionalSection(variableLookup, node.children,
@@ -363,16 +359,24 @@ class _BlockCompiler {
   Future<void> _compileRepeatedSection(
       _VariableLookup variableLookup, List<MustachioNode> block,
       {bool invert = false}) async {
+    var variableIsPotentiallyNullable =
+        typeSystem.isPotentiallyNullable(variableLookup.type);
     var variableAccess = variableLookup.name;
     if (invert) {
-      writeln('if ($variableAccess?.isEmpty ?? true) {');
+      if (variableIsPotentiallyNullable) {
+        writeln('if ($variableAccess?.isEmpty ?? true) {');
+      } else {
+        writeln('if ($variableAccess.isEmpty) {');
+      }
       await _compile(block);
       writeln('}');
     } else {
       var variableAccessResult = getNewContextName();
       writeln('var $variableAccessResult = $variableAccess;');
       var newContextName = getNewContextName();
-      writeln('if ($variableAccessResult != null) {');
+      if (variableIsPotentiallyNullable) {
+        writeln('if ($variableAccessResult != null) {');
+      }
       writeln('  for (var $newContextName in $variableAccessResult) {');
       // If [loopType] is something like `C<int>` where
       // `class C<T> implements Queue<Future<T>>`, we need the [ClassElement]
@@ -380,14 +384,16 @@ class _BlockCompiler {
       // determine that the inner type of the loop is, for example,
       // `Future<int>`.
       var iterableElement = typeProvider.iterableElement;
-      var iterableType = variableLookup.type.asInstanceOf(iterableElement);
-      var innerContextType = iterableType.typeArguments.first;
+      var iterableType = variableLookup.type.asInstanceOf(iterableElement)!;
+      var innerContextType = iterableType.typeArguments.first as InterfaceType;
       var innerContext = _VariableLookup(innerContextType, newContextName);
       _contextStack.push(innerContext);
       await _compile(block);
       _contextStack.pop();
       writeln('  }');
-      writeln('}');
+      if (variableIsPotentiallyNullable) {
+        writeln('}');
+      }
     }
   }
 
@@ -396,6 +402,8 @@ class _BlockCompiler {
       _VariableLookup variableLookup, List<MustachioNode> block,
       {bool invert = false}) async {
     var variableAccess = variableLookup.name;
+    var variableIsPotentiallyNullable =
+        typeSystem.isPotentiallyNullable(variableLookup.type);
     if (invert) {
       writeln('if ($variableAccess == null) {');
       await _compile(block);
@@ -403,12 +411,18 @@ class _BlockCompiler {
     } else {
       var innerContextName = getNewContextName();
       writeln('var $innerContextName = $variableAccess;');
-      writeln('if ($innerContextName != null) {');
-      var innerContext = _VariableLookup(variableLookup.type, innerContextName);
+      if (variableIsPotentiallyNullable) {
+        writeln('if ($innerContextName != null) {');
+      }
+      var innerContext = _VariableLookup(
+          typeSystem.promoteToNonNull(variableLookup.type) as InterfaceType,
+          innerContextName);
       _contextStack.push(innerContext);
       await _compile(block);
       _contextStack.pop();
-      writeln('}');
+      if (variableIsPotentiallyNullable) {
+        writeln('}');
+      }
     }
   }
 
@@ -431,12 +445,18 @@ class _BlockCompiler {
         continue;
       }
 
-      var type = getter.returnType;
-      var contextChain = '${context.name}.$primaryName';
+      var type = getter.returnType as InterfaceType;
+      var contextChain = typeSystem.isPotentiallyNullable(context.type)
+          // This is imperfect; the idea is that in our templates, we may have
+          // `{{foo.bar.baz}}` and `foo.bar` may be nullably typed. Mustache
+          // (and Mustachio) does not have a null-aware property access
+          // operator, nor a null-check operator. This code translates
+          // `foo.bar.baz` to `foo.bar!.baz` for nullable `foo.bar`.
+          ? '${context.name}!.$primaryName'
+          : '${context.name}.$primaryName';
       var remainingNames = [...key.skip(1)];
       for (var secondaryKey in remainingNames) {
-        getter = (type as InterfaceType)
-            .lookUpGetter2(secondaryKey, type.element.library);
+        getter = type.lookUpGetter2(secondaryKey, type.element.library);
         if (getter == null) {
           throw MustachioResolutionError(node.keySpan.message(
               "Failed to resolve '$secondaryKey' on ${context.type} while "
@@ -444,8 +464,10 @@ class _BlockCompiler {
               'the context chain: $contextChain, after first resolving '
               "'$primaryName' to a property on $type"));
         }
-        type = getter.returnType;
-        contextChain = '$contextChain.$secondaryKey';
+        contextChain = typeSystem.isPotentiallyNullable(type)
+            ? '$contextChain!.$secondaryKey'
+            : '$contextChain.$secondaryKey';
+        type = getter.returnType as InterfaceType;
       }
       return _VariableLookup(type, contextChain);
     }
@@ -493,11 +515,12 @@ class _BlockCompiler {
   /// The result is HTML-escaped if [escape] is true.
   void _writeGetter(_VariableLookup variableLookup, {bool escape = true}) {
     var variableAccess = variableLookup.name;
-    if (escape) {
-      writeln('buffer.writeEscaped($variableAccess.toString());');
-    } else {
-      writeln('buffer.write($variableAccess.toString());');
-    }
+    var toString = typeSystem.isPotentiallyNullable(variableLookup.type)
+        ? '$variableAccess?.toString()'
+        : '$variableAccess.toString()';
+    writeln(escape
+        ? 'buffer.writeEscaped($toString);'
+        : 'buffer.write($toString);');
   }
 }
 

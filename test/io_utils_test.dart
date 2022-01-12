@@ -68,8 +68,8 @@ void main() {
       var completed = <int>{};
       var tracker = TaskQueue(maxJobs: 1);
       await tracker.add(() async => completed.add(0));
-      await tracker.add(() async => throw Exception()).catchError((e) {});
-      await tracker.add(() async => throw Exception()).catchError((e) {});
+      await tracker.add(() async => throw Exception()).catchError((e) => -1);
+      await tracker.add(() async => throw Exception()).catchError((e) => -1);
       await tracker.add(() async => completed.add(3));
       await tracker.tasksComplete;
       expect(completed.length, equals(2));

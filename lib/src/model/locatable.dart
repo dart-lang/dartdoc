@@ -14,7 +14,7 @@ abstract class Locatable {
 
   String get fullyQualifiedName;
 
-  String get href;
+  String? get href;
 
   /// A string indicating the URI of this Locatable, usually derived from
   /// [Element.location].

@@ -10,7 +10,6 @@ import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/tool_definition.dart';
-import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 
 typedef ToolErrorCallback = void Function(String message);
@@ -95,7 +94,7 @@ class ToolRunner {
   /// calls [toolErrorCallback] with a detailed error message, and returns `''`.
   Future<String> _runProcess(String name, String content, String commandPath,
       List<String> args, Map<String, String> environment,
-      {@required ToolErrorCallback toolErrorCallback}) async {
+      {required ToolErrorCallback toolErrorCallback}) async {
     String commandString() => ([commandPath] + args).join(' ');
     try {
       var result =
@@ -126,10 +125,9 @@ class ToolRunner {
   /// be sent to to the tool is given in the optional [content]. The stdout of
   /// the tool is returned.
   Future<String> run(List<String> args,
-      {@required String content,
-      @required ToolErrorCallback toolErrorCallback,
-      Map<String, String> environment}) async {
-    assert(args != null);
+      {required String content,
+      required ToolErrorCallback toolErrorCallback,
+      Map<String, String> environment = const {}}) async {
     assert(args.isNotEmpty);
     return _toolTracker.add(() {
       return _run(args,
@@ -140,13 +138,10 @@ class ToolRunner {
   }
 
   Future<String> _run(List<String> args,
-      {@required ToolErrorCallback toolErrorCallback,
-      String content,
-      Map<String, String> environment}) async {
-    assert(args != null);
+      {required ToolErrorCallback toolErrorCallback,
+      required Map<String, String> environment,
+      String content = ''}) async {
     assert(args.isNotEmpty);
-    content ??= '';
-    environment ??= <String, String>{};
     var toolName = args.removeAt(0);
     if (!toolConfiguration.tools.containsKey(toolName)) {
       toolErrorCallback(
@@ -155,14 +150,14 @@ class ToolRunner {
       return '';
     }
     var toolDefinition = toolConfiguration.tools[toolName];
-    var toolArgs = toolDefinition.command;
+    var toolArgs = toolDefinition!.command;
 
     // Substitute the temp filename for the "$INPUT" token, and all of the other
     // environment variables. Variables are allowed to either be in $(VAR) form,
     // or $VAR form.
     var envWithInput = {
       'INPUT': _tmpFileWithContent(content),
-      'TOOL_COMMAND': toolDefinition.command[0],
+      'TOOL_COMMAND': toolArgs[0],
       ...environment,
     };
     if (toolDefinition is DartToolDefinition) {
@@ -174,7 +169,7 @@ class ToolRunner {
       // filesystem.
       envWithInput['DART_SNAPSHOT_CACHE'] = pathContext.absolute(
           SnapshotCache.instanceFor(resourceProvider).snapshotCache.path);
-      if (toolDefinition.setupCommand != null) {
+      if (toolDefinition.setupCommand.isNotEmpty) {
         envWithInput['DART_SETUP_COMMAND'] = toolDefinition.setupCommand[0];
       }
     }
@@ -184,7 +179,8 @@ class ToolRunner {
       ..._substituteInArgs(args, envWithInput),
     ];
 
-    if (toolDefinition.setupCommand != null && !toolDefinition.setupComplete) {
+    if (toolDefinition.setupCommand.isNotEmpty &&
+        !toolDefinition.setupComplete) {
       await _runSetup(
           toolName, toolDefinition, envWithInput, toolErrorCallback);
     }

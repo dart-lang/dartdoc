@@ -21,48 +21,48 @@ void main() {
   final sdk = p.dirname(p.dirname(Platform.resolvedExecutable));
   final fooCode = '''
 class FooBase<T extends Object> {
-  T baz;
+  T? baz;
 }
 
 class Foo extends FooBase<Baz> {
-String s1;
-bool b1;
-List<int> l1;
-@override
-Baz baz;
-Property1 p1;
+  String? s1 = '';
+  bool b1 = false;
+  List<int> l1 = [];
+  @override
+  Baz? baz;
+  Property1? p1;
 }
 
 class Bar {
-  Foo foo;
-  String s2;
-  Baz baz;
-  bool l1;
+  Foo? foo;
+  String? s2;
+  Baz? baz;
+  bool? l1;
 }
 
 class Baz {
-  Bar bar;
+  Bar? bar;
 }
 
 class Property1 {
-  Property2 p2;
+  Property2? p2;
 }
 
 class Property2 with Mixin1 {
-  String s;
+  String? s;
 }
 
 mixin Mixin1 {
-  Property3 p3;
+  Property3? p3;
 }
 
 class Property3 {
-  String s;
+  String? s;
 }
 ''';
-  InMemoryAssetWriter writer;
-  Directory tempDir;
-  File renderScript;
+  late InMemoryAssetWriter writer;
+  late Directory tempDir;
+  late File renderScript;
 
   setUp(() {
     writer = InMemoryAssetWriter();
@@ -85,7 +85,7 @@ import 'package:mustachio/annotations.dart';
       additionalAssets: additionalAssets,
     );
     var rendererAsset = AssetId('foo', 'lib/foo.aot_renderers_for_html.dart');
-    var generatedContent = utf8.decode(writer.assets[rendererAsset]);
+    var generatedContent = utf8.decode(writer.assets[rendererAsset]!);
     renderScript.writeAsStringSync('''
 import 'dart:io';
 
@@ -98,7 +98,7 @@ $mainCode
         'foo',
         Uri.directory(tempDir.path),
         packageUriRoot: Uri.directory(p.join(tempDir.path, 'lib')),
-        languageVersion: LanguageVersion(2, 9),
+        languageVersion: LanguageVersion(2, 12),
       )
     ]);
     var dartToolDir = Directory(p.join(tempDir.path, '.dart_tool'))
@@ -366,7 +366,7 @@ void main() {
               'Text {{#bar}}{{bar.foo.baz.bar.foo.s1}}{{/bar}}',
         },
         '_i1.Baz()..bar = (_i1.Bar()..foo = (_i1.Foo()..s1 = "hello"));'
-        'baz.bar.foo.baz = baz');
+        'baz.bar!.foo!.baz = baz');
     expect(output, equals('Text hello'));
   });
 
@@ -459,7 +459,7 @@ line 1, column 9 of package:foo/templates/html/foo.html: Failed to resolve '[s2]
             }, '_i1.Bar()..foo = _i1.Foo()'),
         throwsA(const TypeMatcher<MustachioResolutionError>()
             .having((e) => e.message, 'message', contains('''
-line 1, column 8 of package:foo/templates/html/bar.html: Failed to resolve 'x' on Bar while resolving [x] as a property chain on any types in the context chain: context0.foo, after first resolving 'foo' to a property on Foo
+line 1, column 8 of package:foo/templates/html/bar.html: Failed to resolve 'x' on Bar while resolving [x] as a property chain on any types in the context chain: context0.foo, after first resolving 'foo' to a property on Foo?
   ╷
 1 │ Text {{foo.x}}
   │        ^^^^^

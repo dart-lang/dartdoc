@@ -5,12 +5,12 @@
 import 'dart:collection';
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/dart/element/type_provider.dart';
 import 'package:analyzer/dart/element/type_system.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:dartdoc/src/mustachio/annotations.dart';
-import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 
 import 'utilities.dart';
@@ -22,7 +22,7 @@ String buildRuntimeRenderers(Set<RendererSpec> specs, Uri sourceUri,
   var visibleElements = specs
       .map((spec) => spec.visibleTypes)
       .reduce((value, element) => value.union(element))
-      .map((type) => type.element)
+      .map((type) => type.element!)
       .toSet();
   var raw = RuntimeRenderersBuilder(
           sourceUri, typeProvider, typeSystem, visibleElements,
@@ -189,11 +189,11 @@ import '${p.basename(_sourceUri.path)}';
   /// * If [type] is an [InterfaceType] (not assignable to [Iterable]), returns
   ///   [type].
   /// * Otherwise, returns `null`, indicating there is no relevant type.
-  InterfaceType _relevantTypeFrom(DartType type) {
+  InterfaceType? _relevantTypeFrom(DartType type) {
     if (type is InterfaceType) {
       if (_typeSystem.isAssignableTo(type, _typeProvider.iterableDynamicType)) {
         var iterableElement = _typeProvider.iterableElement;
-        var iterableType = type.asInstanceOf(iterableElement);
+        var iterableType = type.asInstanceOf(iterableElement)!;
         var innerType = iterableType.typeArguments.first;
 
         return _relevantTypeFrom(innerType);
@@ -202,7 +202,7 @@ import '${p.basename(_sourceUri.path)}';
       }
     } else if (type is TypeParameterType) {
       var bound = type.bound;
-      if (bound == null || bound.isDynamic) {
+      if (bound.isDynamic) {
         // Don't add functions for a generic type, for example
         // `List<E>.first` has type `E`, which we don't have a specific
         // renderer for.
@@ -225,9 +225,9 @@ import '${p.basename(_sourceUri.path)}';
   /// * superclass constraints (if [type] a mixin),
   /// * types of relevant properties (recursively).
   void _addTypeHierarchyToProcess(
-    InterfaceType type, {
-    @required bool isFullRenderer,
-    @required bool includeRenderFunction,
+    InterfaceType? type, {
+    required bool isFullRenderer,
+    required bool includeRenderFunction,
   }) {
     while (type != null) {
       _addTypeToProcess(
@@ -269,8 +269,8 @@ import '${p.basename(_sourceUri.path)}';
   /// Adds [type] to the [_typesToProcess] queue, if it is not already there.
   void _addTypeToProcess(
     ClassElement element, {
-    @required bool isFullRenderer,
-    @required bool includeRenderFunction,
+    required bool isFullRenderer,
+    required bool includeRenderFunction,
   }) {
     var types = _typesToProcess.where((rs) => rs._contextClass == element);
     if (types.isEmpty) {
@@ -316,10 +316,11 @@ import '${p.basename(_sourceUri.path)}';
     if (_allVisibleElements.contains(element)) {
       return true;
     }
-    if (element.supertype == null) {
+    var supertype = element.supertype;
+    if (supertype == null) {
       return false;
     }
-    return _isVisibleToMustache(element.supertype.element);
+    return _isVisibleToMustache(supertype.element);
   }
 
   /// Builds render functions and the renderer class for [renderer].
@@ -334,7 +335,7 @@ import '${p.basename(_sourceUri.path)}';
   /// renderer classes are not built, having been built for a different
   /// [_RendererInfo].
   void _buildRenderer(_RendererInfo renderer,
-      {@required bool buildOnlyPublicFunction}) {
+      {required bool buildOnlyPublicFunction}) {
     var typeName = renderer._typeName;
     var typeWithVariables = '$typeName${renderer._typeVariablesString}';
 
@@ -357,7 +358,7 @@ String ${renderer.publicApiFunctionName}${renderer._typeParametersString}(
 void ${renderer._renderFunctionName}${renderer._typeParametersString}(
     $typeWithVariables context, List<MustachioNode> ast,
     Template template, StringSink sink,
-    {RendererBase<Object> parent}) {
+    {RendererBase<Object>? parent}) {
   var renderer = ${renderer._rendererClassName}(context, parent, template, sink);
   renderer.renderBlock(ast);
 }
@@ -373,16 +374,17 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
     // Write out the constructor.
     _buffer.writeln('''
   ${renderer._rendererClassName}(
-        $typeWithVariables context, RendererBase<Object> parent,
+        $typeWithVariables context, RendererBase<Object>? parent,
         Template template, StringSink sink)
       : super(context, parent, template, sink);
 ''');
-    var propertyMapTypeArguments = renderer._typeArgumentsStringWith(typeName);
+    var propertyMapTypeArguments =
+        renderer._typeArgumentsStringWith(typeWithVariables);
     var propertyMapName = 'propertyMap$propertyMapTypeArguments';
     // Write out `getProperty`.
     _buffer.writeln('''
   @override
-  Property<$typeWithVariables> getProperty(String key) {
+  Property<$typeWithVariables>? getProperty(String key) {
     if ($propertyMapName().containsKey(key)) {
       return $propertyMapName()[key];
     } else {
@@ -413,37 +415,35 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
     static final Map<Type, Object> _propertyMapCache = {};
     static Map<String, Property<$_contextTypeVariable>> propertyMap$generics() =>
         _propertyMapCache.putIfAbsent($_contextTypeVariable, () => {''');
-    if (contextClass.supertype != null) {
-      var superclassRendererName =
-          _typeToRendererClassName[contextClass.supertype.element];
+    var supertype = contextClass.supertype;
+    if (supertype != null) {
+      var superclassRendererName = _typeToRendererClassName[supertype.element];
       if (superclassRendererName != null) {
         var superMapName = '$superclassRendererName.propertyMap';
         var generics = asGenerics([
-          ...contextClass.supertype.typeArguments
+          ...supertype.typeArguments
               .map((e) => e.getDisplayString(withNullability: false)),
           _contextTypeVariable
         ]);
         _buffer.writeln('    ...$superMapName$generics(),');
       }
     }
-    if (contextClass.mixins != null) {
-      // Mixins are spread into the property map _after_ the super class, so
-      // that they override any values which need to be overridden. Superclass
-      // and mixins override from left to right, as do spreads:
-      // `class C extends E with M, N` first takes members from N, then M, then
-      // E. Similarly, `{...a, ...b, ...c}` will feature elements from `c` which
-      // override `b` and `a`.
-      for (var mixin in contextClass.mixins) {
-        var mixinRendererName = _typeToRendererClassName[mixin.element];
-        if (mixinRendererName != null) {
-          var mixinMapName = '$mixinRendererName.propertyMap';
-          var generics = asGenerics([
-            ...mixin.typeArguments
-                .map((e) => e.getDisplayString(withNullability: false)),
-            _contextTypeVariable
-          ]);
-          _buffer.writeln('    ...$mixinMapName$generics(),');
-        }
+    // Mixins are spread into the property map _after_ the super class, so
+    // that they override any values which need to be overridden. Superclass
+    // and mixins override from left to right, as do spreads:
+    // `class C extends E with M, N` first takes members from N, then M, then
+    // E. Similarly, `{...a, ...b, ...c}` will feature elements from `c` which
+    // override `b` and `a`.
+    for (var mixin in contextClass.mixins) {
+      var mixinRendererName = _typeToRendererClassName[mixin.element];
+      if (mixinRendererName != null) {
+        var mixinMapName = '$mixinRendererName.propertyMap';
+        var generics = asGenerics([
+          ...mixin.typeArguments
+              .map((e) => e.getDisplayString(withNullability: false)),
+          _contextTypeVariable
+        ]);
+        _buffer.writeln('    ...$mixinMapName$generics(),');
       }
     }
     for (var property in [...contextClass.accessors]
@@ -452,12 +452,11 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
       if (returnType is InterfaceType) {
         _writeProperty(renderer, property, returnType);
       } else if (returnType is TypeParameterType &&
-          returnType.bound != null &&
           !returnType.bound.isDynamic) {
-        _writeProperty(renderer, property, returnType.bound);
+        _writeProperty(renderer, property, returnType.bound as InterfaceType);
       }
     }
-    _buffer.writeln('});');
+    _buffer.writeln('}) as Map<String, Property<$_contextTypeVariable>>;');
     _buffer.writeln('');
   }
 
@@ -475,7 +474,7 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
         .writeln('getValue: ($_contextTypeVariable c) => c.${property.name},');
 
     var getterName = property.name;
-
+    var getterTypeString = getterType.getDisplayString(withNullability: false);
     // Only add a `getProperties` function, which returns the property map for
     // [getterType], if [getterType] is a renderable type.
     if (_typeToRendererClassName.containsKey(getterType.element)) {
@@ -489,14 +488,13 @@ renderVariable:
   var name = remainingNames.first;
   var nextProperty = $rendererClassName.propertyMap().getValue(name);
   return nextProperty.renderVariable(
-      self.getValue(c), nextProperty, [...remainingNames.skip(1)]);
+      self.getValue(c) as $getterTypeString, nextProperty, [...remainingNames.skip(1)]);
 },
 ''');
     } else {
       // [getterType] does not have a full renderer, so we just render a simple
       // variable, with no opportunity to access fields on [getterType].
-      var getterTypeString =
-          getterType.getDisplayString(withNullability: false);
+
       _buffer.writeln('''
 renderVariable:
     ($_contextTypeVariable c, Property<CT_> self, List<String> remainingNames) =>
@@ -523,16 +521,17 @@ renderVariable:
           var renderFunctionName = _typeToRenderFunctionName[innerType.element];
           String renderCall;
           if (renderFunctionName == null) {
-            var typeName = innerType.element.name;
+            var typeName = innerType.element!.name!;
             if (innerType is InterfaceType) {
               _invisibleGetters.putIfAbsent(
                   typeName, () => innerType.element.allAccessorNames);
             }
             renderCall = 'renderSimple(e, ast, r.template, sink, parent: r, '
-                "getters: _invisibleGetters['$typeName'])";
+                "getters: _invisibleGetters['$typeName']!)";
           } else {
+            var bang = _typeSystem.isPotentiallyNullable(innerType) ? '!' : '';
             renderCall =
-                '$renderFunctionName(e, ast, r.template, sink, parent: r)';
+                '$renderFunctionName(e$bang, ast, r.template, sink, parent: r)';
           }
           _buffer.writeln('''
 renderIterable:
@@ -554,19 +553,22 @@ renderIterable:
         String renderCall;
         if (renderFunctionName == null) {
           var typeName = getterType.element.name;
-          if (getterType is InterfaceType) {
-            _invisibleGetters.putIfAbsent(
-                typeName, () => getterType.element.allAccessorNames);
-          }
+          _invisibleGetters.putIfAbsent(
+              typeName, () => getterType.element.allAccessorNames);
           renderCall =
               'renderSimple(c.$getterName, ast, r.template, sink, parent: r, '
-              "getters: _invisibleGetters['$typeName'])";
+              "getters: _invisibleGetters['$typeName']!)";
         } else {
+          var bang = _typeSystem.isPotentiallyNullable(getterType) ? '!' : '';
           renderCall =
-              '$renderFunctionName(c.$getterName, ast, r.template, sink, parent: r)';
+              '$renderFunctionName(c.$getterName$bang, ast, r.template, sink, parent: r)';
         }
+        var nullValueGetter =
+            getterType.nullabilitySuffix == NullabilitySuffix.none
+                ? 'false'
+                : 'c.$getterName == null';
         _buffer.writeln('''
-isNullValue: ($_contextTypeVariable c) => c.$getterName == null,
+isNullValue: ($_contextTypeVariable c) => $nullValueGetter,
 
 renderValue:
     ($_contextTypeVariable c, RendererBase<$_contextTypeVariable> r,
@@ -585,7 +587,7 @@ renderValue:
     _buffer.write('const _invisibleGetters = {');
     for (var class_ in _invisibleGetters.keys.toList()..sort()) {
       _buffer.write("'$class_':");
-      var getters = _invisibleGetters[class_];
+      var getters = _invisibleGetters[class_]!;
       _buffer.write('{${getters.map((e) => "'$e'").join(', ')}},');
     }
     _buffer.write('};');
@@ -620,14 +622,14 @@ class _RendererInfo {
   bool includeRenderFunction;
 
   /// The public API function name specified with @Renderer, or null.
-  String publicApiFunctionName;
+  String? publicApiFunctionName;
 
   factory _RendererInfo(
     ClassElement contextClass, {
     bool public = false,
     bool isFullRenderer = true,
     bool includeRenderFunction = true,
-    String publicApiFunctionName,
+    String? publicApiFunctionName,
   }) {
     var typeBaseName = contextClass.name;
     var renderFunctionName = '_render_$typeBaseName';
@@ -648,8 +650,8 @@ class _RendererInfo {
     this._contextClass,
     this._renderFunctionName,
     this._rendererClassName, {
-    @required this.isFullRenderer,
-    @required this.includeRenderFunction,
+    required this.isFullRenderer,
+    required this.includeRenderFunction,
     this.publicApiFunctionName,
   });
 
@@ -664,12 +666,21 @@ class _RendererInfo {
   String _typeParametersStringWith(String extra) =>
       _contextClass.typeParametersStringWith(extra);
 
+  String _renderSingleType(DartType tp) {
+    var displayString = tp.getDisplayString(withNullability: false);
+    var nullabilitySuffix =
+        tp.nullabilitySuffix == NullabilitySuffix.question ? '?' : '';
+    return '$displayString$nullabilitySuffix';
+  }
+
   /// Returns the type arguments of the context type, and [extra], as they
   /// appear in a list of generics.
   String _typeArgumentsStringWith(String extra) {
     return asGenerics([
       ..._contextClass.thisType.typeArguments
-          .map((tp) => tp.getDisplayString(withNullability: false)),
+          // withNullability will give star types, we actually want nullable or
+          // non-nullable only for generation.
+          .map(_renderSingleType),
       extra,
     ]);
   }
@@ -679,7 +690,7 @@ extension on ClassElement {
   /// Returns a set of the names of all accessors on this [ClassElement], including supertypes.
   Set<String> get allAccessorNames {
     return {
-      ...?supertype?.element?.allAccessorNames,
+      ...?supertype?.element.allAccessorNames,
       ...accessors
           .where((e) => e.isPublic && !e.isStatic && !e.isSetter)
           .map((e) => e.name),

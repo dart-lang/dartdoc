@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'package:collection/collection.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 final RegExp _categoryRegExp = RegExp(
@@ -11,7 +12,7 @@ final RegExp _categoryRegExp = RegExp(
 /// Mixin implementing dartdoc categorization for ModelElements.
 abstract class Categorization implements ModelElement {
   @override
-  String buildDocumentationAddition(String rawDocs) =>
+  String buildDocumentationAddition(String? rawDocs) =>
       _stripAndSetDartdocCategories(rawDocs ??= '');
 
   /// Parse `{@category ...}` and related information in API comments, stripping
@@ -27,16 +28,16 @@ abstract class Categorization implements ModelElement {
       switch (match[1]) {
         case 'category':
         case 'api':
-          categorySet.add(match[2].trim());
+          categorySet.add(match[2]!.trim());
           break;
         case 'subCategory':
-          subCategorySet.add(match[2].trim());
+          subCategorySet.add(match[2]!.trim());
           break;
         case 'image':
-          _image = match[2].trim();
+          _image = match[2]!.trim();
           break;
         case 'samples':
-          _samples = match[2].trim();
+          _samples = match[2]!.trim();
           break;
       }
       return '';
@@ -49,63 +50,63 @@ abstract class Categorization implements ModelElement {
     return rawDocs;
   }
 
-  bool get hasSubCategoryNames => subCategoryNames.isNotEmpty;
-  List<String> _subCategoryNames;
+  bool get hasSubCategoryNames => subCategoryNames?.isNotEmpty ?? false;
+  List<String>? _subCategoryNames;
 
   /// Either a set of strings containing all declared subcategories for this symbol,
-  /// or a set containing Null if none were declared.
-  List<String> get subCategoryNames {
+  /// or 'null' if none were declared.
+  List<String>? get subCategoryNames {
     // TODO(jcollins-g): avoid side-effect dependency
     if (_subCategoryNames == null) documentationLocal;
     return _subCategoryNames;
   }
 
   @override
-  bool get hasCategoryNames => categoryNames.isNotEmpty;
-  List<String> _categoryNames;
+  bool get hasCategoryNames => categoryNames?.isNotEmpty ?? false;
+  List<String>? _categoryNames;
 
   /// Either a set of strings containing all declared categories for this symbol,
-  /// or a set containing Null if none were declared.
-  List<String> get categoryNames {
+  /// or 'null' if none were declared.
+  List<String>? get categoryNames {
     // TODO(jcollins-g): avoid side-effect dependency
     if (_categoryNames == null) documentationLocal;
     return _categoryNames;
   }
 
-  bool get hasImage => image.isNotEmpty;
-  String _image;
+  bool get hasImage => image!.isNotEmpty;
+  String? _image;
 
-  /// Either a URI to a defined image, or the empty string if none
-  /// was declared.
-  String get image {
+  /// Either a URI to a defined image,
+  /// or 'null' if one was not declared.
+  String? get image {
     // TODO(jcollins-g): avoid side-effect dependency
     if (_image == null) documentationLocal;
     return _image;
   }
 
-  bool get hasSamples => samples.isNotEmpty;
-  String _samples;
+  bool get hasSamples => samples?.isNotEmpty ?? false;
+  String? _samples;
 
-  /// Either a URI to documentation with samples, or the empty string if none
-  /// was declared.
-  String get samples {
+  /// Either a URI to documentation with samples,
+  /// or 'null' if one was not declared.
+  String? get samples {
     // TODO(jcollins-g): avoid side-effect dependency
     if (_samples == null) documentationLocal;
     return _samples;
   }
 
-  bool _hasCategorization;
+  late final Iterable<Category> categories = () {
+    var categoryNames = this.categoryNames;
+    if (categoryNames == null) {
+      return <Category>[];
+    }
 
-  Iterable<Category> _categories;
-
-  Iterable<Category> get categories {
-    _categories ??= categoryNames
-        .map((n) => package.nameToCategory[n])
-        .where((c) => c != null)
+    return categoryNames
+        .map((n) => package?.nameToCategory[n])
+        .whereNotNull()
         .toList()
       ..sort();
-    return _categories;
-  }
+  }();
 
   @override
   Iterable<Category> get displayedCategories {
@@ -113,10 +114,12 @@ abstract class Categorization implements ModelElement {
     return categories.where((c) => c.isDocumented);
   }
 
+  bool? _hasCategorization;
+
   /// True if categories, subcategories, a documentation icon, or samples were
   /// declared.
-  bool get hasCategorization {
+  late final bool hasCategorization = () {
     if (_hasCategorization == null) documentationLocal;
-    return _hasCategorization;
-  }
+    return _hasCategorization ?? false;
+  }();
 }

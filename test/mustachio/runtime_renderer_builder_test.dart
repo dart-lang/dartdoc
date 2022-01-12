@@ -12,7 +12,7 @@ import 'package:test/test.dart';
 import 'builder_test_base.dart';
 
 void main() {
-  InMemoryAssetWriter writer;
+  late InMemoryAssetWriter writer;
 
   Future<LibraryElement> resolveGeneratedLibrary() async {
     var rendererAsset = AssetId('foo', 'lib/foo.runtime_renderers.dart');
@@ -27,8 +27,8 @@ void main() {
   });
 
   group('builds a renderer class', () {
-    LibraryElement renderersLibrary;
-    String generatedContent;
+    late final LibraryElement renderersLibrary;
+    late final String generatedContent;
 
     // Builders are fairly expensive (about 4 seconds per `testBuilder` call),
     // so this [setUpAll] saves significant time over [setUp].
@@ -54,7 +54,7 @@ class Baz {}
 ''');
       renderersLibrary = await resolveGeneratedLibrary();
       var rendererAsset = AssetId('foo', 'lib/foo.runtime_renderers.dart');
-      generatedContent = utf8.decode(writer.assets[rendererAsset]);
+      generatedContent = utf8.decode(writer.assets[rendererAsset]!);
     });
 
     test('for a class which implicitly extends Object', () {
@@ -133,24 +133,26 @@ class Baz {}
                       List<MustachioNode> ast, StringSink sink) {
                     return c.l1.map((e) => renderSimple(
                         e, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['int']));
+                        parent: r, getters: _invisibleGetters['int']!));
                   },
                 ),
 '''));
     });
 
-    test('with a property map with a non-bool, non-Iterable property', () {
+    test(
+        'with a property map with a non-bool, non-Iterable, non-nullable property',
+        () {
       expect(generatedContent, contains('''
                 's1': Property(
                   getValue: (CT_ c) => c.s1,
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(c, remainingNames, 'String'),
-                  isNullValue: (CT_ c) => c.s1 == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     renderSimple(c.s1, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['String']);
+                        parent: r, getters: _invisibleGetters['String']!);
                   },
                 ),
 '''));
@@ -177,7 +179,7 @@ import 'package:mustachio/annotations.dart';
   });
 
   group('builds a renderer class for a generic type', () {
-    String generatedContent;
+    late final String generatedContent;
 
     // Builders are fairly expensive (about 4 seconds per `testBuilder` call),
     // so this [setUpAll] saves significant time over [setUp].
@@ -196,7 +198,7 @@ library foo;
 import 'package:mustachio/annotations.dart';
 ''');
       var rendererAsset = AssetId('foo', 'lib/foo.runtime_renderers.dart');
-      generatedContent = utf8.decode(writer.assets[rendererAsset]);
+      generatedContent = utf8.decode(writer.assets[rendererAsset]!);
     });
 
     test('with a corresponding public API function', () async {
@@ -208,7 +210,7 @@ import 'package:mustachio/annotations.dart';
       expect(
           generatedContent,
           contains('void _render_Foo<T>(\n'
-              '    Foo<T> context, List<MustachioNode> ast, Template template, StringSink sink'));
+              '    Foo<T> context, List<MustachioNode> ast, Template template, StringSink sink,\n'));
     });
 
     test('with a generic supertype type argument', () async {
@@ -239,19 +241,19 @@ class Baz {}
 ''');
     var renderersLibrary = await resolveGeneratedLibrary();
 
-    var fooRenderFunction = renderersLibrary.getTopLevelFunction('renderFoo');
+    var fooRenderFunction = renderersLibrary.getTopLevelFunction('renderFoo')!;
     expect(fooRenderFunction.typeParameters, hasLength(1));
-    var fBound = fooRenderFunction.typeParameters.single.bound;
+    var fBound = fooRenderFunction.typeParameters.single.bound!;
     expect(fBound.getDisplayString(withNullability: false), equals('num'));
 
-    var fooRendererClass = renderersLibrary.getType('_Renderer_Foo');
+    var fooRendererClass = renderersLibrary.getType('_Renderer_Foo')!;
     expect(fooRendererClass.typeParameters, hasLength(1));
-    var cBound = fooRenderFunction.typeParameters.single.bound;
+    var cBound = fooRenderFunction.typeParameters.single.bound!;
     expect(cBound.getDisplayString(withNullability: false), equals('num'));
   });
 
   group('does not generate a renderer', () {
-    LibraryElement renderersLibrary;
+    late final LibraryElement renderersLibrary;
 
     setUpAll(() async {
       writer = InMemoryAssetWriter();

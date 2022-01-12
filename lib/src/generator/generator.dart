@@ -7,7 +7,7 @@ library dartdoc.generator;
 
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
-import 'package:dartdoc/src/model/model.dart' show PackageGraph;
+import 'package:dartdoc/src/model/package_graph.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/warnings.dart';
 
@@ -20,7 +20,7 @@ abstract class FileWriter {
   /// Writes [content] to a file at [filePath].
   ///
   /// If a file is to be overwritten, a warning will be reported on [element].
-  void write(String filePath, String content, {Warnable element});
+  void write(String filePath, String content, {Warnable? element});
 
   /// Writes [content] to a file at [filePath].
   ///
@@ -43,7 +43,7 @@ abstract class Generator {
   Future<void> generate(PackageGraph packageGraph, FileWriter writer);
 }
 
-Future<List<DartdocOption<Object>>> createGeneratorOptions(
+Future<List<DartdocOption>> createGeneratorOptions(
     PackageMetaProvider packageMetaProvider) async {
   var resourceProvider = packageMetaProvider.resourceProvider;
   return [
@@ -71,16 +71,16 @@ Future<List<DartdocOption<Object>>> createGeneratorOptions(
             'Generates `index.json` with indentation and newlines. The file is '
             'larger, but it\'s also easier to diff.',
         negatable: false),
-    DartdocOptionArgFile<String>('favicon', null, resourceProvider,
+    DartdocOptionArgFile<String?>('favicon', null, resourceProvider,
         optionIs: OptionKind.file,
         help: 'A path to a favicon for the generated docs.',
         mustExist: true),
-    DartdocOptionArgOnly<String>('relCanonicalPrefix', null, resourceProvider,
+    DartdocOptionArgOnly<String?>('relCanonicalPrefix', null, resourceProvider,
         help:
             'If provided, add a rel="canonical" prefixed with provided value. '
             'Consider using if building many versions of the docs for public '
             'SEO; learn more at https://goo.gl/gktN6F.'),
-    DartdocOptionArgOnly<String>('templatesDir', null, resourceProvider,
+    DartdocOptionArgOnly<String?>('templatesDir', null, resourceProvider,
         optionIs: OptionKind.dir,
         mustExist: true,
         hide: true,

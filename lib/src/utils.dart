@@ -1,6 +1,7 @@
 // Copyright (c) 2014, the Dart project authors.  Please see the AUTHORS file
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
+
 library dartdoc.utils;
 
 final RegExp leadingWhiteSpace = RegExp(r'^([ \t]*)[^ ]');
@@ -8,14 +9,15 @@ final RegExp leadingWhiteSpace = RegExp(r'^([ \t]*)[^ ]');
 Iterable<String> stripCommonWhitespace(String str) sync* {
   if (str.isEmpty) return;
   final lines = str.split('\n');
-  int /*?*/ minimumSeen;
+  int? minimumSeen;
 
   for (final line in lines) {
     if (line.isNotEmpty) {
       final match = leadingWhiteSpace.firstMatch(line);
       if (match != null) {
-        if (minimumSeen == null || match.group(1).length < minimumSeen) {
-          minimumSeen = match.group(1).length;
+        var groupLength = match.group(1)!.length;
+        if (minimumSeen == null || groupLength < minimumSeen) {
+          minimumSeen = groupLength;
         }
       }
     }
@@ -31,8 +33,6 @@ Iterable<String> stripCommonWhitespace(String str) sync* {
 }
 
 String stripComments(String str) {
-  // TODO(parlough): Once we migrate to null safety, prohibit null here
-  if (str == null) return null;
   if (str.isEmpty) return '';
   final buf = StringBuffer();
 
@@ -69,7 +69,7 @@ String stripComments(String str) {
 }
 
 String truncateString(String str, int length) {
-  if (str != null && str.length > length) {
+  if (str.length > length) {
     // Do not call this on unsanitized HTML.
     assert(!str.contains('<'));
     return '${str.substring(0, length)}…';

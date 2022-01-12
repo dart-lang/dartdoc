@@ -1,12 +1,10 @@
-// @dart=2.9
-
 library two_exports.src.extending;
 
 import 'base.dart';
 
 int topLevelVariable = 1;
 
-bool someConflictingNameSymbol;
+bool? someConflictingNameSymbol;
 
 /// Extending class extends [BaseClass].
 ///
@@ -17,5 +15,5 @@ class ExtendingClass extends BaseClass {}
 
 class ExtendingAgain extends BaseWithMembers {
   @override
-  bool anotherField;
+  bool? anotherField;
 }

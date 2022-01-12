@@ -14,14 +14,14 @@ import 'package:test/test.dart';
 import 'src/utils.dart' as utils;
 
 void main() {
-  MemoryResourceProvider resourceProvider;
-  PackageMetaProvider packageMetaProvider;
-  FakePackageConfigProvider packageConfigProvider;
-  DartdocOptionSet optionSet;
-  Folder sdkFolder;
+  late MemoryResourceProvider resourceProvider;
+  late PackageMetaProvider packageMetaProvider;
+  late FakePackageConfigProvider packageConfigProvider;
+  late DartdocOptionSet optionSet;
+  late Folder sdkFolder;
 
-  Folder projectRoot;
-  String projectPath;
+  late Folder projectRoot;
+  late String projectPath;
   var packageName = 'my_package';
 
   void writeToJoinedPath(List<String> pathSegments, String content) {
@@ -35,17 +35,17 @@ void main() {
 
   setUp(() async {
     packageMetaProvider = utils.testPackageMetaProvider;
-    resourceProvider = packageMetaProvider.resourceProvider;
+    resourceProvider =
+        packageMetaProvider.resourceProvider as MemoryResourceProvider;
     sdkFolder = packageMetaProvider.defaultSdkDir;
 
-    optionSet = await DartdocOptionSet.fromOptionGenerators(
+    optionSet = await DartdocOptionRoot.fromOptionGenerators(
         'dartdoc', [createDartdocOptions], packageMetaProvider);
-    packageConfigProvider = utils.getTestPackageConfigProvider(sdkFolder.path);
+    packageConfigProvider = utils.getTestPackageConfigProvider(sdkFolder.path)
+        as FakePackageConfigProvider;
   });
 
   tearDown(() {
-    projectRoot = null;
-    projectPath = null;
     clearPackageMetaCache();
   });
 
@@ -246,8 +246,8 @@ library bar;
     });
 
     group('using --link-to-remote', () {
-      Folder packageOneRoot;
-      Folder packageTwoRoot;
+      late Folder packageOneRoot;
+      late Folder packageTwoRoot;
 
       setUp(() {
         optionSet.parseArguments(['--link-to-remote']);
@@ -423,7 +423,7 @@ dartdoc:
             ]);
 
         var pragmaModelElement =
-            packageGraph.specialClasses[SpecialClass.pragma];
+            packageGraph.specialClasses[SpecialClass.pragma]!;
         expect(pragmaModelElement.name, equals('pragma'));
       });
     });

@@ -16,7 +16,7 @@ import '../../tool/subprocess_launcher.dart';
 import '../src/utils.dart';
 
 Uri get _currentFileUri =>
-    (reflect(main) as ClosureMirror).function.location.sourceUri;
+    (reflect(main) as ClosureMirror).function.location!.sourceUri;
 String get _testPackagePath =>
     path.fromUri(_currentFileUri.resolve('../../testing/test_package'));
 String get _testPackageFlutterPluginPath => path.fromUri(_currentFileUri
@@ -27,8 +27,8 @@ String get _testPackageMinimumPath =>
 void main() {
   group('Invoking command-line dartdoc', () {
     var dartdocPath = path.canonicalize(path.join('bin', 'dartdoc.dart'));
-    CoverageSubprocessLauncher subprocessLauncher;
-    Directory tempDir;
+    late final CoverageSubprocessLauncher subprocessLauncher;
+    late final Directory tempDir;
 
     setUpAll(() async {
       tempDir =
@@ -179,7 +179,7 @@ void main() {
       await subprocessLauncher.runStreamed(Platform.resolvedExecutable, args,
           workingDirectory: _testPackagePath,
           perLine: (s) => output.writeln(s));
-      var dartdocMeta = pubPackageMetaProvider.fromFilename(dartdocPath);
+      var dartdocMeta = pubPackageMetaProvider.fromFilename(dartdocPath)!;
       expect(output.toString(),
           endsWith('dartdoc version: ${dartdocMeta.version}\n'));
     });
@@ -236,9 +236,9 @@ void main() {
       var footerRegex =
           RegExp(r'<footer>(.*\s*?\n?)+?</footer>', multiLine: true);
       // get footer, check for version number
-      var m = footerRegex.firstMatch(outFile.readAsStringSync());
+      var m = footerRegex.firstMatch(outFile.readAsStringSync())!;
       var version = RegExp(r'(\d+\.)?(\d+\.)?(\*|\d+)');
-      expect(version.hasMatch(m.group(0)), false);
+      expect(version.hasMatch(m.group(0)!), false);
     });
   }, timeout: Timeout.factor(8));
 }
