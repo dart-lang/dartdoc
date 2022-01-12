@@ -273,6 +273,55 @@ void main() {
         //    equals('Ft&lt;String&gt;.new'));
       });
     }, skip: !_constructorTearoffsAllowed.allows(utils.platformVersion));
+
+    group('named-arguments-anywhere', () {
+      Library namedArgumentsAnywhere;
+
+      setUpAll(() async {
+        namedArgumentsAnywhere = (await _testPackageGraphExperiments)
+            .libraries
+            .firstWhere((l) => l.name == 'named_arguments_anywhere');
+      });
+
+      test(
+          'named parameters in a const invocation value can be specified '
+          'last', () {
+        var p =
+            namedArgumentsAnywhere.constants.firstWhere((c) => c.name == 'p');
+
+        expect(
+            p.constantValue,
+            equals(
+                '<a href="%%__HTMLBASE_dartdoc_internal__%%named_arguments_anywhere/C/C.html">C</a>'
+                '(1, 2, c: 3, d: 4)'));
+      });
+
+      test(
+          'named parameters in a const invocation value can be specified '
+          'anywhere', () {
+        var q =
+            namedArgumentsAnywhere.constants.firstWhere((c) => c.name == 'q');
+
+        expect(
+            q.constantValue,
+            equals(
+                '<a href="%%__HTMLBASE_dartdoc_internal__%%named_arguments_anywhere/C/C.html">C</a>'
+                '(1, c: 2, 3, d: 4)'));
+      });
+
+      test(
+          'named parameters in a const invocation value can be specified '
+          'first', () {
+        var r =
+            namedArgumentsAnywhere.constants.firstWhere((c) => c.name == 'r');
+
+        expect(
+            r.constantValue,
+            equals(
+                '<a href="%%__HTMLBASE_dartdoc_internal__%%named_arguments_anywhere/C/C.html">C</a>'
+                '(c: 1, d: 2, 3, 4)'));
+      });
+    }, skip: !_constructorTearoffsAllowed.allows(utils.platformVersion));
   });
 
   group('HTML is sanitized when enabled', () {
