@@ -76,6 +76,12 @@ void main() {
   final _constructorTearoffsAllowed =
       VersionRange(min: Version.parse('2.15.0-0'), includeMin: true);
 
+  // We can not use ExperimentalFeature.releaseVersion or even
+  // ExperimentalFeature.experimentalReleaseVersion as these are set to null
+  // even when partial analyzer implementations are available.
+  final _namedArgumentsAnywhereAllowed =
+      VersionRange(min: Version.parse('2.17.0-0'), includeMin: true);
+
   // Experimental features not yet enabled by default.  Move tests out of this
   // block when the feature is enabled by default.
   group('Experiments', () {
@@ -321,7 +327,7 @@ void main() {
                 '<a href="%%__HTMLBASE_dartdoc_internal__%%named_arguments_anywhere/C/C.html">C</a>'
                 '(c: 1, d: 2, 3, 4)'));
       });
-    }, skip: !_constructorTearoffsAllowed.allows(utils.platformVersion));
+    }, skip: !_namedArgumentsAnywhereAllowed.allows(utils.platformVersion));
   });
 
   group('HTML is sanitized when enabled', () {
