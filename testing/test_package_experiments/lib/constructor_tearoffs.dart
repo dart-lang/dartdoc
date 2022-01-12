@@ -51,7 +51,7 @@ class F<T> {
   F.alternative() {}
 }
 
-typedef Ft = F;
+typedef Ft<T> = F<T>;
 
 /// Referring to [Fstring.new] should be fine.
 typedef Fstring = F<String>;
