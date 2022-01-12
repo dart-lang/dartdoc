@@ -4,7 +4,7 @@
 
 library dartdoc.package_meta;
 
-import 'dart:io' show Platform, Process;
+import 'dart:io' show Platform;
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
@@ -16,8 +16,6 @@ import 'package:dartdoc/src/failure.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:yaml/yaml.dart';
-
-import 'logging.dart';
 
 final Map<String, PackageMeta?> _packageMetaCache = {};
 

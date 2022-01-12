@@ -51,6 +51,7 @@ Future<PackageGraph> bootBasicPackage(
     PackageConfigProvider packageConfigProvider,
     {List<String> excludeLibraries = const [],
     List<String> additionalArguments = const []}) async {
+  // TODO(devoncarew): Should this test method run 'pub get'?
   var resourceProvider = packageMetaProvider.resourceProvider;
   var dir = resourceProvider.getFolder(resourceProvider.pathContext
       .absolute(resourceProvider.pathContext.normalize(dirPath)));
