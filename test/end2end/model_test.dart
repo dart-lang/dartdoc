@@ -722,13 +722,11 @@ void main() {
     });
     test('can invoke a tool multiple times in one comment block', () {
       var envLine = RegExp(r'^Env: \{', multiLine: true);
-      expect(
-          envLine.allMatches(invokeToolMultipleSections.documentation).length,
-          equals(2));
+      expect(envLine.allMatches(invokeToolMultipleSections.documentation),
+          hasLength(2));
       var argLine = RegExp(r'^Args: \[', multiLine: true);
-      expect(
-          argLine.allMatches(invokeToolMultipleSections.documentation).length,
-          equals(2));
+      expect(argLine.allMatches(invokeToolMultipleSections.documentation),
+          hasLength(2));
       expect(invokeToolMultipleSections.documentation,
           contains('Invokes more than one tool in the same comment block.'));
       expect(invokeToolMultipleSections.documentation,
@@ -760,13 +758,12 @@ void main() {
 
   group('Category', () {
     test('Verify categories for test_package', () {
-      expect(packageGraph.localPackages.length, equals(1));
+      expect(packageGraph.localPackages, hasLength(1));
       expect(packageGraph.localPackages.first.hasCategories, isTrue);
       var packageCategories = packageGraph.localPackages.first.categories;
-      expect(packageCategories.length, equals(6));
-      expect(
-          packageGraph.localPackages.first.categoriesWithPublicLibraries.length,
-          equals(3));
+      expect(packageCategories, hasLength(6));
+      expect(packageGraph.localPackages.first.categoriesWithPublicLibraries,
+          hasLength(3));
       expect(
           packageCategories.map((c) => c.name).toList(),
           orderedEquals([
@@ -777,8 +774,16 @@ void main() {
             'More Excellence',
             'NotSoExcellent'
           ]));
-      expect(packageCategories.map((c) => c.libraries.length).toList(),
-          orderedEquals([0, 2, 3, 1, 0, 0]));
+      expect(
+          packageCategories.map((c) => c.libraries).toList(),
+          orderedEquals([
+            hasLength(0),
+            hasLength(2),
+            hasLength(3),
+            hasLength(1),
+            hasLength(0),
+            hasLength(0)
+          ]));
     });
 
     test('Verify libraries with multiple categories show up in multiple places',
@@ -1296,22 +1301,21 @@ void main() {
       });
 
       test('Verify table appearance', () {
-        expect(docsAsHtml.contains('<table><thead><tr><th>Component</th>'),
-            isTrue);
+        expect(docsAsHtml, contains('<table><thead><tr><th>Component</th>'));
       });
 
       test('Verify links inside of table headers', () {
         expect(
-            docsAsHtml.contains(
-                '<th><a href="${htmlBasePlaceholder}fake/Annotation-class.html">Annotation</a></th>'),
-            isTrue);
+            docsAsHtml,
+            contains(
+                '<th><a href="${htmlBasePlaceholder}fake/Annotation-class.html">Annotation</a></th>'));
       });
 
       test('Verify links inside of table body', () {
         expect(
-            docsAsHtml.contains(
-                '<tbody><tr><td><a href="${htmlBasePlaceholder}fake/DocumentWithATable/foo-constant.html">foo</a></td>'),
-            isTrue);
+            docsAsHtml,
+            contains(
+                '<tbody><tr><td><a href="${htmlBasePlaceholder}fake/DocumentWithATable/foo-constant.html">foo</a></td>'));
       });
 
       test('Verify there is no emoji support', () {
@@ -1910,7 +1914,7 @@ void main() {
               .map<String>((ElementType t) => t.name),
           orderedEquals(['int']));
 
-      expect(TypeInferenceMixedIn.superChain.length, equals(2));
+      expect(TypeInferenceMixedIn.superChain, hasLength(2));
       final firstType =
           TypeInferenceMixedIn.superChain.first as ParameterizedElementType;
       final lastType =
@@ -2143,8 +2147,8 @@ void main() {
     test('all instance methods', () {
       var methods = B.publicInstanceMethods.where((m) => !m.isInherited);
       expect(methods, isNotEmpty);
-      expect(B.publicInstanceMethods.length,
-          equals(methods.length + B.publicInheritedMethods.length));
+      expect(B.publicInstanceMethods,
+          hasLength(methods.length + B.publicInheritedMethods.length));
     });
 
     test('inherited methods exist', () {
@@ -3014,7 +3018,7 @@ void main() {
     });
 
     test('static fields inside extensions do not crash', () {
-      expect(staticFieldExtension.staticFields.length, equals(1));
+      expect(staticFieldExtension.staticFields, hasLength(1));
       expect(staticFieldExtension.staticFields.first.name, equals('aStatic'));
     });
 
@@ -3125,7 +3129,7 @@ void main() {
               '<a href="%%__HTMLBASE_dartdoc_internal__%%ex/AnExtendableThing-class.html">AnExtendableThing</a>'));
       // TODO(jcollins-g): consider linking via applied extensions?
       expect(doSomeStuff.documentationAsHtml, contains('<code>aMember</code>'));
-    }, skip: 'unskip when enhanced lookups are on by default');
+    });
 
     test(
         'references from outside an extension refer correctly to the extension',
@@ -3458,10 +3462,10 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
           params,
           '<span class="parameter" id="doAComplicatedThing-param-x"><span class="type-annotation">int</span> <span class="parameter-name">x</span>, </span>'
           '<span class="parameter" id="doAComplicatedThing-param-doSomething">{<span class="type-annotation">void</span> <span class="parameter-name">doSomething</span>(<span class="parameter" id="doSomething-param-aThingParameter"><span class="type-annotation">int</span> <span class="parameter-name">aThingParameter</span>, </span>'
-          '<span class="parameter" id="doSomething-param-anotherThing"><span class="type-annotation">String</span> <span class="parameter-name">anotherThing</span></span>), </span>'
+          '<span class="parameter" id="doSomething-param-anotherThing"><span class="type-annotation">String</span> <span class="parameter-name">anotherThing</span></span>)?, </span>'
           '<span class="parameter" id="doAComplicatedThing-param-doSomethingElse"><span class="type-annotation">void</span> <span class="parameter-name">doSomethingElse</span>(<span class="parameter" id="doSomethingElse-param-aThingParameter"><span class="type-annotation">int</span> <span class="parameter-name">aThingParameter</span>, </span>'
-          '<span class="parameter" id="doSomethingElse-param-somethingElse"><span class="type-annotation">double</span> <span class="parameter-name">somethingElse</span></span>)}</span>');
-    }, skip: 'reenable with analyzer > 1.7.1');
+          '<span class="parameter" id="doSomethingElse-param-somethingElse"><span class="type-annotation">double</span> <span class="parameter-name">somethingElse</span></span>)?}</span>');
+    });
   });
 
   group('Type expansion', () {
@@ -3941,12 +3945,10 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('annotations from getters and setters are accumulated in Fields', () {
-      expect(
-          explicitGetterSetter.featuresAsString.contains('a Getter Annotation'),
-          isTrue);
-      expect(
-          explicitGetterSetter.featuresAsString.contains('a Setter Annotation'),
-          isTrue);
+      expect(explicitGetterSetter.featuresAsString,
+          contains('a Getter Annotation'));
+      expect(explicitGetterSetter.featuresAsString,
+          contains('a Setter Annotation'));
     });
 
     test('Docs from inherited implicit accessors are preserved', () {
@@ -3974,10 +3976,8 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(documentedPartialFieldInSubclassOnly.readOnly, isTrue);
       expect(documentedPartialFieldInSubclassOnly.documentationComment,
           contains('This getter is documented'));
-      expect(
-          documentedPartialFieldInSubclassOnly.annotations
-              .contains(Feature.inheritedSetter),
-          isFalse);
+      expect(documentedPartialFieldInSubclassOnly.annotations,
+          isNot(contains(Feature.inheritedSetter)));
     });
 
     test('@nodoc overridden in subclass for getter works', () {
@@ -4000,22 +4000,16 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(implicitGetterExplicitSetter.getter!.isInherited, isTrue);
       expect(implicitGetterExplicitSetter.setter!.isInherited, isFalse);
       expect(implicitGetterExplicitSetter.isInherited, isFalse);
-      expect(implicitGetterExplicitSetter.features.contains(Feature.inherited),
-          isFalse);
+      expect(implicitGetterExplicitSetter.features,
+          isNot(contains(Feature.inherited)));
+      expect(implicitGetterExplicitSetter.features,
+          contains(Feature.inheritedGetter));
+      expect(implicitGetterExplicitSetter.features,
+          isNot(contains(Feature.overrideFeature)));
+      expect(implicitGetterExplicitSetter.features,
+          contains(Feature.overrideSetter));
       expect(
-          implicitGetterExplicitSetter.features
-              .contains(Feature.inheritedGetter),
-          isTrue);
-      expect(
-          implicitGetterExplicitSetter.features
-              .contains(Feature.overrideFeature),
-          isFalse);
-      expect(
-          implicitGetterExplicitSetter.features
-              .contains(Feature.overrideSetter),
-          isTrue);
-      expect(implicitGetterExplicitSetter.features.contains(Feature.readWrite),
-          isTrue);
+          implicitGetterExplicitSetter.features, contains(Feature.readWrite));
       expect(
           implicitGetterExplicitSetter.oneLineDoc,
           equals(
@@ -4030,22 +4024,16 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(explicitGetterImplicitSetter.getter!.isInherited, isFalse);
       expect(explicitGetterImplicitSetter.setter!.isInherited, isTrue);
       expect(explicitGetterImplicitSetter.isInherited, isFalse);
-      expect(explicitGetterImplicitSetter.features.contains(Feature.inherited),
-          isFalse);
+      expect(explicitGetterImplicitSetter.features,
+          isNot(contains(Feature.inherited)));
+      expect(explicitGetterImplicitSetter.features,
+          contains(Feature.inheritedSetter));
+      expect(explicitGetterImplicitSetter.features,
+          isNot(contains(Feature.overrideFeature)));
+      expect(explicitGetterImplicitSetter.features,
+          contains(Feature.overrideGetter));
       expect(
-          explicitGetterImplicitSetter.features
-              .contains(Feature.inheritedSetter),
-          isTrue);
-      expect(
-          explicitGetterImplicitSetter.features
-              .contains(Feature.overrideFeature),
-          isFalse);
-      expect(
-          explicitGetterImplicitSetter.features
-              .contains(Feature.overrideGetter),
-          isTrue);
-      expect(explicitGetterImplicitSetter.features.contains(Feature.readWrite),
-          isTrue);
+          explicitGetterImplicitSetter.features, contains(Feature.readWrite));
       expect(explicitGetterImplicitSetter.oneLineDoc,
           equals('Getter doc for explicitGetterImplicitSetter'));
       // Even though we have some new setter docs, getter still takes priority.
@@ -4167,9 +4155,8 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
         () {
       var withGenericSub =
           exLibrary.classes.firstWhere((c) => c.name == 'WithGenericSub');
-      expect(
-          withGenericSub.inheritedFields.where((p) => p.name == 'prop').length,
-          equals(1));
+      expect(withGenericSub.inheritedFields.where((p) => p.name == 'prop'),
+          hasLength(1));
     });
   });
 
@@ -4866,7 +4853,7 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('uses = instead of : to set default value', () {
       final rendered =
           ParameterRendererHtml().renderLinkedParams([intCheckOptional]);
-      expect(rendered.contains('</span> = <span'), isTrue);
+      expect(rendered, contains('</span> = <span'));
     });
 
     test('linkedName', () {
@@ -4880,7 +4867,8 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('param with generics', () {
       var params = ParameterRendererHtml()
           .renderLinkedParams(methodWithGenericParam.parameters);
-      expect(params.contains('List') && params.contains('Apple'), isTrue);
+      expect(params, contains('List'));
+      expect(params, contains('Apple'));
     });
 
     test('commas on same param line', () {
@@ -4987,9 +4975,9 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('Cat has implementors', () {
       expect(implC, hasLength(3));
       var implementors = <String>['B', 'Dog', 'ConstantCat'];
-      expect(implementors.contains(implC[0].name), isTrue);
-      expect(implementors.contains(implC[1].name), isTrue);
-      expect(implementors.contains(implC[2].name), isTrue);
+      expect(implementors, contains(implC[0].name));
+      expect(implementors, contains(implC[1].name));
+      expect(implementors, contains(implC[2].name));
     });
 
     test('B does not have implementors', () {
