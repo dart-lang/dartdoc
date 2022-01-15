@@ -9,28 +9,28 @@ import 'package:dartdoc/src/render/enum_field_renderer.dart';
 import 'package:dartdoc/src/special_elements.dart';
 
 class Enum extends InheritingContainer with TypeImplementing {
-  Enum(ClassElement element, Library library, PackageGraph packageGraph)
+  Enum(ClassElement element, Library? library, PackageGraph packageGraph)
       : super(element, library, packageGraph);
 
-  List<InheritingContainer> _inheritanceChain;
+  List<InheritingContainer?>? _inheritanceChain;
   @override
-  List<InheritingContainer> get inheritanceChain {
+  List<InheritingContainer?> get inheritanceChain {
     if (_inheritanceChain == null) {
       _inheritanceChain = [];
-      _inheritanceChain.add(this);
+      _inheritanceChain!.add(this);
 
       for (var c
           in superChain.map((e) => (e.modelElement as InheritingContainer))) {
-        _inheritanceChain.addAll(c.inheritanceChain);
+        _inheritanceChain!.addAll(c.inheritanceChain);
       }
 
-      _inheritanceChain.addAll(interfaces.expand(
+      _inheritanceChain!.addAll(interfaces.expand(
           (e) => (e.modelElement as InheritingContainer).inheritanceChain));
 
-      assert(_inheritanceChain
+      assert(_inheritanceChain!
           .contains(packageGraph.specialClasses[SpecialClass.enumClass]));
     }
-    return _inheritanceChain.toList(growable: false);
+    return _inheritanceChain!.toList(growable: false);
   }
 
   @override
@@ -40,15 +40,17 @@ class Enum extends InheritingContainer with TypeImplementing {
 /// Enum's fields are virtual, so we do a little work to create
 /// usable values for the docs.
 class EnumField extends Field {
-  int index;
+  int? index;
 
   EnumField(FieldElement element, Library library, PackageGraph packageGraph,
-      Accessor getter, Accessor setter)
-      : super(element, library, packageGraph, getter, setter);
+      Accessor? getter, Accessor? setter)
+      : super(element, library, packageGraph, getter as ContainerAccessor?,
+            setter as ContainerAccessor?);
 
   EnumField.forConstant(this.index, FieldElement element, Library library,
-      PackageGraph packageGraph, Accessor getter)
-      : super(element, library, packageGraph, getter, null);
+      PackageGraph packageGraph, Accessor? getter)
+      : super(
+            element, library, packageGraph, getter as ContainerAccessor?, null);
 
   @override
   String get constantValueBase => _fieldRenderer.renderValue(this);
@@ -79,7 +81,7 @@ class EnumField extends Field {
   }
 
   @override
-  String get href {
+  String? get href {
     if (!identical(canonicalModelElement, this)) {
       return canonicalModelElement?.href;
     }
@@ -107,10 +109,10 @@ class EnumField extends Field {
   }
 
   @override
-  String get oneLineDoc => documentationAsHtml;
+  String? get oneLineDoc => documentationAsHtml;
 
   @override
-  Inheritable get overriddenElement => null;
+  Inheritable? get overriddenElement => null;
 
   EnumFieldRenderer get _fieldRenderer =>
       packageGraph.rendererFactory.enumFieldRenderer;

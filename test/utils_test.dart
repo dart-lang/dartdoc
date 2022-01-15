@@ -8,8 +8,8 @@ import 'package:dartdoc/src/utils.dart';
 import 'package:test/test.dart';
 
 void main() {
-  String comment;
-  String documentation;
+  late String comment;
+  late String documentation;
 
   // For readability, the multiline strings below have a left margin. This
   // is the length of that left margin.

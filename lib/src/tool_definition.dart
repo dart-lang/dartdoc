@@ -8,7 +8,6 @@ import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/tool_runner.dart';
-import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p show extension;
 
 /// Defines the attributes of a tool in the options file, corresponding to
@@ -17,14 +16,14 @@ import 'package:path/path.dart' as p show extension;
 class ToolDefinition {
   /// A list containing the command and options to be run for this tool. The
   /// first argument in the command is the tool executable, and will have its
-  /// path evaluated relative to the `dartdoc_options.yaml` location. Must not
-  /// be an empty list, or be null.
+  /// path evaluated relative to the `dartdoc_options.yaml` location.  Must
+  /// not be empty.
   final List<String> command;
 
   /// A list containing the command and options to setup phase for this tool.
   /// The first argument in the command is the tool executable, and will have
   /// its path evaluated relative to the `dartdoc_options.yaml` location. May
-  /// be null or empty, in which case it will be ignored at setup time.
+  /// be empty, in which case it will be ignored at setup time.
   final List<String> setupCommand;
 
   /// A description of the defined tool. Must not be null.
@@ -47,10 +46,8 @@ class ToolDefinition {
       List<String> setupCommand,
       String description,
       ResourceProvider resourceProvider,
-      {List<String> compileArgs}) {
-    assert(command != null);
+      {List<String>? compileArgs}) {
     assert(command.isNotEmpty);
-    assert(description != null);
     if (isDartExecutable(command[0])) {
       return DartToolDefinition(
           command, setupCommand, description, resourceProvider,
@@ -67,15 +64,13 @@ class ToolDefinition {
   }
 
   ToolDefinition(this.command, this.setupCommand, this.description)
-      : assert(command != null),
-        assert(command.isNotEmpty),
-        assert(description != null);
+      : assert(command.isNotEmpty);
 
   @override
   String toString() {
     final commandString =
         '${this is DartToolDefinition ? '(Dart) ' : ''}"${command.join(' ')}"';
-    if (setupCommand == null) {
+    if (setupCommand.isEmpty) {
       return '$runtimeType: $commandString ($description)';
     } else {
       return '$runtimeType: $commandString, with setup command '
@@ -84,9 +79,9 @@ class ToolDefinition {
   }
 
   Future<ToolStateForArgs> toolStateForArgs(String toolName, List<String> args,
-      {@required ToolErrorCallback toolErrorCallback}) async {
+      {required ToolErrorCallback toolErrorCallback}) async {
     var commandPath = args.removeAt(0);
-    return ToolStateForArgs(commandPath, args, null);
+    return ToolStateForArgs(commandPath, args);
   }
 }
 
@@ -105,7 +100,7 @@ class DartToolDefinition extends ToolDefinition {
   /// built.
   @override
   Future<ToolStateForArgs> toolStateForArgs(String toolName, List<String> args,
-      {@required ToolErrorCallback toolErrorCallback}) async {
+      {required ToolErrorCallback toolErrorCallback}) async {
     assert(args[0] == command.first);
     // Set up flags to create a new snapshot, if needed, and use the first run
     // as the training run.
@@ -129,28 +124,25 @@ class DartToolDefinition extends ToolDefinition {
             ...compileArgs,
             ...args,
           ],
-          snapshot._snapshotCompleted);
+          onProcessComplete: snapshot._snapshotCompleted);
     } else {
       await snapshot._snapshotValid();
       if (!snapshotFile.exists) {
-        if (toolErrorCallback != null) {
-          toolErrorCallback(
-              'Snapshot creation failed for $toolName tool. $snapshotPath does '
-              'not exist. Will execute tool without snapshot.');
-        }
+        toolErrorCallback(
+            'Snapshot creation failed for $toolName tool. $snapshotPath does '
+            'not exist. Will execute tool without snapshot.');
       } else {
         // replace the first argument with the path to the snapshot.
         args[0] = snapshotPath;
       }
-      return ToolStateForArgs(_resourceProvider.resolvedExecutable, args, null);
+      return ToolStateForArgs(_resourceProvider.resolvedExecutable, args);
     }
   }
 
   DartToolDefinition(List<String> command, List<String> setupCommand,
       String description, this._resourceProvider,
       {this.compileArgs = const []})
-      : assert(compileArgs != null),
-        super(command, setupCommand, description);
+      : super(command, setupCommand, description);
 }
 
 /// Manages the creation of a single snapshot file in a context where multiple
@@ -235,18 +227,20 @@ class SnapshotCache {
   }
 
   _Snapshot getSnapshot(String toolPath) {
-    if (snapshots.containsKey(toolPath)) {
-      return snapshots[toolPath];
+    var toolSnapshot = snapshots[toolPath];
+    if (toolSnapshot != null) {
+      return toolSnapshot;
     }
-    snapshots[toolPath] =
+    toolSnapshot =
         _Snapshot(snapshotCache, toolPath, _serial, _resourceProvider);
+    snapshots[toolPath] = toolSnapshot;
     _serial++;
-    return snapshots[toolPath];
+    return toolSnapshot;
   }
 
   void dispose() {
     _instances.remove(_resourceProvider);
-    if (snapshotCache != null && snapshotCache.exists) {
+    if (snapshotCache.exists) {
       snapshotCache.delete();
     }
   }
@@ -255,7 +249,7 @@ class SnapshotCache {
 class ToolStateForArgs {
   final String commandPath;
   final List<String> args;
-  final void Function() onProcessComplete;
+  final void Function()? onProcessComplete;
 
-  ToolStateForArgs(this.commandPath, this.args, this.onProcessComplete);
+  ToolStateForArgs(this.commandPath, this.args, {this.onProcessComplete});
 }

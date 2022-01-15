@@ -35,7 +35,6 @@ class MustachioBuilder implements Builder {
     var inputId = buildStep.inputId;
 
     final entryLib = await buildStep.inputLibrary;
-    if (entryLib == null) return;
 
     final rendererGatherer = _RendererGatherer(entryLib);
 
@@ -51,8 +50,8 @@ class MustachioBuilder implements Builder {
 
     if (rendererGatherer._rendererSpecs.isEmpty) {
       await buildStep.writeAsString(runtimeRenderersLibrary, '');
-      await buildStep.writeAsString(aotLibraries[TemplateFormat.html], '');
-      await buildStep.writeAsString(aotLibraries[TemplateFormat.md], '');
+      await buildStep.writeAsString(aotLibraries[TemplateFormat.html]!, '');
+      await buildStep.writeAsString(aotLibraries[TemplateFormat.md]!, '');
 
       return;
     }
@@ -83,7 +82,8 @@ class MustachioBuilder implements Builder {
         aotRenderersContents = '';
       }
 
-      await buildStep.writeAsString(aotLibraries[format], aotRenderersContents);
+      await buildStep.writeAsString(
+          aotLibraries[format]!, aotRenderersContents);
     }
   }
 }
@@ -98,37 +98,32 @@ class _RendererGatherer {
 
     void addRendererSpecs(List<ElementAnnotation> annotations) {
       for (var annotation in annotations) {
-        if (annotation == null) continue;
         if (annotation.element is ConstructorElement) {
-          if (annotation.element.enclosingElement.name == 'Renderer') {
+          if (annotation.element!.enclosingElement!.name == 'Renderer') {
             rendererSpecs.add(_buildRendererSpec(annotation));
           }
         } else if (annotation.element is ConstructorMember) {
-          if (annotation.element.enclosingElement.name == 'Renderer') {
+          if (annotation.element!.enclosingElement!.name == 'Renderer') {
             rendererSpecs.add(_buildRendererSpec(annotation));
           }
         }
       }
     }
 
-    if (entryLib.metadata != null) {
-      addRendererSpecs(entryLib.metadata);
-    }
+    addRendererSpecs(entryLib.metadata);
     for (final element in entryLib.topLevelElements) {
-      if (element.metadata != null) {
-        addRendererSpecs(element.metadata);
-      }
+      addRendererSpecs(element.metadata);
     }
     return _RendererGatherer._(rendererSpecs);
   }
 
   static RendererSpec _buildRendererSpec(ElementAnnotation annotation) {
-    var constantValue = annotation.computeConstantValue();
-    var nameField = constantValue.getField('name');
+    var constantValue = annotation.computeConstantValue()!;
+    var nameField = constantValue.getField('name')!;
     if (nameField.isNull) {
       throw StateError('@Renderer name must not be null');
     }
-    var contextField = constantValue.getField('context');
+    var contextField = constantValue.getField('context')!;
     if (contextField.isNull) {
       throw StateError('@Renderer context must not be null');
     }
@@ -136,12 +131,12 @@ class _RendererGatherer {
     assert(contextFieldType.typeArguments.length == 1);
     var contextType = contextFieldType.typeArguments.single;
 
-    var visibleTypesField = constantValue.getField('visibleTypes');
+    var visibleTypesField = constantValue.getField('visibleTypes')!;
     if (visibleTypesField.isNull) {
       throw StateError('@Renderer visibleTypes must not be null');
     }
     var visibleTypes = {
-      ...visibleTypesField.toSetValue().map((object) => object.toTypeValue())
+      ...visibleTypesField.toSetValue()!.map((object) => object.toTypeValue()!)
     };
 
     var standardHtmlTemplateField =
@@ -149,11 +144,11 @@ class _RendererGatherer {
     var standardMdTemplateField = constantValue.getField('standardMdTemplate');
 
     return RendererSpec(
-      nameField.toSymbolValue(),
-      contextType,
+      nameField.toSymbolValue()!,
+      contextType as InterfaceType,
       visibleTypes,
-      standardHtmlTemplateField.toStringValue(),
-      standardMdTemplateField.toStringValue(),
+      standardHtmlTemplateField!.toStringValue()!,
+      standardMdTemplateField!.toStringValue()!,
     );
   }
 }

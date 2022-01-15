@@ -45,8 +45,6 @@
 ///
 /// [pkg]: http://example.org
 
-// @dart=2.9
-
 library fake;
 
 import 'dart:async';
@@ -88,7 +86,7 @@ abstract class ImplementingThingy implements BaseThingy {}
 abstract class BaseThingy {
   // ignore: public_member_api_docs
   ImplementingThingy get aImplementingThingy;
-  ImplementingThingy aImplementingThingyField;
+  ImplementingThingy? aImplementingThingyField;
   void aImplementingThingyMethod(ImplementingThingy parameter);
 }
 
@@ -123,14 +121,14 @@ class ConstructorTester<A, B> {
 class HasGenerics<X, Y, Z> {
   HasGenerics(X x, Y y, Z z) {}
 
-  X returnX() => null;
+  X? returnX() => null;
 
-  Z returnZ() => null;
+  Z? returnZ() => null;
 
-  Z doStuff(String s, X x) => null;
+  Z? doStuff(String s, X x) => null;
 
   /// Converts itself to a map.
-  Map<X, Y> convertToMap() => null;
+  Map<X, Y>? convertToMap() => null;
 }
 
 /// Coderef to ambiguous parameter of function parameter should not crash us.
@@ -138,8 +136,8 @@ class HasGenerics<X, Y, Z> {
 ///
 /// Here is a coderef: [aThingParameter]
 void doAComplicatedThing(int x,
-    {void doSomething(int aThingParameter, String anotherThing),
-    void doSomethingElse(int aThingParameter, double somethingElse)}) {}
+    {void doSomething(int aThingParameter, String anotherThing)?,
+    void doSomethingElse(int aThingParameter, double somethingElse)?}) {}
 
 /// Bullet point documentation.
 ///
@@ -202,8 +200,8 @@ dynamic get mustGetThis => null;
 
 Map<dynamic, String> mapWithDynamicKeys = {};
 
-Required useSomethingInAnotherPackage;
-String useSomethingInTheSdk;
+Required? useSomethingInAnotherPackage;
+String? useSomethingInTheSdk;
 
 /// Useful for annotations.
 class Annotation {
@@ -252,7 +250,7 @@ class AClassWithFancyProperties {
   ///   }
   /// }
   /// ```
-  String aProperty;
+  String? aProperty;
 }
 
 const _APrivateConstClass CUSTOM_CLASS_PRIVATE = const _APrivateConstClass();
@@ -302,10 +300,10 @@ typedef T GenericTypedef<T>(T input);
 typedef NewGenericTypedef<T> = List<S> Function<S>(T, int, bool);
 
 /// A top level variable with a generic typedef type.
-NewGenericTypedef genericTypedefCombo;
+NewGenericTypedef? genericTypedefCombo;
 
 /// A complicated type parameter to ATypeTakingClass.
-ATypeTakingClass<String Function(int)> get complicatedReturn => null;
+ATypeTakingClass<String Function(int)>? get complicatedReturn => null;
 
 /// Lots and lots of parameters.
 typedef int LotsAndLotsOfParameters(so, many, parameters, it, should, wrap,
@@ -313,7 +311,7 @@ typedef int LotsAndLotsOfParameters(so, many, parameters, it, should, wrap,
 
 /// This class is cool!
 class Cool {
-  // ignore: missing_return
+  // ignore: body_might_complete_normally
   Cool returnCool() {}
 }
 
@@ -361,71 +359,72 @@ class AClassUsingNewStyleMixin extends NotAMixin
 
 /// A generic class for testing type inference.
 class GenericClass<T> {
-  T member;
+  T? member;
 
   /// Destined to be overridden by [ModifierClass].
-  T overrideByModifierClass;
+  T? overrideByModifierClass;
 
   /// Destined to be overridden by [GenericMixin].
-  T overrideByGenericMixin;
+  T? overrideByGenericMixin;
 
   /// Destined to be overridden by [ModifierClass] and [GenericMixin], both.
-  T overrideByBoth;
+  T? overrideByBoth;
 
   /// Destined to be overridden by everything.
-  T overrideByEverything;
+  T? overrideByEverything;
 }
 
 /// A class extending a generic class.
 class ModifierClass<T> extends GenericClass<T> {
-  T modifierMember;
+  T? modifierMember;
 
   @override
-  T overrideByModifierClass;
+  T? overrideByModifierClass;
 
   @override
-  T overrideByBoth;
+  T? overrideByBoth;
 
   @override
-  T overrideByEverything;
+  T? overrideByEverything;
 }
 
 /// A generic mixin that requires GenericClass as a superclass.
 mixin GenericMixin<T> on GenericClass<T> {
-  T mixinMember;
+  T? mixinMember;
 
   @override
-  T overrideByGenericMixin;
+  T? overrideByGenericMixin;
 
   @override
-  T overrideByBoth;
+  T? overrideByBoth;
 
   @override
-  T overrideByEverything;
+  T? overrideByEverything;
 }
 
 /// A class verifying type inference across new-style mixins.
 class TypeInferenceMixedIn extends ModifierClass<int> with GenericMixin {
   @override
-  int overrideByEverything;
+  int? overrideByEverything;
 }
 
-GenericMixin<T> aMixinReturningFunction<T>() => null;
+GenericMixin<T>? aMixinReturningFunction<T>() => null;
 
 functionUsingMixinReturningFunction() {
-  GenericClass<int> using = aMixinReturningFunction();
+  // ignore: unused_local_variable
+  GenericClass<int>? using = aMixinReturningFunction();
 }
 
 /// A super class, with many powers. Link to [Apple] from another library.
 @deprecated
 class SuperAwesomeClass {
   /// In the super class.
-  List<String> powers;
+  List<String>? powers;
 
   /// In the super class.
   ///
   /// Another comment line.
-  void fly(int height, Cool superCool, {String msg}) {
+  void fly(int height, Cool superCool, {String? msg}) {
     // ignore: unused_local_variable, avoid_init_to_null
     var x = null;
     // ignore: unused_local_variable
@@ -435,7 +434,7 @@ class SuperAwesomeClass {
     }
   }
 
-  SuperAwesomeClass operator -(other) {
+  SuperAwesomeClass? operator -(other) {
     return null;
   }
 }
@@ -456,7 +455,12 @@ void aVoidParameter(Future<void> p1) {}
 /// This class extends Future<void>
 abstract class ExtendsFutureVoid extends Future<void> {
   // ignore: missing_return
-  factory ExtendsFutureVoid(FutureOr<void> computation()) {}
+  factory ExtendsFutureVoid(FutureOr<void> computation()) =>
+      _ExtendsFutureVoidImpl();
+}
+
+class _ExtendsFutureVoidImpl implements ExtendsFutureVoid {
+  dynamic noSuchMethod(Invocation _) => null;
 }
 
 /// This class implements Future<void>
@@ -465,7 +469,7 @@ abstract class ImplementsFutureVoid implements Future<void> {}
 /// This class takes a type, and it might be void.
 class ATypeTakingClass<T> {
   // ignore: missing_return
-  T aMethodMaybeReturningVoid() {}
+  T? aMethodMaybeReturningVoid() {}
 }
 
 class ABaseClass {}
@@ -487,13 +491,13 @@ class MixedInImplementation with MixInImplementation {}
 /// they are correct.
 class ImplicitProperties {
   /// Docs for implicitGetterExplicitSetter from ImplicitProperties.
-  String implicitGetterExplicitSetter;
+  String? implicitGetterExplicitSetter;
 
   /// Docs for explicitGetterImplicitSetter from ImplicitProperties.
-  List<int> explicitGetterImplicitSetter;
+  List<int>? explicitGetterImplicitSetter;
 
   /// A simple property to inherit.
-  int forInheriting;
+  int? forInheriting;
 
   /// @nodoc for you
   String get explicitNonDocumentedGetter => "something";
@@ -508,7 +512,7 @@ class ImplicitProperties {
   set explicitPartiallyDocumentedField(double foo) {}
 
   /// @nodoc here, you should never see this
-  String documentedPartialFieldInSubclassOnly;
+  String? documentedPartialFieldInSubclassOnly;
 
   /// Explicit getter for inheriting.
   int get explicitGetterSetterForInheriting => 12;
@@ -529,14 +533,14 @@ abstract class ClassWithUnusualProperties extends ImplicitProperties {
   @override
 
   /// Docs for setter of implicitGetterExplicitSetter.
-  set implicitGetterExplicitSetter(String x) {}
+  set implicitGetterExplicitSetter(String? x) {}
 
   @override
 
   /// Getter doc for explicitGetterImplicitSetter
-  List<int> get explicitGetterImplicitSetter => List<int>();
+  List<int> get explicitGetterImplicitSetter => List<int>.filled(1, 1);
 
-  myCoolTypedef _aFunction;
+  myCoolTypedef? _aFunction;
 
   /// Since I have a different doc, I should be documented.
   @override
@@ -544,12 +548,12 @@ abstract class ClassWithUnusualProperties extends ImplicitProperties {
 
   /// Getter doc for explicitGetterSetter.
   @Annotation('a Getter Annotation')
-  myCoolTypedef get explicitGetterSetter {
+  myCoolTypedef? get explicitGetterSetter {
     return _aFunction;
   }
 
   /// @nodoc for a simple hidden property.
-  String simpleHidden;
+  String? simpleHidden;
 
   /// @nodoc on setter
   set explicitNodocGetterSetter(String s) {}
@@ -559,10 +563,10 @@ abstract class ClassWithUnusualProperties extends ImplicitProperties {
 
   /// This property is not synthetic, so it might reference [f] -- display it.
   @Annotation('a Setter Annotation')
-  set explicitGetterSetter(myCoolTypedef f) => _aFunction = f;
+  set explicitGetterSetter(myCoolTypedef? f) => _aFunction = f;
 
   /// This property only has a getter and no setter; no parameters to print.
-  myCoolTypedef get explicitGetter {
+  myCoolTypedef? get explicitGetter {
     return _aFunction;
   }
 
@@ -572,7 +576,7 @@ abstract class ClassWithUnusualProperties extends ImplicitProperties {
   /// This property has some docs, too.
   final Set finalProperty = Set();
 
-  Map implicitReadWrite;
+  Map? implicitReadWrite;
 
   /// Hey there, more things not to warn about: [f], [x], or [q].
   String aMethod(Function f(Cool x, bool q)) {
@@ -582,13 +586,13 @@ abstract class ClassWithUnusualProperties extends ImplicitProperties {
 
 class HtmlEscapableImplicitProperties {
   /// Docs for implicitGetterExplicitSetter from HtmlEscapableImplicitProperties.
-  List<int> implicitGetterExplicitSetter;
+  List<int>? implicitGetterExplicitSetter;
 
   /// Docs for explicitGetterImplicitSetter from HtmlEscapableImplicitProperties.
-  List<int> explicitGetterImplicitSetter;
+  List<int>? explicitGetterImplicitSetter;
 
   /// A simple property to inherit.
-  List<int> forInheriting;
+  List<int>? forInheriting;
 
   /// Explicit getter for inheriting.
   List<int> get explicitGetterSetterForInheriting => [1, 2];
@@ -601,27 +605,27 @@ class HtmlEscapableProperties extends HtmlEscapableImplicitProperties {
   @override
 
   /// Docs for setter of implicitGetterExplicitSetter.
-  set implicitGetterExplicitSetter(List<int> x) {}
+  set implicitGetterExplicitSetter(List<int>? x) {}
 
   @override
 
   /// Getter doc for explicitGetterImplicitSetter
-  List<int> get explicitGetterImplicitSetter => List<int>();
+  List<int> get explicitGetterImplicitSetter => List<int>.filled(1, 1);
 
   /// Getter doc for explicitGetterSetter.
-  List<int> get explicitGetterSetter => List<int>();
+  List<int> get explicitGetterSetter => List<int>.filled(1, 1);
 
   /// Setter doc for explicitGetterSetter.
   set explicitGetterSetter(List<int> aList) {}
 
   /// A final property.
-  final List<int> finalProperty = List<int>();
+  final List<int> finalProperty = List<int>.filled(1, 1);
 
   /// A simple property.
-  List<int> simpleProperty = List<int>();
+  List<int> simpleProperty = List<int>.filled(1, 1);
 
   /// A long multiple variable declaration.
-  List<int> iAmALongLongLongLongLongLongLongLongLongName,
+  List<int>? iAmALongLongLongLongLongLongLongLongLongName,
       ensureWholeDeclarationIsVisible;
 }
 
@@ -638,7 +642,7 @@ class LongFirstLine extends SuperAwesomeClass
   static const int ANSWER = 42;
 
   /// An instance string property. Readable and writable.
-  String aStringProperty;
+  String? aStringProperty;
 
   /// A static int property.
   static int meaningOfLife = 42;
@@ -665,7 +669,7 @@ class LongFirstLine extends SuperAwesomeClass
   int twoParams(String one, two) => 42;
 
   /// One dynamic param, two named optionals.
-  bool optionalParams(first, {second, int third}) => true;
+  bool optionalParams(first, {second, int? third}) => true;
 
   /// Dynamic getter. Readable only.
   get dynamicGetter => 'could be anything';
@@ -674,12 +678,12 @@ class LongFirstLine extends SuperAwesomeClass
   void set onlySetter(double d) {}
 
   /// Adds another one of these thingies.
-  LongFirstLine operator +(LongFirstLine other) {
+  LongFirstLine? operator +(LongFirstLine other) {
     return null;
   }
 
   /// Multiplies a thingies to this thingie and then returns a new thingie.
-  LongFirstLine operator *(LongFirstLine other) {
+  LongFirstLine? operator *(LongFirstLine other) {
     return null;
   }
 
@@ -735,7 +739,7 @@ class Foo2 {
 }
 
 class OtherGenericsThing<A> {
-  HasGenerics<A, Cool, String> convert() => null;
+  HasGenerics<A, Cool, String>? convert() => null;
 }
 
 /// Constant property.
@@ -746,10 +750,10 @@ const double PI = 3.14159;
 final int meaningOfLife = 42;
 
 /// Simple property
-String simpleProperty;
+String? simpleProperty;
 
 /// Simple @nodoc property.
-String simplePropertyHidden;
+String? simplePropertyHidden;
 
 /// Setter docs should be shown.
 set getterSetterNodocGetter(int value) {}
@@ -801,7 +805,7 @@ get dynamicGetter => 'i could be anything';
 ///
 /// Thanks for using this function!
 @deprecated
-String topLevelFunction(int param1, bool param2, Cool coolBeans,
+String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     [double optionalPositional = 0.0]) {
   return null;
 }
@@ -815,7 +819,7 @@ void onlyPositionalWithNoDefaultNoType([@greatestAnnotation anything]) {}
 
 /// Top-level function with 1 param and 2 optional named params, 1 with a
 /// default value.
-void soIntense(anything, {bool flag: true, int value}) {}
+void soIntense(anything, {bool flag: true, int? value}) {}
 
 /// [FooBar] comes from another library.
 void paramFromAnotherLib(Apple thing) {}
@@ -833,7 +837,7 @@ FutureOr thisIsFutureOr() => null;
 FutureOr<Null> thisIsFutureOrNull() => null;
 
 /// Explicitly return a `FutureOr<T>`.
-FutureOr<T> thisIsFutureOrT<T>() => null;
+FutureOr<T>? thisIsFutureOrT<T>() => null;
 
 /// Has a parameter explicitly typed `FutureOr<Null>`.
 void paramOfFutureOrNull(FutureOr<Null> future) {}
@@ -855,7 +859,7 @@ const greatestAnnotation = 'greatest';
 /// This function has two parameters that are functions.
 ///
 /// Check out the [number] parameter. It's the first one.
-String functionWithFunctionParameters(int number, void thing(one, two),
+String? functionWithFunctionParameters(int number, void thing(one, two),
         String string, Future asyncThing(three, four, five, six, seven)) =>
     null;
 
@@ -880,7 +884,7 @@ class WithGetterAndSetter {
 
 /// Test that we can properly handle covariant member parameters.
 class CovariantMemberParams {
-  covariant int covariantField;
+  covariant int? covariantField;
 
   set covariantSetter(covariant int x) {}
 
@@ -895,7 +899,7 @@ class HasGenericWithExtends<T extends Foo2> {}
 class SpecialList<E> extends ListBase<E> {
   // ignore: annotate_overrides
   E operator [](int index) {
-    return null;
+    return first;
   }
 
   // ignore: annotate_overrides
@@ -966,7 +970,7 @@ class BaseForDocComments {
   /// Reference to an inherited member in another library via class name: [ExtendedBaseReexported.action]
   ///
   /// Link to an existing file: [link](../SubForDocComments/localMethod.html)
-  String doAwesomeStuff(int value) => null;
+  String? doAwesomeStuff(int value) => null;
 
   void anotherMethod() {}
 
@@ -975,20 +979,20 @@ class BaseForDocComments {
 
   String operator [](String key) => "${key}'s value";
 
-  final bool initializeMe;
+  final bool? initializeMe;
 
-  int somethingShadowy;
+  int? somethingShadowy;
 
   /// I'm not really a constructor, but I'm allowed to exist anyway.
-  int aConstructorShadowed;
+  int? aConstructorShadowed;
 
-  BaseForDocComments(this.initializeMe, [bool somethingShadowy]);
+  BaseForDocComments(this.initializeMe, [bool? somethingShadowy]);
 
   BaseForDocComments.aNonDefaultConstructor(this.initializeMe);
 
   BaseForDocComments.aConstructorShadowed(this.initializeMe);
 
-  factory BaseForDocComments.aFactoryFunction() => null;
+  factory BaseForDocComments.aFactoryConstructor() => BaseForDocComments(true);
 }
 
 /// Verify that we can define and use macros inside accessors.
@@ -1030,20 +1034,20 @@ const required = 'required';
 
 /// Paints an image into the given rectangle in the canvas.
 void paintImage1(
-    {@required String canvas,
-    @required int rect,
-    @required ExtraSpecialList image,
-    BaseForDocComments colorFilter,
+    {required String canvas,
+    required int rect,
+    required ExtraSpecialList image,
+    BaseForDocComments? colorFilter,
     String repeat: LongFirstLine.THING}) {
   // nothing to do here -
 }
 
 /// Paints an image into the given rectangle in the canvas.
 void paintImage2(String fooParam,
-    [@required String canvas,
-    @required int rect,
-    @required ExtraSpecialList image,
-    BaseForDocComments colorFilter,
+    [@required String? canvas,
+    @required int? rect,
+    @required ExtraSpecialList? image,
+    BaseForDocComments? colorFilter,
     String repeat = LongFirstLine.THING]) {
   // nothing to do here -
 }
@@ -1268,7 +1272,7 @@ class Super6 implements _Super5 {}
 abstract class IntermediateAbstract extends Object {
   /// This is an override.
   @override
-  bool operator ==(Object other) {}
+  bool operator ==(Object other) => false;
 }
 
 /// This should inherit [==] from [IntermediateAbstract].
@@ -1276,9 +1280,9 @@ class IntermediateAbstractSubclass extends IntermediateAbstract {}
 
 /// Test parameter comment resolution in factory constructors and methods.
 class FactoryConstructorThings {
-  bool aName;
-  int anotherName;
-  String yetAnotherName;
+  bool? aName;
+  int? anotherName;
+  String? yetAnotherName;
   final List<String> initViaFieldFormal;
   final int fieldFormalWithDefault;
 
@@ -1286,35 +1290,35 @@ class FactoryConstructorThings {
       {this.fieldFormalWithDefault = 7});
 
   factory FactoryConstructorThings.anotherName({
-    bool aName,
-    List<int> anotherName,
-    int anotherDifferentName,
-    String differentName,
+    bool? aName,
+    List<int>? anotherName,
+    int? anotherDifferentName,
+    String? differentName,
   }) {
-    return null;
+    return FactoryConstructorThings([]);
   }
 
   factory FactoryConstructorThings.anotherConstructor({
-    bool anotherName,
-    bool redHerring,
+    bool? anotherName,
+    bool? redHerring,
   }) {
-    return null;
+    return FactoryConstructorThings([]);
   }
 
   void aMethod(bool yetAnotherName) {}
 }
 
-DTypeParam
+DTypeParam?
     aTopLevelTypeParameterFunction<DTypeParam extends TypeParameterThings>(
         DTypeParam typedParam) {}
 
 abstract class TypeParameterThings<ATypeParam,
     BTypeParam extends FactoryConstructorThings> {
-  ATypeParam aName;
-  List<BTypeParam> aThing;
+  ATypeParam? aName;
+  List<BTypeParam>? aThing;
 
   /// Here are some docs to inherit referencing [ATypeParam], [BTypeParam], and [CTypeParam].
-  BTypeParam aMethod<CTypeParam>(ATypeParam aParam, CTypeParam anotherParam);
+  BTypeParam? aMethod<CTypeParam>(ATypeParam aParam, CTypeParam anotherParam);
 }
 
 /// Test that inheriting documentation can still reference parent type
@@ -1322,7 +1326,7 @@ abstract class TypeParameterThings<ATypeParam,
 class TypeParameterThingsExtended
     extends TypeParameterThings<String, FactoryConstructorThings> {
   @override
-  FactoryConstructorThings aMethod<QTypeParam>(
+  FactoryConstructorThings? aMethod<QTypeParam>(
           String aParam, QTypeParam anotherParam) =>
       null;
 }
@@ -1333,7 +1337,7 @@ class TypeParameterThingsExtendedQ
   @override
 
   /// I override documentation so I can reference [QTypeParam].
-  FactoryConstructorThings aMethod<QTypeParam>(
+  FactoryConstructorThings? aMethod<QTypeParam>(
           String aParam, QTypeParam anotherParam) =>
       null;
 }

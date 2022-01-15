@@ -16,25 +16,22 @@ import 'comment_referable.dart';
 /// **inherited**: Filtered getters giving only inherited children.
 class Class extends InheritingContainer
     with Constructable, TypeImplementing, MixedInTypes {
-  Class(ClassElement element, Library library, PackageGraph packageGraph)
+  Class(ClassElement element, Library? library, PackageGraph packageGraph)
       : super(element, library, packageGraph) {
     packageGraph.specialClasses.addSpecial(this);
   }
 
-  List<ModelElement> _allModelElements;
-
   @override
-  List<ModelElement> get allModelElements {
-    _allModelElements ??= <ModelElement>[
-      ...super.allModelElements,
-      ...constructors,
-    ];
-    return _allModelElements;
-  }
+  // TODO(srawlins): Figure out what we elsewhere in dartdoc.
+  // ignore: overridden_fields
+  late final List<ModelElement> allModelElements = [
+    ...super.allModelElements,
+    ...constructors,
+  ];
 
   /// Returns the library that encloses this element.
   @override
-  ModelElement get enclosingElement => library;
+  ModelElement? get enclosingElement => library;
 
   @override
   String get fileName => '$name-class.$fileType';
@@ -49,16 +46,20 @@ class Class extends InheritingContainer
   }
 
   @override
-  String get href {
+  String? get href {
     if (!identical(canonicalModelElement, this)) {
       return canonicalModelElement?.href;
     }
     assert(canonicalLibrary != null);
     assert(canonicalLibrary == library);
-    return '${package.baseHref}$filePath';
+    var packageBaseHref = package.baseHref;
+    if (packageBaseHref != null) {
+      return '$packageBaseHref$filePath';
+    }
+    return null;
   }
 
-  bool get isAbstract => element.isAbstract;
+  bool get isAbstract => element!.isAbstract;
 
   @override
   bool get isCanonical => super.isCanonical && isPublic;
@@ -70,15 +71,15 @@ class Class extends InheritingContainer
     }
 
     // if this class is itself Error or Exception, return true
-    if (_doCheck(element)) return true;
+    if (_doCheck(element!)) return true;
 
-    return element.allSupertypes.map((t) => t.element).any(_doCheck);
+    return element!.allSupertypes.map((t) => t.element).any(_doCheck);
   }
 
   @override
   String get kind => 'class';
 
-  List<InheritingContainer> _inheritanceChain;
+  List<InheritingContainer?>? _inheritanceChain;
 
   /// Not the same as superChain as it may include mixins.
   /// It's really not even the same as ordinary Dart inheritance, either,
@@ -86,31 +87,31 @@ class Class extends InheritingContainer
   /// to include them in the set of things we might link to for documentation
   /// purposes in abstract classes.
   @override
-  List<InheritingContainer> get inheritanceChain {
+  List<InheritingContainer?> get inheritanceChain {
     if (_inheritanceChain == null) {
       _inheritanceChain = [];
-      _inheritanceChain.add(this);
+      _inheritanceChain!.add(this);
 
       /// Caching should make this recursion a little less painful.
       for (var c in mixedInTypes.reversed
           .map((e) => (e.modelElement as InheritingContainer))) {
-        _inheritanceChain.addAll(c.inheritanceChain);
+        _inheritanceChain!.addAll(c.inheritanceChain);
       }
 
       for (var c
           in superChain.map((e) => (e.modelElement as InheritingContainer))) {
-        _inheritanceChain.addAll(c.inheritanceChain);
+        _inheritanceChain!.addAll(c.inheritanceChain);
       }
 
       /// Interfaces need to come last, because classes in the superChain might
       /// implement them even when they aren't mentioned.
-      _inheritanceChain.addAll(interfaces.expand(
+      _inheritanceChain!.addAll(interfaces.expand(
           (e) => (e.modelElement as InheritingContainer).inheritanceChain));
     }
-    return _inheritanceChain.toList(growable: false);
+    return _inheritanceChain!.toList(growable: false);
   }
 
-  Iterable<Field> _instanceFields;
+  Iterable<Field>? _instanceFields;
 
   @override
   Iterable<Field> get instanceFields =>

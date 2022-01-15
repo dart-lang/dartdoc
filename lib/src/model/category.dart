@@ -32,7 +32,7 @@ class Category extends Nameable
   @override
   Package get package => _package;
 
-  final String _name;
+  final String? _name;
 
   final DartdocOptionContext _config;
 
@@ -86,17 +86,16 @@ class Category extends Nameable
   }
 
   @override
-  // TODO(jcollins-g): make [Category] a [Warnable]?
-  Warnable get enclosingElement => null;
+  Warnable? get enclosingElement => null;
 
   @override
-  Element get element => null;
+  Element? get element => null;
 
   @override
-  String get name => categoryDefinition?.displayName ?? _name;
+  String get name => categoryDefinition.displayName;
 
   @override
-  String get sortKey => _name;
+  String get sortKey => _name ?? '<default>';
 
   @override
   List<String> get containerOrder => config.categoryOrder;
@@ -108,7 +107,8 @@ class Category extends Nameable
   PackageGraph get packageGraph => package.packageGraph;
 
   @override
-  Library get canonicalLibrary => null;
+  Library get canonicalLibrary =>
+      throw UnimplementedError('Categories can not have associated libraries.');
 
   @override
   List<Locatable> get documentationFrom => [this];
@@ -116,14 +116,9 @@ class Category extends Nameable
   @override
   DocumentLocation get documentedWhere => package.documentedWhere;
 
-  bool _isDocumented;
-
   @override
-  bool get isDocumented {
-    _isDocumented ??= documentedWhere != DocumentLocation.missing &&
-        documentationFile != null;
-    return _isDocumented;
-  }
+  late final bool isDocumented =
+      documentedWhere != DocumentLocation.missing && documentationFile != null;
 
   @override
   String get fullyQualifiedName => name;
@@ -133,41 +128,34 @@ class Category extends Nameable
   String get filePath => 'topics/$name-topic.$_fileType';
 
   @override
-  String get href => isCanonical ? '${package.baseHref}$filePath' : null;
+  String? get href => isCanonical ? '${package.baseHref}$filePath' : null;
 
   String get categoryLabel => _categoryRenderer.renderCategoryLabel(this);
 
   String get linkedName => _categoryRenderer.renderLinkedName(this);
 
-  int _categoryIndex;
-
   /// The position in the container order for this category.
-  int get categoryIndex {
-    _categoryIndex ??= package.categories.indexOf(this);
-    return _categoryIndex;
-  }
+  late final int categoryIndex = package.categories.indexOf(this);
 
-  CategoryDefinition get categoryDefinition =>
-      config.categories.categoryDefinitions[sortKey];
+  late final CategoryDefinition categoryDefinition =
+      config.categories.categoryDefinitions[sortKey] ??
+          CategoryDefinition(_name, null, null);
 
   @override
-  bool get isCanonical => categoryDefinition != null;
+  bool get isCanonical =>
+      config.categories.categoryDefinitions.containsKey(sortKey);
 
   @override
   String get kind => 'Topic';
 
-  File _documentationFile;
-
   @override
-  File get documentationFile {
-    if (_documentationFile == null) {
-      if (categoryDefinition?.documentationMarkdown != null) {
-        _documentationFile = _config.resourceProvider
-            .getFile(categoryDefinition.documentationMarkdown);
-      }
+  late final File? documentationFile = () {
+    var documentationMarkdown = categoryDefinition.documentationMarkdown;
+    if (documentationMarkdown != null) {
+      return _config.resourceProvider.getFile(documentationMarkdown);
     }
-    return _documentationFile;
-  }
+    return null;
+  }();
 
   @override
   Iterable<Class> get classes => _classes;

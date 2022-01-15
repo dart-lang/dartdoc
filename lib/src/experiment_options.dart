@@ -29,7 +29,6 @@ Future<List<DartdocOption<Object>>> createExperimentOptions(
         'enable-experiment', ['non-nullable'], resourceProvider,
         help: 'Enable or disable listed experiments.\n' +
             ExperimentStatus.knownFeatures.values
-                .where((e) => e.documentation != null)
                 .map((e) =>
                     '    [no-]${e.enableString}: ${e.documentation} (default: ${e.isEnabledByDefault})')
                 .join('\n')),

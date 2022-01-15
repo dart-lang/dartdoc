@@ -35,158 +35,138 @@ String renderCategory(_i1.CategoryTemplateData context0) {
   buffer.write(_renderCategory_partial_head_0(context0));
   buffer.writeln();
   var context1 = context0.self;
-  if (context1 != null) {
+  buffer.writeln();
+  buffer.write('''
+# ''');
+  buffer.writeEscaped(context1.name.toString());
+  buffer.write(' ');
+  buffer.writeEscaped(context1.kind.toString());
+  buffer.write('\n\n');
+  buffer.write(_renderCategory_partial_documentation_1(context1, context0));
+  buffer.writeln();
+  if (context1.hasPublicLibraries == true) {
     buffer.writeln();
     buffer.write('''
-# ''');
-    buffer.writeEscaped(context1.name.toString());
-    buffer.write(' ');
-    buffer.writeEscaped(context1.kind.toString());
-    buffer.write('\n\n');
-    buffer.write(_renderCategory_partial_documentation_1(context1, context0));
-    buffer.writeln();
-    if (context1.hasPublicLibraries == true) {
-      buffer.writeln();
-      buffer.write('''
 ## Libraries
 ''');
-      var context2 = context1.publicLibrariesSorted;
-      if (context2 != null) {
-        for (var context3 in context2) {
-          buffer.writeln();
-          buffer.write(
-              _renderCategory_partial_library_2(context3, context1, context0));
-          buffer.writeln();
-        }
-      }
-    }
-    buffer.writeln();
-    if (context1.hasPublicClasses == true) {
+    var context2 = context1.publicLibrariesSorted;
+    for (var context3 in context2) {
       buffer.writeln();
-      buffer.write('''
+      buffer.write(
+          _renderCategory_partial_library_2(context3, context1, context0));
+      buffer.writeln();
+    }
+  }
+  buffer.writeln();
+  if (context1.hasPublicClasses == true) {
+    buffer.writeln();
+    buffer.write('''
 ## Classes
 ''');
-      var context4 = context1.publicClassesSorted;
-      if (context4 != null) {
-        for (var context5 in context4) {
-          buffer.writeln();
-          buffer.write(_renderCategory_partial_container_3(
-              context5, context1, context0));
-          buffer.writeln();
-        }
-      }
-    }
-    buffer.writeln();
-    if (context1.hasPublicMixins == true) {
+    var context4 = context1.publicClassesSorted;
+    for (var context5 in context4) {
       buffer.writeln();
-      buffer.write('''
+      buffer.write(
+          _renderCategory_partial_container_3(context5, context1, context0));
+      buffer.writeln();
+    }
+  }
+  buffer.writeln();
+  if (context1.hasPublicMixins == true) {
+    buffer.writeln();
+    buffer.write('''
 ## Mixins
 ''');
-      var context6 = context1.publicMixinsSorted;
-      if (context6 != null) {
-        for (var context7 in context6) {
-          buffer.writeln();
-          buffer.write(_renderCategory_partial_container_3(
-              context7, context1, context0));
-          buffer.writeln();
-        }
-      }
-    }
-    buffer.writeln();
-    if (context1.hasPublicConstants == true) {
+    var context6 = context1.publicMixinsSorted;
+    for (var context7 in context6) {
       buffer.writeln();
-      buffer.write('''
+      buffer.write(
+          _renderCategory_partial_container_3(context7, context1, context0));
+      buffer.writeln();
+    }
+  }
+  buffer.writeln();
+  if (context1.hasPublicConstants == true) {
+    buffer.writeln();
+    buffer.write('''
 ## Constants
 ''');
-      var context8 = context1.publicConstantsSorted;
-      if (context8 != null) {
-        for (var context9 in context8) {
-          buffer.writeln();
-          buffer.write(
-              _renderCategory_partial_constant_4(context9, context1, context0));
-          buffer.writeln();
-        }
-      }
-    }
-    buffer.writeln();
-    if (context1.hasPublicProperties == true) {
+    var context8 = context1.publicConstantsSorted;
+    for (var context9 in context8) {
       buffer.writeln();
-      buffer.write('''
+      buffer.write(
+          _renderCategory_partial_constant_4(context9, context1, context0));
+      buffer.writeln();
+    }
+  }
+  buffer.writeln();
+  if (context1.hasPublicProperties == true) {
+    buffer.writeln();
+    buffer.write('''
 ## Properties
 ''');
-      var context10 = context1.publicPropertiesSorted;
-      if (context10 != null) {
-        for (var context11 in context10) {
-          buffer.writeln();
-          buffer.write(_renderCategory_partial_property_5(
-              context11, context1, context0));
-          buffer.writeln();
-        }
-      }
-    }
-    buffer.writeln();
-    if (context1.hasPublicFunctions == true) {
+    var context10 = context1.publicPropertiesSorted;
+    for (var context11 in context10) {
       buffer.writeln();
-      buffer.write('''
+      buffer.write(
+          _renderCategory_partial_property_5(context11, context1, context0));
+      buffer.writeln();
+    }
+  }
+  buffer.writeln();
+  if (context1.hasPublicFunctions == true) {
+    buffer.writeln();
+    buffer.write('''
 ## Functions
 ''');
-      var context12 = context1.publicFunctionsSorted;
-      if (context12 != null) {
-        for (var context13 in context12) {
-          buffer.writeln();
-          buffer.write(_renderCategory_partial_callable_6(
-              context13, context1, context0));
-          buffer.writeln();
-        }
-      }
-    }
-    buffer.writeln();
-    if (context1.hasPublicEnums == true) {
+    var context12 = context1.publicFunctionsSorted;
+    for (var context13 in context12) {
       buffer.writeln();
-      buffer.write('''
+      buffer.write(
+          _renderCategory_partial_callable_6(context13, context1, context0));
+      buffer.writeln();
+    }
+  }
+  buffer.writeln();
+  if (context1.hasPublicEnums == true) {
+    buffer.writeln();
+    buffer.write('''
 ## Enums
 ''');
-      var context14 = context1.publicEnumsSorted;
-      if (context14 != null) {
-        for (var context15 in context14) {
-          buffer.writeln();
-          buffer.write(_renderCategory_partial_container_3(
-              context15, context1, context0));
-          buffer.writeln();
-        }
-      }
-    }
-    buffer.writeln();
-    if (context1.hasPublicTypedefs == true) {
+    var context14 = context1.publicEnumsSorted;
+    for (var context15 in context14) {
       buffer.writeln();
-      buffer.write('''
+      buffer.write(
+          _renderCategory_partial_container_3(context15, context1, context0));
+      buffer.writeln();
+    }
+  }
+  buffer.writeln();
+  if (context1.hasPublicTypedefs == true) {
+    buffer.writeln();
+    buffer.write('''
 ## Typedefs
 ''');
-      var context16 = context1.publicTypedefsSorted;
-      if (context16 != null) {
-        for (var context17 in context16) {
-          buffer.writeln();
-          buffer.write(
-              _renderCategory_partial_typedef_7(context17, context1, context0));
-          buffer.writeln();
-        }
-      }
-    }
-    buffer.writeln();
-    if (context1.hasPublicExceptions == true) {
+    var context16 = context1.publicTypedefsSorted;
+    for (var context17 in context16) {
       buffer.writeln();
-      buffer.write('''
+      buffer.write(
+          _renderCategory_partial_typedef_7(context17, context1, context0));
+      buffer.writeln();
+    }
+  }
+  buffer.writeln();
+  if (context1.hasPublicExceptions == true) {
+    buffer.writeln();
+    buffer.write('''
 ## Exceptions / Errors
 ''');
-      var context18 = context1.publicExceptionsSorted;
-      if (context18 != null) {
-        for (var context19 in context18) {
-          buffer.writeln();
-          buffer.write(_renderCategory_partial_container_3(
-              context19, context1, context0));
-          buffer.writeln();
-        }
-      }
+    var context18 = context1.publicExceptionsSorted;
+    for (var context19 in context18) {
+      buffer.writeln();
+      buffer.write(
+          _renderCategory_partial_container_3(context19, context1, context0));
+      buffer.writeln();
     }
   }
   buffer.write('\n\n');
@@ -209,7 +189,7 @@ String _renderCategory_partial_documentation_1(
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
     buffer.writeln();
-    buffer.write(context1.documentationAsHtml.toString());
+    buffer.write(context1.documentationAsHtml?.toString());
   }
   buffer.writeln();
 
@@ -223,7 +203,7 @@ String _renderCategory_partial_library_2(_i3.Library context2,
   buffer.write(context2.linkedName.toString());
   if (context2.isDocumented == true) {
     buffer.writeln();
-    buffer.write(context2.oneLineDoc.toString());
+    buffer.write(context2.oneLineDoc?.toString());
     buffer.write(' ');
     buffer.write(context2.extendedDocLink.toString());
     buffer.writeln();
@@ -243,7 +223,7 @@ String _renderCategory_partial_container_3(_i4.Container context2,
   buffer.write(__renderCategory_partial_container_3_partial_categorization_0(
       context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context2.oneLineDoc.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.writeln();
@@ -261,11 +241,9 @@ String __renderCategory_partial_container_3_partial_categorization_0(
     buffer.write('''
 Categories:''');
     var context3 = context2.displayedCategories;
-    if (context3 != null) {
-      for (var context4 in context3) {
-        buffer.writeln();
-        buffer.write(context4.categoryLabel.toString());
-      }
+    for (var context4 in context3) {
+      buffer.writeln();
+      buffer.write(context4.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -284,7 +262,7 @@ String _renderCategory_partial_constant_4(_i5.TopLevelVariable context2,
   buffer.write(__renderCategory_partial_constant_4_partial_categorization_0(
       context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context2.oneLineDoc.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('  ');
@@ -306,11 +284,9 @@ String __renderCategory_partial_constant_4_partial_categorization_0(
     buffer.write('''
 Categories:''');
     var context3 = context2.displayedCategories;
-    if (context3 != null) {
-      for (var context4 in context3) {
-        buffer.writeln();
-        buffer.write(context4.categoryLabel.toString());
-      }
+    for (var context4 in context3) {
+      buffer.writeln();
+      buffer.write(context4.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -346,7 +322,7 @@ String _renderCategory_partial_property_5(_i5.TopLevelVariable context2,
   buffer.write(__renderCategory_partial_property_5_partial_categorization_0(
       context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context2.oneLineDoc.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('  ');
@@ -368,11 +344,9 @@ String __renderCategory_partial_property_5_partial_categorization_0(
     buffer.write('''
 Categories:''');
     var context3 = context2.displayedCategories;
-    if (context3 != null) {
-      for (var context4 in context3) {
-        buffer.writeln();
-        buffer.write(context4.categoryLabel.toString());
-      }
+    for (var context4 in context3) {
+      buffer.writeln();
+      buffer.write(context4.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -402,14 +376,14 @@ String _renderCategory_partial_callable_6(_i6.ModelFunctionTyped context2,
   buffer.write(context2.linkedName.toString());
   buffer.write(context2.linkedGenericParameters.toString());
   buffer.write('''(''');
-  buffer.write(context2.linkedParamsNoMetadata.toString());
+  buffer.write(context2.linkedParamsNoMetadata?.toString());
   buffer.write(''') ''');
   buffer.write(context2.modelType.returnType.linkedName.toString());
   buffer.writeln();
   buffer.write(__renderCategory_partial_callable_6_partial_categorization_0(
       context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context2.oneLineDoc.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('  ');
@@ -431,11 +405,9 @@ String __renderCategory_partial_callable_6_partial_categorization_0(
     buffer.write('''
 Categories:''');
     var context3 = context2.displayedCategories;
-    if (context3 != null) {
-      for (var context4 in context3) {
-        buffer.writeln();
-        buffer.write(context4.categoryLabel.toString());
-      }
+    for (var context4 in context3) {
+      buffer.writeln();
+      buffer.write(context4!.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -463,26 +435,24 @@ String _renderCategory_partial_typedef_7(_i7.Typedef context2,
   final buffer = StringBuffer();
   if (context2.isCallable == true) {
     var context3 = context2.asCallable;
-    if (context3 != null) {
-      buffer.writeln();
-      buffer.write('''
+    buffer.writeln();
+    buffer.write('''
     ##### ''');
-      buffer.write(context3.linkedName.toString());
-      buffer.write(context3.linkedGenericParameters.toString());
-      buffer.write(''' = ''');
-      buffer.write(context3.modelType.linkedName.toString());
-      buffer.write('\n    ');
-      buffer.write(__renderCategory_partial_typedef_7_partial_categorization_0(
-          context3, context2, context1, context0));
-      buffer.write('\n\n    ');
-      buffer.write(context3.oneLineDoc.toString());
-      buffer.write(' ');
-      buffer.write(context3.extendedDocLink.toString());
-      buffer.write('  ');
-      buffer.write('\n    ');
-      buffer.write(__renderCategory_partial_typedef_7_partial_features_1(
-          context3, context2, context1, context0));
-    }
+    buffer.write(context3.linkedName.toString());
+    buffer.write(context3.linkedGenericParameters.toString());
+    buffer.write(''' = ''');
+    buffer.write(context3.modelType.linkedName.toString());
+    buffer.write('\n    ');
+    buffer.write(__renderCategory_partial_typedef_7_partial_categorization_0(
+        context3, context2, context1, context0));
+    buffer.write('\n\n    ');
+    buffer.write(context3.oneLineDoc?.toString());
+    buffer.write(' ');
+    buffer.write(context3.extendedDocLink.toString());
+    buffer.write('  ');
+    buffer.write('\n    ');
+    buffer.write(__renderCategory_partial_typedef_7_partial_features_1(
+        context3, context2, context1, context0));
   }
   if (context2.isCallable != true) {
     buffer.write('\n  ');
@@ -505,11 +475,9 @@ String __renderCategory_partial_typedef_7_partial_categorization_0(
     buffer.write('''
 Categories:''');
     var context4 = context3.displayedCategories;
-    if (context4 != null) {
-      for (var context5 in context4) {
-        buffer.writeln();
-        buffer.write(context5.categoryLabel.toString());
-      }
+    for (var context5 in context4) {
+      buffer.writeln();
+      buffer.write(context5.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -546,7 +514,7 @@ String __renderCategory_partial_typedef_7_partial_type_2(_i7.Typedef context2,
       ___renderCategory_partial_typedef_7_partial_type_2_partial_categorization_0(
           context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context2.oneLineDoc.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('  ');
@@ -570,11 +538,9 @@ String
     buffer.write('''
 Categories:''');
     var context3 = context2.displayedCategories;
-    if (context3 != null) {
-      for (var context4 in context3) {
-        buffer.writeln();
-        buffer.write(context4.categoryLabel.toString());
-      }
+    for (var context4 in context3) {
+      buffer.writeln();
+      buffer.write(context4.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -613,255 +579,225 @@ String renderClass(_i1.ClassTemplateData context0) {
   buffer.write(_renderClass_partial_head_0(context0));
   buffer.writeln();
   var context1 = context0.self;
-  if (context1 != null) {
-    buffer.writeln();
-    buffer.write('''
+  buffer.writeln();
+  buffer.write('''
 # ''');
-    buffer.write(context1.nameWithGenerics.toString());
-    buffer.write(' ');
-    buffer.writeEscaped(context1.kind.toString());
-    buffer.write('\n\n');
-    buffer.write(_renderClass_partial_source_link_1(context1, context0));
-    buffer.writeln();
-    buffer.write(_renderClass_partial_categorization_2(context1, context0));
-    buffer.writeln();
-    buffer.write(_renderClass_partial_feature_set_3(context1, context0));
-  }
+  buffer.write(context1.nameWithGenerics.toString());
+  buffer.write(' ');
+  buffer.writeEscaped(context1.kind.toString());
+  buffer.write('\n\n');
+  buffer.write(_renderClass_partial_source_link_1(context1, context0));
+  buffer.writeln();
+  buffer.write(_renderClass_partial_categorization_2(context1, context0));
+  buffer.writeln();
+  buffer.write(_renderClass_partial_feature_set_3(context1, context0));
   buffer.writeln();
   var context2 = context0.clazz;
-  if (context2 != null) {
-    buffer.writeln();
-    buffer.write(_renderClass_partial_documentation_4(context2, context0));
-    buffer.writeln();
-    if (context2.hasModifiers == true) {
-      if (context2.hasPublicSuperChainReversed == true) {
-        buffer.writeln();
-        buffer.write('''
+  buffer.writeln();
+  buffer.write(_renderClass_partial_documentation_4(context2, context0));
+  buffer.writeln();
+  if (context2.hasModifiers == true) {
+    if (context2.hasPublicSuperChainReversed == true) {
+      buffer.writeln();
+      buffer.write('''
 **Inheritance**
 
 - ''');
-        buffer.write(context0.linkedObjectType.toString());
-        var context3 = context2.publicSuperChainReversed;
-        if (context3 != null) {
-          for (var context4 in context3) {
-            buffer.writeln();
-            buffer.write('''
-- ''');
-            buffer.write(context4.linkedName.toString());
-          }
-        }
+      buffer.write(context0.linkedObjectType.toString());
+      var context3 = context2.publicSuperChainReversed;
+      for (var context4 in context3) {
         buffer.writeln();
         buffer.write('''
 - ''');
-        buffer.write(context2.name.toString());
+        buffer.write(context4.linkedName.toString());
       }
       buffer.writeln();
-      if (context2.hasPublicInterfaces == true) {
-        buffer.writeln();
-        buffer.write('''
+      buffer.write('''
+- ''');
+      buffer.write(context2.name.toString());
+    }
+    buffer.writeln();
+    if (context2.hasPublicInterfaces == true) {
+      buffer.writeln();
+      buffer.write('''
 **Implemented types**
 ''');
-        var context5 = context2.publicInterfaces;
-        if (context5 != null) {
-          for (var context6 in context5) {
-            buffer.writeln();
-            buffer.write('''
-- ''');
-            buffer.write(context6.linkedName.toString());
-          }
-        }
-      }
-      buffer.writeln();
-      if (context2.hasPublicMixedInTypes == true) {
+      var context5 = context2.publicInterfaces;
+      for (var context6 in context5) {
         buffer.writeln();
         buffer.write('''
+- ''');
+        buffer.write(context6.linkedName.toString());
+      }
+    }
+    buffer.writeln();
+    if (context2.hasPublicMixedInTypes == true) {
+      buffer.writeln();
+      buffer.write('''
 **Mixed in types**
 ''');
-        var context7 = context2.publicMixedInTypes;
-        if (context7 != null) {
-          for (var context8 in context7) {
-            buffer.writeln();
-            buffer.write('''
-- ''');
-            buffer.write(context8.linkedName.toString());
-          }
-        }
-      }
-      buffer.writeln();
-      if (context2.hasPublicImplementors == true) {
+      var context7 = context2.publicMixedInTypes;
+      for (var context8 in context7) {
         buffer.writeln();
         buffer.write('''
+- ''');
+        buffer.write(context8.linkedName.toString());
+      }
+    }
+    buffer.writeln();
+    if (context2.hasPublicImplementors == true) {
+      buffer.writeln();
+      buffer.write('''
 **Implementers**
 ''');
-        var context9 = context2.publicImplementorsSorted;
-        if (context9 != null) {
-          for (var context10 in context9) {
-            buffer.writeln();
-            buffer.write('''
-- ''');
-            buffer.write(context10.linkedName.toString());
-          }
-        }
-      }
-      buffer.writeln();
-      if (context2.hasPotentiallyApplicableExtensions == true) {
+      var context9 = context2.publicImplementorsSorted;
+      for (var context10 in context9) {
         buffer.writeln();
         buffer.write('''
+- ''');
+        buffer.write(context10.linkedName.toString());
+      }
+    }
+    buffer.writeln();
+    if (context2.hasPotentiallyApplicableExtensions == true) {
+      buffer.writeln();
+      buffer.write('''
 **Available Extensions**
 ''');
-        var context11 = context2.potentiallyApplicableExtensions;
-        if (context11 != null) {
-          for (var context12 in context11) {
-            buffer.writeln();
-            buffer.write('''
-- ''');
-            buffer.write(context12.linkedName.toString());
-          }
-        }
-      }
-      buffer.writeln();
-      if (context2.hasAnnotations == true) {
+      var context11 = context2.potentiallyApplicableExtensions;
+      if (context11 != null) {
         buffer.writeln();
         buffer.write('''
+- ''');
+        buffer.write(context2.linkedName.toString());
+      }
+    }
+    buffer.writeln();
+    if (context2.hasAnnotations == true) {
+      buffer.writeln();
+      buffer.write('''
 **Annotations**
 ''');
-        var context13 = context2.annotations;
-        if (context13 != null) {
-          for (var context14 in context13) {
-            buffer.writeln();
-            buffer.write('''
+      var context12 = context2.annotations;
+      for (var context13 in context12) {
+        buffer.writeln();
+        buffer.write('''
 - ''');
-            buffer.write(context14.linkedNameWithParameters.toString());
-          }
-        }
+        buffer.write(context13.linkedNameWithParameters.toString());
       }
     }
+  }
+  buffer.writeln();
+  if (context2.hasPublicConstructors == true) {
     buffer.writeln();
-    if (context2.hasPublicConstructors == true) {
-      buffer.writeln();
-      buffer.write('''
+    buffer.write('''
 ## Constructors
 ''');
-      var context15 = context2.publicConstructorsSorted;
-      if (context15 != null) {
-        for (var context16 in context15) {
-          buffer.writeln();
-          buffer.write(context16.linkedName.toString());
-          buffer.write(''' (''');
-          buffer.write(context16.linkedParams.toString());
-          buffer.write(''')
+    var context14 = context2.publicConstructorsSorted;
+    for (var context15 in context14) {
+      buffer.writeln();
+      buffer.write(context15.linkedName.toString());
+      buffer.write(''' (''');
+      buffer.write(context15.linkedParams.toString());
+      buffer.write(''')
 
 ''');
-          buffer.write(context16.oneLineDoc.toString());
-          buffer.write(' ');
-          buffer.write(context16.extendedDocLink.toString());
-          buffer.write('  ');
-          if (context16.isConst == true) {
-            buffer.write('''_const_''');
-          }
-          buffer.write(' ');
-          if (context16.isFactory == true) {
-            buffer.write('''_factory_''');
-          }
-          buffer.writeln();
-        }
+      buffer.write(context15.oneLineDoc?.toString());
+      buffer.write(' ');
+      buffer.write(context15.extendedDocLink.toString());
+      buffer.write('  ');
+      if (context15.isConst == true) {
+        buffer.write('''_const_''');
       }
-    }
-    buffer.writeln();
-    if (context2.hasPublicInstanceFields == true) {
+      buffer.write(' ');
+      if (context15.isFactory == true) {
+        buffer.write('''_factory_''');
+      }
       buffer.writeln();
-      buffer.write('''
+    }
+  }
+  buffer.writeln();
+  if (context2.hasPublicInstanceFields == true) {
+    buffer.writeln();
+    buffer.write('''
 ## Properties
 ''');
-      var context17 = context2.publicInstanceFieldsSorted;
-      if (context17 != null) {
-        for (var context18 in context17) {
-          buffer.writeln();
-          buffer.write(
-              _renderClass_partial_property_5(context18, context2, context0));
-          buffer.writeln();
-        }
-      }
-    }
-    buffer.writeln();
-    if (context2.hasPublicInstanceMethods == true) {
+    var context16 = context2.publicInstanceFieldsSorted;
+    for (var context17 in context16) {
       buffer.writeln();
-      buffer.write('''
+      buffer.write(
+          _renderClass_partial_property_5(context17, context2, context0));
+      buffer.writeln();
+    }
+  }
+  buffer.writeln();
+  if (context2.hasPublicInstanceMethods == true) {
+    buffer.writeln();
+    buffer.write('''
 ## Methods
 ''');
-      var context19 = context2.publicInstanceMethodsSorted;
-      if (context19 != null) {
-        for (var context20 in context19) {
-          buffer.writeln();
-          buffer.write(
-              _renderClass_partial_callable_6(context20, context2, context0));
-          buffer.writeln();
-        }
-      }
-    }
-    buffer.writeln();
-    if (context2.hasPublicInstanceOperators == true) {
+    var context18 = context2.publicInstanceMethodsSorted;
+    for (var context19 in context18) {
       buffer.writeln();
-      buffer.write('''
+      buffer.write(
+          _renderClass_partial_callable_6(context19, context2, context0));
+      buffer.writeln();
+    }
+  }
+  buffer.writeln();
+  if (context2.hasPublicInstanceOperators == true) {
+    buffer.writeln();
+    buffer.write('''
 ## Operators
 ''');
-      var context21 = context2.publicInstanceOperatorsSorted;
-      if (context21 != null) {
-        for (var context22 in context21) {
-          buffer.writeln();
-          buffer.write(
-              _renderClass_partial_callable_6(context22, context2, context0));
-          buffer.writeln();
-        }
-      }
-    }
-    buffer.writeln();
-    if (context2.hasPublicVariableStaticFields == true) {
+    var context20 = context2.publicInstanceOperatorsSorted;
+    for (var context21 in context20) {
       buffer.writeln();
-      buffer.write('''
+      buffer.write(
+          _renderClass_partial_callable_6(context21, context2, context0));
+      buffer.writeln();
+    }
+  }
+  buffer.writeln();
+  if (context2.hasPublicVariableStaticFields == true) {
+    buffer.writeln();
+    buffer.write('''
 ## Static Properties
 ''');
-      var context23 = context2.publicVariableStaticFieldsSorted;
-      if (context23 != null) {
-        for (var context24 in context23) {
-          buffer.writeln();
-          buffer.write(
-              _renderClass_partial_property_5(context24, context2, context0));
-          buffer.writeln();
-        }
-      }
-    }
-    buffer.writeln();
-    if (context2.hasPublicStaticMethods == true) {
+    var context22 = context2.publicVariableStaticFieldsSorted;
+    for (var context23 in context22) {
       buffer.writeln();
-      buffer.write('''
+      buffer.write(
+          _renderClass_partial_property_5(context23, context2, context0));
+      buffer.writeln();
+    }
+  }
+  buffer.writeln();
+  if (context2.hasPublicStaticMethods == true) {
+    buffer.writeln();
+    buffer.write('''
 ## Static Methods
 ''');
-      var context25 = context2.publicStaticMethodsSorted;
-      if (context25 != null) {
-        for (var context26 in context25) {
-          buffer.writeln();
-          buffer.write(
-              _renderClass_partial_callable_6(context26, context2, context0));
-          buffer.writeln();
-        }
-      }
-    }
-    buffer.writeln();
-    if (context2.hasPublicConstantFields == true) {
+    var context24 = context2.publicStaticMethodsSorted;
+    for (var context25 in context24) {
       buffer.writeln();
-      buffer.write('''
+      buffer.write(
+          _renderClass_partial_callable_6(context25, context2, context0));
+      buffer.writeln();
+    }
+  }
+  buffer.writeln();
+  if (context2.hasPublicConstantFields == true) {
+    buffer.writeln();
+    buffer.write('''
 ## Constants
 ''');
-      var context27 = context2.publicConstantFieldsSorted;
-      if (context27 != null) {
-        for (var context28 in context27) {
-          buffer.writeln();
-          buffer.write(
-              _renderClass_partial_constant_7(context28, context2, context0));
-          buffer.writeln();
-        }
-      }
+    var context26 = context2.publicConstantFieldsSorted;
+    for (var context27 in context26) {
+      buffer.writeln();
+      buffer.write(
+          _renderClass_partial_constant_7(context27, context2, context0));
+      buffer.writeln();
     }
   }
   buffer.write('\n\n');
@@ -902,11 +838,9 @@ String _renderClass_partial_categorization_2(
     buffer.write('''
 Categories:''');
     var context2 = context1.displayedCategories;
-    if (context2 != null) {
-      for (var context3 in context2) {
-        buffer.writeln();
-        buffer.write(context3.categoryLabel.toString());
-      }
+    for (var context3 in context2) {
+      buffer.writeln();
+      buffer.write(context3.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -919,11 +853,9 @@ String _renderClass_partial_feature_set_3(
   final buffer = StringBuffer();
   if (context1.hasFeatureSet == true) {
     var context2 = context1.displayedLanguageFeatures;
-    if (context2 != null) {
-      for (var context3 in context2) {
-        buffer.write('\n    ');
-        buffer.write(context3.featureLabel.toString());
-      }
+    for (var context3 in context2) {
+      buffer.write('\n    ');
+      buffer.write(context3.featureLabel.toString());
     }
   }
   buffer.writeln();
@@ -936,7 +868,7 @@ String _renderClass_partial_documentation_4(
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
     buffer.writeln();
-    buffer.write(context1.documentationAsHtml.toString());
+    buffer.write(context1.documentationAsHtml?.toString());
   }
   buffer.writeln();
 
@@ -956,7 +888,7 @@ String _renderClass_partial_property_5(
   buffer.write(__renderClass_partial_property_5_partial_categorization_0(
       context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context2.oneLineDoc.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('  ');
@@ -976,11 +908,9 @@ String __renderClass_partial_property_5_partial_categorization_0(
     buffer.write('''
 Categories:''');
     var context3 = context2.displayedCategories;
-    if (context3 != null) {
-      for (var context4 in context3) {
-        buffer.writeln();
-        buffer.write(context4.categoryLabel.toString());
-      }
+    for (var context4 in context3) {
+      buffer.writeln();
+      buffer.write(context4!.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -1008,14 +938,14 @@ String _renderClass_partial_callable_6(
   buffer.write(context2.linkedName.toString());
   buffer.write(context2.linkedGenericParameters.toString());
   buffer.write('''(''');
-  buffer.write(context2.linkedParamsNoMetadata.toString());
+  buffer.write(context2.linkedParamsNoMetadata?.toString());
   buffer.write(''') ''');
   buffer.write(context2.modelType.returnType.linkedName.toString());
   buffer.writeln();
   buffer.write(__renderClass_partial_callable_6_partial_categorization_0(
       context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context2.oneLineDoc.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('  ');
@@ -1035,11 +965,9 @@ String __renderClass_partial_callable_6_partial_categorization_0(
     buffer.write('''
 Categories:''');
     var context3 = context2.displayedCategories;
-    if (context3 != null) {
-      for (var context4 in context3) {
-        buffer.writeln();
-        buffer.write(context4.categoryLabel.toString());
-      }
+    for (var context4 in context3) {
+      buffer.writeln();
+      buffer.write(context4!.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -1071,7 +999,7 @@ String _renderClass_partial_constant_7(
   buffer.write(__renderClass_partial_constant_7_partial_categorization_0(
       context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context2.oneLineDoc.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('  ');
@@ -1091,11 +1019,9 @@ String __renderClass_partial_constant_7_partial_categorization_0(
     buffer.write('''
 Categories:''');
     var context3 = context2.displayedCategories;
-    if (context3 != null) {
-      for (var context4 in context3) {
-        buffer.writeln();
-        buffer.write(context4.categoryLabel.toString());
-      }
+    for (var context4 in context3) {
+      buffer.writeln();
+      buffer.write(context4!.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -1132,51 +1058,44 @@ String renderConstructor(_i1.ConstructorTemplateData context0) {
   buffer.write(_renderConstructor_partial_head_0(context0));
   buffer.writeln();
   var context1 = context0.self;
-  if (context1 != null) {
-    buffer.writeln();
-    buffer.write('''
+  buffer.writeln();
+  buffer.write('''
 # ''');
-    buffer.write(context1.nameWithGenerics.toString());
-    buffer.write(' ');
-    buffer.writeEscaped(context1.kind.toString());
-    buffer.write('\n\n');
-    buffer.write(_renderConstructor_partial_source_link_1(context1, context0));
-    buffer.writeln();
-    buffer.write(_renderConstructor_partial_feature_set_2(context1, context0));
-  }
+  buffer.write(context1.nameWithGenerics.toString());
+  buffer.write(' ');
+  buffer.writeEscaped(context1.kind.toString());
+  buffer.write('\n\n');
+  buffer.write(_renderConstructor_partial_source_link_1(context1, context0));
+  buffer.writeln();
+  buffer.write(_renderConstructor_partial_feature_set_2(context1, context0));
   buffer.writeln();
   var context2 = context0.constructor;
-  if (context2 != null) {
-    if (context2.hasAnnotations == true) {
-      var context3 = context2.annotations;
-      if (context3 != null) {
-        for (var context4 in context3) {
-          buffer.writeln();
-          buffer.write('''
+  if (context2.hasAnnotations == true) {
+    var context3 = context2.annotations;
+    for (var context4 in context3) {
+      buffer.writeln();
+      buffer.write('''
 - ''');
-          buffer.write(context4.linkedNameWithParameters.toString());
-        }
-      }
+      buffer.write(context4.linkedNameWithParameters.toString());
     }
-    buffer.writeln();
-    if (context2.isConst == true) {
-      buffer.write('''const''');
-    }
-    buffer.writeln();
-    buffer.write(context2.nameWithGenerics.toString());
-    buffer.write('''(''');
-    if (context2.hasParameters == true) {
-      buffer.write(context2.linkedParamsLines.toString());
-    }
-    buffer.write(''')
+  }
+  buffer.writeln();
+  if (context2.isConst == true) {
+    buffer.write('''const''');
+  }
+  buffer.writeln();
+  buffer.write(context2.nameWithGenerics.toString());
+  buffer.write('''(''');
+  if (context2.hasParameters == true) {
+    buffer.write(context2.linkedParamsLines.toString());
+  }
+  buffer.write(''')
 
 ''');
-    buffer
-        .write(_renderConstructor_partial_documentation_3(context2, context0));
-    buffer.write('\n\n');
-    buffer.write(_renderConstructor_partial_source_code_4(context2, context0));
-    buffer.writeln();
-  }
+  buffer.write(_renderConstructor_partial_documentation_3(context2, context0));
+  buffer.write('\n\n');
+  buffer.write(_renderConstructor_partial_source_code_4(context2, context0));
+  buffer.writeln();
   buffer.write('\n\n');
   buffer.write(_renderConstructor_partial_footer_5(context0));
   buffer.writeln();
@@ -1212,11 +1131,9 @@ String _renderConstructor_partial_feature_set_2(
   final buffer = StringBuffer();
   if (context1.hasFeatureSet == true) {
     var context2 = context1.displayedLanguageFeatures;
-    if (context2 != null) {
-      for (var context3 in context2) {
-        buffer.write('\n    ');
-        buffer.write(context3.featureLabel.toString());
-      }
+    for (var context3 in context2) {
+      buffer.write('\n    ');
+      buffer.write(context3.featureLabel.toString());
     }
   }
   buffer.writeln();
@@ -1229,7 +1146,7 @@ String _renderConstructor_partial_documentation_3(
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
     buffer.writeln();
-    buffer.write(context1.documentationAsHtml.toString());
+    buffer.write(context1.documentationAsHtml?.toString());
   }
   buffer.writeln();
 
@@ -1273,158 +1190,138 @@ String renderEnum(_i1.EnumTemplateData context0) {
   buffer.write(_renderEnum_partial_head_0(context0));
   buffer.writeln();
   var context1 = context0.self;
-  if (context1 != null) {
-    buffer.writeln();
-    buffer.write('''
+  buffer.writeln();
+  buffer.write('''
 # ''');
-    buffer.write(context1.name.toString());
-    buffer.write(' ');
-    buffer.writeEscaped(context1.kind.toString());
-    buffer.write('\n\n');
-    buffer.write(_renderEnum_partial_source_link_1(context1, context0));
-    buffer.writeln();
-    buffer.write(_renderEnum_partial_feature_set_2(context1, context0));
-  }
+  buffer.write(context1.name.toString());
+  buffer.write(' ');
+  buffer.writeEscaped(context1.kind.toString());
+  buffer.write('\n\n');
+  buffer.write(_renderEnum_partial_source_link_1(context1, context0));
+  buffer.writeln();
+  buffer.write(_renderEnum_partial_feature_set_2(context1, context0));
   buffer.writeln();
   var context2 = context0.eNum;
-  if (context2 != null) {
-    buffer.writeln();
-    buffer.write(_renderEnum_partial_documentation_3(context2, context0));
-    buffer.writeln();
-    if (context2.hasModifiers == true) {
-      if (context2.hasPublicSuperChainReversed == true) {
-        buffer.writeln();
-        buffer.write('''
+  buffer.writeln();
+  buffer.write(_renderEnum_partial_documentation_3(context2, context0));
+  buffer.writeln();
+  if (context2.hasModifiers == true) {
+    if (context2.hasPublicSuperChainReversed == true) {
+      buffer.writeln();
+      buffer.write('''
 **Inheritance**
 
 - ''');
-        buffer.write(context0.linkedObjectType.toString());
-        var context3 = context2.publicSuperChainReversed;
-        if (context3 != null) {
-          for (var context4 in context3) {
-            buffer.writeln();
-            buffer.write('''
-- ''');
-            buffer.write(context4.linkedName.toString());
-          }
-        }
+      buffer.write(context0.linkedObjectType.toString());
+      var context3 = context2.publicSuperChainReversed;
+      for (var context4 in context3) {
         buffer.writeln();
         buffer.write('''
 - ''');
-        buffer.write(context2.name.toString());
+        buffer.write(context4.linkedName.toString());
       }
       buffer.writeln();
-      if (context2.hasAnnotations == true) {
-        buffer.writeln();
-        buffer.write('''
+      buffer.write('''
+- ''');
+      buffer.write(context2.name.toString());
+    }
+    buffer.writeln();
+    if (context2.hasAnnotations == true) {
+      buffer.writeln();
+      buffer.write('''
 **Annotations**
 ''');
-        var context5 = context2.annotations;
-        if (context5 != null) {
-          for (var context6 in context5) {
-            buffer.writeln();
-            buffer.write('''
+      var context5 = context2.annotations;
+      for (var context6 in context5) {
+        buffer.writeln();
+        buffer.write('''
 - ''');
-            buffer.write(context6.linkedNameWithParameters.toString());
-          }
-        }
+        buffer.write(context6.linkedNameWithParameters.toString());
       }
     }
+  }
+  buffer.writeln();
+  if (context2.hasPublicConstantFields == true) {
     buffer.writeln();
-    if (context2.hasPublicConstantFields == true) {
-      buffer.writeln();
-      buffer.write('''
+    buffer.write('''
 ## Constants
 ''');
-      var context7 = context2.publicConstantFieldsSorted;
-      if (context7 != null) {
-        for (var context8 in context7) {
-          buffer.writeln();
-          buffer.write(
-              _renderEnum_partial_constant_4(context8, context2, context0));
-          buffer.writeln();
-        }
-      }
-    }
-    buffer.writeln();
-    if (context2.hasPublicInstanceFields == true) {
+    var context7 = context2.publicConstantFieldsSorted;
+    for (var context8 in context7) {
       buffer.writeln();
-      buffer.write('''
+      buffer
+          .write(_renderEnum_partial_constant_4(context8, context2, context0));
+      buffer.writeln();
+    }
+  }
+  buffer.writeln();
+  if (context2.hasPublicInstanceFields == true) {
+    buffer.writeln();
+    buffer.write('''
 ## Properties
 ''');
-      var context9 = context2.publicInstanceFieldsSorted;
-      if (context9 != null) {
-        for (var context10 in context9) {
-          buffer.writeln();
-          buffer.write(
-              _renderEnum_partial_property_5(context10, context2, context0));
-          buffer.writeln();
-        }
-      }
-    }
-    buffer.writeln();
-    if (context2.hasPublicInstanceMethods == true) {
+    var context9 = context2.publicInstanceFieldsSorted;
+    for (var context10 in context9) {
       buffer.writeln();
-      buffer.write('''
+      buffer
+          .write(_renderEnum_partial_property_5(context10, context2, context0));
+      buffer.writeln();
+    }
+  }
+  buffer.writeln();
+  if (context2.hasPublicInstanceMethods == true) {
+    buffer.writeln();
+    buffer.write('''
 ## Methods
 ''');
-      var context11 = context2.publicInstanceMethodsSorted;
-      if (context11 != null) {
-        for (var context12 in context11) {
-          buffer.writeln();
-          buffer.write(
-              _renderEnum_partial_callable_6(context12, context2, context0));
-          buffer.writeln();
-        }
-      }
-    }
-    buffer.writeln();
-    if (context2.hasPublicInstanceOperators == true) {
+    var context11 = context2.publicInstanceMethodsSorted;
+    for (var context12 in context11) {
       buffer.writeln();
-      buffer.write('''
+      buffer
+          .write(_renderEnum_partial_callable_6(context12, context2, context0));
+      buffer.writeln();
+    }
+  }
+  buffer.writeln();
+  if (context2.hasPublicInstanceOperators == true) {
+    buffer.writeln();
+    buffer.write('''
 ## Operators
 ''');
-      var context13 = context2.publicInstanceOperatorsSorted;
-      if (context13 != null) {
-        for (var context14 in context13) {
-          buffer.writeln();
-          buffer.write(
-              _renderEnum_partial_callable_6(context14, context2, context0));
-          buffer.writeln();
-        }
-      }
-    }
-    buffer.writeln();
-    if (context2.hasPublicVariableStaticFields == true) {
+    var context13 = context2.publicInstanceOperatorsSorted;
+    for (var context14 in context13) {
       buffer.writeln();
-      buffer.write('''
+      buffer
+          .write(_renderEnum_partial_callable_6(context14, context2, context0));
+      buffer.writeln();
+    }
+  }
+  buffer.writeln();
+  if (context2.hasPublicVariableStaticFields == true) {
+    buffer.writeln();
+    buffer.write('''
 ## Static Properties
 ''');
-      var context15 = context2.publicVariableStaticFieldsSorted;
-      if (context15 != null) {
-        for (var context16 in context15) {
-          buffer.writeln();
-          buffer.write(
-              _renderEnum_partial_property_5(context16, context2, context0));
-          buffer.writeln();
-        }
-      }
-    }
-    buffer.writeln();
-    if (context2.hasPublicStaticMethods == true) {
+    var context15 = context2.publicVariableStaticFieldsSorted;
+    for (var context16 in context15) {
       buffer.writeln();
-      buffer.write('''
+      buffer
+          .write(_renderEnum_partial_property_5(context16, context2, context0));
+      buffer.writeln();
+    }
+  }
+  buffer.writeln();
+  if (context2.hasPublicStaticMethods == true) {
+    buffer.writeln();
+    buffer.write('''
 ## Static Methods
 ''');
-      var context17 = context2.publicStaticMethodsSorted;
-      if (context17 != null) {
-        for (var context18 in context17) {
-          buffer.writeln();
-          buffer.write(
-              _renderEnum_partial_callable_6(context18, context2, context0));
-          buffer.writeln();
-        }
-      }
+    var context17 = context2.publicStaticMethodsSorted;
+    for (var context18 in context17) {
+      buffer.writeln();
+      buffer
+          .write(_renderEnum_partial_callable_6(context18, context2, context0));
+      buffer.writeln();
     }
   }
   buffer.write('\n\n');
@@ -1462,11 +1359,9 @@ String _renderEnum_partial_feature_set_2(
   final buffer = StringBuffer();
   if (context1.hasFeatureSet == true) {
     var context2 = context1.displayedLanguageFeatures;
-    if (context2 != null) {
-      for (var context3 in context2) {
-        buffer.write('\n    ');
-        buffer.write(context3.featureLabel.toString());
-      }
+    for (var context3 in context2) {
+      buffer.write('\n    ');
+      buffer.write(context3.featureLabel.toString());
     }
   }
   buffer.writeln();
@@ -1479,7 +1374,7 @@ String _renderEnum_partial_documentation_3(
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
     buffer.writeln();
-    buffer.write(context1.documentationAsHtml.toString());
+    buffer.write(context1.documentationAsHtml?.toString());
   }
   buffer.writeln();
 
@@ -1497,7 +1392,7 @@ String _renderEnum_partial_constant_4(
   buffer.write(__renderEnum_partial_constant_4_partial_categorization_0(
       context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context2.oneLineDoc.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('  ');
@@ -1517,11 +1412,9 @@ String __renderEnum_partial_constant_4_partial_categorization_0(
     buffer.write('''
 Categories:''');
     var context3 = context2.displayedCategories;
-    if (context3 != null) {
-      for (var context4 in context3) {
-        buffer.writeln();
-        buffer.write(context4.categoryLabel.toString());
-      }
+    for (var context4 in context3) {
+      buffer.writeln();
+      buffer.write(context4!.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -1555,7 +1448,7 @@ String _renderEnum_partial_property_5(
   buffer.write(__renderEnum_partial_property_5_partial_categorization_0(
       context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context2.oneLineDoc.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('  ');
@@ -1575,11 +1468,9 @@ String __renderEnum_partial_property_5_partial_categorization_0(
     buffer.write('''
 Categories:''');
     var context3 = context2.displayedCategories;
-    if (context3 != null) {
-      for (var context4 in context3) {
-        buffer.writeln();
-        buffer.write(context4.categoryLabel.toString());
-      }
+    for (var context4 in context3) {
+      buffer.writeln();
+      buffer.write(context4!.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -1607,14 +1498,14 @@ String _renderEnum_partial_callable_6(
   buffer.write(context2.linkedName.toString());
   buffer.write(context2.linkedGenericParameters.toString());
   buffer.write('''(''');
-  buffer.write(context2.linkedParamsNoMetadata.toString());
+  buffer.write(context2.linkedParamsNoMetadata?.toString());
   buffer.write(''') ''');
   buffer.write(context2.modelType.returnType.linkedName.toString());
   buffer.writeln();
   buffer.write(__renderEnum_partial_callable_6_partial_categorization_0(
       context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context2.oneLineDoc.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('  ');
@@ -1634,11 +1525,9 @@ String __renderEnum_partial_callable_6_partial_categorization_0(
     buffer.write('''
 Categories:''');
     var context3 = context2.displayedCategories;
-    if (context3 != null) {
-      for (var context4 in context3) {
-        buffer.writeln();
-        buffer.write(context4.categoryLabel.toString());
-      }
+    for (var context4 in context3) {
+      buffer.writeln();
+      buffer.write(context4!.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -1689,127 +1578,109 @@ String renderExtension<T extends _i13.Extension>(
   buffer.write(_renderExtension_partial_head_0(context0));
   buffer.writeln();
   var context1 = context0.self;
-  if (context1 != null) {
-    buffer.writeln();
-    buffer.write('''
+  buffer.writeln();
+  buffer.write('''
 # ''');
-    buffer.write(context1.nameWithGenerics.toString());
-    buffer.write(' ');
-    buffer.writeEscaped(context1.kind.toString());
-    buffer.writeln();
-    buffer.write('''
+  buffer.write(context1.nameWithGenerics.toString());
+  buffer.write(' ');
+  buffer.writeEscaped(context1.kind.toString());
+  buffer.writeln();
+  buffer.write('''
 on ''');
-    var context2 = context1.extendedType;
-    if (context2 != null) {
-      buffer.write(context2.linkedName.toString());
-    }
-    buffer.write('\n\n');
-    buffer.write(_renderExtension_partial_source_link_1(context1, context0));
-    buffer.write('\n\n');
-    buffer.write(_renderExtension_partial_categorization_2(context1, context0));
-    buffer.writeln();
-    buffer.write(_renderExtension_partial_feature_set_3(context1, context0));
-  }
+  var context2 = context1.extendedType;
+  buffer.write(context2.linkedName.toString());
+  buffer.write('\n\n');
+  buffer.write(_renderExtension_partial_source_link_1(context1, context0));
+  buffer.write('\n\n');
+  buffer.write(_renderExtension_partial_categorization_2(context1, context0));
+  buffer.writeln();
+  buffer.write(_renderExtension_partial_feature_set_3(context1, context0));
   buffer.writeln();
   var context3 = context0.extension;
-  if (context3 != null) {
+  buffer.writeln();
+  buffer.write(_renderExtension_partial_documentation_4(context3, context0));
+  buffer.writeln();
+  if (context3.hasPublicInstanceFields == true) {
     buffer.writeln();
-    buffer.write(_renderExtension_partial_documentation_4(context3, context0));
-    buffer.writeln();
-    if (context3.hasPublicInstanceFields == true) {
-      buffer.writeln();
-      buffer.write('''
+    buffer.write('''
 ## Properties
 ''');
-      var context4 = context3.publicInstanceFieldsSorted;
-      if (context4 != null) {
-        for (var context5 in context4) {
-          buffer.writeln();
-          buffer.write(_renderExtension_partial_property_5(
-              context5, context3, context0));
-          buffer.writeln();
-        }
-      }
-    }
-    buffer.writeln();
-    if (context3.hasPublicInstanceMethods == true) {
+    var context4 = context3.publicInstanceFieldsSorted;
+    for (var context5 in context4) {
       buffer.writeln();
-      buffer.write('''
+      buffer.write(
+          _renderExtension_partial_property_5(context5, context3, context0));
+      buffer.writeln();
+    }
+  }
+  buffer.writeln();
+  if (context3.hasPublicInstanceMethods == true) {
+    buffer.writeln();
+    buffer.write('''
 ## Methods
 ''');
-      var context6 = context3.publicInstanceMethodsSorted;
-      if (context6 != null) {
-        for (var context7 in context6) {
-          buffer.writeln();
-          buffer.write(_renderExtension_partial_callable_6(
-              context7, context3, context0));
-          buffer.writeln();
-        }
-      }
-    }
-    buffer.writeln();
-    if (context3.hasPublicInstanceOperators == true) {
+    var context6 = context3.publicInstanceMethodsSorted;
+    for (var context7 in context6) {
       buffer.writeln();
-      buffer.write('''
+      buffer.write(
+          _renderExtension_partial_callable_6(context7, context3, context0));
+      buffer.writeln();
+    }
+  }
+  buffer.writeln();
+  if (context3.hasPublicInstanceOperators == true) {
+    buffer.writeln();
+    buffer.write('''
 ## Operators
 ''');
-      var context8 = context3.publicInstanceOperatorsSorted;
-      if (context8 != null) {
-        for (var context9 in context8) {
-          buffer.writeln();
-          buffer.write(_renderExtension_partial_callable_6(
-              context9, context3, context0));
-          buffer.writeln();
-        }
-      }
-    }
-    buffer.writeln();
-    if (context3.hasPublicVariableStaticFields == true) {
+    var context8 = context3.publicInstanceOperatorsSorted;
+    for (var context9 in context8) {
       buffer.writeln();
-      buffer.write('''
+      buffer.write(
+          _renderExtension_partial_callable_6(context9, context3, context0));
+      buffer.writeln();
+    }
+  }
+  buffer.writeln();
+  if (context3.hasPublicVariableStaticFields == true) {
+    buffer.writeln();
+    buffer.write('''
 ## Static Properties
 ''');
-      var context10 = context3.publicVariableStaticFieldsSorted;
-      if (context10 != null) {
-        for (var context11 in context10) {
-          buffer.writeln();
-          buffer.write(_renderExtension_partial_property_5(
-              context11, context3, context0));
-          buffer.writeln();
-        }
-      }
-    }
-    buffer.writeln();
-    if (context3.hasPublicStaticMethods == true) {
+    var context10 = context3.publicVariableStaticFieldsSorted;
+    for (var context11 in context10) {
       buffer.writeln();
-      buffer.write('''
+      buffer.write(
+          _renderExtension_partial_property_5(context11, context3, context0));
+      buffer.writeln();
+    }
+  }
+  buffer.writeln();
+  if (context3.hasPublicStaticMethods == true) {
+    buffer.writeln();
+    buffer.write('''
 ## Static Methods
 ''');
-      var context12 = context3.publicStaticMethodsSorted;
-      if (context12 != null) {
-        for (var context13 in context12) {
-          buffer.writeln();
-          buffer.write(_renderExtension_partial_callable_6(
-              context13, context3, context0));
-          buffer.writeln();
-        }
-      }
-    }
-    buffer.writeln();
-    if (context3.hasPublicConstantFields == true) {
+    var context12 = context3.publicStaticMethodsSorted;
+    for (var context13 in context12) {
       buffer.writeln();
-      buffer.write('''
+      buffer.write(
+          _renderExtension_partial_callable_6(context13, context3, context0));
+      buffer.writeln();
+    }
+  }
+  buffer.writeln();
+  if (context3.hasPublicConstantFields == true) {
+    buffer.writeln();
+    buffer.write('''
 ## Constants
 ''');
-      var context14 = context3.publicConstantFieldsSorted;
-      if (context14 != null) {
-        for (var context15 in context14) {
-          buffer.writeln();
-          buffer.write(_renderExtension_partial_constant_7(
-              context15, context3, context0));
-          buffer.writeln();
-        }
-      }
+    var context14 = context3.publicConstantFieldsSorted;
+    for (var context15 in context14) {
+      buffer.writeln();
+      buffer.write(
+          _renderExtension_partial_constant_7(context15, context3, context0));
+      buffer.writeln();
     }
   }
   buffer.write('\n\n');
@@ -1851,11 +1722,9 @@ String _renderExtension_partial_categorization_2<T extends _i13.Extension>(
     buffer.write('''
 Categories:''');
     var context2 = context1.displayedCategories;
-    if (context2 != null) {
-      for (var context3 in context2) {
-        buffer.writeln();
-        buffer.write(context3.categoryLabel.toString());
-      }
+    for (var context3 in context2) {
+      buffer.writeln();
+      buffer.write(context3.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -1868,11 +1737,9 @@ String _renderExtension_partial_feature_set_3<T extends _i13.Extension>(
   final buffer = StringBuffer();
   if (context1.hasFeatureSet == true) {
     var context2 = context1.displayedLanguageFeatures;
-    if (context2 != null) {
-      for (var context3 in context2) {
-        buffer.write('\n    ');
-        buffer.write(context3.featureLabel.toString());
-      }
+    for (var context3 in context2) {
+      buffer.write('\n    ');
+      buffer.write(context3.featureLabel.toString());
     }
   }
   buffer.writeln();
@@ -1885,7 +1752,7 @@ String _renderExtension_partial_documentation_4<T extends _i13.Extension>(
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
     buffer.writeln();
-    buffer.write(context1.documentationAsHtml.toString());
+    buffer.write(context1.documentationAsHtml?.toString());
   }
   buffer.writeln();
 
@@ -1907,7 +1774,7 @@ String _renderExtension_partial_property_5<T extends _i13.Extension>(
   buffer.write(__renderExtension_partial_property_5_partial_categorization_0(
       context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context2.oneLineDoc.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('  ');
@@ -1928,11 +1795,9 @@ String __renderExtension_partial_property_5_partial_categorization_0<
     buffer.write('''
 Categories:''');
     var context3 = context2.displayedCategories;
-    if (context3 != null) {
-      for (var context4 in context3) {
-        buffer.writeln();
-        buffer.write(context4.categoryLabel.toString());
-      }
+    for (var context4 in context3) {
+      buffer.writeln();
+      buffer.write(context4!.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -1963,14 +1828,14 @@ String _renderExtension_partial_callable_6<T extends _i13.Extension>(
   buffer.write(context2.linkedName.toString());
   buffer.write(context2.linkedGenericParameters.toString());
   buffer.write('''(''');
-  buffer.write(context2.linkedParamsNoMetadata.toString());
+  buffer.write(context2.linkedParamsNoMetadata?.toString());
   buffer.write(''') ''');
   buffer.write(context2.modelType.returnType.linkedName.toString());
   buffer.writeln();
   buffer.write(__renderExtension_partial_callable_6_partial_categorization_0(
       context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context2.oneLineDoc.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('  ');
@@ -1991,11 +1856,9 @@ String __renderExtension_partial_callable_6_partial_categorization_0<
     buffer.write('''
 Categories:''');
     var context3 = context2.displayedCategories;
-    if (context3 != null) {
-      for (var context4 in context3) {
-        buffer.writeln();
-        buffer.write(context4.categoryLabel.toString());
-      }
+    for (var context4 in context3) {
+      buffer.writeln();
+      buffer.write(context4!.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -2030,7 +1893,7 @@ String _renderExtension_partial_constant_7<T extends _i13.Extension>(
   buffer.write(__renderExtension_partial_constant_7_partial_categorization_0(
       context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context2.oneLineDoc.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('  ');
@@ -2051,11 +1914,9 @@ String __renderExtension_partial_constant_7_partial_categorization_0<
     buffer.write('''
 Categories:''');
     var context3 = context2.displayedCategories;
-    if (context3 != null) {
-      for (var context4 in context3) {
-        buffer.writeln();
-        buffer.write(context4.categoryLabel.toString());
-      }
+    for (var context4 in context3) {
+      buffer.writeln();
+      buffer.write(context4!.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -2094,32 +1955,28 @@ String renderFunction(_i1.FunctionTemplateData context0) {
   buffer.write(_renderFunction_partial_head_0(context0));
   buffer.writeln();
   var context1 = context0.self;
-  if (context1 != null) {
-    buffer.writeln();
-    buffer.write('''
+  buffer.writeln();
+  buffer.write('''
 # ''');
-    buffer.write(context1.nameWithGenerics.toString());
-    buffer.write(' ');
-    buffer.writeEscaped(context1.kind.toString());
-    buffer.write('\n\n');
-    buffer.write(_renderFunction_partial_source_link_1(context1, context0));
-    buffer.writeln();
-    buffer.write(_renderFunction_partial_categorization_2(context1, context0));
-    buffer.writeln();
-    buffer.write(_renderFunction_partial_feature_set_3(context1, context0));
-  }
+  buffer.write(context1.nameWithGenerics.toString());
+  buffer.write(' ');
+  buffer.writeEscaped(context1.kind.toString());
+  buffer.write('\n\n');
+  buffer.write(_renderFunction_partial_source_link_1(context1, context0));
+  buffer.writeln();
+  buffer.write(_renderFunction_partial_categorization_2(context1, context0));
+  buffer.writeln();
+  buffer.write(_renderFunction_partial_feature_set_3(context1, context0));
   buffer.writeln();
   var context2 = context0.function;
-  if (context2 != null) {
-    buffer.writeln();
-    buffer.write(
-        _renderFunction_partial_callable_multiline_4(context2, context0));
-    buffer.write('\n\n');
-    buffer.write(_renderFunction_partial_documentation_5(context2, context0));
-    buffer.write('\n\n');
-    buffer.write(_renderFunction_partial_source_code_6(context2, context0));
-    buffer.writeln();
-  }
+  buffer.writeln();
+  buffer
+      .write(_renderFunction_partial_callable_multiline_4(context2, context0));
+  buffer.write('\n\n');
+  buffer.write(_renderFunction_partial_documentation_5(context2, context0));
+  buffer.write('\n\n');
+  buffer.write(_renderFunction_partial_source_code_6(context2, context0));
+  buffer.writeln();
   buffer.write('\n\n');
   buffer.write(_renderFunction_partial_footer_7(context0));
   buffer.writeln();
@@ -2158,11 +2015,9 @@ String _renderFunction_partial_categorization_2(
     buffer.write('''
 Categories:''');
     var context2 = context1.displayedCategories;
-    if (context2 != null) {
-      for (var context3 in context2) {
-        buffer.writeln();
-        buffer.write(context3.categoryLabel.toString());
-      }
+    for (var context3 in context2) {
+      buffer.writeln();
+      buffer.write(context3.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -2175,11 +2030,9 @@ String _renderFunction_partial_feature_set_3(
   final buffer = StringBuffer();
   if (context1.hasFeatureSet == true) {
     var context2 = context1.displayedLanguageFeatures;
-    if (context2 != null) {
-      for (var context3 in context2) {
-        buffer.write('\n    ');
-        buffer.write(context3.featureLabel.toString());
-      }
+    for (var context3 in context2) {
+      buffer.write('\n    ');
+      buffer.write(context3.featureLabel.toString());
     }
   }
   buffer.writeln();
@@ -2192,13 +2045,11 @@ String _renderFunction_partial_callable_multiline_4(
   final buffer = StringBuffer();
   if (context1.hasAnnotations == true) {
     var context2 = context1.annotations;
-    if (context2 != null) {
-      for (var context3 in context2) {
-        buffer.writeln();
-        buffer.write('''
+    for (var context3 in context2) {
+      buffer.writeln();
+      buffer.write('''
 - ''');
-        buffer.write(context3.linkedNameWithParameters.toString());
-      }
+      buffer.write(context3.linkedNameWithParameters.toString());
     }
   }
   buffer.write('\n\n');
@@ -2241,7 +2092,7 @@ String _renderFunction_partial_documentation_5(
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
     buffer.writeln();
-    buffer.write(context1.documentationAsHtml.toString());
+    buffer.write(context1.documentationAsHtml?.toString());
   }
   buffer.writeln();
 
@@ -2289,55 +2140,45 @@ String renderIndex(_i1.PackageTemplateData context0) {
   buffer.writeEscaped(context0.title.toString());
   buffer.writeln();
   var context1 = context0.defaultPackage;
-  if (context1 != null) {
-    buffer.writeln();
-    buffer.write(_renderIndex_partial_documentation_1(context1, context0));
-  }
+  buffer.writeln();
+  buffer.write(_renderIndex_partial_documentation_1(context1, context0));
   buffer.writeln();
   var context2 = context0.localPackages;
-  if (context2 != null) {
-    for (var context3 in context2) {
-      if (context3.isFirstPackage == true) {
-        buffer.writeln();
-        buffer.write('''
+  for (var context3 in context2) {
+    if (context3.isFirstPackage == true) {
+      buffer.writeln();
+      buffer.write('''
 ## Libraries''');
-      }
-      if (context3.isFirstPackage != true) {
-        buffer.writeln();
-        buffer.write('''
+    }
+    if (context3.isFirstPackage != true) {
+      buffer.writeln();
+      buffer.write('''
 ## ''');
-        buffer.writeEscaped(context3.name.toString());
+      buffer.writeEscaped(context3.name.toString());
+    }
+    buffer.writeln();
+    var context4 = context3.defaultCategory;
+    if (context4 != null) {
+      var context5 = context4.publicLibrariesSorted;
+      for (var context6 in context5) {
+        buffer.writeln();
+        buffer.write(_renderIndex_partial_library_2(
+            context6, context4, context3, context0));
       }
+    }
+    buffer.writeln();
+    var context7 = context3.categoriesWithPublicLibraries;
+    for (var context8 in context7) {
       buffer.writeln();
-      var context4 = context3.defaultCategory;
-      if (context4 != null) {
-        var context5 = context4.publicLibrariesSorted;
-        if (context5 != null) {
-          for (var context6 in context5) {
-            buffer.writeln();
-            buffer.write(_renderIndex_partial_library_2(
-                context6, context4, context3, context0));
-          }
-        }
-      }
-      buffer.writeln();
-      var context7 = context3.categoriesWithPublicLibraries;
-      if (context7 != null) {
-        for (var context8 in context7) {
-          buffer.writeln();
-          buffer.write('''
+      buffer.write('''
 ### Category ''');
-          buffer.write(context8.categoryLabel.toString());
-          buffer.writeln();
-          var context9 = context8.publicLibrariesSorted;
-          if (context9 != null) {
-            for (var context10 in context9) {
-              buffer.writeln();
-              buffer.write(_renderIndex_partial_library_2(
-                  context10, context8, context3, context0));
-            }
-          }
-        }
+      buffer.write(context8.categoryLabel.toString());
+      buffer.writeln();
+      var context9 = context8.publicLibrariesSorted;
+      for (var context10 in context9) {
+        buffer.writeln();
+        buffer.write(_renderIndex_partial_library_2(
+            context10, context8, context3, context0));
       }
     }
   }
@@ -2361,7 +2202,7 @@ String _renderIndex_partial_documentation_1(
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
     buffer.writeln();
-    buffer.write(context1.documentationAsHtml.toString());
+    buffer.write(context1.documentationAsHtml?.toString());
   }
   buffer.writeln();
 
@@ -2378,7 +2219,7 @@ String _renderIndex_partial_library_2(
   buffer.write(context3.linkedName.toString());
   if (context3.isDocumented == true) {
     buffer.writeln();
-    buffer.write(context3.oneLineDoc.toString());
+    buffer.write(context3.oneLineDoc?.toString());
     buffer.write(' ');
     buffer.write(context3.extendedDocLink.toString());
     buffer.writeln();
@@ -2404,222 +2245,164 @@ String renderLibrary(_i1.LibraryTemplateData context0) {
   buffer.write(_renderLibrary_partial_head_0(context0));
   buffer.writeln();
   var context1 = context0.self;
-  if (context1 != null) {
-    buffer.writeln();
-    buffer.write('''
+  buffer.writeln();
+  buffer.write('''
 # ''');
-    buffer.write(context1.name.toString());
-    buffer.write(' ');
-    buffer.writeEscaped(context1.kind.toString());
-    buffer.write('\n\n');
-    buffer.write(_renderLibrary_partial_source_link_1(context1, context0));
-    buffer.writeln();
-    buffer.write(_renderLibrary_partial_categorization_2(context1, context0));
-    buffer.writeln();
-    buffer.write(_renderLibrary_partial_feature_set_3(context1, context0));
-  }
+  buffer.write(context1.name.toString());
+  buffer.write(' ');
+  buffer.writeEscaped(context1.kind.toString());
+  buffer.write('\n\n');
+  buffer.write(_renderLibrary_partial_source_link_1(context1, context0));
+  buffer.writeln();
+  buffer.write(_renderLibrary_partial_categorization_2(context1, context0));
+  buffer.writeln();
+  buffer.write(_renderLibrary_partial_feature_set_3(context1, context0));
   buffer.writeln();
   var context2 = context0.library;
-  if (context2 != null) {
-    buffer.writeln();
-    buffer.write(_renderLibrary_partial_documentation_4(context2, context0));
-  }
+  buffer.writeln();
+  buffer.write(_renderLibrary_partial_documentation_4(context2, context0));
   buffer.writeln();
   var context3 = context0.library;
-  if (context3 != null) {
-    if (context3.hasPublicClasses == true) {
-      buffer.writeln();
-      buffer.write('''
+  if (context3.hasPublicClasses == true) {
+    buffer.writeln();
+    buffer.write('''
 ## Classes
 ''');
-      var context4 = context3.library;
-      if (context4 != null) {
-        var context5 = context4.publicClassesSorted;
-        if (context5 != null) {
-          for (var context6 in context5) {
-            buffer.writeln();
-            buffer.write(_renderLibrary_partial_container_5(
-                context6, context4, context3, context0));
-            buffer.writeln();
-          }
-        }
-      }
+    var context4 = context3.library;
+    var context5 = context4.publicClassesSorted;
+    for (var context6 in context5) {
+      buffer.writeln();
+      buffer.write(_renderLibrary_partial_container_5(
+          context6, context4, context3, context0));
+      buffer.writeln();
     }
   }
   buffer.writeln();
   var context7 = context0.library;
-  if (context7 != null) {
-    if (context7.hasPublicMixins == true) {
-      buffer.writeln();
-      buffer.write('''
+  if (context7.hasPublicMixins == true) {
+    buffer.writeln();
+    buffer.write('''
 ## Mixins
 ''');
-      var context8 = context7.library;
-      if (context8 != null) {
-        var context9 = context8.publicMixinsSorted;
-        if (context9 != null) {
-          for (var context10 in context9) {
-            buffer.writeln();
-            buffer.write(_renderLibrary_partial_container_5(
-                context10, context8, context7, context0));
-            buffer.writeln();
-          }
-        }
-      }
+    var context8 = context7.library;
+    var context9 = context8.publicMixinsSorted;
+    for (var context10 in context9) {
+      buffer.writeln();
+      buffer.write(_renderLibrary_partial_container_5(
+          context10, context8, context7, context0));
+      buffer.writeln();
     }
   }
   buffer.writeln();
   var context11 = context0.library;
-  if (context11 != null) {
-    if (context11.hasPublicExtensions == true) {
-      buffer.writeln();
-      buffer.write('''
+  if (context11.hasPublicExtensions == true) {
+    buffer.writeln();
+    buffer.write('''
 ## Extensions
 ''');
-      var context12 = context11.library;
-      if (context12 != null) {
-        var context13 = context12.publicExtensionsSorted;
-        if (context13 != null) {
-          for (var context14 in context13) {
-            buffer.writeln();
-            buffer.write(_renderLibrary_partial_extension_6(
-                context14, context12, context11, context0));
-            buffer.writeln();
-          }
-        }
-      }
+    var context12 = context11.library;
+    var context13 = context12.publicExtensionsSorted;
+    for (var context14 in context13) {
+      buffer.writeln();
+      buffer.write(_renderLibrary_partial_extension_6(
+          context14, context12, context11, context0));
+      buffer.writeln();
     }
   }
   buffer.writeln();
   var context15 = context0.library;
-  if (context15 != null) {
-    if (context15.hasPublicConstants == true) {
-      buffer.writeln();
-      buffer.write('''
+  if (context15.hasPublicConstants == true) {
+    buffer.writeln();
+    buffer.write('''
 ## Constants
 ''');
-      var context16 = context15.library;
-      if (context16 != null) {
-        var context17 = context16.publicConstantsSorted;
-        if (context17 != null) {
-          for (var context18 in context17) {
-            buffer.writeln();
-            buffer.write(_renderLibrary_partial_constant_7(
-                context18, context16, context15, context0));
-            buffer.writeln();
-          }
-        }
-      }
+    var context16 = context15.library;
+    var context17 = context16.publicConstantsSorted;
+    for (var context18 in context17) {
+      buffer.writeln();
+      buffer.write(_renderLibrary_partial_constant_7(
+          context18, context16, context15, context0));
+      buffer.writeln();
     }
   }
   buffer.writeln();
   var context19 = context0.library;
-  if (context19 != null) {
-    if (context19.hasPublicProperties == true) {
-      buffer.writeln();
-      buffer.write('''
+  if (context19.hasPublicProperties == true) {
+    buffer.writeln();
+    buffer.write('''
 ## Properties
 ''');
-      var context20 = context19.library;
-      if (context20 != null) {
-        var context21 = context20.publicPropertiesSorted;
-        if (context21 != null) {
-          for (var context22 in context21) {
-            buffer.writeln();
-            buffer.write(_renderLibrary_partial_property_8(
-                context22, context20, context19, context0));
-            buffer.writeln();
-          }
-        }
-      }
+    var context20 = context19.library;
+    var context21 = context20.publicPropertiesSorted;
+    for (var context22 in context21) {
+      buffer.writeln();
+      buffer.write(_renderLibrary_partial_property_8(
+          context22, context20, context19, context0));
+      buffer.writeln();
     }
   }
   buffer.writeln();
   var context23 = context0.library;
-  if (context23 != null) {
-    if (context23.hasPublicFunctions == true) {
-      buffer.writeln();
-      buffer.write('''
+  if (context23.hasPublicFunctions == true) {
+    buffer.writeln();
+    buffer.write('''
 ## Functions
 ''');
-      var context24 = context23.library;
-      if (context24 != null) {
-        var context25 = context24.publicFunctionsSorted;
-        if (context25 != null) {
-          for (var context26 in context25) {
-            buffer.writeln();
-            buffer.write(_renderLibrary_partial_callable_9(
-                context26, context24, context23, context0));
-            buffer.writeln();
-          }
-        }
-      }
+    var context24 = context23.library;
+    var context25 = context24.publicFunctionsSorted;
+    for (var context26 in context25) {
+      buffer.writeln();
+      buffer.write(_renderLibrary_partial_callable_9(
+          context26, context24, context23, context0));
+      buffer.writeln();
     }
   }
   buffer.writeln();
   var context27 = context0.library;
-  if (context27 != null) {
-    if (context27.hasPublicEnums == true) {
-      buffer.writeln();
-      buffer.write('''
+  if (context27.hasPublicEnums == true) {
+    buffer.writeln();
+    buffer.write('''
 ## Enums
 ''');
-      var context28 = context27.library;
-      if (context28 != null) {
-        var context29 = context28.publicEnumsSorted;
-        if (context29 != null) {
-          for (var context30 in context29) {
-            buffer.writeln();
-            buffer.write(_renderLibrary_partial_container_5(
-                context30, context28, context27, context0));
-            buffer.writeln();
-          }
-        }
-      }
+    var context28 = context27.library;
+    var context29 = context28.publicEnumsSorted;
+    for (var context30 in context29) {
+      buffer.writeln();
+      buffer.write(_renderLibrary_partial_container_5(
+          context30, context28, context27, context0));
+      buffer.writeln();
     }
   }
   buffer.writeln();
   var context31 = context0.library;
-  if (context31 != null) {
-    if (context31.hasPublicTypedefs == true) {
-      buffer.writeln();
-      buffer.write('''
+  if (context31.hasPublicTypedefs == true) {
+    buffer.writeln();
+    buffer.write('''
 ## Typedefs
 ''');
-      var context32 = context31.library;
-      if (context32 != null) {
-        var context33 = context32.publicTypedefsSorted;
-        if (context33 != null) {
-          for (var context34 in context33) {
-            buffer.writeln();
-            buffer.write(_renderLibrary_partial_typedef_10(
-                context34, context32, context31, context0));
-            buffer.writeln();
-          }
-        }
-      }
+    var context32 = context31.library;
+    var context33 = context32.publicTypedefsSorted;
+    for (var context34 in context33) {
+      buffer.writeln();
+      buffer.write(_renderLibrary_partial_typedef_10(
+          context34, context32, context31, context0));
+      buffer.writeln();
     }
   }
   buffer.writeln();
   var context35 = context0.library;
-  if (context35 != null) {
-    if (context35.hasPublicExceptions == true) {
-      buffer.writeln();
-      buffer.write('''
+  if (context35.hasPublicExceptions == true) {
+    buffer.writeln();
+    buffer.write('''
 ## Exceptions / Errors
 ''');
-      var context36 = context35.library;
-      if (context36 != null) {
-        var context37 = context36.publicExceptionsSorted;
-        if (context37 != null) {
-          for (var context38 in context37) {
-            buffer.writeln();
-            buffer.write(_renderLibrary_partial_container_5(
-                context38, context36, context35, context0));
-            buffer.writeln();
-          }
-        }
-      }
+    var context36 = context35.library;
+    var context37 = context36.publicExceptionsSorted;
+    for (var context38 in context37) {
+      buffer.writeln();
+      buffer.write(_renderLibrary_partial_container_5(
+          context38, context36, context35, context0));
+      buffer.writeln();
     }
   }
   buffer.write('\n\n');
@@ -2660,11 +2443,9 @@ String _renderLibrary_partial_categorization_2(
     buffer.write('''
 Categories:''');
     var context2 = context1.displayedCategories;
-    if (context2 != null) {
-      for (var context3 in context2) {
-        buffer.writeln();
-        buffer.write(context3.categoryLabel.toString());
-      }
+    for (var context3 in context2) {
+      buffer.writeln();
+      buffer.write(context3.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -2677,11 +2458,9 @@ String _renderLibrary_partial_feature_set_3(
   final buffer = StringBuffer();
   if (context1.hasFeatureSet == true) {
     var context2 = context1.displayedLanguageFeatures;
-    if (context2 != null) {
-      for (var context3 in context2) {
-        buffer.write('\n    ');
-        buffer.write(context3.featureLabel.toString());
-      }
+    for (var context3 in context2) {
+      buffer.write('\n    ');
+      buffer.write(context3.featureLabel.toString());
     }
   }
   buffer.writeln();
@@ -2694,7 +2473,7 @@ String _renderLibrary_partial_documentation_4(
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
     buffer.writeln();
-    buffer.write(context1.documentationAsHtml.toString());
+    buffer.write(context1.documentationAsHtml?.toString());
   }
   buffer.writeln();
 
@@ -2714,7 +2493,7 @@ String _renderLibrary_partial_container_5(
   buffer.write(__renderLibrary_partial_container_5_partial_categorization_0(
       context3, context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context3.oneLineDoc.toString());
+  buffer.write(context3.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context3.extendedDocLink.toString());
   buffer.writeln();
@@ -2733,11 +2512,9 @@ String __renderLibrary_partial_container_5_partial_categorization_0(
     buffer.write('''
 Categories:''');
     var context4 = context3.displayedCategories;
-    if (context4 != null) {
-      for (var context5 in context4) {
-        buffer.writeln();
-        buffer.write(context5.categoryLabel.toString());
-      }
+    for (var context5 in context4) {
+      buffer.writeln();
+      buffer.write(context5.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -2757,7 +2534,7 @@ String _renderLibrary_partial_extension_6(
   buffer.write(__renderLibrary_partial_extension_6_partial_categorization_0(
       context3, context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context3.oneLineDoc.toString());
+  buffer.write(context3.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context3.extendedDocLink.toString());
   buffer.writeln();
@@ -2776,11 +2553,9 @@ String __renderLibrary_partial_extension_6_partial_categorization_0(
     buffer.write('''
 Categories:''');
     var context4 = context3.displayedCategories;
-    if (context4 != null) {
-      for (var context5 in context4) {
-        buffer.writeln();
-        buffer.write(context5.categoryLabel.toString());
-      }
+    for (var context5 in context4) {
+      buffer.writeln();
+      buffer.write(context5.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -2802,7 +2577,7 @@ String _renderLibrary_partial_constant_7(
   buffer.write(__renderLibrary_partial_constant_7_partial_categorization_0(
       context3, context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context3.oneLineDoc.toString());
+  buffer.write(context3.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context3.extendedDocLink.toString());
   buffer.write('  ');
@@ -2825,11 +2600,9 @@ String __renderLibrary_partial_constant_7_partial_categorization_0(
     buffer.write('''
 Categories:''');
     var context4 = context3.displayedCategories;
-    if (context4 != null) {
-      for (var context5 in context4) {
-        buffer.writeln();
-        buffer.write(context5.categoryLabel.toString());
-      }
+    for (var context5 in context4) {
+      buffer.writeln();
+      buffer.write(context5.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -2869,7 +2642,7 @@ String _renderLibrary_partial_property_8(
   buffer.write(__renderLibrary_partial_property_8_partial_categorization_0(
       context3, context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context3.oneLineDoc.toString());
+  buffer.write(context3.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context3.extendedDocLink.toString());
   buffer.write('  ');
@@ -2892,11 +2665,9 @@ String __renderLibrary_partial_property_8_partial_categorization_0(
     buffer.write('''
 Categories:''');
     var context4 = context3.displayedCategories;
-    if (context4 != null) {
-      for (var context5 in context4) {
-        buffer.writeln();
-        buffer.write(context5.categoryLabel.toString());
-      }
+    for (var context5 in context4) {
+      buffer.writeln();
+      buffer.write(context5.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -2930,14 +2701,14 @@ String _renderLibrary_partial_callable_9(
   buffer.write(context3.linkedName.toString());
   buffer.write(context3.linkedGenericParameters.toString());
   buffer.write('''(''');
-  buffer.write(context3.linkedParamsNoMetadata.toString());
+  buffer.write(context3.linkedParamsNoMetadata?.toString());
   buffer.write(''') ''');
   buffer.write(context3.modelType.returnType.linkedName.toString());
   buffer.writeln();
   buffer.write(__renderLibrary_partial_callable_9_partial_categorization_0(
       context3, context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context3.oneLineDoc.toString());
+  buffer.write(context3.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context3.extendedDocLink.toString());
   buffer.write('  ');
@@ -2960,11 +2731,9 @@ String __renderLibrary_partial_callable_9_partial_categorization_0(
     buffer.write('''
 Categories:''');
     var context4 = context3.displayedCategories;
-    if (context4 != null) {
-      for (var context5 in context4) {
-        buffer.writeln();
-        buffer.write(context5.categoryLabel.toString());
-      }
+    for (var context5 in context4) {
+      buffer.writeln();
+      buffer.write(context5!.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -2996,26 +2765,24 @@ String _renderLibrary_partial_typedef_10(
   final buffer = StringBuffer();
   if (context3.isCallable == true) {
     var context4 = context3.asCallable;
-    if (context4 != null) {
-      buffer.writeln();
-      buffer.write('''
+    buffer.writeln();
+    buffer.write('''
     ##### ''');
-      buffer.write(context4.linkedName.toString());
-      buffer.write(context4.linkedGenericParameters.toString());
-      buffer.write(''' = ''');
-      buffer.write(context4.modelType.linkedName.toString());
-      buffer.write('\n    ');
-      buffer.write(__renderLibrary_partial_typedef_10_partial_categorization_0(
-          context4, context3, context2, context1, context0));
-      buffer.write('\n\n    ');
-      buffer.write(context4.oneLineDoc.toString());
-      buffer.write(' ');
-      buffer.write(context4.extendedDocLink.toString());
-      buffer.write('  ');
-      buffer.write('\n    ');
-      buffer.write(__renderLibrary_partial_typedef_10_partial_features_1(
-          context4, context3, context2, context1, context0));
-    }
+    buffer.write(context4.linkedName.toString());
+    buffer.write(context4.linkedGenericParameters.toString());
+    buffer.write(''' = ''');
+    buffer.write(context4.modelType.linkedName.toString());
+    buffer.write('\n    ');
+    buffer.write(__renderLibrary_partial_typedef_10_partial_categorization_0(
+        context4, context3, context2, context1, context0));
+    buffer.write('\n\n    ');
+    buffer.write(context4.oneLineDoc?.toString());
+    buffer.write(' ');
+    buffer.write(context4.extendedDocLink.toString());
+    buffer.write('  ');
+    buffer.write('\n    ');
+    buffer.write(__renderLibrary_partial_typedef_10_partial_features_1(
+        context4, context3, context2, context1, context0));
   }
   if (context3.isCallable != true) {
     buffer.write('\n  ');
@@ -3039,11 +2806,9 @@ String __renderLibrary_partial_typedef_10_partial_categorization_0(
     buffer.write('''
 Categories:''');
     var context5 = context4.displayedCategories;
-    if (context5 != null) {
-      for (var context6 in context5) {
-        buffer.writeln();
-        buffer.write(context6.categoryLabel.toString());
-      }
+    for (var context6 in context5) {
+      buffer.writeln();
+      buffer.write(context6.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -3084,7 +2849,7 @@ String __renderLibrary_partial_typedef_10_partial_type_2(
       ___renderLibrary_partial_typedef_10_partial_type_2_partial_categorization_0(
           context3, context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context3.oneLineDoc.toString());
+  buffer.write(context3.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context3.extendedDocLink.toString());
   buffer.write('  ');
@@ -3109,11 +2874,9 @@ String
     buffer.write('''
 Categories:''');
     var context4 = context3.displayedCategories;
-    if (context4 != null) {
-      for (var context5 in context4) {
-        buffer.writeln();
-        buffer.write(context5.categoryLabel.toString());
-      }
+    for (var context5 in context4) {
+      buffer.writeln();
+      buffer.write(context5.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -3153,32 +2916,27 @@ String renderMethod(_i1.MethodTemplateData context0) {
   buffer.write(_renderMethod_partial_head_0(context0));
   buffer.writeln();
   var context1 = context0.self;
-  if (context1 != null) {
-    buffer.writeln();
-    buffer.write('''
+  buffer.writeln();
+  buffer.write('''
 # ''');
-    buffer.write(context1.nameWithGenerics.toString());
-    buffer.write(' ');
-    buffer.writeEscaped(context1.kind.toString());
-    buffer.write('\n\n');
-    buffer.write(_renderMethod_partial_source_link_1(context1, context0));
-    buffer.writeln();
-    buffer.write(_renderMethod_partial_feature_set_2(context1, context0));
-  }
+  buffer.write(context1.nameWithGenerics.toString());
+  buffer.write(' ');
+  buffer.writeEscaped(context1.kind.toString());
+  buffer.write('\n\n');
+  buffer.write(_renderMethod_partial_source_link_1(context1, context0));
+  buffer.writeln();
+  buffer.write(_renderMethod_partial_feature_set_2(context1, context0));
   buffer.writeln();
   var context2 = context0.method;
-  if (context2 != null) {
-    buffer.writeln();
-    buffer
-        .write(_renderMethod_partial_callable_multiline_3(context2, context0));
-    buffer.writeln();
-    buffer.write(_renderMethod_partial_features_4(context2, context0));
-    buffer.write('\n\n');
-    buffer.write(_renderMethod_partial_documentation_5(context2, context0));
-    buffer.write('\n\n');
-    buffer.write(_renderMethod_partial_source_code_6(context2, context0));
-    buffer.writeln();
-  }
+  buffer.writeln();
+  buffer.write(_renderMethod_partial_callable_multiline_3(context2, context0));
+  buffer.writeln();
+  buffer.write(_renderMethod_partial_features_4(context2, context0));
+  buffer.write('\n\n');
+  buffer.write(_renderMethod_partial_documentation_5(context2, context0));
+  buffer.write('\n\n');
+  buffer.write(_renderMethod_partial_source_code_6(context2, context0));
+  buffer.writeln();
   buffer.write('\n\n');
   buffer.write(_renderMethod_partial_footer_7(context0));
   buffer.writeln();
@@ -3214,11 +2972,9 @@ String _renderMethod_partial_feature_set_2(
   final buffer = StringBuffer();
   if (context1.hasFeatureSet == true) {
     var context2 = context1.displayedLanguageFeatures;
-    if (context2 != null) {
-      for (var context3 in context2) {
-        buffer.write('\n    ');
-        buffer.write(context3.featureLabel.toString());
-      }
+    for (var context3 in context2) {
+      buffer.write('\n    ');
+      buffer.write(context3.featureLabel.toString());
     }
   }
   buffer.writeln();
@@ -3231,13 +2987,11 @@ String _renderMethod_partial_callable_multiline_3(
   final buffer = StringBuffer();
   if (context1.hasAnnotations == true) {
     var context2 = context1.annotations;
-    if (context2 != null) {
-      for (var context3 in context2) {
-        buffer.writeln();
-        buffer.write('''
+    for (var context3 in context2) {
+      buffer.writeln();
+      buffer.write('''
 - ''');
-        buffer.write(context3.linkedNameWithParameters.toString());
-      }
+      buffer.write(context3.linkedNameWithParameters.toString());
     }
   }
   buffer.write('\n\n');
@@ -3293,7 +3047,7 @@ String _renderMethod_partial_documentation_5(
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
     buffer.writeln();
-    buffer.write(context1.documentationAsHtml.toString());
+    buffer.write(context1.documentationAsHtml?.toString());
   }
   buffer.writeln();
 
@@ -3336,208 +3090,182 @@ String renderMixin(_i1.MixinTemplateData context0) {
   buffer.write(_renderMixin_partial_head_0(context0));
   buffer.writeln();
   var context1 = context0.self;
-  if (context1 != null) {
-    buffer.writeln();
-    buffer.write('''
+  buffer.writeln();
+  buffer.write('''
 # ''');
-    buffer.write(context1.nameWithGenerics.toString());
-    buffer.write(' ');
-    buffer.writeEscaped(context1.kind.toString());
-    buffer.write('\n\n');
-    buffer.write(_renderMixin_partial_source_link_1(context1, context0));
-    buffer.writeln();
-    buffer.write(_renderMixin_partial_categorization_2(context1, context0));
-    buffer.writeln();
-    buffer.write(_renderMixin_partial_feature_set_3(context1, context0));
-  }
+  buffer.write(context1.nameWithGenerics.toString());
+  buffer.write(' ');
+  buffer.writeEscaped(context1.kind.toString());
+  buffer.write('\n\n');
+  buffer.write(_renderMixin_partial_source_link_1(context1, context0));
+  buffer.writeln();
+  buffer.write(_renderMixin_partial_categorization_2(context1, context0));
+  buffer.writeln();
+  buffer.write(_renderMixin_partial_feature_set_3(context1, context0));
   buffer.writeln();
   var context2 = context0.mixin;
-  if (context2 != null) {
-    buffer.writeln();
-    buffer.write(_renderMixin_partial_documentation_4(context2, context0));
-    buffer.writeln();
-    if (context2.hasModifiers == true) {
-      if (context2.hasPublicSuperclassConstraints == true) {
-        buffer.writeln();
-        buffer.write('''
+  buffer.writeln();
+  buffer.write(_renderMixin_partial_documentation_4(context2, context0));
+  buffer.writeln();
+  if (context2.hasModifiers == true) {
+    if (context2.hasPublicSuperclassConstraints == true) {
+      buffer.writeln();
+      buffer.write('''
 **Superclass Constraints**
 ''');
-        var context3 = context2.publicSuperclassConstraints;
-        if (context3 != null) {
-          for (var context4 in context3) {
-            buffer.writeln();
-            buffer.write('''
-- ''');
-            buffer.write(context4.linkedName.toString());
-          }
-        }
-      }
-      buffer.writeln();
-      if (context2.hasPublicSuperChainReversed == true) {
+      var context3 = context2.publicSuperclassConstraints;
+      for (var context4 in context3) {
         buffer.writeln();
         buffer.write('''
+- ''');
+        buffer.write(context4.linkedName.toString());
+      }
+    }
+    buffer.writeln();
+    if (context2.hasPublicSuperChainReversed == true) {
+      buffer.writeln();
+      buffer.write('''
 **Inheritance**
 
 - ''');
-        buffer.write(context0.linkedObjectType.toString());
-        var context5 = context2.publicSuperChainReversed;
-        if (context5 != null) {
-          for (var context6 in context5) {
-            buffer.writeln();
-            buffer.write('''
-- ''');
-            buffer.write(context6.linkedName.toString());
-          }
-        }
+      buffer.write(context0.linkedObjectType.toString());
+      var context5 = context2.publicSuperChainReversed;
+      for (var context6 in context5) {
         buffer.writeln();
         buffer.write('''
 - ''');
-        buffer.write(context2.name.toString());
+        buffer.write(context6.linkedName.toString());
       }
       buffer.writeln();
-      if (context2.hasPublicInterfaces == true) {
-        buffer.writeln();
-        buffer.write('''
+      buffer.write('''
+- ''');
+      buffer.write(context2.name.toString());
+    }
+    buffer.writeln();
+    if (context2.hasPublicInterfaces == true) {
+      buffer.writeln();
+      buffer.write('''
 **Implemented types**
 ''');
-        var context7 = context2.publicInterfaces;
-        if (context7 != null) {
-          for (var context8 in context7) {
-            buffer.writeln();
-            buffer.write('''
-- ''');
-            buffer.write(context8.linkedName.toString());
-          }
-        }
-      }
-      buffer.writeln();
-      if (context2.hasPublicImplementors == true) {
+      var context7 = context2.publicInterfaces;
+      for (var context8 in context7) {
         buffer.writeln();
         buffer.write('''
+- ''');
+        buffer.write(context8.linkedName.toString());
+      }
+    }
+    buffer.writeln();
+    if (context2.hasPublicImplementors == true) {
+      buffer.writeln();
+      buffer.write('''
 **Mixin Applications**
 ''');
-        var context9 = context2.publicImplementorsSorted;
-        if (context9 != null) {
-          for (var context10 in context9) {
-            buffer.writeln();
-            buffer.write('''
-- ''');
-            buffer.write(context10.linkedName.toString());
-          }
-        }
-      }
-      buffer.writeln();
-      if (context2.hasAnnotations == true) {
+      var context9 = context2.publicImplementorsSorted;
+      for (var context10 in context9) {
         buffer.writeln();
         buffer.write('''
+- ''');
+        buffer.write(context10.linkedName.toString());
+      }
+    }
+    buffer.writeln();
+    if (context2.hasAnnotations == true) {
+      buffer.writeln();
+      buffer.write('''
 **Annotations**
 ''');
-        var context11 = context2.annotations;
-        if (context11 != null) {
-          for (var context12 in context11) {
-            buffer.writeln();
-            buffer.write('''
+      var context11 = context2.annotations;
+      for (var context12 in context11) {
+        buffer.writeln();
+        buffer.write('''
 - ''');
-            buffer.write(context12.linkedNameWithParameters.toString());
-          }
-        }
+        buffer.write(context12.linkedNameWithParameters.toString());
       }
     }
+  }
+  buffer.writeln();
+  if (context2.hasPublicInstanceFields == true) {
     buffer.writeln();
-    if (context2.hasPublicInstanceFields == true) {
-      buffer.writeln();
-      buffer.write('''
+    buffer.write('''
 ## Properties
 ''');
-      var context13 = context2.publicInstanceFieldsSorted;
-      if (context13 != null) {
-        for (var context14 in context13) {
-          buffer.writeln();
-          buffer.write(
-              _renderMixin_partial_property_5(context14, context2, context0));
-          buffer.writeln();
-        }
-      }
-    }
-    buffer.writeln();
-    if (context2.hasPublicInstanceMethods == true) {
+    var context13 = context2.publicInstanceFieldsSorted;
+    for (var context14 in context13) {
       buffer.writeln();
-      buffer.write('''
+      buffer.write(
+          _renderMixin_partial_property_5(context14, context2, context0));
+      buffer.writeln();
+    }
+  }
+  buffer.writeln();
+  if (context2.hasPublicInstanceMethods == true) {
+    buffer.writeln();
+    buffer.write('''
 ## Methods
 ''');
-      var context15 = context2.publicInstanceMethodsSorted;
-      if (context15 != null) {
-        for (var context16 in context15) {
-          buffer.writeln();
-          buffer.write(
-              _renderMixin_partial_callable_6(context16, context2, context0));
-          buffer.writeln();
-        }
-      }
-    }
-    buffer.writeln();
-    if (context2.hasPublicInstanceOperators == true) {
+    var context15 = context2.publicInstanceMethodsSorted;
+    for (var context16 in context15) {
       buffer.writeln();
-      buffer.write('''
+      buffer.write(
+          _renderMixin_partial_callable_6(context16, context2, context0));
+      buffer.writeln();
+    }
+  }
+  buffer.writeln();
+  if (context2.hasPublicInstanceOperators == true) {
+    buffer.writeln();
+    buffer.write('''
 ## Operators
 ''');
-      var context17 = context2.publicInstanceOperatorsSorted;
-      if (context17 != null) {
-        for (var context18 in context17) {
-          buffer.writeln();
-          buffer.write(
-              _renderMixin_partial_callable_6(context18, context2, context0));
-          buffer.writeln();
-        }
-      }
-    }
-    buffer.writeln();
-    if (context2.hasPublicVariableStaticFields == true) {
+    var context17 = context2.publicInstanceOperatorsSorted;
+    for (var context18 in context17) {
       buffer.writeln();
-      buffer.write('''
+      buffer.write(
+          _renderMixin_partial_callable_6(context18, context2, context0));
+      buffer.writeln();
+    }
+  }
+  buffer.writeln();
+  if (context2.hasPublicVariableStaticFields == true) {
+    buffer.writeln();
+    buffer.write('''
 ## Static Properties
 ''');
-      var context19 = context2.publicVariableStaticFieldsSorted;
-      if (context19 != null) {
-        for (var context20 in context19) {
-          buffer.writeln();
-          buffer.write(
-              _renderMixin_partial_property_5(context20, context2, context0));
-          buffer.writeln();
-        }
-      }
-    }
-    buffer.writeln();
-    if (context2.hasPublicStaticMethods == true) {
+    var context19 = context2.publicVariableStaticFieldsSorted;
+    for (var context20 in context19) {
       buffer.writeln();
-      buffer.write('''
+      buffer.write(
+          _renderMixin_partial_property_5(context20, context2, context0));
+      buffer.writeln();
+    }
+  }
+  buffer.writeln();
+  if (context2.hasPublicStaticMethods == true) {
+    buffer.writeln();
+    buffer.write('''
 ## Static Methods
 ''');
-      var context21 = context2.publicStaticMethodsSorted;
-      if (context21 != null) {
-        for (var context22 in context21) {
-          buffer.writeln();
-          buffer.write(
-              _renderMixin_partial_callable_6(context22, context2, context0));
-          buffer.writeln();
-        }
-      }
-    }
-    buffer.writeln();
-    if (context2.hasPublicConstantFields == true) {
+    var context21 = context2.publicStaticMethodsSorted;
+    for (var context22 in context21) {
       buffer.writeln();
-      buffer.write('''
+      buffer.write(
+          _renderMixin_partial_callable_6(context22, context2, context0));
+      buffer.writeln();
+    }
+  }
+  buffer.writeln();
+  if (context2.hasPublicConstantFields == true) {
+    buffer.writeln();
+    buffer.write('''
 ## Constants
 ''');
-      var context23 = context2.publicConstantFieldsSorted;
-      if (context23 != null) {
-        for (var context24 in context23) {
-          buffer.writeln();
-          buffer.write(
-              _renderMixin_partial_constant_7(context24, context2, context0));
-          buffer.writeln();
-        }
-      }
+    var context23 = context2.publicConstantFieldsSorted;
+    for (var context24 in context23) {
+      buffer.writeln();
+      buffer.write(
+          _renderMixin_partial_constant_7(context24, context2, context0));
+      buffer.writeln();
     }
   }
   buffer.write('\n\n');
@@ -3578,11 +3306,9 @@ String _renderMixin_partial_categorization_2(
     buffer.write('''
 Categories:''');
     var context2 = context1.displayedCategories;
-    if (context2 != null) {
-      for (var context3 in context2) {
-        buffer.writeln();
-        buffer.write(context3.categoryLabel.toString());
-      }
+    for (var context3 in context2) {
+      buffer.writeln();
+      buffer.write(context3.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -3595,11 +3321,9 @@ String _renderMixin_partial_feature_set_3(
   final buffer = StringBuffer();
   if (context1.hasFeatureSet == true) {
     var context2 = context1.displayedLanguageFeatures;
-    if (context2 != null) {
-      for (var context3 in context2) {
-        buffer.write('\n    ');
-        buffer.write(context3.featureLabel.toString());
-      }
+    for (var context3 in context2) {
+      buffer.write('\n    ');
+      buffer.write(context3.featureLabel.toString());
     }
   }
   buffer.writeln();
@@ -3612,7 +3336,7 @@ String _renderMixin_partial_documentation_4(
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
     buffer.writeln();
-    buffer.write(context1.documentationAsHtml.toString());
+    buffer.write(context1.documentationAsHtml?.toString());
   }
   buffer.writeln();
 
@@ -3632,7 +3356,7 @@ String _renderMixin_partial_property_5(
   buffer.write(__renderMixin_partial_property_5_partial_categorization_0(
       context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context2.oneLineDoc.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('  ');
@@ -3652,11 +3376,9 @@ String __renderMixin_partial_property_5_partial_categorization_0(
     buffer.write('''
 Categories:''');
     var context3 = context2.displayedCategories;
-    if (context3 != null) {
-      for (var context4 in context3) {
-        buffer.writeln();
-        buffer.write(context4.categoryLabel.toString());
-      }
+    for (var context4 in context3) {
+      buffer.writeln();
+      buffer.write(context4!.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -3684,14 +3406,14 @@ String _renderMixin_partial_callable_6(
   buffer.write(context2.linkedName.toString());
   buffer.write(context2.linkedGenericParameters.toString());
   buffer.write('''(''');
-  buffer.write(context2.linkedParamsNoMetadata.toString());
+  buffer.write(context2.linkedParamsNoMetadata?.toString());
   buffer.write(''') ''');
   buffer.write(context2.modelType.returnType.linkedName.toString());
   buffer.writeln();
   buffer.write(__renderMixin_partial_callable_6_partial_categorization_0(
       context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context2.oneLineDoc.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('  ');
@@ -3711,11 +3433,9 @@ String __renderMixin_partial_callable_6_partial_categorization_0(
     buffer.write('''
 Categories:''');
     var context3 = context2.displayedCategories;
-    if (context3 != null) {
-      for (var context4 in context3) {
-        buffer.writeln();
-        buffer.write(context4.categoryLabel.toString());
-      }
+    for (var context4 in context3) {
+      buffer.writeln();
+      buffer.write(context4!.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -3747,7 +3467,7 @@ String _renderMixin_partial_constant_7(
   buffer.write(__renderMixin_partial_constant_7_partial_categorization_0(
       context2, context1, context0));
   buffer.write('\n\n');
-  buffer.write(context2.oneLineDoc.toString());
+  buffer.write(context2.oneLineDoc?.toString());
   buffer.write(' ');
   buffer.write(context2.extendedDocLink.toString());
   buffer.write('  ');
@@ -3767,11 +3487,9 @@ String __renderMixin_partial_constant_7_partial_categorization_0(
     buffer.write('''
 Categories:''');
     var context3 = context2.displayedCategories;
-    if (context3 != null) {
-      for (var context4 in context3) {
-        buffer.writeln();
-        buffer.write(context4.categoryLabel.toString());
-      }
+    for (var context4 in context3) {
+      buffer.writeln();
+      buffer.write(context4!.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -3808,47 +3526,43 @@ String renderProperty(_i1.PropertyTemplateData context0) {
   buffer.write(_renderProperty_partial_head_0(context0));
   buffer.writeln();
   var context1 = context0.self;
-  if (context1 != null) {
-    buffer.writeln();
-    buffer.write('''
+  buffer.writeln();
+  buffer.write('''
 # ''');
-    buffer.writeEscaped(context1.name.toString());
-    buffer.write(' ');
-    buffer.writeEscaped(context1.kind.toString());
-    buffer.write('\n\n');
-    buffer.write(_renderProperty_partial_source_link_1(context1, context0));
-    buffer.writeln();
-    buffer.write(_renderProperty_partial_feature_set_2(context1, context0));
-  }
+  buffer.writeEscaped(context1.name.toString());
+  buffer.write(' ');
+  buffer.writeEscaped(context1.kind.toString());
+  buffer.write('\n\n');
+  buffer.write(_renderProperty_partial_source_link_1(context1, context0));
+  buffer.writeln();
+  buffer.write(_renderProperty_partial_feature_set_2(context1, context0));
   buffer.writeln();
   var context2 = context0.self;
-  if (context2 != null) {
-    if (context2.hasNoGetterSetter == true) {
+  if (context2.hasNoGetterSetter == true) {
+    buffer.writeln();
+    buffer.write(context2.modelType.linkedName.toString());
+    buffer.write(' ');
+    buffer.write(_renderProperty_partial_name_summary_3(context2, context0));
+    buffer.write('  ');
+    buffer.writeln();
+    buffer.write(_renderProperty_partial_features_4(context2, context0));
+    buffer.write('\n\n');
+    buffer.write(_renderProperty_partial_documentation_5(context2, context0));
+    buffer.write('\n\n');
+    buffer.write(_renderProperty_partial_source_code_6(context2, context0));
+  }
+  buffer.writeln();
+  if (context2.hasGetterOrSetter == true) {
+    if (context2.hasGetter == true) {
       buffer.writeln();
-      buffer.write(context2.modelType.linkedName.toString());
-      buffer.write(' ');
-      buffer.write(_renderProperty_partial_name_summary_3(context2, context0));
-      buffer.write('  ');
-      buffer.writeln();
-      buffer.write(_renderProperty_partial_features_4(context2, context0));
-      buffer.write('\n\n');
-      buffer.write(_renderProperty_partial_documentation_5(context2, context0));
-      buffer.write('\n\n');
-      buffer.write(_renderProperty_partial_source_code_6(context2, context0));
+      buffer
+          .write(_renderProperty_partial_accessor_getter_7(context2, context0));
     }
     buffer.writeln();
-    if (context2.hasGetterOrSetter == true) {
-      if (context2.hasGetter == true) {
-        buffer.writeln();
-        buffer.write(
-            _renderProperty_partial_accessor_getter_7(context2, context0));
-      }
+    if (context2.hasSetter == true) {
       buffer.writeln();
-      if (context2.hasSetter == true) {
-        buffer.writeln();
-        buffer.write(
-            _renderProperty_partial_accessor_setter_8(context2, context0));
-      }
+      buffer
+          .write(_renderProperty_partial_accessor_setter_8(context2, context0));
     }
   }
   buffer.write('\n\n');
@@ -3886,11 +3600,9 @@ String _renderProperty_partial_feature_set_2(
   final buffer = StringBuffer();
   if (context1.hasFeatureSet == true) {
     var context2 = context1.displayedLanguageFeatures;
-    if (context2 != null) {
-      for (var context3 in context2) {
-        buffer.write('\n    ');
-        buffer.write(context3.featureLabel.toString());
-      }
+    for (var context3 in context2) {
+      buffer.write('\n    ');
+      buffer.write(context3.featureLabel.toString());
     }
   }
   buffer.writeln();
@@ -3934,7 +3646,7 @@ String _renderProperty_partial_documentation_5(
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
     buffer.writeln();
-    buffer.write(context1.documentationAsHtml.toString());
+    buffer.write(context1.documentationAsHtml?.toString());
   }
   buffer.writeln();
 
@@ -4032,7 +3744,7 @@ String __renderProperty_partial_accessor_getter_7_partial_documentation_2(
   final buffer = StringBuffer();
   if (context2.hasDocumentation == true) {
     buffer.writeln();
-    buffer.write(context2.documentationAsHtml.toString());
+    buffer.write(context2.documentationAsHtml?.toString());
   }
   buffer.writeln();
 
@@ -4071,7 +3783,7 @@ String _renderProperty_partial_accessor_setter_8(
         __renderProperty_partial_accessor_setter_8_partial_name_summary_0(
             context2, context1, context0));
     buffer.write('''(''');
-    buffer.write(context2.linkedParamsNoMetadata.toString());
+    buffer.write(context2.linkedParamsNoMetadata?.toString());
     buffer.write(''')  ''');
     buffer.writeln();
     buffer.write(__renderProperty_partial_accessor_setter_8_partial_features_1(
@@ -4132,7 +3844,7 @@ String __renderProperty_partial_accessor_setter_8_partial_documentation_2(
   final buffer = StringBuffer();
   if (context2.hasDocumentation == true) {
     buffer.writeln();
-    buffer.write(context2.documentationAsHtml.toString());
+    buffer.write(context2.documentationAsHtml?.toString());
   }
   buffer.writeln();
 
@@ -4191,52 +3903,50 @@ String renderTopLevelProperty(_i1.TopLevelPropertyTemplateData context0) {
   buffer.write(_renderTopLevelProperty_partial_head_0(context0));
   buffer.writeln();
   var context1 = context0.self;
-  if (context1 != null) {
-    buffer.writeln();
-    buffer.write('''
+  buffer.writeln();
+  buffer.write('''
 # ''');
-    buffer.write(context1.name.toString());
+  buffer.write(context1.name.toString());
+  buffer.write(' ');
+  buffer.writeEscaped(context1.kind.toString());
+  buffer.write('\n\n');
+  buffer
+      .write(_renderTopLevelProperty_partial_source_link_1(context1, context0));
+  buffer.writeln();
+  buffer.write(
+      _renderTopLevelProperty_partial_categorization_2(context1, context0));
+  buffer.writeln();
+  buffer
+      .write(_renderTopLevelProperty_partial_feature_set_3(context1, context0));
+  buffer.writeln();
+  if (context1.hasNoGetterSetter == true) {
+    buffer.writeln();
+    buffer.write(context1.modelType.linkedName.toString());
     buffer.write(' ');
-    buffer.writeEscaped(context1.kind.toString());
+    buffer.write(
+        _renderTopLevelProperty_partial_name_summary_4(context1, context0));
+    buffer.write('  ');
+    buffer.writeln();
+    buffer
+        .write(_renderTopLevelProperty_partial_features_5(context1, context0));
     buffer.write('\n\n');
     buffer.write(
-        _renderTopLevelProperty_partial_source_link_1(context1, context0));
+        _renderTopLevelProperty_partial_documentation_6(context1, context0));
+    buffer.write('\n\n');
+    buffer.write(
+        _renderTopLevelProperty_partial_source_code_7(context1, context0));
+  }
+  buffer.writeln();
+  if (context1.hasExplicitGetter == true) {
     buffer.writeln();
     buffer.write(
-        _renderTopLevelProperty_partial_categorization_2(context1, context0));
+        _renderTopLevelProperty_partial_accessor_getter_8(context1, context0));
+  }
+  buffer.writeln();
+  if (context1.hasExplicitSetter == true) {
     buffer.writeln();
     buffer.write(
-        _renderTopLevelProperty_partial_feature_set_3(context1, context0));
-    buffer.writeln();
-    if (context1.hasNoGetterSetter == true) {
-      buffer.writeln();
-      buffer.write(context1.modelType.linkedName.toString());
-      buffer.write(' ');
-      buffer.write(
-          _renderTopLevelProperty_partial_name_summary_4(context1, context0));
-      buffer.write('  ');
-      buffer.writeln();
-      buffer.write(
-          _renderTopLevelProperty_partial_features_5(context1, context0));
-      buffer.write('\n\n');
-      buffer.write(
-          _renderTopLevelProperty_partial_documentation_6(context1, context0));
-      buffer.write('\n\n');
-      buffer.write(
-          _renderTopLevelProperty_partial_source_code_7(context1, context0));
-    }
-    buffer.writeln();
-    if (context1.hasExplicitGetter == true) {
-      buffer.writeln();
-      buffer.write(_renderTopLevelProperty_partial_accessor_getter_8(
-          context1, context0));
-    }
-    buffer.writeln();
-    if (context1.hasExplicitSetter == true) {
-      buffer.writeln();
-      buffer.write(_renderTopLevelProperty_partial_accessor_setter_9(
-          context1, context0));
-    }
+        _renderTopLevelProperty_partial_accessor_setter_9(context1, context0));
   }
   buffer.write('\n\n');
   buffer.write(_renderTopLevelProperty_partial_footer_10(context0));
@@ -4277,11 +3987,9 @@ String _renderTopLevelProperty_partial_categorization_2(
     buffer.write('''
 Categories:''');
     var context2 = context1.displayedCategories;
-    if (context2 != null) {
-      for (var context3 in context2) {
-        buffer.writeln();
-        buffer.write(context3.categoryLabel.toString());
-      }
+    for (var context3 in context2) {
+      buffer.writeln();
+      buffer.write(context3.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -4294,11 +4002,9 @@ String _renderTopLevelProperty_partial_feature_set_3(
   final buffer = StringBuffer();
   if (context1.hasFeatureSet == true) {
     var context2 = context1.displayedLanguageFeatures;
-    if (context2 != null) {
-      for (var context3 in context2) {
-        buffer.write('\n    ');
-        buffer.write(context3.featureLabel.toString());
-      }
+    for (var context3 in context2) {
+      buffer.write('\n    ');
+      buffer.write(context3.featureLabel.toString());
     }
   }
   buffer.writeln();
@@ -4342,7 +4048,7 @@ String _renderTopLevelProperty_partial_documentation_6(
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
     buffer.writeln();
-    buffer.write(context1.documentationAsHtml.toString());
+    buffer.write(context1.documentationAsHtml?.toString());
   }
   buffer.writeln();
 
@@ -4443,7 +4149,7 @@ String
   final buffer = StringBuffer();
   if (context2.hasDocumentation == true) {
     buffer.writeln();
-    buffer.write(context2.documentationAsHtml.toString());
+    buffer.write(context2.documentationAsHtml?.toString());
   }
   buffer.writeln();
 
@@ -4482,7 +4188,7 @@ String _renderTopLevelProperty_partial_accessor_setter_9(
         __renderTopLevelProperty_partial_accessor_setter_9_partial_name_summary_0(
             context2, context1, context0));
     buffer.write('''(''');
-    buffer.write(context2.linkedParamsNoMetadata.toString());
+    buffer.write(context2.linkedParamsNoMetadata?.toString());
     buffer.write(''')  ''');
     buffer.writeln();
     buffer.write(
@@ -4546,7 +4252,7 @@ String
   final buffer = StringBuffer();
   if (context2.hasDocumentation == true) {
     buffer.writeln();
-    buffer.write(context2.documentationAsHtml.toString());
+    buffer.write(context2.documentationAsHtml?.toString());
   }
   buffer.writeln();
 
@@ -4592,31 +4298,26 @@ String renderTypedef(_i1.TypedefTemplateData context0) {
   buffer.write(_renderTypedef_partial_head_0(context0));
   buffer.writeln();
   var context1 = context0.self;
-  if (context1 != null) {
-    buffer.writeln();
-    buffer.write('''
+  buffer.writeln();
+  buffer.write('''
 # ''');
-    buffer.write(context1.nameWithGenerics.toString());
-    buffer.write(' ');
-    buffer.writeEscaped(context1.kind.toString());
-    buffer.write('\n\n');
-    buffer.write(_renderTypedef_partial_source_link_1(context1, context0));
-    buffer.writeln();
-    buffer.write(_renderTypedef_partial_categorization_2(context1, context0));
-    buffer.writeln();
-    buffer.write(_renderTypedef_partial_feature_set_3(context1, context0));
-  }
+  buffer.write(context1.nameWithGenerics.toString());
+  buffer.write(' ');
+  buffer.writeEscaped(context1.kind.toString());
+  buffer.write('\n\n');
+  buffer.write(_renderTypedef_partial_source_link_1(context1, context0));
+  buffer.writeln();
+  buffer.write(_renderTypedef_partial_categorization_2(context1, context0));
+  buffer.writeln();
+  buffer.write(_renderTypedef_partial_feature_set_3(context1, context0));
   buffer.writeln();
   var context2 = context0.typeDef;
-  if (context2 != null) {
-    buffer.writeln();
-    buffer
-        .write(_renderTypedef_partial_typedef_multiline_4(context2, context0));
-    buffer.write('\n\n');
-    buffer.write(_renderTypedef_partial_documentation_5(context2, context0));
-    buffer.write('\n\n');
-    buffer.write(_renderTypedef_partial_source_code_6(context2, context0));
-  }
+  buffer.writeln();
+  buffer.write(_renderTypedef_partial_typedef_multiline_4(context2, context0));
+  buffer.write('\n\n');
+  buffer.write(_renderTypedef_partial_documentation_5(context2, context0));
+  buffer.write('\n\n');
+  buffer.write(_renderTypedef_partial_source_code_6(context2, context0));
   buffer.write('\n\n');
   buffer.write(_renderTypedef_partial_footer_7(context0));
   buffer.writeln();
@@ -4655,11 +4356,9 @@ String _renderTypedef_partial_categorization_2(
     buffer.write('''
 Categories:''');
     var context2 = context1.displayedCategories;
-    if (context2 != null) {
-      for (var context3 in context2) {
-        buffer.writeln();
-        buffer.write(context3.categoryLabel.toString());
-      }
+    for (var context3 in context2) {
+      buffer.writeln();
+      buffer.write(context3.categoryLabel.toString());
     }
   }
   buffer.writeln();
@@ -4672,11 +4371,9 @@ String _renderTypedef_partial_feature_set_3(
   final buffer = StringBuffer();
   if (context1.hasFeatureSet == true) {
     var context2 = context1.displayedLanguageFeatures;
-    if (context2 != null) {
-      for (var context3 in context2) {
-        buffer.write('\n    ');
-        buffer.write(context3.featureLabel.toString());
-      }
+    for (var context3 in context2) {
+      buffer.write('\n    ');
+      buffer.write(context3.featureLabel.toString());
     }
   }
   buffer.writeln();
@@ -4689,26 +4386,22 @@ String _renderTypedef_partial_typedef_multiline_4(
   final buffer = StringBuffer();
   if (context1.isCallable == true) {
     var context2 = context1.asCallable;
-    if (context2 != null) {
-      if (context2.hasAnnotations == true) {
-        var context3 = context2.annotations;
-        if (context3 != null) {
-          for (var context4 in context3) {
-            buffer.writeln();
-            buffer.write('''
+    if (context2.hasAnnotations == true) {
+      var context3 = context2.annotations;
+      for (var context4 in context3) {
+        buffer.writeln();
+        buffer.write('''
     - ''');
-            buffer.write(context4.linkedNameWithParameters.toString());
-          }
-        }
+        buffer.write(context4.linkedNameWithParameters.toString());
       }
-      buffer.write('\n\n    ');
-      buffer.write(context2.modelType.returnType.linkedName.toString());
-      buffer.write(' ');
-      buffer.writeEscaped(context2.name.toString());
-      buffer.write(context2.linkedGenericParameters.toString());
-      buffer.write(''' = ''');
-      buffer.write(context2.modelType.linkedName.toString());
     }
+    buffer.write('\n\n    ');
+    buffer.write(context2.modelType.returnType.linkedName.toString());
+    buffer.write(' ');
+    buffer.writeEscaped(context2.name.toString());
+    buffer.write(context2.linkedGenericParameters.toString());
+    buffer.write(''' = ''');
+    buffer.write(context2.modelType.linkedName.toString());
   }
   if (context1.isCallable != true) {
     buffer.write('\n  ');
@@ -4726,13 +4419,11 @@ String __renderTypedef_partial_typedef_multiline_4_partial_type_multiline_0(
   final buffer = StringBuffer();
   if (context1.hasAnnotations == true) {
     var context2 = context1.annotations;
-    if (context2 != null) {
-      for (var context3 in context2) {
-        buffer.writeln();
-        buffer.write('''
+    for (var context3 in context2) {
+      buffer.writeln();
+      buffer.write('''
 - ''');
-        buffer.write(context3.linkedNameWithParameters.toString());
-      }
+      buffer.write(context3.linkedNameWithParameters.toString());
     }
   }
   buffer.write('\n\n');
@@ -4771,7 +4462,7 @@ String _renderTypedef_partial_documentation_5(
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
     buffer.writeln();
-    buffer.write(context1.documentationAsHtml.toString());
+    buffer.write(context1.documentationAsHtml?.toString());
   }
   buffer.writeln();
 
@@ -4810,7 +4501,7 @@ String _renderTypedef_partial_footer_7(_i1.TypedefTemplateData context0) {
 }
 
 extension on StringBuffer {
-  void writeEscaped(String value) {
-    write(_i19.htmlEscape.convert(value));
+  void writeEscaped(String? value) {
+    write(_i19.htmlEscape.convert(value ?? ''));
   }
 }

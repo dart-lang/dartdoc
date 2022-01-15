@@ -4,18 +4,13 @@
 
 library dartdoc.resource_loader_test;
 
-import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:dartdoc/src/generator/resource_loader.dart';
 import 'package:test/test.dart';
 
 void main() {
   group('Resource Loader', () {
-    ResourceProvider resourceProvider;
-
-    setUp(() {
-      resourceProvider = PhysicalResourceProvider();
-    });
+    var resourceProvider = PhysicalResourceProvider();
 
     test('load from packages', () async {
       var contents = await resourceProvider

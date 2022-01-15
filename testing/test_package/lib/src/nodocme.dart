@@ -3,8 +3,6 @@
 /// reexported, due to dartdoc_options.yaml in the package root.
 ///
 
-// @dart=2.9
-
 library nodocme;
 
 /// I should not appear in documentation.

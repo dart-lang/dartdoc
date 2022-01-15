@@ -10,6 +10,8 @@ analyzer:
     ### Extra ignores for presubmit
     deprecated_member_use: ignore
     deprecated_member_use_from_same_package: ignore
+    ### Temporary presubmit ignore for NNBD migration
+    import_of_legacy_library_into_null_safe: ignore
   language:
     strict-raw-types: true
   exclude:
@@ -17,12 +19,26 @@ analyzer:
     - 'lib/src/third_party/pkg/**'
     - 'lib/templates/*.html'
     - 'pub.dartlang.org/**'
-    - 'testing/**'
-    - 'testing/flutter_packages/test_package_flutter_plugin/**'
+    # These have a lot of lint.
+    - 'testing/test_package/**'
+    - 'testing/test_package_custom_templates/**'
+    - 'testing/test_package_experiments/**'
     - 'testing/test_package_export_error/**'
+    - 'testing/test_package_extensions/**'
+    - 'testing/test_package_import_export_error/**'
+    - 'testing/test_package_imported/**'
+    - 'testing/test_package_options/**'
+    # This package imports flutter, which is perhaps not found by the base `dart analyze` tool.
+    - 'testing/flutter_packages/test_package_flutter_plugin/**'
+    # This package is meant to mock the sky_engine package.
+    - 'testing/sky_engine/**'
+    # These packages have compile-time errors.
+    - 'testing/test_package_bad/**'
 linter:
   rules:
     always_declare_return_types: true
+    always_put_required_named_parameters_first: true
+    avoid_bool_literals_in_conditional_expressions: true
     avoid_dynamic_calls: true
     avoid_single_cascade_in_expression_statements: true
     avoid_unused_constructor_parameters: true
@@ -32,8 +48,10 @@ linter:
     package_api_docs: true
     prefer_final_fields: true
     prefer_initializing_formals: true
+    prefer_single_quotes: true
     prefer_void_to_null: true
     slash_for_doc_comments: true
     type_annotate_public_apis: true
     # Work in progress canonical score lints
     unawaited_futures: true
+    unnecessary_null_aware_assignments: true

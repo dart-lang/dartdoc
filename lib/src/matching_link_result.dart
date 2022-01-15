@@ -4,10 +4,9 @@
 
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
-import 'package:dartdoc/src/quiver.dart';
 
 class MatchingLinkResult {
-  final CommentReferable commentReferable;
+  final CommentReferable? commentReferable;
   final bool warn;
 
   MatchingLinkResult(this.commentReferable, {this.warn = true});
@@ -20,7 +19,7 @@ class MatchingLinkResult {
   }
 
   @override
-  int get hashCode => hash2(commentReferable, warn);
+  int get hashCode => Object.hash(commentReferable, warn);
 
   @override
   String toString() {

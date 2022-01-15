@@ -19,18 +19,17 @@ final Directory _toolExecutableDir = Directory('testing/tool_executables');
 
 void main() {
   ToolConfiguration toolMap;
-  Directory tempDir;
-  File setupFile;
+  Directory? tempDir;
+  late File setupFile;
 
-  ToolRunner runner;
-  ToolTempFileTracker tracker;
-  ToolErrorCallback errorCallback;
+  late ToolRunner runner;
+  late ToolErrorCallback errorCallback;
   final errors = <String>[];
 
   setUpAll(() async {
-    ProcessResult result;
+    ProcessResult? result;
     tempDir = Directory.systemTemp.createTempSync('tool_runner_test_');
-    var snapshotFile = path.join(tempDir.path, 'drill.snapshot');
+    var snapshotFile = path.join(tempDir!.path, 'drill.snapshot');
     try {
       result = Process.runSync(
           Platform.resolvedExecutable,
@@ -50,7 +49,7 @@ void main() {
       stderr.writeln(result.stderr);
     }
     expect(result?.exitCode, equals(0));
-    setupFile = File(path.join(tempDir.path, 'setup.stamp'));
+    setupFile = File(path.join(tempDir!.path, 'setup.stamp'));
     var nonDartName = Platform.isWindows ? 'non_dart.bat' : 'non_dart.sh';
     var nonDartExecutable =
         path.join(_toolExecutableDir.absolute.path, nonDartName);
@@ -86,19 +85,17 @@ echo:
     // yaml map (which would fail on a missing executable), or a file is deleted
     // during execution,it might, so we test it.
     toolMap.tools.addAll({
-      'missing': ToolDefinition(['/a/missing/executable'], null, 'missing'),
+      'missing': ToolDefinition(['/a/missing/executable'], [], 'missing'),
     });
 
     runner = ToolRunner(toolMap);
     errorCallback = (String message) => errors.add(message);
   });
+
   tearDownAll(() {
     tempDir?.deleteSync(recursive: true);
-    tracker?.dispose();
     SnapshotCache.instanceFor(pubPackageMetaProvider.resourceProvider)
         .dispose();
-    setupFile = null;
-    tempDir = null;
   });
 
   group('ToolRunner', () {
@@ -108,7 +105,8 @@ echo:
     // This test must come first, to verify that the first run creates
     // a snapshot.
     test('Tool definition includes compile arguments.', () async {
-      DartToolDefinition definition = runner.toolConfiguration.tools['drill'];
+      var definition =
+          runner.toolConfiguration.tools['drill'] as DartToolDefinition;
       expect(definition.compileArgs, equals(['--no-sound-null-safety']));
     });
     test('can invoke a Dart tool, and second run is a snapshot.', () async {

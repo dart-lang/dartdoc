@@ -15,7 +15,7 @@ void main() {
     var testCasePattern = RegExp(r'test\(.*,');
     var dartdocLibUri = await Isolate.resolvePackageUri(
         Uri.parse('package:dartdoc/dartdoc.dart'));
-    var dartdocPath = p.dirname(p.dirname(dartdocLibUri.path));
+    var dartdocPath = p.dirname(p.dirname(dartdocLibUri!.path));
     // Correct Windows issue path coming out of [Isolate.resolvePackageUri].
     if (p.separator == p.windows.separator && dartdocPath.startsWith('/')) {
       dartdocPath = dartdocPath.substring(1).replaceAll('/', p.separator);
@@ -33,7 +33,7 @@ void main() {
         .where((line) => !line.contains('Parser '))
         // Ignore tests about the SimpleRenderer.
         .where((line) => !line.contains('SimpleRenderer'))
-        .map((line) => testCasePattern.firstMatch(line).group(0))
+        .map((line) => testCasePattern.firstMatch(line)!.group(0))
         .toSet();
 
     var aotCompilerRenderTest = File(p.join(
@@ -41,7 +41,7 @@ void main() {
         .readAsLinesSync();
     var aotCompilerTestCases = aotCompilerRenderTest
         .where((line) => testCasePattern.hasMatch(line))
-        .map((line) => testCasePattern.firstMatch(line).group(0))
+        .map((line) => testCasePattern.firstMatch(line)!.group(0))
         .toSet();
 
     var difference = runtimeRendererTestCases.difference(aotCompilerTestCases);

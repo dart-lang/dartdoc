@@ -84,7 +84,7 @@ void performGenerate(int page) {
 
   _packageUrls(page).then((List<String> packages) {
     return _getPackageInfos(packages).then((List<PackageInfo> infos) {
-      return Future.forEach(infos, (info) {
+      return Future.forEach(infos, (PackageInfo info) {
         return _printGenerationResult(info, _generateFor(info));
       });
     });
@@ -145,7 +145,7 @@ Future<List<PackageInfo>> _getPackageInfos(List<String> packageUrls) {
   return Future.wait(futures);
 }
 
-StringBuffer _logBuffer;
+StringBuffer? _logBuffer;
 
 /// Generate the docs for the given package into _rootDir. Return whether
 /// generation was performed or was skipped (due to an older package).
@@ -193,7 +193,7 @@ Future<bool> _generateFor(PackageInfo package) async {
 }
 
 Future<void> _exec(String command, List<String> args,
-    {String cwd,
+    {String? cwd,
     bool quiet = false,
     Duration timeout = const Duration(seconds: 60)}) {
   return Process.start(command, args, workingDirectory: cwd)
@@ -207,20 +207,16 @@ Future<void> _exec(String command, List<String> args,
       if (code != 0) throw code;
     });
 
-    if (timeout != null) {
-      return f.timeout(timeout, onTimeout: () {
-        _log('Timing out operation $command.');
-        process.kill();
-        throw 'timeout on $command';
-      });
-    } else {
-      return f;
-    }
+    return f.timeout(timeout, onTimeout: () {
+      _log('Timing out operation $command.');
+      process.kill();
+      throw 'timeout on $command';
+    });
   });
 }
 
 bool _isOldSdkConstraint(Map<String, dynamic> pubspecInfo) {
-  var environment = pubspecInfo['environment'] as Map;
+  var environment = pubspecInfo['environment'] as Map?;
   if (environment != null) {
     var sdk = environment['sdk'];
     if (sdk != null) {
@@ -241,8 +237,10 @@ bool _isOldSdkConstraint(Map<String, dynamic> pubspecInfo) {
   return false;
 }
 
+/// Log entries will be dropped if [_logBuffer] has not been initialized.
 void _log(String str) {
-  _logBuffer.write(str);
+  assert(_logBuffer != null);
+  _logBuffer?.write(str);
 }
 
 class PackageInfo {

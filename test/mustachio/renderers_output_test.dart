@@ -24,7 +24,7 @@ import 'package:test/test.dart';
 /// the '--input' flag.
 Future<DartdocGeneratorOptionContext> _generatorContextFromArgv(
     List<String> argv) async {
-  var optionSet = await DartdocOptionSet.fromOptionGenerators(
+  var optionSet = await DartdocOptionRoot.fromOptionGenerators(
       'dartdoc',
       [
         createDartdocOptions,
@@ -84,8 +84,7 @@ void main() {
           if (aotResource.shortName == '.') continue;
           if (aotResource.shortName == '..') continue;
           if (aotResource.shortName == 'static-assets') continue;
-          expect(runtimeResource is Folder, true);
-          checkDirectories(aotResource, runtimeResource);
+          checkDirectories(aotResource, runtimeResource as Folder);
         } else if (aotResource is File) {
           expect(runtimeResource is File, true);
           var contentInAot = aotResource.readAsStringSync();

@@ -31,7 +31,7 @@ class ReferenceChildrenLookup {
 
 extension on Scope {
   /// Prefer the getter for a bundled lookup if both exist.
-  Element lookupPreferGetter(String id) {
+  Element? lookupPreferGetter(String id) {
     var result = lookup(id);
     return result.getter ?? result.setter;
   }
@@ -39,7 +39,7 @@ extension on Scope {
 
 /// A set of utility methods for helping build
 /// [CommentReferable.referenceChildren] out of collections of other
-/// [CommmentReferable]s.
+/// [CommentReferable]s.
 extension CommentReferableEntryGenerators on Iterable<CommentReferable> {
   /// Creates ordinary references except if there is a conflict with
   /// [referable], it will generate a [MapEntry] using [referable]'s
@@ -82,9 +82,11 @@ mixin CommentReferable implements Nameable, ModelBuilderInterface {
   /// For any [CommentReferable] where an analyzer [Scope] exists (or can
   /// be constructed), implement this.  This will take priority over
   /// lookups via [referenceChildren].  Can be cached.
-  Scope get scope => null;
+  Scope? get scope => null;
 
-  String get href => null;
+  String? get href => null;
+
+  static bool _alwaysTrue(CommentReferable? _) => true;
 
   /// Look up a comment reference by its component parts.  If [tryParents] is
   /// true, try looking up the same reference in any parents of [this].
@@ -92,29 +94,28 @@ mixin CommentReferable implements Nameable, ModelBuilderInterface {
   /// searching.  Will skip over entire subtrees whose parent node does
   /// not pass [allowTree].
   @nonVirtual
-  CommentReferable referenceBy(List<String> reference,
+  CommentReferable? referenceBy(List<String> reference,
       {bool tryParents = true,
-      bool Function(CommentReferable) filter,
-      bool Function(CommentReferable) allowTree,
-      Iterable<CommentReferable> parentOverrides}) {
-    filter ??= (r) => true;
-    allowTree ??= (r) => true;
+      bool Function(CommentReferable?) filter = _alwaysTrue,
+      bool Function(CommentReferable?) allowTree = _alwaysTrue,
+      Iterable<CommentReferable>? parentOverrides}) {
     parentOverrides ??= referenceParents;
     if (reference.isEmpty) {
       if (tryParents == false) return this;
       return null;
     }
-    CommentReferable result;
+    CommentReferable? result;
 
     /// Search for the reference.
     for (var referenceLookup in childLookups(reference)) {
       if (scope != null) {
-        result = lookupViaScope(referenceLookup, filter, allowTree);
+        result = lookupViaScope(referenceLookup,
+            filter: filter, allowTree: allowTree);
         if (result != null) break;
       }
       if (referenceChildren.containsKey(referenceLookup.lookup)) {
         result = recurseChildrenAndFilter(
-            referenceLookup, referenceChildren[referenceLookup.lookup],
+            referenceLookup, referenceChildren[referenceLookup.lookup]!,
             allowTree: allowTree, filter: filter);
         if (result != null) break;
       }
@@ -139,17 +140,16 @@ mixin CommentReferable implements Nameable, ModelBuilderInterface {
   /// Override if [Scope.lookup] may return elements not corresponding to a
   /// [CommentReferable], but you still want to have an implementation of
   /// [scope].
-  CommentReferable lookupViaScope(
-      ReferenceChildrenLookup referenceLookup,
-      bool Function(CommentReferable) allowTree,
-      bool Function(CommentReferable) filter) {
-    var resultElement = scope.lookupPreferGetter(referenceLookup.lookup);
+  CommentReferable? lookupViaScope(ReferenceChildrenLookup referenceLookup,
+      {required bool Function(CommentReferable?) allowTree,
+      required bool Function(CommentReferable?) filter}) {
+    var resultElement = scope!.lookupPreferGetter(referenceLookup.lookup);
     if (resultElement == null) return null;
     var result = modelBuilder.fromElement(resultElement);
     if (result is Accessor) {
-      result = (result as Accessor).enclosingCombo;
+      result = result.enclosingCombo;
     }
-    if (result?.enclosingElement is Container) {
+    if (result.enclosingElement is Container) {
       assert(false,
           '[Container] member detected, support not implemented for analyzer scope inside containers');
       return null;
@@ -162,26 +162,26 @@ mixin CommentReferable implements Nameable, ModelBuilderInterface {
   /// Given a [result] found in an implementation of [lookupViaScope] or
   /// [_lookupViaReferenceChildren], recurse through children, skipping over
   /// results that do not match the filter.
-  CommentReferable recurseChildrenAndFilter(
+  CommentReferable? recurseChildrenAndFilter(
       ReferenceChildrenLookup referenceLookup, CommentReferable result,
-      {bool Function(CommentReferable) allowTree,
-      bool Function(CommentReferable) filter}) {
-    assert(result != null);
+      {required bool Function(CommentReferable?) allowTree,
+      required bool Function(CommentReferable?) filter}) {
+    CommentReferable? returnValue = result;
     if (referenceLookup.remaining.isNotEmpty) {
       if (allowTree(result)) {
-        result = result.referenceBy(referenceLookup.remaining,
+        returnValue = result.referenceBy(referenceLookup.remaining,
             tryParents: false, allowTree: allowTree, filter: filter);
       } else {
-        result = null;
+        returnValue = null;
       }
     } else if (!filter(result)) {
-      result = result.referenceBy([referenceLookup.lookup],
+      returnValue = result.referenceBy([referenceLookup.lookup],
           tryParents: false, allowTree: allowTree, filter: filter);
     }
-    if (!filter(result)) {
-      result = null;
+    if (!filter(returnValue)) {
+      returnValue = null;
     }
-    return result;
+    return returnValue;
   }
 
   /// A list of lookups that should be attempted on children based on
@@ -216,15 +216,18 @@ mixin CommentReferable implements Nameable, ModelBuilderInterface {
   /// Replace the parents of parents.  [referenceBy] ignores whatever might
   /// otherwise be implied by the [referenceParents] of [referenceParents],
   /// replacing them with this.
-  Iterable<CommentReferable> get referenceGrandparentOverrides => null;
+  Iterable<CommentReferable>? get referenceGrandparentOverrides => null;
 
   // TODO(jcollins-g): Enforce that reference name is always the same
   // as [ModelElement.name].  Easier/possible after old lookup code is gone.
   String get referenceName => name;
 
   // TODO(jcollins-g): Eliminate need for this in markdown_processor.
-  Library get library => null;
+  Library? get library => null;
 
-  // TODO(jcollins-g): Eliminate need for this in markdown_processor.
-  Element get element;
+  @internal
+
+  /// For testing / comparison only, get the comment referable from where this
+  /// [ElementType] was defined.  Override where an [Element] is available.
+  CommentReferable get definingCommentReferable => this;
 }

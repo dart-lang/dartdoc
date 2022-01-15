@@ -10,7 +10,7 @@ import 'package:analyzer/file_system/file_system.dart';
 // ignore: implementation_imports
 import 'package:analyzer/src/generated/sdk.dart' show DartSdk, SdkLibrary;
 // ignore: implementation_imports
-import 'package:analyzer/src/generated/source_io.dart' show Source;
+import 'package:analyzer/src/generated/source.dart' show Source;
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/failure.dart';
 import 'package:dartdoc/src/logging.dart';
@@ -35,7 +35,6 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     this.rendererFactory,
     this.packageMetaProvider,
   ) : packageMeta = config.topLevelPackageMeta {
-    _packageWarningCounter = PackageWarningCounter(this);
     // Make sure the default package exists, even if it has no libraries.
     // This can happen for packages that only contain embedder SDKs.
     Package.fromPackageMeta(packageMeta, this);
@@ -50,10 +49,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   }
 
   @override
-  String get name => null;
-
-  @override
-  Element get element => null;
+  String get name => '';
 
   /// Call during initialization to add a library to this [PackageGraph].
   ///
@@ -71,7 +67,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     }
     var lib = Library.fromLibraryResult(
         resolvedLibrary, this, Package.fromPackageMeta(packageMeta, this));
-    packageMap[packageMeta.name].libraries.add(lib);
+    packageMap[packageMeta.name]!.libraries.add(lib);
     allLibraries[libraryElement.source.fullName] = lib;
   }
 
@@ -127,7 +123,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       for (var d
           in m.documentationFrom.where((d) => d.hasDocumentationComment)) {
         if (d.needsPrecache && !precachedElements.contains(d)) {
-          precachedElements.add(d);
+          precachedElements.add(d as ModelElement);
           yield d.precacheLocalDocs();
           logProgress(d.name);
           // TopLevelVariables get their documentation from getters and setters,
@@ -152,7 +148,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
               &&
               !m.isCanonical // This element is not canonical
               &&
-              !m.enclosingElement
+              !m.enclosingElement!
                   .isCanonical // The enclosingElement won't need a oneLineDoc from this
           ) {
         continue;
@@ -175,9 +171,9 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
             resourceProvider));
   }
 
-  ModelNode getModelNodeFor(Element element) => _modelNodes[element];
+  ModelNode? getModelNodeFor(Element? element) => _modelNodes[element!];
 
-  SpecialClasses specialClasses;
+  late SpecialClasses specialClasses;
 
   /// It is safe to cache values derived from the [_implementors] table if this
   /// is true.
@@ -192,12 +188,8 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     return _implementors;
   }
 
-  List<Extension> _documentedExtensions;
-  Iterable<Extension> get documentedExtensions {
-    _documentedExtensions ??=
-        utils.filterNonDocumented(extensions).toList(growable: false);
-    return _documentedExtensions;
-  }
+  late final Iterable<Extension> documentedExtensions =
+      utils.filterNonDocumented(extensions).toList(growable: false);
 
   Iterable<Extension> get extensions {
     assert(allExtensionsAdded);
@@ -213,12 +205,10 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   // of differences in the [TimestampedData] timestamps.
   final allLibraries = <String, Library>{};
 
-  /// Keep track of warnings
-  PackageWarningCounter _packageWarningCounter;
-
   /// All ModelElements constructed for this package; a superset of [allModelElements].
-  final allConstructedModelElements =
-      HashMap<Tuple3<Element, Library, Container>, ModelElement>();
+  final HashMap<Tuple3<Element, Library, Container?>, ModelElement?>
+      allConstructedModelElements =
+      HashMap<Tuple3<Element, Library, Container?>, ModelElement?>();
 
   /// Anything that might be inheritable, place here for later lookup.
   final allInheritableElements =
@@ -250,10 +240,8 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   /// PackageMeta Provider for building [PackageMeta]s.
   final PackageMetaProvider packageMetaProvider;
 
-  Package _defaultPackage;
-
-  Package get defaultPackage =>
-      _defaultPackage ??= Package.fromPackageMeta(packageMeta, this);
+  late final Package defaultPackage =
+      Package.fromPackageMeta(packageMeta, this);
 
   final bool hasEmbedderSdk;
 
@@ -269,31 +257,25 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
 
   final DartSdk sdk;
 
-  Map<Source, SdkLibrary> _sdkLibrarySources;
-
-  Map<Source, SdkLibrary> get sdkLibrarySources {
-    if (_sdkLibrarySources == null) {
-      _sdkLibrarySources = {};
-      for (var lib in sdk?.sdkLibraries) {
-        _sdkLibrarySources[sdk.mapDartUri(lib.shortName)] = lib;
-      }
-    }
-    return _sdkLibrarySources;
-  }
+  late final Map<Source?, SdkLibrary> sdkLibrarySources = {
+    for (var lib in sdk.sdkLibraries) sdk.mapDartUri(lib.shortName): lib
+  };
 
   final Map<String, String> _macros = {};
   final Map<String, String> _htmlFragments = {};
   bool allLibrariesAdded = false;
   bool _localDocumentationBuilt = false;
 
-  PackageWarningCounter get packageWarningCounter => _packageWarningCounter;
+  /// Keep track of warnings.
+  late final PackageWarningCounter packageWarningCounter =
+      PackageWarningCounter(this);
 
-  final Set<Tuple3<Element, PackageWarning, String>> _warnAlreadySeen = {};
+  final Set<Tuple3<Element?, PackageWarning, String?>> _warnAlreadySeen = {};
 
-  void warnOnElement(Warnable warnable, PackageWarning kind,
-      {String message,
-      Iterable<Locatable> referredFrom,
-      Iterable<String> extendedDebug}) {
+  void warnOnElement(Warnable? warnable, PackageWarning kind,
+      {String? message,
+      Iterable<Locatable>? referredFrom,
+      Iterable<String>? extendedDebug}) {
     var newEntry = Tuple3(warnable?.element, kind, message);
     if (_warnAlreadySeen.contains(newEntry)) {
       return;
@@ -302,29 +284,30 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     // don't allow warnings we're already working on to get in there.
     _warnAlreadySeen.add(newEntry);
     _warnOnElement(warnable, kind,
-        message: message,
+        message: message ?? '',
         referredFrom: referredFrom,
         extendedDebug: extendedDebug);
     _warnAlreadySeen.remove(newEntry);
   }
 
-  void _warnOnElement(Warnable warnable, PackageWarning kind,
-      {String message,
-      Iterable<Locatable> referredFrom,
-      Iterable<String> extendedDebug}) {
+  void _warnOnElement(Warnable? warnable, PackageWarning kind,
+      {required String message,
+      Iterable<Locatable>? referredFrom,
+      Iterable<String>? extendedDebug}) {
     if (warnable != null) {
       // This sort of warning is only applicable to top level elements.
       if (kind == PackageWarning.ambiguousReexport) {
-        while (warnable.enclosingElement is! Library &&
-            warnable.enclosingElement != null) {
-          warnable = warnable.enclosingElement;
+        var enclosingElement = warnable.enclosingElement;
+        while (enclosingElement != null && enclosingElement is! Library) {
+          warnable = enclosingElement;
+          enclosingElement = warnable.enclosingElement;
         }
       }
     } else {
       // If we don't have an element, we need a message to disambiguate.
-      assert(message != null);
+      assert(message.isNotEmpty);
     }
-    if (_packageWarningCounter.hasWarning(warnable, kind, message)) {
+    if (packageWarningCounter.hasWarning(warnable, kind, message)) {
       return;
     }
     // Some kinds of warnings it is OK to drop if we're not documenting them.
@@ -370,11 +353,11 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
         break;
       case PackageWarning.noLibraryLevelDocs:
         warningMessage =
-            '${warnable.fullyQualifiedName} has no library level documentation comments';
+            '${warnable!.fullyQualifiedName} has no library level documentation comments';
         break;
       case PackageWarning.noDocumentableLibrariesInPackage:
         warningMessage =
-            '${warnable.fullyQualifiedName} has no documentable libraries';
+            '${warnable!.fullyQualifiedName} has no documentable libraries';
         break;
       case PackageWarning.ambiguousDocReference:
         warningMessage = 'ambiguous doc reference $message';
@@ -477,7 +460,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     packageWarningCounter.addWarning(warnable, kind, message, fullMessage);
   }
 
-  String _safeWarnableName(Locatable locatable) {
+  String _safeWarnableName(Locatable? locatable) {
     if (locatable == null) {
       return '<unknown>';
     }
@@ -487,24 +470,18 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
 
   List<Package> get packages => packageMap.values.toList();
 
-  List<Package> _publicPackages;
-
-  List<Package> get publicPackages {
-    if (_publicPackages == null) {
-      assert(allLibrariesAdded);
-      // Help the user if they pass us a package that doesn't exist.
-      for (var packageName in config.packageOrder) {
-        if (!packages.map((p) => p.name).contains(packageName)) {
-          warnOnElement(
-              null, PackageWarning.packageOrderGivesMissingPackageName,
-              message:
-                  "$packageName, packages: ${packages.map((p) => p.name).join(',')}");
-        }
+  late final List<Package> publicPackages = () {
+    assert(allLibrariesAdded);
+    // Help the user if they pass us a package that doesn't exist.
+    for (var packageName in config.packageOrder) {
+      if (!packages.map((p) => p.name).contains(packageName)) {
+        warnOnElement(null, PackageWarning.packageOrderGivesMissingPackageName,
+            message:
+                "$packageName, packages: ${packages.map((p) => p.name).join(',')}");
       }
-      _publicPackages = packages.where((p) => p.isPublic).toList()..sort();
     }
-    return _publicPackages;
-  }
+    return packages.where((p) => p.isPublic).toList()..sort();
+  }();
 
   /// Local packages are to be documented locally vs. remote or not at all.
   List<Package> get localPackages =>
@@ -517,12 +494,12 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   Map<LibraryElement, Set<Library>> _libraryElementReexportedBy = {};
 
   /// Prevent cycles from breaking our stack.
-  Set<Tuple2<Library, LibraryElement>> _reexportsTagged = {};
+  Set<Tuple2<Library, LibraryElement?>> _reexportsTagged = {};
 
   void _tagReexportsFor(
-      final Library topLevelLibrary, final LibraryElement libraryElement,
-      [ExportElement lastExportedElement]) {
-    var key = Tuple2<Library, LibraryElement>(topLevelLibrary, libraryElement);
+      final Library topLevelLibrary, final LibraryElement? libraryElement,
+      [ExportElement? lastExportedElement]) {
+    var key = Tuple2<Library, LibraryElement?>(topLevelLibrary, libraryElement);
     if (_reexportsTagged.contains(key)) {
       return;
     }
@@ -531,7 +508,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       // The first call to _tagReexportFor should not have a null libraryElement.
       assert(lastExportedElement != null);
       warnOnElement(
-          findButDoNotCreateLibraryFor(lastExportedElement.enclosingElement),
+          findButDoNotCreateLibraryFor(lastExportedElement!.enclosingElement!),
           PackageWarning.unresolvedExport,
           message: '"${lastExportedElement.uri}"',
           referredFrom: <Locatable>[topLevelLibrary]);
@@ -578,6 +555,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       if (modelElement is Dynamic) continue;
       // TODO: see [Accessor.enclosingCombo]
       if (modelElement is Accessor) continue;
+      if (modelElement == null) continue;
       final href = modelElement.href;
       if (href == null) continue;
 
@@ -605,9 +583,9 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       if (!implemented.isPublic) {
         privates.add(implemented);
       }
-      implemented = implemented.canonicalModelElement ?? implemented;
-      _implementors.putIfAbsent(implemented, () => []);
-      var list = _implementors[implemented];
+      implemented = implemented.canonicalModelElement as InheritingContainer? ??
+          implemented;
+      var list = _implementors.putIfAbsent(implemented, () => []);
       // TODO(srawlins): This would be more efficient if we created a
       // SplayTreeSet keyed off of `.element`.
       if (!list.any((l) => l.element == implementor.element)) {
@@ -616,19 +594,21 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     }
 
     void addImplementor(InheritingContainer clazz) {
-      if (clazz.supertype != null) {
-        checkAndAddContainer(clazz.supertype.modelElement, clazz);
+      var supertype = clazz.supertype;
+      if (supertype != null) {
+        checkAndAddContainer(
+            supertype.modelElement as InheritingContainer, clazz);
       }
       if (clazz is Class) {
         for (var type in clazz.mixedInTypes) {
-          checkAndAddContainer(type.modelElement, clazz);
+          checkAndAddContainer(type.modelElement as InheritingContainer, clazz);
         }
         for (var type in clazz.interfaces) {
-          checkAndAddContainer(type.modelElement, clazz);
+          checkAndAddContainer(type.modelElement as InheritingContainer, clazz);
         }
       }
       for (var type in clazz.publicInterfaces) {
-        checkAndAddContainer(type.modelElement, clazz);
+        checkAndAddContainer(type.modelElement as InheritingContainer, clazz);
       }
     }
 
@@ -644,58 +624,44 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   Iterable<Library> get libraries =>
       packages.expand((p) => p.libraries).toList()..sort();
 
-  List<Library> _publicLibraries;
+  late final Iterable<Library> publicLibraries = () {
+    assert(allLibrariesAdded);
+    return utils.filterNonPublic(libraries).toList();
+  }();
 
-  Iterable<Library> get publicLibraries {
-    if (_publicLibraries == null) {
-      assert(allLibrariesAdded);
-      _publicLibraries = utils.filterNonPublic(libraries).toList();
-    }
-    return _publicLibraries;
-  }
+  late final Iterable<Library> localLibraries = () {
+    assert(allLibrariesAdded);
+    return localPackages.expand((p) => p.libraries).toList()..sort();
+  }();
 
-  List<Library> _localLibraries;
-
-  Iterable<Library> get localLibraries {
-    if (_localLibraries == null) {
-      assert(allLibrariesAdded);
-      _localLibraries = localPackages.expand((p) => p.libraries).toList()
-        ..sort();
-    }
-    return _localLibraries;
-  }
-
-  List<Library> _localPublicLibraries;
-
-  Iterable<Library> get localPublicLibraries {
-    if (_localPublicLibraries == null) {
-      assert(allLibrariesAdded);
-      _localPublicLibraries = utils.filterNonPublic(localLibraries).toList();
-    }
-    return _localPublicLibraries;
-  }
-
-  Set<Class> _inheritThrough;
+  late final Iterable<Library> localPublicLibraries = () {
+    assert(allLibrariesAdded);
+    return utils.filterNonPublic(localLibraries).toList();
+  }();
 
   /// Return the set of [Class]es objects should inherit through if they
   /// show up in the inheritance chain.  Do not call before interceptorElement is
   /// found.  Add classes here if they are similar to Interceptor in that they
   /// are to be ignored even when they are the implementors of [Inheritable]s,
   /// and the class these inherit from should instead claim implementation.
-  Set<Class> get inheritThrough {
-    if (_inheritThrough == null) {
-      _inheritThrough = {};
-      _inheritThrough.add(specialClasses[SpecialClass.interceptor]);
+  late final Set<Class> inheritThrough = () {
+    var interceptorSpecialClass = specialClasses[SpecialClass.interceptor];
+    if (interceptorSpecialClass == null) {
+      return const <Class>{};
     }
-    return _inheritThrough;
-  }
 
-  Set<Class> _invisibleAnnotations;
+    return {interceptorSpecialClass};
+  }();
 
-  /// Returns the set of [Class] objects that are similar to pragma
+  /// The set of [Class] objects that are similar to pragma
   /// in that we should never count them as documentable annotations.
-  Set<Class> get invisibleAnnotations =>
-      _invisibleAnnotations ??= {specialClasses[SpecialClass.pragma]};
+  late final Set<Class> invisibleAnnotations = () {
+    var pragmaSpecialClass = specialClasses[SpecialClass.pragma];
+    if (pragmaSpecialClass == null) {
+      return const <Class>{};
+    }
+    return {pragmaSpecialClass};
+  }();
 
   bool isAnnotationVisible(Class clazz) =>
       !invisibleAnnotations.contains(clazz);
@@ -708,7 +674,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     buffer.writeln(divider);
     buffer.writeln();
     for (final name in packageMap.keys) {
-      final package = packageMap[name];
+      final package = packageMap[name]!;
       buffer.write('Package $name documented at ${package.documentedWhere} '
           'with libraries: ');
       buffer.writeAll(package.allLibraries);
@@ -718,10 +684,10 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     return buffer.toString();
   }
 
-  final Map<Element, Library> _canonicalLibraryFor = {};
+  final Map<Element?, Library?> _canonicalLibraryFor = {};
 
   /// Tries to find a top level library that references this element.
-  Library findCanonicalLibraryFor(Element e) {
+  Library? findCanonicalLibraryFor(Element? e) {
     assert(allLibrariesAdded);
     var searchElement = e;
     if (e is PropertyAccessorElement) {
@@ -737,7 +703,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     _canonicalLibraryFor[e] = null;
     for (var library in publicLibraries) {
       if (library.modelElementsMap.containsKey(searchElement)) {
-        for (var modelElement in library.modelElementsMap[searchElement]) {
+        for (var modelElement in library.modelElementsMap[searchElement!]!) {
           if (modelElement.isCanonical) {
             return _canonicalLibraryFor[e] = library;
           }
@@ -754,49 +720,56 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   /// This doesn't know anything about [PackageGraph.inheritThrough] and
   /// probably shouldn't, so using it with [Inheritable]s without special casing
   /// is not advised.
-  ModelElement findCanonicalModelElementFor(Element e,
-      {Container preferredClass}) {
+  ModelElement? findCanonicalModelElementFor(Element? e,
+      {Container? preferredClass}) {
     assert(allLibrariesAdded);
     var lib = findCanonicalLibraryFor(e);
-    if (preferredClass != null && preferredClass is Container) {
-      Container canonicalClass =
-          findCanonicalModelElementFor(preferredClass.element);
+    if (preferredClass != null) {
+      Container? canonicalClass =
+          findCanonicalModelElementFor(preferredClass.element) as Container?;
       if (canonicalClass != null) preferredClass = canonicalClass;
     }
     if (lib == null && preferredClass != null) {
       lib = findCanonicalLibraryFor(preferredClass.element);
     }
-    ModelElement modelElement;
     // For elements defined in extensions, they are canonical.
-    if (e?.enclosingElement is ExtensionElement) {
-      lib ??= modelBuilder.fromElement(e.enclosingElement.library);
+    var enclosingElement = e?.enclosingElement;
+    if (enclosingElement is ExtensionElement) {
+      lib ??= modelBuilder.fromElement(enclosingElement.library) as Library?;
       // (TODO:keertip) Find a better way to exclude members of extensions
       //  when libraries are specified using the "--include" flag
       if (lib?.isDocumented == true) {
-        return modelBuilder.from(e, lib);
+        return modelBuilder.from(e!, lib!);
       }
     }
+    ModelElement? modelElement;
     // TODO(jcollins-g): Special cases are pretty large here.  Refactor to split
     // out into helpers.
     // TODO(jcollins-g): The data structures should be changed to eliminate guesswork
     // with member elements.
-    if (e is ClassMemberElement || e is PropertyAccessorElement) {
-      e = e.declaration;
+    var declaration = e?.declaration;
+    if (declaration != null &&
+        (e is ClassMemberElement || e is PropertyAccessorElement)) {
+      e = declaration;
       var candidates = <ModelElement>{};
-      var iKey = Tuple2<Element, Library>(e, lib);
+      var iKey = Tuple2<Element, Library?>(e, lib);
       var key =
-          Tuple4<Element, Library, Class, ModelElement>(e, lib, null, null);
-      var keyWithClass = Tuple4<Element, Library, Class, ModelElement>(
-          e, lib, preferredClass, null);
-      if (allConstructedModelElements.containsKey(key)) {
-        candidates.add(allConstructedModelElements[key]);
+          Tuple4<Element, Library?, Class?, ModelElement?>(e, lib, null, null);
+      var keyWithClass = Tuple4<Element, Library?, Class?, ModelElement?>(
+          e, lib, preferredClass as Class?, null);
+      var constructedWithKey = allConstructedModelElements[key];
+      if (constructedWithKey != null) {
+        candidates.add(constructedWithKey);
       }
-      if (allConstructedModelElements.containsKey(keyWithClass)) {
-        candidates.add(allConstructedModelElements[keyWithClass]);
+      var constructedWithKeyWithClass =
+          allConstructedModelElements[keyWithClass];
+      if (constructedWithKeyWithClass != null) {
+        candidates.add(constructedWithKeyWithClass);
       }
       if (candidates.isEmpty && allInheritableElements.containsKey(iKey)) {
-        candidates
-            .addAll(allInheritableElements[iKey].where((me) => me.isCanonical));
+        candidates.addAll(
+            allInheritableElements[iKey as Tuple2<Element, Library>]!
+                .where((me) => me.isCanonical));
       }
 
       var canonicalClass = findCanonicalModelElementFor(e.enclosingElement);
@@ -819,9 +792,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
 
       // This is for situations where multiple classes may actually be canonical
       // for an inherited element whose defining Class is not canonical.
-      if (matches.length > 1 &&
-          preferredClass != null &&
-          preferredClass is Class) {
+      if (matches.length > 1 && preferredClass != null) {
         // Search for matches inside our superchain.
         var superChain = preferredClass.superChain
             .map((et) => et.modelElement)
@@ -834,7 +805,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
         // preferredClass.
         var enclosingElements = {
           ...matches
-              .map((me) => (me as EnclosedElement).enclosingElement as Class)
+              .map((me) => (me as EnclosedElement).enclosingElement as Class?)
         };
         for (var c in superChain.reversed) {
           if (enclosingElements.contains(c)) {
@@ -858,13 +829,13 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       if (lib != null) {
         if (e is PropertyInducingElement) {
           var getter =
-              e.getter != null ? modelBuilder.from(e.getter, lib) : null;
+              e.getter != null ? modelBuilder.from(e.getter!, lib) : null;
           var setter =
-              e.setter != null ? modelBuilder.from(e.setter, lib) : null;
+              e.setter != null ? modelBuilder.from(e.setter!, lib) : null;
           modelElement = modelBuilder.fromPropertyInducingElement(e, lib,
-              getter: getter, setter: setter);
+              getter: getter as Accessor?, setter: setter as Accessor?);
         } else {
-          modelElement = modelBuilder.from(e, lib);
+          modelElement = modelBuilder.from(e!, lib);
         }
       }
       assert(modelElement is! Inheritable);
@@ -874,7 +845,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     }
     // Prefer Fields.
     if (e is PropertyAccessorElement && modelElement is Accessor) {
-      modelElement = (modelElement as Accessor).enclosingCombo;
+      modelElement = modelElement.enclosingCombo;
     }
     return modelElement;
   }
@@ -882,9 +853,9 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   /// This is used when we might need a Library object that isn't actually
   /// a documentation entry point (for elements that have no Library within the
   /// set of canonical Libraries).
-  Library findButDoNotCreateLibraryFor(Element e) {
+  Library? findButDoNotCreateLibraryFor(Element e) {
     // This is just a cache to avoid creating lots of libraries over and over.
-    return allLibraries[e.library?.source?.fullName];
+    return allLibraries[e.library?.source.fullName];
   }
 
   /// This is used when we might need a Library object that isn't actually
@@ -892,10 +863,6 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   /// set of canonical Libraries).
   Library findOrCreateLibraryFor(DartDocResolvedLibrary resolvedLibrary) {
     final libraryElement = resolvedLibrary.library;
-    // can be null if e is for dynamic
-    if (libraryElement == null) {
-      return null;
-    }
     var foundLibrary = findButDoNotCreateLibraryFor(libraryElement);
     if (foundLibrary != null) return foundLibrary;
 
@@ -903,60 +870,44 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
         resolvedLibrary,
         this,
         Package.fromPackageMeta(
-            packageMetaProvider.fromElement(libraryElement, config.sdkDir),
+            packageMetaProvider.fromElement(libraryElement, config.sdkDir)!,
             packageGraph));
     allLibraries[libraryElement.source.fullName] = foundLibrary;
     return foundLibrary;
   }
 
-  List<ModelElement> _allModelElements;
-
-  Iterable<ModelElement> get allModelElements {
+  late final Iterable<ModelElement> allModelElements = () {
     assert(allLibrariesAdded);
-    if (_allModelElements == null) {
-      _allModelElements = [];
-      var packagesToDo = packages.toSet();
-      var completedPackages = <Package>{};
-      while (packagesToDo.length > completedPackages.length) {
-        packagesToDo.difference(completedPackages).forEach((Package p) {
-          var librariesToDo = p.allLibraries.toSet();
-          var completedLibraries = <Library>{};
-          while (librariesToDo.length > completedLibraries.length) {
-            librariesToDo
-                .difference(completedLibraries)
-                .forEach((Library library) {
-              _allModelElements.addAll(library.allModelElements);
-              completedLibraries.add(library);
-            });
-            librariesToDo.addAll(p.allLibraries);
-          }
-          completedPackages.add(p);
-        });
-        packagesToDo.addAll(packages);
-      }
+    var allElements = <ModelElement>[];
+    var packagesToDo = packages.toSet();
+    var completedPackages = <Package>{};
+    while (packagesToDo.length > completedPackages.length) {
+      packagesToDo.difference(completedPackages).forEach((Package p) {
+        var librariesToDo = p.allLibraries.toSet();
+        var completedLibraries = <Library>{};
+        while (librariesToDo.length > completedLibraries.length) {
+          librariesToDo
+              .difference(completedLibraries)
+              .forEach((Library library) {
+            allElements.addAll(library.allModelElements);
+            completedLibraries.add(library);
+          });
+          librariesToDo.addAll(p.allLibraries);
+        }
+        completedPackages.add(p);
+      });
+      packagesToDo.addAll(packages);
     }
-    return _allModelElements;
-  }
 
-  List<ModelElement> _allLocalModelElements;
+    return allElements;
+  }();
 
-  Iterable<ModelElement> get allLocalModelElements {
-    assert(allLibrariesAdded);
-    if (_allLocalModelElements == null) {
-      _allLocalModelElements = [];
-      for (var library in localLibraries) {
-        _allLocalModelElements.addAll(library.allModelElements);
-      }
-    }
-    return _allLocalModelElements;
-  }
+  late final Iterable<ModelElement> allLocalModelElements = [
+    for (var library in localLibraries) ...library.allModelElements
+  ];
 
-  List<ModelElement> _allCanonicalModelElements;
-
-  Iterable<ModelElement> get allCanonicalModelElements {
-    return _allCanonicalModelElements ??=
-        allLocalModelElements.where((e) => e.isCanonical).toList();
-  }
+  late final Iterable<ModelElement> allCanonicalModelElements =
+      allLocalModelElements.where((e) => e.isCanonical).toList();
 
   /// Glob lookups can be expensive.  Cache per filename.
   final _configSetsNodocFor = HashMap<String, bool>();
@@ -964,7 +915,8 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   /// Given an element's location, look up the nodoc configuration data and
   /// determine whether to unconditionally treat the element as "nodoc".
   bool configSetsNodocFor(String fullName) {
-    if (!_configSetsNodocFor.containsKey(fullName)) {
+    var noDocForName = _configSetsNodocFor[fullName];
+    if (noDocForName == null) {
       var file = resourceProvider.getFile(fullName);
       // Direct lookup instead of generating a custom context will save some
       // cycles.  We can't use the element's [DartdocOptionContext] because that
@@ -972,13 +924,17 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       // for nodoc's semantics.  Looking up the defining element just to pull
       // a context is again, slow.
       List<String> globs = config.optionSet['nodoc'].valueAt(file.parent2);
-      _configSetsNodocFor[fullName] = utils.matchGlobs(globs, fullName);
+      noDocForName = utils.matchGlobs(globs, fullName);
+      _configSetsNodocFor[fullName] = noDocForName;
     }
-    return _configSetsNodocFor[fullName];
+    return noDocForName;
   }
 
-  String getMacro(String name) {
+  String? getMacro(String? name) {
     assert(_localDocumentationBuilt);
+    if (name == null) {
+      return null;
+    }
     return _macros[name];
   }
 
@@ -991,8 +947,11 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     _macros[name] = content;
   }
 
-  String getHtmlFragment(String name) {
+  String? getHtmlFragment(String? name) {
     assert(_localDocumentationBuilt);
+    if (name == null) {
+      return null;
+    }
     return _htmlFragments[name];
   }
 
@@ -1005,46 +964,44 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     _htmlFragments[name] = content;
   }
 
-  Map<String, CommentReferable> _referenceChildren;
   @override
-  Map<String, CommentReferable> get referenceChildren {
-    if (_referenceChildren == null) {
-      _referenceChildren = {};
-      // We have to use a stable order or otherwise references depending
-      // on ambiguous resolution (see below) will change where they
-      // resolve based on internal implementation details.
-      var sortedPackages = packages.toList()..sort(byName);
-      var sortedDocumentedPackages = documentedPackages.toList()..sort(byName);
-      // Packages are the top priority.
-      _referenceChildren.addEntries(sortedPackages.generateEntries());
+  late final Map<String, CommentReferable> referenceChildren = () {
+    var children = <String, CommentReferable>{};
+    // We have to use a stable order or otherwise references depending
+    // on ambiguous resolution (see below) will change where they
+    // resolve based on internal implementation details.
+    var sortedPackages = packages.toList()..sort(byName);
+    var sortedDocumentedPackages = documentedPackages.toList()..sort(byName);
+    // Packages are the top priority.
+    children.addEntries(sortedPackages.generateEntries());
 
-      // Libraries are next.
-      // TODO(jcollins-g): Warn about directly referencing libraries out of
-      // scope?  Doing this is always going to be ambiguous and potentially
-      // confusing.
-      _referenceChildren.addEntriesIfAbsent(sortedDocumentedPackages
-          .expand((p) => p.publicLibrariesSorted)
-          .generateEntries());
+    // Libraries are next.
+    // TODO(jcollins-g): Warn about directly referencing libraries out of
+    // scope?  Doing this is always going to be ambiguous and potentially
+    // confusing.
+    children.addEntriesIfAbsent(sortedDocumentedPackages
+        .expand((p) => p.publicLibrariesSorted)
+        .generateEntries());
 
-      // TODO(jcollins-g): Warn about directly referencing top level items
-      // out of scope?  Doing this will be even more ambiguous and
-      // potentially confusing than doing so with libraries.
-      _referenceChildren.addEntriesIfAbsent(sortedDocumentedPackages
-          .expand((p) => p.publicLibrariesSorted)
-          .expand((l) => [
-                ...l.publicConstants,
-                ...l.publicFunctions,
-                ...l.publicProperties,
-                ...l.publicTypedefs,
-                ...l.publicExtensions,
-                ...l.publicClasses,
-                ...l.publicEnums,
-                ...l.publicMixins
-              ])
-          .generateEntries());
-    }
-    return _referenceChildren;
-  }
+    // TODO(jcollins-g): Warn about directly referencing top level items
+    // out of scope?  Doing this will be even more ambiguous and
+    // potentially confusing than doing so with libraries.
+    children.addEntriesIfAbsent(sortedDocumentedPackages
+        .expand((p) => p.publicLibrariesSorted)
+        .expand((l) => [
+              ...l.publicConstants,
+              ...l.publicFunctions,
+              ...l.publicProperties,
+              ...l.publicTypedefs,
+              ...l.publicExtensions,
+              ...l.publicClasses,
+              ...l.publicEnums,
+              ...l.publicMixins
+            ])
+        .generateEntries());
+
+    return children;
+  }();
 
   @override
   Iterable<CommentReferable> get referenceParents => [];

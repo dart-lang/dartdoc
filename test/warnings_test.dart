@@ -14,13 +14,12 @@ import 'package:dartdoc/src/warnings.dart';
 import 'package:test/test.dart';
 
 void main() {
-  ResourceProvider resourceProvider = PhysicalResourceProvider.INSTANCE;
-  Folder tempDir, testPackageOne, testPackageTwo, testPackageThree;
-  File pubspecYamlOne, pubspecYamlTwo, pubspecYamlThree, dartdocYamlThree;
-  DartdocOptionSet optionSet;
+  var resourceProvider = PhysicalResourceProvider.INSTANCE;
+  late final Folder testPackageOne, testPackageTwo, testPackageThree;
+  late DartdocOptionSet optionSet;
 
   setUpAll(() {
-    tempDir = resourceProvider.createSystemTemp('warnings_test');
+    var tempDir = resourceProvider.createSystemTemp('warnings_test');
     testPackageOne = resourceProvider.getFolder(
         resourceProvider.pathContext.join(tempDir.path, 'test_package_one'))
       ..create();
@@ -30,13 +29,13 @@ void main() {
     testPackageThree = resourceProvider.getFolder(
         resourceProvider.pathContext.join(tempDir.path, 'test_package_three'))
       ..create();
-    pubspecYamlOne = resourceProvider.getFile(
+    var pubspecYamlOne = resourceProvider.getFile(
         resourceProvider.pathContext.join(testPackageOne.path, 'pubspec.yaml'));
     pubspecYamlOne.writeAsStringSync('name: test_package_one');
-    pubspecYamlTwo = resourceProvider.getFile(
+    var pubspecYamlTwo = resourceProvider.getFile(
         resourceProvider.pathContext.join(testPackageTwo.path, 'pubspec.yaml'));
     pubspecYamlTwo.writeAsStringSync('name: test_package_two');
-    dartdocYamlThree = resourceProvider.getFile(resourceProvider.pathContext
+    var dartdocYamlThree = resourceProvider.getFile(resourceProvider.pathContext
         .join(testPackageThree.path, 'dartdoc_options.yaml'));
     dartdocYamlThree.writeAsStringSync('''
 dartdoc:
@@ -48,13 +47,13 @@ dartdoc:
   ignore:
     - ambiguous-reexport  
     ''');
-    pubspecYamlThree = resourceProvider.getFile(resourceProvider.pathContext
+    var pubspecYamlThree = resourceProvider.getFile(resourceProvider.pathContext
         .join(testPackageThree.path, 'pubspec.yaml'));
     pubspecYamlThree.writeAsStringSync('name: test_package_three');
   });
 
   setUp(() async {
-    optionSet = await DartdocOptionSet.fromOptionGenerators(
+    optionSet = await DartdocOptionRoot.fromOptionGenerators(
         'dartdoc', [createDartdocOptions], pubPackageMetaProvider);
   });
 

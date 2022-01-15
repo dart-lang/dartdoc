@@ -23,23 +23,23 @@ const Level progressLevel = Level('PROGRESS', 501);
 /// Has a value of `1201` – one more than [Level.SHOUT].
 const Level printLevel = Level('PRINT', 1201);
 
-void logWarning(Object message) {
+void logWarning(String? message) {
   _logger.log(Level.WARNING, message);
 }
 
-void logInfo(Object message) {
+void logInfo(String? message) {
   _logger.log(Level.INFO, message);
 }
 
-void logDebug(Object message) {
+void logDebug(String? message) {
   _logger.log(Level.FINE, message);
 }
 
-void logProgress(Object message) {
+void logProgress(String? message) {
   _logger.log(progressLevel, message);
 }
 
-void logPrint(Object message) {
+void logPrint(String? message) {
   _logger.log(printLevel, message);
 }
 
@@ -145,7 +145,7 @@ Future<List<DartdocOption<Object>>> createLoggingOptions(
         negatable: true),
     DartdocOptionArgSynth<bool>('quiet',
         (DartdocSyntheticOption<Object> option, Folder dir) {
-      if (option.root['generateDocs']?.valueAt(dir) == false) {
+      if (option.parent['generateDocs'].valueAt(dir) == false) {
         return true;
       }
       return false;

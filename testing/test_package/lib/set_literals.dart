@@ -1,5 +1,3 @@
-// @dart=2.9
-
 const inferredTypeSet = const {1, 3, 5};
 const Set<int> specifiedSet = const {};
 const untypedMap = const {};

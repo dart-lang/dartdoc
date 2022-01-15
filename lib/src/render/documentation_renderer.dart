@@ -6,13 +6,12 @@ import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' show parseFragment;
 
 import 'package:markdown/markdown.dart' as md;
-import 'package:meta/meta.dart';
 
 abstract class DocumentationRenderer {
   DocumentationRenderResult render(
     List<md.Node> nodes, {
-    @required bool processFullDocs,
-    @required bool sanitizeHtml,
+    required bool processFullDocs,
+    required bool sanitizeHtml,
   });
 }
 
@@ -22,8 +21,8 @@ class DocumentationRendererHtml implements DocumentationRenderer {
   @override
   DocumentationRenderResult render(
     List<md.Node> nodes, {
-    @required bool processFullDocs,
-    @required bool sanitizeHtml,
+    required bool processFullDocs,
+    required bool sanitizeHtml,
   }) {
     if (nodes.isEmpty) {
       return DocumentationRenderResult.empty;
@@ -70,11 +69,11 @@ class DocumentationRendererHtml implements DocumentationRenderer {
 class DocumentationRenderResult {
   static const empty = DocumentationRenderResult(asHtml: '', asOneLiner: '');
 
-  final String /*?*/ asHtml;
+  final String asHtml;
   final String asOneLiner;
 
   const DocumentationRenderResult(
-      {@required this.asHtml, @required this.asOneLiner});
+      {required this.asHtml, required this.asOneLiner});
 }
 
 bool _allowClassName(String className) =>
@@ -82,7 +81,7 @@ bool _allowClassName(String className) =>
 
 Iterable<String> _addLinkRel(String uri) {
   final u = Uri.tryParse(uri);
-  if (u.host.isNotEmpty) {
+  if (u != null && u.host.isNotEmpty) {
     // TODO(jonasfj): Consider allowing non-ugc links for trusted sites.
     return ['ugc'];
   }
@@ -91,7 +90,7 @@ Iterable<String> _addLinkRel(String uri) {
 
 void _sanitize(dom.Node node) {
   if (node is dom.Element) {
-    final tagName = node.localName.toUpperCase();
+    final tagName = node.localName!.toUpperCase();
     if (!_allowedElements.contains(tagName)) {
       node.remove();
       return;
@@ -108,7 +107,7 @@ void _sanitize(dom.Node node) {
       final href = node.attributes['href'];
       if (href != null) {
         final rels = _addLinkRel(href);
-        if (rels != null && rels.isNotEmpty) {
+        if (rels.isNotEmpty) {
           node.attributes['rel'] = rels.join(' ');
         }
       }

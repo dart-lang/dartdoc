@@ -7,15 +7,18 @@ import 'package:analyzer/source/line_info.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 abstract class SourceCodeMixin implements Documentable {
-  ModelNode get modelNode;
+  ModelNode? get modelNode;
 
-  CharacterLocation get characterLocation;
+  CharacterLocation? get characterLocation;
 
-  Element get element;
+  Element? get element;
 
   bool get hasSourceCode => config.includeSource && sourceCode.isNotEmpty;
 
-  Library get library;
+  Library? get library;
 
-  String get sourceCode => modelNode == null ? '' : modelNode.sourceCode;
+  String get sourceCode {
+    var modelNode = this.modelNode;
+    return modelNode == null ? '' : modelNode.sourceCode;
+  }
 }

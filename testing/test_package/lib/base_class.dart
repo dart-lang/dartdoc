@@ -1,5 +1,3 @@
-// @dart=2.9
-
 library base_class;
 
 /// Abstract class Constraints

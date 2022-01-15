@@ -31,12 +31,20 @@ import 'package:meta/meta.dart';
 /// **all** : Referring to all children.
 abstract class Container extends ModelElement
     with Categorization, TypeParameters {
-  Container(Element element, Library library, PackageGraph packageGraph)
+  Container(Element element, Library? library, PackageGraph packageGraph)
       : super(element, library, packageGraph);
+
+  /// Containers must have associated libraries.
+  @override
+  Library get library => super.library!;
+
+  /// Containers must have associated packages.
+  @override
+  Package get package => super.package!;
 
   // TODO(jcollins-g): Implement a ContainerScope that flattens supertypes?
   @override
-  Scope get scope => null;
+  Scope? get scope => null;
 
   @override
   bool get hasParameters => false;
@@ -56,7 +64,7 @@ abstract class Container extends ModelElement
       element is ClassElement && (element as ClassElement).isMixin;
 
   @mustCallSuper
-  Iterable<ModelElement> get allModelElements => quiver.concat([
+  Iterable<ModelElement>? get allModelElements => quiver.concat([
         instanceMethods,
         instanceFields,
         instanceOperators,
@@ -66,19 +74,19 @@ abstract class Container extends ModelElement
         staticMethods,
       ]);
 
-  List<ModelElement> _allCanonicalModelElements;
+  List<ModelElement>? _allCanonicalModelElements;
 
   List<ModelElement> get allCanonicalModelElements {
     return (_allCanonicalModelElements ??=
-        allModelElements.where((e) => e.isCanonical).toList());
+        allModelElements!.where((e) => e.isCanonical).toList());
   }
 
   /// All methods, including operators and statics, declared as part of this
   /// [Container].  [declaredMethods] must be the union of [instanceMethods],
   /// [staticMethods], and [instanceOperators].
-  Iterable<Method> get declaredMethods;
+  Iterable<Method>? get declaredMethods;
 
-  Iterable<Method> get instanceMethods => declaredMethods
+  Iterable<Method> get instanceMethods => declaredMethods!
       .where((m) => !m.isStatic && !m.isOperator)
       .toList(growable: false);
 
@@ -103,21 +111,17 @@ abstract class Container extends ModelElement
   Iterable<Method> get publicInstanceMethods =>
       model_utils.filterNonPublic(instanceMethods);
 
-  List<Method> _publicInstanceMethodsSorted;
+  List<Method>? _publicInstanceMethodsSorted;
   List<Method> get publicInstanceMethodsSorted =>
       _publicInstanceMethodsSorted ?? publicInstanceMethods.toList()
         ..sort(byName);
 
-  Iterable<Operator> _declaredOperators;
   @nonVirtual
-  Iterable<Operator> get declaredOperators {
-    _declaredOperators ??=
-        declaredMethods.whereType<Operator>().toList(growable: false);
-    return _declaredOperators;
-  }
+  late final Iterable<Operator> declaredOperators =
+      declaredMethods!.whereType<Operator>().toList(growable: false);
 
   @override
-  ModelElement get enclosingElement;
+  ModelElement? get enclosingElement;
 
   Iterable<Operator> get instanceOperators => declaredOperators;
 
@@ -129,17 +133,17 @@ abstract class Container extends ModelElement
   Iterable<Operator> get publicInstanceOperators =>
       model_utils.filterNonPublic(instanceOperators);
 
-  List<Operator> _publicInstanceOperatorsSorted;
+  List<Operator>? _publicInstanceOperatorsSorted;
   List<Operator> get publicInstanceOperatorsSorted =>
       _publicInstanceOperatorsSorted ??= publicInstanceOperators.toList()
         ..sort(byName);
 
   /// Fields fully declared in this [Container].
-  Iterable<Field> get declaredFields;
+  Iterable<Field>? get declaredFields;
 
   /// All fields accessible in this instance that are not static.
   Iterable<Field> get instanceFields =>
-      declaredFields.where((f) => !f.isStatic);
+      declaredFields!.where((f) => !f.isStatic);
 
   bool get hasInstanceFields => instanceFields.isNotEmpty;
 
@@ -150,18 +154,18 @@ abstract class Container extends ModelElement
   @nonVirtual
   bool get hasPublicInstanceFields => publicInstanceFields.isNotEmpty;
 
-  List<Field> _publicInstanceFieldsSorted;
+  List<Field>? _publicInstanceFieldsSorted;
   List<Field> get publicInstanceFieldsSorted => _publicInstanceFieldsSorted ??=
       publicInstanceFields.toList()..sort(byName);
 
-  Iterable<Field> get constantFields => declaredFields.where((f) => f.isConst);
+  Iterable<Field> get constantFields => declaredFields!.where((f) => f.isConst);
 
   Iterable<Field> get publicConstantFields =>
       model_utils.filterNonPublic(constantFields);
 
   bool get hasPublicConstantFields => publicConstantFieldsSorted.isNotEmpty;
 
-  List<Field> _publicConstantFieldsSorted;
+  List<Field>? _publicConstantFieldsSorted;
   List<Field> get publicConstantFieldsSorted => _publicConstantFieldsSorted ??=
       publicConstantFields.toList()..sort(byName);
 
@@ -173,13 +177,13 @@ abstract class Container extends ModelElement
 
   /// This container might be canonical for elements it does not contain.
   /// See [Inheritable.canonicalEnclosingContainer].
-  bool containsElement(Element element) => allElements.contains(element);
+  bool containsElement(Element? element) => allElements.contains(element);
 
-  Set<Element> _allElements;
-  Set<Element> get allElements =>
-      _allElements ??= allModelElements.map((e) => e.element).toSet();
+  Set<Element?>? _allElements;
+  Set<Element?> get allElements =>
+      _allElements ??= allModelElements!.map((e) => e.element).toSet();
 
-  Map<String, List<ModelElement>> _membersByName;
+  Map<String?, List<ModelElement>>? _membersByName;
 
   /// Given a ModelElement that is a member of some other class, return
   /// the member of this class that has the same name and runtime type.
@@ -189,18 +193,18 @@ abstract class Container extends ModelElement
   T memberByExample<T extends ModelElement>(T example) {
     if (_membersByName == null) {
       _membersByName = {};
-      for (var me in allModelElements) {
-        if (!_membersByName.containsKey(me.name)) {
-          _membersByName[me.name] = [];
+      for (var me in allModelElements!) {
+        if (!_membersByName!.containsKey(me.name)) {
+          _membersByName![me.name] = [];
         }
-        _membersByName[me.name].add(me);
+        _membersByName![me.name]!.add(me);
       }
     }
     ModelElement member;
     // [T] is insufficiently specific to disambiguate between different
     // subtypes of [Inheritable] or other mixins/implementations of
     // [ModelElement] via [Iterable.whereType].
-    var possibleMembers = _membersByName[example.name]
+    var possibleMembers = _membersByName![example.name]!
         .where((e) => e.runtimeType == example.runtimeType);
     if (example is Accessor) {
       possibleMembers = possibleMembers
@@ -208,7 +212,7 @@ abstract class Container extends ModelElement
     }
     member = possibleMembers.first;
     assert(possibleMembers.length == 1);
-    return member;
+    return member as T;
   }
 
   bool get hasPublicStaticFields => publicStaticFieldsSorted.isNotEmpty;
@@ -216,11 +220,11 @@ abstract class Container extends ModelElement
   Iterable<Field> get publicStaticFields =>
       model_utils.filterNonPublic(staticFields);
 
-  List<Field> _publicStaticFieldsSorted;
+  List<Field>? _publicStaticFieldsSorted;
   List<Field> get publicStaticFieldsSorted =>
       _publicStaticFieldsSorted ??= publicStaticFields.toList()..sort(byName);
 
-  Iterable<Field> get staticFields => declaredFields.where((f) => f.isStatic);
+  Iterable<Field> get staticFields => declaredFields!.where((f) => f.isStatic);
 
   Iterable<Field> get variableStaticFields =>
       staticFields.where((f) => !f.isConst);
@@ -231,13 +235,13 @@ abstract class Container extends ModelElement
   Iterable<Field> get publicVariableStaticFields =>
       model_utils.filterNonPublic(variableStaticFields);
 
-  List<Field> _publicVariableStaticFieldsSorted;
+  List<Field>? _publicVariableStaticFieldsSorted;
   List<Field> get publicVariableStaticFieldsSorted =>
       _publicVariableStaticFieldsSorted ??= publicVariableStaticFields.toList()
         ..sort(byName);
 
   Iterable<Method> get staticMethods =>
-      declaredMethods.where((m) => m.isStatic);
+      declaredMethods!.where((m) => m.isStatic);
 
   bool get hasPublicStaticMethods =>
       model_utils.filterNonPublic(publicStaticMethodsSorted).isNotEmpty;
@@ -245,7 +249,7 @@ abstract class Container extends ModelElement
   Iterable<Method> get publicStaticMethods =>
       model_utils.filterNonPublic(staticMethods);
 
-  List<Method> _publicStaticMethodsSorted;
+  List<Method>? _publicStaticMethodsSorted;
   List<Method> get publicStaticMethodsSorted =>
       _publicStaticMethodsSorted ??= publicStaticMethods.toList()..sort(byName);
 
@@ -253,33 +257,33 @@ abstract class Container extends ModelElement
   /// parameter-global.
   Iterable<MapEntry<String, CommentReferable>> get extraReferenceChildren => [];
 
-  Map<String, CommentReferable> _referenceChildren;
+  Map<String, CommentReferable>? _referenceChildren;
   @override
   @mustCallSuper
   Map<String, CommentReferable> get referenceChildren {
     if (_referenceChildren == null) {
       _referenceChildren = {};
-      _referenceChildren.addEntries(allModelElements
+      _referenceChildren!.addEntries(allModelElements!
           .whereNotType<Accessor>()
           .whereNotType<Constructor>()
           .generateEntries());
 
-      _referenceChildren.addEntriesIfAbsent(extraReferenceChildren);
+      _referenceChildren!.addEntriesIfAbsent(extraReferenceChildren);
       // Process unscoped parameters last to make sure they don't override
       // other options.
-      for (var modelElement in allModelElements) {
+      for (var modelElement in allModelElements!) {
         // Don't complain about references to parameter names, but prefer
         // referring to anything else.
         // TODO(jcollins-g): Figure out something good to do in the ecosystem
         // here to wean people off the habit of unscoped parameter references.
         if (modelElement.hasParameters) {
-          _referenceChildren
+          _referenceChildren!
               .addEntriesIfAbsent(modelElement.parameters.generateEntries());
         }
       }
-      _referenceChildren['this'] = this;
+      _referenceChildren!['this'] = this;
     }
-    return _referenceChildren;
+    return _referenceChildren!;
   }
 
   @override

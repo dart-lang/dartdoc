@@ -6,9 +6,9 @@ import 'package:dartdoc/src/model/model.dart';
 
 /// Something able to be indexed.
 abstract class Indexable implements Nameable {
-  String get href;
+  String? get href;
 
   String get kind;
 
-  int get overriddenDepth => 0;
+  int? get overriddenDepth => 0;
 }
