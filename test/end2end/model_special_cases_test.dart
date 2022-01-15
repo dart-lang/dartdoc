@@ -276,7 +276,7 @@ void main() {
     }, skip: !_constructorTearoffsAllowed.allows(utils.platformVersion));
 
     group('named-arguments-anywhere', () {
-      Library namedArgumentsAnywhere;
+      late Library namedArgumentsAnywhere;
 
       setUpAll(() async {
         namedArgumentsAnywhere = (await _testPackageGraphExperiments)
