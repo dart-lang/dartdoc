@@ -67,12 +67,6 @@ void main() {
   final _constructorTearoffsAllowed =
       VersionRange(min: Version.parse('2.15.0-0'), includeMin: true);
 
-  // We can not use ExperimentalFeature.releaseVersion or even
-  // ExperimentalFeature.experimentalReleaseVersion as these are set to null
-  // even when partial analyzer implementations are available.
-  final _namedArgumentsAnywhereAllowed =
-      VersionRange(min: Version.parse('2.17.0-0'), includeMin: true);
-
   // Experimental features not yet enabled by default.  Move tests out of this
   // block when the feature is enabled by default.
   group('Experiments', () {
@@ -226,103 +220,7 @@ void main() {
         expect(referenceLookup(A, 'new'), equals(MatchingLinkResult(null)));
         expect(referenceLookup(At, 'new'), equals(MatchingLinkResult(null)));
       });
-
-      test('constant rendering', () {
-        TopLevelVariable aFunc,
-            aFuncParams,
-            aTearOffDefaultConstructor,
-            aTearOffNonDefaultConstructor,
-            aTearOffNonDefaultConstructorInt,
-            aTearOffDefaultConstructorArgs;
-        TopLevelVariable aTearOffDefaultConstructorTypedef;
-        aFunc =
-            constructorTearoffs.constants.firstWhere((c) => c.name == 'aFunc');
-        aFuncParams = constructorTearoffs.constants
-            .firstWhere((c) => c.name == 'aFuncParams');
-        aTearOffDefaultConstructor = constructorTearoffs.constants
-            .firstWhere((c) => c.name == 'aTearOffDefaultConstructor');
-        aTearOffNonDefaultConstructor = constructorTearoffs.constants
-            .firstWhere((c) => c.name == 'aTearOffNonDefaultConstructor');
-        aTearOffNonDefaultConstructorInt = constructorTearoffs.constants
-            .firstWhere((c) => c.name == 'aTearOffNonDefaultConstructorInt');
-        aTearOffDefaultConstructorArgs = constructorTearoffs.constants
-            .firstWhere((c) => c.name == 'aTearOffDefaultConstructorArgs');
-        aTearOffDefaultConstructorTypedef = constructorTearoffs.constants
-            .firstWhere((c) => c.name == 'aTearOffDefaultConstructorTypedef');
-
-        expect(aFunc.constantValue, equals('func'));
-        expect(aFuncParams.constantValue, equals('funcTypeParams'));
-        var aFuncWithArgs = constructorTearoffs.constants
-            .firstWhere((c) => c.name == 'aFuncWithArgs');
-        expect(aFuncWithArgs.constantValue,
-            equals('funcTypeParams&lt;String, int&gt;'));
-
-        expect(aTearOffDefaultConstructor.constantValue, equals('F.new'));
-        expect(aTearOffNonDefaultConstructor.constantValue,
-            equals('F.alternative'));
-        expect(aTearOffNonDefaultConstructorInt.constantValue,
-            equals('F&lt;int&gt;.alternative'));
-        expect(aTearOffDefaultConstructorArgs.constantValue,
-            equals('F&lt;String&gt;.new'));
-
-        expect(aTearOffDefaultConstructorTypedef.constantValue,
-            equals('Fstring.new'));
-        var aTearOffDefaultConstructorArgsTypedef =
-            constructorTearoffs.constants.firstWhere(
-                (c) => c.name == 'aTearOffDefaultConstructorArgsTypedef');
-        expect(aTearOffDefaultConstructorArgsTypedef.constantValue,
-            equals('Ft&lt;String&gt;.new'));
-      });
     }, skip: !_constructorTearoffsAllowed.allows(utils.platformVersion));
-
-    group('named-arguments-anywhere', () {
-      late Library namedArgumentsAnywhere;
-
-      setUpAll(() async {
-        namedArgumentsAnywhere = (await _testPackageGraphExperiments)
-            .libraries
-            .firstWhere((l) => l.name == 'named_arguments_anywhere');
-      });
-
-      test(
-          'named parameters in a const invocation value can be specified '
-          'last', () {
-        var p =
-            namedArgumentsAnywhere.constants.firstWhere((c) => c.name == 'p');
-
-        expect(
-            p.constantValue,
-            equals(
-                '<a href="%%__HTMLBASE_dartdoc_internal__%%named_arguments_anywhere/C/C.html">C</a>'
-                '(1, 2, c: 3, d: 4)'));
-      });
-
-      test(
-          'named parameters in a const invocation value can be specified '
-          'anywhere', () {
-        var q =
-            namedArgumentsAnywhere.constants.firstWhere((c) => c.name == 'q');
-
-        expect(
-            q.constantValue,
-            equals(
-                '<a href="%%__HTMLBASE_dartdoc_internal__%%named_arguments_anywhere/C/C.html">C</a>'
-                '(1, c: 2, 3, d: 4)'));
-      });
-
-      test(
-          'named parameters in a const invocation value can be specified '
-          'first', () {
-        var r =
-            namedArgumentsAnywhere.constants.firstWhere((c) => c.name == 'r');
-
-        expect(
-            r.constantValue,
-            equals(
-                '<a href="%%__HTMLBASE_dartdoc_internal__%%named_arguments_anywhere/C/C.html">C</a>'
-                '(c: 1, d: 2, 3, 4)'));
-      });
-    }, skip: !_namedArgumentsAnywhereAllowed.allows(utils.platformVersion));
   });
 
   group('HTML is sanitized when enabled', () {

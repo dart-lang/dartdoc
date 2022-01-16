@@ -6,4 +6,3 @@ analyzer:
     - triple-shift
     - generic-metadata
     - constructor-tearoffs
-    - named-arguments-anywhere
