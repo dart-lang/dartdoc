@@ -1,10 +1,10 @@
-# dartdoc
+# Dart documentation generator
 
 [![Build Status](https://github.com/dart-lang/dartdoc/workflows/Test/badge.svg)](https://github.com/dart-lang/dartdoc/actions?query=workflow%3ATest)
 [![Coverage Status](https://coveralls.io/repos/github/dart-lang/dartdoc/badge.svg?branch=master)](https://coveralls.io/github/dart-lang/dartdoc?branch=master)
 
 
-Use `dartdoc` to generate HTML documentaton for your Dart package.
+Use `dart doc` to generate HTML documentaton for your Dart package.
 
 For information about contributing to the dartdoc project, see the
 [contributor docs][].
@@ -12,19 +12,21 @@ For information about contributing to the dartdoc project, see the
 For issues/details related to hosted Dart API docs, see
 [dart-lang/api.dart.dev](https://github.com/dart-lang/api.dart.dev/).
 
-## Installing dartdoc
+## Installation
 
-Run `pub global activate dartdoc` to install the latest version of dartdoc compatible with your SDK.
+The [`dart`] tool(https://dart.dev/tools/dart-tool),
+with the `dart doc` command, is part of the [Dart SDK](https://dart.dev/get-dart).
 
 ## Generating docs
 
-Run `dartdoc` from the root directory of a package.  Your package must analyze without errors
-with `dart analyze` or `flutter analyze` as appropriate.  Here is an example of dartdoc documenting
+Run `dart doc .` from the root directory of a package.  Your package must analyze without errors
+with `dart analyze` or `flutter analyze` as appropriate.  Here is an example of dart doc documenting
 itself:
 
 ```
-$ dartdoc
+$ dart doc .
 Documenting dartdoc...
+...
 Initialized dartdoc with 766 libraries in 63.9 seconds
 Generating docs for library dartdoc from package:dartdoc/dartdoc.dart...
 Validating docs...
@@ -36,7 +38,7 @@ Success! Docs generated into <path to dartdoc>/doc/api
 By default, the documentation is generated to the `doc/api` directory as static
 HTML files.
 
-Run `dartdoc -h` to see the available command-line options.
+Run `dart help doc` to see the available command-line options.
 
 ## Viewing docs
 
@@ -47,7 +49,7 @@ An easy way to run an HTTP server locally is to use the `dhttpd` package. For
 example:
 
 ```
-$ pub global activate dhttpd
+$ dart pub global activate dhttpd
 $ dhttpd --path doc/api
 ```
 
@@ -85,7 +87,7 @@ authoring doc comments for Dart with `dartdoc`.
 
 ## Excluding from documentation
 
-`dartdoc` will not generate documentation for a Dart element and its children that have the
+`dart doc` will not generate documentation for a Dart element and its children that have the
 `@nodoc` tag in the documentation comment.
 
 ## Advanced features
