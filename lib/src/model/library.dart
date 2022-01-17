@@ -133,11 +133,13 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     if (e is GetterSetterCombo) {
       Accessor? getter;
       Accessor? setter;
-      if (e.hasGetter) {
-        getter = modelBuilder.fromElement(e.getter!.element) as Accessor;
+      var elementGetter = e.getter;
+      if (elementGetter != null) {
+        getter = modelBuilder.fromElement(elementGetter.element) as Accessor;
       }
-      if (e.hasSetter) {
-        setter = modelBuilder.fromElement(e.setter!.element) as Accessor;
+      var elementSetter = e.setter;
+      if (elementSetter != null) {
+        setter = modelBuilder.fromElement(elementSetter.element) as Accessor;
       }
       return modelBuilder
           .fromPropertyInducingElement(e.element!,
@@ -146,7 +148,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
           .fullyQualifiedName;
     }
     return modelBuilder.fromElement(e.element!).fullyQualifiedName;
-  }).toList();
+  }).toList(growable: false);
 
   @override
   CharacterLocation? get characterLocation {
@@ -216,12 +218,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   }();
 
   late final String dirName = () {
-    String directoryName;
-    if (isAnonymous) {
-      directoryName = nameFromPath;
-    } else {
-      directoryName = name;
-    }
+    var directoryName = isAnonymous ? nameFromPath : name;
     directoryName = directoryName.replaceAll(':', '-').replaceAll('/', '_');
     return directoryName;
   }();
