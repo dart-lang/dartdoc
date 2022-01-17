@@ -603,9 +603,8 @@ class DartdocOptionArgSynth<T> extends DartdocOption<T>
       OptionKind optionIs = OptionKind.other,
       this.negatable = false,
       this.splitCommas = false})
-      : super(name, null, help, optionIs, mustExist, null, resourceProvider) {
-    assert(T is! Iterable || splitCommas == true);
-  }
+      : assert(T is! Iterable || splitCommas == true),
+        super(name, null, help, optionIs, mustExist, null, resourceProvider);
 
   @override
   void _onMissing(
