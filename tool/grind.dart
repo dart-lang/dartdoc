@@ -241,12 +241,12 @@ void analyzeTestPackages() async {
   }
 }
 
-@Task('Check for dartfmt cleanliness')
-void dartfmt() async {
+@Task('Check for dart format cleanliness')
+void checkFormat() async {
   if (Platform.version.contains('dev')) {
     var filesToFix = <String>[];
     // Filter out test packages as they always have strange formatting.
-    // Passing parameters to dartfmt for directories to search results in
+    // Passing parameters to dart format for directories to search results in
     // filenames being stripped of the dirname so we have to filter here.
     void addFileToFix(String line) {
       if (!line.startsWith('Changed ')) return;
@@ -259,39 +259,29 @@ void dartfmt() async {
     }
 
     log('Validating dart format with version ${Platform.version}');
-    // TODO(jcollins-g): return to global once dartfmt can handle generic
-    // type aliases
-    for (var subDirectory in [
-      'bin',
-      'lib',
-      'test',
-      'tool',
-      path.join('testing/test_package')
-    ]) {
-      await SubprocessLauncher('dartfmt').runStreamed(
-          sdkBin('dart'),
-          [
-            'format',
-            '-o',
-            'none',
-            subDirectory,
-          ],
-          perLine: (n) => addFileToFix(n));
-    }
+    await SubprocessLauncher('dart format').runStreamed(
+        sdkBin('dart'),
+        [
+          'format',
+          '-o',
+          'none',
+          '.',
+        ],
+        perLine: addFileToFix);
     if (filesToFix.isNotEmpty) {
       fail(
           'dart format found files needing reformatting. Use this command to reformat:\n'
           'dart format ${filesToFix.map((f) => "'$f'").join(' ')}');
     }
   } else {
-    log('Skipping dartfmt check, requires latest dev version of SDK');
+    log('Skipping dart format check, requires latest dev version of SDK');
   }
 }
 
 @Task('Run quick presubmit checks.')
 @Depends(
   analyze,
-  dartfmt,
+  checkFormat,
   checkBuild,
   tryPublish,
   smokeTest,
@@ -303,7 +293,7 @@ void presubmit() {}
 void buildbot() {}
 
 @Task('Run buildbot tests, but without publish test')
-@Depends(analyze, dartfmt, checkBuild, smokeTest, longTest, testDartdoc)
+@Depends(analyze, checkFormat, checkBuild, smokeTest, longTest, testDartdoc)
 void buildbotNoPublish() {}
 
 @Task('Generate docs for the Dart SDK')
