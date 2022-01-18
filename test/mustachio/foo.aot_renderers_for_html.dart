@@ -22,7 +22,7 @@ String renderFoo(_i1.Foo context0) {
   buffer.write('''
 
     s1: ''');
-  buffer.writeEscaped(context0.s1?.toString());
+  buffer.writeEscaped(context0.s1);
   buffer.writeln();
   buffer.write('''
     b1? ''');
@@ -51,7 +51,7 @@ String renderFoo(_i1.Foo context0) {
     buffer.writeln();
     buffer.write('''
     Baz has a ''');
-    buffer.writeEscaped(context3.bar!.s2?.toString());
+    buffer.writeEscaped(context3.bar!.s2);
   }
   if (context0.baz == null) {
     buffer.write('''baz is null''');
