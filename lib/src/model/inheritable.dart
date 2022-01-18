@@ -78,14 +78,14 @@ mixin Inheritable on ContainerMember {
                 .memberByExample(this)
                 .canonicalEnclosingContainer;
           }
-          Container? canonicalC = packageGraph
+          var canonicalContainer = packageGraph
               .findCanonicalModelElementFor(c.element) as Container?;
           // TODO(jcollins-g): invert this lookup so traversal is recursive
           // starting from the ModelElement.
-          if (canonicalC != null) {
-            assert(canonicalC.isCanonical);
-            assert(canonicalC.containsElement(searchElement));
-            found = canonicalC;
+          if (canonicalContainer != null) {
+            assert(canonicalContainer.isCanonical);
+            assert(canonicalContainer.containsElement(searchElement));
+            found = canonicalContainer;
             break;
           }
         }
@@ -145,7 +145,7 @@ mixin Inheritable on ContainerMember {
         _isOverride = false;
         return _isOverride;
       }
-      InheritingContainer? enclosingCanonical =
+      var enclosingCanonical =
           enclosingElement!.canonicalModelElement as InheritingContainer?;
       // The container in which this element was defined, canonical if available.
       Container? definingCanonical =
@@ -172,7 +172,7 @@ mixin Inheritable on ContainerMember {
   @override
   late final int overriddenDepth = () {
     var depth = 0;
-    Inheritable e = this;
+    var e = this;
     while (e.overriddenElement != null) {
       depth += 1;
       e = e.overriddenElement!;
