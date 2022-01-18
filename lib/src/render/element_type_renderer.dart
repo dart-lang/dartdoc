@@ -33,8 +33,8 @@ class FunctionTypeElementTypeRendererHtml
     buf.write(' ');
     buf.write(elementType.nameWithGenerics);
     buf.write('<span class="signature">(');
-    buf.write(
-        ParameterRendererHtml().renderLinkedParams(elementType.parameters));
+    buf.write(const ParameterRendererHtml()
+        .renderLinkedParams(elementType.parameters));
     buf.write(')</span>');
     return wrapNullabilityParens(elementType, buf.toString());
   }
@@ -169,7 +169,7 @@ class CallableElementTypeRendererHtml
     var buf = StringBuffer();
     buf.write(elementType.nameWithGenerics);
     buf.write('(');
-    buf.write(ParameterRendererHtml()
+    buf.write(const ParameterRendererHtml()
         .renderLinkedParams(elementType.modelElement.parameters,
             showNames: false)
         .trim());
@@ -206,7 +206,8 @@ class FunctionTypeElementTypeRendererMd
     buf.write(' ');
     buf.write(elementType.nameWithGenerics);
     buf.write('(');
-    buf.write(ParameterRendererMd().renderLinkedParams(elementType.parameters));
+    buf.write(
+        const ParameterRendererMd().renderLinkedParams(elementType.parameters));
     buf.write(')');
     return wrapNullabilityParens(elementType, buf.toString());
   }
@@ -331,7 +332,7 @@ class CallableElementTypeRendererMd
     var buf = StringBuffer();
     buf.write(elementType.nameWithGenerics);
     buf.write('(');
-    buf.write(ParameterRendererMd()
+    buf.write(const ParameterRendererMd()
         .renderLinkedParams(elementType.parameters, showNames: false)
         .trim());
     buf.write(') → ');

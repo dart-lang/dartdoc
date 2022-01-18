@@ -96,7 +96,7 @@ class PubPackageBuilder implements PackageBuilder {
   /// Do not call more than once for a given PackageBuilder.
   Future<void> _calculatePackageMap() async {
     _packageMap = <String, List<Folder>>{};
-    Folder cwd = resourceProvider.getResource(config.inputDir) as Folder;
+    var cwd = resourceProvider.getResource(config.inputDir) as Folder;
     var info = await packageConfigProvider
         .findPackageConfig(resourceProvider.getFolder(cwd.path));
     if (info == null) return;

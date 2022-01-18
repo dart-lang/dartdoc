@@ -507,7 +507,7 @@ abstract class ModelElement extends Canonicalization
   late final String sourceHref = SourceLinker.fromElement(this).href();
 
   Library get definingLibrary {
-    Library? library = modelBuilder.fromElement(element!.library!) as Library?;
+    var library = modelBuilder.fromElement(element!.library!) as Library?;
     if (library == null) {
       warn(PackageWarning.noDefiningLibraryFound);
     }
