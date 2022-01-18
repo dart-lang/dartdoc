@@ -252,9 +252,8 @@ class AliasedElementType extends ParameterizedElementType with Aliased {
       PackageGraph packageGraph,
       ModelElement element,
       ElementType? returnedFrom)
-      : super(type, library, packageGraph, element, returnedFrom) {
-    assert(type.alias?.element != null);
-  }
+      : assert(type.alias?.element != null),
+        super(type, library, packageGraph, element, returnedFrom);
 
   @override
   ParameterizedType get type;

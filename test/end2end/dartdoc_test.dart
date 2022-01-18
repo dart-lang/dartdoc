@@ -44,8 +44,6 @@ final Folder _testPackageBadDir = _getFolder('testing/test_package_bad');
 final Folder _testSkyEnginePackage = _getFolder('testing/sky_engine');
 final Folder _testPackageIncludeExclude =
     _getFolder('testing/test_package_include_exclude');
-final Folder _testPackageImportExportError =
-    _getFolder('testing/test_package_import_export_error');
 final Folder _testPackageOptions = _getFolder('testing/test_package_options');
 final Folder _testPackageCustomTemplates =
     _getFolder('testing/test_package_custom_templates');
@@ -170,21 +168,6 @@ void main() {
       expect(unresolvedToolErrors.length, equals(1));
       expect(unresolvedToolErrors.first,
           contains('Tool "drill" returned non-zero exit code'));
-    });
-
-    test('with broken reexport chain', () async {
-      var dartdoc =
-          await buildDartdoc([], _testPackageImportExportError, tempDir);
-      var results = await dartdoc.generateDocsBase();
-      var p = results.packageGraph;
-      var unresolvedExportWarnings = p
-          .packageWarningCounter.countedWarnings.values
-          .map((e) => e[PackageWarning.unresolvedExport] ?? {})
-          .expand((element) => element);
-
-      expect(unresolvedExportWarnings.length, equals(1));
-      expect(unresolvedExportWarnings.first,
-          equals('"package:not_referenced_in_pubspec/library3.dart"'));
     });
 
     group('include/exclude parameters', () {

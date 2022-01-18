@@ -725,7 +725,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     assert(allLibrariesAdded);
     var lib = findCanonicalLibraryFor(e);
     if (preferredClass != null) {
-      Container? canonicalClass =
+      var canonicalClass =
           findCanonicalModelElementFor(preferredClass.element) as Container?;
       if (canonicalClass != null) preferredClass = canonicalClass;
     }

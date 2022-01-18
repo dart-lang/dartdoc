@@ -1050,17 +1050,13 @@ void main() {
     });
 
     test('can import other libraries with unusual URIs', () {
-      final Set<Library> fakeLibraryImportedExported = () {
-        var _importedExportedLibraries = <Library>{};
-        for (var l in <LibraryElement>{
+      final fakeLibraryImportedExported = <Library>{
+        for (final l in <LibraryElement>{
           ...fakeLibrary.element.importedLibraries,
           ...fakeLibrary.element.exportedLibraries
-        }) {
-          var lib = packageGraph.modelBuilder.fromElement(l) as Library;
-          _importedExportedLibraries.add(lib);
-        }
-        return _importedExportedLibraries;
-      }();
+        })
+          packageGraph.modelBuilder.fromElement(l) as Library
+      };
       expect(fakeLibraryImportedExported.any((l) => l.name == 'import_unusual'),
           isTrue);
     });

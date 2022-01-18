@@ -18,9 +18,7 @@ analyzer:
     - 'testing/test_package/**'
     - 'testing/test_package_custom_templates/**'
     - 'testing/test_package_experiments/**'
-    - 'testing/test_package_export_error/**'
     - 'testing/test_package_extensions/**'
-    - 'testing/test_package_import_export_error/**'
     - 'testing/test_package_imported/**'
     - 'testing/test_package_options/**'
     # This package imports flutter, which is perhaps not found by the base `dart analyze` tool.
@@ -29,25 +27,25 @@ analyzer:
     - 'testing/sky_engine/**'
     # These packages have compile-time errors.
     - 'testing/test_package_bad/**'
-    - 'testing/test_package_export_error/**'
 linter:
   rules:
-    always_declare_return_types: true
-    always_put_required_named_parameters_first: true
-    avoid_bool_literals_in_conditional_expressions: true
-    avoid_dynamic_calls: true
-    avoid_single_cascade_in_expression_statements: true
-    avoid_unused_constructor_parameters: true
-    avoid_init_to_null: true
-    directives_ordering: true
-    no_adjacent_strings_in_list: true
-    package_api_docs: true
-    prefer_final_fields: true
-    prefer_initializing_formals: true
-    prefer_single_quotes: true
-    prefer_void_to_null: true
-    slash_for_doc_comments: true
-    type_annotate_public_apis: true
-    # Work in progress canonical score lints
-    unawaited_futures: true
-    unnecessary_null_aware_assignments: true
+    - always_declare_return_types
+    - always_put_required_named_parameters_first
+    - avoid_bool_literals_in_conditional_expressions
+    - avoid_dynamic_calls
+    - avoid_slow_async_io
+    - avoid_unused_constructor_parameters
+    - depend_on_referenced_packages
+    - directives_ordering
+    - eol_at_end_of_file
+    - no_adjacent_strings_in_list
+    - omit_local_variable_types
+    - package_api_docs
+    - prefer_asserts_in_initializer_lists
+    - prefer_null_aware_method_calls
+    - prefer_single_quotes
+    - sort_child_properties_last
+    - sort_pub_dependencies
+    - type_annotate_public_apis
+    - unawaited_futures
+    - unnecessary_null_aware_assignments

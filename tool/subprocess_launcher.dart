@@ -91,7 +91,7 @@ class CoverageSubprocessLauncher extends SubprocessLauncher {
       }
     }
 
-    Completer<Iterable<Map<Object, Object?>>> coverageResult = Completer();
+    var coverageResult = Completer<Iterable<Map<Object, Object?>>>();
 
     if (coverageEnabled) {
       // This must be added before awaiting in this method.
@@ -173,7 +173,7 @@ class SubprocessLauncher {
     environment = {}
       ..addAll(environmentDefaults)
       ..addAll(environment ?? {});
-    List<Map<String, Object?>> jsonObjects = [];
+    var jsonObjects = <Map<String, Object?>>[];
 
     /// Allow us to pretend we didn't pass the JSON flag in to dartdoc by
     /// printing what dartdoc would have printed without it, yet storing
