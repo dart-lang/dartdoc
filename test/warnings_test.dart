@@ -5,39 +5,59 @@
 /// Unit tests for lib/src/warnings.dart.
 library dartdoc.warnings_test;
 
-import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
+import 'package:dartdoc/options.dart';
+import 'package:dartdoc/src/dartdoc.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
+import 'package:dartdoc/src/generator/generator.dart';
 import 'package:dartdoc/src/io_utils.dart';
+import 'package:dartdoc/src/model/package_builder.dart';
+import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:test/test.dart';
 
-void main() {
-  var resourceProvider = PhysicalResourceProvider.INSTANCE;
-  late final Folder testPackageOne, testPackageTwo, testPackageThree;
-  late DartdocOptionSet optionSet;
+import 'src/test_descriptor_utils.dart' as d;
 
-  setUpAll(() {
-    var tempDir = resourceProvider.createSystemTemp('warnings_test');
-    testPackageOne = resourceProvider.getFolder(
-        resourceProvider.pathContext.join(tempDir.path, 'test_package_one'))
-      ..create();
-    testPackageTwo = resourceProvider.getFolder(
-        resourceProvider.pathContext.join(tempDir.path, 'test_package_two'))
-      ..create();
-    testPackageThree = resourceProvider.getFolder(
-        resourceProvider.pathContext.join(tempDir.path, 'test_package_three'))
-      ..create();
-    var pubspecYamlOne = resourceProvider.getFile(
-        resourceProvider.pathContext.join(testPackageOne.path, 'pubspec.yaml'));
-    pubspecYamlOne.writeAsStringSync('name: test_package_one');
-    var pubspecYamlTwo = resourceProvider.getFile(
-        resourceProvider.pathContext.join(testPackageTwo.path, 'pubspec.yaml'));
-    pubspecYamlTwo.writeAsStringSync('name: test_package_two');
-    var dartdocYamlThree = resourceProvider.getFile(resourceProvider.pathContext
-        .join(testPackageThree.path, 'dartdoc_options.yaml'));
-    dartdocYamlThree.writeAsStringSync('''
+void main() async {
+  var resourceProvider = PhysicalResourceProvider.INSTANCE;
+  var optionSet = await DartdocOptionRoot.fromOptionGenerators(
+      'dartdoc', [createDartdocOptions], pubPackageMetaProvider);
+
+  test('excluding package from "allowed warnings" list ignores all', () async {
+    await d.package('test_package').create();
+    var testPackage = resourceProvider.getFolder(d.dir('test_package').io.path);
+
+    optionSet.parseArguments([
+      '--allow-warnings-in-packages',
+      'some_other_package',
+    ]);
+    PackageWarningOptions options =
+        optionSet['packageWarningOptions'].valueAt(testPackage);
+
+    expect(options.warningModes.values,
+        everyElement(equals(PackageWarningMode.ignore)));
+  });
+
+  test('warnings and errors are allowed at the commandline', () async {
+    await d.package('test_package').create();
+    var testPackage = resourceProvider.getFolder(d.dir('test_package').io.path);
+
+    optionSet.parseArguments([
+      '--allow-warnings-in-packages',
+      'test_package',
+      '--allow-errors-in-packages',
+      'test_package',
+    ]);
+    PackageWarningOptions options =
+        optionSet['packageWarningOptions'].valueAt(testPackage);
+
+    expect(options.warningModes.values, contains(PackageWarningMode.warn));
+    expect(options.warningModes.values, contains(PackageWarningMode.error));
+  });
+
+  test('allowing and ignoring warnings from a package ignores all', () async {
+    await d.package('test_package', dartdocOptions: '''
 dartdoc:
   warnings:
     - type-as-html
@@ -45,64 +65,64 @@ dartdoc:
   errors:
     - unresolved-doc-reference
   ignore:
-    - ambiguous-reexport  
-    ''');
-    var pubspecYamlThree = resourceProvider.getFile(resourceProvider.pathContext
-        .join(testPackageThree.path, 'pubspec.yaml'));
-    pubspecYamlThree.writeAsStringSync('name: test_package_three');
-  });
+    - ambiguous-reexport
+''').create();
+    var testPackage = resourceProvider.getFolder(d.dir('test_package').io.path);
 
-  setUp(() async {
-    optionSet = await DartdocOptionRoot.fromOptionGenerators(
-        'dartdoc', [createDartdocOptions], pubPackageMetaProvider);
-  });
-
-  test('Verify that options for enabling/disabling packages work', () {
     optionSet.parseArguments([
       '--allow-warnings-in-packages',
-      'test_package_two,test_package_three',
+      'test_package',
       '--allow-errors-in-packages',
-      'test_package_two,test_package_three',
+      'test_package',
       '--ignore-warnings-in-packages',
-      'test_package_three',
+      'test_package',
       '--ignore-errors-in-packages',
-      'test_package_three',
+      'test_package',
     ]);
-    PackageWarningOptions optionsOne =
-        optionSet['packageWarningOptions'].valueAt(testPackageOne);
-    PackageWarningOptions optionsTwo =
-        optionSet['packageWarningOptions'].valueAt(testPackageTwo);
-    PackageWarningOptions optionsThree =
-        optionSet['packageWarningOptions'].valueAt(testPackageThree);
+    PackageWarningOptions options =
+        optionSet['packageWarningOptions'].valueAt(testPackage);
 
-    expect(optionsOne.warningModes.values,
-        everyElement(equals(PackageWarningMode.ignore)));
-    expect(optionsOne.warningModes.values,
-        everyElement(equals(PackageWarningMode.ignore)));
-    expect(optionsTwo.warningModes.values, contains(PackageWarningMode.warn));
-    expect(optionsTwo.warningModes.values, contains(PackageWarningMode.error));
-    expect(optionsThree.warningModes.values,
-        everyElement(equals(PackageWarningMode.ignore)));
-    expect(optionsThree.warningModes.values,
+    expect(options.warningModes.values,
         everyElement(equals(PackageWarningMode.ignore)));
   });
 
-  test('Verify that loading warning options from files works', () {
-    optionSet.parseArguments([]);
-    PackageWarningOptions optionsThree =
-        optionSet['packageWarningOptions'].valueAt(testPackageThree);
+  test('loading warning options from files works', () async {
+    await d.package('test_package', dartdocOptions: '''
+dartdoc:
+  warnings:
+    - type-as-html
+    - unresolved-export
+  errors:
+    - unresolved-doc-reference
+  ignore:
+    - ambiguous-reexport
+''').create();
 
-    expect(optionsThree.warningModes[PackageWarning.typeAsHtml],
+    optionSet.parseArguments([]);
+    PackageWarningOptions options = optionSet['packageWarningOptions']
+        .valueAt(resourceProvider.getFolder(d.dir('test_package').io.path));
+
+    expect(options.warningModes[PackageWarning.typeAsHtml],
         equals(PackageWarningMode.warn));
-    expect(optionsThree.warningModes[PackageWarning.unresolvedExport],
+    expect(options.warningModes[PackageWarning.unresolvedExport],
         equals(PackageWarningMode.warn));
-    expect(optionsThree.warningModes[PackageWarning.unresolvedDocReference],
+    expect(options.warningModes[PackageWarning.unresolvedDocReference],
         equals(PackageWarningMode.error));
-    expect(optionsThree.warningModes[PackageWarning.ambiguousReexport],
+    expect(options.warningModes[PackageWarning.ambiguousReexport],
         equals(PackageWarningMode.ignore));
   });
 
-  test('Verify that args override warning options from files', () {
+  test('args override warning options from files', () async {
+    await d.package('test_package', dartdocOptions: '''
+dartdoc:
+  warnings:
+    - type-as-html
+    - unresolved-export
+  errors:
+    - unresolved-doc-reference
+  ignore:
+    - ambiguous-reexport
+''').create();
     optionSet.parseArguments([
       '--warnings',
       'ambiguous-reexport',
@@ -111,22 +131,32 @@ dartdoc:
       '--ignore',
       'unresolved-export',
     ]);
-    PackageWarningOptions optionsThree =
-        optionSet['packageWarningOptions'].valueAt(testPackageThree);
-    expect(optionsThree.warningModes[PackageWarning.typeAsHtml],
+    PackageWarningOptions options = optionSet['packageWarningOptions']
+        .valueAt(resourceProvider.getFolder(d.dir('test_package').io.path));
+    expect(options.warningModes[PackageWarning.typeAsHtml],
         equals(PackageWarningMode.error));
-    expect(optionsThree.warningModes[PackageWarning.unresolvedExport],
+    expect(options.warningModes[PackageWarning.unresolvedExport],
         equals(PackageWarningMode.ignore));
-    // unresolved-doc-reference is not mentioned in command line, so it reverts to default
-    expect(optionsThree.warningModes[PackageWarning.unresolvedDocReference],
+    // `unresolved-doc-reference` is not mentioned in command line, so it
+    // reverts to default.
+    expect(options.warningModes[PackageWarning.unresolvedDocReference],
         equals(PackageWarningMode.warn));
-    expect(optionsThree.warningModes[PackageWarning.ambiguousReexport],
+    expect(options.warningModes[PackageWarning.ambiguousReexport],
         equals(PackageWarningMode.warn));
   });
 
-  test(
-      'Verify that null values for warnings, ignore, and errors reset to defaults',
-      () {
+  test('null values for warnings, ignore, and errors reset to defaults',
+      () async {
+    await d.package('test_package', dartdocOptions: '''
+dartdoc:
+  warnings:
+    - type-as-html
+    - unresolved-export
+  errors:
+    - unresolved-doc-reference
+  ignore:
+    - ambiguous-reexport
+''').create();
     optionSet.parseArguments([
       '--warnings',
       '',
@@ -135,16 +165,89 @@ dartdoc:
       '--ignore',
       '',
     ]);
-    PackageWarningOptions optionsThree =
-        optionSet['packageWarningOptions'].valueAt(testPackageThree);
+    PackageWarningOptions options = optionSet['packageWarningOptions']
+        .valueAt(resourceProvider.getFolder(d.dir('test_package').io.path));
 
-    expect(optionsThree.warningModes[PackageWarning.typeAsHtml],
+    expect(options.warningModes[PackageWarning.typeAsHtml],
         equals(PackageWarningMode.ignore));
-    expect(optionsThree.warningModes[PackageWarning.unresolvedExport],
+    expect(options.warningModes[PackageWarning.unresolvedExport],
         equals(PackageWarningMode.error));
-    expect(optionsThree.warningModes[PackageWarning.unresolvedDocReference],
+    expect(options.warningModes[PackageWarning.unresolvedDocReference],
         equals(PackageWarningMode.warn));
-    expect(optionsThree.warningModes[PackageWarning.ambiguousReexport],
+    expect(options.warningModes[PackageWarning.ambiguousReexport],
         equals(PackageWarningMode.warn));
+  });
+
+  test('warns of a broken re-export chain', () async {
+    await d.package(
+      'test_package',
+      pubspec: '''
+name: test_package
+version: 0.0.1
+environment:
+    sdk: '>=2.12.0 <3.0.0'
+dependencies:
+  test_package_export_error:
+    path: ../test_package_export_error
+''',
+      libFiles: [
+        d.file('lib.dart', '''
+export 'package:test_package_export_error/library2.dart';
+
+/// This is an important class.
+class BugFreeClass {}
+'''),
+      ],
+    ).create();
+    await d.package(
+      'test_package_export_error',
+      pubspec: '''
+name: test_package_export_error
+version: 0.0.1
+environment:
+    sdk: '>=2.12.0 <3.0.0'
+''',
+      libFiles: [
+        d.file('library1.dart', '''
+/// An export of a non-existent library.
+export 'package:not_referenced_in_pubspec/library3.dart' show Lib3Class;
+'''),
+        d.file('library2.dart', '''
+export 'package:test_package_export_error/library1.dart';
+
+class Lib2Class {}
+'''),
+      ],
+    ).create();
+
+    var tempDir = resourceProvider.createSystemTemp('dartdoc.test.');
+
+    var optionSet = await DartdocOptionRoot.fromOptionGenerators(
+        'dartdoc',
+        [
+          createDartdocOptions,
+          createGeneratorOptions,
+        ],
+        pubPackageMetaProvider);
+    optionSet.parseArguments(
+        ['--input', d.dir('test_package').io.path, '--output', tempDir.path]);
+    var context = DartdocGeneratorOptionContext.fromDefaultContextLocation(
+        optionSet, pubPackageMetaProvider.resourceProvider);
+
+    var dartdoc = await Dartdoc.fromContext(
+      context,
+      PubPackageBuilder(
+          context, pubPackageMetaProvider, PhysicalPackageConfigProvider()),
+    );
+
+    var packageGraph = await dartdoc.packageBuilder.buildPackageGraph();
+    var unresolvedExportWarnings = packageGraph
+        .packageWarningCounter.countedWarnings.values
+        .map((e) => e[PackageWarning.unresolvedExport] ?? {})
+        .expand((element) => element);
+
+    expect(unresolvedExportWarnings, hasLength(1));
+    expect(unresolvedExportWarnings.first,
+        equals('"package:not_referenced_in_pubspec/library3.dart"'));
   });
 }
