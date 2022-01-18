@@ -4,7 +4,6 @@
 
 import 'dart:collection';
 
-import 'package:analyzer/dart/ast/ast.dart' hide CommentReference;
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
 // ignore: implementation_imports
@@ -164,11 +163,11 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   final Map<Element, ModelNode> _modelNodes = {};
 
   void populateModelNodeFor(
-      Element element, Map<String, CompilationUnit> compilationUnitMap) {
+      Element element, DartDocResolvedLibrary resolvedLibrary) {
     _modelNodes.putIfAbsent(
         element,
-        () => ModelNode(utils.getAstNode(element, compilationUnitMap), element,
-            resourceProvider));
+        () => ModelNode(
+            resolvedLibrary.getAstNode(element), element, resourceProvider));
   }
 
   ModelNode? getModelNodeFor(Element? element) => _modelNodes[element!];
@@ -862,7 +861,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   /// a documentation entry point (for elements that have no Library within the
   /// set of canonical Libraries).
   Library findOrCreateLibraryFor(DartDocResolvedLibrary resolvedLibrary) {
-    final libraryElement = resolvedLibrary.library;
+    final libraryElement = resolvedLibrary.element.library;
     var foundLibrary = findButDoNotCreateLibraryFor(libraryElement);
     if (foundLibrary != null) return foundLibrary;
 

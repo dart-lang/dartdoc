@@ -4,7 +4,6 @@
 
 import 'dart:collection';
 
-import 'package:analyzer/dart/ast/ast.dart' show CompilationUnit;
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/scope.dart';
 import 'package:analyzer/dart/element/type_system.dart';
@@ -26,13 +25,14 @@ import 'package:dartdoc/src/warnings.dart';
 /// [LibraryElement] given at initialization.
 class _HashableChildLibraryElementVisitor
     extends GeneralizingElementVisitor<void> {
-  final void Function(Element) libraryProcessor;
+  final DartDocResolvedLibrary resolvedLibrary;
+  final PackageGraph packageGraph;
 
-  _HashableChildLibraryElementVisitor(this.libraryProcessor);
+  _HashableChildLibraryElementVisitor(this.resolvedLibrary, this.packageGraph);
 
   @override
   void visitElement(Element element) {
-    libraryProcessor(element);
+    packageGraph.populateModelNodeFor(element, resolvedLibrary);
     super.visitElement(element);
   }
 
@@ -66,15 +66,9 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
   factory Library.fromLibraryResult(DartDocResolvedLibrary resolvedLibrary,
       PackageGraph packageGraph, Package package) {
-    var element = resolvedLibrary.result.element;
+    var element = resolvedLibrary.element;
 
-    // Initialize [packageGraph]'s cache of [ModelNode]s for relevant
-    // elements in this library.
-    var compilationUnitMap = <String, CompilationUnit>{
-      for (var unit in resolvedLibrary.result.units) unit.path: unit.unit,
-    };
-    _HashableChildLibraryElementVisitor((Element e) =>
-            packageGraph.populateModelNodeFor(e, compilationUnitMap))
+    _HashableChildLibraryElementVisitor(resolvedLibrary, packageGraph)
         .visitElement(element);
 
     var exportedAndLocalElements = {
@@ -85,8 +79,12 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
       ..._getDefinedElements(element.definingCompilationUnit),
       for (var cu in element.parts) ..._getDefinedElements(cu),
     };
-    var library = Library._(element, packageGraph, package,
-        resolvedLibrary.restoredUri, exportedAndLocalElements);
+    var library = Library._(
+        element,
+        packageGraph,
+        package,
+        resolvedLibrary.element.source.uri.toString(),
+        exportedAndLocalElements);
 
     package.allLibraries.add(library);
     return library;
@@ -411,17 +409,14 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   /// remotely.
   static String _getNameFromPath(
       LibraryElement element, Package package, String restoredUri) {
-    var name = restoredUri;
-    PackageMeta hidePackage;
-    if (package.documentedWhere == DocumentLocation.remote) {
-      hidePackage = package.packageMeta;
-    } else {
-      hidePackage = package.packageGraph.packageMeta;
-    }
-    // restoreUri must not result in another file URI.
-    assert(!name.startsWith('file:'), '"$name" must not start with "file:"');
-
+    assert(!restoredUri.startsWith('file:'),
+        '"$restoredUri" must not start with "file:"');
+    var hidePackage = package.documentedWhere == DocumentLocation.remote
+        ? package.packageMeta
+        : package.packageGraph.packageMeta;
     var defaultPackagePrefix = 'package:$hidePackage/';
+
+    var name = restoredUri;
     if (name.startsWith(defaultPackagePrefix)) {
       name = name.substring(defaultPackagePrefix.length, name.length);
     }
