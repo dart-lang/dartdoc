@@ -1,4 +1,4 @@
-name: Test - NNBD branch
+name: Test
 
 on:
   # Run CI on pushes to the main branch, and on PRs against main.
@@ -64,7 +64,7 @@ jobs:
         if: runner.os == 'Windows'
         run: git config --global core.autocrlf input
       - uses: actions/checkout@v2
-      - uses: dart-lang/setup-dart@v1.2
+      - uses: dart-lang/setup-dart@v1.3
         with:
           sdk: ${{ matrix.sdk }}
       - name: Install dependencies
