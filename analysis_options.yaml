@@ -18,9 +18,7 @@ analyzer:
     - 'testing/test_package/**'
     - 'testing/test_package_custom_templates/**'
     - 'testing/test_package_experiments/**'
-    - 'testing/test_package_export_error/**'
     - 'testing/test_package_extensions/**'
-    - 'testing/test_package_import_export_error/**'
     - 'testing/test_package_imported/**'
     - 'testing/test_package_options/**'
     # This package imports flutter, which is perhaps not found by the base `dart analyze` tool.
@@ -29,7 +27,6 @@ analyzer:
     - 'testing/sky_engine/**'
     # These packages have compile-time errors.
     - 'testing/test_package_bad/**'
-    - 'testing/test_package_export_error/**'
 linter:
   rules:
     - always_declare_return_types

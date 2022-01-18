@@ -8,8 +8,8 @@ import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
-import 'package:test_descriptor/test_descriptor.dart' as d;
 
+import 'src/test_descriptor_utils.dart' as d;
 import 'src/utils.dart' as utils;
 
 void main() {
@@ -39,19 +39,20 @@ void main() {
             additionalArguments: ['--no-link-to-remote']));
 
     setUp(() async {
-      await d.dir(libraryName, [
-        d.file('pubspec.yaml', '''
+      await d.package(
+        libraryName,
+        pubspec: '''
 name: constructor_tearoffs
 version: 0.0.1
 environment:
   sdk: '>=2.15.0-0 <3.0.0'
-'''),
-        d.file('analysis_options.yaml', '''
+''',
+        analysisOptions: '''
 analyzer:
   enable-experiment:
     - constructor-tearoffs
-'''),
-        d.dir('lib', [
+''',
+        libFiles: [
           d.file('lib.dart', '''
 library $libraryName;
 
@@ -77,8 +78,8 @@ const aTearOffUnnamedConstructorArgsTypedef = Ft<String>.new;
 const aTearOffNamedConstructor = F.alternative;
 const aTearOffNamedConstructorArgs = F<int>.alternative;
 '''),
-        ]),
-      ]).create();
+        ],
+      ).create();
 
       library = (await bootstrapPackageGraph())
           .libraries
@@ -162,19 +163,20 @@ const aTearOffNamedConstructorArgs = F<int>.alternative;
             additionalArguments: ['--no-link-to-remote']));
 
     setUp(() async {
-      await d.dir(libraryName, [
-        d.file('pubspec.yaml', '''
+      await d.package(
+        libraryName,
+        pubspec: '''
 name: named_arguments_anywhere
 version: 0.0.1
 environment:
   sdk: '>=2.17.0-0 <3.0.0'
-'''),
-        d.file('analysis_options.yaml', '''
+''',
+        analysisOptions: '''
 analyzer:
   enable-experiment:
     - named-arguments-anywhere
-'''),
-        d.dir('lib', [
+''',
+        libFiles: [
           d.file('lib.dart', '''
 library $libraryName;
 
@@ -188,8 +190,8 @@ const q = C(1, c: 2, 3, d: 4);
 
 const r = C(c: 1, d: 2, 3, 4);
 '''),
-        ]),
-      ]).create();
+        ],
+      ).create();
 
       library = (await bootstrapPackageGraph())
           .libraries
