@@ -8077,7 +8077,7 @@ class _Renderer_Library extends RendererBase<Library> {
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
                           c, remainingNames, 'InheritanceManager3'),
-                  isNullValue: (CT_ c) => c.inheritanceManager == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     renderSimple(c.inheritanceManager, ast, r.template, sink,
