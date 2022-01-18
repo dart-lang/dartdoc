@@ -467,7 +467,8 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   late final Iterable<ModelElement> allCanonicalModelElements =
       allModelElements.where((e) => e.isCanonical).toList(growable: false);
 
-  late final Map<String, CommentReferable> _referenceChildren = () {
+  @override
+  late final Map<String, CommentReferable> referenceChildren = () {
     var referenceChildrenBuilder = <String, CommentReferable>{};
     var definedNamesModelElements = element.exportNamespace.definedNames.values
         .map((v) => modelBuilder.fromElement(v));
@@ -483,9 +484,6 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     }
     return referenceChildrenBuilder;
   }();
-
-  @override
-  Map<String, CommentReferable> get referenceChildren => _referenceChildren;
 
   @override
   Iterable<CommentReferable> get referenceParents => [package];
