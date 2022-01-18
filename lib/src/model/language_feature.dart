@@ -30,7 +30,6 @@ class LanguageFeature {
 
   final LanguageFeatureRenderer _featureRenderer;
 
-  LanguageFeature(this.name, this._featureRenderer) {
-    assert(_featureDescriptions.containsKey(name));
-  }
+  LanguageFeature(this.name, this._featureRenderer)
+      : assert(_featureDescriptions.containsKey(name));
 }

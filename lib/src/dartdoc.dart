@@ -366,7 +366,7 @@ class Dartdoc {
     if (!file.exists) {
       return;
     }
-    var decoder = JsonDecoder();
+    const decoder = JsonDecoder();
     List<dynamic> jsonData = decoder.convert(file.readAsStringSync());
 
     var found = <String>{};

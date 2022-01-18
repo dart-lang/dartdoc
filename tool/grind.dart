@@ -416,7 +416,7 @@ WarningsCollection jsonMessageIterableToWarnings(
     String? pubDir,
     String branch) {
   var warningTexts = WarningsCollection(tempPath, pubDir, branch);
-  for (Map<Object, Object?> message in messageIterable) {
+  for (final message in messageIterable) {
     if (message.containsKey('level') &&
         message['level'] == 'WARNING' &&
         message.containsKey('data')) {
@@ -1084,7 +1084,7 @@ Future<void> checkBuild() async {
   await build();
   for (var relPath in _generatedFilesList) {
     var newVersion = File(path.join('lib', relPath));
-    if (!await newVersion.exists()) {
+    if (!newVersion.existsSync()) {
       log('${newVersion.path} does not exist\n');
       differentFiles.add(relPath);
     } else if (originalFileContents[relPath] !=

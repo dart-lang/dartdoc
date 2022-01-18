@@ -14,7 +14,7 @@ import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:path/path.dart' as path show Context;
 
-Encoding utf8AllowMalformed = Utf8Codec(allowMalformed: true);
+const Encoding utf8AllowMalformed = Utf8Codec(allowMalformed: true);
 
 extension PathExtensions on path.Context {
   /// Returns a canonicalized path including the home directory in place of

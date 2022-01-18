@@ -515,9 +515,11 @@ class _BlockCompiler {
   /// The result is HTML-escaped if [escape] is true.
   void _writeGetter(_VariableLookup variableLookup, {bool escape = true}) {
     var variableAccess = variableLookup.name;
-    var toString = typeSystem.isPotentiallyNullable(variableLookup.type)
-        ? '$variableAccess?.toString()'
-        : '$variableAccess.toString()';
+    var toString = variableLookup.type.isDartCoreString
+        ? variableAccess
+        : typeSystem.isPotentiallyNullable(variableLookup.type)
+            ? '$variableAccess?.toString()'
+            : '$variableAccess.toString()';
     writeln(escape
         ? 'buffer.writeEscaped($toString);'
         : 'buffer.write($toString);');
