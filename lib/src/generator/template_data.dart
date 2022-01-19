@@ -234,7 +234,7 @@ abstract class InheritingContainerTemplateData<T extends InheritingContainer>
 
   @override
   T get self => clazz;
-  String get linkedObjectType => _packageGraph.dartCoreObject.linkedName;
+  String get linkedObjectType => _packageGraph.dartCoreObject;
   @override
   String get title =>
       '${clazz.name} ${clazz.kind} - ${library.name} library - Dart API';

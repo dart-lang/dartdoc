@@ -172,7 +172,7 @@ class Dartdoc {
     var stopwatch = Stopwatch()..start();
     var packageGraph = await packageBuilder.buildPackageGraph();
     var seconds = stopwatch.elapsedMilliseconds / 1000.0;
-    var libs = packageGraph.libraries.length;
+    var libs = packageGraph.libraryCount;
     logInfo("Initialized dartdoc with $libs librar${libs == 1 ? 'y' : 'ies'} "
         'in ${seconds.toStringAsFixed(1)} seconds');
     stopwatch.reset();
