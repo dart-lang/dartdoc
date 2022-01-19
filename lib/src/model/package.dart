@@ -3,7 +3,6 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/comment_references/model_comment_reference.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/io_utils.dart';
@@ -113,7 +112,7 @@ class Package extends LibraryContainer
 
   @override
   late final String? documentation = () {
-    final docFile = documentationFile;
+    final docFile = packageMeta.getReadmeContents();
     return docFile != null
         ? packageGraph.resourceProvider
             .readAsMalformedAllowedStringSync(docFile)
@@ -125,8 +124,6 @@ class Package extends LibraryContainer
 
   @override
   bool get hasExtendedDocumentation => hasDocumentation;
-
-  late final File? documentationFile = packageMeta.getReadmeContents();
 
   @override
   String get oneLineDoc => '';

@@ -11712,18 +11712,6 @@ class _Renderer_Package extends RendererBase<Package> {
                         parent: r);
                   },
                 ),
-                'documentationFile': Property(
-                  getValue: (CT_ c) => c.documentationFile,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'File'),
-                  isNullValue: (CT_ c) => c.documentationFile == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.documentationFile, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['File']!);
-                  },
-                ),
                 'documentationFrom': Property(
                   getValue: (CT_ c) => c.documentationFrom,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -16661,8 +16649,8 @@ const _invisibleGetters = {
     'allLibrariesAdded',
     'packageWarningCounter',
     'publicPackages',
+    'libraries',
     'publicLibraries',
-    'localLibraries',
     'localPublicLibraries',
     'inheritThrough',
     'invisibleAnnotations',
@@ -16682,7 +16670,6 @@ const _invisibleGetters = {
     'documentedPackages',
     'libraryElementReexportedBy',
     'allHrefs',
-    'libraries',
     'referenceParents'
   },
   'PackageMeta': {
