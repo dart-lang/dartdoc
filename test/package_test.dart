@@ -146,7 +146,8 @@ int x;
         writeToJoinedPath(['README.md'], 'Readme text.');
         var packageGraph = await utils.bootBasicPackage(
             projectPath, packageMetaProvider, packageConfigProvider);
-        expect(packageGraph.defaultPackage.documentationFile, isNotNull);
+        expect(packageGraph.defaultPackage.packageMeta.getReadmeContents(),
+            isNotNull);
         expect(packageGraph.defaultPackage.hasDocumentation, true);
       });
 
@@ -154,7 +155,8 @@ int x;
         writeToJoinedPath(['README'], 'Readme text.');
         var packageGraph = await utils.bootBasicPackage(
             projectPath, packageMetaProvider, packageConfigProvider);
-        expect(packageGraph.defaultPackage.documentationFile, isNotNull);
+        expect(packageGraph.defaultPackage.packageMeta.getReadmeContents(),
+            isNotNull);
         expect(packageGraph.defaultPackage.hasDocumentation, true);
       });
 
@@ -458,7 +460,8 @@ int x;
             projectPath, packageMetaProvider, packageConfigProvider);
 
         expect(packageGraph.defaultPackage.hasDocumentation, isFalse);
-        expect(packageGraph.defaultPackage.documentationFile, isNull);
+        expect(packageGraph.defaultPackage.packageMeta.getReadmeContents(),
+            isNull);
         expect(packageGraph.defaultPackage.documentation, isNull);
       });
 
