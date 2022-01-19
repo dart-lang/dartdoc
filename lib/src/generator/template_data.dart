@@ -2,7 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:collection/collection.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 typedef ContainerSidebar = String Function(
@@ -215,7 +214,6 @@ abstract class InheritingContainerTemplateData<T extends InheritingContainer>
   final T clazz;
   @override
   final Library library;
-  Class? _objectType;
   final LibrarySidebar _sidebarForLibrary;
   final ContainerSidebar _sidebarForContainer;
 
@@ -236,7 +234,7 @@ abstract class InheritingContainerTemplateData<T extends InheritingContainer>
 
   @override
   T get self => clazz;
-  String get linkedObjectType => objectType?.linkedName ?? 'Object';
+  String get linkedObjectType => _packageGraph.dartCoreObject.linkedName;
   @override
   String get title =>
       '${clazz.name} ${clazz.kind} - ${library.name} library - Dart API';
@@ -252,17 +250,6 @@ abstract class InheritingContainerTemplateData<T extends InheritingContainer>
   List<Documentable> get navLinks => [_packageGraph.defaultPackage, library];
   @override
   String get htmlBase => '../';
-
-  Class? get objectType {
-    if (_objectType != null) {
-      return _objectType!;
-    }
-
-    var dc = _packageGraph.libraries
-        .firstWhereOrNull((it) => it.name == 'dart:core');
-
-    return _objectType = dc?.getClassByName('Object');
-  }
 }
 
 /// Base template data class for [Extension].

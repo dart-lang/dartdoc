@@ -638,6 +638,11 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     return utils.filterNonPublic(_localLibraries).toSet();
   }();
 
+  /// The [Class] representing `Object`.
+  late final Class dartCoreObject = libraries
+      .firstWhere((library) => library.name == 'dart:core')
+      .getClassByName('Object')!;
+
   /// Return the set of [Class]es objects should inherit through if they
   /// show up in the inheritance chain.  Do not call before interceptorElement is
   /// found.  Add classes here if they are similar to Interceptor in that they
