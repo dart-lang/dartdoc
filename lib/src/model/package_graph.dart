@@ -10,7 +10,7 @@ import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/src/generated/sdk.dart' show DartSdk, SdkLibrary;
 // ignore: implementation_imports
 import 'package:analyzer/src/generated/source.dart' show Source;
-import 'package:collection/src/iterable_extensions.dart';
+import 'package:collection/collection.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/failure.dart';
 import 'package:dartdoc/src/logging.dart';
