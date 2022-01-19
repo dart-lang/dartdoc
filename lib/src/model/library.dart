@@ -4,7 +4,6 @@
 
 import 'dart:collection';
 
-import 'package:analyzer/dart/ast/ast.dart' show CompilationUnit;
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/scope.dart';
 import 'package:analyzer/dart/element/type_system.dart';
@@ -26,13 +25,14 @@ import 'package:dartdoc/src/warnings.dart';
 /// [LibraryElement] given at initialization.
 class _HashableChildLibraryElementVisitor
     extends GeneralizingElementVisitor<void> {
-  final void Function(Element) libraryProcessor;
+  final DartDocResolvedLibrary resolvedLibrary;
+  final PackageGraph packageGraph;
 
-  _HashableChildLibraryElementVisitor(this.libraryProcessor);
+  _HashableChildLibraryElementVisitor(this.resolvedLibrary, this.packageGraph);
 
   @override
   void visitElement(Element element) {
-    libraryProcessor(element);
+    packageGraph.populateModelNodeFor(element, resolvedLibrary);
     super.visitElement(element);
   }
 
@@ -60,26 +60,15 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   @override
   final Package package;
 
-  @Deprecated('Use [modelBuilder.fromElement] instead of this factory.')
-  factory Library(LibraryElement element, PackageGraph packageGraph) {
-    return packageGraph.modelBuilder.fromElement(element) as Library;
-  }
-
   Library._(LibraryElement element, PackageGraph packageGraph, this.package,
       this._restoredUri, this._exportedAndLocalElements)
       : super(element, null, packageGraph);
 
   factory Library.fromLibraryResult(DartDocResolvedLibrary resolvedLibrary,
       PackageGraph packageGraph, Package package) {
-    var element = resolvedLibrary.result.element;
+    var element = resolvedLibrary.element;
 
-    // Initialize [packageGraph]'s cache of [ModelNode]s for relevant
-    // elements in this library.
-    var compilationUnitMap = <String, CompilationUnit>{
-      for (var unit in resolvedLibrary.result.units) unit.path: unit.unit,
-    };
-    _HashableChildLibraryElementVisitor((Element e) =>
-            packageGraph.populateModelNodeFor(e, compilationUnitMap))
+    _HashableChildLibraryElementVisitor(resolvedLibrary, packageGraph)
         .visitElement(element);
 
     var exportedAndLocalElements = {
@@ -90,8 +79,12 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
       ..._getDefinedElements(element.definingCompilationUnit),
       for (var cu in element.parts) ..._getDefinedElements(cu),
     };
-    var library = Library._(element, packageGraph, package,
-        resolvedLibrary.restoredUri, exportedAndLocalElements);
+    var library = Library._(
+        element,
+        packageGraph,
+        package,
+        resolvedLibrary.element.source.uri.toString(),
+        exportedAndLocalElements);
 
     package.allLibraries.add(library);
     return library;
@@ -115,8 +108,6 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   @override
   Scope get scope => element.scope;
 
-  List<String>? __allOriginalModelElementNames;
-
   /// Return true if this library is in a package configured to be treated as
   /// as using Null safety and itself uses Null safety.
   bool get _allowsNullSafety => element.isNonNullableByDefault;
@@ -135,27 +126,27 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   /// documented with this library, but these ModelElements and names correspond
   /// to the defining library where each originally came from with respect
   /// to inheritance and reexporting.  Most useful for error reporting.
-  Iterable<String>? get _allOriginalModelElementNames {
-    __allOriginalModelElementNames ??= allModelElements.map((e) {
-      if (e is GetterSetterCombo) {
-        Accessor? getter;
-        Accessor? setter;
-        if (e.hasGetter) {
-          getter = modelBuilder.fromElement(e.getter!.element) as Accessor;
-        }
-        if (e.hasSetter) {
-          setter = modelBuilder.fromElement(e.setter!.element) as Accessor;
-        }
-        return modelBuilder
-            .fromPropertyInducingElement(e.element!,
-                modelBuilder.fromElement(e.element!.library!) as Library,
-                getter: getter, setter: setter)
-            .fullyQualifiedName;
+  late final Iterable<String> _allOriginalModelElementNames =
+      allModelElements.map((e) {
+    if (e is GetterSetterCombo) {
+      Accessor? getter;
+      Accessor? setter;
+      var elementGetter = e.getter;
+      if (elementGetter != null) {
+        getter = modelBuilder.fromElement(elementGetter.element) as Accessor;
       }
-      return modelBuilder.fromElement(e.element!).fullyQualifiedName;
-    }).toList();
-    return __allOriginalModelElementNames;
-  }
+      var elementSetter = e.setter;
+      if (elementSetter != null) {
+        setter = modelBuilder.fromElement(elementSetter.element) as Accessor;
+      }
+      return modelBuilder
+          .fromPropertyInducingElement(e.element!,
+              modelBuilder.fromElement(e.element!.library!) as Library,
+              getter: getter, setter: setter)
+          .fullyQualifiedName;
+    }
+    return modelBuilder.fromElement(e.element!).fullyQualifiedName;
+  }).toList(growable: false);
 
   @override
   CharacterLocation? get characterLocation {
@@ -225,12 +216,9 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   }();
 
   late final String dirName = () {
-    var _dirName = name;
-    if (isAnonymous) {
-      _dirName = nameFromPath;
-    }
-    _dirName = _dirName.replaceAll(':', '-').replaceAll('/', '_');
-    return _dirName;
+    var directoryName = isAnonymous ? nameFromPath : name;
+    directoryName = directoryName.replaceAll(':', '-').replaceAll('/', '_');
+    return directoryName;
   }();
 
   Set<String?>? _canonicalFor;
@@ -261,7 +249,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
       return '';
     });
     if (notFoundInAllModelElements.isNotEmpty) {
-      notFoundInAllModelElements.removeAll(_allOriginalModelElementNames!);
+      notFoundInAllModelElements.removeAll(_allOriginalModelElementNames);
     }
     for (var notFound in notFoundInAllModelElements) {
       warn(PackageWarning.ignoredCanonicalFor, message: notFound);
@@ -314,13 +302,8 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     return '${package.baseHref}$filePath';
   }
 
-  InheritanceManager3? _inheritanceManager;
-
   // TODO(srawlins): Make a static field, likely on [Class].
-  InheritanceManager3? get inheritanceManager {
-    _inheritanceManager ??= InheritanceManager3();
-    return _inheritanceManager;
-  }
+  late final InheritanceManager3 inheritanceManager = InheritanceManager3();
 
   bool get isAnonymous => element.name.isEmpty;
 
@@ -343,11 +326,11 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     } else if (element.name.isNotEmpty) {
       return element.name;
     }
-    var _name = pathContext.basename(source.fullName);
-    if (_name.endsWith('.dart')) {
-      _name = _name.substring(0, _name.length - '.dart'.length);
+    var baseName = pathContext.basename(source.fullName);
+    if (baseName.endsWith('.dart')) {
+      return baseName.substring(0, baseName.length - '.dart'.length);
     }
-    return _name;
+    return baseName;
   }();
 
   /// Generate a name for this library based on its location.
@@ -364,15 +347,11 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   String get packageName => packageMeta?.name ?? '';
 
   /// The real packageMeta, as opposed to the package we are documenting with.
-  PackageMeta? _packageMeta;
-
-  PackageMeta? get packageMeta {
-    _packageMeta ??= packageGraph.packageMetaProvider.fromElement(
-      element,
-      config.sdkDir,
-    );
-    return _packageMeta;
-  }
+  late final PackageMeta? packageMeta =
+      packageGraph.packageMetaProvider.fromElement(
+    element,
+    config.sdkDir,
+  );
 
   /// All variables ("properties") except constants.
   @override
@@ -403,21 +382,23 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     elements.addAll(_exportedAndLocalElements
         .whereType<PropertyAccessorElement>()
         .map((a) => a.variable as TopLevelVariableElement));
-    var _variables = <TopLevelVariable>[];
+    var variables = <TopLevelVariable>[];
     for (var element in elements) {
       Accessor? getter;
-      if (element.getter != null) {
-        getter = modelBuilder.from(element.getter!, this) as Accessor;
+      var elementGetter = element.getter;
+      if (elementGetter != null) {
+        getter = modelBuilder.from(elementGetter, this) as Accessor;
       }
       Accessor? setter;
-      if (element.setter != null) {
-        setter = modelBuilder.from(element.setter!, this) as Accessor;
+      var elementSetter = element.setter;
+      if (elementSetter != null) {
+        setter = modelBuilder.from(elementSetter, this) as Accessor;
       }
       var me = modelBuilder.fromPropertyInducingElement(element, this,
           getter: getter, setter: setter);
-      _variables.add(me as TopLevelVariable);
+      variables.add(me as TopLevelVariable);
     }
-    return _variables;
+    return variables;
   }();
 
   /// Reverses URIs if needed to get a package URI.
@@ -428,17 +409,14 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   /// remotely.
   static String _getNameFromPath(
       LibraryElement element, Package package, String restoredUri) {
-    var name = restoredUri;
-    PackageMeta hidePackage;
-    if (package.documentedWhere == DocumentLocation.remote) {
-      hidePackage = package.packageMeta;
-    } else {
-      hidePackage = package.packageGraph.packageMeta;
-    }
-    // restoreUri must not result in another file URI.
-    assert(!name.startsWith('file:'), '"$name" must not start with "file:"');
-
+    assert(!restoredUri.startsWith('file:'),
+        '"$restoredUri" must not start with "file:"');
+    var hidePackage = package.documentedWhere == DocumentLocation.remote
+        ? package.packageMeta
+        : package.packageGraph.packageMeta;
     var defaultPackagePrefix = 'package:$hidePackage/';
+
+    var name = restoredUri;
     if (name.startsWith(defaultPackagePrefix)) {
       name = name.substring(defaultPackagePrefix.length, name.length);
     }
@@ -450,7 +428,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   }
 
   late final HashMap<Element, Set<ModelElement>> modelElementsMap = () {
-    var _modelElementsMap = HashMap<Element, Set<ModelElement>>();
+    var modelElements = HashMap<Element, Set<ModelElement>>();
     for (var modelElement in <ModelElement>[
       ...library.constants,
       ...library.functions,
@@ -469,12 +447,12 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
         return [m, ...m.allModelElements];
       }),
     ]) {
-      _modelElementsMap
+      modelElements
           .putIfAbsent(modelElement.element!, () => {})
           .add(modelElement);
     }
-    _modelElementsMap.putIfAbsent(element, () => {}).add(this);
-    return _modelElementsMap;
+    modelElements.putIfAbsent(element, () => {}).add(this);
+    return modelElements;
   }();
 
   late final Iterable<ModelElement> allModelElements = [
@@ -482,40 +460,25 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   ];
 
   late final Iterable<ModelElement> allCanonicalModelElements =
-      allModelElements.where((e) => e.isCanonical).toList();
+      allModelElements.where((e) => e.isCanonical).toList(growable: false);
 
-  Map<String, CommentReferable>? _referenceChildren;
   @override
-  Map<String, CommentReferable> get referenceChildren {
-    if (_referenceChildren == null) {
-      _referenceChildren = {};
-      var definedNamesModelElements = element
-          .exportNamespace.definedNames.values
-          .map((v) => modelBuilder.fromElement(v));
-      _referenceChildren!.addEntries(
-          definedNamesModelElements.whereNotType<Accessor>().generateEntries());
-      /*
-      Map.fromEntries(
-          element.exportNamespace.definedNames.entries.expand((entry) sync* {
-        var modelElement = ModelElement.fromElement(entry.value, packageGraph);
-        if (modelElement is! Accessor) {
-          yield MapEntry(
-              modelElement.referenceName, modelElement);
-        }
-      }));
-      */
-      // TODO(jcollins-g): warn and get rid of this case where it shows up.
-      // If a user is hiding parts of a prefix import, the user should not
-      // refer to hidden members via the prefix, because that can be
-      // ambiguous.  dart-lang/dartdoc#2683.
-      for (var prefixEntry in prefixToLibrary.entries) {
-        if (!_referenceChildren!.containsKey(prefixEntry.key)) {
-          _referenceChildren![prefixEntry.key] = prefixEntry.value.first;
-        }
-      }
+  late final Map<String, CommentReferable> referenceChildren = () {
+    var referenceChildrenBuilder = <String, CommentReferable>{};
+    var definedNamesModelElements = element.exportNamespace.definedNames.values
+        .map((v) => modelBuilder.fromElement(v));
+    referenceChildrenBuilder.addEntries(
+        definedNamesModelElements.whereNotType<Accessor>().generateEntries());
+    // TODO(jcollins-g): warn and get rid of this case where it shows up.
+    // If a user is hiding parts of a prefix import, the user should not
+    // refer to hidden members via the prefix, because that can be
+    // ambiguous.  dart-lang/dartdoc#2683.
+    for (var prefixEntry in prefixToLibrary.entries) {
+      referenceChildrenBuilder.putIfAbsent(
+          prefixEntry.key, () => prefixEntry.value.first);
     }
-    return _referenceChildren!;
-  }
+    return referenceChildrenBuilder;
+  }();
 
   @override
   Iterable<CommentReferable> get referenceParents => [package];

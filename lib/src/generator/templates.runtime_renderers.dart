@@ -8077,7 +8077,7 @@ class _Renderer_Library extends RendererBase<Library> {
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
                           c, remainingNames, 'InheritanceManager3'),
-                  isNullValue: (CT_ c) => c.inheritanceManager == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     renderSimple(c.inheritanceManager, ast, r.template, sink,
@@ -11710,18 +11710,6 @@ class _Renderer_Package extends RendererBase<Package> {
                     _render_String(
                         c.documentationAsHtml!, ast, r.template, sink,
                         parent: r);
-                  },
-                ),
-                'documentationFile': Property(
-                  getValue: (CT_ c) => c.documentationFile,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'File'),
-                  isNullValue: (CT_ c) => c.documentationFile == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.documentationFile, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['File']!);
                   },
                 ),
                 'documentationFrom': Property(
@@ -16661,8 +16649,8 @@ const _invisibleGetters = {
     'allLibrariesAdded',
     'packageWarningCounter',
     'publicPackages',
+    'libraries',
     'publicLibraries',
-    'localLibraries',
     'localPublicLibraries',
     'inheritThrough',
     'invisibleAnnotations',
@@ -16682,7 +16670,6 @@ const _invisibleGetters = {
     'documentedPackages',
     'libraryElementReexportedBy',
     'allHrefs',
-    'libraries',
     'referenceParents'
   },
   'PackageMeta': {

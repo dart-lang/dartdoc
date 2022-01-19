@@ -4,7 +4,6 @@
 
 import 'dart:collection';
 
-import 'package:analyzer/dart/ast/ast.dart' hide CommentReference;
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
 // ignore: implementation_imports
@@ -164,11 +163,11 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   final Map<Element, ModelNode> _modelNodes = {};
 
   void populateModelNodeFor(
-      Element element, Map<String, CompilationUnit> compilationUnitMap) {
+      Element element, DartDocResolvedLibrary resolvedLibrary) {
     _modelNodes.putIfAbsent(
         element,
-        () => ModelNode(utils.getAstNode(element, compilationUnitMap), element,
-            resourceProvider));
+        () => ModelNode(
+            resolvedLibrary.getAstNode(element), element, resourceProvider));
   }
 
   ModelNode? getModelNodeFor(Element? element) => _modelNodes[element!];
@@ -621,22 +620,22 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     }
   }
 
-  Iterable<Library> get libraries =>
+  late final Iterable<Library> libraries =
       packages.expand((p) => p.libraries).toList()..sort();
 
-  late final Iterable<Library> publicLibraries = () {
+  late final Set<Library> publicLibraries = () {
     assert(allLibrariesAdded);
-    return utils.filterNonPublic(libraries).toList();
+    return utils.filterNonPublic(libraries).toSet();
   }();
 
-  late final Iterable<Library> localLibraries = () {
+  late final List<Library> _localLibraries = () {
     assert(allLibrariesAdded);
     return localPackages.expand((p) => p.libraries).toList()..sort();
   }();
 
-  late final Iterable<Library> localPublicLibraries = () {
+  late final Set<Library> localPublicLibraries = () {
     assert(allLibrariesAdded);
-    return utils.filterNonPublic(localLibraries).toList();
+    return utils.filterNonPublic(_localLibraries).toSet();
   }();
 
   /// Return the set of [Class]es objects should inherit through if they
@@ -862,7 +861,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   /// a documentation entry point (for elements that have no Library within the
   /// set of canonical Libraries).
   Library findOrCreateLibraryFor(DartDocResolvedLibrary resolvedLibrary) {
-    final libraryElement = resolvedLibrary.library;
+    final libraryElement = resolvedLibrary.element.library;
     var foundLibrary = findButDoNotCreateLibraryFor(libraryElement);
     if (foundLibrary != null) return foundLibrary;
 
@@ -903,7 +902,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   }();
 
   late final Iterable<ModelElement> allLocalModelElements = [
-    for (var library in localLibraries) ...library.allModelElements
+    for (var library in _localLibraries) ...library.allModelElements
   ];
 
   late final Iterable<ModelElement> allCanonicalModelElements =

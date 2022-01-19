@@ -377,7 +377,7 @@ abstract class InheritingContainer extends Container
         return __inheritedElements = <ExecutableElement>[];
       }
 
-      var inheritance = definingLibrary.inheritanceManager!;
+      var inheritance = definingLibrary.inheritanceManager;
       var cmap = inheritance.getInheritedConcreteMap2(element!);
       var imap = inheritance.getInheritedMap2(element!);
 

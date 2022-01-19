@@ -7,11 +7,8 @@ library dartdoc.model_utils;
 import 'dart:convert';
 import 'dart:io' show Platform;
 
-import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
-// ignore: implementation_imports
-import 'package:analyzer/src/dart/ast/utilities.dart' show NodeLocator2;
 import 'package:dartdoc/src/failure.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:glob/glob.dart';
@@ -54,23 +51,6 @@ bool matchGlobs(List<String> globs, String fullName, {bool? isWindows}) {
 
   return filteredGlobs.any((g) =>
       Glob(g, context: windows ? path.windows : path.posix).matches(fullName));
-}
-
-/// Returns the [AstNode] for a given [Element].
-///
-/// Uses a precomputed map of [element.source.fullName] to [CompilationUnit]
-/// to avoid linear traversal in [ResolvedLibraryElementImpl.getElementDeclaration].
-AstNode? getAstNode(
-    Element element, Map<String, CompilationUnit> compilationUnitMap) {
-  var fullName = element.source?.fullName;
-  if (fullName != null && !element.isSynthetic && element.nameOffset != -1) {
-    var unit = compilationUnitMap[fullName];
-    if (unit != null) {
-      var locator = NodeLocator2(element.nameOffset);
-      return (locator.searchWithin(unit)?.parent);
-    }
-  }
-  return null;
 }
 
 Iterable<T> filterHasCanonical<T extends ModelElement>(

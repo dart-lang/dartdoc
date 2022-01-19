@@ -242,7 +242,7 @@ void main() {
         var packageGraph = results.packageGraph;
         var p = packageGraph.defaultPackage;
         expect(p.name, 'test_package');
-        expect(p.documentationFile, isNotNull);
+        expect(p.packageMeta.getReadmeContents(), isNotNull);
         // Total number of public libraries in test_package.
         // +2 since we are not manually excluding anything.
         expect(packageGraph.defaultPackage.publicLibraries,
@@ -288,7 +288,7 @@ void main() {
 
       var p = results.packageGraph;
       expect(p.defaultPackage.name, 'sky_engine');
-      expect(p.defaultPackage.documentationFile, isNull);
+      expect(p.defaultPackage.packageMeta.getReadmeContents(), isNull);
       expect(p.libraries, hasLength(3));
       expect(p.libraries.map((lib) => lib.name).contains('dart:core'), isTrue);
       expect(p.libraries.map((lib) => lib.name).contains('dart:async'), isTrue);
