@@ -620,22 +620,22 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     }
   }
 
-  Iterable<Library> get libraries =>
+  late final Iterable<Library> libraries =
       packages.expand((p) => p.libraries).toList()..sort();
 
-  late final Iterable<Library> publicLibraries = () {
+  late final Set<Library> publicLibraries = () {
     assert(allLibrariesAdded);
-    return utils.filterNonPublic(libraries).toList();
+    return utils.filterNonPublic(libraries).toSet();
   }();
 
-  late final Iterable<Library> localLibraries = () {
+  late final List<Library> _localLibraries = () {
     assert(allLibrariesAdded);
     return localPackages.expand((p) => p.libraries).toList()..sort();
   }();
 
-  late final Iterable<Library> localPublicLibraries = () {
+  late final Set<Library> localPublicLibraries = () {
     assert(allLibrariesAdded);
-    return utils.filterNonPublic(localLibraries).toList();
+    return utils.filterNonPublic(_localLibraries).toSet();
   }();
 
   /// Return the set of [Class]es objects should inherit through if they
@@ -902,7 +902,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   }();
 
   late final Iterable<ModelElement> allLocalModelElements = [
-    for (var library in localLibraries) ...library.allModelElements
+    for (var library in _localLibraries) ...library.allModelElements
   ];
 
   late final Iterable<ModelElement> allCanonicalModelElements =

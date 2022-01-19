@@ -3,7 +3,6 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/comment_references/model_comment_reference.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/io_utils.dart';
@@ -107,40 +106,24 @@ class Package extends LibraryContainer
 
   LibraryContainer? get defaultCategory => nameToCategory[null];
 
-  String? _documentationAsHtml;
+  @override
+  late final String? documentationAsHtml =
+      Documentation.forElement(this).asHtml;
 
   @override
-  String? get documentationAsHtml {
-    if (_documentationAsHtml != null) return _documentationAsHtml;
-    _documentationAsHtml = Documentation.forElement(this).asHtml;
-
-    return _documentationAsHtml;
-  }
-
-  String? _documentation;
-
-  @override
-  String? get documentation {
-    if (_documentation == null) {
-      final docFile = documentationFile;
-      if (docFile != null) {
-        _documentation = packageGraph.resourceProvider
-            .readAsMalformedAllowedStringSync(docFile);
-      }
-    }
-    return _documentation;
-  }
+  late final String? documentation = () {
+    final docFile = packageMeta.getReadmeContents();
+    return docFile != null
+        ? packageGraph.resourceProvider
+            .readAsMalformedAllowedStringSync(docFile)
+        : null;
+  }();
 
   @override
   bool get hasDocumentation => documentation?.isNotEmpty == true;
 
   @override
   bool get hasExtendedDocumentation => hasDocumentation;
-
-  File? _documentationFile;
-
-  File? get documentationFile =>
-      _documentationFile ??= packageMeta.getReadmeContents();
 
   @override
   String get oneLineDoc => '';
@@ -162,21 +145,21 @@ class Package extends LibraryContainer
   /// Return true if this is the default package, this is part of an embedder
   /// SDK, or if [DartdocOptionContext.autoIncludeDependencies] is true -- but
   /// only if the package was not excluded on the command line.
-  late final bool isLocal = (
-          // Document as local if this is the default package.
-          _isLocalPublicByDefault ||
-              // Assume we want to document an embedded SDK as local if
-              // it has libraries defined in the default package.
-              // TODO(jcollins-g): Handle case where embedder SDKs can be
-              // assembled from multiple locations?
-              packageGraph.hasEmbedderSdk &&
-                  packageMeta.isSdk &&
-                  libraries.any((l) => _pathContext.isWithin(
-                      packageGraph.packageMeta.dir.path,
-                      (l.element.source.fullName)))) &&
-      // Regardless of the above rules, do not document as local if
-      // we excluded this package by name.
-      !_isExcluded;
+  late final bool isLocal = () {
+    // Do not document as local if we excluded this package by name.
+    if (_isExcluded) return false;
+    // Document as local if this is the default package.
+    if (_isLocalPublicByDefault) return true;
+    // Assume we want to document an embedded SDK as local if it has libraries
+    // defined in the default package.
+    // TODO(jcollins-g): Handle case where embedder SDKs can be assembled from
+    // multiple locations?
+    if (!packageGraph.hasEmbedderSdk) return false;
+    if (!packageMeta.isSdk) return false;
+    final packagePath = packageGraph.packageMeta.dir.path;
+    return libraries.any(
+        (l) => _pathContext.isWithin(packagePath, l.element.source.fullName));
+  }();
 
   /// True if the global config excludes this package by name.
   late final bool _isExcluded = packageGraph.config.isPackageExcluded(name);
