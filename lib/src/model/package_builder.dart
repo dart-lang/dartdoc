@@ -6,6 +6,7 @@ import 'dart:async';
 
 import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:analyzer/dart/analysis/results.dart';
+import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
 // ignore: implementation_imports
@@ -13,6 +14,8 @@ import 'package:analyzer/src/context/builder.dart' show EmbedderYamlLocator;
 // ignore: implementation_imports
 import 'package:analyzer/src/dart/analysis/analysis_context_collection.dart'
     show AnalysisContextCollectionImpl;
+// ignore: implementation_imports
+import 'package:analyzer/src/dart/ast/utilities.dart' show NodeLocator2;
 // ignore: implementation_imports
 import 'package:analyzer/src/dart/sdk/sdk.dart'
     show EmbedderSdk, FolderBasedDartSdk;
@@ -93,6 +96,8 @@ class PubPackageBuilder implements PackageBuilder {
 
   ResourceProvider get resourceProvider => packageMetaProvider.resourceProvider;
 
+  path.Context get pathContext => resourceProvider.pathContext;
+
   /// Do not call more than once for a given PackageBuilder.
   Future<void> _calculatePackageMap() async {
     _packageMap = <String, List<Folder>>{};
@@ -101,9 +106,9 @@ class PubPackageBuilder implements PackageBuilder {
         .findPackageConfig(resourceProvider.getFolder(cwd.path));
     if (info == null) return;
 
-    var rpc = resourceProvider.pathContext;
     for (var package in info.packages) {
-      var packagePath = rpc.normalize(rpc.fromUri(package.packageUriRoot));
+      var packagePath =
+          pathContext.normalize(pathContext.fromUri(package.packageUriRoot));
       var resource = resourceProvider.getResource(packagePath);
       if (resource is Folder) {
         _packageMap[package.name] = [resource];
@@ -113,21 +118,17 @@ class PubPackageBuilder implements PackageBuilder {
 
   late final Map<String, List<Folder>> _packageMap;
 
-  AnalysisContextCollection? _contextCollection;
-
-  AnalysisContextCollection? get contextCollection {
-    _contextCollection ??= AnalysisContextCollectionImpl(
-        includedPaths: [config.inputDir],
-        // TODO(jcollins-g): should we pass excluded directories here instead of
-        // handling it ourselves?
-        resourceProvider: resourceProvider,
-        sdkPath: config.sdkDir,
-        updateAnalysisOptions: (AnalysisOptionsImpl options) => options
-          ..hint = false
-          ..lint = false);
-
-    return _contextCollection;
-  }
+  late final AnalysisContextCollection _contextCollection =
+      AnalysisContextCollectionImpl(
+    includedPaths: [config.inputDir],
+    // TODO(jcollins-g): should we pass excluded directories here instead of
+    // handling it ourselves?
+    resourceProvider: resourceProvider,
+    sdkPath: config.sdkDir,
+    updateAnalysisOptions: (AnalysisOptionsImpl options) => options
+      ..hint = false
+      ..lint = false,
+  );
 
   /// Returns an Iterable with the SDK files we should parse.
   Iterable<String> getSdkFilesToDocument() sync* {
@@ -141,7 +142,6 @@ class PubPackageBuilder implements PackageBuilder {
   /// If [filePath] is not a library, returns null.
   Future<DartDocResolvedLibrary?> processLibrary(String filePath) async {
     var name = filePath;
-    var pathContext = resourceProvider.pathContext;
     var directoryCurrentPath = pathContext.current;
 
     if (name.startsWith(directoryCurrentPath)) {
@@ -154,20 +154,18 @@ class PubPackageBuilder implements PackageBuilder {
     // TODO(scheglov) Do we need this? Maybe the argument is already valid?
     filePath = pathContext.normalize(pathContext.absolute(filePath));
 
-    var analysisContext = contextCollection!.contextFor(config.inputDir);
-    var session = analysisContext.currentSession;
+    var analysisContext = _contextCollection.contextFor(config.inputDir);
     // Allow dart source files with inappropriate suffixes (#1897).
-    final library = await session.getResolvedLibrary(filePath);
+    final library =
+        await analysisContext.currentSession.getResolvedLibrary(filePath);
     if (library is ResolvedLibraryResult) {
-      final libraryElement = library.element;
-      var restoredUri = libraryElement.source.uri.toString();
-      return DartDocResolvedLibrary(library, restoredUri);
+      return DartDocResolvedLibrary(library);
     }
     return null;
   }
 
-  Set<PackageMeta?> _packageMetasForFiles(Iterable<String> files) => {
-        for (var filename in files) packageMetaProvider.fromFilename(filename),
+  Set<PackageMeta> _packageMetasForFiles(Iterable<String> files) => {
+        for (var filename in files) packageMetaProvider.fromFilename(filename)!,
       };
 
   void _addKnownFiles(LibraryElement? element) {
@@ -187,37 +185,36 @@ class PubPackageBuilder implements PackageBuilder {
     }
   }
 
-  /// Parses libraries with the analyzer and invokes [libraryAdder] with each
+  /// Parses libraries with the analyzer and invokes [addLibrary] with each
   /// result.
   ///
   /// Uses [libraries] to prevent calling the callback more than once with the
   /// same [LibraryElement]. Adds each [LibraryElement] found to [libraries].
-  Future<void> _parseLibraries(
-      void Function(DartDocResolvedLibrary) libraryAdder,
-      Set<LibraryElement> libraries,
-      Set<String> files,
+  Future<void> _parseLibraries(void Function(DartDocResolvedLibrary) addLibrary,
+      Set<LibraryElement> libraries, Set<String> files,
       [bool Function(LibraryElement)? isLibraryIncluded]) async {
     isLibraryIncluded ??= (_) => true;
-    Set<PackageMeta?> lastPass = <PackageMeta>{};
-    Set<PackageMeta?> current = <PackageMeta>{};
+    var lastPass = <PackageMeta>{};
+    var current = <PackageMeta>{};
     var knownParts = <String>{};
     do {
       lastPass = current;
 
       // Be careful here not to accidentally stack up multiple
       // [DartDocResolvedLibrary]s, as those eat our heap.
-      for (var f in files.difference(knownParts)) {
-        logProgress(f);
-        var r = await processLibrary(f);
-        if (r == null) {
-          knownParts.add(f);
+      for (var file in files.difference(knownParts)) {
+        logProgress(file);
+        var resolvedLibrary = await processLibrary(file);
+        if (resolvedLibrary == null) {
+          knownParts.add(file);
           continue;
         }
-        _addKnownFiles(r.element);
-        if (!libraries.contains(r.element) && isLibraryIncluded(r.element)) {
-          logDebug('parsing $f...');
-          libraryAdder(r);
-          libraries.add(r.element);
+        _addKnownFiles(resolvedLibrary.element);
+        if (!libraries.contains(resolvedLibrary.element) &&
+            isLibraryIncluded(resolvedLibrary.element)) {
+          logDebug('parsing $file...');
+          addLibrary(resolvedLibrary);
+          libraries.add(resolvedLibrary.element);
         }
       }
 
@@ -231,7 +228,7 @@ class PubPackageBuilder implements PackageBuilder {
       // discovers some files in a package we haven't seen yet, add files
       // for that package.
       for (var meta in current.difference(lastPass)) {
-        if (meta!.isSdk) {
+        if (meta.isSdk) {
           files.addAll(getSdkFilesToDocument());
         } else {
           files.addAll(await findFilesToDocumentInPackage(meta.dir.path,
@@ -375,12 +372,15 @@ class PubPackageBuilder implements PackageBuilder {
   }
 
   Future<void> getLibraries(PackageGraph uninitializedPackageGraph) async {
-    DartSdk? findSpecialsSdk = sdk;
-    if (embedderSdk != null && embedderSdk!.urlMappings.isNotEmpty) {
+    DartSdk findSpecialsSdk;
+    var embedderSdk = this.embedderSdk;
+    if (embedderSdk != null && embedderSdk.urlMappings.isNotEmpty) {
       findSpecialsSdk = embedderSdk;
+    } else {
+      findSpecialsSdk = sdk;
     }
     var files = await _getFiles();
-    var specialFiles = specialLibraryFiles(findSpecialsSdk!);
+    var specialFiles = specialLibraryFiles(findSpecialsSdk);
 
     /// Returns true if this library element should be included according
     /// to the configuration.
@@ -437,11 +437,29 @@ class PubPackageBuilder implements PackageBuilder {
 /// Contains the [ResolvedLibraryResult] and any additional information about
 /// the library.
 class DartDocResolvedLibrary {
-  final ResolvedLibraryResult result;
-  final String restoredUri;
+  final LibraryElement element;
+  final Map<String, CompilationUnit> _units;
 
-  DartDocResolvedLibrary(this.result, this.restoredUri);
+  DartDocResolvedLibrary(ResolvedLibraryResult result)
+      : element = result.element,
+        _units = {
+          for (var unit in result.units) unit.path: unit.unit,
+        };
 
-  LibraryElement get element => result.element;
-  LibraryElement get library => result.element.library;
+  /// Returns the [AstNode] for a given [Element].
+  ///
+  /// Uses a precomputed map of `element.source.fullName` to [CompilationUnit]
+  /// to avoid linear traversal in
+  /// [ResolvedLibraryElementImpl.getElementDeclaration].
+  AstNode? getAstNode(Element element) {
+    var fullName = element.source?.fullName;
+    if (fullName != null && !element.isSynthetic && element.nameOffset != -1) {
+      var unit = _units[fullName];
+      if (unit != null) {
+        var locator = NodeLocator2(element.nameOffset);
+        return locator.searchWithin(unit)?.parent;
+      }
+    }
+    return null;
+  }
 }
