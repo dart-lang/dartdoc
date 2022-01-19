@@ -10,6 +10,7 @@ import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/src/generated/sdk.dart' show DartSdk, SdkLibrary;
 // ignore: implementation_imports
 import 'package:analyzer/src/generated/source.dart' show Source;
+import 'package:collection/collection.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/failure.dart';
 import 'package:dartdoc/src/logging.dart';
@@ -25,6 +26,7 @@ import 'package:dartdoc/src/tool_definition.dart';
 import 'package:dartdoc/src/tool_runner.dart';
 import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/warnings.dart';
+import 'package:meta/meta.dart';
 
 class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   PackageGraph.uninitialized(
@@ -620,8 +622,12 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     }
   }
 
+  @visibleForTesting
   late final Iterable<Library> libraries =
       packages.expand((p) => p.libraries).toList()..sort();
+
+  /// The number of libraries.
+  late final int libraryCount = libraries.length;
 
   late final Set<Library> publicLibraries = () {
     assert(allLibrariesAdded);
@@ -637,6 +643,13 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     assert(allLibrariesAdded);
     return utils.filterNonPublic(_localLibraries).toSet();
   }();
+
+  /// The String name representing the `Object` type.
+  late final String dartCoreObject = libraries
+          .firstWhereOrNull((library) => library.name == 'dart:core')
+          ?.getClassByName('Object')
+          ?.linkedName ??
+      'Object';
 
   /// Return the set of [Class]es objects should inherit through if they
   /// show up in the inheritance chain.  Do not call before interceptorElement is

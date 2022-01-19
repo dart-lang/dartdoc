@@ -7532,28 +7532,6 @@ class _Renderer_InheritingContainerTemplateData<T extends InheritingContainer>
                         parent: r));
                   },
                 ),
-                'objectType': Property(
-                  getValue: (CT_ c) => c.objectType,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_Class.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as Class,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => c.objectType == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_Class(c.objectType!, ast, r.template, sink,
-                        parent: r);
-                  },
-                ),
                 'self': Property(
                   getValue: (CT_ c) => c.self,
                   renderVariable:
@@ -16243,6 +16221,7 @@ const _invisibleGetters = {
     'commentRefs'
   },
   'DocumentationComment': {
+    'needsPrecache',
     'documentationFrom',
     'documentationAsHtml',
     'elementDocumentation',
@@ -16253,8 +16232,7 @@ const _invisibleGetters = {
     'fullyQualifiedNameWithoutLibrary',
     'pathContext',
     'modelElementRenderer',
-    'documentationLocal',
-    'needsPrecache'
+    'documentationLocal'
   },
   'Element': {
     'hashCode',
@@ -16652,6 +16630,7 @@ const _invisibleGetters = {
     'libraries',
     'publicLibraries',
     'localPublicLibraries',
+    'dartCoreObject',
     'inheritThrough',
     'invisibleAnnotations',
     'allModelElements',

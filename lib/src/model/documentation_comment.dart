@@ -768,9 +768,8 @@ mixin DocumentationComment
     _documentationLocal = await _buildDocumentationBase();
   }
 
-  bool? _needsPrecache;
-  bool get needsPrecache =>
-      _needsPrecache ??= _needsPrecacheRegExp.hasMatch(documentationComment);
+  late final bool needsPrecache =
+      _needsPrecacheRegExp.hasMatch(documentationComment);
 
   String? _rawDocs;
 
