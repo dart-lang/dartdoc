@@ -31,6 +31,9 @@ enum SpecialClass {
 
 /// A declaration of a special [Class] and how to find it.
 class _SpecialClassDefinition {
+  /// The package name in which these special [ModelElement]s can be found.
+  static const String packageName = 'Dart';
+
   /// Which specialElement this is.
   final SpecialClass specialClass;
 
@@ -41,8 +44,8 @@ class _SpecialClassDefinition {
   /// can be found.
   final String libraryName;
 
-  /// The package name in which this [ModelElement] can be found.
-  final String packageName;
+  // /// The package name in which this [ModelElement] can be found.
+  // final String packageName;
 
   /// The URI for the library in which this [ModelElement] is defined.
   final String specialFileUri;
@@ -53,7 +56,7 @@ class _SpecialClassDefinition {
 
   const _SpecialClassDefinition(
       this.specialClass, this.name, this.libraryName, this.specialFileUri,
-      {this.required = true, this.packageName = 'Dart'});
+      {this.required = true});
 
   /// Get the filename for the Dart Library where this [ModelElement]
   /// is declared, or `null` if its URI does not denote a library in
