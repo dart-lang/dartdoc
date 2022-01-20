@@ -66,9 +66,9 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       throw DartdocFailure(packageMetaProvider.getMessageForMissingPackageMeta(
           libraryElement, config));
     }
-    var lib = Library.fromLibraryResult(
-        resolvedLibrary, this, Package.fromPackageMeta(packageMeta, this));
-    packageMap[packageMeta.name]!.libraries.add(lib);
+    var package = Package.fromPackageMeta(packageMeta, this);
+    var lib = Library.fromLibraryResult(resolvedLibrary, this, package);
+    package.libraries.add(lib);
     allLibraries[libraryElement.source.fullName] = lib;
   }
 
@@ -83,14 +83,14 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
 
   /// Call after all libraries are added.
   Future<void> initializePackageGraph() async {
-    allLibrariesAdded = true;
     assert(!_localDocumentationBuilt);
+    allLibrariesAdded = true;
     // From here on in, we might find special objects.  Initialize the
     // specialClasses handler so when we find them, they get added.
     specialClasses = SpecialClasses();
     // Go through docs of every ModelElement in package to pre-build the macros
     // index.
-    await Future.wait(precacheLocalDocs());
+    await Future.wait(_precacheLocalDocs());
     _localDocumentationBuilt = true;
 
     // Scan all model elements to insure that interceptor and other special
@@ -116,7 +116,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   }
 
   /// Generate a list of futures for any docs that actually require precaching.
-  Iterable<Future<void>> precacheLocalDocs() sync* {
+  Iterable<Future<void>> _precacheLocalDocs() sync* {
     // Prevent reentrancy.
     var precachedElements = <ModelElement>{};
 
@@ -144,14 +144,13 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       // Not the same as allCanonicalModelElements since we need to run
       // for any ModelElement that might not have a canonical ModelElement,
       // too.
-      if (m.canonicalModelElement !=
-                  null // A canonical element exists somewhere
-              &&
-              !m.isCanonical // This element is not canonical
-              &&
-              !m.enclosingElement!
-                  .isCanonical // The enclosingElement won't need a oneLineDoc from this
-          ) {
+      if (
+          // A canonical element exists somewhere.
+          m.canonicalModelElement != null &&
+              // This element is not canonical.
+              !m.isCanonical &&
+              // The enclosing element won't need a `oneLineDoc` from this.
+              !m.enclosingElement!.isCanonical) {
         continue;
       }
       yield* precacheOneElement(m);
@@ -197,13 +196,17 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     return _extensions;
   }
 
-  // All library objects related to this package; a superset of _libraries.
-  // Keyed by [LibraryElement.Source.fullName] to resolve multiple URIs
-  // referring to the same location to the same [Library].  This isn't how
-  // Dart works internally, but Dartdoc pretends to avoid documenting or
-  // duplicating data structures for the same "library" on disk based
-  // on how it is referenced.  We can't use [Source] as a key since because
-  // of differences in the [TimestampedData] timestamps.
+  /// All library objects related to this package; a superset of [libraries].
+  ///
+  /// Keyed by `LibraryElement.Source.fullName` to resolve different URIs, which
+  /// refer to the same location, to the same [Library].  This isn't how Dart
+  /// works internally, but Dartdoc pretends to avoid documenting or duplicating
+  /// data structures for the same "library" on disk based on how it is
+  /// referenced.  We can't use [Source] as a key due to differences in the
+  /// [TimestampedData] timestamps.
+  ///
+  /// This mapping must be complete before [initializePackageGraph] is called.
+  @visibleForTesting
   final allLibraries = <String, Library>{};
 
   /// All ModelElements constructed for this package; a superset of [allModelElements].
@@ -252,6 +255,8 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   PackageGraph get packageGraph => this;
 
   /// Map of package name to Package.
+  ///
+  /// This mapping must be complete before [initializePackageGraph] is called.
   final Map<String, Package> packageMap = {};
 
   ResourceProvider get resourceProvider => config.resourceProvider;
@@ -265,6 +270,9 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   final Map<String, String> _macros = {};
   final Map<String, String> _htmlFragments = {};
   bool allLibrariesAdded = false;
+
+  /// Whether the local documentation has been built, which is only complete
+  /// after all of the work in [_precacheLocalDocs] is done.
   bool _localDocumentationBuilt = false;
 
   /// Keep track of warnings.
@@ -506,10 +514,9 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     }
     _reexportsTagged.add(key);
     if (libraryElement == null) {
-      // The first call to _tagReexportFor should not have a null libraryElement.
-      assert(lastExportedElement != null);
+      lastExportedElement!;
       warnOnElement(
-          findButDoNotCreateLibraryFor(lastExportedElement!.enclosingElement!),
+          findButDoNotCreateLibraryFor(lastExportedElement.enclosingElement!),
           PackageWarning.unresolvedExport,
           message: '"${lastExportedElement.uri}"',
           referredFrom: <Locatable>[topLevelLibrary]);
@@ -870,9 +877,9 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     return allLibraries[e.library?.source.fullName];
   }
 
-  /// This is used when we might need a Library object that isn't actually
-  /// a documentation entry point (for elements that have no Library within the
-  /// set of canonical Libraries).
+  /// This is used when we might need a [Library] that isn't actually a
+  /// documentation entry point (for elements that have no [Library] within the
+  /// set of canonical libraries).
   Library findOrCreateLibraryFor(DartDocResolvedLibrary resolvedLibrary) {
     final libraryElement = resolvedLibrary.element.library;
     var foundLibrary = findButDoNotCreateLibraryFor(libraryElement);
