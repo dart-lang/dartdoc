@@ -52,18 +52,17 @@ class Package extends LibraryContainer
 
     if (!packageGraph.packageMap.containsKey(packageName) &&
         packageGraph.allLibrariesAdded) expectNonLocal = true;
-    packageGraph.packageMap.putIfAbsent(
-        packageName, () => Package._(packageName, packageGraph, packageMeta));
+    var package = packageGraph.packageMap.putIfAbsent(packageMeta.name,
+        () => Package._(packageMeta.name, packageGraph, packageMeta));
     // Verify that we don't somehow decide to document locally a package picked
     // up after all documented libraries are added, because that breaks the
     // assumption that we've picked up all documented libraries and packages
     // before allLibrariesAdded is true.
     assert(
-        !(expectNonLocal &&
-            packageGraph.packageMap[packageName]!.documentedWhere ==
-                DocumentLocation.local),
-        'Found more libraries to document after allLibrariesAdded was set to true');
-    return packageGraph.packageMap[packageName]!;
+        !(expectNonLocal && package.documentedWhere == DocumentLocation.local),
+        "Found more libraries to document after 'allLibrariesAdded' was set to "
+        'true');
+    return package;
   }
 
   Package._(this._name, this._packageGraph, this._packageMeta);
