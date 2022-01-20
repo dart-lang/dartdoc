@@ -46,6 +46,11 @@ class Annotation extends Feature with ModelBuilder {
     }
   }();
 
+  // TODO(srawlins): Attempt to revive constructor arguments in an annotation,
+  // akin to source_gen's Reviver, in order to link to inner components. For
+  // example, in `@Foo(const Bar(), baz: <Baz>[Baz.one, Baz.two])`, link to
+  // `Foo`, `Bar`, `Baz`, `Baz.one`, and `Baz.two`.
+  /// The textual representation of the argument(s) supplied to the annotation.
   late final String parameterText = () {
     var source = annotation.toSource();
     var startIndex = source.indexOf('(');
