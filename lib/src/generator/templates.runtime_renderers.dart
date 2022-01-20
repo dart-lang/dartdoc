@@ -529,10 +529,10 @@ class _Renderer_Annotation extends RendererBase<Annotation> {
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
-                  isNullValue: (CT_ c) => c.modelType == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_ElementType(c.modelType!, ast, r.template, sink,
+                    _render_ElementType(c.modelType, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -5358,10 +5358,10 @@ class _Renderer_Feature extends RendererBase<Feature> {
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
-                  isNullValue: (CT_ c) => c.linkedName == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.linkedName!, ast, r.template, sink,
+                    _render_String(c.linkedName, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -5380,11 +5380,11 @@ class _Renderer_Feature extends RendererBase<Feature> {
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
-                  isNullValue: (CT_ c) => c.linkedNameWithParameters == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_String(
-                        c.linkedNameWithParameters!, ast, r.template, sink,
+                        c.linkedNameWithParameters, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -5403,10 +5403,10 @@ class _Renderer_Feature extends RendererBase<Feature> {
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
-                  isNullValue: (CT_ c) => c.name == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.name!, ast, r.template, sink, parent: r);
+                    _render_String(c.name, ast, r.template, sink, parent: r);
                   },
                 ),
                 'sortGroup': Property(
@@ -16628,6 +16628,7 @@ const _invisibleGetters = {
     'packageWarningCounter',
     'publicPackages',
     'libraries',
+    'libraryCount',
     'publicLibraries',
     'localPublicLibraries',
     'dartCoreObject',

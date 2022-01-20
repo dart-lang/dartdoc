@@ -19,11 +19,10 @@ class Annotation extends Feature with ModelBuilder {
   final PackageGraph packageGraph;
 
   Annotation(this.annotation, this.library, this.packageGraph)
-      : super(annotation.element!.name);
+      : super(annotation.element!.name!);
 
-  String? _linkedNameWithParameters;
   @override
-  String get linkedNameWithParameters => _linkedNameWithParameters ??=
+  late final String linkedNameWithParameters =
       packageGraph.rendererFactory.featureRenderer.renderAnnotation(this);
 
   /// Return the linked name of the annotation.
@@ -31,44 +30,31 @@ class Annotation extends Feature with ModelBuilder {
   String get linkedName => annotation.element is PropertyAccessorElement
       ? modelBuilder.fromElement(annotation.element!).linkedName
       // TODO(jcollins-g): consider linking to constructor instead of type?
-      : modelType!.linkedName;
+      : modelType.linkedName;
 
-  ElementType? _modelType;
-  ElementType? get modelType {
-    if (_modelType == null) {
-      var annotatedWith = annotation.element;
-      if (annotatedWith is ConstructorElement) {
-        _modelType = modelBuilder.typeFrom(annotatedWith.returnType, library!);
-      } else if (annotatedWith is PropertyAccessorElement) {
-        _modelType = (modelBuilder.fromElement(annotatedWith.variable)
-                as GetterSetterCombo)
-            .modelType;
-      } else {
-        assert(false,
-            'non-callable element used as annotation?: ${annotation.element}');
-      }
+  late final ElementType modelType = () {
+    var annotatedWith = annotation.element;
+    if (annotatedWith is ConstructorElement) {
+      return modelBuilder.typeFrom(annotatedWith.returnType, library!);
+    } else if (annotatedWith is PropertyAccessorElement) {
+      return (modelBuilder.fromElement(annotatedWith.variable)
+              as GetterSetterCombo)
+          .modelType;
+    } else {
+      throw StateError(
+          'non-callable element used as annotation?: ${annotation.element}');
     }
-    return _modelType;
-  }
+  }();
 
-  String? _parameterText;
-  String get parameterText {
-    // TODO(srawlins): Attempt to revive constructor arguments in an annotation,
-    // akin to source_gen's Reviver, in order to link to inner components. For
-    // example, in `@Foo(const Bar(), baz: <Baz>[Baz.one, Baz.two])`, link to
-    // `Foo`, `Bar`, `Baz`, `Baz.one`, and `Baz.two`.
-    if (_parameterText == null) {
-      var source = annotation.toSource();
-      var startIndex = source.indexOf('(');
-      _parameterText =
-          source.substring(startIndex == -1 ? source.length : startIndex);
-    }
-    return _parameterText!;
-  }
+  late final String parameterText = () {
+    var source = annotation.toSource();
+    var startIndex = source.indexOf('(');
+    return source.substring(startIndex == -1 ? source.length : startIndex);
+  }();
 
   @override
   bool get isPublic =>
-      modelType!.isPublic &&
+      modelType.isPublic &&
       modelType is DefinedElementType &&
       !packageGraph.invisibleAnnotations
           .contains((modelType as DefinedElementType).modelElement);
