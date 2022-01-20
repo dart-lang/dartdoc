@@ -313,10 +313,10 @@ class _Renderer_Accessor extends RendererBase<Accessor> {
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
-                  isNullValue: (CT_ c) => c.namePart == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.namePart!, ast, r.template, sink,
+                    _render_String(c.namePart, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -11289,10 +11289,10 @@ class _Renderer_Nameable extends RendererBase<Nameable> {
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
-                  isNullValue: (CT_ c) => c.namePart == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.namePart!, ast, r.template, sink,
+                    _render_String(c.namePart, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -11302,11 +11302,10 @@ class _Renderer_Nameable extends RendererBase<Nameable> {
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
                           c, remainingNames, 'Set<String>'),
-                  isNullValue: (CT_ c) => c.namePieces == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.namePieces, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['Set']!);
+                    return c.namePieces.map((e) =>
+                        _render_String(e, ast, r.template, sink, parent: r));
                   },
                 ),
               }) as Map<String, Property<CT_>>;
