@@ -44,9 +44,6 @@ class _SpecialClassDefinition {
   /// can be found.
   final String libraryName;
 
-  // /// The package name in which this [ModelElement] can be found.
-  // final String packageName;
-
   /// The URI for the library in which this [ModelElement] is defined.
   final String specialFileUri;
 
