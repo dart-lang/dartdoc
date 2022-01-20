@@ -141,16 +141,6 @@ class PubPackageBuilder implements PackageBuilder {
   /// Parse a single library at [filePath] using the current analysis driver.
   /// If [filePath] is not a library, returns null.
   Future<DartDocResolvedLibrary?> processLibrary(String filePath) async {
-    var name = filePath;
-    var directoryCurrentPath = pathContext.current;
-
-    if (name.startsWith(directoryCurrentPath)) {
-      name = name.substring(directoryCurrentPath.length);
-      if (name.startsWith(pathContext.separator)) {
-        name = name.substring(1);
-      }
-    }
-
     // TODO(scheglov) Do we need this? Maybe the argument is already valid?
     filePath = pathContext.normalize(pathContext.absolute(filePath));
 

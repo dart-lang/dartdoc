@@ -7,29 +7,19 @@ import 'package:collection/collection.dart';
 import 'locatable.dart';
 
 /// Something that has a name.
-// TODO(jcollins-g): adjust interface so it can be const?
 abstract class Nameable {
   String get name;
 
   String get fullyQualifiedName => name;
 
-  Set<String>? _namePieces;
-  Set<String>? get namePieces {
-    _namePieces ??= {
-      ...name.split(locationSplitter).where((s) => s.isNotEmpty)
-    };
-    return _namePieces;
-  }
-
-  String? _namePart;
+  late final Set<String> namePieces = {
+    ...name.split(locationSplitter).where((s) => s.isNotEmpty)
+  };
 
   /// Utility getter/cache for `_MarkdownCommentReference._getResultsForClass`.
-  String? get namePart {
-    // TODO(jcollins-g): This should really be the same as 'name', but isn't
-    // because of accessors and operators.
-    _namePart ??= fullyQualifiedName.split('.').last;
-    return _namePart;
-  }
+  // TODO(jcollins-g): This should really be the same as 'name', but isn't
+  // because of accessors and operators.
+  late final String namePart = fullyQualifiedName.split('.').last;
 
   @override
   String toString() => name;
