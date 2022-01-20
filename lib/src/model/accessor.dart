@@ -152,13 +152,10 @@ class Accessor extends ModelElement implements EnclosedElement {
   @override
   String get kind => 'accessor';
 
-  String? _namePart;
+  late final String _namePart = super.namePart.split('=').first;
 
   @override
-  String? get namePart {
-    _namePart ??= super.namePart!.split('=').first;
-    return _namePart;
-  }
+  String get namePart => _namePart;
 
   @override
   Library get library => super.library!;
