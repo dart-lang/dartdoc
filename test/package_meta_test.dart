@@ -70,7 +70,7 @@ void main() {
           resourceProvider
               .readAsMalformedAllowedStringSync(p.getReadmeContents()!),
           contains(
-              'Use `dartdoc` to generate HTML documentaton for your Dart package.'));
+              'Use `dart doc` to generate HTML documentaton for your Dart package.'));
     });
 
     test('has a license', () {
