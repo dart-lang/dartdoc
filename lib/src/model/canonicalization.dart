@@ -42,25 +42,25 @@ abstract class Canonicalization implements Locatable, Documentable {
     // Penalty for deprecated libraries.
     if (lib.isDeprecated) scoredCandidate._alterScore(-1.0, 'is deprecated');
     // Give a big boost if the library has the package name embedded in it.
-    if (lib.package.namePieces!.intersection(lib.namePieces!).isEmpty) {
+    if (lib.package.namePieces.intersection(lib.namePieces).isEmpty) {
       scoredCandidate._alterScore(1.0, 'embeds package name');
     }
     // Give a tiny boost for libraries with long names, assuming they're
     // more specific (and therefore more likely to be the owner of this symbol).
-    scoredCandidate._alterScore(.01 * lib.namePieces!.length, 'name is long');
+    scoredCandidate._alterScore(.01 * lib.namePieces.length, 'name is long');
     // If we don't know the location of this element, return our best guess.
     // TODO(jcollins-g): is that even possible?
     assert(locationPieces.isNotEmpty);
     if (locationPieces.isEmpty) return scoredCandidate;
     // The more pieces we have of the location in our library name, the more we should boost our score.
     scoredCandidate._alterScore(
-        lib.namePieces!.intersection(locationPieces).length.toDouble() /
+        lib.namePieces.intersection(locationPieces).length.toDouble() /
             locationPieces.length.toDouble(),
         'element location shares parts with name');
     // If pieces of location at least start with elements of our library name, boost the score a little bit.
     var scoreBoost = 0.0;
     for (var piece in resplit(locationPieces)) {
-      for (var namePiece in lib.namePieces!) {
+      for (var namePiece in lib.namePieces) {
         if (piece.startsWith(namePiece)) {
           scoreBoost += 0.001;
         }
