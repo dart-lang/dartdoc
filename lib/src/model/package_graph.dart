@@ -482,11 +482,11 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   late final List<Package> publicPackages = () {
     assert(allLibrariesAdded);
     // Help the user if they pass us a package that doesn't exist.
+    var packageNames = packages.map((p) => p.name).toSet();
     for (var packageName in config.packageOrder) {
-      if (!packages.map((p) => p.name).contains(packageName)) {
+      if (!packageNames.contains(packageName)) {
         warnOnElement(null, PackageWarning.packageOrderGivesMissingPackageName,
-            message:
-                "$packageName, packages: ${packages.map((p) => p.name).join(',')}");
+            message: "$packageName, packages: ${packageNames.join(',')}");
       }
     }
     return packages.where((p) => p.isPublic).toList()..sort();
