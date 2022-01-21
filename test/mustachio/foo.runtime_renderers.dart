@@ -550,24 +550,24 @@ class Renderer_Property3 extends RendererBase<Property3> {
 const _invisibleGetters = {
   'Object': {'hashCode', 'runtimeType'},
   'String': {
+    'codeUnits',
     'hashCode',
-    'runtimeType',
-    'length',
     'isEmpty',
     'isNotEmpty',
-    'codeUnits',
-    'runes'
+    'length',
+    'runes',
+    'runtimeType'
   },
   'int': {
+    'bitLength',
     'hashCode',
-    'runtimeType',
+    'isEven',
+    'isFinite',
+    'isInfinite',
     'isNaN',
     'isNegative',
-    'isInfinite',
-    'isFinite',
-    'sign',
-    'isEven',
     'isOdd',
-    'bitLength'
+    'runtimeType',
+    'sign'
   },
 };
