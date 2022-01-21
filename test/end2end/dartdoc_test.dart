@@ -106,7 +106,8 @@ void main() {
       return await Dartdoc.fromContext(
         context,
         PubPackageBuilder(
-            context, pubPackageMetaProvider, PhysicalPackageConfigProvider()),
+            context, pubPackageMetaProvider, PhysicalPackageConfigProvider(),
+            skipUnreachableSdkLibraries: true),
       );
     }
 

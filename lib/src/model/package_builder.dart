@@ -33,6 +33,7 @@ import 'package:dartdoc/src/package_meta.dart'
 import 'package:dartdoc/src/quiver.dart' as quiver;
 import 'package:dartdoc/src/render/renderer_factory.dart';
 import 'package:dartdoc/src/special_elements.dart';
+import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path show Context;
 
 /// Everything you need to instantiate a PackageGraph object for documenting.
@@ -49,7 +50,9 @@ class PubPackageBuilder implements PackageBuilder {
   final PackageConfigProvider packageConfigProvider;
 
   PubPackageBuilder(
-      this.config, this.packageMetaProvider, this.packageConfigProvider);
+      this.config, this.packageMetaProvider, this.packageConfigProvider,
+      {@visibleForTesting skipUnreachableSdkLibraries = false})
+      : _skipUnreachableSdkLibraries = skipUnreachableSdkLibraries;
 
   @override
   Future<PackageGraph> buildPackageGraph() async {
@@ -131,7 +134,7 @@ class PubPackageBuilder implements PackageBuilder {
   );
 
   /// Returns an Iterable with the SDK files we should parse.
-  Iterable<String> getSdkFilesToDocument() sync* {
+  Iterable<String> _getSdkFilesToDocument() sync* {
     for (var sdkLib in sdk.sdkLibraries) {
       var source = sdk.mapDartUri(sdkLib.shortName)!;
       yield source.fullName;
@@ -174,6 +177,15 @@ class PubPackageBuilder implements PackageBuilder {
       }
     }
   }
+
+  /// Whether to skip unreachable libraries when gathering all of the libraries
+  /// for the package graph.
+  ///
+  /// **TESTING ONLY**
+  ///
+  /// When generating dartdoc for any package, this flag should be `false`. This
+  /// is used in tests to dramatically speed up unit tests.
+  final bool _skipUnreachableSdkLibraries;
 
   /// Parses libraries with the analyzer and invokes [addLibrary] with each
   /// result.
@@ -219,7 +231,9 @@ class PubPackageBuilder implements PackageBuilder {
       // for that package.
       for (var meta in current.difference(lastPass)) {
         if (meta.isSdk) {
-          files.addAll(getSdkFilesToDocument());
+          if (!_skipUnreachableSdkLibraries) {
+            files.addAll(_getSdkFilesToDocument());
+          }
         } else {
           files.addAll(await findFilesToDocumentInPackage(meta.dir.path,
                   autoIncludeDependencies: false, filterExcludes: false)
@@ -330,7 +344,7 @@ class PubPackageBuilder implements PackageBuilder {
   Future<Set<String>> _getFiles() async {
     Iterable<String> files;
     if (config.topLevelPackageMeta.isSdk) {
-      files = getSdkFilesToDocument();
+      files = _getSdkFilesToDocument();
     } else {
       files = await findFilesToDocumentInPackage(config.inputDir,
               autoIncludeDependencies: config.autoIncludeDependencies)
@@ -387,9 +401,9 @@ class PubPackageBuilder implements PackageBuilder {
         foundLibraries, files, isLibraryIncluded);
     if (config.include.isNotEmpty) {
       var knownLibraryNames = foundLibraries.map((l) => l.name);
-      var notFound = Set<String>.from(config.include)
+      var notFound = config.include
           .difference(Set.from(knownLibraryNames))
-          .difference(Set.from(config.exclude));
+          .difference(config.exclude);
       if (notFound.isNotEmpty) {
         throw 'Did not find: [${notFound.join(', ')}] in '
             'known libraries: [${knownLibraryNames.join(', ')}]';
