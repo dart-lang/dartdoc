@@ -346,7 +346,7 @@ String _renderCategory_partial_head_0(_i1.CategoryTemplateData context0) {
 
 <header id="title">
   <button id="sidenav-left-toggle" type="button">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+    <i class="material-icons">menu</i>
   </button>
   <ol class="breadcrumbs gt-separated dark hidden-xs">''');
   var context3 = context0.navLinks;
@@ -1722,7 +1722,7 @@ String _renderClass_partial_head_0(_i1.ClassTemplateData context0) {
 
 <header id="title">
   <button id="sidenav-left-toggle" type="button">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+    <i class="material-icons">menu</i>
   </button>
   <ol class="breadcrumbs gt-separated dark hidden-xs">''');
   var context3 = context0.navLinks;
@@ -2359,7 +2359,7 @@ String _renderConstructor_partial_head_0(_i1.ConstructorTemplateData context0) {
 
 <header id="title">
   <button id="sidenav-left-toggle" type="button">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+    <i class="material-icons">menu</i>
   </button>
   <ol class="breadcrumbs gt-separated dark hidden-xs">''');
   var context3 = context0.navLinks;
@@ -2919,7 +2919,7 @@ String _renderEnum_partial_head_0(_i1.EnumTemplateData context0) {
 
 <header id="title">
   <button id="sidenav-left-toggle" type="button">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+    <i class="material-icons">menu</i>
   </button>
   <ol class="breadcrumbs gt-separated dark hidden-xs">''');
   var context3 = context0.navLinks;
@@ -3508,7 +3508,7 @@ String _renderError_partial_head_0(_i1.PackageTemplateData context0) {
 
 <header id="title">
   <button id="sidenav-left-toggle" type="button">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+    <i class="material-icons">menu</i>
   </button>
   <ol class="breadcrumbs gt-separated dark hidden-xs">''');
   var context3 = context0.navLinks;
@@ -4024,7 +4024,7 @@ String _renderExtension_partial_head_0<T extends _i13.Extension>(
 
 <header id="title">
   <button id="sidenav-left-toggle" type="button">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+    <i class="material-icons">menu</i>
   </button>
   <ol class="breadcrumbs gt-separated dark hidden-xs">''');
   var context3 = context0.navLinks;
@@ -4647,7 +4647,7 @@ String _renderFunction_partial_head_0(_i1.FunctionTemplateData context0) {
 
 <header id="title">
   <button id="sidenav-left-toggle" type="button">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+    <i class="material-icons">menu</i>
   </button>
   <ol class="breadcrumbs gt-separated dark hidden-xs">''');
   var context3 = context0.navLinks;
@@ -5136,7 +5136,7 @@ String _renderIndex_partial_head_0(_i1.PackageTemplateData context0) {
 
 <header id="title">
   <button id="sidenav-left-toggle" type="button">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+    <i class="material-icons">menu</i>
   </button>
   <ol class="breadcrumbs gt-separated dark hidden-xs">''');
   var context3 = context0.navLinks;
@@ -5781,7 +5781,7 @@ String _renderLibrary_partial_head_0(_i1.LibraryTemplateData context0) {
 
 <header id="title">
   <button id="sidenav-left-toggle" type="button">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+    <i class="material-icons">menu</i>
   </button>
   <ol class="breadcrumbs gt-separated dark hidden-xs">''');
   var context3 = context0.navLinks;
@@ -6778,7 +6778,7 @@ String _renderMethod_partial_head_0(_i1.MethodTemplateData context0) {
 
 <header id="title">
   <button id="sidenav-left-toggle" type="button">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+    <i class="material-icons">menu</i>
   </button>
   <ol class="breadcrumbs gt-separated dark hidden-xs">''');
   var context3 = context0.navLinks;
@@ -7466,7 +7466,7 @@ String _renderMixin_partial_head_0(_i1.MixinTemplateData context0) {
 
 <header id="title">
   <button id="sidenav-left-toggle" type="button">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+    <i class="material-icons">menu</i>
   </button>
   <ol class="breadcrumbs gt-separated dark hidden-xs">''');
   var context3 = context0.navLinks;
@@ -8091,7 +8091,7 @@ String _renderProperty_partial_head_0(_i1.PropertyTemplateData context0) {
 
 <header id="title">
   <button id="sidenav-left-toggle" type="button">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+    <i class="material-icons">menu</i>
   </button>
   <ol class="breadcrumbs gt-separated dark hidden-xs">''');
   var context3 = context0.navLinks;
@@ -9155,7 +9155,7 @@ String _renderTopLevelProperty_partial_head_0(
 
 <header id="title">
   <button id="sidenav-left-toggle" type="button">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+    <i class="material-icons">menu</i>
   </button>
   <ol class="breadcrumbs gt-separated dark hidden-xs">''');
   var context3 = context0.navLinks;
@@ -9831,7 +9831,7 @@ String _renderTypedef_partial_head_0(_i1.TypedefTemplateData context0) {
 
 <header id="title">
   <button id="sidenav-left-toggle" type="button">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+    <i class="material-icons">menu</i>
   </button>
   <ol class="breadcrumbs gt-separated dark hidden-xs">''');
   var context3 = context0.navLinks;

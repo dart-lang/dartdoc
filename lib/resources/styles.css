@@ -712,7 +712,7 @@ button {
   #sidenav-left-toggle {
     display: inline;
     background: none;
-    fill: #111111;
+    color: #111111;
     width: 24px;
     height: 24px;
     border: none;
