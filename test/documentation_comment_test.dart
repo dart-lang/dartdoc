@@ -57,9 +57,6 @@ void main() {
         messageForMissingPackageMeta:
             PubPackageMeta.messageForMissingPackageMeta,
       );
-      var optionSet = await DartdocOptionRoot.fromOptionGenerators(
-          'dartdoc', [createDartdocOptions], packageMetaProvider);
-      optionSet.parseArguments([]);
       packageConfigProvider = FakePackageConfigProvider();
       // To build the package graph, we always ask package_config for a
       // [PackageConfig] for the SDK directory. Put a dummy entry in.
@@ -69,12 +66,24 @@ void main() {
       projectRoot = utils.writePackage(
           packageName, resourceProvider, packageConfigProvider);
       projectRoot
+          .getChildAssumingFile('dartdoc_options.yaml')
+          .writeAsStringSync('''
+      dartdoc:
+        warnings:
+          - missing-code-block-language
+      ''');
+
+      projectRoot
           .getChildAssumingFolder('lib')
           .getChildAssumingFile('a.dart')
           .writeAsStringSync('''
 /// Documentation comment.
 int x;
 ''');
+
+      var optionSet = await DartdocOptionRoot.fromOptionGenerators(
+          'dartdoc', [createDartdocOptions], packageMetaProvider);
+      optionSet.parseArguments([]);
       packageGraph = await utils.bootBasicPackage(
           projectRoot.path, packageMetaProvider, packageConfigProvider,
           additionalArguments: []);
