@@ -401,9 +401,9 @@ class PubPackageBuilder implements PackageBuilder {
         foundLibraries, files, isLibraryIncluded);
     if (config.include.isNotEmpty) {
       var knownLibraryNames = foundLibraries.map((l) => l.name);
-      var notFound = Set<String>.from(config.include)
+      var notFound = config.include
           .difference(Set.from(knownLibraryNames))
-          .difference(Set.from(config.exclude));
+          .difference(config.exclude);
       if (notFound.isNotEmpty) {
         throw 'Did not find: [${notFound.join(', ')}] in '
             'known libraries: [${knownLibraryNames.join(', ')}]';
