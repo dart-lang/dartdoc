@@ -1253,7 +1253,8 @@ class DartdocOptionContext extends DartdocOptionContextBase
   CategoryConfiguration get categories =>
       optionSet['categories'].valueAt(context);
 
-  List<String> get dropTextFrom => optionSet['dropTextFrom'].valueAt(context);
+  late final Set<String> dropTextFrom =
+      Set.of(optionSet['dropTextFrom'].valueAt(context));
 
   String? get examplePathPrefix =>
       optionSet['examplePathPrefix'].valueAt(context);
