@@ -1253,14 +1253,16 @@ class DartdocOptionContext extends DartdocOptionContextBase
   CategoryConfiguration get categories =>
       optionSet['categories'].valueAt(context);
 
-  List<String> get dropTextFrom => optionSet['dropTextFrom'].valueAt(context);
+  late final Set<String> dropTextFrom =
+      Set.of(optionSet['dropTextFrom'].valueAt(context));
 
   String? get examplePathPrefix =>
       optionSet['examplePathPrefix'].valueAt(context);
 
   // TODO(srawlins): This memoization saved a lot of time in unit testing, but
   // is the first value in this class to be memoized. Memoize others?
-  late final List<String> exclude = optionSet['exclude'].valueAt(context);
+  late final Set<String> exclude =
+      Set.of(optionSet['exclude'].valueAt(context));
 
   List<String> get excludePackages =>
       optionSet['excludePackages'].valueAt(context);
@@ -1269,7 +1271,8 @@ class DartdocOptionContext extends DartdocOptionContextBase
 
   bool get hideSdkText => optionSet['hideSdkText'].valueAt(context);
 
-  List<String> get include => optionSet['include'].valueAt(context);
+  late final Set<String> include =
+      Set.of(optionSet['include'].valueAt(context));
 
   List<String> get includeExternal =>
       optionSet['includeExternal'].valueAt(context);
