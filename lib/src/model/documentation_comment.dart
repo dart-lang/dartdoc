@@ -146,7 +146,7 @@ mixin DocumentationComment
 
   ModelElementRenderer get modelElementRenderer;
 
-  static const _allDirectiveNames = [
+  static const _allDirectiveNames = {
     'animation',
     'end-inject-html',
     'end-tool',
@@ -169,7 +169,7 @@ mixin DocumentationComment
     // Common Dart annotations which may decorate named parameters:
     'deprecated',
     'required',
-  ];
+  };
 
   static final _nameBreak = RegExp('[\\s}]');
 
@@ -735,7 +735,15 @@ mixin DocumentationComment
   /// Analyze fenced code blocks present in the documentation comment,
   /// warning if there is no language specified.
   void _analyzeCodeBlocks(String docs) {
+    if (config.packageWarningOptions
+            .warningModes[PackageWarning.missingCodeBlockLanguage] ==
+        PackageWarningMode.ignore) {
+      return;
+    }
     final results = _codeBlockPattern.allMatches(docs).toList(growable: false);
+    if (results.isEmpty) {
+      return;
+    }
     final firstOfPair = <Match>[];
     for (var i = 0; i < results.length; i++) {
       if (i.isEven && i != results.length - 1) {
