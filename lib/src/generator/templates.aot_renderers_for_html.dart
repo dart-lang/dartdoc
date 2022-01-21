@@ -319,7 +319,7 @@ String _renderCategory_partial_head_0(_i1.CategoryTemplateData context0) {
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/styles.css?v1">
+  buffer.write('''static-assets/styles.css?v2">
   <link rel="icon" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
@@ -1695,7 +1695,7 @@ String _renderClass_partial_head_0(_i1.ClassTemplateData context0) {
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/styles.css?v1">
+  buffer.write('''static-assets/styles.css?v2">
   <link rel="icon" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
@@ -2332,7 +2332,7 @@ String _renderConstructor_partial_head_0(_i1.ConstructorTemplateData context0) {
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/styles.css?v1">
+  buffer.write('''static-assets/styles.css?v2">
   <link rel="icon" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
@@ -2892,7 +2892,7 @@ String _renderEnum_partial_head_0(_i1.EnumTemplateData context0) {
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/styles.css?v1">
+  buffer.write('''static-assets/styles.css?v2">
   <link rel="icon" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
@@ -3481,7 +3481,7 @@ String _renderError_partial_head_0(_i1.PackageTemplateData context0) {
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/styles.css?v1">
+  buffer.write('''static-assets/styles.css?v2">
   <link rel="icon" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
@@ -3997,7 +3997,7 @@ String _renderExtension_partial_head_0<T extends _i13.Extension>(
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/styles.css?v1">
+  buffer.write('''static-assets/styles.css?v2">
   <link rel="icon" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
@@ -4620,7 +4620,7 @@ String _renderFunction_partial_head_0(_i1.FunctionTemplateData context0) {
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/styles.css?v1">
+  buffer.write('''static-assets/styles.css?v2">
   <link rel="icon" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
@@ -5109,7 +5109,7 @@ String _renderIndex_partial_head_0(_i1.PackageTemplateData context0) {
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/styles.css?v1">
+  buffer.write('''static-assets/styles.css?v2">
   <link rel="icon" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
@@ -5754,7 +5754,7 @@ String _renderLibrary_partial_head_0(_i1.LibraryTemplateData context0) {
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/styles.css?v1">
+  buffer.write('''static-assets/styles.css?v2">
   <link rel="icon" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
@@ -6751,7 +6751,7 @@ String _renderMethod_partial_head_0(_i1.MethodTemplateData context0) {
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/styles.css?v1">
+  buffer.write('''static-assets/styles.css?v2">
   <link rel="icon" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
@@ -7439,7 +7439,7 @@ String _renderMixin_partial_head_0(_i1.MixinTemplateData context0) {
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/styles.css?v1">
+  buffer.write('''static-assets/styles.css?v2">
   <link rel="icon" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
@@ -8064,7 +8064,7 @@ String _renderProperty_partial_head_0(_i1.PropertyTemplateData context0) {
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/styles.css?v1">
+  buffer.write('''static-assets/styles.css?v2">
   <link rel="icon" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
@@ -9128,7 +9128,7 @@ String _renderTopLevelProperty_partial_head_0(
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/styles.css?v1">
+  buffer.write('''static-assets/styles.css?v2">
   <link rel="icon" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
@@ -9804,7 +9804,7 @@ String _renderTypedef_partial_head_0(_i1.TypedefTemplateData context0) {
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/styles.css?v1">
+  buffer.write('''static-assets/styles.css?v2">
   <link rel="icon" href="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
