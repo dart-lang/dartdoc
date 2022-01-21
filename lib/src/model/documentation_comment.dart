@@ -146,7 +146,7 @@ mixin DocumentationComment
 
   ModelElementRenderer get modelElementRenderer;
 
-  static const _allDirectiveNames = [
+  static const _allDirectiveNames = {
     'animation',
     'end-inject-html',
     'end-tool',
@@ -169,7 +169,7 @@ mixin DocumentationComment
     // Common Dart annotations which may decorate named parameters:
     'deprecated',
     'required',
-  ];
+  };
 
   static final _nameBreak = RegExp('[\\s}]');
 
