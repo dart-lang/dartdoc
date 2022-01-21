@@ -48,7 +48,8 @@ void main() {
     var dartdoc = await Dartdoc.fromContext(
       context,
       PubPackageBuilder(
-          context, pubPackageMetaProvider, PhysicalPackageConfigProvider()),
+          context, pubPackageMetaProvider, PhysicalPackageConfigProvider(),
+          skipUnreachableSdkLibraries: true),
     );
 
     var packageGraph = await dartdoc.packageBuilder.buildPackageGraph();
