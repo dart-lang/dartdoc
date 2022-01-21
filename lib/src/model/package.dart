@@ -106,8 +106,7 @@ class Package extends LibraryContainer
   LibraryContainer? get defaultCategory => nameToCategory[null];
 
   @override
-  late final String? documentationAsHtml =
-      Documentation.forElement(this).asHtml;
+  late final String documentationAsHtml = Documentation.forElement(this).asHtml;
 
   @override
   late final String? documentation = () {

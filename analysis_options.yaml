@@ -15,6 +15,7 @@ analyzer:
     - 'lib/templates/*.html'
     - 'pub.dartlang.org/**'
     # These have a lot of lint.
+    - 'testing/'
     - 'testing/test_package/**'
     - 'testing/test_package_custom_templates/**'
     - 'testing/test_package_experiments/**'

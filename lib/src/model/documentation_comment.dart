@@ -40,8 +40,6 @@ final RegExp _needsPrecacheRegExp = RegExp(r'{@(template|tool|inject-html)');
 /// entrypoints.
 mixin DocumentationComment
     on Documentable, Warnable, Locatable, SourceCodeMixin {
-  List<DocumentationComment>? _documentationFrom;
-
   /// Returns the ModelElement(s) from which we will get documentation.
   /// Can be more than one if this is a Field composing documentation from
   /// multiple Accessors.
@@ -50,31 +48,25 @@ mixin DocumentationComment
   /// to find docs, if the current class doesn't have docs
   /// for this element.
   @override
-  List<DocumentationComment> get documentationFrom =>
-      _documentationFrom ??= () {
-        if (!hasDocumentationComment &&
-            this is Inheritable &&
-            (this as Inheritable).overriddenElement != null) {
-          return (this as Inheritable).overriddenElement!.documentationFrom;
-        } else if (this is Inheritable && (this as Inheritable).isInherited) {
-          var fromThis = modelBuilder.fromElement(element!);
-          return fromThis.documentationFrom;
-        } else {
-          return [this];
-        }
-      }();
+  late final List<DocumentationComment> documentationFrom = () {
+    if (!hasDocumentationComment &&
+        this is Inheritable &&
+        (this as Inheritable).overriddenElement != null) {
+      return (this as Inheritable).overriddenElement!.documentationFrom;
+    } else if (this is Inheritable && (this as Inheritable).isInherited) {
+      var fromThis = modelBuilder.fromElement(element!);
+      return fromThis.documentationFrom;
+    } else {
+      return [this];
+    }
+  }();
 
-  String? _documentationAsHtml;
   @override
-  String? get documentationAsHtml {
-    if (_documentationAsHtml != null) return _documentationAsHtml;
-    _documentationAsHtml = _injectHtmlFragments(elementDocumentation.asHtml);
-    return _documentationAsHtml;
-  }
+  late final String documentationAsHtml =
+      _injectHtmlFragments(elementDocumentation.asHtml);
 
-  Documentation? _elementDocumentation;
-  Documentation get elementDocumentation =>
-      _elementDocumentation ??= Documentation.forElement(this);
+  late final Documentation elementDocumentation =
+      Documentation.forElement(this);
 
   String get documentationComment;
 
@@ -758,7 +750,7 @@ mixin DocumentationComment
   /// is a two stage process to avoid ordering problems.
   String? _documentationLocal;
 
-  String? get documentationLocal =>
+  String get documentationLocal =>
       _documentationLocal ??= _buildDocumentationLocal();
 
   /// Unconditionally precache local documentation.
@@ -773,40 +765,44 @@ mixin DocumentationComment
 
   String? _rawDocs;
 
-  String? _buildDocumentationLocal() => _buildDocumentationBaseSync();
+  String _buildDocumentationLocal() => _buildDocumentationBaseSync();
 
   /// Override this to add more features to the documentation builder in a
   /// subclass.
-  String buildDocumentationAddition(String? docs) => docs ?? '';
+  String buildDocumentationAddition(String docs) => docs;
 
   /// Separate from _buildDocumentationLocal for overriding.
-  String? _buildDocumentationBaseSync() {
+  String _buildDocumentationBaseSync() {
     assert(_rawDocs == null,
         'reentrant calls to _buildDocumentation* not allowed');
     // Do not use the sync method if we need to evaluate tools or templates.
     assert(!isCanonical || !needsPrecache);
+    String rawDocs;
     if (config.dropTextFrom.contains(element!.library!.name)) {
-      _rawDocs = '';
+      rawDocs = '';
     } else {
-      _rawDocs = _processCommentWithoutTools(documentationComment);
+      rawDocs = _processCommentWithoutTools(documentationComment);
     }
-    _rawDocs = buildDocumentationAddition(_rawDocs);
-    return _rawDocs;
+    rawDocs = buildDocumentationAddition(rawDocs);
+    _rawDocs = rawDocs;
+    return rawDocs;
   }
 
   /// Separate from _buildDocumentationLocal for overriding.  Can only be
   /// used as part of [PackageGraph.setUpPackageGraph].
-  Future<String?> _buildDocumentationBase() async {
+  Future<String> _buildDocumentationBase() async {
     assert(_rawDocs == null,
         'reentrant calls to _buildDocumentation* not allowed');
     // Do not use the sync method if we need to evaluate tools or templates.
+    String rawDocs;
     if (config.dropTextFrom.contains(element!.library!.name)) {
-      _rawDocs = '';
+      rawDocs = '';
     } else {
-      _rawDocs = await processComment(documentationComment);
+      rawDocs = await processComment(documentationComment);
     }
-    _rawDocs = buildDocumentationAddition(_rawDocs);
-    return _rawDocs;
+    rawDocs = buildDocumentationAddition(rawDocs);
+    _rawDocs = rawDocs;
+    return rawDocs;
   }
 
   /// Replace &lt;<dartdoc-html>[digest]</dartdoc-html>&gt; in API comments with
@@ -843,10 +839,10 @@ mixin DocumentationComment
   ///
   /// And the HTML fragment will not have been processed or changed by Markdown,
   /// but just injected verbatim.
-  String? _injectHtmlFragments(String? rawDocs) {
+  String _injectHtmlFragments(String rawDocs) {
     if (!config.injectHtml) return rawDocs;
 
-    return rawDocs!.replaceAllMapped(_htmlInjectRegExp, (match) {
+    return rawDocs.replaceAllMapped(_htmlInjectRegExp, (match) {
       var fragment = packageGraph.getHtmlFragment(match[1]);
       if (fragment == null) {
         warn(PackageWarning.unknownHtmlFragment, message: match[1]);

@@ -13,13 +13,13 @@ import 'model.dart';
 abstract class Documentable extends Nameable {
   String? get documentation;
 
-  String? get documentationAsHtml;
+  String get documentationAsHtml;
 
   bool get hasDocumentation;
 
   bool get hasExtendedDocumentation;
 
-  String? get oneLineDoc;
+  String get oneLineDoc;
 
   PackageGraph get packageGraph;
 
@@ -45,16 +45,10 @@ enum DocumentLocation {
 mixin MarkdownFileDocumentation implements Documentable, Canonicalization {
   DocumentLocation get documentedWhere;
 
-  Documentation? __documentation;
-
-  Documentation? get _documentation {
-    if (__documentation != null) return __documentation;
-    __documentation = Documentation.forElement(this);
-    return __documentation;
-  }
+  late final Documentation _documentation = Documentation.forElement(this);
 
   @override
-  String? get documentationAsHtml => _documentation!.asHtml;
+  String get documentationAsHtml => _documentation.asHtml;
 
   @override
   String get documentation {
@@ -75,7 +69,7 @@ mixin MarkdownFileDocumentation implements Documentable, Canonicalization {
   bool get isDocumented;
 
   @override
-  String? get oneLineDoc => __documentation!.asOneLiner;
+  String get oneLineDoc => _documentation.asOneLiner;
 
   File? get documentationFile;
 

@@ -239,7 +239,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   /// Example:
   ///   {@canonicalFor libname.ClassName}
   @override
-  String buildDocumentationAddition(String? rawDocs) {
+  String buildDocumentationAddition(String rawDocs) {
     rawDocs = super.buildDocumentationAddition(rawDocs);
     var newCanonicalFor = <String?>{};
     var notFoundInAllModelElements = <String?>{};

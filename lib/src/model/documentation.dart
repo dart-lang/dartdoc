@@ -16,40 +16,39 @@ class Documentation {
 
   bool? _hasExtendedDocs;
 
-  bool? get hasExtendedDocs {
+  bool get hasExtendedDocs {
     if (_hasExtendedDocs == null) {
       _renderDocumentation(_element.isCanonical && _asHtml == null);
     }
-    return _hasExtendedDocs;
+    return _hasExtendedDocs!;
   }
 
   String? _asHtml;
 
-  String? get asHtml {
+  String get asHtml {
     if (_asHtml == null) {
       assert(_asOneLiner == null || _element.isCanonical);
       _renderDocumentation(true);
     }
-    return _asHtml;
+    return _asHtml!;
   }
 
   String? _asOneLiner;
 
-  String? get asOneLiner {
+  String get asOneLiner {
     if (_asOneLiner == null) {
       assert(_asHtml == null);
       _renderDocumentation(_element.isCanonical);
     }
-    return _asOneLiner;
+    return _asOneLiner!;
   }
 
-  Map<String, ModelCommentReference>? get commentRefs => _element.commentRefs;
+  Map<String, ModelCommentReference> get commentRefs => _element.commentRefs;
 
   void _renderDocumentation(bool processFullDocs) {
     var parseResult = _parseDocumentation(processFullDocs);
-    if (_hasExtendedDocs != null) {
-      assert(_hasExtendedDocs == parseResult.hasExtendedDocs);
-    }
+    assert(_hasExtendedDocs == null ||
+        _hasExtendedDocs == parseResult.hasExtendedDocs);
     _hasExtendedDocs = parseResult.hasExtendedDocs;
 
     var renderResult = _renderer.render(parseResult.nodes,

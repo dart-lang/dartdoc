@@ -23,14 +23,16 @@ class ModelNode {
 
   static List<ModelCommentReference> _commentRefsFor(
       AstNode? node, ResourceProvider resourceProvider) {
-    if (node is AnnotatedNode &&
-        node.documentationComment?.references != null) {
-      return [
-        for (var m in node.documentationComment!.references)
-          ModelCommentReference(m, resourceProvider),
-      ];
+    if (node is AnnotatedNode) {
+      var nodeDocumentationComment = node.documentationComment;
+      if (nodeDocumentationComment != null) {
+        return [
+          for (var m in nodeDocumentationComment.references)
+            ModelCommentReference(m, resourceProvider),
+        ];
+      }
     }
-    return [];
+    return const [];
   }
 
   late final String sourceCode = () {

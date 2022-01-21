@@ -729,7 +729,7 @@ abstract class ModelElement extends Canonicalization
 
   @override
   bool get hasExtendedDocumentation =>
-      href != null && elementDocumentation.hasExtendedDocs!;
+      href != null && elementDocumentation.hasExtendedDocs;
 
   bool get hasParameters => parameters.isNotEmpty;
 
@@ -841,7 +841,7 @@ abstract class ModelElement extends Canonicalization
   String get name => element!.name!;
 
   @override
-  String? get oneLineDoc => elementDocumentation.asOneLiner;
+  String get oneLineDoc => elementDocumentation.asOneLiner;
 
   Member? get originalMember => _originalMember;
 

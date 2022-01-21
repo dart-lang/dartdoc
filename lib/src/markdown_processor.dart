@@ -120,7 +120,7 @@ const _validHtmlTags = [
 final RegExp _nonHTML =
     RegExp("</?(?!(${_validHtmlTags.join("|")})[> ])\\w+[> ]");
 
-final HtmlEscape _htmlEscape = const HtmlEscape(HtmlEscapeMode.element);
+const HtmlEscape _htmlEscape = HtmlEscape(HtmlEscapeMode.element);
 
 final List<md.InlineSyntax> _markdownSyntaxes = [
   _InlineCodeSyntax(),
@@ -363,15 +363,16 @@ class MarkdownDocument extends md.Document {
   DocumentationParseResult parseMarkdownText(
       String text, bool processFullText) {
     var hasExtendedContent = false;
-    var lines = LineSplitter.split(text).toList();
+    var lines = const LineSplitter().convert(text);
     md.Node? firstNode;
     var nodes = <md.Node>[];
     for (var node in _IterableBlockParser(lines, this).parseLinesGenerator()) {
-      if (firstNode != null) {
+      if (firstNode == null) {
+        firstNode = node;
+      } else if (!hasExtendedContent) {
         hasExtendedContent = true;
         if (!processFullText) break;
       }
-      firstNode ??= node;
       nodes.add(node);
     }
     _parseInlineContent(nodes);

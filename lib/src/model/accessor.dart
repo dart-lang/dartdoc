@@ -63,18 +63,13 @@ class Accessor extends ModelElement implements EnclosedElement {
   @override
   String get sourceCode => _sourceCode;
 
-  bool _documentationCommentComputed = false;
-  String? _documentationComment;
   @override
-  String get documentationComment => _documentationCommentComputed
-      ? _documentationComment!
-      : _documentationComment ??= () {
-          _documentationCommentComputed = true;
-          if (isSynthetic) {
-            return _syntheticDocumentationComment;
-          }
-          return stripComments(super.documentationComment);
-        }();
+  late final String documentationComment = () {
+    if (isSynthetic) {
+      return _syntheticDocumentationComment;
+    }
+    return stripComments(super.documentationComment);
+  }();
 
   /// Build a documentation comment for this accessor assuming it is synthetic.
   /// Value here is not useful if [isSynthetic] is false.

@@ -115,8 +115,7 @@ mixin GetterSetterCombo on ModelElement {
   List<DocumentationComment> get _superDocumentationFrom =>
       super.documentationFrom;
 
-  @override
-  late final List<DocumentationComment> documentationFrom = () {
+  late final List<DocumentationComment> _documentationFrom = () {
     var toReturn = <DocumentationComment>[];
     if (hasPublicGetter) {
       toReturn.addAll(getter!.documentationFrom);
@@ -124,7 +123,7 @@ mixin GetterSetterCombo on ModelElement {
       toReturn.addAll(setter!.documentationFrom);
     }
     if (toReturn.isEmpty ||
-        toReturn.every((e) => e.documentationComment == '')) {
+        toReturn.every((e) => e.documentationComment.isEmpty)) {
       // TODO(jcollins-g): Remove indirection once analyzer realizes super is
       // allowed from from inside a late final variable's anonymous closure call
       // (sdk >= 2.15.0-239.0.dev, but possibly earlier dev versions too).
@@ -132,6 +131,9 @@ mixin GetterSetterCombo on ModelElement {
     }
     return toReturn;
   }();
+
+  @override
+  List<DocumentationComment> get documentationFrom => _documentationFrom;
 
   bool get hasAccessorsWithDocs =>
       (hasPublicGetter && !getter!.isSynthetic && getter!.hasDocumentation ||
@@ -142,79 +144,64 @@ mixin GetterSetterCombo on ModelElement {
       hasPublicSetter &&
       setter!.hasDocumentation);
 
-  String? _oneLineDoc;
-
   @override
-  String? get oneLineDoc {
-    if (_oneLineDoc == null) {
-      if (!hasAccessorsWithDocs) {
-        _oneLineDoc = super.oneLineDoc;
-      } else {
-        var buffer = StringBuffer();
-        if (hasPublicGetter && getter!.oneLineDoc!.isNotEmpty) {
-          buffer.write(getter!.oneLineDoc);
-        }
-        if (hasPublicSetter && setter!.oneLineDoc!.isNotEmpty) {
-          buffer.write(getterSetterBothAvailable ? '' : setter!.oneLineDoc);
-        }
-        _oneLineDoc = buffer.toString();
-      }
+  late final String oneLineDoc = () {
+    if (!hasAccessorsWithDocs) {
+      return super.oneLineDoc;
     }
-    return _oneLineDoc;
-  }
 
-  bool _documentationCommentComputed = false;
-  String? _documentationComment;
+    var buffer = StringBuffer();
+    if (hasPublicGetter && getter!.oneLineDoc.isNotEmpty) {
+      buffer.write(getter!.oneLineDoc);
+    }
+    if (hasPublicSetter && setter!.oneLineDoc.isNotEmpty) {
+      buffer.write(getterSetterBothAvailable ? '' : setter!.oneLineDoc);
+    }
+    return buffer.toString();
+  }();
+
   @override
-  String get documentationComment => _documentationCommentComputed
-      ? _documentationComment!
-      : _documentationComment ??= () {
-          _documentationCommentComputed = true;
-          var docs = _getterSetterDocumentationComment;
-          if (docs.isEmpty) return element!.documentationComment ?? '';
-          return docs;
-        }();
+  late final String documentationComment = () {
+    var docs = _getterSetterDocumentationComment;
+    if (docs.isEmpty) return element!.documentationComment ?? '';
+    return docs;
+  }();
 
   @override
   bool get hasDocumentationComment =>
       _getterSetterDocumentationComment.isNotEmpty ||
       element!.documentationComment != null;
 
-  String? __getterSetterDocumentationComment;
-
   /// Derive a documentation comment for the combo by copying documentation
   /// from the [getter] and/or [setter].
-  String get _getterSetterDocumentationComment =>
-      __getterSetterDocumentationComment ??= () {
-        var buffer = StringBuffer();
+  late final String _getterSetterDocumentationComment = () {
+    var buffer = StringBuffer();
 
-        // Check for synthetic before public, always, or stack overflow.
-        if (hasGetter && !getter!.isSynthetic && getter!.isPublic) {
-          assert(getter!.documentationFrom.length == 1);
-          var fromGetter = getter!.documentationFrom.first;
-          // We have to check against dropTextFrom here since documentationFrom
-          // doesn't yield the real elements for GetterSetterCombos.
-          if (!config.dropTextFrom
-              .contains(fromGetter.element!.library!.name)) {
-            if (fromGetter.hasDocumentationComment) {
-              buffer.write(fromGetter.documentationComment);
-            }
-          }
+    // Check for synthetic before public, always, or stack overflow.
+    if (hasGetter && !getter!.isSynthetic && getter!.isPublic) {
+      assert(getter!.documentationFrom.length == 1);
+      var fromGetter = getter!.documentationFrom.first;
+      // We have to check against dropTextFrom here since documentationFrom
+      // doesn't yield the real elements for GetterSetterCombos.
+      if (!config.dropTextFrom.contains(fromGetter.element!.library!.name)) {
+        if (fromGetter.hasDocumentationComment) {
+          buffer.write(fromGetter.documentationComment);
         }
+      }
+    }
 
-        if (hasSetter && !setter!.isSynthetic && setter!.isPublic) {
-          assert(setter!.documentationFrom.length == 1);
-          var fromSetter = setter!.documentationFrom.first;
-          if (!config.dropTextFrom
-              .contains(fromSetter.element!.library!.name)) {
-            if (fromSetter.hasDocumentationComment) {
-              if (buffer.isNotEmpty) buffer.write('\n\n');
-              buffer.write(fromSetter.documentationComment);
-            }
-          }
+    if (hasSetter && !setter!.isSynthetic && setter!.isPublic) {
+      assert(setter!.documentationFrom.length == 1);
+      var fromSetter = setter!.documentationFrom.first;
+      if (!config.dropTextFrom.contains(fromSetter.element!.library!.name)) {
+        if (fromSetter.hasDocumentationComment) {
+          if (buffer.isNotEmpty) buffer.write('\n\n');
+          buffer.write(fromSetter.documentationComment);
         }
-        return buffer.toString();
-      }();
+      }
+    }
+    return buffer.toString();
+  }();
 
   ElementType get modelType {
     if (hasGetter) return getter!.modelType.returnType;
