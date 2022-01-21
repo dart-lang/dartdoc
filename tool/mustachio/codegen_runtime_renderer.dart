@@ -587,7 +587,7 @@ renderValue:
     _buffer.write('const _invisibleGetters = {');
     for (var class_ in _invisibleGetters.keys.toList()..sort()) {
       _buffer.write("'$class_':");
-      var getters = _invisibleGetters[class_]!;
+      var getters = _invisibleGetters[class_]!.toList()..sort();
       _buffer.write('{${getters.map((e) => "'$e'").join(', ')}},');
     }
     _buffer.write('};');
