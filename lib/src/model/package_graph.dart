@@ -486,8 +486,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     for (var packageName in config.packageOrder) {
       if (!packageNames.contains(packageName)) {
         warnOnElement(null, PackageWarning.packageOrderGivesMissingPackageName,
-            message:
-                "$packageName, packages: ${packageNames.join(',')}");
+            message: "$packageName, packages: ${packageNames.join(',')}");
       }
     }
     return packages.where((p) => p.isPublic).toList()..sort();
