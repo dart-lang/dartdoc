@@ -10,8 +10,6 @@ analyzer:
     ### Extra ignores for presubmit
     deprecated_member_use: ignore
     deprecated_member_use_from_same_package: ignore
-    ### Temporary presubmit ignore for NNBD migration
-    import_of_legacy_library_into_null_safe: ignore
   language:
     strict-raw-types: true
   exclude:
