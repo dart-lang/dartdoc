@@ -14,7 +14,7 @@ For issues/details related to hosted Dart API docs, see
 
 ## Installation
 
-The [`dart`] tool(https://dart.dev/tools/dart-tool),
+The [`dart`](https://dart.dev/tools/dart-tool) tool,
 with the `dart doc` command, is part of the [Dart SDK](https://dart.dev/get-dart).
 
 ## Generating docs
