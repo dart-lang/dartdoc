@@ -101,7 +101,7 @@ class _ModelCommentReferenceImpl implements ModelCommentReference {
   _ModelCommentReferenceImpl(
       CommentReference ref, ResourceProvider resourceProvider)
       : codeRef = _referenceText(ref, resourceProvider),
-        staticElement = ref.identifier.staticElement;
+        staticElement = ref.expression.element;
 
   _ModelCommentReferenceImpl.synthetic(this.codeRef, this.staticElement);
 
@@ -122,4 +122,19 @@ class _ModelCommentReferenceImpl implements ModelCommentReference {
 
   late final List<CommentReferenceNode> parsed =
       CommentReferenceParser(codeRef).parse();
+}
+
+extension on CommentReferableExpression {
+  Element? get element {
+    var expression = this;
+    if (expression is PropertyAccess) {
+      return expression.propertyName.staticElement;
+    } else if (expression is SimpleIdentifier) {
+      return expression.staticElement;
+    } else if (expression is PrefixedIdentifier) {
+      return expression.staticElement;
+    } else {
+      return null;
+    }
+  }
 }
