@@ -138,10 +138,14 @@ abstract class ModelElement extends Canonicalization
   factory ModelElement._fromElement(Element e, PackageGraph p) {
     var lib = p.findButDoNotCreateLibraryFor(e);
     if (e is PropertyInducingElement) {
-      var getter =
-          e.getter != null ? ModelElement._from(e.getter!, lib, p) : null;
-      var setter =
-          e.setter != null ? ModelElement._from(e.setter!, lib, p) : null;
+      var elementGetter = e.getter;
+      var getter = elementGetter != null
+          ? ModelElement._from(elementGetter, lib, p)
+          : null;
+      var elementSetter = e.setter;
+      var setter = elementSetter != null
+          ? ModelElement._from(elementSetter, lib, p)
+          : null;
       return ModelElement._fromPropertyInducingElement(e, lib!, p,
           getter: getter as Accessor?, setter: setter as Accessor?);
     }
@@ -194,19 +198,21 @@ abstract class ModelElement extends Canonicalization
         newModelElement = Field.inherited(
             e, enclosingContainer, library, packageGraph, getter, setter);
       }
-    }
-    if (e is TopLevelVariableElement) {
+    } else if (e is TopLevelVariableElement) {
       assert(getter != null || setter != null);
       newModelElement =
           TopLevelVariable(e, library, packageGraph, getter, setter);
+    } else {
+      throw UnimplementedError(
+          'Unrecognized property inducing element: $e (${e.runtimeType})');
     }
 
     if (enclosingContainer != null) assert(newModelElement is Inheritable);
     _cacheNewModelElement(e, newModelElement, library,
         enclosingContainer: enclosingContainer);
 
-    assert(newModelElement!.element is! MultiplyInheritedExecutableElement);
-    return newModelElement!;
+    assert(newModelElement.element is! MultiplyInheritedExecutableElement);
+    return newModelElement;
   }
 
   /// Creates a [ModelElement] from a non-property-inducing [e].
@@ -378,29 +384,27 @@ abstract class ModelElement extends Canonicalization
   bool get hasCategoryNames => false;
 
   // Stub for mustache.
-  Iterable<Category?> get displayedCategories => [];
+  Iterable<Category?> get displayedCategories => const [];
 
   Set<Library>? get exportedInLibraries {
     return library!.packageGraph.libraryElementReexportedBy[element!.library!];
   }
 
-  late final ModelNode? _modelNode = packageGraph.getModelNodeFor(element);
-
   @override
-  ModelNode? get modelNode => _modelNode;
+  late final ModelNode? modelNode = packageGraph.getModelNodeFor(element);
 
-  Iterable<Annotation>? _annotations;
   // Skips over annotations with null elements or that are otherwise
   // supposed to be invisible (@pragma).  While technically, null elements
   // indicate invalid code from analyzer's perspective they are present in
   // sky_engine (@Native) so we don't want to crash here.
-  Iterable<Annotation> get annotations => _annotations ??= element!.metadata
+  late final Iterable<Annotation> annotations = element!.metadata
       .whereNot((m) =>
           m.element == null ||
           packageGraph
               .specialClasses[SpecialClass.pragma]!.element!.constructors
               .contains(m.element))
-      .map((m) => Annotation(m, library, packageGraph));
+      .map((m) => Annotation(m, library, packageGraph))
+      .toList(growable: false);
 
   @override
   late final bool isPublic = () {
@@ -422,7 +426,7 @@ abstract class ModelElement extends Canonicalization
 
   @override
   late final Map<String, ModelCommentReference> commentRefs = () {
-    var _commentRefs = <String, ModelCommentReference>{};
+    var commentRefsBuilder = <String, ModelCommentReference>{};
     for (var from in documentationFrom) {
       if (from is ModelElement) {
         var checkReferences = [from];
@@ -433,14 +437,16 @@ abstract class ModelElement extends Canonicalization
           // Some elements don't have modelNodes or aren't traversed by
           // the element visitor, or both.
           assert(e is Parameter || e.modelNode != null);
-          _commentRefs.addAll({
-            for (var r in e.modelNode?.commentRefs ?? <ModelCommentReference>[])
-              r.codeRef: r
-          });
+          var nodeCommentRefs = e.modelNode?.commentRefs;
+          if (nodeCommentRefs != null && nodeCommentRefs.isNotEmpty) {
+            for (var r in nodeCommentRefs) {
+              commentRefsBuilder[r.codeRef];
+            }
+          }
         }
       }
     }
-    return _commentRefs;
+    return commentRefsBuilder;
   }();
 
   @override
@@ -448,13 +454,12 @@ abstract class ModelElement extends Canonicalization
       DartdocOptionContext.fromContextElement(
           packageGraph.config, library!.element, packageGraph.resourceProvider);
 
-  late final Set<String> _locationPieces = Set.from(element!.location
+  @override
+  late final Set<String> locationPieces = element!.location
       .toString()
       .split(locationSplitter)
-      .where((s) => s.isNotEmpty));
-
-  @override
-  Set<String> get locationPieces => _locationPieces;
+      .where((s) => s.isNotEmpty)
+      .toSet();
 
   static const Set<String> _specialFeatures = {
     // Replace the @override annotation with a feature that explicitly
@@ -473,7 +478,7 @@ abstract class ModelElement extends Canonicalization
   /// that need to be documented.  See [Feature] for a list.
   Set<Feature> get features {
     return {
-      ...annotations.where((a) => !_specialFeatures.contains(a.name)),
+      ...annotations.whereNot((a) => _specialFeatures.contains(a.name)),
       // 'const' and 'static' are not needed here because 'const' and 'static'
       // elements get their own sections in the doc.
       if (isFinal) Feature.finalFeature,
@@ -510,52 +515,46 @@ abstract class ModelElement extends Canonicalization
     var library = modelBuilder.fromElement(element!.library!) as Library?;
     if (library == null) {
       warn(PackageWarning.noDefiningLibraryFound);
+    } else {
+      return library;
     }
-    Library? fallback;
     if (enclosingElement is ModelElement) {
-      fallback = (enclosingElement as ModelElement).definingLibrary;
+      return (enclosingElement as ModelElement).definingLibrary;
+    } else {
+      return this.library!;
     }
-    return library ?? fallback ?? this.library!;
   }
-
-  Library? _canonicalLibrary;
-
-  // [_canonicalLibrary] can be null so we can't check against null to see
-  // whether we tried to compute it before.
-  bool _canonicalLibraryIsSet = false;
 
   @override
-  Library? get canonicalLibrary {
-    if (!_canonicalLibraryIsSet) {
-      // This is not accurate if we are constructing the Package.
-      assert(packageGraph.allLibrariesAdded);
+  late final Library? canonicalLibrary = () {
+    // This is not accurate if we are constructing the Package.
+    assert(packageGraph.allLibrariesAdded);
+    Library? canonicalLibraryPossibility;
 
-      // Privately named elements can never have a canonical library, so
-      // just shortcut them out.
-      if (!utils.hasPublicName(element!)) {
-        _canonicalLibrary = null;
-      } else if (!packageGraph.localPublicLibraries.contains(definingLibrary)) {
-        _canonicalLibrary = _searchForCanonicalLibrary();
-      } else {
-        _canonicalLibrary = definingLibrary;
-      }
-      // Only pretend when not linking to remote packages.
-      if (this is Inheritable && !config.linkToRemote) {
-        if ((this as Inheritable).isInherited &&
-            _canonicalLibrary == null &&
-            packageGraph.publicLibraries.contains(library)) {
-          // In the event we've inherited a field from an object that isn't
-          // directly reexported, we may need to pretend we are canonical for
-          // this.
-          _canonicalLibrary = library;
-        }
-      }
-      _canonicalLibraryIsSet = true;
+    // Privately named elements can never have a canonical library, so
+    // just shortcut them out.
+    if (!utils.hasPublicName(element!)) {
+      canonicalLibraryPossibility = null;
+    } else if (!packageGraph.localPublicLibraries.contains(definingLibrary)) {
+      canonicalLibraryPossibility = _searchForCanonicalLibrary();
+    } else {
+      canonicalLibraryPossibility = definingLibrary;
     }
-    assert(_canonicalLibrary == null ||
-        packageGraph.publicLibraries.contains(_canonicalLibrary));
-    return _canonicalLibrary;
-  }
+    // Only pretend when not linking to remote packages.
+    if (this is Inheritable && !config.linkToRemote) {
+      if ((this as Inheritable).isInherited &&
+          canonicalLibraryPossibility == null &&
+          packageGraph.publicLibraries.contains(library)) {
+        // In the event we've inherited a field from an object that isn't
+        // directly reexported, we may need to pretend we are canonical for
+        // this.
+        canonicalLibraryPossibility = library;
+      }
+    }
+    assert(canonicalLibraryPossibility == null ||
+        packageGraph.publicLibraries.contains(canonicalLibraryPossibility));
+    return canonicalLibraryPossibility;
+  }();
 
   Library? _searchForCanonicalLibrary() {
     var thisAndExported = definingLibrary.exportedInLibraries;
@@ -679,15 +678,11 @@ abstract class ModelElement extends Canonicalization
 
   String? get filePath;
 
-  String? _fullyQualifiedName;
-
   /// Returns the fully qualified name.
   ///
   /// For example: libraryName.className.methodName
   @override
-  String get fullyQualifiedName {
-    return (_fullyQualifiedName ??= _buildFullyQualifiedName());
-  }
+  late final String fullyQualifiedName = _buildFullyQualifiedName();
 
   late final String _fullyQualifiedNameWithoutLibrary =
       fullyQualifiedName.replaceFirst('${library!.fullyQualifiedName}.', '');
@@ -699,25 +694,19 @@ abstract class ModelElement extends Canonicalization
   @override
   String get sourceFileName => element!.source!.fullName;
 
-  CharacterLocation? _characterLocation;
-  bool _characterLocationIsSet = false;
-
   @override
-  CharacterLocation? get characterLocation {
-    if (!_characterLocationIsSet) {
-      var lineInfo = compilationUnitElement!.lineInfo;
-      _characterLocationIsSet = true;
-      assert(element!.nameOffset >= 0,
-          'Invalid location data for element: $fullyQualifiedName');
-      assert(lineInfo != null,
-          'No lineInfo data available for element: $fullyQualifiedName');
-      var nameOffset = element!.nameOffset;
-      if (nameOffset >= 0) {
-        _characterLocation = lineInfo?.getLocation(nameOffset);
-      }
+  late final CharacterLocation? characterLocation = () {
+    var lineInfo = compilationUnitElement!.lineInfo;
+    assert(element!.nameOffset >= 0,
+        'Invalid location data for element: $fullyQualifiedName');
+    assert(lineInfo != null,
+        'No lineInfo data available for element: $fullyQualifiedName');
+    var nameOffset = element!.nameOffset;
+    if (nameOffset >= 0) {
+      return lineInfo?.getLocation(nameOffset);
     }
-    return _characterLocation;
-  }
+    return null;
+  }();
 
   CompilationUnitElement? get compilationUnitElement =>
       element!.thisOrAncestorOfType<CompilationUnitElement>();
@@ -930,11 +919,9 @@ abstract class ModelElement extends Canonicalization
   @override
   bool get hasDocumentationComment => element!.documentationComment != null;
 
-  late final String _sourceCode =
-      _sourceCodeRenderer.renderSourceCode(super.sourceCode);
-
   @override
-  String get sourceCode => _sourceCode;
+  late final String sourceCode =
+      _sourceCodeRenderer.renderSourceCode(super.sourceCode);
 
   @override
   int compareTo(dynamic other) {
