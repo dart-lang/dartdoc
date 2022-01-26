@@ -37,12 +37,11 @@ class ModelFunctionTypedef extends ModelFunctionTyped {
 class ModelFunctionTyped extends ModelElement
     with TypeParameters
     implements EnclosedElement {
-  List<TypeParameter>? _typeParameters;
   @override
-  List<TypeParameter> get typeParameters => _typeParameters ??= <TypeParameter>[
-        for (var p in element!.typeParameters)
-          modelBuilder.from(p, library!) as TypeParameter,
-      ];
+  late final List<TypeParameter> typeParameters = [
+    for (var p in element!.typeParameters)
+      modelBuilder.from(p, library!) as TypeParameter,
+  ];
 
   ModelFunctionTyped(
       FunctionTypedElement element, Library? library, PackageGraph packageGraph)
@@ -70,18 +69,13 @@ class ModelFunctionTyped extends ModelElement
   // Food for mustache. TODO(jcollins-g): what about enclosing elements?
   bool get isInherited => false;
 
-  Map<String, CommentReferable>? _referenceChildren;
   @override
-  Map<String, CommentReferable> get referenceChildren {
-    if (_referenceChildren == null) {
-      _referenceChildren = {};
-      _referenceChildren!
-          .addEntriesIfAbsent(typeParameters.explicitOnCollisionWith(this));
-      _referenceChildren!
-          .addEntriesIfAbsent(parameters.explicitOnCollisionWith(this));
-    }
-    return _referenceChildren!;
-  }
+  late final Map<String, CommentReferable> referenceChildren = () {
+    var children = <String, CommentReferable>{};
+    children.addEntriesIfAbsent(typeParameters.explicitOnCollisionWith(this));
+    children.addEntriesIfAbsent(parameters.explicitOnCollisionWith(this));
+    return children;
+  }();
 
   @override
   Package get package => super.package!;
@@ -92,7 +86,6 @@ class ModelFunctionTyped extends ModelElement
   @override
   FunctionTypedElement? get element => super.element as FunctionTypedElement?;
 
-  Callable? _modelType;
-  Callable get modelType => (_modelType ??=
-      modelBuilder.typeFrom(element!.type, library!) as Callable?)!;
+  late final Callable modelType =
+      modelBuilder.typeFrom(element!.type, library!) as Callable;
 }
