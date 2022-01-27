@@ -12,14 +12,10 @@ import 'package:dartdoc/dartdoc.dart' show Dartdoc, DartdocResults;
 import 'package:dartdoc/options.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/failure.dart';
-import 'package:dartdoc/src/generator/generator.dart';
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/logging.dart';
-import 'package:dartdoc/src/model/class.dart';
 import 'package:dartdoc/src/model/documentable.dart';
-import 'package:dartdoc/src/model/model_element.dart';
 import 'package:dartdoc/src/model/package_builder.dart';
-import 'package:dartdoc/src/model/package_graph.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/warnings.dart';
@@ -44,28 +40,10 @@ final Folder _testPackageBadDir = _getFolder('testing/test_package_bad');
 final Folder _testSkyEnginePackage = _getFolder('testing/sky_engine');
 final Folder _testPackageIncludeExclude =
     _getFolder('testing/test_package_include_exclude');
-final Folder _testPackageOptions = _getFolder('testing/test_package_options');
 final Folder _testPackageCustomTemplates =
     _getFolder('testing/test_package_custom_templates');
 final Folder _testPackageExperiments =
     _getFolder('testing/test_package_experiments');
-
-/// Convenience factory to build a [DartdocGeneratorOptionContext] and associate
-/// it with a [DartdocOptionSet] based on the current working directory and/or
-/// the '--input' flag.
-Future<DartdocGeneratorOptionContext> _generatorContextFromArgv(
-    List<String> argv) async {
-  var optionSet = await DartdocOptionRoot.fromOptionGenerators(
-      'dartdoc',
-      [
-        createDartdocOptions,
-        createGeneratorOptions,
-      ],
-      pubPackageMetaProvider);
-  optionSet.parseArguments(argv);
-  return DartdocGeneratorOptionContext.fromDefaultContextLocation(
-      optionSet, pubPackageMetaProvider.resourceProvider);
-}
 
 class DartdocLoggingOptionContext extends DartdocGeneratorOptionContext
     with LoggingContext {
@@ -100,7 +78,7 @@ void main() {
 
     Future<Dartdoc> buildDartdoc(
         List<String> argv, Folder packageRoot, Folder tempDir) async {
-      var context = await _generatorContextFromArgv(argv
+      var context = await generatorContextFromArgv(argv
         ..addAll(['--input', packageRoot.path, '--output', tempDir.path]));
 
       return await Dartdoc.fromContext(
@@ -110,51 +88,6 @@ void main() {
             skipUnreachableSdkLibraries: true),
       );
     }
-
-    group('Option handling', () {
-      Dartdoc dartdoc;
-      late DartdocResults results;
-      late PackageGraph packageGraph;
-      late Folder tempDir;
-
-      setUpAll(() async {
-        tempDir = _resourceProvider.createSystemTemp('dartdoc.test.');
-        dartdoc = await buildDartdoc([], _testPackageOptions, tempDir);
-        results = await dartdoc.generateDocsBase();
-        packageGraph = results.packageGraph;
-      });
-
-      test('generator parameters', () async {
-        var favicon = _resourceProvider.getFile(_pathContext
-            .joinAll([tempDir.path, 'static-assets', 'favicon.png']));
-        var index = _resourceProvider
-            .getFile(_pathContext.joinAll([tempDir.path, 'index.html']));
-        expect(favicon.readAsStringSync(),
-            contains('Not really a png, but a test file'));
-        var indexString = index.readAsStringSync();
-        expect(indexString, contains('<em>Footer</em> things'));
-        expect(indexString, contains('footer.txt data'));
-        expect(indexString, contains('HTML header file'));
-      });
-
-      test('examplePathPrefix', () async {
-        var classUseAnExampleHere = packageGraph.allCanonicalModelElements
-            .whereType<Class>()
-            .firstWhere((ModelElement c) => c.name == 'UseAnExampleHere');
-        expect(
-            classUseAnExampleHere.documentationAsHtml,
-            contains(
-                'An example of an example in an unusual example location.'));
-      });
-
-      test('includeExternal and showUndocumentedCategories', () async {
-        var withUndocumentedCategory = packageGraph.allCanonicalModelElements
-            .whereType<Class>()
-            .firstWhere((ModelElement c) => c.name == 'UseAnExampleHere');
-        expect(withUndocumentedCategory.isPublic, isTrue);
-        expect(withUndocumentedCategory.displayedCategories, isNotEmpty);
-      });
-    });
 
     test('errors generate errors even when warnings are off', () async {
       var dartdoc =

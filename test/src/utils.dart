@@ -10,7 +10,9 @@ import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/memory_file_system.dart';
 import 'package:analyzer/src/dart/sdk/sdk.dart';
 import 'package:analyzer/src/test_utilities/mock_sdk.dart';
+import 'package:dartdoc/options.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
+import 'package:dartdoc/src/generator/generator.dart';
 import 'package:dartdoc/src/markdown_processor.dart';
 import 'package:dartdoc/src/matching_link_result.dart';
 import 'package:dartdoc/src/model/package_builder.dart';
@@ -42,6 +44,23 @@ Future<DartdocOptionContext> contextFromArgv(
       'dartdoc', [createDartdocOptions], packageMetaProvider);
   optionSet.parseArguments(argv);
   return DartdocOptionContext.fromDefaultContextLocation(
+      optionSet, pubPackageMetaProvider.resourceProvider);
+}
+
+/// Convenience factory to build a [DartdocGeneratorOptionContext] and
+/// associate it with a [DartdocOptionSet] based on the current working
+/// directory and/or the '--input' flag.
+Future<DartdocGeneratorOptionContext> generatorContextFromArgv(
+    List<String> argv) async {
+  var optionSet = await DartdocOptionRoot.fromOptionGenerators(
+      'dartdoc',
+      [
+        createDartdocOptions,
+        createGeneratorOptions,
+      ],
+      pubPackageMetaProvider);
+  optionSet.parseArguments(argv);
+  return DartdocGeneratorOptionContext.fromDefaultContextLocation(
       optionSet, pubPackageMetaProvider.resourceProvider);
 }
 

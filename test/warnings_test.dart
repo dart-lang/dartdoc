@@ -7,7 +7,6 @@ library dartdoc.warnings_test;
 
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:dartdoc/options.dart';
-import 'package:dartdoc/src/dartdoc.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/generator/generator.dart';
 import 'package:dartdoc/src/io_utils.dart';
@@ -25,7 +24,7 @@ void main() async {
       'dartdoc', [createDartdocOptions], pubPackageMetaProvider);
 
   test('excluding package from "allowed warnings" list ignores all', () async {
-    await d.package('test_package').create();
+    await d.createPackage('test_package');
     var testPackage = resourceProvider.getFolder(d.dir('test_package').io.path);
 
     optionSet.parseArguments([
@@ -40,7 +39,7 @@ void main() async {
   });
 
   test('warnings and errors are allowed at the commandline', () async {
-    await d.package('test_package').create();
+    await d.createPackage('test_package');
     var testPackage = resourceProvider.getFolder(d.dir('test_package').io.path);
 
     optionSet.parseArguments([
@@ -57,7 +56,7 @@ void main() async {
   });
 
   test('allowing and ignoring warnings from a package ignores all', () async {
-    await d.package('test_package', dartdocOptions: '''
+    await d.createPackage('test_package', dartdocOptions: '''
 dartdoc:
   warnings:
     - type-as-html
@@ -66,7 +65,7 @@ dartdoc:
     - unresolved-doc-reference
   ignore:
     - ambiguous-reexport
-''').create();
+''');
     var testPackage = resourceProvider.getFolder(d.dir('test_package').io.path);
 
     optionSet.parseArguments([
@@ -87,7 +86,7 @@ dartdoc:
   });
 
   test('loading warning options from files works', () async {
-    await d.package('test_package', dartdocOptions: '''
+    await d.createPackage('test_package', dartdocOptions: '''
 dartdoc:
   warnings:
     - type-as-html
@@ -96,7 +95,7 @@ dartdoc:
     - unresolved-doc-reference
   ignore:
     - ambiguous-reexport
-''').create();
+''');
 
     optionSet.parseArguments([]);
     PackageWarningOptions options = optionSet['packageWarningOptions']
@@ -113,7 +112,7 @@ dartdoc:
   });
 
   test('args override warning options from files', () async {
-    await d.package('test_package', dartdocOptions: '''
+    await d.createPackage('test_package', dartdocOptions: '''
 dartdoc:
   warnings:
     - type-as-html
@@ -122,7 +121,7 @@ dartdoc:
     - unresolved-doc-reference
   ignore:
     - ambiguous-reexport
-''').create();
+''');
     optionSet.parseArguments([
       '--warnings',
       'ambiguous-reexport',
@@ -147,7 +146,7 @@ dartdoc:
 
   test('null values for warnings, ignore, and errors reset to defaults',
       () async {
-    await d.package('test_package', dartdocOptions: '''
+    await d.createPackage('test_package', dartdocOptions: '''
 dartdoc:
   warnings:
     - type-as-html
@@ -156,7 +155,7 @@ dartdoc:
     - unresolved-doc-reference
   ignore:
     - ambiguous-reexport
-''').create();
+''');
     optionSet.parseArguments([
       '--warnings',
       '',
@@ -179,7 +178,7 @@ dartdoc:
   });
 
   test('warns of a broken re-export chain', () async {
-    await d.package(
+    await d.createPackage(
       'test_package',
       pubspec: '''
 name: test_package
@@ -198,8 +197,8 @@ export 'package:test_package_export_error/library2.dart';
 class BugFreeClass {}
 '''),
       ],
-    ).create();
-    await d.package(
+    );
+    await d.createPackage(
       'test_package_export_error',
       pubspec: '''
 name: test_package_export_error
@@ -218,7 +217,7 @@ export 'package:test_package_export_error/library1.dart';
 class Lib2Class {}
 '''),
       ],
-    ).create();
+    );
 
     var tempDir = resourceProvider.createSystemTemp('dartdoc.test.');
 
@@ -234,14 +233,11 @@ class Lib2Class {}
     var context = DartdocGeneratorOptionContext.fromDefaultContextLocation(
         optionSet, pubPackageMetaProvider.resourceProvider);
 
-    var dartdoc = await Dartdoc.fromContext(
-      context,
-      PubPackageBuilder(
-          context, pubPackageMetaProvider, PhysicalPackageConfigProvider(),
-          skipUnreachableSdkLibraries: true),
-    );
+    var packageGraph = await PubPackageBuilder(
+            context, pubPackageMetaProvider, PhysicalPackageConfigProvider(),
+            skipUnreachableSdkLibraries: true)
+        .buildPackageGraph();
 
-    var packageGraph = await dartdoc.packageBuilder.buildPackageGraph();
     var unresolvedExportWarnings = packageGraph
         .packageWarningCounter.countedWarnings.values
         .map((e) => e[PackageWarning.unresolvedExport] ?? {})
