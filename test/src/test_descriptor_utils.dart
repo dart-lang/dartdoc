@@ -21,6 +21,8 @@ Future<d.DirectoryDescriptor> createPackage(
   List<d.Descriptor> libFiles = const [],
   List<d.Descriptor> files = const [],
 }) async {
+  final languageVersion =
+      RegExp(r"sdk: '>=(\S*)\.0(-0)? ").firstMatch(pubspec)!.group(1);
   final packageDir = d.dir(name, [
     d.file('pubspec.yaml', pubspec),
     if (dartdocOptions != null) d.file('dartdoc_options.yaml', dartdocOptions),
@@ -43,7 +45,7 @@ Future<d.DirectoryDescriptor> createPackage(
       "name": "test_package",
       "rootUri": "../",
       "packageUri": "lib/",
-      "languageVersion": "2.0"
+      "languageVersion": "$languageVersion"
     }
   ],
   "generated": "2021-09-14T20:36:04.604099Z",
