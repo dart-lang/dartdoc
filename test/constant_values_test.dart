@@ -39,7 +39,7 @@ void main() {
             additionalArguments: ['--no-link-to-remote']));
 
     setUp(() async {
-      await d.package(
+      await d.createPackage(
         libraryName,
         pubspec: '''
 name: constructor_tearoffs
@@ -79,7 +79,7 @@ const aTearOffNamedConstructor = F.alternative;
 const aTearOffNamedConstructorArgs = F<int>.alternative;
 '''),
         ],
-      ).create();
+      );
 
       library = (await bootstrapPackageGraph())
           .libraries
@@ -163,7 +163,7 @@ const aTearOffNamedConstructorArgs = F<int>.alternative;
             additionalArguments: ['--no-link-to-remote']));
 
     setUp(() async {
-      await d.package(
+      await d.createPackage(
         libraryName,
         pubspec: '''
 name: named_arguments_anywhere
@@ -191,7 +191,7 @@ const q = C(1, c: 2, 3, d: 4);
 const r = C(c: 1, d: 2, 3, 4);
 '''),
         ],
-      ).create();
+      );
 
       library = (await bootstrapPackageGraph())
           .libraries

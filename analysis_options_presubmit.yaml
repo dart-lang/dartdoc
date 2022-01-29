@@ -23,7 +23,6 @@ analyzer:
     - 'testing/test_package_experiments/**'
     - 'testing/test_package_extensions/**'
     - 'testing/test_package_imported/**'
-    - 'testing/test_package_options/**'
     # This package imports flutter, which is perhaps not found by the base `dart analyze` tool.
     - 'testing/flutter_packages/test_package_flutter_plugin/**'
     # This package is meant to mock the sky_engine package.
