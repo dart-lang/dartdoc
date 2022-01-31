@@ -31,7 +31,7 @@ void main() {
     setUpAll(() async {
       const libraryName = 'super_parameters';
 
-      await d.package(
+      await d.createPackage(
         libraryName,
         libFiles: [
           d.file('lib.dart', '''
@@ -49,7 +49,7 @@ class C {
 }
 '''),
         ],
-      ).create();
+      );
 
       var packageGraph = await utils.bootBasicPackage(
         d.dir(libraryName).io.path,
@@ -172,7 +172,7 @@ class C {
     setUpAll(() async {
       const libraryName = 'super_parameters';
 
-      await d.package(
+      await d.createPackage(
         libraryName,
         pubspec: '''
 name: super_parameters
@@ -220,7 +220,7 @@ class E extends D {
 }
 '''),
         ],
-      ).create();
+      );
 
       var packageGraph = await utils.bootBasicPackage(
         d.dir(libraryName).io.path,
