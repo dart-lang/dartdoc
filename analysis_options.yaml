@@ -18,7 +18,6 @@ analyzer:
     - 'testing/test_package/**'
     - 'testing/test_package_custom_templates/**'
     - 'testing/test_package_experiments/**'
-    - 'testing/test_package_extensions/**'
     - 'testing/test_package_imported/**'
     # This package imports flutter, which is perhaps not found by the base `dart analyze` tool.
     - 'testing/flutter_packages/test_package_flutter_plugin/**'
