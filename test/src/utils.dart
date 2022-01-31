@@ -65,28 +65,31 @@ Future<DartdocGeneratorOptionContext> generatorContextFromArgv(
 }
 
 Future<PackageGraph> bootBasicPackage(
-    String dirPath,
-    PackageMetaProvider packageMetaProvider,
-    PackageConfigProvider packageConfigProvider,
-    {List<String> excludeLibraries = const [],
-    List<String> additionalArguments = const []}) async {
+  String dirPath,
+  PackageMetaProvider packageMetaProvider,
+  PackageConfigProvider packageConfigProvider, {
+  List<String> excludeLibraries = const [],
+  List<String> additionalArguments = const [],
+  bool skipUnreachableSdkLibraries = true,
+}) async {
   var resourceProvider = packageMetaProvider.resourceProvider;
   var dir = resourceProvider.getFolder(resourceProvider.pathContext
       .absolute(resourceProvider.pathContext.normalize(dirPath)));
   return PubPackageBuilder(
-          await contextFromArgv([
-            '--input',
-            dir.path,
-            '--sdk-dir',
-            packageMetaProvider.defaultSdkDir.path,
-            '--exclude',
-            excludeLibraries.join(','),
-            '--allow-tools',
-            ...additionalArguments,
-          ], packageMetaProvider),
-          packageMetaProvider,
-          packageConfigProvider)
-      .buildPackageGraph();
+    await contextFromArgv([
+      '--input',
+      dir.path,
+      '--sdk-dir',
+      packageMetaProvider.defaultSdkDir.path,
+      '--exclude',
+      excludeLibraries.join(','),
+      '--allow-tools',
+      ...additionalArguments,
+    ], packageMetaProvider),
+    packageMetaProvider,
+    packageConfigProvider,
+    skipUnreachableSdkLibraries: skipUnreachableSdkLibraries,
+  ).buildPackageGraph();
 }
 
 /// Returns a [FakePackageConfigProvider] with an entry for the SDK directory.
