@@ -178,8 +178,14 @@ Map<String, String> _createThrowawayPubCache() {
 @Depends(analyzeTestPackages)
 void analyze() async {
   await SubprocessLauncher('analyze').runStreamed(
-    sdkBin('dartanalyzer'),
-    ['--fatal-infos', '--options', 'analysis_options_presubmit.yaml', '.'],
+    sdkDart,
+    [
+      'analyze',
+      '--fatal-infos',
+      '--options',
+      'analysis_options_presubmit.yaml',
+      '.'
+    ],
   );
 }
 
@@ -191,12 +197,12 @@ void analyzeTestPackages() async {
   }
   for (var testPackagePath in testPackagePaths) {
     await SubprocessLauncher('pub-get').runStreamed(
-      sdkBin('dart'),
+      sdkDart,
       ['pub', 'get'],
       workingDirectory: testPackagePath,
     );
     await SubprocessLauncher('analyze-test-package').runStreamed(
-      sdkBin('dart'),
+      sdkDart,
       // TODO(srawlins): Analyze the whole directory by ignoring the pubspec
       // reports.
       ['analyze', 'lib'],
@@ -224,7 +230,7 @@ void checkFormat() async {
 
     log('Validating dart format with version ${Platform.version}');
     await SubprocessLauncher('dart format').runStreamed(
-        sdkBin('dart'),
+        sdkDart,
         [
           'format',
           '-o',
@@ -412,7 +418,7 @@ Future<String> createComparisonDartdoc() async {
       .runStreamed('git', ['clone', Directory.current.path, dartdocClean.path]);
   await launcher.runStreamed('git', ['checkout', dartdocOriginalBranch],
       workingDirectory: dartdocClean.path);
-  await launcher.runStreamed(sdkBin('dart'), ['pub', 'get'],
+  await launcher.runStreamed(sdkDart, ['pub', 'get'],
       workingDirectory: dartdocClean.path);
   return dartdocClean.path;
 }
@@ -463,7 +469,7 @@ dependency_overrides:
   meta:
     path: '${sdkClone.path}/pkg/meta'
 ''', mode: FileMode.append);
-  await launcher.runStreamed(sdkBin('dart'), ['pub', 'get'],
+  await launcher.runStreamed(sdkDart, ['pub', 'get'],
       workingDirectory: dartdocSdk.path);
   return dartdocSdk.path;
 }
@@ -479,7 +485,7 @@ Future<void> testWithAnalyzerSdk() async {
   // analyzer 3.0.0.
   try {
     await launcher.runStreamed(
-        sdkBin('dart'), ['pub', 'run', 'grinder', defaultGrindParameter],
+        sdkDart, ['pub', 'run', 'grinder', defaultGrindParameter],
         workingDirectory: sdkDartdoc);
   } catch (e, st) {
     print('Warning: SDK analyzer job threw "$e":\n$st');
@@ -492,8 +498,7 @@ Future<Iterable<Map<String, Object?>>> _buildSdkDocs(
   if (label != '') label = '-$label';
   var launcher = SubprocessLauncher('build-sdk-docs$label');
   var cwd = await futureCwd;
-  await launcher.runStreamed(sdkBin('dart'), ['pub', 'get'],
-      workingDirectory: cwd);
+  await launcher.runStreamed(sdkDart, ['pub', 'get'], workingDirectory: cwd);
   return await launcher.runStreamed(
       Platform.resolvedExecutable,
       [
@@ -517,10 +522,10 @@ Future<Iterable<Map<String, Object?>>> _buildTestPackageDocs(
   if (label != '') label = '-$label';
   testPackagePath ??= testPackage.absolute.path;
   var launcher = SubprocessLauncher('build-test-package-docs$label');
-  var testPackagePubGet = launcher.runStreamed(sdkBin('dart'), ['pub', 'get'],
+  var testPackagePubGet = launcher.runStreamed(sdkDart, ['pub', 'get'],
       workingDirectory: testPackagePath);
-  var dartdocPubGet = launcher.runStreamed(sdkBin('dart'), ['pub', 'get'],
-      workingDirectory: cwd);
+  var dartdocPubGet =
+      launcher.runStreamed(sdkDart, ['pub', 'get'], workingDirectory: cwd);
   await Future.wait([testPackagePubGet, dartdocPubGet]);
   return await launcher.runStreamed(
       Platform.resolvedExecutable,
@@ -591,7 +596,7 @@ Future<void> serveTestPackageDocsMd() async {
 Future<void> startTestPackageDocsServer() async {
   log('launching dhttpd on port 8002 for SDK');
   var launcher = SubprocessLauncher('serve-test-package-docs');
-  await launcher.runStreamed(sdkBin('dart'), [
+  await launcher.runStreamed(sdkDart, [
     'pub',
     'global',
     'run',
@@ -609,12 +614,12 @@ Future<void> _serveDocsFrom(String servePath, int port, String context) async {
   log('launching dhttpd on port $port for $context');
   var launcher = SubprocessLauncher(context);
   if (!_serveReady) {
-    await launcher.runStreamed(sdkBin('dart'), ['pub', 'get']);
+    await launcher.runStreamed(sdkDart, ['pub', 'get']);
     await launcher
-        .runStreamed(sdkBin('dart'), ['pub', 'global', 'activate', 'dhttpd']);
+        .runStreamed(sdkDart, ['pub', 'global', 'activate', 'dhttpd']);
     _serveReady = true;
   }
-  await launcher.runStreamed(sdkBin('dart'), [
+  await launcher.runStreamed(sdkDart, [
     'pub',
     'global',
     'run',
@@ -631,7 +636,7 @@ Future<void> _serveDocsFrom(String servePath, int port, String context) async {
 Future<void> serveSdkDocs() async {
   log('launching dhttpd on port 8000 for SDK');
   var launcher = SubprocessLauncher('serve-sdk-docs');
-  await launcher.runStreamed(sdkBin('dart'), [
+  await launcher.runStreamed(sdkDart, [
     'pub',
     'global',
     'run',
@@ -673,8 +678,8 @@ Future<void> compareFlutterWarnings() async {
 
   if (Platform.environment['SERVE_FLUTTER'] == '1') {
     var launcher = SubprocessLauncher('serve-flutter-docs');
-    await launcher.runStreamed(sdkBin('dart'), ['pub', 'get']);
-    var original = launcher.runStreamed(sdkBin('dart'), [
+    await launcher.runStreamed(sdkDart, ['pub', 'get']);
+    var original = launcher.runStreamed(sdkDart, [
       'pub',
       'global',
       'run',
@@ -684,7 +689,7 @@ Future<void> compareFlutterWarnings() async {
       '--path',
       path.join(originalDartdocFlutter.absolute.path, 'dev', 'docs', 'doc'),
     ]);
-    var current = launcher.runStreamed(sdkBin('dart'), [
+    var current = launcher.runStreamed(sdkDart, [
       'pub',
       'global',
       'run',
@@ -703,8 +708,8 @@ Future<void> compareFlutterWarnings() async {
 Future<void> serveFlutterDocs() async {
   log('launching dhttpd on port 8001 for Flutter');
   var launcher = SubprocessLauncher('serve-flutter-docs');
-  await launcher.runStreamed(sdkBin('dart'), ['pub', 'get']);
-  await launcher.runStreamed(sdkBin('dart'), [
+  await launcher.runStreamed(sdkDart, ['pub', 'get']);
+  await launcher.runStreamed(sdkDart, [
     'pub',
     'global',
     'run',
@@ -721,8 +726,8 @@ Future<void> serveFlutterDocs() async {
 Future<void> serveLanguageTestDocs() async {
   log('launching dhttpd on port 8004 for language tests');
   var launcher = SubprocessLauncher('serve-language-test-docs');
-  await launcher.runStreamed(sdkBin('dart'), ['pub', 'get']);
-  await launcher.runStreamed(sdkBin('dart'), [
+  await launcher.runStreamed(sdkDart, ['pub', 'get']);
+  await launcher.runStreamed(sdkDart, [
     'pub',
     'global',
     'run',
@@ -1011,7 +1016,7 @@ String _getPackageVersion() {
 @Task('Rebuild generated files')
 Future<void> build() async {
   var launcher = SubprocessLauncher('build');
-  await launcher.runStreamed(sdkBin('dart'),
+  await launcher.runStreamed(sdkDart,
       ['pub', 'run', 'build_runner', 'build', '--delete-conflicting-outputs']);
 
   // TODO(jcollins-g): port to build system?
@@ -1074,7 +1079,7 @@ Future<void> checkBuild() async {
 @Depends(checkChangelogHasVersion)
 Future<void> tryPublish() async {
   var launcher = SubprocessLauncher('try-publish');
-  await launcher.runStreamed(sdkBin('dart'), ['pub', 'publish', '-n']);
+  await launcher.runStreamed(sdkDart, ['pub', 'publish', '-n']);
 }
 
 @Task('Run a smoke test, only')
@@ -1105,6 +1110,8 @@ Future<void> clean() async {
     e.deleteSync(recursive: true);
   }
 }
+
+String get sdkDart => sdkBin('dart');
 
 Iterable<FileSystemEntity> get nonRootPubData {
   // This involves deleting things, so be careful.
