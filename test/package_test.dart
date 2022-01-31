@@ -109,7 +109,7 @@ int x;
         var packageGraph = await utils.bootBasicPackage(
             projectPath, packageMetaProvider, packageConfigProvider);
         var interceptorsLib = packageGraph.libraries
-            .firstWhere((lib) => lib.name == 'dart:_interceptors');
+            .firstWhere((lib) => lib.name == 'dart:_internal');
 
         expect(interceptorsLib.isPublic, isFalse);
       });
