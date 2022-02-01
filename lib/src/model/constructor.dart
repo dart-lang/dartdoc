@@ -100,22 +100,30 @@ class Constructor extends ModelElement
     }
   }
 
-  Map<String, CommentReferable>? _referenceChildren;
   @override
-  Map<String, CommentReferable> get referenceChildren {
-    if (_referenceChildren == null) {
-      _referenceChildren = {};
-      _referenceChildren!.addEntries(allParameters.map((param) {
-        var paramElement = param.element;
-        if (paramElement is FieldFormalParameterElement) {
-          return modelBuilder.fromElement(paramElement.field!);
-        }
-        return param;
-      }).generateEntries());
-      _referenceChildren!.addEntries(typeParameters.generateEntries());
+  late final Map<String, CommentReferable> referenceChildren = () {
+    // Find the element that [parameter] is _really_ referring to.
+    Element? dereferenceParameter(ParameterElement? parameter) {
+      if (parameter is FieldFormalParameterElement) {
+        return parameter.field;
+      } else if (parameter is SuperFormalParameterElement) {
+        return dereferenceParameter(parameter.superConstructorParameter);
+      } else {
+        return parameter;
+      }
     }
-    return _referenceChildren!;
-  }
+
+    var parameterElements = allParameters.map((param) {
+      var paramElement = dereferenceParameter(param.element);
+      return paramElement == null
+          ? param
+          : modelBuilder.fromElement(paramElement);
+    });
+    return {
+      for (var element in parameterElements) element.referenceName: element,
+      for (var tp in typeParameters) tp.referenceName: tp,
+    };
+  }();
 
   @override
   String get referenceName =>

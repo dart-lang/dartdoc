@@ -2944,14 +2944,6 @@ void main() {
         expect(referenceLookup(doAwesomeStuff, 'ExtendedBaseReexported.action'),
             equals(MatchingLinkResult(action)));
       });
-
-      test('displays default value of field formal parameter', () {
-        expect(
-            factoryConstructorThingsDefault.linkedParamsLines,
-            contains(
-                '<span class="parameter-name">fieldFormalWithDefault</span> = '
-                '<span class="default-value">7</span>}'));
-      });
     });
   });
 

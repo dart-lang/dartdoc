@@ -12287,7 +12287,7 @@ class _Renderer_Package extends RendererBase<Package> {
   }
 }
 
-String renderIndex(PackageTemplateData context, Template template) {
+String renderError(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -12503,7 +12503,7 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
   }
 }
 
-String renderError(PackageTemplateData context, Template template) {
+String renderIndex(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -16142,14 +16142,13 @@ const _invisibleGetters = {
   'Context': {'current', 'hashCode', 'runtimeType', 'separator', 'style'},
   'DartType': {
     'alias',
-    'aliasArguments',
-    'aliasElement',
     'displayName',
     'element',
     'hashCode',
     'isBottom',
     'isDartAsyncFuture',
     'isDartAsyncFutureOr',
+    'isDartAsyncStream',
     'isDartCoreBool',
     'isDartCoreDouble',
     'isDartCoreFunction',
@@ -16683,6 +16682,7 @@ const _invisibleGetters = {
     'isPositional',
     'isRequiredNamed',
     'isRequiredPositional',
+    'isSuperFormal',
     'name',
     'parameterKind',
     'parameters',
@@ -16730,6 +16730,7 @@ const _invisibleGetters = {
     'isPrivate',
     'isPublic',
     'isStatic',
+    'isSuperFormal',
     'isSynthetic',
     'kind',
     'library',
