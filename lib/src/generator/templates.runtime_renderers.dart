@@ -4049,13 +4049,6 @@ class _Renderer_Documentable extends RendererBase<Documentable> {
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.hasDocumentation == true,
                 ),
-                'hasExtendedDocumentation': Property(
-                  getValue: (CT_ c) => c.hasExtendedDocumentation,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasExtendedDocumentation == true,
-                ),
                 'href': Property(
                   getValue: (CT_ c) => c.href,
                   renderVariable:
@@ -8924,13 +8917,6 @@ class _Renderer_MarkdownFileDocumentation
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.hasDocumentation == true,
                 ),
-                'hasExtendedDocumentation': Property(
-                  getValue: (CT_ c) => c.hasExtendedDocumentation,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasExtendedDocumentation == true,
-                ),
                 'isDocumented': Property(
                   getValue: (CT_ c) => c.isDocumented,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -10159,28 +10145,6 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                         parent: r, getters: _invisibleGetters['Set']!);
                   },
                 ),
-                'extendedDocLink': Property(
-                  getValue: (CT_ c) => c.extendedDocLink,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_String.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as String,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.extendedDocLink, ast, r.template, sink,
-                        parent: r);
-                  },
-                ),
                 'features': Property(
                   getValue: (CT_ c) => c.features,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -10354,13 +10318,6 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.hasDocumentationComment == true,
-                ),
-                'hasExtendedDocumentation': Property(
-                  getValue: (CT_ c) => c.hasExtendedDocumentation,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasExtendedDocumentation == true,
                 ),
                 'hasFeatures': Property(
                   getValue: (CT_ c) => c.hasFeatures,
@@ -11882,13 +11839,6 @@ class _Renderer_Package extends RendererBase<Package> {
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.hasDocumentedCategories == true,
-                ),
-                'hasExtendedDocumentation': Property(
-                  getValue: (CT_ c) => c.hasExtendedDocumentation,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasExtendedDocumentation == true,
                 ),
                 'hasHomepage': Property(
                   getValue: (CT_ c) => c.hasHomepage,

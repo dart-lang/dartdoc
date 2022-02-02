@@ -1,3 +1,6 @@
+## 4.2.0-dev
+* Removed superfluous `[...]` links. (#2928)
+
 ## 4.1.0
 * Move to analyzer 2.7.0. (#2845)
 * The library interface is now explicitly marked as experimental via meta.
@@ -37,8 +40,8 @@
 * BREAKING CHANGE: Refactor of Class, Enum, and Mixin types result in some
   deleted interfaces in templates and a change in class hierarchy. (#2770)
 * The experimental 'constructor-tearoffs' feature has been partially
-  implemented in dartdoc and should work in simple cases. (#2655, #2770,
-  #2768, #2766, #2763).
+  implemented in dartdoc and should work in simple cases.
+  (#2655, #2770, #2768, #2766, #2763).
 * BREAKING CHANGE: The old lookup code has been deleted, along with the
   `--no-enhanced-reference-lookup` flag. (#2765)
 * Deprecated uses of pub have been removed. (#2764)

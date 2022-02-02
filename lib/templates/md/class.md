@@ -69,7 +69,7 @@
 {{#publicConstructorsSorted}}
 {{{linkedName}}} ({{{ linkedParams }}})
 
-{{{ oneLineDoc }}} {{{ extendedDocLink }}}  {{!two spaces intentional}}
+{{{ oneLineDoc }}}  {{!two spaces intentional}}
 {{#isConst}}_const_{{/isConst}} {{#isFactory}}_factory_{{/isFactory}}
 
 {{/publicConstructorsSorted}}

@@ -122,9 +122,6 @@ class Package extends LibraryContainer
   bool get hasDocumentation => documentation?.isNotEmpty == true;
 
   @override
-  bool get hasExtendedDocumentation => hasDocumentation;
-
-  @override
   String get oneLineDoc => '';
 
   @override

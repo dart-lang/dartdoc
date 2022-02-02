@@ -663,15 +663,6 @@ abstract class ModelElement extends Canonicalization
     return '($sourceUri)';
   }
 
-  /// Returns a link to extended documentation, or the empty string if that
-  /// does not exist.
-  String get extendedDocLink {
-    if (hasExtendedDocumentation) {
-      return modelElementRenderer.renderExtendedDocLink(this);
-    }
-    return '';
-  }
-
   String get fileName => '$name.$fileType';
 
   String get fileType => package!.fileType;
@@ -715,10 +706,6 @@ abstract class ModelElement extends Canonicalization
 
   @override
   bool get hasDocumentation => documentation.isNotEmpty == true;
-
-  @override
-  bool get hasExtendedDocumentation =>
-      href != null && elementDocumentation.hasExtendedDocs!;
 
   bool get hasParameters => parameters.isNotEmpty;
 
