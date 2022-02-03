@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 
 /// This widget is the best stateful widget ever.
 class MyAwesomeWidget extends StatefulWidget {
-  MyAwesomeWidget({Key key}) : super(key: key) {}
+  MyAwesomeWidget({required Key key}) : super(key: key) {}
 
   @override
-  State<MyAwesomeWidget> createState() => null;
+  State<MyAwesomeWidget> createState() => throw UnimplementedError();
 }
