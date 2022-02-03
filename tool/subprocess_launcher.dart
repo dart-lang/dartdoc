@@ -82,7 +82,7 @@ class CoverageSubprocessLauncher extends SubprocessLauncher {
     var portAsString = Completer<String>();
     void parsePortAsString(String line) {
       if (!portAsString.isCompleted && coverageEnabled) {
-        var m = _observatoryPortRegexp.matchAsPrefix(line);
+        var m = _vmServicePortRegexp.matchAsPrefix(line);
         if (m != null) {
           if (m.group(1) != null) portAsString.complete(m.group(1));
         }
@@ -126,8 +126,8 @@ class CoverageSubprocessLauncher extends SubprocessLauncher {
     return results;
   }
 
-  static final _observatoryPortRegexp =
-      RegExp(r'^Observatory listening on http://.*:(\d+)');
+  static final _vmServicePortRegexp =
+      RegExp(r'^(?:Observatory|Dart VM Service) listening on http://.*:(\d+)');
 }
 
 class SubprocessLauncher {
