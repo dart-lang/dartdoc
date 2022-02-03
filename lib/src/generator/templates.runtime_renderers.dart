@@ -16164,7 +16164,6 @@ const _invisibleGetters = {
     'asHtml',
     'asOneLiner',
     'commentRefs',
-    'hasExtendedDocs',
     'hashCode',
     'runtimeType'
   },
