@@ -66,6 +66,11 @@ void main() {
           optionSet,
           _resourceProvider.getFolder(_pathContext.current),
           _resourceProvider));
+
+      // Set up the pub metadata for our test packages.
+      runPubGet(testPackageToolError.path);
+      runPubGet(_testSkyEnginePackage.path);
+      runPubGet(_testPackageCustomTemplates.path);
     });
 
     setUp(() async {
