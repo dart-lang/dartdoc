@@ -357,25 +357,19 @@ class MarkdownDocument extends md.Document {
             linkResolver: linkResolver,
             imageLinkResolver: imageLinkResolver);
 
-  /// Parses markdown text, collecting the first [md.Node] or all of them
-  /// if [processFullText] is `true`. If more than one node is present,
-  /// then [DocumentationParseResult.hasExtendedDocs] will be set to `true`.
-  DocumentationParseResult parseMarkdownText(
-      String text, bool processFullText) {
-    var hasExtendedContent = false;
+  List<md.Node> parseMarkdownText(String text, bool processFullText) {
     var lines = LineSplitter.split(text).toList();
     md.Node? firstNode;
     var nodes = <md.Node>[];
     for (var node in _IterableBlockParser(lines, this).parseLinesGenerator()) {
       if (firstNode != null) {
-        hasExtendedContent = true;
         if (!processFullText) break;
       }
       firstNode ??= node;
       nodes.add(node);
     }
     _parseInlineContent(nodes);
-    return DocumentationParseResult(nodes, hasExtendedContent);
+    return nodes;
   }
 
   // From package:markdown/src/document.dart
@@ -393,15 +387,6 @@ class MarkdownDocument extends md.Document {
       }
     }
   }
-}
-
-class DocumentationParseResult {
-  static const empty = DocumentationParseResult([], false);
-
-  final List<md.Node> nodes;
-  final bool hasExtendedDocs;
-
-  const DocumentationParseResult(this.nodes, this.hasExtendedDocs);
 }
 
 class _InlineCodeSyntax extends md.InlineSyntax {
