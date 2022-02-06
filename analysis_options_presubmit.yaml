@@ -14,20 +14,9 @@ analyzer:
     strict-raw-types: true
   exclude:
     - 'doc/**'
-    - 'lib/src/third_party/pkg/**'
-    - 'lib/templates/*.html'
     - 'pub.dartlang.org/**'
-    # These have a lot of lint.
-    - 'testing/test_package/**'
-    - 'testing/test_package_custom_templates/**'
-    - 'testing/test_package_experiments/**'
-    - 'testing/test_package_imported/**'
-    # This package imports flutter, which is perhaps not found by the base `dart analyze` tool.
-    - 'testing/flutter_packages/test_package_flutter_plugin/**'
-    # This package is meant to mock the sky_engine package.
-    - 'testing/sky_engine/**'
-    # These packages have compile-time errors.
-    - 'testing/test_package_bad/**'
+    - 'testing/**'
+
 linter:
   rules:
     - always_declare_return_types
