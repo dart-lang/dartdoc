@@ -127,7 +127,7 @@ class CoverageSubprocessLauncher extends SubprocessLauncher {
   }
 
   static final _vmServicePortRegexp =
-      RegExp(r'^(?:Observatory|Dart VM Service) listening on http://.*:(\d+)');
+      RegExp(r'^(?:Observatory|The Dart VM Service is) listening on http://.*:(\d+)');
 }
 
 class SubprocessLauncher {
