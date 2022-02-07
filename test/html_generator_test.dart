@@ -105,7 +105,7 @@ void main() {
             'resources/$resource', 'CONTENT');
       }
 
-      var optionRoot = await DartdocOptionRoot.fromOptionGenerators(
+      var optionRoot = DartdocOptionRoot.fromOptionGenerators(
           'dartdoc',
           [
             createDartdocOptions,

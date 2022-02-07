@@ -39,7 +39,7 @@ void main() {
         packageMetaProvider.resourceProvider as MemoryResourceProvider;
     sdkFolder = packageMetaProvider.defaultSdkDir;
 
-    optionSet = await DartdocOptionRoot.fromOptionGenerators(
+    optionSet = DartdocOptionRoot.fromOptionGenerators(
         'dartdoc', [createDartdocOptions], packageMetaProvider);
     packageConfigProvider = utils.getTestPackageConfigProvider(sdkFolder.path)
         as FakePackageConfigProvider;

@@ -43,8 +43,8 @@ abstract class Generator {
   Future<void> generate(PackageGraph packageGraph, FileWriter writer);
 }
 
-Future<List<DartdocOption>> createGeneratorOptions(
-    PackageMetaProvider packageMetaProvider) async {
+List<DartdocOption> createGeneratorOptions(
+    PackageMetaProvider packageMetaProvider) {
   var resourceProvider = packageMetaProvider.resourceProvider;
   return [
     DartdocOptionArgFile<List<String>>('footer', [], resourceProvider,

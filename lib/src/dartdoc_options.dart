@@ -14,7 +14,6 @@
 ///
 library dartdoc.dartdoc_options;
 
-import 'dart:async';
 import 'dart:io' show Platform, stdout;
 
 import 'package:analyzer/dart/element/element.dart';
@@ -453,7 +452,7 @@ abstract class DartdocOption<T extends Object?> {
   ArgResults get _argResults => root.__argResults;
 
   /// To avoid accessing early, call [add] on the option's parent before
-  /// looking up unless this is a [DartdocRootOption].
+  /// looking up unless this is a [DartdocOptionRoot].
   late final DartdocOption<dynamic> parent;
 
   /// The [DartdocOptionRoot] containing this object.
@@ -664,8 +663,7 @@ abstract class DartdocSyntheticOption<T> implements DartdocOption<T> {
   }
 }
 
-typedef OptionGenerator = Future<List<DartdocOption>> Function(
-    PackageMetaProvider);
+typedef OptionGenerator = List<DartdocOption> Function(PackageMetaProvider);
 
 /// This is a [DartdocOptionSet] used as a root node.
 class DartdocOptionRoot extends DartdocOptionSet {
@@ -681,14 +679,14 @@ class DartdocOptionRoot extends DartdocOptionSet {
   /// [name] is the top level key for the option set.
   /// [optionGenerators] is a sequence of asynchronous functions that return
   /// [DartdocOption]s that will be added to the new option set.
-  static Future<DartdocOptionRoot> fromOptionGenerators(
+  static DartdocOptionRoot fromOptionGenerators(
       String name,
       Iterable<OptionGenerator> optionGenerators,
-      PackageMetaProvider packageMetaProvider) async {
+      PackageMetaProvider packageMetaProvider) {
     var optionSet =
         DartdocOptionRoot(name, packageMetaProvider.resourceProvider);
     for (var generator in optionGenerators) {
-      optionSet.addAll(await generator(packageMetaProvider));
+      optionSet.addAll(generator(packageMetaProvider));
     }
     return optionSet;
   }
@@ -841,7 +839,7 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
   /// Otherwise, the child's value overrides values in parents.
   bool get parentDirOverridesChild;
 
-  /// The name of the option, with nested options joined by [.].  For example:
+  /// The name of the option, with nested options joined by `.`.  For example:
   ///
   /// ```yaml
   /// dartdoc:
@@ -1344,9 +1342,9 @@ class DartdocOptionContext extends DartdocOptionContextBase
 
 /// Instantiate dartdoc's configuration file and options parser with the
 /// given command line arguments.
-Future<List<DartdocOption>> createDartdocOptions(
+List<DartdocOption> createDartdocOptions(
   PackageMetaProvider packageMetaProvider,
-) async {
+) {
   var resourceProvider = packageMetaProvider.resourceProvider;
   return [
     DartdocOptionArgOnly<bool>('allowTools', false, resourceProvider,
@@ -1596,8 +1594,8 @@ Future<List<DartdocOption>> createDartdocOptions(
         hide: false),
     // TODO(jcollins-g): refactor so there is a single static "create" for
     // each DartdocOptionContext that traverses the inheritance tree itself.
-    ...await createExperimentOptions(resourceProvider),
-    ...await createPackageWarningOptions(packageMetaProvider),
-    ...await createSourceLinkerOptions(resourceProvider),
+    ...createExperimentOptions(resourceProvider),
+    ...createPackageWarningOptions(packageMetaProvider),
+    ...createSourceLinkerOptions(resourceProvider),
   ];
 }

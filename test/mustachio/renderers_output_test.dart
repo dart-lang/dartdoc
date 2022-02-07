@@ -24,7 +24,7 @@ import 'package:test/test.dart';
 /// the '--input' flag.
 Future<DartdocGeneratorOptionContext> _generatorContextFromArgv(
     List<String> argv) async {
-  var optionSet = await DartdocOptionRoot.fromOptionGenerators(
+  var optionSet = DartdocOptionRoot.fromOptionGenerators(
       'dartdoc',
       [
         createDartdocOptions,
