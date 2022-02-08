@@ -66,8 +66,8 @@ class DartdocProgramOptionContext extends DartdocGeneratorOptionContext
   bool get version => optionSet['version'].valueAt(context);
 }
 
-Future<List<DartdocOption<bool>>> createDartdocProgramOptions(
-    PackageMetaProvider packageMetaProvider) async {
+List<DartdocOption<bool>> createDartdocProgramOptions(
+    PackageMetaProvider packageMetaProvider) {
   var resourceProvider = packageMetaProvider.resourceProvider;
   return [
     DartdocOptionArgOnly<bool>('generateDocs', true, resourceProvider,
@@ -82,12 +82,12 @@ Future<List<DartdocOption<bool>>> createDartdocProgramOptions(
   ];
 }
 
-Future<DartdocProgramOptionContext?> parseOptions(
+DartdocProgramOptionContext? parseOptions(
   PackageMetaProvider packageMetaProvider,
   List<String> arguments, {
   OptionGenerator? additionalOptions,
-}) async {
-  var optionRoot = await DartdocOptionRoot.fromOptionGenerators(
+}) {
+  var optionRoot = DartdocOptionRoot.fromOptionGenerators(
       'dartdoc',
       [
         createDartdocOptions,
@@ -126,7 +126,6 @@ Future<DartdocProgramOptionContext?> parseOptions(
   } on DartdocOptionError catch (e) {
     stderr.writeln(' fatal error: ${e.message}');
     stderr.writeln('');
-    await stderr.flush();
     _printUsage(optionRoot.argParser);
     exitCode = 64;
     return null;

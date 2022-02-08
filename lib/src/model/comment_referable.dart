@@ -160,7 +160,7 @@ mixin CommentReferable implements Nameable, ModelBuilderInterface {
   }
 
   /// Given a [result] found in an implementation of [lookupViaScope] or
-  /// [_lookupViaReferenceChildren], recurse through children, skipping over
+  /// [ReferenceChildrenLookup], recurse through children, skipping over
   /// results that do not match the filter.
   CommentReferable? recurseChildrenAndFilter(
       ReferenceChildrenLookup referenceLookup, CommentReferable result,

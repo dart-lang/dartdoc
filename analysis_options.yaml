@@ -11,10 +11,9 @@ analyzer:
     strict-raw-types: true
   exclude:
     - 'doc/**'
-    - 'lib/src/third_party/pkg/**'
-    - 'lib/templates/*.html'
     - 'pub.dartlang.org/**'
     - 'testing/**'
+
 linter:
   rules:
     - always_declare_return_types

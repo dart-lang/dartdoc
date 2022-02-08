@@ -816,7 +816,7 @@ Future<void> buildFlutterDocs() async {
   var indexContents =
       File(path.join(_flutterDir.path, 'dev', 'docs', 'doc', 'index.html'))
           .readAsLinesSync();
-  stdout.write([...indexContents.take(20), '...'].join('\n'));
+  stdout.write([...indexContents.take(25), '...\n'].join('\n'));
 }
 
 /// A class wrapping a flutter SDK.

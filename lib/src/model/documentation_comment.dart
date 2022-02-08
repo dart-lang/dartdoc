@@ -93,7 +93,8 @@ mixin DocumentationComment
   }
 
   /// Process a [documentationComment], performing various actions based on
-  /// `{@}`-style directives, except `{@tool}`, returning the processed result.
+  /// `{@}`-style directives (except tool directives), returning the processed
+  /// result.
   String _processCommentWithoutTools(String documentationComment) {
     var docs = stripComments(documentationComment);
     if (!docs.contains('{@')) {

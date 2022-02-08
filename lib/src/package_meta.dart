@@ -226,7 +226,7 @@ abstract class PubPackageMeta extends PackageMeta {
   }
 
   /// This factory is guaranteed to return the same object for any given
-  /// [dir.absolute.path].  Multiple [dir.absolute.path]s will resolve to the
+  /// `dir.absolute.path`.  Multiple `dir.absolute.path`s will resolve to the
   /// same object if they are part of the same package.  Returns null
   /// if the directory is not part of a known package.
   static PackageMeta? fromDir(
