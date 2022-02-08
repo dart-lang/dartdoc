@@ -26,6 +26,7 @@ import 'package:analyzer/src/generated/sdk.dart' show DartSdk;
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/logging.dart';
+import 'package:dartdoc/src/matching_link_result.dart';
 import 'package:dartdoc/src/model/model.dart' hide Package;
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart'
@@ -69,8 +70,11 @@ class PubPackageBuilder implements PackageBuilder {
 
     var rendererFactory = RendererFactory.forFormat(config.format);
 
+    runtimeStats.startPerfTask('_calculatePackageMap');
     await _calculatePackageMap();
+    runtimeStats.endPerfTask();
 
+    runtimeStats.startPerfTask('getLibraries');
     var newGraph = PackageGraph.uninitialized(
       config,
       sdk,
@@ -79,7 +83,11 @@ class PubPackageBuilder implements PackageBuilder {
       packageMetaProvider,
     );
     await getLibraries(newGraph);
+    runtimeStats.endPerfTask();
+
+    runtimeStats.startPerfTask('initializePackageGraph');
     await newGraph.initializePackageGraph();
+    runtimeStats.endPerfTask();
     return newGraph;
   }
 

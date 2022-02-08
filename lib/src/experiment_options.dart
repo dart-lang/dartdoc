@@ -21,8 +21,8 @@ abstract class DartdocExperimentOptionContext
 
 // TODO(jcollins-g): Implement YAML parsing for these flags and generation
 // of [DartdocExperimentOptionContext], once a YAML file is available.
-Future<List<DartdocOption<Object>>> createExperimentOptions(
-    ResourceProvider resourceProvider) async {
+List<DartdocOption<Object>> createExperimentOptions(
+    ResourceProvider resourceProvider) {
   return [
     // TODO(jcollins-g): Consider loading experiment values from dartdoc_options.yaml?
     DartdocOptionArgOnly<List<String>>(
