@@ -1,3 +1,14 @@
+## 5.0.0
+* Migrate to null safety.
+* BREAKING CHANGE: Many breaking changes to dartdoc API, as part of the broad
+  migration to null safety.
+* Add a `resources-dir` option to support documenting with `dart doc`
+  compiled AOT from within the Dart SDK directory. (#2857)
+* When rendering to templates, stop calling `toString` on String objects.
+  (#2900)
+* Update README to discuss `dart doc`. (#2898)
+* Add some performance statistics. (#2938)
+
 ## 4.1.0
 * Move to analyzer 2.7.0. (#2845)
 * The library interface is now explicitly marked as experimental via meta.
