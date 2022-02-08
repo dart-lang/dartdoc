@@ -126,7 +126,7 @@ Directory get testPackage =>
 Directory get testPackageExperiments =>
     Directory(path.joinAll(['testing', 'test_package_experiments']));
 
-Directory get pluginPackage => Directory(path
+Directory get testPackageFlutterPlugin => Directory(path
     .joinAll(['testing', 'flutter_packages', 'test_package_flutter_plugin']));
 
 final Directory _testPackageDocsDir = createTempSync('test_package');
@@ -823,7 +823,7 @@ Future<void> buildFlutterDocs() async {
 class FlutterRepo {
   final String flutterPath;
   final Map<String, String> env;
-  final String bin = path.join('bin', 'flutter');
+  final String flutterCmd = path.join('bin', 'flutter');
 
   final String cacheDart;
   final SubprocessLauncher launcher;
@@ -836,12 +836,12 @@ class FlutterRepo {
         'git', ['clone', 'https://github.com/flutter/flutter.git', '.'],
         workingDirectory: flutterPath);
     await launcher.runStreamed(
-      bin,
+      flutterCmd,
       ['--version'],
       workingDirectory: flutterPath,
     );
     await launcher.runStreamed(
-      bin,
+      flutterCmd,
       ['update-packages'],
       workingDirectory: flutterPath,
     );
@@ -1192,9 +1192,8 @@ Future<WarningsCollection> _buildDartdocFlutterPluginDocs() async {
   var flutterRepo = await FlutterRepo.fromExistingFlutterRepo(
       await cleanFlutterRepo, 'docs-flutter-plugin');
 
-  await SubprocessLauncher('pub-get').runStreamed(
-      Platform.resolvedExecutable, ['pub', 'get'],
-      workingDirectory: pluginPackage.path);
+  await flutterRepo.launcher.runStreamed(flutterRepo.cacheDart, ['pub', 'get'],
+      workingDirectory: testPackageFlutterPlugin.path);
 
   return jsonMessageIterableToWarnings(
     await flutterRepo.launcher.runStreamed(
@@ -1207,7 +1206,7 @@ Future<WarningsCollection> _buildDartdocFlutterPluginDocs() async {
         '--output',
         _pluginPackageDocsPath
       ],
-      workingDirectory: pluginPackage.path,
+      workingDirectory: testPackageFlutterPlugin.path,
     ),
     _pluginPackageDocsPath,
     defaultPubCache,
