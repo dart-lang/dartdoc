@@ -27,9 +27,9 @@ abstract class PackageWarningOptionContext implements DartdocOptionContextBase {
   bool get verboseWarnings => optionSet['verboseWarnings'].valueAt(context);
 }
 
-Future<List<DartdocOption<Object?>>> createPackageWarningOptions(
+List<DartdocOption<Object?>> createPackageWarningOptions(
   PackageMetaProvider packageMetaProvider,
-) async {
+) {
   var resourceProvider = packageMetaProvider.resourceProvider;
   return [
     DartdocOptionArgOnly<bool>('allowNonLocalWarnings', false, resourceProvider,

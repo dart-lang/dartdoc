@@ -57,7 +57,7 @@ void main() {
     late Folder tempDir;
 
     setUpAll(() async {
-      var optionSet = await DartdocOptionRoot.fromOptionGenerators(
+      var optionSet = DartdocOptionRoot.fromOptionGenerators(
           'dartdoc',
           [createDartdocProgramOptions, createLoggingOptions],
           pubPackageMetaProvider);
