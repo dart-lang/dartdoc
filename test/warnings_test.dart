@@ -20,7 +20,7 @@ import 'src/test_descriptor_utils.dart' as d;
 
 void main() async {
   var resourceProvider = PhysicalResourceProvider.INSTANCE;
-  var optionSet = await DartdocOptionRoot.fromOptionGenerators(
+  var optionSet = DartdocOptionRoot.fromOptionGenerators(
       'dartdoc', [createDartdocOptions], pubPackageMetaProvider);
 
   test('excluding package from "allowed warnings" list ignores all', () async {
@@ -221,7 +221,7 @@ class Lib2Class {}
 
     var tempDir = resourceProvider.createSystemTemp('dartdoc.test.');
 
-    var optionSet = await DartdocOptionRoot.fromOptionGenerators(
+    var optionSet = DartdocOptionRoot.fromOptionGenerators(
         'dartdoc',
         [
           createDartdocOptions,

@@ -346,7 +346,7 @@ class RuntimeTemplates implements Templates {
   /// Creates a [Templates] from a custom set of template files, found in [dir].
   static Future<Templates> _create(Folder dir, String format,
       {required ResourceProvider resourceProvider}) async {
-    Future<Template> loadTemplate(String templatePath) async {
+    Future<Template> loadTemplate(String templatePath) {
       var templateFile = dir.getChildAssumingFile('$templatePath.$format');
       if (!templateFile.exists) {
         throw DartdocFailure(

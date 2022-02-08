@@ -39,15 +39,15 @@ extension ResourceLoader on ResourceProvider {
 
   /// Helper function for resolving to a non-relative, non-package URI.
   @visibleForTesting
-  Future<Uri> resolveResourceUri(Uri uri) {
+  Future<Uri> resolveResourceUri(Uri uri) async {
     if (uri.scheme == 'package') {
-      return Isolate.resolvePackageUri(uri).then((resolvedUri) {
-        if (resolvedUri == null) {
-          throw ArgumentError.value(uri, 'uri', 'Unknown package');
-        }
-        return resolvedUri;
-      });
+      var resolvedUri = await Isolate.resolvePackageUri(uri);
+      if (resolvedUri == null) {
+        throw ArgumentError.value(uri, 'uri', 'Unknown package');
+      }
+      return resolvedUri;
+    } else {
+      return Uri.base.resolveUri(uri);
     }
-    return Future<Uri>.value(Uri.base.resolveUri(uri));
   }
 }

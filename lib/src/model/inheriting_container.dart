@@ -17,7 +17,7 @@ import 'package:meta/meta.dart';
 /// with a direct call to a [Constructor] in Dart.
 ///
 /// Note that [Constructor]s are not considered to be modifiers so a
-/// [hasModifier] override is not necessary for this mixin.
+/// [hasModifiers] override is not necessary for this mixin.
 mixin Constructable on InheritingContainer {
   List<Constructor>? _constructors;
   Iterable<Constructor> get constructors => _constructors ??= [

@@ -81,7 +81,7 @@ void main() {
 int x;
 ''');
 
-      var optionSet = await DartdocOptionRoot.fromOptionGenerators(
+      var optionSet = DartdocOptionRoot.fromOptionGenerators(
           'dartdoc', [createDartdocOptions], packageMetaProvider);
       optionSet.parseArguments([]);
       packageGraph = await utils.bootBasicPackage(

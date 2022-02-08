@@ -12,6 +12,7 @@ import 'package:analyzer/file_system/file_system.dart';
 import 'package:meta/meta.dart';
 import 'parser.dart';
 
+// TODO(devoncarew): See is we can make this synchronous.
 /// The signature of a partial resolver function.
 typedef PartialResolver = Future<File> Function(String uri);
 

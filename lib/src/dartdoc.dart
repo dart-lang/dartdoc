@@ -129,14 +129,14 @@ class Dartdoc {
   // ignore: unnecessary_getters_setters
   set generator(Generator newGenerator) => _generator = newGenerator;
 
-  /// Asynchronous factory method that builds Dartdoc with an empty generator.
-  static Future<Dartdoc> withEmptyGenerator(
+  /// Factory method that builds Dartdoc with an empty generator.
+  static Dartdoc withEmptyGenerator(
     DartdocOptionContext config,
     PackageBuilder packageBuilder,
-  ) async {
+  ) {
     return Dartdoc._(
       config,
-      await initEmptyGenerator(config),
+      initEmptyGenerator(config),
       packageBuilder,
     );
   }
@@ -170,22 +170,25 @@ class Dartdoc {
   @visibleForTesting
   Future<DartdocResults> generateDocsBase() async {
     var stopwatch = Stopwatch()..start();
+    runtimeStats.startPerfTask('buildPackageGraph');
     var packageGraph = await packageBuilder.buildPackageGraph();
-    var seconds = stopwatch.elapsedMilliseconds / 1000.0;
+    runtimeStats.endPerfTask();
     var libs = packageGraph.libraryCount;
-    logInfo("Initialized dartdoc with $libs librar${libs == 1 ? 'y' : 'ies'} "
-        'in ${seconds.toStringAsFixed(1)} seconds');
-    stopwatch.reset();
+    logInfo("Initialized dartdoc with $libs librar${libs == 1 ? 'y' : 'ies'}");
 
     // Create the out directory.
     if (!_outputDir.exists) _outputDir.create();
 
+    runtimeStats.startPerfTask('generator.generate');
     var writer = DartdocFileWriter(_outputDir.path, config.resourceProvider);
     await generator.generate(packageGraph, writer);
+    runtimeStats.endPerfTask();
 
     _writtenFiles.addAll(writer.writtenFiles);
     if (config.validateLinks && _writtenFiles.isNotEmpty) {
+      runtimeStats.startPerfTask('validateLinks');
       _validateLinks(packageGraph, _outputDir.path);
+      runtimeStats.endPerfTask();
     }
 
     var warnings = packageGraph.packageWarningCounter.warningCount;
@@ -197,13 +200,13 @@ class Dartdoc {
           "and $errors ${pluralize('error', errors)}.");
     }
 
-    seconds = stopwatch.elapsedMilliseconds / 1000.0;
+    var seconds = stopwatch.elapsedMilliseconds / 1000.0;
     libs = packageGraph.localPublicLibraries.length;
     logInfo("Documented $libs public librar${libs == 1 ? 'y' : 'ies'} "
         'in ${seconds.toStringAsFixed(1)} seconds');
 
     if (config.showStats) {
-      logInfo(markdownStats.buildReport());
+      logInfo(runtimeStats.buildReport());
     }
     return DartdocResults(config.topLevelPackageMeta, packageGraph, _outputDir);
   }
@@ -483,7 +486,9 @@ class Dartdoc {
     // [executeGuarded].
     runZonedGuarded(
       () async {
+        runtimeStats.startPerfTask('generateDocs');
         await generateDocs();
+        runtimeStats.endPerfTask();
         await postProcessCallback?.call(config);
       },
       (e, chain) {
