@@ -8,6 +8,7 @@
   (#2900)
 * Update README to discuss `dart doc`. (#2898)
 * Add some performance statistics. (#2938)
+* Move to analyzer 3.1.0.
 
 ## 4.1.0
 * Move to analyzer 2.7.0. (#2845)
