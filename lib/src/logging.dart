@@ -132,8 +132,8 @@ abstract class LoggingContext implements DartdocOptionContextBase {
   bool get quiet => optionSet['quiet'].valueAt(context);
 }
 
-Future<List<DartdocOption<Object>>> createLoggingOptions(
-    PackageMetaProvider packageMetaProvider) async {
+List<DartdocOption<Object>> createLoggingOptions(
+    PackageMetaProvider packageMetaProvider) {
   var resourceProvider = packageMetaProvider.resourceProvider;
   return [
     DartdocOptionArgOnly<bool>('json', false, resourceProvider,

@@ -40,7 +40,7 @@ final Folder testPackageToolError = _resourceProvider.getFolder(_pathContext
 /// [DartdocOptionSet] based on the current working directory.
 Future<DartdocOptionContext> contextFromArgv(
     List<String> argv, PackageMetaProvider packageMetaProvider) async {
-  var optionSet = await DartdocOptionRoot.fromOptionGenerators(
+  var optionSet = DartdocOptionRoot.fromOptionGenerators(
       'dartdoc', [createDartdocOptions], packageMetaProvider);
   optionSet.parseArguments(argv);
   return DartdocOptionContext.fromDefaultContextLocation(
@@ -52,7 +52,7 @@ Future<DartdocOptionContext> contextFromArgv(
 /// directory and/or the '--input' flag.
 Future<DartdocGeneratorOptionContext> generatorContextFromArgv(
     List<String> argv) async {
-  var optionSet = await DartdocOptionRoot.fromOptionGenerators(
+  var optionSet = DartdocOptionRoot.fromOptionGenerators(
       'dartdoc',
       [
         createDartdocOptions,

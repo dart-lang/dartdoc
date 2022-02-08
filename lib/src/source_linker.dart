@@ -26,8 +26,8 @@ abstract class SourceLinkerOptionContext implements DartdocOptionContextBase {
       optionSet['linkToSource']['uriTemplate'].valueAt(context);
 }
 
-Future<List<DartdocOption<Object?>>> createSourceLinkerOptions(
-    ResourceProvider resourceProvider) async {
+List<DartdocOption<Object?>> createSourceLinkerOptions(
+    ResourceProvider resourceProvider) {
   return [
     DartdocOptionSet('linkToSource', resourceProvider)
       ..addAll([
