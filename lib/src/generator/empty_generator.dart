@@ -28,6 +28,6 @@ class EmptyGenerator extends Generator {
   }
 }
 
-Future<Generator> initEmptyGenerator(DartdocOptionContext config) async {
+Generator initEmptyGenerator(DartdocOptionContext config) {
   return EmptyGenerator();
 }

@@ -264,8 +264,10 @@ md.Node _makeLinkNode(String codeRef, Warnable warnable) {
 @visibleForTesting
 MatchingLinkResult getMatchingLinkElement(Warnable warnable, String codeRef) {
   var result = _getMatchingLinkElementCommentReferable(codeRef, warnable);
-  markdownStats.totalReferences++;
-  if (result.commentReferable != null) markdownStats.resolvedReferences++;
+  runtimeStats.totalReferences++;
+  if (result.commentReferable != null) {
+    runtimeStats.resolvedReferences++;
+  }
   return result;
 }
 
