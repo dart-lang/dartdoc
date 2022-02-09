@@ -16659,7 +16659,6 @@ const _invisibleGetters = {
     'isSdk',
     'isValid',
     'name',
-    'needsPubGet',
     'pathContext',
     'requiresFlutter',
     'resolvedDir',
