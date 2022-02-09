@@ -8,6 +8,8 @@
   (#2900)
 * Update README to discuss `dart doc`. (#2898)
 * Add some performance statistics. (#2938)
+* Remove functionality to run `dart pub get` (or `flutter pub get`) as part of
+  `dart doc`. This command needs to be run before running `dart doc`. (#2930)
 * Move to analyzer 3.1.0.
 
 ## 4.1.0
