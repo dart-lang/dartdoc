@@ -786,7 +786,7 @@ $analyzerOptions
     }
   }
 
-  await launcher.runStreamed('pub', ['get'],
+  await launcher.runStreamed(Platform.resolvedExecutable, ['pub', 'get'],
       workingDirectory: _languageTestPackageDir.absolute.path);
   await launcher.runStreamed(
       Platform.resolvedExecutable,
@@ -915,13 +915,13 @@ Future<String> _buildPubPackageDocs(
   var labelContext = label == null ? '' : '-$label';
   var launcher = SubprocessLauncher(
       'build-$pubPackageName$versionContext$labelContext', env);
-  var args = [
+  await launcher.runStreamed(Platform.resolvedExecutable, [
+    'pub',
     'cache',
     'add',
     if (version != null) ...['-v', version],
     pubPackageName,
-  ];
-  await launcher.runStreamed('pub', args);
+  ]);
   var cache =
       Directory(path.join(env['PUB_CACHE']!, 'hosted', 'pub.dartlang.org'));
   var pubPackageDirOrig =
@@ -950,7 +950,7 @@ Future<String> _buildPubPackageDocs(
         environment: flutterRepo.env,
         workingDirectory: pubPackageDir.absolute.path);
   } else {
-    await launcher.runStreamed('pub', ['get'],
+    await launcher.runStreamed(Platform.resolvedExecutable, ['pub', 'get'],
         workingDirectory: pubPackageDir.absolute.path);
     await launcher.runStreamed(
         Platform.resolvedExecutable,
