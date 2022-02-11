@@ -1,3 +1,6 @@
+## 5.0.1
+* Add support for new VM service message. (#2931)
+
 ## 5.0.0
 * Migrate to null safety.
 * BREAKING CHANGE: Many breaking changes to dartdoc API, as part of the broad
