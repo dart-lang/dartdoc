@@ -65,51 +65,33 @@ class Class extends InheritingContainer
   bool get isCanonical => super.isCanonical && isPublic;
 
   bool get isErrorOrException {
-    bool _doCheck(ClassElement element) {
-      return (element.library.isDartCore &&
-          (element.name == 'Exception' || element.name == 'Error'));
-    }
+    bool isError(ClassElement element) => (element.library.isDartCore &&
+        (element.name == 'Exception' || element.name == 'Error'));
 
-    // if this class is itself Error or Exception, return true
-    if (_doCheck(element!)) return true;
-
-    return element!.allSupertypes.map((t) => t.element).any(_doCheck);
+    final element = this.element;
+    if (element == null) return false;
+    if (isError(element)) return true;
+    return element.allSupertypes.map((t) => t.element).any(isError);
   }
 
   @override
   String get kind => 'class';
 
-  List<InheritingContainer?>? _inheritanceChain;
-
-  /// Not the same as superChain as it may include mixins.
-  /// It's really not even the same as ordinary Dart inheritance, either,
-  /// because we pretend that interfaces are part of the inheritance chain
-  /// to include them in the set of things we might link to for documentation
-  /// purposes in abstract classes.
   @override
-  List<InheritingContainer?> get inheritanceChain {
-    if (_inheritanceChain == null) {
-      _inheritanceChain = [];
-      _inheritanceChain!.add(this);
+  late final List<InheritingContainer?> inheritanceChain = [
+    this,
 
-      /// Caching should make this recursion a little less painful.
-      for (var c in mixedInTypes.reversed
-          .map((e) => (e.modelElement as InheritingContainer))) {
-        _inheritanceChain!.addAll(c.inheritanceChain);
-      }
+    // Caching should make this recursion a little less painful.
+    for (var container in mixedInTypes.reversed.modelElements)
+      ...container.inheritanceChain,
 
-      for (var c
-          in superChain.map((e) => (e.modelElement as InheritingContainer))) {
-        _inheritanceChain!.addAll(c.inheritanceChain);
-      }
+    for (var container in superChain.modelElements)
+      ...container.inheritanceChain,
 
-      /// Interfaces need to come last, because classes in the superChain might
-      /// implement them even when they aren't mentioned.
-      _inheritanceChain!.addAll(interfaces.expand(
-          (e) => (e.modelElement as InheritingContainer).inheritanceChain));
-    }
-    return _inheritanceChain!.toList(growable: false);
-  }
+    // Interfaces need to come last, because classes in the superChain might
+    // implement them even when they aren't mentioned.
+    ...interfaces.expandInheritanceChain,
+  ];
 
   Iterable<Field>? _instanceFields;
 
@@ -156,4 +138,7 @@ class Class extends InheritingContainer
       }
     }
   }
+
+  @override
+  String get relationshipsClass => 'clazz-relationships';
 }

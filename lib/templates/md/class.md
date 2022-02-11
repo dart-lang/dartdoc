@@ -12,15 +12,7 @@
 {{>documentation}}
 
 {{#hasModifiers}}
-{{#hasPublicSuperChainReversed}}
-**Inheritance**
-
-- {{{linkedObjectType}}}
-{{#publicSuperChainReversed}}
-- {{{linkedName}}}
-{{/publicSuperChainReversed}}
-- {{{name}}}
-{{/hasPublicSuperChainReversed}}
+{{ >super_chain }}
 
 {{#hasPublicInterfaces}}
 **Implemented types**
