@@ -69,6 +69,7 @@ void main() {
         '_sidebar_for_library',
         '_source_code',
         '_source_link',
+        '_super_chain',
         '_type',
         '_typedef',
         '_type_multiline',
