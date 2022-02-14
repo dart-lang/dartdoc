@@ -257,34 +257,32 @@ abstract class Container extends ModelElement
   /// parameter-global.
   Iterable<MapEntry<String, CommentReferable>> get extraReferenceChildren => [];
 
-  Map<String, CommentReferable>? _referenceChildren;
   @override
   @mustCallSuper
-  Map<String, CommentReferable> get referenceChildren {
-    if (_referenceChildren == null) {
-      _referenceChildren = {};
-      _referenceChildren!.addEntries(allModelElements!
+  late final Map<String, CommentReferable> referenceChildren = () {
+    var referenceChildren = <String, CommentReferable>{
+      for (var element in allModelElements!
           .whereNotType<Accessor>()
-          .whereNotType<Constructor>()
-          .generateEntries());
+          .whereNotType<Constructor>())
+        element.referenceName: element,
+    };
 
-      _referenceChildren!.addEntriesIfAbsent(extraReferenceChildren);
-      // Process unscoped parameters last to make sure they don't override
-      // other options.
-      for (var modelElement in allModelElements!) {
-        // Don't complain about references to parameter names, but prefer
-        // referring to anything else.
-        // TODO(jcollins-g): Figure out something good to do in the ecosystem
-        // here to wean people off the habit of unscoped parameter references.
-        if (modelElement.hasParameters) {
-          _referenceChildren!
-              .addEntriesIfAbsent(modelElement.parameters.generateEntries());
-        }
+    referenceChildren.addEntriesIfAbsent(extraReferenceChildren);
+    // Process unscoped parameters last to make sure they don't override
+    // other options.
+    for (var modelElement in allModelElements!) {
+      // Don't complain about references to parameter names, but prefer
+      // referring to anything else.
+      // TODO(jcollins-g): Figure out something good to do in the ecosystem
+      // here to wean people off the habit of unscoped parameter references.
+      if (modelElement.hasParameters) {
+        referenceChildren
+            .addEntriesIfAbsent(modelElement.parameters.generateEntries());
       }
-      _referenceChildren!['this'] = this;
     }
-    return _referenceChildren!;
-  }
+    referenceChildren['this'] = this;
+    return referenceChildren;
+  }();
 
   @override
   Iterable<CommentReferable> get referenceParents => [definingLibrary, library];

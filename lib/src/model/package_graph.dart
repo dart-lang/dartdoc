@@ -98,8 +98,8 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     // Scan all model elements to insure that interceptor and other special
     // objects are found.
     // Emit warnings for any local package that has no libraries.
-    // After the allModelElements traversal to be sure that all packages
-    // are picked up.
+    // This must be done after the [allModelElements] traversal to be sure that
+    // all packages are picked up.
     for (var package in documentedPackages) {
       for (var library in package.libraries) {
         _addToImplementors(library.allClasses);
@@ -122,40 +122,40 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     // Prevent reentrancy.
     var precachedElements = <ModelElement>{};
 
-    Iterable<Future<void>> precacheOneElement(ModelElement m) sync* {
-      for (var d
-          in m.documentationFrom.where((d) => d.hasDocumentationComment)) {
+    Iterable<Future<void>> precacheOneElement(ModelElement element) sync* {
+      for (var d in element.documentationFrom
+          .where((d) => d.hasDocumentationComment)) {
         if (d.needsPrecache && !precachedElements.contains(d)) {
           precachedElements.add(d as ModelElement);
           yield d.precacheLocalDocs();
           logProgress(d.name);
           // TopLevelVariables get their documentation from getters and setters,
           // so should be precached if either has a template.
-          if (m is TopLevelVariable && !precachedElements.contains(m)) {
-            precachedElements.add(m);
-            yield m.precacheLocalDocs();
+          if (element is TopLevelVariable &&
+              !precachedElements.contains(element)) {
+            precachedElements.add(element);
+            yield element.precacheLocalDocs();
             logProgress(d.name);
           }
         }
       }
     }
 
-    for (var m in allModelElements) {
-      // Skip if there is a canonicalModelElement somewhere else we can run this
-      // for and we won't need a one line document that is precached.
-      // Not the same as allCanonicalModelElements since we need to run
-      // for any ModelElement that might not have a canonical ModelElement,
-      // too.
+    for (var element in allModelElements) {
+      // Skip if there is a `canonicalModelElement` somewhere else we can use
+      // and we won't need a one line document that is precached. Not the same
+      // as `allCanonicalModelElements` since we need to run for any
+      // [ModelElement] that might not _have_ a canonical [ModelElement], too.
       if (
           // A canonical element exists somewhere.
-          m.canonicalModelElement != null &&
+          element.canonicalModelElement != null &&
               // This element is not canonical.
-              !m.isCanonical &&
+              !element.isCanonical &&
               // The enclosing element won't need a `oneLineDoc` from this.
-              !m.enclosingElement!.isCanonical) {
+              !element.enclosingElement!.isCanonical) {
         continue;
       }
-      yield* precacheOneElement(m);
+      yield* precacheOneElement(element);
     }
     // Now wait for any of the tasks still running to complete.
     yield config.tools.runner.wait();
@@ -211,7 +211,8 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   @visibleForTesting
   final allLibraries = <String, Library>{};
 
-  /// All ModelElements constructed for this package; a superset of [allModelElements].
+  /// All [ModelElement]s constructed for this package; a superset of
+  /// [allModelElements].
   final HashMap<Tuple3<Element, Library, Container?>, ModelElement?>
       allConstructedModelElements =
       HashMap<Tuple3<Element, Library, Container?>, ModelElement?>();
@@ -903,8 +904,8 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     var packagesToDo = packages.toSet();
     var completedPackages = <Package>{};
     while (packagesToDo.length > completedPackages.length) {
-      packagesToDo.difference(completedPackages).forEach((Package p) {
-        var librariesToDo = p.allLibraries.toSet();
+      for (var package in packagesToDo.difference(completedPackages)) {
+        var librariesToDo = package.allLibraries.toSet();
         var completedLibraries = <Library>{};
         while (librariesToDo.length > completedLibraries.length) {
           librariesToDo
@@ -913,10 +914,10 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
             allElements.addAll(library.allModelElements);
             completedLibraries.add(library);
           });
-          librariesToDo.addAll(p.allLibraries);
+          librariesToDo.addAll(package.allLibraries);
         }
-        completedPackages.add(p);
-      });
+        completedPackages.add(package);
+      }
       packagesToDo.addAll(packages);
     }
 
