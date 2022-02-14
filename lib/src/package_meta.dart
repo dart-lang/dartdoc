@@ -4,7 +4,7 @@
 
 library dartdoc.package_meta;
 
-import 'dart:io' show Platform, Process;
+import 'dart:io' show Platform;
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
@@ -16,8 +16,6 @@ import 'package:dartdoc/src/failure.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:yaml/yaml.dart';
-
-import 'logging.dart';
 
 final Map<String, PackageMeta?> _packageMetaCache = {};
 
@@ -126,11 +124,7 @@ abstract class PackageMeta {
   /// "both"), or null if this package is not part of a SDK.
   String? sdkType(String? flutterRootPath);
 
-  bool get needsPubGet => false;
-
   bool get requiresFlutter;
-
-  void runPubGet(String? flutterRoot);
 
   String get name;
 
@@ -347,44 +341,6 @@ class _FilePackageMeta extends PubPackageMeta {
   bool get isSdk => false;
 
   @override
-  bool get needsPubGet => !(resourceProvider
-      .getFile(pathContext.join(dir.path, '.dart_tool', 'package_config.json'))
-      .exists);
-
-  @override
-  void runPubGet(String? flutterRoot) {
-    String binPath;
-    List<String> parameters;
-    if (requiresFlutter) {
-      if (flutterRoot == null) {
-        throw DartdocFailure('Package requires flutter but FLUTTER_ROOT unset');
-      }
-      binPath = p.join(flutterRoot, 'bin', 'flutter');
-      if (Platform.isWindows) binPath += '.bat';
-      parameters = ['pub', 'get'];
-    } else {
-      binPath = p.join(p.dirname(Platform.resolvedExecutable), 'dart');
-      if (Platform.isWindows) binPath += '.exe';
-      parameters = ['pub', 'get'];
-    }
-
-    var result =
-        Process.runSync(binPath, parameters, workingDirectory: dir.path);
-
-    var trimmedStdout = (result.stdout as String).trim();
-    if (trimmedStdout.isNotEmpty) {
-      logInfo(trimmedStdout);
-    }
-
-    if (result.exitCode != 0) {
-      var buf = StringBuffer();
-      buf.writeln('${result.stdout}');
-      buf.writeln('${result.stderr}');
-      throw DartdocFailure('pub get failed: ${buf.toString().trim()}');
-    }
-  }
-
-  @override
   String get name => _pubspec['name'] ?? '';
 
   @override
@@ -457,11 +413,6 @@ class _SdkMeta extends PubPackageMeta {
 
   @override
   bool get isSdk => true;
-
-  @override
-  void runPubGet(String? flutterRoot) {
-    throw 'unsupported operation';
-  }
 
   @override
   String get name => 'Dart';

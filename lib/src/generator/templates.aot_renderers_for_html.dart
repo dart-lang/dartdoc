@@ -9,22 +9,21 @@
 // ignore_for_file: unused_local_variable
 // ignore_for_file: non_constant_identifier_names, unnecessary_string_escapes
 
-import 'dart:convert' as _i19;
+import 'dart:convert' as _i18;
 
 import 'package:dartdoc/src/generator/template_data.dart' as _i1;
-import 'package:dartdoc/src/model/accessor.dart' as _i17;
+import 'package:dartdoc/src/model/accessor.dart' as _i16;
 import 'package:dartdoc/src/model/category.dart' as _i2;
 import 'package:dartdoc/src/model/class.dart' as _i8;
 import 'package:dartdoc/src/model/constructor.dart' as _i11;
 import 'package:dartdoc/src/model/container.dart' as _i4;
-import 'package:dartdoc/src/model/documentable.dart' as _i18;
+import 'package:dartdoc/src/model/documentable.dart' as _i17;
 import 'package:dartdoc/src/model/enum.dart' as _i12;
 import 'package:dartdoc/src/model/extension.dart' as _i13;
 import 'package:dartdoc/src/model/field.dart' as _i9;
 import 'package:dartdoc/src/model/library.dart' as _i3;
-import 'package:dartdoc/src/model/library_container.dart' as _i15;
 import 'package:dartdoc/src/model/method.dart' as _i10;
-import 'package:dartdoc/src/model/mixin.dart' as _i16;
+import 'package:dartdoc/src/model/mixin.dart' as _i15;
 import 'package:dartdoc/src/model/model_function.dart' as _i6;
 import 'package:dartdoc/src/model/package.dart' as _i14;
 import 'package:dartdoc/src/model/top_level_variable.dart' as _i5;
@@ -46,7 +45,7 @@ String renderCategory(_i1.CategoryTemplateData context0) {
   buffer.writeEscaped(context1.kind);
   buffer.write('''</h1>
   ''');
-  buffer.write(_renderCategory_partial_documentation_1(context1, context0));
+  buffer.write(_renderCategory_partial_documentation_1(context1));
   buffer.writeln();
   if (context1.hasPublicLibraries == true) {
     buffer.writeln();
@@ -58,8 +57,7 @@ String renderCategory(_i1.CategoryTemplateData context0) {
     var context2 = context1.publicLibrariesSorted;
     for (var context3 in context2) {
       buffer.write('\n      ');
-      buffer.write(
-          _renderCategory_partial_library_2(context3, context1, context0));
+      buffer.write(_renderCategory_partial_library_2(context3));
     }
     buffer.writeln();
     buffer.write('''
@@ -77,8 +75,7 @@ String renderCategory(_i1.CategoryTemplateData context0) {
     var context4 = context1.publicClassesSorted;
     for (var context5 in context4) {
       buffer.write('\n      ');
-      buffer.write(
-          _renderCategory_partial_container_3(context5, context1, context0));
+      buffer.write(_renderCategory_partial_container_3(context5));
     }
     buffer.writeln();
     buffer.write('''
@@ -96,8 +93,7 @@ String renderCategory(_i1.CategoryTemplateData context0) {
     var context6 = context1.publicMixinsSorted;
     for (var context7 in context6) {
       buffer.write('\n      ');
-      buffer.write(
-          _renderCategory_partial_container_3(context7, context1, context0));
+      buffer.write(_renderCategory_partial_container_3(context7));
     }
     buffer.writeln();
     buffer.write('''
@@ -115,8 +111,7 @@ String renderCategory(_i1.CategoryTemplateData context0) {
     var context8 = context1.publicConstantsSorted;
     for (var context9 in context8) {
       buffer.write('\n      ');
-      buffer.write(
-          _renderCategory_partial_constant_4(context9, context1, context0));
+      buffer.write(_renderCategory_partial_constant_4(context9));
     }
     buffer.writeln();
     buffer.write('''
@@ -134,8 +129,7 @@ String renderCategory(_i1.CategoryTemplateData context0) {
     var context10 = context1.publicPropertiesSorted;
     for (var context11 in context10) {
       buffer.write('\n      ');
-      buffer.write(
-          _renderCategory_partial_property_5(context11, context1, context0));
+      buffer.write(_renderCategory_partial_property_5(context11));
     }
     buffer.writeln();
     buffer.write('''
@@ -153,8 +147,7 @@ String renderCategory(_i1.CategoryTemplateData context0) {
     var context12 = context1.publicFunctionsSorted;
     for (var context13 in context12) {
       buffer.write('\n      ');
-      buffer.write(
-          _renderCategory_partial_callable_6(context13, context1, context0));
+      buffer.write(_renderCategory_partial_callable_6(context13));
     }
     buffer.writeln();
     buffer.write('''
@@ -172,8 +165,7 @@ String renderCategory(_i1.CategoryTemplateData context0) {
     var context14 = context1.publicEnumsSorted;
     for (var context15 in context14) {
       buffer.write('\n      ');
-      buffer.write(
-          _renderCategory_partial_container_3(context15, context1, context0));
+      buffer.write(_renderCategory_partial_container_3(context15));
     }
     buffer.writeln();
     buffer.write('''
@@ -191,8 +183,7 @@ String renderCategory(_i1.CategoryTemplateData context0) {
     var context16 = context1.publicTypedefsSorted;
     for (var context17 in context16) {
       buffer.write('\n      ');
-      buffer.write(
-          _renderCategory_partial_typedef_7(context17, context1, context0));
+      buffer.write(_renderCategory_partial_typedef_7(context17));
     }
     buffer.writeln();
     buffer.write('''
@@ -210,8 +201,7 @@ String renderCategory(_i1.CategoryTemplateData context0) {
     var context18 = context1.publicExceptionsSorted;
     for (var context19 in context18) {
       buffer.write('\n      ');
-      buffer.write(
-          _renderCategory_partial_container_3(context19, context1, context0));
+      buffer.write(_renderCategory_partial_container_3(context19));
     }
     buffer.writeln();
     buffer.write('''
@@ -281,8 +271,8 @@ String _renderCategory_partial_head_0(_i1.CategoryTemplateData context0) {
   <title>''');
   buffer.writeEscaped(context0.title);
   buffer.write('''</title>''');
-  var context1 = context0.relCanonicalPrefix;
-  if (context1 != null) {
+  var context7 = context0.relCanonicalPrefix;
+  if (context7 != null) {
     buffer.writeln();
     buffer.write('''
   <link rel="canonical" href="''');
@@ -293,7 +283,7 @@ String _renderCategory_partial_head_0(_i1.CategoryTemplateData context0) {
   }
   buffer.writeln();
   if (context0.useBaseHref == true) {
-    var context2 = context0.htmlBase;
+    var context8 = context0.htmlBase;
     buffer.writeln();
     buffer.write('''
   <!-- required because all the links are pseudo-absolute -->
@@ -347,27 +337,27 @@ String _renderCategory_partial_head_0(_i1.CategoryTemplateData context0) {
 <header id="title">
   <button id="sidenav-left-toggle" type="button">&nbsp;</button>
   <ol class="breadcrumbs gt-separated dark hidden-xs">''');
-  var context3 = context0.navLinks;
-  for (var context4 in context3) {
+  var context9 = context0.navLinks;
+  for (var context10 in context9) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context4.href);
+    buffer.write(context10.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
+    buffer.writeEscaped(context10.name);
     buffer.write('''</a></li>''');
   }
-  var context5 = context0.navLinksWithGenerics;
-  for (var context6 in context5) {
+  var context11 = context0.navLinksWithGenerics;
+  for (var context12 in context11) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context6.href);
+    buffer.write(context12.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context6.name);
-    if (context6.hasGenericParameters == true) {
+    buffer.writeEscaped(context12.name);
+    if (context12.hasGenericParameters == true) {
       buffer.write('''<span class="signature">''');
-      buffer.write(context6.genericParameters);
+      buffer.write(context12.genericParameters);
       buffer.write('''</span>''');
     }
     buffer.write('''</a></li>''');
@@ -405,8 +395,7 @@ String _renderCategory_partial_head_0(_i1.CategoryTemplateData context0) {
   return buffer.toString();
 }
 
-String _renderCategory_partial_documentation_1(
-    _i2.Category context1, _i1.CategoryTemplateData context0) {
+String _renderCategory_partial_documentation_1(_i2.Category context1) {
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
     buffer.writeln();
@@ -423,8 +412,7 @@ String _renderCategory_partial_documentation_1(
   return buffer.toString();
 }
 
-String _renderCategory_partial_library_2(_i3.Library context2,
-    _i2.Category context1, _i1.CategoryTemplateData context0) {
+String _renderCategory_partial_library_2(_i3.Library context2) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
   buffer.writeEscaped(context2.htmlId);
@@ -432,8 +420,8 @@ String _renderCategory_partial_library_2(_i3.Library context2,
   <span class="name">''');
   buffer.write(context2.linkedName);
   buffer.write('''</span> ''');
-  buffer.write(__renderCategory_partial_library_2_partial_categorization_0(
-      context2, context1, context0));
+  buffer.write(
+      __renderCategory_partial_library_2_partial_categorization_0(context2));
   buffer.writeln();
   buffer.write('''
 </dt>
@@ -450,15 +438,13 @@ String _renderCategory_partial_library_2(_i3.Library context2,
 }
 
 String __renderCategory_partial_library_2_partial_categorization_0(
-    _i3.Library context2,
-    _i2.Category context1,
-    _i1.CategoryTemplateData context0) {
+    _i3.Library context2) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
-    var context3 = context2.displayedCategories;
-    for (var context4 in context3) {
+    var context7 = context2.displayedCategories;
+    for (var context8 in context7) {
       buffer.write('\n    ');
-      buffer.write(context4.categoryLabel);
+      buffer.write(context8.categoryLabel);
     }
   }
   buffer.writeln();
@@ -466,8 +452,7 @@ String __renderCategory_partial_library_2_partial_categorization_0(
   return buffer.toString();
 }
 
-String _renderCategory_partial_container_3(_i4.Container context2,
-    _i2.Category context1, _i1.CategoryTemplateData context0) {
+String _renderCategory_partial_container_3(_i4.Container context2) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
   buffer.writeEscaped(context2.htmlId);
@@ -480,8 +465,8 @@ String _renderCategory_partial_container_3(_i4.Container context2,
   buffer.write(context2.linkedName);
   buffer.write(context2.linkedGenericParameters);
   buffer.write('''</span> ''');
-  buffer.write(__renderCategory_partial_container_3_partial_categorization_0(
-      context2, context1, context0));
+  buffer.write(
+      __renderCategory_partial_container_3_partial_categorization_0(context2));
   buffer.writeln();
   buffer.write('''
 </dt>
@@ -497,15 +482,13 @@ String _renderCategory_partial_container_3(_i4.Container context2,
 }
 
 String __renderCategory_partial_container_3_partial_categorization_0(
-    _i4.Container context2,
-    _i2.Category context1,
-    _i1.CategoryTemplateData context0) {
+    _i4.Container context2) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
-    var context3 = context2.displayedCategories;
-    for (var context4 in context3) {
+    var context7 = context2.displayedCategories;
+    for (var context8 in context7) {
       buffer.write('\n    ');
-      buffer.write(context4.categoryLabel);
+      buffer.write(context8.categoryLabel);
     }
   }
   buffer.writeln();
@@ -513,8 +496,7 @@ String __renderCategory_partial_container_3_partial_categorization_0(
   return buffer.toString();
 }
 
-String _renderCategory_partial_constant_4(_i5.TopLevelVariable context2,
-    _i2.Category context1, _i1.CategoryTemplateData context0) {
+String _renderCategory_partial_constant_4(_i5.TopLevelVariable context2) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
   buffer.writeEscaped(context2.htmlId);
@@ -530,8 +512,8 @@ String _renderCategory_partial_constant_4(_i5.TopLevelVariable context2,
   buffer.write(context2.modelType.linkedName);
   buffer.write('''</span>
   ''');
-  buffer.write(__renderCategory_partial_constant_4_partial_categorization_0(
-      context2, context1, context0));
+  buffer.write(
+      __renderCategory_partial_constant_4_partial_categorization_0(context2));
   buffer.writeln();
   buffer.write('''
 </dt>
@@ -539,8 +521,8 @@ String _renderCategory_partial_constant_4(_i5.TopLevelVariable context2,
   ''');
   buffer.write(context2.oneLineDoc);
   buffer.write('\n  ');
-  buffer.write(__renderCategory_partial_constant_4_partial_features_1(
-      context2, context1, context0));
+  buffer
+      .write(__renderCategory_partial_constant_4_partial_features_1(context2));
   buffer.writeln();
   buffer.write('''
   <div>
@@ -555,15 +537,13 @@ String _renderCategory_partial_constant_4(_i5.TopLevelVariable context2,
 }
 
 String __renderCategory_partial_constant_4_partial_categorization_0(
-    _i5.TopLevelVariable context2,
-    _i2.Category context1,
-    _i1.CategoryTemplateData context0) {
+    _i5.TopLevelVariable context2) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
-    var context3 = context2.displayedCategories;
-    for (var context4 in context3) {
+    var context7 = context2.displayedCategories;
+    for (var context8 in context7) {
       buffer.write('\n    ');
-      buffer.write(context4.categoryLabel);
+      buffer.write(context8.categoryLabel);
     }
   }
   buffer.writeln();
@@ -572,9 +552,7 @@ String __renderCategory_partial_constant_4_partial_categorization_0(
 }
 
 String __renderCategory_partial_constant_4_partial_features_1(
-    _i5.TopLevelVariable context2,
-    _i2.Category context1,
-    _i1.CategoryTemplateData context0) {
+    _i5.TopLevelVariable context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
     buffer.write('''<div class="features">''');
@@ -586,8 +564,7 @@ String __renderCategory_partial_constant_4_partial_features_1(
   return buffer.toString();
 }
 
-String _renderCategory_partial_property_5(_i5.TopLevelVariable context2,
-    _i2.Category context1, _i1.CategoryTemplateData context0) {
+String _renderCategory_partial_property_5(_i5.TopLevelVariable context2) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
   buffer.writeEscaped(context2.htmlId);
@@ -604,8 +581,8 @@ String _renderCategory_partial_property_5(_i5.TopLevelVariable context2,
   buffer.write(' ');
   buffer.write(context2.modelType.linkedName);
   buffer.write('''</span> ''');
-  buffer.write(__renderCategory_partial_property_5_partial_categorization_0(
-      context2, context1, context0));
+  buffer.write(
+      __renderCategory_partial_property_5_partial_categorization_0(context2));
   buffer.writeln();
   buffer.write('''
 </dt>
@@ -617,8 +594,8 @@ String _renderCategory_partial_property_5(_i5.TopLevelVariable context2,
   ''');
   buffer.write(context2.oneLineDoc);
   buffer.write('\n  ');
-  buffer.write(__renderCategory_partial_property_5_partial_features_1(
-      context2, context1, context0));
+  buffer
+      .write(__renderCategory_partial_property_5_partial_features_1(context2));
   buffer.writeln();
   buffer.write('''
 </dd>
@@ -628,15 +605,13 @@ String _renderCategory_partial_property_5(_i5.TopLevelVariable context2,
 }
 
 String __renderCategory_partial_property_5_partial_categorization_0(
-    _i5.TopLevelVariable context2,
-    _i2.Category context1,
-    _i1.CategoryTemplateData context0) {
+    _i5.TopLevelVariable context2) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
-    var context3 = context2.displayedCategories;
-    for (var context4 in context3) {
+    var context7 = context2.displayedCategories;
+    for (var context8 in context7) {
       buffer.write('\n    ');
-      buffer.write(context4.categoryLabel);
+      buffer.write(context8.categoryLabel);
     }
   }
   buffer.writeln();
@@ -645,9 +620,7 @@ String __renderCategory_partial_property_5_partial_categorization_0(
 }
 
 String __renderCategory_partial_property_5_partial_features_1(
-    _i5.TopLevelVariable context2,
-    _i2.Category context1,
-    _i1.CategoryTemplateData context0) {
+    _i5.TopLevelVariable context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
     buffer.write('''<div class="features">''');
@@ -659,8 +632,7 @@ String __renderCategory_partial_property_5_partial_features_1(
   return buffer.toString();
 }
 
-String _renderCategory_partial_callable_6(_i6.ModelFunctionTyped context2,
-    _i2.Category context1, _i1.CategoryTemplateData context0) {
+String _renderCategory_partial_callable_6(_i6.ModelFunctionTyped context2) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
   buffer.writeEscaped(context2.htmlId);
@@ -685,8 +657,8 @@ String _renderCategory_partial_callable_6(_i6.ModelFunctionTyped context2,
   buffer.write('''</span>
   </span>
   ''');
-  buffer.write(__renderCategory_partial_callable_6_partial_categorization_0(
-      context2, context1, context0));
+  buffer.write(
+      __renderCategory_partial_callable_6_partial_categorization_0(context2));
   buffer.writeln();
   buffer.write('''
 </dt>
@@ -698,8 +670,8 @@ String _renderCategory_partial_callable_6(_i6.ModelFunctionTyped context2,
   ''');
   buffer.write(context2.oneLineDoc);
   buffer.write('\n  ');
-  buffer.write(__renderCategory_partial_callable_6_partial_features_1(
-      context2, context1, context0));
+  buffer
+      .write(__renderCategory_partial_callable_6_partial_features_1(context2));
   buffer.writeln();
   buffer.write('''
 </dd>
@@ -709,15 +681,13 @@ String _renderCategory_partial_callable_6(_i6.ModelFunctionTyped context2,
 }
 
 String __renderCategory_partial_callable_6_partial_categorization_0(
-    _i6.ModelFunctionTyped context2,
-    _i2.Category context1,
-    _i1.CategoryTemplateData context0) {
+    _i6.ModelFunctionTyped context2) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
-    var context3 = context2.displayedCategories;
-    for (var context4 in context3) {
+    var context7 = context2.displayedCategories;
+    for (var context8 in context7) {
       buffer.write('\n    ');
-      buffer.write(context4!.categoryLabel);
+      buffer.write(context8!.categoryLabel);
     }
   }
   buffer.writeln();
@@ -726,9 +696,7 @@ String __renderCategory_partial_callable_6_partial_categorization_0(
 }
 
 String __renderCategory_partial_callable_6_partial_features_1(
-    _i6.ModelFunctionTyped context2,
-    _i2.Category context1,
-    _i1.CategoryTemplateData context0) {
+    _i6.ModelFunctionTyped context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
     buffer.write('''<div class="features">''');
@@ -740,57 +708,55 @@ String __renderCategory_partial_callable_6_partial_features_1(
   return buffer.toString();
 }
 
-String _renderCategory_partial_typedef_7(_i7.Typedef context2,
-    _i2.Category context1, _i1.CategoryTemplateData context0) {
+String _renderCategory_partial_typedef_7(_i7.Typedef context2) {
   final buffer = StringBuffer();
   if (context2.isCallable == true) {
-    var context3 = context2.asCallable;
+    var context4 = context2.asCallable;
     buffer.writeln();
     buffer.write('''
   <dt id="''');
-    buffer.writeEscaped(context3.htmlId);
+    buffer.writeEscaped(context4.htmlId);
     buffer.write('''" class="callable''');
-    if (context3.isInherited == true) {
+    if (context4.isInherited == true) {
       buffer.write(''' inherited''');
     }
     buffer.write('''">
     <span class="name''');
-    if (context3.isDeprecated == true) {
+    if (context4.isDeprecated == true) {
       buffer.write(''' deprecated''');
     }
     buffer.write('''">''');
-    buffer.write(context3.linkedName);
+    buffer.write(context4.linkedName);
     buffer.write('''</span>''');
-    buffer.write(context3.linkedGenericParameters);
+    buffer.write(context4.linkedGenericParameters);
     buffer.write('''<span class="signature">
       <span class="returntype parameter">= ''');
-    buffer.write(context3.modelType.linkedName);
+    buffer.write(context4.modelType.linkedName);
     buffer.write('''</span>
     </span>
     ''');
-    buffer.write(__renderCategory_partial_typedef_7_partial_categorization_0(
-        context3, context2, context1, context0));
+    buffer.write(
+        __renderCategory_partial_typedef_7_partial_categorization_0(context4));
     buffer.writeln();
     buffer.write('''
   </dt>
   <dd''');
-    if (context3.isInherited == true) {
+    if (context4.isInherited == true) {
       buffer.write(''' class="inherited"''');
     }
     buffer.write('''>
     ''');
-    buffer.write(context3.oneLineDoc);
+    buffer.write(context4.oneLineDoc);
     buffer.write('\n    ');
-    buffer.write(__renderCategory_partial_typedef_7_partial_features_1(
-        context3, context2, context1, context0));
+    buffer
+        .write(__renderCategory_partial_typedef_7_partial_features_1(context4));
     buffer.writeln();
     buffer.write('''
   </dd>''');
   }
   if (context2.isCallable != true) {
     buffer.write('\n  ');
-    buffer.write(__renderCategory_partial_typedef_7_partial_type_2(
-        context2, context1, context0));
+    buffer.write(__renderCategory_partial_typedef_7_partial_type_2(context2));
   }
   buffer.writeln();
 
@@ -798,16 +764,13 @@ String _renderCategory_partial_typedef_7(_i7.Typedef context2,
 }
 
 String __renderCategory_partial_typedef_7_partial_categorization_0(
-    _i7.FunctionTypedef context3,
-    _i7.Typedef context2,
-    _i2.Category context1,
-    _i1.CategoryTemplateData context0) {
+    _i7.FunctionTypedef context3) {
   final buffer = StringBuffer();
   if (context3.hasCategoryNames == true) {
-    var context4 = context3.displayedCategories;
-    for (var context5 in context4) {
+    var context8 = context3.displayedCategories;
+    for (var context9 in context8) {
       buffer.write('\n    ');
-      buffer.write(context5.categoryLabel);
+      buffer.write(context9.categoryLabel);
     }
   }
   buffer.writeln();
@@ -816,10 +779,7 @@ String __renderCategory_partial_typedef_7_partial_categorization_0(
 }
 
 String __renderCategory_partial_typedef_7_partial_features_1(
-    _i7.FunctionTypedef context3,
-    _i7.Typedef context2,
-    _i2.Category context1,
-    _i1.CategoryTemplateData context0) {
+    _i7.FunctionTypedef context3) {
   final buffer = StringBuffer();
   if (context3.hasFeatures == true) {
     buffer.write('''<div class="features">''');
@@ -831,8 +791,7 @@ String __renderCategory_partial_typedef_7_partial_features_1(
   return buffer.toString();
 }
 
-String __renderCategory_partial_typedef_7_partial_type_2(_i7.Typedef context2,
-    _i2.Category context1, _i1.CategoryTemplateData context0) {
+String __renderCategory_partial_typedef_7_partial_type_2(_i7.Typedef context2) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
   buffer.writeEscaped(context2.htmlId);
@@ -859,7 +818,7 @@ String __renderCategory_partial_typedef_7_partial_type_2(_i7.Typedef context2,
   ''');
   buffer.write(
       ___renderCategory_partial_typedef_7_partial_type_2_partial_categorization_0(
-          context2, context1, context0));
+          context2));
   buffer.writeln();
   buffer.write('''
 </dt>
@@ -873,7 +832,7 @@ String __renderCategory_partial_typedef_7_partial_type_2(_i7.Typedef context2,
   buffer.write('\n  ');
   buffer.write(
       ___renderCategory_partial_typedef_7_partial_type_2_partial_features_1(
-          context2, context1, context0));
+          context2));
   buffer.writeln();
   buffer.write('''
 </dd>
@@ -884,15 +843,13 @@ String __renderCategory_partial_typedef_7_partial_type_2(_i7.Typedef context2,
 
 String
     ___renderCategory_partial_typedef_7_partial_type_2_partial_categorization_0(
-        _i7.Typedef context2,
-        _i2.Category context1,
-        _i1.CategoryTemplateData context0) {
+        _i7.Typedef context2) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
-    var context3 = context2.displayedCategories;
-    for (var context4 in context3) {
+    var context9 = context2.displayedCategories;
+    for (var context10 in context9) {
       buffer.write('\n    ');
-      buffer.write(context4.categoryLabel);
+      buffer.write(context10.categoryLabel);
     }
   }
   buffer.writeln();
@@ -901,9 +858,7 @@ String
 }
 
 String ___renderCategory_partial_typedef_7_partial_type_2_partial_features_1(
-    _i7.Typedef context2,
-    _i2.Category context1,
-    _i1.CategoryTemplateData context0) {
+    _i7.Typedef context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
     buffer.write('''<div class="features">''');
@@ -925,27 +880,27 @@ String _renderCategory_partial_search_sidebar_8(
 </header>
 
 <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">''');
-  var context1 = context0.navLinks;
-  for (var context2 in context1) {
+  var context5 = context0.navLinks;
+  for (var context6 in context5) {
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context2.href);
+    buffer.write(context6.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context2.name);
+    buffer.writeEscaped(context6.name);
     buffer.write('''</a></li>''');
   }
-  var context3 = context0.navLinksWithGenerics;
-  for (var context4 in context3) {
+  var context7 = context0.navLinksWithGenerics;
+  for (var context8 in context7) {
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context4.href);
+    buffer.write(context8.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
-    if (context4.hasGenericParameters == true) {
+    buffer.writeEscaped(context8.name);
+    if (context8.hasGenericParameters == true) {
       buffer.write('''<span class="signature">''');
-      buffer.write(context4.genericParameters);
+      buffer.write(context8.genericParameters);
       buffer.write('''</span>''');
     }
     buffer.write('''</a></li>''');
@@ -978,19 +933,19 @@ String _renderCategory_partial_search_sidebar_8(
 String _renderCategory_partial_packages_9(_i1.CategoryTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<ol>''');
-  var context1 = context0.localPackages;
-  for (var context2 in context1) {
-    if (context2.isFirstPackage == true) {
-      if (context2.hasDocumentedCategories == true) {
+  var context12 = context0.localPackages;
+  for (var context13 in context12) {
+    if (context13.isFirstPackage == true) {
+      if (context13.hasDocumentedCategories == true) {
         buffer.writeln();
         buffer.write('''
       <li class="section-title">Topics</li>''');
-        var context3 = context2.documentedCategoriesSorted;
-        for (var context4 in context3) {
+        var context14 = context13.documentedCategoriesSorted;
+        for (var context15 in context14) {
           buffer.writeln();
           buffer.write('''
         <li>''');
-          buffer.write(context4.linkedName);
+          buffer.write(context15.linkedName);
           buffer.write('''</li>''');
         }
       }
@@ -998,37 +953,37 @@ String _renderCategory_partial_packages_9(_i1.CategoryTemplateData context0) {
       buffer.write('''
       <li class="section-title">Libraries</li>''');
     }
-    if (context2.isFirstPackage != true) {
+    if (context13.isFirstPackage != true) {
       buffer.writeln();
       buffer.write('''
       <li class="section-title">''');
-      buffer.writeEscaped(context2.name);
+      buffer.writeEscaped(context13.name);
       buffer.write('''</li>''');
     }
-    var context5 = context2.defaultCategory;
-    if (context5 != null) {
-      var context6 = context5.publicLibrariesSorted;
-      for (var context7 in context6) {
+    var context16 = context13.defaultCategory;
+    if (context16 != null) {
+      var context17 = context16.publicLibrariesSorted;
+      for (var context18 in context17) {
         buffer.writeln();
         buffer.write('''
       <li>''');
-        buffer.write(context7.linkedName);
+        buffer.write(context18.linkedName);
         buffer.write('''</li>''');
       }
     }
-    var context8 = context2.categoriesWithPublicLibraries;
-    for (var context9 in context8) {
+    var context19 = context13.categoriesWithPublicLibraries;
+    for (var context20 in context19) {
       buffer.writeln();
       buffer.write('''
       <li class="section-subtitle">''');
-      buffer.writeEscaped(context9.name);
+      buffer.writeEscaped(context20.name);
       buffer.write('''</li>''');
-      var context10 = context9.publicLibrariesSorted;
-      for (var context11 in context10) {
+      var context21 = context20.publicLibrariesSorted;
+      for (var context22 in context21) {
         buffer.writeln();
         buffer.write('''
         <li class="section-subitem">''');
-        buffer.write(context11.linkedName);
+        buffer.write(context22.linkedName);
         buffer.write('''</li>''');
       }
     }
@@ -1045,164 +1000,164 @@ String _renderCategory_partial_sidebar_for_category_10(
     _i1.CategoryTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<ol>''');
-  var context1 = context0.self;
-  if (context1.hasPublicLibraries == true) {
+  var context37 = context0.self;
+  if (context37.hasPublicLibraries == true) {
     buffer.writeln();
     buffer.write('''
   <li class="section-title"><a href="''');
     buffer.write(context0.self.href);
     buffer.write('''#libraries">Libraries</a></li>''');
-    var context2 = context0.self;
-    var context3 = context2.publicLibrariesSorted;
-    for (var context4 in context3) {
+    var context38 = context0.self;
+    var context39 = context38.publicLibrariesSorted;
+    for (var context40 in context39) {
       buffer.writeln();
       buffer.write('''
   <li>''');
-      buffer.write(context4.linkedName);
+      buffer.write(context40.linkedName);
       buffer.write('''</li>''');
     }
   }
   buffer.writeln();
-  var context5 = context0.self;
-  if (context5.hasPublicMixins == true) {
+  var context41 = context0.self;
+  if (context41.hasPublicMixins == true) {
     buffer.writeln();
     buffer.write('''
   <li class="section-title"><a href="''');
     buffer.write(context0.self.href);
     buffer.write('''#mixins">Mixins</a></li>''');
-    var context6 = context0.self;
-    var context7 = context6.publicMixinsSorted;
-    for (var context8 in context7) {
+    var context42 = context0.self;
+    var context43 = context42.publicMixinsSorted;
+    for (var context44 in context43) {
       buffer.writeln();
       buffer.write('''
   <li>''');
-      buffer.write(context8.linkedName);
+      buffer.write(context44.linkedName);
       buffer.write('''</li>''');
     }
   }
   buffer.writeln();
-  var context9 = context0.self;
-  if (context9.hasPublicClasses == true) {
+  var context45 = context0.self;
+  if (context45.hasPublicClasses == true) {
     buffer.writeln();
     buffer.write('''
   <li class="section-title"><a href="''');
     buffer.write(context0.self.href);
     buffer.write('''#classes">Classes</a></li>''');
-    var context10 = context0.self;
-    var context11 = context10.publicClassesSorted;
-    for (var context12 in context11) {
+    var context46 = context0.self;
+    var context47 = context46.publicClassesSorted;
+    for (var context48 in context47) {
       buffer.writeln();
       buffer.write('''
   <li>''');
-      buffer.write(context12.linkedName);
+      buffer.write(context48.linkedName);
       buffer.write('''</li>''');
     }
   }
   buffer.writeln();
-  var context13 = context0.self;
-  if (context13.hasPublicConstants == true) {
+  var context49 = context0.self;
+  if (context49.hasPublicConstants == true) {
     buffer.writeln();
     buffer.write('''
   <li class="section-title"><a href="''');
     buffer.write(context0.self.href);
     buffer.write('''#constants">Constants</a></li>''');
-    var context14 = context0.self;
-    var context15 = context14.publicConstantsSorted;
-    for (var context16 in context15) {
+    var context50 = context0.self;
+    var context51 = context50.publicConstantsSorted;
+    for (var context52 in context51) {
       buffer.writeln();
       buffer.write('''
   <li>''');
-      buffer.write(context16.linkedName);
+      buffer.write(context52.linkedName);
       buffer.write('''</li>''');
     }
   }
   buffer.writeln();
-  var context17 = context0.self;
-  if (context17.hasPublicProperties == true) {
+  var context53 = context0.self;
+  if (context53.hasPublicProperties == true) {
     buffer.writeln();
     buffer.write('''
   <li class="section-title"><a href="''');
     buffer.write(context0.self.href);
     buffer.write('''#properties">Properties</a></li>''');
-    var context18 = context0.self;
-    var context19 = context18.publicPropertiesSorted;
-    for (var context20 in context19) {
+    var context54 = context0.self;
+    var context55 = context54.publicPropertiesSorted;
+    for (var context56 in context55) {
       buffer.writeln();
       buffer.write('''
   <li>''');
-      buffer.write(context20.linkedName);
+      buffer.write(context56.linkedName);
       buffer.write('''</li>''');
     }
   }
   buffer.writeln();
-  var context21 = context0.self;
-  if (context21.hasPublicFunctions == true) {
+  var context57 = context0.self;
+  if (context57.hasPublicFunctions == true) {
     buffer.writeln();
     buffer.write('''
   <li class="section-title"><a href="''');
     buffer.write(context0.self.href);
     buffer.write('''#functions">Functions</a></li>''');
-    var context22 = context0.self;
-    var context23 = context22.publicFunctionsSorted;
-    for (var context24 in context23) {
+    var context58 = context0.self;
+    var context59 = context58.publicFunctionsSorted;
+    for (var context60 in context59) {
       buffer.writeln();
       buffer.write('''
   <li>''');
-      buffer.write(context24.linkedName);
+      buffer.write(context60.linkedName);
       buffer.write('''</li>''');
     }
   }
   buffer.writeln();
-  var context25 = context0.self;
-  if (context25.hasPublicEnums == true) {
+  var context61 = context0.self;
+  if (context61.hasPublicEnums == true) {
     buffer.writeln();
     buffer.write('''
   <li class="section-title"><a href="''');
     buffer.write(context0.self.href);
     buffer.write('''#enums">Enums</a></li>''');
-    var context26 = context0.self;
-    var context27 = context26.publicEnumsSorted;
-    for (var context28 in context27) {
+    var context62 = context0.self;
+    var context63 = context62.publicEnumsSorted;
+    for (var context64 in context63) {
       buffer.writeln();
       buffer.write('''
   <li>''');
-      buffer.write(context28.linkedName);
+      buffer.write(context64.linkedName);
       buffer.write('''</li>''');
     }
   }
   buffer.writeln();
-  var context29 = context0.self;
-  if (context29.hasPublicTypedefs == true) {
+  var context65 = context0.self;
+  if (context65.hasPublicTypedefs == true) {
     buffer.writeln();
     buffer.write('''
   <li class="section-title"><a href="''');
     buffer.write(context0.self.href);
     buffer.write('''#typedefs">Typedefs</a></li>''');
-    var context30 = context0.self;
-    var context31 = context30.publicTypedefsSorted;
-    for (var context32 in context31) {
+    var context66 = context0.self;
+    var context67 = context66.publicTypedefsSorted;
+    for (var context68 in context67) {
       buffer.writeln();
       buffer.write('''
   <li>''');
-      buffer.write(context32.linkedName);
+      buffer.write(context68.linkedName);
       buffer.write('''</li>''');
     }
   }
   buffer.writeln();
-  var context33 = context0.self;
-  if (context33.hasPublicExceptions == true) {
+  var context69 = context0.self;
+  if (context69.hasPublicExceptions == true) {
     buffer.writeln();
     buffer.write('''
   <li class="section-title"><a href="''');
     buffer.write(context0.self.href);
     buffer.write('''#exceptions">Exceptions</a></li>''');
-    var context34 = context0.self;
-    var context35 = context34.publicExceptionsSorted;
-    for (var context36 in context35) {
+    var context70 = context0.self;
+    var context71 = context70.publicExceptionsSorted;
+    for (var context72 in context71) {
       buffer.writeln();
       buffer.write('''
   <li>''');
-      buffer.write(context36.linkedName);
+      buffer.write(context72.linkedName);
       buffer.write('''</li>''');
     }
   }
@@ -1275,62 +1230,40 @@ String renderClass(_i1.ClassTemplateData context0) {
   buffer.writeln();
   buffer.write('''
       <div>''');
-  buffer.write(_renderClass_partial_source_link_1(context1, context0));
+  buffer.write(_renderClass_partial_source_link_1(context1));
   buffer.write('''<h1><span class="kind-class">''');
   buffer.write(context1.nameWithGenerics);
   buffer.write('''</span> ''');
   buffer.writeEscaped(context1.kind);
   buffer.write(' ');
-  buffer.write(_renderClass_partial_feature_set_2(context1, context0));
+  buffer.write(_renderClass_partial_feature_set_2(context1));
   buffer.write(' ');
-  buffer.write(_renderClass_partial_categorization_3(context1, context0));
+  buffer.write(_renderClass_partial_categorization_3(context1));
   buffer.write('''</h1></div>''');
   buffer.writeln();
   var context2 = context0.clazz;
   buffer.write('\n    ');
-  buffer.write(_renderClass_partial_documentation_4(context2, context0));
+  buffer.write(_renderClass_partial_documentation_4(context2));
   buffer.writeln();
   if (context2.hasModifiers == true) {
     buffer.writeln();
     buffer.write('''
     <section>
-      <dl class="dl-horizontal">''');
-    if (context2.hasPublicSuperChainReversed == true) {
-      buffer.writeln();
-      buffer.write('''
-        <dt>Inheritance</dt>
-        <dd><ul class="gt-separated dark clazz-relationships">
-          <li>''');
-      buffer.write(context0.linkedObjectType);
-      buffer.write('''</li>''');
-      var context3 = context2.publicSuperChainReversed;
-      for (var context4 in context3) {
-        buffer.writeln();
-        buffer.write('''
-          <li>''');
-        buffer.write(context4.linkedName);
-        buffer.write('''</li>''');
-      }
-      buffer.writeln();
-      buffer.write('''
-          <li>''');
-      buffer.write(context2.name);
-      buffer.write('''</li>
-        </ul></dd>''');
-    }
-    buffer.writeln();
+      <dl class="dl-horizontal">
+        ''');
+    buffer.write(_renderClass_partial_super_chain_5(context2, context0));
     if (context2.hasPublicInterfaces == true) {
       buffer.writeln();
       buffer.write('''
         <dt>Implemented types</dt>
         <dd>
           <ul class="comma-separated clazz-relationships">''');
-      var context5 = context2.publicInterfaces;
-      for (var context6 in context5) {
+      var context3 = context2.publicInterfaces;
+      for (var context4 in context3) {
         buffer.writeln();
         buffer.write('''
             <li>''');
-        buffer.write(context6.linkedName);
+        buffer.write(context4.linkedName);
         buffer.write('''</li>''');
       }
       buffer.writeln();
@@ -1344,12 +1277,12 @@ String renderClass(_i1.ClassTemplateData context0) {
       buffer.write('''
         <dt>Mixed in types</dt>
         <dd><ul class="comma-separated clazz-relationships">''');
-      var context7 = context2.publicMixedInTypes;
-      for (var context8 in context7) {
+      var context5 = context2.publicMixedInTypes;
+      for (var context6 in context5) {
         buffer.writeln();
         buffer.write('''
           <li>''');
-        buffer.write(context8.linkedName);
+        buffer.write(context6.linkedName);
         buffer.write('''</li>''');
       }
       buffer.writeln();
@@ -1362,12 +1295,12 @@ String renderClass(_i1.ClassTemplateData context0) {
       buffer.write('''
         <dt>Implementers</dt>
         <dd><ul class="comma-separated clazz-relationships">''');
-      var context9 = context2.publicImplementorsSorted;
-      for (var context10 in context9) {
+      var context7 = context2.publicImplementorsSorted;
+      for (var context8 in context7) {
         buffer.writeln();
         buffer.write('''
           <li>''');
-        buffer.write(context10.linkedName);
+        buffer.write(context8.linkedName);
         buffer.write('''</li>''');
       }
       buffer.writeln();
@@ -1380,12 +1313,12 @@ String renderClass(_i1.ClassTemplateData context0) {
       buffer.write('''
         <dt>Available Extensions</dt>
         <dd><ul class="comma-separated clazz-relationships">''');
-      var context11 = context2.potentiallyApplicableExtensionsSorted;
-      for (var context12 in context11) {
+      var context9 = context2.potentiallyApplicableExtensionsSorted;
+      for (var context10 in context9) {
         buffer.writeln();
         buffer.write('''
           <li>''');
-        buffer.write(context12.linkedName);
+        buffer.write(context10.linkedName);
         buffer.write('''</li>''');
       }
       buffer.writeln();
@@ -1398,12 +1331,12 @@ String renderClass(_i1.ClassTemplateData context0) {
       buffer.write('''
         <dt>Annotations</dt>
         <dd><ul class="annotation-list clazz-relationships">''');
-      var context13 = context2.annotations;
-      for (var context14 in context13) {
+      var context11 = context2.annotations;
+      for (var context12 in context11) {
         buffer.writeln();
         buffer.write('''
           <li>''');
-        buffer.write(context14.linkedNameWithParameters);
+        buffer.write(context12.linkedNameWithParameters);
         buffer.write('''</li>''');
       }
       buffer.writeln();
@@ -1423,28 +1356,28 @@ String renderClass(_i1.ClassTemplateData context0) {
       <h2>Constructors</h2>
 
       <dl class="constructor-summary-list">''');
-    var context15 = context2.publicConstructorsSorted;
-    for (var context16 in context15) {
+    var context13 = context2.publicConstructorsSorted;
+    for (var context14 in context13) {
       buffer.writeln();
       buffer.write('''
         <dt id="''');
-      buffer.writeEscaped(context16.htmlId);
+      buffer.writeEscaped(context14.htmlId);
       buffer.write('''" class="callable">
           <span class="name">''');
-      buffer.write(context16.linkedName);
+      buffer.write(context14.linkedName);
       buffer.write('''</span><span class="signature">(''');
-      buffer.write(context16.linkedParams);
+      buffer.write(context14.linkedParams);
       buffer.write(''')</span>
         </dt>
         <dd>
           ''');
-      buffer.write(context16.oneLineDoc);
-      if (context16.isConst == true) {
+      buffer.write(context14.oneLineDoc);
+      if (context14.isConst == true) {
         buffer.writeln();
         buffer.write('''
           <div class="constructor-modifier features">const</div>''');
       }
-      if (context16.isFactory == true) {
+      if (context14.isFactory == true) {
         buffer.writeln();
         buffer.write('''
           <div class="constructor-modifier features">factory</div>''');
@@ -1470,11 +1403,10 @@ String renderClass(_i1.ClassTemplateData context0) {
       <h2>Properties</h2>
 
       <dl class="properties">''');
-    var context17 = context2.publicInstanceFieldsSorted;
-    for (var context18 in context17) {
+    var context15 = context2.publicInstanceFieldsSorted;
+    for (var context16 in context15) {
       buffer.write('\n        ');
-      buffer.write(
-          _renderClass_partial_property_5(context18, context2, context0));
+      buffer.write(_renderClass_partial_property_6(context16));
     }
     buffer.writeln();
     buffer.write('''
@@ -1492,11 +1424,10 @@ String renderClass(_i1.ClassTemplateData context0) {
     buffer.write('''" id="instance-methods">
       <h2>Methods</h2>
       <dl class="callables">''');
-    var context19 = context2.publicInstanceMethodsSorted;
-    for (var context20 in context19) {
+    var context17 = context2.publicInstanceMethodsSorted;
+    for (var context18 in context17) {
       buffer.write('\n        ');
-      buffer.write(
-          _renderClass_partial_callable_6(context20, context2, context0));
+      buffer.write(_renderClass_partial_callable_7(context18));
     }
     buffer.writeln();
     buffer.write('''
@@ -1514,11 +1445,10 @@ String renderClass(_i1.ClassTemplateData context0) {
     buffer.write('''" id="operators">
       <h2>Operators</h2>
       <dl class="callables">''');
-    var context21 = context2.publicInstanceOperatorsSorted;
-    for (var context22 in context21) {
+    var context19 = context2.publicInstanceOperatorsSorted;
+    for (var context20 in context19) {
       buffer.write('\n        ');
-      buffer.write(
-          _renderClass_partial_callable_6(context22, context2, context0));
+      buffer.write(_renderClass_partial_callable_7(context20));
     }
     buffer.writeln();
     buffer.write('''
@@ -1533,11 +1463,10 @@ String renderClass(_i1.ClassTemplateData context0) {
       <h2>Static Properties</h2>
 
       <dl class="properties">''');
-    var context23 = context2.publicVariableStaticFieldsSorted;
-    for (var context24 in context23) {
+    var context21 = context2.publicVariableStaticFieldsSorted;
+    for (var context22 in context21) {
       buffer.write('\n        ');
-      buffer.write(
-          _renderClass_partial_property_5(context24, context2, context0));
+      buffer.write(_renderClass_partial_property_6(context22));
     }
     buffer.writeln();
     buffer.write('''
@@ -1551,11 +1480,10 @@ String renderClass(_i1.ClassTemplateData context0) {
     <section class="summary offset-anchor" id="static-methods">
       <h2>Static Methods</h2>
       <dl class="callables">''');
-    var context25 = context2.publicStaticMethodsSorted;
-    for (var context26 in context25) {
+    var context23 = context2.publicStaticMethodsSorted;
+    for (var context24 in context23) {
       buffer.write('\n        ');
-      buffer.write(
-          _renderClass_partial_callable_6(context26, context2, context0));
+      buffer.write(_renderClass_partial_callable_7(context24));
     }
     buffer.writeln();
     buffer.write('''
@@ -1570,11 +1498,10 @@ String renderClass(_i1.ClassTemplateData context0) {
       <h2>Constants</h2>
 
       <dl class="properties">''');
-    var context27 = context2.publicConstantFieldsSorted;
-    for (var context28 in context27) {
+    var context25 = context2.publicConstantFieldsSorted;
+    for (var context26 in context25) {
       buffer.write('\n        ');
-      buffer.write(
-          _renderClass_partial_constant_7(context28, context2, context0));
+      buffer.write(_renderClass_partial_constant_8(context26));
     }
     buffer.writeln();
     buffer.write('''
@@ -1588,7 +1515,7 @@ String renderClass(_i1.ClassTemplateData context0) {
 
   <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
     ''');
-  buffer.write(_renderClass_partial_search_sidebar_8(context0));
+  buffer.write(_renderClass_partial_search_sidebar_9(context0));
   buffer.writeln();
   buffer.write('''
     <h5>''');
@@ -1610,7 +1537,7 @@ String renderClass(_i1.ClassTemplateData context0) {
   </div><!--/.sidebar-offcanvas-->
 
 ''');
-  buffer.write(_renderClass_partial_footer_9(context0));
+  buffer.write(_renderClass_partial_footer_10(context0));
   buffer.writeln();
 
   return buffer.toString();
@@ -1639,8 +1566,8 @@ String _renderClass_partial_head_0(_i1.ClassTemplateData context0) {
   <title>''');
   buffer.writeEscaped(context0.title);
   buffer.write('''</title>''');
-  var context1 = context0.relCanonicalPrefix;
-  if (context1 != null) {
+  var context7 = context0.relCanonicalPrefix;
+  if (context7 != null) {
     buffer.writeln();
     buffer.write('''
   <link rel="canonical" href="''');
@@ -1651,7 +1578,7 @@ String _renderClass_partial_head_0(_i1.ClassTemplateData context0) {
   }
   buffer.writeln();
   if (context0.useBaseHref == true) {
-    var context2 = context0.htmlBase;
+    var context8 = context0.htmlBase;
     buffer.writeln();
     buffer.write('''
   <!-- required because all the links are pseudo-absolute -->
@@ -1705,27 +1632,27 @@ String _renderClass_partial_head_0(_i1.ClassTemplateData context0) {
 <header id="title">
   <button id="sidenav-left-toggle" type="button">&nbsp;</button>
   <ol class="breadcrumbs gt-separated dark hidden-xs">''');
-  var context3 = context0.navLinks;
-  for (var context4 in context3) {
+  var context9 = context0.navLinks;
+  for (var context10 in context9) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context4.href);
+    buffer.write(context10.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
+    buffer.writeEscaped(context10.name);
     buffer.write('''</a></li>''');
   }
-  var context5 = context0.navLinksWithGenerics;
-  for (var context6 in context5) {
+  var context11 = context0.navLinksWithGenerics;
+  for (var context12 in context11) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context6.href);
+    buffer.write(context12.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context6.name);
-    if (context6.hasGenericParameters == true) {
+    buffer.writeEscaped(context12.name);
+    if (context12.hasGenericParameters == true) {
       buffer.write('''<span class="signature">''');
-      buffer.write(context6.genericParameters);
+      buffer.write(context12.genericParameters);
       buffer.write('''</span>''');
     }
     buffer.write('''</a></li>''');
@@ -1763,8 +1690,7 @@ String _renderClass_partial_head_0(_i1.ClassTemplateData context0) {
   return buffer.toString();
 }
 
-String _renderClass_partial_source_link_1(
-    _i8.Class context1, _i1.ClassTemplateData context0) {
+String _renderClass_partial_source_link_1(_i8.Class context1) {
   final buffer = StringBuffer();
   if (context1.hasSourceHref == true) {
     buffer.writeln();
@@ -1778,14 +1704,13 @@ String _renderClass_partial_source_link_1(
   return buffer.toString();
 }
 
-String _renderClass_partial_feature_set_2(
-    _i8.Class context1, _i1.ClassTemplateData context0) {
+String _renderClass_partial_feature_set_2(_i8.Class context1) {
   final buffer = StringBuffer();
   if (context1.hasFeatureSet == true) {
-    var context2 = context1.displayedLanguageFeatures;
-    for (var context3 in context2) {
+    var context4 = context1.displayedLanguageFeatures;
+    for (var context5 in context4) {
       buffer.write('\n    ');
-      buffer.write(context3.featureLabel);
+      buffer.write(context5.featureLabel);
     }
   }
   buffer.writeln();
@@ -1793,14 +1718,13 @@ String _renderClass_partial_feature_set_2(
   return buffer.toString();
 }
 
-String _renderClass_partial_categorization_3(
-    _i8.Class context1, _i1.ClassTemplateData context0) {
+String _renderClass_partial_categorization_3(_i8.Class context1) {
   final buffer = StringBuffer();
   if (context1.hasCategoryNames == true) {
-    var context2 = context1.displayedCategories;
-    for (var context3 in context2) {
+    var context4 = context1.displayedCategories;
+    for (var context5 in context4) {
       buffer.write('\n    ');
-      buffer.write(context3.categoryLabel);
+      buffer.write(context5.categoryLabel);
     }
   }
   buffer.writeln();
@@ -1808,8 +1732,7 @@ String _renderClass_partial_categorization_3(
   return buffer.toString();
 }
 
-String _renderClass_partial_documentation_4(
-    _i8.Class context1, _i1.ClassTemplateData context0) {
+String _renderClass_partial_documentation_4(_i8.Class context1) {
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
     buffer.writeln();
@@ -1826,8 +1749,40 @@ String _renderClass_partial_documentation_4(
   return buffer.toString();
 }
 
-String _renderClass_partial_property_5(
-    _i9.Field context2, _i8.Class context1, _i1.ClassTemplateData context0) {
+String _renderClass_partial_super_chain_5(
+    _i8.Class context1, _i1.ClassTemplateData context0) {
+  final buffer = StringBuffer();
+  if (context1.hasPublicSuperChainReversed == true) {
+    buffer.writeln();
+    buffer.write('''
+  <dt>Inheritance</dt>
+  <dd><ul class="gt-separated dark ''');
+    buffer.writeEscaped(context1.relationshipsClass);
+    buffer.write('''">
+    <li>''');
+    buffer.write(context0.linkedObjectType);
+    buffer.write('''</li>''');
+    var context4 = context1.publicSuperChainReversed;
+    for (var context5 in context4) {
+      buffer.writeln();
+      buffer.write('''
+    <li>''');
+      buffer.write(context5.linkedName);
+      buffer.write('''</li>''');
+    }
+    buffer.writeln();
+    buffer.write('''
+    <li>''');
+    buffer.write(context1.name);
+    buffer.write('''</li>
+  </ul></dd>''');
+  }
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
+String _renderClass_partial_property_6(_i9.Field context2) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
   buffer.writeEscaped(context2.htmlId);
@@ -1844,8 +1799,8 @@ String _renderClass_partial_property_5(
   buffer.write(' ');
   buffer.write(context2.modelType.linkedName);
   buffer.write('''</span> ''');
-  buffer.write(__renderClass_partial_property_5_partial_categorization_0(
-      context2, context1, context0));
+  buffer.write(
+      __renderClass_partial_property_6_partial_categorization_0(context2));
   buffer.writeln();
   buffer.write('''
 </dt>
@@ -1857,8 +1812,7 @@ String _renderClass_partial_property_5(
   ''');
   buffer.write(context2.oneLineDoc);
   buffer.write('\n  ');
-  buffer.write(__renderClass_partial_property_5_partial_features_1(
-      context2, context1, context0));
+  buffer.write(__renderClass_partial_property_6_partial_features_1(context2));
   buffer.writeln();
   buffer.write('''
 </dd>
@@ -1867,14 +1821,14 @@ String _renderClass_partial_property_5(
   return buffer.toString();
 }
 
-String __renderClass_partial_property_5_partial_categorization_0(
-    _i9.Field context2, _i8.Class context1, _i1.ClassTemplateData context0) {
+String __renderClass_partial_property_6_partial_categorization_0(
+    _i9.Field context2) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
-    var context3 = context2.displayedCategories;
-    for (var context4 in context3) {
+    var context7 = context2.displayedCategories;
+    for (var context8 in context7) {
       buffer.write('\n    ');
-      buffer.write(context4!.categoryLabel);
+      buffer.write(context8!.categoryLabel);
     }
   }
   buffer.writeln();
@@ -1882,8 +1836,7 @@ String __renderClass_partial_property_5_partial_categorization_0(
   return buffer.toString();
 }
 
-String __renderClass_partial_property_5_partial_features_1(
-    _i9.Field context2, _i8.Class context1, _i1.ClassTemplateData context0) {
+String __renderClass_partial_property_6_partial_features_1(_i9.Field context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
     buffer.write('''<div class="features">''');
@@ -1895,8 +1848,7 @@ String __renderClass_partial_property_5_partial_features_1(
   return buffer.toString();
 }
 
-String _renderClass_partial_callable_6(
-    _i10.Method context2, _i8.Class context1, _i1.ClassTemplateData context0) {
+String _renderClass_partial_callable_7(_i10.Method context2) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
   buffer.writeEscaped(context2.htmlId);
@@ -1921,8 +1873,8 @@ String _renderClass_partial_callable_6(
   buffer.write('''</span>
   </span>
   ''');
-  buffer.write(__renderClass_partial_callable_6_partial_categorization_0(
-      context2, context1, context0));
+  buffer.write(
+      __renderClass_partial_callable_7_partial_categorization_0(context2));
   buffer.writeln();
   buffer.write('''
 </dt>
@@ -1934,8 +1886,7 @@ String _renderClass_partial_callable_6(
   ''');
   buffer.write(context2.oneLineDoc);
   buffer.write('\n  ');
-  buffer.write(__renderClass_partial_callable_6_partial_features_1(
-      context2, context1, context0));
+  buffer.write(__renderClass_partial_callable_7_partial_features_1(context2));
   buffer.writeln();
   buffer.write('''
 </dd>
@@ -1944,14 +1895,14 @@ String _renderClass_partial_callable_6(
   return buffer.toString();
 }
 
-String __renderClass_partial_callable_6_partial_categorization_0(
-    _i10.Method context2, _i8.Class context1, _i1.ClassTemplateData context0) {
+String __renderClass_partial_callable_7_partial_categorization_0(
+    _i10.Method context2) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
-    var context3 = context2.displayedCategories;
-    for (var context4 in context3) {
+    var context7 = context2.displayedCategories;
+    for (var context8 in context7) {
       buffer.write('\n    ');
-      buffer.write(context4!.categoryLabel);
+      buffer.write(context8!.categoryLabel);
     }
   }
   buffer.writeln();
@@ -1959,8 +1910,8 @@ String __renderClass_partial_callable_6_partial_categorization_0(
   return buffer.toString();
 }
 
-String __renderClass_partial_callable_6_partial_features_1(
-    _i10.Method context2, _i8.Class context1, _i1.ClassTemplateData context0) {
+String __renderClass_partial_callable_7_partial_features_1(
+    _i10.Method context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
     buffer.write('''<div class="features">''');
@@ -1972,8 +1923,7 @@ String __renderClass_partial_callable_6_partial_features_1(
   return buffer.toString();
 }
 
-String _renderClass_partial_constant_7(
-    _i9.Field context2, _i8.Class context1, _i1.ClassTemplateData context0) {
+String _renderClass_partial_constant_8(_i9.Field context2) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
   buffer.writeEscaped(context2.htmlId);
@@ -1989,8 +1939,8 @@ String _renderClass_partial_constant_7(
   buffer.write(context2.modelType.linkedName);
   buffer.write('''</span>
   ''');
-  buffer.write(__renderClass_partial_constant_7_partial_categorization_0(
-      context2, context1, context0));
+  buffer.write(
+      __renderClass_partial_constant_8_partial_categorization_0(context2));
   buffer.writeln();
   buffer.write('''
 </dt>
@@ -1998,8 +1948,7 @@ String _renderClass_partial_constant_7(
   ''');
   buffer.write(context2.oneLineDoc);
   buffer.write('\n  ');
-  buffer.write(__renderClass_partial_constant_7_partial_features_1(
-      context2, context1, context0));
+  buffer.write(__renderClass_partial_constant_8_partial_features_1(context2));
   buffer.writeln();
   buffer.write('''
   <div>
@@ -2013,14 +1962,14 @@ String _renderClass_partial_constant_7(
   return buffer.toString();
 }
 
-String __renderClass_partial_constant_7_partial_categorization_0(
-    _i9.Field context2, _i8.Class context1, _i1.ClassTemplateData context0) {
+String __renderClass_partial_constant_8_partial_categorization_0(
+    _i9.Field context2) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
-    var context3 = context2.displayedCategories;
-    for (var context4 in context3) {
+    var context7 = context2.displayedCategories;
+    for (var context8 in context7) {
       buffer.write('\n    ');
-      buffer.write(context4!.categoryLabel);
+      buffer.write(context8!.categoryLabel);
     }
   }
   buffer.writeln();
@@ -2028,8 +1977,7 @@ String __renderClass_partial_constant_7_partial_categorization_0(
   return buffer.toString();
 }
 
-String __renderClass_partial_constant_7_partial_features_1(
-    _i9.Field context2, _i8.Class context1, _i1.ClassTemplateData context0) {
+String __renderClass_partial_constant_8_partial_features_1(_i9.Field context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
     buffer.write('''<div class="features">''');
@@ -2041,7 +1989,7 @@ String __renderClass_partial_constant_7_partial_features_1(
   return buffer.toString();
 }
 
-String _renderClass_partial_search_sidebar_8(_i1.ClassTemplateData context0) {
+String _renderClass_partial_search_sidebar_9(_i1.ClassTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<header id="header-search-sidebar" class="hidden-l">
   <form class="search-sidebar" role="search">
@@ -2050,27 +1998,27 @@ String _renderClass_partial_search_sidebar_8(_i1.ClassTemplateData context0) {
 </header>
 
 <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">''');
-  var context1 = context0.navLinks;
-  for (var context2 in context1) {
+  var context5 = context0.navLinks;
+  for (var context6 in context5) {
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context2.href);
+    buffer.write(context6.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context2.name);
+    buffer.writeEscaped(context6.name);
     buffer.write('''</a></li>''');
   }
-  var context3 = context0.navLinksWithGenerics;
-  for (var context4 in context3) {
+  var context7 = context0.navLinksWithGenerics;
+  for (var context8 in context7) {
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context4.href);
+    buffer.write(context8.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
-    if (context4.hasGenericParameters == true) {
+    buffer.writeEscaped(context8.name);
+    if (context8.hasGenericParameters == true) {
       buffer.write('''<span class="signature">''');
-      buffer.write(context4.genericParameters);
+      buffer.write(context8.genericParameters);
       buffer.write('''</span>''');
     }
     buffer.write('''</a></li>''');
@@ -2100,7 +2048,7 @@ String _renderClass_partial_search_sidebar_8(_i1.ClassTemplateData context0) {
   return buffer.toString();
 }
 
-String _renderClass_partial_footer_9(_i1.ClassTemplateData context0) {
+String _renderClass_partial_footer_10(_i1.ClassTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''</main>
 
@@ -2161,13 +2109,13 @@ String renderConstructor(_i1.ConstructorTemplateData context0) {
   buffer.writeln();
   buffer.write('''
       <div>''');
-  buffer.write(_renderConstructor_partial_source_link_1(context1, context0));
+  buffer.write(_renderConstructor_partial_source_link_1(context1));
   buffer.write('''<h1><span class="kind-constructor">''');
   buffer.write(context1.nameWithGenerics);
   buffer.write('''</span> ''');
   buffer.writeEscaped(context1.kind);
   buffer.write(' ');
-  buffer.write(_renderConstructor_partial_feature_set_2(context1, context0));
+  buffer.write(_renderConstructor_partial_feature_set_2(context1));
   buffer.write('''</h1></div>''');
   buffer.writeln();
   var context2 = context0.constructor;
@@ -2211,9 +2159,9 @@ String renderConstructor(_i1.ConstructorTemplateData context0) {
     </section>
 
     ''');
-  buffer.write(_renderConstructor_partial_documentation_3(context2, context0));
+  buffer.write(_renderConstructor_partial_documentation_3(context2));
   buffer.write('\n\n    ');
-  buffer.write(_renderConstructor_partial_source_code_4(context2, context0));
+  buffer.write(_renderConstructor_partial_source_code_4(context2));
   buffer.writeln();
   buffer.writeln();
   buffer.write('''
@@ -2268,8 +2216,8 @@ String _renderConstructor_partial_head_0(_i1.ConstructorTemplateData context0) {
   <title>''');
   buffer.writeEscaped(context0.title);
   buffer.write('''</title>''');
-  var context1 = context0.relCanonicalPrefix;
-  if (context1 != null) {
+  var context7 = context0.relCanonicalPrefix;
+  if (context7 != null) {
     buffer.writeln();
     buffer.write('''
   <link rel="canonical" href="''');
@@ -2280,7 +2228,7 @@ String _renderConstructor_partial_head_0(_i1.ConstructorTemplateData context0) {
   }
   buffer.writeln();
   if (context0.useBaseHref == true) {
-    var context2 = context0.htmlBase;
+    var context8 = context0.htmlBase;
     buffer.writeln();
     buffer.write('''
   <!-- required because all the links are pseudo-absolute -->
@@ -2334,27 +2282,27 @@ String _renderConstructor_partial_head_0(_i1.ConstructorTemplateData context0) {
 <header id="title">
   <button id="sidenav-left-toggle" type="button">&nbsp;</button>
   <ol class="breadcrumbs gt-separated dark hidden-xs">''');
-  var context3 = context0.navLinks;
-  for (var context4 in context3) {
+  var context9 = context0.navLinks;
+  for (var context10 in context9) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context4.href);
+    buffer.write(context10.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
+    buffer.writeEscaped(context10.name);
     buffer.write('''</a></li>''');
   }
-  var context5 = context0.navLinksWithGenerics;
-  for (var context6 in context5) {
+  var context11 = context0.navLinksWithGenerics;
+  for (var context12 in context11) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context6.href);
+    buffer.write(context12.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context6.name);
-    if (context6.hasGenericParameters == true) {
+    buffer.writeEscaped(context12.name);
+    if (context12.hasGenericParameters == true) {
       buffer.write('''<span class="signature">''');
-      buffer.write(context6.genericParameters);
+      buffer.write(context12.genericParameters);
       buffer.write('''</span>''');
     }
     buffer.write('''</a></li>''');
@@ -2392,8 +2340,7 @@ String _renderConstructor_partial_head_0(_i1.ConstructorTemplateData context0) {
   return buffer.toString();
 }
 
-String _renderConstructor_partial_source_link_1(
-    _i11.Constructor context1, _i1.ConstructorTemplateData context0) {
+String _renderConstructor_partial_source_link_1(_i11.Constructor context1) {
   final buffer = StringBuffer();
   if (context1.hasSourceHref == true) {
     buffer.writeln();
@@ -2407,14 +2354,13 @@ String _renderConstructor_partial_source_link_1(
   return buffer.toString();
 }
 
-String _renderConstructor_partial_feature_set_2(
-    _i11.Constructor context1, _i1.ConstructorTemplateData context0) {
+String _renderConstructor_partial_feature_set_2(_i11.Constructor context1) {
   final buffer = StringBuffer();
   if (context1.hasFeatureSet == true) {
-    var context2 = context1.displayedLanguageFeatures;
-    for (var context3 in context2) {
+    var context4 = context1.displayedLanguageFeatures;
+    for (var context5 in context4) {
       buffer.write('\n    ');
-      buffer.write(context3.featureLabel);
+      buffer.write(context5.featureLabel);
     }
   }
   buffer.writeln();
@@ -2422,8 +2368,7 @@ String _renderConstructor_partial_feature_set_2(
   return buffer.toString();
 }
 
-String _renderConstructor_partial_documentation_3(
-    _i11.Constructor context1, _i1.ConstructorTemplateData context0) {
+String _renderConstructor_partial_documentation_3(_i11.Constructor context1) {
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
     buffer.writeln();
@@ -2440,8 +2385,7 @@ String _renderConstructor_partial_documentation_3(
   return buffer.toString();
 }
 
-String _renderConstructor_partial_source_code_4(
-    _i11.Constructor context1, _i1.ConstructorTemplateData context0) {
+String _renderConstructor_partial_source_code_4(_i11.Constructor context1) {
   final buffer = StringBuffer();
   if (context1.hasSourceCode == true) {
     buffer.writeln();
@@ -2468,27 +2412,27 @@ String _renderConstructor_partial_search_sidebar_5(
 </header>
 
 <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">''');
-  var context1 = context0.navLinks;
-  for (var context2 in context1) {
+  var context5 = context0.navLinks;
+  for (var context6 in context5) {
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context2.href);
+    buffer.write(context6.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context2.name);
+    buffer.writeEscaped(context6.name);
     buffer.write('''</a></li>''');
   }
-  var context3 = context0.navLinksWithGenerics;
-  for (var context4 in context3) {
+  var context7 = context0.navLinksWithGenerics;
+  for (var context8 in context7) {
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context4.href);
+    buffer.write(context8.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
-    if (context4.hasGenericParameters == true) {
+    buffer.writeEscaped(context8.name);
+    if (context8.hasGenericParameters == true) {
       buffer.write('''<span class="signature">''');
-      buffer.write(context4.genericParameters);
+      buffer.write(context8.genericParameters);
       buffer.write('''</span>''');
     }
     buffer.write('''</a></li>''');
@@ -2580,61 +2524,46 @@ String renderEnum(_i1.EnumTemplateData context0) {
   buffer.writeln();
   buffer.write('''
       <div>''');
-  buffer.write(_renderEnum_partial_source_link_1(context1, context0));
-  buffer.write('''<h1><span class="kind-enum">''');
+  buffer.write(_renderEnum_partial_source_link_1(context1));
+  buffer.writeln();
+  buffer.write('''
+        <h1>
+          <span class="kind-enum">''');
   buffer.write(context1.name);
-  buffer.write('''</span> ''');
+  buffer.write('''</span>
+          ''');
   buffer.writeEscaped(context1.kind);
   buffer.write(' ');
-  buffer.write(_renderEnum_partial_feature_set_2(context1, context0));
+  buffer.write(_renderEnum_partial_feature_set_2(context1));
   buffer.write(' ');
-  buffer.write(_renderEnum_partial_categorization_3(context1, context0));
-  buffer.write('''</h1></div>''');
+  buffer.write(_renderEnum_partial_categorization_3(context1));
+  buffer.writeln();
+  buffer.write('''
+        </h1>
+      </div>''');
   buffer.writeln();
   var context2 = context0.eNum;
   buffer.write('\n    ');
-  buffer.write(_renderEnum_partial_documentation_4(context2, context0));
+  buffer.write(_renderEnum_partial_documentation_4(context2));
   buffer.writeln();
   if (context2.hasModifiers == true) {
     buffer.writeln();
     buffer.write('''
     <section>
-      <dl class="dl-horizontal">''');
-    if (context2.hasPublicSuperChainReversed == true) {
-      buffer.writeln();
-      buffer.write('''
-        <dt>Inheritance</dt>
-        <dd><ul class="gt-separated dark eNum-relationships">
-          <li>''');
-      buffer.write(context0.linkedObjectType);
-      buffer.write('''</li>''');
-      var context3 = context2.publicSuperChainReversed;
-      for (var context4 in context3) {
-        buffer.writeln();
-        buffer.write('''
-          <li>''');
-        buffer.write(context4.linkedName);
-        buffer.write('''</li>''');
-      }
-      buffer.writeln();
-      buffer.write('''
-          <li>''');
-      buffer.write(context2.name);
-      buffer.write('''</li>
-        </ul></dd>''');
-    }
-    buffer.writeln();
+      <dl class="dl-horizontal">
+        ''');
+    buffer.write(_renderEnum_partial_super_chain_5(context2, context0));
     if (context2.hasAnnotations == true) {
       buffer.writeln();
       buffer.write('''
         <dt>Annotations</dt>
         <dd><ul class="annotation-list eNum-relationships">''');
-      var context5 = context2.annotations;
-      for (var context6 in context5) {
+      var context3 = context2.annotations;
+      for (var context4 in context3) {
         buffer.writeln();
         buffer.write('''
           <li>''');
-        buffer.write(context6.linkedNameWithParameters);
+        buffer.write(context4.linkedNameWithParameters);
         buffer.write('''</li>''');
       }
       buffer.writeln();
@@ -2654,11 +2583,10 @@ String renderEnum(_i1.EnumTemplateData context0) {
       <h2>Constants</h2>
 
       <dl class="properties">''');
-    var context7 = context2.publicConstantFieldsSorted;
-    for (var context8 in context7) {
+    var context5 = context2.publicConstantFieldsSorted;
+    for (var context6 in context5) {
       buffer.write('\n        ');
-      buffer
-          .write(_renderEnum_partial_constant_5(context8, context2, context0));
+      buffer.write(_renderEnum_partial_constant_6(context6));
     }
     buffer.writeln();
     buffer.write('''
@@ -2669,19 +2597,22 @@ String renderEnum(_i1.EnumTemplateData context0) {
   if (context2.hasPublicInstanceFields == true) {
     buffer.writeln();
     buffer.write('''
-    <section class="summary offset-anchor''');
+    <section
+        class="
+          summary
+          offset-anchor''');
     if (context2.publicInheritedInstanceFields == true) {
-      buffer.write(''' inherited''');
+      buffer.write('''inherited''');
     }
-    buffer.write('''" id="instance-properties">
+    buffer.write('''"
+        id="instance-properties">
       <h2>Properties</h2>
 
       <dl class="properties">''');
-    var context9 = context2.publicInstanceFieldsSorted;
-    for (var context10 in context9) {
+    var context7 = context2.publicInstanceFieldsSorted;
+    for (var context8 in context7) {
       buffer.write('\n        ');
-      buffer
-          .write(_renderEnum_partial_property_6(context10, context2, context0));
+      buffer.write(_renderEnum_partial_property_7(context8));
     }
     buffer.writeln();
     buffer.write('''
@@ -2692,18 +2623,21 @@ String renderEnum(_i1.EnumTemplateData context0) {
   if (context2.hasPublicInstanceMethods == true) {
     buffer.writeln();
     buffer.write('''
-    <section class="summary offset-anchor''');
+    <section
+        class="
+          summary
+          offset-anchor''');
     if (context2.publicInheritedInstanceMethods == true) {
-      buffer.write(''' inherited''');
+      buffer.write('''inherited''');
     }
-    buffer.write('''" id="instance-methods">
+    buffer.write('''"
+        id="instance-methods">
       <h2>Methods</h2>
       <dl class="callables">''');
-    var context11 = context2.publicInstanceMethodsSorted;
-    for (var context12 in context11) {
+    var context9 = context2.publicInstanceMethodsSorted;
+    for (var context10 in context9) {
       buffer.write('\n        ');
-      buffer
-          .write(_renderEnum_partial_callable_7(context12, context2, context0));
+      buffer.write(_renderEnum_partial_callable_8(context10));
     }
     buffer.writeln();
     buffer.write('''
@@ -2714,18 +2648,21 @@ String renderEnum(_i1.EnumTemplateData context0) {
   if (context2.hasPublicInstanceOperators == true) {
     buffer.writeln();
     buffer.write('''
-    <section class="summary offset-anchor''');
+    <section
+        class="
+          summary
+          offset-anchor''');
     if (context2.publicInheritedInstanceOperators == true) {
-      buffer.write(''' inherited''');
+      buffer.write('''inherited''');
     }
-    buffer.write('''" id="operators">
+    buffer.write('''"
+        id="operators">
       <h2>Operators</h2>
       <dl class="callables">''');
-    var context13 = context2.publicInstanceOperatorsSorted;
-    for (var context14 in context13) {
+    var context11 = context2.publicInstanceOperatorsSorted;
+    for (var context12 in context11) {
       buffer.write('\n        ');
-      buffer
-          .write(_renderEnum_partial_callable_7(context14, context2, context0));
+      buffer.write(_renderEnum_partial_callable_8(context12));
     }
     buffer.writeln();
     buffer.write('''
@@ -2740,11 +2677,10 @@ String renderEnum(_i1.EnumTemplateData context0) {
       <h2>Static Properties</h2>
 
       <dl class="properties">''');
-    var context15 = context2.publicVariableStaticFieldsSorted;
-    for (var context16 in context15) {
+    var context13 = context2.publicVariableStaticFieldsSorted;
+    for (var context14 in context13) {
       buffer.write('\n        ');
-      buffer
-          .write(_renderEnum_partial_property_6(context16, context2, context0));
+      buffer.write(_renderEnum_partial_property_7(context14));
     }
     buffer.writeln();
     buffer.write('''
@@ -2758,11 +2694,10 @@ String renderEnum(_i1.EnumTemplateData context0) {
     <section class="summary offset-anchor" id="static-methods">
       <h2>Static Methods</h2>
       <dl class="callables">''');
-    var context17 = context2.publicStaticMethodsSorted;
-    for (var context18 in context17) {
+    var context15 = context2.publicStaticMethodsSorted;
+    for (var context16 in context15) {
       buffer.write('\n        ');
-      buffer
-          .write(_renderEnum_partial_callable_7(context18, context2, context0));
+      buffer.write(_renderEnum_partial_callable_8(context16));
     }
     buffer.writeln();
     buffer.write('''
@@ -2771,11 +2706,11 @@ String renderEnum(_i1.EnumTemplateData context0) {
   }
   buffer.writeln();
   buffer.write('''
-  </div> <!-- /.main-content -->
+  </div><!-- /.main-content -->
 
   <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
     ''');
-  buffer.write(_renderEnum_partial_search_sidebar_8(context0));
+  buffer.write(_renderEnum_partial_search_sidebar_9(context0));
   buffer.writeln();
   buffer.write('''
     <h5>''');
@@ -2794,10 +2729,10 @@ String renderEnum(_i1.EnumTemplateData context0) {
   buffer.write(context0.sidebarForContainer);
   buffer.writeln();
   buffer.write('''
-  </div><!--/.sidebar-offcanvas-->
+  </div><!-- /.sidebar-offcanvas -->
 
 ''');
-  buffer.write(_renderEnum_partial_footer_9(context0));
+  buffer.write(_renderEnum_partial_footer_10(context0));
   buffer.writeln();
 
   return buffer.toString();
@@ -2826,8 +2761,8 @@ String _renderEnum_partial_head_0(_i1.EnumTemplateData context0) {
   <title>''');
   buffer.writeEscaped(context0.title);
   buffer.write('''</title>''');
-  var context1 = context0.relCanonicalPrefix;
-  if (context1 != null) {
+  var context7 = context0.relCanonicalPrefix;
+  if (context7 != null) {
     buffer.writeln();
     buffer.write('''
   <link rel="canonical" href="''');
@@ -2838,7 +2773,7 @@ String _renderEnum_partial_head_0(_i1.EnumTemplateData context0) {
   }
   buffer.writeln();
   if (context0.useBaseHref == true) {
-    var context2 = context0.htmlBase;
+    var context8 = context0.htmlBase;
     buffer.writeln();
     buffer.write('''
   <!-- required because all the links are pseudo-absolute -->
@@ -2892,27 +2827,27 @@ String _renderEnum_partial_head_0(_i1.EnumTemplateData context0) {
 <header id="title">
   <button id="sidenav-left-toggle" type="button">&nbsp;</button>
   <ol class="breadcrumbs gt-separated dark hidden-xs">''');
-  var context3 = context0.navLinks;
-  for (var context4 in context3) {
+  var context9 = context0.navLinks;
+  for (var context10 in context9) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context4.href);
+    buffer.write(context10.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
+    buffer.writeEscaped(context10.name);
     buffer.write('''</a></li>''');
   }
-  var context5 = context0.navLinksWithGenerics;
-  for (var context6 in context5) {
+  var context11 = context0.navLinksWithGenerics;
+  for (var context12 in context11) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context6.href);
+    buffer.write(context12.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context6.name);
-    if (context6.hasGenericParameters == true) {
+    buffer.writeEscaped(context12.name);
+    if (context12.hasGenericParameters == true) {
       buffer.write('''<span class="signature">''');
-      buffer.write(context6.genericParameters);
+      buffer.write(context12.genericParameters);
       buffer.write('''</span>''');
     }
     buffer.write('''</a></li>''');
@@ -2950,8 +2885,7 @@ String _renderEnum_partial_head_0(_i1.EnumTemplateData context0) {
   return buffer.toString();
 }
 
-String _renderEnum_partial_source_link_1(
-    _i12.Enum context1, _i1.EnumTemplateData context0) {
+String _renderEnum_partial_source_link_1(_i12.Enum context1) {
   final buffer = StringBuffer();
   if (context1.hasSourceHref == true) {
     buffer.writeln();
@@ -2965,14 +2899,13 @@ String _renderEnum_partial_source_link_1(
   return buffer.toString();
 }
 
-String _renderEnum_partial_feature_set_2(
-    _i12.Enum context1, _i1.EnumTemplateData context0) {
+String _renderEnum_partial_feature_set_2(_i12.Enum context1) {
   final buffer = StringBuffer();
   if (context1.hasFeatureSet == true) {
-    var context2 = context1.displayedLanguageFeatures;
-    for (var context3 in context2) {
+    var context4 = context1.displayedLanguageFeatures;
+    for (var context5 in context4) {
       buffer.write('\n    ');
-      buffer.write(context3.featureLabel);
+      buffer.write(context5.featureLabel);
     }
   }
   buffer.writeln();
@@ -2980,14 +2913,13 @@ String _renderEnum_partial_feature_set_2(
   return buffer.toString();
 }
 
-String _renderEnum_partial_categorization_3(
-    _i12.Enum context1, _i1.EnumTemplateData context0) {
+String _renderEnum_partial_categorization_3(_i12.Enum context1) {
   final buffer = StringBuffer();
   if (context1.hasCategoryNames == true) {
-    var context2 = context1.displayedCategories;
-    for (var context3 in context2) {
+    var context4 = context1.displayedCategories;
+    for (var context5 in context4) {
       buffer.write('\n    ');
-      buffer.write(context3.categoryLabel);
+      buffer.write(context5.categoryLabel);
     }
   }
   buffer.writeln();
@@ -2995,8 +2927,7 @@ String _renderEnum_partial_categorization_3(
   return buffer.toString();
 }
 
-String _renderEnum_partial_documentation_4(
-    _i12.Enum context1, _i1.EnumTemplateData context0) {
+String _renderEnum_partial_documentation_4(_i12.Enum context1) {
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
     buffer.writeln();
@@ -3013,8 +2944,40 @@ String _renderEnum_partial_documentation_4(
   return buffer.toString();
 }
 
-String _renderEnum_partial_constant_5(
-    _i9.Field context2, _i12.Enum context1, _i1.EnumTemplateData context0) {
+String _renderEnum_partial_super_chain_5(
+    _i12.Enum context1, _i1.EnumTemplateData context0) {
+  final buffer = StringBuffer();
+  if (context1.hasPublicSuperChainReversed == true) {
+    buffer.writeln();
+    buffer.write('''
+  <dt>Inheritance</dt>
+  <dd><ul class="gt-separated dark ''');
+    buffer.writeEscaped(context1.relationshipsClass);
+    buffer.write('''">
+    <li>''');
+    buffer.write(context0.linkedObjectType);
+    buffer.write('''</li>''');
+    var context4 = context1.publicSuperChainReversed;
+    for (var context5 in context4) {
+      buffer.writeln();
+      buffer.write('''
+    <li>''');
+      buffer.write(context5.linkedName);
+      buffer.write('''</li>''');
+    }
+    buffer.writeln();
+    buffer.write('''
+    <li>''');
+    buffer.write(context1.name);
+    buffer.write('''</li>
+  </ul></dd>''');
+  }
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
+String _renderEnum_partial_constant_6(_i9.Field context2) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
   buffer.writeEscaped(context2.htmlId);
@@ -3030,8 +2993,8 @@ String _renderEnum_partial_constant_5(
   buffer.write(context2.modelType.linkedName);
   buffer.write('''</span>
   ''');
-  buffer.write(__renderEnum_partial_constant_5_partial_categorization_0(
-      context2, context1, context0));
+  buffer.write(
+      __renderEnum_partial_constant_6_partial_categorization_0(context2));
   buffer.writeln();
   buffer.write('''
 </dt>
@@ -3039,8 +3002,7 @@ String _renderEnum_partial_constant_5(
   ''');
   buffer.write(context2.oneLineDoc);
   buffer.write('\n  ');
-  buffer.write(__renderEnum_partial_constant_5_partial_features_1(
-      context2, context1, context0));
+  buffer.write(__renderEnum_partial_constant_6_partial_features_1(context2));
   buffer.writeln();
   buffer.write('''
   <div>
@@ -3054,14 +3016,14 @@ String _renderEnum_partial_constant_5(
   return buffer.toString();
 }
 
-String __renderEnum_partial_constant_5_partial_categorization_0(
-    _i9.Field context2, _i12.Enum context1, _i1.EnumTemplateData context0) {
+String __renderEnum_partial_constant_6_partial_categorization_0(
+    _i9.Field context2) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
-    var context3 = context2.displayedCategories;
-    for (var context4 in context3) {
+    var context7 = context2.displayedCategories;
+    for (var context8 in context7) {
       buffer.write('\n    ');
-      buffer.write(context4!.categoryLabel);
+      buffer.write(context8!.categoryLabel);
     }
   }
   buffer.writeln();
@@ -3069,8 +3031,7 @@ String __renderEnum_partial_constant_5_partial_categorization_0(
   return buffer.toString();
 }
 
-String __renderEnum_partial_constant_5_partial_features_1(
-    _i9.Field context2, _i12.Enum context1, _i1.EnumTemplateData context0) {
+String __renderEnum_partial_constant_6_partial_features_1(_i9.Field context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
     buffer.write('''<div class="features">''');
@@ -3082,8 +3043,7 @@ String __renderEnum_partial_constant_5_partial_features_1(
   return buffer.toString();
 }
 
-String _renderEnum_partial_property_6(
-    _i9.Field context2, _i12.Enum context1, _i1.EnumTemplateData context0) {
+String _renderEnum_partial_property_7(_i9.Field context2) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
   buffer.writeEscaped(context2.htmlId);
@@ -3100,8 +3060,8 @@ String _renderEnum_partial_property_6(
   buffer.write(' ');
   buffer.write(context2.modelType.linkedName);
   buffer.write('''</span> ''');
-  buffer.write(__renderEnum_partial_property_6_partial_categorization_0(
-      context2, context1, context0));
+  buffer.write(
+      __renderEnum_partial_property_7_partial_categorization_0(context2));
   buffer.writeln();
   buffer.write('''
 </dt>
@@ -3113,8 +3073,7 @@ String _renderEnum_partial_property_6(
   ''');
   buffer.write(context2.oneLineDoc);
   buffer.write('\n  ');
-  buffer.write(__renderEnum_partial_property_6_partial_features_1(
-      context2, context1, context0));
+  buffer.write(__renderEnum_partial_property_7_partial_features_1(context2));
   buffer.writeln();
   buffer.write('''
 </dd>
@@ -3123,14 +3082,14 @@ String _renderEnum_partial_property_6(
   return buffer.toString();
 }
 
-String __renderEnum_partial_property_6_partial_categorization_0(
-    _i9.Field context2, _i12.Enum context1, _i1.EnumTemplateData context0) {
+String __renderEnum_partial_property_7_partial_categorization_0(
+    _i9.Field context2) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
-    var context3 = context2.displayedCategories;
-    for (var context4 in context3) {
+    var context7 = context2.displayedCategories;
+    for (var context8 in context7) {
       buffer.write('\n    ');
-      buffer.write(context4!.categoryLabel);
+      buffer.write(context8!.categoryLabel);
     }
   }
   buffer.writeln();
@@ -3138,8 +3097,7 @@ String __renderEnum_partial_property_6_partial_categorization_0(
   return buffer.toString();
 }
 
-String __renderEnum_partial_property_6_partial_features_1(
-    _i9.Field context2, _i12.Enum context1, _i1.EnumTemplateData context0) {
+String __renderEnum_partial_property_7_partial_features_1(_i9.Field context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
     buffer.write('''<div class="features">''');
@@ -3151,8 +3109,7 @@ String __renderEnum_partial_property_6_partial_features_1(
   return buffer.toString();
 }
 
-String _renderEnum_partial_callable_7(
-    _i10.Method context2, _i12.Enum context1, _i1.EnumTemplateData context0) {
+String _renderEnum_partial_callable_8(_i10.Method context2) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
   buffer.writeEscaped(context2.htmlId);
@@ -3177,8 +3134,8 @@ String _renderEnum_partial_callable_7(
   buffer.write('''</span>
   </span>
   ''');
-  buffer.write(__renderEnum_partial_callable_7_partial_categorization_0(
-      context2, context1, context0));
+  buffer.write(
+      __renderEnum_partial_callable_8_partial_categorization_0(context2));
   buffer.writeln();
   buffer.write('''
 </dt>
@@ -3190,8 +3147,7 @@ String _renderEnum_partial_callable_7(
   ''');
   buffer.write(context2.oneLineDoc);
   buffer.write('\n  ');
-  buffer.write(__renderEnum_partial_callable_7_partial_features_1(
-      context2, context1, context0));
+  buffer.write(__renderEnum_partial_callable_8_partial_features_1(context2));
   buffer.writeln();
   buffer.write('''
 </dd>
@@ -3200,14 +3156,14 @@ String _renderEnum_partial_callable_7(
   return buffer.toString();
 }
 
-String __renderEnum_partial_callable_7_partial_categorization_0(
-    _i10.Method context2, _i12.Enum context1, _i1.EnumTemplateData context0) {
+String __renderEnum_partial_callable_8_partial_categorization_0(
+    _i10.Method context2) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
-    var context3 = context2.displayedCategories;
-    for (var context4 in context3) {
+    var context7 = context2.displayedCategories;
+    for (var context8 in context7) {
       buffer.write('\n    ');
-      buffer.write(context4!.categoryLabel);
+      buffer.write(context8!.categoryLabel);
     }
   }
   buffer.writeln();
@@ -3215,8 +3171,8 @@ String __renderEnum_partial_callable_7_partial_categorization_0(
   return buffer.toString();
 }
 
-String __renderEnum_partial_callable_7_partial_features_1(
-    _i10.Method context2, _i12.Enum context1, _i1.EnumTemplateData context0) {
+String __renderEnum_partial_callable_8_partial_features_1(
+    _i10.Method context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
     buffer.write('''<div class="features">''');
@@ -3228,7 +3184,7 @@ String __renderEnum_partial_callable_7_partial_features_1(
   return buffer.toString();
 }
 
-String _renderEnum_partial_search_sidebar_8(_i1.EnumTemplateData context0) {
+String _renderEnum_partial_search_sidebar_9(_i1.EnumTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<header id="header-search-sidebar" class="hidden-l">
   <form class="search-sidebar" role="search">
@@ -3237,27 +3193,27 @@ String _renderEnum_partial_search_sidebar_8(_i1.EnumTemplateData context0) {
 </header>
 
 <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">''');
-  var context1 = context0.navLinks;
-  for (var context2 in context1) {
+  var context5 = context0.navLinks;
+  for (var context6 in context5) {
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context2.href);
+    buffer.write(context6.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context2.name);
+    buffer.writeEscaped(context6.name);
     buffer.write('''</a></li>''');
   }
-  var context3 = context0.navLinksWithGenerics;
-  for (var context4 in context3) {
+  var context7 = context0.navLinksWithGenerics;
+  for (var context8 in context7) {
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context4.href);
+    buffer.write(context8.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
-    if (context4.hasGenericParameters == true) {
+    buffer.writeEscaped(context8.name);
+    if (context8.hasGenericParameters == true) {
       buffer.write('''<span class="signature">''');
-      buffer.write(context4.genericParameters);
+      buffer.write(context8.genericParameters);
       buffer.write('''</span>''');
     }
     buffer.write('''</a></li>''');
@@ -3287,7 +3243,7 @@ String _renderEnum_partial_search_sidebar_8(_i1.EnumTemplateData context0) {
   return buffer.toString();
 }
 
-String _renderEnum_partial_footer_9(_i1.EnumTemplateData context0) {
+String _renderEnum_partial_footer_10(_i1.EnumTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''</main>
 
@@ -3407,8 +3363,8 @@ String _renderError_partial_head_0(_i1.PackageTemplateData context0) {
   <title>''');
   buffer.writeEscaped(context0.title);
   buffer.write('''</title>''');
-  var context1 = context0.relCanonicalPrefix;
-  if (context1 != null) {
+  var context7 = context0.relCanonicalPrefix;
+  if (context7 != null) {
     buffer.writeln();
     buffer.write('''
   <link rel="canonical" href="''');
@@ -3419,7 +3375,7 @@ String _renderError_partial_head_0(_i1.PackageTemplateData context0) {
   }
   buffer.writeln();
   if (context0.useBaseHref == true) {
-    var context2 = context0.htmlBase;
+    var context8 = context0.htmlBase;
     buffer.writeln();
     buffer.write('''
   <!-- required because all the links are pseudo-absolute -->
@@ -3473,27 +3429,27 @@ String _renderError_partial_head_0(_i1.PackageTemplateData context0) {
 <header id="title">
   <button id="sidenav-left-toggle" type="button">&nbsp;</button>
   <ol class="breadcrumbs gt-separated dark hidden-xs">''');
-  var context3 = context0.navLinks;
-  for (var context4 in context3) {
+  var context9 = context0.navLinks;
+  for (var context10 in context9) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context4.href);
+    buffer.write(context10.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
+    buffer.writeEscaped(context10.name);
     buffer.write('''</a></li>''');
   }
-  var context5 = context0.navLinksWithGenerics;
-  for (var context6 in context5) {
+  var context11 = context0.navLinksWithGenerics;
+  for (var context12 in context11) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context6.href);
+    buffer.write(context12.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context6.name);
-    if (context6.hasGenericParameters == true) {
+    buffer.writeEscaped(context12.name);
+    if (context12.hasGenericParameters == true) {
       buffer.write('''<span class="signature">''');
-      buffer.write(context6.genericParameters);
+      buffer.write(context12.genericParameters);
       buffer.write('''</span>''');
     }
     buffer.write('''</a></li>''');
@@ -3540,27 +3496,27 @@ String _renderError_partial_search_sidebar_1(_i1.PackageTemplateData context0) {
 </header>
 
 <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">''');
-  var context1 = context0.navLinks;
-  for (var context2 in context1) {
+  var context5 = context0.navLinks;
+  for (var context6 in context5) {
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context2.href);
+    buffer.write(context6.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context2.name);
+    buffer.writeEscaped(context6.name);
     buffer.write('''</a></li>''');
   }
-  var context3 = context0.navLinksWithGenerics;
-  for (var context4 in context3) {
+  var context7 = context0.navLinksWithGenerics;
+  for (var context8 in context7) {
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context4.href);
+    buffer.write(context8.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
-    if (context4.hasGenericParameters == true) {
+    buffer.writeEscaped(context8.name);
+    if (context8.hasGenericParameters == true) {
       buffer.write('''<span class="signature">''');
-      buffer.write(context4.genericParameters);
+      buffer.write(context8.genericParameters);
       buffer.write('''</span>''');
     }
     buffer.write('''</a></li>''');
@@ -3593,19 +3549,19 @@ String _renderError_partial_search_sidebar_1(_i1.PackageTemplateData context0) {
 String _renderError_partial_packages_2(_i1.PackageTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<ol>''');
-  var context1 = context0.localPackages;
-  for (var context2 in context1) {
-    if (context2.isFirstPackage == true) {
-      if (context2.hasDocumentedCategories == true) {
+  var context12 = context0.localPackages;
+  for (var context13 in context12) {
+    if (context13.isFirstPackage == true) {
+      if (context13.hasDocumentedCategories == true) {
         buffer.writeln();
         buffer.write('''
       <li class="section-title">Topics</li>''');
-        var context3 = context2.documentedCategoriesSorted;
-        for (var context4 in context3) {
+        var context14 = context13.documentedCategoriesSorted;
+        for (var context15 in context14) {
           buffer.writeln();
           buffer.write('''
         <li>''');
-          buffer.write(context4.linkedName);
+          buffer.write(context15.linkedName);
           buffer.write('''</li>''');
         }
       }
@@ -3613,37 +3569,37 @@ String _renderError_partial_packages_2(_i1.PackageTemplateData context0) {
       buffer.write('''
       <li class="section-title">Libraries</li>''');
     }
-    if (context2.isFirstPackage != true) {
+    if (context13.isFirstPackage != true) {
       buffer.writeln();
       buffer.write('''
       <li class="section-title">''');
-      buffer.writeEscaped(context2.name);
+      buffer.writeEscaped(context13.name);
       buffer.write('''</li>''');
     }
-    var context5 = context2.defaultCategory;
-    if (context5 != null) {
-      var context6 = context5.publicLibrariesSorted;
-      for (var context7 in context6) {
+    var context16 = context13.defaultCategory;
+    if (context16 != null) {
+      var context17 = context16.publicLibrariesSorted;
+      for (var context18 in context17) {
         buffer.writeln();
         buffer.write('''
       <li>''');
-        buffer.write(context7.linkedName);
+        buffer.write(context18.linkedName);
         buffer.write('''</li>''');
       }
     }
-    var context8 = context2.categoriesWithPublicLibraries;
-    for (var context9 in context8) {
+    var context19 = context13.categoriesWithPublicLibraries;
+    for (var context20 in context19) {
       buffer.writeln();
       buffer.write('''
       <li class="section-subtitle">''');
-      buffer.writeEscaped(context9.name);
+      buffer.writeEscaped(context20.name);
       buffer.write('''</li>''');
-      var context10 = context9.publicLibrariesSorted;
-      for (var context11 in context10) {
+      var context21 = context20.publicLibrariesSorted;
+      for (var context22 in context21) {
         buffer.writeln();
         buffer.write('''
         <li class="section-subitem">''');
-        buffer.write(context11.linkedName);
+        buffer.write(context22.linkedName);
         buffer.write('''</li>''');
       }
     }
@@ -3718,20 +3674,20 @@ String renderExtension<T extends _i13.Extension>(
   buffer.writeln();
   buffer.write('''
     <div>''');
-  buffer.write(_renderExtension_partial_source_link_1(context1, context0));
+  buffer.write(_renderExtension_partial_source_link_1(context1));
   buffer.write('''<h1><span class="kind-class">''');
   buffer.write(context1.nameWithGenerics);
   buffer.write('''</span> ''');
   buffer.writeEscaped(context1.kind);
   buffer.write(' ');
-  buffer.write(_renderExtension_partial_feature_set_2(context1, context0));
+  buffer.write(_renderExtension_partial_feature_set_2(context1));
   buffer.write(' ');
-  buffer.write(_renderExtension_partial_categorization_3(context1, context0));
+  buffer.write(_renderExtension_partial_categorization_3(context1));
   buffer.write('''</h1></div>''');
   buffer.writeln();
   var context2 = context0.extension;
   buffer.write('\n    ');
-  buffer.write(_renderExtension_partial_documentation_4(context2, context0));
+  buffer.write(_renderExtension_partial_documentation_4(context2));
   buffer.writeln();
   buffer.write('''
     <section>
@@ -3762,8 +3718,7 @@ String renderExtension<T extends _i13.Extension>(
     var context4 = context2.publicInstanceFieldsSorted;
     for (var context5 in context4) {
       buffer.write('\n            ');
-      buffer.write(
-          _renderExtension_partial_property_5(context5, context2, context0));
+      buffer.write(_renderExtension_partial_property_5(context5));
     }
     buffer.writeln();
     buffer.write('''
@@ -3780,8 +3735,7 @@ String renderExtension<T extends _i13.Extension>(
     var context6 = context2.publicInstanceMethodsSorted;
     for (var context7 in context6) {
       buffer.write('\n            ');
-      buffer.write(
-          _renderExtension_partial_callable_6(context7, context2, context0));
+      buffer.write(_renderExtension_partial_callable_6(context7));
     }
     buffer.writeln();
     buffer.write('''
@@ -3798,8 +3752,7 @@ String renderExtension<T extends _i13.Extension>(
     var context8 = context2.publicInstanceOperatorsSorted;
     for (var context9 in context8) {
       buffer.write('\n            ');
-      buffer.write(
-          _renderExtension_partial_callable_6(context9, context2, context0));
+      buffer.write(_renderExtension_partial_callable_6(context9));
     }
     buffer.writeln();
     buffer.write('''
@@ -3817,8 +3770,7 @@ String renderExtension<T extends _i13.Extension>(
     var context10 = context2.publicVariableStaticFieldsSorted;
     for (var context11 in context10) {
       buffer.write('\n            ');
-      buffer.write(
-          _renderExtension_partial_property_5(context11, context2, context0));
+      buffer.write(_renderExtension_partial_property_5(context11));
     }
     buffer.writeln();
     buffer.write('''
@@ -3835,8 +3787,7 @@ String renderExtension<T extends _i13.Extension>(
     var context12 = context2.publicStaticMethodsSorted;
     for (var context13 in context12) {
       buffer.write('\n            ');
-      buffer.write(
-          _renderExtension_partial_callable_6(context13, context2, context0));
+      buffer.write(_renderExtension_partial_callable_6(context13));
     }
     buffer.writeln();
     buffer.write('''
@@ -3854,8 +3805,7 @@ String renderExtension<T extends _i13.Extension>(
     var context14 = context2.publicConstantFieldsSorted;
     for (var context15 in context14) {
       buffer.write('\n            ');
-      buffer.write(
-          _renderExtension_partial_constant_7(context15, context2, context0));
+      buffer.write(_renderExtension_partial_constant_7(context15));
     }
     buffer.writeln();
     buffer.write('''
@@ -3921,8 +3871,8 @@ String _renderExtension_partial_head_0<T extends _i13.Extension>(
   <title>''');
   buffer.writeEscaped(context0.title);
   buffer.write('''</title>''');
-  var context1 = context0.relCanonicalPrefix;
-  if (context1 != null) {
+  var context7 = context0.relCanonicalPrefix;
+  if (context7 != null) {
     buffer.writeln();
     buffer.write('''
   <link rel="canonical" href="''');
@@ -3933,7 +3883,7 @@ String _renderExtension_partial_head_0<T extends _i13.Extension>(
   }
   buffer.writeln();
   if (context0.useBaseHref == true) {
-    var context2 = context0.htmlBase;
+    var context8 = context0.htmlBase;
     buffer.writeln();
     buffer.write('''
   <!-- required because all the links are pseudo-absolute -->
@@ -3987,27 +3937,27 @@ String _renderExtension_partial_head_0<T extends _i13.Extension>(
 <header id="title">
   <button id="sidenav-left-toggle" type="button">&nbsp;</button>
   <ol class="breadcrumbs gt-separated dark hidden-xs">''');
-  var context3 = context0.navLinks;
-  for (var context4 in context3) {
+  var context9 = context0.navLinks;
+  for (var context10 in context9) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context4.href);
+    buffer.write(context10.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
+    buffer.writeEscaped(context10.name);
     buffer.write('''</a></li>''');
   }
-  var context5 = context0.navLinksWithGenerics;
-  for (var context6 in context5) {
+  var context11 = context0.navLinksWithGenerics;
+  for (var context12 in context11) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context6.href);
+    buffer.write(context12.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context6.name);
-    if (context6.hasGenericParameters == true) {
+    buffer.writeEscaped(context12.name);
+    if (context12.hasGenericParameters == true) {
       buffer.write('''<span class="signature">''');
-      buffer.write(context6.genericParameters);
+      buffer.write(context12.genericParameters);
       buffer.write('''</span>''');
     }
     buffer.write('''</a></li>''');
@@ -4045,8 +3995,7 @@ String _renderExtension_partial_head_0<T extends _i13.Extension>(
   return buffer.toString();
 }
 
-String _renderExtension_partial_source_link_1<T extends _i13.Extension>(
-    _i13.Extension context1, _i1.ExtensionTemplateData<T> context0) {
+String _renderExtension_partial_source_link_1(_i13.Extension context1) {
   final buffer = StringBuffer();
   if (context1.hasSourceHref == true) {
     buffer.writeln();
@@ -4060,14 +4009,13 @@ String _renderExtension_partial_source_link_1<T extends _i13.Extension>(
   return buffer.toString();
 }
 
-String _renderExtension_partial_feature_set_2<T extends _i13.Extension>(
-    _i13.Extension context1, _i1.ExtensionTemplateData<T> context0) {
+String _renderExtension_partial_feature_set_2(_i13.Extension context1) {
   final buffer = StringBuffer();
   if (context1.hasFeatureSet == true) {
-    var context2 = context1.displayedLanguageFeatures;
-    for (var context3 in context2) {
+    var context4 = context1.displayedLanguageFeatures;
+    for (var context5 in context4) {
       buffer.write('\n    ');
-      buffer.write(context3.featureLabel);
+      buffer.write(context5.featureLabel);
     }
   }
   buffer.writeln();
@@ -4075,14 +4023,13 @@ String _renderExtension_partial_feature_set_2<T extends _i13.Extension>(
   return buffer.toString();
 }
 
-String _renderExtension_partial_categorization_3<T extends _i13.Extension>(
-    _i13.Extension context1, _i1.ExtensionTemplateData<T> context0) {
+String _renderExtension_partial_categorization_3(_i13.Extension context1) {
   final buffer = StringBuffer();
   if (context1.hasCategoryNames == true) {
-    var context2 = context1.displayedCategories;
-    for (var context3 in context2) {
+    var context4 = context1.displayedCategories;
+    for (var context5 in context4) {
       buffer.write('\n    ');
-      buffer.write(context3.categoryLabel);
+      buffer.write(context5.categoryLabel);
     }
   }
   buffer.writeln();
@@ -4090,8 +4037,7 @@ String _renderExtension_partial_categorization_3<T extends _i13.Extension>(
   return buffer.toString();
 }
 
-String _renderExtension_partial_documentation_4<T extends _i13.Extension>(
-    _i13.Extension context1, _i1.ExtensionTemplateData<T> context0) {
+String _renderExtension_partial_documentation_4(_i13.Extension context1) {
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
     buffer.writeln();
@@ -4108,10 +4054,7 @@ String _renderExtension_partial_documentation_4<T extends _i13.Extension>(
   return buffer.toString();
 }
 
-String _renderExtension_partial_property_5<T extends _i13.Extension>(
-    _i9.Field context2,
-    _i13.Extension context1,
-    _i1.ExtensionTemplateData<T> context0) {
+String _renderExtension_partial_property_5(_i9.Field context2) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
   buffer.writeEscaped(context2.htmlId);
@@ -4128,8 +4071,8 @@ String _renderExtension_partial_property_5<T extends _i13.Extension>(
   buffer.write(' ');
   buffer.write(context2.modelType.linkedName);
   buffer.write('''</span> ''');
-  buffer.write(__renderExtension_partial_property_5_partial_categorization_0(
-      context2, context1, context0));
+  buffer.write(
+      __renderExtension_partial_property_5_partial_categorization_0(context2));
   buffer.writeln();
   buffer.write('''
 </dt>
@@ -4141,8 +4084,8 @@ String _renderExtension_partial_property_5<T extends _i13.Extension>(
   ''');
   buffer.write(context2.oneLineDoc);
   buffer.write('\n  ');
-  buffer.write(__renderExtension_partial_property_5_partial_features_1(
-      context2, context1, context0));
+  buffer
+      .write(__renderExtension_partial_property_5_partial_features_1(context2));
   buffer.writeln();
   buffer.write('''
 </dd>
@@ -4151,15 +4094,14 @@ String _renderExtension_partial_property_5<T extends _i13.Extension>(
   return buffer.toString();
 }
 
-String __renderExtension_partial_property_5_partial_categorization_0<
-        T extends _i13.Extension>(_i9.Field context2, _i13.Extension context1,
-    _i1.ExtensionTemplateData<T> context0) {
+String __renderExtension_partial_property_5_partial_categorization_0(
+    _i9.Field context2) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
-    var context3 = context2.displayedCategories;
-    for (var context4 in context3) {
+    var context7 = context2.displayedCategories;
+    for (var context8 in context7) {
       buffer.write('\n    ');
-      buffer.write(context4!.categoryLabel);
+      buffer.write(context8!.categoryLabel);
     }
   }
   buffer.writeln();
@@ -4167,9 +4109,8 @@ String __renderExtension_partial_property_5_partial_categorization_0<
   return buffer.toString();
 }
 
-String __renderExtension_partial_property_5_partial_features_1<
-        T extends _i13.Extension>(_i9.Field context2, _i13.Extension context1,
-    _i1.ExtensionTemplateData<T> context0) {
+String __renderExtension_partial_property_5_partial_features_1(
+    _i9.Field context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
     buffer.write('''<div class="features">''');
@@ -4181,10 +4122,7 @@ String __renderExtension_partial_property_5_partial_features_1<
   return buffer.toString();
 }
 
-String _renderExtension_partial_callable_6<T extends _i13.Extension>(
-    _i10.Method context2,
-    _i13.Extension context1,
-    _i1.ExtensionTemplateData<T> context0) {
+String _renderExtension_partial_callable_6(_i10.Method context2) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
   buffer.writeEscaped(context2.htmlId);
@@ -4209,8 +4147,8 @@ String _renderExtension_partial_callable_6<T extends _i13.Extension>(
   buffer.write('''</span>
   </span>
   ''');
-  buffer.write(__renderExtension_partial_callable_6_partial_categorization_0(
-      context2, context1, context0));
+  buffer.write(
+      __renderExtension_partial_callable_6_partial_categorization_0(context2));
   buffer.writeln();
   buffer.write('''
 </dt>
@@ -4222,8 +4160,8 @@ String _renderExtension_partial_callable_6<T extends _i13.Extension>(
   ''');
   buffer.write(context2.oneLineDoc);
   buffer.write('\n  ');
-  buffer.write(__renderExtension_partial_callable_6_partial_features_1(
-      context2, context1, context0));
+  buffer
+      .write(__renderExtension_partial_callable_6_partial_features_1(context2));
   buffer.writeln();
   buffer.write('''
 </dd>
@@ -4232,15 +4170,14 @@ String _renderExtension_partial_callable_6<T extends _i13.Extension>(
   return buffer.toString();
 }
 
-String __renderExtension_partial_callable_6_partial_categorization_0<
-        T extends _i13.Extension>(_i10.Method context2, _i13.Extension context1,
-    _i1.ExtensionTemplateData<T> context0) {
+String __renderExtension_partial_callable_6_partial_categorization_0(
+    _i10.Method context2) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
-    var context3 = context2.displayedCategories;
-    for (var context4 in context3) {
+    var context7 = context2.displayedCategories;
+    for (var context8 in context7) {
       buffer.write('\n    ');
-      buffer.write(context4!.categoryLabel);
+      buffer.write(context8!.categoryLabel);
     }
   }
   buffer.writeln();
@@ -4248,9 +4185,8 @@ String __renderExtension_partial_callable_6_partial_categorization_0<
   return buffer.toString();
 }
 
-String __renderExtension_partial_callable_6_partial_features_1<
-        T extends _i13.Extension>(_i10.Method context2, _i13.Extension context1,
-    _i1.ExtensionTemplateData<T> context0) {
+String __renderExtension_partial_callable_6_partial_features_1(
+    _i10.Method context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
     buffer.write('''<div class="features">''');
@@ -4262,10 +4198,7 @@ String __renderExtension_partial_callable_6_partial_features_1<
   return buffer.toString();
 }
 
-String _renderExtension_partial_constant_7<T extends _i13.Extension>(
-    _i9.Field context2,
-    _i13.Extension context1,
-    _i1.ExtensionTemplateData<T> context0) {
+String _renderExtension_partial_constant_7(_i9.Field context2) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
   buffer.writeEscaped(context2.htmlId);
@@ -4281,8 +4214,8 @@ String _renderExtension_partial_constant_7<T extends _i13.Extension>(
   buffer.write(context2.modelType.linkedName);
   buffer.write('''</span>
   ''');
-  buffer.write(__renderExtension_partial_constant_7_partial_categorization_0(
-      context2, context1, context0));
+  buffer.write(
+      __renderExtension_partial_constant_7_partial_categorization_0(context2));
   buffer.writeln();
   buffer.write('''
 </dt>
@@ -4290,8 +4223,8 @@ String _renderExtension_partial_constant_7<T extends _i13.Extension>(
   ''');
   buffer.write(context2.oneLineDoc);
   buffer.write('\n  ');
-  buffer.write(__renderExtension_partial_constant_7_partial_features_1(
-      context2, context1, context0));
+  buffer
+      .write(__renderExtension_partial_constant_7_partial_features_1(context2));
   buffer.writeln();
   buffer.write('''
   <div>
@@ -4305,15 +4238,14 @@ String _renderExtension_partial_constant_7<T extends _i13.Extension>(
   return buffer.toString();
 }
 
-String __renderExtension_partial_constant_7_partial_categorization_0<
-        T extends _i13.Extension>(_i9.Field context2, _i13.Extension context1,
-    _i1.ExtensionTemplateData<T> context0) {
+String __renderExtension_partial_constant_7_partial_categorization_0(
+    _i9.Field context2) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
-    var context3 = context2.displayedCategories;
-    for (var context4 in context3) {
+    var context7 = context2.displayedCategories;
+    for (var context8 in context7) {
       buffer.write('\n    ');
-      buffer.write(context4!.categoryLabel);
+      buffer.write(context8!.categoryLabel);
     }
   }
   buffer.writeln();
@@ -4321,9 +4253,8 @@ String __renderExtension_partial_constant_7_partial_categorization_0<
   return buffer.toString();
 }
 
-String __renderExtension_partial_constant_7_partial_features_1<
-        T extends _i13.Extension>(_i9.Field context2, _i13.Extension context1,
-    _i1.ExtensionTemplateData<T> context0) {
+String __renderExtension_partial_constant_7_partial_features_1(
+    _i9.Field context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
     buffer.write('''<div class="features">''');
@@ -4345,27 +4276,27 @@ String _renderExtension_partial_search_sidebar_8<T extends _i13.Extension>(
 </header>
 
 <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">''');
-  var context1 = context0.navLinks;
-  for (var context2 in context1) {
+  var context5 = context0.navLinks;
+  for (var context6 in context5) {
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context2.href);
+    buffer.write(context6.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context2.name);
+    buffer.writeEscaped(context6.name);
     buffer.write('''</a></li>''');
   }
-  var context3 = context0.navLinksWithGenerics;
-  for (var context4 in context3) {
+  var context7 = context0.navLinksWithGenerics;
+  for (var context8 in context7) {
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context4.href);
+    buffer.write(context8.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
-    if (context4.hasGenericParameters == true) {
+    buffer.writeEscaped(context8.name);
+    if (context8.hasGenericParameters == true) {
       buffer.write('''<span class="signature">''');
-      buffer.write(context4.genericParameters);
+      buffer.write(context8.genericParameters);
       buffer.write('''</span>''');
     }
     buffer.write('''</a></li>''');
@@ -4457,15 +4388,15 @@ String renderFunction(_i1.FunctionTemplateData context0) {
   buffer.writeln();
   buffer.write('''
       <div>''');
-  buffer.write(_renderFunction_partial_source_link_1(context1, context0));
+  buffer.write(_renderFunction_partial_source_link_1(context1));
   buffer.write('''<h1><span class="kind-function">''');
   buffer.write(context1.nameWithGenerics);
   buffer.write('''</span> ''');
   buffer.writeEscaped(context1.kind);
   buffer.write(' ');
-  buffer.write(_renderFunction_partial_feature_set_2(context1, context0));
+  buffer.write(_renderFunction_partial_feature_set_2(context1));
   buffer.write(' ');
-  buffer.write(_renderFunction_partial_categorization_3(context1, context0));
+  buffer.write(_renderFunction_partial_categorization_3(context1));
   buffer.write('''</h1></div>''');
   buffer.writeln();
   var context2 = context0.function;
@@ -4473,15 +4404,14 @@ String renderFunction(_i1.FunctionTemplateData context0) {
   buffer.write('''
     <section class="multi-line-signature">
         ''');
-  buffer
-      .write(_renderFunction_partial_callable_multiline_4(context2, context0));
+  buffer.write(_renderFunction_partial_callable_multiline_4(context2));
   buffer.writeln();
   buffer.write('''
     </section>
     ''');
-  buffer.write(_renderFunction_partial_documentation_5(context2, context0));
+  buffer.write(_renderFunction_partial_documentation_5(context2));
   buffer.write('\n\n    ');
-  buffer.write(_renderFunction_partial_source_code_6(context2, context0));
+  buffer.write(_renderFunction_partial_source_code_6(context2));
   buffer.writeln();
   buffer.writeln();
   buffer.write('''
@@ -4536,8 +4466,8 @@ String _renderFunction_partial_head_0(_i1.FunctionTemplateData context0) {
   <title>''');
   buffer.writeEscaped(context0.title);
   buffer.write('''</title>''');
-  var context1 = context0.relCanonicalPrefix;
-  if (context1 != null) {
+  var context7 = context0.relCanonicalPrefix;
+  if (context7 != null) {
     buffer.writeln();
     buffer.write('''
   <link rel="canonical" href="''');
@@ -4548,7 +4478,7 @@ String _renderFunction_partial_head_0(_i1.FunctionTemplateData context0) {
   }
   buffer.writeln();
   if (context0.useBaseHref == true) {
-    var context2 = context0.htmlBase;
+    var context8 = context0.htmlBase;
     buffer.writeln();
     buffer.write('''
   <!-- required because all the links are pseudo-absolute -->
@@ -4602,27 +4532,27 @@ String _renderFunction_partial_head_0(_i1.FunctionTemplateData context0) {
 <header id="title">
   <button id="sidenav-left-toggle" type="button">&nbsp;</button>
   <ol class="breadcrumbs gt-separated dark hidden-xs">''');
-  var context3 = context0.navLinks;
-  for (var context4 in context3) {
+  var context9 = context0.navLinks;
+  for (var context10 in context9) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context4.href);
+    buffer.write(context10.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
+    buffer.writeEscaped(context10.name);
     buffer.write('''</a></li>''');
   }
-  var context5 = context0.navLinksWithGenerics;
-  for (var context6 in context5) {
+  var context11 = context0.navLinksWithGenerics;
+  for (var context12 in context11) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context6.href);
+    buffer.write(context12.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context6.name);
-    if (context6.hasGenericParameters == true) {
+    buffer.writeEscaped(context12.name);
+    if (context12.hasGenericParameters == true) {
       buffer.write('''<span class="signature">''');
-      buffer.write(context6.genericParameters);
+      buffer.write(context12.genericParameters);
       buffer.write('''</span>''');
     }
     buffer.write('''</a></li>''');
@@ -4660,8 +4590,7 @@ String _renderFunction_partial_head_0(_i1.FunctionTemplateData context0) {
   return buffer.toString();
 }
 
-String _renderFunction_partial_source_link_1(
-    _i6.ModelFunction context1, _i1.FunctionTemplateData context0) {
+String _renderFunction_partial_source_link_1(_i6.ModelFunction context1) {
   final buffer = StringBuffer();
   if (context1.hasSourceHref == true) {
     buffer.writeln();
@@ -4675,14 +4604,13 @@ String _renderFunction_partial_source_link_1(
   return buffer.toString();
 }
 
-String _renderFunction_partial_feature_set_2(
-    _i6.ModelFunction context1, _i1.FunctionTemplateData context0) {
+String _renderFunction_partial_feature_set_2(_i6.ModelFunction context1) {
   final buffer = StringBuffer();
   if (context1.hasFeatureSet == true) {
-    var context2 = context1.displayedLanguageFeatures;
-    for (var context3 in context2) {
+    var context4 = context1.displayedLanguageFeatures;
+    for (var context5 in context4) {
       buffer.write('\n    ');
-      buffer.write(context3.featureLabel);
+      buffer.write(context5.featureLabel);
     }
   }
   buffer.writeln();
@@ -4690,14 +4618,13 @@ String _renderFunction_partial_feature_set_2(
   return buffer.toString();
 }
 
-String _renderFunction_partial_categorization_3(
-    _i6.ModelFunction context1, _i1.FunctionTemplateData context0) {
+String _renderFunction_partial_categorization_3(_i6.ModelFunction context1) {
   final buffer = StringBuffer();
   if (context1.hasCategoryNames == true) {
-    var context2 = context1.displayedCategories;
-    for (var context3 in context2) {
+    var context4 = context1.displayedCategories;
+    for (var context5 in context4) {
       buffer.write('\n    ');
-      buffer.write(context3.categoryLabel);
+      buffer.write(context5.categoryLabel);
     }
   }
   buffer.writeln();
@@ -4706,19 +4633,19 @@ String _renderFunction_partial_categorization_3(
 }
 
 String _renderFunction_partial_callable_multiline_4(
-    _i6.ModelFunction context1, _i1.FunctionTemplateData context0) {
+    _i6.ModelFunction context1) {
   final buffer = StringBuffer();
   if (context1.hasAnnotations == true) {
     buffer.writeln();
     buffer.write('''
 <div>
   <ol class="annotation-list">''');
-    var context2 = context1.annotations;
-    for (var context3 in context2) {
+    var context4 = context1.annotations;
+    for (var context5 in context4) {
       buffer.writeln();
       buffer.write('''
     <li>''');
-      buffer.write(context3.linkedNameWithParameters);
+      buffer.write(context5.linkedNameWithParameters);
       buffer.write('''</li>''');
     }
     buffer.writeln();
@@ -4735,7 +4662,7 @@ String _renderFunction_partial_callable_multiline_4(
 ''');
   buffer.write(
       __renderFunction_partial_callable_multiline_4_partial_name_summary_0(
-          context1, context0));
+          context1));
   buffer.write(context1.genericParameters);
   buffer.write('''(<wbr>''');
   if (context1.hasParameters == true) {
@@ -4748,7 +4675,7 @@ String _renderFunction_partial_callable_multiline_4(
 }
 
 String __renderFunction_partial_callable_multiline_4_partial_name_summary_0(
-    _i6.ModelFunction context1, _i1.FunctionTemplateData context0) {
+    _i6.ModelFunction context1) {
   final buffer = StringBuffer();
   if (context1.isConst == true) {
     buffer.write('''const ''');
@@ -4764,8 +4691,7 @@ String __renderFunction_partial_callable_multiline_4_partial_name_summary_0(
   return buffer.toString();
 }
 
-String _renderFunction_partial_documentation_5(
-    _i6.ModelFunction context1, _i1.FunctionTemplateData context0) {
+String _renderFunction_partial_documentation_5(_i6.ModelFunction context1) {
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
     buffer.writeln();
@@ -4782,8 +4708,7 @@ String _renderFunction_partial_documentation_5(
   return buffer.toString();
 }
 
-String _renderFunction_partial_source_code_6(
-    _i6.ModelFunction context1, _i1.FunctionTemplateData context0) {
+String _renderFunction_partial_source_code_6(_i6.ModelFunction context1) {
   final buffer = StringBuffer();
   if (context1.hasSourceCode == true) {
     buffer.writeln();
@@ -4810,27 +4735,27 @@ String _renderFunction_partial_search_sidebar_7(
 </header>
 
 <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">''');
-  var context1 = context0.navLinks;
-  for (var context2 in context1) {
+  var context5 = context0.navLinks;
+  for (var context6 in context5) {
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context2.href);
+    buffer.write(context6.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context2.name);
+    buffer.writeEscaped(context6.name);
     buffer.write('''</a></li>''');
   }
-  var context3 = context0.navLinksWithGenerics;
-  for (var context4 in context3) {
+  var context7 = context0.navLinksWithGenerics;
+  for (var context8 in context7) {
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context4.href);
+    buffer.write(context8.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
-    if (context4.hasGenericParameters == true) {
+    buffer.writeEscaped(context8.name);
+    if (context8.hasGenericParameters == true) {
       buffer.write('''<span class="signature">''');
-      buffer.write(context4.genericParameters);
+      buffer.write(context8.genericParameters);
       buffer.write('''</span>''');
     }
     buffer.write('''</a></li>''');
@@ -4919,7 +4844,7 @@ String renderIndex(_i1.PackageTemplateData context0) {
   <div id="dartdoc-main-content" class="main-content">''');
   var context1 = context0.defaultPackage;
   buffer.write('\n      ');
-  buffer.write(_renderIndex_partial_documentation_1(context1, context0));
+  buffer.write(_renderIndex_partial_documentation_1(context1));
   buffer.writeln();
   var context2 = context0.localPackages;
   for (var context3 in context2) {
@@ -4946,8 +4871,7 @@ String renderIndex(_i1.PackageTemplateData context0) {
       var context5 = context4.publicLibrariesSorted;
       for (var context6 in context5) {
         buffer.write('\n          ');
-        buffer.write(_renderIndex_partial_library_2(
-            context6, context4, context3, context0));
+        buffer.write(_renderIndex_partial_library_2(context6));
       }
     }
     var context7 = context3.categoriesWithPublicLibraries;
@@ -4960,8 +4884,7 @@ String renderIndex(_i1.PackageTemplateData context0) {
       var context9 = context8.publicLibrariesSorted;
       for (var context10 in context9) {
         buffer.write('\n            ');
-        buffer.write(_renderIndex_partial_library_2(
-            context10, context8, context3, context0));
+        buffer.write(_renderIndex_partial_library_2(context10));
       }
     }
     buffer.writeln();
@@ -5023,8 +4946,8 @@ String _renderIndex_partial_head_0(_i1.PackageTemplateData context0) {
   <title>''');
   buffer.writeEscaped(context0.title);
   buffer.write('''</title>''');
-  var context1 = context0.relCanonicalPrefix;
-  if (context1 != null) {
+  var context7 = context0.relCanonicalPrefix;
+  if (context7 != null) {
     buffer.writeln();
     buffer.write('''
   <link rel="canonical" href="''');
@@ -5035,7 +4958,7 @@ String _renderIndex_partial_head_0(_i1.PackageTemplateData context0) {
   }
   buffer.writeln();
   if (context0.useBaseHref == true) {
-    var context2 = context0.htmlBase;
+    var context8 = context0.htmlBase;
     buffer.writeln();
     buffer.write('''
   <!-- required because all the links are pseudo-absolute -->
@@ -5089,27 +5012,27 @@ String _renderIndex_partial_head_0(_i1.PackageTemplateData context0) {
 <header id="title">
   <button id="sidenav-left-toggle" type="button">&nbsp;</button>
   <ol class="breadcrumbs gt-separated dark hidden-xs">''');
-  var context3 = context0.navLinks;
-  for (var context4 in context3) {
+  var context9 = context0.navLinks;
+  for (var context10 in context9) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context4.href);
+    buffer.write(context10.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
+    buffer.writeEscaped(context10.name);
     buffer.write('''</a></li>''');
   }
-  var context5 = context0.navLinksWithGenerics;
-  for (var context6 in context5) {
+  var context11 = context0.navLinksWithGenerics;
+  for (var context12 in context11) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context6.href);
+    buffer.write(context12.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context6.name);
-    if (context6.hasGenericParameters == true) {
+    buffer.writeEscaped(context12.name);
+    if (context12.hasGenericParameters == true) {
       buffer.write('''<span class="signature">''');
-      buffer.write(context6.genericParameters);
+      buffer.write(context12.genericParameters);
       buffer.write('''</span>''');
     }
     buffer.write('''</a></li>''');
@@ -5147,8 +5070,7 @@ String _renderIndex_partial_head_0(_i1.PackageTemplateData context0) {
   return buffer.toString();
 }
 
-String _renderIndex_partial_documentation_1(
-    _i14.Package context1, _i1.PackageTemplateData context0) {
+String _renderIndex_partial_documentation_1(_i14.Package context1) {
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
     buffer.writeln();
@@ -5165,11 +5087,7 @@ String _renderIndex_partial_documentation_1(
   return buffer.toString();
 }
 
-String _renderIndex_partial_library_2(
-    _i3.Library context3,
-    _i15.LibraryContainer context2,
-    _i14.Package context1,
-    _i1.PackageTemplateData context0) {
+String _renderIndex_partial_library_2(_i3.Library context3) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
   buffer.writeEscaped(context3.htmlId);
@@ -5177,8 +5095,8 @@ String _renderIndex_partial_library_2(
   <span class="name">''');
   buffer.write(context3.linkedName);
   buffer.write('''</span> ''');
-  buffer.write(__renderIndex_partial_library_2_partial_categorization_0(
-      context3, context2, context1, context0));
+  buffer.write(
+      __renderIndex_partial_library_2_partial_categorization_0(context3));
   buffer.writeln();
   buffer.write('''
 </dt>
@@ -5195,16 +5113,13 @@ String _renderIndex_partial_library_2(
 }
 
 String __renderIndex_partial_library_2_partial_categorization_0(
-    _i3.Library context3,
-    _i15.LibraryContainer context2,
-    _i14.Package context1,
-    _i1.PackageTemplateData context0) {
+    _i3.Library context3) {
   final buffer = StringBuffer();
   if (context3.hasCategoryNames == true) {
-    var context4 = context3.displayedCategories;
-    for (var context5 in context4) {
+    var context8 = context3.displayedCategories;
+    for (var context9 in context8) {
       buffer.write('\n    ');
-      buffer.write(context5.categoryLabel);
+      buffer.write(context9.categoryLabel);
     }
   }
   buffer.writeln();
@@ -5221,27 +5136,27 @@ String _renderIndex_partial_search_sidebar_3(_i1.PackageTemplateData context0) {
 </header>
 
 <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">''');
-  var context1 = context0.navLinks;
-  for (var context2 in context1) {
+  var context5 = context0.navLinks;
+  for (var context6 in context5) {
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context2.href);
+    buffer.write(context6.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context2.name);
+    buffer.writeEscaped(context6.name);
     buffer.write('''</a></li>''');
   }
-  var context3 = context0.navLinksWithGenerics;
-  for (var context4 in context3) {
+  var context7 = context0.navLinksWithGenerics;
+  for (var context8 in context7) {
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context4.href);
+    buffer.write(context8.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
-    if (context4.hasGenericParameters == true) {
+    buffer.writeEscaped(context8.name);
+    if (context8.hasGenericParameters == true) {
       buffer.write('''<span class="signature">''');
-      buffer.write(context4.genericParameters);
+      buffer.write(context8.genericParameters);
       buffer.write('''</span>''');
     }
     buffer.write('''</a></li>''');
@@ -5274,19 +5189,19 @@ String _renderIndex_partial_search_sidebar_3(_i1.PackageTemplateData context0) {
 String _renderIndex_partial_packages_4(_i1.PackageTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<ol>''');
-  var context1 = context0.localPackages;
-  for (var context2 in context1) {
-    if (context2.isFirstPackage == true) {
-      if (context2.hasDocumentedCategories == true) {
+  var context12 = context0.localPackages;
+  for (var context13 in context12) {
+    if (context13.isFirstPackage == true) {
+      if (context13.hasDocumentedCategories == true) {
         buffer.writeln();
         buffer.write('''
       <li class="section-title">Topics</li>''');
-        var context3 = context2.documentedCategoriesSorted;
-        for (var context4 in context3) {
+        var context14 = context13.documentedCategoriesSorted;
+        for (var context15 in context14) {
           buffer.writeln();
           buffer.write('''
         <li>''');
-          buffer.write(context4.linkedName);
+          buffer.write(context15.linkedName);
           buffer.write('''</li>''');
         }
       }
@@ -5294,37 +5209,37 @@ String _renderIndex_partial_packages_4(_i1.PackageTemplateData context0) {
       buffer.write('''
       <li class="section-title">Libraries</li>''');
     }
-    if (context2.isFirstPackage != true) {
+    if (context13.isFirstPackage != true) {
       buffer.writeln();
       buffer.write('''
       <li class="section-title">''');
-      buffer.writeEscaped(context2.name);
+      buffer.writeEscaped(context13.name);
       buffer.write('''</li>''');
     }
-    var context5 = context2.defaultCategory;
-    if (context5 != null) {
-      var context6 = context5.publicLibrariesSorted;
-      for (var context7 in context6) {
+    var context16 = context13.defaultCategory;
+    if (context16 != null) {
+      var context17 = context16.publicLibrariesSorted;
+      for (var context18 in context17) {
         buffer.writeln();
         buffer.write('''
       <li>''');
-        buffer.write(context7.linkedName);
+        buffer.write(context18.linkedName);
         buffer.write('''</li>''');
       }
     }
-    var context8 = context2.categoriesWithPublicLibraries;
-    for (var context9 in context8) {
+    var context19 = context13.categoriesWithPublicLibraries;
+    for (var context20 in context19) {
       buffer.writeln();
       buffer.write('''
       <li class="section-subtitle">''');
-      buffer.writeEscaped(context9.name);
+      buffer.writeEscaped(context20.name);
       buffer.write('''</li>''');
-      var context10 = context9.publicLibrariesSorted;
-      for (var context11 in context10) {
+      var context21 = context20.publicLibrariesSorted;
+      for (var context22 in context21) {
         buffer.writeln();
         buffer.write('''
         <li class="section-subitem">''');
-        buffer.write(context11.linkedName);
+        buffer.write(context22.linkedName);
         buffer.write('''</li>''');
       }
     }
@@ -5398,20 +5313,20 @@ String renderLibrary(_i1.LibraryTemplateData context0) {
   buffer.writeln();
   buffer.write('''
       <div>''');
-  buffer.write(_renderLibrary_partial_source_link_1(context1, context0));
+  buffer.write(_renderLibrary_partial_source_link_1(context1));
   buffer.write('''<h1><span class="kind-library">''');
   buffer.write(context1.name);
   buffer.write('''</span> ''');
   buffer.writeEscaped(context1.kind);
   buffer.write(' ');
-  buffer.write(_renderLibrary_partial_feature_set_2(context1, context0));
+  buffer.write(_renderLibrary_partial_feature_set_2(context1));
   buffer.write(' ');
-  buffer.write(_renderLibrary_partial_categorization_3(context1, context0));
+  buffer.write(_renderLibrary_partial_categorization_3(context1));
   buffer.write('''</h1></div>''');
   buffer.writeln();
   var context2 = context0.library;
   buffer.write('\n    ');
-  buffer.write(_renderLibrary_partial_documentation_4(context2, context0));
+  buffer.write(_renderLibrary_partial_documentation_4(context2));
   buffer.writeln();
   var context3 = context0.library;
   if (context3.hasPublicClasses == true) {
@@ -5425,8 +5340,7 @@ String renderLibrary(_i1.LibraryTemplateData context0) {
     var context5 = context4.publicClassesSorted;
     for (var context6 in context5) {
       buffer.write('\n        ');
-      buffer.write(_renderLibrary_partial_container_5(
-          context6, context4, context3, context0));
+      buffer.write(_renderLibrary_partial_container_5(context6));
     }
     buffer.writeln();
     buffer.write('''
@@ -5446,8 +5360,7 @@ String renderLibrary(_i1.LibraryTemplateData context0) {
     var context9 = context8.publicMixinsSorted;
     for (var context10 in context9) {
       buffer.write('\n        ');
-      buffer.write(_renderLibrary_partial_container_5(
-          context10, context8, context7, context0));
+      buffer.write(_renderLibrary_partial_container_5(context10));
     }
     buffer.writeln();
     buffer.write('''
@@ -5467,8 +5380,7 @@ String renderLibrary(_i1.LibraryTemplateData context0) {
     var context13 = context12.publicExtensionsSorted;
     for (var context14 in context13) {
       buffer.write('\n        ');
-      buffer.write(_renderLibrary_partial_extension_6(
-          context14, context12, context11, context0));
+      buffer.write(_renderLibrary_partial_extension_6(context14));
     }
     buffer.writeln();
     buffer.write('''
@@ -5488,8 +5400,7 @@ String renderLibrary(_i1.LibraryTemplateData context0) {
     var context17 = context16.publicConstantsSorted;
     for (var context18 in context17) {
       buffer.write('\n        ');
-      buffer.write(_renderLibrary_partial_constant_7(
-          context18, context16, context15, context0));
+      buffer.write(_renderLibrary_partial_constant_7(context18));
     }
     buffer.writeln();
     buffer.write('''
@@ -5509,8 +5420,7 @@ String renderLibrary(_i1.LibraryTemplateData context0) {
     var context21 = context20.publicPropertiesSorted;
     for (var context22 in context21) {
       buffer.write('\n        ');
-      buffer.write(_renderLibrary_partial_property_8(
-          context22, context20, context19, context0));
+      buffer.write(_renderLibrary_partial_property_8(context22));
     }
     buffer.writeln();
     buffer.write('''
@@ -5530,8 +5440,7 @@ String renderLibrary(_i1.LibraryTemplateData context0) {
     var context25 = context24.publicFunctionsSorted;
     for (var context26 in context25) {
       buffer.write('\n        ');
-      buffer.write(_renderLibrary_partial_callable_9(
-          context26, context24, context23, context0));
+      buffer.write(_renderLibrary_partial_callable_9(context26));
     }
     buffer.writeln();
     buffer.write('''
@@ -5551,8 +5460,7 @@ String renderLibrary(_i1.LibraryTemplateData context0) {
     var context29 = context28.publicEnumsSorted;
     for (var context30 in context29) {
       buffer.write('\n        ');
-      buffer.write(_renderLibrary_partial_container_5(
-          context30, context28, context27, context0));
+      buffer.write(_renderLibrary_partial_container_5(context30));
     }
     buffer.writeln();
     buffer.write('''
@@ -5572,8 +5480,7 @@ String renderLibrary(_i1.LibraryTemplateData context0) {
     var context33 = context32.publicTypedefsSorted;
     for (var context34 in context33) {
       buffer.write('\n          ');
-      buffer.write(_renderLibrary_partial_typedef_10(
-          context34, context32, context31, context0));
+      buffer.write(_renderLibrary_partial_typedef_10(context34));
     }
     buffer.writeln();
     buffer.write('''
@@ -5593,8 +5500,7 @@ String renderLibrary(_i1.LibraryTemplateData context0) {
     var context37 = context36.publicExceptionsSorted;
     for (var context38 in context37) {
       buffer.write('\n        ');
-      buffer.write(_renderLibrary_partial_container_5(
-          context38, context36, context35, context0));
+      buffer.write(_renderLibrary_partial_container_5(context38));
     }
     buffer.writeln();
     buffer.write('''
@@ -5664,8 +5570,8 @@ String _renderLibrary_partial_head_0(_i1.LibraryTemplateData context0) {
   <title>''');
   buffer.writeEscaped(context0.title);
   buffer.write('''</title>''');
-  var context1 = context0.relCanonicalPrefix;
-  if (context1 != null) {
+  var context7 = context0.relCanonicalPrefix;
+  if (context7 != null) {
     buffer.writeln();
     buffer.write('''
   <link rel="canonical" href="''');
@@ -5676,7 +5582,7 @@ String _renderLibrary_partial_head_0(_i1.LibraryTemplateData context0) {
   }
   buffer.writeln();
   if (context0.useBaseHref == true) {
-    var context2 = context0.htmlBase;
+    var context8 = context0.htmlBase;
     buffer.writeln();
     buffer.write('''
   <!-- required because all the links are pseudo-absolute -->
@@ -5730,27 +5636,27 @@ String _renderLibrary_partial_head_0(_i1.LibraryTemplateData context0) {
 <header id="title">
   <button id="sidenav-left-toggle" type="button">&nbsp;</button>
   <ol class="breadcrumbs gt-separated dark hidden-xs">''');
-  var context3 = context0.navLinks;
-  for (var context4 in context3) {
+  var context9 = context0.navLinks;
+  for (var context10 in context9) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context4.href);
+    buffer.write(context10.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
+    buffer.writeEscaped(context10.name);
     buffer.write('''</a></li>''');
   }
-  var context5 = context0.navLinksWithGenerics;
-  for (var context6 in context5) {
+  var context11 = context0.navLinksWithGenerics;
+  for (var context12 in context11) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context6.href);
+    buffer.write(context12.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context6.name);
-    if (context6.hasGenericParameters == true) {
+    buffer.writeEscaped(context12.name);
+    if (context12.hasGenericParameters == true) {
       buffer.write('''<span class="signature">''');
-      buffer.write(context6.genericParameters);
+      buffer.write(context12.genericParameters);
       buffer.write('''</span>''');
     }
     buffer.write('''</a></li>''');
@@ -5788,8 +5694,7 @@ String _renderLibrary_partial_head_0(_i1.LibraryTemplateData context0) {
   return buffer.toString();
 }
 
-String _renderLibrary_partial_source_link_1(
-    _i3.Library context1, _i1.LibraryTemplateData context0) {
+String _renderLibrary_partial_source_link_1(_i3.Library context1) {
   final buffer = StringBuffer();
   if (context1.hasSourceHref == true) {
     buffer.writeln();
@@ -5803,14 +5708,13 @@ String _renderLibrary_partial_source_link_1(
   return buffer.toString();
 }
 
-String _renderLibrary_partial_feature_set_2(
-    _i3.Library context1, _i1.LibraryTemplateData context0) {
+String _renderLibrary_partial_feature_set_2(_i3.Library context1) {
   final buffer = StringBuffer();
   if (context1.hasFeatureSet == true) {
-    var context2 = context1.displayedLanguageFeatures;
-    for (var context3 in context2) {
+    var context4 = context1.displayedLanguageFeatures;
+    for (var context5 in context4) {
       buffer.write('\n    ');
-      buffer.write(context3.featureLabel);
+      buffer.write(context5.featureLabel);
     }
   }
   buffer.writeln();
@@ -5818,14 +5722,13 @@ String _renderLibrary_partial_feature_set_2(
   return buffer.toString();
 }
 
-String _renderLibrary_partial_categorization_3(
-    _i3.Library context1, _i1.LibraryTemplateData context0) {
+String _renderLibrary_partial_categorization_3(_i3.Library context1) {
   final buffer = StringBuffer();
   if (context1.hasCategoryNames == true) {
-    var context2 = context1.displayedCategories;
-    for (var context3 in context2) {
+    var context4 = context1.displayedCategories;
+    for (var context5 in context4) {
       buffer.write('\n    ');
-      buffer.write(context3.categoryLabel);
+      buffer.write(context5.categoryLabel);
     }
   }
   buffer.writeln();
@@ -5833,8 +5736,7 @@ String _renderLibrary_partial_categorization_3(
   return buffer.toString();
 }
 
-String _renderLibrary_partial_documentation_4(
-    _i3.Library context1, _i1.LibraryTemplateData context0) {
+String _renderLibrary_partial_documentation_4(_i3.Library context1) {
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
     buffer.writeln();
@@ -5851,11 +5753,7 @@ String _renderLibrary_partial_documentation_4(
   return buffer.toString();
 }
 
-String _renderLibrary_partial_container_5(
-    _i4.Container context3,
-    _i3.Library context2,
-    _i3.Library context1,
-    _i1.LibraryTemplateData context0) {
+String _renderLibrary_partial_container_5(_i4.Container context3) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
   buffer.writeEscaped(context3.htmlId);
@@ -5868,8 +5766,8 @@ String _renderLibrary_partial_container_5(
   buffer.write(context3.linkedName);
   buffer.write(context3.linkedGenericParameters);
   buffer.write('''</span> ''');
-  buffer.write(__renderLibrary_partial_container_5_partial_categorization_0(
-      context3, context2, context1, context0));
+  buffer.write(
+      __renderLibrary_partial_container_5_partial_categorization_0(context3));
   buffer.writeln();
   buffer.write('''
 </dt>
@@ -5885,16 +5783,13 @@ String _renderLibrary_partial_container_5(
 }
 
 String __renderLibrary_partial_container_5_partial_categorization_0(
-    _i4.Container context3,
-    _i3.Library context2,
-    _i3.Library context1,
-    _i1.LibraryTemplateData context0) {
+    _i4.Container context3) {
   final buffer = StringBuffer();
   if (context3.hasCategoryNames == true) {
-    var context4 = context3.displayedCategories;
-    for (var context5 in context4) {
+    var context8 = context3.displayedCategories;
+    for (var context9 in context8) {
       buffer.write('\n    ');
-      buffer.write(context5.categoryLabel);
+      buffer.write(context9.categoryLabel);
     }
   }
   buffer.writeln();
@@ -5902,11 +5797,7 @@ String __renderLibrary_partial_container_5_partial_categorization_0(
   return buffer.toString();
 }
 
-String _renderLibrary_partial_extension_6(
-    _i13.Extension context3,
-    _i3.Library context2,
-    _i3.Library context1,
-    _i1.LibraryTemplateData context0) {
+String _renderLibrary_partial_extension_6(_i13.Extension context3) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
   buffer.writeEscaped(context3.htmlId);
@@ -5918,8 +5809,8 @@ String _renderLibrary_partial_extension_6(
   buffer.write('''">''');
   buffer.write(context3.linkedName);
   buffer.write('''</span> ''');
-  buffer.write(__renderLibrary_partial_extension_6_partial_categorization_0(
-      context3, context2, context1, context0));
+  buffer.write(
+      __renderLibrary_partial_extension_6_partial_categorization_0(context3));
   buffer.writeln();
   buffer.write('''
 </dt>
@@ -5936,16 +5827,13 @@ String _renderLibrary_partial_extension_6(
 }
 
 String __renderLibrary_partial_extension_6_partial_categorization_0(
-    _i13.Extension context3,
-    _i3.Library context2,
-    _i3.Library context1,
-    _i1.LibraryTemplateData context0) {
+    _i13.Extension context3) {
   final buffer = StringBuffer();
   if (context3.hasCategoryNames == true) {
-    var context4 = context3.displayedCategories;
-    for (var context5 in context4) {
+    var context8 = context3.displayedCategories;
+    for (var context9 in context8) {
       buffer.write('\n    ');
-      buffer.write(context5.categoryLabel);
+      buffer.write(context9.categoryLabel);
     }
   }
   buffer.writeln();
@@ -5953,11 +5841,7 @@ String __renderLibrary_partial_extension_6_partial_categorization_0(
   return buffer.toString();
 }
 
-String _renderLibrary_partial_constant_7(
-    _i5.TopLevelVariable context3,
-    _i3.Library context2,
-    _i3.Library context1,
-    _i1.LibraryTemplateData context0) {
+String _renderLibrary_partial_constant_7(_i5.TopLevelVariable context3) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
   buffer.writeEscaped(context3.htmlId);
@@ -5973,8 +5857,8 @@ String _renderLibrary_partial_constant_7(
   buffer.write(context3.modelType.linkedName);
   buffer.write('''</span>
   ''');
-  buffer.write(__renderLibrary_partial_constant_7_partial_categorization_0(
-      context3, context2, context1, context0));
+  buffer.write(
+      __renderLibrary_partial_constant_7_partial_categorization_0(context3));
   buffer.writeln();
   buffer.write('''
 </dt>
@@ -5982,8 +5866,7 @@ String _renderLibrary_partial_constant_7(
   ''');
   buffer.write(context3.oneLineDoc);
   buffer.write('\n  ');
-  buffer.write(__renderLibrary_partial_constant_7_partial_features_1(
-      context3, context2, context1, context0));
+  buffer.write(__renderLibrary_partial_constant_7_partial_features_1(context3));
   buffer.writeln();
   buffer.write('''
   <div>
@@ -5998,16 +5881,13 @@ String _renderLibrary_partial_constant_7(
 }
 
 String __renderLibrary_partial_constant_7_partial_categorization_0(
-    _i5.TopLevelVariable context3,
-    _i3.Library context2,
-    _i3.Library context1,
-    _i1.LibraryTemplateData context0) {
+    _i5.TopLevelVariable context3) {
   final buffer = StringBuffer();
   if (context3.hasCategoryNames == true) {
-    var context4 = context3.displayedCategories;
-    for (var context5 in context4) {
+    var context8 = context3.displayedCategories;
+    for (var context9 in context8) {
       buffer.write('\n    ');
-      buffer.write(context5.categoryLabel);
+      buffer.write(context9.categoryLabel);
     }
   }
   buffer.writeln();
@@ -6016,10 +5896,7 @@ String __renderLibrary_partial_constant_7_partial_categorization_0(
 }
 
 String __renderLibrary_partial_constant_7_partial_features_1(
-    _i5.TopLevelVariable context3,
-    _i3.Library context2,
-    _i3.Library context1,
-    _i1.LibraryTemplateData context0) {
+    _i5.TopLevelVariable context3) {
   final buffer = StringBuffer();
   if (context3.hasFeatures == true) {
     buffer.write('''<div class="features">''');
@@ -6031,11 +5908,7 @@ String __renderLibrary_partial_constant_7_partial_features_1(
   return buffer.toString();
 }
 
-String _renderLibrary_partial_property_8(
-    _i5.TopLevelVariable context3,
-    _i3.Library context2,
-    _i3.Library context1,
-    _i1.LibraryTemplateData context0) {
+String _renderLibrary_partial_property_8(_i5.TopLevelVariable context3) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
   buffer.writeEscaped(context3.htmlId);
@@ -6052,8 +5925,8 @@ String _renderLibrary_partial_property_8(
   buffer.write(' ');
   buffer.write(context3.modelType.linkedName);
   buffer.write('''</span> ''');
-  buffer.write(__renderLibrary_partial_property_8_partial_categorization_0(
-      context3, context2, context1, context0));
+  buffer.write(
+      __renderLibrary_partial_property_8_partial_categorization_0(context3));
   buffer.writeln();
   buffer.write('''
 </dt>
@@ -6065,8 +5938,7 @@ String _renderLibrary_partial_property_8(
   ''');
   buffer.write(context3.oneLineDoc);
   buffer.write('\n  ');
-  buffer.write(__renderLibrary_partial_property_8_partial_features_1(
-      context3, context2, context1, context0));
+  buffer.write(__renderLibrary_partial_property_8_partial_features_1(context3));
   buffer.writeln();
   buffer.write('''
 </dd>
@@ -6076,16 +5948,13 @@ String _renderLibrary_partial_property_8(
 }
 
 String __renderLibrary_partial_property_8_partial_categorization_0(
-    _i5.TopLevelVariable context3,
-    _i3.Library context2,
-    _i3.Library context1,
-    _i1.LibraryTemplateData context0) {
+    _i5.TopLevelVariable context3) {
   final buffer = StringBuffer();
   if (context3.hasCategoryNames == true) {
-    var context4 = context3.displayedCategories;
-    for (var context5 in context4) {
+    var context8 = context3.displayedCategories;
+    for (var context9 in context8) {
       buffer.write('\n    ');
-      buffer.write(context5.categoryLabel);
+      buffer.write(context9.categoryLabel);
     }
   }
   buffer.writeln();
@@ -6094,10 +5963,7 @@ String __renderLibrary_partial_property_8_partial_categorization_0(
 }
 
 String __renderLibrary_partial_property_8_partial_features_1(
-    _i5.TopLevelVariable context3,
-    _i3.Library context2,
-    _i3.Library context1,
-    _i1.LibraryTemplateData context0) {
+    _i5.TopLevelVariable context3) {
   final buffer = StringBuffer();
   if (context3.hasFeatures == true) {
     buffer.write('''<div class="features">''');
@@ -6109,11 +5975,7 @@ String __renderLibrary_partial_property_8_partial_features_1(
   return buffer.toString();
 }
 
-String _renderLibrary_partial_callable_9(
-    _i6.ModelFunctionTyped context3,
-    _i3.Library context2,
-    _i3.Library context1,
-    _i1.LibraryTemplateData context0) {
+String _renderLibrary_partial_callable_9(_i6.ModelFunctionTyped context3) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
   buffer.writeEscaped(context3.htmlId);
@@ -6138,8 +6000,8 @@ String _renderLibrary_partial_callable_9(
   buffer.write('''</span>
   </span>
   ''');
-  buffer.write(__renderLibrary_partial_callable_9_partial_categorization_0(
-      context3, context2, context1, context0));
+  buffer.write(
+      __renderLibrary_partial_callable_9_partial_categorization_0(context3));
   buffer.writeln();
   buffer.write('''
 </dt>
@@ -6151,8 +6013,7 @@ String _renderLibrary_partial_callable_9(
   ''');
   buffer.write(context3.oneLineDoc);
   buffer.write('\n  ');
-  buffer.write(__renderLibrary_partial_callable_9_partial_features_1(
-      context3, context2, context1, context0));
+  buffer.write(__renderLibrary_partial_callable_9_partial_features_1(context3));
   buffer.writeln();
   buffer.write('''
 </dd>
@@ -6162,16 +6023,13 @@ String _renderLibrary_partial_callable_9(
 }
 
 String __renderLibrary_partial_callable_9_partial_categorization_0(
-    _i6.ModelFunctionTyped context3,
-    _i3.Library context2,
-    _i3.Library context1,
-    _i1.LibraryTemplateData context0) {
+    _i6.ModelFunctionTyped context3) {
   final buffer = StringBuffer();
   if (context3.hasCategoryNames == true) {
-    var context4 = context3.displayedCategories;
-    for (var context5 in context4) {
+    var context8 = context3.displayedCategories;
+    for (var context9 in context8) {
       buffer.write('\n    ');
-      buffer.write(context5!.categoryLabel);
+      buffer.write(context9!.categoryLabel);
     }
   }
   buffer.writeln();
@@ -6180,10 +6038,7 @@ String __renderLibrary_partial_callable_9_partial_categorization_0(
 }
 
 String __renderLibrary_partial_callable_9_partial_features_1(
-    _i6.ModelFunctionTyped context3,
-    _i3.Library context2,
-    _i3.Library context1,
-    _i1.LibraryTemplateData context0) {
+    _i6.ModelFunctionTyped context3) {
   final buffer = StringBuffer();
   if (context3.hasFeatures == true) {
     buffer.write('''<div class="features">''');
@@ -6195,60 +6050,55 @@ String __renderLibrary_partial_callable_9_partial_features_1(
   return buffer.toString();
 }
 
-String _renderLibrary_partial_typedef_10(
-    _i7.Typedef context3,
-    _i3.Library context2,
-    _i3.Library context1,
-    _i1.LibraryTemplateData context0) {
+String _renderLibrary_partial_typedef_10(_i7.Typedef context3) {
   final buffer = StringBuffer();
   if (context3.isCallable == true) {
-    var context4 = context3.asCallable;
+    var context5 = context3.asCallable;
     buffer.writeln();
     buffer.write('''
   <dt id="''');
-    buffer.writeEscaped(context4.htmlId);
+    buffer.writeEscaped(context5.htmlId);
     buffer.write('''" class="callable''');
-    if (context4.isInherited == true) {
+    if (context5.isInherited == true) {
       buffer.write(''' inherited''');
     }
     buffer.write('''">
     <span class="name''');
-    if (context4.isDeprecated == true) {
+    if (context5.isDeprecated == true) {
       buffer.write(''' deprecated''');
     }
     buffer.write('''">''');
-    buffer.write(context4.linkedName);
+    buffer.write(context5.linkedName);
     buffer.write('''</span>''');
-    buffer.write(context4.linkedGenericParameters);
+    buffer.write(context5.linkedGenericParameters);
     buffer.write('''<span class="signature">
       <span class="returntype parameter">= ''');
-    buffer.write(context4.modelType.linkedName);
+    buffer.write(context5.modelType.linkedName);
     buffer.write('''</span>
     </span>
     ''');
-    buffer.write(__renderLibrary_partial_typedef_10_partial_categorization_0(
-        context4, context3, context2, context1, context0));
+    buffer.write(
+        __renderLibrary_partial_typedef_10_partial_categorization_0(context5));
     buffer.writeln();
     buffer.write('''
   </dt>
   <dd''');
-    if (context4.isInherited == true) {
+    if (context5.isInherited == true) {
       buffer.write(''' class="inherited"''');
     }
     buffer.write('''>
     ''');
-    buffer.write(context4.oneLineDoc);
+    buffer.write(context5.oneLineDoc);
     buffer.write('\n    ');
-    buffer.write(__renderLibrary_partial_typedef_10_partial_features_1(
-        context4, context3, context2, context1, context0));
+    buffer
+        .write(__renderLibrary_partial_typedef_10_partial_features_1(context5));
     buffer.writeln();
     buffer.write('''
   </dd>''');
   }
   if (context3.isCallable != true) {
     buffer.write('\n  ');
-    buffer.write(__renderLibrary_partial_typedef_10_partial_type_2(
-        context3, context2, context1, context0));
+    buffer.write(__renderLibrary_partial_typedef_10_partial_type_2(context3));
   }
   buffer.writeln();
 
@@ -6256,17 +6106,13 @@ String _renderLibrary_partial_typedef_10(
 }
 
 String __renderLibrary_partial_typedef_10_partial_categorization_0(
-    _i7.FunctionTypedef context4,
-    _i7.Typedef context3,
-    _i3.Library context2,
-    _i3.Library context1,
-    _i1.LibraryTemplateData context0) {
+    _i7.FunctionTypedef context4) {
   final buffer = StringBuffer();
   if (context4.hasCategoryNames == true) {
-    var context5 = context4.displayedCategories;
-    for (var context6 in context5) {
+    var context9 = context4.displayedCategories;
+    for (var context10 in context9) {
       buffer.write('\n    ');
-      buffer.write(context6.categoryLabel);
+      buffer.write(context10.categoryLabel);
     }
   }
   buffer.writeln();
@@ -6275,11 +6121,7 @@ String __renderLibrary_partial_typedef_10_partial_categorization_0(
 }
 
 String __renderLibrary_partial_typedef_10_partial_features_1(
-    _i7.FunctionTypedef context4,
-    _i7.Typedef context3,
-    _i3.Library context2,
-    _i3.Library context1,
-    _i1.LibraryTemplateData context0) {
+    _i7.FunctionTypedef context4) {
   final buffer = StringBuffer();
   if (context4.hasFeatures == true) {
     buffer.write('''<div class="features">''');
@@ -6291,11 +6133,7 @@ String __renderLibrary_partial_typedef_10_partial_features_1(
   return buffer.toString();
 }
 
-String __renderLibrary_partial_typedef_10_partial_type_2(
-    _i7.Typedef context3,
-    _i3.Library context2,
-    _i3.Library context1,
-    _i1.LibraryTemplateData context0) {
+String __renderLibrary_partial_typedef_10_partial_type_2(_i7.Typedef context3) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
   buffer.writeEscaped(context3.htmlId);
@@ -6322,7 +6160,7 @@ String __renderLibrary_partial_typedef_10_partial_type_2(
   ''');
   buffer.write(
       ___renderLibrary_partial_typedef_10_partial_type_2_partial_categorization_0(
-          context3, context2, context1, context0));
+          context3));
   buffer.writeln();
   buffer.write('''
 </dt>
@@ -6336,7 +6174,7 @@ String __renderLibrary_partial_typedef_10_partial_type_2(
   buffer.write('\n  ');
   buffer.write(
       ___renderLibrary_partial_typedef_10_partial_type_2_partial_features_1(
-          context3, context2, context1, context0));
+          context3));
   buffer.writeln();
   buffer.write('''
 </dd>
@@ -6347,16 +6185,13 @@ String __renderLibrary_partial_typedef_10_partial_type_2(
 
 String
     ___renderLibrary_partial_typedef_10_partial_type_2_partial_categorization_0(
-        _i7.Typedef context3,
-        _i3.Library context2,
-        _i3.Library context1,
-        _i1.LibraryTemplateData context0) {
+        _i7.Typedef context3) {
   final buffer = StringBuffer();
   if (context3.hasCategoryNames == true) {
-    var context4 = context3.displayedCategories;
-    for (var context5 in context4) {
+    var context10 = context3.displayedCategories;
+    for (var context11 in context10) {
       buffer.write('\n    ');
-      buffer.write(context5.categoryLabel);
+      buffer.write(context11.categoryLabel);
     }
   }
   buffer.writeln();
@@ -6365,10 +6200,7 @@ String
 }
 
 String ___renderLibrary_partial_typedef_10_partial_type_2_partial_features_1(
-    _i7.Typedef context3,
-    _i3.Library context2,
-    _i3.Library context1,
-    _i1.LibraryTemplateData context0) {
+    _i7.Typedef context3) {
   final buffer = StringBuffer();
   if (context3.hasFeatures == true) {
     buffer.write('''<div class="features">''');
@@ -6390,27 +6222,27 @@ String _renderLibrary_partial_search_sidebar_11(
 </header>
 
 <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">''');
-  var context1 = context0.navLinks;
-  for (var context2 in context1) {
+  var context5 = context0.navLinks;
+  for (var context6 in context5) {
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context2.href);
+    buffer.write(context6.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context2.name);
+    buffer.writeEscaped(context6.name);
     buffer.write('''</a></li>''');
   }
-  var context3 = context0.navLinksWithGenerics;
-  for (var context4 in context3) {
+  var context7 = context0.navLinksWithGenerics;
+  for (var context8 in context7) {
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context4.href);
+    buffer.write(context8.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
-    if (context4.hasGenericParameters == true) {
+    buffer.writeEscaped(context8.name);
+    if (context8.hasGenericParameters == true) {
       buffer.write('''<span class="signature">''');
-      buffer.write(context4.genericParameters);
+      buffer.write(context8.genericParameters);
       buffer.write('''</span>''');
     }
     buffer.write('''</a></li>''');
@@ -6443,19 +6275,19 @@ String _renderLibrary_partial_search_sidebar_11(
 String _renderLibrary_partial_packages_12(_i1.LibraryTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<ol>''');
-  var context1 = context0.localPackages;
-  for (var context2 in context1) {
-    if (context2.isFirstPackage == true) {
-      if (context2.hasDocumentedCategories == true) {
+  var context12 = context0.localPackages;
+  for (var context13 in context12) {
+    if (context13.isFirstPackage == true) {
+      if (context13.hasDocumentedCategories == true) {
         buffer.writeln();
         buffer.write('''
       <li class="section-title">Topics</li>''');
-        var context3 = context2.documentedCategoriesSorted;
-        for (var context4 in context3) {
+        var context14 = context13.documentedCategoriesSorted;
+        for (var context15 in context14) {
           buffer.writeln();
           buffer.write('''
         <li>''');
-          buffer.write(context4.linkedName);
+          buffer.write(context15.linkedName);
           buffer.write('''</li>''');
         }
       }
@@ -6463,37 +6295,37 @@ String _renderLibrary_partial_packages_12(_i1.LibraryTemplateData context0) {
       buffer.write('''
       <li class="section-title">Libraries</li>''');
     }
-    if (context2.isFirstPackage != true) {
+    if (context13.isFirstPackage != true) {
       buffer.writeln();
       buffer.write('''
       <li class="section-title">''');
-      buffer.writeEscaped(context2.name);
+      buffer.writeEscaped(context13.name);
       buffer.write('''</li>''');
     }
-    var context5 = context2.defaultCategory;
-    if (context5 != null) {
-      var context6 = context5.publicLibrariesSorted;
-      for (var context7 in context6) {
+    var context16 = context13.defaultCategory;
+    if (context16 != null) {
+      var context17 = context16.publicLibrariesSorted;
+      for (var context18 in context17) {
         buffer.writeln();
         buffer.write('''
       <li>''');
-        buffer.write(context7.linkedName);
+        buffer.write(context18.linkedName);
         buffer.write('''</li>''');
       }
     }
-    var context8 = context2.categoriesWithPublicLibraries;
-    for (var context9 in context8) {
+    var context19 = context13.categoriesWithPublicLibraries;
+    for (var context20 in context19) {
       buffer.writeln();
       buffer.write('''
       <li class="section-subtitle">''');
-      buffer.writeEscaped(context9.name);
+      buffer.writeEscaped(context20.name);
       buffer.write('''</li>''');
-      var context10 = context9.publicLibrariesSorted;
-      for (var context11 in context10) {
+      var context21 = context20.publicLibrariesSorted;
+      for (var context22 in context21) {
         buffer.writeln();
         buffer.write('''
         <li class="section-subitem">''');
-        buffer.write(context11.linkedName);
+        buffer.write(context22.linkedName);
         buffer.write('''</li>''');
       }
     }
@@ -6567,13 +6399,13 @@ String renderMethod(_i1.MethodTemplateData context0) {
   buffer.writeln();
   buffer.write('''
       <div>''');
-  buffer.write(_renderMethod_partial_source_link_1(context1, context0));
+  buffer.write(_renderMethod_partial_source_link_1(context1));
   buffer.write('''<h1><span class="kind-method">''');
   buffer.write(context1.nameWithGenerics);
   buffer.write('''</span> ''');
   buffer.writeEscaped(context1.kind);
   buffer.write(' ');
-  buffer.write(_renderMethod_partial_feature_set_2(context1, context0));
+  buffer.write(_renderMethod_partial_feature_set_2(context1));
   buffer.write('''</h1></div>''');
   buffer.writeln();
   var context2 = context0.method;
@@ -6581,16 +6413,16 @@ String renderMethod(_i1.MethodTemplateData context0) {
   buffer.write('''
     <section class="multi-line-signature">
       ''');
-  buffer.write(_renderMethod_partial_callable_multiline_3(context2, context0));
+  buffer.write(_renderMethod_partial_callable_multiline_3(context2));
   buffer.write('\n      ');
-  buffer.write(_renderMethod_partial_features_4(context2, context0));
+  buffer.write(_renderMethod_partial_features_4(context2));
   buffer.writeln();
   buffer.write('''
     </section>
     ''');
-  buffer.write(_renderMethod_partial_documentation_5(context2, context0));
+  buffer.write(_renderMethod_partial_documentation_5(context2));
   buffer.write('\n\n    ');
-  buffer.write(_renderMethod_partial_source_code_6(context2, context0));
+  buffer.write(_renderMethod_partial_source_code_6(context2));
   buffer.writeln();
   buffer.writeln();
   buffer.write('''
@@ -6645,8 +6477,8 @@ String _renderMethod_partial_head_0(_i1.MethodTemplateData context0) {
   <title>''');
   buffer.writeEscaped(context0.title);
   buffer.write('''</title>''');
-  var context1 = context0.relCanonicalPrefix;
-  if (context1 != null) {
+  var context7 = context0.relCanonicalPrefix;
+  if (context7 != null) {
     buffer.writeln();
     buffer.write('''
   <link rel="canonical" href="''');
@@ -6657,7 +6489,7 @@ String _renderMethod_partial_head_0(_i1.MethodTemplateData context0) {
   }
   buffer.writeln();
   if (context0.useBaseHref == true) {
-    var context2 = context0.htmlBase;
+    var context8 = context0.htmlBase;
     buffer.writeln();
     buffer.write('''
   <!-- required because all the links are pseudo-absolute -->
@@ -6711,27 +6543,27 @@ String _renderMethod_partial_head_0(_i1.MethodTemplateData context0) {
 <header id="title">
   <button id="sidenav-left-toggle" type="button">&nbsp;</button>
   <ol class="breadcrumbs gt-separated dark hidden-xs">''');
-  var context3 = context0.navLinks;
-  for (var context4 in context3) {
+  var context9 = context0.navLinks;
+  for (var context10 in context9) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context4.href);
+    buffer.write(context10.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
+    buffer.writeEscaped(context10.name);
     buffer.write('''</a></li>''');
   }
-  var context5 = context0.navLinksWithGenerics;
-  for (var context6 in context5) {
+  var context11 = context0.navLinksWithGenerics;
+  for (var context12 in context11) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context6.href);
+    buffer.write(context12.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context6.name);
-    if (context6.hasGenericParameters == true) {
+    buffer.writeEscaped(context12.name);
+    if (context12.hasGenericParameters == true) {
       buffer.write('''<span class="signature">''');
-      buffer.write(context6.genericParameters);
+      buffer.write(context12.genericParameters);
       buffer.write('''</span>''');
     }
     buffer.write('''</a></li>''');
@@ -6769,8 +6601,7 @@ String _renderMethod_partial_head_0(_i1.MethodTemplateData context0) {
   return buffer.toString();
 }
 
-String _renderMethod_partial_source_link_1(
-    _i10.Method context1, _i1.MethodTemplateData context0) {
+String _renderMethod_partial_source_link_1(_i10.Method context1) {
   final buffer = StringBuffer();
   if (context1.hasSourceHref == true) {
     buffer.writeln();
@@ -6784,14 +6615,13 @@ String _renderMethod_partial_source_link_1(
   return buffer.toString();
 }
 
-String _renderMethod_partial_feature_set_2(
-    _i10.Method context1, _i1.MethodTemplateData context0) {
+String _renderMethod_partial_feature_set_2(_i10.Method context1) {
   final buffer = StringBuffer();
   if (context1.hasFeatureSet == true) {
-    var context2 = context1.displayedLanguageFeatures;
-    for (var context3 in context2) {
+    var context4 = context1.displayedLanguageFeatures;
+    for (var context5 in context4) {
       buffer.write('\n    ');
-      buffer.write(context3.featureLabel);
+      buffer.write(context5.featureLabel);
     }
   }
   buffer.writeln();
@@ -6799,20 +6629,19 @@ String _renderMethod_partial_feature_set_2(
   return buffer.toString();
 }
 
-String _renderMethod_partial_callable_multiline_3(
-    _i10.Method context1, _i1.MethodTemplateData context0) {
+String _renderMethod_partial_callable_multiline_3(_i10.Method context1) {
   final buffer = StringBuffer();
   if (context1.hasAnnotations == true) {
     buffer.writeln();
     buffer.write('''
 <div>
   <ol class="annotation-list">''');
-    var context2 = context1.annotations;
-    for (var context3 in context2) {
+    var context4 = context1.annotations;
+    for (var context5 in context4) {
       buffer.writeln();
       buffer.write('''
     <li>''');
-      buffer.write(context3.linkedNameWithParameters);
+      buffer.write(context5.linkedNameWithParameters);
       buffer.write('''</li>''');
     }
     buffer.writeln();
@@ -6829,7 +6658,7 @@ String _renderMethod_partial_callable_multiline_3(
 ''');
   buffer.write(
       __renderMethod_partial_callable_multiline_3_partial_name_summary_0(
-          context1, context0));
+          context1));
   buffer.write(context1.genericParameters);
   buffer.write('''(<wbr>''');
   if (context1.hasParameters == true) {
@@ -6842,7 +6671,7 @@ String _renderMethod_partial_callable_multiline_3(
 }
 
 String __renderMethod_partial_callable_multiline_3_partial_name_summary_0(
-    _i10.Method context1, _i1.MethodTemplateData context0) {
+    _i10.Method context1) {
   final buffer = StringBuffer();
   if (context1.isConst == true) {
     buffer.write('''const ''');
@@ -6858,8 +6687,7 @@ String __renderMethod_partial_callable_multiline_3_partial_name_summary_0(
   return buffer.toString();
 }
 
-String _renderMethod_partial_features_4(
-    _i10.Method context1, _i1.MethodTemplateData context0) {
+String _renderMethod_partial_features_4(_i10.Method context1) {
   final buffer = StringBuffer();
   if (context1.hasFeatures == true) {
     buffer.write('''<div class="features">''');
@@ -6871,8 +6699,7 @@ String _renderMethod_partial_features_4(
   return buffer.toString();
 }
 
-String _renderMethod_partial_documentation_5(
-    _i10.Method context1, _i1.MethodTemplateData context0) {
+String _renderMethod_partial_documentation_5(_i10.Method context1) {
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
     buffer.writeln();
@@ -6889,8 +6716,7 @@ String _renderMethod_partial_documentation_5(
   return buffer.toString();
 }
 
-String _renderMethod_partial_source_code_6(
-    _i10.Method context1, _i1.MethodTemplateData context0) {
+String _renderMethod_partial_source_code_6(_i10.Method context1) {
   final buffer = StringBuffer();
   if (context1.hasSourceCode == true) {
     buffer.writeln();
@@ -6916,27 +6742,27 @@ String _renderMethod_partial_search_sidebar_7(_i1.MethodTemplateData context0) {
 </header>
 
 <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">''');
-  var context1 = context0.navLinks;
-  for (var context2 in context1) {
+  var context5 = context0.navLinks;
+  for (var context6 in context5) {
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context2.href);
+    buffer.write(context6.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context2.name);
+    buffer.writeEscaped(context6.name);
     buffer.write('''</a></li>''');
   }
-  var context3 = context0.navLinksWithGenerics;
-  for (var context4 in context3) {
+  var context7 = context0.navLinksWithGenerics;
+  for (var context8 in context7) {
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context4.href);
+    buffer.write(context8.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
-    if (context4.hasGenericParameters == true) {
+    buffer.writeEscaped(context8.name);
+    if (context8.hasGenericParameters == true) {
       buffer.write('''<span class="signature">''');
-      buffer.write(context4.genericParameters);
+      buffer.write(context8.genericParameters);
       buffer.write('''</span>''');
     }
     buffer.write('''</a></li>''');
@@ -7027,20 +6853,20 @@ String renderMixin(_i1.MixinTemplateData context0) {
   buffer.writeln();
   buffer.write('''
       <div>''');
-  buffer.write(_renderMixin_partial_source_link_1(context1, context0));
+  buffer.write(_renderMixin_partial_source_link_1(context1));
   buffer.write('''<h1><span class="kind-mixin">''');
   buffer.write(context1.nameWithGenerics);
   buffer.write('''</span> ''');
   buffer.writeEscaped(context1.kind);
   buffer.write(' ');
-  buffer.write(_renderMixin_partial_feature_set_2(context1, context0));
+  buffer.write(_renderMixin_partial_feature_set_2(context1));
   buffer.write(' ');
-  buffer.write(_renderMixin_partial_categorization_3(context1, context0));
+  buffer.write(_renderMixin_partial_categorization_3(context1));
   buffer.write('''</h1></div>''');
   buffer.writeln();
   var context2 = context0.mixin;
   buffer.write('\n    ');
-  buffer.write(_renderMixin_partial_documentation_4(context2, context0));
+  buffer.write(_renderMixin_partial_documentation_4(context2));
   buffer.writeln();
   if (context2.hasModifiers == true) {
     buffer.writeln();
@@ -7064,30 +6890,8 @@ String renderMixin(_i1.MixinTemplateData context0) {
       buffer.write('''
         </ul></dd>''');
     }
-    buffer.writeln();
-    if (context2.hasPublicSuperChainReversed == true) {
-      buffer.writeln();
-      buffer.write('''
-        <dt>Inheritance</dt>
-        <dd><ul class="gt-separated dark mixin-relationships">
-          <li>''');
-      buffer.write(context0.linkedObjectType);
-      buffer.write('''</li>''');
-      var context5 = context2.publicSuperChainReversed;
-      for (var context6 in context5) {
-        buffer.writeln();
-        buffer.write('''
-          <li>''');
-        buffer.write(context6.linkedName);
-        buffer.write('''</li>''');
-      }
-      buffer.writeln();
-      buffer.write('''
-          <li>''');
-      buffer.write(context2.name);
-      buffer.write('''</li>
-        </ul></dd>''');
-    }
+    buffer.write('\n\n        ');
+    buffer.write(_renderMixin_partial_super_chain_5(context2, context0));
     buffer.writeln();
     if (context2.hasPublicInterfaces == true) {
       buffer.writeln();
@@ -7095,12 +6899,12 @@ String renderMixin(_i1.MixinTemplateData context0) {
         <dt>Implements</dt>
         <dd>
           <ul class="comma-separated mixin-relationships">''');
-      var context7 = context2.publicInterfaces;
-      for (var context8 in context7) {
+      var context5 = context2.publicInterfaces;
+      for (var context6 in context5) {
         buffer.writeln();
         buffer.write('''
             <li>''');
-        buffer.write(context8.linkedName);
+        buffer.write(context6.linkedName);
         buffer.write('''</li>''');
       }
       buffer.writeln();
@@ -7115,12 +6919,12 @@ String renderMixin(_i1.MixinTemplateData context0) {
         <dt>Mixin Applications</dt>
         <dd>
           <ul class="comma-separated mixin-relationships">''');
-      var context9 = context2.publicImplementorsSorted;
-      for (var context10 in context9) {
+      var context7 = context2.publicImplementorsSorted;
+      for (var context8 in context7) {
         buffer.writeln();
         buffer.write('''
             <li>''');
-        buffer.write(context10.linkedName);
+        buffer.write(context8.linkedName);
         buffer.write('''</li>''');
       }
       buffer.writeln();
@@ -7134,12 +6938,12 @@ String renderMixin(_i1.MixinTemplateData context0) {
       buffer.write('''
         <dt>Annotations</dt>
         <dd><ul class="annotation-list mixin-relationships">''');
-      var context11 = context2.annotations;
-      for (var context12 in context11) {
+      var context9 = context2.annotations;
+      for (var context10 in context9) {
         buffer.writeln();
         buffer.write('''
           <li>''');
-        buffer.write(context12.linkedNameWithParameters);
+        buffer.write(context10.linkedNameWithParameters);
         buffer.write('''</li>''');
       }
       buffer.writeln();
@@ -7163,11 +6967,10 @@ String renderMixin(_i1.MixinTemplateData context0) {
       <h2>Properties</h2>
 
       <dl class="properties">''');
-    var context13 = context2.publicInstanceFields;
-    for (var context14 in context13) {
+    var context11 = context2.publicInstanceFields;
+    for (var context12 in context11) {
       buffer.write('\n        ');
-      buffer.write(
-          _renderMixin_partial_property_5(context14, context2, context0));
+      buffer.write(_renderMixin_partial_property_6(context12));
     }
     buffer.writeln();
     buffer.write('''
@@ -7185,11 +6988,10 @@ String renderMixin(_i1.MixinTemplateData context0) {
     buffer.write('''" id="instance-methods">
       <h2>Methods</h2>
       <dl class="callables">''');
-    var context15 = context2.publicInstanceMethods;
-    for (var context16 in context15) {
+    var context13 = context2.publicInstanceMethods;
+    for (var context14 in context13) {
       buffer.write('\n        ');
-      buffer.write(
-          _renderMixin_partial_callable_6(context16, context2, context0));
+      buffer.write(_renderMixin_partial_callable_7(context14));
     }
     buffer.writeln();
     buffer.write('''
@@ -7207,11 +7009,10 @@ String renderMixin(_i1.MixinTemplateData context0) {
     buffer.write('''" id="operators">
       <h2>Operators</h2>
       <dl class="callables">''');
-    var context17 = context2.publicInstanceOperatorsSorted;
-    for (var context18 in context17) {
+    var context15 = context2.publicInstanceOperatorsSorted;
+    for (var context16 in context15) {
       buffer.write('\n        ');
-      buffer.write(
-          _renderMixin_partial_callable_6(context18, context2, context0));
+      buffer.write(_renderMixin_partial_callable_7(context16));
     }
     buffer.writeln();
     buffer.write('''
@@ -7226,11 +7027,10 @@ String renderMixin(_i1.MixinTemplateData context0) {
       <h2>Static Properties</h2>
 
       <dl class="properties">''');
-    var context19 = context2.publicVariableStaticFieldsSorted;
-    for (var context20 in context19) {
+    var context17 = context2.publicVariableStaticFieldsSorted;
+    for (var context18 in context17) {
       buffer.write('\n        ');
-      buffer.write(
-          _renderMixin_partial_property_5(context20, context2, context0));
+      buffer.write(_renderMixin_partial_property_6(context18));
     }
     buffer.writeln();
     buffer.write('''
@@ -7244,11 +7044,10 @@ String renderMixin(_i1.MixinTemplateData context0) {
     <section class="summary offset-anchor" id="static-methods">
       <h2>Static Methods</h2>
       <dl class="callables">''');
-    var context21 = context2.publicStaticMethods;
-    for (var context22 in context21) {
+    var context19 = context2.publicStaticMethods;
+    for (var context20 in context19) {
       buffer.write('\n        ');
-      buffer.write(
-          _renderMixin_partial_callable_6(context22, context2, context0));
+      buffer.write(_renderMixin_partial_callable_7(context20));
     }
     buffer.writeln();
     buffer.write('''
@@ -7263,11 +7062,10 @@ String renderMixin(_i1.MixinTemplateData context0) {
       <h2>Constants</h2>
 
       <dl class="properties">''');
-    var context23 = context2.publicConstantFieldsSorted;
-    for (var context24 in context23) {
+    var context21 = context2.publicConstantFieldsSorted;
+    for (var context22 in context21) {
       buffer.write('\n        ');
-      buffer.write(
-          _renderMixin_partial_constant_7(context24, context2, context0));
+      buffer.write(_renderMixin_partial_constant_8(context22));
     }
     buffer.writeln();
     buffer.write('''
@@ -7280,7 +7078,7 @@ String renderMixin(_i1.MixinTemplateData context0) {
 
   <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
     ''');
-  buffer.write(_renderMixin_partial_search_sidebar_8(context0));
+  buffer.write(_renderMixin_partial_search_sidebar_9(context0));
   buffer.writeln();
   buffer.write('''
     <h5>''');
@@ -7302,7 +7100,7 @@ String renderMixin(_i1.MixinTemplateData context0) {
   </div><!--/.sidebar-offcanvas-->
 
 ''');
-  buffer.write(_renderMixin_partial_footer_9(context0));
+  buffer.write(_renderMixin_partial_footer_10(context0));
   buffer.writeln();
 
   return buffer.toString();
@@ -7331,8 +7129,8 @@ String _renderMixin_partial_head_0(_i1.MixinTemplateData context0) {
   <title>''');
   buffer.writeEscaped(context0.title);
   buffer.write('''</title>''');
-  var context1 = context0.relCanonicalPrefix;
-  if (context1 != null) {
+  var context7 = context0.relCanonicalPrefix;
+  if (context7 != null) {
     buffer.writeln();
     buffer.write('''
   <link rel="canonical" href="''');
@@ -7343,7 +7141,7 @@ String _renderMixin_partial_head_0(_i1.MixinTemplateData context0) {
   }
   buffer.writeln();
   if (context0.useBaseHref == true) {
-    var context2 = context0.htmlBase;
+    var context8 = context0.htmlBase;
     buffer.writeln();
     buffer.write('''
   <!-- required because all the links are pseudo-absolute -->
@@ -7397,27 +7195,27 @@ String _renderMixin_partial_head_0(_i1.MixinTemplateData context0) {
 <header id="title">
   <button id="sidenav-left-toggle" type="button">&nbsp;</button>
   <ol class="breadcrumbs gt-separated dark hidden-xs">''');
-  var context3 = context0.navLinks;
-  for (var context4 in context3) {
+  var context9 = context0.navLinks;
+  for (var context10 in context9) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context4.href);
+    buffer.write(context10.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
+    buffer.writeEscaped(context10.name);
     buffer.write('''</a></li>''');
   }
-  var context5 = context0.navLinksWithGenerics;
-  for (var context6 in context5) {
+  var context11 = context0.navLinksWithGenerics;
+  for (var context12 in context11) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context6.href);
+    buffer.write(context12.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context6.name);
-    if (context6.hasGenericParameters == true) {
+    buffer.writeEscaped(context12.name);
+    if (context12.hasGenericParameters == true) {
       buffer.write('''<span class="signature">''');
-      buffer.write(context6.genericParameters);
+      buffer.write(context12.genericParameters);
       buffer.write('''</span>''');
     }
     buffer.write('''</a></li>''');
@@ -7455,8 +7253,7 @@ String _renderMixin_partial_head_0(_i1.MixinTemplateData context0) {
   return buffer.toString();
 }
 
-String _renderMixin_partial_source_link_1(
-    _i16.Mixin context1, _i1.MixinTemplateData context0) {
+String _renderMixin_partial_source_link_1(_i15.Mixin context1) {
   final buffer = StringBuffer();
   if (context1.hasSourceHref == true) {
     buffer.writeln();
@@ -7470,14 +7267,13 @@ String _renderMixin_partial_source_link_1(
   return buffer.toString();
 }
 
-String _renderMixin_partial_feature_set_2(
-    _i16.Mixin context1, _i1.MixinTemplateData context0) {
+String _renderMixin_partial_feature_set_2(_i15.Mixin context1) {
   final buffer = StringBuffer();
   if (context1.hasFeatureSet == true) {
-    var context2 = context1.displayedLanguageFeatures;
-    for (var context3 in context2) {
+    var context4 = context1.displayedLanguageFeatures;
+    for (var context5 in context4) {
       buffer.write('\n    ');
-      buffer.write(context3.featureLabel);
+      buffer.write(context5.featureLabel);
     }
   }
   buffer.writeln();
@@ -7485,14 +7281,13 @@ String _renderMixin_partial_feature_set_2(
   return buffer.toString();
 }
 
-String _renderMixin_partial_categorization_3(
-    _i16.Mixin context1, _i1.MixinTemplateData context0) {
+String _renderMixin_partial_categorization_3(_i15.Mixin context1) {
   final buffer = StringBuffer();
   if (context1.hasCategoryNames == true) {
-    var context2 = context1.displayedCategories;
-    for (var context3 in context2) {
+    var context4 = context1.displayedCategories;
+    for (var context5 in context4) {
       buffer.write('\n    ');
-      buffer.write(context3.categoryLabel);
+      buffer.write(context5.categoryLabel);
     }
   }
   buffer.writeln();
@@ -7500,8 +7295,7 @@ String _renderMixin_partial_categorization_3(
   return buffer.toString();
 }
 
-String _renderMixin_partial_documentation_4(
-    _i16.Mixin context1, _i1.MixinTemplateData context0) {
+String _renderMixin_partial_documentation_4(_i15.Mixin context1) {
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
     buffer.writeln();
@@ -7518,8 +7312,40 @@ String _renderMixin_partial_documentation_4(
   return buffer.toString();
 }
 
-String _renderMixin_partial_property_5(
-    _i9.Field context2, _i16.Mixin context1, _i1.MixinTemplateData context0) {
+String _renderMixin_partial_super_chain_5(
+    _i15.Mixin context1, _i1.MixinTemplateData context0) {
+  final buffer = StringBuffer();
+  if (context1.hasPublicSuperChainReversed == true) {
+    buffer.writeln();
+    buffer.write('''
+  <dt>Inheritance</dt>
+  <dd><ul class="gt-separated dark ''');
+    buffer.writeEscaped(context1.relationshipsClass);
+    buffer.write('''">
+    <li>''');
+    buffer.write(context0.linkedObjectType);
+    buffer.write('''</li>''');
+    var context4 = context1.publicSuperChainReversed;
+    for (var context5 in context4) {
+      buffer.writeln();
+      buffer.write('''
+    <li>''');
+      buffer.write(context5.linkedName);
+      buffer.write('''</li>''');
+    }
+    buffer.writeln();
+    buffer.write('''
+    <li>''');
+    buffer.write(context1.name);
+    buffer.write('''</li>
+  </ul></dd>''');
+  }
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
+String _renderMixin_partial_property_6(_i9.Field context2) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
   buffer.writeEscaped(context2.htmlId);
@@ -7536,8 +7362,8 @@ String _renderMixin_partial_property_5(
   buffer.write(' ');
   buffer.write(context2.modelType.linkedName);
   buffer.write('''</span> ''');
-  buffer.write(__renderMixin_partial_property_5_partial_categorization_0(
-      context2, context1, context0));
+  buffer.write(
+      __renderMixin_partial_property_6_partial_categorization_0(context2));
   buffer.writeln();
   buffer.write('''
 </dt>
@@ -7549,8 +7375,7 @@ String _renderMixin_partial_property_5(
   ''');
   buffer.write(context2.oneLineDoc);
   buffer.write('\n  ');
-  buffer.write(__renderMixin_partial_property_5_partial_features_1(
-      context2, context1, context0));
+  buffer.write(__renderMixin_partial_property_6_partial_features_1(context2));
   buffer.writeln();
   buffer.write('''
 </dd>
@@ -7559,14 +7384,14 @@ String _renderMixin_partial_property_5(
   return buffer.toString();
 }
 
-String __renderMixin_partial_property_5_partial_categorization_0(
-    _i9.Field context2, _i16.Mixin context1, _i1.MixinTemplateData context0) {
+String __renderMixin_partial_property_6_partial_categorization_0(
+    _i9.Field context2) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
-    var context3 = context2.displayedCategories;
-    for (var context4 in context3) {
+    var context7 = context2.displayedCategories;
+    for (var context8 in context7) {
       buffer.write('\n    ');
-      buffer.write(context4!.categoryLabel);
+      buffer.write(context8!.categoryLabel);
     }
   }
   buffer.writeln();
@@ -7574,8 +7399,7 @@ String __renderMixin_partial_property_5_partial_categorization_0(
   return buffer.toString();
 }
 
-String __renderMixin_partial_property_5_partial_features_1(
-    _i9.Field context2, _i16.Mixin context1, _i1.MixinTemplateData context0) {
+String __renderMixin_partial_property_6_partial_features_1(_i9.Field context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
     buffer.write('''<div class="features">''');
@@ -7587,8 +7411,7 @@ String __renderMixin_partial_property_5_partial_features_1(
   return buffer.toString();
 }
 
-String _renderMixin_partial_callable_6(
-    _i10.Method context2, _i16.Mixin context1, _i1.MixinTemplateData context0) {
+String _renderMixin_partial_callable_7(_i10.Method context2) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
   buffer.writeEscaped(context2.htmlId);
@@ -7613,8 +7436,8 @@ String _renderMixin_partial_callable_6(
   buffer.write('''</span>
   </span>
   ''');
-  buffer.write(__renderMixin_partial_callable_6_partial_categorization_0(
-      context2, context1, context0));
+  buffer.write(
+      __renderMixin_partial_callable_7_partial_categorization_0(context2));
   buffer.writeln();
   buffer.write('''
 </dt>
@@ -7626,8 +7449,7 @@ String _renderMixin_partial_callable_6(
   ''');
   buffer.write(context2.oneLineDoc);
   buffer.write('\n  ');
-  buffer.write(__renderMixin_partial_callable_6_partial_features_1(
-      context2, context1, context0));
+  buffer.write(__renderMixin_partial_callable_7_partial_features_1(context2));
   buffer.writeln();
   buffer.write('''
 </dd>
@@ -7636,14 +7458,14 @@ String _renderMixin_partial_callable_6(
   return buffer.toString();
 }
 
-String __renderMixin_partial_callable_6_partial_categorization_0(
-    _i10.Method context2, _i16.Mixin context1, _i1.MixinTemplateData context0) {
+String __renderMixin_partial_callable_7_partial_categorization_0(
+    _i10.Method context2) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
-    var context3 = context2.displayedCategories;
-    for (var context4 in context3) {
+    var context7 = context2.displayedCategories;
+    for (var context8 in context7) {
       buffer.write('\n    ');
-      buffer.write(context4!.categoryLabel);
+      buffer.write(context8!.categoryLabel);
     }
   }
   buffer.writeln();
@@ -7651,8 +7473,8 @@ String __renderMixin_partial_callable_6_partial_categorization_0(
   return buffer.toString();
 }
 
-String __renderMixin_partial_callable_6_partial_features_1(
-    _i10.Method context2, _i16.Mixin context1, _i1.MixinTemplateData context0) {
+String __renderMixin_partial_callable_7_partial_features_1(
+    _i10.Method context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
     buffer.write('''<div class="features">''');
@@ -7664,8 +7486,7 @@ String __renderMixin_partial_callable_6_partial_features_1(
   return buffer.toString();
 }
 
-String _renderMixin_partial_constant_7(
-    _i9.Field context2, _i16.Mixin context1, _i1.MixinTemplateData context0) {
+String _renderMixin_partial_constant_8(_i9.Field context2) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
   buffer.writeEscaped(context2.htmlId);
@@ -7681,8 +7502,8 @@ String _renderMixin_partial_constant_7(
   buffer.write(context2.modelType.linkedName);
   buffer.write('''</span>
   ''');
-  buffer.write(__renderMixin_partial_constant_7_partial_categorization_0(
-      context2, context1, context0));
+  buffer.write(
+      __renderMixin_partial_constant_8_partial_categorization_0(context2));
   buffer.writeln();
   buffer.write('''
 </dt>
@@ -7690,8 +7511,7 @@ String _renderMixin_partial_constant_7(
   ''');
   buffer.write(context2.oneLineDoc);
   buffer.write('\n  ');
-  buffer.write(__renderMixin_partial_constant_7_partial_features_1(
-      context2, context1, context0));
+  buffer.write(__renderMixin_partial_constant_8_partial_features_1(context2));
   buffer.writeln();
   buffer.write('''
   <div>
@@ -7705,14 +7525,14 @@ String _renderMixin_partial_constant_7(
   return buffer.toString();
 }
 
-String __renderMixin_partial_constant_7_partial_categorization_0(
-    _i9.Field context2, _i16.Mixin context1, _i1.MixinTemplateData context0) {
+String __renderMixin_partial_constant_8_partial_categorization_0(
+    _i9.Field context2) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
-    var context3 = context2.displayedCategories;
-    for (var context4 in context3) {
+    var context7 = context2.displayedCategories;
+    for (var context8 in context7) {
       buffer.write('\n    ');
-      buffer.write(context4!.categoryLabel);
+      buffer.write(context8!.categoryLabel);
     }
   }
   buffer.writeln();
@@ -7720,8 +7540,7 @@ String __renderMixin_partial_constant_7_partial_categorization_0(
   return buffer.toString();
 }
 
-String __renderMixin_partial_constant_7_partial_features_1(
-    _i9.Field context2, _i16.Mixin context1, _i1.MixinTemplateData context0) {
+String __renderMixin_partial_constant_8_partial_features_1(_i9.Field context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
     buffer.write('''<div class="features">''');
@@ -7733,7 +7552,7 @@ String __renderMixin_partial_constant_7_partial_features_1(
   return buffer.toString();
 }
 
-String _renderMixin_partial_search_sidebar_8(_i1.MixinTemplateData context0) {
+String _renderMixin_partial_search_sidebar_9(_i1.MixinTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<header id="header-search-sidebar" class="hidden-l">
   <form class="search-sidebar" role="search">
@@ -7742,27 +7561,27 @@ String _renderMixin_partial_search_sidebar_8(_i1.MixinTemplateData context0) {
 </header>
 
 <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">''');
-  var context1 = context0.navLinks;
-  for (var context2 in context1) {
+  var context5 = context0.navLinks;
+  for (var context6 in context5) {
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context2.href);
+    buffer.write(context6.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context2.name);
+    buffer.writeEscaped(context6.name);
     buffer.write('''</a></li>''');
   }
-  var context3 = context0.navLinksWithGenerics;
-  for (var context4 in context3) {
+  var context7 = context0.navLinksWithGenerics;
+  for (var context8 in context7) {
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context4.href);
+    buffer.write(context8.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
-    if (context4.hasGenericParameters == true) {
+    buffer.writeEscaped(context8.name);
+    if (context8.hasGenericParameters == true) {
       buffer.write('''<span class="signature">''');
-      buffer.write(context4.genericParameters);
+      buffer.write(context8.genericParameters);
       buffer.write('''</span>''');
     }
     buffer.write('''</a></li>''');
@@ -7792,7 +7611,7 @@ String _renderMixin_partial_search_sidebar_8(_i1.MixinTemplateData context0) {
   return buffer.toString();
 }
 
-String _renderMixin_partial_footer_9(_i1.MixinTemplateData context0) {
+String _renderMixin_partial_footer_10(_i1.MixinTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''</main>
 
@@ -7853,13 +7672,13 @@ String renderProperty(_i1.PropertyTemplateData context0) {
   buffer.writeln();
   buffer.write('''
       <div>''');
-  buffer.write(_renderProperty_partial_source_link_1(context1, context0));
+  buffer.write(_renderProperty_partial_source_link_1(context1));
   buffer.write('''<h1><span class="kind-property">''');
   buffer.writeEscaped(context1.name);
   buffer.write('''</span> ''');
   buffer.writeEscaped(context1.kind);
   buffer.write(' ');
-  buffer.write(_renderProperty_partial_feature_set_2(context1, context0));
+  buffer.write(_renderProperty_partial_feature_set_2(context1));
   buffer.write('''</h1></div>''');
   buffer.writeln();
   var context2 = context0.self;
@@ -7870,29 +7689,27 @@ String renderProperty(_i1.PropertyTemplateData context0) {
           ''');
     buffer.write(context2.modelType.linkedName);
     buffer.write('\n          ');
-    buffer.write(_renderProperty_partial_name_summary_3(context2, context0));
+    buffer.write(_renderProperty_partial_name_summary_3(context2));
     buffer.write('\n          ');
-    buffer.write(_renderProperty_partial_features_4(context2, context0));
+    buffer.write(_renderProperty_partial_features_4(context2));
     buffer.writeln();
     buffer.write('''
         </section>
         ''');
-    buffer.write(_renderProperty_partial_documentation_5(context2, context0));
+    buffer.write(_renderProperty_partial_documentation_5(context2));
     buffer.write('\n        ');
-    buffer.write(_renderProperty_partial_source_code_6(context2, context0));
+    buffer.write(_renderProperty_partial_source_code_6(context2));
   }
   buffer.writeln();
   if (context2.hasGetterOrSetter == true) {
     if (context2.hasGetter == true) {
       buffer.write('\n        ');
-      buffer
-          .write(_renderProperty_partial_accessor_getter_7(context2, context0));
+      buffer.write(_renderProperty_partial_accessor_getter_7(context2));
     }
     buffer.writeln();
     if (context2.hasSetter == true) {
       buffer.write('\n        ');
-      buffer
-          .write(_renderProperty_partial_accessor_setter_8(context2, context0));
+      buffer.write(_renderProperty_partial_accessor_setter_8(context2));
     }
   }
   buffer.writeln();
@@ -7948,8 +7765,8 @@ String _renderProperty_partial_head_0(_i1.PropertyTemplateData context0) {
   <title>''');
   buffer.writeEscaped(context0.title);
   buffer.write('''</title>''');
-  var context1 = context0.relCanonicalPrefix;
-  if (context1 != null) {
+  var context7 = context0.relCanonicalPrefix;
+  if (context7 != null) {
     buffer.writeln();
     buffer.write('''
   <link rel="canonical" href="''');
@@ -7960,7 +7777,7 @@ String _renderProperty_partial_head_0(_i1.PropertyTemplateData context0) {
   }
   buffer.writeln();
   if (context0.useBaseHref == true) {
-    var context2 = context0.htmlBase;
+    var context8 = context0.htmlBase;
     buffer.writeln();
     buffer.write('''
   <!-- required because all the links are pseudo-absolute -->
@@ -8014,27 +7831,27 @@ String _renderProperty_partial_head_0(_i1.PropertyTemplateData context0) {
 <header id="title">
   <button id="sidenav-left-toggle" type="button">&nbsp;</button>
   <ol class="breadcrumbs gt-separated dark hidden-xs">''');
-  var context3 = context0.navLinks;
-  for (var context4 in context3) {
+  var context9 = context0.navLinks;
+  for (var context10 in context9) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context4.href);
+    buffer.write(context10.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
+    buffer.writeEscaped(context10.name);
     buffer.write('''</a></li>''');
   }
-  var context5 = context0.navLinksWithGenerics;
-  for (var context6 in context5) {
+  var context11 = context0.navLinksWithGenerics;
+  for (var context12 in context11) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context6.href);
+    buffer.write(context12.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context6.name);
-    if (context6.hasGenericParameters == true) {
+    buffer.writeEscaped(context12.name);
+    if (context12.hasGenericParameters == true) {
       buffer.write('''<span class="signature">''');
-      buffer.write(context6.genericParameters);
+      buffer.write(context12.genericParameters);
       buffer.write('''</span>''');
     }
     buffer.write('''</a></li>''');
@@ -8072,8 +7889,7 @@ String _renderProperty_partial_head_0(_i1.PropertyTemplateData context0) {
   return buffer.toString();
 }
 
-String _renderProperty_partial_source_link_1(
-    _i9.Field context1, _i1.PropertyTemplateData context0) {
+String _renderProperty_partial_source_link_1(_i9.Field context1) {
   final buffer = StringBuffer();
   if (context1.hasSourceHref == true) {
     buffer.writeln();
@@ -8087,14 +7903,13 @@ String _renderProperty_partial_source_link_1(
   return buffer.toString();
 }
 
-String _renderProperty_partial_feature_set_2(
-    _i9.Field context1, _i1.PropertyTemplateData context0) {
+String _renderProperty_partial_feature_set_2(_i9.Field context1) {
   final buffer = StringBuffer();
   if (context1.hasFeatureSet == true) {
-    var context2 = context1.displayedLanguageFeatures;
-    for (var context3 in context2) {
+    var context4 = context1.displayedLanguageFeatures;
+    for (var context5 in context4) {
       buffer.write('\n    ');
-      buffer.write(context3.featureLabel);
+      buffer.write(context5.featureLabel);
     }
   }
   buffer.writeln();
@@ -8102,8 +7917,7 @@ String _renderProperty_partial_feature_set_2(
   return buffer.toString();
 }
 
-String _renderProperty_partial_name_summary_3(
-    _i9.Field context1, _i1.PropertyTemplateData context0) {
+String _renderProperty_partial_name_summary_3(_i9.Field context1) {
   final buffer = StringBuffer();
   if (context1.isConst == true) {
     buffer.write('''const ''');
@@ -8119,8 +7933,7 @@ String _renderProperty_partial_name_summary_3(
   return buffer.toString();
 }
 
-String _renderProperty_partial_features_4(
-    _i9.Field context1, _i1.PropertyTemplateData context0) {
+String _renderProperty_partial_features_4(_i9.Field context1) {
   final buffer = StringBuffer();
   if (context1.hasFeatures == true) {
     buffer.write('''<div class="features">''');
@@ -8132,8 +7945,7 @@ String _renderProperty_partial_features_4(
   return buffer.toString();
 }
 
-String _renderProperty_partial_documentation_5(
-    _i9.Field context1, _i1.PropertyTemplateData context0) {
+String _renderProperty_partial_documentation_5(_i9.Field context1) {
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
     buffer.writeln();
@@ -8150,8 +7962,7 @@ String _renderProperty_partial_documentation_5(
   return buffer.toString();
 }
 
-String _renderProperty_partial_source_code_6(
-    _i9.Field context1, _i1.PropertyTemplateData context0) {
+String _renderProperty_partial_source_code_6(_i9.Field context1) {
   final buffer = StringBuffer();
   if (context1.hasSourceCode == true) {
     buffer.writeln();
@@ -8168,26 +7979,25 @@ String _renderProperty_partial_source_code_6(
   return buffer.toString();
 }
 
-String _renderProperty_partial_accessor_getter_7(
-    _i9.Field context1, _i1.PropertyTemplateData context0) {
+String _renderProperty_partial_accessor_getter_7(_i9.Field context1) {
   final buffer = StringBuffer();
-  var context2 = context1.getter;
-  if (context2 != null) {
+  var context3 = context1.getter;
+  if (context3 != null) {
     buffer.writeln();
     buffer.write('''
 <section id="getter">
 
 <section class="multi-line-signature">
   <span class="returntype">''');
-    buffer.write(context2.modelType.returnType.linkedName);
+    buffer.write(context3.modelType.returnType.linkedName);
     buffer.write('''</span>
   ''');
     buffer.write(
         __renderProperty_partial_accessor_getter_7_partial_name_summary_0(
-            context2, context1, context0));
+            context3));
     buffer.write('\n  ');
     buffer.write(__renderProperty_partial_accessor_getter_7_partial_features_1(
-        context2, context1, context0));
+        context3));
     buffer.writeln();
     buffer.write('''
 </section>
@@ -8195,11 +8005,11 @@ String _renderProperty_partial_accessor_getter_7(
 ''');
     buffer.write(
         __renderProperty_partial_accessor_getter_7_partial_documentation_2(
-            context2, context1, context0));
+            context3));
     buffer.writeln();
     buffer.write(
         __renderProperty_partial_accessor_getter_7_partial_source_code_3(
-            context2, context1, context0));
+            context3));
     buffer.writeln();
     buffer.write('''
 </section>''');
@@ -8210,9 +8020,7 @@ String _renderProperty_partial_accessor_getter_7(
 }
 
 String __renderProperty_partial_accessor_getter_7_partial_name_summary_0(
-    _i17.ContainerAccessor context2,
-    _i9.Field context1,
-    _i1.PropertyTemplateData context0) {
+    _i16.ContainerAccessor context2) {
   final buffer = StringBuffer();
   if (context2.isConst == true) {
     buffer.write('''const ''');
@@ -8229,9 +8037,7 @@ String __renderProperty_partial_accessor_getter_7_partial_name_summary_0(
 }
 
 String __renderProperty_partial_accessor_getter_7_partial_features_1(
-    _i17.ContainerAccessor context2,
-    _i9.Field context1,
-    _i1.PropertyTemplateData context0) {
+    _i16.ContainerAccessor context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
     buffer.write('''<div class="features">''');
@@ -8244,9 +8050,7 @@ String __renderProperty_partial_accessor_getter_7_partial_features_1(
 }
 
 String __renderProperty_partial_accessor_getter_7_partial_documentation_2(
-    _i17.ContainerAccessor context2,
-    _i9.Field context1,
-    _i1.PropertyTemplateData context0) {
+    _i16.ContainerAccessor context2) {
   final buffer = StringBuffer();
   if (context2.hasDocumentation == true) {
     buffer.writeln();
@@ -8264,9 +8068,7 @@ String __renderProperty_partial_accessor_getter_7_partial_documentation_2(
 }
 
 String __renderProperty_partial_accessor_getter_7_partial_source_code_3(
-    _i17.ContainerAccessor context2,
-    _i9.Field context1,
-    _i1.PropertyTemplateData context0) {
+    _i16.ContainerAccessor context2) {
   final buffer = StringBuffer();
   if (context2.hasSourceCode == true) {
     buffer.writeln();
@@ -8283,11 +8085,10 @@ String __renderProperty_partial_accessor_getter_7_partial_source_code_3(
   return buffer.toString();
 }
 
-String _renderProperty_partial_accessor_setter_8(
-    _i9.Field context1, _i1.PropertyTemplateData context0) {
+String _renderProperty_partial_accessor_setter_8(_i9.Field context1) {
   final buffer = StringBuffer();
-  var context2 = context1.setter;
-  if (context2 != null) {
+  var context3 = context1.setter;
+  if (context3 != null) {
     buffer.writeln();
     buffer.write('''
 <section id="setter">
@@ -8297,13 +8098,13 @@ String _renderProperty_partial_accessor_setter_8(
   ''');
     buffer.write(
         __renderProperty_partial_accessor_setter_8_partial_name_summary_0(
-            context2, context1, context0));
+            context3));
     buffer.write('''<span class="signature">(<wbr>''');
-    buffer.write(context2.linkedParamsNoMetadata);
+    buffer.write(context3.linkedParamsNoMetadata);
     buffer.write(''')</span>
   ''');
     buffer.write(__renderProperty_partial_accessor_setter_8_partial_features_1(
-        context2, context1, context0));
+        context3));
     buffer.writeln();
     buffer.write('''
 </section>
@@ -8311,11 +8112,11 @@ String _renderProperty_partial_accessor_setter_8(
 ''');
     buffer.write(
         __renderProperty_partial_accessor_setter_8_partial_documentation_2(
-            context2, context1, context0));
+            context3));
     buffer.writeln();
     buffer.write(
         __renderProperty_partial_accessor_setter_8_partial_source_code_3(
-            context2, context1, context0));
+            context3));
     buffer.writeln();
     buffer.write('''
 </section>''');
@@ -8326,9 +8127,7 @@ String _renderProperty_partial_accessor_setter_8(
 }
 
 String __renderProperty_partial_accessor_setter_8_partial_name_summary_0(
-    _i17.ContainerAccessor context2,
-    _i9.Field context1,
-    _i1.PropertyTemplateData context0) {
+    _i16.ContainerAccessor context2) {
   final buffer = StringBuffer();
   if (context2.isConst == true) {
     buffer.write('''const ''');
@@ -8345,9 +8144,7 @@ String __renderProperty_partial_accessor_setter_8_partial_name_summary_0(
 }
 
 String __renderProperty_partial_accessor_setter_8_partial_features_1(
-    _i17.ContainerAccessor context2,
-    _i9.Field context1,
-    _i1.PropertyTemplateData context0) {
+    _i16.ContainerAccessor context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
     buffer.write('''<div class="features">''');
@@ -8360,9 +8157,7 @@ String __renderProperty_partial_accessor_setter_8_partial_features_1(
 }
 
 String __renderProperty_partial_accessor_setter_8_partial_documentation_2(
-    _i17.ContainerAccessor context2,
-    _i9.Field context1,
-    _i1.PropertyTemplateData context0) {
+    _i16.ContainerAccessor context2) {
   final buffer = StringBuffer();
   if (context2.hasDocumentation == true) {
     buffer.writeln();
@@ -8380,9 +8175,7 @@ String __renderProperty_partial_accessor_setter_8_partial_documentation_2(
 }
 
 String __renderProperty_partial_accessor_setter_8_partial_source_code_3(
-    _i17.ContainerAccessor context2,
-    _i9.Field context1,
-    _i1.PropertyTemplateData context0) {
+    _i16.ContainerAccessor context2) {
   final buffer = StringBuffer();
   if (context2.hasSourceCode == true) {
     buffer.writeln();
@@ -8409,27 +8202,27 @@ String _renderProperty_partial_search_sidebar_9(
 </header>
 
 <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">''');
-  var context1 = context0.navLinks;
-  for (var context2 in context1) {
+  var context5 = context0.navLinks;
+  for (var context6 in context5) {
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context2.href);
+    buffer.write(context6.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context2.name);
+    buffer.writeEscaped(context6.name);
     buffer.write('''</a></li>''');
   }
-  var context3 = context0.navLinksWithGenerics;
-  for (var context4 in context3) {
+  var context7 = context0.navLinksWithGenerics;
+  for (var context8 in context7) {
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context4.href);
+    buffer.write(context8.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
-    if (context4.hasGenericParameters == true) {
+    buffer.writeEscaped(context8.name);
+    if (context8.hasGenericParameters == true) {
       buffer.write('''<span class="signature">''');
-      buffer.write(context4.genericParameters);
+      buffer.write(context8.genericParameters);
       buffer.write('''</span>''');
     }
     buffer.write('''</a></li>''');
@@ -8509,7 +8302,7 @@ String _renderProperty_partial_footer_10(_i1.PropertyTemplateData context0) {
   return buffer.toString();
 }
 
-String renderSidebarForContainer<T extends _i18.Documentable>(
+String renderSidebarForContainer<T extends _i17.Documentable>(
     _i1.TemplateDataWithContainer<T> context0) {
   final buffer = StringBuffer();
   buffer.write('''<ol>''');
@@ -8741,7 +8534,7 @@ String renderSidebarForContainer<T extends _i18.Documentable>(
   return buffer.toString();
 }
 
-String renderSidebarForLibrary<T extends _i18.Documentable>(
+String renderSidebarForLibrary<T extends _i17.Documentable>(
     _i1.TemplateDataWithLibrary<T> context0) {
   final buffer = StringBuffer();
   buffer.write('''<ol>''');
@@ -8908,18 +8701,15 @@ String renderTopLevelProperty(_i1.TopLevelPropertyTemplateData context0) {
   buffer.writeln();
   buffer.write('''
       <div>''');
-  buffer
-      .write(_renderTopLevelProperty_partial_source_link_1(context1, context0));
+  buffer.write(_renderTopLevelProperty_partial_source_link_1(context1));
   buffer.write('''<h1><span class="kind-top-level-property">''');
   buffer.write(context1.name);
   buffer.write('''</span> ''');
   buffer.writeEscaped(context1.kind);
   buffer.write(' ');
-  buffer
-      .write(_renderTopLevelProperty_partial_feature_set_2(context1, context0));
+  buffer.write(_renderTopLevelProperty_partial_feature_set_2(context1));
   buffer.write(' ');
-  buffer.write(
-      _renderTopLevelProperty_partial_categorization_3(context1, context0));
+  buffer.write(_renderTopLevelProperty_partial_categorization_3(context1));
   buffer.write('''</h1></div>
 ''');
   if (context1.hasNoGetterSetter == true) {
@@ -8929,32 +8719,26 @@ String renderTopLevelProperty(_i1.TopLevelPropertyTemplateData context0) {
           ''');
     buffer.write(context1.modelType.linkedName);
     buffer.write('\n          ');
-    buffer.write(
-        _renderTopLevelProperty_partial_name_summary_4(context1, context0));
+    buffer.write(_renderTopLevelProperty_partial_name_summary_4(context1));
     buffer.write('\n          ');
-    buffer
-        .write(_renderTopLevelProperty_partial_features_5(context1, context0));
+    buffer.write(_renderTopLevelProperty_partial_features_5(context1));
     buffer.writeln();
     buffer.write('''
         </section>
         ''');
-    buffer.write(
-        _renderTopLevelProperty_partial_documentation_6(context1, context0));
+    buffer.write(_renderTopLevelProperty_partial_documentation_6(context1));
     buffer.write('\n        ');
-    buffer.write(
-        _renderTopLevelProperty_partial_source_code_7(context1, context0));
+    buffer.write(_renderTopLevelProperty_partial_source_code_7(context1));
   }
   buffer.writeln();
   if (context1.hasExplicitGetter == true) {
     buffer.write('\n        ');
-    buffer.write(
-        _renderTopLevelProperty_partial_accessor_getter_8(context1, context0));
+    buffer.write(_renderTopLevelProperty_partial_accessor_getter_8(context1));
   }
   buffer.writeln();
   if (context1.hasExplicitSetter == true) {
     buffer.write('\n        ');
-    buffer.write(
-        _renderTopLevelProperty_partial_accessor_setter_9(context1, context0));
+    buffer.write(_renderTopLevelProperty_partial_accessor_setter_9(context1));
   }
   buffer.writeln();
   buffer.write('''
@@ -9010,8 +8794,8 @@ String _renderTopLevelProperty_partial_head_0(
   <title>''');
   buffer.writeEscaped(context0.title);
   buffer.write('''</title>''');
-  var context1 = context0.relCanonicalPrefix;
-  if (context1 != null) {
+  var context7 = context0.relCanonicalPrefix;
+  if (context7 != null) {
     buffer.writeln();
     buffer.write('''
   <link rel="canonical" href="''');
@@ -9022,7 +8806,7 @@ String _renderTopLevelProperty_partial_head_0(
   }
   buffer.writeln();
   if (context0.useBaseHref == true) {
-    var context2 = context0.htmlBase;
+    var context8 = context0.htmlBase;
     buffer.writeln();
     buffer.write('''
   <!-- required because all the links are pseudo-absolute -->
@@ -9076,27 +8860,27 @@ String _renderTopLevelProperty_partial_head_0(
 <header id="title">
   <button id="sidenav-left-toggle" type="button">&nbsp;</button>
   <ol class="breadcrumbs gt-separated dark hidden-xs">''');
-  var context3 = context0.navLinks;
-  for (var context4 in context3) {
+  var context9 = context0.navLinks;
+  for (var context10 in context9) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context4.href);
+    buffer.write(context10.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
+    buffer.writeEscaped(context10.name);
     buffer.write('''</a></li>''');
   }
-  var context5 = context0.navLinksWithGenerics;
-  for (var context6 in context5) {
+  var context11 = context0.navLinksWithGenerics;
+  for (var context12 in context11) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context6.href);
+    buffer.write(context12.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context6.name);
-    if (context6.hasGenericParameters == true) {
+    buffer.writeEscaped(context12.name);
+    if (context12.hasGenericParameters == true) {
       buffer.write('''<span class="signature">''');
-      buffer.write(context6.genericParameters);
+      buffer.write(context12.genericParameters);
       buffer.write('''</span>''');
     }
     buffer.write('''</a></li>''');
@@ -9135,7 +8919,7 @@ String _renderTopLevelProperty_partial_head_0(
 }
 
 String _renderTopLevelProperty_partial_source_link_1(
-    _i5.TopLevelVariable context1, _i1.TopLevelPropertyTemplateData context0) {
+    _i5.TopLevelVariable context1) {
   final buffer = StringBuffer();
   if (context1.hasSourceHref == true) {
     buffer.writeln();
@@ -9150,13 +8934,13 @@ String _renderTopLevelProperty_partial_source_link_1(
 }
 
 String _renderTopLevelProperty_partial_feature_set_2(
-    _i5.TopLevelVariable context1, _i1.TopLevelPropertyTemplateData context0) {
+    _i5.TopLevelVariable context1) {
   final buffer = StringBuffer();
   if (context1.hasFeatureSet == true) {
-    var context2 = context1.displayedLanguageFeatures;
-    for (var context3 in context2) {
+    var context4 = context1.displayedLanguageFeatures;
+    for (var context5 in context4) {
       buffer.write('\n    ');
-      buffer.write(context3.featureLabel);
+      buffer.write(context5.featureLabel);
     }
   }
   buffer.writeln();
@@ -9165,13 +8949,13 @@ String _renderTopLevelProperty_partial_feature_set_2(
 }
 
 String _renderTopLevelProperty_partial_categorization_3(
-    _i5.TopLevelVariable context1, _i1.TopLevelPropertyTemplateData context0) {
+    _i5.TopLevelVariable context1) {
   final buffer = StringBuffer();
   if (context1.hasCategoryNames == true) {
-    var context2 = context1.displayedCategories;
-    for (var context3 in context2) {
+    var context4 = context1.displayedCategories;
+    for (var context5 in context4) {
       buffer.write('\n    ');
-      buffer.write(context3.categoryLabel);
+      buffer.write(context5.categoryLabel);
     }
   }
   buffer.writeln();
@@ -9180,7 +8964,7 @@ String _renderTopLevelProperty_partial_categorization_3(
 }
 
 String _renderTopLevelProperty_partial_name_summary_4(
-    _i5.TopLevelVariable context1, _i1.TopLevelPropertyTemplateData context0) {
+    _i5.TopLevelVariable context1) {
   final buffer = StringBuffer();
   if (context1.isConst == true) {
     buffer.write('''const ''');
@@ -9197,7 +8981,7 @@ String _renderTopLevelProperty_partial_name_summary_4(
 }
 
 String _renderTopLevelProperty_partial_features_5(
-    _i5.TopLevelVariable context1, _i1.TopLevelPropertyTemplateData context0) {
+    _i5.TopLevelVariable context1) {
   final buffer = StringBuffer();
   if (context1.hasFeatures == true) {
     buffer.write('''<div class="features">''');
@@ -9210,7 +8994,7 @@ String _renderTopLevelProperty_partial_features_5(
 }
 
 String _renderTopLevelProperty_partial_documentation_6(
-    _i5.TopLevelVariable context1, _i1.TopLevelPropertyTemplateData context0) {
+    _i5.TopLevelVariable context1) {
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
     buffer.writeln();
@@ -9228,7 +9012,7 @@ String _renderTopLevelProperty_partial_documentation_6(
 }
 
 String _renderTopLevelProperty_partial_source_code_7(
-    _i5.TopLevelVariable context1, _i1.TopLevelPropertyTemplateData context0) {
+    _i5.TopLevelVariable context1) {
   final buffer = StringBuffer();
   if (context1.hasSourceCode == true) {
     buffer.writeln();
@@ -9246,26 +9030,26 @@ String _renderTopLevelProperty_partial_source_code_7(
 }
 
 String _renderTopLevelProperty_partial_accessor_getter_8(
-    _i5.TopLevelVariable context1, _i1.TopLevelPropertyTemplateData context0) {
+    _i5.TopLevelVariable context1) {
   final buffer = StringBuffer();
-  var context2 = context1.getter;
-  if (context2 != null) {
+  var context3 = context1.getter;
+  if (context3 != null) {
     buffer.writeln();
     buffer.write('''
 <section id="getter">
 
 <section class="multi-line-signature">
   <span class="returntype">''');
-    buffer.write(context2.modelType.returnType.linkedName);
+    buffer.write(context3.modelType.returnType.linkedName);
     buffer.write('''</span>
   ''');
     buffer.write(
         __renderTopLevelProperty_partial_accessor_getter_8_partial_name_summary_0(
-            context2, context1, context0));
+            context3));
     buffer.write('\n  ');
     buffer.write(
         __renderTopLevelProperty_partial_accessor_getter_8_partial_features_1(
-            context2, context1, context0));
+            context3));
     buffer.writeln();
     buffer.write('''
 </section>
@@ -9273,11 +9057,11 @@ String _renderTopLevelProperty_partial_accessor_getter_8(
 ''');
     buffer.write(
         __renderTopLevelProperty_partial_accessor_getter_8_partial_documentation_2(
-            context2, context1, context0));
+            context3));
     buffer.writeln();
     buffer.write(
         __renderTopLevelProperty_partial_accessor_getter_8_partial_source_code_3(
-            context2, context1, context0));
+            context3));
     buffer.writeln();
     buffer.write('''
 </section>''');
@@ -9289,9 +9073,7 @@ String _renderTopLevelProperty_partial_accessor_getter_8(
 
 String
     __renderTopLevelProperty_partial_accessor_getter_8_partial_name_summary_0(
-        _i17.Accessor context2,
-        _i5.TopLevelVariable context1,
-        _i1.TopLevelPropertyTemplateData context0) {
+        _i16.Accessor context2) {
   final buffer = StringBuffer();
   if (context2.isConst == true) {
     buffer.write('''const ''');
@@ -9308,9 +9090,7 @@ String
 }
 
 String __renderTopLevelProperty_partial_accessor_getter_8_partial_features_1(
-    _i17.Accessor context2,
-    _i5.TopLevelVariable context1,
-    _i1.TopLevelPropertyTemplateData context0) {
+    _i16.Accessor context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
     buffer.write('''<div class="features">''');
@@ -9324,9 +9104,7 @@ String __renderTopLevelProperty_partial_accessor_getter_8_partial_features_1(
 
 String
     __renderTopLevelProperty_partial_accessor_getter_8_partial_documentation_2(
-        _i17.Accessor context2,
-        _i5.TopLevelVariable context1,
-        _i1.TopLevelPropertyTemplateData context0) {
+        _i16.Accessor context2) {
   final buffer = StringBuffer();
   if (context2.hasDocumentation == true) {
     buffer.writeln();
@@ -9344,9 +9122,7 @@ String
 }
 
 String __renderTopLevelProperty_partial_accessor_getter_8_partial_source_code_3(
-    _i17.Accessor context2,
-    _i5.TopLevelVariable context1,
-    _i1.TopLevelPropertyTemplateData context0) {
+    _i16.Accessor context2) {
   final buffer = StringBuffer();
   if (context2.hasSourceCode == true) {
     buffer.writeln();
@@ -9364,10 +9140,10 @@ String __renderTopLevelProperty_partial_accessor_getter_8_partial_source_code_3(
 }
 
 String _renderTopLevelProperty_partial_accessor_setter_9(
-    _i5.TopLevelVariable context1, _i1.TopLevelPropertyTemplateData context0) {
+    _i5.TopLevelVariable context1) {
   final buffer = StringBuffer();
-  var context2 = context1.setter;
-  if (context2 != null) {
+  var context3 = context1.setter;
+  if (context3 != null) {
     buffer.writeln();
     buffer.write('''
 <section id="setter">
@@ -9377,14 +9153,14 @@ String _renderTopLevelProperty_partial_accessor_setter_9(
   ''');
     buffer.write(
         __renderTopLevelProperty_partial_accessor_setter_9_partial_name_summary_0(
-            context2, context1, context0));
+            context3));
     buffer.write('''<span class="signature">(<wbr>''');
-    buffer.write(context2.linkedParamsNoMetadata);
+    buffer.write(context3.linkedParamsNoMetadata);
     buffer.write(''')</span>
   ''');
     buffer.write(
         __renderTopLevelProperty_partial_accessor_setter_9_partial_features_1(
-            context2, context1, context0));
+            context3));
     buffer.writeln();
     buffer.write('''
 </section>
@@ -9392,11 +9168,11 @@ String _renderTopLevelProperty_partial_accessor_setter_9(
 ''');
     buffer.write(
         __renderTopLevelProperty_partial_accessor_setter_9_partial_documentation_2(
-            context2, context1, context0));
+            context3));
     buffer.writeln();
     buffer.write(
         __renderTopLevelProperty_partial_accessor_setter_9_partial_source_code_3(
-            context2, context1, context0));
+            context3));
     buffer.writeln();
     buffer.write('''
 </section>''');
@@ -9408,9 +9184,7 @@ String _renderTopLevelProperty_partial_accessor_setter_9(
 
 String
     __renderTopLevelProperty_partial_accessor_setter_9_partial_name_summary_0(
-        _i17.Accessor context2,
-        _i5.TopLevelVariable context1,
-        _i1.TopLevelPropertyTemplateData context0) {
+        _i16.Accessor context2) {
   final buffer = StringBuffer();
   if (context2.isConst == true) {
     buffer.write('''const ''');
@@ -9427,9 +9201,7 @@ String
 }
 
 String __renderTopLevelProperty_partial_accessor_setter_9_partial_features_1(
-    _i17.Accessor context2,
-    _i5.TopLevelVariable context1,
-    _i1.TopLevelPropertyTemplateData context0) {
+    _i16.Accessor context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
     buffer.write('''<div class="features">''');
@@ -9443,9 +9215,7 @@ String __renderTopLevelProperty_partial_accessor_setter_9_partial_features_1(
 
 String
     __renderTopLevelProperty_partial_accessor_setter_9_partial_documentation_2(
-        _i17.Accessor context2,
-        _i5.TopLevelVariable context1,
-        _i1.TopLevelPropertyTemplateData context0) {
+        _i16.Accessor context2) {
   final buffer = StringBuffer();
   if (context2.hasDocumentation == true) {
     buffer.writeln();
@@ -9463,9 +9233,7 @@ String
 }
 
 String __renderTopLevelProperty_partial_accessor_setter_9_partial_source_code_3(
-    _i17.Accessor context2,
-    _i5.TopLevelVariable context1,
-    _i1.TopLevelPropertyTemplateData context0) {
+    _i16.Accessor context2) {
   final buffer = StringBuffer();
   if (context2.hasSourceCode == true) {
     buffer.writeln();
@@ -9492,27 +9260,27 @@ String _renderTopLevelProperty_partial_search_sidebar_10(
 </header>
 
 <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">''');
-  var context1 = context0.navLinks;
-  for (var context2 in context1) {
+  var context5 = context0.navLinks;
+  for (var context6 in context5) {
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context2.href);
+    buffer.write(context6.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context2.name);
+    buffer.writeEscaped(context6.name);
     buffer.write('''</a></li>''');
   }
-  var context3 = context0.navLinksWithGenerics;
-  for (var context4 in context3) {
+  var context7 = context0.navLinksWithGenerics;
+  for (var context8 in context7) {
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context4.href);
+    buffer.write(context8.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
-    if (context4.hasGenericParameters == true) {
+    buffer.writeEscaped(context8.name);
+    if (context8.hasGenericParameters == true) {
       buffer.write('''<span class="signature">''');
-      buffer.write(context4.genericParameters);
+      buffer.write(context8.genericParameters);
       buffer.write('''</span>''');
     }
     buffer.write('''</a></li>''');
@@ -9604,15 +9372,15 @@ String renderTypedef(_i1.TypedefTemplateData context0) {
   buffer.writeln();
   buffer.write('''
       <div>''');
-  buffer.write(_renderTypedef_partial_source_link_1(context1, context0));
+  buffer.write(_renderTypedef_partial_source_link_1(context1));
   buffer.write('''<h1><span class="kind-typedef">''');
   buffer.write(context1.nameWithGenerics);
   buffer.write('''</span> ''');
   buffer.writeEscaped(context1.kind);
   buffer.write(' ');
-  buffer.write(_renderTypedef_partial_feature_set_2(context1, context0));
+  buffer.write(_renderTypedef_partial_feature_set_2(context1));
   buffer.write(' ');
-  buffer.write(_renderTypedef_partial_categorization_3(context1, context0));
+  buffer.write(_renderTypedef_partial_categorization_3(context1));
   buffer.write('''</h1></div>''');
   buffer.writeln();
   buffer.write('''
@@ -9620,16 +9388,16 @@ String renderTypedef(_i1.TypedefTemplateData context0) {
     <section class="multi-line-signature">''');
   var context2 = context0.typeDef;
   buffer.write('\n        ');
-  buffer.write(_renderTypedef_partial_typedef_multiline_4(context2, context0));
+  buffer.write(_renderTypedef_partial_typedef_multiline_4(context2));
   buffer.writeln();
   buffer.write('''
     </section>
 ''');
   var context3 = context0.typeDef;
   buffer.write('\n    ');
-  buffer.write(_renderTypedef_partial_documentation_5(context3, context0));
+  buffer.write(_renderTypedef_partial_documentation_5(context3));
   buffer.write('\n    ');
-  buffer.write(_renderTypedef_partial_source_code_6(context3, context0));
+  buffer.write(_renderTypedef_partial_source_code_6(context3));
   buffer.writeln();
   buffer.write('''
 
@@ -9684,8 +9452,8 @@ String _renderTypedef_partial_head_0(_i1.TypedefTemplateData context0) {
   <title>''');
   buffer.writeEscaped(context0.title);
   buffer.write('''</title>''');
-  var context1 = context0.relCanonicalPrefix;
-  if (context1 != null) {
+  var context7 = context0.relCanonicalPrefix;
+  if (context7 != null) {
     buffer.writeln();
     buffer.write('''
   <link rel="canonical" href="''');
@@ -9696,7 +9464,7 @@ String _renderTypedef_partial_head_0(_i1.TypedefTemplateData context0) {
   }
   buffer.writeln();
   if (context0.useBaseHref == true) {
-    var context2 = context0.htmlBase;
+    var context8 = context0.htmlBase;
     buffer.writeln();
     buffer.write('''
   <!-- required because all the links are pseudo-absolute -->
@@ -9750,27 +9518,27 @@ String _renderTypedef_partial_head_0(_i1.TypedefTemplateData context0) {
 <header id="title">
   <button id="sidenav-left-toggle" type="button">&nbsp;</button>
   <ol class="breadcrumbs gt-separated dark hidden-xs">''');
-  var context3 = context0.navLinks;
-  for (var context4 in context3) {
+  var context9 = context0.navLinks;
+  for (var context10 in context9) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context4.href);
+    buffer.write(context10.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
+    buffer.writeEscaped(context10.name);
     buffer.write('''</a></li>''');
   }
-  var context5 = context0.navLinksWithGenerics;
-  for (var context6 in context5) {
+  var context11 = context0.navLinksWithGenerics;
+  for (var context12 in context11) {
     buffer.writeln();
     buffer.write('''
     <li><a href="''');
-    buffer.write(context6.href);
+    buffer.write(context12.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context6.name);
-    if (context6.hasGenericParameters == true) {
+    buffer.writeEscaped(context12.name);
+    if (context12.hasGenericParameters == true) {
       buffer.write('''<span class="signature">''');
-      buffer.write(context6.genericParameters);
+      buffer.write(context12.genericParameters);
       buffer.write('''</span>''');
     }
     buffer.write('''</a></li>''');
@@ -9808,8 +9576,7 @@ String _renderTypedef_partial_head_0(_i1.TypedefTemplateData context0) {
   return buffer.toString();
 }
 
-String _renderTypedef_partial_source_link_1(
-    _i7.Typedef context1, _i1.TypedefTemplateData context0) {
+String _renderTypedef_partial_source_link_1(_i7.Typedef context1) {
   final buffer = StringBuffer();
   if (context1.hasSourceHref == true) {
     buffer.writeln();
@@ -9823,14 +9590,13 @@ String _renderTypedef_partial_source_link_1(
   return buffer.toString();
 }
 
-String _renderTypedef_partial_feature_set_2(
-    _i7.Typedef context1, _i1.TypedefTemplateData context0) {
+String _renderTypedef_partial_feature_set_2(_i7.Typedef context1) {
   final buffer = StringBuffer();
   if (context1.hasFeatureSet == true) {
-    var context2 = context1.displayedLanguageFeatures;
-    for (var context3 in context2) {
+    var context4 = context1.displayedLanguageFeatures;
+    for (var context5 in context4) {
       buffer.write('\n    ');
-      buffer.write(context3.featureLabel);
+      buffer.write(context5.featureLabel);
     }
   }
   buffer.writeln();
@@ -9838,14 +9604,13 @@ String _renderTypedef_partial_feature_set_2(
   return buffer.toString();
 }
 
-String _renderTypedef_partial_categorization_3(
-    _i7.Typedef context1, _i1.TypedefTemplateData context0) {
+String _renderTypedef_partial_categorization_3(_i7.Typedef context1) {
   final buffer = StringBuffer();
   if (context1.hasCategoryNames == true) {
-    var context2 = context1.displayedCategories;
-    for (var context3 in context2) {
+    var context4 = context1.displayedCategories;
+    for (var context5 in context4) {
       buffer.write('\n    ');
-      buffer.write(context3.categoryLabel);
+      buffer.write(context5.categoryLabel);
     }
   }
   buffer.writeln();
@@ -9853,22 +9618,21 @@ String _renderTypedef_partial_categorization_3(
   return buffer.toString();
 }
 
-String _renderTypedef_partial_typedef_multiline_4(
-    _i7.Typedef context1, _i1.TypedefTemplateData context0) {
+String _renderTypedef_partial_typedef_multiline_4(_i7.Typedef context1) {
   final buffer = StringBuffer();
   if (context1.isCallable == true) {
-    var context2 = context1.asCallable;
-    if (context2.hasAnnotations == true) {
+    var context5 = context1.asCallable;
+    if (context5.hasAnnotations == true) {
       buffer.writeln();
       buffer.write('''
     <div>
       <ol class="annotation-list">''');
-      var context3 = context2.annotations;
-      for (var context4 in context3) {
+      var context6 = context5.annotations;
+      for (var context7 in context6) {
         buffer.writeln();
         buffer.write('''
       <li>''');
-        buffer.write(context4.linkedNameWithParameters);
+        buffer.write(context7.linkedNameWithParameters);
         buffer.write('''</li>''');
       }
       buffer.writeln();
@@ -9876,27 +9640,27 @@ String _renderTypedef_partial_typedef_multiline_4(
     </ol>
     </div>''');
     }
-    if (context2.isConst == true) {
+    if (context5.isConst == true) {
       buffer.write('''const ''');
     }
     buffer.write('''<span class="name ''');
-    if (context2.isDeprecated == true) {
+    if (context5.isDeprecated == true) {
       buffer.write('''deprecated''');
     }
     buffer.write('''">''');
-    buffer.writeEscaped(context2.name);
+    buffer.writeEscaped(context5.name);
     buffer.write('''</span>''');
-    buffer.write(context2.linkedGenericParameters);
+    buffer.write(context5.linkedGenericParameters);
     buffer.write(''' =
      <span class="returntype">''');
-    buffer.write(context2.modelType.linkedName);
+    buffer.write(context5.modelType.linkedName);
     buffer.write('''</span>''');
   }
   if (context1.isCallable != true) {
     buffer.write('\n  ');
     buffer.write(
         __renderTypedef_partial_typedef_multiline_4_partial_type_multiline_0(
-            context1, context0));
+            context1));
   }
   buffer.writeln();
 
@@ -9904,19 +9668,19 @@ String _renderTypedef_partial_typedef_multiline_4(
 }
 
 String __renderTypedef_partial_typedef_multiline_4_partial_type_multiline_0(
-    _i7.Typedef context1, _i1.TypedefTemplateData context0) {
+    _i7.Typedef context1) {
   final buffer = StringBuffer();
   if (context1.hasAnnotations == true) {
     buffer.writeln();
     buffer.write('''
 <div>
   <ol class="annotation-list">''');
-    var context2 = context1.annotations;
-    for (var context3 in context2) {
+    var context6 = context1.annotations;
+    for (var context7 in context6) {
       buffer.writeln();
       buffer.write('''
     <li>''');
-      buffer.write(context3.linkedNameWithParameters);
+      buffer.write(context7.linkedNameWithParameters);
       buffer.write('''</li>''');
     }
     buffer.writeln();
@@ -9927,7 +9691,7 @@ String __renderTypedef_partial_typedef_multiline_4_partial_type_multiline_0(
   buffer.writeln();
   buffer.write(
       ___renderTypedef_partial_typedef_multiline_4_partial_type_multiline_0_partial_name_summary_0(
-          context1, context0));
+          context1));
   buffer.write(context1.genericParameters);
   buffer.write(''' = ''');
   buffer.write(context1.modelType.linkedName);
@@ -9939,7 +9703,7 @@ String __renderTypedef_partial_typedef_multiline_4_partial_type_multiline_0(
 
 String
     ___renderTypedef_partial_typedef_multiline_4_partial_type_multiline_0_partial_name_summary_0(
-        _i7.Typedef context1, _i1.TypedefTemplateData context0) {
+        _i7.Typedef context1) {
   final buffer = StringBuffer();
   if (context1.isConst == true) {
     buffer.write('''const ''');
@@ -9955,8 +9719,7 @@ String
   return buffer.toString();
 }
 
-String _renderTypedef_partial_documentation_5(
-    _i7.Typedef context1, _i1.TypedefTemplateData context0) {
+String _renderTypedef_partial_documentation_5(_i7.Typedef context1) {
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
     buffer.writeln();
@@ -9973,8 +9736,7 @@ String _renderTypedef_partial_documentation_5(
   return buffer.toString();
 }
 
-String _renderTypedef_partial_source_code_6(
-    _i7.Typedef context1, _i1.TypedefTemplateData context0) {
+String _renderTypedef_partial_source_code_6(_i7.Typedef context1) {
   final buffer = StringBuffer();
   if (context1.hasSourceCode == true) {
     buffer.writeln();
@@ -10001,27 +9763,27 @@ String _renderTypedef_partial_search_sidebar_7(
 </header>
 
 <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">''');
-  var context1 = context0.navLinks;
-  for (var context2 in context1) {
+  var context5 = context0.navLinks;
+  for (var context6 in context5) {
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context2.href);
+    buffer.write(context6.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context2.name);
+    buffer.writeEscaped(context6.name);
     buffer.write('''</a></li>''');
   }
-  var context3 = context0.navLinksWithGenerics;
-  for (var context4 in context3) {
+  var context7 = context0.navLinksWithGenerics;
+  for (var context8 in context7) {
     buffer.writeln();
     buffer.write('''
   <li><a href="''');
-    buffer.write(context4.href);
+    buffer.write(context8.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
-    if (context4.hasGenericParameters == true) {
+    buffer.writeEscaped(context8.name);
+    if (context8.hasGenericParameters == true) {
       buffer.write('''<span class="signature">''');
-      buffer.write(context4.genericParameters);
+      buffer.write(context8.genericParameters);
       buffer.write('''</span>''');
     }
     buffer.write('''</a></li>''');
@@ -10103,6 +9865,6 @@ String _renderTypedef_partial_footer_8(_i1.TypedefTemplateData context0) {
 
 extension on StringBuffer {
   void writeEscaped(String? value) {
-    write(_i19.htmlEscape.convert(value ?? ''));
+    write(_i18.htmlEscape.convert(value ?? ''));
   }
 }

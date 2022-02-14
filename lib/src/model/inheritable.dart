@@ -42,21 +42,19 @@ mixin Inheritable on ContainerMember {
       canonicalEnclosingContainer?.canonicalLibrary;
 
   @override
-  ModelElement? buildCanonicalModelElement() {
+  late final ModelElement? canonicalModelElement = () {
+    final canonicalEnclosingContainer = this.canonicalEnclosingContainer;
+    if (canonicalEnclosingContainer == null) {
+      return null;
+    }
     // TODO(jcollins-g): factor out extension logic into [Extendable]
     if (canonicalEnclosingContainer is Extension) {
       return this;
     }
-    if (canonicalEnclosingContainer is Container) {
-      return canonicalEnclosingContainer!.allCanonicalModelElements
-          .firstWhereOrNull((m) =>
-              m.name == name && m.isPropertyAccessor == isPropertyAccessor);
-    }
-    if (canonicalEnclosingContainer != null) {
-      throw UnimplementedError('$canonicalEnclosingContainer: unknown type');
-    }
-    return null;
-  }
+    return canonicalEnclosingContainer.allCanonicalModelElements
+        .firstWhereOrNull((m) =>
+            m.name == name && m.isPropertyAccessor == isPropertyAccessor);
+  }();
 
   @override
   Container? computeCanonicalEnclosingContainer() {

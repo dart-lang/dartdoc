@@ -213,14 +213,13 @@ mixin TypeImplementing on InheritingContainer {
 /// Members follow similar naming rules to [Container], with the following
 /// additions:
 ///
-/// **instance**: As with [Container], but also includes inherited children.
-/// **inherited**: Filtered getters giving only inherited children.
+/// * **instance**: As with [Container], but also includes inherited children.
+/// * **inherited**: Filtered getters giving only inherited children.
 abstract class InheritingContainer extends Container
     with ExtensionTarget
     implements EnclosedElement {
-  @override
-
   /// [ClassElement] is analogous to [InheritingContainer].
+  @override
   ClassElement? get element => super.element as ClassElement?;
 
   DefinedElementType? _supertype;
@@ -335,6 +334,7 @@ abstract class InheritingContainer extends Container
           as DefinedElementType?)!;
 
   /// Not the same as superChain as it may include mixins.
+  ///
   /// It's really not even the same as ordinary Dart inheritance, either,
   /// because we pretend that interfaces are part of the inheritance chain
   /// to include them in the set of things we might link to for documentation
@@ -363,11 +363,12 @@ abstract class InheritingContainer extends Container
     return typeChain;
   }
 
-  Iterable<DefinedElementType> get publicSuperChain =>
-      model_utils.filterNonPublic(superChain);
+  late final List<DefinedElementType> publicSuperChain = [
+    ...model_utils.filterNonPublic(superChain)
+  ];
 
   Iterable<DefinedElementType> get publicSuperChainReversed =>
-      publicSuperChain.toList().reversed;
+      publicSuperChain.reversed;
 
   List<ExecutableElement?>? __inheritedElements;
 
@@ -573,4 +574,17 @@ abstract class InheritingContainer extends Container
 
   @override
   Iterable<Field> get constantFields => allFields.where((f) => f.isConst);
+
+  /// The CSS class to use in an inheritance list.
+  String get relationshipsClass;
+}
+
+extension DefinedElementTypeIterableExtensions on Iterable<DefinedElementType> {
+  /// Returns the `ModelElement` for each element.
+  Iterable<InheritingContainer> get modelElements =>
+      map((e) => e.modelElement as InheritingContainer);
+
+  /// Expands the `ModelElement` for each element to its inheritance chain.
+  Iterable<InheritingContainer?> get expandInheritanceChain =>
+      expand((e) => (e.modelElement as InheritingContainer).inheritanceChain);
 }

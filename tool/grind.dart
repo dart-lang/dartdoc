@@ -22,6 +22,9 @@ class GrindTestFailure {
   final String message;
 
   GrindTestFailure(this.message);
+
+  @override
+  String toString() => message;
 }
 
 /// Kind of an inefficient grepper for now.
@@ -123,7 +126,7 @@ Directory get testPackage =>
 Directory get testPackageExperiments =>
     Directory(path.joinAll(['testing', 'test_package_experiments']));
 
-Directory get pluginPackage => Directory(path
+Directory get testPackageFlutterPlugin => Directory(path
     .joinAll(['testing', 'flutter_packages', 'test_package_flutter_plugin']));
 
 final Directory _testPackageDocsDir = createTempSync('test_package');
@@ -478,8 +481,8 @@ Future<void> testWithAnalyzerSdk() async {
   // TODO(srawlins): Re-enable sdk-analyzer when dart_style is published using
   // analyzer 3.0.0.
   try {
-    await launcher.runStreamed(Platform.resolvedExecutable,
-        ['pub', 'run', 'grinder', defaultGrindParameter],
+    await launcher.runStreamed(
+        Platform.resolvedExecutable, ['run', 'grinder', defaultGrindParameter],
         workingDirectory: sdkDartdoc);
   } catch (e, st) {
     print('Warning: SDK analyzer job threw "$e":\n$st');
@@ -783,7 +786,7 @@ $analyzerOptions
     }
   }
 
-  await launcher.runStreamed('pub', ['get'],
+  await launcher.runStreamed(Platform.resolvedExecutable, ['pub', 'get'],
       workingDirectory: _languageTestPackageDir.absolute.path);
   await launcher.runStreamed(
       Platform.resolvedExecutable,
@@ -820,7 +823,7 @@ Future<void> buildFlutterDocs() async {
 class FlutterRepo {
   final String flutterPath;
   final Map<String, String> env;
-  final String bin = path.join('bin', 'flutter');
+  final String flutterCmd = path.join('bin', 'flutter');
 
   final String cacheDart;
   final SubprocessLauncher launcher;
@@ -833,12 +836,12 @@ class FlutterRepo {
         'git', ['clone', 'https://github.com/flutter/flutter.git', '.'],
         workingDirectory: flutterPath);
     await launcher.runStreamed(
-      bin,
+      flutterCmd,
       ['--version'],
       workingDirectory: flutterPath,
     );
     await launcher.runStreamed(
-      bin,
+      flutterCmd,
       ['update-packages'],
       workingDirectory: flutterPath,
     );
@@ -912,13 +915,13 @@ Future<String> _buildPubPackageDocs(
   var labelContext = label == null ? '' : '-$label';
   var launcher = SubprocessLauncher(
       'build-$pubPackageName$versionContext$labelContext', env);
-  var args = [
+  await launcher.runStreamed(Platform.resolvedExecutable, [
+    'pub',
     'cache',
     'add',
     if (version != null) ...['-v', version],
     pubPackageName,
-  ];
-  await launcher.runStreamed('pub', args);
+  ]);
   var cache =
       Directory(path.join(env['PUB_CACHE']!, 'hosted', 'pub.dartlang.org'));
   var pubPackageDirOrig =
@@ -947,7 +950,7 @@ Future<String> _buildPubPackageDocs(
         environment: flutterRepo.env,
         workingDirectory: pubPackageDir.absolute.path);
   } else {
-    await launcher.runStreamed('pub', ['get'],
+    await launcher.runStreamed(Platform.resolvedExecutable, ['pub', 'get'],
         workingDirectory: pubPackageDir.absolute.path);
     await launcher.runStreamed(
         Platform.resolvedExecutable,
@@ -1189,21 +1192,26 @@ Future<WarningsCollection> _buildDartdocFlutterPluginDocs() async {
   var flutterRepo = await FlutterRepo.fromExistingFlutterRepo(
       await cleanFlutterRepo, 'docs-flutter-plugin');
 
+  await flutterRepo.launcher.runStreamed(flutterRepo.cacheDart, ['pub', 'get'],
+      workingDirectory: testPackageFlutterPlugin.path);
+
   return jsonMessageIterableToWarnings(
-      await flutterRepo.launcher.runStreamed(
-          flutterRepo.cacheDart,
-          [
-            '--enable-asserts',
-            path.join(Directory.current.path, 'bin', 'dartdoc.dart'),
-            '--json',
-            '--link-to-remote',
-            '--output',
-            _pluginPackageDocsPath
-          ],
-          workingDirectory: pluginPackage.path),
-      _pluginPackageDocsPath,
-      defaultPubCache,
-      'HEAD');
+    await flutterRepo.launcher.runStreamed(
+      flutterRepo.cacheDart,
+      [
+        '--enable-asserts',
+        path.join(Directory.current.path, 'bin', 'dartdoc.dart'),
+        '--json',
+        '--link-to-remote',
+        '--output',
+        _pluginPackageDocsPath
+      ],
+      workingDirectory: testPackageFlutterPlugin.path,
+    ),
+    _pluginPackageDocsPath,
+    defaultPubCache,
+    'HEAD',
+  );
 }
 
 @Task('Build docs for a package that requires flutter with remote linking')

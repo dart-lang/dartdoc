@@ -44,29 +44,21 @@ class Mixin extends InheritingContainer with TypeImplementing {
   @override
   String get kind => 'mixin';
 
-  List<InheritingContainer?>? _inheritanceChain;
+  @override
+  late final List<InheritingContainer?> inheritanceChain = [
+    this,
+
+    // Mix-in interfaces come before other interfaces.
+    ...superclassConstraints!.expandInheritanceChain,
+
+    for (var container in superChain.modelElements)
+      ...container.inheritanceChain,
+
+    // Interfaces need to come last, because classes in the superChain might
+    // implement them even when they aren't mentioned.
+    ...interfaces.expandInheritanceChain,
+  ];
 
   @override
-  List<InheritingContainer?> get inheritanceChain {
-    if (_inheritanceChain == null) {
-      _inheritanceChain = [];
-      _inheritanceChain!.add(this);
-
-      // Mix-in interfaces come before other interfaces.
-      _inheritanceChain!.addAll(superclassConstraints!.expand(
-          (ParameterizedElementType i) =>
-              (i.modelElement as InheritingContainer).inheritanceChain));
-
-      for (var c
-          in superChain.map((e) => (e.modelElement as InheritingContainer))) {
-        _inheritanceChain!.addAll(c.inheritanceChain);
-      }
-
-      /// Interfaces need to come last, because classes in the superChain might
-      /// implement them even when they aren't mentioned.
-      _inheritanceChain!.addAll(interfaces.expand(
-          (e) => (e.modelElement as InheritingContainer).inheritanceChain));
-    }
-    return _inheritanceChain!.toList(growable: false);
-  }
+  String get relationshipsClass => 'mixin-relationships';
 }

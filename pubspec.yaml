@@ -1,6 +1,6 @@
 name: dartdoc
 # Run `dart run grinder build` after updating.
-version: 4.1.0
+version: 5.0.1
 description: A non-interactive HTML documentation generator for Dart source code.
 homepage: https://github.com/dart-lang/dartdoc
 environment:

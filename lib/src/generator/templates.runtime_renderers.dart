@@ -1915,6 +1915,28 @@ class _Renderer_Class extends RendererBase<Class> {
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.publicInheritedInstanceFields == true,
                 ),
+                'relationshipsClass': Property(
+                  getValue: (CT_ c) => c.relationshipsClass,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        _Renderer_String.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(
+                        self.getValue(c) as String,
+                        nextProperty,
+                        [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => false,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    _render_String(c.relationshipsClass, ast, r.template, sink,
+                        parent: r);
+                  },
+                ),
               }) as Map<String, Property<CT_>>;
 
   _Renderer_Class(Class context, RendererBase<Object>? parent,
@@ -4618,6 +4640,28 @@ class _Renderer_Enum extends RendererBase<Enum> {
                     _render_String(c.kind, ast, r.template, sink, parent: r);
                   },
                 ),
+                'relationshipsClass': Property(
+                  getValue: (CT_ c) => c.relationshipsClass,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        _Renderer_String.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(
+                        self.getValue(c) as String,
+                        nextProperty,
+                        [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => false,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    _render_String(c.relationshipsClass, ast, r.template, sink,
+                        parent: r);
+                  },
+                ),
               }) as Map<String, Property<CT_>>;
 
   _Renderer_Enum(Enum context, RendererBase<Object>? parent, Template template,
@@ -6782,6 +6826,29 @@ class _Renderer_Inheritable extends RendererBase<Inheritable> {
                         parent: r);
                   },
                 ),
+                'canonicalModelElement': Property(
+                  getValue: (CT_ c) => c.canonicalModelElement,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        _Renderer_ModelElement.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(
+                        self.getValue(c) as ModelElement,
+                        nextProperty,
+                        [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => c.canonicalModelElement == null,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    _render_ModelElement(
+                        c.canonicalModelElement!, ast, r.template, sink,
+                        parent: r);
+                  },
+                ),
                 'features': Property(
                   getValue: (CT_ c) => c.features,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -7261,7 +7328,7 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<DefinedElementType>'),
+                          c, remainingNames, 'List<DefinedElementType>'),
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.publicSuperChain.map((e) =>
@@ -7280,6 +7347,28 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                     return c.publicSuperChainReversed.map((e) =>
                         _render_DefinedElementType(e, ast, r.template, sink,
                             parent: r));
+                  },
+                ),
+                'relationshipsClass': Property(
+                  getValue: (CT_ c) => c.relationshipsClass,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        _Renderer_String.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(
+                        self.getValue(c) as String,
+                        nextProperty,
+                        [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => false,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    _render_String(c.relationshipsClass, ast, r.template, sink,
+                        parent: r);
                   },
                 ),
                 'superChain': Property(
@@ -9707,6 +9796,28 @@ class _Renderer_Mixin extends RendererBase<Mixin> {
                         _render_ParameterizedElementType(
                             e, ast, r.template, sink,
                             parent: r));
+                  },
+                ),
+                'relationshipsClass': Property(
+                  getValue: (CT_ c) => c.relationshipsClass,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        _Renderer_String.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(
+                        self.getValue(c) as String,
+                        nextProperty,
+                        [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => false,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    _render_String(c.relationshipsClass, ast, r.template, sink,
+                        parent: r);
                   },
                 ),
                 'superclassConstraints': Property(
@@ -16421,6 +16532,7 @@ const _invisibleGetters = {
   'HashMap': {'hashCode', 'runtimeType'},
   'Inheritable': {
     'canonicalLibrary',
+    'canonicalModelElement',
     'features',
     'inheritance',
     'isCovariant',
@@ -16608,7 +16720,6 @@ const _invisibleGetters = {
     'isSdk',
     'isValid',
     'name',
-    'needsPubGet',
     'pathContext',
     'requiresFlutter',
     'resolvedDir',

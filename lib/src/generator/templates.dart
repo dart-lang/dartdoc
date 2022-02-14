@@ -206,7 +206,7 @@ class MarkdownAotTemplates implements Templates {
 
   @override
   String renderError(PackageTemplateData context) =>
-      aot_renderers_for_md.renderError(context);
+      aot_renderers_for_md.renderError();
 
   @override
   String renderExtension(ExtensionTemplateData context) =>
@@ -239,12 +239,12 @@ class MarkdownAotTemplates implements Templates {
   @override
   String renderSidebarForContainer(
           TemplateDataWithContainer<Documentable> context) =>
-      aot_renderers_for_md.renderSidebarForContainer(context);
+      aot_renderers_for_md.renderSidebarForContainer();
 
   @override
   String renderSidebarForLibrary(
           TemplateDataWithLibrary<Documentable> context) =>
-      aot_renderers_for_md.renderSidebarForLibrary(context);
+      aot_renderers_for_md.renderSidebarForLibrary();
 
   @override
   String renderTopLevelProperty(TopLevelPropertyTemplateData context) =>

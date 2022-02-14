@@ -67,8 +67,8 @@ $sourceLibraryContent
     {
       ...annotationsAsset,
       'foo|lib/foo.dart': sourceLibraryContent,
-      'foo|lib/templates/html/foo.html': 'EMPTY',
-      'foo|lib/templates/md/foo.md': 'EMPTY',
+      'foo|lib/templates/html/foo.html': 's1 is {{ s1 }}',
+      'foo|lib/templates/md/foo.md': 's1 is {{ s1 }}',
       'foo|lib/templates/html/bar.html': 'EMPTY',
       'foo|lib/templates/md/bar.md': 'EMPTY',
       'foo|lib/templates/html/baz.html': 'EMPTY',
