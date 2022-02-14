@@ -161,7 +161,9 @@ class Baz {}
 
   test('builds renderers from multiple annotations', () async {
     await testMustachioBuilder(writer, '''
-class Foo {}
+class Foo {
+  String s1 = 'hello';
+}
 class Bar {}
 class Baz {}
 ''', libraryFrontMatter: '''
@@ -187,7 +189,9 @@ import 'package:mustachio/annotations.dart';
       writer = InMemoryAssetWriter();
       await testMustachioBuilder(writer, '''
 class FooBase<T> {}
-class Foo<T> extends FooBase<T> {}
+class Foo<T> extends FooBase<T> {
+  String s1 = 'hello';
+}
 class BarBase<T> {}
 class Bar<T> extends BarBase<int> {}
 class Baz {}
@@ -235,7 +239,9 @@ import 'package:mustachio/annotations.dart';
 
   test('builds a renderer for a generic, bounded type', () async {
     await testMustachioBuilder(writer, '''
-class Foo<T extends num> {}
+class Foo<T extends num> {
+  String s1 = 'hello';
+}
 class Bar {}
 class Baz {}
 ''');
@@ -263,6 +269,7 @@ abstract class Foo<T> {
   Private get _private1 => Bar();
   void set setter1(Setter s);
   Method method1(Method m);
+  String s1 = 'hello';
 }
 class Bar {}
 class Baz {}
