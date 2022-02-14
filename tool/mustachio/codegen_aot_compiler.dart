@@ -41,6 +41,7 @@ Future<String> compileTemplatesToRenderers(
       buildData,
     );
     rendererFunctions.addAll(await compiler._compileToRenderer());
+    //rendererFunctions.addAll(compiler._compiledPartials);
   }
   var library = Library((b) {
     b.body.addAll(rendererFunctions);
@@ -96,8 +97,13 @@ class _AotCompiler {
   /// The set of compilers for all referenced partials.
   final Set<_AotCompiler> _partialCompilers = {};
 
+  final Set<Method> _compiledPartials = {};
+
   /// The current stack of context objects (as variable lookups).
   final List<_VariableLookup> _contextStack;
+
+  /// The set of context objects which are ultimately used by this compiler.
+  final Set<_VariableLookup> _usedContextStack = {};
 
   /// A counter for naming partial render functions.
   ///
@@ -145,7 +151,8 @@ class _AotCompiler {
     var result = <_VariableLookup>[];
     var index = original.length - 1;
     for (var variable in original) {
-      result.push(_VariableLookup(variable.type, 'context$index'));
+      result.push(_VariableLookup(variable.type, 'context$index',
+          indexInParent: original.indexOf(variable)));
       index--;
     }
     return [...result.reversed];
@@ -158,6 +165,12 @@ class _AotCompiler {
       _contextNameCounter++;
     }
 
+    var blockCompiler = _BlockCompiler(this, _contextStack);
+    await blockCompiler._compile(_syntaxTree);
+    var rendererBody = blockCompiler._buffer.toString();
+    _usedContextStack.addAll(_contextStack
+        .where((c) => blockCompiler._usedContextTypes.contains(c)));
+
     // Get the type parameters of _each_ of the context types in the stack,
     // including their bounds, concatenate them, and wrap them in angle
     // brackets.
@@ -168,7 +181,7 @@ class _AotCompiler {
     // the body of the function should not reference the type parameters, so
     // this should be perfectly possible.
     var typeParameters = <TypeReference>[];
-    for (var context in _contextStack) {
+    for (var context in _usedContextStack) {
       for (var typeParameter in context.type.element.typeParameters) {
         var bound = typeParameter.bound;
         if (bound == null) {
@@ -184,12 +197,8 @@ class _AotCompiler {
       }
     }
 
-    var blockCompiler = _BlockCompiler(this, _contextStack);
-    await blockCompiler._compile(_syntaxTree);
-    var rendererBody = blockCompiler._buffer.toString();
-
     var parameters = <Parameter>[];
-    for (var context in _contextStack) {
+    for (var context in _usedContextStack) {
       var contextElement = context.type.element;
       var contextElementUri = await _elementUri(contextElement);
       parameters.add(Parameter((b) => b
@@ -244,6 +253,8 @@ class _BlockCompiler {
   final _AotCompiler _templateCompiler;
 
   final List<_VariableLookup> _contextStack;
+
+  final Set<_VariableLookup> _usedContextTypes = {};
 
   final _buffer = StringBuffer();
 
@@ -311,12 +322,20 @@ class _BlockCompiler {
       // Add this partial renderer; to be written later.
       _templateCompiler._partialCompilers.add(partialRenderer);
       _templateCompiler._partialCounter++;
+      _templateCompiler._compiledPartials
+          .addAll(await partialRenderer._compileToRenderer());
+      //_templateCompiler._compiledPartials
+      //    .addAll(partialRenderer._compiledPartials);
     }
     // Call the partial's renderer function here; the definition of the renderer
     // function is written later.
     write('buffer.write(');
     writeln('${partialRenderer._rendererName}(');
-    writeln(_contextStack.map((context) => context.name).join(','));
+    var usedContextStack = partialRenderer._usedContextStack
+        .map((context) => context.indexInParent!)
+        .map((index) => _contextStack[index]);
+    writeln(usedContextStack.map((c) => c.name).join(','));
+    _usedContextTypes.addAll(usedContextStack);
     writeln('));');
   }
 
@@ -433,51 +452,54 @@ class _BlockCompiler {
 
     // '.' is an entirely special case.
     if (key.length == 1 && key[0] == '.') {
+      _usedContextTypes.add(_contextStack.first);
       return _VariableLookup(contextType, contextName);
     }
 
     var primaryName = key[0];
 
-    for (var context in _contextStack) {
-      var getter =
-          context.type.lookUpGetter2(primaryName, contextType.element.library);
-      if (getter == null) {
-        continue;
+    late _VariableLookup context;
+    PropertyAccessorElement? getter;
+    for (var c in _contextStack) {
+      getter = c.type.lookUpGetter2(primaryName, contextType.element.library);
+      if (getter != null) {
+        context = c;
+        _usedContextTypes.add(c);
+        break;
       }
-
-      var type = getter.returnType as InterfaceType;
-      var contextChain = typeSystem.isPotentiallyNullable(context.type)
-          // This is imperfect; the idea is that in our templates, we may have
-          // `{{foo.bar.baz}}` and `foo.bar` may be nullably typed. Mustache
-          // (and Mustachio) does not have a null-aware property access
-          // operator, nor a null-check operator. This code translates
-          // `foo.bar.baz` to `foo.bar!.baz` for nullable `foo.bar`.
-          ? '${context.name}!.$primaryName'
-          : '${context.name}.$primaryName';
-      var remainingNames = [...key.skip(1)];
-      for (var secondaryKey in remainingNames) {
-        getter = type.lookUpGetter2(secondaryKey, type.element.library);
-        if (getter == null) {
-          throw MustachioResolutionError(node.keySpan.message(
-              "Failed to resolve '$secondaryKey' on ${context.type} while "
-              'resolving $remainingNames as a property chain on any types in '
-              'the context chain: $contextChain, after first resolving '
-              "'$primaryName' to a property on $type"));
-        }
-        contextChain = typeSystem.isPotentiallyNullable(type)
-            ? '$contextChain!.$secondaryKey'
-            : '$contextChain.$secondaryKey';
-        type = getter.returnType as InterfaceType;
-      }
-      return _VariableLookup(type, contextChain);
+    }
+    if (getter == null) {
+      var contextTypes = [for (var c in _contextStack) c.type];
+      throw MustachioResolutionError(node.keySpan
+          .message("Failed to resolve '$key' as a property on any types in the "
+              'context chain: $contextTypes'));
     }
 
-    var contextTypes = [
-      for (var c in _contextStack) c.type,
-    ];
-    throw MustachioResolutionError(node.keySpan
-        .message("Failed to resolve '$key' as a property on any types in the "
-            'context chain: $contextTypes'));
+    var type = getter.returnType as InterfaceType;
+    var contextChain = typeSystem.isPotentiallyNullable(context.type)
+        // This is imperfect; the idea is that in our templates, we may have
+        // `{{foo.bar.baz}}` and `foo.bar` may be nullably typed. Mustache
+        // (and Mustachio) does not have a null-aware property access
+        // operator, nor a null-check operator. This code translates
+        // `foo.bar.baz` to `foo.bar!.baz` for nullable `foo.bar`.
+        ? '${context.name}!.$primaryName'
+        : '${context.name}.$primaryName';
+    var remainingNames = [...key.skip(1)];
+    for (var secondaryKey in remainingNames) {
+      getter = type.lookUpGetter2(secondaryKey, type.element.library);
+      if (getter == null) {
+        throw MustachioResolutionError(node.keySpan.message(
+            "Failed to resolve '$secondaryKey' on ${context.type} while "
+            'resolving $remainingNames as a property chain on any types in '
+            'the context chain: $contextChain, after first resolving '
+            "'$primaryName' to a property on $type"));
+      }
+      contextChain = typeSystem.isPotentiallyNullable(type)
+          ? '$contextChain!.$secondaryKey'
+          : '$contextChain.$secondaryKey';
+      type = getter.returnType as InterfaceType;
+    }
+    return _VariableLookup(type, contextChain);
   }
 
   /// Writes [content] to the generated render functions as text, properly
@@ -550,7 +572,11 @@ class _VariableLookup {
 
   final String name;
 
-  _VariableLookup(this.type, this.name);
+  /// The index of this variable in the declaring compiler's parent compiler's
+  /// context stack, if it was declared in the construction of a compiler.
+  final int? indexInParent;
+
+  _VariableLookup(this.type, this.name, {this.indexInParent});
 }
 
 extension<T> on List<T> {
