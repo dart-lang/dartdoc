@@ -42,39 +42,35 @@ mixin DocumentationComment
     on Documentable, Warnable, Locatable, SourceCodeMixin {
   List<DocumentationComment>? _documentationFrom;
 
-  /// Returns the ModelElement(s) from which we will get documentation.
-  /// Can be more than one if this is a Field composing documentation from
-  /// multiple Accessors.
+  /// The [ModelElement](s) from which we will get documentation.
   ///
-  /// This getter will walk up the inheritance hierarchy
-  /// to find docs, if the current class doesn't have docs
-  /// for this element.
+  /// Can be more than one if this is a [Field] composing documentation from
+  /// multiple [Accessor]s.
+  ///
+  /// This will walk up the inheritance hierarchy to find docs, if the current
+  /// class doesn't have docs for this element.
   @override
   List<DocumentationComment> get documentationFrom =>
       _documentationFrom ??= () {
-        if (!hasDocumentationComment &&
-            this is Inheritable &&
-            (this as Inheritable).overriddenElement != null) {
-          return (this as Inheritable).overriddenElement!.documentationFrom;
-        } else if (this is Inheritable && (this as Inheritable).isInherited) {
-          var fromThis = modelBuilder.fromElement(element!);
-          return fromThis.documentationFrom;
+        final self = this;
+        if (self is! Inheritable) {
+          return [this];
+        }
+        if (!hasDocumentationComment && self.overriddenElement != null) {
+          return self.overriddenElement!.documentationFrom;
+        } else if (self.isInherited) {
+          return modelBuilder.fromElement(element!).documentationFrom;
         } else {
           return [this];
         }
       }();
 
-  String? _documentationAsHtml;
   @override
-  String? get documentationAsHtml {
-    if (_documentationAsHtml != null) return _documentationAsHtml;
-    _documentationAsHtml = _injectHtmlFragments(elementDocumentation.asHtml);
-    return _documentationAsHtml;
-  }
+  late final String? documentationAsHtml =
+      _injectHtmlFragments(elementDocumentation.asHtml);
 
-  Documentation? _elementDocumentation;
-  Documentation get elementDocumentation =>
-      _elementDocumentation ??= Documentation.forElement(this);
+  late final Documentation elementDocumentation =
+      Documentation.forElement(this);
 
   String get documentationComment;
 
@@ -83,14 +79,10 @@ mixin DocumentationComment
   bool get hasDocumentationComment;
 
   /// Returns true if the raw documentation comment has a nodoc indication.
-  bool get hasNodoc {
-    if (hasDocumentationComment &&
-        (documentationComment.contains('@nodoc') ||
-            documentationComment.contains('<nodoc>'))) {
-      return true;
-    }
-    return packageGraph.configSetsNodocFor(element!.source!.fullName);
-  }
+  late final bool hasNodoc = (hasDocumentationComment &&
+          (documentationComment.contains('@nodoc') ||
+              documentationComment.contains('<nodoc>'))) ||
+      packageGraph.configSetsNodocFor(element!.source!.fullName);
 
   /// Process a [documentationComment], performing various actions based on
   /// `{@}`-style directives (except tool directives), returning the processed
