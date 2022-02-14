@@ -41,7 +41,6 @@ Future<String> compileTemplatesToRenderers(
       buildData,
     );
     rendererFunctions.addAll(await compiler._compileToRenderer());
-    //rendererFunctions.addAll(compiler._compiledPartials);
   }
   var library = Library((b) {
     b.body.addAll(rendererFunctions);
@@ -324,8 +323,6 @@ class _BlockCompiler {
       _templateCompiler._partialCounter++;
       _templateCompiler._compiledPartials
           .addAll(await partialRenderer._compileToRenderer());
-      //_templateCompiler._compiledPartials
-      //    .addAll(partialRenderer._compiledPartials);
     }
     // Call the partial's renderer function here; the definition of the renderer
     // function is written later.
