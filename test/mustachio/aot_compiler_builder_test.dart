@@ -30,7 +30,9 @@ void main() {
     await testMustachioBuilder(
       writer,
       '''
-class Foo {}
+class Foo {
+  String s1 = 'hello';
+}
 class Bar {}
 class Baz {}
 ''',
@@ -56,7 +58,9 @@ import 'package:mustachio/annotations.dart';
 
   test('builds a public API render function', () async {
     await testMustachioBuilder(writer, '''
-class Foo<T> {}
+class Foo<T> {
+  String s1 = 'hello';
+}
 ''', libraryFrontMatter: '''
 @Renderer(#renderFoo, Context<Foo>(), 'foo')
 library foo;
@@ -72,7 +76,9 @@ import 'package:mustachio/annotations.dart';
     await testMustachioBuilder(
       writer,
       '''
-class Foo<T> {}
+class Foo<T> {
+  String s1 = 'hello';
+}
 ''',
       libraryFrontMatter: '''
 @Renderer(#renderFoo, Context<Foo>(), 'foo')
@@ -81,7 +87,7 @@ import 'package:mustachio/annotations.dart';
 ''',
       additionalAssets: {
         'foo|lib/templates/html/foo.html': '{{ >foo_header }}',
-        'foo|lib/templates/html/_foo_header.html': 'EMPTY',
+        'foo|lib/templates/html/_foo_header.html': 's1 is {{ s1 }}',
       },
     );
     var rendererAsset = AssetId('foo', 'lib/foo.aot_renderers_for_html.dart');
@@ -94,7 +100,9 @@ import 'package:mustachio/annotations.dart';
 
   test('builds a renderer for a generic, bounded type', () async {
     await testMustachioBuilder(writer, '''
-class Foo<T extends num> {}
+class Foo<T extends num> {
+  String s1 = 'hello';
+}
 class Bar {}
 class Baz {}
 ''');

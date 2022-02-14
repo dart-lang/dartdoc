@@ -75,13 +75,13 @@ String _renderFoo_partial_foo_header_0(_i1.Foo context0) {
   return buffer.toString();
 }
 
-String renderBar(_i1.Bar context0) {
+String renderBar() {
   final buffer = StringBuffer();
 
   return buffer.toString();
 }
 
-String renderBaz(_i1.Baz context0) {
+String renderBaz() {
   final buffer = StringBuffer();
 
   return buffer.toString();
