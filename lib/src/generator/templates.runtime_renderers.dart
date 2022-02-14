@@ -6833,6 +6833,29 @@ class _Renderer_Inheritable extends RendererBase<Inheritable> {
                         parent: r);
                   },
                 ),
+                'canonicalModelElement': Property(
+                  getValue: (CT_ c) => c.canonicalModelElement,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        _Renderer_ModelElement.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(
+                        self.getValue(c) as ModelElement,
+                        nextProperty,
+                        [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => c.canonicalModelElement == null,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    _render_ModelElement(
+                        c.canonicalModelElement!, ast, r.template, sink,
+                        parent: r);
+                  },
+                ),
                 'features': Property(
                   getValue: (CT_ c) => c.features,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -16560,6 +16583,7 @@ const _invisibleGetters = {
   'HashMap': {'hashCode', 'runtimeType'},
   'Inheritable': {
     'canonicalLibrary',
+    'canonicalModelElement',
     'features',
     'inheritance',
     'isCovariant',

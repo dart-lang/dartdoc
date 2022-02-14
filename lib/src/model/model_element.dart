@@ -494,18 +494,16 @@ abstract class ModelElement extends Canonicalization
       (element is TypeAliasElement &&
           (element as TypeAliasElement).aliasedElement is FunctionTypedElement);
 
-  ModelElement? buildCanonicalModelElement() {
+  // The canonical ModelElement for this ModelElement,
+  // or null if there isn't one.
+  late final ModelElement? canonicalModelElement = () {
     Container? preferredClass;
     if (enclosingElement is Class || enclosingElement is Extension) {
       preferredClass = enclosingElement as Container?;
     }
     return packageGraph.findCanonicalModelElementFor(element,
         preferredClass: preferredClass);
-  }
-
-  // The canonical ModelElement for this ModelElement,
-  // or null if there isn't one.
-  late final ModelElement? canonicalModelElement = buildCanonicalModelElement();
+  }();
 
   bool get hasSourceHref => sourceHref.isNotEmpty;
 
@@ -635,11 +633,11 @@ abstract class ModelElement extends Canonicalization
     if (library != canonicalLibrary) return false;
     // If there's no inheritance to deal with, we're done.
     if (this is! Inheritable) return true;
-    var i = this as Inheritable;
+    final self = this as Inheritable;
     // If we're the defining element, or if the defining element is not in the
     // set of libraries being documented, then this element should be treated as
-    // canonical (given library == canonicalLibrary).
-    return i.enclosingElement == i.canonicalEnclosingContainer;
+    // canonical (given `library == canonicalLibrary`).
+    return self.enclosingElement == self.canonicalEnclosingContainer;
   }
 
   /// Returns the docs, stripped of their leading comments syntax.
