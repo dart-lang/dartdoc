@@ -122,40 +122,31 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     // Prevent reentrancy.
     var precachedElements = <ModelElement>{};
 
-    Iterable<Future<void>> precacheOneElement(ModelElement element) sync* {
-      for (var d in element.documentationFrom
-          .where((d) => d.hasDocumentationComment)) {
-        if (d.needsPrecache && !precachedElements.contains(d)) {
-          precachedElements.add(d as ModelElement);
-          yield d.precacheLocalDocs();
-          logProgress(d.name);
-          // TopLevelVariables get their documentation from getters and setters,
-          // so should be precached if either has a template.
-          if (element is TopLevelVariable &&
-              !precachedElements.contains(element)) {
-            precachedElements.add(element);
-            yield element.precacheLocalDocs();
+    for (var element in _allModelElements) {
+      // Only precache elements which are canonical, have a canonical element
+      // somewhere, or have a canonical enclosing element. Not the same as
+      // `allCanonicalModelElements` since we need to run for any [ModelElement]
+      // that might not _have_ a canonical [ModelElement], too.
+      if (element.isCanonical ||
+          element.canonicalModelElement == null ||
+          element.enclosingElement!.isCanonical) {
+        for (var d in element.documentationFrom
+            .where((d) => d.hasDocumentationComment)) {
+          if (d.needsPrecache && !precachedElements.contains(d)) {
+            precachedElements.add(d as ModelElement);
+            yield d.precacheLocalDocs();
             logProgress(d.name);
+            // [TopLevelVariable]s get their documentation from getters and
+            // setters, so should be precached if either has a template.
+            if (element is TopLevelVariable &&
+                !precachedElements.contains(element)) {
+              precachedElements.add(element);
+              yield element.precacheLocalDocs();
+              logProgress(d.name);
+            }
           }
         }
       }
-    }
-
-    for (var element in allModelElements) {
-      // Skip if there is a `canonicalModelElement` somewhere else we can use
-      // and we won't need a one line document that is precached. Not the same
-      // as `allCanonicalModelElements` since we need to run for any
-      // [ModelElement] that might not _have_ a canonical [ModelElement], too.
-      if (
-          // A canonical element exists somewhere.
-          element.canonicalModelElement != null &&
-              // This element is not canonical.
-              !element.isCanonical &&
-              // The enclosing element won't need a `oneLineDoc` from this.
-              !element.enclosingElement!.isCanonical) {
-        continue;
-      }
-      yield* precacheOneElement(element);
     }
     // Now wait for any of the tasks still running to complete.
     yield config.tools.runner.wait();
@@ -212,7 +203,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   final allLibraries = <String, Library>{};
 
   /// All [ModelElement]s constructed for this package; a superset of
-  /// [allModelElements].
+  /// [_allModelElements].
   final HashMap<Tuple3<Element, Library, Container?>, ModelElement?>
       allConstructedModelElements =
       HashMap<Tuple3<Element, Library, Container?>, ModelElement?>();
@@ -898,27 +889,23 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     return foundLibrary;
   }
 
-  late final Iterable<ModelElement> allModelElements = () {
+  late final Iterable<ModelElement> _allModelElements = () {
     assert(allLibrariesAdded);
     var allElements = <ModelElement>[];
-    var packagesToDo = packages.toSet();
     var completedPackages = <Package>{};
-    while (packagesToDo.length > completedPackages.length) {
-      for (var package in packagesToDo.difference(completedPackages)) {
-        var librariesToDo = package.allLibraries.toSet();
-        var completedLibraries = <Library>{};
-        while (librariesToDo.length > completedLibraries.length) {
-          librariesToDo
-              .difference(completedLibraries)
-              .forEach((Library library) {
-            allElements.addAll(library.allModelElements);
-            completedLibraries.add(library);
-          });
-          librariesToDo.addAll(package.allLibraries);
-        }
-        completedPackages.add(package);
+    for (var package in packages) {
+      if (completedPackages.contains(package)) {
+        continue;
       }
-      packagesToDo.addAll(packages);
+      var completedLibraries = <Library>{};
+      for (var library in package.allLibraries) {
+        if (completedLibraries.contains(library)) {
+          continue;
+        }
+        allElements.addAll(library.allModelElements);
+        completedLibraries.add(library);
+      }
+      completedPackages.add(package);
     }
 
     return allElements;
@@ -928,8 +915,8 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     for (var library in _localLibraries) ...library.allModelElements
   ];
 
-  late final Iterable<ModelElement> allCanonicalModelElements =
-      allLocalModelElements.where((e) => e.isCanonical).toList();
+  Iterable<ModelElement> get allCanonicalModelElements =>
+      allLocalModelElements.where((e) => e.isCanonical);
 
   /// Glob lookups can be expensive.  Cache per filename.
   final _configSetsNodocFor = HashMap<String, bool>();

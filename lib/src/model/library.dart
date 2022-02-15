@@ -18,7 +18,6 @@ import 'package:collection/collection.dart' show IterableExtension;
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart' show PackageMeta;
-import 'package:dartdoc/src/quiver.dart' as quiver;
 import 'package:dartdoc/src/warnings.dart';
 
 /// Find all hashable children of a given element that are defined in the
@@ -91,18 +90,17 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   }
 
   static Iterable<Element> _getDefinedElements(
-      CompilationUnitElement compilationUnit) {
-    return quiver.concat([
-      compilationUnit.accessors,
-      compilationUnit.classes,
-      compilationUnit.enums,
-      compilationUnit.extensions,
-      compilationUnit.functions,
-      compilationUnit.mixins,
-      compilationUnit.topLevelVariables,
-      compilationUnit.typeAliases,
-    ]);
-  }
+          CompilationUnitElement compilationUnit) =>
+      [
+        ...compilationUnit.accessors,
+        ...compilationUnit.classes,
+        ...compilationUnit.enums,
+        ...compilationUnit.extensions,
+        ...compilationUnit.functions,
+        ...compilationUnit.mixins,
+        ...compilationUnit.topLevelVariables,
+        ...compilationUnit.typeAliases,
+      ];
 
   /// Allow scope for Libraries.
   @override
@@ -196,8 +194,8 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   }
 
   @override
-  late final Iterable<TopLevelVariable> constants =
-      _variables.where((v) => v.isConst).toList(growable: false);
+  Iterable<TopLevelVariable> get constants =>
+      _variables.where((v) => v.isConst);
 
   /// Map of import prefixes ('import "foo" as prefix;') to [Library].
   late final Map<String, Set<Library>> prefixToLibrary = () {
@@ -455,9 +453,9 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     return modelElements;
   }();
 
-  late final Iterable<ModelElement> allModelElements = [
-    for (var modelElements in modelElementsMap.values) ...modelElements,
-  ];
+  Iterable<ModelElement> get allModelElements => [
+        for (var modelElements in modelElementsMap.values) ...modelElements,
+      ];
 
   late final Iterable<ModelElement> allCanonicalModelElements =
       allModelElements.where((e) => e.isCanonical).toList(growable: false);

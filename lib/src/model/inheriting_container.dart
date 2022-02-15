@@ -10,7 +10,6 @@ import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/extension_target.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as model_utils;
-import 'package:dartdoc/src/quiver.dart' as quiver;
 import 'package:meta/meta.dart';
 
 /// A mixin to build an [InheritingContainer] capable of being constructed
@@ -235,7 +234,7 @@ abstract class InheritingContainer extends Container
 
   @override
   Iterable<Method> get instanceMethods =>
-      quiver.concat([super.instanceMethods, inheritedMethods]);
+      [...super.instanceMethods, ...inheritedMethods];
 
   @override
   bool get publicInheritedInstanceMethods =>
@@ -243,19 +242,17 @@ abstract class InheritingContainer extends Container
 
   @override
   Iterable<Operator> get instanceOperators =>
-      quiver.concat([super.instanceOperators, inheritedOperators]);
+      [...super.instanceOperators, ...inheritedOperators];
 
   @override
   bool get publicInheritedInstanceOperators =>
       publicInstanceOperators.every((f) => f.isInherited);
 
   @override
-  late final List<ModelElement> allModelElements = List.of(
-      quiver.concat<ModelElement>([
-        super.allModelElements!,
-        typeParameters,
-      ]),
-      growable: false);
+  late final List<ModelElement> allModelElements = [
+    ...super.allModelElements,
+    ...typeParameters,
+  ];
 
   /// Returns the [InheritingContainer] with the library in which [element] is defined.
   InheritingContainer get definingContainer =>

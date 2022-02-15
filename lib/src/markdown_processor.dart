@@ -157,9 +157,8 @@ class _IterableBlockParser extends md.BlockParser {
   }
 }
 
-/// Return false if the passed [referable] is an unnamed [Constructor],
-/// or if it is shadowing another type of element, or is a parameter of
-/// one of the above.
+/// Returns false if [referable] is an unnamed [Constructor], or if it is
+/// shadowing another type of element, or is a parameter of one of the above.
 bool _rejectUnnamedAndShadowingConstructors(CommentReferable? referable) {
   if (referable is Constructor) {
     if (referable.isUnnamedConstructor) return false;
@@ -186,8 +185,8 @@ MatchingLinkResult _getMatchingLinkElementCommentReferable(
   var commentReference =
       warnable.commentRefs[codeRef] ?? ModelCommentReference.synthetic(codeRef);
 
-  late final bool Function(CommentReferable?) filter;
-  late final bool Function(CommentReferable?) allowTree;
+  bool Function(CommentReferable?) filter;
+  bool Function(CommentReferable?) allowTree;
 
   // Constructor references are pretty ambiguous by nature since they can be
   // declared with the same name as the class they are constructing, and even
