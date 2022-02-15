@@ -7557,28 +7557,6 @@ class _Renderer_InheritingContainerTemplateData<T extends InheritingContainer>
                         parent: r);
                   },
                 ),
-                'linkedObjectType': Property(
-                  getValue: (CT_ c) => c.linkedObjectType,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_String.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as String,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.linkedObjectType, ast, r.template, sink,
-                        parent: r);
-                  },
-                ),
                 'metaDescription': Property(
                   getValue: (CT_ c) => c.metaDescription,
                   renderVariable:
@@ -10640,6 +10618,28 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_String(c.linkedName, ast, r.template, sink,
+                        parent: r);
+                  },
+                ),
+                'linkedObjectType': Property(
+                  getValue: (CT_ c) => c.linkedObjectType,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        _Renderer_String.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(
+                        self.getValue(c) as String,
+                        nextProperty,
+                        [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => false,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    _render_String(c.linkedObjectType, ast, r.template, sink,
                         parent: r);
                   },
                 ),

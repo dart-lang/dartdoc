@@ -3,6 +3,10 @@
 // To change the contents of this library, make changes to the builder source
 // files in the tool/mustachio/ directory.
 
+// There are a few deduplicated render functions which are generated but not
+// used.
+// TODO(srawlins): Detect these and do not write them.
+// ignore_for_file: unused_element
 // Sometimes we enter a new section which triggers creating a new variable, but
 // the variable is not used; generally when the section is checking if a
 // non-bool, non-Iterable field is non-null.
@@ -63,18 +67,6 @@ String renderFoo(_i1.Foo context0) {
   return buffer.toString();
 }
 
-String _renderFoo_partial_foo_header_0(_i1.Foo context0) {
-  final buffer = StringBuffer();
-  buffer.write('''<div class="partial">
-    l1: ''');
-  buffer.writeEscaped(context0.l1.toString());
-  buffer.writeln();
-  buffer.write('''
-</div>''');
-
-  return buffer.toString();
-}
-
 String renderBar() {
   final buffer = StringBuffer();
 
@@ -83,6 +75,18 @@ String renderBar() {
 
 String renderBaz() {
   final buffer = StringBuffer();
+
+  return buffer.toString();
+}
+
+String _renderFoo_partial_foo_header_0(_i1.Foo context0) {
+  final buffer = StringBuffer();
+  buffer.write('''<div class="partial">
+    l1: ''');
+  buffer.writeEscaped(context0.l1.toString());
+  buffer.writeln();
+  buffer.write('''
+</div>''');
 
   return buffer.toString();
 }
