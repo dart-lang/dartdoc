@@ -4,7 +4,7 @@
 
 import 'dart:async';
 
-import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
+import 'package:analyzer/dart/analysis/analysis_context.dart';
 import 'package:analyzer/dart/analysis/context_root.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/ast/ast.dart';
@@ -51,11 +51,28 @@ class PubPackageBuilder implements PackageBuilder {
   final PackageConfigProvider packageConfigProvider;
 
   PubPackageBuilder(
-    this.config,
-    this.packageMetaProvider,
-    this.packageConfigProvider, {
-    @visibleForTesting bool skipUnreachableSdkLibraries = false,
-  }) : _skipUnreachableSdkLibraries = skipUnreachableSdkLibraries;
+      this.config, this.packageMetaProvider, this.packageConfigProvider,
+      {@visibleForTesting bool skipUnreachableSdkLibraries = false})
+      : _analysisContext = AnalysisContextCollectionImpl(
+          includedPaths: [config.inputDir],
+          // TODO(jcollins-g): should we pass excluded directories here instead
+          // of handling it ourselves?
+          resourceProvider: packageMetaProvider.resourceProvider,
+          sdkPath: config.sdkDir,
+
+
+    updateAnalysisOptions2: ({
+      required AnalysisOptionsImpl analysisOptions,
+      required ContextRoot contextRoot,
+      required DartSdk sdk,
+    }) =>
+        analysisOptions
+          ..hint = false
+          ..lint = false,
+
+
+        ).contextFor(config.inputDir),
+        _skipUnreachableSdkLibraries = skipUnreachableSdkLibraries;
 
   @override
   Future<PackageGraph> buildPackageGraph() async {
@@ -100,15 +117,10 @@ class PubPackageBuilder implements PackageBuilder {
       FolderBasedDartSdk(
           resourceProvider, resourceProvider.getFolder(config.sdkDir));
 
-  EmbedderSdk? _embedderSdk;
-
-  EmbedderSdk? get embedderSdk {
-    if (_embedderSdk == null && !config.topLevelPackageMeta.isSdk) {
-      _embedderSdk = EmbedderSdk(
+  late final EmbedderSdk? embedderSdk = config.topLevelPackageMeta.isSdk
+      ? null
+      : EmbedderSdk(
           resourceProvider, EmbedderYamlLocator(_packageMap).embedderYamls);
-    }
-    return _embedderSdk;
-  }
 
   ResourceProvider get resourceProvider => packageMetaProvider.resourceProvider;
 
@@ -134,22 +146,7 @@ class PubPackageBuilder implements PackageBuilder {
 
   late final Map<String, List<Folder>> _packageMap;
 
-  late final AnalysisContextCollection _contextCollection =
-      AnalysisContextCollectionImpl(
-    includedPaths: [config.inputDir],
-    // TODO(jcollins-g): should we pass excluded directories here instead of
-    // handling it ourselves?
-    resourceProvider: resourceProvider,
-    sdkPath: config.sdkDir,
-    updateAnalysisOptions2: ({
-      required AnalysisOptionsImpl analysisOptions,
-      required ContextRoot contextRoot,
-      required DartSdk sdk,
-    }) =>
-        analysisOptions
-          ..hint = false
-          ..lint = false,
-  );
+  final AnalysisContext _analysisContext;
 
   /// Returns an Iterable with the SDK files we should parse.
   Iterable<String> _getSdkFilesToDocument() sync* {
@@ -166,10 +163,9 @@ class PubPackageBuilder implements PackageBuilder {
     // TODO(scheglov) Do we need this? Maybe the argument is already valid?
     filePath = pathContext.normalize(pathContext.absolute(filePath));
 
-    var analysisContext = _contextCollection.contextFor(config.inputDir);
     // Allow dart source files with inappropriate suffixes (#1897).
     final library =
-        await analysisContext.currentSession.getResolvedLibrary(filePath);
+        await _analysisContext.currentSession.getResolvedLibrary(filePath);
     if (library is ResolvedLibraryResult) {
       return DartDocResolvedLibrary(library);
     }
