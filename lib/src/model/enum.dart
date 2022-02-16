@@ -25,6 +25,10 @@ class Enum extends InheritingContainer with TypeImplementing {
   String get relationshipsClass => 'eNum-relationships';
 }
 
+/// A field specific to an enum's values.
+///
+/// Enum's value fields are virtual, so we do a little work to create usable
+/// entries for the docs.
 class EnumField extends Field {
   int? index;
 
@@ -41,11 +45,22 @@ class EnumField extends Field {
   @override
   String get constantValueBase => _fieldRenderer.renderValue(this);
 
-  /*@override
+  @override
   List<DocumentationComment> get documentationFrom {
     if (name == 'values' || name == 'index') return [this];
     return super.documentationFrom;
-  }*/
+  }
+
+  @override
+  String get documentation {
+    if (name == 'values') {
+      return 'A constant List of the values in this enum, in order of their declaration.';
+    } else if (name == 'index') {
+      return 'The integer index of this enum.';
+    } else {
+      return super.documentation;
+    }
+  }
 
   @override
   String get extendedDocLink {

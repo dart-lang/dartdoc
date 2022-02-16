@@ -47,19 +47,12 @@ class Field extends ModelElement
     // Verify that [hasSetter] and [hasGetthasPublicGetterNoSettererNoSetter]
     // are mutually exclusive, to prevent displaying more or less than one
     // summary.
-    if (name == 'values') {
-      return 'A constant List of the values in this enum, in order of their '
-          'declaration.';
-    } else if (name == 'index') {
-      return 'The integer index of this enum.';
-    } else {
-      if (isPublic) {
-        assert((hasPublicSetter && !hasPublicGetterNoSetter) ||
-            (!hasPublicSetter && hasPublicGetterNoSetter));
-      }
-      //documentationFrom;
-      return super.documentation;
+    if (isPublic) {
+      assert((hasPublicSetter && !hasPublicGetterNoSetter) ||
+          (!hasPublicSetter && hasPublicGetterNoSetter));
     }
+    //documentationFrom;
+    return super.documentation;
   }
 
   @override
