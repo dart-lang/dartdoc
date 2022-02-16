@@ -81,71 +81,64 @@ const aTearOffNamedConstructorArgs = F<int>.alternative;
         ],
       );
 
-      library = (await bootstrapPackageGraph())
-          .libraries
-          .firstWhere((l) => l.name == libraryName);
+      library = (await bootstrapPackageGraph()).libraries.named(libraryName);
     });
 
     test('non-generic function reference', () {
-      var aFuncConstant =
-          library.constants.firstWhere((c) => c.name == 'aFunc');
+      var aFuncConstant = library.constants.named('aFunc');
       expect(aFuncConstant.constantValue, equals('func'));
     });
 
     test('generic function reference', () {
-      var aFuncParamsConstant =
-          library.constants.firstWhere((c) => c.name == 'aFuncParams');
+      var aFuncParamsConstant = library.constants.named('aFuncParams');
       expect(aFuncParamsConstant.constantValue, equals('funcTypeParams'));
     });
 
     test('generic function reference w/ type args', () {
-      var aFuncWithArgs =
-          library.constants.firstWhere((c) => c.name == 'aFuncWithArgs');
+      var aFuncWithArgs = library.constants.named('aFuncWithArgs');
       expect(aFuncWithArgs.constantValue,
           equals('funcTypeParams&lt;String, int&gt;'));
     });
 
     test('named constructor reference', () {
-      var aTearOffNamedConstructor = library.constants
-          .firstWhere((c) => c.name == 'aTearOffNamedConstructor');
+      var aTearOffNamedConstructor =
+          library.constants.named('aTearOffNamedConstructor');
       expect(aTearOffNamedConstructor.constantValue, equals('F.alternative'));
     });
 
     test('named constructor reference w/ type args', () {
-      var aTearOffNamedConstructorArgs = library.constants
-          .firstWhere((c) => c.name == 'aTearOffNamedConstructorArgs');
+      var aTearOffNamedConstructorArgs =
+          library.constants.named('aTearOffNamedConstructorArgs');
       expect(aTearOffNamedConstructorArgs.constantValue,
           equals('F&lt;int&gt;.alternative'));
     });
 
     test('unnamed constructor reference', () {
-      var aTearOffUnnamedConstructor = library.constants
-          .firstWhere((c) => c.name == 'aTearOffUnnamedConstructor');
+      var aTearOffUnnamedConstructor =
+          library.constants.named('aTearOffUnnamedConstructor');
       expect(aTearOffUnnamedConstructor.constantValue, equals('F.new'));
     });
 
     test('unnamed constructor reference w/ type args', () {
-      var aTearOffUnnamedConstructorArgs = library.constants
-          .firstWhere((c) => c.name == 'aTearOffUnnamedConstructorArgs');
+      var aTearOffUnnamedConstructorArgs =
+          library.constants.named('aTearOffUnnamedConstructorArgs');
       expect(aTearOffUnnamedConstructorArgs.constantValue,
           equals('F&lt;String&gt;.new'));
     });
 
     test('unnamed typedef constructor reference', () {
-      var aTearOffUnnamedConstructorTypedef = library.constants
-          .firstWhere((c) => c.name == 'aTearOffUnnamedConstructorTypedef');
+      var aTearOffUnnamedConstructorTypedef =
+          library.constants.named('aTearOffUnnamedConstructorTypedef');
       expect(aTearOffUnnamedConstructorTypedef.constantValue,
           equals('Fstring.new'));
     });
 
     test('unnamed typedef constructor reference w/ type args', () {
-      var aTearOffUnnamedConstructorArgsTypedef = library.constants
-          .firstWhere((c) => c.name == 'aTearOffUnnamedConstructorArgsTypedef');
+      var aTearOffUnnamedConstructorArgsTypedef =
+          library.constants.named('aTearOffUnnamedConstructorArgsTypedef');
       expect(aTearOffUnnamedConstructorArgsTypedef.constantValue,
           equals('Ft&lt;String&gt;.new'));
     });
-
-    test('constant rendering', () {}, skip: true);
   }, skip: !constructorTearoffsAllowed.allows(utils.platformVersion));
 
   group('named-arguments-anywhere', () {
@@ -193,14 +186,12 @@ const r = C(c: 1, d: 2, 3, 4);
         ],
       );
 
-      library = (await bootstrapPackageGraph())
-          .libraries
-          .firstWhere((l) => l.name == libraryName);
+      library = (await bootstrapPackageGraph()).libraries.named(libraryName);
     });
 
     test('named parameters in a const invocation value can be specified last',
         () async {
-      var pConst = library.constants.firstWhere((c) => c.name == 'p');
+      var pConst = library.constants.named('p');
 
       expect(pConst.constantValue,
           equals('<a href="$linkPrefix/C/C.html">C</a>(1, 2, c: 3, d: 4)'));
@@ -209,7 +200,7 @@ const r = C(c: 1, d: 2, 3, 4);
     test(
         'named parameters in a const invocation value can be specified anywhere',
         () async {
-      var qConst = library.constants.firstWhere((c) => c.name == 'q');
+      var qConst = library.constants.named('q');
 
       expect(qConst.constantValue,
           equals('<a href="$linkPrefix/C/C.html">C</a>(1, c: 2, 3, d: 4)'));
@@ -217,7 +208,7 @@ const r = C(c: 1, d: 2, 3, 4);
 
     test('named parameters in a const invocation value can be specified first',
         () async {
-      var rConst = library.constants.firstWhere((c) => c.name == 'r');
+      var rConst = library.constants.named('r');
 
       expect(rConst.constantValue,
           equals('<a href="$linkPrefix/C/C.html">C</a>(c: 1, d: 2, 3, 4)'));

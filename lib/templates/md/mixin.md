@@ -21,14 +21,7 @@
 {{/hasPublicSuperclassConstraints}}
 
 {{ >super_chain }}
-
-{{#hasPublicInterfaces}}
-**Implemented types**
-
-{{#publicInterfaces}}
-- {{{linkedName}}}
-{{/publicInterfaces}}
-{{/hasPublicInterfaces}}
+{{ >interfaces }}
 
 {{#hasPublicImplementors}}
 **Mixin Applications**

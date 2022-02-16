@@ -44,15 +44,22 @@ class Field extends ModelElement
 
   @override
   String get documentation {
-    // Verify that hasSetter and hasGetterNoSetter are mutually exclusive,
-    // to prevent displaying more or less than one summary.
-    if (isPublic) {
-      var assertCheck = <dynamic>{}
-        ..addAll(<bool>[hasPublicSetter, hasPublicGetterNoSetter]);
-      assert(assertCheck.containsAll([true, false]));
+    // Verify that [hasSetter] and [hasGetthasPublicGetterNoSettererNoSetter]
+    // are mutually exclusive, to prevent displaying more or less than one
+    // summary.
+    if (name == 'values') {
+      return 'A constant List of the values in this enum, in order of their '
+          'declaration.';
+    } else if (name == 'index') {
+      return 'The integer index of this enum.';
+    } else {
+      if (isPublic) {
+        assert((hasPublicSetter && !hasPublicGetterNoSetter) ||
+            (!hasPublicSetter && hasPublicGetterNoSetter));
+      }
+      //documentationFrom;
+      return super.documentation;
     }
-    documentationFrom;
-    return super.documentation;
   }
 
   @override

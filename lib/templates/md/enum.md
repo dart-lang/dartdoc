@@ -12,6 +12,7 @@
 
 {{#hasModifiers}}
 {{ >super_chain }}
+{{ >interfaces }}
 
 {{#hasAnnotations}}
 **Annotations**

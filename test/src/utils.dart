@@ -17,6 +17,7 @@ import 'package:dartdoc/src/failure.dart';
 import 'package:dartdoc/src/generator/generator.dart';
 import 'package:dartdoc/src/markdown_processor.dart';
 import 'package:dartdoc/src/matching_link_result.dart';
+import 'package:dartdoc/src/model/model_element.dart';
 import 'package:dartdoc/src/model/package_builder.dart';
 import 'package:dartdoc/src/model/package_graph.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
@@ -24,6 +25,7 @@ import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
+import 'package:test/test.dart';
 
 /// The number of public libraries in testing/test_package, minus 2 for
 /// the excluded libraries listed in the initializers for _testPackageGraphMemo
@@ -247,3 +249,15 @@ MatchingLinkResult definingLinkResult(MatchingLinkResult originalResult) {
 
 MatchingLinkResult referenceLookup(Warnable element, String codeRef) =>
     definingLinkResult(getMatchingLinkElement(element, codeRef));
+
+/// Returns a matcher which compresses consecutive whitespace in [text] into a
+/// single space.
+Matcher matchesCompressed(String text) => matches(RegExp(text.replaceAll(
+      RegExp(r'\s\s+', multiLine: true),
+      ' *',
+    )));
+
+extension ModelElementIterableExtensions<T extends ModelElement>
+    on Iterable<T> {
+  T named(String name) => firstWhere((e) => e.name == name);
+}

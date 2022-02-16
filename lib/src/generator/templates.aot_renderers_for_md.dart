@@ -556,12 +556,14 @@ String renderClass(_i1.ClassTemplateData context0) {
     buffer.writeln();
     buffer.write(_renderClass_partial_super_chain_5(context2, context0));
     buffer.writeln();
-    if (context2.hasPublicInterfaces == true) {
+    buffer.write(_renderClass_partial_interfaces_6(context2));
+    buffer.writeln();
+    if (context2.hasPublicMixedInTypes == true) {
       buffer.writeln();
       buffer.write('''
-**Implemented types**
+**Mixed in types**
 ''');
-      var context3 = context2.publicInterfaces;
+      var context3 = context2.publicMixedInTypes;
       for (var context4 in context3) {
         buffer.writeln();
         buffer.write('''
@@ -570,12 +572,12 @@ String renderClass(_i1.ClassTemplateData context0) {
       }
     }
     buffer.writeln();
-    if (context2.hasPublicMixedInTypes == true) {
+    if (context2.hasPublicImplementors == true) {
       buffer.writeln();
       buffer.write('''
-**Mixed in types**
+**Implementers**
 ''');
-      var context5 = context2.publicMixedInTypes;
+      var context5 = context2.publicImplementorsSorted;
       for (var context6 in context5) {
         buffer.writeln();
         buffer.write('''
@@ -584,27 +586,13 @@ String renderClass(_i1.ClassTemplateData context0) {
       }
     }
     buffer.writeln();
-    if (context2.hasPublicImplementors == true) {
-      buffer.writeln();
-      buffer.write('''
-**Implementers**
-''');
-      var context7 = context2.publicImplementorsSorted;
-      for (var context8 in context7) {
-        buffer.writeln();
-        buffer.write('''
-- ''');
-        buffer.write(context8.linkedName);
-      }
-    }
-    buffer.writeln();
     if (context2.hasPotentiallyApplicableExtensions == true) {
       buffer.writeln();
       buffer.write('''
 **Available Extensions**
 ''');
-      var context9 = context2.potentiallyApplicableExtensions;
-      if (context9 != null) {
+      var context7 = context2.potentiallyApplicableExtensions;
+      if (context7 != null) {
         buffer.writeln();
         buffer.write('''
 - ''');
@@ -617,12 +605,12 @@ String renderClass(_i1.ClassTemplateData context0) {
       buffer.write('''
 **Annotations**
 ''');
-      var context10 = context2.annotations;
-      for (var context11 in context10) {
+      var context8 = context2.annotations;
+      for (var context9 in context8) {
         buffer.writeln();
         buffer.write('''
 - ''');
-        buffer.write(context11.linkedNameWithParameters);
+        buffer.write(context9.linkedNameWithParameters);
       }
     }
   }
@@ -632,24 +620,24 @@ String renderClass(_i1.ClassTemplateData context0) {
     buffer.write('''
 ## Constructors
 ''');
-    var context12 = context2.publicConstructorsSorted;
-    for (var context13 in context12) {
+    var context10 = context2.publicConstructorsSorted;
+    for (var context11 in context10) {
       buffer.writeln();
-      buffer.write(context13.linkedName);
+      buffer.write(context11.linkedName);
       buffer.write(''' (''');
-      buffer.write(context13.linkedParams);
+      buffer.write(context11.linkedParams);
       buffer.write(''')
 
 ''');
-      buffer.write(context13.oneLineDoc);
+      buffer.write(context11.oneLineDoc);
       buffer.write(' ');
-      buffer.write(context13.extendedDocLink);
+      buffer.write(context11.extendedDocLink);
       buffer.write('  ');
-      if (context13.isConst == true) {
+      if (context11.isConst == true) {
         buffer.write('''_const_''');
       }
       buffer.write(' ');
-      if (context13.isFactory == true) {
+      if (context11.isFactory == true) {
         buffer.write('''_factory_''');
       }
       buffer.writeln();
@@ -661,10 +649,10 @@ String renderClass(_i1.ClassTemplateData context0) {
     buffer.write('''
 ## Properties
 ''');
-    var context14 = context2.publicInstanceFieldsSorted;
-    for (var context15 in context14) {
+    var context12 = context2.publicInstanceFieldsSorted;
+    for (var context13 in context12) {
       buffer.writeln();
-      buffer.write(_renderClass_partial_property_6(context15));
+      buffer.write(_renderClass_partial_property_7(context13));
       buffer.writeln();
     }
   }
@@ -674,10 +662,10 @@ String renderClass(_i1.ClassTemplateData context0) {
     buffer.write('''
 ## Methods
 ''');
-    var context16 = context2.publicInstanceMethodsSorted;
-    for (var context17 in context16) {
+    var context14 = context2.publicInstanceMethodsSorted;
+    for (var context15 in context14) {
       buffer.writeln();
-      buffer.write(_renderClass_partial_callable_7(context17));
+      buffer.write(_renderClass_partial_callable_8(context15));
       buffer.writeln();
     }
   }
@@ -687,10 +675,10 @@ String renderClass(_i1.ClassTemplateData context0) {
     buffer.write('''
 ## Operators
 ''');
-    var context18 = context2.publicInstanceOperatorsSorted;
-    for (var context19 in context18) {
+    var context16 = context2.publicInstanceOperatorsSorted;
+    for (var context17 in context16) {
       buffer.writeln();
-      buffer.write(_renderClass_partial_callable_7(context19));
+      buffer.write(_renderClass_partial_callable_8(context17));
       buffer.writeln();
     }
   }
@@ -700,10 +688,10 @@ String renderClass(_i1.ClassTemplateData context0) {
     buffer.write('''
 ## Static Properties
 ''');
-    var context20 = context2.publicVariableStaticFieldsSorted;
-    for (var context21 in context20) {
+    var context18 = context2.publicVariableStaticFieldsSorted;
+    for (var context19 in context18) {
       buffer.writeln();
-      buffer.write(_renderClass_partial_property_6(context21));
+      buffer.write(_renderClass_partial_property_7(context19));
       buffer.writeln();
     }
   }
@@ -713,10 +701,10 @@ String renderClass(_i1.ClassTemplateData context0) {
     buffer.write('''
 ## Static Methods
 ''');
-    var context22 = context2.publicStaticMethodsSorted;
-    for (var context23 in context22) {
+    var context20 = context2.publicStaticMethodsSorted;
+    for (var context21 in context20) {
       buffer.writeln();
-      buffer.write(_renderClass_partial_callable_7(context23));
+      buffer.write(_renderClass_partial_callable_8(context21));
       buffer.writeln();
     }
   }
@@ -726,15 +714,15 @@ String renderClass(_i1.ClassTemplateData context0) {
     buffer.write('''
 ## Constants
 ''');
-    var context24 = context2.publicConstantFieldsSorted;
-    for (var context25 in context24) {
+    var context22 = context2.publicConstantFieldsSorted;
+    for (var context23 in context22) {
       buffer.writeln();
-      buffer.write(_renderClass_partial_constant_8(context25));
+      buffer.write(_renderClass_partial_constant_9(context23));
       buffer.writeln();
     }
   }
   buffer.write('\n\n');
-  buffer.write(_renderClass_partial_footer_9(context0));
+  buffer.write(_renderClass_partial_footer_10(context0));
   buffer.writeln();
 
   return buffer.toString();
@@ -830,7 +818,26 @@ String _renderClass_partial_super_chain_5(
   return buffer.toString();
 }
 
-String _renderClass_partial_property_6(_i9.Field context2) {
+String _renderClass_partial_interfaces_6(_i8.Class context1) {
+  final buffer = StringBuffer();
+  if (context1.hasPublicInterfaces == true) {
+    buffer.writeln();
+    buffer.write('''
+**Implemented types**
+''');
+    var context4 = context1.publicInterfaces;
+    for (var context5 in context4) {
+      buffer.writeln();
+      buffer.write('''
+- ''');
+      buffer.write(context5.linkedName);
+    }
+  }
+
+  return buffer.toString();
+}
+
+String _renderClass_partial_property_7(_i9.Field context2) {
   final buffer = StringBuffer();
   buffer.write('''##### ''');
   buffer.write(context2.linkedName);
@@ -840,20 +847,20 @@ String _renderClass_partial_property_6(_i9.Field context2) {
   buffer.write(context2.modelType.linkedName);
   buffer.writeln();
   buffer.write(
-      __renderClass_partial_property_6_partial_categorization_0(context2));
+      __renderClass_partial_property_7_partial_categorization_0(context2));
   buffer.write('\n\n');
   buffer.write(context2.oneLineDoc);
   buffer.write(' ');
   buffer.write(context2.extendedDocLink);
   buffer.write('  ');
   buffer.writeln();
-  buffer.write(__renderClass_partial_property_6_partial_features_1(context2));
+  buffer.write(__renderClass_partial_property_7_partial_features_1(context2));
   buffer.writeln();
 
   return buffer.toString();
 }
 
-String __renderClass_partial_property_6_partial_categorization_0(
+String __renderClass_partial_property_7_partial_categorization_0(
     _i9.Field context2) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
@@ -871,7 +878,7 @@ Categories:''');
   return buffer.toString();
 }
 
-String __renderClass_partial_property_6_partial_features_1(_i9.Field context2) {
+String __renderClass_partial_property_7_partial_features_1(_i9.Field context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
     buffer.write('''_''');
@@ -883,7 +890,7 @@ String __renderClass_partial_property_6_partial_features_1(_i9.Field context2) {
   return buffer.toString();
 }
 
-String _renderClass_partial_callable_7(_i10.Method context2) {
+String _renderClass_partial_callable_8(_i10.Method context2) {
   final buffer = StringBuffer();
   buffer.write('''##### ''');
   buffer.write(context2.linkedName);
@@ -894,20 +901,20 @@ String _renderClass_partial_callable_7(_i10.Method context2) {
   buffer.write(context2.modelType.returnType.linkedName);
   buffer.writeln();
   buffer.write(
-      __renderClass_partial_callable_7_partial_categorization_0(context2));
+      __renderClass_partial_callable_8_partial_categorization_0(context2));
   buffer.write('\n\n');
   buffer.write(context2.oneLineDoc);
   buffer.write(' ');
   buffer.write(context2.extendedDocLink);
   buffer.write('  ');
   buffer.writeln();
-  buffer.write(__renderClass_partial_callable_7_partial_features_1(context2));
+  buffer.write(__renderClass_partial_callable_8_partial_features_1(context2));
   buffer.writeln();
 
   return buffer.toString();
 }
 
-String __renderClass_partial_callable_7_partial_categorization_0(
+String __renderClass_partial_callable_8_partial_categorization_0(
     _i10.Method context2) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
@@ -925,7 +932,7 @@ Categories:''');
   return buffer.toString();
 }
 
-String __renderClass_partial_callable_7_partial_features_1(
+String __renderClass_partial_callable_8_partial_features_1(
     _i10.Method context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
@@ -938,7 +945,7 @@ String __renderClass_partial_callable_7_partial_features_1(
   return buffer.toString();
 }
 
-String _renderClass_partial_constant_8(_i9.Field context2) {
+String _renderClass_partial_constant_9(_i9.Field context2) {
   final buffer = StringBuffer();
   buffer.write('''##### ''');
   buffer.write(context2.linkedName);
@@ -946,20 +953,20 @@ String _renderClass_partial_constant_8(_i9.Field context2) {
   buffer.write(context2.modelType.linkedName);
   buffer.writeln();
   buffer.write(
-      __renderClass_partial_constant_8_partial_categorization_0(context2));
+      __renderClass_partial_constant_9_partial_categorization_0(context2));
   buffer.write('\n\n');
   buffer.write(context2.oneLineDoc);
   buffer.write(' ');
   buffer.write(context2.extendedDocLink);
   buffer.write('  ');
   buffer.writeln();
-  buffer.write(__renderClass_partial_constant_8_partial_features_1(context2));
+  buffer.write(__renderClass_partial_constant_9_partial_features_1(context2));
   buffer.writeln();
 
   return buffer.toString();
 }
 
-String __renderClass_partial_constant_8_partial_categorization_0(
+String __renderClass_partial_constant_9_partial_categorization_0(
     _i9.Field context2) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
@@ -977,7 +984,7 @@ Categories:''');
   return buffer.toString();
 }
 
-String __renderClass_partial_constant_8_partial_features_1(_i9.Field context2) {
+String __renderClass_partial_constant_9_partial_features_1(_i9.Field context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
     buffer.write('''_''');
@@ -989,7 +996,7 @@ String __renderClass_partial_constant_8_partial_features_1(_i9.Field context2) {
   return buffer.toString();
 }
 
-String _renderClass_partial_footer_9(_i1.ClassTemplateData context0) {
+String _renderClass_partial_footer_10(_i1.ClassTemplateData context0) {
   final buffer = StringBuffer();
   buffer.writeln();
   buffer.write(context0.customInnerFooter);
@@ -1152,6 +1159,8 @@ String renderEnum(_i1.EnumTemplateData context0) {
     buffer.writeln();
     buffer.write(_renderEnum_partial_super_chain_4(context2, context0));
     buffer.writeln();
+    buffer.write(_renderEnum_partial_interfaces_5(context2));
+    buffer.writeln();
     if (context2.hasAnnotations == true) {
       buffer.writeln();
       buffer.write('''
@@ -1175,7 +1184,7 @@ String renderEnum(_i1.EnumTemplateData context0) {
     var context5 = context2.publicConstantFieldsSorted;
     for (var context6 in context5) {
       buffer.writeln();
-      buffer.write(_renderEnum_partial_constant_5(context6));
+      buffer.write(_renderEnum_partial_constant_6(context6));
       buffer.writeln();
     }
   }
@@ -1188,7 +1197,7 @@ String renderEnum(_i1.EnumTemplateData context0) {
     var context7 = context2.publicInstanceFieldsSorted;
     for (var context8 in context7) {
       buffer.writeln();
-      buffer.write(_renderEnum_partial_property_6(context8));
+      buffer.write(_renderEnum_partial_property_7(context8));
       buffer.writeln();
     }
   }
@@ -1201,7 +1210,7 @@ String renderEnum(_i1.EnumTemplateData context0) {
     var context9 = context2.publicInstanceMethodsSorted;
     for (var context10 in context9) {
       buffer.writeln();
-      buffer.write(_renderEnum_partial_callable_7(context10));
+      buffer.write(_renderEnum_partial_callable_8(context10));
       buffer.writeln();
     }
   }
@@ -1214,7 +1223,7 @@ String renderEnum(_i1.EnumTemplateData context0) {
     var context11 = context2.publicInstanceOperatorsSorted;
     for (var context12 in context11) {
       buffer.writeln();
-      buffer.write(_renderEnum_partial_callable_7(context12));
+      buffer.write(_renderEnum_partial_callable_8(context12));
       buffer.writeln();
     }
   }
@@ -1227,7 +1236,7 @@ String renderEnum(_i1.EnumTemplateData context0) {
     var context13 = context2.publicVariableStaticFieldsSorted;
     for (var context14 in context13) {
       buffer.writeln();
-      buffer.write(_renderEnum_partial_property_6(context14));
+      buffer.write(_renderEnum_partial_property_7(context14));
       buffer.writeln();
     }
   }
@@ -1240,12 +1249,12 @@ String renderEnum(_i1.EnumTemplateData context0) {
     var context15 = context2.publicStaticMethodsSorted;
     for (var context16 in context15) {
       buffer.writeln();
-      buffer.write(_renderEnum_partial_callable_7(context16));
+      buffer.write(_renderEnum_partial_callable_8(context16));
       buffer.writeln();
     }
   }
   buffer.write('\n\n');
-  buffer.write(_renderEnum_partial_footer_8(context0));
+  buffer.write(_renderEnum_partial_footer_9(context0));
   buffer.writeln();
 
   return buffer.toString();
@@ -1324,7 +1333,26 @@ String _renderEnum_partial_super_chain_4(
   return buffer.toString();
 }
 
-String _renderEnum_partial_constant_5(_i9.Field context2) {
+String _renderEnum_partial_interfaces_5(_i12.Enum context1) {
+  final buffer = StringBuffer();
+  if (context1.hasPublicInterfaces == true) {
+    buffer.writeln();
+    buffer.write('''
+**Implemented types**
+''');
+    var context4 = context1.publicInterfaces;
+    for (var context5 in context4) {
+      buffer.writeln();
+      buffer.write('''
+- ''');
+      buffer.write(context5.linkedName);
+    }
+  }
+
+  return buffer.toString();
+}
+
+String _renderEnum_partial_constant_6(_i9.Field context2) {
   final buffer = StringBuffer();
   buffer.write('''##### ''');
   buffer.write(context2.linkedName);
@@ -1332,20 +1360,20 @@ String _renderEnum_partial_constant_5(_i9.Field context2) {
   buffer.write(context2.modelType.linkedName);
   buffer.writeln();
   buffer.write(
-      __renderEnum_partial_constant_5_partial_categorization_0(context2));
+      __renderEnum_partial_constant_6_partial_categorization_0(context2));
   buffer.write('\n\n');
   buffer.write(context2.oneLineDoc);
   buffer.write(' ');
   buffer.write(context2.extendedDocLink);
   buffer.write('  ');
   buffer.writeln();
-  buffer.write(__renderEnum_partial_constant_5_partial_features_1(context2));
+  buffer.write(__renderEnum_partial_constant_6_partial_features_1(context2));
   buffer.writeln();
 
   return buffer.toString();
 }
 
-String __renderEnum_partial_constant_5_partial_categorization_0(
+String __renderEnum_partial_constant_6_partial_categorization_0(
     _i9.Field context2) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
@@ -1363,7 +1391,7 @@ Categories:''');
   return buffer.toString();
 }
 
-String __renderEnum_partial_constant_5_partial_features_1(_i9.Field context2) {
+String __renderEnum_partial_constant_6_partial_features_1(_i9.Field context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
     buffer.write('''_''');
@@ -1375,7 +1403,7 @@ String __renderEnum_partial_constant_5_partial_features_1(_i9.Field context2) {
   return buffer.toString();
 }
 
-String _renderEnum_partial_property_6(_i9.Field context2) {
+String _renderEnum_partial_property_7(_i9.Field context2) {
   final buffer = StringBuffer();
   buffer.write('''##### ''');
   buffer.write(context2.linkedName);
@@ -1385,20 +1413,20 @@ String _renderEnum_partial_property_6(_i9.Field context2) {
   buffer.write(context2.modelType.linkedName);
   buffer.writeln();
   buffer.write(
-      __renderEnum_partial_property_6_partial_categorization_0(context2));
+      __renderEnum_partial_property_7_partial_categorization_0(context2));
   buffer.write('\n\n');
   buffer.write(context2.oneLineDoc);
   buffer.write(' ');
   buffer.write(context2.extendedDocLink);
   buffer.write('  ');
   buffer.writeln();
-  buffer.write(__renderEnum_partial_property_6_partial_features_1(context2));
+  buffer.write(__renderEnum_partial_property_7_partial_features_1(context2));
   buffer.writeln();
 
   return buffer.toString();
 }
 
-String __renderEnum_partial_property_6_partial_categorization_0(
+String __renderEnum_partial_property_7_partial_categorization_0(
     _i9.Field context2) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
@@ -1416,7 +1444,7 @@ Categories:''');
   return buffer.toString();
 }
 
-String __renderEnum_partial_property_6_partial_features_1(_i9.Field context2) {
+String __renderEnum_partial_property_7_partial_features_1(_i9.Field context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
     buffer.write('''_''');
@@ -1428,7 +1456,7 @@ String __renderEnum_partial_property_6_partial_features_1(_i9.Field context2) {
   return buffer.toString();
 }
 
-String _renderEnum_partial_callable_7(_i10.Method context2) {
+String _renderEnum_partial_callable_8(_i10.Method context2) {
   final buffer = StringBuffer();
   buffer.write('''##### ''');
   buffer.write(context2.linkedName);
@@ -1439,20 +1467,20 @@ String _renderEnum_partial_callable_7(_i10.Method context2) {
   buffer.write(context2.modelType.returnType.linkedName);
   buffer.writeln();
   buffer.write(
-      __renderEnum_partial_callable_7_partial_categorization_0(context2));
+      __renderEnum_partial_callable_8_partial_categorization_0(context2));
   buffer.write('\n\n');
   buffer.write(context2.oneLineDoc);
   buffer.write(' ');
   buffer.write(context2.extendedDocLink);
   buffer.write('  ');
   buffer.writeln();
-  buffer.write(__renderEnum_partial_callable_7_partial_features_1(context2));
+  buffer.write(__renderEnum_partial_callable_8_partial_features_1(context2));
   buffer.writeln();
 
   return buffer.toString();
 }
 
-String __renderEnum_partial_callable_7_partial_categorization_0(
+String __renderEnum_partial_callable_8_partial_categorization_0(
     _i10.Method context2) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
@@ -1470,7 +1498,7 @@ Categories:''');
   return buffer.toString();
 }
 
-String __renderEnum_partial_callable_7_partial_features_1(
+String __renderEnum_partial_callable_8_partial_features_1(
     _i10.Method context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
@@ -1483,7 +1511,7 @@ String __renderEnum_partial_callable_7_partial_features_1(
   return buffer.toString();
 }
 
-String _renderEnum_partial_footer_8(_i1.EnumTemplateData context0) {
+String _renderEnum_partial_footer_9(_i1.EnumTemplateData context0) {
   final buffer = StringBuffer();
   buffer.writeln();
   buffer.write(context0.customInnerFooter);
@@ -2932,12 +2960,14 @@ String renderMixin(_i1.MixinTemplateData context0) {
     buffer.write('\n\n');
     buffer.write(_renderMixin_partial_super_chain_5(context2, context0));
     buffer.writeln();
-    if (context2.hasPublicInterfaces == true) {
+    buffer.write(_renderMixin_partial_interfaces_6(context2));
+    buffer.writeln();
+    if (context2.hasPublicImplementors == true) {
       buffer.writeln();
       buffer.write('''
-**Implemented types**
+**Mixin Applications**
 ''');
-      var context5 = context2.publicInterfaces;
+      var context5 = context2.publicImplementorsSorted;
       for (var context6 in context5) {
         buffer.writeln();
         buffer.write('''
@@ -2946,31 +2976,17 @@ String renderMixin(_i1.MixinTemplateData context0) {
       }
     }
     buffer.writeln();
-    if (context2.hasPublicImplementors == true) {
-      buffer.writeln();
-      buffer.write('''
-**Mixin Applications**
-''');
-      var context7 = context2.publicImplementorsSorted;
-      for (var context8 in context7) {
-        buffer.writeln();
-        buffer.write('''
-- ''');
-        buffer.write(context8.linkedName);
-      }
-    }
-    buffer.writeln();
     if (context2.hasAnnotations == true) {
       buffer.writeln();
       buffer.write('''
 **Annotations**
 ''');
-      var context9 = context2.annotations;
-      for (var context10 in context9) {
+      var context7 = context2.annotations;
+      for (var context8 in context7) {
         buffer.writeln();
         buffer.write('''
 - ''');
-        buffer.write(context10.linkedNameWithParameters);
+        buffer.write(context8.linkedNameWithParameters);
       }
     }
   }
@@ -2980,10 +2996,10 @@ String renderMixin(_i1.MixinTemplateData context0) {
     buffer.write('''
 ## Properties
 ''');
-    var context11 = context2.publicInstanceFieldsSorted;
-    for (var context12 in context11) {
+    var context9 = context2.publicInstanceFieldsSorted;
+    for (var context10 in context9) {
       buffer.writeln();
-      buffer.write(_renderMixin_partial_property_6(context12));
+      buffer.write(_renderMixin_partial_property_7(context10));
       buffer.writeln();
     }
   }
@@ -2993,10 +3009,10 @@ String renderMixin(_i1.MixinTemplateData context0) {
     buffer.write('''
 ## Methods
 ''');
-    var context13 = context2.publicInstanceMethodsSorted;
-    for (var context14 in context13) {
+    var context11 = context2.publicInstanceMethodsSorted;
+    for (var context12 in context11) {
       buffer.writeln();
-      buffer.write(_renderMixin_partial_callable_7(context14));
+      buffer.write(_renderMixin_partial_callable_8(context12));
       buffer.writeln();
     }
   }
@@ -3006,10 +3022,10 @@ String renderMixin(_i1.MixinTemplateData context0) {
     buffer.write('''
 ## Operators
 ''');
-    var context15 = context2.publicInstanceOperatorsSorted;
-    for (var context16 in context15) {
+    var context13 = context2.publicInstanceOperatorsSorted;
+    for (var context14 in context13) {
       buffer.writeln();
-      buffer.write(_renderMixin_partial_callable_7(context16));
+      buffer.write(_renderMixin_partial_callable_8(context14));
       buffer.writeln();
     }
   }
@@ -3019,10 +3035,10 @@ String renderMixin(_i1.MixinTemplateData context0) {
     buffer.write('''
 ## Static Properties
 ''');
-    var context17 = context2.publicVariableStaticFieldsSorted;
-    for (var context18 in context17) {
+    var context15 = context2.publicVariableStaticFieldsSorted;
+    for (var context16 in context15) {
       buffer.writeln();
-      buffer.write(_renderMixin_partial_property_6(context18));
+      buffer.write(_renderMixin_partial_property_7(context16));
       buffer.writeln();
     }
   }
@@ -3032,10 +3048,10 @@ String renderMixin(_i1.MixinTemplateData context0) {
     buffer.write('''
 ## Static Methods
 ''');
-    var context19 = context2.publicStaticMethodsSorted;
-    for (var context20 in context19) {
+    var context17 = context2.publicStaticMethodsSorted;
+    for (var context18 in context17) {
       buffer.writeln();
-      buffer.write(_renderMixin_partial_callable_7(context20));
+      buffer.write(_renderMixin_partial_callable_8(context18));
       buffer.writeln();
     }
   }
@@ -3045,15 +3061,15 @@ String renderMixin(_i1.MixinTemplateData context0) {
     buffer.write('''
 ## Constants
 ''');
-    var context21 = context2.publicConstantFieldsSorted;
-    for (var context22 in context21) {
+    var context19 = context2.publicConstantFieldsSorted;
+    for (var context20 in context19) {
       buffer.writeln();
-      buffer.write(_renderMixin_partial_constant_8(context22));
+      buffer.write(_renderMixin_partial_constant_9(context20));
       buffer.writeln();
     }
   }
   buffer.write('\n\n');
-  buffer.write(_renderMixin_partial_footer_9(context0));
+  buffer.write(_renderMixin_partial_footer_10(context0));
   buffer.writeln();
 
   return buffer.toString();
@@ -3149,7 +3165,26 @@ String _renderMixin_partial_super_chain_5(
   return buffer.toString();
 }
 
-String _renderMixin_partial_property_6(_i9.Field context2) {
+String _renderMixin_partial_interfaces_6(_i15.Mixin context1) {
+  final buffer = StringBuffer();
+  if (context1.hasPublicInterfaces == true) {
+    buffer.writeln();
+    buffer.write('''
+**Implemented types**
+''');
+    var context4 = context1.publicInterfaces;
+    for (var context5 in context4) {
+      buffer.writeln();
+      buffer.write('''
+- ''');
+      buffer.write(context5.linkedName);
+    }
+  }
+
+  return buffer.toString();
+}
+
+String _renderMixin_partial_property_7(_i9.Field context2) {
   final buffer = StringBuffer();
   buffer.write('''##### ''');
   buffer.write(context2.linkedName);
@@ -3159,20 +3194,20 @@ String _renderMixin_partial_property_6(_i9.Field context2) {
   buffer.write(context2.modelType.linkedName);
   buffer.writeln();
   buffer.write(
-      __renderMixin_partial_property_6_partial_categorization_0(context2));
+      __renderMixin_partial_property_7_partial_categorization_0(context2));
   buffer.write('\n\n');
   buffer.write(context2.oneLineDoc);
   buffer.write(' ');
   buffer.write(context2.extendedDocLink);
   buffer.write('  ');
   buffer.writeln();
-  buffer.write(__renderMixin_partial_property_6_partial_features_1(context2));
+  buffer.write(__renderMixin_partial_property_7_partial_features_1(context2));
   buffer.writeln();
 
   return buffer.toString();
 }
 
-String __renderMixin_partial_property_6_partial_categorization_0(
+String __renderMixin_partial_property_7_partial_categorization_0(
     _i9.Field context2) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
@@ -3190,7 +3225,7 @@ Categories:''');
   return buffer.toString();
 }
 
-String __renderMixin_partial_property_6_partial_features_1(_i9.Field context2) {
+String __renderMixin_partial_property_7_partial_features_1(_i9.Field context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
     buffer.write('''_''');
@@ -3202,7 +3237,7 @@ String __renderMixin_partial_property_6_partial_features_1(_i9.Field context2) {
   return buffer.toString();
 }
 
-String _renderMixin_partial_callable_7(_i10.Method context2) {
+String _renderMixin_partial_callable_8(_i10.Method context2) {
   final buffer = StringBuffer();
   buffer.write('''##### ''');
   buffer.write(context2.linkedName);
@@ -3213,20 +3248,20 @@ String _renderMixin_partial_callable_7(_i10.Method context2) {
   buffer.write(context2.modelType.returnType.linkedName);
   buffer.writeln();
   buffer.write(
-      __renderMixin_partial_callable_7_partial_categorization_0(context2));
+      __renderMixin_partial_callable_8_partial_categorization_0(context2));
   buffer.write('\n\n');
   buffer.write(context2.oneLineDoc);
   buffer.write(' ');
   buffer.write(context2.extendedDocLink);
   buffer.write('  ');
   buffer.writeln();
-  buffer.write(__renderMixin_partial_callable_7_partial_features_1(context2));
+  buffer.write(__renderMixin_partial_callable_8_partial_features_1(context2));
   buffer.writeln();
 
   return buffer.toString();
 }
 
-String __renderMixin_partial_callable_7_partial_categorization_0(
+String __renderMixin_partial_callable_8_partial_categorization_0(
     _i10.Method context2) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
@@ -3244,7 +3279,7 @@ Categories:''');
   return buffer.toString();
 }
 
-String __renderMixin_partial_callable_7_partial_features_1(
+String __renderMixin_partial_callable_8_partial_features_1(
     _i10.Method context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
@@ -3257,7 +3292,7 @@ String __renderMixin_partial_callable_7_partial_features_1(
   return buffer.toString();
 }
 
-String _renderMixin_partial_constant_8(_i9.Field context2) {
+String _renderMixin_partial_constant_9(_i9.Field context2) {
   final buffer = StringBuffer();
   buffer.write('''##### ''');
   buffer.write(context2.linkedName);
@@ -3265,20 +3300,20 @@ String _renderMixin_partial_constant_8(_i9.Field context2) {
   buffer.write(context2.modelType.linkedName);
   buffer.writeln();
   buffer.write(
-      __renderMixin_partial_constant_8_partial_categorization_0(context2));
+      __renderMixin_partial_constant_9_partial_categorization_0(context2));
   buffer.write('\n\n');
   buffer.write(context2.oneLineDoc);
   buffer.write(' ');
   buffer.write(context2.extendedDocLink);
   buffer.write('  ');
   buffer.writeln();
-  buffer.write(__renderMixin_partial_constant_8_partial_features_1(context2));
+  buffer.write(__renderMixin_partial_constant_9_partial_features_1(context2));
   buffer.writeln();
 
   return buffer.toString();
 }
 
-String __renderMixin_partial_constant_8_partial_categorization_0(
+String __renderMixin_partial_constant_9_partial_categorization_0(
     _i9.Field context2) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
@@ -3296,7 +3331,7 @@ Categories:''');
   return buffer.toString();
 }
 
-String __renderMixin_partial_constant_8_partial_features_1(_i9.Field context2) {
+String __renderMixin_partial_constant_9_partial_features_1(_i9.Field context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
     buffer.write('''_''');
@@ -3308,7 +3343,7 @@ String __renderMixin_partial_constant_8_partial_features_1(_i9.Field context2) {
   return buffer.toString();
 }
 
-String _renderMixin_partial_footer_9(_i1.MixinTemplateData context0) {
+String _renderMixin_partial_footer_10(_i1.MixinTemplateData context0) {
   final buffer = StringBuffer();
   buffer.writeln();
   buffer.write(context0.customInnerFooter);

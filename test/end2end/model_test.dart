@@ -3232,11 +3232,10 @@ void main() {
     });
 
     test('has a (synthetic) values constant', () {
-      var valuesField = animal.constantFields
-          .firstWhere((f) => f.name == 'values') as EnumField;
+      var valuesField =
+          animal.constantFields.firstWhere((f) => f.name == 'values');
       expect(valuesField, isNotNull);
-      expect(valuesField.constantValue,
-          equals(EnumFieldRendererHtml().renderValue(valuesField)));
+      expect(valuesField.constantValue, equals('[CAT, DOG, HORSE]'));
       expect(valuesField.documentation, startsWith('A constant List'));
     });
 
@@ -3271,8 +3270,9 @@ void main() {
 
     test('has a single `index` property that is not linked', () {
       expect(
-          animal.instanceFields.where((f) => !f.isInherited).first.linkedName,
-          equals('index'));
+        animal.instanceFields.where((f) => !f.isInherited).first.linkedName,
+        '<a href="%%__HTMLBASE_dartdoc_internal__%%ex/Animal/index.html">index</a>',
+      );
     });
   });
 
@@ -4196,8 +4196,11 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
       // Enums also have fields and have historically had problems.
       var macrosFromAccessors =
           fakeLibrary.enums.firstWhere((e) => e.name == 'MacrosFromAccessors');
-      for (var a in macrosFromAccessors.allFields.expand(_expandAccessors)) {
-        expectValidLocation(a.characterLocation!);
+      for (var accessor
+          in macrosFromAccessors.allFields.expand(_expandAccessors)) {
+        if (accessor.name != 'index' && accessor.name != 'values') {
+          expectValidLocation(accessor.characterLocation!);
+        }
       }
     });
 

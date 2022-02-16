@@ -84,14 +84,19 @@ mixin GetterSetterCombo on ModelElement {
 
   @override
   CharacterLocation? get characterLocation {
+    final element = this.element!;
+    if (element.name == 'index') {
+      // something something enum
+      return null;
+    }
     // Handle all synthetic possibilities.  Ordinarily, warnings for
     // explicit setters/getters will be handled by those objects, but
     // if a warning comes up for an enclosing synthetic field we have to
     // put it somewhere.  So pick an accessor.
-    if (element!.isSynthetic) {
+    if (element.isSynthetic) {
       if (hasExplicitGetter) return getter!.characterLocation;
       if (hasExplicitSetter) return setter!.characterLocation;
-      assert(false, 'Field and accessors can not all be synthetic');
+      assert(false, 'Field and accessors can not all be synthetic: $element');
     }
     return super.characterLocation;
   }
