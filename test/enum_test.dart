@@ -84,11 +84,7 @@ library $libraryName;
 
 class C<T> {}
 
-enum E<T> implements C<T> {
-  one, two, three;
-
-  final int f = 0;
-}
+enum E<T> implements C<T> { one, two, three; }
 '''),
         ],
       );
@@ -122,18 +118,13 @@ enum E<T> implements C<T> {
       expect(eEnum.interfaces, isNotEmpty);
     }, skip: true /* currently failing */);
 
-    test('an enum field is presented with linked type parameters', () async {
-      var fField = library.enums.named('E').allFields.named('f');
-
-      expect(fField.linkedName, '<a href="$linkPrefix/E/f.html">f</a>');
-    });
-
     // TODO(srawlins): Add rendering tests.
     // * Fix interfaces test.
     // * Add tests for rendered supertypes HTML.
     // * Add tests for rendered interfaces HTML.
     // * Add tests for rendered mixins HTML.
     // * Add tests for rendered static members.
+    // * Add tests for rendered fields.
     // * Add tests for rendered getters, setters, operators, methods.
     // * Add tests for rendered field pages.
     // * Add tests for rendered generic enum values.
