@@ -136,18 +136,25 @@ class SubprocessLauncher {
 
   String get prefix => context.isNotEmpty ? '$context: ' : '';
 
-  // This is borrowed from flutter:dev/tools/dartdoc.dart; modified.
-  static Future<void> _printStream(Stream<List<int>> stream, StringSink output,
+  /// Listen to [stream] as a stream of lines of text, writing them to both
+  /// [output] and a returned String.
+  ///
+  /// This is borrowed from flutter:dev/tools/dartdoc.dart; modified.
+  static Future<String> _printStream(Stream<List<int>> stream, Stdout output,
       {required Iterable<String> Function(String line) filter,
       String prefix = ''}) {
-    return stream
+    var buffer = StringBuffer();
+    var streamIsDone = stream
         .transform(utf8.decoder)
         .transform(const LineSplitter())
         .expand(filter)
         .listen((String line) {
       output.write('$prefix$line'.trim());
       output.write('\n');
+      buffer.write('$prefix$line'.trim());
+      buffer.write('\n');
     }).asFuture();
+    return streamIsDone.then((_) => buffer.toString());
   }
 
   SubprocessLauncher(this.context, [Map<String, String>? environment]) {
@@ -249,11 +256,9 @@ class SubprocessLauncher {
         workingDirectory: workingDirectory,
         environment: environment,
         includeParentEnvironment: includeParentEnvironment);
-    var stdoutBuffer = StringBuffer();
-    var stdoutFuture = _printStream(process.stdout, stdoutBuffer,
+    var stdoutFuture = _printStream(process.stdout, stdout,
         prefix: prefix, filter: jsonCallback);
-    var stderrBuffer = StringBuffer();
-    var stderrFuture = _printStream(process.stderr, stderrBuffer,
+    var stderrFuture = _printStream(process.stderr, stderr,
         prefix: prefix, filter: jsonCallback);
     await Future.wait([stderrFuture, stdoutFuture, process.exitCode]);
 
@@ -263,7 +268,7 @@ class SubprocessLauncher {
           executable,
           arguments,
           'SubprocessLauncher got non-zero exitCode: $exitCode\n\n'
-          'stdout: $stdoutBuffer\n\nstderr: $stderrBuffer',
+          'stdout: ${await stdoutFuture}\n\nstderr: ${await stderrFuture}',
           exitCode);
     }
     return jsonObjects;
