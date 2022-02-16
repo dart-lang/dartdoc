@@ -136,8 +136,8 @@ class SubprocessLauncher {
 
   String get prefix => context.isNotEmpty ? '$context: ' : '';
 
-  // from flutter:dev/tools/dartdoc.dart, modified
-  static Future<void> _printStream(Stream<List<int>> stream, Stdout output,
+  // This is borrowed from flutter:dev/tools/dartdoc.dart; modified.
+  static Future<void> _printStream(Stream<List<int>> stream, StringSink output,
       {required Iterable<String> Function(String line) filter,
       String prefix = ''}) {
     return stream
@@ -249,9 +249,11 @@ class SubprocessLauncher {
         workingDirectory: workingDirectory,
         environment: environment,
         includeParentEnvironment: includeParentEnvironment);
-    var stdoutFuture = _printStream(process.stdout, stdout,
+    var stdoutBuffer = StringBuffer();
+    var stdoutFuture = _printStream(process.stdout, stdoutBuffer,
         prefix: prefix, filter: jsonCallback);
-    var stderrFuture = _printStream(process.stderr, stderr,
+    var stderrBuffer = StringBuffer();
+    var stderrFuture = _printStream(process.stderr, stderrBuffer,
         prefix: prefix, filter: jsonCallback);
     await Future.wait([stderrFuture, stdoutFuture, process.exitCode]);
 
@@ -261,7 +263,7 @@ class SubprocessLauncher {
           executable,
           arguments,
           'SubprocessLauncher got non-zero exitCode: $exitCode\n\n'
-          'stdout: ${process.stdout}\n\nstderr: ${process.stderr}',
+          'stdout: $stdoutBuffer\n\nstderr: $stderrBuffer',
           exitCode);
     }
     return jsonObjects;
