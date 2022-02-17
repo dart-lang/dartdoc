@@ -14,7 +14,8 @@ import 'package:dartdoc/options.dart';
 Future<void> main(List<String> arguments) async {
   var config = parseOptions(pubPackageMetaProvider, arguments);
   if (config == null) {
-    // There was an error while parsing options.
+    // Do not run dartdoc as there was either a fatal error parsing options, or
+    // `--help` was passed, or `--version` was passed.
     return;
   }
   final packageConfigProvider = PhysicalPackageConfigProvider();

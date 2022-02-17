@@ -11,216 +11,183 @@ import 'dart:mirrors';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
+import 'package:test_process/test_process.dart';
 
-import '../../tool/subprocess_launcher.dart';
+import '../src/test_descriptor_utils.dart' as d;
 import '../src/utils.dart';
 
 Uri get _currentFileUri =>
     (reflect(main) as ClosureMirror).function.location!.sourceUri;
-String get _testPackagePath =>
-    path.fromUri(_currentFileUri.resolve('../../testing/test_package'));
 String get _testPackageFlutterPluginPath => path.fromUri(_currentFileUri
     .resolve('../../testing/flutter_packages/test_package_flutter_plugin'));
-String get _testPackageMinimumPath =>
-    path.fromUri(_currentFileUri.resolve('../../testing/test_package_minimum'));
+
+var _dartdocPath = path.canonicalize(path.join('bin', 'dartdoc.dart'));
+
+/// Runs dartdoc via [TestProcess.start].
+Future<TestProcess> runDartdoc(
+  List<String> options, {
+  required String workingDirectory,
+  Map<String, String>? environment,
+  bool includeParentEnvironment = true,
+}) =>
+    TestProcess.start(
+      Platform.resolvedExecutable,
+      [_dartdocPath, ...options],
+      workingDirectory: workingDirectory,
+      environment: environment,
+      includeParentEnvironment: includeParentEnvironment,
+    );
 
 void main() {
-  group('Invoking command-line dartdoc', () {
-    var dartdocPath = path.canonicalize(path.join('bin', 'dartdoc.dart'));
-    late final CoverageSubprocessLauncher subprocessLauncher;
-    late final Directory tempDir;
+  test('invoking dartdoc on an empty package does not crash', () async {
+    var packageDir = await d.createPackage('empty');
+    var process = await runDartdoc([], workingDirectory: packageDir.io.path);
+    await expectLater(
+      process.stderr,
+      emitsThrough(
+          contains('package:test_package has no documentable libraries')),
+    );
+    await process.shouldExit(0);
+  });
 
-    setUpAll(() async {
-      tempDir =
-          Directory.systemTemp.createTempSync('dartdoc_integration_test.');
-      subprocessLauncher =
-          CoverageSubprocessLauncher('dartdoc_integration_test-subprocesses');
+  group('invoking dartdoc on a basic package', () {
+    late d.DirectoryDescriptor packageDir;
+
+    setUp(() async {
+      packageDir = await d.createPackage('test_package', libFiles: [
+        d.file('lib.dart', '/// [dead] reference\nclass C {}'),
+      ]);
     });
 
-    tearDown(() async {
-      tempDir.listSync().forEach((FileSystemEntity f) {
-        f.deleteSync(recursive: true);
-      });
-    });
-
-    tearDownAll(() async {
-      await Future.wait(CoverageSubprocessLauncher.coverageResults);
-    });
-
-    test('running on an empty package does not crash and generates a warning',
+    test('with --no-generate-docs is quiet and does not generate docs',
         () async {
-      var outputDir =
-          await Directory.systemTemp.createTemp('dartdoc.testEmpty.');
-      var outputLines = <String>[];
-      await subprocessLauncher.runStreamed(Platform.resolvedExecutable,
-          [dartdocPath, '--output', outputDir.path],
-          perLine: outputLines.add, workingDirectory: _testPackageMinimumPath);
-      expect(
-          outputLines,
-          contains(matches(
-              'package:test_package_minimum has no documentable libraries')));
-    }, timeout: Timeout.factor(2));
-
-    test('running --no-generate-docs is quiet and does not generate docs',
-        () async {
-      var outputDir =
-          await Directory.systemTemp.createTemp('dartdoc.testEmpty.');
-      var outputLines = <String>[];
-      await subprocessLauncher.runStreamed(Platform.resolvedExecutable,
-          [dartdocPath, '--output', outputDir.path, '--no-generate-docs'],
-          perLine: outputLines.add, workingDirectory: _testPackagePath);
-      expect(outputLines, isNot(contains(matches('^parsing'))));
-      expect(outputLines, contains(matches('^  warning:')));
-      expect(outputLines.last, matches(r'^Found \d+ warnings and \d+ errors'));
-      expect(outputDir.listSync(), isEmpty);
-    }, timeout: Timeout.factor(2));
-
-    test('running --quiet is quiet and does generate docs', () async {
-      var outputDir =
-          await Directory.systemTemp.createTemp('dartdoc.testEmpty.');
-      var outputLines = <String>[];
-      await subprocessLauncher.runStreamed(Platform.resolvedExecutable,
-          [dartdocPath, '--output', outputDir.path, '--quiet'],
-          perLine: outputLines.add, workingDirectory: _testPackagePath);
-      expect(outputLines, isNot(contains(matches('^parsing'))));
-      expect(outputLines, contains(matches('^  warning:')));
-      expect(outputLines.last, matches(r'^Found \d+ warnings and \d+ errors'));
-      expect(outputDir.listSync(), isNotEmpty);
-    }, timeout: Timeout.factor(2));
-
-    test('invalid parameters return non-zero and print a fatal-error',
-        () async {
-      var outputLines = <String>[];
+      var process = await runDartdoc(
+        ['--no-generate-docs'],
+        workingDirectory: packageDir.io.path,
+      );
       await expectLater(
-          subprocessLauncher.runStreamed(
-              Platform.resolvedExecutable,
-              [
-                dartdocPath,
-                '--nonexisting',
-              ],
-              perLine: outputLines.add),
-          throwsA(const TypeMatcher<ProcessException>()));
-      expect(
-          outputLines.firstWhere((l) => l.startsWith(' fatal')),
-          equals(
+          process.stderr, emitsThrough('Found 1 warning and 0 errors.'));
+      await process.shouldExit(0);
+      var docs = Directory(path.join(packageDir.io.path, 'doc', 'api'));
+      expect(docs.listSync(recursive: true), isEmpty);
+    }, timeout: Timeout.factor(2));
+
+    test('with --quiet is quiet and does generate docs', () async {
+      var process = await runDartdoc(
+        ['--quiet'],
+        workingDirectory: packageDir.io.path,
+      );
+      await expectLater(process.stderr, emitsThrough(matches('^  warning:')));
+      await expectLater(
+          process.stderr, emitsThrough('Found 1 warning and 0 errors.'));
+      await process.shouldExit(0);
+      var indexHtml = Directory(path.join(packageDir.io.path, 'doc', 'api'));
+      expect(indexHtml.listSync(), isNotEmpty);
+    }, timeout: Timeout.factor(2));
+
+    test('with invalid options return non-zero and print a fatal-error',
+        () async {
+      var process = await runDartdoc(
+        ['--nonexisting'],
+        workingDirectory: packageDir.io.path,
+      );
+      await expectLater(
+          process.stderr,
+          emitsThrough(
               ' fatal error: Could not find an option named "nonexisting".'));
+      await process.shouldExit(64);
     });
 
-    test('missing a required file path prints a fatal-error', () async {
-      var outputLines = <String>[];
-      var impossiblePath = path.join(dartdocPath, 'impossible');
+    test('missing a required file path prints a fatal error', () async {
+      var process = await runDartdoc(
+        ['--input', 'non-existant'],
+        workingDirectory: packageDir.io.path,
+      );
       await expectLater(
-          subprocessLauncher.runStreamed(
-              Platform.resolvedExecutable,
-              [
-                dartdocPath,
-                '--input',
-                impossiblePath,
-              ],
-              perLine: outputLines.add),
-          throwsA(const TypeMatcher<ProcessException>()));
-      expect(
-          outputLines.firstWhere((l) => l.startsWith(' fatal')),
-          startsWith(
-              ' fatal error: Argument --input, set to $impossiblePath, resolves to missing path: '));
+        process.stderr,
+        emitsThrough(
+            ' fatal error: Argument --input, set to non-existant, resolves to '
+            'missing path: "${path.join(packageDir.io.path, 'non-existant')}"'),
+      );
+      await process.shouldExit(64);
     });
 
-    test('errors cause non-zero exit when warnings are off', () async {
-      await expectLater(
-          subprocessLauncher.runStreamed(Platform.resolvedExecutable, [
-            dartdocPath,
-            '--allow-tools',
-            '--input=${testPackageToolError.path}',
-            '--output=${path.join(tempDir.absolute.path, 'test_package_tool_error')}'
-          ]),
-          throwsA(const TypeMatcher<ProcessException>()));
-    });
-
-    test('help prints command line args', () async {
-      var outputLines = <String>[];
-      print('dartdocPath: $dartdocPath');
-      await subprocessLauncher.runStreamed(
-          Platform.resolvedExecutable, [dartdocPath, '--help'],
-          perLine: outputLines.add);
-      expect(outputLines,
-          contains('Generate HTML documentation for Dart libraries.'));
-      expect(
-          outputLines.join('\n'),
-          contains(
-              RegExp('^-h, --help[ ]+Show command help.', multiLine: true)));
-    });
-
-    test('Validate missing FLUTTER_ROOT exception is clean', () async {
-      var output = StringBuffer();
-      var args = <String>[dartdocPath];
-      var dartTool =
-          Directory(path.join(_testPackageFlutterPluginPath, '.dart_tool'));
-      if (dartTool.existsSync()) dartTool.deleteSync(recursive: true);
-      await expectLater(
-          subprocessLauncher.runStreamed(Platform.resolvedExecutable, args,
-              environment: Map.from(Platform.environment)
-                ..remove('FLUTTER_ROOT'),
-              includeParentEnvironment: false,
-              workingDirectory: _testPackageFlutterPluginPath, perLine: (s) {
-            output.writeln(s);
-          }),
-          throwsA(const TypeMatcher<ProcessException>()));
-      // Asynchronous exception, but we still need the output, too.
-      expect(
-          output.toString(),
-          contains(RegExp(
-              'Top level package requires Flutter but FLUTTER_ROOT environment variable not set|test_package_flutter_plugin requires the Flutter SDK, version solving failed')));
-      expect(output.toString(), isNot(contains('asynchronous gap')));
+    test('with --help prints command line args', () async {
+      var process = await runDartdoc(
+        ['--help'],
+        workingDirectory: packageDir.io.path,
+      );
+      await expectLater(process.stdout,
+          emitsThrough('Generate HTML documentation for Dart libraries.'));
+      await expectLater(process.stdout,
+          emitsThrough(matches('^-h, --help[ ]+Show command help.')));
+      await process.shouldExit(0);
     });
 
     test('Validate --version works', () async {
-      var output = StringBuffer();
-      var args = <String>[dartdocPath, '--version'];
-      await subprocessLauncher.runStreamed(Platform.resolvedExecutable, args,
-          workingDirectory: _testPackagePath,
-          perLine: (s) => output.writeln(s));
-      var dartdocMeta = pubPackageMetaProvider.fromFilename(dartdocPath)!;
-      expect(output.toString(),
-          endsWith('dartdoc version: ${dartdocMeta.version}\n'));
+      var process = await runDartdoc(
+        ['--version'],
+        workingDirectory: packageDir.io.path,
+      );
+      var dartdocMeta = pubPackageMetaProvider.fromFilename(_dartdocPath)!;
+      await expectLater(process.stdout,
+          emitsThrough('dartdoc version: ${dartdocMeta.version}'));
+      await process.shouldExit(0);
     });
 
     test('Validate JSON output', () async {
-      var args = <String>[
-        dartdocPath,
-        '--include',
-        'ex',
-        '--no-include-source',
-        '--output',
-        tempDir.path,
-        '--json'
-      ];
-
-      var jsonValues = await subprocessLauncher.runStreamed(
-          Platform.resolvedExecutable, args,
-          workingDirectory: _testPackagePath);
-
-      expect(jsonValues, isNotEmpty,
-          reason: 'All STDOUT lines should be JSON-encoded maps.');
-    }, timeout: Timeout.factor(2));
-
-    test('--footer-text includes text', () async {
-      var footerTextPath = path.join(Directory.systemTemp.path, 'footer.txt');
-      File(footerTextPath).writeAsStringSync(' footer text include ');
-
-      var args = <String>[
-        dartdocPath,
-        '--footer-text=$footerTextPath',
-        '--include',
-        'ex',
-        '--output',
-        tempDir.path
-      ];
-
-      await subprocessLauncher.runStreamed(Platform.resolvedExecutable, args,
-          workingDirectory: _testPackagePath);
-
-      var outFile = File(path.join(tempDir.path, 'index.html'));
-      expect(outFile.readAsStringSync(), contains('footer text include'));
+      var process = await runDartdoc(
+        [
+          //dartdocPath,
+          '--no-include-source',
+          '--json',
+        ],
+        workingDirectory: packageDir.io.path,
+      );
+      await expectLater(
+          process.stdout,
+          emitsThrough(
+              '{"level":"WARNING","message":"Found 1 warning and 0 errors."}'));
+      await process.shouldExit(0);
     }, timeout: Timeout.factor(2));
   }, timeout: Timeout.factor(8));
+
+  test('with tool errors cause non-zero exit when warnings are off', () async {
+    // TODO(srawlins): Remove test_package_tool_error and generate afresh.
+    var packageDir = await d.createPackage('test_package');
+    var tempDir = path.join(
+        Directory.systemTemp
+            .createTempSync('dartdoc_integration_test.')
+            .absolute
+            .path,
+        'test_package_tool_error');
+    var process = await runDartdoc(
+      [
+        '--allow-tools',
+        '--input=${testPackageToolError.path}',
+        '--output=$tempDir',
+      ],
+      workingDirectory: packageDir.io.path,
+    );
+    await process.shouldExit(1);
+  });
+
+  test('with missing FLUTTER_ROOT exception reports an error', () async {
+    // TODO(srawlins): Remove test_package_flutter_plugin and generate afresh.
+    var dartTool =
+        Directory(path.join(_testPackageFlutterPluginPath, '.dart_tool'));
+    if (dartTool.existsSync()) dartTool.deleteSync(recursive: true);
+    var process = await runDartdoc(
+      [],
+      workingDirectory: _testPackageFlutterPluginPath,
+      environment: {...Platform.environment}..remove('FLUTTER_ROOT'),
+      includeParentEnvironment: false,
+    );
+    await expectLater(
+        process.stderr,
+        emitsThrough(matches(
+            'Top level package requires Flutter but FLUTTER_ROOT environment variable not set|'
+            'test_package_flutter_plugin requires the Flutter SDK, version solving failed')));
+    await process.shouldExit(1);
+  });
 }
