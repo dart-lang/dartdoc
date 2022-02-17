@@ -12,11 +12,11 @@ import 'dart:io' as io;
 
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
-import 'package:path/path.dart' as path show Context;
+import 'package:path/path.dart' as p show Context;
 
 const Encoding utf8AllowMalformed = Utf8Codec(allowMalformed: true);
 
-extension PathExtensions on path.Context {
+extension PathExtensions on p.Context {
   /// Returns a canonicalized path including the home directory in place of
   /// tilde references.
   String canonicalizeWithTilde(String originalPath) =>

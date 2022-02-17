@@ -8,7 +8,7 @@ library dartdoc.source_linker;
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/model.dart';
-import 'package:path/path.dart' as path;
+import 'package:path/path.dart' as p;
 
 final _uriTemplateRegExp = RegExp(r'(%[frl]%)');
 
@@ -106,17 +106,16 @@ class SourceLinker {
     if (root == null || uriTemplate == null) {
       return '';
     }
-    if (!path.isWithin(root, sourceFileName) ||
-        excludes
-            .any((String exclude) => path.isWithin(exclude, sourceFileName))) {
+    if (!p.isWithin(root, sourceFileName) ||
+        excludes.any((String exclude) => p.isWithin(exclude, sourceFileName))) {
       return '';
     }
     return uriTemplate.replaceAllMapped(_uriTemplateRegExp, (match) {
       switch (match[1]) {
         case '%f%':
-          var urlContext = path.Context(style: path.Style.url);
+          var urlContext = p.Context(style: p.Style.url);
           return urlContext
-              .joinAll(path.split(path.relative(sourceFileName, from: root)));
+              .joinAll(p.split(p.relative(sourceFileName, from: root)));
         case '%r%':
           return revision!;
         case '%l%':

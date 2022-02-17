@@ -9,7 +9,7 @@ import 'dart:io';
 import 'dart:mirrors';
 
 import 'package:dartdoc/src/package_meta.dart';
-import 'package:path/path.dart' as path;
+import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 import 'package:test_process/test_process.dart';
 
@@ -18,10 +18,10 @@ import '../src/utils.dart';
 
 Uri get _currentFileUri =>
     (reflect(main) as ClosureMirror).function.location!.sourceUri;
-String get _testPackageFlutterPluginPath => path.fromUri(_currentFileUri
+String get _testPackageFlutterPluginPath => p.fromUri(_currentFileUri
     .resolve('../../testing/flutter_packages/test_package_flutter_plugin'));
 
-var _dartdocPath = path.canonicalize(path.join('bin', 'dartdoc.dart'));
+var _dartdocPath = p.canonicalize(p.join('bin', 'dartdoc.dart'));
 
 /// Runs dartdoc via [TestProcess.start].
 Future<TestProcess> runDartdoc(
@@ -68,7 +68,7 @@ void main() {
       await expectLater(
           process.stderr, emitsThrough('Found 1 warning and 0 errors.'));
       await process.shouldExit(0);
-      var docs = Directory(path.join(packageDir.io.path, 'doc', 'api'));
+      var docs = Directory(p.join(packageDir.io.path, 'doc', 'api'));
       expect(docs.listSync(recursive: true), isEmpty);
     }, timeout: Timeout.factor(2));
 
@@ -81,7 +81,7 @@ void main() {
       await expectLater(
           process.stderr, emitsThrough('Found 1 warning and 0 errors.'));
       await process.shouldExit(0);
-      var indexHtml = Directory(path.join(packageDir.io.path, 'doc', 'api'));
+      var indexHtml = Directory(p.join(packageDir.io.path, 'doc', 'api'));
       expect(indexHtml.listSync(), isNotEmpty);
     }, timeout: Timeout.factor(2));
 
@@ -103,8 +103,7 @@ void main() {
         ['--input', 'non-existant'],
         workingDirectory: packageDir.io.path,
       );
-      var fullPath =
-          path.canonicalize(path.join(packageDir.io.path, 'non-existant'));
+      var fullPath = p.canonicalize(p.join(packageDir.io.path, 'non-existant'));
       await expectLater(
         process.stderr,
         emitsThrough(
@@ -157,7 +156,7 @@ void main() {
   test('with tool errors cause non-zero exit when warnings are off', () async {
     // TODO(srawlins): Remove test_package_tool_error and generate afresh.
     var packageDir = await d.createPackage('test_package');
-    var tempDir = path.join(
+    var tempDir = p.join(
         Directory.systemTemp
             .createTempSync('dartdoc_integration_test.')
             .absolute
@@ -177,7 +176,7 @@ void main() {
   test('with missing FLUTTER_ROOT exception reports an error', () async {
     // TODO(srawlins): Remove test_package_flutter_plugin and generate afresh.
     var dartTool =
-        Directory(path.join(_testPackageFlutterPluginPath, '.dart_tool'));
+        Directory(p.join(_testPackageFlutterPluginPath, '.dart_tool'));
     if (dartTool.existsSync()) dartTool.deleteSync(recursive: true);
     var process = await runDartdoc(
       [],

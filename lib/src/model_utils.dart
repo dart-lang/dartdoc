@@ -12,7 +12,7 @@ import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/failure.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:glob/glob.dart';
-import 'package:path/path.dart' as path;
+import 'package:path/path.dart' as p;
 
 final _driveLetterMatcher = RegExp(r'^\w:\\');
 
@@ -43,14 +43,14 @@ bool matchGlobs(List<String> globs, String fullName, {bool? isWindows}) {
       if (!driveGlob.hasMatch(glob)) continue;
       // `C:\` => `\` for rejoining via posix.
       glob = glob.replaceFirst(_driveLetterMatcher, r'/');
-      filteredGlobs.add(path.posix.joinAll(path.windows.split(glob)));
+      filteredGlobs.add(p.posix.joinAll(p.windows.split(glob)));
     }
   } else {
     filteredGlobs.addAll(globs);
   }
 
-  return filteredGlobs.any((g) =>
-      Glob(g, context: windows ? path.windows : path.posix).matches(fullName));
+  return filteredGlobs.any(
+      (g) => Glob(g, context: windows ? p.windows : p.posix).matches(fullName));
 }
 
 Iterable<T> filterHasCanonical<T extends ModelElement>(
