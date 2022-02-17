@@ -141,21 +141,19 @@ class SubprocessLauncher {
   ///
   /// This is borrowed from flutter:dev/tools/dartdoc.dart; modified.
   static Future<String> _printStream(Stream<List<int>> stream, Stdout output,
-      {required Iterable<String> Function(String line) filter,
-      String prefix = ''}) {
-    var buffer = StringBuffer();
-    var streamIsDone = stream
-        .transform(utf8.decoder)
-        .transform(const LineSplitter())
-        .expand(filter)
-        .listen((String line) {
-      output.write('$prefix$line'.trim());
-      output.write('\n');
-      buffer.write('$prefix$line'.trim());
-      buffer.write('\n');
-    }).asFuture();
-    return streamIsDone.then((_) => buffer.toString());
-  }
+          {required Iterable<String> Function(String line) filter,
+          String prefix = ''}) =>
+      stream
+          .transform(utf8.decoder)
+          .transform(const LineSplitter())
+          .expand(filter)
+          .map(
+        (String line) {
+          final value = '$prefix$line'.trim() + '\n';
+          output.write(value);
+          return value;
+        },
+      ).join();
 
   SubprocessLauncher(this.context, [Map<String, String>? environment]) {
     environmentDefaults.addAll(environment ?? {});
