@@ -103,11 +103,13 @@ void main() {
         ['--input', 'non-existant'],
         workingDirectory: packageDir.io.path,
       );
+      var fullPath =
+          path.canonicalize(path.join(packageDir.io.path, 'non-existant'));
       await expectLater(
         process.stderr,
         emitsThrough(
             ' fatal error: Argument --input, set to non-existant, resolves to '
-            'missing path: "${path.join(packageDir.io.path, 'non-existant')}"'),
+            'missing path: "$fullPath"'),
       );
       await process.shouldExit(64);
     });
