@@ -12,6 +12,7 @@ doc/
 lcov.info
 packages
 pub.dartlang.org/
+test_data/
 testing/test_package/doc
 testing/test_package_small/doc
 pubspec.lock
