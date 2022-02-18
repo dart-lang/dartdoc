@@ -10,7 +10,7 @@ import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/tool_definition.dart';
 import 'package:dartdoc/src/tool_runner.dart';
-import 'package:path/path.dart' as path;
+import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 import 'package:yaml/yaml.dart';
 
@@ -29,7 +29,7 @@ void main() {
   setUpAll(() async {
     ProcessResult? result;
     tempDir = Directory.systemTemp.createTempSync('tool_runner_test_');
-    var snapshotFile = path.join(tempDir!.path, 'drill.snapshot');
+    var snapshotFile = p.join(tempDir!.path, 'drill.snapshot');
     try {
       result = Process.runSync(
           Platform.resolvedExecutable,
@@ -49,10 +49,10 @@ void main() {
       stderr.writeln(result.stderr);
     }
     expect(result?.exitCode, equals(0));
-    setupFile = File(path.join(tempDir!.path, 'setup.stamp'));
+    setupFile = File(p.join(tempDir!.path, 'setup.stamp'));
     var nonDartName = Platform.isWindows ? 'non_dart.bat' : 'non_dart.sh';
     var nonDartExecutable =
-        path.join(_toolExecutableDir.absolute.path, nonDartName);
+        p.join(_toolExecutableDir.absolute.path, nonDartName);
     // Have to replace backslashes on Windows with double-backslashes, to
     // escape them for YAML parser.
     var yamlMap = '''

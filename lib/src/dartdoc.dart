@@ -26,7 +26,7 @@ import 'package:dartdoc/src/version.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:meta/meta.dart';
-import 'package:path/path.dart' as path;
+import 'package:path/path.dart' as p;
 
 const String programName = 'dartdoc';
 // Update when pubspec version changes by running `pub run build_runner build`
@@ -49,7 +49,7 @@ class DartdocFileWriter implements FileWriter {
     bool allowOverwrite = false,
   }) {
     // Replace '/' separators with proper separators for the platform.
-    var outFile = path.joinAll(filePath.split('/'));
+    var outFile = p.joinAll(filePath.split('/'));
 
     if (!allowOverwrite) {
       _warnAboutOverwrite(outFile, null);
@@ -65,7 +65,7 @@ class DartdocFileWriter implements FileWriter {
   @override
   void write(String filePath, String content, {Warnable? element}) {
     // Replace '/' separators with proper separators for the platform.
-    var outFile = path.joinAll(filePath.split('/'));
+    var outFile = p.joinAll(filePath.split('/'));
 
     _warnAboutOverwrite(outFile, element);
     _fileElementMap[outFile] = element;
@@ -251,12 +251,12 @@ class Dartdoc {
     Set<Warnable>? warnOnElements;
 
     // Make all paths relative to origin.
-    if (path.isWithin(origin, warnOn)) {
-      warnOn = path.relative(warnOn, from: origin);
+    if (p.isWithin(origin, warnOn)) {
+      warnOn = p.relative(warnOn, from: origin);
     }
     if (referredFrom != null) {
-      if (path.isWithin(origin, referredFrom)) {
-        referredFrom = path.relative(referredFrom, from: origin);
+      if (p.isWithin(origin, referredFrom)) {
+        referredFrom = p.relative(referredFrom, from: origin);
       }
       var hrefReferredFrom = _hrefs[referredFrom];
       // Source paths are always relative.
@@ -289,9 +289,9 @@ class Dartdoc {
 
   void _doOrphanCheck(
       PackageGraph packageGraph, String origin, Set<String> visited) {
-    var normalOrigin = path.normalize(origin);
-    var staticAssets = path.joinAll([normalOrigin, 'static-assets', '']);
-    var indexJson = path.joinAll([normalOrigin, 'index.json']);
+    var normalOrigin = p.normalize(origin);
+    var staticAssets = p.joinAll([normalOrigin, 'static-assets', '']);
+    var indexJson = p.joinAll([normalOrigin, 'index.json']);
     var foundIndexJson = false;
 
     void checkDirectory(Folder dir) {
@@ -300,17 +300,17 @@ class Dartdoc {
           checkDirectory(f);
           continue;
         }
-        var fullPath = path.normalize(f.path);
+        var fullPath = p.normalize(f.path);
         if (fullPath.startsWith(staticAssets)) {
           continue;
         }
-        if (path.equals(fullPath, indexJson)) {
+        if (p.equals(fullPath, indexJson)) {
           foundIndexJson = true;
           _onCheckProgress.add(fullPath);
           continue;
         }
         if (visited.contains(fullPath)) continue;
-        var relativeFullPath = path.relative(fullPath, from: normalOrigin);
+        var relativeFullPath = p.relative(fullPath, from: normalOrigin);
         if (!_writtenFiles.contains(relativeFullPath)) {
           // This isn't a file we wrote (this time); don't claim we did.
           _warn(
@@ -363,8 +363,8 @@ class Dartdoc {
 
   void _doSearchIndexCheck(
       PackageGraph packageGraph, String origin, Set<String> visited) {
-    var fullPath = path.joinAll([origin, 'index.json']);
-    var indexPath = path.joinAll([origin, 'index.html']);
+    var fullPath = p.joinAll([origin, 'index.json']);
+    var indexPath = p.joinAll([origin, 'index.html']);
     var file = config.resourceProvider.getFile(fullPath);
     if (!file.exists) {
       return;
@@ -379,11 +379,10 @@ class Dartdoc {
     found.add(indexPath);
     for (Map<String, dynamic> entry in jsonData) {
       if (entry.containsKey('href')) {
-        var entryPath =
-            path.joinAll([origin, ...path.posix.split(entry['href'])]);
+        var entryPath = p.joinAll([origin, ...p.posix.split(entry['href'])]);
         if (!visited.contains(entryPath)) {
           _warn(packageGraph, PackageWarning.brokenLink, entryPath,
-              path.normalize(origin),
+              p.normalize(origin),
               referredFrom: fullPath);
         }
         found.add(entryPath);
@@ -393,7 +392,7 @@ class Dartdoc {
     var missingFromSearch = visited.difference(found);
     for (var s in missingFromSearch) {
       _warn(packageGraph, PackageWarning.missingFromSearchIndex, s,
-          path.normalize(origin),
+          p.normalize(origin),
           referredFrom: fullPath);
     }
   }
@@ -401,12 +400,12 @@ class Dartdoc {
   void _doCheck(PackageGraph packageGraph, String origin, Set<String> visited,
       String pathToCheck,
       [String? source, String? fullPath]) {
-    fullPath ??= path.normalize(path.joinAll([origin, pathToCheck]));
+    fullPath ??= p.normalize(p.joinAll([origin, pathToCheck]));
 
     var stringLinksAndHref = _getStringLinksAndHref(fullPath);
     if (stringLinksAndHref == null) {
       _warn(packageGraph, PackageWarning.brokenLink, pathToCheck,
-          path.normalize(origin),
+          p.normalize(origin),
           referredFrom: source);
       _onCheckProgress.add(pathToCheck);
       // Remove so that we properly count that the file doesn't exist for
@@ -432,14 +431,13 @@ class Dartdoc {
         if (uri == null || !uri.hasAuthority && !uri.hasFragment) {
           String full;
           if (baseHref != null) {
-            full = '${path.dirname(pathToCheck)}/$baseHref/$href';
+            full = '${p.dirname(pathToCheck)}/$baseHref/$href';
           } else {
-            full = '${path.dirname(pathToCheck)}/$href';
+            full = '${p.dirname(pathToCheck)}/$href';
           }
 
-          final newPathToCheck = path.normalize(full);
-          final newFullPath =
-              path.normalize(path.joinAll([origin, newPathToCheck]));
+          final newPathToCheck = p.normalize(full);
+          final newFullPath = p.normalize(p.joinAll([origin, newPathToCheck]));
           if (!visited.contains(newFullPath)) {
             toVisit.add(Tuple2(newPathToCheck, newFullPath));
             visited.add(newFullPath);

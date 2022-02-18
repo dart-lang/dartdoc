@@ -6,7 +6,7 @@ import 'dart:async';
 
 import 'package:build/build.dart';
 import 'package:glob/glob.dart';
-import 'package:path/path.dart' as path;
+import 'package:path/path.dart' as p;
 
 String _resourcesFile(Iterable<String> packagePaths) => '''
 // WARNING: This file is auto-generated. Do not edit.
@@ -29,11 +29,11 @@ class ResourceBuilder implements Builder {
         await buildStep.findAssets(Glob('$_resourcesPath/**')).toList();
     var packagePaths = [
       for (var asset in resourceAssets)
-        path.url.relative(asset.path, from: _resourcesPath),
+        p.url.relative(asset.path, from: _resourcesPath),
     ]..sort();
     await buildStep.writeAsString(
         AssetId(buildStep.inputId.package,
-            path.url.join('lib', 'src', 'generator', 'html_resources.g.dart')),
+            p.url.join('lib', 'src', 'generator', 'html_resources.g.dart')),
         _resourcesFile(packagePaths));
   }
 

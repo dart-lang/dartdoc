@@ -33,7 +33,7 @@ import 'package:dartdoc/src/special_elements.dart';
 import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:meta/meta.dart';
-import 'package:path/path.dart' as path show Context;
+import 'package:path/path.dart' as p show Context;
 
 // TODO(jcollins-g): Implement resolution per ECMA-408 4th edition, page 39 #22.
 /// Resolves this very rare case incorrectly by picking the closest element in
@@ -875,7 +875,7 @@ abstract class ModelElement extends Canonicalization
   }();
 
   @override
-  path.Context get pathContext => packageGraph.resourceProvider.pathContext;
+  p.Context get pathContext => packageGraph.resourceProvider.pathContext;
 
   late final List<Parameter> parameters = () {
     if (!isCallable) {
