@@ -35,7 +35,7 @@ import 'package:dartdoc/src/quiver.dart' as quiver;
 import 'package:dartdoc/src/render/renderer_factory.dart';
 import 'package:dartdoc/src/special_elements.dart';
 import 'package:meta/meta.dart';
-import 'package:path/path.dart' as path show Context;
+import 'package:path/path.dart' as p show Context;
 
 /// Everything you need to instantiate a PackageGraph object for documenting.
 abstract class PackageBuilder {
@@ -105,7 +105,7 @@ class PubPackageBuilder implements PackageBuilder {
 
   ResourceProvider get resourceProvider => packageMetaProvider.resourceProvider;
 
-  path.Context get pathContext => resourceProvider.pathContext;
+  p.Context get pathContext => resourceProvider.pathContext;
 
   /// Do not call more than once for a given PackageBuilder.
   Future<void> _calculatePackageMap() async {
@@ -420,7 +420,7 @@ class PubPackageBuilder implements PackageBuilder {
         foundLibraries, specialFiles.difference(files));
   }
 
-  path.Context get _pathContext => resourceProvider.pathContext;
+  p.Context get _pathContext => resourceProvider.pathContext;
 
   /// If [dir] contains both a `lib` directory and a `pubspec.yaml` file treat
   /// it like a package and only return the `lib` dir.
