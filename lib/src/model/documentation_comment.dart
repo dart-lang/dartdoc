@@ -10,7 +10,7 @@ import 'package:dartdoc/src/render/model_element_renderer.dart';
 import 'package:dartdoc/src/utils.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:meta/meta.dart';
-import 'package:path/path.dart' as path show Context;
+import 'package:path/path.dart' as p show Context;
 
 final _templatePattern = RegExp(
     r'[ ]*{@template\s+(.+?)}([\s\S]+?){@endtemplate}[ ]*(\n?)',
@@ -135,7 +135,7 @@ mixin DocumentationComment
 
   String? get fullyQualifiedNameWithoutLibrary;
 
-  path.Context get pathContext;
+  p.Context get pathContext;
 
   ModelElementRenderer get modelElementRenderer;
 

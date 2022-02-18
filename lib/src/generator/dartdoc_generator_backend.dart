@@ -12,7 +12,7 @@ import 'package:dartdoc/src/generator/templates.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/version.dart';
 import 'package:dartdoc/src/warnings.dart';
-import 'package:path/path.dart' as path show Context;
+import 'package:path/path.dart' as p show Context;
 
 /// Configuration options for the Dartdoc's default backend.
 class DartdocGeneratorBackendOptions implements TemplateOptions {
@@ -75,7 +75,7 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
   final SidebarGenerator<TemplateDataWithContainer<Documentable>>
       sidebarForContainer;
   final ResourceProvider resourceProvider;
-  final path.Context _pathContext;
+  final p.Context _pathContext;
 
   DartdocGeneratorBackend(this.options, this.templates, this.resourceProvider)
       : sidebarForLibrary = SidebarGenerator(templates.renderSidebarForLibrary),

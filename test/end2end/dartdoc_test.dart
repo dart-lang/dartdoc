@@ -19,7 +19,7 @@ import 'package:dartdoc/src/model/package_builder.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/warnings.dart';
-import 'package:path/path.dart' as path;
+import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
@@ -175,7 +175,7 @@ void main() {
         results = await dartdoc.generateDocs();
       });
 
-      test('generate docs for ${path.basename(_testPackageDir.path)} works',
+      test('generate docs for ${p.basename(_testPackageDir.path)} works',
           () async {
         expect(results.packageGraph, isNotNull);
         var packageGraph = results.packageGraph;
@@ -205,7 +205,7 @@ void main() {
       });
     });
 
-    test('generate docs for ${path.basename(_testPackageBadDir.path)} fails',
+    test('generate docs for ${p.basename(_testPackageBadDir.path)} fails',
         () async {
       var dartdoc = await buildDartdoc([], _testPackageBadDir, tempDir);
 
@@ -252,17 +252,16 @@ void main() {
     });
 
     test('generate docs with custom templates', () async {
-      var templatesDir =
-          path.join(_testPackageCustomTemplates.path, 'templates');
+      var templatesDir = p.join(_testPackageCustomTemplates.path, 'templates');
       var dartdoc = await buildDartdoc(['--templates-dir', templatesDir],
           _testPackageCustomTemplates, tempDir);
 
       var results = await dartdoc.generateDocs();
       expect(results.packageGraph, isNotNull);
 
-      var p = results.packageGraph;
-      expect(p.defaultPackage.name, 'test_package_custom_templates');
-      expect(p.localPublicLibraries, hasLength(1));
+      var graph = results.packageGraph;
+      expect(graph.defaultPackage.name, 'test_package_custom_templates');
+      expect(graph.localPublicLibraries, hasLength(1));
 
       var index = _resourceProvider
           .getFile(_pathContext.join(tempDir.path, 'index.html'));
@@ -271,7 +270,7 @@ void main() {
     });
 
     test('generate docs with missing required template fails', () async {
-      var templatesDir = path.join(path.current, 'test/templates');
+      var templatesDir = p.join(p.current, 'test/templates');
       try {
         await buildDartdoc(['--templates-dir', templatesDir],
             _testPackageCustomTemplates, tempDir);
@@ -284,7 +283,7 @@ void main() {
     });
 
     test('generate docs with bad templatesDir path fails', () async {
-      var badPath = path.join(tempDir.path, 'BAD');
+      var badPath = p.join(tempDir.path, 'BAD');
       try {
         await buildDartdoc(
             ['--templates-dir', badPath], _testPackageCustomTemplates, tempDir);
