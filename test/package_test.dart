@@ -108,8 +108,7 @@ int x;
       test('has private libraries', () async {
         var packageGraph = await utils.bootBasicPackage(
             projectPath, packageMetaProvider, packageConfigProvider);
-        var interceptorsLib = packageGraph.libraries
-            .firstWhere((lib) => lib.name == 'dart:_internal');
+        var interceptorsLib = packageGraph.libraries.named('dart:_internal');
 
         expect(interceptorsLib.isPublic, isFalse);
       });
@@ -126,8 +125,7 @@ int x;
       test('has a public library', () async {
         var packageGraph = await utils.bootBasicPackage(
             projectPath, packageMetaProvider, packageConfigProvider);
-        var library =
-            packageGraph.libraries.firstWhere((lib) => lib.name == 'a');
+        var library = packageGraph.libraries.named('a');
         expect(library.isDocumented, true);
       });
 
@@ -310,7 +308,7 @@ dartdoc:
         // TODO(srawlins): Why is there more than one?
         var libraryOne =
             packageOne.allLibraries.lastWhere((l) => l.name == 'one');
-        var classOne = libraryOne.allClasses.firstWhere((c) => c.name == 'One');
+        var classOne = libraryOne.allClasses.named('One');
         expect(packageOne.documentedWhere, equals(DocumentLocation.remote));
         expect(classOne.href,
             equals('https://mypub.topdomain/one/0.0.1/one/One-class.html'));
@@ -350,10 +348,8 @@ dartdoc:
             packageGraph.packages.singleWhere((p) => p.name == 'one');
         expect(packageOne.documentedWhere, equals(DocumentLocation.remote));
         // TODO(srawlins): Why is there more than one?
-        var libraryScript =
-            packageOne.allLibraries.singleWhere((l) => l.name == 'script');
-        var classScript =
-            libraryScript.allClasses.singleWhere((c) => c.name == 'Script');
+        var libraryScript = packageOne.allLibraries.named('script');
+        var classScript = libraryScript.allClasses.named('Script');
         expect(
             classScript.href,
             equals(

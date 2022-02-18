@@ -111,15 +111,10 @@ mixin MixedInTypes on InheritingContainer {
 /// Add the ability for an [InheritingContainer] to be implemented by other
 /// InheritingContainers and to reference what it itself implements.
 mixin TypeImplementing on InheritingContainer {
-  List<DefinedElementType>? _directInterfaces;
-  List<DefinedElementType> get directInterfaces =>
-      _directInterfaces ??
-      [
-        ...element!.interfaces
-            .map<DefinedElementType>(
-                (f) => modelBuilder.typeFrom(f, library) as DefinedElementType)
-            .toList(growable: false)
-      ];
+  late final List<DefinedElementType> directInterfaces = [
+    for (var interface in element!.interfaces)
+      modelBuilder.typeFrom(interface, library) as DefinedElementType
+  ];
 
   /// Interfaces directly implemented by this container.
   List<DefinedElementType> get interfaces => directInterfaces;
@@ -160,10 +155,9 @@ mixin TypeImplementing on InheritingContainer {
       } else {
         assert(
             false,
-            'Can not handle intermediate non-public interfaces '
-            'created by ModelElements that are not classes or mixins:  '
-            '$fullyQualifiedName contains an interface {$i}, '
-            'defined by ${i.modelElement}');
+            'Can not handle intermediate non-public interfaces created by '
+            'ModelElements that are not classes or mixins: $fullyQualifiedName '
+            'contains an interface $i, defined by ${i.modelElement}');
         continue;
       }
     }

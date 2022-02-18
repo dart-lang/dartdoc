@@ -25,8 +25,10 @@ class Enum extends InheritingContainer with TypeImplementing {
   String get relationshipsClass => 'eNum-relationships';
 }
 
-/// Enum's fields are virtual, so we do a little work to create
-/// usable values for the docs.
+/// A field specific to an enum's values.
+///
+/// Enum's value fields are virtual, so we do a little work to create usable
+/// entries for the docs.
 class EnumField extends Field {
   int? index;
 
