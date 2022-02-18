@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:io';
+import 'dart:math';
 import 'package:args/args.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
 
@@ -20,7 +21,7 @@ environment:
 /// Within the generated package, `dartdoc --show-stats` can be helpful in
 /// understanding these characteristics.
 void main(List<String> args) async {
-  var argParser = ArgParser()
+  final argParser = ArgParser()
     ..addOption(
       'library-count',
       defaultsTo: '1',
@@ -37,54 +38,50 @@ void main(List<String> args) async {
       help: 'the number of methods per class',
     )
     ..addOption(
+      'parameter-count',
+      defaultsTo: '1',
+      help: 'the number of parameters per method',
+    )
+    ..addOption(
       'reference-count',
       defaultsTo: '1',
       help: 'the number of references per class doc comment',
     );
-  var argResults = argParser.parse(args);
+  final argResults = argParser.parse(args);
   // TODO(srawlins): Support generating multiple packages.
-  var libraryCount = int.parse(argResults['library-count']);
-  var classCount = int.parse(argResults['class-count']);
-  var methodCount = int.parse(argResults['method-count']);
-  var referenceCount = int.parse(argResults['reference-count']);
-  var testDataDir = Directory('test_data')..createSync();
-  var libFiles = <d.Descriptor>[];
+  final libraryCount = int.parse(argResults['library-count']);
+  final classCount = int.parse(argResults['class-count']);
+  final methodCount = int.parse(argResults['method-count']);
+  final parameterCount = int.parse(argResults['parameter-count']);
+  final referenceCount = int.parse(argResults['reference-count']);
+  final testDataDir = Directory('test_data')..createSync();
+  final libFiles = <d.Descriptor>[];
   var classCounter = 1;
   var methodCounter = 1;
-  // TODO(srawlins): Swap these out for elements being generated.
-  var sdkElements = [
-    'int',
-    'double',
-    'bool',
-    'List',
-    'String',
-    'Set',
-    'Iterable',
-    'Map',
-    'Future',
-    'num',
-  ];
-  for (var i = 1; i <= libraryCount; i++) {
-    var libraryContent = StringBuffer();
-    for (var j = 1; j <= classCount; j++) {
-      libraryContent.writeln('/// Doc comment.');
-      var sdkReferences =
-          sdkElements.take(referenceCount).map((e) => '[$e]').join(' ');
-      libraryContent.writeln('/// $sdkReferences');
-      if (classCounter > 1) {
-        libraryContent.writeln('/// Another class: [C${classCounter - 1}]');
-      }
-      libraryContent.writeln('class C$classCounter {');
-      for (var k = 1; k < methodCount; k++) {
-        libraryContent.writeln('  void m$methodCounter() {}');
+  final rng = Random();
+  for (var lIndex = 1; lIndex <= libraryCount; lIndex++) {
+    final content = StringBuffer();
+    for (var cIndex = 1; cIndex <= classCount; cIndex++) {
+      content.writeln('/// Doc comment.');
+      final references =
+          List.generate(referenceCount, (_) => '[C${rng.nextInt(classCount)}]')
+              .join(' ');
+      content.writeln('/// References: $references');
+      content.writeln('class C$classCounter {');
+      for (var mIndex = 1; mIndex <= methodCount; mIndex++) {
+        content.write('  void m$methodCounter(');
+        content.write(
+            List.generate(parameterCount, (var pIndex) => 'int p$pIndex')
+                .join(', '));
+        content.writeln(') {}');
         methodCounter++;
       }
-      libraryContent.writeln('}');
+      content.writeln('}');
       classCounter++;
     }
-    libFiles.add(d.file('lib$i.dart', libraryContent.toString()));
+    libFiles.add(d.file('lib$lIndex.dart', content.toString()));
   }
-  var testPackageDir = d.dir('test_package', [
+  final testPackageDir = d.dir('test_package', [
     d.file('pubspec.yaml', _defaultPubspec),
     d.dir('lib', libFiles),
   ]);
