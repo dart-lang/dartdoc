@@ -26,8 +26,7 @@ void main() {
     var sdkPackage = localPackages.single;
     expect(sdkPackage.name, equals('Dart'));
 
-    var dartAsyncLib =
-        sdkPackage.libraries.firstWhere((l) => l.name == 'dart:async');
+    var dartAsyncLib = sdkPackage.libraries.named('dart:async');
     expect(dartAsyncLib.name, 'dart:async');
     expect(dartAsyncLib.dirName, 'dart-async');
     expect(dartAsyncLib.href,

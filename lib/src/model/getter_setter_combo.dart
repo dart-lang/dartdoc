@@ -91,7 +91,7 @@ mixin GetterSetterCombo on ModelElement {
     if (element!.isSynthetic) {
       if (hasExplicitGetter) return getter!.characterLocation;
       if (hasExplicitSetter) return setter!.characterLocation;
-      assert(false, 'Field and accessors can not all be synthetic');
+      assert(false, 'Field and accessors can not all be synthetic: $element');
     }
     return super.characterLocation;
   }

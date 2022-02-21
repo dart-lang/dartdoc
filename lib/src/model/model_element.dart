@@ -186,7 +186,8 @@ abstract class ModelElement extends Canonicalization
         } else if (e.enclosingElement is ExtensionElement) {
           newModelElement = Field(e, library, packageGraph,
               getter as ContainerAccessor?, setter as ContainerAccessor?);
-        } else if (e.enclosingElement is ClassElement &&
+        } // TODO(srawlins): Stop special casing enum fields.
+        else if (e.enclosingElement is ClassElement &&
             (e.enclosingElement as ClassElement).isEnum) {
           newModelElement = EnumField(e, library, packageGraph, getter, setter);
         } else {
@@ -195,6 +196,7 @@ abstract class ModelElement extends Canonicalization
         }
       } else {
         // EnumFields can't be inherited, so this case is simpler.
+        // TODO(srawlins): Correct this? Is this dead?
         newModelElement = Field.inherited(
             e, enclosingContainer, library, packageGraph, getter, setter);
       }
