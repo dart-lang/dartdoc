@@ -180,13 +180,7 @@ Map<String, String> _createThrowawayPubCache() {
 void analyze() async {
   await SubprocessLauncher('analyze').runStreamed(
     Platform.resolvedExecutable,
-    [
-      'analyze',
-      '--fatal-infos',
-      '--options',
-      'analysis_options_presubmit.yaml',
-      '.'
-    ],
+    ['analyze', '--fatal-infos', '.'],
   );
 }
 
