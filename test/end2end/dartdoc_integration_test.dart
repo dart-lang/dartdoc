@@ -171,7 +171,7 @@ void main() {
       workingDirectory: packagePath,
     );
     await process.shouldExit(1);
-  });
+  }, timeout: Timeout.factor(2));
 
   test('with missing FLUTTER_ROOT exception reports an error', () async {
     // TODO(srawlins): Remove test_package_flutter_plugin and generate afresh.
