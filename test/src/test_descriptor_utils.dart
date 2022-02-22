@@ -5,6 +5,7 @@
 import 'dart:convert';
 
 import 'package:analyzer/file_system/memory_file_system.dart';
+import 'package:path/path.dart' as p;
 import 'package:test_descriptor/test_descriptor.dart' as d;
 import 'package:yaml/yaml.dart' as yaml;
 
@@ -112,7 +113,7 @@ extension DescriptorExtensions on d.Descriptor {
 extension on d.DirectoryDescriptor {
   Future<String> createInMemory(MemoryResourceProvider resourceProvider,
       [String? parent]) async {
-    parent ??= '/temp';
+    parent ??= resourceProvider.convertPath('/temp');
     resourceProvider.newFolder(parent).create();
     var fullPath = resourceProvider.pathContext.join(parent, name);
     resourceProvider.newFolder(fullPath).create();
