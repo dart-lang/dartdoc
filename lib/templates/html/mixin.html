@@ -21,17 +21,7 @@
         {{/hasPublicSuperclassConstraints}}
 
         {{ >super_chain }}
-
-        {{#hasPublicInterfaces}}
-        <dt>Implements</dt>
-        <dd>
-          <ul class="comma-separated mixin-relationships">
-            {{#publicInterfaces}}
-            <li>{{{linkedName}}}</li>
-            {{/publicInterfaces}}
-          </ul>
-        </dd>
-        {{/hasPublicInterfaces}}
+        {{ >interfaces }}
 
         {{#hasPublicImplementors}}
         <dt>Mixin Applications</dt>
