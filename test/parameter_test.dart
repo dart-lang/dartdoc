@@ -26,7 +26,7 @@ void main() {
     // unreachable Dart SDK libraries, so we set up this package once.
     setUpAll(() async {
       const libraryName = 'super_parameters';
-      var packageMetaProvider = utils.testPackageMetaProvider;
+      var packageMetaProvider = testPackageMetaProvider;
 
       var packagePath = await d.createPackage(
         libraryName,
@@ -49,8 +49,9 @@ class C {
         resourceProvider:
             packageMetaProvider.resourceProvider as MemoryResourceProvider,
       );
-      var packageConfigProvider = utils.getTestPackageConfigProvider(
-          packageMetaProvider.defaultSdkDir.path) as FakePackageConfigProvider;
+      var packageConfigProvider =
+          getTestPackageConfigProvider(packageMetaProvider.defaultSdkDir.path)
+              as FakePackageConfigProvider;
       packageConfigProvider.addPackageToConfigFor(
           packagePath, libraryName, Uri.file('$packagePath/'));
 
