@@ -136,19 +136,24 @@ class SubprocessLauncher {
 
   String get prefix => context.isNotEmpty ? '$context: ' : '';
 
-  // from flutter:dev/tools/dartdoc.dart, modified
-  static Future<void> _printStream(Stream<List<int>> stream, Stdout output,
-      {required Iterable<String> Function(String line) filter,
-      String prefix = ''}) {
-    return stream
-        .transform(utf8.decoder)
-        .transform(const LineSplitter())
-        .expand(filter)
-        .listen((String line) {
-      output.write('$prefix$line'.trim());
-      output.write('\n');
-    }).asFuture();
-  }
+  /// Listen to [stream] as a stream of lines of text, writing them to both
+  /// [output] and a returned String.
+  ///
+  /// This is borrowed from flutter:dev/tools/dartdoc.dart; modified.
+  static Future<String> _printStream(Stream<List<int>> stream, Stdout output,
+          {required Iterable<String> Function(String line) filter,
+          String prefix = ''}) =>
+      stream
+          .transform(utf8.decoder)
+          .transform(const LineSplitter())
+          .expand(filter)
+          .map(
+        (String line) {
+          final value = '$prefix$line'.trim() + '\n';
+          output.write(value);
+          return value;
+        },
+      ).join();
 
   SubprocessLauncher(this.context, [Map<String, String>? environment]) {
     environmentDefaults.addAll(environment ?? {});
@@ -261,7 +266,7 @@ class SubprocessLauncher {
           executable,
           arguments,
           'SubprocessLauncher got non-zero exitCode: $exitCode\n\n'
-          'stdout: ${process.stdout}\n\nstderr: ${process.stderr}',
+          'stdout: ${await stdoutFuture}\n\nstderr: ${await stderrFuture}',
           exitCode);
     }
     return jsonObjects;

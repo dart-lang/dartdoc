@@ -86,52 +86,52 @@ mixin CommentReferable implements Nameable, ModelBuilderInterface {
 
   String? get href => null;
 
-  static bool _alwaysTrue(CommentReferable? _) => true;
-
-  /// Look up a comment reference by its component parts.  If [tryParents] is
-  /// true, try looking up the same reference in any parents of [this].
-  /// Will skip over results that do not pass a given [filter] and keep
-  /// searching.  Will skip over entire subtrees whose parent node does
-  /// not pass [allowTree].
+  /// Look up a comment reference by its component parts.
+  ///
+  /// If [tryParents] is true, try looking up the same reference in any parents
+  /// of `this`. Will skip over results that do not pass a given [filter] and
+  /// keep searching.  Will skip over entire subtrees whose parent node does not
+  /// pass [allowTree].
   @nonVirtual
-  CommentReferable? referenceBy(List<String> reference,
-      {bool tryParents = true,
-      bool Function(CommentReferable?) filter = _alwaysTrue,
-      bool Function(CommentReferable?) allowTree = _alwaysTrue,
-      Iterable<CommentReferable>? parentOverrides}) {
+  CommentReferable? referenceBy(
+    List<String> reference, {
+    required bool Function(CommentReferable?) filter,
+    required bool Function(CommentReferable?) allowTree,
+    bool tryParents = true,
+    Iterable<CommentReferable>? parentOverrides,
+  }) {
     parentOverrides ??= referenceParents;
     if (reference.isEmpty) {
       if (tryParents == false) return this;
       return null;
     }
-    CommentReferable? result;
 
-    /// Search for the reference.
     for (var referenceLookup in childLookups(reference)) {
       if (scope != null) {
-        result = lookupViaScope(referenceLookup,
+        var result = _lookupViaScope(referenceLookup,
             filter: filter, allowTree: allowTree);
-        if (result != null) break;
+        if (result != null) return result;
       }
-      if (referenceChildren.containsKey(referenceLookup.lookup)) {
-        result = recurseChildrenAndFilter(
-            referenceLookup, referenceChildren[referenceLookup.lookup]!,
+      final referenceChildren = this.referenceChildren;
+      final childrenResult = referenceChildren[referenceLookup.lookup];
+      if (childrenResult != null) {
+        var result = _recurseChildrenAndFilter(referenceLookup, childrenResult,
             allowTree: allowTree, filter: filter);
-        if (result != null) break;
+        if (result != null) return result;
       }
     }
     // If we can't find it in children, try searching parents if allowed.
-    if (result == null && tryParents) {
+    if (tryParents) {
       for (var parent in parentOverrides) {
-        result = parent.referenceBy(reference,
+        var result = parent.referenceBy(reference,
             tryParents: true,
             parentOverrides: referenceGrandparentOverrides,
             allowTree: allowTree,
             filter: filter);
-        if (result != null) break;
+        if (result != null) return result;
       }
     }
-    return result;
+    return null;
   }
 
   /// Looks up references by [scope], skipping over results that do not match
@@ -140,9 +140,11 @@ mixin CommentReferable implements Nameable, ModelBuilderInterface {
   /// Override if [Scope.lookup] may return elements not corresponding to a
   /// [CommentReferable], but you still want to have an implementation of
   /// [scope].
-  CommentReferable? lookupViaScope(ReferenceChildrenLookup referenceLookup,
-      {required bool Function(CommentReferable?) allowTree,
-      required bool Function(CommentReferable?) filter}) {
+  CommentReferable? _lookupViaScope(
+    ReferenceChildrenLookup referenceLookup, {
+    required bool Function(CommentReferable?) filter,
+    required bool Function(CommentReferable?) allowTree,
+  }) {
     var resultElement = scope!.lookupPreferGetter(referenceLookup.lookup);
     if (resultElement == null) return null;
     var result = modelBuilder.fromElement(resultElement);
@@ -155,17 +157,19 @@ mixin CommentReferable implements Nameable, ModelBuilderInterface {
       return null;
     }
     if (!allowTree(result)) return null;
-    return recurseChildrenAndFilter(referenceLookup, result,
+    return _recurseChildrenAndFilter(referenceLookup, result,
         allowTree: allowTree, filter: filter);
   }
 
   /// Given a [result] found in an implementation of [lookupViaScope] or
   /// [ReferenceChildrenLookup], recurse through children, skipping over
   /// results that do not match the filter.
-  CommentReferable? recurseChildrenAndFilter(
-      ReferenceChildrenLookup referenceLookup, CommentReferable result,
-      {required bool Function(CommentReferable?) allowTree,
-      required bool Function(CommentReferable?) filter}) {
+  CommentReferable? _recurseChildrenAndFilter(
+    ReferenceChildrenLookup referenceLookup,
+    CommentReferable result, {
+    required bool Function(CommentReferable?) filter,
+    required bool Function(CommentReferable?) allowTree,
+  }) {
     CommentReferable? returnValue = result;
     if (referenceLookup.remaining.isNotEmpty) {
       if (allowTree(result)) {

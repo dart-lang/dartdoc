@@ -12,7 +12,7 @@ import 'package:dartdoc/src/model/model_object_builder.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:meta/meta.dart';
-import 'package:path/path.dart' as path show Context;
+import 'package:path/path.dart' as p show Context;
 import 'package:pub_semver/pub_semver.dart';
 
 // All hrefs are emitted as relative paths from the output root. We are unable
@@ -378,7 +378,7 @@ class Package extends LibraryContainer
   @override
   Iterable<CommentReferable> get referenceParents => [packageGraph];
 
-  path.Context get _pathContext => _packageGraph.resourceProvider.pathContext;
+  p.Context get _pathContext => _packageGraph.resourceProvider.pathContext;
 
   @override
   // Packages are not interpreted by the analyzer in such a way to generate

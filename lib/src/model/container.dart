@@ -7,7 +7,6 @@ import 'package:analyzer/dart/element/scope.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as model_utils;
-import 'package:dartdoc/src/quiver.dart' as quiver;
 import 'package:meta/meta.dart';
 
 /// A [Container] represents a Dart construct that can contain methods,
@@ -63,22 +62,21 @@ abstract class Container extends ModelElement
   bool get isMixin =>
       element is ClassElement && (element as ClassElement).isMixin;
 
-  @mustCallSuper
-  Iterable<ModelElement>? get allModelElements => quiver.concat([
-        instanceMethods,
-        instanceFields,
-        instanceOperators,
-        instanceAccessors,
-        staticFields,
-        staticAccessors,
-        staticMethods,
-      ]);
+  Iterable<ModelElement> get allModelElements => [
+        ...instanceMethods,
+        ...instanceFields,
+        ...instanceOperators,
+        ...instanceAccessors,
+        ...staticFields,
+        ...staticAccessors,
+        ...staticMethods,
+      ];
 
   List<ModelElement>? _allCanonicalModelElements;
 
   List<ModelElement> get allCanonicalModelElements {
     return (_allCanonicalModelElements ??=
-        allModelElements!.where((e) => e.isCanonical).toList());
+        allModelElements.where((e) => e.isCanonical).toList());
   }
 
   /// All methods, including operators and statics, declared as part of this
@@ -181,7 +179,7 @@ abstract class Container extends ModelElement
 
   Set<Element?>? _allElements;
   Set<Element?> get allElements =>
-      _allElements ??= allModelElements!.map((e) => e.element).toSet();
+      _allElements ??= allModelElements.map((e) => e.element).toSet();
 
   Map<String?, List<ModelElement>>? _membersByName;
 
@@ -193,11 +191,11 @@ abstract class Container extends ModelElement
   T memberByExample<T extends ModelElement>(T example) {
     if (_membersByName == null) {
       _membersByName = {};
-      for (var me in allModelElements!) {
-        if (!_membersByName!.containsKey(me.name)) {
-          _membersByName![me.name] = [];
+      for (var element in allModelElements) {
+        if (!_membersByName!.containsKey(element.name)) {
+          _membersByName![element.name] = [];
         }
-        _membersByName![me.name]!.add(me);
+        _membersByName![element.name]!.add(element);
       }
     }
     ModelElement member;
@@ -261,7 +259,7 @@ abstract class Container extends ModelElement
   @mustCallSuper
   late final Map<String, CommentReferable> referenceChildren = () {
     var referenceChildren = <String, CommentReferable>{
-      for (var element in allModelElements!
+      for (var element in allModelElements
           .whereNotType<Accessor>()
           .whereNotType<Constructor>())
         element.referenceName: element,
@@ -270,7 +268,7 @@ abstract class Container extends ModelElement
     referenceChildren.addEntriesIfAbsent(extraReferenceChildren);
     // Process unscoped parameters last to make sure they don't override
     // other options.
-    for (var modelElement in allModelElements!) {
+    for (var modelElement in allModelElements) {
       // Don't complain about references to parameter names, but prefer
       // referring to anything else.
       // TODO(jcollins-g): Figure out something good to do in the ecosystem

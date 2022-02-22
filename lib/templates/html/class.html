@@ -12,16 +12,7 @@
     <section>
       <dl class="dl-horizontal">
         {{ >super_chain }}
-        {{#hasPublicInterfaces}}
-        <dt>Implemented types</dt>
-        <dd>
-          <ul class="comma-separated clazz-relationships">
-            {{#publicInterfaces}}
-            <li>{{{linkedName}}}</li>
-            {{/publicInterfaces}}
-          </ul>
-        </dd>
-        {{/hasPublicInterfaces}}
+        {{ >interfaces }}
 
         {{#hasPublicMixedInTypes}}
         <dt>Mixed in types</dt>

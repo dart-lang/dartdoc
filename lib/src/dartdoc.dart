@@ -5,7 +5,6 @@
 library src.dartdoc;
 
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io' show Platform, exitCode, stderr;
 
 import 'package:analyzer/file_system/file_system.dart';
@@ -20,13 +19,12 @@ import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/matching_link_result.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
-import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/utils.dart';
+import 'package:dartdoc/src/validator.dart';
 import 'package:dartdoc/src/version.dart';
 import 'package:dartdoc/src/warnings.dart';
-import 'package:html/parser.dart' show parse;
 import 'package:meta/meta.dart';
-import 'package:path/path.dart' as path;
+import 'package:path/path.dart' as p;
 
 const String programName = 'dartdoc';
 // Update when pubspec version changes by running `pub run build_runner build`
@@ -49,7 +47,7 @@ class DartdocFileWriter implements FileWriter {
     bool allowOverwrite = false,
   }) {
     // Replace '/' separators with proper separators for the platform.
-    var outFile = path.joinAll(filePath.split('/'));
+    var outFile = p.joinAll(filePath.split('/'));
 
     if (!allowOverwrite) {
       _warnAboutOverwrite(outFile, null);
@@ -65,7 +63,7 @@ class DartdocFileWriter implements FileWriter {
   @override
   void write(String filePath, String content, {Warnable? element}) {
     // Replace '/' separators with proper separators for the platform.
-    var outFile = path.joinAll(filePath.split('/'));
+    var outFile = p.joinAll(filePath.split('/'));
 
     _warnAboutOverwrite(outFile, element);
     _fileElementMap[outFile] = element;
@@ -107,7 +105,6 @@ class Dartdoc {
   Generator _generator;
   final PackageBuilder packageBuilder;
   final DartdocOptionContext config;
-  final Set<String> _writtenFiles = {};
   late final Folder _outputDir = config.resourceProvider
       .getFolder(config.resourceProvider.pathContext.absolute(config.output))
     ..create();
@@ -184,10 +181,12 @@ class Dartdoc {
     await generator.generate(packageGraph, writer);
     runtimeStats.endPerfTask();
 
-    _writtenFiles.addAll(writer.writtenFiles);
-    if (config.validateLinks && _writtenFiles.isNotEmpty) {
+    var writtenFiles = writer.writtenFiles;
+    if (config.validateLinks && writtenFiles.isNotEmpty) {
       runtimeStats.startPerfTask('validateLinks');
-      _validateLinks(packageGraph, _outputDir.path);
+      Validator(packageGraph, config, _outputDir.path, writtenFiles,
+              _onCheckProgress)
+          .validateLinks();
       runtimeStats.endPerfTask();
     }
 
@@ -238,234 +237,6 @@ class Dartdoc {
     } finally {
       dartdocResults?.packageGraph.dispose();
     }
-  }
-
-  /// Warn on file paths.
-  void _warn(PackageGraph packageGraph, PackageWarning kind, String warnOn,
-      String origin,
-      {String? referredFrom}) {
-    // Ordinarily this would go in [Package.warn], but we don't actually know what
-    // ModelElement to warn on yet.
-    Warnable? warnOnElement;
-    var referredFromElements = <Warnable>{};
-    Set<Warnable>? warnOnElements;
-
-    // Make all paths relative to origin.
-    if (path.isWithin(origin, warnOn)) {
-      warnOn = path.relative(warnOn, from: origin);
-    }
-    if (referredFrom != null) {
-      if (path.isWithin(origin, referredFrom)) {
-        referredFrom = path.relative(referredFrom, from: origin);
-      }
-      var hrefReferredFrom = _hrefs[referredFrom];
-      // Source paths are always relative.
-      if (hrefReferredFrom != null) {
-        referredFromElements.addAll(hrefReferredFrom);
-      }
-    }
-    warnOnElements = _hrefs[warnOn];
-
-    if (referredFromElements.any((e) => e.isCanonical)) {
-      referredFromElements.removeWhere((e) => !e.isCanonical);
-    }
-    if (warnOnElements != null) {
-      for (var e in warnOnElements) {
-        if (e.isCanonical) {
-          warnOnElement = e;
-          break;
-        }
-      }
-    }
-
-    if (referredFromElements.isEmpty && referredFrom == 'index.html') {
-      referredFromElements.add(packageGraph.defaultPackage);
-    }
-    var message = warnOn;
-    if (referredFrom == 'index.json') message = '$warnOn (from index.json)';
-    packageGraph.warnOnElement(warnOnElement, kind,
-        message: message, referredFrom: referredFromElements);
-  }
-
-  void _doOrphanCheck(
-      PackageGraph packageGraph, String origin, Set<String> visited) {
-    var normalOrigin = path.normalize(origin);
-    var staticAssets = path.joinAll([normalOrigin, 'static-assets', '']);
-    var indexJson = path.joinAll([normalOrigin, 'index.json']);
-    var foundIndexJson = false;
-
-    void checkDirectory(Folder dir) {
-      for (var f in dir.getChildren()) {
-        if (f is Folder) {
-          checkDirectory(f);
-          continue;
-        }
-        var fullPath = path.normalize(f.path);
-        if (fullPath.startsWith(staticAssets)) {
-          continue;
-        }
-        if (path.equals(fullPath, indexJson)) {
-          foundIndexJson = true;
-          _onCheckProgress.add(fullPath);
-          continue;
-        }
-        if (visited.contains(fullPath)) continue;
-        var relativeFullPath = path.relative(fullPath, from: normalOrigin);
-        if (!_writtenFiles.contains(relativeFullPath)) {
-          // This isn't a file we wrote (this time); don't claim we did.
-          _warn(
-              packageGraph, PackageWarning.unknownFile, fullPath, normalOrigin);
-        } else {
-          // Error messages are orphaned by design and do not appear in the search
-          // index.
-          if (const {'__404error.html', 'categories.json'}.contains(fullPath)) {
-            _warn(packageGraph, PackageWarning.orphanedFile, fullPath,
-                normalOrigin);
-          }
-        }
-        _onCheckProgress.add(fullPath);
-      }
-    }
-
-    checkDirectory(config.resourceProvider.getFolder(normalOrigin));
-
-    if (!foundIndexJson) {
-      _warn(packageGraph, PackageWarning.brokenLink, indexJson, normalOrigin);
-      _onCheckProgress.add(indexJson);
-    }
-  }
-
-  // This is extracted to save memory during the check; be careful not to hang
-  // on to anything referencing the full file and doc tree.
-  Tuple2<Iterable<String>, String?>? _getStringLinksAndHref(String fullPath) {
-    var file = config.resourceProvider.getFile(fullPath);
-    if (!file.exists) {
-      return null;
-    }
-    // TODO(srawlins): It is possible that instantiating an HtmlParser using
-    // `lowercaseElementName: false` and `lowercaseAttrName: false` may save
-    // time or memory.
-    var doc = parse(file.readAsBytesSync());
-    var base = doc.querySelector('base');
-    String? baseHref;
-    if (base != null) {
-      baseHref = base.attributes['href'];
-    }
-    var links = doc.querySelectorAll('a');
-    var stringLinks = links
-        .map((link) => link.attributes['href'])
-        .whereType<String>()
-        .where((href) => href.isNotEmpty)
-        .toList();
-
-    return Tuple2(stringLinks, baseHref);
-  }
-
-  void _doSearchIndexCheck(
-      PackageGraph packageGraph, String origin, Set<String> visited) {
-    var fullPath = path.joinAll([origin, 'index.json']);
-    var indexPath = path.joinAll([origin, 'index.html']);
-    var file = config.resourceProvider.getFile(fullPath);
-    if (!file.exists) {
-      return;
-    }
-    const decoder = JsonDecoder();
-    List<dynamic> jsonData = decoder.convert(file.readAsStringSync());
-
-    var found = <String>{};
-    found.add(fullPath);
-    // The package index isn't supposed to be in the search, so suppress the
-    // warning.
-    found.add(indexPath);
-    for (Map<String, dynamic> entry in jsonData) {
-      if (entry.containsKey('href')) {
-        var entryPath =
-            path.joinAll([origin, ...path.posix.split(entry['href'])]);
-        if (!visited.contains(entryPath)) {
-          _warn(packageGraph, PackageWarning.brokenLink, entryPath,
-              path.normalize(origin),
-              referredFrom: fullPath);
-        }
-        found.add(entryPath);
-      }
-    }
-    // Missing from search index
-    var missingFromSearch = visited.difference(found);
-    for (var s in missingFromSearch) {
-      _warn(packageGraph, PackageWarning.missingFromSearchIndex, s,
-          path.normalize(origin),
-          referredFrom: fullPath);
-    }
-  }
-
-  void _doCheck(PackageGraph packageGraph, String origin, Set<String> visited,
-      String pathToCheck,
-      [String? source, String? fullPath]) {
-    fullPath ??= path.normalize(path.joinAll([origin, pathToCheck]));
-
-    var stringLinksAndHref = _getStringLinksAndHref(fullPath);
-    if (stringLinksAndHref == null) {
-      _warn(packageGraph, PackageWarning.brokenLink, pathToCheck,
-          path.normalize(origin),
-          referredFrom: source);
-      _onCheckProgress.add(pathToCheck);
-      // Remove so that we properly count that the file doesn't exist for
-      // the orphan check.
-      visited.remove(fullPath);
-      return;
-    }
-    visited.add(fullPath);
-    var stringLinks = stringLinksAndHref.item1;
-    var baseHref = stringLinksAndHref.item2;
-
-    // Prevent extremely large stacks by storing the paths we are using
-    // here instead -- occasionally, very large jobs have overflowed
-    // the stack without this.
-    // (newPathToCheck, newFullPath)
-    var toVisit = <Tuple2<String, String>>{};
-
-    final ignoreHyperlinks = RegExp(r'^(https:|http:|mailto:|ftp:)');
-    for (final href in stringLinks) {
-      if (!href.startsWith(ignoreHyperlinks)) {
-        final uri = Uri.tryParse(href);
-
-        if (uri == null || !uri.hasAuthority && !uri.hasFragment) {
-          String full;
-          if (baseHref != null) {
-            full = '${path.dirname(pathToCheck)}/$baseHref/$href';
-          } else {
-            full = '${path.dirname(pathToCheck)}/$href';
-          }
-
-          final newPathToCheck = path.normalize(full);
-          final newFullPath =
-              path.normalize(path.joinAll([origin, newPathToCheck]));
-          if (!visited.contains(newFullPath)) {
-            toVisit.add(Tuple2(newPathToCheck, newFullPath));
-            visited.add(newFullPath);
-          }
-        }
-      }
-    }
-    for (var visitPaths in toVisit) {
-      _doCheck(packageGraph, origin, visited, visitPaths.item1, pathToCheck,
-          visitPaths.item2);
-    }
-    _onCheckProgress.add(pathToCheck);
-  }
-
-  late final Map<String, Set<ModelElement>> _hrefs;
-
-  /// Don't call this method more than once, and only after you've
-  /// generated all docs for the Package.
-  void _validateLinks(PackageGraph packageGraph, String origin) {
-    _hrefs = packageGraph.allHrefs;
-
-    final visited = <String>{};
-    logInfo('Validating docs...');
-    _doCheck(packageGraph, origin, visited, 'index.html');
-    _doOrphanCheck(packageGraph, origin, visited);
-    _doSearchIndexCheck(packageGraph, origin, visited);
   }
 
   /// Runs [generateDocs] function and properly handles the errors.

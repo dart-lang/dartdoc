@@ -44,14 +44,14 @@ class Field extends ModelElement
 
   @override
   String get documentation {
-    // Verify that hasSetter and hasGetterNoSetter are mutually exclusive,
-    // to prevent displaying more or less than one summary.
+    // Verify that [hasSetter] and [hasGetthasPublicGetterNoSettererNoSetter]
+    // are mutually exclusive, to prevent displaying more or less than one
+    // summary.
     if (isPublic) {
-      var assertCheck = <dynamic>{}
-        ..addAll(<bool>[hasPublicSetter, hasPublicGetterNoSetter]);
-      assert(assertCheck.containsAll([true, false]));
+      assert((hasPublicSetter && !hasPublicGetterNoSetter) ||
+          (!hasPublicSetter && hasPublicGetterNoSetter));
     }
-    documentationFrom;
+    //documentationFrom;
     return super.documentation;
   }
 

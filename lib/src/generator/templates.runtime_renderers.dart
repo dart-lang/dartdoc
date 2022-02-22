@@ -2955,11 +2955,11 @@ class _Renderer_Container extends RendererBase<Container> {
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
                           c, remainingNames, 'Iterable<ModelElement>'),
-                  isNullValue: (CT_ c) => c.allModelElements == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.allModelElements, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['Iterable']!);
+                    return c.allModelElements.map((e) => _render_ModelElement(
+                        e, ast, r.template, sink,
+                        parent: r));
                   },
                 ),
                 'constantFields': Property(
@@ -12348,7 +12348,7 @@ class _Renderer_Package extends RendererBase<Package> {
   }
 }
 
-String renderError(PackageTemplateData context, Template template) {
+String renderIndex(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -12564,7 +12564,7 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
   }
 }
 
-String renderIndex(PackageTemplateData context, Template template) {
+String renderError(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -16674,7 +16674,6 @@ const _invisibleGetters = {
     'allLibraries',
     'allLibrariesAdded',
     'allLocalModelElements',
-    'allModelElements',
     'config',
     'dartCoreObject',
     'defaultPackage',

@@ -9,7 +9,7 @@ import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
 import 'src/test_descriptor_utils.dart' as d;
-import 'src/utils.dart' as utils;
+import 'src/utils.dart';
 
 void main() {
   // We can not use ExperimentalFeature.releaseVersion or even
@@ -17,11 +17,6 @@ void main() {
   // even when partial analyzer implementations are available.
   final superParametersAllowed =
       VersionRange(min: Version.parse('2.17.0-0'), includeMin: true);
-
-  Matcher matchesCompressed(String text) => matches(RegExp(text.replaceAll(
-        RegExp(r'\s\s+', multiLine: true),
-        ' *',
-      )));
 
   group('parameters', () {
     late Library library;
@@ -51,12 +46,12 @@ class C {
         ],
       );
 
-      var packageGraph = await utils.bootBasicPackage(
+      var packageGraph = await bootBasicPackage(
         d.dir(libraryName).io.path,
         pubPackageMetaProvider,
         PhysicalPackageConfigProvider(),
       );
-      library = packageGraph.libraries.firstWhere((l) => l.name == libraryName);
+      library = packageGraph.libraries.named(libraryName);
     });
 
     test(
@@ -222,12 +217,12 @@ class E extends D {
         ],
       );
 
-      var packageGraph = await utils.bootBasicPackage(
+      var packageGraph = await bootBasicPackage(
         d.dir(libraryName).io.path,
         pubPackageMetaProvider,
         PhysicalPackageConfigProvider(),
       );
-      library = packageGraph.libraries.firstWhere((l) => l.name == libraryName);
+      library = packageGraph.libraries.named(libraryName);
     });
 
     test(
@@ -370,7 +365,7 @@ class E extends D {
         </span>
       '''));
     });
-  }, skip: !superParametersAllowed.allows(utils.platformVersion));
+  }, skip: !superParametersAllowed.allows(platformVersion));
 }
 
 extension on Library {

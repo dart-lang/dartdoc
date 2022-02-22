@@ -13,14 +13,7 @@
 
 {{#hasModifiers}}
 {{ >super_chain }}
-
-{{#hasPublicInterfaces}}
-**Implemented types**
-
-{{#publicInterfaces}}
-- {{{linkedName}}}
-{{/publicInterfaces}}
-{{/hasPublicInterfaces}}
+{{ >interfaces }}
 
 {{#hasPublicMixedInTypes}}
 **Mixed in types**

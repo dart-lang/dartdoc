@@ -7,7 +7,6 @@ import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/extension_target.dart';
 import 'package:dartdoc/src/model/model.dart';
-import 'package:dartdoc/src/quiver.dart' as quiver;
 
 /// Extension methods
 class Extension extends Container implements EnclosedElement {
@@ -93,12 +92,10 @@ class Extension extends Container implements EnclosedElement {
   }
 
   @override
-  late final List<ModelElement> allModelElements = List.of(
-      quiver.concat<ModelElement>([
-        super.allModelElements!,
-        typeParameters,
-      ]),
-      growable: false);
+  late final List<ModelElement> allModelElements = [
+    ...super.allModelElements,
+    ...typeParameters,
+  ];
 
   @override
   String get filePath => '${library.dirName}/$fileName';

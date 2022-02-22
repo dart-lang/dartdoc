@@ -33,7 +33,7 @@ import 'package:dartdoc/src/special_elements.dart';
 import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:meta/meta.dart';
-import 'package:path/path.dart' as path show Context;
+import 'package:path/path.dart' as p show Context;
 
 // TODO(jcollins-g): Implement resolution per ECMA-408 4th edition, page 39 #22.
 /// Resolves this very rare case incorrectly by picking the closest element in
@@ -186,7 +186,8 @@ abstract class ModelElement extends Canonicalization
         } else if (e.enclosingElement is ExtensionElement) {
           newModelElement = Field(e, library, packageGraph,
               getter as ContainerAccessor?, setter as ContainerAccessor?);
-        } else if (e.enclosingElement is ClassElement &&
+        } // TODO(srawlins): Stop special casing enum fields.
+        else if (e.enclosingElement is ClassElement &&
             (e.enclosingElement as ClassElement).isEnum) {
           newModelElement = EnumField(e, library, packageGraph, getter, setter);
         } else {
@@ -195,6 +196,7 @@ abstract class ModelElement extends Canonicalization
         }
       } else {
         // EnumFields can't be inherited, so this case is simpler.
+        // TODO(srawlins): Correct this? Is this dead?
         newModelElement = Field.inherited(
             e, enclosingContainer, library, packageGraph, getter, setter);
       }
@@ -862,7 +864,7 @@ abstract class ModelElement extends Canonicalization
   }();
 
   @override
-  path.Context get pathContext => packageGraph.resourceProvider.pathContext;
+  p.Context get pathContext => packageGraph.resourceProvider.pathContext;
 
   late final List<Parameter> parameters = () {
     if (!isCallable) {
