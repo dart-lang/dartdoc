@@ -19,7 +19,6 @@ import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/render/category_renderer.dart';
 import 'package:dartdoc/src/render/enum_field_renderer.dart';
-import 'package:dartdoc/src/render/model_element_renderer.dart';
 import 'package:dartdoc/src/render/parameter_renderer.dart';
 import 'package:dartdoc/src/render/typedef_renderer.dart';
 import 'package:dartdoc/src/special_elements.dart';
@@ -1240,7 +1239,6 @@ void main() {
   group('Docs as HTML', () {
     late final Class Apple, B, superAwesomeClass, foo2;
     late final TopLevelVariable incorrectDocReferenceFromEx;
-    late final TopLevelVariable bulletDoced;
     late final ModelFunction thisIsAsync;
     late final ModelFunction topLevelFunction;
 
@@ -1261,8 +1259,6 @@ void main() {
       Apple = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
       specialList =
           fakeLibrary.classes.firstWhere((c) => c.name == 'SpecialList');
-      bulletDoced =
-          fakeLibrary.constants.firstWhere((c) => c.name == 'bulletDoced');
       topLevelFunction =
           fakeLibrary.functions.firstWhere((f) => f.name == 'topLevelFunction');
       thisIsAsync =
@@ -1574,14 +1570,6 @@ void main() {
           contains("['hello from dart']"));
     });
 
-    test('class without additional docs', () {
-      expect(specialList.hasExtendedDocumentation, equals(false));
-    });
-
-    test('class with additional docs', () {
-      expect(Apple.hasExtendedDocumentation, equals(true));
-    });
-
     test('oneLine doc references in inherited methods should not have brackets',
         () {
       var add = specialList.instanceMethods.firstWhere((m) => m.name == 'add');
@@ -1746,14 +1734,6 @@ void main() {
       Iterable<Match> matches =
           RegExp('In the super class').allMatches(powers.documentationAsHtml!);
       expect(matches, hasLength(1));
-    });
-
-    test('bullet points work in top level variables', () {
-      expect(
-          bulletDoced.extendedDocLink,
-          equals(
-              ModelElementRendererHtml().renderExtendedDocLink(bulletDoced)));
-      expect(bulletDoced.documentationAsHtml, contains('<li>'));
     });
   });
 
@@ -3247,7 +3227,6 @@ void main() {
       expect(dog.isConst, isTrue);
       expect(
           dog.constantValue, equals(EnumFieldRendererHtml().renderValue(dog)));
-      expect(dog.extendedDocLink, equals(''));
     });
 
     test('constants have correct indicies', () {
@@ -4034,14 +4013,7 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('has extended documentation', () {
-      expect(lengthX.hasExtendedDocumentation, isTrue);
       expect(lengthX.oneLineDoc, equals('Returns a length.'));
-      // TODO(jdkoren): This is left here to have at least one literal matching
-      // test for extendedDocLink. Move this when extracting renderer tests.
-      expect(
-          lengthX.extendedDocLink,
-          equals(
-              '<a href="${htmlBasePlaceholder}fake/WithGetterAndSetter/lengthX.html">[...]</a>'));
       expect(lengthX.documentation, contains('the fourth dimension'));
       expect(lengthX.documentation, isNot(contains('[...]')));
     });

@@ -17,8 +17,6 @@ abstract class Documentable extends Nameable {
 
   bool get hasDocumentation;
 
-  bool get hasExtendedDocumentation;
-
   String? get oneLineDoc;
 
   PackageGraph get packageGraph;
@@ -67,9 +65,6 @@ mixin MarkdownFileDocumentation implements Documentable, Canonicalization {
 
   @override
   bool get hasDocumentation => documentation.isNotEmpty == true;
-
-  @override
-  bool get hasExtendedDocumentation => documentation.isNotEmpty;
 
   @override
   bool get isDocumented;

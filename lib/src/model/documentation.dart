@@ -14,15 +14,6 @@ class Documentation {
 
   Documentation.forElement(this._element);
 
-  bool? _hasExtendedDocs;
-
-  bool? get hasExtendedDocs {
-    if (_hasExtendedDocs == null) {
-      _renderDocumentation(_element.isCanonical && _asHtml == null);
-    }
-    return _hasExtendedDocs;
-  }
-
   String? _asHtml;
 
   String? get asHtml {
@@ -47,12 +38,8 @@ class Documentation {
 
   void _renderDocumentation(bool processFullDocs) {
     var parseResult = _parseDocumentation(processFullDocs);
-    if (_hasExtendedDocs != null) {
-      assert(_hasExtendedDocs == parseResult.hasExtendedDocs);
-    }
-    _hasExtendedDocs = parseResult.hasExtendedDocs;
 
-    var renderResult = _renderer.render(parseResult.nodes,
+    var renderResult = _renderer.render(parseResult,
         processFullDocs: processFullDocs,
         sanitizeHtml: _element.config.sanitizeHtml);
 
@@ -62,13 +49,10 @@ class Documentation {
     _asOneLiner ??= renderResult.asOneLiner;
   }
 
-  /// Parses the documentation, collecting the first [md.Node] or all of them
-  /// if [processFullDocs] is `true`. If more than one node is present,
-  /// then [DocumentationParseResult.hasExtendedDocs] will be set to `true`.
-  DocumentationParseResult _parseDocumentation(bool processFullDocs) {
+  List<md.Node> _parseDocumentation(bool processFullDocs) {
     final text = _element.documentation;
     if (text == null || text.isEmpty) {
-      return DocumentationParseResult.empty;
+      return const [];
     }
     showWarningsForGenericsOutsideSquareBracketsBlocks(
         text, _element as Warnable);
