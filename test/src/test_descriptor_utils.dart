@@ -2,6 +2,9 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'dart:convert';
+
+import 'package:analyzer/file_system/memory_file_system.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
 import 'package:yaml/yaml.dart' as yaml;
 
@@ -15,13 +18,18 @@ environment:
 ''';
 
 /// Creates a pub package in a directory named [name].
-Future<d.DirectoryDescriptor> createPackage(
+///
+/// If [resourceProvider] is given, then the pub package is created in the file
+/// system provided by [resourceProvider]; otherwise it is created in the
+/// physical file system, under [d.sandbox].
+Future<String> createPackage(
   String name, {
   String pubspec = _defaultPubspec,
   String? dartdocOptions,
   String? analysisOptions,
   List<d.Descriptor> libFiles = const [],
   List<d.Descriptor> files = const [],
+  MemoryResourceProvider? resourceProvider,
 }) async {
   final parsedYaml = yaml.loadYaml(pubspec) as Map;
   final packageName = parsedYaml['name'];
@@ -74,6 +82,49 @@ Future<d.DirectoryDescriptor> createPackage(
       ],
     ),
   ]);
-  await packageDir.create();
-  return packageDir;
+  if (resourceProvider == null) {
+    await packageDir.create();
+    return packageDir.io.path;
+  } else {
+    return await packageDir.createInMemory(resourceProvider);
+  }
+}
+
+extension DescriptorExtensions on d.Descriptor {
+  Future<String> createInMemory(MemoryResourceProvider resourceProvider,
+      [String? parent]) {
+    var self = this;
+    if (self is d.DirectoryDescriptor) {
+      return self.createInMemory(resourceProvider, parent);
+    } else if (self is d.FileDescriptor) {
+      return self.createInMemory(resourceProvider, parent!);
+    } else {
+      throw StateError(
+          '$runtimeType is not a DirectoryDescriptor, nor a FileDescriptor!');
+    }
+  }
+}
+
+extension on d.DirectoryDescriptor {
+  Future<String> createInMemory(MemoryResourceProvider resourceProvider,
+      [String? parent]) async {
+    parent ??= '/temp';
+    resourceProvider.newFolder(parent).create();
+    var fullPath = resourceProvider.pathContext.join(parent, name);
+    resourceProvider.newFolder(fullPath).create();
+    for (var e in contents) {
+      await e.createInMemory(resourceProvider, fullPath);
+    }
+    return fullPath;
+  }
+}
+
+extension on d.FileDescriptor {
+  Future<String> createInMemory(
+      MemoryResourceProvider resourceProvider, String parent) async {
+    var content = await readAsBytes().transform(utf8.decoder).join('');
+    var fullPath = resourceProvider.pathContext.join(parent, name);
+    resourceProvider.newFile(fullPath, content);
+    return fullPath;
+  }
 }

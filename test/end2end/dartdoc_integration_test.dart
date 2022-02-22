@@ -40,8 +40,8 @@ Future<TestProcess> runDartdoc(
 
 void main() {
   test('invoking dartdoc on an empty package does not crash', () async {
-    var packageDir = await d.createPackage('empty');
-    var process = await runDartdoc([], workingDirectory: packageDir.io.path);
+    var packagePath = await d.createPackage('empty');
+    var process = await runDartdoc([], workingDirectory: packagePath);
     await expectLater(
       process.stderr,
       emitsThrough(
@@ -51,10 +51,10 @@ void main() {
   });
 
   group('invoking dartdoc on a basic package', () {
-    late d.DirectoryDescriptor packageDir;
+    late String packagePath;
 
     setUp(() async {
-      packageDir = await d.createPackage('test_package', libFiles: [
+      packagePath = await d.createPackage('test_package', libFiles: [
         d.file('lib.dart', '/// [dead] reference\nclass C {}'),
       ]);
     });
@@ -63,25 +63,25 @@ void main() {
         () async {
       var process = await runDartdoc(
         ['--no-generate-docs'],
-        workingDirectory: packageDir.io.path,
+        workingDirectory: packagePath,
       );
       await expectLater(
           process.stderr, emitsThrough('Found 1 warning and 0 errors.'));
       await process.shouldExit(0);
-      var docs = Directory(p.join(packageDir.io.path, 'doc', 'api'));
+      var docs = Directory(p.join(packagePath, 'doc', 'api'));
       expect(docs.listSync(recursive: true), isEmpty);
     }, timeout: Timeout.factor(2));
 
     test('with --quiet is quiet and does generate docs', () async {
       var process = await runDartdoc(
         ['--quiet'],
-        workingDirectory: packageDir.io.path,
+        workingDirectory: packagePath,
       );
       await expectLater(process.stderr, emitsThrough(matches('^  warning:')));
       await expectLater(
           process.stderr, emitsThrough('Found 1 warning and 0 errors.'));
       await process.shouldExit(0);
-      var indexHtml = Directory(p.join(packageDir.io.path, 'doc', 'api'));
+      var indexHtml = Directory(p.join(packagePath, 'doc', 'api'));
       expect(indexHtml.listSync(), isNotEmpty);
     }, timeout: Timeout.factor(2));
 
@@ -89,7 +89,7 @@ void main() {
         () async {
       var process = await runDartdoc(
         ['--nonexisting'],
-        workingDirectory: packageDir.io.path,
+        workingDirectory: packagePath,
       );
       await expectLater(
           process.stderr,
@@ -101,9 +101,9 @@ void main() {
     test('missing a required file path prints a fatal error', () async {
       var process = await runDartdoc(
         ['--input', 'non-existant'],
-        workingDirectory: packageDir.io.path,
+        workingDirectory: packagePath,
       );
-      var fullPath = p.canonicalize(p.join(packageDir.io.path, 'non-existant'));
+      var fullPath = p.canonicalize(p.join(packagePath, 'non-existant'));
       await expectLater(
         process.stderr,
         emitsThrough(
@@ -116,7 +116,7 @@ void main() {
     test('with --help prints command line args', () async {
       var process = await runDartdoc(
         ['--help'],
-        workingDirectory: packageDir.io.path,
+        workingDirectory: packagePath,
       );
       await expectLater(process.stdout,
           emitsThrough('Generate HTML documentation for Dart libraries.'));
@@ -128,7 +128,7 @@ void main() {
     test('Validate --version works', () async {
       var process = await runDartdoc(
         ['--version'],
-        workingDirectory: packageDir.io.path,
+        workingDirectory: packagePath,
       );
       var dartdocMeta = pubPackageMetaProvider.fromFilename(_dartdocPath)!;
       await expectLater(process.stdout,
@@ -143,7 +143,7 @@ void main() {
           '--no-include-source',
           '--json',
         ],
-        workingDirectory: packageDir.io.path,
+        workingDirectory: packagePath,
       );
       await expectLater(
           process.stdout,
@@ -155,7 +155,7 @@ void main() {
 
   test('with tool errors cause non-zero exit when warnings are off', () async {
     // TODO(srawlins): Remove test_package_tool_error and generate afresh.
-    var packageDir = await d.createPackage('test_package');
+    var packagePath = await d.createPackage('test_package');
     var tempDir = p.join(
         Directory.systemTemp
             .createTempSync('dartdoc_integration_test.')
@@ -168,7 +168,7 @@ void main() {
         '--input=${testPackageToolError.path}',
         '--output=$tempDir',
       ],
-      workingDirectory: packageDir.io.path,
+      workingDirectory: packagePath,
     );
     await process.shouldExit(1);
   });
