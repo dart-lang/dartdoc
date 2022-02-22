@@ -1,5 +1,5 @@
 ##### {{{ linkedName }}}
 {{#isDocumented}}
-{{{ oneLineDoc }}} {{{ extendedDocLink }}}
+{{{ oneLineDoc }}}
 
 {{/isDocumented}}

@@ -428,8 +428,6 @@ String _renderCategory_partial_library_2(_i3.Library context2) {
 <dd>''');
   if (context2.isDocumented == true) {
     buffer.write(context2.oneLineDoc);
-    buffer.write(' ');
-    buffer.write(context2.extendedDocLink);
   }
   buffer.writeln();
   buffer.write('''
@@ -475,8 +473,6 @@ String _renderCategory_partial_container_3(_i4.Container context2) {
 <dd>
   ''');
   buffer.write(context2.oneLineDoc);
-  buffer.write(' ');
-  buffer.write(context2.extendedDocLink);
   buffer.writeln();
   buffer.write('''
 </dd>
@@ -524,8 +520,6 @@ String _renderCategory_partial_constant_4(_i5.TopLevelVariable context2) {
 <dd>
   ''');
   buffer.write(context2.oneLineDoc);
-  buffer.write(' ');
-  buffer.write(context2.extendedDocLink);
   buffer.write('\n  ');
   buffer
       .write(__renderCategory_partial_constant_4_partial_features_1(context2));
@@ -599,8 +593,6 @@ String _renderCategory_partial_property_5(_i5.TopLevelVariable context2) {
   buffer.write('''>
   ''');
   buffer.write(context2.oneLineDoc);
-  buffer.write(' ');
-  buffer.write(context2.extendedDocLink);
   buffer.write('\n  ');
   buffer
       .write(__renderCategory_partial_property_5_partial_features_1(context2));
@@ -677,8 +669,6 @@ String _renderCategory_partial_callable_6(_i6.ModelFunctionTyped context2) {
   buffer.write('''>
   ''');
   buffer.write(context2.oneLineDoc);
-  buffer.write(' ');
-  buffer.write(context2.extendedDocLink);
   buffer.write('\n  ');
   buffer
       .write(__renderCategory_partial_callable_6_partial_features_1(context2));
@@ -757,8 +747,6 @@ String _renderCategory_partial_typedef_7(_i7.Typedef context2) {
     buffer.write('''>
     ''');
     buffer.write(context4.oneLineDoc);
-    buffer.write(' ');
-    buffer.write(context4.extendedDocLink);
     buffer.write('\n    ');
     buffer
         .write(__renderCategory_partial_typedef_7_partial_features_1(context4));
@@ -841,8 +829,6 @@ String __renderCategory_partial_typedef_7_partial_type_2(_i7.Typedef context2) {
   buffer.write('''>
   ''');
   buffer.write(context2.oneLineDoc);
-  buffer.write(' ');
-  buffer.write(context2.extendedDocLink);
   buffer.write('\n  ');
   buffer.write(
       ___renderCategory_partial_typedef_7_partial_type_2_partial_features_1(
@@ -1369,8 +1355,6 @@ String renderClass(_i1.ClassTemplateData context0) {
         <dd>
           ''');
       buffer.write(context12.oneLineDoc);
-      buffer.write(' ');
-      buffer.write(context12.extendedDocLink);
       if (context12.isConst == true) {
         buffer.writeln();
         buffer.write('''
@@ -1839,8 +1823,6 @@ String _renderClass_partial_property_7(_i9.Field context2) {
   buffer.write('''>
   ''');
   buffer.write(context2.oneLineDoc);
-  buffer.write(' ');
-  buffer.write(context2.extendedDocLink);
   buffer.write('\n  ');
   buffer.write(__renderClass_partial_property_7_partial_features_1(context2));
   buffer.writeln();
@@ -1915,8 +1897,6 @@ String _renderClass_partial_callable_8(_i10.Method context2) {
   buffer.write('''>
   ''');
   buffer.write(context2.oneLineDoc);
-  buffer.write(' ');
-  buffer.write(context2.extendedDocLink);
   buffer.write('\n  ');
   buffer.write(__renderClass_partial_callable_8_partial_features_1(context2));
   buffer.writeln();
@@ -1979,8 +1959,6 @@ String _renderClass_partial_constant_9(_i9.Field context2) {
 <dd>
   ''');
   buffer.write(context2.oneLineDoc);
-  buffer.write(' ');
-  buffer.write(context2.extendedDocLink);
   buffer.write('\n  ');
   buffer.write(__renderClass_partial_constant_9_partial_features_1(context2));
   buffer.writeln();
@@ -3066,8 +3044,6 @@ String _renderEnum_partial_constant_7(_i9.Field context2) {
 <dd>
   ''');
   buffer.write(context2.oneLineDoc);
-  buffer.write(' ');
-  buffer.write(context2.extendedDocLink);
   buffer.write('\n  ');
   buffer.write(__renderEnum_partial_constant_7_partial_features_1(context2));
   buffer.writeln();
@@ -3139,8 +3115,6 @@ String _renderEnum_partial_property_8(_i9.Field context2) {
   buffer.write('''>
   ''');
   buffer.write(context2.oneLineDoc);
-  buffer.write(' ');
-  buffer.write(context2.extendedDocLink);
   buffer.write('\n  ');
   buffer.write(__renderEnum_partial_property_8_partial_features_1(context2));
   buffer.writeln();
@@ -3215,8 +3189,6 @@ String _renderEnum_partial_callable_9(_i10.Method context2) {
   buffer.write('''>
   ''');
   buffer.write(context2.oneLineDoc);
-  buffer.write(' ');
-  buffer.write(context2.extendedDocLink);
   buffer.write('\n  ');
   buffer.write(__renderEnum_partial_callable_9_partial_features_1(context2));
   buffer.writeln();
@@ -4154,8 +4126,6 @@ String _renderExtension_partial_property_5(_i9.Field context2) {
   buffer.write('''>
   ''');
   buffer.write(context2.oneLineDoc);
-  buffer.write(' ');
-  buffer.write(context2.extendedDocLink);
   buffer.write('\n  ');
   buffer
       .write(__renderExtension_partial_property_5_partial_features_1(context2));
@@ -4232,8 +4202,6 @@ String _renderExtension_partial_callable_6(_i10.Method context2) {
   buffer.write('''>
   ''');
   buffer.write(context2.oneLineDoc);
-  buffer.write(' ');
-  buffer.write(context2.extendedDocLink);
   buffer.write('\n  ');
   buffer
       .write(__renderExtension_partial_callable_6_partial_features_1(context2));
@@ -4297,8 +4265,6 @@ String _renderExtension_partial_constant_7(_i9.Field context2) {
 <dd>
   ''');
   buffer.write(context2.oneLineDoc);
-  buffer.write(' ');
-  buffer.write(context2.extendedDocLink);
   buffer.write('\n  ');
   buffer
       .write(__renderExtension_partial_constant_7_partial_features_1(context2));
@@ -5180,8 +5146,6 @@ String _renderIndex_partial_library_2(_i3.Library context3) {
 <dd>''');
   if (context3.isDocumented == true) {
     buffer.write(context3.oneLineDoc);
-    buffer.write(' ');
-    buffer.write(context3.extendedDocLink);
   }
   buffer.writeln();
   buffer.write('''
@@ -5853,8 +5817,6 @@ String _renderLibrary_partial_container_5(_i4.Container context3) {
 <dd>
   ''');
   buffer.write(context3.oneLineDoc);
-  buffer.write(' ');
-  buffer.write(context3.extendedDocLink);
   buffer.writeln();
   buffer.write('''
 </dd>
@@ -5898,8 +5860,6 @@ String _renderLibrary_partial_extension_6(_i13.Extension context3) {
 <dd>
     ''');
   buffer.write(context3.oneLineDoc);
-  buffer.write(' ');
-  buffer.write(context3.extendedDocLink);
   buffer.writeln();
   buffer.write('''
 </dd>
@@ -5948,8 +5908,6 @@ String _renderLibrary_partial_constant_7(_i5.TopLevelVariable context3) {
 <dd>
   ''');
   buffer.write(context3.oneLineDoc);
-  buffer.write(' ');
-  buffer.write(context3.extendedDocLink);
   buffer.write('\n  ');
   buffer.write(__renderLibrary_partial_constant_7_partial_features_1(context3));
   buffer.writeln();
@@ -6022,8 +5980,6 @@ String _renderLibrary_partial_property_8(_i5.TopLevelVariable context3) {
   buffer.write('''>
   ''');
   buffer.write(context3.oneLineDoc);
-  buffer.write(' ');
-  buffer.write(context3.extendedDocLink);
   buffer.write('\n  ');
   buffer.write(__renderLibrary_partial_property_8_partial_features_1(context3));
   buffer.writeln();
@@ -6099,8 +6055,6 @@ String _renderLibrary_partial_callable_9(_i6.ModelFunctionTyped context3) {
   buffer.write('''>
   ''');
   buffer.write(context3.oneLineDoc);
-  buffer.write(' ');
-  buffer.write(context3.extendedDocLink);
   buffer.write('\n  ');
   buffer.write(__renderLibrary_partial_callable_9_partial_features_1(context3));
   buffer.writeln();
@@ -6178,8 +6132,6 @@ String _renderLibrary_partial_typedef_10(_i7.Typedef context3) {
     buffer.write('''>
     ''');
     buffer.write(context5.oneLineDoc);
-    buffer.write(' ');
-    buffer.write(context5.extendedDocLink);
     buffer.write('\n    ');
     buffer
         .write(__renderLibrary_partial_typedef_10_partial_features_1(context5));
@@ -6262,8 +6214,6 @@ String __renderLibrary_partial_typedef_10_partial_type_2(_i7.Typedef context3) {
   buffer.write('''>
   ''');
   buffer.write(context3.oneLineDoc);
-  buffer.write(' ');
-  buffer.write(context3.extendedDocLink);
   buffer.write('\n  ');
   buffer.write(
       ___renderLibrary_partial_typedef_10_partial_type_2_partial_features_1(
@@ -7478,8 +7428,6 @@ String _renderMixin_partial_property_7(_i9.Field context2) {
   buffer.write('''>
   ''');
   buffer.write(context2.oneLineDoc);
-  buffer.write(' ');
-  buffer.write(context2.extendedDocLink);
   buffer.write('\n  ');
   buffer.write(__renderMixin_partial_property_7_partial_features_1(context2));
   buffer.writeln();
@@ -7554,8 +7502,6 @@ String _renderMixin_partial_callable_8(_i10.Method context2) {
   buffer.write('''>
   ''');
   buffer.write(context2.oneLineDoc);
-  buffer.write(' ');
-  buffer.write(context2.extendedDocLink);
   buffer.write('\n  ');
   buffer.write(__renderMixin_partial_callable_8_partial_features_1(context2));
   buffer.writeln();
@@ -7618,8 +7564,6 @@ String _renderMixin_partial_constant_9(_i9.Field context2) {
 <dd>
   ''');
   buffer.write(context2.oneLineDoc);
-  buffer.write(' ');
-  buffer.write(context2.extendedDocLink);
   buffer.write('\n  ');
   buffer.write(__renderMixin_partial_constant_9_partial_features_1(context2));
   buffer.writeln();
