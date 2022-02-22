@@ -91,6 +91,10 @@ Future<String> createPackage(
 }
 
 extension DescriptorExtensions on d.Descriptor {
+  /// Creates this [d.Descriptor] in the [MemoryResourceProvider].
+  ///
+  /// For a [d.DirectoryDescriptor], the subtree will be created. For a
+  /// [d.FileDescriptor], the file contents will be written.
   Future<String> createInMemory(MemoryResourceProvider resourceProvider,
       [String? parent]) {
     var self = this;

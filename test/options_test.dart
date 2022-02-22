@@ -67,7 +67,7 @@ dartdoc:
         d.dir('static-assets', [d.file('favicon.png', 'Just plain text')]),
       ]),
     ]).validate();
-  }, solo: true);
+  });
 
   test('header option adds content to index.html', () async {
     packagePath = await d.createPackage(
