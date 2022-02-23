@@ -17,7 +17,7 @@ import 'src/utils.dart' as utils;
 void main() async {
   const packageName = 'test_package';
 
-  late d.DirectoryDescriptor packageDir;
+  late String packagePath;
 
   Future<Dartdoc> buildDartdoc({
     List<String> excludeLibraries = const [],
@@ -25,7 +25,7 @@ void main() async {
   }) async {
     final resourceProvider = pubPackageMetaProvider.resourceProvider;
     final dir = resourceProvider
-        .getFolder(resourceProvider.pathContext.absolute(packageDir.io.path));
+        .getFolder(resourceProvider.pathContext.absolute(packagePath));
     final context = await utils.generatorContextFromArgv([
       '--input',
       dir.path,
@@ -51,7 +51,7 @@ void main() async {
   }
 
   test('favicon option copies a favicon file', () async {
-    packageDir = await d.createPackage(
+    packagePath = await d.createPackage(
       packageName,
       dartdocOptions: '''
 dartdoc:
@@ -70,7 +70,7 @@ dartdoc:
   });
 
   test('header option adds content to index.html', () async {
-    packageDir = await d.createPackage(
+    packagePath = await d.createPackage(
       packageName,
       dartdocOptions: '''
 dartdoc:
@@ -91,7 +91,7 @@ dartdoc:
   });
 
   test('footer option adds content to index.html', () async {
-    packageDir = await d.createPackage(
+    packagePath = await d.createPackage(
       packageName,
       dartdocOptions: '''
 dartdoc:
@@ -112,7 +112,7 @@ dartdoc:
   });
 
   test('footerText option adds text to index.html', () async {
-    packageDir = await d.createPackage(
+    packagePath = await d.createPackage(
       packageName,
       dartdocOptions: '''
 dartdoc:
@@ -133,7 +133,7 @@ dartdoc:
   });
 
   test('excludeFooterVersion option does not display version', () async {
-    packageDir = await d.createPackage(
+    packagePath = await d.createPackage(
       packageName,
       dartdocOptions: '''
 dartdoc:
@@ -146,9 +146,8 @@ dartdoc:
     );
     await (await buildDartdoc()).generateDocs();
 
-    final indexContent =
-        io.File(p.joinAll([packageDir.io.path, 'doc', 'index.html']))
-            .readAsStringSync();
+    final indexContent = io.File(p.joinAll([packagePath, 'doc', 'index.html']))
+        .readAsStringSync();
     final footerRegex =
         RegExp(r'<footer>(.*\s*?\n?)+?</footer>', multiLine: true);
     // Get footer, and check for version number.
@@ -161,7 +160,7 @@ dartdoc:
   });
 
   test('examplePathPrefix option finds examples in a custom path', () async {
-    packageDir = await d.createPackage(
+    packagePath = await d.createPackage(
       packageName,
       dartdocOptions: '''
 dartdoc:
@@ -195,7 +194,7 @@ An example in an unusual dir.
 
   test('showUndocumentedCategories option shows undocumented categories',
       () async {
-    packageDir = await d.createPackage(
+    packagePath = await d.createPackage(
       packageName,
       dartdocOptions: '''
 dartdoc:

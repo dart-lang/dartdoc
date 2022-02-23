@@ -133,7 +133,8 @@ PackageConfigProvider getTestPackageConfigProvider(String sdkPath) {
 PackageMetaProvider get testPackageMetaProvider {
   var resourceProvider = MemoryResourceProvider();
   final sdkRoot = resourceProvider.getFolder(
-    resourceProvider.convertPath('/sdk'),
+    resourceProvider.pathContext
+        .canonicalize(resourceProvider.convertPath('/sdk')),
   );
   createMockSdk(
     resourceProvider: resourceProvider,

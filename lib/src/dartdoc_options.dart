@@ -410,7 +410,7 @@ abstract class DartdocOption<T extends Object?> {
   void _validatePaths(_OptionValueWithContext<T> valueWithContext) {
     if (!mustExist) return;
     assert(isDir || isFile);
-    var resolvedPaths = <String>[];
+    List<String> resolvedPaths;
     var value = valueWithContext.value;
     if (value is String) {
       resolvedPaths = [valueWithContext.resolvedValue as String];
@@ -423,6 +423,7 @@ abstract class DartdocOption<T extends Object?> {
           false,
           'Trying to ensure existence of unsupported type '
           '${valueWithContext.value.runtimeType}');
+      return;
     }
     for (var path in resolvedPaths) {
       var f = isDir
