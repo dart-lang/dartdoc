@@ -135,6 +135,7 @@ PackageMetaProvider get testPackageMetaProvider {
   final sdkRoot = resourceProvider.getFolder(
     resourceProvider.convertPath('/sdk'),
   );
+  print('CREATING MOCK SDK AT ${sdkRoot.path}');
   createMockSdk(
     resourceProvider: resourceProvider,
     root: sdkRoot,
