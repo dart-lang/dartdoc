@@ -42,8 +42,8 @@ void main() {
       resourceProvider =
           packageMetaProvider.resourceProvider as MemoryResourceProvider;
       pathContext = resourceProvider.pathContext;
-      packageConfigProvider = utils.getTestPackageConfigProvider(
-          packageMetaProvider.defaultSdkDir.path) as FakePackageConfigProvider;
+      packageConfigProvider = utils
+          .getTestPackageConfigProvider(packageMetaProvider.defaultSdkDir.path);
       for (var template in [
         '_accessor_getter',
         '_accessor_setter',

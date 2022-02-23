@@ -50,8 +50,7 @@ class C {
             packageMetaProvider.resourceProvider as MemoryResourceProvider,
       );
       var packageConfigProvider =
-          getTestPackageConfigProvider(packageMetaProvider.defaultSdkDir.path)
-              as FakePackageConfigProvider;
+          getTestPackageConfigProvider(packageMetaProvider.defaultSdkDir.path);
       packageConfigProvider.addPackageToConfigFor(
           packagePath, libraryName, Uri.file('$packagePath/'));
 

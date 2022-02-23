@@ -710,25 +710,6 @@ class Oops implements Exception {
 @deprecated
 class Doh extends Error {}
 
-/// An `enum` for ROYGBIV constants.
-enum Color {
-  /// Red
-  RED,
-
-  /// Orange
-  ORANGE,
-  YELLOW,
-  GREEN,
-
-  /// Some constants have long docs.
-  ///
-  /// Some constants have long docs.
-  /// Some constants have long docs.
-  BLUE,
-  INDIGO,
-  VIOLET
-}
-
 /// link to method from class [Apple.m]
 class Foo2 {
   final int index;

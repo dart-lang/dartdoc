@@ -41,8 +41,7 @@ void main() {
 
     optionSet = DartdocOptionRoot.fromOptionGenerators(
         'dartdoc', [createDartdocOptions], packageMetaProvider);
-    packageConfigProvider = utils.getTestPackageConfigProvider(sdkFolder.path)
-        as FakePackageConfigProvider;
+    packageConfigProvider = utils.getTestPackageConfigProvider(sdkFolder.path);
   });
 
   tearDown(() {
