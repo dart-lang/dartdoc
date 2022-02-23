@@ -136,7 +136,6 @@ PackageMetaProvider get testPackageMetaProvider {
     resourceProvider.pathContext
         .canonicalize(resourceProvider.convertPath('/sdk')),
   );
-  print('CREATING MOCK SDK AT ${sdkRoot.path}');
   createMockSdk(
     resourceProvider: resourceProvider,
     root: sdkRoot,
