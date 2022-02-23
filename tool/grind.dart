@@ -179,8 +179,8 @@ Map<String, String> _createThrowawayPubCache() {
 @Depends(analyzeTestPackages)
 void analyze() async {
   await SubprocessLauncher('analyze').runStreamed(
-    sdkBin('dartanalyzer'),
-    ['--fatal-infos', '--options', 'analysis_options_presubmit.yaml', '.'],
+    Platform.resolvedExecutable,
+    ['analyze', '--fatal-infos', '.'],
   );
 }
 
