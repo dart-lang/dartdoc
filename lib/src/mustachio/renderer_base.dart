@@ -203,12 +203,13 @@ abstract class RendererBase<T extends Object?> {
       throw MustachioResolutionError(node.keySpan.message(e.message));
     }
 
+    final parent = this.parent;
     if (parent != null) {
-      return parent!.getFields(node);
+      return parent.getFields(node);
     } else {
       throw MustachioResolutionError(node.keySpan.message(
-          "Failed to resolve '${names.first}' as a property on any types in the "
-          'context chain: $contextChainString'));
+          "Failed to resolve '${names.first}' as a property on any types in "
+          'the context chain: $contextChainString'));
     }
   }
 
@@ -236,12 +237,13 @@ abstract class RendererBase<T extends Object?> {
     var key = node.key.first;
     var property = getProperty(key);
     if (property == null) {
+      final parent = this.parent;
       if (parent == null) {
         throw MustachioResolutionError(node.keySpan.message(
             "Failed to resolve '$key' as a property on any types in the "
             'current context'));
       } else {
-        return parent!.section(node);
+        return parent.section(node);
       }
     }
 

@@ -1397,48 +1397,11 @@ String renderClass(_i1.ClassTemplateData context0) {
     </section>''');
   }
   buffer.writeln();
-  if (context2.hasPublicInstanceMethods == true) {
-    buffer.writeln();
-    buffer.write('''
-    <section class="summary offset-anchor''');
-    if (context2.publicInheritedInstanceMethods == true) {
-      buffer.write(''' inherited''');
-    }
-    buffer.write('''" id="instance-methods">
-      <h2>Methods</h2>
-      <dl class="callables">''');
-    var context15 = context2.publicInstanceMethodsSorted;
-    for (var context16 in context15) {
-      buffer.write('\n        ');
-      buffer.write(_renderClass_partial_callable_8(context16));
-    }
-    buffer.writeln();
-    buffer.write('''
-      </dl>
-    </section>''');
-  }
-  buffer.writeln();
-  if (context2.hasPublicInstanceOperators == true) {
-    buffer.writeln();
-    buffer.write('''
-    <section class="summary offset-anchor''');
-    if (context2.publicInheritedInstanceOperators == true) {
-      buffer.write(''' inherited''');
-    }
-    buffer.write('''" id="operators">
-      <h2>Operators</h2>
-      <dl class="callables">''');
-    var context17 = context2.publicInstanceOperatorsSorted;
-    for (var context18 in context17) {
-      buffer.write('\n        ');
-      buffer.write(_renderClass_partial_callable_8(context18));
-    }
-    buffer.writeln();
-    buffer.write('''
-      </dl>
-    </section>''');
-  }
-  buffer.writeln();
+  buffer.write('''
+
+    {{> instance_methods }}
+    {{> instance_operators }}
+''');
   if (context2.hasPublicVariableStaticFields == true) {
     buffer.writeln();
     buffer.write('''
@@ -1446,10 +1409,10 @@ String renderClass(_i1.ClassTemplateData context0) {
       <h2>Static Properties</h2>
 
       <dl class="properties">''');
-    var context19 = context2.publicVariableStaticFieldsSorted;
-    for (var context20 in context19) {
+    var context15 = context2.publicVariableStaticFieldsSorted;
+    for (var context16 in context15) {
       buffer.write('\n        ');
-      buffer.write(_renderClass_partial_property_7(context20));
+      buffer.write(_renderClass_partial_property_7(context16));
     }
     buffer.writeln();
     buffer.write('''
@@ -1463,10 +1426,10 @@ String renderClass(_i1.ClassTemplateData context0) {
     <section class="summary offset-anchor" id="static-methods">
       <h2>Static Methods</h2>
       <dl class="callables">''');
-    var context21 = context2.publicStaticMethodsSorted;
-    for (var context22 in context21) {
+    var context17 = context2.publicStaticMethodsSorted;
+    for (var context18 in context17) {
       buffer.write('\n        ');
-      buffer.write(_renderClass_partial_callable_8(context22));
+      buffer.write(_renderClass_partial_callable_8(context18));
     }
     buffer.writeln();
     buffer.write('''
@@ -1481,10 +1444,10 @@ String renderClass(_i1.ClassTemplateData context0) {
       <h2>Constants</h2>
 
       <dl class="properties">''');
-    var context23 = context2.publicConstantFieldsSorted;
-    for (var context24 in context23) {
+    var context19 = context2.publicConstantFieldsSorted;
+    for (var context20 in context19) {
       buffer.write('\n        ');
-      buffer.write(_renderClass_partial_constant_9(context24));
+      buffer.write(_renderClass_partial_constant_9(context20));
     }
     buffer.writeln();
     buffer.write('''
@@ -3769,40 +3732,11 @@ String renderExtension<T extends _i13.Extension>(
     </section>''');
   }
   buffer.writeln();
-  if (context2.hasPublicInstanceMethods == true) {
-    buffer.writeln();
-    buffer.write('''
-    <section class="summary offset-anchor" id="instance-methods">
-        <h2>Methods</h2>
-        <dl class="callables">''');
-    var context6 = context2.publicInstanceMethodsSorted;
-    for (var context7 in context6) {
-      buffer.write('\n            ');
-      buffer.write(_renderExtension_partial_callable_6(context7));
-    }
-    buffer.writeln();
-    buffer.write('''
-        </dl>
-    </section>''');
-  }
-  buffer.writeln();
-  if (context2.hasPublicInstanceOperators == true) {
-    buffer.writeln();
-    buffer.write('''
-    <section class="summary offset-anchor" id="operators">
-        <h2>Operators</h2>
-        <dl class="callables">''');
-    var context8 = context2.publicInstanceOperatorsSorted;
-    for (var context9 in context8) {
-      buffer.write('\n            ');
-      buffer.write(_renderExtension_partial_callable_6(context9));
-    }
-    buffer.writeln();
-    buffer.write('''
-        </dl>
-    </section>''');
-  }
-  buffer.writeln();
+  buffer.write('''
+
+    {{> instance_methods }}
+    {{> instance_operators }}
+''');
   if (context2.hasPublicVariableStaticFields == true) {
     buffer.writeln();
     buffer.write('''
@@ -3810,10 +3744,10 @@ String renderExtension<T extends _i13.Extension>(
         <h2>Static Properties</h2>
 
         <dl class="properties">''');
-    var context10 = context2.publicVariableStaticFieldsSorted;
-    for (var context11 in context10) {
+    var context6 = context2.publicVariableStaticFieldsSorted;
+    for (var context7 in context6) {
       buffer.write('\n            ');
-      buffer.write(_renderExtension_partial_property_5(context11));
+      buffer.write(_renderExtension_partial_property_5(context7));
     }
     buffer.writeln();
     buffer.write('''
@@ -3827,10 +3761,10 @@ String renderExtension<T extends _i13.Extension>(
     <section class="summary offset-anchor" id="static-methods">
         <h2>Static Methods</h2>
         <dl class="callables">''');
-    var context12 = context2.publicStaticMethodsSorted;
-    for (var context13 in context12) {
+    var context8 = context2.publicStaticMethodsSorted;
+    for (var context9 in context8) {
       buffer.write('\n            ');
-      buffer.write(_renderExtension_partial_callable_6(context13));
+      buffer.write(_renderExtension_partial_callable_6(context9));
     }
     buffer.writeln();
     buffer.write('''
@@ -3845,10 +3779,10 @@ String renderExtension<T extends _i13.Extension>(
         <h2>Constants</h2>
 
         <dl class="properties">''');
-    var context14 = context2.publicConstantFieldsSorted;
-    for (var context15 in context14) {
+    var context10 = context2.publicConstantFieldsSorted;
+    for (var context11 in context10) {
       buffer.write('\n            ');
-      buffer.write(_renderExtension_partial_constant_7(context15));
+      buffer.write(_renderExtension_partial_constant_7(context11));
     }
     buffer.writeln();
     buffer.write('''
@@ -7003,48 +6937,11 @@ String renderMixin(_i1.MixinTemplateData context0) {
     </section>''');
   }
   buffer.writeln();
-  if (context2.hasPublicInstanceMethods == true) {
-    buffer.writeln();
-    buffer.write('''
-    <section class="summary offset-anchor''');
-    if (context2.publicInheritedInstanceMethods == true) {
-      buffer.write(''' inherited''');
-    }
-    buffer.write('''" id="instance-methods">
-      <h2>Methods</h2>
-      <dl class="callables">''');
-    var context11 = context2.publicInstanceMethods;
-    for (var context12 in context11) {
-      buffer.write('\n        ');
-      buffer.write(_renderMixin_partial_callable_8(context12));
-    }
-    buffer.writeln();
-    buffer.write('''
-      </dl>
-    </section>''');
-  }
-  buffer.writeln();
-  if (context2.hasPublicInstanceOperators == true) {
-    buffer.writeln();
-    buffer.write('''
-    <section class="summary offset-anchor''');
-    if (context2.publicInheritedInstanceOperators == true) {
-      buffer.write(''' inherited''');
-    }
-    buffer.write('''" id="operators">
-      <h2>Operators</h2>
-      <dl class="callables">''');
-    var context13 = context2.publicInstanceOperatorsSorted;
-    for (var context14 in context13) {
-      buffer.write('\n        ');
-      buffer.write(_renderMixin_partial_callable_8(context14));
-    }
-    buffer.writeln();
-    buffer.write('''
-      </dl>
-    </section>''');
-  }
-  buffer.writeln();
+  buffer.write('''
+
+    {{> instance_methods }}
+    {{> instance_operators }}
+''');
   if (context2.hasPublicVariableStaticFields == true) {
     buffer.writeln();
     buffer.write('''
@@ -7052,10 +6949,10 @@ String renderMixin(_i1.MixinTemplateData context0) {
       <h2>Static Properties</h2>
 
       <dl class="properties">''');
-    var context15 = context2.publicVariableStaticFieldsSorted;
-    for (var context16 in context15) {
+    var context11 = context2.publicVariableStaticFieldsSorted;
+    for (var context12 in context11) {
       buffer.write('\n        ');
-      buffer.write(_renderMixin_partial_property_7(context16));
+      buffer.write(_renderMixin_partial_property_7(context12));
     }
     buffer.writeln();
     buffer.write('''
@@ -7069,10 +6966,10 @@ String renderMixin(_i1.MixinTemplateData context0) {
     <section class="summary offset-anchor" id="static-methods">
       <h2>Static Methods</h2>
       <dl class="callables">''');
-    var context17 = context2.publicStaticMethods;
-    for (var context18 in context17) {
+    var context13 = context2.publicStaticMethods;
+    for (var context14 in context13) {
       buffer.write('\n        ');
-      buffer.write(_renderMixin_partial_callable_8(context18));
+      buffer.write(_renderMixin_partial_callable_8(context14));
     }
     buffer.writeln();
     buffer.write('''
@@ -7087,10 +6984,10 @@ String renderMixin(_i1.MixinTemplateData context0) {
       <h2>Constants</h2>
 
       <dl class="properties">''');
-    var context19 = context2.publicConstantFieldsSorted;
-    for (var context20 in context19) {
+    var context15 = context2.publicConstantFieldsSorted;
+    for (var context16 in context15) {
       buffer.write('\n        ');
-      buffer.write(_renderMixin_partial_constant_9(context20));
+      buffer.write(_renderMixin_partial_constant_9(context16));
     }
     buffer.writeln();
     buffer.write('''

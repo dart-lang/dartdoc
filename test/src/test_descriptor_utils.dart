@@ -24,13 +24,14 @@ environment:
 /// physical file system, under [d.sandbox].
 Future<String> createPackage(
   String name, {
-  String pubspec = _defaultPubspec,
+  String? pubspec,
   String? dartdocOptions,
   String? analysisOptions,
   List<d.Descriptor> libFiles = const [],
   List<d.Descriptor> files = const [],
   MemoryResourceProvider? resourceProvider,
 }) async {
+  pubspec ??= _defaultPubspec;
   final parsedYaml = yaml.loadYaml(pubspec) as Map;
   final packageName = parsedYaml['name'];
   final versionConstraint = (parsedYaml['environment'] as Map)['sdk'];
