@@ -120,7 +120,7 @@ Future<PackageGraph> bootBasicPackage(
 }
 
 /// Returns a [FakePackageConfigProvider] with an entry for the SDK directory.
-PackageConfigProvider getTestPackageConfigProvider(String sdkPath) {
+FakePackageConfigProvider getTestPackageConfigProvider(String sdkPath) {
   var packageConfigProvider = FakePackageConfigProvider();
   // To build the package graph, we always ask package_config for a
   // [PackageConfig] for the SDK directory. Put a dummy entry in.

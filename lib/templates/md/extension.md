@@ -22,23 +22,9 @@ on {{#extendedType}}{{{linkedName}}}{{/extendedType}}
 {{/publicInstanceFieldsSorted}}
 {{/hasPublicInstanceFields}}
 
-{{#hasPublicInstanceMethods}}
-## Methods
+{{> instance_methods }}
 
-{{#publicInstanceMethodsSorted}}
-{{>callable}}
-
-{{/publicInstanceMethodsSorted}}
-{{/hasPublicInstanceMethods}}
-
-{{#hasPublicInstanceOperators}}
-## Operators
-
-{{#publicInstanceOperatorsSorted}}
-{{>callable}}
-
-{{/publicInstanceOperatorsSorted}}
-{{/hasPublicInstanceOperators}}
+{{ >instance_operators }}
 
 {{#hasPublicVariableStaticFields}}
 ## Static Properties
