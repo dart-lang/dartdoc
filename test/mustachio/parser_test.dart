@@ -234,6 +234,34 @@ void main() {
         spanStart: 13, spanEnd: 25);
   });
 
+  test('parses section with whitespace before delimiter', () {
+    var parser =
+        MustachioParser('Text {{ #key }}Section text{{ /key }}', _filePath);
+    var ast = parser.parse();
+    expect(ast, hasLength(2));
+    _expectText(ast[0], equals('Text '));
+    var section = ast[1] as Section;
+    _expectSection(section, equals(['key']),
+        spanStart: 5, spanEnd: 37, keySpanStart: 9, keySpanEnd: 12);
+    expect(section.children, hasLength(1));
+    _expectText(section.children.single, equals('Section text'),
+        spanStart: 15, spanEnd: 27);
+  });
+
+  test('parses section with whitespace after delimiter', () {
+    var parser =
+        MustachioParser('Text {{# key }}Section text{{/ key }}', _filePath);
+    var ast = parser.parse();
+    expect(ast, hasLength(2));
+    _expectText(ast[0], equals('Text '));
+    var section = ast[1] as Section;
+    _expectSection(section, equals(['key']),
+        spanStart: 5, spanEnd: 37, keySpanStart: 9, keySpanEnd: 12);
+    expect(section.children, hasLength(1));
+    _expectText(section.children.single, equals('Section text'),
+        spanStart: 15, spanEnd: 27);
+  });
+
   test('parses empty section', () {
     var parser = MustachioParser('Text {{#key}}{{/key}}', _filePath);
     var ast = parser.parse();
@@ -381,6 +409,38 @@ void main() {
     _expectText(section.children[0], equals(' AA '));
   });
 
+  test('parses inverted section with whitespace before delimiter', () {
+    var parser = MustachioParser('Text {{ ^key }} AA {{ /key }}', _filePath);
+    var ast = parser.parse();
+    expect(ast, hasLength(2));
+    _expectText(ast[0], equals('Text '));
+    var section = ast[1] as Section;
+    _expectSection(section, equals(['key']),
+        invert: true,
+        spanStart: 5,
+        spanEnd: 29,
+        keySpanStart: 9,
+        keySpanEnd: 12);
+    expect(section.children, hasLength(1));
+    _expectText(section.children[0], equals(' AA '));
+  });
+
+  test('parses inverted section with whitespace after delimiter', () {
+    var parser = MustachioParser('Text {{^ key }} AA {{/ key }}', _filePath);
+    var ast = parser.parse();
+    expect(ast, hasLength(2));
+    _expectText(ast[0], equals('Text '));
+    var section = ast[1] as Section;
+    _expectSection(section, equals(['key']),
+        invert: true,
+        spanStart: 5,
+        spanEnd: 29,
+        keySpanStart: 9,
+        keySpanEnd: 12);
+    expect(section.children, hasLength(1));
+    _expectText(section.children[0], equals(' AA '));
+  });
+
   test('parses section with empty key as text', () {
     var parser = MustachioParser('Text {{^}}{{/key}}', _filePath);
     var ast = parser.parse();
@@ -389,7 +449,25 @@ void main() {
   });
 
   test('parses partial', () {
+    var parser = MustachioParser('Text {{>partial}}', _filePath);
+    var ast = parser.parse();
+    expect(ast, hasLength(2));
+    _expectText(ast[0], equals('Text '));
+    _expectPartial(ast[1], equals('partial'),
+        spanStart: 5, spanEnd: 17, keySpanStart: 8, keySpanEnd: 15);
+  });
+
+  test('parses partial with whitespace before delimiter', () {
     var parser = MustachioParser('Text {{ >partial }}', _filePath);
+    var ast = parser.parse();
+    expect(ast, hasLength(2));
+    _expectText(ast[0], equals('Text '));
+    _expectPartial(ast[1], equals('partial'),
+        spanStart: 5, spanEnd: 19, keySpanStart: 9, keySpanEnd: 16);
+  });
+
+  test('parses partial with whitespace after delimiter', () {
+    var parser = MustachioParser('Text {{> partial }}', _filePath);
     var ast = parser.parse();
     expect(ast, hasLength(2));
     _expectText(ast[0], equals('Text '));
