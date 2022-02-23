@@ -112,7 +112,8 @@ extension DescriptorExtensions on d.Descriptor {
 extension on d.DirectoryDescriptor {
   Future<String> createInMemory(MemoryResourceProvider resourceProvider,
       [String? parent]) async {
-    parent ??= resourceProvider.convertPath('/temp');
+    parent ??= resourceProvider.pathContext
+        .canonicalize(resourceProvider.convertPath('/temp'));
     resourceProvider.newFolder(parent).create();
     var fullPath = resourceProvider.pathContext.join(parent, name);
     resourceProvider.newFolder(fullPath).create();
