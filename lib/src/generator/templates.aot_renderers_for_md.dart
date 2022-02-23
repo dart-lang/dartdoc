@@ -21,10 +21,10 @@ import 'package:dartdoc/src/model/enum.dart' as _i13;
 import 'package:dartdoc/src/model/extension.dart' as _i14;
 import 'package:dartdoc/src/model/field.dart' as _i9;
 import 'package:dartdoc/src/model/library.dart' as _i3;
-import 'package:dartdoc/src/model/method.dart' as _i11;
+import 'package:dartdoc/src/model/method.dart' as _i10;
 import 'package:dartdoc/src/model/mixin.dart' as _i16;
 import 'package:dartdoc/src/model/model_function.dart' as _i6;
-import 'package:dartdoc/src/model/operator.dart' as _i10;
+import 'package:dartdoc/src/model/operator.dart' as _i11;
 import 'package:dartdoc/src/model/package.dart' as _i15;
 import 'package:dartdoc/src/model/top_level_variable.dart' as _i5;
 import 'package:dartdoc/src/model/typedef.dart' as _i7;
@@ -642,7 +642,7 @@ String renderClass(_i1.ClassTemplateData context0) {
     }
   }
   buffer.write('\n\n');
-  buffer.write(_renderClass_partial_instance_methods_8());
+  buffer.write(_renderClass_partial_instance_methods_8(context2));
   buffer.write('\n\n');
   buffer.write(_renderClass_partial_instance_operators_9(context2));
   buffer.writeln();
@@ -851,16 +851,80 @@ String __renderClass_partial_property_7_partial_features_1(_i9.Field context2) {
   return buffer.toString();
 }
 
-String _renderClass_partial_instance_methods_8() {
+String _renderClass_partial_instance_methods_8(_i8.Class context1) {
   final buffer = StringBuffer();
-  buffer.write('''{{# hasPublicInstanceMethods }}
+  if (context1.hasPublicInstanceMethods == true) {
+    buffer.writeln();
+    buffer.write('''
 ## Methods
+''');
+    var context4 = context1.publicInstanceMethodsSorted;
+    for (var context5 in context4) {
+      buffer.writeln();
+      buffer.write(__renderClass_partial_instance_methods_8_partial_callable_0(
+          context5));
+      buffer.writeln();
+    }
+  }
 
-{{# publicInstanceMethodsSorted }}
-{{> callable }}
+  return buffer.toString();
+}
 
-{{/ publicInstanceMethodsSorted }}
-{{/ hasPublicInstanceMethods }}''');
+String __renderClass_partial_instance_methods_8_partial_callable_0(
+    _i10.Method context2) {
+  final buffer = StringBuffer();
+  buffer.write('''##### ''');
+  buffer.write(context2.linkedName);
+  buffer.write(context2.linkedGenericParameters);
+  buffer.write('''(''');
+  buffer.write(context2.linkedParamsNoMetadata);
+  buffer.write(''') ''');
+  buffer.write(context2.modelType.returnType.linkedName);
+  buffer.writeln();
+  buffer.write(
+      ___renderClass_partial_instance_methods_8_partial_callable_0_partial_categorization_0(
+          context2));
+  buffer.write('\n\n');
+  buffer.write(context2.oneLineDoc);
+  buffer.write('  ');
+  buffer.writeln();
+  buffer.write(
+      ___renderClass_partial_instance_methods_8_partial_callable_0_partial_features_1(
+          context2));
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
+String
+    ___renderClass_partial_instance_methods_8_partial_callable_0_partial_categorization_0(
+        _i10.Method context2) {
+  final buffer = StringBuffer();
+  if (context2.hasCategoryNames == true) {
+    buffer.writeln();
+    buffer.write('''
+Categories:''');
+    var context9 = context2.displayedCategories;
+    for (var context10 in context9) {
+      buffer.writeln();
+      buffer.write(context10!.categoryLabel);
+    }
+  }
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
+String
+    ___renderClass_partial_instance_methods_8_partial_callable_0_partial_features_1(
+        _i10.Method context2) {
+  final buffer = StringBuffer();
+  if (context2.hasFeatures == true) {
+    buffer.write('''_''');
+    buffer.write(context2.featuresAsString);
+    buffer.write('''_''');
+  }
+  buffer.writeln();
 
   return buffer.toString();
 }
@@ -886,7 +950,7 @@ String _renderClass_partial_instance_operators_9(_i8.Class context1) {
 }
 
 String __renderClass_partial_instance_operators_9_partial_callable_0(
-    _i10.Operator context2) {
+    _i11.Operator context2) {
   final buffer = StringBuffer();
   buffer.write('''##### ''');
   buffer.write(context2.linkedName);
@@ -913,7 +977,7 @@ String __renderClass_partial_instance_operators_9_partial_callable_0(
 
 String
     ___renderClass_partial_instance_operators_9_partial_callable_0_partial_categorization_0(
-        _i10.Operator context2) {
+        _i11.Operator context2) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
     buffer.writeln();
@@ -932,7 +996,7 @@ Categories:''');
 
 String
     ___renderClass_partial_instance_operators_9_partial_callable_0_partial_features_1(
-        _i10.Operator context2) {
+        _i11.Operator context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
     buffer.write('''_''');
@@ -944,7 +1008,7 @@ String
   return buffer.toString();
 }
 
-String _renderClass_partial_callable_10(_i11.Method context2) {
+String _renderClass_partial_callable_10(_i10.Method context2) {
   final buffer = StringBuffer();
   buffer.write('''##### ''');
   buffer.write(context2.linkedName);
@@ -967,7 +1031,7 @@ String _renderClass_partial_callable_10(_i11.Method context2) {
 }
 
 String __renderClass_partial_callable_10_partial_categorization_0(
-    _i11.Method context2) {
+    _i10.Method context2) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
     buffer.writeln();
@@ -985,7 +1049,7 @@ Categories:''');
 }
 
 String __renderClass_partial_callable_10_partial_features_1(
-    _i11.Method context2) {
+    _i10.Method context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
     buffer.write('''_''');
@@ -1503,7 +1567,7 @@ String __renderEnum_partial_property_7_partial_features_1(_i9.Field context2) {
   return buffer.toString();
 }
 
-String _renderEnum_partial_callable_8(_i11.Method context2) {
+String _renderEnum_partial_callable_8(_i10.Method context2) {
   final buffer = StringBuffer();
   buffer.write('''##### ''');
   buffer.write(context2.linkedName);
@@ -1526,7 +1590,7 @@ String _renderEnum_partial_callable_8(_i11.Method context2) {
 }
 
 String __renderEnum_partial_callable_8_partial_categorization_0(
-    _i11.Method context2) {
+    _i10.Method context2) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
     buffer.writeln();
@@ -1544,7 +1608,7 @@ Categories:''');
 }
 
 String __renderEnum_partial_callable_8_partial_features_1(
-    _i11.Method context2) {
+    _i10.Method context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
     buffer.write('''_''');
@@ -1812,7 +1876,7 @@ String _renderExtension_partial_instance_operators_6(_i14.Extension context1) {
 }
 
 String __renderExtension_partial_instance_operators_6_partial_callable_0(
-    _i10.Operator context2) {
+    _i11.Operator context2) {
   final buffer = StringBuffer();
   buffer.write('''##### ''');
   buffer.write(context2.linkedName);
@@ -1839,7 +1903,7 @@ String __renderExtension_partial_instance_operators_6_partial_callable_0(
 
 String
     ___renderExtension_partial_instance_operators_6_partial_callable_0_partial_categorization_0(
-        _i10.Operator context2) {
+        _i11.Operator context2) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
     buffer.writeln();
@@ -1858,7 +1922,7 @@ Categories:''');
 
 String
     ___renderExtension_partial_instance_operators_6_partial_callable_0_partial_features_1(
-        _i10.Operator context2) {
+        _i11.Operator context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
     buffer.write('''_''');
@@ -1870,7 +1934,7 @@ String
   return buffer.toString();
 }
 
-String _renderExtension_partial_callable_7(_i11.Method context2) {
+String _renderExtension_partial_callable_7(_i10.Method context2) {
   final buffer = StringBuffer();
   buffer.write('''##### ''');
   buffer.write(context2.linkedName);
@@ -1894,7 +1958,7 @@ String _renderExtension_partial_callable_7(_i11.Method context2) {
 }
 
 String __renderExtension_partial_callable_7_partial_categorization_0(
-    _i11.Method context2) {
+    _i10.Method context2) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
     buffer.writeln();
@@ -1912,7 +1976,7 @@ Categories:''');
 }
 
 String __renderExtension_partial_callable_7_partial_features_1(
-    _i11.Method context2) {
+    _i10.Method context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
     buffer.write('''_''');
@@ -2877,7 +2941,7 @@ String _renderMethod_partial_head_0(_i1.MethodTemplateData context0) {
   return buffer.toString();
 }
 
-String _renderMethod_partial_source_link_1(_i11.Method context1) {
+String _renderMethod_partial_source_link_1(_i10.Method context1) {
   final buffer = StringBuffer();
   if (context1.hasSourceHref == true) {
     buffer.writeln();
@@ -2891,7 +2955,7 @@ String _renderMethod_partial_source_link_1(_i11.Method context1) {
   return buffer.toString();
 }
 
-String _renderMethod_partial_feature_set_2(_i11.Method context1) {
+String _renderMethod_partial_feature_set_2(_i10.Method context1) {
   final buffer = StringBuffer();
   if (context1.hasFeatureSet == true) {
     var context4 = context1.displayedLanguageFeatures;
@@ -2905,7 +2969,7 @@ String _renderMethod_partial_feature_set_2(_i11.Method context1) {
   return buffer.toString();
 }
 
-String _renderMethod_partial_callable_multiline_3(_i11.Method context1) {
+String _renderMethod_partial_callable_multiline_3(_i10.Method context1) {
   final buffer = StringBuffer();
   if (context1.hasAnnotations == true) {
     var context4 = context1.annotations;
@@ -2934,7 +2998,7 @@ String _renderMethod_partial_callable_multiline_3(_i11.Method context1) {
 }
 
 String __renderMethod_partial_callable_multiline_3_partial_name_summary_0(
-    _i11.Method context1) {
+    _i10.Method context1) {
   final buffer = StringBuffer();
   if (context1.isConst == true) {
     buffer.write('''const ''');
@@ -2951,7 +3015,7 @@ String __renderMethod_partial_callable_multiline_3_partial_name_summary_0(
   return buffer.toString();
 }
 
-String _renderMethod_partial_features_4(_i11.Method context1) {
+String _renderMethod_partial_features_4(_i10.Method context1) {
   final buffer = StringBuffer();
   if (context1.hasFeatures == true) {
     buffer.write('''_''');
@@ -2963,7 +3027,7 @@ String _renderMethod_partial_features_4(_i11.Method context1) {
   return buffer.toString();
 }
 
-String _renderMethod_partial_documentation_5(_i11.Method context1) {
+String _renderMethod_partial_documentation_5(_i10.Method context1) {
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
     buffer.writeln();
@@ -2974,7 +3038,7 @@ String _renderMethod_partial_documentation_5(_i11.Method context1) {
   return buffer.toString();
 }
 
-String _renderMethod_partial_source_code_6(_i11.Method context1) {
+String _renderMethod_partial_source_code_6(_i10.Method context1) {
   final buffer = StringBuffer();
   if (context1.hasSourceCode == true) {
     buffer.writeln();
@@ -3320,7 +3384,7 @@ String _renderMixin_partial_instance_operators_8(_i16.Mixin context1) {
 }
 
 String __renderMixin_partial_instance_operators_8_partial_callable_0(
-    _i10.Operator context2) {
+    _i11.Operator context2) {
   final buffer = StringBuffer();
   buffer.write('''##### ''');
   buffer.write(context2.linkedName);
@@ -3347,7 +3411,7 @@ String __renderMixin_partial_instance_operators_8_partial_callable_0(
 
 String
     ___renderMixin_partial_instance_operators_8_partial_callable_0_partial_categorization_0(
-        _i10.Operator context2) {
+        _i11.Operator context2) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
     buffer.writeln();
@@ -3366,7 +3430,7 @@ Categories:''');
 
 String
     ___renderMixin_partial_instance_operators_8_partial_callable_0_partial_features_1(
-        _i10.Operator context2) {
+        _i11.Operator context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
     buffer.write('''_''');
@@ -3378,7 +3442,7 @@ String
   return buffer.toString();
 }
 
-String _renderMixin_partial_callable_9(_i11.Method context2) {
+String _renderMixin_partial_callable_9(_i10.Method context2) {
   final buffer = StringBuffer();
   buffer.write('''##### ''');
   buffer.write(context2.linkedName);
@@ -3401,7 +3465,7 @@ String _renderMixin_partial_callable_9(_i11.Method context2) {
 }
 
 String __renderMixin_partial_callable_9_partial_categorization_0(
-    _i11.Method context2) {
+    _i10.Method context2) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
     buffer.writeln();
@@ -3419,7 +3483,7 @@ Categories:''');
 }
 
 String __renderMixin_partial_callable_9_partial_features_1(
-    _i11.Method context2) {
+    _i10.Method context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
     buffer.write('''_''');
