@@ -180,7 +180,7 @@ enum E<T> implements C<T> { one, two, three; }
 enum E {
   one, two, three;
 
-  /// Doc comment for [method1].
+  /// Doc comment.
   int method1(String p) => 7;
 }
 ''');
@@ -195,7 +195,7 @@ enum E {
         method1.linkedName,
         '<a href="$linkPrefix/E/method1.html">method1</a>',
       );
-      expect(method1.documentationComment, '/// Doc comment for [method1].');
+      expect(method1.documentationComment, '/// Doc comment.');
     });
 
     test('a generic enum is presented with linked interfaces', () async {
