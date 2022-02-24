@@ -276,9 +276,9 @@ class C3
 '''),
       ],
       files: [
-        d.file('One.md', ''),
-        d.file('Two.md', ''),
-        d.file('Three.md', ''),
+        d.file('one.md', ''),
+        d.file('two.md', ''),
+        d.file('three.md', ''),
       ],
       resourceProvider: resourceProvider,
     );
@@ -325,10 +325,10 @@ class C4
 '''),
       ],
       files: [
-        d.file('One.md', ''),
-        d.file('Two.md', ''),
-        d.file('Three.md', ''),
-        d.file('Four.md', ''),
+        d.file('one.md', ''),
+        d.file('two.md', ''),
+        d.file('three.md', ''),
+        d.file('four.md', ''),
       ],
       resourceProvider: resourceProvider,
     );
@@ -360,8 +360,8 @@ class C1
 '''),
       ],
       files: [
-        d.file('One.md', ''),
-        d.file('Two.md', ''),
+        d.file('one.md', ''),
+        d.file('two.md', ''),
       ],
       resourceProvider: resourceProvider,
     );
