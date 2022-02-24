@@ -150,15 +150,19 @@ class MustachioParser {
     var char = _thisChar;
     if (char == $hash) {
       _index++;
+      _walkPastWhitespace();
       return _parseSection(invert: false, tagStartIndex: tagStartIndex);
     } else if (char == $caret) {
       _index++;
+      _walkPastWhitespace();
       return _parseSection(invert: true, tagStartIndex: tagStartIndex);
     } else if (char == $slash) {
       _index++;
+      _walkPastWhitespace();
       return _parseEndSection();
     } else if (char == $gt) {
       _index++;
+      _walkPastWhitespace();
       return _parsePartial(tagStartIndex: tagStartIndex);
     } else if (char == $exclamation) {
       _index++;
