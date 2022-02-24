@@ -6,6 +6,7 @@ import 'package:analyzer/file_system/memory_file_system.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
+import 'package:dartdoc/src/render/enum_field_renderer.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
@@ -62,7 +63,7 @@ $libraryContent
     return packageGraph.libraries.named(libraryName);
   }
 
-  group('enums', () {
+  group('an enum', () {
     const libraryName = 'enums';
     const placeholder = '%%__HTMLBASE_dartdoc_internal__%%';
     const linkPrefix = '$placeholder$libraryName';
@@ -74,14 +75,93 @@ $libraryContent
       await setUpPackage(packageMetaProvider, libraryName);
     });
 
-    test('an enum is presented with a linked name', () async {
+    test('is found on the enclosing library', () async {
+      var library = await bootPackageWithLibrary('enum E { one, two, three }');
+      expect(library.publicEnums, isNotEmpty);
+    });
+
+    test('has a fully qualified names', () async {
+      var library = await bootPackageWithLibrary('enum E { one, two, three }');
+      var eEnum = library.enums.named('E');
+
+      expect(eEnum.fullyQualifiedName, equals('enums.E'));
+    });
+
+    test('is presented with a linked name', () async {
       var library = await bootPackageWithLibrary('enum E { one, two, three }');
       var eEnum = library.enums.named('E');
 
       expect(eEnum.linkedName, equals('<a href="$linkPrefix/E.html">E</a>'));
     });
 
-    test('an enum has annotations', () async {
+    test('has a library as its enclosing element', () async {
+      var library = await bootPackageWithLibrary('enum E { one, two, three }');
+      var eEnum = library.enums.named('E');
+
+      expect(eEnum.enclosingElement!.name, 'enums');
+    });
+
+    test('has the correct number of constants', () async {
+      var library = await bootPackageWithLibrary('enum E { one, two, three }');
+      var eEnum = library.enums.named('E');
+
+      // Three enum values, plus the `values` constant field.
+      expect(eEnum.constantFields, hasLength(4));
+    });
+
+    test("has a (synthetic) 'values' constant", () async {
+      var library = await bootPackageWithLibrary('enum E { one, two, three }');
+      var valuesField =
+          library.enums.named('E').constantFields.named('values') as EnumField;
+      expect(valuesField.constantValue,
+          equals(EnumFieldRendererHtml().renderValue(valuesField)));
+      expect(valuesField.documentation, startsWith('A constant List'));
+    });
+
+    test("has an 'index' getter, which is linked", () async {
+      var library = await bootPackageWithLibrary('enum E { one, two, three }');
+      var eEnum = library.enums.named('E');
+
+      expect(eEnum.instanceFields.map((f) => f.name), contains('index'));
+      expect(
+        eEnum.instanceFields.named('index').linkedName,
+        '<a href="https://api.dart.dev/stable/2.9.0/dart-core/Enum/index.html">index</a>',
+      );
+    });
+
+    test("'toString' is treated specialty", () async {
+      var library = await bootPackageWithLibrary('enum E { one, two, three }');
+      var eEnum = library.enums.named('E');
+      var toStringMethod = eEnum.instanceMethods.named('toString');
+      expect(toStringMethod.characterLocation, isNotNull);
+      expect(toStringMethod.characterLocation.toString(),
+          equals(eEnum.characterLocation.toString()));
+    });
+
+    test('value does not link anywhere', () async {
+      var library = await bootPackageWithLibrary('enum E { one, two, three }');
+      var oneValue =
+          library.enums.named('E').constantFields.named('one') as EnumField;
+      expect(oneValue.linkedName, 'one');
+      expect(oneValue.constantValue,
+          equals(EnumFieldRendererHtml().renderValue(oneValue)));
+    });
+
+    test('values have correct indices', () async {
+      var library = await bootPackageWithLibrary('enum E { one, two, three }');
+      var oneValue =
+          library.enums.named('E').constantFields.named('one') as EnumField;
+      var twoValue =
+          library.enums.named('E').constantFields.named('two') as EnumField;
+      var threeValue =
+          library.enums.named('E').constantFields.named('three') as EnumField;
+
+      expect(oneValue.constantValue, equals('const E(0)'));
+      expect(twoValue.constantValue, equals('const E(1)'));
+      expect(threeValue.constantValue, equals('const E(2)'));
+    });
+
+    test('has annotations', () async {
       var library = await bootPackageWithLibrary('''
 class C {
   const C();
@@ -98,7 +178,7 @@ enum E { one, two, three }
           '<a href="$linkPrefix/C-class.html">C</a>');
     });
 
-    test('an enum has a doc comment', () async {
+    test('has a doc comment', () async {
       var library = await bootPackageWithLibrary('''
 /// Doc comment for [E].
 enum E { one, two, three }
@@ -109,7 +189,7 @@ enum E { one, two, three }
       expect(eEnum.documentationComment, '/// Doc comment for [E].');
     });
 
-    test('an enum value has a doc comment', () async {
+    test('value has a doc comment', () async {
       var library = await bootPackageWithLibrary('''
 enum E {
   /// Doc comment for [E.one].

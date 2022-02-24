@@ -121,19 +121,6 @@ class ExtendedShortName extends ShortName {
   const ExtendedShortName(String aParameter) : super(aParameter);
 }
 
-/// Referencing [processMessage] (or other things) here should not break
-/// enum constants ala #1445
-enum Animal {
-  /// Single line docs.
-  CAT,
-
-  /// Multi line docs.
-  ///
-  /// [Dog] needs lots of docs.
-  DOG,
-  HORSE
-}
-
 /**
  * Sample class [String]
  *

@@ -18,7 +18,6 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/render/category_renderer.dart';
-import 'package:dartdoc/src/render/enum_field_renderer.dart';
 import 'package:dartdoc/src/render/parameter_renderer.dart';
 import 'package:dartdoc/src/render/typedef_renderer.dart';
 import 'package:dartdoc/src/special_elements.dart';
@@ -992,10 +991,6 @@ void main() {
     test('has mixins', () {
       expect(fakeLibrary.hasPublicMixins, isTrue);
       expect(reexportTwoLib.hasPublicMixins, isTrue);
-    });
-
-    test('has enums', () {
-      expect(exLibrary.hasPublicEnums, isTrue);
     });
 
     test('has functions', () {
@@ -3178,87 +3173,6 @@ void main() {
     test('correctly finds all the public extensions', () {
       expect(extensions, hasLength(7));
     });
-  });
-
-  group('Enum', () {
-    late final Enum animal;
-    late final Method animalToString;
-
-    setUpAll(() {
-      animal = exLibrary.enums.firstWhere((e) => e.name == 'Animal');
-      animalToString =
-          animal.instanceMethods.firstWhere((m) => m.name == 'toString');
-
-      /// Trigger code reference resolution
-      animal.documentationAsHtml;
-    });
-
-    test('has a fully qualified name', () {
-      expect(animal.fullyQualifiedName, 'ex.Animal');
-    });
-
-    test('toString() method location is handled specially', () {
-      expect(animalToString.characterLocation, isNotNull);
-      expect(animalToString.characterLocation.toString(),
-          equals(animal.characterLocation.toString()));
-    });
-
-    test('has enclosing element', () {
-      expect(animal.enclosingElement!.name, equals(exLibrary.name));
-    });
-
-    test('has correct number of constants', () {
-      expect(animal.constantFields, hasLength(4));
-    });
-
-    test('has a (synthetic) values constant', () {
-      var valuesField = animal.constantFields
-          .firstWhere((f) => f.name == 'values') as EnumField;
-      expect(valuesField, isNotNull);
-      expect(valuesField.constantValue,
-          equals(EnumFieldRendererHtml().renderValue(valuesField)));
-      expect(valuesField.documentation, startsWith('A constant List'));
-    });
-
-    test('has a constant that does not link anywhere', () {
-      var dog =
-          animal.constantFields.firstWhere((f) => f.name == 'DOG') as EnumField;
-      expect(dog.linkedName, equals('DOG'));
-      expect(dog.isConst, isTrue);
-      expect(
-          dog.constantValue, equals(EnumFieldRendererHtml().renderValue(dog)));
-    });
-
-    test('constants have correct indicies', () {
-      String valueByName(var name) {
-        return animal.constantFields
-            .firstWhere((f) => f.name == name)
-            .constantValue;
-      }
-
-      expect(valueByName('CAT'), equals('const Animal(0)'));
-      expect(valueByName('DOG'), equals('const Animal(1)'));
-      expect(valueByName('HORSE'), equals('const Animal(2)'));
-    });
-
-    test('has a single `index` property', () {
-      var instanceFields = animal.instanceFields.where((f) => !f.isInherited);
-      expect(instanceFields, hasLength(1));
-      expect(instanceFields.first, isNotNull);
-      expect(instanceFields.first.name, equals('index'));
-    },
-        // analyzer 3.3.0 changed behavior here.
-        // TODO(srawlins): Correct this.
-        skip: true);
-
-    test('has a single `index` property that is not linked', () {
-      expect(
-          animal.instanceFields.where((f) => !f.isInherited).first.linkedName,
-          equals('index'));
-    },
-        // analyzer 3.3.0 changed behavior here.
-        // TODO(srawlins): Correct this.
-        skip: true);
   });
 
   group('Function', () {
