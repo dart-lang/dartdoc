@@ -2,11 +2,10 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'dart:io' as io;
-
+import 'package:analyzer/file_system/memory_file_system.dart';
+import 'package:dartdoc/options.dart';
 import 'package:dartdoc/src/dartdoc.dart';
 import 'package:dartdoc/src/model/model.dart';
-import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
@@ -18,35 +17,57 @@ void main() async {
   const packageName = 'test_package';
 
   late String packagePath;
+  late MemoryResourceProvider resourceProvider;
+  late PackageMetaProvider packageMetaProvider;
+  late DartdocGeneratorOptionContext context;
+
+  setUp(() {
+    packageMetaProvider = utils.testPackageMetaProvider;
+    resourceProvider =
+        packageMetaProvider.resourceProvider as MemoryResourceProvider;
+  });
+
+  Future<PubPackageBuilder> createPackageBuilder({
+    List<String> excludeLibraries = const [],
+    bool skipUnreachableSdkLibraries = true,
+  }) async {
+    //final dir = resourceProvider.pathContext.absolute(packagePath);
+    context = await utils.generatorContextFromArgv([
+      '--input',
+      packagePath,
+      '--output',
+      p.join(packagePath, 'doc'),
+      '--sdk-dir',
+      packageMetaProvider.defaultSdkDir.path,
+      '--exclude',
+      excludeLibraries.join(','),
+      '--allow-tools',
+      '--no-link-to-remote',
+    ], packageMetaProvider);
+
+    var packageConfigProvider = utils
+        .getTestPackageConfigProvider(packageMetaProvider.defaultSdkDir.path);
+    packageConfigProvider.addPackageToConfigFor(
+        packagePath, packageName, Uri.file('$packagePath/'));
+    return PubPackageBuilder(
+      context,
+      packageMetaProvider,
+      packageConfigProvider,
+      skipUnreachableSdkLibraries: skipUnreachableSdkLibraries,
+    );
+  }
 
   Future<Dartdoc> buildDartdoc({
     List<String> excludeLibraries = const [],
     bool skipUnreachableSdkLibraries = true,
   }) async {
-    final resourceProvider = pubPackageMetaProvider.resourceProvider;
-    final dir = resourceProvider
-        .getFolder(resourceProvider.pathContext.absolute(packagePath));
-    final context = await utils.generatorContextFromArgv([
-      '--input',
-      dir.path,
-      '--output',
-      p.join(dir.path, 'doc'),
-      '--sdk-dir',
-      pubPackageMetaProvider.defaultSdkDir.path,
-      '--exclude',
-      excludeLibraries.join(','),
-      '--allow-tools',
-      '--no-link-to-remote',
-    ]);
-
+    final packageBuilder = await createPackageBuilder(
+      excludeLibraries: excludeLibraries,
+      skipUnreachableSdkLibraries: skipUnreachableSdkLibraries,
+    );
     return await Dartdoc.fromContext(
       context,
-      PubPackageBuilder(
-        context,
-        pubPackageMetaProvider,
-        PhysicalPackageConfigProvider(),
-        skipUnreachableSdkLibraries: skipUnreachableSdkLibraries,
-      ),
+      packageBuilder,
     );
   }
 
@@ -59,14 +80,16 @@ dartdoc:
 ''',
       libFiles: [d.file('lib.dart', '')],
       files: [d.file('anicon.png', 'Just plain text')],
+      resourceProvider: resourceProvider,
     );
+    await utils.writeDartdocResources(resourceProvider);
     await (await buildDartdoc()).generateDocs();
 
-    await d.dir(packageName, [
-      d.dir('doc', [
-        d.dir('static-assets', [d.file('favicon.png', 'Just plain text')]),
-      ]),
-    ]).validate();
+    final faviconContent = resourceProvider
+        .getFile(
+            p.joinAll([packagePath, 'doc', 'static-assets', 'favicon.png']))
+        .readAsStringSync();
+    expect(faviconContent, contains('Just plain text'));
   });
 
   test('header option adds content to index.html', () async {
@@ -80,14 +103,15 @@ dartdoc:
       files: [
         d.dir('extras', [d.file('header.html', '<em>Header</em> things.')])
       ],
+      resourceProvider: resourceProvider,
     );
+    await utils.writeDartdocResources(resourceProvider);
     await (await buildDartdoc()).generateDocs();
 
-    await d.dir(packageName, [
-      d.dir('doc', [
-        d.file('index.html', contains('<em>Header</em> things.')),
-      ]),
-    ]).validate();
+    final indexContent = resourceProvider
+        .getFile(p.joinAll([packagePath, 'doc', 'index.html']))
+        .readAsStringSync();
+    expect(indexContent, contains('<em>Header</em> things.'));
   });
 
   test('footer option adds content to index.html', () async {
@@ -101,14 +125,15 @@ dartdoc:
       files: [
         d.dir('extras', [d.file('footer.html', '<em>Footer</em> things.')])
       ],
+      resourceProvider: resourceProvider,
     );
+    await utils.writeDartdocResources(resourceProvider);
     await (await buildDartdoc()).generateDocs();
 
-    await d.dir(packageName, [
-      d.dir('doc', [
-        d.file('index.html', contains('<em>Footer</em> things.')),
-      ]),
-    ]).validate();
+    final indexContent = resourceProvider
+        .getFile(p.joinAll([packagePath, 'doc', 'index.html']))
+        .readAsStringSync();
+    expect(indexContent, contains('<em>Footer</em> things.'));
   });
 
   test('footerText option adds text to index.html', () async {
@@ -122,14 +147,15 @@ dartdoc:
       files: [
         d.dir('extras', [d.file('footer.txt', 'Just footer text')])
       ],
+      resourceProvider: resourceProvider,
     );
+    await utils.writeDartdocResources(resourceProvider);
     await (await buildDartdoc()).generateDocs();
 
-    await d.dir(packageName, [
-      d.dir('doc', [
-        d.file('index.html', contains('Just footer text')),
-      ]),
-    ]).validate();
+    final indexContent = resourceProvider
+        .getFile(p.joinAll([packagePath, 'doc', 'index.html']))
+        .readAsStringSync();
+    expect(indexContent, contains('Just footer text'));
   });
 
   test('excludeFooterVersion option does not display version', () async {
@@ -143,10 +169,13 @@ dartdoc:
       files: [
         d.dir('extras', [d.file('footer.txt', 'Just footer text')])
       ],
+      resourceProvider: resourceProvider,
     );
+    await utils.writeDartdocResources(resourceProvider);
     await (await buildDartdoc()).generateDocs();
 
-    final indexContent = io.File(p.joinAll([packagePath, 'doc', 'index.html']))
+    final indexContent = resourceProvider
+        .getFile(p.joinAll([packagePath, 'doc', 'index.html']))
         .readAsStringSync();
     final footerRegex =
         RegExp(r'<footer>(.*\s*?\n?)+?</footer>', multiLine: true);
@@ -183,9 +212,11 @@ An example in an unusual dir.
 '''),
         ]),
       ],
+      resourceProvider: resourceProvider,
     );
-    final results = await (await buildDartdoc()).generateDocs();
-    final classFoo = results.packageGraph.allCanonicalModelElements
+    final packageGraph =
+        await (await createPackageBuilder()).buildPackageGraph();
+    final classFoo = packageGraph.allCanonicalModelElements
         .whereType<Class>()
         .firstWhere((c) => c.name == 'Foo');
     expect(classFoo.documentationAsHtml,
@@ -206,11 +237,139 @@ dartdoc:
 class Foo {}
 '''),
       ],
+      resourceProvider: resourceProvider,
     );
-    final results = await (await buildDartdoc()).generateDocs();
-    final classFoo = results.packageGraph.allCanonicalModelElements
+    final packageGraph =
+        await (await createPackageBuilder()).buildPackageGraph();
+    final classFoo = packageGraph.allCanonicalModelElements
         .whereType<Class>()
         .firstWhere((c) => c.name == 'Foo');
     expect(classFoo.displayedCategories, isNotEmpty);
+  });
+
+  test('categoryOrder orders categories', () async {
+    packagePath = await d.createPackage(
+      packageName,
+      dartdocOptions: '''
+dartdoc:
+  categories:
+    One:
+      markdown: One.md
+    Two:
+      markdown: Two.md
+    Three:
+      markdown: Three.md
+  categoryOrder: ["Three", "One", "Two"]
+''',
+      libFiles: [
+        d.file('lib.dart', '''
+library 'lib1';
+
+/// {@category One}
+class C1
+
+/// {@category Two}
+class C2
+
+/// {@category Three}
+class C3
+'''),
+      ],
+      files: [
+        d.file('One.md', ''),
+        d.file('Two.md', ''),
+        d.file('Three.md', ''),
+      ],
+      resourceProvider: resourceProvider,
+    );
+    final packageGraph =
+        await (await createPackageBuilder()).buildPackageGraph();
+    final package = packageGraph.packages
+        .firstWhere((element) => element.name == packageName);
+    expect(package.documentedCategoriesSorted.map((c) => c.name),
+        equals(['Three', 'One', 'Two']));
+  });
+
+  test('categories not included in categoryOrder are ordered at the end',
+      () async {
+    packagePath = await d.createPackage(
+      packageName,
+      dartdocOptions: '''
+dartdoc:
+  categories:
+    Three:
+      markdown: Three.md
+    One:
+      markdown: One.md
+    Two:
+      markdown: Two.md
+    Four:
+      markdown: Four.md
+  categoryOrder: ["Two", "One"]
+''',
+      libFiles: [
+        d.file('lib.dart', '''
+library 'lib1';
+
+/// {@category Three}
+class C3
+
+/// {@category One}
+class C1
+
+/// {@category Two}
+class C2
+
+/// {@category Four}
+class C4
+'''),
+      ],
+      files: [
+        d.file('One.md', ''),
+        d.file('Two.md', ''),
+        d.file('Three.md', ''),
+        d.file('Four.md', ''),
+      ],
+      resourceProvider: resourceProvider,
+    );
+    final packageGraph =
+        await (await createPackageBuilder()).buildPackageGraph();
+    final package = packageGraph.packages
+        .firstWhere((element) => element.name == packageName);
+    expect(package.documentedCategoriesSorted.map((c) => c.name),
+        equals(['Two', 'One', 'Four', 'Three']));
+  });
+
+  test('categories are only tracked when used', () async {
+    packagePath = await d.createPackage(
+      packageName,
+      dartdocOptions: '''
+dartdoc:
+  categories:
+    One:
+      markdown: One.md
+    Two:
+      markdown: Two.md
+''',
+      libFiles: [
+        d.file('lib.dart', '''
+library 'lib1';
+
+/// {@category One}
+class C1
+'''),
+      ],
+      files: [
+        d.file('One.md', ''),
+        d.file('Two.md', ''),
+      ],
+      resourceProvider: resourceProvider,
+    );
+    final packageGraph =
+        await (await createPackageBuilder()).buildPackageGraph();
+    final package = packageGraph.packages
+        .firstWhere((element) => element.name == packageName);
+    expect(
+        package.documentedCategoriesSorted.map((c) => c.name), equals(['One']));
   });
 }

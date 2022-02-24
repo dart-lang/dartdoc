@@ -95,18 +95,9 @@ abstract class Categorization implements ModelElement {
     return _samples;
   }
 
-  late final Iterable<Category> categories = () {
-    var categoryNames = this.categoryNames;
-    if (categoryNames == null) {
-      return <Category>[];
-    }
-
-    return categoryNames
-        .map((n) => package?.nameToCategory[n])
-        .whereNotNull()
-        .toList()
-      ..sort();
-  }();
+  late final Iterable<Category> categories = [
+    ...?categoryNames?.map((n) => package?.nameToCategory[n]).whereNotNull()
+  ]..sort();
 
   @override
   Iterable<Category> get displayedCategories {

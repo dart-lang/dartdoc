@@ -83,8 +83,9 @@ void main() {
 
     Future<Dartdoc> buildDartdoc(
         List<String> argv, Folder packageRoot, Folder tempDir) async {
-      var context = await generatorContextFromArgv(argv
-        ..addAll(['--input', packageRoot.path, '--output', tempDir.path]));
+      var context = await generatorContextFromArgv(
+          [...argv, '--input', packageRoot.path, '--output', tempDir.path],
+          pubPackageMetaProvider);
 
       return await Dartdoc.fromContext(
         context,

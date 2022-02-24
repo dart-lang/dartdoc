@@ -15,6 +15,7 @@ import 'package:dartdoc/options.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/failure.dart';
 import 'package:dartdoc/src/generator/generator.dart';
+import 'package:dartdoc/src/generator/resource_loader.dart';
 import 'package:dartdoc/src/markdown_processor.dart';
 import 'package:dartdoc/src/matching_link_result.dart';
 import 'package:dartdoc/src/model/model_element.dart';
@@ -56,17 +57,17 @@ Future<DartdocOptionContext> contextFromArgv(
 /// associate it with a [DartdocOptionSet] based on the current working
 /// directory and/or the '--input' flag.
 Future<DartdocGeneratorOptionContext> generatorContextFromArgv(
-    List<String> argv) async {
+    List<String> argv, PackageMetaProvider packageMetaProvider) async {
   var optionSet = DartdocOptionRoot.fromOptionGenerators(
       'dartdoc',
       [
         createDartdocOptions,
         createGeneratorOptions,
       ],
-      pubPackageMetaProvider);
+      packageMetaProvider);
   optionSet.parseArguments(argv);
   return DartdocGeneratorOptionContext.fromDefaultContextLocation(
-      optionSet, pubPackageMetaProvider.resourceProvider);
+      optionSet, packageMetaProvider.resourceProvider);
 }
 
 void runPubGet(String dirPath) {
@@ -232,6 +233,70 @@ two:lib/
   return projectFolder;
 }
 
+Future<void> writeDartdocResources(ResourceProvider resourceProvider) async {
+  for (var template in [
+    '_accessor_getter',
+    '_accessor_setter',
+    '_callable',
+    '_callable_multiline',
+    '_categorization',
+    '_class',
+    '_constant',
+    '_documentation',
+    '_extension',
+    '_features',
+    '_feature_set',
+    '_footer',
+    '_head',
+    '_library',
+    '_mixin',
+    '_name_summary',
+    '_packages',
+    '_property',
+    '_search_sidebar',
+    '_sidebar_for_category',
+    '_sidebar_for_container',
+    '_sidebar_for_library',
+    '_source_code',
+    '_source_link',
+    '_super_chain',
+    '_type',
+    '_typedef',
+    '_type_multiline',
+    '_typedef_multiline',
+    '404error',
+    'category',
+    'class',
+    'constructor',
+    'enum',
+    'extension',
+    'function',
+    'index',
+    'library',
+    'method',
+    'mixin',
+    'property',
+    'top_level_property',
+    'typedef',
+  ]) {
+    await resourceProvider.writeDartdocResource(
+        'templates/html/$template.html', 'CONTENT');
+  }
+
+  for (var resource in [
+    'favicon.png',
+    'github.css',
+    'highlight.pack.js',
+    'play_button.svg',
+    'readme.md',
+    'script.js',
+    'styles.css',
+  ]) {
+    await resourceProvider.writeDartdocResource(
+        'resources/$resource', 'CONTENT');
+  }
+}
+
 /// For comparison purposes, return an equivalent [MatchingLinkResult]
 /// for the defining element returned.  May return [originalResult].
 /// We do this to eliminate canonicalization effects from comparison,
@@ -261,4 +326,12 @@ Matcher matchesCompressed(String text) => matches(RegExp(text.replaceAll(
 extension ModelElementIterableExtensions<T extends ModelElement>
     on Iterable<T> {
   T named(String name) => firstWhere((e) => e.name == name);
+}
+
+/// Extension methods just for tests.
+extension on ResourceProvider {
+  Future<void> writeDartdocResource(String path, String content) async {
+    var fileUri = await resolveResourceUri(Uri.parse('package:dartdoc/$path'));
+    getFile(fileUri.toFilePath()).writeAsStringSync(content);
+  }
 }
