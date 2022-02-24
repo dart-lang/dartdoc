@@ -41,8 +41,6 @@ class Package extends LibraryContainer
   String _name;
   PackageGraph _packageGraph;
 
-  final Map<String?, Category> _nameToCategory = {};
-
   // Creates a package, if necessary, and adds it to the [packageGraph].
   factory Package.fromPackageMeta(
       PackageMeta packageMeta, PackageGraph packageGraph) {
@@ -279,34 +277,29 @@ class Package extends LibraryContainer
   }
 
   /// A map of category name to the category itself.
-  Map<String?, Category> get nameToCategory {
-    if (_nameToCategory.isEmpty) {
-      Category? categoryFor(String? category) {
-        _nameToCategory.putIfAbsent(
-            category, () => Category(category!, this, config));
-        return _nameToCategory[category];
-      }
-
-      _nameToCategory[null] = Category(null, this, config);
-      for (var c in libraries.expand(
-          (l) => l.allCanonicalModelElements.whereType<Categorization>())) {
-        if (c.hasCategoryNames) {
-          for (var category in c.categoryNames!) {
-            categoryFor(category)!.addItem(c);
-          }
-        } else {
-          // Add to the default category.
-          categoryFor(null)!.addItem(c);
+  late final Map<String?, Category> nameToCategory = () {
+    var result = <String?, Category>{};
+    var defaultCategory = Category(null, this, config);
+    result[null] = defaultCategory;
+    for (var c in libraries.expand(
+        (l) => l.allCanonicalModelElements.whereType<Categorization>())) {
+      if (c.hasCategoryNames) {
+        for (var category in c.categoryNames!) {
+          result
+              .putIfAbsent(category, () => Category(category, this, config))
+              .addItem(c);
         }
+      } else {
+        // Add to the default category.
+        defaultCategory.addItem(c);
       }
     }
-    return _nameToCategory;
-  }
-
-  late final List<Category> categories = () {
-    return nameToCategory.values.where((c) => c.name.isNotEmpty).toList()
-      ..sort();
+    return result;
   }();
+
+  /// The categories, sorted alphabetically by name.
+  late final List<Category> categories =
+      nameToCategory.values.where((c) => c.name.isNotEmpty).toList()..sort();
 
   Iterable<Category> get categoriesWithPublicLibraries =>
       categories.where((c) => c.publicLibraries.isNotEmpty);
@@ -314,13 +307,39 @@ class Package extends LibraryContainer
   Iterable<Category> get documentedCategories =>
       categories.where((c) => c.isDocumented);
 
+  /// The documented categories, sorted either by the 'categoryOrder' option, or
+  /// by name.
+  ///
+  /// In the case that 'categoryOrder' is given, any documented categories which
+  /// are not found in 'categoryOrder' are listed after the ones which are,
+  /// ordered by name.
   Iterable<Category> get documentedCategoriesSorted {
-    // Category display order is configurable; leave the category order
-    // as defined if the order is specified.
-    if (config.categoryOrder.isEmpty) {
+    if (config.categoryOrder.isNotEmpty) {
+      final documentedCategories = this.documentedCategories.toList();
+      return documentedCategories
+        ..sort((a, b) {
+          var aIndex = config.categoryOrder.indexOf(a.name);
+          var bIndex = config.categoryOrder.indexOf(b.name);
+          if (aIndex >= 0 && bIndex >= 0) {
+            return aIndex.compareTo(bIndex);
+          } else if (aIndex < 0 && bIndex >= 0) {
+            // `a` is not found in the category order, but `b` is.
+            return 1;
+          } else if (bIndex < 0 && aIndex >= 0) {
+            // `b` is not found in the category order, but `a` is.
+            return -1;
+          } else {
+            // Neither is found in the category order.
+            return documentedCategories
+                .indexOf(a)
+                .compareTo(documentedCategories.indexOf(b));
+          }
+        });
+    } else {
+      // Category display order is configurable; leave the category order
+      // as defined if the order is specified.
       return documentedCategories;
     }
-    return documentedCategories.toList()..sort(byName);
   }
 
   bool get hasDocumentedCategories => documentedCategories.isNotEmpty;
