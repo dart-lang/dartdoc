@@ -254,11 +254,11 @@ class Foo {}
 dartdoc:
   categories:
     One:
-      markdown: One.md
+      markdown: one.md
     Two:
-      markdown: Two.md
+      markdown: two.md
     Three:
-      markdown: Three.md
+      markdown: three.md
   categoryOrder: ["Three", "One", "Two"]
 ''',
       libFiles: [
@@ -298,13 +298,13 @@ class C3
 dartdoc:
   categories:
     Three:
-      markdown: Three.md
+      markdown: three.md
     One:
-      markdown: One.md
+      markdown: one.md
     Two:
-      markdown: Two.md
+      markdown: two.md
     Four:
-      markdown: Four.md
+      markdown: four.md
   categoryOrder: ["Two", "One"]
 ''',
       libFiles: [
@@ -347,9 +347,9 @@ class C4
 dartdoc:
   categories:
     One:
-      markdown: One.md
+      markdown: one.md
     Two:
-      markdown: Two.md
+      markdown: two.md
 ''',
       libFiles: [
         d.file('lib.dart', '''
