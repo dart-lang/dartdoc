@@ -54,10 +54,14 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   @override
   String get name => '';
 
+  /// Adds [resolvedLibrary] to the package graph, adding it to [allLibraries],
+  /// and to the [Package] which is created from the [PackageMeta] for the
+  /// library.
+  ///
   /// Call during initialization to add a library to this [PackageGraph].
   ///
   /// Libraries added in this manner are assumed to be part of documented
-  /// packages, even if includes or embedder.yaml files cause these to
+  /// packages, even if 'includes' or 'embedder.yaml' files cause these to
   /// span packages.
   void addLibraryToGraph(DartDocResolvedLibrary resolvedLibrary) {
     assert(!allLibrariesAdded);
@@ -74,6 +78,10 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     allLibraries[libraryElement.source.fullName] = lib;
   }
 
+  /// Adds [resolvedLibrary] as a special library to the package graph, which
+  /// adds the library to [allLibraries], but does not add it to any [Package]'s
+  /// list of libraries.
+  ///
   /// Call during initialization to add a library possibly containing
   /// special/non-documented elements to this [PackageGraph].  Must be called
   /// after any normal libraries.
