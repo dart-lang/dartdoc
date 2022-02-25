@@ -150,6 +150,7 @@ class PubPackageBuilder implements PackageBuilder {
   /// Parse a single library at [filePath] using the current analysis driver.
   /// If [filePath] is not a library, returns null.
   Future<DartDocResolvedLibrary?> processLibrary(String filePath) async {
+    logDebug('parsing $filePath...');
     // TODO(scheglov) Do we need this? Maybe the argument is already valid?
     filePath = pathContext.normalize(pathContext.absolute(filePath));
 
@@ -167,6 +168,8 @@ class PubPackageBuilder implements PackageBuilder {
         for (var filename in files) packageMetaProvider.fromFilename(filename)!,
       };
 
+  /// Adds [element]'s path and all of its part files' paths to [_knownFiles],
+  /// and recursively adds the paths of all imported and exported libraries.
   void _addKnownFiles(LibraryElement? element) {
     if (element != null) {
       var path = element.source.fullName;
@@ -193,43 +196,57 @@ class PubPackageBuilder implements PackageBuilder {
   /// is used in tests to dramatically speed up unit tests.
   final bool _skipUnreachableSdkLibraries;
 
+  /// A set containing known part file paths.
+  ///
+  /// This set is used to prevent resolving set files more than once.
+  final _knownParts = <String>{};
+
   /// Parses libraries with the analyzer and invokes [addLibrary] with each
   /// result.
   ///
-  /// Uses [libraries] to prevent calling the callback more than once with the
-  /// same [LibraryElement]. Adds each [LibraryElement] found to [libraries].
-  Future<void> _parseLibraries(void Function(DartDocResolvedLibrary) addLibrary,
-      Set<LibraryElement> libraries, Set<String> files,
-      [bool Function(LibraryElement)? isLibraryIncluded]) async {
+  /// Uses [processedLibraries] to prevent calling the callback more than once
+  /// with the same [LibraryElement]. Adds each [LibraryElement] found to
+  /// [processedLibraries].
+  Future<void> _parseLibraries(
+    void Function(DartDocResolvedLibrary) addLibrary,
+    Set<LibraryElement> processedLibraries,
+    Set<String> files, {
+    bool Function(LibraryElement)? isLibraryIncluded,
+  }) async {
+    files = {...files};
     isLibraryIncluded ??= (_) => true;
     var lastPass = <PackageMeta>{};
     var current = <PackageMeta>{};
-    var knownParts = <String>{};
+    var processedFiles = <String>{};
     do {
       lastPass = current;
 
-      // Be careful here not to accidentally stack up multiple
+      // Be careful here; not to accidentally stack up multiple
       // [DartDocResolvedLibrary]s, as those eat our heap.
-      for (var file in files.difference(knownParts)) {
+      var libraryFiles = files.difference(_knownParts);
+      for (var file in libraryFiles) {
+        if (processedFiles.contains(file)) {
+          continue;
+        }
+        processedFiles.add(file);
         logProgress(file);
         var resolvedLibrary = await processLibrary(file);
         if (resolvedLibrary == null) {
-          knownParts.add(file);
+          _knownParts.add(file);
           continue;
         }
         _addKnownFiles(resolvedLibrary.element);
-        if (!libraries.contains(resolvedLibrary.element) &&
+        if (!processedLibraries.contains(resolvedLibrary.element) &&
             isLibraryIncluded(resolvedLibrary.element)) {
-          logDebug('parsing $file...');
           addLibrary(resolvedLibrary);
-          libraries.add(resolvedLibrary.element);
+          processedLibraries.add(resolvedLibrary.element);
         }
       }
 
       files.addAll(_knownFiles);
       files.addAll(_includeExternalsFrom(_knownFiles));
 
-      current = _packageMetasForFiles(files.difference(knownParts));
+      current = _packageMetasForFiles(files.difference(_knownParts));
       // To get canonicalization correct for non-locally documented packages
       // (so we can generate the right hyperlinks), it's vital that we
       // add all libraries in dependent packages.  So if the analyzer
@@ -392,23 +409,19 @@ class PubPackageBuilder implements PackageBuilder {
     var files = await _getFiles();
     var specialFiles = specialLibraryFiles(findSpecialsSdk);
 
-    /// Returns true if this library element should be included according
-    /// to the configuration.
-    bool isLibraryIncluded(LibraryElement libraryElement) {
-      if (config.include.isNotEmpty &&
-          !config.include.contains(libraryElement.name)) {
-        return false;
-      }
-      return true;
-    }
-
     var foundLibraries = <LibraryElement>{};
-    await _parseLibraries(uninitializedPackageGraph.addLibraryToGraph,
-        foundLibraries, files, isLibraryIncluded);
+    await _parseLibraries(
+      uninitializedPackageGraph.addLibraryToGraph,
+      foundLibraries,
+      files,
+      isLibraryIncluded: (LibraryElement libraryElement) =>
+          config.include.isEmpty ||
+          config.include.contains(libraryElement.name),
+    );
     if (config.include.isNotEmpty) {
       var knownLibraryNames = foundLibraries.map((l) => l.name);
       var notFound = config.include
-          .difference(Set.from(knownLibraryNames))
+          .difference(Set.of(knownLibraryNames))
           .difference(config.exclude);
       if (notFound.isNotEmpty) {
         throw 'Did not find: [${notFound.join(', ')}] in '
