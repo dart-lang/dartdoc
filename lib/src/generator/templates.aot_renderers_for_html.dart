@@ -2818,56 +2818,10 @@ String renderEnum(_i1.EnumTemplateData context0) {
       </dl>
     </section>''');
   }
-  buffer.writeln();
-  if (context2.hasPublicInstanceMethods == true) {
-    buffer.writeln();
-    buffer.write('''
-    <section
-        class="
-          summary
-          offset-anchor''');
-    if (context2.publicInheritedInstanceMethods == true) {
-      buffer.write('''inherited''');
-    }
-    buffer.write('''"
-        id="instance-methods">
-      <h2>Methods</h2>
-      <dl class="callables">''');
-    var context9 = context2.publicInstanceMethodsSorted;
-    for (var context10 in context9) {
-      buffer.write('\n        ');
-      buffer.write(_renderEnum_partial_callable_9(context10));
-    }
-    buffer.writeln();
-    buffer.write('''
-      </dl>
-    </section>''');
-  }
-  buffer.writeln();
-  if (context2.hasPublicInstanceOperators == true) {
-    buffer.writeln();
-    buffer.write('''
-    <section
-        class="
-          summary
-          offset-anchor''');
-    if (context2.publicInheritedInstanceOperators == true) {
-      buffer.write('''inherited''');
-    }
-    buffer.write('''"
-        id="operators">
-      <h2>Operators</h2>
-      <dl class="callables">''');
-    var context11 = context2.publicInstanceOperatorsSorted;
-    for (var context12 in context11) {
-      buffer.write('\n        ');
-      buffer.write(_renderEnum_partial_callable_9(context12));
-    }
-    buffer.writeln();
-    buffer.write('''
-      </dl>
-    </section>''');
-  }
+  buffer.write('\n\n    ');
+  buffer.write(_renderEnum_partial_instance_methods_9(context2));
+  buffer.write('\n    ');
+  buffer.write(_renderEnum_partial_instance_operators_10(context2));
   buffer.writeln();
   if (context2.hasPublicVariableStaticFields == true) {
     buffer.writeln();
@@ -2876,10 +2830,10 @@ String renderEnum(_i1.EnumTemplateData context0) {
       <h2>Static Properties</h2>
 
       <dl class="properties">''');
-    var context13 = context2.publicVariableStaticFieldsSorted;
-    for (var context14 in context13) {
+    var context9 = context2.publicVariableStaticFieldsSorted;
+    for (var context10 in context9) {
       buffer.write('\n        ');
-      buffer.write(_renderEnum_partial_property_8(context14));
+      buffer.write(_renderEnum_partial_property_8(context10));
     }
     buffer.writeln();
     buffer.write('''
@@ -2893,10 +2847,10 @@ String renderEnum(_i1.EnumTemplateData context0) {
     <section class="summary offset-anchor" id="static-methods">
       <h2>Static Methods</h2>
       <dl class="callables">''');
-    var context15 = context2.publicStaticMethodsSorted;
-    for (var context16 in context15) {
+    var context11 = context2.publicStaticMethodsSorted;
+    for (var context12 in context11) {
       buffer.write('\n        ');
-      buffer.write(_renderEnum_partial_callable_9(context16));
+      buffer.write(_renderEnum_partial_callable_11(context12));
     }
     buffer.writeln();
     buffer.write('''
@@ -2909,7 +2863,7 @@ String renderEnum(_i1.EnumTemplateData context0) {
 
   <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
     ''');
-  buffer.write(_renderEnum_partial_search_sidebar_10(context0));
+  buffer.write(_renderEnum_partial_search_sidebar_12(context0));
   buffer.writeln();
   buffer.write('''
     <h5>''');
@@ -2931,7 +2885,7 @@ String renderEnum(_i1.EnumTemplateData context0) {
   </div><!-- /.sidebar-offcanvas -->
 
 ''');
-  buffer.write(_renderEnum_partial_footer_11(context0));
+  buffer.write(_renderEnum_partial_footer_13(context0));
   buffer.writeln();
 
   return buffer.toString();
@@ -3337,7 +3291,37 @@ String __renderEnum_partial_property_8_partial_features_1(_i9.Field context2) {
   return buffer.toString();
 }
 
-String _renderEnum_partial_callable_9(_i10.Method context2) {
+String _renderEnum_partial_instance_methods_9(_i13.Enum context1) {
+  final buffer = StringBuffer();
+  if (context1.hasPublicInstanceMethods == true) {
+    buffer.writeln();
+    buffer.write('''
+  <section
+      class="summary offset-anchor''');
+    if (context1.publicInheritedInstanceMethods == true) {
+      buffer.write(''' inherited''');
+    }
+    buffer.write('''"
+      id="instance-methods">
+    <h2>Methods</h2>
+      <dl class="callables">''');
+    var context4 = context1.publicInstanceMethodsSorted;
+    for (var context5 in context4) {
+      buffer.write('\n          ');
+      buffer.write(
+          __renderEnum_partial_instance_methods_9_partial_callable_0(context5));
+    }
+    buffer.writeln();
+    buffer.write('''
+      </dl>
+  </section>''');
+  }
+
+  return buffer.toString();
+}
+
+String __renderEnum_partial_instance_methods_9_partial_callable_0(
+    _i10.Method context2) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
   buffer.writeEscaped(context2.htmlId);
@@ -3363,7 +3347,8 @@ String _renderEnum_partial_callable_9(_i10.Method context2) {
   </span>
   ''');
   buffer.write(
-      __renderEnum_partial_callable_9_partial_categorization_0(context2));
+      ___renderEnum_partial_instance_methods_9_partial_callable_0_partial_categorization_0(
+          context2));
   buffer.writeln();
   buffer.write('''
 </dt>
@@ -3375,7 +3360,9 @@ String _renderEnum_partial_callable_9(_i10.Method context2) {
   ''');
   buffer.write(context2.oneLineDoc);
   buffer.write('\n  ');
-  buffer.write(__renderEnum_partial_callable_9_partial_features_1(context2));
+  buffer.write(
+      ___renderEnum_partial_instance_methods_9_partial_callable_0_partial_features_1(
+          context2));
   buffer.writeln();
   buffer.write('''
 </dd>
@@ -3384,7 +3371,195 @@ String _renderEnum_partial_callable_9(_i10.Method context2) {
   return buffer.toString();
 }
 
-String __renderEnum_partial_callable_9_partial_categorization_0(
+String
+    ___renderEnum_partial_instance_methods_9_partial_callable_0_partial_categorization_0(
+        _i10.Method context2) {
+  final buffer = StringBuffer();
+  if (context2.hasCategoryNames == true) {
+    var context9 = context2.displayedCategories;
+    for (var context10 in context9) {
+      buffer.write('\n    ');
+      buffer.write(context10!.categoryLabel);
+    }
+  }
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
+String
+    ___renderEnum_partial_instance_methods_9_partial_callable_0_partial_features_1(
+        _i10.Method context2) {
+  final buffer = StringBuffer();
+  if (context2.hasFeatures == true) {
+    buffer.write('''<div class="features">''');
+    buffer.write(context2.featuresAsString);
+    buffer.write('''</div>''');
+  }
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
+String _renderEnum_partial_instance_operators_10(_i13.Enum context1) {
+  final buffer = StringBuffer();
+  if (context1.hasPublicInstanceOperators == true) {
+    buffer.writeln();
+    buffer.write('''
+  <section
+      class="summary offset-anchor''');
+    if (context1.publicInheritedInstanceOperators == true) {
+      buffer.write(''' inherited''');
+    }
+    buffer.write('''"
+      id="operators">
+    <h2>Operators</h2>
+    <dl class="callables">''');
+    var context4 = context1.publicInstanceOperatorsSorted;
+    for (var context5 in context4) {
+      buffer.write('\n        ');
+      buffer.write(
+          __renderEnum_partial_instance_operators_10_partial_callable_0(
+              context5));
+    }
+    buffer.writeln();
+    buffer.write('''
+    </dl>
+  </section>''');
+  }
+
+  return buffer.toString();
+}
+
+String __renderEnum_partial_instance_operators_10_partial_callable_0(
+    _i11.Operator context2) {
+  final buffer = StringBuffer();
+  buffer.write('''<dt id="''');
+  buffer.writeEscaped(context2.htmlId);
+  buffer.write('''" class="callable''');
+  if (context2.isInherited == true) {
+    buffer.write(''' inherited''');
+  }
+  buffer.write('''">
+  <span class="name''');
+  if (context2.isDeprecated == true) {
+    buffer.write(''' deprecated''');
+  }
+  buffer.write('''">''');
+  buffer.write(context2.linkedName);
+  buffer.write('''</span>''');
+  buffer.write(context2.linkedGenericParameters);
+  buffer.write('''<span class="signature">(<wbr>''');
+  buffer.write(context2.linkedParamsNoMetadata);
+  buffer.write(''')
+    <span class="returntype parameter">&#8594; ''');
+  buffer.write(context2.modelType.returnType.linkedName);
+  buffer.write('''</span>
+  </span>
+  ''');
+  buffer.write(
+      ___renderEnum_partial_instance_operators_10_partial_callable_0_partial_categorization_0(
+          context2));
+  buffer.writeln();
+  buffer.write('''
+</dt>
+<dd''');
+  if (context2.isInherited == true) {
+    buffer.write(''' class="inherited"''');
+  }
+  buffer.write('''>
+  ''');
+  buffer.write(context2.oneLineDoc);
+  buffer.write('\n  ');
+  buffer.write(
+      ___renderEnum_partial_instance_operators_10_partial_callable_0_partial_features_1(
+          context2));
+  buffer.writeln();
+  buffer.write('''
+</dd>
+''');
+
+  return buffer.toString();
+}
+
+String
+    ___renderEnum_partial_instance_operators_10_partial_callable_0_partial_categorization_0(
+        _i11.Operator context2) {
+  final buffer = StringBuffer();
+  if (context2.hasCategoryNames == true) {
+    var context9 = context2.displayedCategories;
+    for (var context10 in context9) {
+      buffer.write('\n    ');
+      buffer.write(context10!.categoryLabel);
+    }
+  }
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
+String
+    ___renderEnum_partial_instance_operators_10_partial_callable_0_partial_features_1(
+        _i11.Operator context2) {
+  final buffer = StringBuffer();
+  if (context2.hasFeatures == true) {
+    buffer.write('''<div class="features">''');
+    buffer.write(context2.featuresAsString);
+    buffer.write('''</div>''');
+  }
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
+String _renderEnum_partial_callable_11(_i10.Method context2) {
+  final buffer = StringBuffer();
+  buffer.write('''<dt id="''');
+  buffer.writeEscaped(context2.htmlId);
+  buffer.write('''" class="callable''');
+  if (context2.isInherited == true) {
+    buffer.write(''' inherited''');
+  }
+  buffer.write('''">
+  <span class="name''');
+  if (context2.isDeprecated == true) {
+    buffer.write(''' deprecated''');
+  }
+  buffer.write('''">''');
+  buffer.write(context2.linkedName);
+  buffer.write('''</span>''');
+  buffer.write(context2.linkedGenericParameters);
+  buffer.write('''<span class="signature">(<wbr>''');
+  buffer.write(context2.linkedParamsNoMetadata);
+  buffer.write(''')
+    <span class="returntype parameter">&#8594; ''');
+  buffer.write(context2.modelType.returnType.linkedName);
+  buffer.write('''</span>
+  </span>
+  ''');
+  buffer.write(
+      __renderEnum_partial_callable_11_partial_categorization_0(context2));
+  buffer.writeln();
+  buffer.write('''
+</dt>
+<dd''');
+  if (context2.isInherited == true) {
+    buffer.write(''' class="inherited"''');
+  }
+  buffer.write('''>
+  ''');
+  buffer.write(context2.oneLineDoc);
+  buffer.write('\n  ');
+  buffer.write(__renderEnum_partial_callable_11_partial_features_1(context2));
+  buffer.writeln();
+  buffer.write('''
+</dd>
+''');
+
+  return buffer.toString();
+}
+
+String __renderEnum_partial_callable_11_partial_categorization_0(
     _i10.Method context2) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
@@ -3399,7 +3574,7 @@ String __renderEnum_partial_callable_9_partial_categorization_0(
   return buffer.toString();
 }
 
-String __renderEnum_partial_callable_9_partial_features_1(
+String __renderEnum_partial_callable_11_partial_features_1(
     _i10.Method context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
@@ -3412,7 +3587,7 @@ String __renderEnum_partial_callable_9_partial_features_1(
   return buffer.toString();
 }
 
-String _renderEnum_partial_search_sidebar_10(_i1.EnumTemplateData context0) {
+String _renderEnum_partial_search_sidebar_12(_i1.EnumTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''<header id="header-search-sidebar" class="hidden-l">
   <form class="search-sidebar" role="search">
@@ -3471,7 +3646,7 @@ String _renderEnum_partial_search_sidebar_10(_i1.EnumTemplateData context0) {
   return buffer.toString();
 }
 
-String _renderEnum_partial_footer_11(_i1.EnumTemplateData context0) {
+String _renderEnum_partial_footer_13(_i1.EnumTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write('''</main>
 
