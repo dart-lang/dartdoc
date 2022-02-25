@@ -278,16 +278,60 @@ enum E {
       expect(method1.documentationComment, '/// Doc comment.');
     });
 
-    test('a generic enum is presented with linked interfaces', () async {
+    test("an enhanced enum's operators are documented", () async {
+      var library = await bootPackageWithLibrary('''
+enum E {
+  one, two, three;
+
+  /// Greater than.
+  bool operator >(E other) => index > other.index;
+
+  /// Less than.
+  bool operator <(E other) => index < other.index;
+}
+''');
+      var greaterThan =
+          library.enums.named('E').instanceOperators.named('operator >');
+
+      expect(greaterThan.isInherited, false);
+      expect(greaterThan.isOperator, true);
+      expect(greaterThan.isStatic, false);
+      expect(greaterThan.isCallable, true);
+      expect(greaterThan.isDocumented, true);
+      expect(
+        greaterThan.linkedName,
+        '<a href="$linkPrefix/E/operator_greater.html">operator ></a>',
+      );
+      expect(greaterThan.documentationComment, '/// Greater than.');
+
+      var lessThan =
+          library.enums.named('E').instanceOperators.named('operator <');
+
+      expect(lessThan.isInherited, false);
+      expect(lessThan.isOperator, true);
+      expect(lessThan.isStatic, false);
+      expect(lessThan.isCallable, true);
+      expect(lessThan.isDocumented, true);
+      expect(
+        lessThan.linkedName,
+        // TODO(srawlins): I think this smells... escape HTML.
+        '<a href="$linkPrefix/E/operator_less.html">operator <</a>',
+      );
+      expect(lessThan.documentationComment, '/// Less than.');
+    });
+
+    test('an enum is presented with linked interfaces', () async {
       var library = await bootPackageWithLibrary('''
 class C<T> {}
+class D {}
 
-enum E<T> implements C<T> { one, two, three; }
+enum E<T> implements C<T>, D { one, two, three; }
 ''');
       var eEnum = library.enums.named('E');
 
-      expect(eEnum.interfaces, isNotEmpty);
-    }, skip: true /* passes with analyzer at HEAD on 2022-02-23 */);
+      expect(eEnum.interfaces, hasLength(2));
+      expect(eEnum.interfaces.map((i) => i.name), equals(['C', 'D']));
+    });
 
     // TODO(srawlins): Add rendering tests.
     // * Fix interfaces test.

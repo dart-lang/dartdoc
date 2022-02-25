@@ -1316,42 +1316,20 @@ String renderEnum(_i1.EnumTemplateData context0) {
       buffer.writeln();
     }
   }
-  buffer.writeln();
-  if (context2.hasPublicInstanceMethods == true) {
-    buffer.writeln();
-    buffer.write('''
-## Methods
-''');
-    var context9 = context2.publicInstanceMethodsSorted;
-    for (var context10 in context9) {
-      buffer.writeln();
-      buffer.write(_renderEnum_partial_callable_8(context10));
-      buffer.writeln();
-    }
-  }
-  buffer.writeln();
-  if (context2.hasPublicInstanceOperators == true) {
-    buffer.writeln();
-    buffer.write('''
-## Operators
-''');
-    var context11 = context2.publicInstanceOperatorsSorted;
-    for (var context12 in context11) {
-      buffer.writeln();
-      buffer.write(_renderEnum_partial_callable_8(context12));
-      buffer.writeln();
-    }
-  }
+  buffer.write('\n\n');
+  buffer.write(_renderEnum_partial_instance_methods_8(context2));
+  buffer.write('\n\n');
+  buffer.write(_renderEnum_partial_instance_operators_9(context2));
   buffer.writeln();
   if (context2.hasPublicVariableStaticFields == true) {
     buffer.writeln();
     buffer.write('''
 ## Static Properties
 ''');
-    var context13 = context2.publicVariableStaticFieldsSorted;
-    for (var context14 in context13) {
+    var context9 = context2.publicVariableStaticFieldsSorted;
+    for (var context10 in context9) {
       buffer.writeln();
-      buffer.write(_renderEnum_partial_property_7(context14));
+      buffer.write(_renderEnum_partial_property_7(context10));
       buffer.writeln();
     }
   }
@@ -1361,15 +1339,15 @@ String renderEnum(_i1.EnumTemplateData context0) {
     buffer.write('''
 ## Static Methods
 ''');
-    var context15 = context2.publicStaticMethodsSorted;
-    for (var context16 in context15) {
+    var context11 = context2.publicStaticMethodsSorted;
+    for (var context12 in context11) {
       buffer.writeln();
-      buffer.write(_renderEnum_partial_callable_8(context16));
+      buffer.write(_renderEnum_partial_callable_10(context12));
       buffer.writeln();
     }
   }
   buffer.write('\n\n');
-  buffer.write(_renderEnum_partial_footer_9(context0));
+  buffer.write(_renderEnum_partial_footer_11(context0));
   buffer.writeln();
 
   return buffer.toString();
@@ -1567,7 +1545,27 @@ String __renderEnum_partial_property_7_partial_features_1(_i9.Field context2) {
   return buffer.toString();
 }
 
-String _renderEnum_partial_callable_8(_i10.Method context2) {
+String _renderEnum_partial_instance_methods_8(_i13.Enum context1) {
+  final buffer = StringBuffer();
+  if (context1.hasPublicInstanceMethods == true) {
+    buffer.writeln();
+    buffer.write('''
+## Methods
+''');
+    var context4 = context1.publicInstanceMethodsSorted;
+    for (var context5 in context4) {
+      buffer.writeln();
+      buffer.write(
+          __renderEnum_partial_instance_methods_8_partial_callable_0(context5));
+      buffer.writeln();
+    }
+  }
+
+  return buffer.toString();
+}
+
+String __renderEnum_partial_instance_methods_8_partial_callable_0(
+    _i10.Method context2) {
   final buffer = StringBuffer();
   buffer.write('''##### ''');
   buffer.write(context2.linkedName);
@@ -1578,18 +1576,154 @@ String _renderEnum_partial_callable_8(_i10.Method context2) {
   buffer.write(context2.modelType.returnType.linkedName);
   buffer.writeln();
   buffer.write(
-      __renderEnum_partial_callable_8_partial_categorization_0(context2));
+      ___renderEnum_partial_instance_methods_8_partial_callable_0_partial_categorization_0(
+          context2));
   buffer.write('\n\n');
   buffer.write(context2.oneLineDoc);
   buffer.write('  ');
   buffer.writeln();
-  buffer.write(__renderEnum_partial_callable_8_partial_features_1(context2));
+  buffer.write(
+      ___renderEnum_partial_instance_methods_8_partial_callable_0_partial_features_1(
+          context2));
   buffer.writeln();
 
   return buffer.toString();
 }
 
-String __renderEnum_partial_callable_8_partial_categorization_0(
+String
+    ___renderEnum_partial_instance_methods_8_partial_callable_0_partial_categorization_0(
+        _i10.Method context2) {
+  final buffer = StringBuffer();
+  if (context2.hasCategoryNames == true) {
+    buffer.writeln();
+    buffer.write('''
+Categories:''');
+    var context9 = context2.displayedCategories;
+    for (var context10 in context9) {
+      buffer.writeln();
+      buffer.write(context10!.categoryLabel);
+    }
+  }
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
+String
+    ___renderEnum_partial_instance_methods_8_partial_callable_0_partial_features_1(
+        _i10.Method context2) {
+  final buffer = StringBuffer();
+  if (context2.hasFeatures == true) {
+    buffer.write('''_''');
+    buffer.write(context2.featuresAsString);
+    buffer.write('''_''');
+  }
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
+String _renderEnum_partial_instance_operators_9(_i13.Enum context1) {
+  final buffer = StringBuffer();
+  if (context1.hasPublicInstanceOperators == true) {
+    buffer.writeln();
+    buffer.write('''
+## Operators
+''');
+    var context4 = context1.publicInstanceOperatorsSorted;
+    for (var context5 in context4) {
+      buffer.writeln();
+      buffer.write(__renderEnum_partial_instance_operators_9_partial_callable_0(
+          context5));
+      buffer.writeln();
+    }
+  }
+
+  return buffer.toString();
+}
+
+String __renderEnum_partial_instance_operators_9_partial_callable_0(
+    _i11.Operator context2) {
+  final buffer = StringBuffer();
+  buffer.write('''##### ''');
+  buffer.write(context2.linkedName);
+  buffer.write(context2.linkedGenericParameters);
+  buffer.write('''(''');
+  buffer.write(context2.linkedParamsNoMetadata);
+  buffer.write(''') ''');
+  buffer.write(context2.modelType.returnType.linkedName);
+  buffer.writeln();
+  buffer.write(
+      ___renderEnum_partial_instance_operators_9_partial_callable_0_partial_categorization_0(
+          context2));
+  buffer.write('\n\n');
+  buffer.write(context2.oneLineDoc);
+  buffer.write('  ');
+  buffer.writeln();
+  buffer.write(
+      ___renderEnum_partial_instance_operators_9_partial_callable_0_partial_features_1(
+          context2));
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
+String
+    ___renderEnum_partial_instance_operators_9_partial_callable_0_partial_categorization_0(
+        _i11.Operator context2) {
+  final buffer = StringBuffer();
+  if (context2.hasCategoryNames == true) {
+    buffer.writeln();
+    buffer.write('''
+Categories:''');
+    var context9 = context2.displayedCategories;
+    for (var context10 in context9) {
+      buffer.writeln();
+      buffer.write(context10!.categoryLabel);
+    }
+  }
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
+String
+    ___renderEnum_partial_instance_operators_9_partial_callable_0_partial_features_1(
+        _i11.Operator context2) {
+  final buffer = StringBuffer();
+  if (context2.hasFeatures == true) {
+    buffer.write('''_''');
+    buffer.write(context2.featuresAsString);
+    buffer.write('''_''');
+  }
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
+String _renderEnum_partial_callable_10(_i10.Method context2) {
+  final buffer = StringBuffer();
+  buffer.write('''##### ''');
+  buffer.write(context2.linkedName);
+  buffer.write(context2.linkedGenericParameters);
+  buffer.write('''(''');
+  buffer.write(context2.linkedParamsNoMetadata);
+  buffer.write(''') ''');
+  buffer.write(context2.modelType.returnType.linkedName);
+  buffer.writeln();
+  buffer.write(
+      __renderEnum_partial_callable_10_partial_categorization_0(context2));
+  buffer.write('\n\n');
+  buffer.write(context2.oneLineDoc);
+  buffer.write('  ');
+  buffer.writeln();
+  buffer.write(__renderEnum_partial_callable_10_partial_features_1(context2));
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
+String __renderEnum_partial_callable_10_partial_categorization_0(
     _i10.Method context2) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
@@ -1607,7 +1741,7 @@ Categories:''');
   return buffer.toString();
 }
 
-String __renderEnum_partial_callable_8_partial_features_1(
+String __renderEnum_partial_callable_10_partial_features_1(
     _i10.Method context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
@@ -1620,7 +1754,7 @@ String __renderEnum_partial_callable_8_partial_features_1(
   return buffer.toString();
 }
 
-String _renderEnum_partial_footer_9(_i1.EnumTemplateData context0) {
+String _renderEnum_partial_footer_11(_i1.EnumTemplateData context0) {
   final buffer = StringBuffer();
   buffer.writeln();
   buffer.write(context0.customInnerFooter);
