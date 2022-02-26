@@ -1,6 +1,0 @@
-name: test_package_minimum
-homepage: http://github.com/dart-lang
-description: The only package with no bugs.
-version: 0.0.3
-environment:
-  sdk: '>=2.12.0 <3.0.0'

@@ -1,3 +1,0 @@
-dartdoc:
-  include: ['explicitly_included', 'more_included']
-  exclude: ['excluded']
