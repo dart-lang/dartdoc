@@ -932,19 +932,16 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   /// Given an element's location, look up the nodoc configuration data and
   /// determine whether to unconditionally treat the element as "nodoc".
   bool configSetsNodocFor(String fullName) {
-    var noDocForName = _configSetsNodocFor[fullName];
-    if (noDocForName == null) {
+    return _configSetsNodocFor.putIfAbsent(fullName, () {
       var file = resourceProvider.getFile(fullName);
       // Direct lookup instead of generating a custom context will save some
       // cycles.  We can't use the element's [DartdocOptionContext] because that
       // might not be where the element was defined, which is what's important
       // for nodoc's semantics.  Looking up the defining element just to pull
       // a context is again, slow.
-      List<String> globs = config.optionSet['nodoc'].valueAt(file.parent2);
-      noDocForName = utils.matchGlobs(globs, fullName);
-      _configSetsNodocFor[fullName] = noDocForName;
-    }
-    return noDocForName;
+      var globs = config.optionSet['nodoc'].valueAt(file.parent2);
+      return utils.matchGlobs(globs, fullName);
+    });
   }
 
   String? getMacro(String? name) {
