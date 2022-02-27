@@ -6,19 +6,12 @@ import 'package:analyzer/file_system/memory_file_system.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
-import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
 import 'src/test_descriptor_utils.dart' as d;
 import 'src/utils.dart';
 
 void main() {
-  // We can not use ExperimentalFeature.releaseVersion or even
-  // ExperimentalFeature.experimentalReleaseVersion as these are set to null
-  // even when partial analyzer implementations are available.
-  final superParametersAllowed =
-      VersionRange(min: Version.parse('2.17.0-0'), includeMin: true);
-
   group('parameters', () {
     late Library library;
 
@@ -373,7 +366,7 @@ class E extends D {
         </span>
       '''));
     });
-  }, skip: !superParametersAllowed.allows(platformVersion));
+  }, skip: superParametersAllowed);
 }
 
 extension on Library {
