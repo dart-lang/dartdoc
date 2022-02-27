@@ -38,8 +38,6 @@ final _testPackageDir = _getFolder('testing/test_package');
 
 final Folder _testPackageBadDir = _getFolder('testing/test_package_bad');
 final Folder _testSkyEnginePackage = _getFolder('testing/sky_engine');
-final Folder _testPackageIncludeExclude =
-    _getFolder('testing/test_package_include_exclude');
 final Folder _testPackageCustomTemplates =
     _getFolder('testing/test_package_custom_templates');
 final Folder _testPackageExperiments =
@@ -108,36 +106,6 @@ void main() {
       expect(unresolvedToolErrors.length, equals(1));
       expect(unresolvedToolErrors.first,
           contains('Tool "drill" returned non-zero exit code'));
-    });
-
-    group('include/exclude parameters', () {
-      test('with config file', () async {
-        var dartdoc =
-            await buildDartdoc([], _testPackageIncludeExclude, tempDir);
-        var results = await dartdoc.generateDocs();
-        var p = results.packageGraph;
-        expect(p.localPublicLibraries.map((l) => l.name),
-            orderedEquals(['explicitly_included', 'more_included']));
-      });
-
-      test('with include command line argument', () async {
-        var dartdoc = await buildDartdoc(['--include', 'another_included'],
-            _testPackageIncludeExclude, tempDir);
-        var results = await dartdoc.generateDocs();
-        var p = results.packageGraph;
-        expect(p.localPublicLibraries.length, equals(1));
-        expect(p.localPublicLibraries.first.name, equals('another_included'));
-      });
-
-      test('with exclude command line argument', () async {
-        var dartdoc = await buildDartdoc(['--exclude', 'more_included'],
-            _testPackageIncludeExclude, tempDir);
-        var results = await dartdoc.generateDocs();
-        var p = results.packageGraph;
-        expect(p.localPublicLibraries.length, equals(1));
-        expect(
-            p.localPublicLibraries.first.name, equals('explicitly_included'));
-      });
     });
 
     test('basic interlinking test', () async {

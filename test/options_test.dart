@@ -28,10 +28,9 @@ void main() async {
   });
 
   Future<PubPackageBuilder> createPackageBuilder({
-    List<String> excludeLibraries = const [],
+    List<String> additionalOptions = const [],
     bool skipUnreachableSdkLibraries = true,
   }) async {
-    //final dir = resourceProvider.pathContext.absolute(packagePath);
     context = await utils.generatorContextFromArgv([
       '--input',
       packagePath,
@@ -39,10 +38,9 @@ void main() async {
       p.join(packagePath, 'doc'),
       '--sdk-dir',
       packageMetaProvider.defaultSdkDir.path,
-      '--exclude',
-      excludeLibraries.join(','),
       '--allow-tools',
       '--no-link-to-remote',
+      ...additionalOptions,
     ], packageMetaProvider);
 
     var packageConfigProvider = utils
@@ -58,11 +56,11 @@ void main() async {
   }
 
   Future<Dartdoc> buildDartdoc({
-    List<String> excludeLibraries = const [],
+    List<String> additionalOptions = const [],
     bool skipUnreachableSdkLibraries = true,
   }) async {
     final packageBuilder = await createPackageBuilder(
-      excludeLibraries: excludeLibraries,
+      additionalOptions: additionalOptions,
       skipUnreachableSdkLibraries: skipUnreachableSdkLibraries,
     );
     return await Dartdoc.fromContext(
@@ -221,6 +219,93 @@ An example in an unusual dir.
         .firstWhere((c) => c.name == 'Foo');
     expect(classFoo.documentationAsHtml,
         contains('<code class="language-dart">An example in an unusual dir.'));
+  });
+
+  test("'include' option can be specified in options file", () async {
+    packagePath = await d.createPackage(
+      packageName,
+      dartdocOptions: '''
+dartdoc:
+  include: ["library_1", "library_2"]
+''',
+      libFiles: [
+        d.file('library_1.dart', '''
+library library_1;
+class Foo {}
+'''),
+        d.file('library_2.dart', '''
+library library_2;
+class Bar {}
+'''),
+        d.file('library_3.dart', '''
+library library_3;
+class Baz {}
+'''),
+      ],
+      resourceProvider: resourceProvider,
+    );
+    final packageGraph =
+        await (await createPackageBuilder()).buildPackageGraph();
+    expect(packageGraph.localPublicLibraries.map((l) => l.name),
+        orderedEquals(['library_1', 'library_2']));
+  });
+
+  test("'include' command line option overrides options file option", () async {
+    packagePath = await d.createPackage(
+      packageName,
+      dartdocOptions: '''
+dartdoc:
+  include: ["library_1", "library_2"]
+''',
+      libFiles: [
+        d.file('library_1.dart', '''
+library library_1;
+class Foo {}
+'''),
+        d.file('library_2.dart', '''
+library library_2;
+class Bar {}
+'''),
+        d.file('library_3.dart', '''
+library library_3;
+class Baz {}
+'''),
+      ],
+      resourceProvider: resourceProvider,
+    );
+    final packageGraph = await (await createPackageBuilder(
+      additionalOptions: ['--include', 'library_3'],
+    ))
+        .buildPackageGraph();
+    expect(packageGraph.localPublicLibraries.map((l) => l.name),
+        orderedEquals(['library_3']));
+  });
+
+  test("'exclude' command line option overrides options file option", () async {
+    packagePath = await d.createPackage(
+      packageName,
+      dartdocOptions: '''
+dartdoc:
+  include: ["library_1", "library_2"]
+''',
+      libFiles: [
+        d.file('library_1.dart', '''
+library library_1;
+class Foo {}
+'''),
+        d.file('library_2.dart', '''
+library library_2;
+class Bar {}
+'''),
+      ],
+      resourceProvider: resourceProvider,
+    );
+    final packageGraph = await (await createPackageBuilder(
+      additionalOptions: ['--exclude', 'library_1'],
+    ))
+        .buildPackageGraph();
+    expect(packageGraph.localPublicLibraries.map((l) => l.name),
+        orderedEquals(['library_2']));
   });
 
   test('showUndocumentedCategories option shows undocumented categories',
