@@ -48,7 +48,7 @@ void main() {
           contains('package:test_package has no documentable libraries')),
     );
     await process.shouldExit(0);
-  });
+  }, timeout: Timeout.factor(2));
 
   group('invoking dartdoc on a basic package', () {
     late String packagePath;

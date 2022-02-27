@@ -12,8 +12,8 @@ final RegExp _categoryRegExp = RegExp(
 /// Mixin implementing dartdoc categorization for ModelElements.
 abstract class Categorization implements ModelElement {
   @override
-  String buildDocumentationAddition(String? rawDocs) =>
-      _stripAndSetDartdocCategories(rawDocs ??= '');
+  String buildDocumentationAddition(String rawDocs) =>
+      _stripAndSetDartdocCategories(rawDocs);
 
   /// Parse `{@category ...}` and related information in API comments, stripping
   /// out that information from the given comments and returning the stripped
