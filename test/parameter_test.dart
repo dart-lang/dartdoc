@@ -366,7 +366,7 @@ class E extends D {
         </span>
       '''));
     });
-  }, skip: superParametersAllowed);
+  }, skip: !superParametersAllowed);
 }
 
 extension on Library {
