@@ -231,24 +231,25 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
   static final _canonicalRegExp = RegExp(r'{@canonicalFor\s([^}]+)}');
 
-  /// Hide canonicalFor from doc while leaving a note to ourselves to
+  /// Hides [canonicalFor] from doc while leaving a note to ourselves to
   /// help with ambiguous canonicalization determination.
   ///
   /// Example:
-  ///   {@canonicalFor libname.ClassName}
+  ///
+  ///     {@canonicalFor libname.ClassName}
   @override
-  String buildDocumentationAddition(String? rawDocs) {
+  String buildDocumentationAddition(String rawDocs) {
     rawDocs = super.buildDocumentationAddition(rawDocs);
-    var newCanonicalFor = <String?>{};
-    var notFoundInAllModelElements = <String?>{};
+    var newCanonicalFor = <String>{};
+    var notFoundInAllModelElements = <String>{};
     rawDocs = rawDocs.replaceAllMapped(_canonicalRegExp, (Match match) {
-      newCanonicalFor.add(match.group(1));
-      notFoundInAllModelElements.add(match.group(1));
+      var elementName = match.group(1)!;
+      newCanonicalFor.add(elementName);
+      if (!_allOriginalModelElementNames.contains(elementName)) {
+        notFoundInAllModelElements.add(elementName);
+      }
       return '';
     });
-    if (notFoundInAllModelElements.isNotEmpty) {
-      notFoundInAllModelElements.removeAll(_allOriginalModelElementNames);
-    }
     for (var notFound in notFoundInAllModelElements) {
       warn(PackageWarning.ignoredCanonicalFor, message: notFound);
     }

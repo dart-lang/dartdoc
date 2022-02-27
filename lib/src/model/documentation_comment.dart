@@ -32,8 +32,6 @@ final _macroRegExp = RegExp(r'{@macro\s+([^}]+)}');
 
 final _htmlInjectRegExp = RegExp(r'<dartdoc-html>([a-f0-9]+)</dartdoc-html>');
 
-final RegExp _needsPrecacheRegExp = RegExp(r'{@(template|tool|inject-html)');
-
 /// Features for processing directives in a documentation comment.
 ///
 /// [_processCommentWithoutTools] and [processComment] are the primary
@@ -72,17 +70,25 @@ mixin DocumentationComment
   late final Documentation elementDocumentation =
       Documentation.forElement(this);
 
+  /// The rawest form of the documentation comment, including comment delimiters
+  /// like `///`, `//`, `/*`, `*/`.
   String get documentationComment;
 
   /// True if [this] has a synthetic/inherited or local documentation
   /// comment.  False otherwise.
   bool get hasDocumentationComment;
 
-  /// Returns true if the raw documentation comment has a nodoc indication.
-  late final bool hasNodoc = (hasDocumentationComment &&
-          (documentationComment.contains('@nodoc') ||
-              documentationComment.contains('<nodoc>'))) ||
-      packageGraph.configSetsNodocFor(element!.source!.fullName);
+  /// Returns true if the raw documentation comment has a 'nodoc' indication.
+  late final bool hasNodoc = () {
+    if (packageGraph.configSetsNodocFor(element!.source!.fullName)) {
+      return true;
+    }
+    if (!hasDocumentationComment) {
+      return false;
+    }
+    _scanForDirectives(documentationComment);
+    return _hasNodoc;
+  }();
 
   /// Process a [documentationComment], performing various actions based on
   /// `{@}`-style directives (except tool directives), returning the processed
@@ -769,8 +775,67 @@ mixin DocumentationComment
     _documentationLocal = await _buildDocumentationBase();
   }
 
-  late final bool needsPrecache =
-      _needsPrecacheRegExp.hasMatch(documentationComment);
+  late final bool _hasNodoc;
+
+  late final bool _hasInjectHtml;
+
+  late final bool _hasTemplate;
+
+  late final bool _hasTool;
+
+  bool get needsPrecache {
+    _scanForDirectives(documentationComment);
+    return _hasInjectHtml || _hasTemplate || _hasTool;
+  }
+
+  bool _directivesHaveBeenScanned = false;
+
+  void _scanForDirectives(String docComment) {
+    if (_directivesHaveBeenScanned) {
+      return;
+    }
+    _directivesHaveBeenScanned = true;
+    var startIndex = 0;
+    var hasNodoc = false;
+    var hasInjectHtml = false;
+    var hasTemplate = false;
+    var hasTool = false;
+    var docCommentLength = docComment.length;
+    while (true) {
+      startIndex = docComment.indexOf('@', startIndex);
+      if (startIndex < 0) {
+        // No more directives.
+        break;
+      }
+      startIndex++;
+      if (startIndex >= docCommentLength) {
+        // EOL.
+        break;
+      }
+      if (docComment.startsWith('nodoc', startIndex)) {
+        hasNodoc = true;
+      } else if (startIndex - 2 >= 0 && docComment[startIndex - 2] == '{') {
+        if (docComment.startsWith('inject-html', startIndex)) {
+          // This is soft, but for the purposes of `needsPrecache`, it works.
+          hasInjectHtml = true;
+        } else if (docComment.startsWith('template', startIndex)) {
+          // This is soft, but for the purposes of `needsPrecache`, it works.
+          hasTemplate = true;
+        } else if (docComment.startsWith('tool', startIndex)) {
+          // This is soft, but for the purposes of `needsPrecache`, it works.
+          hasTool = true;
+        }
+      }
+    }
+    if (!hasNodoc && docComment.contains('<nodoc>')) {
+      // TODO(srawlins): Stop supporting this old format.
+      hasNodoc = true;
+    }
+    _hasNodoc = hasNodoc;
+    _hasInjectHtml = hasInjectHtml;
+    _hasTemplate = hasTemplate;
+    _hasTool = hasTool;
+  }
 
   String? _rawDocs;
 
@@ -778,36 +843,36 @@ mixin DocumentationComment
 
   /// Override this to add more features to the documentation builder in a
   /// subclass.
-  String buildDocumentationAddition(String? docs) => docs ?? '';
+  String buildDocumentationAddition(String docs) => docs;
 
-  /// Separate from _buildDocumentationLocal for overriding.
+  /// Separate from [_buildDocumentationLocal] for overriding.
   String? _buildDocumentationBaseSync() {
     assert(_rawDocs == null,
         'reentrant calls to _buildDocumentation* not allowed');
     // Do not use the sync method if we need to evaluate tools or templates.
     assert(!isCanonical || !needsPrecache);
+    String rawDocs;
     if (config.dropTextFrom.contains(element!.library!.name)) {
-      _rawDocs = '';
+      rawDocs = '';
     } else {
-      _rawDocs = _processCommentWithoutTools(documentationComment);
+      rawDocs = _processCommentWithoutTools(documentationComment);
     }
-    _rawDocs = buildDocumentationAddition(_rawDocs);
-    return _rawDocs;
+    return _rawDocs = buildDocumentationAddition(rawDocs);
   }
 
-  /// Separate from _buildDocumentationLocal for overriding.  Can only be
+  /// Separate from [_buildDocumentationLocal] for overriding.  Can only be
   /// used as part of [PackageGraph.setUpPackageGraph].
   Future<String?> _buildDocumentationBase() async {
     assert(_rawDocs == null,
         'reentrant calls to _buildDocumentation* not allowed');
+    String rawDocs;
     // Do not use the sync method if we need to evaluate tools or templates.
     if (config.dropTextFrom.contains(element!.library!.name)) {
-      _rawDocs = '';
+      rawDocs = '';
     } else {
-      _rawDocs = await processComment(documentationComment);
+      rawDocs = await processComment(documentationComment);
     }
-    _rawDocs = buildDocumentationAddition(_rawDocs);
-    return _rawDocs;
+    return _rawDocs = buildDocumentationAddition(rawDocs);
   }
 
   /// Replace &lt;<dartdoc-html>[digest]</dartdoc-html>&gt; in API comments with
