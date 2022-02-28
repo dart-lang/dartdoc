@@ -7,18 +7,12 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/render/enum_field_renderer.dart';
-import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
 import 'src/test_descriptor_utils.dart' as d;
 import 'src/utils.dart';
 
 void main() {
-  // We can not use ExperimentalFeature.releaseVersion or even
-  // ExperimentalFeature.experimentalReleaseVersion as these are set to null
-  // even when partial analyzer implementations are available.
-  final enhancedEnumsAllowed =
-      VersionRange(min: Version.parse('2.17.0-0'), includeMin: true);
   const libraryName = 'enums';
 
   late PackageMetaProvider packageMetaProvider;
@@ -27,7 +21,6 @@ void main() {
   late String packagePath;
 
   Future<void> setUpPackage(
-    PackageMetaProvider packageMetaProvider,
     String name, {
     String? pubspec,
     String? analysisOptions,
@@ -36,8 +29,7 @@ void main() {
       name,
       pubspec: pubspec,
       analysisOptions: analysisOptions,
-      resourceProvider:
-          packageMetaProvider.resourceProvider as MemoryResourceProvider,
+      resourceProvider: resourceProvider,
     );
 
     packageConfigProvider =
@@ -72,7 +64,7 @@ $libraryContent
       packageMetaProvider = testPackageMetaProvider;
       resourceProvider =
           packageMetaProvider.resourceProvider as MemoryResourceProvider;
-      await setUpPackage(packageMetaProvider, libraryName);
+      await setUpPackage(libraryName);
     });
 
     test('is found on the enclosing library', () async {
@@ -214,7 +206,6 @@ enum E {
       resourceProvider =
           packageMetaProvider.resourceProvider as MemoryResourceProvider;
       await setUpPackage(
-        packageMetaProvider,
         libraryName,
         pubspec: '''
 name: enhanced_enums
@@ -349,5 +340,5 @@ enum E<T> implements C<T>, D { one, two, three; }
     // * Add tests for referencing enum static members.
     // * Add tests for referencing enum getters, setters, operators, methods.
     // * Add tests for referencing constructors.
-  }, skip: !enhancedEnumsAllowed.allows(platformVersion));
+  }, skip: !enhancedEnumsAllowed);
 }

@@ -20,13 +20,9 @@ import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:path/path.dart' as p;
-import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
 import '../src/utils.dart';
-
-final _experimentPackageAllowed =
-    VersionRange(min: Version.parse('2.15.0-0'), includeMin: true);
 
 final _resourceProvider = pubPackageMetaProvider.resourceProvider;
 final _pathContext = _resourceProvider.pathContext;
@@ -40,8 +36,6 @@ final Folder _testPackageBadDir = _getFolder('testing/test_package_bad');
 final Folder _testSkyEnginePackage = _getFolder('testing/sky_engine');
 final Folder _testPackageCustomTemplates =
     _getFolder('testing/test_package_custom_templates');
-final Folder _testPackageExperiments =
-    _getFolder('testing/test_package_experiments');
 
 class DartdocLoggingOptionContext extends DartdocGeneratorOptionContext
     with LoggingContext {
@@ -251,30 +245,6 @@ void main() {
       }
     });
 
-    test('generate docs with bad templatesDir path fails', () async {
-      var badPath = p.join(tempDir.path, 'BAD');
-      try {
-        await buildDartdoc(
-            ['--templates-dir', badPath], _testPackageCustomTemplates, tempDir);
-        fail('dartdoc should fail with bad templatesDir path');
-      } catch (e) {
-        expect(e is DartdocFailure, isTrue);
-      }
-    });
-
-    test('generating markdown docs does not crash', () async {
-      var dartdoc =
-          await buildDartdoc(['--format', 'md'], _testPackageDir, tempDir);
-      await dartdoc.generateDocsBase();
-    });
-
-    test('generating markdown docs for experimental features does not crash',
-        () async {
-      var dartdoc = await buildDartdoc(
-          ['--format', 'md'], _testPackageExperiments, tempDir);
-      await dartdoc.generateDocsBase();
-    }, skip: !_experimentPackageAllowed.allows(platformVersion));
-
     test('rel canonical prefix does not include base href', () async {
       final prefix = 'foo.bar/baz';
       var dartdoc = await buildDartdoc(
@@ -294,17 +264,6 @@ void main() {
       expect(level2.exists, isTrue);
       expect(level2.readAsStringSync(),
           contains('<link rel="canonical" href="$prefix/ex/Apple/m.html">'));
-    });
-
-    test('generate docs with bad output format', () async {
-      try {
-        await buildDartdoc(['--format', 'bad'], _testPackageDir, tempDir);
-        fail('dartdoc should fail with bad output format');
-      } catch (e) {
-        expect(e is DartdocFailure, isTrue);
-        expect((e as DartdocFailure).message,
-            startsWith('Unsupported output format'));
-      }
     });
   }, timeout: Timeout.factor(12));
 }

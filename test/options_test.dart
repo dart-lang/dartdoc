@@ -5,6 +5,7 @@
 import 'package:analyzer/file_system/memory_file_system.dart';
 import 'package:dartdoc/options.dart';
 import 'package:dartdoc/src/dartdoc.dart';
+import 'package:dartdoc/src/failure.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:path/path.dart' as p;
@@ -219,6 +220,42 @@ An example in an unusual dir.
         .firstWhere((c) => c.name == 'Foo');
     expect(classFoo.documentationAsHtml,
         contains('<code class="language-dart">An example in an unusual dir.'));
+  });
+
+  test("'format=md' option generates markdown files", () async {
+    packagePath = await d.createPackage(
+      packageName,
+      libFiles: [
+        d.file('library_1.dart', '''
+library library_1;
+class Foo {}
+'''),
+      ],
+      resourceProvider: resourceProvider,
+    );
+    await (await buildDartdoc(additionalOptions: ['--format', 'md']))
+        .generateDocsBase();
+    final indexContent = resourceProvider
+        .getFile(p.joinAll([packagePath, 'doc', 'library_1', 'Foo-class.md']))
+        .readAsStringSync();
+    expect(indexContent, contains('# Foo class'));
+  });
+
+  test("'format=bad' option results in DartdocFailure", () async {
+    packagePath = await d.createPackage(
+      packageName,
+      libFiles: [
+        d.file('library_1.dart', '''
+library library_1;
+class Foo {}
+'''),
+      ],
+      resourceProvider: resourceProvider,
+    );
+    expect(
+        () => buildDartdoc(additionalOptions: ['--format', 'bad']),
+        throwsA(const TypeMatcher<DartdocFailure>().having((f) => f.message,
+            'message', startsWith('Unsupported output format'))));
   });
 
   test("'include' option can be specified in options file", () async {
@@ -456,5 +493,26 @@ class C1
         .firstWhere((element) => element.name == packageName);
     expect(
         package.documentedCategoriesSorted.map((c) => c.name), equals(['One']));
+  });
+
+  test("bad 'templates-dir' option results in DartdocFailure", () async {
+    packagePath = await d.createPackage(
+      packageName,
+      libFiles: [
+        d.file('library_1.dart', '''
+library library_1;
+class Foo {}
+'''),
+      ],
+      resourceProvider: resourceProvider,
+    );
+    expect(
+        () => buildDartdoc(additionalOptions: ['--templates-dir', 'bad']),
+        throwsA(const TypeMatcher<DartdocFailure>().having(
+          (f) => f.message,
+          'message',
+          startsWith(
+              'Argument --templates-dir, set to bad, resolves to missing path'),
+        )));
   });
 }

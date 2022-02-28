@@ -323,6 +323,34 @@ Matcher matchesCompressed(String text) => matches(RegExp(text.replaceAll(
       ' *',
     )));
 
+/// We can not use [ExperimentalFeature.releaseVersion] or even
+/// [ExperimentalFeature.experimentalReleaseVersion] as these are set to `null`
+/// even when partial analyzer implementations are available.
+bool get constructorTearoffsAllowed =>
+    VersionRange(min: Version.parse('2.15.0-0'), includeMin: true)
+        .allows(platformVersion);
+
+/// We can not use [ExperimentalFeature.releaseVersion] or even
+/// [ExperimentalFeature.experimentalReleaseVersion] as these are set to `null`
+/// even when partial analyzer implementations are available.
+bool get enhancedEnumsAllowed =>
+    VersionRange(min: Version.parse('2.17.0-0'), includeMin: true)
+        .allows(platformVersion);
+
+/// We can not use [ExperimentalFeature.releaseVersion] or even
+/// [ExperimentalFeature.experimentalReleaseVersion] as these are set to `null`
+/// even when partial analyzer implementations are available.
+bool get namedArgumentsAnywhereAllowed =>
+    VersionRange(min: Version.parse('2.17.0-0'), includeMin: true)
+        .allows(platformVersion);
+
+/// We can not use [ExperimentalFeature.releaseVersion] or even
+/// [ExperimentalFeature.experimentalReleaseVersion] as these are set to `null`
+/// even when partial analyzer implementations are available.
+bool get superParametersAllowed =>
+    VersionRange(min: Version.parse('2.17.0-0'), includeMin: true)
+        .allows(platformVersion);
+
 extension ModelElementIterableExtensions<T extends ModelElement>
     on Iterable<T> {
   T named(String name) => firstWhere((e) => e.name == name);

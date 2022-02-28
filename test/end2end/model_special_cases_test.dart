@@ -15,7 +15,6 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/special_elements.dart';
-import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
 import '../src/utils.dart' as utils;
@@ -60,13 +59,6 @@ Future<PackageGraph> _bootSdkPackage() async {
 }
 
 void main() {
-  // We can not use ExperimentalFeature.releaseVersion or even
-  // ExperimentalFeature.experimentalReleaseVersion as these are set to null
-  // even when partial analyzer implementations are available, and are often
-  // set too high after release.
-  final _constructorTearoffsAllowed =
-      VersionRange(min: Version.parse('2.15.0-0'), includeMin: true);
-
   // Experimental features not yet enabled by default.  Move tests out of this
   // block when the feature is enabled by default.
   group('Experiments', () {
@@ -220,7 +212,7 @@ void main() {
         expect(referenceLookup(A, 'new'), equals(MatchingLinkResult(null)));
         expect(referenceLookup(At, 'new'), equals(MatchingLinkResult(null)));
       });
-    }, skip: !_constructorTearoffsAllowed.allows(utils.platformVersion));
+    }, skip: !utils.constructorTearoffsAllowed);
   });
 
   group('HTML is sanitized when enabled', () {
