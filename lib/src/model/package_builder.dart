@@ -86,6 +86,11 @@ class PubPackageBuilder implements PackageBuilder {
     runtimeStats.startPerfTask('initializePackageGraph');
     await newGraph.initializePackageGraph();
     runtimeStats.endPerfTask();
+
+    runtimeStats.startPerfTask('initializeCategories');
+    newGraph.initializeCategories();
+    runtimeStats.endPerfTask();
+
     return newGraph;
   }
 

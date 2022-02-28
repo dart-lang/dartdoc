@@ -1051,7 +1051,7 @@ class _Renderer_Category extends RendererBase<Category> {
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<TopLevelVariable>'),
+                          c, remainingNames, 'List<TopLevelVariable>'),
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.constants.map((e) => _render_TopLevelVariable(
@@ -1171,7 +1171,7 @@ class _Renderer_Category extends RendererBase<Category> {
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<Enum>'),
+                          c, remainingNames, 'List<Enum>'),
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.enums.map((e) =>
@@ -1195,7 +1195,7 @@ class _Renderer_Category extends RendererBase<Category> {
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<Extension>'),
+                          c, remainingNames, 'List<Extension>'),
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.extensions.map((e) =>
@@ -1251,7 +1251,7 @@ class _Renderer_Category extends RendererBase<Category> {
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<ModelFunction>'),
+                          c, remainingNames, 'List<ModelFunction>'),
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.functions.map((e) => _render_ModelFunction(
@@ -1342,7 +1342,7 @@ class _Renderer_Category extends RendererBase<Category> {
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<Mixin>'),
+                          c, remainingNames, 'List<Mixin>'),
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.mixins.map((e) =>
@@ -1410,7 +1410,7 @@ class _Renderer_Category extends RendererBase<Category> {
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<TopLevelVariable>'),
+                          c, remainingNames, 'List<TopLevelVariable>'),
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.properties.map((e) => _render_TopLevelVariable(
@@ -1471,7 +1471,7 @@ class _Renderer_Category extends RendererBase<Category> {
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<Typedef>'),
+                          c, remainingNames, 'List<Typedef>'),
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.typedefs.map((e) =>
@@ -7855,19 +7855,6 @@ class _Renderer_Library extends RendererBase<Library> {
                 ..._Renderer_ModelElement.propertyMap<CT_>(),
                 ..._Renderer_Categorization.propertyMap<CT_>(),
                 ..._Renderer_TopLevelContainer.propertyMap<CT_>(),
-                'allCanonicalModelElements': Property(
-                  getValue: (CT_ c) => c.allCanonicalModelElements,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<ModelElement>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.allCanonicalModelElements.map((e) =>
-                        _render_ModelElement(e, ast, r.template, sink,
-                            parent: r));
-                  },
-                ),
                 'allClasses': Property(
                   getValue: (CT_ c) => c.allClasses,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -8458,13 +8445,6 @@ class _Renderer_Library extends RendererBase<Library> {
       return null;
     }
   }
-}
-
-void _render_LibraryContainer(LibraryContainer context, List<MustachioNode> ast,
-    Template template, StringSink sink,
-    {RendererBase<Object>? parent}) {
-  var renderer = _Renderer_LibraryContainer(context, parent, template, sink);
-  renderer.renderBlock(ast);
 }
 
 class _Renderer_LibraryContainer extends RendererBase<LibraryContainer> {
@@ -11698,17 +11678,16 @@ class _Renderer_Package extends RendererBase<Package> {
                     }
                     var name = remainingNames.first;
                     var nextProperty =
-                        _Renderer_LibraryContainer.propertyMap().getValue(name);
+                        _Renderer_Category.propertyMap().getValue(name);
                     return nextProperty.renderVariable(
-                        self.getValue(c) as LibraryContainer,
+                        self.getValue(c) as Category,
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
-                  isNullValue: (CT_ c) => c.defaultCategory == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_LibraryContainer(
-                        c.defaultCategory!, ast, r.template, sink,
+                    _render_Category(c.defaultCategory, ast, r.template, sink,
                         parent: r);
                   },
                 ),

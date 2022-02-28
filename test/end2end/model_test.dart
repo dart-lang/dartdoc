@@ -798,7 +798,7 @@ void main() {
     test('Verify that libraries without categories get handled', () {
       expect(
           packageGraph
-              .localPackages.first.defaultCategory!.publicLibraries.length,
+              .localPackages.first.defaultCategory.publicLibraries.length,
           // Only 5 libraries have categories, the rest belong in default.
           equals(kTestPackagePublicLibraries - 5));
     });

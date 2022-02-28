@@ -2463,12 +2463,10 @@ String renderIndex(_i1.PackageTemplateData context0) {
     }
     buffer.writeln();
     var context4 = context3.defaultCategory;
-    if (context4 != null) {
-      var context5 = context4.publicLibrariesSorted;
-      for (var context6 in context5) {
-        buffer.writeln();
-        buffer.write(_renderIndex_partial_library_2(context6));
-      }
+    var context5 = context4.publicLibrariesSorted;
+    for (var context6 in context5) {
+      buffer.writeln();
+      buffer.write(_renderIndex_partial_library_2(context6));
     }
     buffer.writeln();
     var context7 = context3.categoriesWithPublicLibraries;

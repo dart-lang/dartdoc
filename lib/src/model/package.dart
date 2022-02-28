@@ -101,8 +101,6 @@ class Package extends LibraryContainer
   /// in this package.
   bool get hasCategories => categories.isNotEmpty;
 
-  LibraryContainer? get defaultCategory => nameToCategory[null];
-
   @override
   late final String? documentationAsHtml =
       Documentation.forElement(this).asHtml;
@@ -276,30 +274,75 @@ class Package extends LibraryContainer
     return super.publicLibraries;
   }
 
+  /// The default, unnamed category.
+  ///
+  /// This is initialized by [initializeCategories].
+  late final Category defaultCategory;
+
   /// A map of category name to the category itself.
-  late final Map<String?, Category> nameToCategory = () {
-    var result = <String?, Category>{};
-    var defaultCategory = Category(null, this, config);
-    result[null] = defaultCategory;
-    for (var c in libraries.expand(
-        (l) => l.allCanonicalModelElements.whereType<Categorization>())) {
-      if (c.hasCategoryNames) {
-        for (var category in c.categoryNames!) {
-          result
-              .putIfAbsent(category, () => Category(category, this, config))
-              .addItem(c);
-        }
-      } else {
-        // Add to the default category.
-        defaultCategory.addItem(c);
+  ///
+  /// This is initialized by [initializeCategories].
+  late final Map<String?, Category> nameToCategory;
+
+  /// Adds [categorization] to one or more categories in the [nameToCategory]
+  /// map, if it is annoated with `{@category}`, or `[defaultCategory], if not,
+  /// via the [addTo] callback.
+  void addToCategories(
+      Categorization categorization, void Function(Category) addTo) {
+    if (!categorization.isCanonical) {
+      return;
+    }
+    var categoryNames = categorization.categoryNames;
+    if (categoryNames == null || categoryNames.isEmpty) {
+      addTo(defaultCategory);
+      return;
+    }
+    for (var category in categoryNames) {
+      addTo(nameToCategory.putIfAbsent(
+          category, () => Category(category, this, config)));
+    }
+  }
+
+  /// Initializes the [defaultCategory] and the [nameToCategory] map, with all
+  /// appropriate elements.
+  void initializeCategories() {
+    defaultCategory = Category(null, this, config);
+    nameToCategory = {};
+    for (var library in libraries) {
+      addToCategories(library, (c) => c.libraries.add(library));
+      for (var constant in library.constants) {
+        addToCategories(constant, (c) => c.constants.add(constant));
+      }
+      for (var function in library.functions) {
+        addToCategories(function, (c) => c.functions.add(function));
+      }
+      for (var property in library.properties) {
+        addToCategories(property, (c) => c.properties.add(property));
+      }
+      for (var typedef_ in library.typedefs) {
+        addToCategories(typedef_, (c) => c.typedefs.add(typedef_));
+      }
+      for (var extension in library.extensions) {
+        addToCategories(extension, (c) => c.extensions.add(extension));
+      }
+      for (var class_ in library.allClasses) {
+        addToCategories(class_, (c) => c.addClass(class_));
+      }
+      for (var enum_ in library.enums) {
+        addToCategories(enum_, (c) => c.enums.add(enum_));
+      }
+      for (var mixin in library.mixins) {
+        addToCategories(mixin, (c) => c.mixins.add(mixin));
       }
     }
-    return result;
-  }();
+  }
 
   /// The categories, sorted alphabetically by name.
-  late final List<Category> categories =
-      nameToCategory.values.where((c) => c.name.isNotEmpty).toList()..sort();
+  late final List<Category> categories = [
+    defaultCategory,
+    ...nameToCategory.values,
+  ].where((c) => c.name.isNotEmpty).toList()
+    ..sort();
 
   Iterable<Category> get categoriesWithPublicLibraries =>
       categories.where((c) => c.publicLibraries.isNotEmpty);
