@@ -160,6 +160,13 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     yield config.tools.runner.wait();
   }
 
+  /// Initializes the category mappings in all [packages].
+  void initializeCategories() {
+    for (var package in packages) {
+      package.initializeCategories();
+    }
+  }
+
   // Many ModelElements have the same ModelNode; don't build/cache this data more
   // than once for them.
   final Map<Element, ModelNode> _modelNodes = {};

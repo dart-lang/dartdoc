@@ -426,6 +426,8 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     return name;
   }
 
+  /// A mapping of all [Element]s in this library to the [ModelElement]s which
+  /// represent them in dartdoc.
   late final HashMap<Element, Set<ModelElement>> modelElementsMap = () {
     var modelElements = HashMap<Element, Set<ModelElement>>();
     for (var modelElement in <ModelElement>[
@@ -433,18 +435,10 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
       ...library.functions,
       ...library.properties,
       ...library.typedefs,
-      ...library.extensions.expand((e) {
-        return [e, ...e.allModelElements];
-      }),
-      ...library.allClasses.expand((c) {
-        return [c, ...c.allModelElements];
-      }),
-      ...library.enums.expand((e) {
-        return [e, ...e.allModelElements];
-      }),
-      ...library.mixins.expand((m) {
-        return [m, ...m.allModelElements];
-      }),
+      ...library.extensions.expand((e) => [e, ...e.allModelElements]),
+      ...library.allClasses.expand((c) => [c, ...c.allModelElements]),
+      ...library.enums.expand((e) => [e, ...e.allModelElements]),
+      ...library.mixins.expand((m) => [m, ...m.allModelElements]),
     ]) {
       modelElements
           .putIfAbsent(modelElement.element!, () => {})
@@ -457,9 +451,6 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   Iterable<ModelElement> get allModelElements => [
         for (var modelElements in modelElementsMap.values) ...modelElements,
       ];
-
-  late final Iterable<ModelElement> allCanonicalModelElements =
-      allModelElements.where((e) => e.isCanonical).toList(growable: false);
 
   @override
   late final Map<String, CommentReferable> referenceChildren = () {

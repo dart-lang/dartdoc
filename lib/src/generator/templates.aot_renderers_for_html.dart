@@ -962,15 +962,13 @@ String _renderCategory_partial_packages_9(_i1.CategoryTemplateData context0) {
       buffer.write('''</li>''');
     }
     var context16 = context13.defaultCategory;
-    if (context16 != null) {
-      var context17 = context16.publicLibrariesSorted;
-      for (var context18 in context17) {
-        buffer.writeln();
-        buffer.write('''
+    var context17 = context16.publicLibrariesSorted;
+    for (var context18 in context17) {
+      buffer.writeln();
+      buffer.write('''
       <li>''');
-        buffer.write(context18.linkedName);
-        buffer.write('''</li>''');
-      }
+      buffer.write(context18.linkedName);
+      buffer.write('''</li>''');
     }
     var context19 = context13.categoriesWithPublicLibraries;
     for (var context20 in context19) {
@@ -3980,15 +3978,13 @@ String _renderError_partial_packages_2(_i1.PackageTemplateData context0) {
       buffer.write('''</li>''');
     }
     var context16 = context13.defaultCategory;
-    if (context16 != null) {
-      var context17 = context16.publicLibrariesSorted;
-      for (var context18 in context17) {
-        buffer.writeln();
-        buffer.write('''
+    var context17 = context16.publicLibrariesSorted;
+    for (var context18 in context17) {
+      buffer.writeln();
+      buffer.write('''
       <li>''');
-        buffer.write(context18.linkedName);
-        buffer.write('''</li>''');
-      }
+      buffer.write(context18.linkedName);
+      buffer.write('''</li>''');
     }
     var context19 = context13.categoriesWithPublicLibraries;
     for (var context20 in context19) {
@@ -5462,12 +5458,10 @@ String renderIndex(_i1.PackageTemplateData context0) {
     buffer.write('''
         <dl>''');
     var context4 = context3.defaultCategory;
-    if (context4 != null) {
-      var context5 = context4.publicLibrariesSorted;
-      for (var context6 in context5) {
-        buffer.write('\n          ');
-        buffer.write(_renderIndex_partial_library_2(context6));
-      }
+    var context5 = context4.publicLibrariesSorted;
+    for (var context6 in context5) {
+      buffer.write('\n          ');
+      buffer.write(_renderIndex_partial_library_2(context6));
     }
     var context7 = context3.categoriesWithPublicLibraries;
     for (var context8 in context7) {
@@ -5812,15 +5806,13 @@ String _renderIndex_partial_packages_4(_i1.PackageTemplateData context0) {
       buffer.write('''</li>''');
     }
     var context16 = context13.defaultCategory;
-    if (context16 != null) {
-      var context17 = context16.publicLibrariesSorted;
-      for (var context18 in context17) {
-        buffer.writeln();
-        buffer.write('''
+    var context17 = context16.publicLibrariesSorted;
+    for (var context18 in context17) {
+      buffer.writeln();
+      buffer.write('''
       <li>''');
-        buffer.write(context18.linkedName);
-        buffer.write('''</li>''');
-      }
+      buffer.write(context18.linkedName);
+      buffer.write('''</li>''');
     }
     var context19 = context13.categoriesWithPublicLibraries;
     for (var context20 in context19) {
@@ -6898,15 +6890,13 @@ String _renderLibrary_partial_packages_12(_i1.LibraryTemplateData context0) {
       buffer.write('''</li>''');
     }
     var context16 = context13.defaultCategory;
-    if (context16 != null) {
-      var context17 = context16.publicLibrariesSorted;
-      for (var context18 in context17) {
-        buffer.writeln();
-        buffer.write('''
+    var context17 = context16.publicLibrariesSorted;
+    for (var context18 in context17) {
+      buffer.writeln();
+      buffer.write('''
       <li>''');
-        buffer.write(context18.linkedName);
-        buffer.write('''</li>''');
-      }
+      buffer.write(context18.linkedName);
+      buffer.write('''</li>''');
     }
     var context19 = context13.categoriesWithPublicLibraries;
     for (var context20 in context19) {
