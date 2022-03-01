@@ -31,7 +31,6 @@ import 'package:dartdoc/src/model/model.dart' hide Package;
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart'
     show PackageMeta, PackageMetaProvider;
-import 'package:dartdoc/src/quiver.dart' as quiver;
 import 'package:dartdoc/src/render/renderer_factory.dart';
 import 'package:dartdoc/src/special_elements.dart';
 import 'package:meta/meta.dart';
@@ -370,15 +369,12 @@ class PubPackageBuilder implements PackageBuilder {
   }
 
   Future<Set<String>> _getFiles() async {
-    Iterable<String> files;
-    if (config.topLevelPackageMeta.isSdk) {
-      files = _getSdkFilesToDocument();
-    } else {
-      files = await findFilesToDocumentInPackage(config.inputDir,
-              autoIncludeDependencies: config.autoIncludeDependencies)
-          .toList();
-    }
-    files = quiver.concat([files, _includeExternalsFrom(files)]);
+    var files = config.topLevelPackageMeta.isSdk
+        ? _getSdkFilesToDocument()
+        : await findFilesToDocumentInPackage(config.inputDir,
+                autoIncludeDependencies: config.autoIncludeDependencies)
+            .toList();
+    files = [...files, ..._includeExternalsFrom(files)];
     return {
       ...files.map((s) => resourceProvider.pathContext
           .absolute(resourceProvider.getFile(s).path)),
