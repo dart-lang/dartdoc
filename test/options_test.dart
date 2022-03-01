@@ -531,8 +531,9 @@ class Foo {}
       ],
       resourceProvider: resourceProvider,
     );
-    var customTemplatesDir =
-        resourceProvider.newFolder('/custom_templates').path;
+    var customTemplatesDir = resourceProvider
+        .newFolder(resourceProvider.convertPath('/custom_templates'))
+        .path;
     expect(
         () => buildDartdoc(
             additionalOptions: ['--templates-dir', customTemplatesDir]),
