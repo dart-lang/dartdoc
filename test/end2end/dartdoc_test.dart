@@ -232,19 +232,6 @@ void main() {
           contains('Welcome my friends to a custom template'));
     });
 
-    test('generate docs with missing required template fails', () async {
-      var templatesDir = p.join(p.current, 'test/templates');
-      try {
-        await buildDartdoc(['--templates-dir', templatesDir],
-            _testPackageCustomTemplates, tempDir);
-        fail('dartdoc should fail with missing required template');
-      } catch (e) {
-        expect(e is DartdocFailure, isTrue);
-        expect((e as DartdocFailure).message,
-            startsWith('Missing required template file'));
-      }
-    });
-
     test('rel canonical prefix does not include base href', () async {
       final prefix = 'foo.bar/baz';
       var dartdoc = await buildDartdoc(

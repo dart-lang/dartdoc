@@ -388,13 +388,13 @@ dartdoc:
 library 'lib1';
 
 /// {@category One}
-class C1
+class C1 {}
 
 /// {@category Two}
-class C2
+class C2 {}
 
 /// {@category Three}
-class C3
+class C3 {}
 '''),
       ],
       files: [
@@ -434,16 +434,16 @@ dartdoc:
 library 'lib1';
 
 /// {@category Three}
-class C3
+class C3 {}
 
 /// {@category One}
-class C1
+class C1 {}
 
 /// {@category Two}
-class C2
+class C2 {}
 
 /// {@category Four}
-class C4
+class C4 {}
 '''),
       ],
       files: [
@@ -478,7 +478,7 @@ dartdoc:
 library 'lib1';
 
 /// {@category One}
-class C1
+class C1 {}
 '''),
       ],
       files: [
@@ -495,7 +495,9 @@ class C1
         package.documentedCategoriesSorted.map((c) => c.name), equals(['One']));
   });
 
-  test("bad 'templates-dir' option results in DartdocFailure", () async {
+  test(
+      "'templates-dir' option referencing a non-existent directory results in "
+      'DartdocFailure', () async {
     packagePath = await d.createPackage(
       packageName,
       libFiles: [
@@ -514,5 +516,27 @@ class Foo {}
           startsWith(
               'Argument --templates-dir, set to bad, resolves to missing path'),
         )));
+  });
+
+  test(
+      "'templates-dir' option referencing an empty directory results in "
+      'DartdocFailure', () async {
+    packagePath = await d.createPackage(
+      packageName,
+      libFiles: [
+        d.file('library_1.dart', '''
+library library_1;
+class Foo {}
+'''),
+      ],
+      resourceProvider: resourceProvider,
+    );
+    var customTemplatesDir =
+        resourceProvider.newFolder('/custom_templates').path;
+    expect(
+        () => buildDartdoc(
+            additionalOptions: ['--templates-dir', customTemplatesDir]),
+        throwsA(const TypeMatcher<DartdocFailure>().having((f) => f.message,
+            'message', startsWith('Missing required template file'))));
   });
 }
