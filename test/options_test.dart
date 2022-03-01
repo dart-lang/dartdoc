@@ -532,7 +532,8 @@ class Foo {}
       resourceProvider: resourceProvider,
     );
     var customTemplatesDir = resourceProvider
-        .newFolder(resourceProvider.convertPath('/custom_templates'))
+        .newFolder(resourceProvider.pathContext
+            .canonicalize(resourceProvider.convertPath('/custom_templates')))
         .path;
     expect(
         () => buildDartdoc(
