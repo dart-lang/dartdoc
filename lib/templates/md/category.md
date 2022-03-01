@@ -32,6 +32,15 @@
 {{/publicMixinsSorted}}
 {{/hasPublicMixins}}
 
+{{#hasPublicExtensions}}
+## Extensions
+
+{{#publicExtensionsSorted}}
+{{>extension}}
+
+{{/publicExtensionsSorted}}
+{{/hasPublicExtensions}}
+
 {{#hasPublicConstants}}
 ## Constants
 
