@@ -103,16 +103,7 @@
     </section>
     {{/hasPublicVariableStaticFields}}
 
-    {{#hasPublicStaticMethods}}
-    <section class="summary offset-anchor" id="static-methods">
-      <h2>Static Methods</h2>
-      <dl class="callables">
-        {{#publicStaticMethodsSorted}}
-        {{>callable}}
-        {{/publicStaticMethodsSorted}}
-      </dl>
-    </section>
-    {{/hasPublicStaticMethods}}
+    {{ >static_methods }}
 
     {{#hasPublicConstantFields}}
     <section class="summary offset-anchor" id="constants">

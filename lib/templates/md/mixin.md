@@ -62,14 +62,7 @@
 {{/publicVariableStaticFieldsSorted}}
 {{/hasPublicVariableStaticFields}}
 
-{{#hasPublicStaticMethods}}
-## Static Methods
-
-{{#publicStaticMethodsSorted}}
-{{>callable}}
-
-{{/publicStaticMethodsSorted}}
-{{/hasPublicStaticMethods}}
+{{ >static_methods }}
 
 {{#hasPublicConstantFields}}
 ## Constants
