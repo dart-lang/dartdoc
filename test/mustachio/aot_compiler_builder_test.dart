@@ -113,4 +113,93 @@ class Baz {}
     var fBound = fooRenderFunction.typeParameters.single.bound!;
     expect(fBound.getDisplayString(withNullability: false), equals('num'));
   });
+
+  test('deduplicates partials which share context type LUB', () async {
+    await testMustachioBuilder(
+      writer,
+      '''
+abstract class Base {
+  String get s1;
+}
+
+class Foo implements Base {
+  @override
+  String s1 = 'F';
+}
+
+class Bar implements Base {
+  @override
+  String s1 = 'B';
+}
+''',
+      libraryFrontMatter: '''
+@Renderer(#renderFoo, Context<Foo>(), 'foo')
+@Renderer(#renderBar, Context<Bar>(), 'bar')
+library foo;
+import 'package:mustachio/annotations.dart';
+''',
+      additionalAssets: {
+        'foo|lib/templates/html/foo.html': '{{ >base }}',
+        'foo|lib/templates/html/bar.html': '{{ >base }}',
+        'foo|lib/templates/html/_base.html': 's1 is {{ s1 }}',
+      },
+    );
+    var rendererAsset = AssetId('foo', 'lib/foo.aot_renderers_for_html.dart');
+    var generatedContent = utf8.decode(writer.assets[rendererAsset]!);
+    expect(
+      generatedContent,
+      contains('String _renderFoo_partial_base_0(_i1.Foo context0) =>\n'
+          '    _deduplicated_lib_templates_html__base_html(context0);\n'),
+    );
+    expect(
+      generatedContent,
+      contains('String _renderBar_partial_base_0(_i1.Bar context0) =>\n'
+          '    _deduplicated_lib_templates_html__base_html(context0);\n'),
+    );
+    expect(
+      generatedContent,
+      contains('String _deduplicated_lib_templates_html__base_html('),
+    );
+  });
+
+  test('does not deduplicate partials when attempting to do so throws',
+      () async {
+    await testMustachioBuilder(
+      writer,
+      '''
+abstract class Base {}
+
+class Foo implements Base {
+  // Not part of the interface of [Base].
+  String s1 = 'F';
+}
+
+class Bar implements Base {
+  // Not part of the interface of [Base].
+  String s1 = 'B';
+}
+''',
+      libraryFrontMatter: '''
+@Renderer(#renderFoo, Context<Foo>(), 'foo')
+@Renderer(#renderBar, Context<Bar>(), 'bar')
+library foo;
+import 'package:mustachio/annotations.dart';
+''',
+      additionalAssets: {
+        'foo|lib/templates/html/foo.html': '{{ >base }}',
+        'foo|lib/templates/html/bar.html': '{{ >base }}',
+        'foo|lib/templates/html/_base.html': 's1 is {{ s1 }}',
+      },
+    );
+    var rendererAsset = AssetId('foo', 'lib/foo.aot_renderers_for_html.dart');
+    var generatedContent = utf8.decode(writer.assets[rendererAsset]!);
+    expect(
+      generatedContent,
+      contains('String _renderFoo_partial_base_0(_i1.Foo context0) {'),
+    );
+    expect(
+      generatedContent,
+      contains('String _renderBar_partial_base_0(_i1.Bar context0) {'),
+    );
+  });
 }

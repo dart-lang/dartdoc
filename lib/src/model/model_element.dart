@@ -961,4 +961,6 @@ abstract class ModelElement extends Canonicalization
         ? super.definingCommentReferable
         : modelBuilder.fromElement(element);
   }
+
+  String get linkedObjectType => _packageGraph.dartCoreObject;
 }
