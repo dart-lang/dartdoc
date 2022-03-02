@@ -1479,23 +1479,8 @@ String renderClass(_i1.ClassTemplateData context0) {
       </dl>
     </section>''');
   }
-  buffer.writeln();
-  if (context2.hasPublicStaticMethods == true) {
-    buffer.writeln();
-    buffer.write('''
-    <section class="summary offset-anchor" id="static-methods">
-      <h2>Static Methods</h2>
-      <dl class="callables">''');
-    var context17 = context2.publicStaticMethodsSorted;
-    for (var context18 in context17) {
-      buffer.write('\n        ');
-      buffer.write(_renderClass_partial_callable_10(context18));
-    }
-    buffer.writeln();
-    buffer.write('''
-      </dl>
-    </section>''');
-  }
+  buffer.write('\n\n    ');
+  buffer.write(_renderClass_partial_static_methods_10(context2));
   buffer.writeln();
   if (context2.hasPublicConstantFields == true) {
     buffer.writeln();
@@ -1504,10 +1489,10 @@ String renderClass(_i1.ClassTemplateData context0) {
       <h2>Constants</h2>
 
       <dl class="properties">''');
-    var context19 = context2.publicConstantFieldsSorted;
-    for (var context20 in context19) {
+    var context17 = context2.publicConstantFieldsSorted;
+    for (var context18 in context17) {
       buffer.write('\n        ');
-      buffer.write(_renderClass_partial_constant_11(context20));
+      buffer.write(_renderClass_partial_constant_11(context18));
     }
     buffer.writeln();
     buffer.write('''
@@ -1897,16 +1882,16 @@ String _renderClass_partial_instance_methods_8(_i9.Class context1) {
     buffer.write('''"
       id="instance-methods">
     <h2>Methods</h2>
-      <dl class="callables">''');
+    <dl class="callables">''');
     var context4 = context1.publicInstanceMethodsSorted;
     for (var context5 in context4) {
-      buffer.write('\n          ');
+      buffer.write('\n        ');
       buffer.write(__renderClass_partial_instance_methods_8_partial_callable_0(
           context5));
     }
     buffer.writeln();
     buffer.write('''
-      </dl>
+    </dl>
   </section>''');
   }
 
@@ -2105,7 +2090,31 @@ String
   return buffer.toString();
 }
 
-String _renderClass_partial_callable_10(_i11.Method context2) {
+String _renderClass_partial_static_methods_10(_i9.Class context1) {
+  final buffer = StringBuffer();
+  if (context1.hasPublicStaticMethods == true) {
+    buffer.writeln();
+    buffer.write('''
+  <section class="summary offset-anchor" id="static-methods">
+    <h2>Static Methods</h2>
+    <dl class="callables">''');
+    var context4 = context1.publicStaticMethodsSorted;
+    for (var context5 in context4) {
+      buffer.write('\n        ');
+      buffer.write(
+          __renderClass_partial_static_methods_10_partial_callable_0(context5));
+    }
+    buffer.writeln();
+    buffer.write('''
+    </dl>
+  </section>''');
+  }
+
+  return buffer.toString();
+}
+
+String __renderClass_partial_static_methods_10_partial_callable_0(
+    _i11.Method context2) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
   buffer.writeEscaped(context2.htmlId);
@@ -2131,7 +2140,8 @@ String _renderClass_partial_callable_10(_i11.Method context2) {
   </span>
   ''');
   buffer.write(
-      __renderClass_partial_callable_10_partial_categorization_0(context2));
+      ___renderClass_partial_static_methods_10_partial_callable_0_partial_categorization_0(
+          context2));
   buffer.writeln();
   buffer.write('''
 </dt>
@@ -2143,7 +2153,9 @@ String _renderClass_partial_callable_10(_i11.Method context2) {
   ''');
   buffer.write(context2.oneLineDoc);
   buffer.write('\n  ');
-  buffer.write(__renderClass_partial_callable_10_partial_features_1(context2));
+  buffer.write(
+      ___renderClass_partial_static_methods_10_partial_callable_0_partial_features_1(
+          context2));
   buffer.writeln();
   buffer.write('''
 </dd>
@@ -2152,14 +2164,15 @@ String _renderClass_partial_callable_10(_i11.Method context2) {
   return buffer.toString();
 }
 
-String __renderClass_partial_callable_10_partial_categorization_0(
-    _i11.Method context2) {
+String
+    ___renderClass_partial_static_methods_10_partial_callable_0_partial_categorization_0(
+        _i11.Method context2) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
-    var context7 = context2.displayedCategories;
-    for (var context8 in context7) {
+    var context9 = context2.displayedCategories;
+    for (var context10 in context9) {
       buffer.write('\n    ');
-      buffer.write(context8!.categoryLabel);
+      buffer.write(context10!.categoryLabel);
     }
   }
   buffer.writeln();
@@ -2167,8 +2180,9 @@ String __renderClass_partial_callable_10_partial_categorization_0(
   return buffer.toString();
 }
 
-String __renderClass_partial_callable_10_partial_features_1(
-    _i11.Method context2) {
+String
+    ___renderClass_partial_static_methods_10_partial_callable_0_partial_features_1(
+        _i11.Method context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
     buffer.write('''<div class="features">''');
@@ -2787,7 +2801,7 @@ String renderEnum(_i1.EnumTemplateData context0) {
   buffer.write('''
         <h1>
           <span class="kind-enum">''');
-  buffer.write(context1.name);
+  buffer.write(context1.nameWithGenerics);
   buffer.write('''</span>
           ''');
   buffer.writeEscaped(context1.kind);
@@ -2901,23 +2915,8 @@ String renderEnum(_i1.EnumTemplateData context0) {
       </dl>
     </section>''');
   }
-  buffer.writeln();
-  if (context2.hasPublicStaticMethods == true) {
-    buffer.writeln();
-    buffer.write('''
-    <section class="summary offset-anchor" id="static-methods">
-      <h2>Static Methods</h2>
-      <dl class="callables">''');
-    var context11 = context2.publicStaticMethodsSorted;
-    for (var context12 in context11) {
-      buffer.write('\n        ');
-      buffer.write(_renderEnum_partial_callable_11(context12));
-    }
-    buffer.writeln();
-    buffer.write('''
-      </dl>
-    </section>''');
-  }
+  buffer.write('\n\n    ');
+  buffer.write(_renderEnum_partial_static_methods_11(context2));
   buffer.writeln();
   buffer.write('''
   </div><!-- /.main-content -->
@@ -3365,16 +3364,16 @@ String _renderEnum_partial_instance_methods_9(_i14.Enum context1) {
     buffer.write('''"
       id="instance-methods">
     <h2>Methods</h2>
-      <dl class="callables">''');
+    <dl class="callables">''');
     var context4 = context1.publicInstanceMethodsSorted;
     for (var context5 in context4) {
-      buffer.write('\n          ');
+      buffer.write('\n        ');
       buffer.write(
           __renderEnum_partial_instance_methods_9_partial_callable_0(context5));
     }
     buffer.writeln();
     buffer.write('''
-      </dl>
+    </dl>
   </section>''');
   }
 
@@ -3573,7 +3572,31 @@ String
   return buffer.toString();
 }
 
-String _renderEnum_partial_callable_11(_i11.Method context2) {
+String _renderEnum_partial_static_methods_11(_i14.Enum context1) {
+  final buffer = StringBuffer();
+  if (context1.hasPublicStaticMethods == true) {
+    buffer.writeln();
+    buffer.write('''
+  <section class="summary offset-anchor" id="static-methods">
+    <h2>Static Methods</h2>
+    <dl class="callables">''');
+    var context4 = context1.publicStaticMethodsSorted;
+    for (var context5 in context4) {
+      buffer.write('\n        ');
+      buffer.write(
+          __renderEnum_partial_static_methods_11_partial_callable_0(context5));
+    }
+    buffer.writeln();
+    buffer.write('''
+    </dl>
+  </section>''');
+  }
+
+  return buffer.toString();
+}
+
+String __renderEnum_partial_static_methods_11_partial_callable_0(
+    _i11.Method context2) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
   buffer.writeEscaped(context2.htmlId);
@@ -3599,7 +3622,8 @@ String _renderEnum_partial_callable_11(_i11.Method context2) {
   </span>
   ''');
   buffer.write(
-      __renderEnum_partial_callable_11_partial_categorization_0(context2));
+      ___renderEnum_partial_static_methods_11_partial_callable_0_partial_categorization_0(
+          context2));
   buffer.writeln();
   buffer.write('''
 </dt>
@@ -3611,7 +3635,9 @@ String _renderEnum_partial_callable_11(_i11.Method context2) {
   ''');
   buffer.write(context2.oneLineDoc);
   buffer.write('\n  ');
-  buffer.write(__renderEnum_partial_callable_11_partial_features_1(context2));
+  buffer.write(
+      ___renderEnum_partial_static_methods_11_partial_callable_0_partial_features_1(
+          context2));
   buffer.writeln();
   buffer.write('''
 </dd>
@@ -3620,14 +3646,15 @@ String _renderEnum_partial_callable_11(_i11.Method context2) {
   return buffer.toString();
 }
 
-String __renderEnum_partial_callable_11_partial_categorization_0(
-    _i11.Method context2) {
+String
+    ___renderEnum_partial_static_methods_11_partial_callable_0_partial_categorization_0(
+        _i11.Method context2) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
-    var context7 = context2.displayedCategories;
-    for (var context8 in context7) {
+    var context9 = context2.displayedCategories;
+    for (var context10 in context9) {
       buffer.write('\n    ');
-      buffer.write(context8!.categoryLabel);
+      buffer.write(context10!.categoryLabel);
     }
   }
   buffer.writeln();
@@ -3635,8 +3662,9 @@ String __renderEnum_partial_callable_11_partial_categorization_0(
   return buffer.toString();
 }
 
-String __renderEnum_partial_callable_11_partial_features_1(
-    _i11.Method context2) {
+String
+    ___renderEnum_partial_static_methods_11_partial_callable_0_partial_features_1(
+        _i11.Method context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
     buffer.write('''<div class="features">''');
@@ -4209,23 +4237,8 @@ String renderExtension<T extends _i5.Extension>(
         </dl>
     </section>''');
   }
-  buffer.writeln();
-  if (context2.hasPublicStaticMethods == true) {
-    buffer.writeln();
-    buffer.write('''
-    <section class="summary offset-anchor" id="static-methods">
-        <h2>Static Methods</h2>
-        <dl class="callables">''');
-    var context8 = context2.publicStaticMethodsSorted;
-    for (var context9 in context8) {
-      buffer.write('\n            ');
-      buffer.write(_renderExtension_partial_callable_8(context9));
-    }
-    buffer.writeln();
-    buffer.write('''
-        </dl>
-    </section>''');
-  }
+  buffer.write('\n\n    ');
+  buffer.write(_renderExtension_partial_static_methods_8(context2));
   buffer.writeln();
   if (context2.hasPublicConstantFields == true) {
     buffer.writeln();
@@ -4234,10 +4247,10 @@ String renderExtension<T extends _i5.Extension>(
         <h2>Constants</h2>
 
         <dl class="properties">''');
-    var context10 = context2.publicConstantFieldsSorted;
-    for (var context11 in context10) {
+    var context8 = context2.publicConstantFieldsSorted;
+    for (var context9 in context8) {
       buffer.write('\n            ');
-      buffer.write(_renderExtension_partial_constant_9(context11));
+      buffer.write(_renderExtension_partial_constant_9(context9));
     }
     buffer.writeln();
     buffer.write('''
@@ -4567,17 +4580,17 @@ String _renderExtension_partial_instance_methods_6(_i5.Extension context1) {
     buffer.write('''"
       id="instance-methods">
     <h2>Methods</h2>
-      <dl class="callables">''');
+    <dl class="callables">''');
     var context4 = context1.publicInstanceMethodsSorted;
     for (var context5 in context4) {
-      buffer.write('\n          ');
+      buffer.write('\n        ');
       buffer.write(
           __renderExtension_partial_instance_methods_6_partial_callable_0(
               context5));
     }
     buffer.writeln();
     buffer.write('''
-      </dl>
+    </dl>
   </section>''');
   }
 
@@ -4776,7 +4789,32 @@ String
   return buffer.toString();
 }
 
-String _renderExtension_partial_callable_8(_i11.Method context2) {
+String _renderExtension_partial_static_methods_8(_i5.Extension context1) {
+  final buffer = StringBuffer();
+  if (context1.hasPublicStaticMethods == true) {
+    buffer.writeln();
+    buffer.write('''
+  <section class="summary offset-anchor" id="static-methods">
+    <h2>Static Methods</h2>
+    <dl class="callables">''');
+    var context4 = context1.publicStaticMethodsSorted;
+    for (var context5 in context4) {
+      buffer.write('\n        ');
+      buffer.write(
+          __renderExtension_partial_static_methods_8_partial_callable_0(
+              context5));
+    }
+    buffer.writeln();
+    buffer.write('''
+    </dl>
+  </section>''');
+  }
+
+  return buffer.toString();
+}
+
+String __renderExtension_partial_static_methods_8_partial_callable_0(
+    _i11.Method context2) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
   buffer.writeEscaped(context2.htmlId);
@@ -4802,7 +4840,8 @@ String _renderExtension_partial_callable_8(_i11.Method context2) {
   </span>
   ''');
   buffer.write(
-      __renderExtension_partial_callable_8_partial_categorization_0(context2));
+      ___renderExtension_partial_static_methods_8_partial_callable_0_partial_categorization_0(
+          context2));
   buffer.writeln();
   buffer.write('''
 </dt>
@@ -4814,8 +4853,9 @@ String _renderExtension_partial_callable_8(_i11.Method context2) {
   ''');
   buffer.write(context2.oneLineDoc);
   buffer.write('\n  ');
-  buffer
-      .write(__renderExtension_partial_callable_8_partial_features_1(context2));
+  buffer.write(
+      ___renderExtension_partial_static_methods_8_partial_callable_0_partial_features_1(
+          context2));
   buffer.writeln();
   buffer.write('''
 </dd>
@@ -4824,14 +4864,15 @@ String _renderExtension_partial_callable_8(_i11.Method context2) {
   return buffer.toString();
 }
 
-String __renderExtension_partial_callable_8_partial_categorization_0(
-    _i11.Method context2) {
+String
+    ___renderExtension_partial_static_methods_8_partial_callable_0_partial_categorization_0(
+        _i11.Method context2) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
-    var context7 = context2.displayedCategories;
-    for (var context8 in context7) {
+    var context9 = context2.displayedCategories;
+    for (var context10 in context9) {
       buffer.write('\n    ');
-      buffer.write(context8!.categoryLabel);
+      buffer.write(context10!.categoryLabel);
     }
   }
   buffer.writeln();
@@ -4839,8 +4880,9 @@ String __renderExtension_partial_callable_8_partial_categorization_0(
   return buffer.toString();
 }
 
-String __renderExtension_partial_callable_8_partial_features_1(
-    _i11.Method context2) {
+String
+    ___renderExtension_partial_static_methods_8_partial_callable_0_partial_features_1(
+        _i11.Method context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
     buffer.write('''<div class="features">''');
@@ -7629,23 +7671,8 @@ String renderMixin(_i1.MixinTemplateData context0) {
       </dl>
     </section>''');
   }
-  buffer.writeln();
-  if (context2.hasPublicStaticMethods == true) {
-    buffer.writeln();
-    buffer.write('''
-    <section class="summary offset-anchor" id="static-methods">
-      <h2>Static Methods</h2>
-      <dl class="callables">''');
-    var context13 = context2.publicStaticMethods;
-    for (var context14 in context13) {
-      buffer.write('\n        ');
-      buffer.write(_renderMixin_partial_callable_10(context14));
-    }
-    buffer.writeln();
-    buffer.write('''
-      </dl>
-    </section>''');
-  }
+  buffer.write('\n\n    ');
+  buffer.write(_renderMixin_partial_static_methods_10(context2));
   buffer.writeln();
   if (context2.hasPublicConstantFields == true) {
     buffer.writeln();
@@ -7654,10 +7681,10 @@ String renderMixin(_i1.MixinTemplateData context0) {
       <h2>Constants</h2>
 
       <dl class="properties">''');
-    var context15 = context2.publicConstantFieldsSorted;
-    for (var context16 in context15) {
+    var context13 = context2.publicConstantFieldsSorted;
+    for (var context14 in context13) {
       buffer.write('\n        ');
-      buffer.write(_renderMixin_partial_constant_11(context16));
+      buffer.write(_renderMixin_partial_constant_11(context14));
     }
     buffer.writeln();
     buffer.write('''
@@ -8046,16 +8073,16 @@ String _renderMixin_partial_instance_methods_8(_i16.Mixin context1) {
     buffer.write('''"
       id="instance-methods">
     <h2>Methods</h2>
-      <dl class="callables">''');
+    <dl class="callables">''');
     var context4 = context1.publicInstanceMethodsSorted;
     for (var context5 in context4) {
-      buffer.write('\n          ');
+      buffer.write('\n        ');
       buffer.write(__renderMixin_partial_instance_methods_8_partial_callable_0(
           context5));
     }
     buffer.writeln();
     buffer.write('''
-      </dl>
+    </dl>
   </section>''');
   }
 
@@ -8254,7 +8281,31 @@ String
   return buffer.toString();
 }
 
-String _renderMixin_partial_callable_10(_i11.Method context2) {
+String _renderMixin_partial_static_methods_10(_i16.Mixin context1) {
+  final buffer = StringBuffer();
+  if (context1.hasPublicStaticMethods == true) {
+    buffer.writeln();
+    buffer.write('''
+  <section class="summary offset-anchor" id="static-methods">
+    <h2>Static Methods</h2>
+    <dl class="callables">''');
+    var context4 = context1.publicStaticMethodsSorted;
+    for (var context5 in context4) {
+      buffer.write('\n        ');
+      buffer.write(
+          __renderMixin_partial_static_methods_10_partial_callable_0(context5));
+    }
+    buffer.writeln();
+    buffer.write('''
+    </dl>
+  </section>''');
+  }
+
+  return buffer.toString();
+}
+
+String __renderMixin_partial_static_methods_10_partial_callable_0(
+    _i11.Method context2) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
   buffer.writeEscaped(context2.htmlId);
@@ -8280,7 +8331,8 @@ String _renderMixin_partial_callable_10(_i11.Method context2) {
   </span>
   ''');
   buffer.write(
-      __renderMixin_partial_callable_10_partial_categorization_0(context2));
+      ___renderMixin_partial_static_methods_10_partial_callable_0_partial_categorization_0(
+          context2));
   buffer.writeln();
   buffer.write('''
 </dt>
@@ -8292,7 +8344,9 @@ String _renderMixin_partial_callable_10(_i11.Method context2) {
   ''');
   buffer.write(context2.oneLineDoc);
   buffer.write('\n  ');
-  buffer.write(__renderMixin_partial_callable_10_partial_features_1(context2));
+  buffer.write(
+      ___renderMixin_partial_static_methods_10_partial_callable_0_partial_features_1(
+          context2));
   buffer.writeln();
   buffer.write('''
 </dd>
@@ -8301,14 +8355,15 @@ String _renderMixin_partial_callable_10(_i11.Method context2) {
   return buffer.toString();
 }
 
-String __renderMixin_partial_callable_10_partial_categorization_0(
-    _i11.Method context2) {
+String
+    ___renderMixin_partial_static_methods_10_partial_callable_0_partial_categorization_0(
+        _i11.Method context2) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
-    var context7 = context2.displayedCategories;
-    for (var context8 in context7) {
+    var context9 = context2.displayedCategories;
+    for (var context10 in context9) {
       buffer.write('\n    ');
-      buffer.write(context8!.categoryLabel);
+      buffer.write(context10!.categoryLabel);
     }
   }
   buffer.writeln();
@@ -8316,8 +8371,9 @@ String __renderMixin_partial_callable_10_partial_categorization_0(
   return buffer.toString();
 }
 
-String __renderMixin_partial_callable_10_partial_features_1(
-    _i11.Method context2) {
+String
+    ___renderMixin_partial_static_methods_10_partial_callable_0_partial_features_1(
+        _i11.Method context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
     buffer.write('''<div class="features">''');

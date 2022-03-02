@@ -1,67 +1,60 @@
-{{>head}}
+{{ >head }}
 
-{{#self}}
-# {{{name}}} {{kind}}
+{{ #self }}
+# {{{ nameWithGenerics }}} {{ kind }}
 
-{{>source_link}}
-{{>feature_set}}
-{{/self}}
+{{ >source_link }}
+{{ >feature_set }}
+{{ /self}}
 
-{{#eNum}}
-{{>documentation}}
+{{ #eNum }}
+{{ >documentation }}
 
-{{#hasModifiers}}
+{{ #hasModifiers }}
 {{ >super_chain }}
 {{ >interfaces }}
 
-{{#hasAnnotations}}
+{{ #hasAnnotations }}
 **Annotations**
 
-{{#annotations}}
-- {{{linkedNameWithParameters}}}
-{{/annotations}}
-{{/hasAnnotations}}
-{{/hasModifiers}}
+{{ #annotations }}
+- {{{ linkedNameWithParameters }}}
+{{ /annotations }}
+{{ /hasAnnotations }}
+{{ /hasModifiers }}
 
-{{#hasPublicConstantFields}}
+{{ #hasPublicConstantFields }}
 ## Constants
 
-{{#publicConstantFieldsSorted}}
-{{>constant}}
+{{ #publicConstantFieldsSorted }}
+{{ >constant }}
 
-{{/publicConstantFieldsSorted}}
-{{/hasPublicConstantFields}}
+{{ /publicConstantFieldsSorted }}
+{{ /hasPublicConstantFields }}
 
-{{#hasPublicInstanceFields}}
+{{ #hasPublicInstanceFields }}
 ## Properties
 
-{{#publicInstanceFieldsSorted}}
-{{>property}}
+{{ #publicInstanceFieldsSorted }}
+{{ >property }}
 
-{{/publicInstanceFieldsSorted}}
-{{/hasPublicInstanceFields}}
+{{ /publicInstanceFieldsSorted }}
+{{ /hasPublicInstanceFields }}
 
 {{ >instance_methods }}
 
 {{ >instance_operators }}
 
-{{#hasPublicVariableStaticFields}}
+{{ #hasPublicVariableStaticFields }}
 ## Static Properties
 
-{{#publicVariableStaticFieldsSorted}}
-{{>property}}
+{{ #publicVariableStaticFieldsSorted }}
+{{ >property }}
 
-{{/publicVariableStaticFieldsSorted}}
-{{/hasPublicVariableStaticFields}}
+{{ /publicVariableStaticFieldsSorted }}
+{{ /hasPublicVariableStaticFields }}
 
-{{#hasPublicStaticMethods}}
-## Static Methods
+{{ >static_methods }}
+{{ /eNum }}
 
-{{#publicStaticMethodsSorted}}
-{{>callable}}
-
-{{/publicStaticMethodsSorted}}
-{{/hasPublicStaticMethods}}
-{{/eNum}}
-
-{{>footer}}
+{{ >footer }}

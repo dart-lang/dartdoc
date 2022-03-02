@@ -703,29 +703,18 @@ String renderClass(_i1.ClassTemplateData context0) {
       buffer.writeln();
     }
   }
-  buffer.writeln();
-  if (context2.hasPublicStaticMethods == true) {
-    buffer.writeln();
-    buffer.write('''
-## Static Methods
-''');
-    var context16 = context2.publicStaticMethodsSorted;
-    for (var context17 in context16) {
-      buffer.writeln();
-      buffer.write(_renderClass_partial_callable_10(context17));
-      buffer.writeln();
-    }
-  }
+  buffer.write('\n\n');
+  buffer.write(_renderClass_partial_static_methods_10(context2));
   buffer.writeln();
   if (context2.hasPublicConstantFields == true) {
     buffer.writeln();
     buffer.write('''
 ## Constants
 ''');
-    var context18 = context2.publicConstantFieldsSorted;
-    for (var context19 in context18) {
+    var context16 = context2.publicConstantFieldsSorted;
+    for (var context17 in context16) {
       buffer.writeln();
-      buffer.write(_renderClass_partial_constant_11(context19));
+      buffer.write(_renderClass_partial_constant_11(context17));
       buffer.writeln();
     }
   }
@@ -1054,7 +1043,27 @@ String
   return buffer.toString();
 }
 
-String _renderClass_partial_callable_10(_i11.Method context2) {
+String _renderClass_partial_static_methods_10(_i9.Class context1) {
+  final buffer = StringBuffer();
+  if (context1.hasPublicStaticMethods == true) {
+    buffer.writeln();
+    buffer.write('''
+## Static Methods
+''');
+    var context4 = context1.publicStaticMethodsSorted;
+    for (var context5 in context4) {
+      buffer.writeln();
+      buffer.write(
+          __renderClass_partial_static_methods_10_partial_callable_0(context5));
+      buffer.writeln();
+    }
+  }
+
+  return buffer.toString();
+}
+
+String __renderClass_partial_static_methods_10_partial_callable_0(
+    _i11.Method context2) {
   final buffer = StringBuffer();
   buffer.write('''##### ''');
   buffer.write(context2.linkedName);
@@ -1065,28 +1074,32 @@ String _renderClass_partial_callable_10(_i11.Method context2) {
   buffer.write(context2.modelType.returnType.linkedName);
   buffer.writeln();
   buffer.write(
-      __renderClass_partial_callable_10_partial_categorization_0(context2));
+      ___renderClass_partial_static_methods_10_partial_callable_0_partial_categorization_0(
+          context2));
   buffer.write('\n\n');
   buffer.write(context2.oneLineDoc);
   buffer.write('  ');
   buffer.writeln();
-  buffer.write(__renderClass_partial_callable_10_partial_features_1(context2));
+  buffer.write(
+      ___renderClass_partial_static_methods_10_partial_callable_0_partial_features_1(
+          context2));
   buffer.writeln();
 
   return buffer.toString();
 }
 
-String __renderClass_partial_callable_10_partial_categorization_0(
-    _i11.Method context2) {
+String
+    ___renderClass_partial_static_methods_10_partial_callable_0_partial_categorization_0(
+        _i11.Method context2) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
     buffer.writeln();
     buffer.write('''
 Categories:''');
-    var context7 = context2.displayedCategories;
-    for (var context8 in context7) {
+    var context9 = context2.displayedCategories;
+    for (var context10 in context9) {
       buffer.writeln();
-      buffer.write(context8!.categoryLabel);
+      buffer.write(context10!.categoryLabel);
     }
   }
   buffer.writeln();
@@ -1094,8 +1107,9 @@ Categories:''');
   return buffer.toString();
 }
 
-String __renderClass_partial_callable_10_partial_features_1(
-    _i11.Method context2) {
+String
+    ___renderClass_partial_static_methods_10_partial_callable_0_partial_features_1(
+        _i11.Method context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
     buffer.write('''_''');
@@ -1304,7 +1318,7 @@ String renderEnum(_i1.EnumTemplateData context0) {
   buffer.writeln();
   buffer.write('''
 # ''');
-  buffer.write(context1.name);
+  buffer.write(context1.nameWithGenerics);
   buffer.write(' ');
   buffer.writeEscaped(context1.kind);
   buffer.write('\n\n');
@@ -1379,19 +1393,8 @@ String renderEnum(_i1.EnumTemplateData context0) {
       buffer.writeln();
     }
   }
-  buffer.writeln();
-  if (context2.hasPublicStaticMethods == true) {
-    buffer.writeln();
-    buffer.write('''
-## Static Methods
-''');
-    var context11 = context2.publicStaticMethodsSorted;
-    for (var context12 in context11) {
-      buffer.writeln();
-      buffer.write(_renderEnum_partial_callable_10(context12));
-      buffer.writeln();
-    }
-  }
+  buffer.write('\n\n');
+  buffer.write(_renderEnum_partial_static_methods_10(context2));
   buffer.write('\n\n');
   buffer.write(_renderEnum_partial_footer_11(context0));
   buffer.writeln();
@@ -1747,7 +1750,27 @@ String
   return buffer.toString();
 }
 
-String _renderEnum_partial_callable_10(_i11.Method context2) {
+String _renderEnum_partial_static_methods_10(_i14.Enum context1) {
+  final buffer = StringBuffer();
+  if (context1.hasPublicStaticMethods == true) {
+    buffer.writeln();
+    buffer.write('''
+## Static Methods
+''');
+    var context4 = context1.publicStaticMethodsSorted;
+    for (var context5 in context4) {
+      buffer.writeln();
+      buffer.write(
+          __renderEnum_partial_static_methods_10_partial_callable_0(context5));
+      buffer.writeln();
+    }
+  }
+
+  return buffer.toString();
+}
+
+String __renderEnum_partial_static_methods_10_partial_callable_0(
+    _i11.Method context2) {
   final buffer = StringBuffer();
   buffer.write('''##### ''');
   buffer.write(context2.linkedName);
@@ -1758,28 +1781,32 @@ String _renderEnum_partial_callable_10(_i11.Method context2) {
   buffer.write(context2.modelType.returnType.linkedName);
   buffer.writeln();
   buffer.write(
-      __renderEnum_partial_callable_10_partial_categorization_0(context2));
+      ___renderEnum_partial_static_methods_10_partial_callable_0_partial_categorization_0(
+          context2));
   buffer.write('\n\n');
   buffer.write(context2.oneLineDoc);
   buffer.write('  ');
   buffer.writeln();
-  buffer.write(__renderEnum_partial_callable_10_partial_features_1(context2));
+  buffer.write(
+      ___renderEnum_partial_static_methods_10_partial_callable_0_partial_features_1(
+          context2));
   buffer.writeln();
 
   return buffer.toString();
 }
 
-String __renderEnum_partial_callable_10_partial_categorization_0(
-    _i11.Method context2) {
+String
+    ___renderEnum_partial_static_methods_10_partial_callable_0_partial_categorization_0(
+        _i11.Method context2) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
     buffer.writeln();
     buffer.write('''
 Categories:''');
-    var context7 = context2.displayedCategories;
-    for (var context8 in context7) {
+    var context9 = context2.displayedCategories;
+    for (var context10 in context9) {
       buffer.writeln();
-      buffer.write(context8!.categoryLabel);
+      buffer.write(context10!.categoryLabel);
     }
   }
   buffer.writeln();
@@ -1787,8 +1814,9 @@ Categories:''');
   return buffer.toString();
 }
 
-String __renderEnum_partial_callable_10_partial_features_1(
-    _i11.Method context2) {
+String
+    ___renderEnum_partial_static_methods_10_partial_callable_0_partial_features_1(
+        _i11.Method context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
     buffer.write('''_''');
@@ -1881,29 +1909,18 @@ on ''');
       buffer.writeln();
     }
   }
-  buffer.writeln();
-  if (context3.hasPublicStaticMethods == true) {
-    buffer.writeln();
-    buffer.write('''
-## Static Methods
-''');
-    var context8 = context3.publicStaticMethodsSorted;
-    for (var context9 in context8) {
-      buffer.writeln();
-      buffer.write(_renderExtension_partial_callable_8(context9));
-      buffer.writeln();
-    }
-  }
+  buffer.write('\n\n');
+  buffer.write(_renderExtension_partial_static_methods_8(context3));
   buffer.writeln();
   if (context3.hasPublicConstantFields == true) {
     buffer.writeln();
     buffer.write('''
 ## Constants
 ''');
-    var context10 = context3.publicConstantFieldsSorted;
-    for (var context11 in context10) {
+    var context8 = context3.publicConstantFieldsSorted;
+    for (var context9 in context8) {
       buffer.writeln();
-      buffer.write(_renderExtension_partial_constant_9(context11));
+      buffer.write(_renderExtension_partial_constant_9(context9));
       buffer.writeln();
     }
   }
@@ -2190,7 +2207,28 @@ String
   return buffer.toString();
 }
 
-String _renderExtension_partial_callable_8(_i11.Method context2) {
+String _renderExtension_partial_static_methods_8(_i5.Extension context1) {
+  final buffer = StringBuffer();
+  if (context1.hasPublicStaticMethods == true) {
+    buffer.writeln();
+    buffer.write('''
+## Static Methods
+''');
+    var context4 = context1.publicStaticMethodsSorted;
+    for (var context5 in context4) {
+      buffer.writeln();
+      buffer.write(
+          __renderExtension_partial_static_methods_8_partial_callable_0(
+              context5));
+      buffer.writeln();
+    }
+  }
+
+  return buffer.toString();
+}
+
+String __renderExtension_partial_static_methods_8_partial_callable_0(
+    _i11.Method context2) {
   final buffer = StringBuffer();
   buffer.write('''##### ''');
   buffer.write(context2.linkedName);
@@ -2201,29 +2239,32 @@ String _renderExtension_partial_callable_8(_i11.Method context2) {
   buffer.write(context2.modelType.returnType.linkedName);
   buffer.writeln();
   buffer.write(
-      __renderExtension_partial_callable_8_partial_categorization_0(context2));
+      ___renderExtension_partial_static_methods_8_partial_callable_0_partial_categorization_0(
+          context2));
   buffer.write('\n\n');
   buffer.write(context2.oneLineDoc);
   buffer.write('  ');
   buffer.writeln();
-  buffer
-      .write(__renderExtension_partial_callable_8_partial_features_1(context2));
+  buffer.write(
+      ___renderExtension_partial_static_methods_8_partial_callable_0_partial_features_1(
+          context2));
   buffer.writeln();
 
   return buffer.toString();
 }
 
-String __renderExtension_partial_callable_8_partial_categorization_0(
-    _i11.Method context2) {
+String
+    ___renderExtension_partial_static_methods_8_partial_callable_0_partial_categorization_0(
+        _i11.Method context2) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
     buffer.writeln();
     buffer.write('''
 Categories:''');
-    var context7 = context2.displayedCategories;
-    for (var context8 in context7) {
+    var context9 = context2.displayedCategories;
+    for (var context10 in context9) {
       buffer.writeln();
-      buffer.write(context8!.categoryLabel);
+      buffer.write(context10!.categoryLabel);
     }
   }
   buffer.writeln();
@@ -2231,8 +2272,9 @@ Categories:''');
   return buffer.toString();
 }
 
-String __renderExtension_partial_callable_8_partial_features_1(
-    _i11.Method context2) {
+String
+    ___renderExtension_partial_static_methods_8_partial_callable_0_partial_features_1(
+        _i11.Method context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
     buffer.write('''_''');
@@ -3421,29 +3463,18 @@ String renderMixin(_i1.MixinTemplateData context0) {
       buffer.writeln();
     }
   }
-  buffer.writeln();
-  if (context2.hasPublicStaticMethods == true) {
-    buffer.writeln();
-    buffer.write('''
-## Static Methods
-''');
-    var context13 = context2.publicStaticMethodsSorted;
-    for (var context14 in context13) {
-      buffer.writeln();
-      buffer.write(_renderMixin_partial_callable_10(context14));
-      buffer.writeln();
-    }
-  }
+  buffer.write('\n\n');
+  buffer.write(_renderMixin_partial_static_methods_10(context2));
   buffer.writeln();
   if (context2.hasPublicConstantFields == true) {
     buffer.writeln();
     buffer.write('''
 ## Constants
 ''');
-    var context15 = context2.publicConstantFieldsSorted;
-    for (var context16 in context15) {
+    var context13 = context2.publicConstantFieldsSorted;
+    for (var context14 in context13) {
       buffer.writeln();
-      buffer.write(_renderMixin_partial_constant_11(context16));
+      buffer.write(_renderMixin_partial_constant_11(context14));
       buffer.writeln();
     }
   }
@@ -3772,7 +3803,27 @@ String
   return buffer.toString();
 }
 
-String _renderMixin_partial_callable_10(_i11.Method context2) {
+String _renderMixin_partial_static_methods_10(_i16.Mixin context1) {
+  final buffer = StringBuffer();
+  if (context1.hasPublicStaticMethods == true) {
+    buffer.writeln();
+    buffer.write('''
+## Static Methods
+''');
+    var context4 = context1.publicStaticMethodsSorted;
+    for (var context5 in context4) {
+      buffer.writeln();
+      buffer.write(
+          __renderMixin_partial_static_methods_10_partial_callable_0(context5));
+      buffer.writeln();
+    }
+  }
+
+  return buffer.toString();
+}
+
+String __renderMixin_partial_static_methods_10_partial_callable_0(
+    _i11.Method context2) {
   final buffer = StringBuffer();
   buffer.write('''##### ''');
   buffer.write(context2.linkedName);
@@ -3783,28 +3834,32 @@ String _renderMixin_partial_callable_10(_i11.Method context2) {
   buffer.write(context2.modelType.returnType.linkedName);
   buffer.writeln();
   buffer.write(
-      __renderMixin_partial_callable_10_partial_categorization_0(context2));
+      ___renderMixin_partial_static_methods_10_partial_callable_0_partial_categorization_0(
+          context2));
   buffer.write('\n\n');
   buffer.write(context2.oneLineDoc);
   buffer.write('  ');
   buffer.writeln();
-  buffer.write(__renderMixin_partial_callable_10_partial_features_1(context2));
+  buffer.write(
+      ___renderMixin_partial_static_methods_10_partial_callable_0_partial_features_1(
+          context2));
   buffer.writeln();
 
   return buffer.toString();
 }
 
-String __renderMixin_partial_callable_10_partial_categorization_0(
-    _i11.Method context2) {
+String
+    ___renderMixin_partial_static_methods_10_partial_callable_0_partial_categorization_0(
+        _i11.Method context2) {
   final buffer = StringBuffer();
   if (context2.hasCategoryNames == true) {
     buffer.writeln();
     buffer.write('''
 Categories:''');
-    var context7 = context2.displayedCategories;
-    for (var context8 in context7) {
+    var context9 = context2.displayedCategories;
+    for (var context10 in context9) {
       buffer.writeln();
-      buffer.write(context8!.categoryLabel);
+      buffer.write(context10!.categoryLabel);
     }
   }
   buffer.writeln();
@@ -3812,8 +3867,9 @@ Categories:''');
   return buffer.toString();
 }
 
-String __renderMixin_partial_callable_10_partial_features_1(
-    _i11.Method context2) {
+String
+    ___renderMixin_partial_static_methods_10_partial_callable_0_partial_features_1(
+        _i11.Method context2) {
   final buffer = StringBuffer();
   if (context2.hasFeatures == true) {
     buffer.write('''_''');

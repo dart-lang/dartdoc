@@ -79,8 +79,6 @@ dartdoc:
 ''',
       libFiles: [
         d.file('lib.dart', '''
-library 'lib1';
-
 /// A class.
 /// {@category One}
 class C1 {}
@@ -122,7 +120,7 @@ typedef T1 = void Function();
     await utils.writeDartdocResources(resourceProvider);
     await (await buildDartdoc()).generateDocs();
     topicOneLines = resourceProvider
-        .getFile(p.joinAll([packagePath, 'doc', 'topics', 'One-topic.html']))
+        .getFile(p.join(packagePath, 'doc', 'topics', 'One-topic.html'))
         .readAsStringSync()
         .split('\n');
   });
@@ -164,8 +162,7 @@ typedef T1 = void Function();
           matches('<h2>Extensions</h2>'),
           matches('<a href="../lib/Ex.html">Ex</a>'),
           matches('An extension.'),
-        ]),
-        reason: topicOneLines.join('\n'));
+        ]));
   });
 
   test('category page links to functions annotated with category', () async {
@@ -175,8 +172,7 @@ typedef T1 = void Function();
           matches('<h2>Functions</h2>'),
           matches('<a href="../lib/F1.html">F1</a>'),
           matches('A function.'),
-        ]),
-        reason: topicOneLines.join('\n'));
+        ]));
   });
 
   test('category page links to mixins annotated with category', () async {
@@ -186,8 +182,7 @@ typedef T1 = void Function();
           matches('<h2>Mixins</h2>'),
           matches('<a href="../lib/M1-mixin.html">M1</a>'),
           matches('A mixin.'),
-        ]),
-        reason: topicOneLines.join('\n'));
+        ]));
   });
 
   test('category page links to properties annotated with category', () async {

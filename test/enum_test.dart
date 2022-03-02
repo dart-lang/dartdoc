@@ -324,6 +324,29 @@ enum E<T> implements C<T>, D { one, two, three; }
       expect(eEnum.interfaces.map((i) => i.name), equals(['C', 'D']));
     });
 
+    test("an enhanced enum's static methods are documented", () async {
+      var library = await bootPackageWithLibrary('''
+enum E {
+  one, two, three;
+
+  /// Doc comment.
+  static int method1(String p) => 7;
+}
+''');
+      var method1 = library.enums.named('E').staticMethods.named('method1');
+
+      expect(method1.isInherited, false);
+      expect(method1.isOperator, false);
+      expect(method1.isStatic, true);
+      expect(method1.isCallable, true);
+      expect(method1.isDocumented, true);
+      expect(
+        method1.linkedName,
+        '<a href="$linkPrefix/E/method1.html">method1</a>',
+      );
+      expect(method1.documentationComment, '/// Doc comment.');
+    });
+
     // TODO(srawlins): Add rendering tests.
     // * Fix interfaces test.
     // * Add tests for rendered supertypes HTML.

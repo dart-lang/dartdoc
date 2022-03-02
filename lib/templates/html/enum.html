@@ -4,7 +4,7 @@
     {{ #self }}
       <div>{{ >source_link }}
         <h1>
-          <span class="kind-enum">{{{ name }}}</span>
+          <span class="kind-enum">{{{ nameWithGenerics }}}</span>
           {{ kind }} {{ >feature_set }} {{ >categorization }}
         </h1>
       </div>
@@ -74,16 +74,7 @@
     </section>
     {{ /hasPublicVariableStaticFields }}
 
-    {{ #hasPublicStaticMethods }}
-    <section class="summary offset-anchor" id="static-methods">
-      <h2>Static Methods</h2>
-      <dl class="callables">
-        {{ #publicStaticMethodsSorted }}
-        {{ >callable }}
-        {{ /publicStaticMethodsSorted }}
-      </dl>
-    </section>
-    {{ /hasPublicStaticMethods }}
+    {{ >static_methods }}
     {{ /eNum }}
   </div><!-- /.main-content -->
 
