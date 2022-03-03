@@ -45,16 +45,11 @@
 
 {{ >instance_operators }}
 
-{{ #hasPublicVariableStaticFields }}
-## Static Properties
-
-{{ #publicVariableStaticFieldsSorted }}
-{{ >property }}
-
-{{ /publicVariableStaticFieldsSorted }}
-{{ /hasPublicVariableStaticFields }}
+{{ >static_properties }}
 
 {{ >static_methods }}
+
+{{ >static_constants }}
 {{ /eNum }}
 
 {{ >footer }}

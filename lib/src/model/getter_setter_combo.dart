@@ -84,6 +84,13 @@ mixin GetterSetterCombo on ModelElement {
 
   @override
   CharacterLocation? get characterLocation {
+    if (enclosingElement is Enum) {
+      if (name == 'values') {
+        return null;
+      } else if (name == 'index') {
+        return null;
+      }
+    }
     // Handle all synthetic possibilities.  Ordinarily, warnings for
     // explicit setters/getters will be handled by those objects, but
     // if a warning comes up for an enclosing synthetic field we have to

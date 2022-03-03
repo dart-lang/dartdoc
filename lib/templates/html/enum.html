@@ -30,17 +30,17 @@
     </section>
     {{ /hasModifiers }}
 
-    {{ #hasPublicConstantFields }}
+    {{ #hasPublicEnumValues }}
     <section class="summary offset-anchor" id="constants">
-      <h2>Constants</h2>
+      <h2>Values</h2>
 
       <dl class="properties">
-        {{ #publicConstantFieldsSorted }}
-        {{ >constant }}
-        {{ /publicConstantFieldsSorted }}
+        {{ #publicEnumValuesSorted }}
+          {{ >constant }}
+        {{ /publicEnumValuesSorted }}
       </dl>
     </section>
-    {{ /hasPublicConstantFields }}
+    {{ /hasPublicEnumValues }}
 
     {{ #hasPublicInstanceFields }}
     <section
@@ -61,20 +61,9 @@
 
     {{ >instance_methods }}
     {{ >instance_operators }}
-
-    {{ #hasPublicVariableStaticFields }}
-    <section class="summary offset-anchor" id="static-properties">
-      <h2>Static Properties</h2>
-
-      <dl class="properties">
-        {{ #publicVariableStaticFieldsSorted }}
-        {{ >property }}
-        {{ /publicVariableStaticFieldsSorted }}
-      </dl>
-    </section>
-    {{ /hasPublicVariableStaticFields }}
-
+    {{ >static_properties }}
     {{ >static_methods }}
+    {{ >static_constants }}
     {{ /eNum }}
   </div><!-- /.main-content -->
 

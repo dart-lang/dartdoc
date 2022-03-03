@@ -103,11 +103,52 @@ $libraryContent
 
     test("has a (synthetic) 'values' constant", () async {
       var library = await bootPackageWithLibrary('enum E { one, two, three }');
-      var valuesField =
-          library.enums.named('E').constantFields.named('values') as EnumField;
-      expect(valuesField.constantValue,
-          equals(EnumFieldRendererHtml().renderValue(valuesField)));
+      var valuesField = library.enums.named('E').constantFields.named('values');
       expect(valuesField.documentation, startsWith('A constant List'));
+    });
+
+    test("has a 'values' constant which can be referenced", () async {
+      var library = await bootPackageWithLibrary('''
+enum E { one, two, three }
+
+/// Reference to [E.values].
+class C {}
+''');
+      var cClass = library.classes.named('C');
+      expect(
+        cClass.documentationAsHtml,
+        '<p>Reference to '
+        '<a href="%%__HTMLBASE_dartdoc_internal__%%enums/E/values-constant.html">E.values</a>.</p>',
+      );
+    });
+
+    test('has a value which can be referenced', () async {
+      var library = await bootPackageWithLibrary('''
+enum E { one, two, three }
+
+/// Reference to [E.one].
+class C {}
+''');
+      var cClass = library.classes.named('C');
+      expect(
+          cClass.documentationAsHtml,
+          '<p>Reference to '
+          '<a href="%%__HTMLBASE_dartdoc_internal__%%enums/E.html">E.one</a>.</p>');
+    });
+
+    test("has an 'index' getter which can be referenced", () async {
+      var library = await bootPackageWithLibrary('''
+enum E { one, two, three }
+
+/// Reference to [E.index].
+class C {}
+''');
+      var cClass = library.classes.named('C');
+      expect(
+        cClass.documentationAsHtml,
+        '<p>Reference to '
+        '<a href="https://api.dart.dev/stable/2.16.0/dart-core/Enum/index.html">E.index</a>.</p>',
+      );
     });
 
     test("has an 'index' getter, which is linked", () async {
@@ -117,7 +158,7 @@ $libraryContent
       expect(eEnum.instanceFields.map((f) => f.name), contains('index'));
       expect(
         eEnum.instanceFields.named('index').linkedName,
-        '<a href="https://api.dart.dev/stable/2.9.0/dart-core/Enum/index.html">index</a>',
+        '<a href="https://api.dart.dev/stable/2.16.0/dart-core/Enum/index.html">index</a>',
       );
     });
 
@@ -348,19 +389,17 @@ enum E {
     });
 
     // TODO(srawlins): Add rendering tests.
-    // * Fix interfaces test.
     // * Add tests for rendered supertypes HTML.
-    // * Add tests for rendered interfaces HTML.
     // * Add tests for rendered mixins HTML.
-    // * Add tests for rendered static members.
+    // * Add tests for rendered static methods, static fields.
     // * Add tests for rendered fields.
-    // * Add tests for rendered getters, setters, operators.
+    // * Add tests for rendered getters, setters.
     // * Add tests for rendered field pages.
     // * Add tests for rendered generic enum values.
     // * Add tests for rendered constructors.
 
     // TODO(srawlins): Add referencing tests (`/// [Enum.method]` etc.)
-    // * Add tests for referencing enum static members.
+    // * Add tests for referencing enum static methods, static fields.
     // * Add tests for referencing enum getters, setters, operators, methods.
     // * Add tests for referencing constructors.
   }, skip: !enhancedEnumsAllowed);

@@ -86,7 +86,10 @@ analyzer:
 class C<T> {}
 
 enum E<T> implements C<T> {
-  one, two, three;
+  /// Doc comment for [one].
+  one,
+
+  two, three;
 
   /// A method.
   void m1() {}
@@ -96,6 +99,9 @@ enum E<T> implements C<T> {
 
   /// A static method.
   static void s1() {}
+
+  /// A constant.
+  static const c1 = 1;
 }
 '''),
         ],
@@ -130,12 +136,12 @@ enum E<T> implements C<T> {
       );
     });
 
-    test('enum page contains the values constant', () async {
+    test("enum page contains the 'values' constant", () async {
       expect(
           eLines,
           containsAllInOrder([
             matches('<h2>Constants</h2>'),
-            matches('<span class="name ">values</span>'),
+            matches('<a href="../lib/E/values-constant.html">values</a>'),
             matches(
                 'A constant List of the values in this enum, in order of their declaration.'),
           ]));
@@ -177,6 +183,26 @@ enum E<T> implements C<T> {
             matches('<h2>Static Methods</h2>'),
             matches('<a href="../lib/E/s1.html">s1</a>'),
             matches('A static method.'),
+          ]));
+    });
+
+    test('enum page contains values', () async {
+      expect(
+          eLines,
+          containsAllInOrder([
+            matches('<h2>Values</h2>'),
+            matches('<span class="name ">one</span>'),
+            matches('<p>Doc comment for <a href="../lib/E.html">one</a>.</p>'),
+          ]));
+    });
+
+    test('enum page contains (static) constants', () async {
+      expect(
+          eLines,
+          containsAllInOrder([
+            matches('<h2>Constants</h2>'),
+            matches('<a href="../lib/E/c1-constant.html">c1</a>'),
+            matches('A constant.'),
           ]));
     });
 

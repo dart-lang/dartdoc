@@ -4,6 +4,7 @@
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/model_utils.dart' as model_utils;
 import 'package:dartdoc/src/render/enum_field_renderer.dart';
 
 class Enum extends InheritingContainer with TypeImplementing {
@@ -23,6 +24,11 @@ class Enum extends InheritingContainer with TypeImplementing {
 
   @override
   String get relationshipsClass => 'eNum-relationships';
+
+  late final Iterable<Field> publicEnumValuesSorted =
+      model_utils.filterNonPublic(constantFields).whereType<EnumField>();
+
+  bool get hasPublicEnumValues => publicEnumValuesSorted.isNotEmpty;
 }
 
 /// A field specific to an enum's values.
@@ -49,17 +55,6 @@ class EnumField extends Field {
   List<DocumentationComment> get documentationFrom {
     if (name == 'values' || name == 'index') return [this];
     return super.documentationFrom;
-  }
-
-  @override
-  String get documentation {
-    if (name == 'values') {
-      return 'A constant List of the values in this enum, in order of their declaration.';
-    } else if (name == 'index') {
-      return 'The integer index of this enum.';
-    } else {
-      return super.documentation;
-    }
   }
 
   @override
