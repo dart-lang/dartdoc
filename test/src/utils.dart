@@ -158,7 +158,7 @@ PackageMetaProvider get testPackageMetaProvider {
 ///
 /// Included is a "version" file and an "api_readme.md" file.
 void writeMockSdkFiles(Folder sdkFolder) {
-  sdkFolder.getChildAssumingFile('version').writeAsStringSync('2.9.0');
+  sdkFolder.getChildAssumingFile('version').writeAsStringSync('2.16.0');
   sdkFolder.getChildAssumingFile('api_readme.md').writeAsStringSync(
       'Welcome to the [Dart](https://dart.dev/) API reference documentation');
 

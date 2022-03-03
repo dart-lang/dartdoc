@@ -73,25 +73,11 @@
 
 {{ >instance_operators }}
 
-{{#hasPublicVariableStaticFields}}
-## Static Properties
-
-{{#publicVariableStaticFieldsSorted}}
-{{>property}}
-
-{{/publicVariableStaticFieldsSorted}}
-{{/hasPublicVariableStaticFields}}
+{{ >static_properties }}
 
 {{ >static_methods }}
 
-{{#hasPublicConstantFields}}
-## Constants
-
-{{#publicConstantFieldsSorted}}
-{{>constant}}
-
-{{/publicConstantFieldsSorted}}
-{{/hasPublicConstantFields}}
+{{ >static_constants }}
 {{/clazz}}
 
 {{>footer}}

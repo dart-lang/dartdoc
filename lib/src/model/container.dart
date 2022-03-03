@@ -163,8 +163,7 @@ abstract class Container extends ModelElement
 
   bool get hasPublicConstantFields => publicConstantFieldsSorted.isNotEmpty;
 
-  List<Field>? _publicConstantFieldsSorted;
-  List<Field> get publicConstantFieldsSorted => _publicConstantFieldsSorted ??=
+  late final List<Field> publicConstantFieldsSorted =
       publicConstantFields.toList()..sort(byName);
 
   Iterable<Accessor> get instanceAccessors =>

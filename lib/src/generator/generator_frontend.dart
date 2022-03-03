@@ -217,24 +217,37 @@ class GeneratorFrontEnd implements Generator {
           }
         }
 
-        for (var eNum in filterNonDocumented(lib.enums)) {
-          indexAccumulator.add(eNum);
-          _generatorBackend.generateEnum(writer, packageGraph, lib, eNum);
+        for (var enum_ in filterNonDocumented(lib.enums)) {
+          indexAccumulator.add(enum_);
+          _generatorBackend.generateEnum(writer, packageGraph, lib, enum_);
 
-          for (var property in filterNonDocumented(eNum.instanceFields)) {
+          for (var constant in filterNonDocumented(enum_.constantFields)) {
+            if (constant is EnumField) {
+              // Enum values don't get their own page; just any additional
+              // constants.
+              continue;
+            }
+            if (!constant.isCanonical) continue;
+
+            indexAccumulator.add(constant);
+            _generatorBackend.generateConstant(
+                writer, packageGraph, lib, enum_, constant);
+          }
+
+          for (var property in filterNonDocumented(enum_.instanceFields)) {
             indexAccumulator.add(property);
             _generatorBackend.generateConstant(
-                writer, packageGraph, lib, eNum, property);
+                writer, packageGraph, lib, enum_, property);
           }
-          for (var operator in filterNonDocumented(eNum.instanceOperators)) {
+          for (var operator in filterNonDocumented(enum_.instanceOperators)) {
             indexAccumulator.add(operator);
             _generatorBackend.generateMethod(
-                writer, packageGraph, lib, eNum, operator);
+                writer, packageGraph, lib, enum_, operator);
           }
-          for (var method in filterNonDocumented(eNum.instanceMethods)) {
+          for (var method in filterNonDocumented(enum_.instanceMethods)) {
             indexAccumulator.add(method);
             _generatorBackend.generateMethod(
-                writer, packageGraph, lib, eNum, method);
+                writer, packageGraph, lib, enum_, method);
           }
         }
 

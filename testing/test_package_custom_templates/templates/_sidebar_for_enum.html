@@ -1,11 +1,11 @@
 <ol>
   {{#eNum}}
-  {{#hasPublicConstantFields}}
-  <li class="section-title"><a href="{{{href}}}#constants">Constants</a></li>
-  {{#publicConstantFieldsSorted}}
-  <li>{{{linkedName}}}</li>
-  {{/publicConstantFieldsSorted}}
-  {{/hasPublicConstantFields}}
+  {{ #hasPublicEnumValues }}
+  <li class="section-title"><a href="{{{href}}}#values">Values</a></li>
+  {{ #publicEnumValuesSorted }}
+  <li>{{{ linkedName }}}</li>
+  {{ /publicEnumValuesSorted }}
+  {{ /hasPublicEnumValues }}
 
   {{#hasPublicConstructors}}
   <li class="section-title"><a href="{{{href}}}#constructors">Constructors</a></li>
@@ -50,5 +50,12 @@
   <li>{{{ linkedName }}}</li>
   {{/publicStaticMethodsSorted}}
   {{/hasPublicStaticMethods}}
-  {{/eNum}}
+
+  {{ #hasPublicConstantFields }}
+  <li class="section-title"><a href="{{{ href }}}#constants">Constants</a></li>
+  {{ #publicConstantFieldsSorted }}
+  <li>{{{ linkedName }}}</li>
+  {{ /publicConstantFieldsSorted }}
+  {{ /hasPublicConstantFields }}
+  {{ /eNum }}
 </ol>

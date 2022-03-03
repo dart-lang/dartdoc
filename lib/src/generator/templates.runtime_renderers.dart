@@ -4606,6 +4606,13 @@ class _Renderer_Enum extends RendererBase<Enum> {
           () => {
                 ..._Renderer_InheritingContainer.propertyMap<CT_>(),
                 ..._Renderer_TypeImplementing.propertyMap<CT_>(),
+                'hasPublicEnumValues': Property(
+                  getValue: (CT_ c) => c.hasPublicEnumValues,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.hasPublicEnumValues == true,
+                ),
                 'inheritanceChain': Property(
                   getValue: (CT_ c) => c.inheritanceChain,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -4638,6 +4645,18 @@ class _Renderer_Enum extends RendererBase<Enum> {
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_String(c.kind, ast, r.template, sink, parent: r);
+                  },
+                ),
+                'publicEnumValuesSorted': Property(
+                  getValue: (CT_ c) => c.publicEnumValuesSorted,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'Iterable<Field>'),
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    return c.publicEnumValuesSorted.map((e) =>
+                        _render_Field(e, ast, r.template, sink, parent: r));
                   },
                 ),
                 'relationshipsClass': Property(

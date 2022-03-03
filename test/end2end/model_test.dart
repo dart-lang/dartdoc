@@ -4089,6 +4089,9 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
       var macrosFromAccessors =
           fakeLibrary.enums.firstWhere((e) => e.name == 'MacrosFromAccessors');
       for (var a in macrosFromAccessors.allFields.expand(_expandAccessors)) {
+        if (a.name == 'values') {
+          continue;
+        }
         expectValidLocation(a.characterLocation!);
       }
     });
