@@ -31,28 +31,17 @@ mixin Constructable on InheritingContainer {
   Iterable<Constructor> get publicConstructors =>
       model_utils.filterNonPublic(constructors);
 
-  List<Constructor>? _publicConstructorsSorted;
-
   @override
-  Iterable<Constructor> get publicConstructorsSorted =>
-      _publicConstructorsSorted ??= publicConstructors.toList()..sort(byName);
+  late final List<Constructor> publicConstructorsSorted =
+      publicConstructors.toList()..sort(byName);
 
-  Constructor? _unnamedConstructor;
-  Constructor? get unnamedConstructor {
-    _unnamedConstructor ??=
-        constructors.firstWhereOrNull((c) => c.isUnnamedConstructor);
-    return _unnamedConstructor;
-  }
-
-  Constructor? _defaultConstructor;
+  late final Constructor? unnamedConstructor =
+      constructors.firstWhereOrNull((c) => c.isUnnamedConstructor);
 
   /// With constructor tearoffs, this is no longer equivalent to the unnamed
   /// constructor and assumptions based on that are incorrect.
-  Constructor? get defaultConstructor {
-    _defaultConstructor ??= unnamedConstructor ??
-        constructors.firstWhere((c) => c.isDefaultConstructor);
-    return _defaultConstructor;
-  }
+  late final Constructor? defaultConstructor = unnamedConstructor ??
+      constructors.firstWhere((c) => c.isDefaultConstructor);
 
   static Iterable<MapEntry<String, CommentReferable>> _constructorGenerator(
       Iterable<Constructor> source) sync* {
@@ -90,14 +79,10 @@ mixin Constructable on InheritingContainer {
 
 /// Add the ability to support mixed-in types to an [InheritingContainer].
 mixin MixedInTypes on InheritingContainer {
-  List<DefinedElementType>? _mixedInTypes;
-
-  List<DefinedElementType> get mixedInTypes =>
-      _mixedInTypes ??
-      [
-        ...element!.mixins.map<DefinedElementType>(
-            (f) => modelBuilder.typeFrom(f, library) as DefinedElementType)
-      ];
+  late final List<DefinedElementType> mixedInTypes = [
+    ...element!.mixins
+        .map((f) => modelBuilder.typeFrom(f, library) as DefinedElementType)
+  ];
 
   bool get hasPublicMixedInTypes => publicMixedInTypes.isNotEmpty;
 
@@ -242,11 +227,13 @@ abstract class InheritingContainer extends Container
   bool get publicInheritedInstanceOperators =>
       publicInstanceOperators.every((f) => f.isInherited);
 
-  @override
-  late final List<ModelElement> allModelElements = [
+  late final List<ModelElement> _allModelElements = [
     ...super.allModelElements,
     ...typeParameters,
   ];
+
+  @override
+  List<ModelElement> get allModelElements => _allModelElements;
 
   /// Returns the [InheritingContainer] with the library in which [element] is defined.
   InheritingContainer get definingContainer =>

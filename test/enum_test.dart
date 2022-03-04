@@ -388,6 +388,47 @@ enum E {
       expect(method1.documentationComment, '/// Doc comment.');
     });
 
+    test("an enhanced enum's constructors are documented", () async {
+      var library = await bootPackageWithLibrary('''
+enum E {
+  one.named(1),
+  two.named(2);
+
+  final int x;
+
+  /// A named constructor.
+  const E.named(this.x);
+}
+''');
+      print(library.enums.named('E').constructors);
+      var namedConstructor =
+          library.enums.named('E').constructors.named('E.named');
+
+      expect(namedConstructor.isFactory, false);
+      expect(namedConstructor.fullyQualifiedName, 'enums.E.named');
+      expect(namedConstructor.nameWithGenerics, 'E.named');
+      expect(namedConstructor.documentationComment, '/// A named constructor.');
+    });
+    test("has an 'index' getter which can be referenced", () async {
+      var library = await bootPackageWithLibrary('''
+enum E {
+  one.named(1),
+  two.named(2);
+
+  const E.named(int x);
+}
+
+/// Reference to [E.named].
+class C {}
+''');
+      var cClass = library.classes.named('C');
+      expect(
+        cClass.documentationAsHtml,
+        '<p>Reference to '
+        '<a href="https://api.dart.dev/stable/2.16.0/dart-core/Enum/index.html">E.index</a>.</p>',
+      );
+    });
+
     // TODO(srawlins): Add rendering tests.
     // * Add tests for rendered supertypes HTML.
     // * Add tests for rendered mixins HTML.
@@ -396,7 +437,6 @@ enum E {
     // * Add tests for rendered getters, setters.
     // * Add tests for rendered field pages.
     // * Add tests for rendered generic enum values.
-    // * Add tests for rendered constructors.
 
     // TODO(srawlins): Add referencing tests (`/// [Enum.method]` etc.)
     // * Add tests for referencing enum static methods, static fields.

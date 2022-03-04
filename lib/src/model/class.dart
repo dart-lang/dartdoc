@@ -22,8 +22,6 @@ class Class extends InheritingContainer
   }
 
   @override
-  // TODO(srawlins): Figure out what we elsewhere in dartdoc.
-  // ignore: overridden_fields
   late final List<ModelElement> allModelElements = [
     ...super.allModelElements,
     ...constructors,
@@ -93,11 +91,9 @@ class Class extends InheritingContainer
     ...interfaces.expandInheritanceChain,
   ];
 
-  Iterable<Field>? _instanceFields;
-
   @override
-  Iterable<Field> get instanceFields =>
-      _instanceFields ??= allFields.where((f) => !f.isStatic);
+  late final Iterable<Field> instanceFields =
+      allFields.where((f) => !f.isStatic);
 
   @override
   bool get publicInheritedInstanceFields =>

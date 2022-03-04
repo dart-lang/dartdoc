@@ -30,9 +30,8 @@ class Constructor extends ModelElement
   ConstructorElement? get element => super.element as ConstructorElement?;
 
   @override
-  // TODO(jcollins-g): Revisit this when dart-lang/sdk#31517 is implemented.
   List<TypeParameter> get typeParameters =>
-      (enclosingElement as Class).typeParameters;
+      (enclosingElement as Constructable).typeParameters;
 
   @override
   ModelElement get enclosingElement =>
@@ -60,16 +59,15 @@ class Constructor extends ModelElement
   bool get isUnnamedConstructor => name == enclosingElement.name;
 
   bool get isDefaultConstructor =>
-      name == '${enclosingElement.name}.new' || isUnnamedConstructor;
+      isUnnamedConstructor || name == '${enclosingElement.name}.new';
 
   bool get isFactory => element!.isFactory;
 
   @override
   String get kind => 'constructor';
 
-  Callable? _modelType;
-  Callable get modelType => (_modelType ??=
-      modelBuilder.typeFrom(element!.type, library!) as Callable?)!;
+  late final Callable modelType =
+      modelBuilder.typeFrom(element!.type, library!) as Callable;
 
   @override
   late final String name = () {
