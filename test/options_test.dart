@@ -518,6 +518,48 @@ class Foo {}
         )));
   });
 
+  test("'templates-dir' option specifies the templates to use", () async {
+    packagePath = await d.createPackage(
+      packageName,
+      libFiles: [
+        d.file('library_1.dart', '''
+library library_1;
+class Foo {}
+'''),
+      ],
+      files: [
+        d.dir('templates', [
+          d.file('_sidebar_for_container.html', 'EMPTY'),
+          d.file('_sidebar_for_library.html', 'EMPTY'),
+          d.file('404error.html', 'EMPTY'),
+          d.file('category.html', 'EMPTY'),
+          d.file('class.html', 'CLASS FILE'),
+          d.file('constructor.html', 'EMPTY'),
+          d.file('enum.html', 'EMPTY'),
+          d.file('extension.html', 'EMPTY'),
+          d.file('function.html', 'EMPTY'),
+          d.file('index.html', 'EMPTY'),
+          d.file('library.html', 'EMPTY'),
+          d.file('method.html', 'EMPTY'),
+          d.file('mixin.html', 'EMPTY'),
+          d.file('property.html', 'EMPTY'),
+          d.file('top_level_property.html', 'EMPTY'),
+          d.file('typedef.html', 'EMPTY'),
+        ]),
+      ],
+      resourceProvider: resourceProvider,
+    );
+    var customTemplatesDir = p.join(packagePath, 'templates');
+    await utils.writeDartdocResources(resourceProvider);
+    var dartdoc = await buildDartdoc(
+        additionalOptions: ['--templates-dir', customTemplatesDir]);
+    await dartdoc.generateDocsBase();
+    final indexContent = resourceProvider
+        .getFile(p.joinAll([packagePath, 'doc', 'library_1', 'Foo-class.html']))
+        .readAsStringSync();
+    expect(indexContent, contains('CLASS FILE'));
+  });
+
   test(
       "'templates-dir' option referencing an empty directory results in "
       'DartdocFailure', () async {

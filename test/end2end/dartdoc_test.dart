@@ -34,8 +34,6 @@ final _testPackageDir = _getFolder('testing/test_package');
 
 final Folder _testPackageBadDir = _getFolder('testing/test_package_bad');
 final Folder _testSkyEnginePackage = _getFolder('testing/sky_engine');
-final Folder _testPackageCustomTemplates =
-    _getFolder('testing/test_package_custom_templates');
 
 class DartdocLoggingOptionContext extends DartdocGeneratorOptionContext
     with LoggingContext {
@@ -62,7 +60,6 @@ void main() {
       // Set up the pub metadata for our test packages.
       runPubGet(testPackageToolError.path);
       runPubGet(_testSkyEnginePackage.path);
-      runPubGet(_testPackageCustomTemplates.path);
     });
 
     setUp(() async {
@@ -212,24 +209,6 @@ void main() {
       expect(
           dartBear.allClasses.map((cls) => cls.name).contains('Bear'), isTrue);
       expect(dartPackage.publicLibraries, hasLength(3));
-    });
-
-    test('generate docs with custom templates', () async {
-      var templatesDir = p.join(_testPackageCustomTemplates.path, 'templates');
-      var dartdoc = await buildDartdoc(['--templates-dir', templatesDir],
-          _testPackageCustomTemplates, tempDir);
-
-      var results = await dartdoc.generateDocs();
-      expect(results.packageGraph, isNotNull);
-
-      var graph = results.packageGraph;
-      expect(graph.defaultPackage.name, 'test_package_custom_templates');
-      expect(graph.localPublicLibraries, hasLength(1));
-
-      var index = _resourceProvider
-          .getFile(_pathContext.join(tempDir.path, 'index.html'));
-      expect(index.readAsStringSync(),
-          contains('Welcome my friends to a custom template'));
     });
 
     test('rel canonical prefix does not include base href', () async {
