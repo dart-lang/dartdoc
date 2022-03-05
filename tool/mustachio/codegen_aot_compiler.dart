@@ -149,12 +149,12 @@ Future<Map<_AotCompiler, Method>> _deduplicateRenderers(
     Method compiledLubRenderer;
     try {
       compiledLubRenderer = await lubCompiler._compileToRenderer();
-    } on MustachioResolutionError catch (e, st) {
+    } on MustachioResolutionError {
       // Oops, switching to the LUB type prevents the renderer from compiling;
       // likely the properties accessed in the partial are not all declared on
       // the LUB type.
       var names = compilers.map((c) => c._rendererName);
-      print('Could not deduplicate ${assetId.path} ${names.join(', ')}; $e');
+      print('Could not deduplicate ${assetId.path} ${names.join(', ')}');
       continue;
     }
 
