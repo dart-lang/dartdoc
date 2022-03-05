@@ -387,49 +387,8 @@ String renderClass(_i1.ClassTemplateData context0) {
       </dl>
     </section>''');
   }
-  buffer.writeln();
-  if (context2.hasPublicConstructors == true) {
-    buffer.writeln();
-    buffer.write('''
-    <section class="summary offset-anchor" id="constructors">
-      <h2>Constructors</h2>
-
-      <dl class="constructor-summary-list">''');
-    var context11 = context2.publicConstructorsSorted;
-    for (var context12 in context11) {
-      buffer.writeln();
-      buffer.write('''
-        <dt id="''');
-      buffer.writeEscaped(context12.htmlId);
-      buffer.write('''" class="callable">
-          <span class="name">''');
-      buffer.write(context12.linkedName);
-      buffer.write('''</span><span class="signature">(''');
-      buffer.write(context12.linkedParams);
-      buffer.write(''')</span>
-        </dt>
-        <dd>
-          ''');
-      buffer.write(context12.oneLineDoc);
-      if (context12.isConst == true) {
-        buffer.writeln();
-        buffer.write('''
-          <div class="constructor-modifier features">const</div>''');
-      }
-      if (context12.isFactory == true) {
-        buffer.writeln();
-        buffer.write('''
-          <div class="constructor-modifier features">factory</div>''');
-      }
-      buffer.writeln();
-      buffer.write('''
-        </dd>''');
-    }
-    buffer.writeln();
-    buffer.write('''
-      </dl>
-    </section>''');
-  }
+  buffer.write('\n\n    ');
+  buffer.write(_renderClass_partial_constructors_7(context2));
   buffer.writeln();
   if (context2.hasPublicInstanceFields == true) {
     buffer.writeln();
@@ -442,10 +401,10 @@ String renderClass(_i1.ClassTemplateData context0) {
       <h2>Properties</h2>
 
       <dl class="properties">''');
-    var context13 = context2.publicInstanceFieldsSorted;
-    for (var context14 in context13) {
+    var context11 = context2.publicInstanceFieldsSorted;
+    for (var context12 in context11) {
       buffer.write('\n        ');
-      buffer.write(_renderClass_partial_property_7(context14));
+      buffer.write(_renderClass_partial_property_8(context12));
     }
     buffer.writeln();
     buffer.write('''
@@ -453,15 +412,15 @@ String renderClass(_i1.ClassTemplateData context0) {
     </section>''');
   }
   buffer.write('\n\n    ');
-  buffer.write(_renderClass_partial_instance_methods_8(context2));
+  buffer.write(_renderClass_partial_instance_methods_9(context2));
   buffer.write('\n    ');
-  buffer.write(_renderClass_partial_instance_operators_9(context2));
+  buffer.write(_renderClass_partial_instance_operators_10(context2));
   buffer.write('\n    ');
-  buffer.write(_renderClass_partial_static_properties_10(context2));
+  buffer.write(_renderClass_partial_static_properties_11(context2));
   buffer.write('\n    ');
-  buffer.write(_renderClass_partial_static_methods_11(context2));
+  buffer.write(_renderClass_partial_static_methods_12(context2));
   buffer.write('\n    ');
-  buffer.write(_renderClass_partial_static_constants_12(context2));
+  buffer.write(_renderClass_partial_static_constants_13(context2));
   buffer.writeln();
   buffer.write('''
 
@@ -469,7 +428,7 @@ String renderClass(_i1.ClassTemplateData context0) {
 
   <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
     ''');
-  buffer.write(_renderClass_partial_search_sidebar_13(context0));
+  buffer.write(_renderClass_partial_search_sidebar_14(context0));
   buffer.writeln();
   buffer.write('''
     <h5>''');
@@ -491,7 +450,7 @@ String renderClass(_i1.ClassTemplateData context0) {
   </div><!--/.sidebar-offcanvas-->
 
 ''');
-  buffer.write(_renderClass_partial_footer_14(context0));
+  buffer.write(_renderClass_partial_footer_15(context0));
   buffer.writeln();
 
   return buffer.toString();
@@ -656,6 +615,8 @@ String renderEnum(_i1.EnumTemplateData context0) {
       </dl>
     </section>''');
   }
+  buffer.write('\n\n    ');
+  buffer.write(_renderEnum_partial_constructors_7(context2));
   buffer.writeln();
   if (context2.hasPublicEnumValues == true) {
     buffer.writeln();
@@ -667,7 +628,7 @@ String renderEnum(_i1.EnumTemplateData context0) {
     var context5 = context2.publicEnumValuesSorted;
     for (var context6 in context5) {
       buffer.write('\n          ');
-      buffer.write(_renderEnum_partial_constant_7(context6));
+      buffer.write(_renderEnum_partial_constant_8(context6));
     }
     buffer.writeln();
     buffer.write('''
@@ -693,7 +654,7 @@ String renderEnum(_i1.EnumTemplateData context0) {
     var context7 = context2.publicInstanceFieldsSorted;
     for (var context8 in context7) {
       buffer.write('\n        ');
-      buffer.write(_renderEnum_partial_property_8(context8));
+      buffer.write(_renderEnum_partial_property_9(context8));
     }
     buffer.writeln();
     buffer.write('''
@@ -701,22 +662,22 @@ String renderEnum(_i1.EnumTemplateData context0) {
     </section>''');
   }
   buffer.write('\n\n    ');
-  buffer.write(_renderEnum_partial_instance_methods_9(context2));
+  buffer.write(_renderEnum_partial_instance_methods_10(context2));
   buffer.write('\n    ');
-  buffer.write(_renderEnum_partial_instance_operators_10(context2));
+  buffer.write(_renderEnum_partial_instance_operators_11(context2));
   buffer.write('\n    ');
-  buffer.write(_renderEnum_partial_static_properties_11(context2));
+  buffer.write(_renderEnum_partial_static_properties_12(context2));
   buffer.write('\n    ');
-  buffer.write(_renderEnum_partial_static_methods_12(context2));
+  buffer.write(_renderEnum_partial_static_methods_13(context2));
   buffer.write('\n    ');
-  buffer.write(_renderEnum_partial_static_constants_13(context2));
+  buffer.write(_renderEnum_partial_static_constants_14(context2));
   buffer.writeln();
   buffer.write('''
   </div><!-- /.main-content -->
 
   <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
     ''');
-  buffer.write(_renderEnum_partial_search_sidebar_14(context0));
+  buffer.write(_renderEnum_partial_search_sidebar_15(context0));
   buffer.writeln();
   buffer.write('''
     <h5>''');
@@ -738,7 +699,7 @@ String renderEnum(_i1.EnumTemplateData context0) {
   </div><!-- /.sidebar-offcanvas -->
 
 ''');
-  buffer.write(_renderEnum_partial_footer_15(context0));
+  buffer.write(_renderEnum_partial_footer_16(context0));
   buffer.writeln();
 
   return buffer.toString();
@@ -2403,23 +2364,50 @@ String _renderClass_partial_documentation_4(_i10.Class context1) =>
     _deduplicated_lib_templates_html__documentation_html(context1);
 String _renderClass_partial_super_chain_5(_i10.Class context1) =>
     _deduplicated_lib_templates_html__super_chain_html(context1);
-String _renderClass_partial_interfaces_6(_i10.Class context1) =>
-    _deduplicated_lib_templates_html__interfaces_html(context1);
-String _renderClass_partial_property_7(_i11.Field context2) =>
+String _renderClass_partial_interfaces_6(_i10.Class context1) {
+  final buffer = StringBuffer();
+  if (context1.hasPublicInterfaces == true) {
+    buffer.writeln();
+    buffer.write('''
+<dt>Implemented types</dt>
+<dd>
+    <ul class="comma-separated ''');
+    buffer.writeEscaped(context1.relationshipsClass);
+    buffer.write('''">''');
+    var context2 = context1.publicInterfaces;
+    for (var context3 in context2) {
+      buffer.writeln();
+      buffer.write('''
+        <li>''');
+      buffer.write(context3.linkedName);
+      buffer.write('''</li>''');
+    }
+    buffer.writeln();
+    buffer.write('''
+    </ul>
+</dd>''');
+  }
+
+  return buffer.toString();
+}
+
+String _renderClass_partial_constructors_7(_i10.Class context1) =>
+    _deduplicated_lib_templates_html__constructors_html(context1);
+String _renderClass_partial_property_8(_i11.Field context2) =>
     _deduplicated_lib_templates_html__property_html(context2);
-String _renderClass_partial_instance_methods_8(_i10.Class context1) =>
+String _renderClass_partial_instance_methods_9(_i10.Class context1) =>
     _deduplicated_lib_templates_html__instance_methods_html(context1);
-String _renderClass_partial_instance_operators_9(_i10.Class context1) =>
+String _renderClass_partial_instance_operators_10(_i10.Class context1) =>
     _deduplicated_lib_templates_html__instance_operators_html(context1);
-String _renderClass_partial_static_properties_10(_i10.Class context1) =>
+String _renderClass_partial_static_properties_11(_i10.Class context1) =>
     _deduplicated_lib_templates_html__static_properties_html(context1);
-String _renderClass_partial_static_methods_11(_i10.Class context1) =>
+String _renderClass_partial_static_methods_12(_i10.Class context1) =>
     _deduplicated_lib_templates_html__static_methods_html(context1);
-String _renderClass_partial_static_constants_12(_i10.Class context1) =>
+String _renderClass_partial_static_constants_13(_i10.Class context1) =>
     _deduplicated_lib_templates_html__static_constants_html(context1);
-String _renderClass_partial_search_sidebar_13(_i1.ClassTemplateData context0) =>
+String _renderClass_partial_search_sidebar_14(_i1.ClassTemplateData context0) =>
     _deduplicated_lib_templates_html__search_sidebar_html(context0);
-String _renderClass_partial_footer_14(_i1.ClassTemplateData context0) =>
+String _renderClass_partial_footer_15(_i1.ClassTemplateData context0) =>
     _deduplicated_lib_templates_html__footer_html(context0);
 String _renderConstructor_partial_head_0(
         _i1.ConstructorTemplateData context0) =>
@@ -2450,25 +2438,52 @@ String _renderEnum_partial_documentation_4(_i13.Enum context1) =>
     _deduplicated_lib_templates_html__documentation_html(context1);
 String _renderEnum_partial_super_chain_5(_i13.Enum context1) =>
     _deduplicated_lib_templates_html__super_chain_html(context1);
-String _renderEnum_partial_interfaces_6(_i13.Enum context1) =>
-    _deduplicated_lib_templates_html__interfaces_html(context1);
-String _renderEnum_partial_constant_7(_i11.Field context2) =>
+String _renderEnum_partial_interfaces_6(_i13.Enum context1) {
+  final buffer = StringBuffer();
+  if (context1.hasPublicInterfaces == true) {
+    buffer.writeln();
+    buffer.write('''
+<dt>Implemented types</dt>
+<dd>
+    <ul class="comma-separated ''');
+    buffer.writeEscaped(context1.relationshipsClass);
+    buffer.write('''">''');
+    var context2 = context1.publicInterfaces;
+    for (var context3 in context2) {
+      buffer.writeln();
+      buffer.write('''
+        <li>''');
+      buffer.write(context3.linkedName);
+      buffer.write('''</li>''');
+    }
+    buffer.writeln();
+    buffer.write('''
+    </ul>
+</dd>''');
+  }
+
+  return buffer.toString();
+}
+
+String _renderEnum_partial_constructors_7(_i13.Enum context1) =>
+    _deduplicated_lib_templates_html__constructors_html(context1);
+String _renderEnum_partial_constant_8(_i11.Field context2) =>
     _deduplicated_lib_templates_html__constant_html(context2);
-String _renderEnum_partial_property_8(_i11.Field context2) =>
+String _renderEnum_partial_property_9(_i11.Field context2) =>
     _deduplicated_lib_templates_html__property_html(context2);
-String _renderEnum_partial_instance_methods_9(_i13.Enum context1) =>
+String _renderEnum_partial_instance_methods_10(_i13.Enum context1) =>
     _deduplicated_lib_templates_html__instance_methods_html(context1);
-String _renderEnum_partial_instance_operators_10(_i13.Enum context1) =>
+String _renderEnum_partial_instance_operators_11(_i13.Enum context1) =>
     _deduplicated_lib_templates_html__instance_operators_html(context1);
-String _renderEnum_partial_static_properties_11(_i13.Enum context1) =>
+String _renderEnum_partial_static_properties_12(_i13.Enum context1) =>
     _deduplicated_lib_templates_html__static_properties_html(context1);
-String _renderEnum_partial_static_methods_12(_i13.Enum context1) =>
+String _renderEnum_partial_static_methods_13(_i13.Enum context1) =>
     _deduplicated_lib_templates_html__static_methods_html(context1);
-String _renderEnum_partial_static_constants_13(_i13.Enum context1) =>
+String _renderEnum_partial_static_constants_14(_i13.Enum context1) =>
     _deduplicated_lib_templates_html__static_constants_html(context1);
-String _renderEnum_partial_search_sidebar_14(_i1.EnumTemplateData context0) =>
+String _renderEnum_partial_search_sidebar_15(_i1.EnumTemplateData context0) =>
     _deduplicated_lib_templates_html__search_sidebar_html(context0);
-String _renderEnum_partial_footer_15(_i1.EnumTemplateData context0) =>
+String _renderEnum_partial_footer_16(_i1.EnumTemplateData context0) =>
     _deduplicated_lib_templates_html__footer_html(context0);
 String _renderError_partial_head_0(_i1.PackageTemplateData context0) =>
     _deduplicated_lib_templates_html__head_html(context0);
@@ -2736,8 +2751,33 @@ String _renderMixin_partial_documentation_4(_i16.Mixin context1) =>
     _deduplicated_lib_templates_html__documentation_html(context1);
 String _renderMixin_partial_super_chain_5(_i16.Mixin context1) =>
     _deduplicated_lib_templates_html__super_chain_html(context1);
-String _renderMixin_partial_interfaces_6(_i16.Mixin context1) =>
-    _deduplicated_lib_templates_html__interfaces_html(context1);
+String _renderMixin_partial_interfaces_6(_i16.Mixin context1) {
+  final buffer = StringBuffer();
+  if (context1.hasPublicInterfaces == true) {
+    buffer.writeln();
+    buffer.write('''
+<dt>Implemented types</dt>
+<dd>
+    <ul class="comma-separated ''');
+    buffer.writeEscaped(context1.relationshipsClass);
+    buffer.write('''">''');
+    var context2 = context1.publicInterfaces;
+    for (var context3 in context2) {
+      buffer.writeln();
+      buffer.write('''
+        <li>''');
+      buffer.write(context3.linkedName);
+      buffer.write('''</li>''');
+    }
+    buffer.writeln();
+    buffer.write('''
+    </ul>
+</dd>''');
+  }
+
+  return buffer.toString();
+}
+
 String _renderMixin_partial_property_7(_i11.Field context2) =>
     _deduplicated_lib_templates_html__property_html(context2);
 String _renderMixin_partial_instance_methods_8(_i16.Mixin context1) =>
@@ -3841,7 +3881,7 @@ String _deduplicated_lib_templates_html__feature_set_html(
 }
 
 String _deduplicated_lib_templates_html__super_chain_html(
-    _i20.TypeImplementing context0) {
+    _i20.InheritingContainer context0) {
   final buffer = StringBuffer();
   if (context0.hasPublicSuperChainReversed == true) {
     buffer.writeln();
@@ -3875,29 +3915,50 @@ String _deduplicated_lib_templates_html__super_chain_html(
   return buffer.toString();
 }
 
-String _deduplicated_lib_templates_html__interfaces_html(
-    _i20.TypeImplementing context0) {
+String _deduplicated_lib_templates_html__constructors_html(
+    _i20.InheritingContainer context0) {
   final buffer = StringBuffer();
-  if (context0.hasPublicInterfaces == true) {
+  if (context0.hasPublicConstructors == true) {
     buffer.writeln();
     buffer.write('''
-<dt>Implemented types</dt>
-<dd>
-    <ul class="comma-separated ''');
-    buffer.writeEscaped(context0.relationshipsClass);
-    buffer.write('''">''');
-    var context1 = context0.publicInterfaces;
+  <section class="summary offset-anchor" id="constructors">
+    <h2>Constructors</h2>
+
+    <dl class="constructor-summary-list">''');
+    var context1 = context0.publicConstructorsSorted;
     for (var context2 in context1) {
       buffer.writeln();
       buffer.write('''
-        <li>''');
+        <dt id="''');
+      buffer.writeEscaped(context2.htmlId);
+      buffer.write('''" class="callable">
+          <span class="name">''');
       buffer.write(context2.linkedName);
-      buffer.write('''</li>''');
+      buffer.write('''</span><span class="signature">(''');
+      buffer.write(context2.linkedParams);
+      buffer.write(''')</span>
+        </dt>
+        <dd>
+          ''');
+      buffer.write(context2.oneLineDoc);
+      if (context2.isConst == true) {
+        buffer.writeln();
+        buffer.write('''
+            <div class="constructor-modifier features">const</div>''');
+      }
+      if (context2.isFactory == true) {
+        buffer.writeln();
+        buffer.write('''
+            <div class="constructor-modifier features">factory</div>''');
+      }
+      buffer.writeln();
+      buffer.write('''
+        </dd>''');
     }
     buffer.writeln();
     buffer.write('''
-    </ul>
-</dd>''');
+    </dl>
+  </section>''');
   }
 
   return buffer.toString();
