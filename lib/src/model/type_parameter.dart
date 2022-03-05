@@ -75,6 +75,7 @@ class TypeParameter extends ModelElement {
   String get referenceName => element!.name;
 }
 
+/// A mixin for [ModelElement]s which have type parameters.
 mixin TypeParameters implements ModelElement {
   String get nameWithGenerics => '$name$genericParameters';
 

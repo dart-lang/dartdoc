@@ -17,15 +17,37 @@ abstract class TemplateOptions {
   String get customInnerFooterText;
 }
 
-abstract class TemplateData<T extends Documentable> {
+abstract class TemplateDataBase {
   final PackageGraph _packageGraph;
   final TemplateOptions htmlOptions;
 
-  TemplateData(this.htmlOptions, this._packageGraph);
+  TemplateDataBase(this.htmlOptions, this._packageGraph);
 
   String get title;
+
   String get layoutTitle;
+
   String get metaDescription;
+
+  String get version => htmlOptions.toolVersion;
+
+  String? get relCanonicalPrefix => htmlOptions.relCanonicalPrefix;
+
+  bool get useBaseHref => htmlOptions.useBaseHref;
+
+  String get customHeader => htmlOptions.customHeaderContent;
+
+  String get customFooter => htmlOptions.customFooterContent;
+
+  String get customInnerFooter => htmlOptions.customInnerFooterText;
+
+  List<Package> get localPackages => _packageGraph.localPackages;
+
+  Package get defaultPackage => _packageGraph.defaultPackage;
+
+  bool get hasFooterVersion => _packageGraph.hasFooterVersion;
+
+  bool get includeVersion => false;
 
   List<Documentable> get navLinks;
   List<Container> get navLinksWithGenerics => [];
@@ -36,17 +58,13 @@ abstract class TemplateData<T extends Documentable> {
     return navLinksWithGenerics.last;
   }
 
-  bool get includeVersion => false;
-
   bool get hasHomepage => false;
 
   String? get homepage => null;
 
+  Documentable get self;
+
   String get htmlBase;
-  T get self;
-  String get version => htmlOptions.toolVersion;
-  String? get relCanonicalPrefix => htmlOptions.relCanonicalPrefix;
-  bool get useBaseHref => htmlOptions.useBaseHref;
 
   String get bareHref {
     if (self is Indexable) {
@@ -55,22 +73,18 @@ abstract class TemplateData<T extends Documentable> {
     }
     return '';
   }
+}
 
-  List<Package> get localPackages => _packageGraph.localPackages;
+abstract class TemplateData<T extends Documentable> extends TemplateDataBase {
+  TemplateData(TemplateOptions htmlOptions, PackageGraph packageGraph)
+      : super(htmlOptions, packageGraph);
 
-  Package get defaultPackage => _packageGraph.defaultPackage;
-
-  bool get hasFooterVersion => _packageGraph.hasFooterVersion;
+  @override
+  T get self;
 
   String _layoutTitle(String name, String kind, bool isDeprecated) =>
       _packageGraph.rendererFactory.templateRenderer
           .composeLayoutTitle(name, kind, isDeprecated);
-
-  String get customHeader => htmlOptions.customHeaderContent;
-
-  String get customFooter => htmlOptions.customFooterContent;
-
-  String get customInnerFooter => htmlOptions.customInnerFooterText;
 }
 
 /// A [TemplateData] which contains a library, for rendering the
