@@ -253,7 +253,7 @@ abstract class Container extends ModelElement
   /// For subclasses to add items after the main pass but before the
   /// parameter-global.
   @visibleForOverriding
-  Iterable<MapEntry<String, CommentReferable>> get extraReferenceChildren => [];
+  Iterable<MapEntry<String, CommentReferable>> get extraReferenceChildren;
 
   @override
   @mustCallSuper

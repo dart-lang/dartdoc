@@ -152,11 +152,16 @@ import '${p.basename(_sourceUri.path)}';
   /// is a "valid" property.
   ///
   /// A "valid" property is a public, instance getter with an interface type
-  /// return type. Getters annotated with @internal, @protected, or
-  /// @visibleForTesting are not valid.
+  /// return type. Getters annotated with `@internal`, `@protected`,
+  ///  `@visibleForOverriding`, or `@visibleForTesting` are not valid.
   void _addPropertyToProcess(PropertyAccessorElement property) {
     if (property.isPrivate || property.isStatic || property.isSetter) return;
-    if (property.hasProtected || property.hasVisibleForTesting) return;
+    if (property.hasInternal ||
+        property.hasProtected ||
+        property.hasVisibleForOverriding ||
+        property.hasVisibleForTesting) {
+      return;
+    }
     var type = _relevantTypeFrom(property.type.returnType);
     if (type == null) return;
 
@@ -311,7 +316,8 @@ import '${p.basename(_sourceUri.path)}';
     }
   }
 
-  /// Returns whether [element] or any of its supertypes are "visible" to Mustache.
+  /// Returns whether [element] or any of its supertypes are "visible" to
+  /// Mustache.
   bool _isVisibleToMustache(ClassElement element) {
     if (_allVisibleElements.contains(element)) {
       return true;
@@ -468,7 +474,12 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
     }
 
     if (property.isPrivate || property.isStatic || property.isSetter) return;
-    if (property.hasProtected || property.hasVisibleForTesting) return;
+    if (property.hasInternal ||
+        property.hasProtected ||
+        property.hasVisibleForOverriding ||
+        property.hasVisibleForTesting) {
+      return;
+    }
     _buffer.writeln("'${property.name}': Property(");
     _buffer
         .writeln('getValue: ($_contextTypeVariable c) => c.${property.name},');

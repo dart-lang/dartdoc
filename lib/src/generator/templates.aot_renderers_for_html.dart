@@ -2821,8 +2821,33 @@ String _renderClass_partial_documentation_4(_i10.Class context1) =>
     _deduplicated_lib_templates_html__documentation_html(context1);
 String _renderClass_partial_super_chain_5(_i10.Class context1) =>
     _deduplicated_lib_templates_html__super_chain_html(context1);
-String _renderClass_partial_interfaces_6(_i10.Class context1) =>
-    _deduplicated_lib_templates_html__interfaces_html(context1);
+String _renderClass_partial_interfaces_6(_i10.Class context1) {
+  final buffer = StringBuffer();
+  if (context1.hasPublicInterfaces == true) {
+    buffer.writeln();
+    buffer.write('''
+<dt>Implemented types</dt>
+<dd>
+    <ul class="comma-separated ''');
+    buffer.writeEscaped(context1.relationshipsClass);
+    buffer.write('''">''');
+    var context2 = context1.publicInterfaces;
+    for (var context3 in context2) {
+      buffer.writeln();
+      buffer.write('''
+        <li>''');
+      buffer.write(context3.linkedName);
+      buffer.write('''</li>''');
+    }
+    buffer.writeln();
+    buffer.write('''
+    </ul>
+</dd>''');
+  }
+
+  return buffer.toString();
+}
+
 String _renderClass_partial_constructors_7(_i10.Class context1) =>
     _deduplicated_lib_templates_html__constructors_html(context1);
 String _renderClass_partial_property_8(_i11.Field context2) =>
@@ -3369,8 +3394,33 @@ String _renderEnum_partial_documentation_4(_i13.Enum context1) =>
     _deduplicated_lib_templates_html__documentation_html(context1);
 String _renderEnum_partial_super_chain_5(_i13.Enum context1) =>
     _deduplicated_lib_templates_html__super_chain_html(context1);
-String _renderEnum_partial_interfaces_6(_i13.Enum context1) =>
-    _deduplicated_lib_templates_html__interfaces_html(context1);
+String _renderEnum_partial_interfaces_6(_i13.Enum context1) {
+  final buffer = StringBuffer();
+  if (context1.hasPublicInterfaces == true) {
+    buffer.writeln();
+    buffer.write('''
+<dt>Implemented types</dt>
+<dd>
+    <ul class="comma-separated ''');
+    buffer.writeEscaped(context1.relationshipsClass);
+    buffer.write('''">''');
+    var context2 = context1.publicInterfaces;
+    for (var context3 in context2) {
+      buffer.writeln();
+      buffer.write('''
+        <li>''');
+      buffer.write(context3.linkedName);
+      buffer.write('''</li>''');
+    }
+    buffer.writeln();
+    buffer.write('''
+    </ul>
+</dd>''');
+  }
+
+  return buffer.toString();
+}
+
 String _renderEnum_partial_constructors_7(_i13.Enum context1) =>
     _deduplicated_lib_templates_html__constructors_html(context1);
 String _renderEnum_partial_constant_8(_i11.Field context2) =>
@@ -5590,8 +5640,33 @@ String _renderMixin_partial_documentation_4(_i16.Mixin context1) =>
     _deduplicated_lib_templates_html__documentation_html(context1);
 String _renderMixin_partial_super_chain_5(_i16.Mixin context1) =>
     _deduplicated_lib_templates_html__super_chain_html(context1);
-String _renderMixin_partial_interfaces_6(_i16.Mixin context1) =>
-    _deduplicated_lib_templates_html__interfaces_html(context1);
+String _renderMixin_partial_interfaces_6(_i16.Mixin context1) {
+  final buffer = StringBuffer();
+  if (context1.hasPublicInterfaces == true) {
+    buffer.writeln();
+    buffer.write('''
+<dt>Implemented types</dt>
+<dd>
+    <ul class="comma-separated ''');
+    buffer.writeEscaped(context1.relationshipsClass);
+    buffer.write('''">''');
+    var context2 = context1.publicInterfaces;
+    for (var context3 in context2) {
+      buffer.writeln();
+      buffer.write('''
+        <li>''');
+      buffer.write(context3.linkedName);
+      buffer.write('''</li>''');
+    }
+    buffer.writeln();
+    buffer.write('''
+    </ul>
+</dd>''');
+  }
+
+  return buffer.toString();
+}
+
 String _renderMixin_partial_property_7(_i11.Field context2) =>
     _deduplicated_lib_templates_html__property_html(context2);
 String _renderMixin_partial_instance_methods_8(_i16.Mixin context1) =>
@@ -7226,7 +7301,7 @@ String _deduplicated_lib_templates_html__feature_set_html(
 }
 
 String _deduplicated_lib_templates_html__super_chain_html(
-    _i20.TypeImplementing context0) {
+    _i20.InheritingContainer context0) {
   final buffer = StringBuffer();
   if (context0.hasPublicSuperChainReversed == true) {
     buffer.writeln();
@@ -7260,36 +7335,8 @@ String _deduplicated_lib_templates_html__super_chain_html(
   return buffer.toString();
 }
 
-String _deduplicated_lib_templates_html__interfaces_html(
-    _i20.TypeImplementing context0) {
-  final buffer = StringBuffer();
-  if (context0.hasPublicInterfaces == true) {
-    buffer.writeln();
-    buffer.write('''
-<dt>Implemented types</dt>
-<dd>
-    <ul class="comma-separated ''');
-    buffer.writeEscaped(context0.relationshipsClass);
-    buffer.write('''">''');
-    var context1 = context0.publicInterfaces;
-    for (var context2 in context1) {
-      buffer.writeln();
-      buffer.write('''
-        <li>''');
-      buffer.write(context2.linkedName);
-      buffer.write('''</li>''');
-    }
-    buffer.writeln();
-    buffer.write('''
-    </ul>
-</dd>''');
-  }
-
-  return buffer.toString();
-}
-
 String _deduplicated_lib_templates_html__constructors_html(
-    _i20.TypeImplementing context0) {
+    _i20.InheritingContainer context0) {
   final buffer = StringBuffer();
   if (context0.hasPublicConstructors == true) {
     buffer.writeln();

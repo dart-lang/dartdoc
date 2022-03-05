@@ -118,7 +118,7 @@ class C {}
       expect(
         cClass.documentationAsHtml,
         '<p>Reference to '
-        '<a href="%%__HTMLBASE_dartdoc_internal__%%enums/E/values-constant.html">E.values</a>.</p>',
+        '<a href="$linkPrefix/E/values-constant.html">E.values</a>.</p>',
       );
     });
 
@@ -130,10 +130,8 @@ enum E { one, two, three }
 class C {}
 ''');
       var cClass = library.classes.named('C');
-      expect(
-          cClass.documentationAsHtml,
-          '<p>Reference to '
-          '<a href="%%__HTMLBASE_dartdoc_internal__%%enums/E.html">E.one</a>.</p>');
+      expect(cClass.documentationAsHtml,
+          '<p>Reference to <a href="$linkPrefix/E.html">E.one</a>.</p>');
     });
 
     test("has an 'index' getter which can be referenced", () async {
@@ -400,7 +398,6 @@ enum E {
   const E.named(this.x);
 }
 ''');
-      print(library.enums.named('E').constructors);
       var namedConstructor =
           library.enums.named('E').constructors.named('E.named');
 
@@ -424,8 +421,7 @@ class C {}
       var cClass = library.classes.named('C');
       expect(
         cClass.documentationAsHtml,
-        '<p>Reference to '
-        '<a href="https://api.dart.dev/stable/2.16.0/dart-core/Enum/index.html">E.index</a>.</p>',
+        '<p>Reference to <a href="$linkPrefix/E/E.named.html">E.named</a>.</p>',
       );
     });
 
@@ -441,6 +437,5 @@ class C {}
     // TODO(srawlins): Add referencing tests (`/// [Enum.method]` etc.)
     // * Add tests for referencing enum static methods, static fields.
     // * Add tests for referencing enum getters, setters, operators, methods.
-    // * Add tests for referencing constructors.
   }, skip: !enhancedEnumsAllowed);
 }

@@ -1112,8 +1112,25 @@ String _renderClass_partial_documentation_4(_i9.Class context1) =>
     _deduplicated_lib_templates_md__documentation_md(context1);
 String _renderClass_partial_super_chain_5(_i9.Class context1) =>
     _deduplicated_lib_templates_md__super_chain_md(context1);
-String _renderClass_partial_interfaces_6(_i9.Class context1) =>
-    _deduplicated_lib_templates_md__interfaces_md(context1);
+String _renderClass_partial_interfaces_6(_i9.Class context1) {
+  final buffer = StringBuffer();
+  if (context1.hasPublicInterfaces == true) {
+    buffer.writeln();
+    buffer.write('''
+**Implemented types**
+''');
+    var context2 = context1.publicInterfaces;
+    for (var context3 in context2) {
+      buffer.writeln();
+      buffer.write('''
+- ''');
+      buffer.write(context3.linkedName);
+    }
+  }
+
+  return buffer.toString();
+}
+
 String _renderClass_partial_constructors_7(_i9.Class context1) =>
     _deduplicated_lib_templates_md__constructors_md(context1);
 String _renderClass_partial_property_8(_i10.Field context2) =>
@@ -1183,8 +1200,25 @@ String _renderEnum_partial_documentation_3(_i12.Enum context1) =>
     _deduplicated_lib_templates_md__documentation_md(context1);
 String _renderEnum_partial_super_chain_4(_i12.Enum context1) =>
     _deduplicated_lib_templates_md__super_chain_md(context1);
-String _renderEnum_partial_interfaces_5(_i12.Enum context1) =>
-    _deduplicated_lib_templates_md__interfaces_md(context1);
+String _renderEnum_partial_interfaces_5(_i12.Enum context1) {
+  final buffer = StringBuffer();
+  if (context1.hasPublicInterfaces == true) {
+    buffer.writeln();
+    buffer.write('''
+**Implemented types**
+''');
+    var context2 = context1.publicInterfaces;
+    for (var context3 in context2) {
+      buffer.writeln();
+      buffer.write('''
+- ''');
+      buffer.write(context3.linkedName);
+    }
+  }
+
+  return buffer.toString();
+}
+
 String _renderEnum_partial_constructors_6(_i12.Enum context1) =>
     _deduplicated_lib_templates_md__constructors_md(context1);
 String _renderEnum_partial_constant_7(_i10.Field context2) =>
@@ -1480,8 +1514,25 @@ String _renderMixin_partial_documentation_4(_i15.Mixin context1) =>
     _deduplicated_lib_templates_md__documentation_md(context1);
 String _renderMixin_partial_super_chain_5(_i15.Mixin context1) =>
     _deduplicated_lib_templates_md__super_chain_md(context1);
-String _renderMixin_partial_interfaces_6(_i15.Mixin context1) =>
-    _deduplicated_lib_templates_md__interfaces_md(context1);
+String _renderMixin_partial_interfaces_6(_i15.Mixin context1) {
+  final buffer = StringBuffer();
+  if (context1.hasPublicInterfaces == true) {
+    buffer.writeln();
+    buffer.write('''
+**Implemented types**
+''');
+    var context2 = context1.publicInterfaces;
+    for (var context3 in context2) {
+      buffer.writeln();
+      buffer.write('''
+- ''');
+      buffer.write(context3.linkedName);
+    }
+  }
+
+  return buffer.toString();
+}
+
 String _renderMixin_partial_property_7(_i10.Field context2) =>
     _deduplicated_lib_templates_md__property_md(context2);
 String _renderMixin_partial_instance_methods_8(_i15.Mixin context1) =>
@@ -2112,7 +2163,7 @@ String _deduplicated_lib_templates_md__feature_set_md(
 }
 
 String _deduplicated_lib_templates_md__super_chain_md(
-    _i19.TypeImplementing context0) {
+    _i19.InheritingContainer context0) {
   final buffer = StringBuffer();
   if (context0.hasPublicSuperChainReversed == true) {
     buffer.writeln();
@@ -2137,28 +2188,8 @@ String _deduplicated_lib_templates_md__super_chain_md(
   return buffer.toString();
 }
 
-String _deduplicated_lib_templates_md__interfaces_md(
-    _i19.TypeImplementing context0) {
-  final buffer = StringBuffer();
-  if (context0.hasPublicInterfaces == true) {
-    buffer.writeln();
-    buffer.write('''
-**Implemented types**
-''');
-    var context1 = context0.publicInterfaces;
-    for (var context2 in context1) {
-      buffer.writeln();
-      buffer.write('''
-- ''');
-      buffer.write(context2.linkedName);
-    }
-  }
-
-  return buffer.toString();
-}
-
 String _deduplicated_lib_templates_md__constructors_md(
-    _i19.TypeImplementing context0) {
+    _i19.InheritingContainer context0) {
   final buffer = StringBuffer();
   if (context0.hasPublicConstructors == true) {
     buffer.writeln();

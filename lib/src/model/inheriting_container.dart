@@ -57,6 +57,7 @@ mixin Constructable on InheritingContainer {
   }
 
   @override
+  @visibleForOverriding
   Iterable<MapEntry<String, CommentReferable>>
       get extraReferenceChildren sync* {
     yield* _constructorGenerator(constructors);
@@ -70,7 +71,7 @@ mixin Constructable on InheritingContainer {
       ]) {
         yield MapEntry(modelElement.referenceName, modelElement);
       }
-      if (container is Class) {
+      if (container is Constructable) {
         yield* _constructorGenerator(container.constructors);
       }
     }
