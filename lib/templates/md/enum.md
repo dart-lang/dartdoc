@@ -23,6 +23,8 @@
 {{ /hasAnnotations }}
 {{ /hasModifiers }}
 
+{{ >constructors }}
+
 {{ #hasPublicConstantFields }}
 ## Constants
 

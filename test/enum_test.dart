@@ -118,7 +118,7 @@ class C {}
       expect(
         cClass.documentationAsHtml,
         '<p>Reference to '
-        '<a href="%%__HTMLBASE_dartdoc_internal__%%enums/E/values-constant.html">E.values</a>.</p>',
+        '<a href="$linkPrefix/E/values-constant.html">E.values</a>.</p>',
       );
     });
 
@@ -130,10 +130,8 @@ enum E { one, two, three }
 class C {}
 ''');
       var cClass = library.classes.named('C');
-      expect(
-          cClass.documentationAsHtml,
-          '<p>Reference to '
-          '<a href="%%__HTMLBASE_dartdoc_internal__%%enums/E.html">E.one</a>.</p>');
+      expect(cClass.documentationAsHtml,
+          '<p>Reference to <a href="$linkPrefix/E.html">E.one</a>.</p>');
     });
 
     test("has an 'index' getter which can be referenced", () async {
@@ -388,6 +386,74 @@ enum E {
       expect(method1.documentationComment, '/// Doc comment.');
     });
 
+    test("an enhanced enum's constructors are documented", () async {
+      var library = await bootPackageWithLibrary('''
+enum E {
+  one.named(1),
+  two.named(2);
+
+  final int x;
+
+  /// A named constructor.
+  const E.named(this.x);
+}
+''');
+      var namedConstructor =
+          library.enums.named('E').constructors.named('E.named');
+
+      expect(namedConstructor.isFactory, false);
+      expect(namedConstructor.fullyQualifiedName, 'enums.E.named');
+      expect(namedConstructor.nameWithGenerics, 'E.named');
+      expect(namedConstructor.documentationComment, '/// A named constructor.');
+    });
+
+    test("an enhanced enum's value has a constant value implementation",
+        () async {
+      var library = await bootPackageWithLibrary('''
+enum E {
+  one.named(1),
+  two.named(2);
+
+  final int x;
+
+  /// A named constructor.
+  const E.named(this.x);
+}
+
+enum F { one, two }
+''');
+      var eOneValue = library.enums.named('E').constantFields.named('one');
+      expect(eOneValue.constantValueTruncated, 'E.named(1)');
+
+      var eTwoValue = library.enums.named('E').constantFields.named('two');
+      expect(eTwoValue.constantValueTruncated, 'E.named(2)');
+
+      var fOneValue = library.enums.named('F').constantFields.named('one');
+      expect(fOneValue.constantValueTruncated, 'F()');
+
+      var fTwoValue = library.enums.named('F').constantFields.named('two');
+      expect(fTwoValue.constantValueTruncated, 'F()');
+    });
+
+    test('has a named constructor which can be referenced', () async {
+      var library = await bootPackageWithLibrary('''
+enum E {
+  one.named(1),
+  two.named(2);
+
+  const E.named(int x);
+}
+
+/// Reference to [E.named].
+class C {}
+''');
+      var cClass = library.classes.named('C');
+      expect(
+        cClass.documentationAsHtml,
+        '<p>Reference to <a href="$linkPrefix/E/E.named.html">E.named</a>.</p>',
+      );
+    });
+
     // TODO(srawlins): Add rendering tests.
     // * Add tests for rendered supertypes HTML.
     // * Add tests for rendered mixins HTML.
@@ -396,11 +462,9 @@ enum E {
     // * Add tests for rendered getters, setters.
     // * Add tests for rendered field pages.
     // * Add tests for rendered generic enum values.
-    // * Add tests for rendered constructors.
 
     // TODO(srawlins): Add referencing tests (`/// [Enum.method]` etc.)
     // * Add tests for referencing enum static methods, static fields.
     // * Add tests for referencing enum getters, setters, operators, methods.
-    // * Add tests for referencing constructors.
   }, skip: !enhancedEnumsAllowed);
 }

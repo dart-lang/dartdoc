@@ -315,7 +315,7 @@ class ConstructorTemplateData extends TemplateData<Constructor>
         TemplateDataWithContainer<Constructor> {
   @override
   final Library library;
-  final Class clazz;
+  final Constructable constructable;
   final Constructor constructor;
   final ContainerSidebar _sidebarForContainer;
 
@@ -323,7 +323,7 @@ class ConstructorTemplateData extends TemplateData<Constructor>
       TemplateOptions htmlOptions,
       PackageGraph packageGraph,
       this.library,
-      this.clazz,
+      this.constructable,
       this.constructor,
       this._sidebarForContainer)
       : super(htmlOptions, packageGraph);
@@ -331,7 +331,7 @@ class ConstructorTemplateData extends TemplateData<Constructor>
   String get sidebarForContainer => _sidebarForContainer(container, this);
 
   @override
-  Container get container => clazz;
+  Container get container => constructable;
   @override
   Constructor get self => constructor;
   @override
@@ -340,18 +340,18 @@ class ConstructorTemplateData extends TemplateData<Constructor>
   @override
   List<Documentable> get navLinks => [_packageGraph.defaultPackage, library];
   @override
-  List<Container> get navLinksWithGenerics => [clazz];
+  List<Container> get navLinksWithGenerics => [constructable];
   @override
   @override
   String get htmlBase => '../../';
   @override
-  String get title => '${constructor.name} constructor - ${clazz.name} class - '
+  String get title =>
+      '${constructor.name} constructor - ${constructable.name} - '
       '${library.name} library - Dart API';
   @override
   String get metaDescription =>
-      'API docs for the ${constructor.name} constructor from the '
-      '$clazz class from the ${library.name} library, '
-      'for the Dart programming language.';
+      'API docs for the ${constructor.name} constructor from $constructable '
+      'from the ${library.name} library, for the Dart programming language.';
 }
 
 class EnumTemplateData extends InheritingContainerTemplateData<Enum> {

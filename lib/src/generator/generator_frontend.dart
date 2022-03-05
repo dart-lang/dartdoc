@@ -234,6 +234,14 @@ class GeneratorFrontEnd implements Generator {
                 writer, packageGraph, lib, enum_, constant);
           }
 
+          for (var constructor in filterNonDocumented(enum_.constructors)) {
+            if (!constructor.isCanonical) continue;
+
+            indexAccumulator.add(constructor);
+            _generatorBackend.generateConstructor(
+                writer, packageGraph, lib, enum_, constructor);
+          }
+
           for (var property in filterNonDocumented(enum_.instanceFields)) {
             indexAccumulator.add(property);
             _generatorBackend.generateConstant(
@@ -309,7 +317,7 @@ abstract class GeneratorBackend {
 
   /// Emit documentation content for the [constructor].
   void generateConstructor(FileWriter writer, PackageGraph graph,
-      Library library, Class clazz, Constructor constructor);
+      Library library, Constructable constructable, Constructor constructor);
 
   /// Emit documentation content for the [field].
   void generateConstant(FileWriter writer, PackageGraph graph, Library library,

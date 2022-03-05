@@ -5,9 +5,11 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:dartdoc/src/element_type.dart';
+import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as model_utils;
 import 'package:dartdoc/src/special_elements.dart';
+import 'package:meta/meta.dart';
 
 /// Implements the Dart 2.1 "mixin" style of mixin declarations.
 class Mixin extends InheritingContainer with TypeImplementing {
@@ -58,6 +60,10 @@ class Mixin extends InheritingContainer with TypeImplementing {
     // implement them even when they aren't mentioned.
     ...interfaces.expandInheritanceChain,
   ];
+
+  @override
+  @visibleForOverriding
+  Iterable<MapEntry<String, CommentReferable>> get extraReferenceChildren => [];
 
   @override
   String get relationshipsClass => 'mixin-relationships';

@@ -783,8 +783,9 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       var iKey = Tuple2<Element, Library?>(e, lib);
       var key =
           Tuple4<Element, Library?, Class?, ModelElement?>(e, lib, null, null);
-      var keyWithClass = Tuple4<Element, Library?, Class?, ModelElement?>(
-          e, lib, preferredClass as Class?, null);
+      var keyWithClass =
+          Tuple4<Element, Library?, InheritingContainer?, ModelElement?>(
+              e, lib, preferredClass as InheritingContainer?, null);
       var constructedWithKey = allConstructedModelElements[key];
       if (constructedWithKey != null) {
         candidates.add(constructedWithKey);
@@ -801,7 +802,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       }
 
       var canonicalClass = findCanonicalModelElementFor(e.enclosingElement);
-      if (canonicalClass is Class) {
+      if (canonicalClass is InheritingContainer) {
         candidates.addAll(canonicalClass.allCanonicalModelElements.where((m) {
           return m.element == e;
         }));
@@ -824,7 +825,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
         // Search for matches inside our superchain.
         var superChain = preferredClass.superChain
             .map((et) => et.modelElement)
-            .cast<Class>()
+            .cast<InheritingContainer>()
             .toList();
         superChain.add(preferredClass);
         matches.removeWhere((me) =>

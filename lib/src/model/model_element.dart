@@ -415,6 +415,7 @@ abstract class ModelElement extends Canonicalization
     if (enclosingElement is Class && !(enclosingElement as Class).isPublic) {
       return false;
     }
+    // TODO(srawlins): Er, mixin? enum?
     if (enclosingElement is Extension &&
         !(enclosingElement as Extension).isPublic) {
       return false;
@@ -496,7 +497,10 @@ abstract class ModelElement extends Canonicalization
   // or null if there isn't one.
   late final ModelElement? canonicalModelElement = () {
     Container? preferredClass;
-    if (enclosingElement is Class || enclosingElement is Extension) {
+    // TODO(srawlins): Add mixin.
+    if (enclosingElement is Class ||
+        enclosingElement is Enum ||
+        enclosingElement is Extension) {
       preferredClass = enclosingElement as Container?;
     }
     return packageGraph.findCanonicalModelElementFor(element,

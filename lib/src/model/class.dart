@@ -5,8 +5,6 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/model/model.dart';
 
-import 'comment_referable.dart';
-
 /// A [Container] defined with a `class` declaration in Dart.
 ///
 /// Members follow similar naming rules to [Container], with the following
@@ -22,8 +20,6 @@ class Class extends InheritingContainer
   }
 
   @override
-  // TODO(srawlins): Figure out what we elsewhere in dartdoc.
-  // ignore: overridden_fields
   late final List<ModelElement> allModelElements = [
     ...super.allModelElements,
     ...constructors,
@@ -93,11 +89,9 @@ class Class extends InheritingContainer
     ...interfaces.expandInheritanceChain,
   ];
 
-  Iterable<Field>? _instanceFields;
-
   @override
-  Iterable<Field> get instanceFields =>
-      _instanceFields ??= allFields.where((f) => !f.isStatic);
+  late final Iterable<Field> instanceFields =
+      allFields.where((f) => !f.isStatic);
 
   @override
   bool get publicInheritedInstanceFields =>
@@ -105,39 +99,6 @@ class Class extends InheritingContainer
 
   @override
   Iterable<Field> get constantFields => allFields.where((f) => f.isConst);
-
-  static Iterable<MapEntry<String, CommentReferable>> _constructorGenerator(
-      Iterable<Constructor> source) sync* {
-    for (var constructor in source) {
-      yield MapEntry(constructor.referenceName, constructor);
-      yield MapEntry(
-          '${constructor.enclosingElement.referenceName}.${constructor.referenceName}',
-          constructor);
-      if (constructor.isDefaultConstructor) {
-        yield MapEntry('new', constructor);
-      }
-    }
-  }
-
-  @override
-  Iterable<MapEntry<String, CommentReferable>>
-      get extraReferenceChildren sync* {
-    yield* _constructorGenerator(constructors);
-    // TODO(jcollins-g): wean important users off of relying on static method
-    // inheritance (dart-lang/dartdoc#2698)
-    for (var container
-        in publicSuperChain.map((t) => t.modelElement).whereType<Container>()) {
-      for (var modelElement in [
-        ...container.staticFields,
-        ...container.staticMethods,
-      ]) {
-        yield MapEntry(modelElement.referenceName, modelElement);
-      }
-      if (container is Class) {
-        yield* _constructorGenerator(container.constructors);
-      }
-    }
-  }
 
   @override
   String get relationshipsClass => 'clazz-relationships';

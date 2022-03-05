@@ -172,9 +172,9 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
 
   @override
   void generateConstructor(FileWriter writer, PackageGraph packageGraph,
-      Library lib, Class clazz, Constructor constructor) {
-    var data = ConstructorTemplateData(options, packageGraph, lib, clazz,
-        constructor, sidebarForContainer.getRenderFor);
+      Library lib, Constructable constructable, Constructor constructor) {
+    var data = ConstructorTemplateData(options, packageGraph, lib,
+        constructable, constructor, sidebarForContainer.getRenderFor);
     var content = templates.renderConstructor(data);
     write(writer, constructor.filePath, data, content);
   }
