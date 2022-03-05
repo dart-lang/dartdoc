@@ -2598,8 +2598,8 @@ class _Renderer_ConstructorTemplateData
           CT_,
           () => {
                 ..._Renderer_TemplateData.propertyMap<Constructor, CT_>(),
-                'clazz': Property(
-                  getValue: (CT_ c) => c.clazz,
+                'constructable': Property(
+                  getValue: (CT_ c) => c.constructable,
                   renderVariable:
                       (CT_ c, Property<CT_> self, List<String> remainingNames) {
                     if (remainingNames.isEmpty) {
@@ -2607,16 +2607,18 @@ class _Renderer_ConstructorTemplateData
                     }
                     var name = remainingNames.first;
                     var nextProperty =
-                        _Renderer_Class.propertyMap().getValue(name);
+                        _Renderer_Constructable.propertyMap().getValue(name);
                     return nextProperty.renderVariable(
-                        self.getValue(c) as Class,
+                        self.getValue(c) as Constructable,
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
                   isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_Class(c.clazz, ast, r.template, sink, parent: r);
+                    renderSimple(c.constructable, ast, r.template, sink,
+                        parent: r,
+                        getters: _invisibleGetters['Constructable']!);
                   },
                 ),
                 'constructor': Property(
@@ -16086,6 +16088,15 @@ const _invisibleGetters = {
     'topLevelVariables',
     'typeAliases',
     'types'
+  },
+  'Constructable': {
+    'constructors',
+    'defaultConstructor',
+    'extraReferenceChildren',
+    'hasPublicConstructors',
+    'publicConstructors',
+    'publicConstructorsSorted',
+    'unnamedConstructor'
   },
   'ConstructorElement': {
     'declaration',
