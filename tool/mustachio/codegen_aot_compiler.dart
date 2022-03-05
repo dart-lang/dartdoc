@@ -154,7 +154,7 @@ Future<Map<_AotCompiler, Method>> _deduplicateRenderers(
       // likely the properties accessed in the partial are not all declared on
       // the LUB type.
       var names = compilers.map((c) => c._rendererName);
-      print('Could not deduplicate ${names.join(', ')}.');
+      print('Could not deduplicate ${assetId.path} ${names.join(', ')}');
       continue;
     }
 
@@ -187,6 +187,23 @@ Future<Map<_AotCompiler, Method>> _deduplicateRenderers(
 /// redirects to the render function for [lubCompiler].
 Future<Method> _redirectingMethod(
     _AotCompiler compiler, _AotCompiler lubCompiler) async {
+  var typeParameters = <TypeReference>[];
+  for (var context in compiler._usedContextStack) {
+    for (var typeParameter in context.type.element.typeParameters) {
+      var bound = typeParameter.bound;
+      if (bound == null) {
+        typeParameters
+            .add(TypeReference((b) => b..symbol = typeParameter.name));
+      } else {
+        var boundElement = bound.element!;
+        var boundUri = await compiler._elementUri(boundElement);
+        typeParameters.add(TypeReference((b) => b
+          ..symbol = typeParameter.name
+          ..bound = refer(boundElement.name!, boundUri)));
+      }
+    }
+  }
+
   var parameters = <Parameter>[];
   for (var context in compiler._usedContextStack) {
     var contextElement = context.type.element;
@@ -203,6 +220,7 @@ Future<Method> _redirectingMethod(
   return Method((b) => b
     ..returns = refer('String')
     ..name = compiler._rendererName
+    ..types.addAll(typeParameters)
     ..requiredParameters.addAll(parameters)
     ..body = refer(lubCompiler._rendererName).call(arguments).code);
 }

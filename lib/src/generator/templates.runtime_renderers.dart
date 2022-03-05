@@ -13483,8 +13483,54 @@ class _Renderer_String extends RendererBase<String> {
 class _Renderer_TemplateData<T extends Documentable>
     extends RendererBase<TemplateData<T>> {
   static final Map<Type, Object> _propertyMapCache = {};
-  static Map<String, Property<CT_>> propertyMap<T extends Documentable,
-          CT_ extends TemplateData>() =>
+  static Map<String, Property<CT_>>
+      propertyMap<T extends Documentable, CT_ extends TemplateData>() =>
+          _propertyMapCache.putIfAbsent(
+              CT_,
+              () => {
+                    ..._Renderer_TemplateDataBase.propertyMap<CT_>(),
+                    'self': Property(
+                      getValue: (CT_ c) => c.self,
+                      renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) {
+                        if (remainingNames.isEmpty) {
+                          return self.getValue(c).toString();
+                        }
+                        var name = remainingNames.first;
+                        var nextProperty =
+                            _Renderer_Documentable.propertyMap().getValue(name);
+                        return nextProperty.renderVariable(
+                            self.getValue(c) as Documentable,
+                            nextProperty,
+                            [...remainingNames.skip(1)]);
+                      },
+                      isNullValue: (CT_ c) => false,
+                      renderValue: (CT_ c, RendererBase<CT_> r,
+                          List<MustachioNode> ast, StringSink sink) {
+                        _render_Documentable(c.self, ast, r.template, sink,
+                            parent: r);
+                      },
+                    ),
+                  }) as Map<String, Property<CT_>>;
+
+  _Renderer_TemplateData(TemplateData<T> context, RendererBase<Object>? parent,
+      Template template, StringSink sink)
+      : super(context, parent, template, sink);
+
+  @override
+  Property<TemplateData<T>>? getProperty(String key) {
+    if (propertyMap<T, TemplateData<T>>().containsKey(key)) {
+      return propertyMap<T, TemplateData<T>>()[key];
+    } else {
+      return null;
+    }
+  }
+}
+
+class _Renderer_TemplateDataBase extends RendererBase<TemplateDataBase> {
+  static final Map<Type, Object> _propertyMapCache = {};
+  static Map<String, Property<CT_>> propertyMap<
+          CT_ extends TemplateDataBase>() =>
       _propertyMapCache.putIfAbsent(
           CT_,
           () => {
@@ -13876,14 +13922,14 @@ class _Renderer_TemplateData<T extends Documentable>
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_TemplateData(TemplateData<T> context, RendererBase<Object>? parent,
-      Template template, StringSink sink)
+  _Renderer_TemplateDataBase(TemplateDataBase context,
+      RendererBase<Object>? parent, Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<TemplateData<T>>? getProperty(String key) {
-    if (propertyMap<T, TemplateData<T>>().containsKey(key)) {
-      return propertyMap<T, TemplateData<T>>()[key];
+  Property<TemplateDataBase>? getProperty(String key) {
+    if (propertyMap<TemplateDataBase>().containsKey(key)) {
+      return propertyMap<TemplateDataBase>()[key];
     } else {
       return null;
     }
