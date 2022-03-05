@@ -406,7 +406,36 @@ enum E {
       expect(namedConstructor.nameWithGenerics, 'E.named');
       expect(namedConstructor.documentationComment, '/// A named constructor.');
     });
-    test("has an 'index' getter which can be referenced", () async {
+
+    test("an enhanced enum's value has a constant value implementation",
+        () async {
+      var library = await bootPackageWithLibrary('''
+enum E {
+  one.named(1),
+  two.named(2);
+
+  final int x;
+
+  /// A named constructor.
+  const E.named(this.x);
+}
+
+enum F { one, two }
+''');
+      var eOneValue = library.enums.named('E').constantFields.named('one');
+      expect(eOneValue.constantValueTruncated, 'E.named(1)');
+
+      var eTwoValue = library.enums.named('E').constantFields.named('two');
+      expect(eTwoValue.constantValueTruncated, 'E.named(2)');
+
+      var fOneValue = library.enums.named('F').constantFields.named('one');
+      expect(fOneValue.constantValueTruncated, 'F()');
+
+      var fTwoValue = library.enums.named('F').constantFields.named('two');
+      expect(fTwoValue.constantValueTruncated, 'F()');
+    });
+
+    test('has a named constructor which can be referenced', () async {
       var library = await bootPackageWithLibrary('''
 enum E {
   one.named(1),

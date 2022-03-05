@@ -77,11 +77,6 @@ mixin GetterSetterCombo on ModelElement {
         '${targetClass.linkedName}.${target.linkedName}');
   }
 
-  String _buildConstantValueBase() {
-    var result = constantInitializer?.toString() ?? '';
-    return const HtmlEscape(HtmlEscapeMode.unknown).convert(result);
-  }
-
   @override
   CharacterLocation? get characterLocation {
     if (enclosingElement is Enum) {
@@ -107,10 +102,9 @@ mixin GetterSetterCombo on ModelElement {
 
   String get constantValueTruncated =>
       linkifyConstantValue(truncateString(constantValueBase, 200));
-  String? _constantValueBase;
 
-  String get constantValueBase =>
-      _constantValueBase ??= _buildConstantValueBase();
+  late final String constantValueBase = const HtmlEscape(HtmlEscapeMode.unknown)
+      .convert(constantInitializer?.toString() ?? '');
 
   late final bool hasPublicGetter = hasGetter && getter!.isPublic;
 

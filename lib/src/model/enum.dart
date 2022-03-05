@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'package:analyzer/dart/analysis/features.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as model_utils;
@@ -55,7 +56,10 @@ class EnumField extends Field {
             element, library, packageGraph, getter as ContainerAccessor?, null);
 
   @override
-  String get constantValueBase => _fieldRenderer.renderValue(this);
+  String get constantValueBase =>
+      element!.library!.featureSet.isEnabled(Feature.enhanced_enums)
+          ? super.constantValueBase
+          : _fieldRenderer.renderValue(this);
 
   @override
   List<DocumentationComment> get documentationFrom {
