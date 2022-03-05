@@ -387,8 +387,49 @@ String renderClass(_i1.ClassTemplateData context0) {
       </dl>
     </section>''');
   }
-  buffer.write('\n\n    ');
-  buffer.write(_renderClass_partial_constructors_7(context2));
+  buffer.writeln();
+  if (context2.hasPublicConstructors == true) {
+    buffer.writeln();
+    buffer.write('''
+    <section class="summary offset-anchor" id="constructors">
+      <h2>Constructors</h2>
+
+      <dl class="constructor-summary-list">''');
+    var context11 = context2.publicConstructorsSorted;
+    for (var context12 in context11) {
+      buffer.writeln();
+      buffer.write('''
+        <dt id="''');
+      buffer.writeEscaped(context12.htmlId);
+      buffer.write('''" class="callable">
+          <span class="name">''');
+      buffer.write(context12.linkedName);
+      buffer.write('''</span><span class="signature">(''');
+      buffer.write(context12.linkedParams);
+      buffer.write(''')</span>
+        </dt>
+        <dd>
+          ''');
+      buffer.write(context12.oneLineDoc);
+      if (context12.isConst == true) {
+        buffer.writeln();
+        buffer.write('''
+          <div class="constructor-modifier features">const</div>''');
+      }
+      if (context12.isFactory == true) {
+        buffer.writeln();
+        buffer.write('''
+          <div class="constructor-modifier features">factory</div>''');
+      }
+      buffer.writeln();
+      buffer.write('''
+        </dd>''');
+    }
+    buffer.writeln();
+    buffer.write('''
+      </dl>
+    </section>''');
+  }
   buffer.writeln();
   if (context2.hasPublicInstanceFields == true) {
     buffer.writeln();
@@ -401,10 +442,10 @@ String renderClass(_i1.ClassTemplateData context0) {
       <h2>Properties</h2>
 
       <dl class="properties">''');
-    var context11 = context2.publicInstanceFieldsSorted;
-    for (var context12 in context11) {
+    var context13 = context2.publicInstanceFieldsSorted;
+    for (var context14 in context13) {
       buffer.write('\n        ');
-      buffer.write(_renderClass_partial_property_8(context12));
+      buffer.write(_renderClass_partial_property_7(context14));
     }
     buffer.writeln();
     buffer.write('''
@@ -412,15 +453,15 @@ String renderClass(_i1.ClassTemplateData context0) {
     </section>''');
   }
   buffer.write('\n\n    ');
-  buffer.write(_renderClass_partial_instance_methods_9(context2));
+  buffer.write(_renderClass_partial_instance_methods_8(context2));
   buffer.write('\n    ');
-  buffer.write(_renderClass_partial_instance_operators_10(context2));
+  buffer.write(_renderClass_partial_instance_operators_9(context2));
   buffer.write('\n    ');
-  buffer.write(_renderClass_partial_static_properties_11(context2));
+  buffer.write(_renderClass_partial_static_properties_10(context2));
   buffer.write('\n    ');
-  buffer.write(_renderClass_partial_static_methods_12(context2));
+  buffer.write(_renderClass_partial_static_methods_11(context2));
   buffer.write('\n    ');
-  buffer.write(_renderClass_partial_static_constants_13(context2));
+  buffer.write(_renderClass_partial_static_constants_12(context2));
   buffer.writeln();
   buffer.write('''
 
@@ -428,7 +469,7 @@ String renderClass(_i1.ClassTemplateData context0) {
 
   <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
     ''');
-  buffer.write(_renderClass_partial_search_sidebar_14(context0));
+  buffer.write(_renderClass_partial_search_sidebar_13(context0));
   buffer.writeln();
   buffer.write('''
     <h5>''');
@@ -450,7 +491,7 @@ String renderClass(_i1.ClassTemplateData context0) {
   </div><!--/.sidebar-offcanvas-->
 
 ''');
-  buffer.write(_renderClass_partial_footer_15(context0));
+  buffer.write(_renderClass_partial_footer_14(context0));
   buffer.writeln();
 
   return buffer.toString();
@@ -615,8 +656,6 @@ String renderEnum(_i1.EnumTemplateData context0) {
       </dl>
     </section>''');
   }
-  buffer.write('\n\n    ');
-  buffer.write(_renderEnum_partial_constructors_7(context2));
   buffer.writeln();
   if (context2.hasPublicEnumValues == true) {
     buffer.writeln();
@@ -628,7 +667,7 @@ String renderEnum(_i1.EnumTemplateData context0) {
     var context5 = context2.publicEnumValuesSorted;
     for (var context6 in context5) {
       buffer.write('\n          ');
-      buffer.write(_renderEnum_partial_constant_8(context6));
+      buffer.write(_renderEnum_partial_constant_7(context6));
     }
     buffer.writeln();
     buffer.write('''
@@ -654,7 +693,7 @@ String renderEnum(_i1.EnumTemplateData context0) {
     var context7 = context2.publicInstanceFieldsSorted;
     for (var context8 in context7) {
       buffer.write('\n        ');
-      buffer.write(_renderEnum_partial_property_9(context8));
+      buffer.write(_renderEnum_partial_property_8(context8));
     }
     buffer.writeln();
     buffer.write('''
@@ -662,22 +701,22 @@ String renderEnum(_i1.EnumTemplateData context0) {
     </section>''');
   }
   buffer.write('\n\n    ');
-  buffer.write(_renderEnum_partial_instance_methods_10(context2));
+  buffer.write(_renderEnum_partial_instance_methods_9(context2));
   buffer.write('\n    ');
-  buffer.write(_renderEnum_partial_instance_operators_11(context2));
+  buffer.write(_renderEnum_partial_instance_operators_10(context2));
   buffer.write('\n    ');
-  buffer.write(_renderEnum_partial_static_properties_12(context2));
+  buffer.write(_renderEnum_partial_static_properties_11(context2));
   buffer.write('\n    ');
-  buffer.write(_renderEnum_partial_static_methods_13(context2));
+  buffer.write(_renderEnum_partial_static_methods_12(context2));
   buffer.write('\n    ');
-  buffer.write(_renderEnum_partial_static_constants_14(context2));
+  buffer.write(_renderEnum_partial_static_constants_13(context2));
   buffer.writeln();
   buffer.write('''
   </div><!-- /.main-content -->
 
   <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
     ''');
-  buffer.write(_renderEnum_partial_search_sidebar_15(context0));
+  buffer.write(_renderEnum_partial_search_sidebar_14(context0));
   buffer.writeln();
   buffer.write('''
     <h5>''');
@@ -699,7 +738,7 @@ String renderEnum(_i1.EnumTemplateData context0) {
   </div><!-- /.sidebar-offcanvas -->
 
 ''');
-  buffer.write(_renderEnum_partial_footer_16(context0));
+  buffer.write(_renderEnum_partial_footer_15(context0));
   buffer.writeln();
 
   return buffer.toString();
@@ -2102,153 +2141,8 @@ String renderTypedef(_i1.TypedefTemplateData context0) {
   return buffer.toString();
 }
 
-String _renderCategory_partial_head_0(_i1.CategoryTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">''');
-  if (context0.includeVersion == true) {
-    buffer.writeln();
-    buffer.write('''
-  <meta name="generator" content="made with love by dartdoc ''');
-    buffer.writeEscaped(context0.version);
-    buffer.write('''">''');
-  }
-  buffer.writeln();
-  buffer.write('''
-  <meta name="description" content="''');
-  buffer.writeEscaped(context0.metaDescription);
-  buffer.write('''">
-  <title>''');
-  buffer.writeEscaped(context0.title);
-  buffer.write('''</title>''');
-  var context1 = context0.relCanonicalPrefix;
-  if (context1 != null) {
-    buffer.writeln();
-    buffer.write('''
-  <link rel="canonical" href="''');
-    buffer.write(context0.relCanonicalPrefix);
-    buffer.write('''/''');
-    buffer.write(context0.bareHref);
-    buffer.write('''">''');
-  }
-  buffer.writeln();
-  if (context0.useBaseHref == true) {
-    var context2 = context0.htmlBase;
-    buffer.writeln();
-    buffer.write('''
-  <!-- required because all the links are pseudo-absolute -->
-  <base href="''');
-    buffer.write(context0.htmlBase);
-    buffer.write('''">''');
-  }
-  buffer.write('\n\n  ');
-  buffer.writeln();
-  buffer.write('''
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  ''');
-  buffer.writeln();
-  buffer.write('''
-  <link rel="stylesheet" href="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/github.css?v1">
-  <link rel="stylesheet" href="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/styles.css?v1">
-  <link rel="icon" href="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/favicon.png?v1">
-
-  ''');
-  buffer.write(context0.customHeader);
-  buffer.writeln();
-  buffer.write('''
-</head>
-
-''');
-  buffer.writeln();
-  buffer.write('''
-<body data-base-href="''');
-  buffer.write(context0.htmlBase);
-  buffer.write('''"
-      data-using-base-href="''');
-  buffer.write(context0.useBaseHref.toString());
-  buffer.write('''">
-
-<div id="overlay-under-drawer"></div>
-
-<header id="title">
-  <button id="sidenav-left-toggle" type="button">&nbsp;</button>
-  <ol class="breadcrumbs gt-separated dark hidden-xs">''');
-  var context3 = context0.navLinks;
-  for (var context4 in context3) {
-    buffer.writeln();
-    buffer.write('''
-    <li><a href="''');
-    buffer.write(context4.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
-    buffer.write('''</a></li>''');
-  }
-  var context5 = context0.navLinksWithGenerics;
-  for (var context6 in context5) {
-    buffer.writeln();
-    buffer.write('''
-    <li><a href="''');
-    buffer.write(context6.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context6.name);
-    if (context6.hasGenericParameters == true) {
-      buffer.write('''<span class="signature">''');
-      buffer.write(context6.genericParameters);
-      buffer.write('''</span>''');
-    }
-    buffer.write('''</a></li>''');
-  }
-  if (context0.hasHomepage != true) {
-    buffer.writeln();
-    buffer.write('''
-    <li class="self-crumb">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</li>''');
-  }
-  if (context0.hasHomepage == true) {
-    buffer.writeln();
-    buffer.write('''
-    <li><a href="''');
-    buffer.write(context0.homepage);
-    buffer.write('''">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</a></li>''');
-  }
-  buffer.writeln();
-  buffer.write('''
-  </ol>
-  <div class="self-name">''');
-  buffer.writeEscaped(context0.self.name);
-  buffer.write('''</div>
-  <form class="search navbar-right" role="search">
-    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
-  </form>
-</header>
-
-<main>
-''');
-
-  return buffer.toString();
-}
-
+String _renderCategory_partial_head_0(_i1.CategoryTemplateData context0) =>
+    _deduplicated_lib_templates_html__head_html(context0);
 String _renderCategory_partial_documentation_1(_i4.Category context1) =>
     _deduplicated_lib_templates_html__documentation_html(context1);
 String _renderCategory_partial_library_2(_i5.Library context2) =>
@@ -2318,129 +2212,10 @@ String __renderCategory_partial_callable_7_partial_features_1(
 String _renderCategory_partial_typedef_8(_i9.Typedef context2) =>
     _deduplicated_lib_templates_html__typedef_html(context2);
 String _renderCategory_partial_search_sidebar_9(
-    _i1.CategoryTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''<header id="header-search-sidebar" class="hidden-l">
-  <form class="search-sidebar" role="search">
-    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
-  </form>
-</header>
-
-<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">''');
-  var context1 = context0.navLinks;
-  for (var context2 in context1) {
-    buffer.writeln();
-    buffer.write('''
-  <li><a href="''');
-    buffer.write(context2.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context2.name);
-    buffer.write('''</a></li>''');
-  }
-  var context3 = context0.navLinksWithGenerics;
-  for (var context4 in context3) {
-    buffer.writeln();
-    buffer.write('''
-  <li><a href="''');
-    buffer.write(context4.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
-    if (context4.hasGenericParameters == true) {
-      buffer.write('''<span class="signature">''');
-      buffer.write(context4.genericParameters);
-      buffer.write('''</span>''');
-    }
-    buffer.write('''</a></li>''');
-  }
-  if (context0.hasHomepage != true) {
-    buffer.writeln();
-    buffer.write('''
-  <li class="self-crumb">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</li>''');
-  }
-  if (context0.hasHomepage == true) {
-    buffer.writeln();
-    buffer.write('''
-  <li><a href="''');
-    buffer.write(context0.homepage);
-    buffer.write('''">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</a></li>''');
-  }
-  buffer.writeln();
-  buffer.write('''
-</ol>
-
-''');
-
-  return buffer.toString();
-}
-
-String _renderCategory_partial_packages_10(_i1.CategoryTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''<ol>''');
-  var context1 = context0.localPackages;
-  for (var context2 in context1) {
-    if (context2.isFirstPackage == true) {
-      if (context2.hasDocumentedCategories == true) {
-        buffer.writeln();
-        buffer.write('''
-      <li class="section-title">Topics</li>''');
-        var context3 = context2.documentedCategoriesSorted;
-        for (var context4 in context3) {
-          buffer.writeln();
-          buffer.write('''
-        <li>''');
-          buffer.write(context4.linkedName);
-          buffer.write('''</li>''');
-        }
-      }
-      buffer.writeln();
-      buffer.write('''
-      <li class="section-title">Libraries</li>''');
-    }
-    if (context2.isFirstPackage != true) {
-      buffer.writeln();
-      buffer.write('''
-      <li class="section-title">''');
-      buffer.writeEscaped(context2.name);
-      buffer.write('''</li>''');
-    }
-    var context5 = context2.defaultCategory;
-    var context6 = context5.publicLibrariesSorted;
-    for (var context7 in context6) {
-      buffer.writeln();
-      buffer.write('''
-      <li>''');
-      buffer.write(context7.linkedName);
-      buffer.write('''</li>''');
-    }
-    var context8 = context2.categoriesWithPublicLibraries;
-    for (var context9 in context8) {
-      buffer.writeln();
-      buffer.write('''
-      <li class="section-subtitle">''');
-      buffer.writeEscaped(context9.name);
-      buffer.write('''</li>''');
-      var context10 = context9.publicLibrariesSorted;
-      for (var context11 in context10) {
-        buffer.writeln();
-        buffer.write('''
-        <li class="section-subitem">''');
-        buffer.write(context11.linkedName);
-        buffer.write('''</li>''');
-      }
-    }
-  }
-  buffer.writeln();
-  buffer.write('''
-</ol>
-''');
-
-  return buffer.toString();
-}
-
+        _i1.CategoryTemplateData context0) =>
+    _deduplicated_lib_templates_html__search_sidebar_html(context0);
+String _renderCategory_partial_packages_10(_i1.CategoryTemplateData context0) =>
+    _deduplicated_lib_templates_html__packages_html(context0);
 String _renderCategory_partial_sidebar_for_category_11(
     _i1.CategoryTemplateData context0) {
   final buffer = StringBuffer();
@@ -2614,203 +2389,10 @@ String _renderCategory_partial_sidebar_for_category_11(
   return buffer.toString();
 }
 
-String _renderCategory_partial_footer_12(_i1.CategoryTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''</main>
-
-<footer>
-  <span class="no-break">
-    ''');
-  buffer.writeEscaped(context0.defaultPackage.name);
-  if (context0.hasFooterVersion == true) {
-    buffer.write('\n      ');
-    buffer.writeEscaped(context0.defaultPackage.version);
-  }
-  buffer.writeln();
-  buffer.write('''
-  </span>
-
-  ''');
-  buffer.write(context0.customInnerFooter);
-  buffer.writeln();
-  buffer.write('''
-</footer>
-
-''');
-  buffer.writeln();
-  buffer.writeln();
-  buffer.write('''
-<script src="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/highlight.pack.js?v1"></script>
-<script src="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/script.js?v1"></script>
-
-''');
-  buffer.write(context0.customFooter);
-  buffer.writeln();
-  buffer.write('''
-
-</body>
-
-</html>
-''');
-
-  return buffer.toString();
-}
-
-String _renderClass_partial_head_0(_i1.ClassTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">''');
-  if (context0.includeVersion == true) {
-    buffer.writeln();
-    buffer.write('''
-  <meta name="generator" content="made with love by dartdoc ''');
-    buffer.writeEscaped(context0.version);
-    buffer.write('''">''');
-  }
-  buffer.writeln();
-  buffer.write('''
-  <meta name="description" content="''');
-  buffer.writeEscaped(context0.metaDescription);
-  buffer.write('''">
-  <title>''');
-  buffer.writeEscaped(context0.title);
-  buffer.write('''</title>''');
-  var context1 = context0.relCanonicalPrefix;
-  if (context1 != null) {
-    buffer.writeln();
-    buffer.write('''
-  <link rel="canonical" href="''');
-    buffer.write(context0.relCanonicalPrefix);
-    buffer.write('''/''');
-    buffer.write(context0.bareHref);
-    buffer.write('''">''');
-  }
-  buffer.writeln();
-  if (context0.useBaseHref == true) {
-    var context2 = context0.htmlBase;
-    buffer.writeln();
-    buffer.write('''
-  <!-- required because all the links are pseudo-absolute -->
-  <base href="''');
-    buffer.write(context0.htmlBase);
-    buffer.write('''">''');
-  }
-  buffer.write('\n\n  ');
-  buffer.writeln();
-  buffer.write('''
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  ''');
-  buffer.writeln();
-  buffer.write('''
-  <link rel="stylesheet" href="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/github.css?v1">
-  <link rel="stylesheet" href="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/styles.css?v1">
-  <link rel="icon" href="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/favicon.png?v1">
-
-  ''');
-  buffer.write(context0.customHeader);
-  buffer.writeln();
-  buffer.write('''
-</head>
-
-''');
-  buffer.writeln();
-  buffer.write('''
-<body data-base-href="''');
-  buffer.write(context0.htmlBase);
-  buffer.write('''"
-      data-using-base-href="''');
-  buffer.write(context0.useBaseHref.toString());
-  buffer.write('''">
-
-<div id="overlay-under-drawer"></div>
-
-<header id="title">
-  <button id="sidenav-left-toggle" type="button">&nbsp;</button>
-  <ol class="breadcrumbs gt-separated dark hidden-xs">''');
-  var context3 = context0.navLinks;
-  for (var context4 in context3) {
-    buffer.writeln();
-    buffer.write('''
-    <li><a href="''');
-    buffer.write(context4.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
-    buffer.write('''</a></li>''');
-  }
-  var context5 = context0.navLinksWithGenerics;
-  for (var context6 in context5) {
-    buffer.writeln();
-    buffer.write('''
-    <li><a href="''');
-    buffer.write(context6.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context6.name);
-    if (context6.hasGenericParameters == true) {
-      buffer.write('''<span class="signature">''');
-      buffer.write(context6.genericParameters);
-      buffer.write('''</span>''');
-    }
-    buffer.write('''</a></li>''');
-  }
-  if (context0.hasHomepage != true) {
-    buffer.writeln();
-    buffer.write('''
-    <li class="self-crumb">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</li>''');
-  }
-  if (context0.hasHomepage == true) {
-    buffer.writeln();
-    buffer.write('''
-    <li><a href="''');
-    buffer.write(context0.homepage);
-    buffer.write('''">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</a></li>''');
-  }
-  buffer.writeln();
-  buffer.write('''
-  </ol>
-  <div class="self-name">''');
-  buffer.writeEscaped(context0.self.name);
-  buffer.write('''</div>
-  <form class="search navbar-right" role="search">
-    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
-  </form>
-</header>
-
-<main>
-''');
-
-  return buffer.toString();
-}
-
+String _renderCategory_partial_footer_12(_i1.CategoryTemplateData context0) =>
+    _deduplicated_lib_templates_html__footer_html(context0);
+String _renderClass_partial_head_0(_i1.ClassTemplateData context0) =>
+    _deduplicated_lib_templates_html__head_html(context0);
 String _renderClass_partial_source_link_1(_i10.Class context1) =>
     _deduplicated_lib_templates_html__source_link_html(context1);
 String _renderClass_partial_feature_set_2(_i10.Class context1) =>
@@ -2821,303 +2403,27 @@ String _renderClass_partial_documentation_4(_i10.Class context1) =>
     _deduplicated_lib_templates_html__documentation_html(context1);
 String _renderClass_partial_super_chain_5(_i10.Class context1) =>
     _deduplicated_lib_templates_html__super_chain_html(context1);
-String _renderClass_partial_interfaces_6(_i10.Class context1) {
-  final buffer = StringBuffer();
-  if (context1.hasPublicInterfaces == true) {
-    buffer.writeln();
-    buffer.write('''
-<dt>Implemented types</dt>
-<dd>
-    <ul class="comma-separated ''');
-    buffer.writeEscaped(context1.relationshipsClass);
-    buffer.write('''">''');
-    var context2 = context1.publicInterfaces;
-    for (var context3 in context2) {
-      buffer.writeln();
-      buffer.write('''
-        <li>''');
-      buffer.write(context3.linkedName);
-      buffer.write('''</li>''');
-    }
-    buffer.writeln();
-    buffer.write('''
-    </ul>
-</dd>''');
-  }
-
-  return buffer.toString();
-}
-
-String _renderClass_partial_constructors_7(_i10.Class context1) =>
-    _deduplicated_lib_templates_html__constructors_html(context1);
-String _renderClass_partial_property_8(_i11.Field context2) =>
+String _renderClass_partial_interfaces_6(_i10.Class context1) =>
+    _deduplicated_lib_templates_html__interfaces_html(context1);
+String _renderClass_partial_property_7(_i11.Field context2) =>
     _deduplicated_lib_templates_html__property_html(context2);
-String _renderClass_partial_instance_methods_9(_i10.Class context1) =>
+String _renderClass_partial_instance_methods_8(_i10.Class context1) =>
     _deduplicated_lib_templates_html__instance_methods_html(context1);
-String _renderClass_partial_instance_operators_10(_i10.Class context1) =>
+String _renderClass_partial_instance_operators_9(_i10.Class context1) =>
     _deduplicated_lib_templates_html__instance_operators_html(context1);
-String _renderClass_partial_static_properties_11(_i10.Class context1) =>
+String _renderClass_partial_static_properties_10(_i10.Class context1) =>
     _deduplicated_lib_templates_html__static_properties_html(context1);
-String _renderClass_partial_static_methods_12(_i10.Class context1) =>
+String _renderClass_partial_static_methods_11(_i10.Class context1) =>
     _deduplicated_lib_templates_html__static_methods_html(context1);
-String _renderClass_partial_static_constants_13(_i10.Class context1) =>
+String _renderClass_partial_static_constants_12(_i10.Class context1) =>
     _deduplicated_lib_templates_html__static_constants_html(context1);
-String _renderClass_partial_search_sidebar_14(_i1.ClassTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''<header id="header-search-sidebar" class="hidden-l">
-  <form class="search-sidebar" role="search">
-    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
-  </form>
-</header>
-
-<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">''');
-  var context1 = context0.navLinks;
-  for (var context2 in context1) {
-    buffer.writeln();
-    buffer.write('''
-  <li><a href="''');
-    buffer.write(context2.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context2.name);
-    buffer.write('''</a></li>''');
-  }
-  var context3 = context0.navLinksWithGenerics;
-  for (var context4 in context3) {
-    buffer.writeln();
-    buffer.write('''
-  <li><a href="''');
-    buffer.write(context4.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
-    if (context4.hasGenericParameters == true) {
-      buffer.write('''<span class="signature">''');
-      buffer.write(context4.genericParameters);
-      buffer.write('''</span>''');
-    }
-    buffer.write('''</a></li>''');
-  }
-  if (context0.hasHomepage != true) {
-    buffer.writeln();
-    buffer.write('''
-  <li class="self-crumb">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</li>''');
-  }
-  if (context0.hasHomepage == true) {
-    buffer.writeln();
-    buffer.write('''
-  <li><a href="''');
-    buffer.write(context0.homepage);
-    buffer.write('''">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</a></li>''');
-  }
-  buffer.writeln();
-  buffer.write('''
-</ol>
-
-''');
-
-  return buffer.toString();
-}
-
-String _renderClass_partial_footer_15(_i1.ClassTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''</main>
-
-<footer>
-  <span class="no-break">
-    ''');
-  buffer.writeEscaped(context0.defaultPackage.name);
-  if (context0.hasFooterVersion == true) {
-    buffer.write('\n      ');
-    buffer.writeEscaped(context0.defaultPackage.version);
-  }
-  buffer.writeln();
-  buffer.write('''
-  </span>
-
-  ''');
-  buffer.write(context0.customInnerFooter);
-  buffer.writeln();
-  buffer.write('''
-</footer>
-
-''');
-  buffer.writeln();
-  buffer.writeln();
-  buffer.write('''
-<script src="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/highlight.pack.js?v1"></script>
-<script src="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/script.js?v1"></script>
-
-''');
-  buffer.write(context0.customFooter);
-  buffer.writeln();
-  buffer.write('''
-
-</body>
-
-</html>
-''');
-
-  return buffer.toString();
-}
-
-String _renderConstructor_partial_head_0(_i1.ConstructorTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">''');
-  if (context0.includeVersion == true) {
-    buffer.writeln();
-    buffer.write('''
-  <meta name="generator" content="made with love by dartdoc ''');
-    buffer.writeEscaped(context0.version);
-    buffer.write('''">''');
-  }
-  buffer.writeln();
-  buffer.write('''
-  <meta name="description" content="''');
-  buffer.writeEscaped(context0.metaDescription);
-  buffer.write('''">
-  <title>''');
-  buffer.writeEscaped(context0.title);
-  buffer.write('''</title>''');
-  var context1 = context0.relCanonicalPrefix;
-  if (context1 != null) {
-    buffer.writeln();
-    buffer.write('''
-  <link rel="canonical" href="''');
-    buffer.write(context0.relCanonicalPrefix);
-    buffer.write('''/''');
-    buffer.write(context0.bareHref);
-    buffer.write('''">''');
-  }
-  buffer.writeln();
-  if (context0.useBaseHref == true) {
-    var context2 = context0.htmlBase;
-    buffer.writeln();
-    buffer.write('''
-  <!-- required because all the links are pseudo-absolute -->
-  <base href="''');
-    buffer.write(context0.htmlBase);
-    buffer.write('''">''');
-  }
-  buffer.write('\n\n  ');
-  buffer.writeln();
-  buffer.write('''
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  ''');
-  buffer.writeln();
-  buffer.write('''
-  <link rel="stylesheet" href="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/github.css?v1">
-  <link rel="stylesheet" href="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/styles.css?v1">
-  <link rel="icon" href="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/favicon.png?v1">
-
-  ''');
-  buffer.write(context0.customHeader);
-  buffer.writeln();
-  buffer.write('''
-</head>
-
-''');
-  buffer.writeln();
-  buffer.write('''
-<body data-base-href="''');
-  buffer.write(context0.htmlBase);
-  buffer.write('''"
-      data-using-base-href="''');
-  buffer.write(context0.useBaseHref.toString());
-  buffer.write('''">
-
-<div id="overlay-under-drawer"></div>
-
-<header id="title">
-  <button id="sidenav-left-toggle" type="button">&nbsp;</button>
-  <ol class="breadcrumbs gt-separated dark hidden-xs">''');
-  var context3 = context0.navLinks;
-  for (var context4 in context3) {
-    buffer.writeln();
-    buffer.write('''
-    <li><a href="''');
-    buffer.write(context4.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
-    buffer.write('''</a></li>''');
-  }
-  var context5 = context0.navLinksWithGenerics;
-  for (var context6 in context5) {
-    buffer.writeln();
-    buffer.write('''
-    <li><a href="''');
-    buffer.write(context6.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context6.name);
-    if (context6.hasGenericParameters == true) {
-      buffer.write('''<span class="signature">''');
-      buffer.write(context6.genericParameters);
-      buffer.write('''</span>''');
-    }
-    buffer.write('''</a></li>''');
-  }
-  if (context0.hasHomepage != true) {
-    buffer.writeln();
-    buffer.write('''
-    <li class="self-crumb">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</li>''');
-  }
-  if (context0.hasHomepage == true) {
-    buffer.writeln();
-    buffer.write('''
-    <li><a href="''');
-    buffer.write(context0.homepage);
-    buffer.write('''">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</a></li>''');
-  }
-  buffer.writeln();
-  buffer.write('''
-  </ol>
-  <div class="self-name">''');
-  buffer.writeEscaped(context0.self.name);
-  buffer.write('''</div>
-  <form class="search navbar-right" role="search">
-    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
-  </form>
-</header>
-
-<main>
-''');
-
-  return buffer.toString();
-}
-
+String _renderClass_partial_search_sidebar_13(_i1.ClassTemplateData context0) =>
+    _deduplicated_lib_templates_html__search_sidebar_html(context0);
+String _renderClass_partial_footer_14(_i1.ClassTemplateData context0) =>
+    _deduplicated_lib_templates_html__footer_html(context0);
+String _renderConstructor_partial_head_0(
+        _i1.ConstructorTemplateData context0) =>
+    _deduplicated_lib_templates_html__head_html(context0);
 String _renderConstructor_partial_source_link_1(_i12.Constructor context1) =>
     _deduplicated_lib_templates_html__source_link_html(context1);
 String _renderConstructor_partial_feature_set_2(_i12.Constructor context1) =>
@@ -3127,263 +2433,13 @@ String _renderConstructor_partial_documentation_3(_i12.Constructor context1) =>
 String _renderConstructor_partial_source_code_4(_i12.Constructor context1) =>
     _deduplicated_lib_templates_html__source_code_html(context1);
 String _renderConstructor_partial_search_sidebar_5(
-    _i1.ConstructorTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''<header id="header-search-sidebar" class="hidden-l">
-  <form class="search-sidebar" role="search">
-    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
-  </form>
-</header>
-
-<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">''');
-  var context1 = context0.navLinks;
-  for (var context2 in context1) {
-    buffer.writeln();
-    buffer.write('''
-  <li><a href="''');
-    buffer.write(context2.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context2.name);
-    buffer.write('''</a></li>''');
-  }
-  var context3 = context0.navLinksWithGenerics;
-  for (var context4 in context3) {
-    buffer.writeln();
-    buffer.write('''
-  <li><a href="''');
-    buffer.write(context4.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
-    if (context4.hasGenericParameters == true) {
-      buffer.write('''<span class="signature">''');
-      buffer.write(context4.genericParameters);
-      buffer.write('''</span>''');
-    }
-    buffer.write('''</a></li>''');
-  }
-  if (context0.hasHomepage != true) {
-    buffer.writeln();
-    buffer.write('''
-  <li class="self-crumb">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</li>''');
-  }
-  if (context0.hasHomepage == true) {
-    buffer.writeln();
-    buffer.write('''
-  <li><a href="''');
-    buffer.write(context0.homepage);
-    buffer.write('''">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</a></li>''');
-  }
-  buffer.writeln();
-  buffer.write('''
-</ol>
-
-''');
-
-  return buffer.toString();
-}
-
+        _i1.ConstructorTemplateData context0) =>
+    _deduplicated_lib_templates_html__search_sidebar_html(context0);
 String _renderConstructor_partial_footer_6(
-    _i1.ConstructorTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''</main>
-
-<footer>
-  <span class="no-break">
-    ''');
-  buffer.writeEscaped(context0.defaultPackage.name);
-  if (context0.hasFooterVersion == true) {
-    buffer.write('\n      ');
-    buffer.writeEscaped(context0.defaultPackage.version);
-  }
-  buffer.writeln();
-  buffer.write('''
-  </span>
-
-  ''');
-  buffer.write(context0.customInnerFooter);
-  buffer.writeln();
-  buffer.write('''
-</footer>
-
-''');
-  buffer.writeln();
-  buffer.writeln();
-  buffer.write('''
-<script src="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/highlight.pack.js?v1"></script>
-<script src="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/script.js?v1"></script>
-
-''');
-  buffer.write(context0.customFooter);
-  buffer.writeln();
-  buffer.write('''
-
-</body>
-
-</html>
-''');
-
-  return buffer.toString();
-}
-
-String _renderEnum_partial_head_0(_i1.EnumTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">''');
-  if (context0.includeVersion == true) {
-    buffer.writeln();
-    buffer.write('''
-  <meta name="generator" content="made with love by dartdoc ''');
-    buffer.writeEscaped(context0.version);
-    buffer.write('''">''');
-  }
-  buffer.writeln();
-  buffer.write('''
-  <meta name="description" content="''');
-  buffer.writeEscaped(context0.metaDescription);
-  buffer.write('''">
-  <title>''');
-  buffer.writeEscaped(context0.title);
-  buffer.write('''</title>''');
-  var context1 = context0.relCanonicalPrefix;
-  if (context1 != null) {
-    buffer.writeln();
-    buffer.write('''
-  <link rel="canonical" href="''');
-    buffer.write(context0.relCanonicalPrefix);
-    buffer.write('''/''');
-    buffer.write(context0.bareHref);
-    buffer.write('''">''');
-  }
-  buffer.writeln();
-  if (context0.useBaseHref == true) {
-    var context2 = context0.htmlBase;
-    buffer.writeln();
-    buffer.write('''
-  <!-- required because all the links are pseudo-absolute -->
-  <base href="''');
-    buffer.write(context0.htmlBase);
-    buffer.write('''">''');
-  }
-  buffer.write('\n\n  ');
-  buffer.writeln();
-  buffer.write('''
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  ''');
-  buffer.writeln();
-  buffer.write('''
-  <link rel="stylesheet" href="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/github.css?v1">
-  <link rel="stylesheet" href="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/styles.css?v1">
-  <link rel="icon" href="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/favicon.png?v1">
-
-  ''');
-  buffer.write(context0.customHeader);
-  buffer.writeln();
-  buffer.write('''
-</head>
-
-''');
-  buffer.writeln();
-  buffer.write('''
-<body data-base-href="''');
-  buffer.write(context0.htmlBase);
-  buffer.write('''"
-      data-using-base-href="''');
-  buffer.write(context0.useBaseHref.toString());
-  buffer.write('''">
-
-<div id="overlay-under-drawer"></div>
-
-<header id="title">
-  <button id="sidenav-left-toggle" type="button">&nbsp;</button>
-  <ol class="breadcrumbs gt-separated dark hidden-xs">''');
-  var context3 = context0.navLinks;
-  for (var context4 in context3) {
-    buffer.writeln();
-    buffer.write('''
-    <li><a href="''');
-    buffer.write(context4.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
-    buffer.write('''</a></li>''');
-  }
-  var context5 = context0.navLinksWithGenerics;
-  for (var context6 in context5) {
-    buffer.writeln();
-    buffer.write('''
-    <li><a href="''');
-    buffer.write(context6.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context6.name);
-    if (context6.hasGenericParameters == true) {
-      buffer.write('''<span class="signature">''');
-      buffer.write(context6.genericParameters);
-      buffer.write('''</span>''');
-    }
-    buffer.write('''</a></li>''');
-  }
-  if (context0.hasHomepage != true) {
-    buffer.writeln();
-    buffer.write('''
-    <li class="self-crumb">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</li>''');
-  }
-  if (context0.hasHomepage == true) {
-    buffer.writeln();
-    buffer.write('''
-    <li><a href="''');
-    buffer.write(context0.homepage);
-    buffer.write('''">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</a></li>''');
-  }
-  buffer.writeln();
-  buffer.write('''
-  </ol>
-  <div class="self-name">''');
-  buffer.writeEscaped(context0.self.name);
-  buffer.write('''</div>
-  <form class="search navbar-right" role="search">
-    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
-  </form>
-</header>
-
-<main>
-''');
-
-  return buffer.toString();
-}
-
+        _i1.ConstructorTemplateData context0) =>
+    _deduplicated_lib_templates_html__footer_html(context0);
+String _renderEnum_partial_head_0(_i1.EnumTemplateData context0) =>
+    _deduplicated_lib_templates_html__head_html(context0);
 String _renderEnum_partial_source_link_1(_i13.Enum context1) =>
     _deduplicated_lib_templates_html__source_link_html(context1);
 String _renderEnum_partial_feature_set_2(_i13.Enum context1) =>
@@ -3394,626 +2450,38 @@ String _renderEnum_partial_documentation_4(_i13.Enum context1) =>
     _deduplicated_lib_templates_html__documentation_html(context1);
 String _renderEnum_partial_super_chain_5(_i13.Enum context1) =>
     _deduplicated_lib_templates_html__super_chain_html(context1);
-String _renderEnum_partial_interfaces_6(_i13.Enum context1) {
-  final buffer = StringBuffer();
-  if (context1.hasPublicInterfaces == true) {
-    buffer.writeln();
-    buffer.write('''
-<dt>Implemented types</dt>
-<dd>
-    <ul class="comma-separated ''');
-    buffer.writeEscaped(context1.relationshipsClass);
-    buffer.write('''">''');
-    var context2 = context1.publicInterfaces;
-    for (var context3 in context2) {
-      buffer.writeln();
-      buffer.write('''
-        <li>''');
-      buffer.write(context3.linkedName);
-      buffer.write('''</li>''');
-    }
-    buffer.writeln();
-    buffer.write('''
-    </ul>
-</dd>''');
-  }
-
-  return buffer.toString();
-}
-
-String _renderEnum_partial_constructors_7(_i13.Enum context1) =>
-    _deduplicated_lib_templates_html__constructors_html(context1);
-String _renderEnum_partial_constant_8(_i11.Field context2) =>
+String _renderEnum_partial_interfaces_6(_i13.Enum context1) =>
+    _deduplicated_lib_templates_html__interfaces_html(context1);
+String _renderEnum_partial_constant_7(_i11.Field context2) =>
     _deduplicated_lib_templates_html__constant_html(context2);
-String _renderEnum_partial_property_9(_i11.Field context2) =>
+String _renderEnum_partial_property_8(_i11.Field context2) =>
     _deduplicated_lib_templates_html__property_html(context2);
-String _renderEnum_partial_instance_methods_10(_i13.Enum context1) =>
+String _renderEnum_partial_instance_methods_9(_i13.Enum context1) =>
     _deduplicated_lib_templates_html__instance_methods_html(context1);
-String _renderEnum_partial_instance_operators_11(_i13.Enum context1) =>
+String _renderEnum_partial_instance_operators_10(_i13.Enum context1) =>
     _deduplicated_lib_templates_html__instance_operators_html(context1);
-String _renderEnum_partial_static_properties_12(_i13.Enum context1) =>
+String _renderEnum_partial_static_properties_11(_i13.Enum context1) =>
     _deduplicated_lib_templates_html__static_properties_html(context1);
-String _renderEnum_partial_static_methods_13(_i13.Enum context1) =>
+String _renderEnum_partial_static_methods_12(_i13.Enum context1) =>
     _deduplicated_lib_templates_html__static_methods_html(context1);
-String _renderEnum_partial_static_constants_14(_i13.Enum context1) =>
+String _renderEnum_partial_static_constants_13(_i13.Enum context1) =>
     _deduplicated_lib_templates_html__static_constants_html(context1);
-String _renderEnum_partial_search_sidebar_15(_i1.EnumTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''<header id="header-search-sidebar" class="hidden-l">
-  <form class="search-sidebar" role="search">
-    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
-  </form>
-</header>
-
-<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">''');
-  var context1 = context0.navLinks;
-  for (var context2 in context1) {
-    buffer.writeln();
-    buffer.write('''
-  <li><a href="''');
-    buffer.write(context2.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context2.name);
-    buffer.write('''</a></li>''');
-  }
-  var context3 = context0.navLinksWithGenerics;
-  for (var context4 in context3) {
-    buffer.writeln();
-    buffer.write('''
-  <li><a href="''');
-    buffer.write(context4.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
-    if (context4.hasGenericParameters == true) {
-      buffer.write('''<span class="signature">''');
-      buffer.write(context4.genericParameters);
-      buffer.write('''</span>''');
-    }
-    buffer.write('''</a></li>''');
-  }
-  if (context0.hasHomepage != true) {
-    buffer.writeln();
-    buffer.write('''
-  <li class="self-crumb">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</li>''');
-  }
-  if (context0.hasHomepage == true) {
-    buffer.writeln();
-    buffer.write('''
-  <li><a href="''');
-    buffer.write(context0.homepage);
-    buffer.write('''">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</a></li>''');
-  }
-  buffer.writeln();
-  buffer.write('''
-</ol>
-
-''');
-
-  return buffer.toString();
-}
-
-String _renderEnum_partial_footer_16(_i1.EnumTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''</main>
-
-<footer>
-  <span class="no-break">
-    ''');
-  buffer.writeEscaped(context0.defaultPackage.name);
-  if (context0.hasFooterVersion == true) {
-    buffer.write('\n      ');
-    buffer.writeEscaped(context0.defaultPackage.version);
-  }
-  buffer.writeln();
-  buffer.write('''
-  </span>
-
-  ''');
-  buffer.write(context0.customInnerFooter);
-  buffer.writeln();
-  buffer.write('''
-</footer>
-
-''');
-  buffer.writeln();
-  buffer.writeln();
-  buffer.write('''
-<script src="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/highlight.pack.js?v1"></script>
-<script src="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/script.js?v1"></script>
-
-''');
-  buffer.write(context0.customFooter);
-  buffer.writeln();
-  buffer.write('''
-
-</body>
-
-</html>
-''');
-
-  return buffer.toString();
-}
-
-String _renderError_partial_head_0(_i1.PackageTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">''');
-  if (context0.includeVersion == true) {
-    buffer.writeln();
-    buffer.write('''
-  <meta name="generator" content="made with love by dartdoc ''');
-    buffer.writeEscaped(context0.version);
-    buffer.write('''">''');
-  }
-  buffer.writeln();
-  buffer.write('''
-  <meta name="description" content="''');
-  buffer.writeEscaped(context0.metaDescription);
-  buffer.write('''">
-  <title>''');
-  buffer.writeEscaped(context0.title);
-  buffer.write('''</title>''');
-  var context1 = context0.relCanonicalPrefix;
-  if (context1 != null) {
-    buffer.writeln();
-    buffer.write('''
-  <link rel="canonical" href="''');
-    buffer.write(context0.relCanonicalPrefix);
-    buffer.write('''/''');
-    buffer.write(context0.bareHref);
-    buffer.write('''">''');
-  }
-  buffer.writeln();
-  if (context0.useBaseHref == true) {
-    var context2 = context0.htmlBase;
-    buffer.writeln();
-    buffer.write('''
-  <!-- required because all the links are pseudo-absolute -->
-  <base href="''');
-    buffer.write(context0.htmlBase);
-    buffer.write('''">''');
-  }
-  buffer.write('\n\n  ');
-  buffer.writeln();
-  buffer.write('''
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  ''');
-  buffer.writeln();
-  buffer.write('''
-  <link rel="stylesheet" href="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/github.css?v1">
-  <link rel="stylesheet" href="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/styles.css?v1">
-  <link rel="icon" href="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/favicon.png?v1">
-
-  ''');
-  buffer.write(context0.customHeader);
-  buffer.writeln();
-  buffer.write('''
-</head>
-
-''');
-  buffer.writeln();
-  buffer.write('''
-<body data-base-href="''');
-  buffer.write(context0.htmlBase);
-  buffer.write('''"
-      data-using-base-href="''');
-  buffer.write(context0.useBaseHref.toString());
-  buffer.write('''">
-
-<div id="overlay-under-drawer"></div>
-
-<header id="title">
-  <button id="sidenav-left-toggle" type="button">&nbsp;</button>
-  <ol class="breadcrumbs gt-separated dark hidden-xs">''');
-  var context3 = context0.navLinks;
-  for (var context4 in context3) {
-    buffer.writeln();
-    buffer.write('''
-    <li><a href="''');
-    buffer.write(context4.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
-    buffer.write('''</a></li>''');
-  }
-  var context5 = context0.navLinksWithGenerics;
-  for (var context6 in context5) {
-    buffer.writeln();
-    buffer.write('''
-    <li><a href="''');
-    buffer.write(context6.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context6.name);
-    if (context6.hasGenericParameters == true) {
-      buffer.write('''<span class="signature">''');
-      buffer.write(context6.genericParameters);
-      buffer.write('''</span>''');
-    }
-    buffer.write('''</a></li>''');
-  }
-  if (context0.hasHomepage != true) {
-    buffer.writeln();
-    buffer.write('''
-    <li class="self-crumb">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</li>''');
-  }
-  if (context0.hasHomepage == true) {
-    buffer.writeln();
-    buffer.write('''
-    <li><a href="''');
-    buffer.write(context0.homepage);
-    buffer.write('''">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</a></li>''');
-  }
-  buffer.writeln();
-  buffer.write('''
-  </ol>
-  <div class="self-name">''');
-  buffer.writeEscaped(context0.self.name);
-  buffer.write('''</div>
-  <form class="search navbar-right" role="search">
-    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
-  </form>
-</header>
-
-<main>
-''');
-
-  return buffer.toString();
-}
-
-String _renderError_partial_search_sidebar_1(_i1.PackageTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''<header id="header-search-sidebar" class="hidden-l">
-  <form class="search-sidebar" role="search">
-    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
-  </form>
-</header>
-
-<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">''');
-  var context1 = context0.navLinks;
-  for (var context2 in context1) {
-    buffer.writeln();
-    buffer.write('''
-  <li><a href="''');
-    buffer.write(context2.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context2.name);
-    buffer.write('''</a></li>''');
-  }
-  var context3 = context0.navLinksWithGenerics;
-  for (var context4 in context3) {
-    buffer.writeln();
-    buffer.write('''
-  <li><a href="''');
-    buffer.write(context4.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
-    if (context4.hasGenericParameters == true) {
-      buffer.write('''<span class="signature">''');
-      buffer.write(context4.genericParameters);
-      buffer.write('''</span>''');
-    }
-    buffer.write('''</a></li>''');
-  }
-  if (context0.hasHomepage != true) {
-    buffer.writeln();
-    buffer.write('''
-  <li class="self-crumb">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</li>''');
-  }
-  if (context0.hasHomepage == true) {
-    buffer.writeln();
-    buffer.write('''
-  <li><a href="''');
-    buffer.write(context0.homepage);
-    buffer.write('''">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</a></li>''');
-  }
-  buffer.writeln();
-  buffer.write('''
-</ol>
-
-''');
-
-  return buffer.toString();
-}
-
-String _renderError_partial_packages_2(_i1.PackageTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''<ol>''');
-  var context1 = context0.localPackages;
-  for (var context2 in context1) {
-    if (context2.isFirstPackage == true) {
-      if (context2.hasDocumentedCategories == true) {
-        buffer.writeln();
-        buffer.write('''
-      <li class="section-title">Topics</li>''');
-        var context3 = context2.documentedCategoriesSorted;
-        for (var context4 in context3) {
-          buffer.writeln();
-          buffer.write('''
-        <li>''');
-          buffer.write(context4.linkedName);
-          buffer.write('''</li>''');
-        }
-      }
-      buffer.writeln();
-      buffer.write('''
-      <li class="section-title">Libraries</li>''');
-    }
-    if (context2.isFirstPackage != true) {
-      buffer.writeln();
-      buffer.write('''
-      <li class="section-title">''');
-      buffer.writeEscaped(context2.name);
-      buffer.write('''</li>''');
-    }
-    var context5 = context2.defaultCategory;
-    var context6 = context5.publicLibrariesSorted;
-    for (var context7 in context6) {
-      buffer.writeln();
-      buffer.write('''
-      <li>''');
-      buffer.write(context7.linkedName);
-      buffer.write('''</li>''');
-    }
-    var context8 = context2.categoriesWithPublicLibraries;
-    for (var context9 in context8) {
-      buffer.writeln();
-      buffer.write('''
-      <li class="section-subtitle">''');
-      buffer.writeEscaped(context9.name);
-      buffer.write('''</li>''');
-      var context10 = context9.publicLibrariesSorted;
-      for (var context11 in context10) {
-        buffer.writeln();
-        buffer.write('''
-        <li class="section-subitem">''');
-        buffer.write(context11.linkedName);
-        buffer.write('''</li>''');
-      }
-    }
-  }
-  buffer.writeln();
-  buffer.write('''
-</ol>
-''');
-
-  return buffer.toString();
-}
-
-String _renderError_partial_footer_3(_i1.PackageTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''</main>
-
-<footer>
-  <span class="no-break">
-    ''');
-  buffer.writeEscaped(context0.defaultPackage.name);
-  if (context0.hasFooterVersion == true) {
-    buffer.write('\n      ');
-    buffer.writeEscaped(context0.defaultPackage.version);
-  }
-  buffer.writeln();
-  buffer.write('''
-  </span>
-
-  ''');
-  buffer.write(context0.customInnerFooter);
-  buffer.writeln();
-  buffer.write('''
-</footer>
-
-''');
-  buffer.writeln();
-  buffer.writeln();
-  buffer.write('''
-<script src="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/highlight.pack.js?v1"></script>
-<script src="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/script.js?v1"></script>
-
-''');
-  buffer.write(context0.customFooter);
-  buffer.writeln();
-  buffer.write('''
-
-</body>
-
-</html>
-''');
-
-  return buffer.toString();
-}
-
+String _renderEnum_partial_search_sidebar_14(_i1.EnumTemplateData context0) =>
+    _deduplicated_lib_templates_html__search_sidebar_html(context0);
+String _renderEnum_partial_footer_15(_i1.EnumTemplateData context0) =>
+    _deduplicated_lib_templates_html__footer_html(context0);
+String _renderError_partial_head_0(_i1.PackageTemplateData context0) =>
+    _deduplicated_lib_templates_html__head_html(context0);
+String _renderError_partial_search_sidebar_1(
+        _i1.PackageTemplateData context0) =>
+    _deduplicated_lib_templates_html__search_sidebar_html(context0);
+String _renderError_partial_packages_2(_i1.PackageTemplateData context0) =>
+    _deduplicated_lib_templates_html__packages_html(context0);
+String _renderError_partial_footer_3(_i1.PackageTemplateData context0) =>
+    _deduplicated_lib_templates_html__footer_html(context0);
 String _renderExtension_partial_head_0<T extends _i2.Extension>(
-    _i1.ExtensionTemplateData<T> context0) {
-  final buffer = StringBuffer();
-  buffer.write('''<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">''');
-  if (context0.includeVersion == true) {
-    buffer.writeln();
-    buffer.write('''
-  <meta name="generator" content="made with love by dartdoc ''');
-    buffer.writeEscaped(context0.version);
-    buffer.write('''">''');
-  }
-  buffer.writeln();
-  buffer.write('''
-  <meta name="description" content="''');
-  buffer.writeEscaped(context0.metaDescription);
-  buffer.write('''">
-  <title>''');
-  buffer.writeEscaped(context0.title);
-  buffer.write('''</title>''');
-  var context1 = context0.relCanonicalPrefix;
-  if (context1 != null) {
-    buffer.writeln();
-    buffer.write('''
-  <link rel="canonical" href="''');
-    buffer.write(context0.relCanonicalPrefix);
-    buffer.write('''/''');
-    buffer.write(context0.bareHref);
-    buffer.write('''">''');
-  }
-  buffer.writeln();
-  if (context0.useBaseHref == true) {
-    var context2 = context0.htmlBase;
-    buffer.writeln();
-    buffer.write('''
-  <!-- required because all the links are pseudo-absolute -->
-  <base href="''');
-    buffer.write(context0.htmlBase);
-    buffer.write('''">''');
-  }
-  buffer.write('\n\n  ');
-  buffer.writeln();
-  buffer.write('''
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  ''');
-  buffer.writeln();
-  buffer.write('''
-  <link rel="stylesheet" href="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/github.css?v1">
-  <link rel="stylesheet" href="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/styles.css?v1">
-  <link rel="icon" href="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/favicon.png?v1">
-
-  ''');
-  buffer.write(context0.customHeader);
-  buffer.writeln();
-  buffer.write('''
-</head>
-
-''');
-  buffer.writeln();
-  buffer.write('''
-<body data-base-href="''');
-  buffer.write(context0.htmlBase);
-  buffer.write('''"
-      data-using-base-href="''');
-  buffer.write(context0.useBaseHref.toString());
-  buffer.write('''">
-
-<div id="overlay-under-drawer"></div>
-
-<header id="title">
-  <button id="sidenav-left-toggle" type="button">&nbsp;</button>
-  <ol class="breadcrumbs gt-separated dark hidden-xs">''');
-  var context3 = context0.navLinks;
-  for (var context4 in context3) {
-    buffer.writeln();
-    buffer.write('''
-    <li><a href="''');
-    buffer.write(context4.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
-    buffer.write('''</a></li>''');
-  }
-  var context5 = context0.navLinksWithGenerics;
-  for (var context6 in context5) {
-    buffer.writeln();
-    buffer.write('''
-    <li><a href="''');
-    buffer.write(context6.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context6.name);
-    if (context6.hasGenericParameters == true) {
-      buffer.write('''<span class="signature">''');
-      buffer.write(context6.genericParameters);
-      buffer.write('''</span>''');
-    }
-    buffer.write('''</a></li>''');
-  }
-  if (context0.hasHomepage != true) {
-    buffer.writeln();
-    buffer.write('''
-    <li class="self-crumb">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</li>''');
-  }
-  if (context0.hasHomepage == true) {
-    buffer.writeln();
-    buffer.write('''
-    <li><a href="''');
-    buffer.write(context0.homepage);
-    buffer.write('''">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</a></li>''');
-  }
-  buffer.writeln();
-  buffer.write('''
-  </ol>
-  <div class="self-name">''');
-  buffer.writeEscaped(context0.self.name);
-  buffer.write('''</div>
-  <form class="search navbar-right" role="search">
-    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
-  </form>
-</header>
-
-<main>
-''');
-
-  return buffer.toString();
-}
-
+        _i1.ExtensionTemplateData<T> context0) =>
+    _deduplicated_lib_templates_html__head_html(context0);
 String _renderExtension_partial_source_link_1(_i2.Extension context1) =>
     _deduplicated_lib_templates_html__source_link_html(context1);
 String _renderExtension_partial_feature_set_2(_i2.Extension context1) =>
@@ -4035,263 +2503,13 @@ String _renderExtension_partial_static_methods_9(_i2.Extension context1) =>
 String _renderExtension_partial_static_constants_10(_i2.Extension context1) =>
     _deduplicated_lib_templates_html__static_constants_html(context1);
 String _renderExtension_partial_search_sidebar_11<T extends _i2.Extension>(
-    _i1.ExtensionTemplateData<T> context0) {
-  final buffer = StringBuffer();
-  buffer.write('''<header id="header-search-sidebar" class="hidden-l">
-  <form class="search-sidebar" role="search">
-    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
-  </form>
-</header>
-
-<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">''');
-  var context2 = context0.navLinks;
-  for (var context3 in context2) {
-    buffer.writeln();
-    buffer.write('''
-  <li><a href="''');
-    buffer.write(context3.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context3.name);
-    buffer.write('''</a></li>''');
-  }
-  var context4 = context0.navLinksWithGenerics;
-  for (var context5 in context4) {
-    buffer.writeln();
-    buffer.write('''
-  <li><a href="''');
-    buffer.write(context5.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context5.name);
-    if (context5.hasGenericParameters == true) {
-      buffer.write('''<span class="signature">''');
-      buffer.write(context5.genericParameters);
-      buffer.write('''</span>''');
-    }
-    buffer.write('''</a></li>''');
-  }
-  if (context0.hasHomepage != true) {
-    buffer.writeln();
-    buffer.write('''
-  <li class="self-crumb">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</li>''');
-  }
-  if (context0.hasHomepage == true) {
-    buffer.writeln();
-    buffer.write('''
-  <li><a href="''');
-    buffer.write(context0.homepage);
-    buffer.write('''">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</a></li>''');
-  }
-  buffer.writeln();
-  buffer.write('''
-</ol>
-
-''');
-
-  return buffer.toString();
-}
-
+        _i1.ExtensionTemplateData<T> context0) =>
+    _deduplicated_lib_templates_html__search_sidebar_html(context0);
 String _renderExtension_partial_footer_12<T extends _i2.Extension>(
-    _i1.ExtensionTemplateData<T> context0) {
-  final buffer = StringBuffer();
-  buffer.write('''</main>
-
-<footer>
-  <span class="no-break">
-    ''');
-  buffer.writeEscaped(context0.defaultPackage.name);
-  if (context0.hasFooterVersion == true) {
-    buffer.write('\n      ');
-    buffer.writeEscaped(context0.defaultPackage.version);
-  }
-  buffer.writeln();
-  buffer.write('''
-  </span>
-
-  ''');
-  buffer.write(context0.customInnerFooter);
-  buffer.writeln();
-  buffer.write('''
-</footer>
-
-''');
-  buffer.writeln();
-  buffer.writeln();
-  buffer.write('''
-<script src="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/highlight.pack.js?v1"></script>
-<script src="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/script.js?v1"></script>
-
-''');
-  buffer.write(context0.customFooter);
-  buffer.writeln();
-  buffer.write('''
-
-</body>
-
-</html>
-''');
-
-  return buffer.toString();
-}
-
-String _renderFunction_partial_head_0(_i1.FunctionTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">''');
-  if (context0.includeVersion == true) {
-    buffer.writeln();
-    buffer.write('''
-  <meta name="generator" content="made with love by dartdoc ''');
-    buffer.writeEscaped(context0.version);
-    buffer.write('''">''');
-  }
-  buffer.writeln();
-  buffer.write('''
-  <meta name="description" content="''');
-  buffer.writeEscaped(context0.metaDescription);
-  buffer.write('''">
-  <title>''');
-  buffer.writeEscaped(context0.title);
-  buffer.write('''</title>''');
-  var context1 = context0.relCanonicalPrefix;
-  if (context1 != null) {
-    buffer.writeln();
-    buffer.write('''
-  <link rel="canonical" href="''');
-    buffer.write(context0.relCanonicalPrefix);
-    buffer.write('''/''');
-    buffer.write(context0.bareHref);
-    buffer.write('''">''');
-  }
-  buffer.writeln();
-  if (context0.useBaseHref == true) {
-    var context2 = context0.htmlBase;
-    buffer.writeln();
-    buffer.write('''
-  <!-- required because all the links are pseudo-absolute -->
-  <base href="''');
-    buffer.write(context0.htmlBase);
-    buffer.write('''">''');
-  }
-  buffer.write('\n\n  ');
-  buffer.writeln();
-  buffer.write('''
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  ''');
-  buffer.writeln();
-  buffer.write('''
-  <link rel="stylesheet" href="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/github.css?v1">
-  <link rel="stylesheet" href="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/styles.css?v1">
-  <link rel="icon" href="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/favicon.png?v1">
-
-  ''');
-  buffer.write(context0.customHeader);
-  buffer.writeln();
-  buffer.write('''
-</head>
-
-''');
-  buffer.writeln();
-  buffer.write('''
-<body data-base-href="''');
-  buffer.write(context0.htmlBase);
-  buffer.write('''"
-      data-using-base-href="''');
-  buffer.write(context0.useBaseHref.toString());
-  buffer.write('''">
-
-<div id="overlay-under-drawer"></div>
-
-<header id="title">
-  <button id="sidenav-left-toggle" type="button">&nbsp;</button>
-  <ol class="breadcrumbs gt-separated dark hidden-xs">''');
-  var context3 = context0.navLinks;
-  for (var context4 in context3) {
-    buffer.writeln();
-    buffer.write('''
-    <li><a href="''');
-    buffer.write(context4.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
-    buffer.write('''</a></li>''');
-  }
-  var context5 = context0.navLinksWithGenerics;
-  for (var context6 in context5) {
-    buffer.writeln();
-    buffer.write('''
-    <li><a href="''');
-    buffer.write(context6.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context6.name);
-    if (context6.hasGenericParameters == true) {
-      buffer.write('''<span class="signature">''');
-      buffer.write(context6.genericParameters);
-      buffer.write('''</span>''');
-    }
-    buffer.write('''</a></li>''');
-  }
-  if (context0.hasHomepage != true) {
-    buffer.writeln();
-    buffer.write('''
-    <li class="self-crumb">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</li>''');
-  }
-  if (context0.hasHomepage == true) {
-    buffer.writeln();
-    buffer.write('''
-    <li><a href="''');
-    buffer.write(context0.homepage);
-    buffer.write('''">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</a></li>''');
-  }
-  buffer.writeln();
-  buffer.write('''
-  </ol>
-  <div class="self-name">''');
-  buffer.writeEscaped(context0.self.name);
-  buffer.write('''</div>
-  <form class="search navbar-right" role="search">
-    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
-  </form>
-</header>
-
-<main>
-''');
-
-  return buffer.toString();
-}
-
+        _i1.ExtensionTemplateData<T> context0) =>
+    _deduplicated_lib_templates_html__footer_html(context0);
+String _renderFunction_partial_head_0(_i1.FunctionTemplateData context0) =>
+    _deduplicated_lib_templates_html__head_html(context0);
 String _renderFunction_partial_source_link_1(_i8.ModelFunction context1) =>
     _deduplicated_lib_templates_html__source_link_html(context1);
 String _renderFunction_partial_feature_set_2(_i8.ModelFunction context1) =>
@@ -4348,586 +2566,25 @@ String _renderFunction_partial_documentation_5(_i8.ModelFunction context1) =>
 String _renderFunction_partial_source_code_6(_i8.ModelFunction context1) =>
     _deduplicated_lib_templates_html__source_code_html(context1);
 String _renderFunction_partial_search_sidebar_7(
-    _i1.FunctionTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''<header id="header-search-sidebar" class="hidden-l">
-  <form class="search-sidebar" role="search">
-    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
-  </form>
-</header>
-
-<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">''');
-  var context1 = context0.navLinks;
-  for (var context2 in context1) {
-    buffer.writeln();
-    buffer.write('''
-  <li><a href="''');
-    buffer.write(context2.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context2.name);
-    buffer.write('''</a></li>''');
-  }
-  var context3 = context0.navLinksWithGenerics;
-  for (var context4 in context3) {
-    buffer.writeln();
-    buffer.write('''
-  <li><a href="''');
-    buffer.write(context4.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
-    if (context4.hasGenericParameters == true) {
-      buffer.write('''<span class="signature">''');
-      buffer.write(context4.genericParameters);
-      buffer.write('''</span>''');
-    }
-    buffer.write('''</a></li>''');
-  }
-  if (context0.hasHomepage != true) {
-    buffer.writeln();
-    buffer.write('''
-  <li class="self-crumb">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</li>''');
-  }
-  if (context0.hasHomepage == true) {
-    buffer.writeln();
-    buffer.write('''
-  <li><a href="''');
-    buffer.write(context0.homepage);
-    buffer.write('''">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</a></li>''');
-  }
-  buffer.writeln();
-  buffer.write('''
-</ol>
-
-''');
-
-  return buffer.toString();
-}
-
-String _renderFunction_partial_footer_8(_i1.FunctionTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''</main>
-
-<footer>
-  <span class="no-break">
-    ''');
-  buffer.writeEscaped(context0.defaultPackage.name);
-  if (context0.hasFooterVersion == true) {
-    buffer.write('\n      ');
-    buffer.writeEscaped(context0.defaultPackage.version);
-  }
-  buffer.writeln();
-  buffer.write('''
-  </span>
-
-  ''');
-  buffer.write(context0.customInnerFooter);
-  buffer.writeln();
-  buffer.write('''
-</footer>
-
-''');
-  buffer.writeln();
-  buffer.writeln();
-  buffer.write('''
-<script src="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/highlight.pack.js?v1"></script>
-<script src="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/script.js?v1"></script>
-
-''');
-  buffer.write(context0.customFooter);
-  buffer.writeln();
-  buffer.write('''
-
-</body>
-
-</html>
-''');
-
-  return buffer.toString();
-}
-
-String _renderIndex_partial_head_0(_i1.PackageTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">''');
-  if (context0.includeVersion == true) {
-    buffer.writeln();
-    buffer.write('''
-  <meta name="generator" content="made with love by dartdoc ''');
-    buffer.writeEscaped(context0.version);
-    buffer.write('''">''');
-  }
-  buffer.writeln();
-  buffer.write('''
-  <meta name="description" content="''');
-  buffer.writeEscaped(context0.metaDescription);
-  buffer.write('''">
-  <title>''');
-  buffer.writeEscaped(context0.title);
-  buffer.write('''</title>''');
-  var context1 = context0.relCanonicalPrefix;
-  if (context1 != null) {
-    buffer.writeln();
-    buffer.write('''
-  <link rel="canonical" href="''');
-    buffer.write(context0.relCanonicalPrefix);
-    buffer.write('''/''');
-    buffer.write(context0.bareHref);
-    buffer.write('''">''');
-  }
-  buffer.writeln();
-  if (context0.useBaseHref == true) {
-    var context2 = context0.htmlBase;
-    buffer.writeln();
-    buffer.write('''
-  <!-- required because all the links are pseudo-absolute -->
-  <base href="''');
-    buffer.write(context0.htmlBase);
-    buffer.write('''">''');
-  }
-  buffer.write('\n\n  ');
-  buffer.writeln();
-  buffer.write('''
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  ''');
-  buffer.writeln();
-  buffer.write('''
-  <link rel="stylesheet" href="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/github.css?v1">
-  <link rel="stylesheet" href="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/styles.css?v1">
-  <link rel="icon" href="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/favicon.png?v1">
-
-  ''');
-  buffer.write(context0.customHeader);
-  buffer.writeln();
-  buffer.write('''
-</head>
-
-''');
-  buffer.writeln();
-  buffer.write('''
-<body data-base-href="''');
-  buffer.write(context0.htmlBase);
-  buffer.write('''"
-      data-using-base-href="''');
-  buffer.write(context0.useBaseHref.toString());
-  buffer.write('''">
-
-<div id="overlay-under-drawer"></div>
-
-<header id="title">
-  <button id="sidenav-left-toggle" type="button">&nbsp;</button>
-  <ol class="breadcrumbs gt-separated dark hidden-xs">''');
-  var context3 = context0.navLinks;
-  for (var context4 in context3) {
-    buffer.writeln();
-    buffer.write('''
-    <li><a href="''');
-    buffer.write(context4.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
-    buffer.write('''</a></li>''');
-  }
-  var context5 = context0.navLinksWithGenerics;
-  for (var context6 in context5) {
-    buffer.writeln();
-    buffer.write('''
-    <li><a href="''');
-    buffer.write(context6.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context6.name);
-    if (context6.hasGenericParameters == true) {
-      buffer.write('''<span class="signature">''');
-      buffer.write(context6.genericParameters);
-      buffer.write('''</span>''');
-    }
-    buffer.write('''</a></li>''');
-  }
-  if (context0.hasHomepage != true) {
-    buffer.writeln();
-    buffer.write('''
-    <li class="self-crumb">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</li>''');
-  }
-  if (context0.hasHomepage == true) {
-    buffer.writeln();
-    buffer.write('''
-    <li><a href="''');
-    buffer.write(context0.homepage);
-    buffer.write('''">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</a></li>''');
-  }
-  buffer.writeln();
-  buffer.write('''
-  </ol>
-  <div class="self-name">''');
-  buffer.writeEscaped(context0.self.name);
-  buffer.write('''</div>
-  <form class="search navbar-right" role="search">
-    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
-  </form>
-</header>
-
-<main>
-''');
-
-  return buffer.toString();
-}
-
+        _i1.FunctionTemplateData context0) =>
+    _deduplicated_lib_templates_html__search_sidebar_html(context0);
+String _renderFunction_partial_footer_8(_i1.FunctionTemplateData context0) =>
+    _deduplicated_lib_templates_html__footer_html(context0);
+String _renderIndex_partial_head_0(_i1.PackageTemplateData context0) =>
+    _deduplicated_lib_templates_html__head_html(context0);
 String _renderIndex_partial_documentation_1(_i14.Package context1) =>
     _deduplicated_lib_templates_html__documentation_html(context1);
 String _renderIndex_partial_library_2(_i5.Library context3) =>
     _deduplicated_lib_templates_html__library_html(context3);
-String _renderIndex_partial_search_sidebar_3(_i1.PackageTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''<header id="header-search-sidebar" class="hidden-l">
-  <form class="search-sidebar" role="search">
-    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
-  </form>
-</header>
-
-<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">''');
-  var context1 = context0.navLinks;
-  for (var context2 in context1) {
-    buffer.writeln();
-    buffer.write('''
-  <li><a href="''');
-    buffer.write(context2.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context2.name);
-    buffer.write('''</a></li>''');
-  }
-  var context3 = context0.navLinksWithGenerics;
-  for (var context4 in context3) {
-    buffer.writeln();
-    buffer.write('''
-  <li><a href="''');
-    buffer.write(context4.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
-    if (context4.hasGenericParameters == true) {
-      buffer.write('''<span class="signature">''');
-      buffer.write(context4.genericParameters);
-      buffer.write('''</span>''');
-    }
-    buffer.write('''</a></li>''');
-  }
-  if (context0.hasHomepage != true) {
-    buffer.writeln();
-    buffer.write('''
-  <li class="self-crumb">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</li>''');
-  }
-  if (context0.hasHomepage == true) {
-    buffer.writeln();
-    buffer.write('''
-  <li><a href="''');
-    buffer.write(context0.homepage);
-    buffer.write('''">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</a></li>''');
-  }
-  buffer.writeln();
-  buffer.write('''
-</ol>
-
-''');
-
-  return buffer.toString();
-}
-
-String _renderIndex_partial_packages_4(_i1.PackageTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''<ol>''');
-  var context1 = context0.localPackages;
-  for (var context2 in context1) {
-    if (context2.isFirstPackage == true) {
-      if (context2.hasDocumentedCategories == true) {
-        buffer.writeln();
-        buffer.write('''
-      <li class="section-title">Topics</li>''');
-        var context3 = context2.documentedCategoriesSorted;
-        for (var context4 in context3) {
-          buffer.writeln();
-          buffer.write('''
-        <li>''');
-          buffer.write(context4.linkedName);
-          buffer.write('''</li>''');
-        }
-      }
-      buffer.writeln();
-      buffer.write('''
-      <li class="section-title">Libraries</li>''');
-    }
-    if (context2.isFirstPackage != true) {
-      buffer.writeln();
-      buffer.write('''
-      <li class="section-title">''');
-      buffer.writeEscaped(context2.name);
-      buffer.write('''</li>''');
-    }
-    var context5 = context2.defaultCategory;
-    var context6 = context5.publicLibrariesSorted;
-    for (var context7 in context6) {
-      buffer.writeln();
-      buffer.write('''
-      <li>''');
-      buffer.write(context7.linkedName);
-      buffer.write('''</li>''');
-    }
-    var context8 = context2.categoriesWithPublicLibraries;
-    for (var context9 in context8) {
-      buffer.writeln();
-      buffer.write('''
-      <li class="section-subtitle">''');
-      buffer.writeEscaped(context9.name);
-      buffer.write('''</li>''');
-      var context10 = context9.publicLibrariesSorted;
-      for (var context11 in context10) {
-        buffer.writeln();
-        buffer.write('''
-        <li class="section-subitem">''');
-        buffer.write(context11.linkedName);
-        buffer.write('''</li>''');
-      }
-    }
-  }
-  buffer.writeln();
-  buffer.write('''
-</ol>
-''');
-
-  return buffer.toString();
-}
-
-String _renderIndex_partial_footer_5(_i1.PackageTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''</main>
-
-<footer>
-  <span class="no-break">
-    ''');
-  buffer.writeEscaped(context0.defaultPackage.name);
-  if (context0.hasFooterVersion == true) {
-    buffer.write('\n      ');
-    buffer.writeEscaped(context0.defaultPackage.version);
-  }
-  buffer.writeln();
-  buffer.write('''
-  </span>
-
-  ''');
-  buffer.write(context0.customInnerFooter);
-  buffer.writeln();
-  buffer.write('''
-</footer>
-
-''');
-  buffer.writeln();
-  buffer.writeln();
-  buffer.write('''
-<script src="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/highlight.pack.js?v1"></script>
-<script src="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/script.js?v1"></script>
-
-''');
-  buffer.write(context0.customFooter);
-  buffer.writeln();
-  buffer.write('''
-
-</body>
-
-</html>
-''');
-
-  return buffer.toString();
-}
-
-String _renderLibrary_partial_head_0(_i1.LibraryTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">''');
-  if (context0.includeVersion == true) {
-    buffer.writeln();
-    buffer.write('''
-  <meta name="generator" content="made with love by dartdoc ''');
-    buffer.writeEscaped(context0.version);
-    buffer.write('''">''');
-  }
-  buffer.writeln();
-  buffer.write('''
-  <meta name="description" content="''');
-  buffer.writeEscaped(context0.metaDescription);
-  buffer.write('''">
-  <title>''');
-  buffer.writeEscaped(context0.title);
-  buffer.write('''</title>''');
-  var context1 = context0.relCanonicalPrefix;
-  if (context1 != null) {
-    buffer.writeln();
-    buffer.write('''
-  <link rel="canonical" href="''');
-    buffer.write(context0.relCanonicalPrefix);
-    buffer.write('''/''');
-    buffer.write(context0.bareHref);
-    buffer.write('''">''');
-  }
-  buffer.writeln();
-  if (context0.useBaseHref == true) {
-    var context2 = context0.htmlBase;
-    buffer.writeln();
-    buffer.write('''
-  <!-- required because all the links are pseudo-absolute -->
-  <base href="''');
-    buffer.write(context0.htmlBase);
-    buffer.write('''">''');
-  }
-  buffer.write('\n\n  ');
-  buffer.writeln();
-  buffer.write('''
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  ''');
-  buffer.writeln();
-  buffer.write('''
-  <link rel="stylesheet" href="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/github.css?v1">
-  <link rel="stylesheet" href="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/styles.css?v1">
-  <link rel="icon" href="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/favicon.png?v1">
-
-  ''');
-  buffer.write(context0.customHeader);
-  buffer.writeln();
-  buffer.write('''
-</head>
-
-''');
-  buffer.writeln();
-  buffer.write('''
-<body data-base-href="''');
-  buffer.write(context0.htmlBase);
-  buffer.write('''"
-      data-using-base-href="''');
-  buffer.write(context0.useBaseHref.toString());
-  buffer.write('''">
-
-<div id="overlay-under-drawer"></div>
-
-<header id="title">
-  <button id="sidenav-left-toggle" type="button">&nbsp;</button>
-  <ol class="breadcrumbs gt-separated dark hidden-xs">''');
-  var context3 = context0.navLinks;
-  for (var context4 in context3) {
-    buffer.writeln();
-    buffer.write('''
-    <li><a href="''');
-    buffer.write(context4.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
-    buffer.write('''</a></li>''');
-  }
-  var context5 = context0.navLinksWithGenerics;
-  for (var context6 in context5) {
-    buffer.writeln();
-    buffer.write('''
-    <li><a href="''');
-    buffer.write(context6.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context6.name);
-    if (context6.hasGenericParameters == true) {
-      buffer.write('''<span class="signature">''');
-      buffer.write(context6.genericParameters);
-      buffer.write('''</span>''');
-    }
-    buffer.write('''</a></li>''');
-  }
-  if (context0.hasHomepage != true) {
-    buffer.writeln();
-    buffer.write('''
-    <li class="self-crumb">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</li>''');
-  }
-  if (context0.hasHomepage == true) {
-    buffer.writeln();
-    buffer.write('''
-    <li><a href="''');
-    buffer.write(context0.homepage);
-    buffer.write('''">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</a></li>''');
-  }
-  buffer.writeln();
-  buffer.write('''
-  </ol>
-  <div class="self-name">''');
-  buffer.writeEscaped(context0.self.name);
-  buffer.write('''</div>
-  <form class="search navbar-right" role="search">
-    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
-  </form>
-</header>
-
-<main>
-''');
-
-  return buffer.toString();
-}
-
+String _renderIndex_partial_search_sidebar_3(
+        _i1.PackageTemplateData context0) =>
+    _deduplicated_lib_templates_html__search_sidebar_html(context0);
+String _renderIndex_partial_packages_4(_i1.PackageTemplateData context0) =>
+    _deduplicated_lib_templates_html__packages_html(context0);
+String _renderIndex_partial_footer_5(_i1.PackageTemplateData context0) =>
+    _deduplicated_lib_templates_html__footer_html(context0);
+String _renderLibrary_partial_head_0(_i1.LibraryTemplateData context0) =>
+    _deduplicated_lib_templates_html__head_html(context0);
 String _renderLibrary_partial_source_link_1(_i5.Library context1) =>
     _deduplicated_lib_templates_html__source_link_html(context1);
 String _renderLibrary_partial_feature_set_2(_i5.Library context1) =>
@@ -5000,326 +2657,14 @@ String __renderLibrary_partial_callable_9_partial_features_1(
 String _renderLibrary_partial_typedef_10(_i9.Typedef context3) =>
     _deduplicated_lib_templates_html__typedef_html(context3);
 String _renderLibrary_partial_search_sidebar_11(
-    _i1.LibraryTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''<header id="header-search-sidebar" class="hidden-l">
-  <form class="search-sidebar" role="search">
-    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
-  </form>
-</header>
-
-<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">''');
-  var context1 = context0.navLinks;
-  for (var context2 in context1) {
-    buffer.writeln();
-    buffer.write('''
-  <li><a href="''');
-    buffer.write(context2.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context2.name);
-    buffer.write('''</a></li>''');
-  }
-  var context3 = context0.navLinksWithGenerics;
-  for (var context4 in context3) {
-    buffer.writeln();
-    buffer.write('''
-  <li><a href="''');
-    buffer.write(context4.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
-    if (context4.hasGenericParameters == true) {
-      buffer.write('''<span class="signature">''');
-      buffer.write(context4.genericParameters);
-      buffer.write('''</span>''');
-    }
-    buffer.write('''</a></li>''');
-  }
-  if (context0.hasHomepage != true) {
-    buffer.writeln();
-    buffer.write('''
-  <li class="self-crumb">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</li>''');
-  }
-  if (context0.hasHomepage == true) {
-    buffer.writeln();
-    buffer.write('''
-  <li><a href="''');
-    buffer.write(context0.homepage);
-    buffer.write('''">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</a></li>''');
-  }
-  buffer.writeln();
-  buffer.write('''
-</ol>
-
-''');
-
-  return buffer.toString();
-}
-
-String _renderLibrary_partial_packages_12(_i1.LibraryTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''<ol>''');
-  var context1 = context0.localPackages;
-  for (var context2 in context1) {
-    if (context2.isFirstPackage == true) {
-      if (context2.hasDocumentedCategories == true) {
-        buffer.writeln();
-        buffer.write('''
-      <li class="section-title">Topics</li>''');
-        var context3 = context2.documentedCategoriesSorted;
-        for (var context4 in context3) {
-          buffer.writeln();
-          buffer.write('''
-        <li>''');
-          buffer.write(context4.linkedName);
-          buffer.write('''</li>''');
-        }
-      }
-      buffer.writeln();
-      buffer.write('''
-      <li class="section-title">Libraries</li>''');
-    }
-    if (context2.isFirstPackage != true) {
-      buffer.writeln();
-      buffer.write('''
-      <li class="section-title">''');
-      buffer.writeEscaped(context2.name);
-      buffer.write('''</li>''');
-    }
-    var context5 = context2.defaultCategory;
-    var context6 = context5.publicLibrariesSorted;
-    for (var context7 in context6) {
-      buffer.writeln();
-      buffer.write('''
-      <li>''');
-      buffer.write(context7.linkedName);
-      buffer.write('''</li>''');
-    }
-    var context8 = context2.categoriesWithPublicLibraries;
-    for (var context9 in context8) {
-      buffer.writeln();
-      buffer.write('''
-      <li class="section-subtitle">''');
-      buffer.writeEscaped(context9.name);
-      buffer.write('''</li>''');
-      var context10 = context9.publicLibrariesSorted;
-      for (var context11 in context10) {
-        buffer.writeln();
-        buffer.write('''
-        <li class="section-subitem">''');
-        buffer.write(context11.linkedName);
-        buffer.write('''</li>''');
-      }
-    }
-  }
-  buffer.writeln();
-  buffer.write('''
-</ol>
-''');
-
-  return buffer.toString();
-}
-
-String _renderLibrary_partial_footer_13(_i1.LibraryTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''</main>
-
-<footer>
-  <span class="no-break">
-    ''');
-  buffer.writeEscaped(context0.defaultPackage.name);
-  if (context0.hasFooterVersion == true) {
-    buffer.write('\n      ');
-    buffer.writeEscaped(context0.defaultPackage.version);
-  }
-  buffer.writeln();
-  buffer.write('''
-  </span>
-
-  ''');
-  buffer.write(context0.customInnerFooter);
-  buffer.writeln();
-  buffer.write('''
-</footer>
-
-''');
-  buffer.writeln();
-  buffer.writeln();
-  buffer.write('''
-<script src="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/highlight.pack.js?v1"></script>
-<script src="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/script.js?v1"></script>
-
-''');
-  buffer.write(context0.customFooter);
-  buffer.writeln();
-  buffer.write('''
-
-</body>
-
-</html>
-''');
-
-  return buffer.toString();
-}
-
-String _renderMethod_partial_head_0(_i1.MethodTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">''');
-  if (context0.includeVersion == true) {
-    buffer.writeln();
-    buffer.write('''
-  <meta name="generator" content="made with love by dartdoc ''');
-    buffer.writeEscaped(context0.version);
-    buffer.write('''">''');
-  }
-  buffer.writeln();
-  buffer.write('''
-  <meta name="description" content="''');
-  buffer.writeEscaped(context0.metaDescription);
-  buffer.write('''">
-  <title>''');
-  buffer.writeEscaped(context0.title);
-  buffer.write('''</title>''');
-  var context1 = context0.relCanonicalPrefix;
-  if (context1 != null) {
-    buffer.writeln();
-    buffer.write('''
-  <link rel="canonical" href="''');
-    buffer.write(context0.relCanonicalPrefix);
-    buffer.write('''/''');
-    buffer.write(context0.bareHref);
-    buffer.write('''">''');
-  }
-  buffer.writeln();
-  if (context0.useBaseHref == true) {
-    var context2 = context0.htmlBase;
-    buffer.writeln();
-    buffer.write('''
-  <!-- required because all the links are pseudo-absolute -->
-  <base href="''');
-    buffer.write(context0.htmlBase);
-    buffer.write('''">''');
-  }
-  buffer.write('\n\n  ');
-  buffer.writeln();
-  buffer.write('''
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  ''');
-  buffer.writeln();
-  buffer.write('''
-  <link rel="stylesheet" href="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/github.css?v1">
-  <link rel="stylesheet" href="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/styles.css?v1">
-  <link rel="icon" href="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/favicon.png?v1">
-
-  ''');
-  buffer.write(context0.customHeader);
-  buffer.writeln();
-  buffer.write('''
-</head>
-
-''');
-  buffer.writeln();
-  buffer.write('''
-<body data-base-href="''');
-  buffer.write(context0.htmlBase);
-  buffer.write('''"
-      data-using-base-href="''');
-  buffer.write(context0.useBaseHref.toString());
-  buffer.write('''">
-
-<div id="overlay-under-drawer"></div>
-
-<header id="title">
-  <button id="sidenav-left-toggle" type="button">&nbsp;</button>
-  <ol class="breadcrumbs gt-separated dark hidden-xs">''');
-  var context3 = context0.navLinks;
-  for (var context4 in context3) {
-    buffer.writeln();
-    buffer.write('''
-    <li><a href="''');
-    buffer.write(context4.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
-    buffer.write('''</a></li>''');
-  }
-  var context5 = context0.navLinksWithGenerics;
-  for (var context6 in context5) {
-    buffer.writeln();
-    buffer.write('''
-    <li><a href="''');
-    buffer.write(context6.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context6.name);
-    if (context6.hasGenericParameters == true) {
-      buffer.write('''<span class="signature">''');
-      buffer.write(context6.genericParameters);
-      buffer.write('''</span>''');
-    }
-    buffer.write('''</a></li>''');
-  }
-  if (context0.hasHomepage != true) {
-    buffer.writeln();
-    buffer.write('''
-    <li class="self-crumb">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</li>''');
-  }
-  if (context0.hasHomepage == true) {
-    buffer.writeln();
-    buffer.write('''
-    <li><a href="''');
-    buffer.write(context0.homepage);
-    buffer.write('''">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</a></li>''');
-  }
-  buffer.writeln();
-  buffer.write('''
-  </ol>
-  <div class="self-name">''');
-  buffer.writeEscaped(context0.self.name);
-  buffer.write('''</div>
-  <form class="search navbar-right" role="search">
-    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
-  </form>
-</header>
-
-<main>
-''');
-
-  return buffer.toString();
-}
-
+        _i1.LibraryTemplateData context0) =>
+    _deduplicated_lib_templates_html__search_sidebar_html(context0);
+String _renderLibrary_partial_packages_12(_i1.LibraryTemplateData context0) =>
+    _deduplicated_lib_templates_html__packages_html(context0);
+String _renderLibrary_partial_footer_13(_i1.LibraryTemplateData context0) =>
+    _deduplicated_lib_templates_html__footer_html(context0);
+String _renderMethod_partial_head_0(_i1.MethodTemplateData context0) =>
+    _deduplicated_lib_templates_html__head_html(context0);
 String _renderMethod_partial_source_link_1(_i15.Method context1) =>
     _deduplicated_lib_templates_html__source_link_html(context1);
 String _renderMethod_partial_feature_set_2(_i15.Method context1) =>
@@ -5374,262 +2719,13 @@ String _renderMethod_partial_documentation_5(_i15.Method context1) =>
     _deduplicated_lib_templates_html__documentation_html(context1);
 String _renderMethod_partial_source_code_6(_i15.Method context1) =>
     _deduplicated_lib_templates_html__source_code_html(context1);
-String _renderMethod_partial_search_sidebar_7(_i1.MethodTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''<header id="header-search-sidebar" class="hidden-l">
-  <form class="search-sidebar" role="search">
-    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
-  </form>
-</header>
-
-<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">''');
-  var context1 = context0.navLinks;
-  for (var context2 in context1) {
-    buffer.writeln();
-    buffer.write('''
-  <li><a href="''');
-    buffer.write(context2.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context2.name);
-    buffer.write('''</a></li>''');
-  }
-  var context3 = context0.navLinksWithGenerics;
-  for (var context4 in context3) {
-    buffer.writeln();
-    buffer.write('''
-  <li><a href="''');
-    buffer.write(context4.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
-    if (context4.hasGenericParameters == true) {
-      buffer.write('''<span class="signature">''');
-      buffer.write(context4.genericParameters);
-      buffer.write('''</span>''');
-    }
-    buffer.write('''</a></li>''');
-  }
-  if (context0.hasHomepage != true) {
-    buffer.writeln();
-    buffer.write('''
-  <li class="self-crumb">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</li>''');
-  }
-  if (context0.hasHomepage == true) {
-    buffer.writeln();
-    buffer.write('''
-  <li><a href="''');
-    buffer.write(context0.homepage);
-    buffer.write('''">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</a></li>''');
-  }
-  buffer.writeln();
-  buffer.write('''
-</ol>
-
-''');
-
-  return buffer.toString();
-}
-
-String _renderMethod_partial_footer_8(_i1.MethodTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''</main>
-
-<footer>
-  <span class="no-break">
-    ''');
-  buffer.writeEscaped(context0.defaultPackage.name);
-  if (context0.hasFooterVersion == true) {
-    buffer.write('\n      ');
-    buffer.writeEscaped(context0.defaultPackage.version);
-  }
-  buffer.writeln();
-  buffer.write('''
-  </span>
-
-  ''');
-  buffer.write(context0.customInnerFooter);
-  buffer.writeln();
-  buffer.write('''
-</footer>
-
-''');
-  buffer.writeln();
-  buffer.writeln();
-  buffer.write('''
-<script src="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/highlight.pack.js?v1"></script>
-<script src="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/script.js?v1"></script>
-
-''');
-  buffer.write(context0.customFooter);
-  buffer.writeln();
-  buffer.write('''
-
-</body>
-
-</html>
-''');
-
-  return buffer.toString();
-}
-
-String _renderMixin_partial_head_0(_i1.MixinTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">''');
-  if (context0.includeVersion == true) {
-    buffer.writeln();
-    buffer.write('''
-  <meta name="generator" content="made with love by dartdoc ''');
-    buffer.writeEscaped(context0.version);
-    buffer.write('''">''');
-  }
-  buffer.writeln();
-  buffer.write('''
-  <meta name="description" content="''');
-  buffer.writeEscaped(context0.metaDescription);
-  buffer.write('''">
-  <title>''');
-  buffer.writeEscaped(context0.title);
-  buffer.write('''</title>''');
-  var context1 = context0.relCanonicalPrefix;
-  if (context1 != null) {
-    buffer.writeln();
-    buffer.write('''
-  <link rel="canonical" href="''');
-    buffer.write(context0.relCanonicalPrefix);
-    buffer.write('''/''');
-    buffer.write(context0.bareHref);
-    buffer.write('''">''');
-  }
-  buffer.writeln();
-  if (context0.useBaseHref == true) {
-    var context2 = context0.htmlBase;
-    buffer.writeln();
-    buffer.write('''
-  <!-- required because all the links are pseudo-absolute -->
-  <base href="''');
-    buffer.write(context0.htmlBase);
-    buffer.write('''">''');
-  }
-  buffer.write('\n\n  ');
-  buffer.writeln();
-  buffer.write('''
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  ''');
-  buffer.writeln();
-  buffer.write('''
-  <link rel="stylesheet" href="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/github.css?v1">
-  <link rel="stylesheet" href="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/styles.css?v1">
-  <link rel="icon" href="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/favicon.png?v1">
-
-  ''');
-  buffer.write(context0.customHeader);
-  buffer.writeln();
-  buffer.write('''
-</head>
-
-''');
-  buffer.writeln();
-  buffer.write('''
-<body data-base-href="''');
-  buffer.write(context0.htmlBase);
-  buffer.write('''"
-      data-using-base-href="''');
-  buffer.write(context0.useBaseHref.toString());
-  buffer.write('''">
-
-<div id="overlay-under-drawer"></div>
-
-<header id="title">
-  <button id="sidenav-left-toggle" type="button">&nbsp;</button>
-  <ol class="breadcrumbs gt-separated dark hidden-xs">''');
-  var context3 = context0.navLinks;
-  for (var context4 in context3) {
-    buffer.writeln();
-    buffer.write('''
-    <li><a href="''');
-    buffer.write(context4.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
-    buffer.write('''</a></li>''');
-  }
-  var context5 = context0.navLinksWithGenerics;
-  for (var context6 in context5) {
-    buffer.writeln();
-    buffer.write('''
-    <li><a href="''');
-    buffer.write(context6.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context6.name);
-    if (context6.hasGenericParameters == true) {
-      buffer.write('''<span class="signature">''');
-      buffer.write(context6.genericParameters);
-      buffer.write('''</span>''');
-    }
-    buffer.write('''</a></li>''');
-  }
-  if (context0.hasHomepage != true) {
-    buffer.writeln();
-    buffer.write('''
-    <li class="self-crumb">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</li>''');
-  }
-  if (context0.hasHomepage == true) {
-    buffer.writeln();
-    buffer.write('''
-    <li><a href="''');
-    buffer.write(context0.homepage);
-    buffer.write('''">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</a></li>''');
-  }
-  buffer.writeln();
-  buffer.write('''
-  </ol>
-  <div class="self-name">''');
-  buffer.writeEscaped(context0.self.name);
-  buffer.write('''</div>
-  <form class="search navbar-right" role="search">
-    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
-  </form>
-</header>
-
-<main>
-''');
-
-  return buffer.toString();
-}
-
+String _renderMethod_partial_search_sidebar_7(
+        _i1.MethodTemplateData context0) =>
+    _deduplicated_lib_templates_html__search_sidebar_html(context0);
+String _renderMethod_partial_footer_8(_i1.MethodTemplateData context0) =>
+    _deduplicated_lib_templates_html__footer_html(context0);
+String _renderMixin_partial_head_0(_i1.MixinTemplateData context0) =>
+    _deduplicated_lib_templates_html__head_html(context0);
 String _renderMixin_partial_source_link_1(_i16.Mixin context1) =>
     _deduplicated_lib_templates_html__source_link_html(context1);
 String _renderMixin_partial_feature_set_2(_i16.Mixin context1) =>
@@ -5640,33 +2736,8 @@ String _renderMixin_partial_documentation_4(_i16.Mixin context1) =>
     _deduplicated_lib_templates_html__documentation_html(context1);
 String _renderMixin_partial_super_chain_5(_i16.Mixin context1) =>
     _deduplicated_lib_templates_html__super_chain_html(context1);
-String _renderMixin_partial_interfaces_6(_i16.Mixin context1) {
-  final buffer = StringBuffer();
-  if (context1.hasPublicInterfaces == true) {
-    buffer.writeln();
-    buffer.write('''
-<dt>Implemented types</dt>
-<dd>
-    <ul class="comma-separated ''');
-    buffer.writeEscaped(context1.relationshipsClass);
-    buffer.write('''">''');
-    var context2 = context1.publicInterfaces;
-    for (var context3 in context2) {
-      buffer.writeln();
-      buffer.write('''
-        <li>''');
-      buffer.write(context3.linkedName);
-      buffer.write('''</li>''');
-    }
-    buffer.writeln();
-    buffer.write('''
-    </ul>
-</dd>''');
-  }
-
-  return buffer.toString();
-}
-
+String _renderMixin_partial_interfaces_6(_i16.Mixin context1) =>
+    _deduplicated_lib_templates_html__interfaces_html(context1);
 String _renderMixin_partial_property_7(_i11.Field context2) =>
     _deduplicated_lib_templates_html__property_html(context2);
 String _renderMixin_partial_instance_methods_8(_i16.Mixin context1) =>
@@ -5679,262 +2750,12 @@ String _renderMixin_partial_static_methods_11(_i16.Mixin context1) =>
     _deduplicated_lib_templates_html__static_methods_html(context1);
 String _renderMixin_partial_static_constants_12(_i16.Mixin context1) =>
     _deduplicated_lib_templates_html__static_constants_html(context1);
-String _renderMixin_partial_search_sidebar_13(_i1.MixinTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''<header id="header-search-sidebar" class="hidden-l">
-  <form class="search-sidebar" role="search">
-    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
-  </form>
-</header>
-
-<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">''');
-  var context1 = context0.navLinks;
-  for (var context2 in context1) {
-    buffer.writeln();
-    buffer.write('''
-  <li><a href="''');
-    buffer.write(context2.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context2.name);
-    buffer.write('''</a></li>''');
-  }
-  var context3 = context0.navLinksWithGenerics;
-  for (var context4 in context3) {
-    buffer.writeln();
-    buffer.write('''
-  <li><a href="''');
-    buffer.write(context4.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
-    if (context4.hasGenericParameters == true) {
-      buffer.write('''<span class="signature">''');
-      buffer.write(context4.genericParameters);
-      buffer.write('''</span>''');
-    }
-    buffer.write('''</a></li>''');
-  }
-  if (context0.hasHomepage != true) {
-    buffer.writeln();
-    buffer.write('''
-  <li class="self-crumb">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</li>''');
-  }
-  if (context0.hasHomepage == true) {
-    buffer.writeln();
-    buffer.write('''
-  <li><a href="''');
-    buffer.write(context0.homepage);
-    buffer.write('''">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</a></li>''');
-  }
-  buffer.writeln();
-  buffer.write('''
-</ol>
-
-''');
-
-  return buffer.toString();
-}
-
-String _renderMixin_partial_footer_14(_i1.MixinTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''</main>
-
-<footer>
-  <span class="no-break">
-    ''');
-  buffer.writeEscaped(context0.defaultPackage.name);
-  if (context0.hasFooterVersion == true) {
-    buffer.write('\n      ');
-    buffer.writeEscaped(context0.defaultPackage.version);
-  }
-  buffer.writeln();
-  buffer.write('''
-  </span>
-
-  ''');
-  buffer.write(context0.customInnerFooter);
-  buffer.writeln();
-  buffer.write('''
-</footer>
-
-''');
-  buffer.writeln();
-  buffer.writeln();
-  buffer.write('''
-<script src="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/highlight.pack.js?v1"></script>
-<script src="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/script.js?v1"></script>
-
-''');
-  buffer.write(context0.customFooter);
-  buffer.writeln();
-  buffer.write('''
-
-</body>
-
-</html>
-''');
-
-  return buffer.toString();
-}
-
-String _renderProperty_partial_head_0(_i1.PropertyTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">''');
-  if (context0.includeVersion == true) {
-    buffer.writeln();
-    buffer.write('''
-  <meta name="generator" content="made with love by dartdoc ''');
-    buffer.writeEscaped(context0.version);
-    buffer.write('''">''');
-  }
-  buffer.writeln();
-  buffer.write('''
-  <meta name="description" content="''');
-  buffer.writeEscaped(context0.metaDescription);
-  buffer.write('''">
-  <title>''');
-  buffer.writeEscaped(context0.title);
-  buffer.write('''</title>''');
-  var context1 = context0.relCanonicalPrefix;
-  if (context1 != null) {
-    buffer.writeln();
-    buffer.write('''
-  <link rel="canonical" href="''');
-    buffer.write(context0.relCanonicalPrefix);
-    buffer.write('''/''');
-    buffer.write(context0.bareHref);
-    buffer.write('''">''');
-  }
-  buffer.writeln();
-  if (context0.useBaseHref == true) {
-    var context2 = context0.htmlBase;
-    buffer.writeln();
-    buffer.write('''
-  <!-- required because all the links are pseudo-absolute -->
-  <base href="''');
-    buffer.write(context0.htmlBase);
-    buffer.write('''">''');
-  }
-  buffer.write('\n\n  ');
-  buffer.writeln();
-  buffer.write('''
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  ''');
-  buffer.writeln();
-  buffer.write('''
-  <link rel="stylesheet" href="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/github.css?v1">
-  <link rel="stylesheet" href="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/styles.css?v1">
-  <link rel="icon" href="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/favicon.png?v1">
-
-  ''');
-  buffer.write(context0.customHeader);
-  buffer.writeln();
-  buffer.write('''
-</head>
-
-''');
-  buffer.writeln();
-  buffer.write('''
-<body data-base-href="''');
-  buffer.write(context0.htmlBase);
-  buffer.write('''"
-      data-using-base-href="''');
-  buffer.write(context0.useBaseHref.toString());
-  buffer.write('''">
-
-<div id="overlay-under-drawer"></div>
-
-<header id="title">
-  <button id="sidenav-left-toggle" type="button">&nbsp;</button>
-  <ol class="breadcrumbs gt-separated dark hidden-xs">''');
-  var context3 = context0.navLinks;
-  for (var context4 in context3) {
-    buffer.writeln();
-    buffer.write('''
-    <li><a href="''');
-    buffer.write(context4.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
-    buffer.write('''</a></li>''');
-  }
-  var context5 = context0.navLinksWithGenerics;
-  for (var context6 in context5) {
-    buffer.writeln();
-    buffer.write('''
-    <li><a href="''');
-    buffer.write(context6.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context6.name);
-    if (context6.hasGenericParameters == true) {
-      buffer.write('''<span class="signature">''');
-      buffer.write(context6.genericParameters);
-      buffer.write('''</span>''');
-    }
-    buffer.write('''</a></li>''');
-  }
-  if (context0.hasHomepage != true) {
-    buffer.writeln();
-    buffer.write('''
-    <li class="self-crumb">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</li>''');
-  }
-  if (context0.hasHomepage == true) {
-    buffer.writeln();
-    buffer.write('''
-    <li><a href="''');
-    buffer.write(context0.homepage);
-    buffer.write('''">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</a></li>''');
-  }
-  buffer.writeln();
-  buffer.write('''
-  </ol>
-  <div class="self-name">''');
-  buffer.writeEscaped(context0.self.name);
-  buffer.write('''</div>
-  <form class="search navbar-right" role="search">
-    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
-  </form>
-</header>
-
-<main>
-''');
-
-  return buffer.toString();
-}
-
+String _renderMixin_partial_search_sidebar_13(_i1.MixinTemplateData context0) =>
+    _deduplicated_lib_templates_html__search_sidebar_html(context0);
+String _renderMixin_partial_footer_14(_i1.MixinTemplateData context0) =>
+    _deduplicated_lib_templates_html__footer_html(context0);
+String _renderProperty_partial_head_0(_i1.PropertyTemplateData context0) =>
+    _deduplicated_lib_templates_html__head_html(context0);
 String _renderProperty_partial_source_link_1(_i11.Field context1) =>
     _deduplicated_lib_templates_html__source_link_html(context1);
 String _renderProperty_partial_feature_set_2(_i11.Field context1) =>
@@ -5952,263 +2773,13 @@ String _renderProperty_partial_accessor_getter_7(_i11.Field context1) =>
 String _renderProperty_partial_accessor_setter_8(_i11.Field context1) =>
     _deduplicated_lib_templates_html__accessor_setter_html(context1);
 String _renderProperty_partial_search_sidebar_9(
-    _i1.PropertyTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''<header id="header-search-sidebar" class="hidden-l">
-  <form class="search-sidebar" role="search">
-    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
-  </form>
-</header>
-
-<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">''');
-  var context1 = context0.navLinks;
-  for (var context2 in context1) {
-    buffer.writeln();
-    buffer.write('''
-  <li><a href="''');
-    buffer.write(context2.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context2.name);
-    buffer.write('''</a></li>''');
-  }
-  var context3 = context0.navLinksWithGenerics;
-  for (var context4 in context3) {
-    buffer.writeln();
-    buffer.write('''
-  <li><a href="''');
-    buffer.write(context4.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
-    if (context4.hasGenericParameters == true) {
-      buffer.write('''<span class="signature">''');
-      buffer.write(context4.genericParameters);
-      buffer.write('''</span>''');
-    }
-    buffer.write('''</a></li>''');
-  }
-  if (context0.hasHomepage != true) {
-    buffer.writeln();
-    buffer.write('''
-  <li class="self-crumb">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</li>''');
-  }
-  if (context0.hasHomepage == true) {
-    buffer.writeln();
-    buffer.write('''
-  <li><a href="''');
-    buffer.write(context0.homepage);
-    buffer.write('''">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</a></li>''');
-  }
-  buffer.writeln();
-  buffer.write('''
-</ol>
-
-''');
-
-  return buffer.toString();
-}
-
-String _renderProperty_partial_footer_10(_i1.PropertyTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''</main>
-
-<footer>
-  <span class="no-break">
-    ''');
-  buffer.writeEscaped(context0.defaultPackage.name);
-  if (context0.hasFooterVersion == true) {
-    buffer.write('\n      ');
-    buffer.writeEscaped(context0.defaultPackage.version);
-  }
-  buffer.writeln();
-  buffer.write('''
-  </span>
-
-  ''');
-  buffer.write(context0.customInnerFooter);
-  buffer.writeln();
-  buffer.write('''
-</footer>
-
-''');
-  buffer.writeln();
-  buffer.writeln();
-  buffer.write('''
-<script src="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/highlight.pack.js?v1"></script>
-<script src="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/script.js?v1"></script>
-
-''');
-  buffer.write(context0.customFooter);
-  buffer.writeln();
-  buffer.write('''
-
-</body>
-
-</html>
-''');
-
-  return buffer.toString();
-}
-
+        _i1.PropertyTemplateData context0) =>
+    _deduplicated_lib_templates_html__search_sidebar_html(context0);
+String _renderProperty_partial_footer_10(_i1.PropertyTemplateData context0) =>
+    _deduplicated_lib_templates_html__footer_html(context0);
 String _renderTopLevelProperty_partial_head_0(
-    _i1.TopLevelPropertyTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">''');
-  if (context0.includeVersion == true) {
-    buffer.writeln();
-    buffer.write('''
-  <meta name="generator" content="made with love by dartdoc ''');
-    buffer.writeEscaped(context0.version);
-    buffer.write('''">''');
-  }
-  buffer.writeln();
-  buffer.write('''
-  <meta name="description" content="''');
-  buffer.writeEscaped(context0.metaDescription);
-  buffer.write('''">
-  <title>''');
-  buffer.writeEscaped(context0.title);
-  buffer.write('''</title>''');
-  var context1 = context0.relCanonicalPrefix;
-  if (context1 != null) {
-    buffer.writeln();
-    buffer.write('''
-  <link rel="canonical" href="''');
-    buffer.write(context0.relCanonicalPrefix);
-    buffer.write('''/''');
-    buffer.write(context0.bareHref);
-    buffer.write('''">''');
-  }
-  buffer.writeln();
-  if (context0.useBaseHref == true) {
-    var context2 = context0.htmlBase;
-    buffer.writeln();
-    buffer.write('''
-  <!-- required because all the links are pseudo-absolute -->
-  <base href="''');
-    buffer.write(context0.htmlBase);
-    buffer.write('''">''');
-  }
-  buffer.write('\n\n  ');
-  buffer.writeln();
-  buffer.write('''
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  ''');
-  buffer.writeln();
-  buffer.write('''
-  <link rel="stylesheet" href="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/github.css?v1">
-  <link rel="stylesheet" href="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/styles.css?v1">
-  <link rel="icon" href="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/favicon.png?v1">
-
-  ''');
-  buffer.write(context0.customHeader);
-  buffer.writeln();
-  buffer.write('''
-</head>
-
-''');
-  buffer.writeln();
-  buffer.write('''
-<body data-base-href="''');
-  buffer.write(context0.htmlBase);
-  buffer.write('''"
-      data-using-base-href="''');
-  buffer.write(context0.useBaseHref.toString());
-  buffer.write('''">
-
-<div id="overlay-under-drawer"></div>
-
-<header id="title">
-  <button id="sidenav-left-toggle" type="button">&nbsp;</button>
-  <ol class="breadcrumbs gt-separated dark hidden-xs">''');
-  var context3 = context0.navLinks;
-  for (var context4 in context3) {
-    buffer.writeln();
-    buffer.write('''
-    <li><a href="''');
-    buffer.write(context4.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
-    buffer.write('''</a></li>''');
-  }
-  var context5 = context0.navLinksWithGenerics;
-  for (var context6 in context5) {
-    buffer.writeln();
-    buffer.write('''
-    <li><a href="''');
-    buffer.write(context6.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context6.name);
-    if (context6.hasGenericParameters == true) {
-      buffer.write('''<span class="signature">''');
-      buffer.write(context6.genericParameters);
-      buffer.write('''</span>''');
-    }
-    buffer.write('''</a></li>''');
-  }
-  if (context0.hasHomepage != true) {
-    buffer.writeln();
-    buffer.write('''
-    <li class="self-crumb">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</li>''');
-  }
-  if (context0.hasHomepage == true) {
-    buffer.writeln();
-    buffer.write('''
-    <li><a href="''');
-    buffer.write(context0.homepage);
-    buffer.write('''">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</a></li>''');
-  }
-  buffer.writeln();
-  buffer.write('''
-  </ol>
-  <div class="self-name">''');
-  buffer.writeEscaped(context0.self.name);
-  buffer.write('''</div>
-  <form class="search navbar-right" role="search">
-    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
-  </form>
-</header>
-
-<main>
-''');
-
-  return buffer.toString();
-}
-
+        _i1.TopLevelPropertyTemplateData context0) =>
+    _deduplicated_lib_templates_html__head_html(context0);
 String _renderTopLevelProperty_partial_source_link_1(
         _i7.TopLevelVariable context1) =>
     _deduplicated_lib_templates_html__source_link_html(context1);
@@ -6237,263 +2808,13 @@ String _renderTopLevelProperty_partial_accessor_setter_9(
         _i7.TopLevelVariable context1) =>
     _deduplicated_lib_templates_html__accessor_setter_html(context1);
 String _renderTopLevelProperty_partial_search_sidebar_10(
-    _i1.TopLevelPropertyTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''<header id="header-search-sidebar" class="hidden-l">
-  <form class="search-sidebar" role="search">
-    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
-  </form>
-</header>
-
-<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">''');
-  var context1 = context0.navLinks;
-  for (var context2 in context1) {
-    buffer.writeln();
-    buffer.write('''
-  <li><a href="''');
-    buffer.write(context2.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context2.name);
-    buffer.write('''</a></li>''');
-  }
-  var context3 = context0.navLinksWithGenerics;
-  for (var context4 in context3) {
-    buffer.writeln();
-    buffer.write('''
-  <li><a href="''');
-    buffer.write(context4.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
-    if (context4.hasGenericParameters == true) {
-      buffer.write('''<span class="signature">''');
-      buffer.write(context4.genericParameters);
-      buffer.write('''</span>''');
-    }
-    buffer.write('''</a></li>''');
-  }
-  if (context0.hasHomepage != true) {
-    buffer.writeln();
-    buffer.write('''
-  <li class="self-crumb">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</li>''');
-  }
-  if (context0.hasHomepage == true) {
-    buffer.writeln();
-    buffer.write('''
-  <li><a href="''');
-    buffer.write(context0.homepage);
-    buffer.write('''">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</a></li>''');
-  }
-  buffer.writeln();
-  buffer.write('''
-</ol>
-
-''');
-
-  return buffer.toString();
-}
-
+        _i1.TopLevelPropertyTemplateData context0) =>
+    _deduplicated_lib_templates_html__search_sidebar_html(context0);
 String _renderTopLevelProperty_partial_footer_11(
-    _i1.TopLevelPropertyTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''</main>
-
-<footer>
-  <span class="no-break">
-    ''');
-  buffer.writeEscaped(context0.defaultPackage.name);
-  if (context0.hasFooterVersion == true) {
-    buffer.write('\n      ');
-    buffer.writeEscaped(context0.defaultPackage.version);
-  }
-  buffer.writeln();
-  buffer.write('''
-  </span>
-
-  ''');
-  buffer.write(context0.customInnerFooter);
-  buffer.writeln();
-  buffer.write('''
-</footer>
-
-''');
-  buffer.writeln();
-  buffer.writeln();
-  buffer.write('''
-<script src="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/highlight.pack.js?v1"></script>
-<script src="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/script.js?v1"></script>
-
-''');
-  buffer.write(context0.customFooter);
-  buffer.writeln();
-  buffer.write('''
-
-</body>
-
-</html>
-''');
-
-  return buffer.toString();
-}
-
-String _renderTypedef_partial_head_0(_i1.TypedefTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">''');
-  if (context0.includeVersion == true) {
-    buffer.writeln();
-    buffer.write('''
-  <meta name="generator" content="made with love by dartdoc ''');
-    buffer.writeEscaped(context0.version);
-    buffer.write('''">''');
-  }
-  buffer.writeln();
-  buffer.write('''
-  <meta name="description" content="''');
-  buffer.writeEscaped(context0.metaDescription);
-  buffer.write('''">
-  <title>''');
-  buffer.writeEscaped(context0.title);
-  buffer.write('''</title>''');
-  var context1 = context0.relCanonicalPrefix;
-  if (context1 != null) {
-    buffer.writeln();
-    buffer.write('''
-  <link rel="canonical" href="''');
-    buffer.write(context0.relCanonicalPrefix);
-    buffer.write('''/''');
-    buffer.write(context0.bareHref);
-    buffer.write('''">''');
-  }
-  buffer.writeln();
-  if (context0.useBaseHref == true) {
-    var context2 = context0.htmlBase;
-    buffer.writeln();
-    buffer.write('''
-  <!-- required because all the links are pseudo-absolute -->
-  <base href="''');
-    buffer.write(context0.htmlBase);
-    buffer.write('''">''');
-  }
-  buffer.write('\n\n  ');
-  buffer.writeln();
-  buffer.write('''
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  ''');
-  buffer.writeln();
-  buffer.write('''
-  <link rel="stylesheet" href="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/github.css?v1">
-  <link rel="stylesheet" href="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/styles.css?v1">
-  <link rel="icon" href="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/favicon.png?v1">
-
-  ''');
-  buffer.write(context0.customHeader);
-  buffer.writeln();
-  buffer.write('''
-</head>
-
-''');
-  buffer.writeln();
-  buffer.write('''
-<body data-base-href="''');
-  buffer.write(context0.htmlBase);
-  buffer.write('''"
-      data-using-base-href="''');
-  buffer.write(context0.useBaseHref.toString());
-  buffer.write('''">
-
-<div id="overlay-under-drawer"></div>
-
-<header id="title">
-  <button id="sidenav-left-toggle" type="button">&nbsp;</button>
-  <ol class="breadcrumbs gt-separated dark hidden-xs">''');
-  var context3 = context0.navLinks;
-  for (var context4 in context3) {
-    buffer.writeln();
-    buffer.write('''
-    <li><a href="''');
-    buffer.write(context4.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
-    buffer.write('''</a></li>''');
-  }
-  var context5 = context0.navLinksWithGenerics;
-  for (var context6 in context5) {
-    buffer.writeln();
-    buffer.write('''
-    <li><a href="''');
-    buffer.write(context6.href);
-    buffer.write('''">''');
-    buffer.writeEscaped(context6.name);
-    if (context6.hasGenericParameters == true) {
-      buffer.write('''<span class="signature">''');
-      buffer.write(context6.genericParameters);
-      buffer.write('''</span>''');
-    }
-    buffer.write('''</a></li>''');
-  }
-  if (context0.hasHomepage != true) {
-    buffer.writeln();
-    buffer.write('''
-    <li class="self-crumb">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</li>''');
-  }
-  if (context0.hasHomepage == true) {
-    buffer.writeln();
-    buffer.write('''
-    <li><a href="''');
-    buffer.write(context0.homepage);
-    buffer.write('''">''');
-    buffer.write(context0.layoutTitle);
-    buffer.write('''</a></li>''');
-  }
-  buffer.writeln();
-  buffer.write('''
-  </ol>
-  <div class="self-name">''');
-  buffer.writeEscaped(context0.self.name);
-  buffer.write('''</div>
-  <form class="search navbar-right" role="search">
-    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
-  </form>
-</header>
-
-<main>
-''');
-
-  return buffer.toString();
-}
-
+        _i1.TopLevelPropertyTemplateData context0) =>
+    _deduplicated_lib_templates_html__footer_html(context0);
+String _renderTypedef_partial_head_0(_i1.TypedefTemplateData context0) =>
+    _deduplicated_lib_templates_html__head_html(context0);
 String _renderTypedef_partial_source_link_1(_i9.Typedef context1) =>
     _deduplicated_lib_templates_html__source_link_html(context1);
 String _renderTypedef_partial_feature_set_2(_i9.Typedef context1) =>
@@ -6592,36 +2913,121 @@ String _renderTypedef_partial_documentation_5(_i9.Typedef context1) =>
 String _renderTypedef_partial_source_code_6(_i9.Typedef context1) =>
     _deduplicated_lib_templates_html__source_code_html(context1);
 String _renderTypedef_partial_search_sidebar_7(
-    _i1.TypedefTemplateData context0) {
+        _i1.TypedefTemplateData context0) =>
+    _deduplicated_lib_templates_html__search_sidebar_html(context0);
+String _renderTypedef_partial_footer_8(_i1.TypedefTemplateData context0) =>
+    _deduplicated_lib_templates_html__footer_html(context0);
+String _deduplicated_lib_templates_html__head_html(
+    _i1.TemplateDataBase context0) {
   final buffer = StringBuffer();
-  buffer.write('''<header id="header-search-sidebar" class="hidden-l">
-  <form class="search-sidebar" role="search">
-    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
-  </form>
-</header>
-
-<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">''');
-  var context1 = context0.navLinks;
-  for (var context2 in context1) {
+  buffer.write('''<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">''');
+  if (context0.includeVersion == true) {
     buffer.writeln();
     buffer.write('''
-  <li><a href="''');
-    buffer.write(context2.href);
+  <meta name="generator" content="made with love by dartdoc ''');
+    buffer.writeEscaped(context0.version);
     buffer.write('''">''');
-    buffer.writeEscaped(context2.name);
-    buffer.write('''</a></li>''');
   }
-  var context3 = context0.navLinksWithGenerics;
+  buffer.writeln();
+  buffer.write('''
+  <meta name="description" content="''');
+  buffer.writeEscaped(context0.metaDescription);
+  buffer.write('''">
+  <title>''');
+  buffer.writeEscaped(context0.title);
+  buffer.write('''</title>''');
+  var context1 = context0.relCanonicalPrefix;
+  if (context1 != null) {
+    buffer.writeln();
+    buffer.write('''
+  <link rel="canonical" href="''');
+    buffer.write(context0.relCanonicalPrefix);
+    buffer.write('''/''');
+    buffer.write(context0.bareHref);
+    buffer.write('''">''');
+  }
+  buffer.writeln();
+  if (context0.useBaseHref == true) {
+    var context2 = context0.htmlBase;
+    buffer.writeln();
+    buffer.write('''
+  <!-- required because all the links are pseudo-absolute -->
+  <base href="''');
+    buffer.write(context0.htmlBase);
+    buffer.write('''">''');
+  }
+  buffer.write('\n\n  ');
+  buffer.writeln();
+  buffer.write('''
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  ''');
+  buffer.writeln();
+  buffer.write('''
+  <link rel="stylesheet" href="''');
+  if (context0.useBaseHref != true) {
+    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
+  }
+  buffer.write('''static-assets/github.css?v1">
+  <link rel="stylesheet" href="''');
+  if (context0.useBaseHref != true) {
+    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
+  }
+  buffer.write('''static-assets/styles.css?v1">
+  <link rel="icon" href="''');
+  if (context0.useBaseHref != true) {
+    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
+  }
+  buffer.write('''static-assets/favicon.png?v1">
+
+  ''');
+  buffer.write(context0.customHeader);
+  buffer.writeln();
+  buffer.write('''
+</head>
+
+''');
+  buffer.writeln();
+  buffer.write('''
+<body data-base-href="''');
+  buffer.write(context0.htmlBase);
+  buffer.write('''"
+      data-using-base-href="''');
+  buffer.write(context0.useBaseHref.toString());
+  buffer.write('''">
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <button id="sidenav-left-toggle" type="button">&nbsp;</button>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">''');
+  var context3 = context0.navLinks;
   for (var context4 in context3) {
     buffer.writeln();
     buffer.write('''
-  <li><a href="''');
+    <li><a href="''');
     buffer.write(context4.href);
     buffer.write('''">''');
     buffer.writeEscaped(context4.name);
-    if (context4.hasGenericParameters == true) {
+    buffer.write('''</a></li>''');
+  }
+  var context5 = context0.navLinksWithGenerics;
+  for (var context6 in context5) {
+    buffer.writeln();
+    buffer.write('''
+    <li><a href="''');
+    buffer.write(context6.href);
+    buffer.write('''">''');
+    buffer.writeEscaped(context6.name);
+    if (context6.hasGenericParameters == true) {
       buffer.write('''<span class="signature">''');
-      buffer.write(context4.genericParameters);
+      buffer.write(context6.genericParameters);
       buffer.write('''</span>''');
     }
     buffer.write('''</a></li>''');
@@ -6629,14 +3035,14 @@ String _renderTypedef_partial_search_sidebar_7(
   if (context0.hasHomepage != true) {
     buffer.writeln();
     buffer.write('''
-  <li class="self-crumb">''');
+    <li class="self-crumb">''');
     buffer.write(context0.layoutTitle);
     buffer.write('''</li>''');
   }
   if (context0.hasHomepage == true) {
     buffer.writeln();
     buffer.write('''
-  <li><a href="''');
+    <li><a href="''');
     buffer.write(context0.homepage);
     buffer.write('''">''');
     buffer.write(context0.layoutTitle);
@@ -6644,58 +3050,16 @@ String _renderTypedef_partial_search_sidebar_7(
   }
   buffer.writeln();
   buffer.write('''
-</ol>
+  </ol>
+  <div class="self-name">''');
+  buffer.writeEscaped(context0.self.name);
+  buffer.write('''</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
 
-''');
-
-  return buffer.toString();
-}
-
-String _renderTypedef_partial_footer_8(_i1.TypedefTemplateData context0) {
-  final buffer = StringBuffer();
-  buffer.write('''</main>
-
-<footer>
-  <span class="no-break">
-    ''');
-  buffer.writeEscaped(context0.defaultPackage.name);
-  if (context0.hasFooterVersion == true) {
-    buffer.write('\n      ');
-    buffer.writeEscaped(context0.defaultPackage.version);
-  }
-  buffer.writeln();
-  buffer.write('''
-  </span>
-
-  ''');
-  buffer.write(context0.customInnerFooter);
-  buffer.writeln();
-  buffer.write('''
-</footer>
-
-''');
-  buffer.writeln();
-  buffer.writeln();
-  buffer.write('''
-<script src="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/highlight.pack.js?v1"></script>
-<script src="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/script.js?v1"></script>
-
-''');
-  buffer.write(context0.customFooter);
-  buffer.writeln();
-  buffer.write('''
-
-</body>
-
-</html>
+<main>
 ''');
 
   return buffer.toString();
@@ -7270,6 +3634,182 @@ String __deduplicated_lib_templates_html__type_html_partial_features_1(
   return buffer.toString();
 }
 
+String _deduplicated_lib_templates_html__search_sidebar_html(
+    _i1.TemplateDataBase context0) {
+  final buffer = StringBuffer();
+  buffer.write('''<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">''');
+  var context1 = context0.navLinks;
+  for (var context2 in context1) {
+    buffer.writeln();
+    buffer.write('''
+  <li><a href="''');
+    buffer.write(context2.href);
+    buffer.write('''">''');
+    buffer.writeEscaped(context2.name);
+    buffer.write('''</a></li>''');
+  }
+  var context3 = context0.navLinksWithGenerics;
+  for (var context4 in context3) {
+    buffer.writeln();
+    buffer.write('''
+  <li><a href="''');
+    buffer.write(context4.href);
+    buffer.write('''">''');
+    buffer.writeEscaped(context4.name);
+    if (context4.hasGenericParameters == true) {
+      buffer.write('''<span class="signature">''');
+      buffer.write(context4.genericParameters);
+      buffer.write('''</span>''');
+    }
+    buffer.write('''</a></li>''');
+  }
+  if (context0.hasHomepage != true) {
+    buffer.writeln();
+    buffer.write('''
+  <li class="self-crumb">''');
+    buffer.write(context0.layoutTitle);
+    buffer.write('''</li>''');
+  }
+  if (context0.hasHomepage == true) {
+    buffer.writeln();
+    buffer.write('''
+  <li><a href="''');
+    buffer.write(context0.homepage);
+    buffer.write('''">''');
+    buffer.write(context0.layoutTitle);
+    buffer.write('''</a></li>''');
+  }
+  buffer.writeln();
+  buffer.write('''
+</ol>
+
+''');
+
+  return buffer.toString();
+}
+
+String _deduplicated_lib_templates_html__packages_html(
+    _i1.TemplateDataBase context0) {
+  final buffer = StringBuffer();
+  buffer.write('''<ol>''');
+  var context1 = context0.localPackages;
+  for (var context2 in context1) {
+    if (context2.isFirstPackage == true) {
+      if (context2.hasDocumentedCategories == true) {
+        buffer.writeln();
+        buffer.write('''
+      <li class="section-title">Topics</li>''');
+        var context3 = context2.documentedCategoriesSorted;
+        for (var context4 in context3) {
+          buffer.writeln();
+          buffer.write('''
+        <li>''');
+          buffer.write(context4.linkedName);
+          buffer.write('''</li>''');
+        }
+      }
+      buffer.writeln();
+      buffer.write('''
+      <li class="section-title">Libraries</li>''');
+    }
+    if (context2.isFirstPackage != true) {
+      buffer.writeln();
+      buffer.write('''
+      <li class="section-title">''');
+      buffer.writeEscaped(context2.name);
+      buffer.write('''</li>''');
+    }
+    var context5 = context2.defaultCategory;
+    var context6 = context5.publicLibrariesSorted;
+    for (var context7 in context6) {
+      buffer.writeln();
+      buffer.write('''
+      <li>''');
+      buffer.write(context7.linkedName);
+      buffer.write('''</li>''');
+    }
+    var context8 = context2.categoriesWithPublicLibraries;
+    for (var context9 in context8) {
+      buffer.writeln();
+      buffer.write('''
+      <li class="section-subtitle">''');
+      buffer.writeEscaped(context9.name);
+      buffer.write('''</li>''');
+      var context10 = context9.publicLibrariesSorted;
+      for (var context11 in context10) {
+        buffer.writeln();
+        buffer.write('''
+        <li class="section-subitem">''');
+        buffer.write(context11.linkedName);
+        buffer.write('''</li>''');
+      }
+    }
+  }
+  buffer.writeln();
+  buffer.write('''
+</ol>
+''');
+
+  return buffer.toString();
+}
+
+String _deduplicated_lib_templates_html__footer_html(
+    _i1.TemplateDataBase context0) {
+  final buffer = StringBuffer();
+  buffer.write('''</main>
+
+<footer>
+  <span class="no-break">
+    ''');
+  buffer.writeEscaped(context0.defaultPackage.name);
+  if (context0.hasFooterVersion == true) {
+    buffer.write('\n      ');
+    buffer.writeEscaped(context0.defaultPackage.version);
+  }
+  buffer.writeln();
+  buffer.write('''
+  </span>
+
+  ''');
+  buffer.write(context0.customInnerFooter);
+  buffer.writeln();
+  buffer.write('''
+</footer>
+
+''');
+  buffer.writeln();
+  buffer.writeln();
+  buffer.write('''
+<script src="''');
+  if (context0.useBaseHref != true) {
+    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
+  }
+  buffer.write('''static-assets/highlight.pack.js?v1"></script>
+<script src="''');
+  if (context0.useBaseHref != true) {
+    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
+  }
+  buffer.write('''static-assets/script.js?v1"></script>
+
+''');
+  buffer.write(context0.customFooter);
+  buffer.writeln();
+  buffer.write('''
+
+</body>
+
+</html>
+''');
+
+  return buffer.toString();
+}
+
 String _deduplicated_lib_templates_html__source_link_html(
     _i18.ModelElement context0) {
   final buffer = StringBuffer();
@@ -7301,7 +3841,7 @@ String _deduplicated_lib_templates_html__feature_set_html(
 }
 
 String _deduplicated_lib_templates_html__super_chain_html(
-    _i20.InheritingContainer context0) {
+    _i20.TypeImplementing context0) {
   final buffer = StringBuffer();
   if (context0.hasPublicSuperChainReversed == true) {
     buffer.writeln();
@@ -7335,50 +3875,29 @@ String _deduplicated_lib_templates_html__super_chain_html(
   return buffer.toString();
 }
 
-String _deduplicated_lib_templates_html__constructors_html(
-    _i20.InheritingContainer context0) {
+String _deduplicated_lib_templates_html__interfaces_html(
+    _i20.TypeImplementing context0) {
   final buffer = StringBuffer();
-  if (context0.hasPublicConstructors == true) {
+  if (context0.hasPublicInterfaces == true) {
     buffer.writeln();
     buffer.write('''
-  <section class="summary offset-anchor" id="constructors">
-    <h2>Constructors</h2>
-
-    <dl class="constructor-summary-list">''');
-    var context1 = context0.publicConstructorsSorted;
+<dt>Implemented types</dt>
+<dd>
+    <ul class="comma-separated ''');
+    buffer.writeEscaped(context0.relationshipsClass);
+    buffer.write('''">''');
+    var context1 = context0.publicInterfaces;
     for (var context2 in context1) {
       buffer.writeln();
       buffer.write('''
-        <dt id="''');
-      buffer.writeEscaped(context2.htmlId);
-      buffer.write('''" class="callable">
-          <span class="name">''');
+        <li>''');
       buffer.write(context2.linkedName);
-      buffer.write('''</span><span class="signature">(''');
-      buffer.write(context2.linkedParams);
-      buffer.write(''')</span>
-        </dt>
-        <dd>
-          ''');
-      buffer.write(context2.oneLineDoc);
-      if (context2.isConst == true) {
-        buffer.writeln();
-        buffer.write('''
-            <div class="constructor-modifier features">const</div>''');
-      }
-      if (context2.isFactory == true) {
-        buffer.writeln();
-        buffer.write('''
-            <div class="constructor-modifier features">factory</div>''');
-      }
-      buffer.writeln();
-      buffer.write('''
-        </dd>''');
+      buffer.write('''</li>''');
     }
     buffer.writeln();
     buffer.write('''
-    </dl>
-  </section>''');
+    </ul>
+</dd>''');
   }
 
   return buffer.toString();
