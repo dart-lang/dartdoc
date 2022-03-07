@@ -97,11 +97,23 @@ enum E<T> implements C<T> {
   /// An operator.
   bool operator >(E other) => false;
 
+  /// A field.
+  int f1 = 0;
+
   /// A static method.
   static void s1() {}
 
   /// A constant.
   static const c1 = 1;
+
+  /// A static field.
+  static final int sf1 = 2;
+
+  /// A static getter.
+  static int get gs1 => 3;
+
+  /// A static setter.
+  static void set gs1(int value) {}
 }
 '''),
         ],
@@ -162,7 +174,17 @@ enum E<T> implements C<T> {
           containsAllInOrder([
             matches('<h2>Properties</h2>'),
             matches('<a href="../lib/E/index.html">index</a>'),
-            // TODO(srawlins): This should have docs.
+            matches('The integer index of this enum value.'),
+          ]));
+    });
+
+    test('enum page contains other properties', () async {
+      expect(
+          eLines,
+          containsAllInOrder([
+            matches('<h2>Properties</h2>'),
+            matches('<a href="../lib/E/f1.html">f1</a>'),
+            matches('A field.'),
           ]));
     });
 
@@ -183,6 +205,26 @@ enum E<T> implements C<T> {
             matches('<h2>Static Methods</h2>'),
             matches('<a href="../lib/E/s1.html">s1</a>'),
             matches('A static method.'),
+          ]));
+    });
+
+    test('enum page contains static fields', () async {
+      expect(
+          eLines,
+          containsAllInOrder([
+            matches('<h2>Static Properties</h2>'),
+            matches('<a href="../lib/E/sf1.html">sf1</a>'),
+            matches('A static field.'),
+          ]));
+    });
+
+    test('enum page contains static getter/setter pairs', () async {
+      expect(
+          eLines,
+          containsAllInOrder([
+            matches('<h2>Static Properties</h2>'),
+            matches('<a href="../lib/E/gs1.html">gs1</a>'),
+            matches('A static getter.'),
           ]));
     });
 

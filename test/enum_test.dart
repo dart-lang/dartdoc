@@ -386,6 +386,69 @@ enum E {
       expect(method1.documentationComment, '/// Doc comment.');
     });
 
+    test("an enhanced enum's static fields are documented", () async {
+      var library = await bootPackageWithLibrary('''
+enum E {
+  one, two, three;
+
+  /// Doc comment.
+  static int field1 = 1;
+}
+''');
+      var method1 = library.enums.named('E').staticFields.named('field1');
+
+      expect(method1.isInherited, false);
+      expect(method1.isStatic, true);
+      expect(method1.isDocumented, true);
+      expect(
+        method1.linkedName,
+        '<a href="$linkPrefix/E/field1.html">field1</a>',
+      );
+      expect(method1.documentationComment, '/// Doc comment.');
+    });
+
+    test("an enhanced enum's static getters are documented", () async {
+      var library = await bootPackageWithLibrary('''
+enum E {
+  one, two, three;
+
+  /// Doc comment.
+  static int get getter1 => 1;
+}
+''');
+      var method1 = library.enums.named('E').staticFields.named('getter1');
+
+      expect(method1.isInherited, false);
+      expect(method1.isStatic, true);
+      expect(method1.isDocumented, true);
+      expect(
+        method1.linkedName,
+        '<a href="$linkPrefix/E/getter1.html">getter1</a>',
+      );
+      expect(method1.documentationComment, 'Doc comment.');
+    });
+
+    test("an enhanced enum's instance fields are documented", () async {
+      var library = await bootPackageWithLibrary('''
+enum E {
+  one, two, three;
+
+  /// Doc comment.
+  final int field1 = 1;
+}
+''');
+      var method1 = library.enums.named('E').instanceFields.named('field1');
+
+      expect(method1.isInherited, false);
+      expect(method1.isStatic, false);
+      expect(method1.isDocumented, true);
+      expect(
+        method1.linkedName,
+        '<a href="$linkPrefix/E/field1.html">field1</a>',
+      );
+      expect(method1.documentationComment, '/// Doc comment.');
+    });
+
     test("an enhanced enum's constructors are documented", () async {
       var library = await bootPackageWithLibrary('''
 enum E {
@@ -457,14 +520,12 @@ class C {}
     // TODO(srawlins): Add rendering tests.
     // * Add tests for rendered supertypes HTML.
     // * Add tests for rendered mixins HTML.
-    // * Add tests for rendered static methods, static fields.
-    // * Add tests for rendered fields.
     // * Add tests for rendered getters, setters.
     // * Add tests for rendered field pages.
     // * Add tests for rendered generic enum values.
 
     // TODO(srawlins): Add referencing tests (`/// [Enum.method]` etc.)
     // * Add tests for referencing enum static methods, static fields.
-    // * Add tests for referencing enum getters, setters, operators, methods.
+    // * Add tests for referencing enum getters, setters, methods.
   }, skip: !enhancedEnumsAllowed);
 }
