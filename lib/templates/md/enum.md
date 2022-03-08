@@ -13,6 +13,7 @@
 {{ #hasModifiers }}
 {{ >super_chain }}
 {{ >interfaces }}
+{{ >mixed_in_types }}
 
 {{ #hasAnnotations }}
 **Annotations**
