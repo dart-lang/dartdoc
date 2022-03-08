@@ -3119,12 +3119,12 @@ class _Renderer_Container extends RendererBase<Container> {
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.isClassOrEnum == true,
                 ),
-                'isClassOrExtension': Property(
-                  getValue: (CT_ c) => c.isClassOrExtension,
+                'isClassOrEnumOrExtension': Property(
+                  getValue: (CT_ c) => c.isClassOrEnumOrExtension,
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isClassOrExtension == true,
+                  getBool: (CT_ c) => c.isClassOrEnumOrExtension == true,
                 ),
                 'isEnum': Property(
                   getValue: (CT_ c) => c.isEnum,

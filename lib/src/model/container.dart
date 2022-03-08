@@ -48,17 +48,25 @@ abstract class Container extends ModelElement
   @override
   bool get hasParameters => false;
 
-  /// Is this a class (but not an enum)?
+  /// Whether this a class or mixin, but not an enum.
   bool get isClass =>
       element is ClassElement && !(element as ClassElement).isEnum;
   bool get isExtension => element is ExtensionElement;
 
+  /// Whether this is a class, an enum, or an extension.
+  ///
   /// For templates, classes and extensions have much in common despite
   /// differing underlying implementations in the analyzer.
-  bool get isClassOrExtension => isClass || isExtension;
+  bool get isClassOrEnumOrExtension => element is ClassElement || isExtension;
+
+  /// Whether this is an enum.
   bool get isEnum =>
       element is ClassElement && (element as ClassElement).isEnum;
-  bool get isClassOrEnum => isClass || isEnum;
+
+  /// Whether this is a class or an enum.
+  bool get isClassOrEnum => element is ClassElement;
+
+  /// Whether this is a mixin.
   bool get isMixin =>
       element is ClassElement && (element as ClassElement).isMixin;
 

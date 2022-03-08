@@ -1558,7 +1558,7 @@ String renderSidebarForContainer<T extends _i3.Documentable>(
   buffer.write('''<ol>''');
   var context1 = context0.container;
   buffer.writeln();
-  if (context1.isClass == true) {
+  if (context1.isClassOrEnum == true) {
     if (context1.hasPublicConstructors == true) {
       buffer.writeln();
       buffer.write('''
@@ -1727,7 +1727,7 @@ String renderSidebarForContainer<T extends _i3.Documentable>(
     }
   }
   buffer.writeln();
-  if (context1.isClassOrExtension == true) {
+  if (context1.isClassOrEnumOrExtension == true) {
     if (context1.hasPublicVariableStaticFields == true) {
       buffer.writeln();
       buffer.write('''
@@ -1760,19 +1760,21 @@ String renderSidebarForContainer<T extends _i3.Documentable>(
       }
     }
     buffer.writeln();
-    if (context1.hasPublicConstantFields == true) {
-      buffer.writeln();
-      buffer.write('''
-    <li class="section-title"><a href="''');
-      buffer.write(context1.href);
-      buffer.write('''#constants">Constants</a></li>''');
-      var context22 = context1.publicConstantFieldsSorted;
-      for (var context23 in context22) {
+    if (context1.isEnum != true) {
+      if (context1.hasPublicConstantFields == true) {
         buffer.writeln();
         buffer.write('''
+    <li class="section-title"><a href="''');
+        buffer.write(context1.href);
+        buffer.write('''#constants">Constants</a></li>''');
+        var context22 = context1.publicConstantFieldsSorted;
+        for (var context23 in context22) {
+          buffer.writeln();
+          buffer.write('''
     <li>''');
-        buffer.write(context23.linkedName);
-        buffer.write('''</li>''');
+          buffer.write(context23.linkedName);
+          buffer.write('''</li>''');
+        }
       }
     }
   }
