@@ -4522,6 +4522,7 @@ class _Renderer_Enum extends RendererBase<Enum> {
                 ..._Renderer_InheritingContainer.propertyMap<CT_>(),
                 ..._Renderer_Constructable.propertyMap<CT_>(),
                 ..._Renderer_TypeImplementing.propertyMap<CT_>(),
+                ..._Renderer_MixedInTypes.propertyMap<CT_>(),
                 'allModelElements': Property(
                   getValue: (CT_ c) => c.allModelElements,
                   renderVariable: (CT_ c, Property<CT_> self,

@@ -85,7 +85,9 @@ analyzer:
           d.file('lib.dart', '''
 class C<T> {}
 
-enum E<T> implements C<T> {
+mixin M<T> {}
+
+enum E<T> with M<T> implements C<T> {
   /// Doc comment for [one].
   one,
 
@@ -146,6 +148,17 @@ enum E<T> implements C<T> {
               '<span class="type-parameter">T</span>&gt;</span>'),
         ]),
       );
+    });
+
+    test('enum page contains mixed-in types', () async {
+      expect(
+          eLines,
+          containsAllInOrder([
+            matches('<dt>Mixed in types</dt>'),
+            matches('<a href="../lib/M-mixin.html">M</a>'
+                '<span class="signature">&lt;<wbr>'
+                '<span class="type-parameter">T</span>&gt;</span>'),
+          ]));
     });
 
     test("enum page contains the 'values' constant", () async {
@@ -257,5 +270,11 @@ enum E<T> implements C<T> {
             matches('An operator.'),
           ]));
     });
+
+    // TODO(srawlins): Add rendering tests.
+    // * Add tests for rendered supertype (Enum) HTML.
+    // * Add tests for rendered getters, setters.
+    // * Add tests for rendered field pages.
+    // * Add tests for rendered generic enum values.
   }, skip: !enhancedEnumsAllowed);
 }

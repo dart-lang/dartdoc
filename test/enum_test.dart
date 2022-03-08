@@ -236,7 +236,7 @@ enum E {
     });
   });
 
-  group('enhanced enums', () {
+  group('an enhanced enum', () {
     const placeholder = '%%__HTMLBASE_dartdoc_internal__%%';
     const linkPrefix = '$placeholder$libraryName';
 
@@ -260,7 +260,7 @@ analyzer:
       );
     });
 
-    test('an enum is presented with a linked name', () async {
+    test('is presented with a linked name', () async {
       var library = await bootPackageWithLibrary('''
 class C<T> {}
 
@@ -271,7 +271,7 @@ enum E<T> implements C<T> { one, two, three; }
       expect(eEnum.linkedName, '<a href="$linkPrefix/E.html">E</a>');
     });
 
-    test('a generic enum is presented with linked type parameters', () async {
+    test('which is generic is presented with linked type parameters', () async {
       var library = await bootPackageWithLibrary('''
 class C<T> {}
 
@@ -285,7 +285,7 @@ enum E<T> implements C<T> { one, two, three; }
       );
     });
 
-    test("an enhanced enum's methods are documented", () async {
+    test('can have methods which are documented', () async {
       var library = await bootPackageWithLibrary('''
 enum E {
   one, two, three;
@@ -308,7 +308,7 @@ enum E {
       expect(method1.documentationComment, '/// Doc comment.');
     });
 
-    test("an enhanced enum's operators are documented", () async {
+    test('can have operators which are documented', () async {
       var library = await bootPackageWithLibrary('''
 enum E {
   one, two, three;
@@ -350,7 +350,7 @@ enum E {
       expect(lessThan.documentationComment, '/// Less than.');
     });
 
-    test('an enum is presented with linked interfaces', () async {
+    test('is presented with linked interfaces', () async {
       var library = await bootPackageWithLibrary('''
 class C<T> {}
 class D {}
@@ -361,6 +361,19 @@ enum E<T> implements C<T>, D { one, two, three; }
 
       expect(eEnum.interfaces, hasLength(2));
       expect(eEnum.interfaces.map((i) => i.name), equals(['C', 'D']));
+    });
+
+    test('is presented with linked mixed-in types', () async {
+      var library = await bootPackageWithLibrary('''
+mixin M<T> {}
+mixin N {}
+
+enum E<T> with M<T>, N { one, two, three; }
+''');
+      var eEnum = library.enums.named('E');
+
+      expect(eEnum.mixedInTypes, hasLength(2));
+      expect(eEnum.mixedInTypes.map((i) => i.name), equals(['M', 'N']));
     });
 
     test("an enhanced enum's static methods are documented", () async {
@@ -516,13 +529,6 @@ class C {}
         '<p>Reference to <a href="$linkPrefix/E/E.named.html">E.named</a>.</p>',
       );
     });
-
-    // TODO(srawlins): Add rendering tests.
-    // * Add tests for rendered supertypes HTML.
-    // * Add tests for rendered mixins HTML.
-    // * Add tests for rendered getters, setters.
-    // * Add tests for rendered field pages.
-    // * Add tests for rendered generic enum values.
 
     // TODO(srawlins): Add referencing tests (`/// [Enum.method]` etc.)
     // * Add tests for referencing enum static methods, static fields.

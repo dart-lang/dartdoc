@@ -8,7 +8,8 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as model_utils;
 import 'package:dartdoc/src/render/enum_field_renderer.dart';
 
-class Enum extends InheritingContainer with Constructable, TypeImplementing {
+class Enum extends InheritingContainer
+    with Constructable, TypeImplementing, MixedInTypes {
   Enum(ClassElement element, Library? library, PackageGraph packageGraph)
       : super(element, library, packageGraph);
 
@@ -21,6 +22,8 @@ class Enum extends InheritingContainer with Constructable, TypeImplementing {
   @override
   late final List<InheritingContainer?> inheritanceChain = [
     this,
+    for (var container in mixedInTypes.reversed.modelElements)
+      ...container.inheritanceChain,
     for (var container in superChain.modelElements)
       ...container.inheritanceChain,
     ...interfaces.expandInheritanceChain,

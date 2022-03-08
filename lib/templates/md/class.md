@@ -14,14 +14,7 @@
 {{#hasModifiers}}
 {{ >super_chain }}
 {{ >interfaces }}
-
-{{#hasPublicMixedInTypes}}
-**Mixed in types**
-
-{{#publicMixedInTypes}}
-- {{{linkedName}}}
-{{/publicMixedInTypes}}
-{{/hasPublicMixedInTypes}}
+{{ >mixed_in_types }}
 
 {{#hasPublicImplementors}}
 **Implementers**

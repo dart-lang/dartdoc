@@ -13,15 +13,7 @@
       <dl class="dl-horizontal">
         {{ >super_chain }}
         {{ >interfaces }}
-
-        {{#hasPublicMixedInTypes}}
-        <dt>Mixed in types</dt>
-        <dd><ul class="comma-separated clazz-relationships">
-          {{#publicMixedInTypes}}
-          <li>{{{linkedName}}}</li>
-          {{/publicMixedInTypes}}
-        </ul></dd>
-        {{/hasPublicMixedInTypes}}
+        {{ >mixed_in_types }}
 
         {{#hasPublicImplementors}}
         <dt>Implementers</dt>
