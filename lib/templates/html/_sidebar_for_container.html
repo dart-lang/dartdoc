@@ -1,14 +1,14 @@
 <ol>
     {{#container}}
 
-    {{#isClass}}
-    {{#hasPublicConstructors}}
-    <li class="section-title"><a href="{{{href}}}#constructors">Constructors</a></li>
-    {{#publicConstructorsSorted}}
-    <li><a{{#isDeprecated}} class="deprecated"{{/isDeprecated}} href="{{{href}}}">{{shortName}}</a></li>
-    {{/publicConstructorsSorted}}
-    {{/hasPublicConstructors}}
-    {{/isClass}}
+    {{ #isClassOrEnum }}
+      {{ #hasPublicConstructors }}
+        <li class="section-title"><a href="{{{ href }}}#constructors">Constructors</a></li>
+        {{ #publicConstructorsSorted }}
+          <li><a{{ #isDeprecated }} class="deprecated"{{ /isDeprecated }} href="{{{ href }}}">{{ shortName }}</a></li>
+        {{ /publicConstructorsSorted }}
+      {{ /hasPublicConstructors }}
+    {{ /isClassOrEnum }}
 
     {{#isEnum}}
     {{#hasPublicConstantFields}}
@@ -68,27 +68,29 @@
     {{/hasPublicInstanceOperators}}
     {{/isExtension}}
 
-    {{#isClassOrExtension}}
-    {{#hasPublicVariableStaticFields}}
-    <li class="section-title"><a href="{{{href}}}#static-properties">Static properties</a></li>
-    {{#publicVariableStaticFieldsSorted}}
-    <li>{{{ linkedName }}}</li>
-    {{/publicVariableStaticFieldsSorted}}
-    {{/hasPublicVariableStaticFields}}
+    {{ #isClassOrEnumOrExtension }}
+      {{ #hasPublicVariableStaticFields }}
+        <li class="section-title"><a href="{{{ href }}}#static-properties">Static properties</a></li>
+        {{ #publicVariableStaticFieldsSorted }}
+          <li>{{{ linkedName }}}</li>
+        {{ /publicVariableStaticFieldsSorted }}
+      {{ /hasPublicVariableStaticFields }}
 
-    {{#hasPublicStaticMethods}}
-    <li class="section-title"><a href="{{{href}}}#static-methods">Static methods</a></li>
-    {{#publicStaticMethodsSorted}}
-    <li>{{{ linkedName }}}</li>
-    {{/publicStaticMethodsSorted}}
-    {{/hasPublicStaticMethods}}
+      {{ #hasPublicStaticMethods }}
+        <li class="section-title"><a href="{{{ href }}}#static-methods">Static methods</a></li>
+        {{ #publicStaticMethodsSorted }}
+          <li>{{{ linkedName }}}</li>
+        {{ /publicStaticMethodsSorted }}
+      {{ /hasPublicStaticMethods }}
 
-    {{#hasPublicConstantFields}}
-    <li class="section-title"><a href="{{{href}}}#constants">Constants</a></li>
-    {{#publicConstantFieldsSorted}}
-    <li>{{{linkedName}}}</li>
-    {{/publicConstantFieldsSorted}}
-    {{/hasPublicConstantFields}}
-    {{/isClassOrExtension}}
-    {{/container}}
+      {{ ^isEnum }}
+        {{ #hasPublicConstantFields }}
+          <li class="section-title"><a href="{{{ href }}}#constants">Constants</a></li>
+          {{ #publicConstantFieldsSorted }}
+            <li>{{{ linkedName }}}</li>
+          {{ /publicConstantFieldsSorted }}
+        {{ /hasPublicConstantFields }}
+      {{ /isEnum }}
+    {{ /isClassOrEnumOrExtension }}
+    {{ /container }}
 </ol>
