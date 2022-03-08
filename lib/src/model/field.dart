@@ -48,7 +48,7 @@ class Field extends ModelElement
       if (name == 'values') {
         return 'A constant List of the values in this enum, in order of their declaration.';
       } else if (name == 'index') {
-        return 'The integer index of this enum.';
+        return 'The integer index of this enum value.';
       }
     }
 
