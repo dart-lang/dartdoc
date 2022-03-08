@@ -271,6 +271,86 @@ enum E<T> with M<T> implements C<T> {
           ]));
     });
 
+    test('enum sidebar contains constructors', () async {
+      expect(
+          eLines,
+          containsAllInOrder([
+            matches('<div id="dartdoc-sidebar-right"'),
+            matches('<a href="../lib/E.html#constructors">Constructors</a>'),
+            matches('<a href="../lib/E/E.html">E</a>'),
+          ]));
+    });
+
+    test('enum sidebar contains constants', () async {
+      expect(
+          eLines,
+          containsAllInOrder([
+            matches('<div id="dartdoc-sidebar-right"'),
+            matches('<a href="../lib/E.html#constants">Constants</a>'),
+            matches('<a href="../lib/E/c1-constant.html">c1</a>'),
+            // TODO(srawlins): Linkify this.
+            matches('<li>one</li>'),
+            // TODO(srawlins): Move this to static properties.
+            matches('<a href="../lib/E/values-constant.html">values</a>'),
+          ]),
+          reason: eLines.join('\n'));
+    });
+
+    test('enum sidebar contains properties', () async {
+      expect(
+          eLines,
+          containsAllInOrder([
+            matches('<div id="dartdoc-sidebar-right"'),
+            matches(
+                '<a href="../lib/E.html#instance-properties">Properties</a>'),
+            matches('<a href="../lib/E/f1.html">f1</a>'),
+            matches('<a href="../lib/E/index.html">index</a>'),
+          ]));
+    });
+
+    test('enum sidebar contains methods', () async {
+      expect(
+          eLines,
+          containsAllInOrder([
+            matches('<div id="dartdoc-sidebar-right"'),
+            matches('<a href="../lib/E.html#instance-methods">Methods</a>'),
+            matches('<a href="../lib/E/m1.html">m1</a>'),
+          ]));
+    });
+
+    test('enum sidebar contains operators', () async {
+      expect(
+          eLines,
+          containsAllInOrder([
+            matches('<div id="dartdoc-sidebar-right"'),
+            matches('<a href="../lib/E.html#operators">Operators</a>'),
+            matches('<a href="../lib/E/operator_greater.html">operator ></a>'),
+          ]));
+    });
+
+    test('enum sidebar contains static properties', () async {
+      expect(
+          eLines,
+          containsAllInOrder([
+            matches('<div id="dartdoc-sidebar-right"'),
+            matches(
+                '<a href="../lib/E.html#static-properties">Static properties</a>'),
+            matches('<a href="../lib/E/gs1.html">gs1</a>'),
+            matches('<a href="../lib/E/sf1.html">sf1</a>'),
+          ]));
+    });
+
+    test('enum sidebar contains static methods', () async {
+      expect(
+          eLines,
+          containsAllInOrder([
+            matches('<div id="dartdoc-sidebar-right"'),
+            matches(
+                '<a href="../lib/E.html#static-methods">Static methods</a>'),
+            matches('<a href="../lib/E/s1.html">s1</a>'),
+          ]));
+    });
+
     // TODO(srawlins): Add rendering tests.
     // * Add tests for rendered supertype (Enum) HTML.
     // * Add tests for rendered getters, setters.

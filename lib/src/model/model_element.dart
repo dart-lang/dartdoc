@@ -180,7 +180,12 @@ abstract class ModelElement extends Canonicalization
     if (e is FieldElement) {
       if (enclosingContainer == null) {
         if (e.isEnumConstant) {
-          var index = e.computeConstantValue()!.getField('index')!.toIntValue();
+          var constantValue = e.computeConstantValue();
+          if (constantValue == null) {
+            throw StateError(
+                'Enum $e (${e.runtimeType}) does not have a constant value.');
+          }
+          var index = constantValue.getField('index')!.toIntValue();
           newModelElement =
               EnumField.forConstant(index, e, library, packageGraph, getter);
         } else if (e.enclosingElement is ExtensionElement) {
@@ -374,7 +379,7 @@ abstract class ModelElement extends Canonicalization
       return Parameter(e, library, packageGraph,
           originalMember: originalMember as ParameterMember?);
     }
-    throw 'Unknown type ${e.runtimeType}';
+    throw UnimplementedError('Unknown type ${e.runtimeType}');
   }
 
   // Stub for mustache, which would otherwise search enclosing elements to find
