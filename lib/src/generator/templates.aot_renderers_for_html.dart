@@ -1562,14 +1562,14 @@ String renderSidebarForContainer<T extends _i3.Documentable>(
     if (context1.hasPublicConstructors == true) {
       buffer.writeln();
       buffer.write('''
-    <li class="section-title"><a href="''');
+        <li class="section-title"><a href="''');
       buffer.write(context1.href);
       buffer.write('''#constructors">Constructors</a></li>''');
       var context2 = context1.publicConstructorsSorted;
       for (var context3 in context2) {
         buffer.writeln();
         buffer.write('''
-    <li><a''');
+          <li><a''');
         if (context3.isDeprecated == true) {
           buffer.write(''' class="deprecated"''');
         }
@@ -1731,14 +1731,14 @@ String renderSidebarForContainer<T extends _i3.Documentable>(
     if (context1.hasPublicVariableStaticFields == true) {
       buffer.writeln();
       buffer.write('''
-    <li class="section-title"><a href="''');
+        <li class="section-title"><a href="''');
       buffer.write(context1.href);
       buffer.write('''#static-properties">Static properties</a></li>''');
       var context18 = context1.publicVariableStaticFieldsSorted;
       for (var context19 in context18) {
         buffer.writeln();
         buffer.write('''
-    <li>''');
+          <li>''');
         buffer.write(context19.linkedName);
         buffer.write('''</li>''');
       }
@@ -1747,14 +1747,14 @@ String renderSidebarForContainer<T extends _i3.Documentable>(
     if (context1.hasPublicStaticMethods == true) {
       buffer.writeln();
       buffer.write('''
-    <li class="section-title"><a href="''');
+        <li class="section-title"><a href="''');
       buffer.write(context1.href);
       buffer.write('''#static-methods">Static methods</a></li>''');
       var context20 = context1.publicStaticMethodsSorted;
       for (var context21 in context20) {
         buffer.writeln();
         buffer.write('''
-    <li>''');
+          <li>''');
         buffer.write(context21.linkedName);
         buffer.write('''</li>''');
       }
@@ -1764,14 +1764,14 @@ String renderSidebarForContainer<T extends _i3.Documentable>(
       if (context1.hasPublicConstantFields == true) {
         buffer.writeln();
         buffer.write('''
-    <li class="section-title"><a href="''');
+          <li class="section-title"><a href="''');
         buffer.write(context1.href);
         buffer.write('''#constants">Constants</a></li>''');
         var context22 = context1.publicConstantFieldsSorted;
         for (var context23 in context22) {
           buffer.writeln();
           buffer.write('''
-    <li>''');
+            <li>''');
           buffer.write(context23.linkedName);
           buffer.write('''</li>''');
         }
