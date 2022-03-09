@@ -139,10 +139,8 @@ abstract class Container extends ModelElement
   Iterable<Operator> get publicInstanceOperators =>
       model_utils.filterNonPublic(instanceOperators);
 
-  List<Operator>? _publicInstanceOperatorsSorted;
-  List<Operator> get publicInstanceOperatorsSorted =>
-      _publicInstanceOperatorsSorted ??= publicInstanceOperators.toList()
-        ..sort(byName);
+  late final List<Operator> publicInstanceOperatorsSorted =
+      publicInstanceOperators.toList()..sort(byName);
 
   /// Fields fully declared in this [Container].
   Iterable<Field>? get declaredFields;
@@ -160,8 +158,7 @@ abstract class Container extends ModelElement
   @nonVirtual
   bool get hasPublicInstanceFields => publicInstanceFields.isNotEmpty;
 
-  List<Field>? _publicInstanceFieldsSorted;
-  List<Field> get publicInstanceFieldsSorted => _publicInstanceFieldsSorted ??=
+  late final List<Field> publicInstanceFieldsSorted =
       publicInstanceFields.toList()..sort(byName);
 
   Iterable<Field> get constantFields => declaredFields!.where((f) => f.isConst);
@@ -184,11 +181,16 @@ abstract class Container extends ModelElement
   /// See [Inheritable.canonicalEnclosingContainer].
   bool containsElement(Element? element) => allElements.contains(element);
 
-  Set<Element?>? _allElements;
-  Set<Element?> get allElements =>
-      _allElements ??= allModelElements.map((e) => e.element).toSet();
+  late final Set<Element?> allElements =
+      allModelElements.map((e) => e.element).toSet();
 
-  Map<String?, List<ModelElement>>? _membersByName;
+  late final Map<String?, List<ModelElement>> _membersByName = () {
+    var membersByName = <String?, List<ModelElement>>{};
+    for (var element in allModelElements) {
+      membersByName.putIfAbsent(element.name, () => []).add(element);
+    }
+    return membersByName;
+  }();
 
   /// Given a ModelElement that is a member of some other class, return
   /// the member of this class that has the same name and runtime type.
@@ -196,20 +198,11 @@ abstract class Container extends ModelElement
   /// This enables object substitution for canonicalization, such as Interceptor
   /// for Object.
   T memberByExample<T extends ModelElement>(T example) {
-    if (_membersByName == null) {
-      _membersByName = {};
-      for (var element in allModelElements) {
-        if (!_membersByName!.containsKey(element.name)) {
-          _membersByName![element.name] = [];
-        }
-        _membersByName![element.name]!.add(element);
-      }
-    }
     ModelElement member;
     // [T] is insufficiently specific to disambiguate between different
     // subtypes of [Inheritable] or other mixins/implementations of
     // [ModelElement] via [Iterable.whereType].
-    var possibleMembers = _membersByName![example.name]!
+    var possibleMembers = _membersByName[example.name]!
         .where((e) => e.runtimeType == example.runtimeType);
     if (example is Accessor) {
       possibleMembers = possibleMembers
@@ -225,9 +218,8 @@ abstract class Container extends ModelElement
   Iterable<Field> get publicStaticFields =>
       model_utils.filterNonPublic(staticFields);
 
-  List<Field>? _publicStaticFieldsSorted;
-  List<Field> get publicStaticFieldsSorted =>
-      _publicStaticFieldsSorted ??= publicStaticFields.toList()..sort(byName);
+  late final List<Field> publicStaticFieldsSorted = publicStaticFields.toList()
+    ..sort(byName);
 
   Iterable<Field> get staticFields => declaredFields!.where((f) => f.isStatic);
 
@@ -240,10 +232,8 @@ abstract class Container extends ModelElement
   Iterable<Field> get publicVariableStaticFields =>
       model_utils.filterNonPublic(variableStaticFields);
 
-  List<Field>? _publicVariableStaticFieldsSorted;
-  List<Field> get publicVariableStaticFieldsSorted =>
-      _publicVariableStaticFieldsSorted ??= publicVariableStaticFields.toList()
-        ..sort(byName);
+  late final List<Field> publicVariableStaticFieldsSorted =
+      publicVariableStaticFields.toList()..sort(byName);
 
   Iterable<Method> get staticMethods =>
       declaredMethods!.where((m) => m.isStatic);
@@ -254,9 +244,8 @@ abstract class Container extends ModelElement
   Iterable<Method> get publicStaticMethods =>
       model_utils.filterNonPublic(staticMethods);
 
-  List<Method>? _publicStaticMethodsSorted;
-  List<Method> get publicStaticMethodsSorted =>
-      _publicStaticMethodsSorted ??= publicStaticMethods.toList()..sort(byName);
+  late final List<Method> publicStaticMethodsSorted =
+      publicStaticMethods.toList()..sort(byName);
 
   /// For subclasses to add items after the main pass but before the
   /// parameter-global.
