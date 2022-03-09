@@ -376,7 +376,7 @@ enum E<T> with M<T>, N { one, two, three; }
       expect(eEnum.mixedInTypes.map((i) => i.name), equals(['M', 'N']));
     });
 
-    test("an enhanced enum's static methods are documented", () async {
+    test('can have static methods which are documented', () async {
       var library = await bootPackageWithLibrary('''
 enum E {
   one, two, three;
@@ -399,7 +399,7 @@ enum E {
       expect(method1.documentationComment, '/// Doc comment.');
     });
 
-    test("an enhanced enum's static fields are documented", () async {
+    test('can have static fields which are documented', () async {
       var library = await bootPackageWithLibrary('''
 enum E {
   one, two, three;
@@ -420,7 +420,7 @@ enum E {
       expect(method1.documentationComment, '/// Doc comment.');
     });
 
-    test("an enhanced enum's static getters are documented", () async {
+    test('can have static getters which are documented', () async {
       var library = await bootPackageWithLibrary('''
 enum E {
   one, two, three;
@@ -441,7 +441,7 @@ enum E {
       expect(method1.documentationComment, 'Doc comment.');
     });
 
-    test("an enhanced enum's instance fields are documented", () async {
+    test('can have instance fields which are documented', () async {
       var library = await bootPackageWithLibrary('''
 enum E {
   one, two, three;
@@ -462,7 +462,24 @@ enum E {
       expect(method1.documentationComment, '/// Doc comment.');
     });
 
-    test("an enhanced enum's constructors are documented", () async {
+    test('can have instance setters which are documented', () async {
+      var library = await bootPackageWithLibrary('''
+enum E {
+  one, two;
+
+  /// A setter.
+  set x(int value) {}
+}
+''');
+      var xSetter = library.enums.named('E').instanceAccessors.named('x=');
+
+      expect(xSetter.isGetter, false);
+      expect(xSetter.isSetter, true);
+      expect(xSetter.isPublic, true);
+      expect(xSetter.documentationComment, 'A setter.');
+    });
+
+    test('can have constructors which are documented', () async {
       var library = await bootPackageWithLibrary('''
 enum E {
   one.named(1),
@@ -483,8 +500,7 @@ enum E {
       expect(namedConstructor.documentationComment, '/// A named constructor.');
     });
 
-    test("an enhanced enum's value has a constant value implementation",
-        () async {
+    test('has values which have a constant value implementation', () async {
       var library = await bootPackageWithLibrary('''
 enum E {
   one.named(1),
@@ -530,8 +546,64 @@ class C {}
       );
     });
 
+    test('can have instance methods which can be referenced', () async {
+      var library = await bootPackageWithLibrary('''
+enum E {
+  one, two;
+
+  /// Doc comment.
+  static int method1(String p) => 7;
+}
+
+/// Reference to [E.method1].
+class C {}
+''');
+      var cClass = library.classes.named('C');
+      expect(
+        cClass.documentationAsHtml,
+        '<p>Reference to <a href="$linkPrefix/E/method1.html">E.method1</a>.</p>',
+      );
+    });
+
+    test('can have instance getters which can be referenced', () async {
+      var library = await bootPackageWithLibrary('''
+enum E {
+  one, two;
+
+  /// A getter.
+  int get x => 1;
+}
+
+/// Reference to [E.x].
+class C {}
+''');
+      var cClass = library.classes.named('C');
+      expect(
+        cClass.documentationAsHtml,
+        '<p>Reference to <a href="$linkPrefix/E/x.html">E.x</a>.</p>',
+      );
+    });
+
+    test('can have instance setters which can be referenced', () async {
+      var library = await bootPackageWithLibrary('''
+enum E {
+  one, two;
+
+  /// A setter.
+  set x(int value) {}
+}
+
+/// Reference to [E.x].
+class C {}
+''');
+      var cClass = library.classes.named('C');
+      expect(
+        cClass.documentationAsHtml,
+        '<p>Reference to <a href="$linkPrefix/E/x.html">E.x</a>.</p>',
+      );
+    });
+
     // TODO(srawlins): Add referencing tests (`/// [Enum.method]` etc.)
     // * Add tests for referencing enum static methods, static fields.
-    // * Add tests for referencing enum getters, setters, methods.
   }, skip: !enhancedEnumsAllowed);
 }
