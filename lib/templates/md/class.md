@@ -32,13 +32,7 @@
 {{/potentiallyApplicableExtensions}}
 {{/hasPotentiallyApplicableExtensions}}
 
-{{#hasAnnotations}}
-**Annotations**
-
-{{#annotations}}
-- {{{linkedNameWithParameters}}}
-{{/annotations}}
-{{/hasAnnotations}}
+{{ >annotations }}
 {{/hasModifiers}}
 
 {{ >constructors }}

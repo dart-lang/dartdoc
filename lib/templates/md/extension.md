@@ -13,6 +13,8 @@ on {{#extendedType}}{{{linkedName}}}{{/extendedType}}
 {{#extension}}
 {{>documentation}}
 
+{{ >annotations }}
+
 {{#hasPublicInstanceFields}}
 ## Properties
 

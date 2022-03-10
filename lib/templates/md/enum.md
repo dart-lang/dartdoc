@@ -15,13 +15,7 @@
 {{ >interfaces }}
 {{ >mixed_in_types }}
 
-{{ #hasAnnotations }}
-**Annotations**
-
-{{ #annotations }}
-- {{{ linkedNameWithParameters }}}
-{{ /annotations }}
-{{ /hasAnnotations }}
+{{ >annotations }}
 {{ /hasModifiers }}
 
 {{ >constructors }}

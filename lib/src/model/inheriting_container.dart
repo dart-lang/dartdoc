@@ -553,9 +553,6 @@ abstract class InheritingContainer extends Container
 
   @override
   Iterable<Field> get constantFields => allFields.where((f) => f.isConst);
-
-  /// The CSS class to use in an inheritance list.
-  String get relationshipsClass;
 }
 
 extension DefinedElementTypeIterableExtensions on Iterable<DefinedElementType> {

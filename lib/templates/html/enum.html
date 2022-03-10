@@ -19,14 +19,7 @@
         {{ >super_chain }}
         {{ >interfaces }}
         {{ >mixed_in_types }}
-        {{ #hasAnnotations }}
-        <dt>Annotations</dt>
-        <dd><ul class="annotation-list eNum-relationships">
-          {{ #annotations }}
-          <li>{{{ linkedNameWithParameters }}}</li>
-          {{ /annotations }}
-        </ul></dd>
-        {{ /hasAnnotations }}
+        {{ >annotations }}
       </dl>
     </section>
     {{ /hasModifiers }}

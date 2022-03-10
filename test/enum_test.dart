@@ -122,6 +122,21 @@ class C {}
       );
     });
 
+    test('has a value which can be annotated', () async {
+      var library = await bootPackageWithLibrary('''
+enum E {
+  @deprecated
+  one,
+  two, three
+}
+
+''');
+      var one = library.enums.named('E').constantFields.named('one');
+      expect(one.hasAnnotations, true);
+      expect(one.annotations, hasLength(1));
+      expect(one.isDeprecated, true);
+    });
+
     test('has a value which can be referenced', () async {
       var library = await bootPackageWithLibrary('''
 enum E { one, two, three }
