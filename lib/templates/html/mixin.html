@@ -34,14 +34,7 @@
         </dd>
         {{/hasPublicImplementors}}
 
-        {{#hasAnnotations}}
-        <dt>Annotations</dt>
-        <dd><ul class="annotation-list mixin-relationships">
-          {{#annotations}}
-          <li>{{{linkedNameWithParameters}}}</li>
-          {{/annotations}}
-        </ul></dd>
-        {{/hasAnnotations}}
+        {{ >annotations }}
       </dl>
     </section>
     {{/hasModifiers}}

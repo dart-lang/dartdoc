@@ -281,4 +281,7 @@ abstract class Container extends ModelElement
 
   @override
   Iterable<CommentReferable> get referenceParents => [definingLibrary, library];
+
+  /// The CSS class to use in an inheritance list.
+  String get relationshipsClass;
 }

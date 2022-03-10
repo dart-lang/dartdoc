@@ -3421,6 +3421,28 @@ class _Renderer_Container extends RendererBase<Container> {
                         getters: _invisibleGetters['CommentReferable']!));
                   },
                 ),
+                'relationshipsClass': Property(
+                  getValue: (CT_ c) => c.relationshipsClass,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        _Renderer_String.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(
+                        self.getValue(c) as String,
+                        nextProperty,
+                        [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => false,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    _render_String(c.relationshipsClass, ast, r.template, sink,
+                        parent: r);
+                  },
+                ),
                 'scope': Property(
                   getValue: (CT_ c) => c.scope,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -4901,6 +4923,28 @@ class _Renderer_Extension extends RendererBase<Extension> {
                       List<MustachioNode> ast, StringSink sink) {
                     renderSimple(c.referenceChildren, ast, r.template, sink,
                         parent: r, getters: _invisibleGetters['Map']!);
+                  },
+                ),
+                'relationshipsClass': Property(
+                  getValue: (CT_ c) => c.relationshipsClass,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        _Renderer_String.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(
+                        self.getValue(c) as String,
+                        nextProperty,
+                        [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => false,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    _render_String(c.relationshipsClass, ast, r.template, sink,
+                        parent: r);
                   },
                 ),
                 'typeParameters': Property(
@@ -7296,28 +7340,6 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                     return c.publicSuperChainReversed.map((e) =>
                         _render_DefinedElementType(e, ast, r.template, sink,
                             parent: r));
-                  },
-                ),
-                'relationshipsClass': Property(
-                  getValue: (CT_ c) => c.relationshipsClass,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_String.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as String,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.relationshipsClass, ast, r.template, sink,
-                        parent: r);
                   },
                 ),
                 'superChain': Property(

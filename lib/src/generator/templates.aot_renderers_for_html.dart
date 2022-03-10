@@ -348,31 +348,15 @@ String renderClass(_i1.ClassTemplateData context0) {
       buffer.write('''
         </ul></dd>''');
     }
-    buffer.writeln();
-    if (context2.hasAnnotations == true) {
-      buffer.writeln();
-      buffer.write('''
-        <dt>Annotations</dt>
-        <dd><ul class="annotation-list clazz-relationships">''');
-      var context7 = context2.annotations;
-      for (var context8 in context7) {
-        buffer.writeln();
-        buffer.write('''
-          <li>''');
-        buffer.write(context8.linkedNameWithParameters);
-        buffer.write('''</li>''');
-      }
-      buffer.writeln();
-      buffer.write('''
-        </ul></dd>''');
-    }
+    buffer.write('\n\n        ');
+    buffer.write(_renderClass_partial_annotations_8(context2));
     buffer.writeln();
     buffer.write('''
       </dl>
     </section>''');
   }
   buffer.write('\n\n    ');
-  buffer.write(_renderClass_partial_constructors_8(context2));
+  buffer.write(_renderClass_partial_constructors_9(context2));
   buffer.writeln();
   if (context2.hasPublicInstanceFields == true) {
     buffer.writeln();
@@ -385,10 +369,10 @@ String renderClass(_i1.ClassTemplateData context0) {
       <h2>Properties</h2>
 
       <dl class="properties">''');
-    var context9 = context2.publicInstanceFieldsSorted;
-    for (var context10 in context9) {
+    var context7 = context2.publicInstanceFieldsSorted;
+    for (var context8 in context7) {
       buffer.write('\n        ');
-      buffer.write(_renderClass_partial_property_9(context10));
+      buffer.write(_renderClass_partial_property_10(context8));
     }
     buffer.writeln();
     buffer.write('''
@@ -396,15 +380,15 @@ String renderClass(_i1.ClassTemplateData context0) {
     </section>''');
   }
   buffer.write('\n\n    ');
-  buffer.write(_renderClass_partial_instance_methods_10(context2));
+  buffer.write(_renderClass_partial_instance_methods_11(context2));
   buffer.write('\n    ');
-  buffer.write(_renderClass_partial_instance_operators_11(context2));
+  buffer.write(_renderClass_partial_instance_operators_12(context2));
   buffer.write('\n    ');
-  buffer.write(_renderClass_partial_static_properties_12(context2));
+  buffer.write(_renderClass_partial_static_properties_13(context2));
   buffer.write('\n    ');
-  buffer.write(_renderClass_partial_static_methods_13(context2));
+  buffer.write(_renderClass_partial_static_methods_14(context2));
   buffer.write('\n    ');
-  buffer.write(_renderClass_partial_static_constants_14(context2));
+  buffer.write(_renderClass_partial_static_constants_15(context2));
   buffer.writeln();
   buffer.write('''
 
@@ -412,7 +396,7 @@ String renderClass(_i1.ClassTemplateData context0) {
 
   <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
     ''');
-  buffer.write(_renderClass_partial_search_sidebar_15(context0));
+  buffer.write(_renderClass_partial_search_sidebar_16(context0));
   buffer.writeln();
   buffer.write('''
     <h5>''');
@@ -434,7 +418,7 @@ String renderClass(_i1.ClassTemplateData context0) {
   </div><!--/.sidebar-offcanvas-->
 
 ''');
-  buffer.write(_renderClass_partial_footer_16(context0));
+  buffer.write(_renderClass_partial_footer_17(context0));
   buffer.writeln();
 
   return buffer.toString();
@@ -579,30 +563,15 @@ String renderEnum(_i1.EnumTemplateData context0) {
     buffer.write(_renderEnum_partial_interfaces_6(context2));
     buffer.write('\n        ');
     buffer.write(_renderEnum_partial_mixed_in_types_7(context2));
-    if (context2.hasAnnotations == true) {
-      buffer.writeln();
-      buffer.write('''
-        <dt>Annotations</dt>
-        <dd><ul class="annotation-list eNum-relationships">''');
-      var context3 = context2.annotations;
-      for (var context4 in context3) {
-        buffer.writeln();
-        buffer.write('''
-          <li>''');
-        buffer.write(context4.linkedNameWithParameters);
-        buffer.write('''</li>''');
-      }
-      buffer.writeln();
-      buffer.write('''
-        </ul></dd>''');
-    }
+    buffer.write('\n        ');
+    buffer.write(_renderEnum_partial_annotations_8(context2));
     buffer.writeln();
     buffer.write('''
       </dl>
     </section>''');
   }
   buffer.write('\n\n    ');
-  buffer.write(_renderEnum_partial_constructors_8(context2));
+  buffer.write(_renderEnum_partial_constructors_9(context2));
   buffer.writeln();
   if (context2.hasPublicEnumValues == true) {
     buffer.writeln();
@@ -611,10 +580,10 @@ String renderEnum(_i1.EnumTemplateData context0) {
       <h2>Values</h2>
 
       <dl class="properties">''');
-    var context5 = context2.publicEnumValuesSorted;
-    for (var context6 in context5) {
+    var context3 = context2.publicEnumValuesSorted;
+    for (var context4 in context3) {
       buffer.write('\n          ');
-      buffer.write(_renderEnum_partial_constant_9(context6));
+      buffer.write(_renderEnum_partial_constant_10(context4));
     }
     buffer.writeln();
     buffer.write('''
@@ -637,10 +606,10 @@ String renderEnum(_i1.EnumTemplateData context0) {
       <h2>Properties</h2>
 
       <dl class="properties">''');
-    var context7 = context2.publicInstanceFieldsSorted;
-    for (var context8 in context7) {
+    var context5 = context2.publicInstanceFieldsSorted;
+    for (var context6 in context5) {
       buffer.write('\n        ');
-      buffer.write(_renderEnum_partial_property_10(context8));
+      buffer.write(_renderEnum_partial_property_11(context6));
     }
     buffer.writeln();
     buffer.write('''
@@ -648,22 +617,22 @@ String renderEnum(_i1.EnumTemplateData context0) {
     </section>''');
   }
   buffer.write('\n\n    ');
-  buffer.write(_renderEnum_partial_instance_methods_11(context2));
+  buffer.write(_renderEnum_partial_instance_methods_12(context2));
   buffer.write('\n    ');
-  buffer.write(_renderEnum_partial_instance_operators_12(context2));
+  buffer.write(_renderEnum_partial_instance_operators_13(context2));
   buffer.write('\n    ');
-  buffer.write(_renderEnum_partial_static_properties_13(context2));
+  buffer.write(_renderEnum_partial_static_properties_14(context2));
   buffer.write('\n    ');
-  buffer.write(_renderEnum_partial_static_methods_14(context2));
+  buffer.write(_renderEnum_partial_static_methods_15(context2));
   buffer.write('\n    ');
-  buffer.write(_renderEnum_partial_static_constants_15(context2));
+  buffer.write(_renderEnum_partial_static_constants_16(context2));
   buffer.writeln();
   buffer.write('''
   </div><!-- /.main-content -->
 
   <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
     ''');
-  buffer.write(_renderEnum_partial_search_sidebar_16(context0));
+  buffer.write(_renderEnum_partial_search_sidebar_17(context0));
   buffer.writeln();
   buffer.write('''
     <h5>''');
@@ -685,7 +654,7 @@ String renderEnum(_i1.EnumTemplateData context0) {
   </div><!-- /.sidebar-offcanvas -->
 
 ''');
-  buffer.write(_renderEnum_partial_footer_17(context0));
+  buffer.write(_renderEnum_partial_footer_18(context0));
   buffer.writeln();
 
   return buffer.toString();
@@ -767,21 +736,25 @@ String renderExtension<T extends _i2.Extension>(
   buffer.writeln();
   buffer.write('''
     <section>
-        <dl class="dl-horizontal">
+      <dl class="dl-horizontal">
         <dt>on</dt>
         <dd>
-            <ul class="comma-separated clazz-relationships">''');
+          <ul class="comma-separated clazz-relationships">''');
   var context3 = context2.extendedType;
   buffer.writeln();
   buffer.write('''
-            <li>''');
+              <li>''');
   buffer.write(context3.linkedName);
   buffer.write('''</li>''');
   buffer.writeln();
   buffer.write('''
-            </ul>
+          </ul>
         </dd>
-        </dl>
+      </dl>
+      ''');
+  buffer.write(_renderExtension_partial_annotations_5(context2));
+  buffer.writeln();
+  buffer.write('''
     </section>
 ''');
   if (context2.hasPublicInstanceFields == true) {
@@ -794,7 +767,7 @@ String renderExtension<T extends _i2.Extension>(
     var context4 = context2.publicInstanceFieldsSorted;
     for (var context5 in context4) {
       buffer.write('\n            ');
-      buffer.write(_renderExtension_partial_property_5(context5));
+      buffer.write(_renderExtension_partial_property_6(context5));
     }
     buffer.writeln();
     buffer.write('''
@@ -802,15 +775,15 @@ String renderExtension<T extends _i2.Extension>(
     </section>''');
   }
   buffer.write('\n\n    ');
-  buffer.write(_renderExtension_partial_instance_methods_6(context2));
+  buffer.write(_renderExtension_partial_instance_methods_7(context2));
   buffer.write('\n    ');
-  buffer.write(_renderExtension_partial_instance_operators_7(context2));
+  buffer.write(_renderExtension_partial_instance_operators_8(context2));
   buffer.write('\n    ');
-  buffer.write(_renderExtension_partial_static_properties_8(context2));
+  buffer.write(_renderExtension_partial_static_properties_9(context2));
   buffer.write('\n    ');
-  buffer.write(_renderExtension_partial_static_methods_9(context2));
+  buffer.write(_renderExtension_partial_static_methods_10(context2));
   buffer.write('\n    ');
-  buffer.write(_renderExtension_partial_static_constants_10(context2));
+  buffer.write(_renderExtension_partial_static_constants_11(context2));
   buffer.writeln();
   buffer.write('''
 
@@ -818,7 +791,7 @@ String renderExtension<T extends _i2.Extension>(
 
 <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
     ''');
-  buffer.write(_renderExtension_partial_search_sidebar_11(context0));
+  buffer.write(_renderExtension_partial_search_sidebar_12(context0));
   buffer.writeln();
   buffer.write('''
     <h5>''');
@@ -840,7 +813,7 @@ String renderExtension<T extends _i2.Extension>(
 </div><!--/.sidebar-offcanvas-->
 
 ''');
-  buffer.write(_renderExtension_partial_footer_12(context0));
+  buffer.write(_renderExtension_partial_footer_13(context0));
   buffer.writeln();
   buffer.writeln();
 
@@ -1382,24 +1355,8 @@ String renderMixin(_i1.MixinTemplateData context0) {
           </ul>
         </dd>''');
     }
-    buffer.writeln();
-    if (context2.hasAnnotations == true) {
-      buffer.writeln();
-      buffer.write('''
-        <dt>Annotations</dt>
-        <dd><ul class="annotation-list mixin-relationships">''');
-      var context7 = context2.annotations;
-      for (var context8 in context7) {
-        buffer.writeln();
-        buffer.write('''
-          <li>''');
-        buffer.write(context8.linkedNameWithParameters);
-        buffer.write('''</li>''');
-      }
-      buffer.writeln();
-      buffer.write('''
-        </ul></dd>''');
-    }
+    buffer.write('\n\n        ');
+    buffer.write(_renderMixin_partial_annotations_7(context2));
     buffer.writeln();
     buffer.write('''
       </dl>
@@ -1417,10 +1374,10 @@ String renderMixin(_i1.MixinTemplateData context0) {
       <h2>Properties</h2>
 
       <dl class="properties">''');
-    var context9 = context2.publicInstanceFields;
-    for (var context10 in context9) {
+    var context7 = context2.publicInstanceFields;
+    for (var context8 in context7) {
       buffer.write('\n        ');
-      buffer.write(_renderMixin_partial_property_7(context10));
+      buffer.write(_renderMixin_partial_property_8(context8));
     }
     buffer.writeln();
     buffer.write('''
@@ -1428,22 +1385,22 @@ String renderMixin(_i1.MixinTemplateData context0) {
     </section>''');
   }
   buffer.write('\n\n    ');
-  buffer.write(_renderMixin_partial_instance_methods_8(context2));
+  buffer.write(_renderMixin_partial_instance_methods_9(context2));
   buffer.write('\n    ');
-  buffer.write(_renderMixin_partial_instance_operators_9(context2));
+  buffer.write(_renderMixin_partial_instance_operators_10(context2));
   buffer.write('\n    ');
-  buffer.write(_renderMixin_partial_static_properties_10(context2));
+  buffer.write(_renderMixin_partial_static_properties_11(context2));
   buffer.write('\n    ');
-  buffer.write(_renderMixin_partial_static_methods_11(context2));
+  buffer.write(_renderMixin_partial_static_methods_12(context2));
   buffer.write('\n    ');
-  buffer.write(_renderMixin_partial_static_constants_12(context2));
+  buffer.write(_renderMixin_partial_static_constants_13(context2));
   buffer.writeln();
   buffer.write('''
   </div> <!-- /.main-content -->
 
   <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
     ''');
-  buffer.write(_renderMixin_partial_search_sidebar_13(context0));
+  buffer.write(_renderMixin_partial_search_sidebar_14(context0));
   buffer.writeln();
   buffer.write('''
     <h5>''');
@@ -1465,7 +1422,7 @@ String renderMixin(_i1.MixinTemplateData context0) {
   </div><!--/.sidebar-offcanvas-->
 
 ''');
-  buffer.write(_renderMixin_partial_footer_14(context0));
+  buffer.write(_renderMixin_partial_footer_15(context0));
   buffer.writeln();
 
   return buffer.toString();
@@ -2406,23 +2363,25 @@ String _renderClass_partial_mixed_in_types_7(_i10.Class context1) {
   return buffer.toString();
 }
 
-String _renderClass_partial_constructors_8(_i10.Class context1) =>
+String _renderClass_partial_annotations_8(_i10.Class context1) =>
+    _deduplicated_lib_templates_html__annotations_html(context1);
+String _renderClass_partial_constructors_9(_i10.Class context1) =>
     _deduplicated_lib_templates_html__constructors_html(context1);
-String _renderClass_partial_property_9(_i11.Field context2) =>
+String _renderClass_partial_property_10(_i11.Field context2) =>
     _deduplicated_lib_templates_html__property_html(context2);
-String _renderClass_partial_instance_methods_10(_i10.Class context1) =>
+String _renderClass_partial_instance_methods_11(_i10.Class context1) =>
     _deduplicated_lib_templates_html__instance_methods_html(context1);
-String _renderClass_partial_instance_operators_11(_i10.Class context1) =>
+String _renderClass_partial_instance_operators_12(_i10.Class context1) =>
     _deduplicated_lib_templates_html__instance_operators_html(context1);
-String _renderClass_partial_static_properties_12(_i10.Class context1) =>
+String _renderClass_partial_static_properties_13(_i10.Class context1) =>
     _deduplicated_lib_templates_html__static_properties_html(context1);
-String _renderClass_partial_static_methods_13(_i10.Class context1) =>
+String _renderClass_partial_static_methods_14(_i10.Class context1) =>
     _deduplicated_lib_templates_html__static_methods_html(context1);
-String _renderClass_partial_static_constants_14(_i10.Class context1) =>
+String _renderClass_partial_static_constants_15(_i10.Class context1) =>
     _deduplicated_lib_templates_html__static_constants_html(context1);
-String _renderClass_partial_search_sidebar_15(_i1.ClassTemplateData context0) =>
+String _renderClass_partial_search_sidebar_16(_i1.ClassTemplateData context0) =>
     _deduplicated_lib_templates_html__search_sidebar_html(context0);
-String _renderClass_partial_footer_16(_i1.ClassTemplateData context0) =>
+String _renderClass_partial_footer_17(_i1.ClassTemplateData context0) =>
     _deduplicated_lib_templates_html__footer_html(context0);
 String _renderConstructor_partial_head_0(
         _i1.ConstructorTemplateData context0) =>
@@ -2507,25 +2466,27 @@ String _renderEnum_partial_mixed_in_types_7(_i13.Enum context1) {
   return buffer.toString();
 }
 
-String _renderEnum_partial_constructors_8(_i13.Enum context1) =>
+String _renderEnum_partial_annotations_8(_i13.Enum context1) =>
+    _deduplicated_lib_templates_html__annotations_html(context1);
+String _renderEnum_partial_constructors_9(_i13.Enum context1) =>
     _deduplicated_lib_templates_html__constructors_html(context1);
-String _renderEnum_partial_constant_9(_i11.Field context2) =>
+String _renderEnum_partial_constant_10(_i11.Field context2) =>
     _deduplicated_lib_templates_html__constant_html(context2);
-String _renderEnum_partial_property_10(_i11.Field context2) =>
+String _renderEnum_partial_property_11(_i11.Field context2) =>
     _deduplicated_lib_templates_html__property_html(context2);
-String _renderEnum_partial_instance_methods_11(_i13.Enum context1) =>
+String _renderEnum_partial_instance_methods_12(_i13.Enum context1) =>
     _deduplicated_lib_templates_html__instance_methods_html(context1);
-String _renderEnum_partial_instance_operators_12(_i13.Enum context1) =>
+String _renderEnum_partial_instance_operators_13(_i13.Enum context1) =>
     _deduplicated_lib_templates_html__instance_operators_html(context1);
-String _renderEnum_partial_static_properties_13(_i13.Enum context1) =>
+String _renderEnum_partial_static_properties_14(_i13.Enum context1) =>
     _deduplicated_lib_templates_html__static_properties_html(context1);
-String _renderEnum_partial_static_methods_14(_i13.Enum context1) =>
+String _renderEnum_partial_static_methods_15(_i13.Enum context1) =>
     _deduplicated_lib_templates_html__static_methods_html(context1);
-String _renderEnum_partial_static_constants_15(_i13.Enum context1) =>
+String _renderEnum_partial_static_constants_16(_i13.Enum context1) =>
     _deduplicated_lib_templates_html__static_constants_html(context1);
-String _renderEnum_partial_search_sidebar_16(_i1.EnumTemplateData context0) =>
+String _renderEnum_partial_search_sidebar_17(_i1.EnumTemplateData context0) =>
     _deduplicated_lib_templates_html__search_sidebar_html(context0);
-String _renderEnum_partial_footer_17(_i1.EnumTemplateData context0) =>
+String _renderEnum_partial_footer_18(_i1.EnumTemplateData context0) =>
     _deduplicated_lib_templates_html__footer_html(context0);
 String _renderError_partial_head_0(_i1.PackageTemplateData context0) =>
     _deduplicated_lib_templates_html__head_html(context0);
@@ -2547,22 +2508,24 @@ String _renderExtension_partial_categorization_3(_i2.Extension context1) =>
     _deduplicated_lib_templates_html__categorization_html(context1);
 String _renderExtension_partial_documentation_4(_i2.Extension context1) =>
     _deduplicated_lib_templates_html__documentation_html(context1);
-String _renderExtension_partial_property_5(_i11.Field context2) =>
+String _renderExtension_partial_annotations_5(_i2.Extension context1) =>
+    _deduplicated_lib_templates_html__annotations_html(context1);
+String _renderExtension_partial_property_6(_i11.Field context2) =>
     _deduplicated_lib_templates_html__property_html(context2);
-String _renderExtension_partial_instance_methods_6(_i2.Extension context1) =>
+String _renderExtension_partial_instance_methods_7(_i2.Extension context1) =>
     _deduplicated_lib_templates_html__instance_methods_html(context1);
-String _renderExtension_partial_instance_operators_7(_i2.Extension context1) =>
+String _renderExtension_partial_instance_operators_8(_i2.Extension context1) =>
     _deduplicated_lib_templates_html__instance_operators_html(context1);
-String _renderExtension_partial_static_properties_8(_i2.Extension context1) =>
+String _renderExtension_partial_static_properties_9(_i2.Extension context1) =>
     _deduplicated_lib_templates_html__static_properties_html(context1);
-String _renderExtension_partial_static_methods_9(_i2.Extension context1) =>
+String _renderExtension_partial_static_methods_10(_i2.Extension context1) =>
     _deduplicated_lib_templates_html__static_methods_html(context1);
-String _renderExtension_partial_static_constants_10(_i2.Extension context1) =>
+String _renderExtension_partial_static_constants_11(_i2.Extension context1) =>
     _deduplicated_lib_templates_html__static_constants_html(context1);
-String _renderExtension_partial_search_sidebar_11<T extends _i2.Extension>(
+String _renderExtension_partial_search_sidebar_12<T extends _i2.Extension>(
         _i1.ExtensionTemplateData<T> context0) =>
     _deduplicated_lib_templates_html__search_sidebar_html(context0);
-String _renderExtension_partial_footer_12<T extends _i2.Extension>(
+String _renderExtension_partial_footer_13<T extends _i2.Extension>(
         _i1.ExtensionTemplateData<T> context0) =>
     _deduplicated_lib_templates_html__footer_html(context0);
 String _renderFunction_partial_head_0(_i1.FunctionTemplateData context0) =>
@@ -2820,21 +2783,23 @@ String _renderMixin_partial_interfaces_6(_i16.Mixin context1) {
   return buffer.toString();
 }
 
-String _renderMixin_partial_property_7(_i11.Field context2) =>
+String _renderMixin_partial_annotations_7(_i16.Mixin context1) =>
+    _deduplicated_lib_templates_html__annotations_html(context1);
+String _renderMixin_partial_property_8(_i11.Field context2) =>
     _deduplicated_lib_templates_html__property_html(context2);
-String _renderMixin_partial_instance_methods_8(_i16.Mixin context1) =>
+String _renderMixin_partial_instance_methods_9(_i16.Mixin context1) =>
     _deduplicated_lib_templates_html__instance_methods_html(context1);
-String _renderMixin_partial_instance_operators_9(_i16.Mixin context1) =>
+String _renderMixin_partial_instance_operators_10(_i16.Mixin context1) =>
     _deduplicated_lib_templates_html__instance_operators_html(context1);
-String _renderMixin_partial_static_properties_10(_i16.Mixin context1) =>
+String _renderMixin_partial_static_properties_11(_i16.Mixin context1) =>
     _deduplicated_lib_templates_html__static_properties_html(context1);
-String _renderMixin_partial_static_methods_11(_i16.Mixin context1) =>
+String _renderMixin_partial_static_methods_12(_i16.Mixin context1) =>
     _deduplicated_lib_templates_html__static_methods_html(context1);
-String _renderMixin_partial_static_constants_12(_i16.Mixin context1) =>
+String _renderMixin_partial_static_constants_13(_i16.Mixin context1) =>
     _deduplicated_lib_templates_html__static_constants_html(context1);
-String _renderMixin_partial_search_sidebar_13(_i1.MixinTemplateData context0) =>
+String _renderMixin_partial_search_sidebar_14(_i1.MixinTemplateData context0) =>
     _deduplicated_lib_templates_html__search_sidebar_html(context0);
-String _renderMixin_partial_footer_14(_i1.MixinTemplateData context0) =>
+String _renderMixin_partial_footer_15(_i1.MixinTemplateData context0) =>
     _deduplicated_lib_templates_html__footer_html(context0);
 String _renderProperty_partial_head_0(_i1.PropertyTemplateData context0) =>
     _deduplicated_lib_templates_html__head_html(context0);
@@ -3953,6 +3918,34 @@ String _deduplicated_lib_templates_html__super_chain_html(
   </dd>''');
   }
   buffer.writeln();
+
+  return buffer.toString();
+}
+
+String _deduplicated_lib_templates_html__annotations_html(
+    _i6.Container context0) {
+  final buffer = StringBuffer();
+  if (context0.hasAnnotations == true) {
+    buffer.writeln();
+    buffer.write('''
+  <dt>Annotations</dt>
+  <dd>
+    <ul class="annotation-list ''');
+    buffer.writeEscaped(context0.relationshipsClass);
+    buffer.write('''">''');
+    var context1 = context0.annotations;
+    for (var context2 in context1) {
+      buffer.writeln();
+      buffer.write('''
+        <li>''');
+      buffer.write(context2.linkedNameWithParameters);
+      buffer.write('''</li>''');
+    }
+    buffer.writeln();
+    buffer.write('''
+    </ul>
+  </dd>''');
+  }
 
   return buffer.toString();
 }

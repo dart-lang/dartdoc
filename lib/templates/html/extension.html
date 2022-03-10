@@ -8,16 +8,17 @@
     {{#extension}}
     {{>documentation}}
     <section>
-        <dl class="dl-horizontal">
+      <dl class="dl-horizontal">
         <dt>on</dt>
         <dd>
-            <ul class="comma-separated clazz-relationships">
-            {{#extendedType}}
-            <li>{{{linkedName}}}</li>
-            {{/extendedType}}
-            </ul>
+          <ul class="comma-separated clazz-relationships">
+            {{ #extendedType }}
+              <li>{{{ linkedName }}}</li>
+            {{ /extendedType }}
+          </ul>
         </dd>
-        </dl>
+      </dl>
+      {{ >annotations }}
     </section>
 
     {{#hasPublicInstanceFields}}

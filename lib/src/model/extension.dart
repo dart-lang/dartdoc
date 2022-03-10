@@ -114,4 +114,7 @@ class Extension extends Container implements EnclosedElement {
   @override
   @visibleForOverriding
   Iterable<MapEntry<String, CommentReferable>> get extraReferenceChildren => [];
+
+  @override
+  String get relationshipsClass => 'clazz-relationships';
 }
