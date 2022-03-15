@@ -1085,7 +1085,7 @@ void main() {
           dog.instanceMethods.firstWhere((m) => m.name == 'withUndefinedMacro');
       MacrosFromAccessors =
           fakeLibrary.enums.firstWhere((e) => e.name == 'MacrosFromAccessors');
-      macroReferencedHere = MacrosFromAccessors.publicConstantFields
+      macroReferencedHere = MacrosFromAccessors.publicEnumValues
           .firstWhere((e) => e.name == 'macroReferencedHere') as EnumField;
       ClassTemplateOneLiner = exLibrary.allClasses
           .firstWhere((c) => c.name == 'ClassTemplateOneLiner');
