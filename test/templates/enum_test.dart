@@ -341,17 +341,14 @@ enum EnumWithDefaultConstructor { four, five, six }
           ]));
     });
 
-    test('enum sidebar contains constants', () async {
+    test('enum sidebar contains values', () async {
       expect(
           eLines,
           containsAllInOrder([
             matches('<div id="dartdoc-sidebar-right"'),
-            matches('<a href="../lib/E.html#constants">Constants</a>'),
-            matches('<a href="../lib/E/c1-constant.html">c1</a>'),
+            matches('<a href="../lib/E.html#values">Values</a>'),
             // TODO(srawlins): Linkify this.
             matches('<li>one</li>'),
-            // TODO(srawlins): Move this to static properties.
-            matches('<a href="../lib/E/values-constant.html">values</a>'),
           ]));
     });
 
@@ -407,6 +404,17 @@ enum EnumWithDefaultConstructor { four, five, six }
             matches(
                 '<a href="../lib/E.html#static-methods">Static methods</a>'),
             matches('<a href="../lib/E/s1.html">s1</a>'),
+          ]));
+    });
+
+    test('enum sidebar contains constants', () async {
+      expect(
+          eLines,
+          containsAllInOrder([
+            matches('<div id="dartdoc-sidebar-right"'),
+            matches('<a href="../lib/E.html#constants">Constants</a>'),
+            matches('<a href="../lib/E/c1-constant.html">c1</a>'),
+            matches('<a href="../lib/E/values-constant.html">values</a>'),
           ]));
     });
 

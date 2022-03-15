@@ -62,23 +62,20 @@ class Extension extends Container implements EnclosedElement {
   @override
   String get name => element.name == null ? '' : super.name;
 
-  List<Field>? _declaredFields;
-
   @override
-  List<Field>? get declaredFields {
-    _declaredFields ??= element.fields.map((f) {
-      Accessor? getter, setter;
-      if (f.getter != null) {
-        getter = ContainerAccessor(f.getter, library, packageGraph);
-      }
-      if (f.setter != null) {
-        setter = ContainerAccessor(f.setter, library, packageGraph);
-      }
-      return modelBuilder.fromPropertyInducingElement(f, library,
-          getter: getter, setter: setter) as Field;
-    }).toList(growable: false);
-    return _declaredFields;
-  }
+  late final List<Field> declaredFields = element.fields.map((field) {
+    Accessor? getter, setter;
+    final fGetter = field.getter;
+    if (fGetter != null) {
+      getter = ContainerAccessor(fGetter, library, packageGraph);
+    }
+    final fSetter = field.setter;
+    if (fSetter != null) {
+      setter = ContainerAccessor(fSetter, library, packageGraph);
+    }
+    return modelBuilder.fromPropertyInducingElement(field, library,
+        getter: getter, setter: setter) as Field;
+  }).toList(growable: false);
 
   List<TypeParameter>? _typeParameters;
 

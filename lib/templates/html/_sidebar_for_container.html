@@ -10,14 +10,14 @@
       {{ /hasPublicConstructors }}
     {{ /isClassOrEnum }}
 
-    {{#isEnum}}
-    {{#hasPublicConstantFields}}
-    <li class="section-title"><a href="{{{href}}}#constants">Constants</a></li>
-    {{#publicConstantFieldsSorted}}
-    <li>{{{linkedName}}}</li>
-    {{/publicConstantFieldsSorted}}
-    {{/hasPublicConstantFields}}
-    {{/isEnum}}
+    {{ #isEnum }}
+    {{ #hasPublicEnumValues }}
+    <li class="section-title"><a href="{{{ href }}}#values">Values</a></li>
+    {{ #publicEnumValues }}
+    <li>{{{ linkedName }}}</li>
+    {{ /publicEnumValues }}
+    {{ /hasPublicEnumValues }}
+    {{ /isEnum }}
 
     {{#isClassOrEnum}}
     {{#hasPublicInstanceFields}}
@@ -83,14 +83,12 @@
         {{ /publicStaticMethodsSorted }}
       {{ /hasPublicStaticMethods }}
 
-      {{ ^isEnum }}
-        {{ #hasPublicConstantFields }}
-          <li class="section-title"><a href="{{{ href }}}#constants">Constants</a></li>
-          {{ #publicConstantFieldsSorted }}
-            <li>{{{ linkedName }}}</li>
-          {{ /publicConstantFieldsSorted }}
-        {{ /hasPublicConstantFields }}
-      {{ /isEnum }}
+      {{ #hasPublicConstantFields }}
+        <li class="section-title"><a href="{{{ href }}}#constants">Constants</a></li>
+        {{ #publicConstantFieldsSorted }}
+          <li>{{{ linkedName }}}</li>
+        {{ /publicConstantFieldsSorted }}
+      {{ /hasPublicConstantFields }}
     {{ /isClassOrEnumOrExtension }}
     {{ /container }}
 </ol>

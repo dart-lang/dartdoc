@@ -35,10 +35,16 @@ class Enum extends InheritingContainer
   @override
   String get relationshipsClass => 'eNum-relationships';
 
-  late final Iterable<Field> publicEnumValuesSorted =
-      model_utils.filterNonPublic(constantFields).whereType<EnumField>();
+  @override
+  Iterable<Field> get constantFields =>
+      declaredFields.where((f) => f is! EnumField && f.isConst);
 
-  bool get hasPublicEnumValues => publicEnumValuesSorted.isNotEmpty;
+  @override
+  late final Iterable<Field> publicEnumValues =
+      model_utils.filterNonPublic(allFields).whereType<EnumField>();
+
+  @override
+  bool get hasPublicEnumValues => publicEnumValues.isNotEmpty;
 }
 
 /// A field specific to an enum's values.

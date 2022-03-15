@@ -2932,11 +2932,10 @@ class _Renderer_Container extends RendererBase<Container> {
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
                           c, remainingNames, 'Iterable<Field>'),
-                  isNullValue: (CT_ c) => c.declaredFields == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.declaredFields, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['Iterable']!);
+                    return c.declaredFields.map((e) =>
+                        _render_Field(e, ast, r.template, sink, parent: r));
                   },
                 ),
                 'declaredMethods': Property(
@@ -3014,6 +3013,13 @@ class _Renderer_Container extends RendererBase<Container> {
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.hasPublicConstructors == true,
+                ),
+                'hasPublicEnumValues': Property(
+                  getValue: (CT_ c) => c.hasPublicEnumValues,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.hasPublicEnumValues == true,
                 ),
                 'hasPublicInstanceFields': Property(
                   getValue: (CT_ c) => c.hasPublicInstanceFields,
@@ -3226,6 +3232,18 @@ class _Renderer_Container extends RendererBase<Container> {
                     return c.publicConstructorsSorted.map((e) =>
                         _render_Constructor(e, ast, r.template, sink,
                             parent: r));
+                  },
+                ),
+                'publicEnumValues': Property(
+                  getValue: (CT_ c) => c.publicEnumValues,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'Iterable<Field>'),
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    return c.publicEnumValues.map((e) =>
+                        _render_Field(e, ast, r.template, sink, parent: r));
                   },
                 ),
                 'publicInheritedInstanceFields': Property(
@@ -4558,6 +4576,18 @@ class _Renderer_Enum extends RendererBase<Enum> {
                         parent: r));
                   },
                 ),
+                'constantFields': Property(
+                  getValue: (CT_ c) => c.constantFields,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'Iterable<Field>'),
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    return c.constantFields.map((e) =>
+                        _render_Field(e, ast, r.template, sink, parent: r));
+                  },
+                ),
                 'hasPublicEnumValues': Property(
                   getValue: (CT_ c) => c.hasPublicEnumValues,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -4599,15 +4629,15 @@ class _Renderer_Enum extends RendererBase<Enum> {
                     _render_String(c.kind, ast, r.template, sink, parent: r);
                   },
                 ),
-                'publicEnumValuesSorted': Property(
-                  getValue: (CT_ c) => c.publicEnumValuesSorted,
+                'publicEnumValues': Property(
+                  getValue: (CT_ c) => c.publicEnumValues,
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
                           c, remainingNames, 'Iterable<Field>'),
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    return c.publicEnumValuesSorted.map((e) =>
+                    return c.publicEnumValues.map((e) =>
                         _render_Field(e, ast, r.template, sink, parent: r));
                   },
                 ),
@@ -4769,11 +4799,10 @@ class _Renderer_Extension extends RendererBase<Extension> {
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
                           c, remainingNames, 'List<Field>'),
-                  isNullValue: (CT_ c) => c.declaredFields == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.declaredFields, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['List']!);
+                    return c.declaredFields.map((e) =>
+                        _render_Field(e, ast, r.template, sink, parent: r));
                   },
                 ),
                 'declaredMethods': Property(
@@ -12274,7 +12303,7 @@ class _Renderer_Package extends RendererBase<Package> {
   }
 }
 
-String renderError(PackageTemplateData context, Template template) {
+String renderIndex(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -12490,7 +12519,7 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
   }
 }
 
-String renderIndex(PackageTemplateData context, Template template) {
+String renderError(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
