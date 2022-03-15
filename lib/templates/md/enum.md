@@ -20,14 +20,14 @@
 
 {{ >constructors }}
 
-{{ #hasPublicConstantFields }}
-## Constants
+{{ #hasPublicEnumValues }}
+## Values
 
-{{ #publicConstantFieldsSorted }}
+{{ #publicEnumValues }}
 {{ >constant }}
 
-{{ /publicConstantFieldsSorted }}
-{{ /hasPublicConstantFields }}
+{{ /publicEnumValues }}
+{{ /hasPublicEnumValues }}
 
 {{ #hasPublicInstanceFields }}
 ## Properties

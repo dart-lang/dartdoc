@@ -576,11 +576,11 @@ String renderEnum(_i1.EnumTemplateData context0) {
   if (context2.hasPublicEnumValues == true) {
     buffer.writeln();
     buffer.write('''
-    <section class="summary offset-anchor" id="constants">
+    <section class="summary offset-anchor" id="values">
       <h2>Values</h2>
 
       <dl class="properties">''');
-    var context3 = context2.publicEnumValuesSorted;
+    var context3 = context2.publicEnumValues;
     for (var context4 in context3) {
       buffer.write('\n          ');
       buffer.write(_renderEnum_partial_constant_10(context4));
@@ -1540,13 +1540,13 @@ String renderSidebarForContainer<T extends _i3.Documentable>(
   }
   buffer.writeln();
   if (context1.isEnum == true) {
-    if (context1.hasPublicConstantFields == true) {
+    if (context1.hasPublicEnumValues == true) {
       buffer.writeln();
       buffer.write('''
     <li class="section-title"><a href="''');
       buffer.write(context1.href);
-      buffer.write('''#constants">Constants</a></li>''');
-      var context4 = context1.publicConstantFieldsSorted;
+      buffer.write('''#values">Values</a></li>''');
+      var context4 = context1.publicEnumValues;
       for (var context5 in context4) {
         buffer.writeln();
         buffer.write('''
@@ -1717,21 +1717,19 @@ String renderSidebarForContainer<T extends _i3.Documentable>(
       }
     }
     buffer.writeln();
-    if (context1.isEnum != true) {
-      if (context1.hasPublicConstantFields == true) {
+    if (context1.hasPublicConstantFields == true) {
+      buffer.writeln();
+      buffer.write('''
+        <li class="section-title"><a href="''');
+      buffer.write(context1.href);
+      buffer.write('''#constants">Constants</a></li>''');
+      var context22 = context1.publicConstantFieldsSorted;
+      for (var context23 in context22) {
         buffer.writeln();
         buffer.write('''
-          <li class="section-title"><a href="''');
-        buffer.write(context1.href);
-        buffer.write('''#constants">Constants</a></li>''');
-        var context22 = context1.publicConstantFieldsSorted;
-        for (var context23 in context22) {
-          buffer.writeln();
-          buffer.write('''
-            <li>''');
-          buffer.write(context23.linkedName);
-          buffer.write('''</li>''');
-        }
+          <li>''');
+        buffer.write(context23.linkedName);
+        buffer.write('''</li>''');
       }
     }
   }

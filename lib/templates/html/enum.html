@@ -27,13 +27,13 @@
     {{ >constructors }}
 
     {{ #hasPublicEnumValues }}
-    <section class="summary offset-anchor" id="constants">
+    <section class="summary offset-anchor" id="values">
       <h2>Values</h2>
 
       <dl class="properties">
-        {{ #publicEnumValuesSorted }}
+        {{ #publicEnumValues }}
           {{ >constant }}
-        {{ /publicEnumValuesSorted }}
+        {{ /publicEnumValues }}
       </dl>
     </section>
     {{ /hasPublicEnumValues }}

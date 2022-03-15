@@ -362,12 +362,12 @@ String renderEnum(_i1.EnumTemplateData context0) {
   buffer.write('\n\n');
   buffer.write(_renderEnum_partial_constructors_8(context2));
   buffer.writeln();
-  if (context2.hasPublicConstantFields == true) {
+  if (context2.hasPublicEnumValues == true) {
     buffer.writeln();
     buffer.write('''
-## Constants
+## Values
 ''');
-    var context3 = context2.publicConstantFieldsSorted;
+    var context3 = context2.publicEnumValues;
     for (var context4 in context3) {
       buffer.writeln();
       buffer.write(_renderEnum_partial_constant_9(context4));

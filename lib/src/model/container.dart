@@ -143,11 +143,11 @@ abstract class Container extends ModelElement
       publicInstanceOperators.toList()..sort(byName);
 
   /// Fields fully declared in this [Container].
-  Iterable<Field>? get declaredFields;
+  Iterable<Field> get declaredFields;
 
   /// All fields accessible in this instance that are not static.
   Iterable<Field> get instanceFields =>
-      declaredFields!.where((f) => !f.isStatic);
+      declaredFields.where((f) => !f.isStatic);
 
   bool get hasInstanceFields => instanceFields.isNotEmpty;
 
@@ -161,15 +161,19 @@ abstract class Container extends ModelElement
   late final List<Field> publicInstanceFieldsSorted =
       publicInstanceFields.toList()..sort(byName);
 
-  Iterable<Field> get constantFields => declaredFields!.where((f) => f.isConst);
+  Iterable<Field> get constantFields => declaredFields.where((f) => f.isConst);
 
   Iterable<Field> get publicConstantFields =>
       model_utils.filterNonPublic(constantFields);
 
-  bool get hasPublicConstantFields => publicConstantFieldsSorted.isNotEmpty;
+  bool get hasPublicConstantFields => publicConstantFields.isNotEmpty;
 
   late final List<Field> publicConstantFieldsSorted =
       publicConstantFields.toList()..sort(byName);
+
+  Iterable<Field> get publicEnumValues => [];
+
+  bool get hasPublicEnumValues => publicEnumValues.isNotEmpty;
 
   Iterable<Accessor> get instanceAccessors =>
       instanceFields.expand((f) => f.allAccessors);
@@ -221,7 +225,7 @@ abstract class Container extends ModelElement
   late final List<Field> publicStaticFieldsSorted = publicStaticFields.toList()
     ..sort(byName);
 
-  Iterable<Field> get staticFields => declaredFields!.where((f) => f.isStatic);
+  Iterable<Field> get staticFields => declaredFields.where((f) => f.isStatic);
 
   Iterable<Field> get variableStaticFields =>
       staticFields.where((f) => !f.isConst);

@@ -125,7 +125,7 @@ abstract class ModelElement extends Canonicalization
         DocumentationComment,
         ModelBuilder
     implements Comparable<ModelElement>, Documentable {
-  final Element? _element;
+  final Element _element;
 
   // TODO(jcollins-g): This really wants a "member that has a type" class.
   final Member? _originalMember;

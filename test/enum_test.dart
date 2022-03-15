@@ -97,8 +97,7 @@ $libraryContent
       var library = await bootPackageWithLibrary('enum E { one, two, three }');
       var eEnum = library.enums.named('E');
 
-      // Three enum values, plus the `values` constant field.
-      expect(eEnum.constantFields, hasLength(4));
+      expect(eEnum.publicEnumValues, hasLength(3));
     });
 
     test("has a (synthetic) 'values' constant", () async {
@@ -131,7 +130,7 @@ enum E {
 }
 
 ''');
-      var one = library.enums.named('E').constantFields.named('one');
+      var one = library.enums.named('E').publicEnumValues.named('one');
       expect(one.hasAnnotations, true);
       expect(one.annotations, hasLength(1));
       expect(one.isDeprecated, true);
@@ -187,7 +186,7 @@ class C {}
     test('value does not link anywhere', () async {
       var library = await bootPackageWithLibrary('enum E { one, two, three }');
       var oneValue =
-          library.enums.named('E').constantFields.named('one') as EnumField;
+          library.enums.named('E').publicEnumValues.named('one') as EnumField;
       expect(oneValue.linkedName, 'one');
       expect(oneValue.constantValue,
           equals(EnumFieldRendererHtml().renderValue(oneValue)));
@@ -196,11 +195,11 @@ class C {}
     test('values have correct indices', () async {
       var library = await bootPackageWithLibrary('enum E { one, two, three }');
       var oneValue =
-          library.enums.named('E').constantFields.named('one') as EnumField;
+          library.enums.named('E').publicEnumValues.named('one') as EnumField;
       var twoValue =
-          library.enums.named('E').constantFields.named('two') as EnumField;
+          library.enums.named('E').publicEnumValues.named('two') as EnumField;
       var threeValue =
-          library.enums.named('E').constantFields.named('three') as EnumField;
+          library.enums.named('E').publicEnumValues.named('three') as EnumField;
 
       expect(oneValue.constantValue, equals('const E(0)'));
       expect(twoValue.constantValue, equals('const E(1)'));
@@ -244,7 +243,7 @@ enum E {
   three
 }
 ''');
-      var one = library.enums.named('E').constantFields.named('one');
+      var one = library.enums.named('E').publicEnumValues.named('one');
 
       expect(one.hasDocumentationComment, true);
       expect(one.documentationComment, '/// Doc comment for [E.one].');
@@ -529,16 +528,16 @@ enum E {
 
 enum F { one, two }
 ''');
-      var eOneValue = library.enums.named('E').constantFields.named('one');
+      var eOneValue = library.enums.named('E').publicEnumValues.named('one');
       expect(eOneValue.constantValueTruncated, 'E.named(1)');
 
-      var eTwoValue = library.enums.named('E').constantFields.named('two');
+      var eTwoValue = library.enums.named('E').publicEnumValues.named('two');
       expect(eTwoValue.constantValueTruncated, 'E.named(2)');
 
-      var fOneValue = library.enums.named('F').constantFields.named('one');
+      var fOneValue = library.enums.named('F').publicEnumValues.named('one');
       expect(fOneValue.constantValueTruncated, 'F()');
 
-      var fTwoValue = library.enums.named('F').constantFields.named('two');
+      var fTwoValue = library.enums.named('F').publicEnumValues.named('two');
       expect(fTwoValue.constantValueTruncated, 'F()');
     });
 
@@ -618,7 +617,40 @@ class C {}
       );
     });
 
-    // TODO(srawlins): Add referencing tests (`/// [Enum.method]` etc.)
-    // * Add tests for referencing enum static methods, static fields.
+    test('can have static methods which can be referenced', () async {
+      var library = await bootPackageWithLibrary('''
+enum E {
+  one, two;
+
+  static void m() {}
+}
+
+/// Reference to [E.m].
+class C {}
+''');
+      var cClass = library.classes.named('C');
+      expect(
+        cClass.documentationAsHtml,
+        '<p>Reference to <a href="$linkPrefix/E/m.html">E.m</a>.</p>',
+      );
+    });
+
+    test('can have static fields which can be referenced', () async {
+      var library = await bootPackageWithLibrary('''
+enum E {
+  one, two;
+
+  static int f = 1;
+}
+
+/// Reference to [E.f].
+class C {}
+''');
+      var cClass = library.classes.named('C');
+      expect(
+        cClass.documentationAsHtml,
+        '<p>Reference to <a href="$linkPrefix/E/f.html">E.f</a>.</p>',
+      );
+    });
   }, skip: !enhancedEnumsAllowed);
 }
