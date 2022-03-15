@@ -21,6 +21,7 @@ void main() async {
   late PackageMetaProvider packageMetaProvider;
   late DartdocGeneratorOptionContext context;
   late List<String> eLines;
+  late List<String> enumWithDefaultConstructorLines;
 
   Future<PubPackageBuilder> createPackageBuilder({
     List<String> additionalOptions = const [],
@@ -86,11 +87,13 @@ mixin M<T> {}
 
 enum E<T> with M<T> implements C<T> {
   /// Doc comment for [one].
-  one,
+  one<int>.named(1),
 
   @deprecated
-  two,
-  three;
+  two<double>.named(2.0),
+  three<num>.named(3);
+
+  const E.named(T i);
 
   /// A method.
   void m1() {}
@@ -100,6 +103,12 @@ enum E<T> with M<T> implements C<T> {
 
   /// A field.
   int f1 = 0;
+
+  /// An instance getter.
+  int get ig1 => 1;
+
+  /// An instance setter.
+  set is1(int value) {}
 
   /// A static method.
   static void s1() {}
@@ -116,6 +125,8 @@ enum E<T> with M<T> implements C<T> {
   /// A static setter.
   static void set gs1(int value) {}
 }
+
+enum EnumWithDefaultConstructor { four, five, six }
 '''),
         ],
         resourceProvider: resourceProvider,
@@ -124,6 +135,11 @@ enum E<T> with M<T> implements C<T> {
       await (await buildDartdoc()).generateDocs();
       eLines = resourceProvider
           .getFile(p.join(packagePath, 'doc', 'lib', 'E.html'))
+          .readAsStringSync()
+          .split('\n');
+      enumWithDefaultConstructorLines = resourceProvider
+          .getFile(p.join(
+              packagePath, 'doc', 'lib', 'EnumWithDefaultConstructor.html'))
           .readAsStringSync()
           .split('\n');
     });
@@ -157,6 +173,28 @@ enum E<T> with M<T> implements C<T> {
             matches('<a href="../lib/M-mixin.html">M</a>'
                 '<span class="signature">&lt;<wbr>'
                 '<span class="type-parameter">T</span>&gt;</span>'),
+          ]));
+    });
+
+    test('enum sidebar contains default constructors', () async {
+      expect(
+          enumWithDefaultConstructorLines,
+          containsAllInOrder([
+            matches('<div id="dartdoc-sidebar-right"'),
+            matches(
+                '<a href="../lib/EnumWithDefaultConstructor.html#constructors">Constructors</a>'),
+            matches(
+                '<a href="../lib/EnumWithDefaultConstructor/EnumWithDefaultConstructor.html">EnumWithDefaultConstructor</a>'),
+          ]));
+    });
+
+    test('enum sidebar contains explicit constructors', () async {
+      expect(
+          eLines,
+          containsAllInOrder([
+            matches('<div id="dartdoc-sidebar-right"'),
+            matches('<a href="../lib/E.html#constructors">Constructors</a>'),
+            matches('<a href="../lib/E/E.named.html">named</a>'),
           ]));
     });
 
@@ -197,6 +235,28 @@ enum E<T> with M<T> implements C<T> {
             matches('<h2>Properties</h2>'),
             matches('<a href="../lib/E/f1.html">f1</a>'),
             matches('A field.'),
+          ]));
+    });
+
+    test('enum page contains instance getters', () async {
+      expect(
+          eLines,
+          containsAllInOrder([
+            matches('<h2>Properties</h2>'),
+            matches('<a href="../lib/E/ig1.html">ig1</a>'),
+            matches('An instance getter.'),
+            matches('<div class="features">read-only</div>'),
+          ]));
+    });
+
+    test('enum page contains instance setters', () async {
+      expect(
+          eLines,
+          containsAllInOrder([
+            matches('<h2>Properties</h2>'),
+            matches('<a href="../lib/E/is1.html">is1</a>'),
+            matches('An instance setter.'),
+            matches('<div class="features">write-only</div>'),
           ]));
     });
 
@@ -247,6 +307,8 @@ enum E<T> with M<T> implements C<T> {
             matches('<h2>Values</h2>'),
             matches('<span class="name ">one</span>'),
             matches('<p>Doc comment for <a href="../lib/E.html">one</a>.</p>'),
+            matches(
+                r'<span class="signature"><code>E&lt;int&gt;.named\(1\)</code></span>'),
           ]));
     });
 
@@ -279,16 +341,6 @@ enum E<T> with M<T> implements C<T> {
           ]));
     });
 
-    test('enum sidebar contains constructors', () async {
-      expect(
-          eLines,
-          containsAllInOrder([
-            matches('<div id="dartdoc-sidebar-right"'),
-            matches('<a href="../lib/E.html#constructors">Constructors</a>'),
-            matches('<a href="../lib/E/E.html">E</a>'),
-          ]));
-    });
-
     test('enum sidebar contains constants', () async {
       expect(
           eLines,
@@ -300,8 +352,7 @@ enum E<T> with M<T> implements C<T> {
             matches('<li>one</li>'),
             // TODO(srawlins): Move this to static properties.
             matches('<a href="../lib/E/values-constant.html">values</a>'),
-          ]),
-          reason: eLines.join('\n'));
+          ]));
     });
 
     test('enum sidebar contains properties', () async {
@@ -361,8 +412,6 @@ enum E<T> with M<T> implements C<T> {
 
     // TODO(srawlins): Add rendering tests.
     // * Add tests for rendered supertype (Enum) HTML.
-    // * Add tests for rendered getters, setters.
     // * Add tests for rendered field pages.
-    // * Add tests for rendered generic enum values.
   }, skip: !enhancedEnumsAllowed);
 }
