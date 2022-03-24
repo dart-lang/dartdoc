@@ -947,7 +947,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       // might not be where the element was defined, which is what's important
       // for nodoc's semantics.  Looking up the defining element just to pull
       // a context is again, slow.
-      var globs = config.optionSet['nodoc'].valueAt(file.parent2);
+      var globs = config.optionSet['nodoc'].valueAt(file.parent);
       return utils.matchGlobs(globs, fullName);
     });
   }
