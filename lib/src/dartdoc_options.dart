@@ -1200,7 +1200,7 @@ class DartdocOptionContext extends DartdocOptionContextBase
       ResourceProvider resourceProvider)
       : context = resourceProvider.getFolder(resourceProvider.pathContext
             .canonicalize(contextLocation is File
-                ? contextLocation.parent2.path
+                ? contextLocation.parent.path
                 : contextLocation.path));
 
   /// Build a DartdocOptionContext via the 'inputDir' command line option.

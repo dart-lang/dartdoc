@@ -16482,7 +16482,12 @@ const _invisibleGetters = {
     'modificationStamp',
     'runtimeType'
   },
-  'FunctionElement': {'hashCode', 'isEntryPoint', 'runtimeType'},
+  'FunctionElement': {
+    'hashCode',
+    'isDartCoreIdentical',
+    'isEntryPoint',
+    'runtimeType'
+  },
   'FunctionType': {
     'hashCode',
     'namedParameterTypes',
