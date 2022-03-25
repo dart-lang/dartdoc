@@ -79,7 +79,7 @@ class Template {
       partialResolver = (String path) async {
         var partialPath = pathContext.isAbsolute(path)
             ? path
-            : pathContext.join(file.parent2.path, path);
+            : pathContext.join(file.parent.path, path);
         var partialFile =
             file.provider.getFile(pathContext.normalize(partialPath));
         return partialFile;

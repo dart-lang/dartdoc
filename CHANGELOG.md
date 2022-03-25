@@ -1,5 +1,6 @@
 ## 5.1.0-dev
 * Removed superfluous `[...]` links. (#2928)
+* Move to analyzer 3.4.0.
 
 ## 5.0.1
 * Add support for new VM service message. (#2931)

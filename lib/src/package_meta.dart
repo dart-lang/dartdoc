@@ -40,8 +40,8 @@ final PackageMetaProvider pubPackageMetaProvider = PackageMetaProvider(
     PhysicalResourceProvider.INSTANCE
         .getFile(PhysicalResourceProvider.INSTANCE.pathContext
             .absolute(Platform.resolvedExecutable))
-        .parent2
-        .parent2,
+        .parent
+        .parent,
     messageForMissingPackageMeta: PubPackageMeta.messageForMissingPackageMeta);
 
 /// Sets the supported way of constructing [PackageMeta] objects.
@@ -215,14 +215,14 @@ abstract class PubPackageMeta extends PackageMeta {
         resourceProvider
             .getFile(resourceProvider.pathContext
                 .canonicalize(libraryElement.source.fullName))
-            .parent2,
+            .parent,
         resourceProvider);
   }
 
   static PackageMeta? fromFilename(
       String filename, ResourceProvider resourceProvider) {
     return PubPackageMeta.fromDir(
-        resourceProvider.getFile(filename).parent2, resourceProvider);
+        resourceProvider.getFile(filename).parent, resourceProvider);
   }
 
   /// This factory is guaranteed to return the same object for any given
@@ -321,11 +321,11 @@ class _FilePackageMeta extends PubPackageMeta {
     // a pub library to do this.
     // People could have a pub cache at root with Windows drive mappings.
     if (pathContext.split(pathContext.canonicalize(dir.path)).length >= 3) {
-      var pubCacheRoot = dir.parent2.parent2.parent2.path;
+      var pubCacheRoot = dir.parent.parent.parent.path;
       // Check for directory structure too close to root.
-      if (pubCacheRoot != dir.parent2.parent2.path) {
-        var hosted = pathContext.canonicalize(dir.parent2.parent2.path);
-        var hostname = pathContext.canonicalize(dir.parent2.path);
+      if (pubCacheRoot != dir.parent.parent.path) {
+        var hosted = pathContext.canonicalize(dir.parent.parent.path);
+        var hostname = pathContext.canonicalize(dir.parent.path);
         if (pathContext.basename(hosted) == 'hosted' &&
             resourceProvider
                 .getFolder(pathContext.join(pubCacheRoot, '_temp'))

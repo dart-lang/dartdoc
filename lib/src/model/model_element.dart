@@ -695,11 +695,9 @@ abstract class ModelElement extends Canonicalization
     var lineInfo = compilationUnitElement!.lineInfo;
     assert(element!.nameOffset >= 0,
         'Invalid location data for element: $fullyQualifiedName');
-    assert(lineInfo != null,
-        'No lineInfo data available for element: $fullyQualifiedName');
     var nameOffset = element!.nameOffset;
     if (nameOffset >= 0) {
-      return lineInfo?.getLocation(nameOffset);
+      return lineInfo.getLocation(nameOffset);
     }
     return null;
   }();
