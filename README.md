@@ -4,12 +4,12 @@
 [![Coverage Status](https://coveralls.io/repos/github/dart-lang/dartdoc/badge.svg?branch=master)](https://coveralls.io/github/dart-lang/dartdoc?branch=master)
 
 
-Use `dart doc` to generate HTML documentaton for your Dart package.
+Use `dart doc` to generate HTML documentation for your Dart package.
 
 For information about contributing to the dartdoc project, see the
 [contributor docs][].
 
-For issues/details related to hosted Dart API docs, see
+For issues/details related to the hosted Dart SDK API docs, see
 [dart-lang/api.dart.dev](https://github.com/dart-lang/api.dart.dev/).
 
 ## Installation
@@ -19,11 +19,15 @@ with the `dart doc` command, is part of the [Dart SDK](https://dart.dev/get-dart
 
 ## Generating docs
 
-Run `dart doc .` from the root directory of a package.  Your package must analyze without errors
-with `dart analyze` or `flutter analyze` as appropriate.  Here is an example of dart doc documenting
-itself:
+Run `dart doc .` from the root directory of a package.
+You must first run `dart pub get` or `flutter pub get` and
+your package must analyze without errors
+with `dart analyze` or `flutter analyze` as appropriate.
+Here is an example of dartdoc documenting itself:
 
 ```
+$ dart pub get
+...
 $ dart doc .
 Documenting dartdoc...
 ...
@@ -432,7 +436,7 @@ link-to-source:
 
 Example staging command line:
 ```bash
-pub global run dartdoc --link-to-source-root '.' --link-to-source-revision 6fac6f770d271312c88e8ae881861702a9a605be --link-to-source-uri-template 'https://github.com/dart-lang/dartdoc/blob/%r%/%f#L%l%'
+dart pub global run dartdoc --link-to-source-root '.' --link-to-source-revision 6fac6f770d271312c88e8ae881861702a9a605be --link-to-source-uri-template 'https://github.com/dart-lang/dartdoc/blob/%r%/%f#L%l%'
 ```
 
 This gets more complicated with `--auto-include-dependencies` as these command line flags
