@@ -17,10 +17,10 @@ class GeneratorFrontEnd implements Generator {
 
   @override
   Future<void> generate(PackageGraph? packageGraph, FileWriter writer) async {
-    var indexElements = <Indexable>[];
-    if (packageGraph != null) {
-      _generateDocs(packageGraph, writer, indexElements);
-    }
+    var indexElements = packageGraph == null
+        ? <Indexable>[]
+        : _generateDocs(packageGraph, writer);
+
     await _generatorBackend.generateAdditionalFiles(writer);
 
     var categories = indexElements
@@ -33,11 +33,11 @@ class GeneratorFrontEnd implements Generator {
 
   /// Traverses the package graph and generates documentation for all contained
   /// elements.
-  void _generateDocs(PackageGraph packageGraph, FileWriter writer,
-      List<Indexable> indexAccumulator) {
+  List<Indexable> _generateDocs(PackageGraph packageGraph, FileWriter writer) {
     _generatorBackend.generatePackage(
         writer, packageGraph, packageGraph.defaultPackage);
 
+    var indexAccumulator = <Indexable>[];
     for (var package in packageGraph.localPackages) {
       for (var category in filterNonDocumented(package.categories)) {
         logInfo('Generating docs for category ${category.name} from '
@@ -283,6 +283,7 @@ class GeneratorFrontEnd implements Generator {
         }
       }
     }
+    return indexAccumulator;
   }
 }
 

@@ -58,11 +58,9 @@ Iterable<T> filterHasCanonical<T extends ModelElement>(
   return maybeHasCanonicalItems.where((me) => me.canonicalModelElement != null);
 }
 
-/// Remove elements that aren't documented.
-Iterable<T> filterNonDocumented<T extends Documentable>(
-    Iterable<T> maybeDocumentedItems) {
-  return maybeDocumentedItems.where((me) => me.isDocumented);
-}
+/// Selects [items] which are documented.
+Iterable<T> filterNonDocumented<T extends Documentable>(Iterable<T> items) =>
+    items.where((me) => me.isDocumented);
 
 /// Returns an iterable containing only public elements from [privacyItems].
 Iterable<T> filterNonPublic<T extends Privacy>(Iterable<T> privacyItems) {
