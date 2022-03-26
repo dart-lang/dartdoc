@@ -350,7 +350,7 @@ void main() {
         'Verify that autoIncludeDependencies makes everything document locally',
         () {
       expect(ginormousPackageGraph.packages.map((p) => p.documentedWhere),
-          everyElement((x) => x == DocumentLocation.local));
+          everyElement((DocumentLocation x) => x == DocumentLocation.local));
     });
 
     test('Verify that ginormousPackageGraph takes in the SDK', () {

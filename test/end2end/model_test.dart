@@ -237,7 +237,7 @@ void main() {
           orderedEquals(genericParameters));
     }
 
-    void expectAliasedTypeName(Aliased n, expected) {
+    void expectAliasedTypeName(Aliased n, Matcher expected) {
       expect(n.aliasElement.name, expected);
     }
 
