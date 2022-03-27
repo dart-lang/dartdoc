@@ -19,9 +19,8 @@ abstract class LibraryContainer
   Iterable<Library> get publicLibraries =>
       model_utils.filterNonPublic(libraries);
 
-  List<Library>? _publicLibrariesSorted;
-  Iterable<Library> get publicLibrariesSorted =>
-      _publicLibrariesSorted ??= publicLibraries.toList()..sort(byName);
+  late final List<Library> publicLibrariesSorted =
+      publicLibraries.sorted(byName);
 
   bool get hasPublicLibraries => publicLibraries.isNotEmpty;
 
@@ -30,10 +29,10 @@ abstract class LibraryContainer
   String get enclosingName;
 
   /// Order by which this container should be sorted.
-  List<String?> get containerOrder;
+  List<String> get containerOrder;
 
   /// Sorting key.  [containerOrder] should contain these.
-  String? get sortKey => name;
+  String get sortKey => name;
 
   /// Does this container represent the SDK?  This can be false for containers
   /// that only represent a part of the SDK.
@@ -47,9 +46,9 @@ abstract class LibraryContainer
   /// * 3 otherwise.
   int get _group {
     if (containerOrder.contains(sortKey)) return -1;
-    if (equalsIgnoreAsciiCase(sortKey!, enclosingName)) return 0;
+    if (equalsIgnoreAsciiCase(sortKey, enclosingName)) return 0;
     if (isSdk) return 1;
-    if (sortKey!.toLowerCase().contains(enclosingName.toLowerCase())) return 2;
+    if (sortKey.toLowerCase().contains(enclosingName.toLowerCase())) return 2;
     return 3;
   }
 
@@ -60,7 +59,7 @@ abstract class LibraryContainer
         return Comparable.compare(containerOrder.indexOf(sortKey),
             containerOrder.indexOf(other.sortKey));
       } else {
-        return sortKey!.toLowerCase().compareTo(other.sortKey!.toLowerCase());
+        return sortKey.toLowerCase().compareTo(other.sortKey.toLowerCase());
       }
     }
     return Comparable.compare(_group, other._group);

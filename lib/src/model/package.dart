@@ -132,7 +132,7 @@ class Package extends LibraryContainer
   /// If we have public libraries, this is the default package, or we are
   /// auto-including dependencies, this package is public.
   late final bool isPublic =
-      libraries.any((l) => l.isPublic) || _isLocalPublicByDefault;
+      _isLocalPublicByDefault || libraries.any((l) => l.isPublic);
 
   /// Return true if this is the default package, this is part of an embedder
   /// SDK, or if [DartdocOptionContext.autoIncludeDependencies] is true -- but
@@ -182,38 +182,22 @@ class Package extends LibraryContainer
 
   String get filePath => 'index.$fileType';
 
-  String? _fileType;
-
-  String get fileType {
-    // TODO(jdkoren): Provide a way to determine file type of a remote package's
-    // docs. Perhaps make this configurable through dartdoc options.
-    // In theory, a remote package could be documented in any supported format.
-    // In practice, devs depend on Dart, Flutter, and/or packages fetched
-    // from pub.dev, and we know that all of those use html docs.
-    return _fileType ??= (package.documentedWhere == DocumentLocation.remote)
-        ? 'html'
-        : config.format;
-  }
+  // TODO(jdkoren): Provide a way to determine file type of a remote package's
+  // docs. Perhaps make this configurable through dartdoc options.
+  // In theory, a remote package could be documented in any supported format.
+  // In practice, devs depend on Dart, Flutter, and/or packages fetched
+  // from pub.dev, and we know that all of those use html docs.
+  late final String fileType =
+      (package.documentedWhere == DocumentLocation.remote)
+          ? 'html'
+          : config.format;
 
   @override
   String get fullyQualifiedName => 'package:$name';
 
-  String? _baseHref;
-
-  String? get baseHref {
-    if (_baseHref != null) {
-      return _baseHref;
-    }
-
-    if (documentedWhere == DocumentLocation.remote) {
-      _baseHref = _remoteBaseHref;
-      if (!_baseHref!.endsWith('/')) _baseHref = '$_baseHref/';
-    } else {
-      _baseHref = config.useBaseHref ? '' : htmlBasePlaceholder;
-    }
-
-    return _baseHref;
-  }
+  late final String baseHref = documentedWhere == DocumentLocation.remote
+      ? (_remoteBaseHref.endsWith('/') ? _remoteBaseHref : '$_remoteBaseHref/')
+      : (config.useBaseHref ? '' : htmlBasePlaceholder);
 
   String get _remoteBaseHref {
     return config.linkToUrl.replaceAllMapped(_substituteNameVersion, (m) {
@@ -390,7 +374,7 @@ class Package extends LibraryContainer
   @override
   late final DartdocOptionContext config = DartdocOptionContext.fromContext(
       packageGraph.config,
-      packageGraph.resourceProvider.getFolder(packagePath!),
+      packageGraph.resourceProvider.getFolder(packagePath),
       packageGraph.resourceProvider);
 
   /// Is this the package at the top of the list?  We display the first
@@ -402,12 +386,8 @@ class Package extends LibraryContainer
   @override
   bool get isSdk => packageMeta.isSdk;
 
-  String? _packagePath;
-
-  String? get packagePath {
-    _packagePath ??= _pathContext.canonicalize(packageMeta.dir.path);
-    return _packagePath;
-  }
+  late final String packagePath =
+      _pathContext.canonicalize(packageMeta.dir.path);
 
   String get version => packageMeta.version;
 
@@ -419,23 +399,19 @@ class Package extends LibraryContainer
   Element? get element => null;
 
   @override
-  List<String?> get containerOrder => config.packageOrder;
+  List<String> get containerOrder => config.packageOrder;
 
-  Map<String, CommentReferable>? _referenceChildren;
   @override
-  Map<String, CommentReferable> get referenceChildren {
-    if (_referenceChildren == null) {
-      _referenceChildren = {};
-      _referenceChildren!.addEntries(publicLibrariesSorted.generateEntries());
-      // Do not override any preexisting data, and insert based on the
-      // public library sort order.
-      // TODO(jcollins-g): warn when results require package-global
-      // lookups like this.
-      _referenceChildren!.addEntriesIfAbsent(
-          publicLibrariesSorted.expand((l) => l.referenceChildren.entries));
-    }
-    return _referenceChildren!;
+  late final Map<String, CommentReferable> referenceChildren =
+      <String, CommentReferable>{
+    for (var library in publicLibrariesSorted) library.referenceName: library,
   }
+        // Do not override any preexisting data, and insert based on the
+        // public library sort order.
+        // TODO(jcollins-g): warn when results require package-global
+        // lookups like this.
+        ..addEntriesIfAbsent(
+            publicLibrariesSorted.expand((l) => l.referenceChildren.entries));
 
   @override
   Iterable<CommentReferable> get referenceParents => [packageGraph];
