@@ -291,21 +291,30 @@ class PubPackageBuilder implements PackageBuilder {
     }
 
     var sep = _pathContext.separator;
+    var packagesWithSeparators = '${sep}packages$sep';
     for (var packageDir in packageDirs) {
       var packageLibDir = _pathContext.join(packageDir, 'lib');
       var packageLibSrcDir = _pathContext.join(packageLibDir, 'src');
+      var packageDirContainsPackages =
+          packageDir.contains(packagesWithSeparators);
       // To avoid analyzing package files twice, only files with paths not
-      // containing '/packages' will be added. The only exception is if the file
-      // to analyze already has a '/package' in its path.
+      // containing '/packages/' will be added. The only exception is if the
+      // file to analyze already has a '/packages/' in its path.
       for (var lib
           in _listDir(packageDir, recursive: true, listDir: _packageDirList)) {
         if (lib.endsWith('.dart') &&
-            (!lib.contains('${sep}packages$sep') ||
-                packageDir.contains('${sep}packages$sep'))) {
-          // Only include libraries within the lib dir that are not in 'lib/src'.
+            (packageDirContainsPackages ||
+                !lib.contains(packagesWithSeparators))) {
+          // Only include libraries within the lib dir that are not in
+          // 'lib/src'.
           if (_pathContext.isWithin(packageLibDir, lib) &&
               !_pathContext.isWithin(packageLibSrcDir, lib)) {
             // Only add the file if it does not contain 'part of'.
+            // TODO(srawlins): I worry that the cure is worse than the disease:
+            // A very small percentage of files should be part files (citation
+            // missing), but we pay a price here of reading all files into
+            // memory, scanning them for a substring, and then dropping the
+            // contents.
             var contents = resourceProvider.getFile(lib).readAsStringSync();
 
             if (contents.startsWith('part of ') ||
