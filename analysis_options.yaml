@@ -9,6 +9,7 @@ analyzer:
     unused_shown_name: warning
   language:
     strict-raw-types: true
+    strict-inference: true
   exclude:
     - 'doc/**'
     - 'pub.dartlang.org/**'

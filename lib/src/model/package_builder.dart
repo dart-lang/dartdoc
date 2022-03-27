@@ -50,9 +50,11 @@ class PubPackageBuilder implements PackageBuilder {
   final PackageConfigProvider packageConfigProvider;
 
   PubPackageBuilder(
-      this.config, this.packageMetaProvider, this.packageConfigProvider,
-      {@visibleForTesting skipUnreachableSdkLibraries = false})
-      : _skipUnreachableSdkLibraries = skipUnreachableSdkLibraries;
+    this.config,
+    this.packageMetaProvider,
+    this.packageConfigProvider, {
+    @visibleForTesting bool skipUnreachableSdkLibraries = false,
+  }) : _skipUnreachableSdkLibraries = skipUnreachableSdkLibraries;
 
   @override
   Future<PackageGraph> buildPackageGraph() async {
