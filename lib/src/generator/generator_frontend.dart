@@ -6,6 +6,7 @@ import 'package:dartdoc/src/generator/generator.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
+import 'package:dartdoc/src/runtime_stats.dart';
 import 'package:dartdoc/src/warnings.dart';
 
 /// [Generator] that delegates rendering to a [GeneratorBackend] and delegates
@@ -34,6 +35,21 @@ class GeneratorFrontEnd implements Generator {
   /// Traverses the package graph and generates documentation for all contained
   /// elements.
   List<Indexable> _generateDocs(PackageGraph packageGraph, FileWriter writer) {
+    runtimeStats.resetAccumulators({
+      'writtenCategoryFileCount',
+      'writtenClassFileCount',
+      'writtenConstructorFileCount',
+      'writtenEnumFileCount',
+      'writtenExtensionFileCount',
+      'writtenFunctionFileCount',
+      'writtenLibraryFileCount',
+      'writtenMethodFileCount',
+      'writtenMixinFileCount',
+      'writtenPackageFileCount',
+      'writtenPropertyFileCount',
+      'writtenTopLevelPropertyFileCount',
+      'writtenTypedefFileCount'
+    });
     _generatorBackend.generatePackage(
         writer, packageGraph, packageGraph.defaultPackage);
 

@@ -10,6 +10,7 @@ import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model_element.dart';
 import 'package:dartdoc/src/model/package_graph.dart';
+import 'package:dartdoc/src/runtime_stats.dart';
 import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:html/parser.dart' show parse;
@@ -35,6 +36,10 @@ class Validator {
   /// generated all docs for the Package.
   void validateLinks() {
     logInfo('Validating...');
+    runtimeStats.resetAccumulators({
+      'readCountForLinkValidation',
+      'readCountForIndexValidation',
+    });
     _collectLinks('index.html');
     _checkForOrphans();
     _checkSearchIndex();
@@ -144,6 +149,7 @@ class Validator {
       return;
     }
     final jsonData = json.decode(file.readAsStringSync()) as List;
+    runtimeStats.incrementAccumulator('readCountForIndexValidation');
 
     final found = <String>{};
     found.add(fullPath);
@@ -167,6 +173,9 @@ class Validator {
     }
   }
 
+  /// Gets all link destinations, and the base link destination, if one is found
+  /// on the page.
+  ///
   /// This is extracted to save memory during the check; be careful not to hang
   /// on to anything referencing the full file and doc tree.
   Tuple2<Iterable<String>, String?>? _getStringLinksAndHref(String fullPath) {
@@ -178,6 +187,7 @@ class Validator {
     // `lowercaseElementName: false` and `lowercaseAttrName: false` may save
     // time or memory.
     final doc = parse(file.readAsBytesSync());
+    runtimeStats.incrementAccumulator('readCountForLinkValidation');
     final base = doc.querySelector('base');
     String? baseHref;
     if (base != null) {

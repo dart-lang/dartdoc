@@ -12,6 +12,7 @@ import 'package:dartdoc/src/comment_references/model_comment_reference.dart';
 import 'package:dartdoc/src/matching_link_result.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/runtime_stats.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'package:meta/meta.dart';
