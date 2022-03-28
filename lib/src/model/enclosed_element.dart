@@ -7,6 +7,6 @@ import 'package:dartdoc/src/model/model.dart';
 /// An element that is enclosed by some other element.
 ///
 /// Libraries are not enclosed.
-abstract class EnclosedElement {
+abstract class EnclosedElement implements Indexable {
   ModelElement? get enclosingElement;
 }
