@@ -10,6 +10,7 @@ import 'package:dartdoc/src/generator/generator_utils.dart' as generator_util;
 import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/src/generator/templates.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/runtime_stats.dart';
 import 'package:dartdoc/src/version.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:path/path.dart' as p show Context;
@@ -120,27 +121,12 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
   }
 
   @override
-  void generatePackage(FileWriter writer, PackageGraph graph, Package package) {
-    var data = PackageTemplateData(options, graph, package);
-    var content = templates.renderIndex(data);
-    write(writer, package.filePath, data, content);
-  }
-
-  @override
   void generateCategory(
       FileWriter writer, PackageGraph packageGraph, Category category) {
     var data = CategoryTemplateData(options, packageGraph, category);
     var content = templates.renderCategory(data);
     write(writer, category.filePath, data, content);
-  }
-
-  @override
-  void generateLibrary(
-      FileWriter writer, PackageGraph packageGraph, Library lib) {
-    var data = LibraryTemplateData(
-        options, packageGraph, lib, sidebarForLibrary.getRenderFor);
-    var content = templates.renderLibrary(data);
-    write(writer, lib.filePath, data, content);
+    runtimeStats.accumulators.update('writtenCategoryFileCount', (c) => c + 1);
   }
 
   @override
@@ -150,25 +136,13 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
         sidebarForLibrary.getRenderFor, sidebarForContainer.getRenderFor);
     var content = templates.renderClass(data);
     write(writer, clazz.filePath, data, content);
+    runtimeStats.accumulators.update('writtenClassFileCount', (c) => c + 1);
   }
 
   @override
-  void generateExtension(FileWriter writer, PackageGraph packageGraph,
-      Library lib, Extension extension) {
-    var data = ExtensionTemplateData(options, packageGraph, lib, extension,
-        sidebarForLibrary.getRenderFor, sidebarForContainer.getRenderFor);
-    var content = templates.renderExtension(data);
-    write(writer, extension.filePath, data, content);
-  }
-
-  @override
-  void generateMixin(
-      FileWriter writer, PackageGraph packageGraph, Library lib, Mixin mixin) {
-    var data = MixinTemplateData(options, packageGraph, lib, mixin,
-        sidebarForLibrary.getRenderFor, sidebarForContainer.getRenderFor);
-    var content = templates.renderMixin(data);
-    write(writer, mixin.filePath, data, content);
-  }
+  void generateConstant(FileWriter writer, PackageGraph packageGraph,
+          Library lib, Container clazz, Field property) =>
+      generateProperty(writer, packageGraph, lib, clazz, property);
 
   @override
   void generateConstructor(FileWriter writer, PackageGraph packageGraph,
@@ -177,6 +151,8 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
         constructable, constructor, sidebarForContainer.getRenderFor);
     var content = templates.renderConstructor(data);
     write(writer, constructor.filePath, data, content);
+    runtimeStats.accumulators
+        .update('writtenConstructorFileCount', (c) => c + 1);
   }
 
   @override
@@ -186,6 +162,17 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
         sidebarForLibrary.getRenderFor, sidebarForContainer.getRenderFor);
     var content = templates.renderEnum(data);
     write(writer, eNum.filePath, data, content);
+    runtimeStats.accumulators.update('writtenEnumFileCount', (c) => c + 1);
+  }
+
+  @override
+  void generateExtension(FileWriter writer, PackageGraph packageGraph,
+      Library lib, Extension extension) {
+    var data = ExtensionTemplateData(options, packageGraph, lib, extension,
+        sidebarForLibrary.getRenderFor, sidebarForContainer.getRenderFor);
+    var content = templates.renderExtension(data);
+    write(writer, extension.filePath, data, content);
+    runtimeStats.accumulators.update('writtenExtensionFileCount', (c) => c + 1);
   }
 
   @override
@@ -195,6 +182,17 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
         options, packageGraph, lib, function, sidebarForLibrary.getRenderFor);
     var content = templates.renderFunction(data);
     write(writer, function.filePath, data, content);
+    runtimeStats.accumulators.update('writtenFunctionFileCount', (c) => c + 1);
+  }
+
+  @override
+  void generateLibrary(
+      FileWriter writer, PackageGraph packageGraph, Library lib) {
+    var data = LibraryTemplateData(
+        options, packageGraph, lib, sidebarForLibrary.getRenderFor);
+    var content = templates.renderLibrary(data);
+    write(writer, lib.filePath, data, content);
+    runtimeStats.accumulators.update('writtenLibraryFileCount', (c) => c + 1);
   }
 
   @override
@@ -204,12 +202,26 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
         sidebarForContainer.getRenderFor);
     var content = templates.renderMethod(data);
     write(writer, method.filePath, data, content);
+    runtimeStats.accumulators.update('writtenMethodFileCount', (c) => c + 1);
   }
 
   @override
-  void generateConstant(FileWriter writer, PackageGraph packageGraph,
-          Library lib, Container clazz, Field property) =>
-      generateProperty(writer, packageGraph, lib, clazz, property);
+  void generateMixin(
+      FileWriter writer, PackageGraph packageGraph, Library lib, Mixin mixin) {
+    var data = MixinTemplateData(options, packageGraph, lib, mixin,
+        sidebarForLibrary.getRenderFor, sidebarForContainer.getRenderFor);
+    var content = templates.renderMixin(data);
+    write(writer, mixin.filePath, data, content);
+    runtimeStats.accumulators.update('writtenMixinFileCount', (c) => c + 1);
+  }
+
+  @override
+  void generatePackage(FileWriter writer, PackageGraph graph, Package package) {
+    var data = PackageTemplateData(options, graph, package);
+    var content = templates.renderIndex(data);
+    write(writer, package.filePath, data, content);
+    runtimeStats.accumulators.update('writtenPackageFileCount', (c) => c + 1);
+  }
 
   @override
   void generateProperty(FileWriter writer, PackageGraph packageGraph,
@@ -218,15 +230,7 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
         sidebarForContainer.getRenderFor);
     var content = templates.renderProperty(data);
     write(writer, property.filePath, data, content);
-  }
-
-  @override
-  void generateTopLevelProperty(FileWriter writer, PackageGraph packageGraph,
-      Library lib, TopLevelVariable property) {
-    var data = TopLevelPropertyTemplateData(
-        options, packageGraph, lib, property, sidebarForLibrary.getRenderFor);
-    var content = templates.renderTopLevelProperty(data);
-    write(writer, property.filePath, data, content);
+    runtimeStats.accumulators.update('writtenPropertyFileCount', (c) => c + 1);
   }
 
   @override
@@ -235,12 +239,24 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
       generateTopLevelProperty(writer, packageGraph, lib, property);
 
   @override
+  void generateTopLevelProperty(FileWriter writer, PackageGraph packageGraph,
+      Library lib, TopLevelVariable property) {
+    var data = TopLevelPropertyTemplateData(
+        options, packageGraph, lib, property, sidebarForLibrary.getRenderFor);
+    var content = templates.renderTopLevelProperty(data);
+    write(writer, property.filePath, data, content);
+    runtimeStats.accumulators
+        .update('writtenTopLevelPropertyFileCount', (c) => c + 1);
+  }
+
+  @override
   void generateTypeDef(FileWriter writer, PackageGraph packageGraph,
       Library lib, Typedef typeDef) {
     var data = TypedefTemplateData(
         options, packageGraph, lib, typeDef, sidebarForLibrary.getRenderFor);
     var content = templates.renderTypedef(data);
     write(writer, typeDef.filePath, data, content);
+    runtimeStats.accumulators.update('writtenTypedefFileCount', (c) => c + 1);
   }
 
   @override

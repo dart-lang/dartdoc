@@ -26,12 +26,12 @@ import 'package:analyzer/src/generated/sdk.dart' show DartSdk;
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/logging.dart';
-import 'package:dartdoc/src/matching_link_result.dart';
 import 'package:dartdoc/src/model/model.dart' hide Package;
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart'
     show PackageMeta, PackageMetaProvider;
 import 'package:dartdoc/src/render/renderer_factory.dart';
+import 'package:dartdoc/src/runtime_stats.dart';
 import 'package:dartdoc/src/special_elements.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p show Context;
