@@ -36,10 +36,10 @@ class Validator {
   /// generated all docs for the Package.
   void validateLinks() {
     logInfo('Validating...');
-    runtimeStats.resetAccumulators([
+    runtimeStats.resetAccumulators({
       'readCountForLinkValidation',
       'readCountForIndexValidation',
-    ]);
+    });
     _collectLinks('index.html');
     _checkForOrphans();
     _checkSearchIndex();

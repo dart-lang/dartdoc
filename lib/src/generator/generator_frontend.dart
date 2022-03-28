@@ -35,7 +35,7 @@ class GeneratorFrontEnd implements Generator {
   /// Traverses the package graph and generates documentation for all contained
   /// elements.
   List<Indexable> _generateDocs(PackageGraph packageGraph, FileWriter writer) {
-    runtimeStats.resetAccumulators([
+    runtimeStats.resetAccumulators({
       'writtenCategoryFileCount',
       'writtenClassFileCount',
       'writtenConstructorFileCount',
@@ -49,7 +49,7 @@ class GeneratorFrontEnd implements Generator {
       'writtenPropertyFileCount',
       'writtenTopLevelPropertyFileCount',
       'writtenTypedefFileCount'
-    ]);
+    });
     _generatorBackend.generatePackage(
         writer, packageGraph, packageGraph.defaultPackage);
 
