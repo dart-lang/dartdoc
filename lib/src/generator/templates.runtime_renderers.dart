@@ -10468,6 +10468,13 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.isDocumented == true,
                 ),
+                'isEnumValue': Property(
+                  getValue: (CT_ c) => c.isEnumValue,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.isEnumValue == true,
+                ),
                 'isExecutable': Property(
                   getValue: (CT_ c) => c.isExecutable,
                   renderVariable: (CT_ c, Property<CT_> self,

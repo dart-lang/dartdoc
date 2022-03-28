@@ -183,11 +183,11 @@ class C {}
           equals(eEnum.characterLocation.toString()));
     });
 
-    test('value does not link anywhere', () async {
+    test('value links to its anchor', () async {
       var library = await bootPackageWithLibrary('enum E { one, two, three }');
       var oneValue =
           library.enums.named('E').publicEnumValues.named('one') as EnumField;
-      expect(oneValue.linkedName, 'one');
+      expect(oneValue.linkedName, '<a href="$linkPrefix/E.html#one">one</a>');
       expect(oneValue.constantValue,
           equals(EnumFieldRendererHtml().renderValue(oneValue)));
     });

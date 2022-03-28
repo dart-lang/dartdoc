@@ -185,7 +185,12 @@ abstract class ModelElement extends Canonicalization
             throw StateError(
                 'Enum $e (${e.runtimeType}) does not have a constant value.');
           }
-          var index = constantValue.getField('index')!.toIntValue();
+          var constantIndex = constantValue.getField('index');
+          if (constantIndex == null) {
+            throw StateError(
+                'Enum $e (${e.runtimeType}) does not have a constant value.');
+          }
+          var index = constantIndex.toIntValue()!;
           newModelElement =
               EnumField.forConstant(index, e, library, packageGraph, getter);
         } else if (e.enclosingElement is ExtensionElement) {
@@ -761,6 +766,9 @@ abstract class ModelElement extends Canonicalization
 
   @override
   bool get isDocumented => isCanonical && isPublic;
+
+  /// Whether this element is an enum value.
+  bool get isEnumValue => false;
 
   bool get isExecutable => element is ExecutableElement;
 

@@ -6,6 +6,8 @@ import 'package:dartdoc/src/model/enum.dart';
 
 abstract class EnumFieldRenderer {
   String renderValue(EnumField field);
+
+  String renderLinkedName(EnumField field);
 }
 
 class EnumFieldRendererHtml implements EnumFieldRenderer {
@@ -19,6 +21,12 @@ class EnumFieldRendererHtml implements EnumFieldRenderer {
       return 'const ${field.enclosingElement.name}(${field.index})';
     }
   }
+
+  @override
+  String renderLinkedName(EnumField field) {
+    var cssClass = field.isDeprecated ? ' class="deprecated"' : '';
+    return '<a$cssClass href="${field.href}#${field.htmlId}">${field.name}</a>';
+  }
 }
 
 class EnumFieldRendererMd implements EnumFieldRenderer {
@@ -31,5 +39,13 @@ class EnumFieldRendererMd implements EnumFieldRenderer {
     } else {
       return 'const ${field.enclosingElement.name}(${field.index})';
     }
+  }
+
+  @override
+  String renderLinkedName(EnumField field) {
+    if (field.isDeprecated) {
+      return '[~~${field.name}~~](${field.href})';
+    }
+    return '[${field.name}](${field.href})';
   }
 }
