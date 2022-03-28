@@ -48,8 +48,9 @@ class Validator {
   void _collectLinks(String pathToCheck, [String? source, String? fullPath]) {
     fullPath ??= p.join(_origin, pathToCheck);
 
-    final stringLinksAndHref = _getStringLinksAndHref(fullPath);
-    if (stringLinksAndHref == null) {
+    final pageLinks = _getLinksAndBaseHref(fullPath);
+    if (pageLinks == null) {
+      // The file could not be read.
       _warn(PackageWarning.brokenLink, pathToCheck, _origin,
           referredFrom: source);
       _onCheckProgress.add(pathToCheck);
@@ -59,27 +60,22 @@ class Validator {
       return;
     }
     _visited.add(fullPath);
-    final stringLinks = stringLinksAndHref.item1;
-    final baseHref = stringLinksAndHref.item2;
+    final links = pageLinks.links;
+    final baseHref = pageLinks.baseHref;
 
     // Prevent extremely large stacks by storing the paths we are using
     // here instead -- occasionally, very large jobs have overflowed
     // the stack without this.
     // (newPathToCheck, newFullPath)
     final toVisit = <Tuple2<String, String>>{};
+    final pathDirectory = baseHref == null
+        ? p.dirname(pathToCheck)
+        : '${p.dirname(pathToCheck)}/$baseHref';
 
-    for (final href in stringLinks) {
-      if (href.startsWith('https:') ||
-          href.startsWith('http:') ||
-          href.startsWith('mailto:') ||
-          href.startsWith('ftp:')) {
-        continue;
-      }
+    for (final href in links) {
       final uri = Uri.tryParse(href);
       if (uri == null || !uri.hasAuthority && !uri.hasFragment) {
-        var linkPath = baseHref != null
-            ? '${p.dirname(pathToCheck)}/$baseHref/$href'
-            : '${p.dirname(pathToCheck)}/$href';
+        var linkPath = '$pathDirectory/$href';
 
         linkPath = p.normalize(linkPath);
         final newFullPath = p.join(_origin, linkPath);
@@ -178,7 +174,7 @@ class Validator {
   ///
   /// This is extracted to save memory during the check; be careful not to hang
   /// on to anything referencing the full file and doc tree.
-  Tuple2<Iterable<String>, String?>? _getStringLinksAndHref(String fullPath) {
+  _PageLinks? _getLinksAndBaseHref(String fullPath) {
     final file = _config.resourceProvider.getFile(fullPath);
     if (!file.exists) {
       return null;
@@ -197,10 +193,15 @@ class Validator {
     final stringLinks = links
         .map((link) => link.attributes['href'])
         .whereType<String>()
-        .where((href) => href.isNotEmpty)
-        .toList();
+        .where((href) =>
+            href.isNotEmpty &&
+            !href.startsWith('https:') &&
+            !href.startsWith('http:') &&
+            !href.startsWith('mailto:') &&
+            !href.startsWith('ftp:'))
+        .toSet();
 
-    return Tuple2(stringLinks, baseHref);
+    return _PageLinks(stringLinks, baseHref);
   }
 
   /// Warns on erroneous file paths.
@@ -252,4 +253,12 @@ class Validator {
     _packageGraph.warnOnElement(warnOnElement, kind,
         message: message, referredFrom: referredFromElements);
   }
+}
+
+/// Stores all links found in a page, and the base href.
+class _PageLinks {
+  final Set<String> links;
+  final String? baseHref;
+
+  const _PageLinks(this.links, this.baseHref);
 }
