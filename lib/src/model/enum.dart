@@ -52,12 +52,10 @@ class Enum extends InheritingContainer
 /// Enum's value fields are virtual, so we do a little work to create usable
 /// entries for the docs.
 class EnumField extends Field {
-  int? index;
+  final int index;
 
-  EnumField(FieldElement element, Library library, PackageGraph packageGraph,
-      Accessor? getter, Accessor? setter)
-      : super(element, library, packageGraph, getter as ContainerAccessor?,
-            setter as ContainerAccessor?);
+  @override
+  bool get isEnumValue => true;
 
   EnumField.forConstant(this.index, FieldElement element, Library library,
       PackageGraph packageGraph, Accessor? getter)
@@ -88,16 +86,13 @@ class EnumField extends Field {
   }
 
   @override
-  String get linkedName => name;
+  String get linkedName => _fieldRenderer.renderLinkedName(this);
 
   @override
   bool get isCanonical {
     if (name == 'index') return false;
     // If this is something inherited from Object, e.g. hashCode, let the
     // normal rules apply.
-    if (index == null) {
-      return super.isCanonical;
-    }
     // TODO(jcollins-g): We don't actually document this as a separate entity;
     //                   do that or change this to false and deal with the
     //                   consequences.

@@ -176,25 +176,24 @@ enum EnumWithDefaultConstructor { four, five, six }
           ]));
     });
 
-    test('enum sidebar contains default constructors', () async {
-      expect(
-          enumWithDefaultConstructorLines,
-          containsAllInOrder([
-            matches('<div id="dartdoc-sidebar-right"'),
-            matches(
-                '<a href="../lib/EnumWithDefaultConstructor.html#constructors">Constructors</a>'),
-            matches(
-                '<a href="../lib/EnumWithDefaultConstructor/EnumWithDefaultConstructor.html">EnumWithDefaultConstructor</a>'),
-          ]));
-    });
-
-    test('enum sidebar contains explicit constructors', () async {
+    test('enum page contains values', () async {
       expect(
           eLines,
           containsAllInOrder([
-            matches('<div id="dartdoc-sidebar-right"'),
-            matches('<a href="../lib/E.html#constructors">Constructors</a>'),
-            matches('<a href="../lib/E/E.named.html">named</a>'),
+            matches('<h2>Values</h2>'),
+            matches('<span class="name ">one</span>'),
+            matches('<p>Doc comment for <a href="../lib/E.html">one</a>.</p>'),
+            matches(
+                r'<span class="signature"><code>E&lt;int&gt;.named\(1\)</code></span>'),
+          ]));
+    });
+
+    test('enum page contains values with deprecated annotation', () async {
+      expect(
+          eLines,
+          containsAllInOrder([
+            matches('<h2>Values</h2>'),
+            matches('<span class="name deprecated">two</span>'),
           ]));
     });
 
@@ -300,27 +299,6 @@ enum EnumWithDefaultConstructor { four, five, six }
           ]));
     });
 
-    test('enum page contains values', () async {
-      expect(
-          eLines,
-          containsAllInOrder([
-            matches('<h2>Values</h2>'),
-            matches('<span class="name ">one</span>'),
-            matches('<p>Doc comment for <a href="../lib/E.html">one</a>.</p>'),
-            matches(
-                r'<span class="signature"><code>E&lt;int&gt;.named\(1\)</code></span>'),
-          ]));
-    });
-
-    test('enum page contains values with deprecated annotation', () async {
-      expect(
-          eLines,
-          containsAllInOrder([
-            matches('<h2>Values</h2>'),
-            matches('<span class="name deprecated">two</span>'),
-          ]));
-    });
-
     test('enum page contains (static) constants', () async {
       expect(
           eLines,
@@ -341,14 +319,35 @@ enum EnumWithDefaultConstructor { four, five, six }
           ]));
     });
 
+    test('enum sidebar contains default constructors', () async {
+      expect(
+          enumWithDefaultConstructorLines,
+          containsAllInOrder([
+            matches('<div id="dartdoc-sidebar-right"'),
+            matches(
+                '<a href="../lib/EnumWithDefaultConstructor.html#constructors">Constructors</a>'),
+            matches(
+                '<a href="../lib/EnumWithDefaultConstructor/EnumWithDefaultConstructor.html">EnumWithDefaultConstructor</a>'),
+          ]));
+    });
+
+    test('enum sidebar contains explicit constructors', () async {
+      expect(
+          eLines,
+          containsAllInOrder([
+            matches('<div id="dartdoc-sidebar-right"'),
+            matches('<a href="../lib/E.html#constructors">Constructors</a>'),
+            matches('<a href="../lib/E/E.named.html">named</a>'),
+          ]));
+    });
+
     test('enum sidebar contains values', () async {
       expect(
           eLines,
           containsAllInOrder([
             matches('<div id="dartdoc-sidebar-right"'),
             matches('<a href="../lib/E.html#values">Values</a>'),
-            // TODO(srawlins): Linkify this.
-            matches('<li>one</li>'),
+            matches('<li><a href="../lib/E.html#one">one</a></li>'),
           ]));
     });
 

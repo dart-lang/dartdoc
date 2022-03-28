@@ -3283,14 +3283,31 @@ String _deduplicated_lib_templates_html__constant_html(
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
   buffer.writeEscaped(context0.htmlId);
-  buffer.write('''" class="constant">
-  <span class="name ''');
-  if (context0.isDeprecated == true) {
-    buffer.write('''deprecated''');
+  buffer.write('''" class="constant">''');
+  if (context0.isEnumValue == true) {
+    buffer.writeln();
+    buffer.write('''
+    <span class="name ''');
+    if (context0.isDeprecated == true) {
+      buffer.write('''deprecated''');
+    }
+    buffer.write('''">''');
+    buffer.write(context0.name);
+    buffer.write('''</span>''');
   }
-  buffer.write('''">''');
-  buffer.write(context0.linkedName);
-  buffer.write('''</span>
+  if (context0.isEnumValue != true) {
+    buffer.writeln();
+    buffer.write('''
+    <span class="name ''');
+    if (context0.isDeprecated == true) {
+      buffer.write('''deprecated''');
+    }
+    buffer.write('''">''');
+    buffer.write(context0.linkedName);
+    buffer.write('''</span>''');
+  }
+  buffer.writeln();
+  buffer.write('''
   <span class="signature">&#8594; const ''');
   buffer.write(context0.modelType.linkedName);
   buffer.write('''</span>
@@ -4463,14 +4480,31 @@ String
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
   buffer.writeEscaped(context1.htmlId);
-  buffer.write('''" class="constant">
-  <span class="name ''');
-  if (context1.isDeprecated == true) {
-    buffer.write('''deprecated''');
+  buffer.write('''" class="constant">''');
+  if (context1.isEnumValue == true) {
+    buffer.writeln();
+    buffer.write('''
+    <span class="name ''');
+    if (context1.isDeprecated == true) {
+      buffer.write('''deprecated''');
+    }
+    buffer.write('''">''');
+    buffer.write(context1.name);
+    buffer.write('''</span>''');
   }
-  buffer.write('''">''');
-  buffer.write(context1.linkedName);
-  buffer.write('''</span>
+  if (context1.isEnumValue != true) {
+    buffer.writeln();
+    buffer.write('''
+    <span class="name ''');
+    if (context1.isDeprecated == true) {
+      buffer.write('''deprecated''');
+    }
+    buffer.write('''">''');
+    buffer.write(context1.linkedName);
+    buffer.write('''</span>''');
+  }
+  buffer.writeln();
+  buffer.write('''
   <span class="signature">&#8594; const ''');
   buffer.write(context1.modelType.linkedName);
   buffer.write('''</span>
