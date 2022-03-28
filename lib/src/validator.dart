@@ -36,8 +36,10 @@ class Validator {
   /// generated all docs for the Package.
   void validateLinks() {
     logInfo('Validating...');
-    runtimeStats.accumulators['readCountForLinkValidation'] = 0;
-    runtimeStats.accumulators['readCountForIndexValidation'] = 0;
+    runtimeStats.resetAccumulators([
+      'readCountForLinkValidation',
+      'readCountForIndexValidation',
+    ]);
     _collectLinks('index.html');
     _checkForOrphans();
     _checkSearchIndex();
@@ -147,8 +149,7 @@ class Validator {
       return;
     }
     final jsonData = json.decode(file.readAsStringSync()) as List;
-    runtimeStats.accumulators
-        .update('readCountForIndexValidation', (c) => c + 1);
+    runtimeStats.incrementAccumulator('readCountForIndexValidation');
 
     final found = <String>{};
     found.add(fullPath);
@@ -186,8 +187,7 @@ class Validator {
     // `lowercaseElementName: false` and `lowercaseAttrName: false` may save
     // time or memory.
     final doc = parse(file.readAsBytesSync());
-    runtimeStats.accumulators
-        .update('readCountForLinkValidation', (c) => c + 1);
+    runtimeStats.incrementAccumulator('readCountForLinkValidation');
     final base = doc.querySelector('base');
     String? baseHref;
     if (base != null) {

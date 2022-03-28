@@ -6,10 +6,10 @@ class _RuntimeStats {
   int totalReferences = 0;
   int resolvedReferences = 0;
 
-  List<_PerfTask> perfTasks = [];
-  List<_PerfTask> taskQueue = [];
+  final List<_PerfTask> perfTasks = [];
+  final List<_PerfTask> taskQueue = [];
 
-  Map<String, int> accumulators = {};
+  final Map<String, int> _accumulators = {};
 
   String _valueAndPercent(int references) {
     final percent = references.toDouble() / totalReferences.toDouble() * 100;
@@ -38,6 +38,18 @@ class _RuntimeStats {
     taskQueue.removeLast().finish();
   }
 
+  void resetAccumulators(Iterable<String> names) {
+    for (var name in names) {
+      _accumulators[name] = 0;
+    }
+  }
+
+  /// Increments the accumulator named [name].
+  ///
+  /// Accumulator key must exist before calling.
+  void incrementAccumulator(String name) =>
+      _accumulators.update(name, (c) => c + 1);
+
   String buildReport() {
     final report = StringBuffer();
     report.writeln('\nReference Counts:');
@@ -52,9 +64,9 @@ class _RuntimeStats {
       }
     }
 
-    if (accumulators.isNotEmpty) {
+    if (_accumulators.isNotEmpty) {
       report.writeln('\nAccumulators:');
-      accumulators.forEach((name, count) {
+      _accumulators.forEach((name, count) {
         report.writeln('  $name: $count');
       });
     }
