@@ -13,6 +13,7 @@ import 'package:dartdoc/src/generator/generator_frontend.dart';
 import 'package:dartdoc/src/generator/html_generator.dart';
 import 'package:dartdoc/src/generator/html_resources.g.dart';
 import 'package:dartdoc/src/generator/templates.dart';
+import 'package:dartdoc/src/model/library.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/warnings.dart';
@@ -114,7 +115,7 @@ void main() {
       var expectedPath = pathContext.join('a', 'a-library.html');
       expect(
           packageGraph.localPublicLibraries,
-          anyElement((l) => packageGraph.packageWarningCounter
+          anyElement((Library l) => packageGraph.packageWarningCounter
               .hasWarning(l, PackageWarning.duplicateFile, expectedPath)));
     }, onPlatform: {'windows': Skip('Test does not work on Windows (#2446)')});
   }, onPlatform: {
