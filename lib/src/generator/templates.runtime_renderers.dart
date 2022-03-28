@@ -8442,7 +8442,7 @@ class _Renderer_LibraryContainer extends RendererBase<LibraryContainer> {
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.containerOrder.map((e) =>
-                        _render_String(e!, ast, r.template, sink, parent: r));
+                        _render_String(e, ast, r.template, sink, parent: r));
                   },
                 ),
                 'enclosingName': Property(
@@ -8523,7 +8523,7 @@ class _Renderer_LibraryContainer extends RendererBase<LibraryContainer> {
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<Library>'),
+                          c, remainingNames, 'List<Library>'),
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.publicLibrariesSorted.map((e) =>
@@ -8545,11 +8545,10 @@ class _Renderer_LibraryContainer extends RendererBase<LibraryContainer> {
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
-                  isNullValue: (CT_ c) => c.sortKey == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.sortKey!, ast, r.template, sink,
-                        parent: r);
+                    _render_String(c.sortKey, ast, r.template, sink, parent: r);
                   },
                 ),
               }) as Map<String, Property<CT_>>;
@@ -11553,10 +11552,10 @@ class _Renderer_Package extends RendererBase<Package> {
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
-                  isNullValue: (CT_ c) => c.baseHref == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.baseHref!, ast, r.template, sink,
+                    _render_String(c.baseHref, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -11642,7 +11641,7 @@ class _Renderer_Package extends RendererBase<Package> {
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.containerOrder.map((e) =>
-                        _render_String(e!, ast, r.template, sink, parent: r));
+                        _render_String(e, ast, r.template, sink, parent: r));
                   },
                 ),
                 'defaultCategory': Property(
@@ -12172,10 +12171,10 @@ class _Renderer_Package extends RendererBase<Package> {
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
-                  isNullValue: (CT_ c) => c.packagePath == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.packagePath!, ast, r.template, sink,
+                    _render_String(c.packagePath, ast, r.template, sink,
                         parent: r);
                   },
                 ),
