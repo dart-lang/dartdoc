@@ -1,6 +1,14 @@
-## 5.1.0-dev
+## 5.1.0
+* Support new enhanced enums feature.
 * Removed superfluous `[...]` links. (#2928)
+* Fix `categoryOrder` option. (#2965)
+* Display categorized extensions. (#2975)
+* Add annotations to extensions.
 * Move to analyzer 3.4.0.
+* Minor improvements to performance. (#2946, #2968, #2972, #2974, #2999, #3000)
+* Mustachio: Remove parameters which are unused in AOT renderers. (#2943)
+* Mustachio: Deduplicate AOT partial renderers. (#2978)
+* Mustachio: Allow whitespace after section and partial delimiters. (#2964)
 
 ## 5.0.1
 * Add support for new VM service message. (#2931)
