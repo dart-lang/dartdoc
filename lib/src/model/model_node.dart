@@ -14,12 +14,33 @@ class ModelNode {
   final List<ModelCommentReference> commentRefs;
   final Element element;
   final ResourceProvider resourceProvider;
+  final int _sourceEnd;
+  final int _sourceOffset;
 
-  final AstNode? _sourceNode;
+  factory ModelNode(
+      AstNode? sourceNode, Element element, ResourceProvider resourceProvider) {
+    var commentRefs = _commentRefsFor(sourceNode, resourceProvider);
+    // Get a node higher up the syntax tree that includes the semicolon.
+    // In this case, it is either a [FieldDeclaration] or
+    // [TopLevelVariableDeclaration]. (#2401)
+    if (sourceNode == null) {
+      return ModelNode._(element, resourceProvider, commentRefs,
+          sourceEnd: -1, sourceOffset: -1);
+    } else {
+      if (sourceNode is VariableDeclaration) {
+        sourceNode = sourceNode.parent!.parent!;
+        assert(sourceNode is FieldDeclaration ||
+            sourceNode is TopLevelVariableDeclaration);
+      }
+      return ModelNode._(element, resourceProvider, commentRefs,
+          sourceEnd: sourceNode.end, sourceOffset: sourceNode.offset);
+    }
+  }
 
-  ModelNode(AstNode? sourceNode, this.element, this.resourceProvider)
-      : _sourceNode = sourceNode,
-        commentRefs = _commentRefsFor(sourceNode, resourceProvider);
+  ModelNode._(this.element, this.resourceProvider, this.commentRefs,
+      {required int sourceEnd, required int sourceOffset})
+      : _sourceEnd = sourceEnd,
+        _sourceOffset = sourceOffset;
 
   static List<ModelCommentReference> _commentRefsFor(
       AstNode? node, ResourceProvider resourceProvider) {
@@ -36,26 +57,13 @@ class ModelNode {
   }
 
   late final String sourceCode = () {
-    var enclosingSourceNode = _sourceNode;
-    if (enclosingSourceNode == null) {
+    if (_sourceEnd < 0 || _sourceOffset < 0) {
       return '';
     }
 
-    /// Get a node higher up the syntax tree that includes the semicolon.
-    /// In this case, it is either a [FieldDeclaration] or
-    /// [TopLevelVariableDeclaration]. (#2401)
-    if (enclosingSourceNode is VariableDeclaration) {
-      enclosingSourceNode = enclosingSourceNode.parent!.parent;
-      assert(enclosingSourceNode is FieldDeclaration ||
-          enclosingSourceNode is TopLevelVariableDeclaration);
-    }
-
-    var sourceEnd = enclosingSourceNode!.end;
-    var sourceOffset = enclosingSourceNode.offset;
-
     var contents = model_utils.getFileContentsFor(element, resourceProvider)!;
-    // Find the start of the line, so that we can line up all the indents.
-    var i = sourceOffset;
+    // Find the start of the line, so that we can line up all of the indents.
+    var i = _sourceOffset;
     while (i > 0) {
       i -= 1;
       if (contents[i] == '\n' || contents[i] == '\r') {
@@ -65,8 +73,7 @@ class ModelNode {
     }
 
     // Trim the common indent from the source snippet.
-    var start = sourceOffset - (sourceOffset - i);
-    var source = contents.substring(start, sourceEnd);
+    var source = contents.substring(i, _sourceEnd);
 
     source = model_utils.stripIndentFromSource(source);
     source = model_utils.stripDartdocCommentsFromSource(source);
