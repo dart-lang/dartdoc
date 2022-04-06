@@ -83,6 +83,8 @@ Iterable<InheritingContainer> findCanonicalFor(
 /// allowed in some environments, so avoid using this.
 // TODO(jcollins-g): consider deprecating this and the `--include-source`
 // feature that uses it now that source code linking is possible.
+// TODO(srawlins): Evaluate whether this leads to a ton of memory usage.
+// An LRU of size 1 might be just fine.
 String? getFileContentsFor(Element e, ResourceProvider resourceProvider) {
   var location = e.source?.fullName;
   if (location != null && !_fileContents.containsKey(location)) {
@@ -92,7 +94,6 @@ String? getFileContentsFor(Element e, ResourceProvider resourceProvider) {
   return _fileContents[location];
 }
 
-final RegExp slashes = RegExp(r'[\/]');
 bool hasPrivateName(Element e) {
   var elementName = e.name;
   if (elementName == null) return false;
@@ -108,23 +109,40 @@ bool hasPrivateName(Element e) {
       return true;
     }
   }
-  if (e is LibraryElement &&
-      (e.identifier.startsWith('dart:_') ||
-          e.identifier.startsWith('dart:nativewrappers/') ||
-          ['dart:nativewrappers'].contains(e.identifier))) {
-    return true;
-  }
   if (e is LibraryElement) {
+    if (e.identifier.startsWith('dart:_') ||
+        e.identifier.startsWith('dart:nativewrappers/') ||
+        'dart:nativewrappers' == e.identifier) {
+      return true;
+    }
     var elementLocation = e.location;
     if (elementLocation != null) {
-      var locationParts = elementLocation.components[0].split(slashes);
+      var elementUri = elementLocation.components[0];
       // TODO(jcollins-g): Implement real cross package detection
-      if (locationParts.length >= 2 &&
-          locationParts[0].startsWith('package:') &&
-          locationParts[1] == 'src') return true;
+      if (_uriIsPackageImplementation(elementUri)) {
+        return true;
+      }
     }
   }
   return false;
+}
+
+/// Returns whether [uri] is a package's implementation, a URI starting with
+/// "package:", and with a first path segment of "src".
+bool _uriIsPackageImplementation(String uri) {
+  var firstSlashIndex = uri.indexOf('/');
+  var packageLength = 'package:'.length;
+  if (firstSlashIndex < packageLength) {
+    return false;
+  }
+  if (uri.substring(0, packageLength) != 'package:') {
+    return false;
+  }
+  var secondSlashIndex = uri.indexOf('/', firstSlashIndex + 1);
+  if (secondSlashIndex < 0) {
+    return false;
+  }
+  return uri.substring(firstSlashIndex + 1, secondSlashIndex) == 'src';
 }
 
 bool hasPublicName(Element e) => !hasPrivateName(e);
@@ -132,25 +150,26 @@ bool hasPublicName(Element e) => !hasPrivateName(e);
 /// Strip leading dartdoc comments from the given source code.
 String stripDartdocCommentsFromSource(String source) {
   var remainder = source.trimLeft();
-  var sanitizer = const HtmlEscape();
-  var lineComments = remainder.startsWith('///') ||
-      remainder.startsWith(sanitizer.convert('///'));
-  var blockComments = remainder.startsWith('/**') ||
-      remainder.startsWith(sanitizer.convert('/**'));
+  var lineComments = remainder.startsWith(_tripleSlash) ||
+      remainder.startsWith(_escapedTripleSlash);
+  var blockComments = remainder.startsWith(_slashStarStar) ||
+      remainder.startsWith(_escapedSlashStarStar);
 
   return source.split('\n').where((String line) {
     if (lineComments) {
-      if (line.startsWith('///') || line.startsWith(sanitizer.convert('///'))) {
+      if (line.startsWith(_tripleSlash) ||
+          line.startsWith(_escapedTripleSlash)) {
         return false;
       }
       lineComments = false;
       return true;
     } else if (blockComments) {
-      if (line.contains('*/') || line.contains(sanitizer.convert('*/'))) {
+      if (line.contains(_starSlash) || line.contains(_escapedStarSlash)) {
         blockComments = false;
         return false;
       }
-      if (line.startsWith('/**') || line.startsWith(sanitizer.convert('/**'))) {
+      if (line.startsWith(_slashStarStar) ||
+          line.startsWith(_escapedSlashStarStar)) {
         return false;
       }
       return false;
@@ -159,6 +178,20 @@ String stripDartdocCommentsFromSource(String source) {
     return true;
   }).join('\n');
 }
+
+const HtmlEscape _escape = HtmlEscape();
+
+const String _tripleSlash = '///';
+
+final String _escapedTripleSlash = _escape.convert(_tripleSlash);
+
+const String _slashStarStar = '/**';
+
+final String _escapedSlashStarStar = _escape.convert(_slashStarStar);
+
+const String _starSlash = '*/';
+
+final String _escapedStarSlash = _escape.convert(_starSlash);
 
 /// Strip the common indent from the given source fragment.
 String stripIndentFromSource(String source) {
