@@ -13,7 +13,7 @@ lcov.info
 packages
 pub.dartlang.org/
 test_data/
-testing/**/doc
+testing/
 pubspec.lock
 
 *.dart.js
