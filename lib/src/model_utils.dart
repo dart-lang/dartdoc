@@ -115,34 +115,16 @@ bool hasPrivateName(Element e) {
         'dart:nativewrappers' == e.identifier) {
       return true;
     }
-    var elementLocation = e.location;
-    if (elementLocation != null) {
-      var elementUri = elementLocation.components[0];
-      // TODO(jcollins-g): Implement real cross package detection
-      if (_uriIsPackageImplementation(elementUri)) {
-        return true;
-      }
+    var elementUri = e.source.uri;
+    // TODO(jcollins-g): Implement real cross package detection
+    var pathSegments = elementUri.pathSegments;
+    if (pathSegments.length >= 2 &&
+        pathSegments[0].startsWith('package:') &&
+        pathSegments[1] == 'src') {
+      return true;
     }
   }
   return false;
-}
-
-/// Returns whether [uri] is a package's implementation, a URI starting with
-/// "package:", and with a first path segment of "src".
-bool _uriIsPackageImplementation(String uri) {
-  var firstSlashIndex = uri.indexOf('/');
-  var packageLength = 'package:'.length;
-  if (firstSlashIndex < packageLength) {
-    return false;
-  }
-  if (uri.substring(0, packageLength) != 'package:') {
-    return false;
-  }
-  var secondSlashIndex = uri.indexOf('/', firstSlashIndex + 1);
-  if (secondSlashIndex < 0) {
-    return false;
-  }
-  return uri.substring(firstSlashIndex + 1, secondSlashIndex) == 'src';
 }
 
 bool hasPublicName(Element e) => !hasPrivateName(e);
