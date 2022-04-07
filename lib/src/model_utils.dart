@@ -117,10 +117,7 @@ bool hasPrivateName(Element e) {
     }
     var elementUri = e.source.uri;
     // TODO(jcollins-g): Implement real cross package detection
-    var pathSegments = elementUri.pathSegments;
-    if (pathSegments.length >= 2 &&
-        pathSegments[0].startsWith('package:') &&
-        pathSegments[1] == 'src') {
+    if (elementUri.scheme == 'package' && elementUri.pathSegments[1] == 'src') {
       return true;
     }
   }
