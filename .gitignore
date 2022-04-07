@@ -10,13 +10,11 @@
 build/
 doc/
 lcov.info
-packages
 pub.dartlang.org/
 test_data/
 testing/**/doc
 pubspec.lock
 
-*.dart.js
 *.iml
 *.ipr
 *.iws
