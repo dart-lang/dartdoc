@@ -1034,7 +1034,6 @@ Future<void> buildWeb() async {
     'web/docs.dart',
   ]);
   delete(File('lib/resources/docs.dart.js.deps'));
-  delete(File('lib/resources/docs.dart.js.map'));
 
   final compileSig = calcDartFilesSig(Directory('web'));
   File(p.join('web', 'sig.txt')).writeAsStringSync(compileSig);

@@ -2,10 +2,18 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// import 'dart:html';
+import 'dart:js' as js;
+
+import 'search.dart' as search;
+import 'sidenav.dart' as sidenav;
 
 void main() {
-  // TODO: Implement the dartdoc web frontend.
-  // var element = DivElement()..text = 'Hello world!';
-  // document.body!.append(element);
+  inithighlightJS();
+  sidenav.init();
+  search.init();
+}
+
+void inithighlightJS() {
+  js.JsObject hljs = js.context['hljs'];
+  hljs.callMethod('highlightAll');
 }
