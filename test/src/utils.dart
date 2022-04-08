@@ -284,6 +284,7 @@ Future<void> writeDartdocResources(ResourceProvider resourceProvider) async {
   }
 
   for (var resource in [
+    'docs.dart.js',
     'favicon.png',
     'github.css',
     'highlight.pack.js',
