@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io' hide ProcessException;
 
 import 'package:analyzer/file_system/physical_file_system.dart';
@@ -1036,7 +1037,7 @@ Future<void> buildWeb() async {
   delete(File('lib/resources/docs.dart.js.deps'));
 
   final compileSig = calcDartFilesSig(Directory('web'));
-  File(p.join('web', 'sig.txt')).writeAsStringSync(compileSig);
+  File(p.join('web', 'sig.txt')).writeAsStringSync('$compileSig\n');
 }
 
 /// Paths in this list are relative to lib/.
@@ -1087,7 +1088,8 @@ Future<void> checkBuild() async {
 
   // Verify that the web frontend has been compiled.
   final currentCodeSig = calcDartFilesSig(Directory('web'));
-  final lastCompileSig = File(p.join('web', 'sig.txt')).readAsStringSync();
+  final lastCompileSig =
+      File(p.join('web', 'sig.txt')).readAsStringSync().trim();
   if (currentCodeSig != lastCompileSig) {
     fail('The web frontend (web/docs.dart) needs to be recompiled; rebuild it '
         'with "grind build-web" or "grind build".');
@@ -1319,7 +1321,9 @@ String calcDartFilesSig(Directory dir) {
   var output = AccumulatorSink<crypto.Digest>();
   var input = crypto.md5.startChunkedConversion(output);
   for (var file in files) {
-    input.add(file.readAsBytesSync());
+    for (var line in file.readAsLinesSync()) {
+      input.add(utf8.encoder.convert(line));
+    }
   }
   input.close();
 
