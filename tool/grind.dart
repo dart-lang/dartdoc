@@ -1091,6 +1091,8 @@ Future<void> checkBuild() async {
   final lastCompileSig =
       File(p.join('web', 'sig.txt')).readAsStringSync().trim();
   if (currentCodeSig != lastCompileSig) {
+    log('current files: $currentCodeSig');
+    log('cached sig   : $lastCompileSig');
     fail('The web frontend (web/docs.dart) needs to be recompiled; rebuild it '
         'with "grind build-web" or "grind build".');
   }
@@ -1322,7 +1324,7 @@ String calcDartFilesSig(Directory dir) {
   var input = crypto.md5.startChunkedConversion(output);
   for (var file in files) {
     for (var line in file.readAsLinesSync()) {
-      input.add(utf8.encoder.convert(line));
+      input.add(utf8.encoder.convert(line.trim()));
     }
   }
   input.close();
