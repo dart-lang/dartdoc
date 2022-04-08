@@ -3042,8 +3042,7 @@ String _deduplicated_lib_templates_html__head_html(
   buffer.write('''
 <body data-base-href="''');
   buffer.write(context0.htmlBase);
-  buffer.write('''"
-      data-using-base-href="''');
+  buffer.write('''" data-using-base-href="''');
   buffer.write(context0.useBaseHref.toString());
   buffer.write('''">
 

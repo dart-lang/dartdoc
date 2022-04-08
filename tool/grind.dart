@@ -1323,6 +1323,9 @@ String calcDartFilesSig(Directory dir) {
   var output = AccumulatorSink<crypto.Digest>();
   var input = crypto.md5.startChunkedConversion(output);
   for (var file in files) {
+    // TODO: remove - added for diagnostics
+    log('calcDartFilesSig: ${file.path}, ${file.lengthSync()} bytes');
+
     for (var line in file.readAsLinesSync()) {
       input.add(utf8.encoder.convert(line.trim()));
     }
