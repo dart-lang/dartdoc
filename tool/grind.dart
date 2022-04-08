@@ -1319,6 +1319,7 @@ String calcDartFilesSig(Directory dir) {
       .whereType<File>()
       .where((file) => file.path.endsWith('.dart'))
       .toList();
+  files.sort((a, b) => a.path.toLowerCase().compareTo(b.path.toLowerCase()));
 
   var output = AccumulatorSink<crypto.Digest>();
   var input = crypto.md5.startChunkedConversion(output);
