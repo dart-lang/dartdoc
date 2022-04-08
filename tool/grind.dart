@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:io' hide ProcessException;
 
 import 'package:analyzer/file_system/physical_file_system.dart';
+import 'package:crypto/crypto.dart' as crypto;
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:grinder/grinder.dart';
@@ -1006,6 +1007,7 @@ String _getPackageVersion() {
 }
 
 @Task('Rebuild generated files')
+@Depends(buildWeb)
 Future<void> build() async {
   var launcher = SubprocessLauncher('build');
   await launcher.runStreamed(Platform.resolvedExecutable,
@@ -1019,6 +1021,23 @@ Future<void> build() async {
     root: '.'
     uriTemplate: 'https://github.com/dart-lang/dartdoc/blob/v$version/%f%#L%l%'
 ''');
+}
+
+@Task('Build the web frontend')
+Future<void> buildWeb() async {
+  // Compile the web app.
+  var launcher = SubprocessLauncher('build');
+  await launcher.runStreamed(Platform.resolvedExecutable, [
+    'compile',
+    'js',
+    '--output=lib/resources/docs.dart.js',
+    'web/docs.dart',
+  ]);
+  delete(File('lib/resources/docs.dart.js.deps'));
+  delete(File('lib/resources/docs.dart.js.map'));
+
+  final compileSig = calcDartFilesSig(Directory('web'));
+  File(p.join('web', 'sig.txt')).writeAsStringSync(compileSig);
 }
 
 /// Paths in this list are relative to lib/.
@@ -1037,8 +1056,8 @@ Future<void> checkBuild() async {
   var originalFileContents = <String, String>{};
   var differentFiles = <String>[];
 
-  // Load original file contents into memory before running the builder;
-  // it modifies them in place.
+  // Load original file contents into memory before running the builder; it
+  // modifies them in place.
   for (var relPath in _generatedFilesList) {
     var origPath = p.joinAll(['lib', relPath]);
     var oldVersion = File(origPath);
@@ -1048,6 +1067,7 @@ Future<void> checkBuild() async {
   }
 
   await build();
+
   for (var relPath in _generatedFilesList) {
     var newVersion = File(p.join('lib', relPath));
     if (!newVersion.existsSync()) {
@@ -1064,6 +1084,14 @@ Future<void> checkBuild() async {
     fail('The following generated files needed to be rebuilt:\n'
         '  ${differentFiles.map((f) => p.join('lib', f)).join("\n  ")}\n'
         'Rebuild them with "grind build" and check the results in.');
+  }
+
+  // Verify that the web frontend has been compiled.
+  final currentCodeSig = calcDartFilesSig(Directory('web'));
+  final lastCompileSig = File(p.join('web', 'sig.txt')).readAsStringSync();
+  if (currentCodeSig != lastCompileSig) {
+    fail('The web frontend (web/docs.dart) needs to be recompiled; rebuild it '
+        'with "grind build-web" or "grind build".');
   }
 }
 
@@ -1280,4 +1308,45 @@ int _findCount(String str, String match) {
     index = str.indexOf(match, index + match.length);
   }
   return count;
+}
+
+String calcDartFilesSig(Directory dir) {
+  final files = dir
+      .listSync(recursive: true)
+      .whereType<File>()
+      .where((file) => file.path.endsWith('.dart'))
+      .toList();
+
+  var output = AccumulatorSink<crypto.Digest>();
+  var input = crypto.md5.startChunkedConversion(output);
+  for (var file in files) {
+    input.add(file.readAsBytesSync());
+  }
+  input.close();
+
+  var result = output.events.single;
+  return result.bytes
+      .map((byte) => byte.toRadixString(16).padLeft(2, '0').toUpperCase())
+      .join();
+}
+
+class AccumulatorSink<T> implements Sink<T> {
+  List<T> get events => _events;
+  final _events = <T>[];
+
+  var _isClosed = false;
+
+  @override
+  void add(T event) {
+    if (_isClosed) {
+      throw StateError("Can't add to a closed sink.");
+    }
+
+    _events.add(event);
+  }
+
+  @override
+  void close() {
+    _isClosed = true;
+  }
 }
