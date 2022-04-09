@@ -423,7 +423,7 @@ void initializeSearch(
         var parentOffsetHeight = listBox.offsetHeight;
         if (offsetTop < parentOffsetHeight ||
             parentOffsetHeight < (offsetTop + selected.offsetHeight)) {
-          selected.scrollIntoViewIfNeeded();
+          selected.scrollIntoView();
         }
       }
 
