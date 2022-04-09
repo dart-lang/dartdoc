@@ -3852,11 +3852,11 @@ String _deduplicated_lib_templates_html__footer_html(
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
   buffer.write('''static-assets/highlight.pack.js?v1"></script>
-<script src="''');
+<!-- script src="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/script.js?v1"></script>
+  buffer.write('''static-assets/script.js?v1"></script -->
 <script src="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');

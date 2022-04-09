@@ -291,7 +291,6 @@ Future<void> writeDartdocResources(ResourceProvider resourceProvider) async {
     'highlight.pack.js',
     'play_button.svg',
     'readme.md',
-    'script.js',
     'styles.css',
   ]) {
     await resourceProvider.writeDartdocResource(

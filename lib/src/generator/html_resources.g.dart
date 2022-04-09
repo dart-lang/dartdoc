@@ -8,6 +8,5 @@ const List<String> resourceNames = [
   'highlight.pack.js',
   'play_button.svg',
   'readme.md',
-  'script.js',
   'styles.css',
 ];
