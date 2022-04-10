@@ -71,7 +71,7 @@ jobs:
         run: dart pub get
       - name: ${{ matrix.job }}
         if: runner.os != 'Windows'
-        run: ./tool/travis.sh
+        run: ./tool/ci.sh
         env:
           DARTDOC_BOT: ${{ matrix.job }}
           #COVERAGE_TOKEN: true # this needs to be set to enable coverage
