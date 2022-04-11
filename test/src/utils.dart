@@ -285,12 +285,12 @@ Future<void> writeDartdocResources(ResourceProvider resourceProvider) async {
 
   for (var resource in [
     'docs.dart.js',
+    'docs.dart.js.map',
     'favicon.png',
     'github.css',
     'highlight.pack.js',
     'play_button.svg',
     'readme.md',
-    'script.js',
     'styles.css',
   ]) {
     await resourceProvider.writeDartdocResource(

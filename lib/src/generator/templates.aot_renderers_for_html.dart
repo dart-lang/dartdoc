@@ -3042,8 +3042,7 @@ String _deduplicated_lib_templates_html__head_html(
   buffer.write('''
 <body data-base-href="''');
   buffer.write(context0.htmlBase);
-  buffer.write('''"
-      data-using-base-href="''');
+  buffer.write('''" data-using-base-href="''');
   buffer.write(context0.useBaseHref.toString());
   buffer.write('''">
 
@@ -3853,11 +3852,6 @@ String _deduplicated_lib_templates_html__footer_html(
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
   buffer.write('''static-assets/highlight.pack.js?v1"></script>
-<script src="''');
-  if (context0.useBaseHref != true) {
-    buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
-  }
-  buffer.write('''static-assets/script.js?v1"></script>
 <script src="''');
   if (context0.useBaseHref != true) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
