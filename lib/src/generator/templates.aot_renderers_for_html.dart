@@ -503,10 +503,6 @@ String renderConstructor(_i1.ConstructorTemplateData context0) {
   buffer.write(' ');
   buffer.writeEscaped(context0.parent!.kind);
   buffer.write('''</h5>
-    ''');
-  buffer.write(context0.sidebarForContainer);
-  buffer.writeln();
-  buffer.write('''
   </div><!--/.sidebar-offcanvas-left-->
 
   <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
@@ -1267,10 +1263,6 @@ String renderMethod(_i1.MethodTemplateData context0) {
   buffer.write(' ');
   buffer.writeEscaped(context0.parent!.kind);
   buffer.write('''</h5>
-    ''');
-  buffer.write(context0.sidebarForContainer);
-  buffer.writeln();
-  buffer.write('''
   </div><!--/.sidebar-offcanvas-->
 
   <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
@@ -1493,10 +1485,6 @@ String renderProperty(_i1.PropertyTemplateData context0) {
   buffer.write(' ');
   buffer.writeEscaped(context0.parent!.kind);
   buffer.write('''</h5>
-    ''');
-  buffer.write(context0.sidebarForContainer);
-  buffer.writeln();
-  buffer.write('''
   </div><!--/.sidebar-offcanvas-->
 
   <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
