@@ -715,19 +715,6 @@ class _Renderer_Canonicalization extends RendererBase<Canonicalization> {
                         parent: r);
                   },
                 ),
-                'commentRefs': Property(
-                  getValue: (CT_ c) => c.commentRefs,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames,
-                          'Map<String, ModelCommentReference>'),
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.commentRefs, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['Map']!);
-                  },
-                ),
                 'isCanonical': Property(
                   getValue: (CT_ c) => c.isCanonical,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -1017,19 +1004,6 @@ class _Renderer_Category extends RendererBase<Category> {
                       List<MustachioNode> ast, StringSink sink) {
                     return c.classes.map((e) =>
                         _render_Class(e, ast, r.template, sink, parent: r));
-                  },
-                ),
-                'commentRefs': Property(
-                  getValue: (CT_ c) => c.commentRefs,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames,
-                          'Map<String, ModelCommentReference>'),
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.commentRefs, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['Map']!);
                   },
                 ),
                 'config': Property(
@@ -10043,19 +10017,6 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                         getters: _invisibleGetters['CharacterLocation']!);
                   },
                 ),
-                'commentRefs': Property(
-                  getValue: (CT_ c) => c.commentRefs,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames,
-                          'Map<String, ModelCommentReference>'),
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.commentRefs, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['Map']!);
-                  },
-                ),
                 'compilationUnitElement': Property(
                   getValue: (CT_ c) => c.compilationUnitElement,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -11610,19 +11571,6 @@ class _Renderer_Package extends RendererBase<Package> {
                       List<MustachioNode> ast, StringSink sink) {
                     return c.categoriesWithPublicLibraries.map((e) =>
                         _render_Category(e, ast, r.template, sink, parent: r));
-                  },
-                ),
-                'commentRefs': Property(
-                  getValue: (CT_ c) => c.commentRefs,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames,
-                          'Map<String, ModelCommentReference>'),
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.commentRefs, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['Map']!);
                   },
                 ),
                 'config': Property(
@@ -16290,13 +16238,7 @@ const _invisibleGetters = {
     'validateLinks'
   },
   'DocumentLocation': {'hashCode', 'index', 'runtimeType'},
-  'Documentation': {
-    'asHtml',
-    'asOneLiner',
-    'commentRefs',
-    'hashCode',
-    'runtimeType'
-  },
+  'Documentation': {'asHtml', 'asOneLiner', 'hashCode', 'runtimeType'},
   'DocumentationComment': {
     'documentationAsHtml',
     'documentationComment',

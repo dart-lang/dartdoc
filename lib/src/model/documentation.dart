@@ -2,7 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:dartdoc/src/comment_references/model_comment_reference.dart';
 import 'package:dartdoc/src/markdown_processor.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/documentation_renderer.dart';
@@ -33,8 +32,6 @@ class Documentation {
     }
     return _asOneLiner;
   }
-
-  Map<String, ModelCommentReference>? get commentRefs => _element.commentRefs;
 
   void _renderDocumentation(bool processFullDocs) {
     var parseResult = _parseDocumentation(processFullDocs);

@@ -14,7 +14,6 @@ import 'package:analyzer/source/line_info.dart';
 import 'package:analyzer/src/dart/element/member.dart'
     show ExecutableMember, Member, ParameterMember;
 import 'package:collection/collection.dart';
-import 'package:dartdoc/src/comment_references/model_comment_reference.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/annotation.dart';
@@ -431,31 +430,6 @@ abstract class ModelElement extends Canonicalization
       return false;
     }
     return utils.hasPublicName(element!) && !hasNodoc;
-  }();
-
-  @override
-  late final Map<String, ModelCommentReference> commentRefs = () {
-    var commentRefsBuilder = <String, ModelCommentReference>{};
-    for (var from in documentationFrom) {
-      if (from is ModelElement) {
-        var checkReferences = [from];
-        if (from is Accessor) {
-          checkReferences.add(from.enclosingCombo);
-        }
-        for (var e in checkReferences) {
-          // Some elements don't have modelNodes or aren't traversed by
-          // the element visitor, or both.
-          assert(e is Parameter || e.modelNode != null);
-          var nodeCommentRefs = e.modelNode?.commentRefs;
-          if (nodeCommentRefs != null && nodeCommentRefs.isNotEmpty) {
-            for (var r in nodeCommentRefs) {
-              commentRefsBuilder[r.codeRef];
-            }
-          }
-        }
-      }
-    }
-    return commentRefsBuilder;
   }();
 
   @override
