@@ -183,8 +183,7 @@ bool _requireConstructor(CommentReferable? referable) =>
 /// Implements _getMatchingLinkElement via [CommentReferable.referenceBy].
 MatchingLinkResult _getMatchingLinkElementCommentReferable(
     String codeRef, Warnable warnable) {
-  var commentReference =
-      warnable.commentRefs[codeRef] ?? ModelCommentReference.synthetic(codeRef);
+  var commentReference = ModelCommentReference.synthetic(codeRef);
 
   bool Function(CommentReferable?) filter;
   bool Function(CommentReferable?) allowTree;

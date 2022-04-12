@@ -3,7 +3,6 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/dart/element/element.dart';
-import 'package:dartdoc/src/comment_references/model_comment_reference.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
@@ -417,11 +416,6 @@ class Package extends LibraryContainer
   Iterable<CommentReferable> get referenceParents => [packageGraph];
 
   p.Context get _pathContext => _packageGraph.resourceProvider.pathContext;
-
-  @override
-  // Packages are not interpreted by the analyzer in such a way to generate
-  // [CommentReference] nodes, so this is always empty.
-  Map<String, ModelCommentReference> get commentRefs => {};
 
   @override
   String get referenceName => 'package:$name';
