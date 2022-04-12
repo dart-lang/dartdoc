@@ -41,15 +41,8 @@ void init() {
 
     var textPromise = js_util.callMethod<Object>(response, 'text', []);
     var text = await promiseToFuture<String>(textPromise);
-
-    // "name":"dartdoc",
-    // "qualifiedName":"dartdoc",
-    // "href":"dartdoc/dartdoc-library.html",
-    // "type":"library",
-    // "overriddenDepth":0,
-    // "packageName":"dartdoc"
-    // ["enclosedBy":{"name":"Accessor","type":"class"}]
-    var index = (jsonDecode(text) as List).cast<Map<String, dynamic>>();
+    var jsonIndex = (jsonDecode(text) as List).cast<Map<String, dynamic>>();
+    final index = jsonIndex.map((entry) => IndexItem.fromMap(entry)).toList();
 
     // Initialize all three search fields.
     if (searchBox != null) {
@@ -75,34 +68,25 @@ const weights = {
   'operator': 4,
   'constant': 4,
   'property': 4,
-  'constructor': 4
+  'constructor': 4,
 };
 
-class SearchMatch {
-  final Map<String, dynamic> element;
-  final double score;
-
-  SearchMatch(this.element, this.score);
-}
-
-List<Map<String, dynamic>> findMatches(
-    List<Map<String, dynamic>> index, String query) {
-  if (query == '') {
+List<IndexItem> findMatches(List<IndexItem> index, String query) {
+  if (query.isEmpty) {
     return [];
   }
 
   var allMatches = <SearchMatch>[];
 
-  // ignore: avoid_function_literals_in_foreach_calls
-  index.forEach((Map<String, dynamic> element) {
+  for (var element in index) {
     void score(int value) {
-      value -= (element['overriddenDepth'] as int) * 10;
-      var weightFactor = weights[element['type']] ?? 4;
+      value -= (element.overriddenDepth ?? 0) * 10;
+      var weightFactor = weights[element.type] ?? 4;
       allMatches.add(SearchMatch(element, value / weightFactor));
     }
 
-    var name = element['name'] as String;
-    var qualifiedName = element['qualifiedName'] as String;
+    var name = element.name;
+    var qualifiedName = element.qualifiedName;
     var lowerName = name.toLowerCase();
     var lowerQualifiedName = qualifiedName.toLowerCase();
     var lowerQuery = query.toLowerCase();
@@ -126,24 +110,17 @@ List<Map<String, dynamic>> findMatches(
         score(400);
       }
     }
-  });
+  }
 
   allMatches.sort((SearchMatch a, SearchMatch b) {
     var x = (b.score - a.score).round();
     if (x == 0) {
-      return (a.element['name'] as String).length -
-          (b.element['name'] as String).length;
+      return a.element.name.length - b.element.name.length;
     }
     return x;
   });
 
-  var justElements = <Map<String, dynamic>>[];
-
-  for (var i = 0; i < allMatches.length; i++) {
-    justElements.add(allMatches[i].element);
-  }
-
-  return justElements;
+  return allMatches.map((match) => match.element).toList();
 }
 
 const minLength = 1;
@@ -151,7 +128,7 @@ const suggestionLimit = 10;
 
 void initializeSearch(
   InputElement input,
-  List<Map<String, dynamic>> index,
+  List<IndexItem> index,
   String htmlBase,
 ) {
   input.disabled = false;
@@ -211,23 +188,22 @@ void initializeSearch(
         query, "<strong class='tt-highlight'>$sanitizedText</strong>");
   }
 
-  Element createSuggestion(String query, Map<String, dynamic> match) {
+  Element createSuggestion(String query, IndexItem match) {
     var suggestion = document.createElement('div');
-    suggestion.setAttribute('data-href', match['href'] as String);
+    suggestion.setAttribute('data-href', match.href ?? '');
     suggestion.classes.add('tt-suggestion');
 
     var suggestionTitle = document.createElement('span');
     suggestionTitle.classes.add('tt-suggestion-title');
-    suggestionTitle.innerHtml = highlight(
-        '${match['name']} ${(match['type'] as String).toLowerCase()}', query);
+    suggestionTitle.innerHtml =
+        highlight('${match.name} ${match.type.toLowerCase()}', query);
 
     suggestion.append(suggestionTitle);
 
-    if (match['enclosedBy'] != null) {
+    if (match.enclosedBy != null) {
       var fromLib = document.createElement('div');
       fromLib.classes.add('search-from-lib');
-      fromLib.innerHtml =
-          'from ${highlight((match['enclosedBy'] as Map)['name'], query)}';
+      fromLib.innerHtml = 'from ${highlight(match.enclosedBy!.name, query)}';
 
       suggestion.append(fromLib);
     }
@@ -237,12 +213,8 @@ void initializeSearch(
     });
 
     suggestion.addEventListener('click', (event) {
-      if (match['href'] != null) {
-        print('baseHref: $htmlBase');
-        print('match.href: ${match['href']}');
-        print('assign: $htmlBase${match['href']}');
-
-        window.location.assign('$htmlBase${match['href']}');
+      if (match.href != null) {
+        window.location.assign('$htmlBase${match.href}');
         event.preventDefault();
       }
     });
@@ -255,7 +227,7 @@ void initializeSearch(
   String? hint;
 
   var suggestionElements = <Element>[];
-  var suggestionsInfo = <Map<String, dynamic>>[];
+  var suggestionsInfo = <IndexItem>[];
   int? selectedElement;
 
   void setHint(String? value) {
@@ -275,7 +247,7 @@ void initializeSearch(
     listBox.setAttribute('aria-expanded', 'false');
   }
 
-  void updateSuggestions(String query, List<Map<String, dynamic>> suggestions) {
+  void updateSuggestions(String query, List<IndexItem> suggestions) {
     suggestionsInfo = [];
     suggestionElements = [];
     presentation.text = '';
@@ -286,15 +258,15 @@ void initializeSearch(
       return;
     }
 
-    for (var i = 0; i < suggestions.length; i++) {
-      var element = createSuggestion(query, suggestions[i]);
+    for (final suggestion in suggestions) {
+      var element = createSuggestion(query, suggestion);
       suggestionElements.add(element);
       presentation.append(element);
     }
 
     suggestionsInfo = suggestions;
 
-    setHint(query + (suggestions[0]['name'] as String).substring(query.length));
+    setHint(query + suggestions[0].name.substring(query.length));
     selectedElement = null;
 
     showSuggestions();
@@ -352,9 +324,6 @@ void initializeSearch(
       var selectingElement = selectedElement ?? 0;
       var href = suggestionElements[selectingElement].dataset['href'];
       if (href != null) {
-        print('baseHref: $htmlBase');
-        print('href: $href');
-        print('assign: $htmlBase$href');
         window.location.assign('$htmlBase$href');
       }
       return;
@@ -370,7 +339,7 @@ void initializeSearch(
         }
       } else {
         // The user wants to fill the input field with their currently selected suggestion
-        handle(suggestionsInfo[selectedElement!]['name'] as String);
+        handle(suggestionsInfo[selectedElement!].name);
         storedValue = null;
         selectedElement = null;
         event.preventDefault();
@@ -429,17 +398,80 @@ void initializeSearch(
 
       // Store the actual input value to display their currently selected item.
       storedValue ??= input.value;
-      input.value = suggestionsInfo[selectedElement!]['name'] as String;
+      input.value = suggestionsInfo[selectedElement!].name;
       setHint('');
     } else if (storedValue != null && previousSelectedElement != null) {
       // They are moving back to the input field, so return the stored value.
       input.value = storedValue;
       setHint(storedValue! +
-          (suggestionsInfo[0]['name'] as String)
-              .substring(storedValue!.length));
+          suggestionsInfo[0].name.substring(storedValue!.length));
       storedValue = null;
     }
 
     event.preventDefault();
+  });
+}
+
+class SearchMatch {
+  final IndexItem element;
+  final double score;
+
+  SearchMatch(this.element, this.score);
+}
+
+class IndexItem {
+  final String name;
+  final String qualifiedName;
+  final String type;
+  final String? href;
+  final int? overriddenDepth;
+  final EnclosedBy? enclosedBy;
+
+  IndexItem._({
+    required this.name,
+    required this.qualifiedName,
+    required this.type,
+    this.href,
+    this.overriddenDepth,
+    this.enclosedBy,
+  });
+
+  // "name":"dartdoc",
+  // "qualifiedName":"dartdoc",
+  // "href":"dartdoc/dartdoc-library.html",
+  // "type":"library",
+  // "overriddenDepth":0,
+  // "packageName":"dartdoc"
+  // ["enclosedBy":{"name":"Accessor","type":"class"}]
+
+  factory IndexItem.fromMap(Map<String, dynamic> data) {
+    // Note that this map also contains 'packageName', but we're not currently
+    // using that info.
+
+    EnclosedBy? enclosedBy;
+    if (data['enclosedBy'] != null) {
+      final map = data['enclosedBy'] as Map<String, dynamic>;
+      enclosedBy = EnclosedBy._(name: map['name'], type: map['type']);
+    }
+
+    return IndexItem._(
+      name: data['name'],
+      qualifiedName: data['qualifiedName'],
+      href: data['href'],
+      type: data['type'],
+      overriddenDepth: data['overriddenDepth'],
+      enclosedBy: enclosedBy,
+    );
+  }
+}
+
+class EnclosedBy {
+  final String name;
+  final String type;
+
+  // ["enclosedBy":{"name":"Accessor","type":"class"}]
+  EnclosedBy._({
+    required this.name,
+    required this.type,
   });
 }
