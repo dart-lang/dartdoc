@@ -431,8 +431,8 @@ class IndexItem {
     required this.name,
     required this.qualifiedName,
     required this.type,
-    required this.href,
-    required this.overriddenDepth,
+    this.href,
+    this.overriddenDepth,
     this.enclosedBy,
   });
 
