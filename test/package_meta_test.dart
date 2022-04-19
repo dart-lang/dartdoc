@@ -55,8 +55,8 @@ void main() {
               'A non-interactive HTML documentation generator for Dart source code.'));
     });
 
-    test('has a homepage', () {
-      expect(p.homepage, equals('https://github.com/dart-lang/dartdoc'));
+    test('has a repository', () {
+      expect(p.repository, equals('https://github.com/dart-lang/dartdoc'));
     });
 
     test('is valid', () {

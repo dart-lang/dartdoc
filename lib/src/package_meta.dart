@@ -138,6 +138,8 @@ abstract class PackageMeta {
 
   String get homepage;
 
+  String get repository;
+
   File? getReadmeContents();
 
   File? getLicenseContents();
@@ -353,6 +355,9 @@ class _FilePackageMeta extends PubPackageMeta {
   String get homepage => _pubspec['homepage'] ?? '';
 
   @override
+  String get repository => _pubspec['repository'] ?? '';
+
+  @override
   bool get requiresFlutter =>
       _environment?.containsKey('flutter') == true ||
       _dependencies?.containsKey('flutter') == true;
@@ -432,6 +437,9 @@ class _SdkMeta extends PubPackageMeta {
 
   @override
   String get homepage => 'https://github.com/dart-lang/sdk';
+
+  @override
+  String get repository => 'https://github.com/dart-lang/sdk';
 
   @override
   bool get requiresFlutter => false;
