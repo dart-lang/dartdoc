@@ -16685,6 +16685,7 @@ const _invisibleGetters = {
     'isValid',
     'name',
     'pathContext',
+    'repository',
     'requiresFlutter',
     'resolvedDir',
     'resourceProvider',
