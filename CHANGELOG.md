@@ -1,3 +1,6 @@
+## 5.1.1
+* Fixed the `{@youtube}` directive to respect the provided width and height.
+
 ## 5.1.0
 * Support new enhanced enums feature.
 * Removed superfluous `[...]` links. (#2928)
