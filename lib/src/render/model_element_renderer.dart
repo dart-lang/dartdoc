@@ -10,7 +10,7 @@ abstract class ModelElementRenderer {
 
   String renderLinkedName(ModelElement modelElement);
 
-  String renderYoutubeUrl(String youTubeId, String aspectRatio);
+  String renderYoutubeUrl(String youTubeId, int width, int height);
 
   String renderAnimation(
       String uniqueId, int width, int height, Uri movieUrl, String overlayId);
@@ -31,29 +31,28 @@ class ModelElementRendererHtml extends ModelElementRenderer {
   }
 
   @override
-  String renderYoutubeUrl(String youTubeId, String aspectRatio) {
+  String renderYoutubeUrl(String youTubeId, int width, int height) {
     // Blank lines before and after, and no indenting at the beginning and end
     // is needed so that Markdown doesn't confuse this with code, so be
     // careful of whitespace here.
     return '''
 
-<p style="position: relative;
-          padding-top: $aspectRatio%;">
-  <iframe src="https://www.youtube.com/embed/$youTubeId?rel=0"
-          frameborder="0"
-          allow="accelerometer;
-                 autoplay;
-                 encrypted-media;
-                 gyroscope;
-                 picture-in-picture"
-          allowfullscreen
-          style="position: absolute;
-                 top: 0;
-                 left: 0;
-                 width: 100%;
-                 height: 100%;">
-  </iframe>
-</p>
+<iframe src="https://www.youtube.com/embed/$youTubeId?rel=0" 
+        title="YouTube video player" 
+        frameborder="0" 
+        allow="accelerometer; 
+               autoplay; 
+               clipboard-write; 
+               encrypted-media; 
+               gyroscope; 
+               picture-in-picture" 
+        allowfullscreen="" 
+        style="max-width: ${width}px;
+               max-height: ${height}px;
+               width: 100%;
+               height: 100%;
+               aspect-ratio: $width / $height;">
+</iframe>
 
 '''; // Must end at start of line, or following inline text will be indented.
   }
