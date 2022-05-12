@@ -990,10 +990,14 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
             .pathContext
             .join(dir.path, 'dartdoc_options.yaml'));
         if (dartdocOptionsFile.exists) {
-          yamlData = _YamlFileData(
-              loadYaml(dartdocOptionsFile.readAsStringSync()),
-              resourceProvider.pathContext.canonicalize(dir.path));
-          break;
+          final yaml = loadYaml(dartdocOptionsFile.readAsStringSync());
+          // [loadYaml()] will return null for empty (or all comment) yaml files,
+          // so we must check for that case.
+          if (yaml != null) {
+            yamlData = _YamlFileData(
+                yaml, resourceProvider.pathContext.canonicalize(dir.path));
+            break;
+          }
         }
       }
     }
