@@ -16131,15 +16131,13 @@ const _invisibleGetters = {
     'enums',
     'extensions',
     'functions',
-    'hasLoadLibraryFunction',
     'hashCode',
     'lineInfo',
     'mixins',
     'runtimeType',
     'session',
     'topLevelVariables',
-    'typeAliases',
-    'types'
+    'typeAliases'
   },
   'Constructable': {
     'constructors',
@@ -16527,8 +16525,6 @@ const _invisibleGetters = {
     'exportedLibraries',
     'exports',
     'featureSet',
-    'hasExtUri',
-    'hasLoadLibraryFunction',
     'hashCode',
     'identifier',
     'importedLibraries',
