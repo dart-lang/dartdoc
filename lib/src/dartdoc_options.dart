@@ -996,8 +996,8 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
           if (yaml != null) {
             yamlData = _YamlFileData(
                 yaml, resourceProvider.pathContext.canonicalize(dir.path));
-            break;
           }
+          break;
         }
       }
     }
