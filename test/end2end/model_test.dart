@@ -1145,25 +1145,38 @@ void main() {
     });
 
     test(
-        'renders a YouTube video within the method documentation with correct aspect ratio',
+        'renders a YouTube video within the method documentation with correct max height/width',
         () {
       expect(
-          withYouTubeWatchUrl.documentation,
-          contains(
-              '<iframe src="https://www.youtube.com/embed/oHg5SJYRHA0?rel=0"'));
-      // Video is 560x315, which means height is 56.25% of width.
+        withYouTubeWatchUrl.documentation,
+        contains(
+          '<iframe src="https://www.youtube.com/embed/oHg5SJYRHA0?rel=0"',
+        ),
+      );
       expect(
-          withYouTubeWatchUrl.documentation, contains('padding-top: 56.25%;'));
+        withYouTubeWatchUrl.documentation,
+        contains('max-width: 560px;'),
+      );
+      expect(
+        withYouTubeWatchUrl.documentation,
+        contains('max-height: 315px;'),
+      );
     });
     test("Doesn't place YouTube video in one line doc", () {
       expect(
-          withYouTubeInOneLineDoc.oneLineDoc,
-          isNot(contains(
-              '<iframe src="https://www.youtube.com/embed/oHg5SJYRHA0?rel=0"')));
-      expect(
-          withYouTubeInOneLineDoc.documentation,
+        withYouTubeInOneLineDoc.oneLineDoc,
+        isNot(
           contains(
-              '<iframe src="https://www.youtube.com/embed/oHg5SJYRHA0?rel=0"'));
+            '<iframe src="https://www.youtube.com/embed/oHg5SJYRHA0?rel=0"',
+          ),
+        ),
+      );
+      expect(
+        withYouTubeInOneLineDoc.documentation,
+        contains(
+          '<iframe src="https://www.youtube.com/embed/oHg5SJYRHA0?rel=0"',
+        ),
+      );
     });
     test('Handles YouTube video inline properly', () {
       // Make sure it doesn't have a double-space before the continued line,

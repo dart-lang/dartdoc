@@ -1012,7 +1012,7 @@ String _getPackageVersion() {
 Future<void> build() async {
   var launcher = SubprocessLauncher('build');
   await launcher.runStreamed(Platform.resolvedExecutable,
-      ['pub', 'run', 'build_runner', 'build', '--delete-conflicting-outputs']);
+      ['run', 'build_runner', 'build', '--delete-conflicting-outputs']);
 
   // TODO(jcollins-g): port to build system?
   var version = _getPackageVersion();
