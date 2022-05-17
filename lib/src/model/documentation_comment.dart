@@ -471,9 +471,8 @@ mixin DocumentationComment
         return '';
       }
       var youTubeId = url.group(url.groupCount)!;
-      var aspectRatio = (height / width * 100).toStringAsFixed(2);
 
-      return modelElementRenderer.renderYoutubeUrl(youTubeId, aspectRatio);
+      return modelElementRenderer.renderYoutubeUrl(youTubeId, width, height);
     });
   }
 

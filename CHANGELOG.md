@@ -9,6 +9,7 @@
 * Mustachio: Remove parameters which are unused in AOT renderers. (#2943)
 * Mustachio: Deduplicate AOT partial renderers. (#2978)
 * Mustachio: Allow whitespace after section and partial delimiters. (#2964)
+* Fixed the `{@youtube}` directive to respect the provided width and height. (#3030)
 
 ## 5.0.1
 * Add support for new VM service message. (#2931)

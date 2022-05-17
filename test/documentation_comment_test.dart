@@ -716,15 +716,17 @@ Text.
 
       expectNoWarnings();
       expect(
-          doc,
-          matches(RegExp(
-              '^Text.\n\n+'
-              r'<p style="position: relative;\s+padding-top: 200.00%;">\s*'
-              r'<iframe src="https://www.youtube.com/embed/oHg5SJYRHA0\?rel=0".*</iframe>\s*'
-              '</p>\n\n+'
-              r'End text.$',
-              multiLine: true,
-              dotAll: true)));
+        doc,
+        matches(
+          RegExp(
+            '^Text.\n\n+'
+            r'<iframe src="https://www.youtube.com/embed/oHg5SJYRHA0\?rel=0".*</iframe>\s*\n\n+'
+            r'End text.$',
+            multiLine: true,
+            dotAll: true,
+          ),
+        ),
+      );
     });
 
     test('processes leading @youtube', () async {
@@ -736,14 +738,16 @@ Text.
 
       expectNoWarnings();
       expect(
-          doc,
-          matches(RegExp(
-              r'^<p style="position: relative;\s+padding-top: 200.00%;">\s*'
-              r'<iframe src="https://www.youtube.com/embed/oHg5SJYRHA0\?rel=0".*</iframe>\s*'
-              '</p>\n\n+'
-              r'End text.$',
-              multiLine: true,
-              dotAll: true)));
+        doc,
+        matches(
+          RegExp(
+            r'<iframe src="https://www.youtube.com/embed/oHg5SJYRHA0\?rel=0".*</iframe>\s*\n\n+'
+            r'End text.$',
+            multiLine: true,
+            dotAll: true,
+          ),
+        ),
+      );
     });
 
     test('processes trailing @youtube', () async {
@@ -755,14 +759,16 @@ Text.
 
       expectNoWarnings();
       expect(
-          doc,
-          matches(RegExp(
-              '^Text.\n\n+'
-              r'<p style="position: relative;\s+padding-top: 200.00%;">\s*'
-              r'<iframe src="https://www.youtube.com/embed/oHg5SJYRHA0\?rel=0".*</iframe>\s*'
-              r'</p>$',
-              multiLine: true,
-              dotAll: true)));
+        doc,
+        matches(
+          RegExp(
+            '^Text.\n\n+'
+            r'<iframe src="https://www.youtube.com/embed/oHg5SJYRHA0\?rel=0".*</iframe>\s*$',
+            multiLine: true,
+            dotAll: true,
+          ),
+        ),
+      );
     });
 
     test('warns when @youtube has less than 3 arguments', () async {
