@@ -44,6 +44,21 @@ void init() {
     var jsonIndex = (jsonDecode(text) as List).cast<Map<String, dynamic>>();
     final index = jsonIndex.map((entry) => IndexItem.fromMap(entry)).toList();
 
+    // Navigate to the first result from the 'search' query parameter
+    // if specified and found.
+    final url = Uri.parse(window.location.toString());
+    final search = url.queryParameters['search'];
+    if (search != null) {
+      final matches = findMatches(index, search);
+      if (matches.isNotEmpty) {
+        final href = matches.first.href;
+        if (href != null) {
+          window.location.assign('$htmlBase$href');
+          return;
+        }
+      }
+    }
+
     // Initialize all three search fields.
     if (searchBox != null) {
       initializeSearch(searchBox, index, htmlBase);
