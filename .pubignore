@@ -16,7 +16,6 @@ test_data/
 testing/
 pubspec.lock
 
-*.dart.js
 *.iml
 *.ipr
 *.iws

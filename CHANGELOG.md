@@ -1,3 +1,6 @@
+## 5.1.1
+* Include `lib/resources/docs.dart.js`
+
 ## 5.1.0
 * Support new enhanced enums feature.
 * Removed superfluous `[...]` links. (#2928)
