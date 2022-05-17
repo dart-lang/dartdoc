@@ -1033,6 +1033,7 @@ Future<void> buildWeb() async {
     'js',
     '--output=lib/resources/docs.dart.js',
     'web/docs.dart',
+    '-O4',
   ]);
   delete(File('lib/resources/docs.dart.js.deps'));
 
