@@ -1,5 +1,10 @@
+## 5.1.2
+* Include `lib/resources/docs.dart.js.map`
+* Reintroduce query param search. (#3026)
+
 ## 5.1.1
 * Include `lib/resources/docs.dart.js`
+* Optimize compiled Dart web code with `-04`. (#3028)
 
 ## 5.1.0
 * Support new enhanced enums feature.
