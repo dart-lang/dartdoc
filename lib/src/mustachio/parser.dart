@@ -5,9 +5,10 @@
 // See the Mustachio README at tool/mustachio/README.md for high-level
 // documentation.
 
-import 'package:charcode/charcode.dart';
 import 'package:meta/meta.dart';
 import 'package:source_span/source_span.dart';
+
+import '../charcode.dart';
 
 /// A [Mustache](https://mustache.github.io/mustache.5.html) parser for use by a
 /// generated Mustachio renderer.
