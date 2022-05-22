@@ -565,6 +565,22 @@ footer a, footer a:hover {
   margin: 0;
 }
 
+table {
+  margin-bottom: 1em;
+}
+
+table,
+th,
+td {
+  border: 1px solid lightgrey;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 8px;
+}
+
 .gt-separated {
   list-style: none;
   padding: 0;
