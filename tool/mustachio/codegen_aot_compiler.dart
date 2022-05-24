@@ -260,7 +260,7 @@ class _AotCompiler {
   final Set<_VariableLookup> _usedContexts = {};
 
   List<_VariableLookup> get _usedContextStack =>
-      [..._contextStack.where((c) => _usedContexts.contains(c))];
+      [..._contextStack.where(_usedContexts.contains)];
 
   /// A counter for naming partial render functions.
   ///

@@ -42,7 +42,7 @@ void init() {
     var textPromise = js_util.callMethod<Object>(response, 'text', []);
     var text = await promiseToFuture<String>(textPromise);
     var jsonIndex = (jsonDecode(text) as List).cast<Map<String, dynamic>>();
-    final index = jsonIndex.map((entry) => IndexItem.fromMap(entry)).toList();
+    final index = jsonIndex.map(IndexItem.fromMap).toList();
 
     // Navigate to the first result from the 'search' query parameter
     // if specified and found.

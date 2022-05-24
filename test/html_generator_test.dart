@@ -73,9 +73,7 @@ void main() {
     File getConvertedFile(String path) =>
         resourceProvider.getFile(resourceProvider.convertPath(path));
 
-    tearDown(() {
-      clearPackageMetaCache();
-    });
+    tearDown(clearPackageMetaCache);
 
     test('a null package has some assets', () async {
       await generator.generate(null, writer);

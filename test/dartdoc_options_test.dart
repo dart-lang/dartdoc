@@ -239,9 +239,7 @@ dartdoc:
     ''');
   });
 
-  tearDownAll(() {
-    tempDir.delete();
-  });
+  tearDownAll(tempDir.delete);
 
   group('new style synthetic option', () {
     test('validate argument override changes value', () {

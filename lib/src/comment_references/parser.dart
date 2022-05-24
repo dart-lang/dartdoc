@@ -59,7 +59,7 @@ class StringTrie {
   void addWord(String toAdd) {
     var currentTrie = this;
     for (var i in toAdd.codeUnits) {
-      currentTrie.children.putIfAbsent(i, () => StringTrie());
+      currentTrie.children.putIfAbsent(i, StringTrie.new);
       currentTrie = currentTrie.children[i]!;
     }
     currentTrie.valid = true;
