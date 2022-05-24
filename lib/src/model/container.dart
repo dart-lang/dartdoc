@@ -30,8 +30,7 @@ import 'package:meta/meta.dart';
 /// **all** : Referring to all children.
 abstract class Container extends ModelElement
     with Categorization, TypeParameters {
-  Container(Element element, Library? library, PackageGraph packageGraph)
-      : super(element, library, packageGraph);
+  Container(super.element, super.library, super.packageGraph);
 
   /// Containers must have associated libraries.
   @override

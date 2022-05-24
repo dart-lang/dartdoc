@@ -2,7 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
@@ -13,8 +12,7 @@ import 'package:meta/meta.dart';
 
 /// Implements the Dart 2.1 "mixin" style of mixin declarations.
 class Mixin extends InheritingContainer with TypeImplementing {
-  Mixin(ClassElement element, Library? library, PackageGraph packageGraph)
-      : super(element, library, packageGraph);
+  Mixin(super.element, super.library, super.packageGraph);
 
   List<ParameterizedElementType>? _superclassConstraints;
 

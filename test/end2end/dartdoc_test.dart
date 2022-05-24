@@ -38,8 +38,7 @@ final Folder _testSkyEnginePackage = _getFolder('testing/sky_engine');
 class DartdocLoggingOptionContext extends DartdocGeneratorOptionContext
     with LoggingContext {
   DartdocLoggingOptionContext(
-      DartdocOptionSet optionSet, Folder dir, ResourceProvider resourceProvider)
-      : super(optionSet, dir, resourceProvider);
+      super.optionSet, super.dir, super.resourceProvider);
 }
 
 void main() {

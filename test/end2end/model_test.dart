@@ -54,9 +54,8 @@ class TestLibraryContainer extends LibraryContainer with Nameable {
 }
 
 class TestLibraryContainerSdk extends TestLibraryContainer {
-  TestLibraryContainerSdk(String name, List<String> containerOrder,
-      LibraryContainer enclosingContainer)
-      : super(name, containerOrder, enclosingContainer);
+  TestLibraryContainerSdk(super.name, super.containerOrder,
+      LibraryContainer super.enclosingContainer);
 
   @override
   bool get isSdk => true;
@@ -572,7 +571,7 @@ void main() {
 
   group('Tools', () {
     late final Class toolUser;
-    late final Class _NonCanonicalToolUser,
+    late final Class NonCanonicalToolUser,
         CanonicalToolUser,
         PrivateLibraryToolUser;
     late final Class ImplementingClassForTool,
@@ -589,7 +588,7 @@ void main() {
         RegExp(r'PACKAGE_INVOCATION_INDEX: (\d+)');
 
     setUpAll(() {
-      _NonCanonicalToolUser = fakeLibrary.allClasses
+      NonCanonicalToolUser = fakeLibrary.allClasses
           .firstWhere((c) => c.name == '_NonCanonicalToolUser');
       CanonicalToolUser = fakeLibrary.allClasses
           .firstWhere((c) => c.name == 'CanonicalToolUser');
@@ -602,7 +601,7 @@ void main() {
       toolUser = exLibrary.classes.firstWhere((c) => c.name == 'ToolUser');
       invokeTool =
           toolUser.instanceMethods.firstWhere((m) => m.name == 'invokeTool');
-      invokeToolNonCanonical = _NonCanonicalToolUser.instanceMethods
+      invokeToolNonCanonical = NonCanonicalToolUser.instanceMethods
           .firstWhere((m) => m.name == 'invokeToolNonCanonical');
       invokeToolNonCanonicalSubclass = CanonicalToolUser.instanceMethods
           .firstWhere((m) => m.name == 'invokeToolNonCanonical');
@@ -4087,21 +4086,21 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
       expectValidLocation(onlyGetterGetter!.characterLocation!);
       expectValidLocation(onlySetterSetter!.characterLocation!);
 
-      Iterable<Accessor> _expandAccessors(Field f) sync* {
+      Iterable<Accessor> expandAccessors(Field f) sync* {
         if (f.hasGetter) yield f.getter!;
         if (f.hasSetter) yield f.setter!;
       }
 
       // classB has a variety of inherited and partially overridden fields.
       // All should have valid locations on their accessors.
-      for (var a in classB.allFields.expand(_expandAccessors)) {
+      for (var a in classB.allFields.expand(expandAccessors)) {
         expectValidLocation(a.characterLocation!);
       }
 
       // Enums also have fields and have historically had problems.
       var macrosFromAccessors =
           fakeLibrary.enums.firstWhere((e) => e.name == 'MacrosFromAccessors');
-      for (var a in macrosFromAccessors.allFields.expand(_expandAccessors)) {
+      for (var a in macrosFromAccessors.allFields.expand(expandAccessors)) {
         if (a.name == 'values') {
           continue;
         }

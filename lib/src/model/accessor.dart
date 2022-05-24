@@ -20,10 +20,9 @@ class Accessor extends ModelElement implements EnclosedElement {
   /// Initialized by the combo's constructor.
   late final GetterSetterCombo enclosingCombo;
 
-  Accessor(PropertyAccessorElement element, Library? library,
-      PackageGraph packageGraph,
-      [ExecutableMember? originalMember])
-      : super(element, library, packageGraph, originalMember);
+  Accessor(PropertyAccessorElement super.element, super.library,
+      super.packageGraph,
+      [ExecutableMember? super.originalMember]);
 
   @override
   CharacterLocation? get characterLocation {
@@ -196,9 +195,8 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
   @override
   bool get isCovariant => isSetter && parameters.first.isCovariant;
 
-  ContainerAccessor(PropertyAccessorElement element, Library? library,
-      PackageGraph packageGraph)
-      : super(element, library, packageGraph);
+  ContainerAccessor(super.element, super.library,
+      super.packageGraph);
 
   ContainerAccessor.inherited(PropertyAccessorElement element, Library? library,
       PackageGraph packageGraph, this._enclosingElement,

@@ -10,8 +10,7 @@ import 'package:dartdoc/src/model/model.dart';
 /// A [ModelElement] for a [FunctionElement] that isn't part of a type definition.
 class ModelFunction extends ModelFunctionTyped with Categorization {
   ModelFunction(
-      FunctionElement element, Library? library, PackageGraph packageGraph)
-      : super(element, library, packageGraph);
+      FunctionElement super.element, super.library, super.packageGraph);
 
   @override
   bool get isStatic => element!.isStatic;
@@ -27,8 +26,7 @@ class ModelFunction extends ModelFunctionTyped with Categorization {
 /// explicit typedef.
 class ModelFunctionTypedef extends ModelFunctionTyped {
   ModelFunctionTypedef(
-      FunctionTypedElement element, Library? library, PackageGraph packageGraph)
-      : super(element, library, packageGraph);
+      super.element, super.library, super.packageGraph);
 
   @override
   String get name => element!.enclosingElement!.name!;
@@ -44,8 +42,7 @@ class ModelFunctionTyped extends ModelElement
   ];
 
   ModelFunctionTyped(
-      FunctionTypedElement element, Library? library, PackageGraph packageGraph)
-      : super(element, library, packageGraph);
+      FunctionTypedElement super.element, super.library, super.packageGraph);
 
   @override
   ModelElement? get enclosingElement => library;

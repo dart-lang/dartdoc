@@ -67,11 +67,11 @@ class StringTrie {
 }
 
 final StringTrie operatorParseTrie = () {
-  var _operatorParseTrie = StringTrie();
+  var operatorParseTrie = StringTrie();
   for (var name in operatorNames.keys) {
-    _operatorParseTrie.addWord(name);
+    operatorParseTrie.addWord(name);
   }
-  return _operatorParseTrie;
+  return operatorParseTrie;
 }();
 
 /// A parser for comment references.

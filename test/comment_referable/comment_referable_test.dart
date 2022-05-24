@@ -134,9 +134,8 @@ class GrandparentOverrider extends GenericChild {
   @override
   final Iterable<Base> referenceGrandparentOverrides;
 
-  GrandparentOverrider(String name, List<GenericChild> children, Base parent,
-      this.referenceGrandparentOverrides)
-      : super(name, children, parent);
+  GrandparentOverrider(super.name, super.children, super.parent,
+      this.referenceGrandparentOverrides);
 }
 
 void main() {

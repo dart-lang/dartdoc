@@ -149,7 +149,7 @@ class SubprocessLauncher {
           .expand(filter)
           .map(
         (String line) {
-          final value = '$prefix$line'.trim() + '\n';
+          final value = '${'$prefix$line'.trim()}\n';
           output.write(value);
           return value;
         },

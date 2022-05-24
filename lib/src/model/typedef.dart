@@ -12,8 +12,7 @@ import 'package:dartdoc/src/render/typedef_renderer.dart';
 abstract class Typedef extends ModelElement
     with TypeParameters, Categorization
     implements EnclosedElement {
-  Typedef(TypeAliasElement element, Library? library, PackageGraph packageGraph)
-      : super(element, library, packageGraph);
+  Typedef(TypeAliasElement super.element, super.library, super.packageGraph);
 
   DartType get aliasedType => element!.aliasedType;
 
@@ -93,8 +92,7 @@ abstract class Typedef extends ModelElement
 /// for `Function` itself.
 class GeneralizedTypedef extends Typedef {
   GeneralizedTypedef(
-      TypeAliasElement element, Library? library, PackageGraph packageGraph)
-      : super(element, library, packageGraph) {
+      super.element, super.library, super.packageGraph) {
     assert(!isCallable);
   }
 }
@@ -102,8 +100,7 @@ class GeneralizedTypedef extends Typedef {
 /// A typedef referring to a non-function, defined type.
 class ClassTypedef extends Typedef {
   ClassTypedef(
-      TypeAliasElement element, Library? library, PackageGraph packageGraph)
-      : super(element, library, packageGraph) {
+      super.element, super.library, super.packageGraph) {
     assert(!isCallable);
     assert(modelType.modelElement is Class);
   }
@@ -125,8 +122,7 @@ class ClassTypedef extends Typedef {
 /// A typedef referring to a function type.
 class FunctionTypedef extends Typedef {
   FunctionTypedef(
-      TypeAliasElement element, Library? library, PackageGraph packageGraph)
-      : super(element, library, packageGraph) {
+      super.element, super.library, super.packageGraph) {
     assert(isCallable);
   }
 

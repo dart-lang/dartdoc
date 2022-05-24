@@ -176,10 +176,10 @@ abstract class ParameterRenderer {
       }
     }
     if (param.isRequiredNamed) {
-      buf.write(required('required') + ' ');
+      buf.write('${required('required')} ');
     }
     if (param.isCovariant) {
-      buf.write(covariant('covariant') + ' ');
+      buf.write('${covariant('covariant')} ');
     }
     if (paramModelType is Callable) {
       String returnTypeName;

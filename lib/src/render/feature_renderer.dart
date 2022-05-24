@@ -24,7 +24,7 @@ class FeatureRendererHtml extends FeatureRenderer {
 
   @override
   String renderAnnotation(Annotation feature) =>
-      '@' + feature.linkedName + _htmlEscape.convert(feature.parameterText);
+      '@${feature.linkedName}${_htmlEscape.convert(feature.parameterText)}';
 }
 
 /// A markdown renderer for a [Feature].
@@ -33,5 +33,5 @@ class FeatureRendererMd extends FeatureRenderer {
 
   @override
   String renderAnnotation(Annotation feature) =>
-      '@' + feature.linkedName + _htmlEscape.convert(feature.parameterText);
+      '@${feature.linkedName}${_htmlEscape.convert(feature.parameterText)}';
 }

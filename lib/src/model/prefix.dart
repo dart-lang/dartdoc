@@ -15,8 +15,7 @@ import '../../dartdoc.dart';
 class Prefix extends ModelElement implements EnclosedElement {
   /// [library] is the library the prefix is defined in, not the [Library]
   /// referred to by the [PrefixElement].
-  Prefix(PrefixElement element, Library? library, PackageGraph packageGraph)
-      : super(element, library, packageGraph);
+  Prefix(PrefixElement super.element, super.library, super.packageGraph);
 
   @override
   bool get isCanonical => false;

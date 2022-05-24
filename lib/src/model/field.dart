@@ -17,10 +17,9 @@ class Field extends ModelElement
   @override
   final ContainerAccessor? setter;
 
-  Field(FieldElement element, Library library, PackageGraph packageGraph,
+  Field(FieldElement super.element, Library super.library, super.packageGraph,
       this.getter, this.setter)
-      : assert(getter != null || setter != null),
-        super(element, library, packageGraph) {
+      : assert(getter != null || setter != null) {
     if (getter != null) getter!.enclosingCombo = this;
     if (setter != null) setter!.enclosingCombo = this;
   }

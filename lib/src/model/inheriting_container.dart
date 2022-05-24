@@ -209,8 +209,7 @@ abstract class InheritingContainer extends Container
               as DefinedElementType?;
 
   InheritingContainer(
-      ClassElement element, Library? library, PackageGraph packageGraph)
-      : super(element, library, packageGraph);
+      ClassElement super.element, super.library, super.packageGraph);
 
   @override
   Iterable<Method> get instanceMethods =>
@@ -374,11 +373,11 @@ abstract class InheritingContainer extends Container
           inheritanceChainElements ??=
               inheritanceChain.map((c) => c!.element).toList();
           // [packageGraph.specialClasses] is not available yet.
-          bool _isDartCoreObject(ClassElement e) =>
+          bool isDartCoreObject(ClassElement e) =>
               e.name == 'Object' && e.library.name == 'dart.core';
           assert(inheritanceChainElements
                   .contains(imap[nameObj]!.enclosingElement) ||
-              _isDartCoreObject(
+              isDartCoreObject(
                   imap[nameObj]!.enclosingElement as ClassElement));
 
           // If the concrete object from [InheritanceManager3.getInheritedConcreteMap2]

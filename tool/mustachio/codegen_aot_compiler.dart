@@ -78,7 +78,9 @@ Future<String> compileTemplatesToRenderers(
 // the variable is not used; generally when the section is checking if a
 // non-bool, non-Iterable field is non-null.
 // ignore_for_file: unused_local_variable
+// ignore_for_file: no_leading_underscores_for_library_prefixes
 // ignore_for_file: non_constant_identifier_names, unnecessary_string_escapes
+// ignore_for_file: use_super_parameters
 
 ${library.accept(DartEmitter.scoped(orderDirectives: true))}
 ''');

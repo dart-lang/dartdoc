@@ -64,22 +64,14 @@ List<DartdocOption<Object?>> createPackageWarningOptions(
     // will override.
     DartdocOptionArgFile<List<String>?>('errors', null, resourceProvider,
         splitCommas: true,
-        help: 'Additional warning names to force as errors.  Specify an empty '
-                'list to force defaults (overriding '
-                'dartdoc_options.yaml)\nDefaults:\n' +
-            _warningsListHelpText(PackageWarningMode.error)),
+        help: 'Additional warning names to force as errors.  Specify an empty list to force defaults (overriding dartdoc_options.yaml)\nDefaults:\n${_warningsListHelpText(PackageWarningMode.error)}'),
     DartdocOptionArgFile<List<String>?>('ignore', null, resourceProvider,
         splitCommas: true,
-        help: 'Additional warning names to ignore.  Specify an empty list to '
-                'force defaults (overriding '
-                'dartdoc_options.yaml).\nDefaults:\n' +
-            _warningsListHelpText(PackageWarningMode.ignore)),
+        help: 'Additional warning names to ignore.  Specify an empty list to force defaults (overriding dartdoc_options.yaml).\nDefaults:\n${_warningsListHelpText(PackageWarningMode.ignore)}'),
     DartdocOptionArgFile<List<String>?>('warnings', null, resourceProvider,
         splitCommas: true,
         help:
-            'Additional warning names to show as warnings (instead of error or '
-                    'ignore, if not warning by default).\nDefaults:\n' +
-                _warningsListHelpText(PackageWarningMode.warn)),
+            'Additional warning names to show as warnings (instead of error or ignore, if not warning by default).\nDefaults:\n${_warningsListHelpText(PackageWarningMode.warn)}'),
     // Synthetic option uses a factory to build a PackageWarningOptions from all the above flags.
     DartdocOptionSyntheticOnly<PackageWarningOptions>(
       'packageWarningOptions',

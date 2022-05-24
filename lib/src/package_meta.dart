@@ -20,7 +20,7 @@ import 'package:yaml/yaml.dart';
 final Map<String, PackageMeta?> _packageMetaCache = {};
 
 class PackageMetaFailure extends DartdocFailure {
-  PackageMetaFailure(String message) : super(message);
+  PackageMetaFailure(super.message);
 }
 
 /// For each list in this list, at least one of the given paths must exist
@@ -164,8 +164,7 @@ abstract class PackageMeta {
 
 /// Default implementation of [PackageMeta] depends on pub packages.
 abstract class PubPackageMeta extends PackageMeta {
-  PubPackageMeta(Folder dir, ResourceProvider resourceProvider)
-      : super(dir, resourceProvider);
+  PubPackageMeta(super.dir, super.resourceProvider);
 
   static final List<List<String>> _sdkDirFilePaths = () {
     var pathsToReturn = <List<String>>[];
@@ -307,12 +306,11 @@ class _FilePackageMeta extends PubPackageMeta {
     return loadYaml(pubspec.readAsStringSync());
   }();
 
-  _FilePackageMeta(Folder dir, ResourceProvider resourceProvider)
-      : super(dir, resourceProvider);
+  _FilePackageMeta(super.dir, super.resourceProvider);
 
   @override
   late final String? hostedAt = () {
-    String? _hostedAt;
+    String? hostedAt;
     // Search for 'hosted/host.domain' as the immediate parent directories,
     // and verify that a directory "_temp" exists alongside "hosted".  Those
     // seem to be the only guaranteed things to exist if we're from a pub
@@ -332,11 +330,11 @@ class _FilePackageMeta extends PubPackageMeta {
             resourceProvider
                 .getFolder(pathContext.join(pubCacheRoot, '_temp'))
                 .exists) {
-          _hostedAt = pathContext.basename(hostname);
+          hostedAt = pathContext.basename(hostname);
         }
       }
     }
-    return _hostedAt;
+    return hostedAt;
   }();
 
   @override
@@ -410,8 +408,7 @@ class _SdkMeta extends PubPackageMeta {
   late final String sdkReadmePath =
       resourceProvider.pathContext.join(dir.path, 'lib', 'api_readme.md');
 
-  _SdkMeta(Folder dir, ResourceProvider resourceProvider)
-      : super(dir, resourceProvider);
+  _SdkMeta(super.dir, super.resourceProvider);
 
   @override
   String? get hostedAt => null;

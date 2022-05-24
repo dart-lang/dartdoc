@@ -1,3 +1,7 @@
+## 5.1.3-dev
+
+* Require Dart 2.17.0
+
 ## 5.1.2
 * Include `lib/resources/docs.dart.js.map`
 * Reintroduce query param search. (#3026)

@@ -28,9 +28,9 @@ const String _rootDir = 'pub.dartlang.org';
 ///
 ///     dart tool/doc_packages.dart --generate --page=3
 ///
-void main(List<String> _args) {
+void main(List<String> arguments) {
   var parser = _createArgsParser();
-  var args = parser.parse(_args);
+  var args = parser.parse(arguments);
 
   if (args['help']) {
     _printUsageAndExit(parser);
@@ -160,13 +160,13 @@ Future<bool> _generateFor(PackageInfo package) async {
   output.createSync(recursive: true);
 
   try {
-    File(output.path + '/archive.tar.gz').writeAsBytesSync(response.bodyBytes);
+    File('${output.path}/archive.tar.gz').writeAsBytesSync(response.bodyBytes);
 
     await _exec('tar', ['zxvf', 'archive.tar.gz'],
         cwd: output.path, quiet: true);
 
     // Rule out any old packages (old sdk constraints).
-    var pubspecFile = File(output.path + '/pubspec.yaml');
+    var pubspecFile = File('${output.path}/pubspec.yaml');
     var pubspecInfo = loadYaml(pubspecFile.readAsStringSync());
 
     // Check for old versions.
@@ -188,7 +188,7 @@ Future<bool> _generateFor(PackageInfo package) async {
     _log(st.toString());
     rethrow;
   } finally {
-    File(output.path + '/output.txt').writeAsStringSync(_logBuffer.toString());
+    File('${output.path}/output.txt').writeAsStringSync(_logBuffer.toString());
   }
 }
 

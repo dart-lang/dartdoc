@@ -76,8 +76,7 @@ abstract class TemplateDataBase {
 }
 
 abstract class TemplateData<T extends Documentable> extends TemplateDataBase {
-  TemplateData(TemplateOptions htmlOptions, PackageGraph packageGraph)
-      : super(htmlOptions, packageGraph);
+  TemplateData(super.htmlOptions, super.packageGraph);
 
   @override
   T get self;
@@ -103,9 +102,7 @@ abstract class TemplateDataWithContainer<T extends Documentable>
 
 class PackageTemplateData extends TemplateData<Package> {
   final Package package;
-  PackageTemplateData(
-      TemplateOptions htmlOptions, PackageGraph packageGraph, this.package)
-      : super(htmlOptions, packageGraph);
+  PackageTemplateData(super.htmlOptions, super.packageGraph, this.package);
 
   @override
   bool get includeVersion => true;
@@ -134,9 +131,7 @@ class PackageTemplateData extends TemplateData<Package> {
 class CategoryTemplateData extends TemplateData<Category> {
   final Category category;
 
-  CategoryTemplateData(
-      TemplateOptions htmlOptions, PackageGraph packageGraph, this.category)
-      : super(htmlOptions, packageGraph);
+  CategoryTemplateData(super.htmlOptions, super.packageGraph, this.category);
 
   @override
   String get title => '${category.name} ${category.kind} - Dart API';
@@ -164,9 +159,8 @@ class LibraryTemplateData extends TemplateData<Library>
   final Library library;
   final LibrarySidebar _sidebarForLibrary;
 
-  LibraryTemplateData(TemplateOptions htmlOptions, PackageGraph packageGraph,
-      this.library, this._sidebarForLibrary)
-      : super(htmlOptions, packageGraph);
+  LibraryTemplateData(super.htmlOptions, super.packageGraph, this.library,
+      this._sidebarForLibrary);
 
   String get sidebarForLibrary => _sidebarForLibrary(library, this);
   @override
@@ -189,15 +183,8 @@ class LibraryTemplateData extends TemplateData<Library>
 
 /// Template data for Dart 2.1-style mixin declarations.
 class MixinTemplateData extends InheritingContainerTemplateData<Mixin> {
-  MixinTemplateData(
-      TemplateOptions htmlOptions,
-      PackageGraph packageGraph,
-      Library library,
-      Mixin mixin,
-      LibrarySidebar _sidebarForLibrary,
-      ContainerSidebar _sidebarForContainer)
-      : super(htmlOptions, packageGraph, library, mixin, _sidebarForLibrary,
-            _sidebarForContainer);
+  MixinTemplateData(super.htmlOptions, super.packageGraph, super.library,
+      super.mixin, super.sidebarForLibrary, super.sidebarForContainer);
 
   Mixin get mixin => clazz;
 
@@ -207,15 +194,8 @@ class MixinTemplateData extends InheritingContainerTemplateData<Mixin> {
 
 /// Template data for Dart classes.
 class ClassTemplateData extends InheritingContainerTemplateData<Class> {
-  ClassTemplateData(
-      TemplateOptions htmlOptions,
-      PackageGraph packageGraph,
-      Library library,
-      Class clazz,
-      LibrarySidebar _sidebarForLibrary,
-      ContainerSidebar _sidebarForContainer)
-      : super(htmlOptions, packageGraph, library, clazz, _sidebarForLibrary,
-            _sidebarForContainer);
+  ClassTemplateData(super.htmlOptions, super.packageGraph, super.library,
+      super.clazz, super.sidebarForLibrary, super.sidebarForContainer);
 
   @override
   Class get clazz => super.clazz;
@@ -232,13 +212,12 @@ abstract class InheritingContainerTemplateData<T extends InheritingContainer>
   final ContainerSidebar _sidebarForContainer;
 
   InheritingContainerTemplateData(
-      TemplateOptions htmlOptions,
-      PackageGraph packageGraph,
+      super.htmlOptions,
+      super.packageGraph,
       this.library,
       this.clazz,
       this._sidebarForLibrary,
-      this._sidebarForContainer)
-      : super(htmlOptions, packageGraph);
+      this._sidebarForContainer);
 
   String get sidebarForLibrary => _sidebarForLibrary(library, this);
   String get sidebarForContainer => _sidebarForContainer(container, this);
@@ -275,14 +254,8 @@ class ExtensionTemplateData<T extends Extension> extends TemplateData<T>
   final ContainerSidebar _sidebarForContainer;
   final LibrarySidebar _sidebarForLibrary;
 
-  ExtensionTemplateData(
-      TemplateOptions htmlOptions,
-      PackageGraph packageGraph,
-      this.library,
-      this.extension,
-      this._sidebarForLibrary,
-      this._sidebarForContainer)
-      : super(htmlOptions, packageGraph);
+  ExtensionTemplateData(super.htmlOptions, super.packageGraph, this.library,
+      this.extension, this._sidebarForLibrary, this._sidebarForContainer);
 
   String get sidebarForContainer => _sidebarForContainer(container, this);
   String get sidebarForLibrary => _sidebarForLibrary(library, this);
@@ -319,14 +292,8 @@ class ConstructorTemplateData extends TemplateData<Constructor>
   final Constructor constructor;
   final ContainerSidebar _sidebarForContainer;
 
-  ConstructorTemplateData(
-      TemplateOptions htmlOptions,
-      PackageGraph packageGraph,
-      this.library,
-      this.constructable,
-      this.constructor,
-      this._sidebarForContainer)
-      : super(htmlOptions, packageGraph);
+  ConstructorTemplateData(super.htmlOptions, super.packageGraph, this.library,
+      this.constructable, this.constructor, this._sidebarForContainer);
 
   String get sidebarForContainer => _sidebarForContainer(container, this);
 
@@ -355,15 +322,8 @@ class ConstructorTemplateData extends TemplateData<Constructor>
 }
 
 class EnumTemplateData extends InheritingContainerTemplateData<Enum> {
-  EnumTemplateData(
-      TemplateOptions htmlOptions,
-      PackageGraph packageGraph,
-      Library library,
-      Enum eNum,
-      LibrarySidebar _sidebarForLibrary,
-      ContainerSidebar _sidebarForContainer)
-      : super(htmlOptions, packageGraph, library, eNum, _sidebarForLibrary,
-            _sidebarForContainer);
+  EnumTemplateData(super.htmlOptions, super.packageGraph, super.library,
+      super.eNum, super.sidebarForLibrary, super.sidebarForContainer);
 
   Enum get eNum => clazz;
   @override
@@ -377,9 +337,8 @@ class FunctionTemplateData extends TemplateData<ModelFunction>
   final Library library;
   final LibrarySidebar _sidebarForLibrary;
 
-  FunctionTemplateData(TemplateOptions htmlOptions, PackageGraph packageGraph,
-      this.library, this.function, this._sidebarForLibrary)
-      : super(htmlOptions, packageGraph);
+  FunctionTemplateData(super.htmlOptions, super.packageGraph, this.library,
+      this.function, this._sidebarForLibrary);
 
   String get sidebarForLibrary => _sidebarForLibrary(library, this);
 
@@ -414,10 +373,9 @@ class MethodTemplateData extends TemplateData<Method>
 
   final String _containerDescription;
 
-  MethodTemplateData(TemplateOptions htmlOptions, PackageGraph packageGraph,
-      this.library, this.container, this.method, this._sidebarForContainer)
-      : _containerDescription = container.isClass ? 'class' : 'extension',
-        super(htmlOptions, packageGraph);
+  MethodTemplateData(super.htmlOptions, super.packageGraph, this.library,
+      this.container, this.method, this._sidebarForContainer)
+      : _containerDescription = container.isClass ? 'class' : 'extension';
 
   String get sidebarForContainer => _sidebarForContainer(container, this);
 
@@ -455,10 +413,9 @@ class PropertyTemplateData extends TemplateData<Field>
   final ContainerSidebar _sidebarForContainer;
   final String _containerDescription;
 
-  PropertyTemplateData(TemplateOptions htmlOptions, PackageGraph packageGraph,
-      this.library, this.container, this.property, this._sidebarForContainer)
-      : _containerDescription = container.isClass ? 'class' : 'extension',
-        super(htmlOptions, packageGraph);
+  PropertyTemplateData(super.htmlOptions, super.packageGraph, this.library,
+      this.container, this.property, this._sidebarForContainer)
+      : _containerDescription = container.isClass ? 'class' : 'extension';
 
   String get sidebarForContainer => _sidebarForContainer(container, this);
 
@@ -492,9 +449,8 @@ class TypedefTemplateData extends TemplateData<Typedef>
   final Typedef typeDef;
   final LibrarySidebar _sidebarForLibrary;
 
-  TypedefTemplateData(TemplateOptions htmlOptions, PackageGraph packageGraph,
-      this.library, this.typeDef, this._sidebarForLibrary)
-      : super(htmlOptions, packageGraph);
+  TypedefTemplateData(super.htmlOptions, super.packageGraph, this.library,
+      this.typeDef, this._sidebarForLibrary);
 
   String get sidebarForLibrary => _sidebarForLibrary(library, this);
 
@@ -524,13 +480,8 @@ class TopLevelPropertyTemplateData extends TemplateData<TopLevelVariable>
   final TopLevelVariable property;
   final LibrarySidebar _sidebarForLibrary;
 
-  TopLevelPropertyTemplateData(
-      TemplateOptions htmlOptions,
-      PackageGraph packageGraph,
-      this.library,
-      this.property,
-      this._sidebarForLibrary)
-      : super(htmlOptions, packageGraph);
+  TopLevelPropertyTemplateData(super.htmlOptions, super.packageGraph,
+      this.library, this.property, this._sidebarForLibrary);
 
   String get sidebarForLibrary => _sidebarForLibrary(library, this);
 
