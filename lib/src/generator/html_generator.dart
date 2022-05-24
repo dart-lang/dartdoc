@@ -30,8 +30,7 @@ Future<Generator> initHtmlGenerator(DartdocGeneratorOptionContext context,
 
 /// Generator backend for html output.
 class HtmlGeneratorBackend extends DartdocGeneratorBackend {
-  HtmlGeneratorBackend(super.options,
-      super.templates, super.resourceProvider);
+  HtmlGeneratorBackend(super.options, super.templates, super.resourceProvider);
 
   @override
   void generatePackage(FileWriter writer, PackageGraph graph, Package package) {

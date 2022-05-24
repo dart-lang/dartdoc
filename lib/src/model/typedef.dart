@@ -91,16 +91,14 @@ abstract class Typedef extends ModelElement
 /// referring to a defined class.  An example is a typedef alias for `void` or
 /// for `Function` itself.
 class GeneralizedTypedef extends Typedef {
-  GeneralizedTypedef(
-      super.element, super.library, super.packageGraph) {
+  GeneralizedTypedef(super.element, super.library, super.packageGraph) {
     assert(!isCallable);
   }
 }
 
 /// A typedef referring to a non-function, defined type.
 class ClassTypedef extends Typedef {
-  ClassTypedef(
-      super.element, super.library, super.packageGraph) {
+  ClassTypedef(super.element, super.library, super.packageGraph) {
     assert(!isCallable);
     assert(modelType.modelElement is Class);
   }
@@ -121,8 +119,7 @@ class ClassTypedef extends Typedef {
 
 /// A typedef referring to a function type.
 class FunctionTypedef extends Typedef {
-  FunctionTypedef(
-      super.element, super.library, super.packageGraph) {
+  FunctionTypedef(super.element, super.library, super.packageGraph) {
     assert(isCallable);
   }
 

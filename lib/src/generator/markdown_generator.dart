@@ -25,8 +25,8 @@ Future<Generator> initMarkdownGenerator(DartdocGeneratorOptionContext context,
 
 /// Generator backend for markdown output.
 class MarkdownGeneratorBackend extends DartdocGeneratorBackend {
-  MarkdownGeneratorBackend(super.options,
-      super.templates, super.resourceProvider);
+  MarkdownGeneratorBackend(
+      super.options, super.templates, super.resourceProvider);
 
   @override
   void generatePackage(FileWriter writer, PackageGraph graph, Package package) {

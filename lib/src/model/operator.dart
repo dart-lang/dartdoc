@@ -12,7 +12,8 @@ class Operator extends Method {
   Operator(super.element, super.library, super.packageGraph);
 
   Operator.inherited(super.element, Container super.enclosingContainer,
-      super.library, super.packageGraph, {Member? originalMember})
+      super.library, super.packageGraph,
+      {Member? originalMember})
       : super.inherited(originalMember: originalMember as ExecutableMember?);
 
   @override

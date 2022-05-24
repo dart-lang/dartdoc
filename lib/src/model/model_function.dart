@@ -25,8 +25,7 @@ class ModelFunction extends ModelFunctionTyped with Categorization {
 /// A [ModelElement] for a [FunctionTypedElement] that is part of an
 /// explicit typedef.
 class ModelFunctionTypedef extends ModelFunctionTyped {
-  ModelFunctionTypedef(
-      super.element, super.library, super.packageGraph);
+  ModelFunctionTypedef(super.element, super.library, super.packageGraph);
 
   @override
   String get name => element!.enclosingElement!.name!;
