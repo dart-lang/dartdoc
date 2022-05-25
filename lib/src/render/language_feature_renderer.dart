@@ -56,8 +56,8 @@ class LanguageFeatureRendererMd extends LanguageFeatureRenderer {
   String renderLanguageFeatureLabel(LanguageFeature feature) {
     final featureUrl = feature.featureUrl;
     if (featureUrl != null) {
-      return r'*[<' + feature.name + r'>](' + featureUrl + ')*';
+      return '*[<${feature.name}>]($featureUrl)*';
     }
-    return r'*<' + feature.name + r'>*';
+    return '*<${feature.name}>*';
   }
 }

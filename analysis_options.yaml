@@ -36,4 +36,6 @@ linter:
     - sort_pub_dependencies
     - type_annotate_public_apis
     - unawaited_futures
+    - unnecessary_lambdas
     - unnecessary_null_aware_assignments
+    - use_super_parameters

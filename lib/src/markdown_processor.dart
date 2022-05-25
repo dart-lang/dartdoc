@@ -142,8 +142,7 @@ final List<md.BlockSyntax> _markdownBlockSyntaxes = [
 final RegExp _hideSchemes = RegExp('^(http|https)://');
 
 class _IterableBlockParser extends md.BlockParser {
-  _IterableBlockParser(List<String> lines, md.Document document)
-      : super(lines, document);
+  _IterableBlockParser(super.lines, super.document);
 
   Iterable<md.Node> parseLinesGenerator() sync* {
     while (!isDone) {
@@ -346,17 +345,11 @@ class MarkdownDocument extends md.Document {
   }
 
   MarkdownDocument(
-      {Iterable<md.BlockSyntax>? blockSyntaxes,
-      Iterable<md.InlineSyntax>? inlineSyntaxes,
-      md.ExtensionSet? extensionSet,
-      md.Resolver? linkResolver,
-      md.Resolver? imageLinkResolver})
-      : super(
-            blockSyntaxes: blockSyntaxes,
-            inlineSyntaxes: inlineSyntaxes,
-            extensionSet: extensionSet,
-            linkResolver: linkResolver,
-            imageLinkResolver: imageLinkResolver);
+      {super.blockSyntaxes,
+      super.inlineSyntaxes,
+      super.extensionSet,
+      super.linkResolver,
+      super.imageLinkResolver});
 
   /// Parses markdown text, collecting the first [md.Node] or all of them
   /// if [processFullText] is `true`.

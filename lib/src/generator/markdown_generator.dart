@@ -2,7 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/options.dart';
 import 'package:dartdoc/src/generator/dartdoc_generator_backend.dart';
 import 'package:dartdoc/src/generator/generator.dart';
@@ -26,9 +25,8 @@ Future<Generator> initMarkdownGenerator(DartdocGeneratorOptionContext context,
 
 /// Generator backend for markdown output.
 class MarkdownGeneratorBackend extends DartdocGeneratorBackend {
-  MarkdownGeneratorBackend(DartdocGeneratorBackendOptions options,
-      Templates templates, ResourceProvider resourceProvider)
-      : super(options, templates, resourceProvider);
+  MarkdownGeneratorBackend(
+      super.options, super.templates, super.resourceProvider);
 
   @override
   void generatePackage(FileWriter writer, PackageGraph graph, Package package) {

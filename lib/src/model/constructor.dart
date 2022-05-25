@@ -12,8 +12,7 @@ class Constructor extends ModelElement
     with TypeParameters, ContainerMember
     implements EnclosedElement {
   Constructor(
-      ConstructorElement element, Library? library, PackageGraph packageGraph)
-      : super(element, library, packageGraph);
+      ConstructorElement super.element, super.library, super.packageGraph);
 
   @override
   CharacterLocation? get characterLocation {

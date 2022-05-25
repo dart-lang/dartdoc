@@ -46,11 +46,11 @@ int get _usageLineLength => stdout.hasTerminal ? stdout.terminalColumns : 80;
 typedef ConvertYamlToType<T> = T Function(YamlMap, String, ResourceProvider);
 
 class DartdocOptionError extends DartdocFailure {
-  DartdocOptionError(String details) : super(details);
+  DartdocOptionError(super.details);
 }
 
 class DartdocFileMissing extends DartdocOptionError {
-  DartdocFileMissing(String details) : super(details);
+  DartdocFileMissing(super.details);
 }
 
 /// Defines the attributes of a category in the options file, corresponding to
@@ -668,8 +668,7 @@ typedef OptionGenerator = List<DartdocOption> Function(PackageMetaProvider);
 
 /// This is a [DartdocOptionSet] used as a root node.
 class DartdocOptionRoot extends DartdocOptionSet {
-  DartdocOptionRoot(String name, ResourceProvider resourceProvider)
-      : super(name, resourceProvider);
+  DartdocOptionRoot(super.name, super.resourceProvider);
 
   late final ArgParser _argParser =
       ArgParser(usageLineLength: _usageLineLength);

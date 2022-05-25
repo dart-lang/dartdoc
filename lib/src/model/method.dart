@@ -19,8 +19,7 @@ class Method extends ModelElement
   @override
   List<TypeParameter> typeParameters = [];
 
-  Method(MethodElement element, Library? library, PackageGraph packageGraph)
-      : super(element, library, packageGraph) {
+  Method(MethodElement super.element, super.library, super.packageGraph) {
     _calcTypeParameters();
   }
 

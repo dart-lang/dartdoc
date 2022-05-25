@@ -127,9 +127,8 @@ abstract class ElementType extends Privacy
 /// An [ElementType] that isn't pinned to an Element (or one that is, but whose
 /// element is irrelevant).
 class UndefinedElementType extends ElementType {
-  UndefinedElementType(DartType f, Library library, PackageGraph packageGraph,
-      ElementType? returnedFrom)
-      : super(f, library, packageGraph, returnedFrom);
+  UndefinedElementType(
+      super.f, super.library, super.packageGraph, super.returnedFrom);
 
   @override
   bool get isPublic => true;
@@ -174,9 +173,8 @@ class UndefinedElementType extends ElementType {
 /// A FunctionType that does not have an underpinning Element.
 class FunctionTypeElementType extends UndefinedElementType
     with Rendered, Callable {
-  FunctionTypeElementType(FunctionType f, Library library,
-      PackageGraph packageGraph, ElementType? returnedFrom)
-      : super(f, library, packageGraph, returnedFrom);
+  FunctionTypeElementType(FunctionType super.f, super.library,
+      super.packageGraph, super.returnedFrom);
 
   /// An unmodifiable list of this function element's type parameters.
   List<TypeParameter> get typeFormals => type.typeFormals
@@ -193,9 +191,8 @@ class FunctionTypeElementType extends UndefinedElementType
 
 class AliasedFunctionTypeElementType extends FunctionTypeElementType
     with Aliased {
-  AliasedFunctionTypeElementType(FunctionType f, Library library,
-      PackageGraph packageGraph, ElementType? returnedFrom)
-      : super(f, library, packageGraph, returnedFrom) {
+  AliasedFunctionTypeElementType(
+      super.f, super.library, super.packageGraph, super.returnedFrom) {
     assert(type.alias?.element != null);
     assert(type.alias?.typeArguments != null);
   }
@@ -206,13 +203,8 @@ class AliasedFunctionTypeElementType extends FunctionTypeElementType
 }
 
 class ParameterizedElementType extends DefinedElementType with Rendered {
-  ParameterizedElementType(
-      ParameterizedType type,
-      Library library,
-      PackageGraph packageGraph,
-      ModelElement element,
-      ElementType? returnedFrom)
-      : super(type, library, packageGraph, element, returnedFrom);
+  ParameterizedElementType(ParameterizedType super.type, super.library,
+      super.packageGraph, super.element, super.returnedFrom);
 
   @override
   ParameterizedType get type => super.type as ParameterizedType;
@@ -246,14 +238,9 @@ mixin Aliased implements ElementType, ModelBuilderInterface {
 }
 
 class AliasedElementType extends ParameterizedElementType with Aliased {
-  AliasedElementType(
-      ParameterizedType type,
-      Library library,
-      PackageGraph packageGraph,
-      ModelElement element,
-      ElementType? returnedFrom)
-      : assert(type.alias?.element != null),
-        super(type, library, packageGraph, element, returnedFrom);
+  AliasedElementType(super.type, super.library, super.packageGraph,
+      super.element, super.returnedFrom)
+      : assert(type.alias?.element != null);
 
   @override
   ParameterizedType get type;
@@ -268,13 +255,8 @@ class AliasedElementType extends ParameterizedElementType with Aliased {
 }
 
 class TypeParameterElementType extends DefinedElementType {
-  TypeParameterElementType(
-      TypeParameterType type,
-      Library library,
-      PackageGraph packageGraph,
-      ModelElement element,
-      ElementType? returnedFrom)
-      : super(type, library, packageGraph, element, returnedFrom);
+  TypeParameterElementType(TypeParameterType super.type, super.library,
+      super.packageGraph, super.element, super.returnedFrom);
 
   @override
   TypeParameterType get type => super.type as TypeParameterType;
@@ -413,13 +395,8 @@ mixin Rendered implements ElementType {
 /// A callable type that may or may not be backed by a declaration using the generic
 /// function syntax.
 class CallableElementType extends DefinedElementType with Rendered, Callable {
-  CallableElementType(
-      FunctionType t,
-      Library library,
-      PackageGraph packageGraph,
-      ModelElement element,
-      ElementType? returnedFrom)
-      : super(t, library, packageGraph, element, returnedFrom);
+  CallableElementType(FunctionType super.t, super.library, super.packageGraph,
+      super.element, super.returnedFrom);
 
   @override
   String get name => super.name.isNotEmpty ? super.name : 'Function';
@@ -437,11 +414,6 @@ class CallableElementType extends DefinedElementType with Rendered, Callable {
 
 /// A non-callable type backed by a [GenericTypeAliasElement].
 class GenericTypeAliasElementType extends TypeParameterElementType {
-  GenericTypeAliasElementType(
-      TypeParameterType t,
-      Library library,
-      PackageGraph packageGraph,
-      ModelElement element,
-      ElementType? returnedFrom)
-      : super(t, library, packageGraph, element, returnedFrom);
+  GenericTypeAliasElementType(super.t, super.library, super.packageGraph,
+      super.element, super.returnedFrom);
 }

@@ -44,9 +44,7 @@ void main() {
     packageConfigProvider = utils.getTestPackageConfigProvider(sdkFolder.path);
   });
 
-  tearDown(() {
-    clearPackageMetaCache();
-  });
+  tearDown(clearPackageMetaCache);
 
   group('tests', () {
     group('typical package', () {

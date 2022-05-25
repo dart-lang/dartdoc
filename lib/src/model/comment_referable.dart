@@ -26,7 +26,7 @@ class ReferenceChildrenLookup {
 
   @override
   String toString() =>
-      '$lookup ($lookup${remaining.isNotEmpty ? "." + remaining.join(".") : ''})';
+      '$lookup ($lookup${remaining.isNotEmpty ? ".${remaining.join(".")}" : ''})';
 }
 
 extension on Scope {

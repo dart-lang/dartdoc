@@ -27,10 +27,7 @@ List<DartdocOption<Object>> createExperimentOptions(
     // TODO(jcollins-g): Consider loading experiment values from dartdoc_options.yaml?
     DartdocOptionArgOnly<List<String>>(
         'enable-experiment', ['non-nullable'], resourceProvider,
-        help: 'Enable or disable listed experiments.\n' +
-            ExperimentStatus.knownFeatures.values
-                .map((e) =>
-                    '    [no-]${e.enableString}: ${e.documentation} (default: ${e.isEnabledByDefault})')
-                .join('\n')),
+        help:
+            'Enable or disable listed experiments.\n${ExperimentStatus.knownFeatures.values.map((e) => '    [no-]${e.enableString}: ${e.documentation} (default: ${e.isEnabledByDefault})').join('\n')}'),
   ];
 }

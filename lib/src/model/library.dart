@@ -456,7 +456,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   late final Map<String, CommentReferable> referenceChildren = () {
     var referenceChildrenBuilder = <String, CommentReferable>{};
     var definedNamesModelElements = element.exportNamespace.definedNames.values
-        .map((v) => modelBuilder.fromElement(v));
+        .map(modelBuilder.fromElement);
     referenceChildrenBuilder.addEntries(
         definedNamesModelElements.whereNotType<Accessor>().generateEntries());
     // TODO(jcollins-g): warn and get rid of this case where it shows up.

@@ -4,7 +4,6 @@
 
 library dartdoc.html_generator;
 
-import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/options.dart';
 import 'package:dartdoc/src/generator/dartdoc_generator_backend.dart';
 import 'package:dartdoc/src/generator/generator.dart';
@@ -31,9 +30,7 @@ Future<Generator> initHtmlGenerator(DartdocGeneratorOptionContext context,
 
 /// Generator backend for html output.
 class HtmlGeneratorBackend extends DartdocGeneratorBackend {
-  HtmlGeneratorBackend(DartdocGeneratorBackendOptions options,
-      Templates templates, ResourceProvider resourceProvider)
-      : super(options, templates, resourceProvider);
+  HtmlGeneratorBackend(super.options, super.templates, super.resourceProvider);
 
   @override
   void generatePackage(FileWriter writer, PackageGraph graph, Package package) {

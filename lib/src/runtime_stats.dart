@@ -76,7 +76,7 @@ class _RuntimeStats {
 }
 
 /// TODO(jcollins-g): re-write to something that isn't process-global?
-final _RuntimeStats runtimeStats = _RuntimeStats();
+final runtimeStats = _RuntimeStats();
 
 class _PerfTask {
   final String name;

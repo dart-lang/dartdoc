@@ -16,9 +16,8 @@ class TopLevelVariable extends ModelElement
   @override
   final Accessor? setter;
 
-  TopLevelVariable(TopLevelVariableElement element, Library library,
-      PackageGraph packageGraph, this.getter, this.setter)
-      : super(element, library, packageGraph) {
+  TopLevelVariable(TopLevelVariableElement super.element, Library super.library,
+      super.packageGraph, this.getter, this.setter) {
     if (getter != null) {
       getter!.enclosingCombo = this;
     }

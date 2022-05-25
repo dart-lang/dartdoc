@@ -14,9 +14,8 @@ class Extension extends Container implements EnclosedElement {
   late final ElementType extendedType =
       modelBuilder.typeFrom(element.extendedType, library);
 
-  Extension(
-      ExtensionElement element, Library library, PackageGraph packageGraph)
-      : super(element, library, packageGraph);
+  Extension(ExtensionElement super.element, Library super.library,
+      super.packageGraph);
 
   /// Detect if this extension applies to every object.
   bool get alwaysApplies =>

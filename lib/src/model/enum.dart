@@ -10,8 +10,7 @@ import 'package:dartdoc/src/render/enum_field_renderer.dart';
 
 class Enum extends InheritingContainer
     with Constructable, TypeImplementing, MixedInTypes {
-  Enum(ClassElement element, Library? library, PackageGraph packageGraph)
-      : super(element, library, packageGraph);
+  Enum(super.element, super.library, super.packageGraph);
 
   @override
   late final List<ModelElement> allModelElements = [

@@ -84,16 +84,16 @@ class Parameter extends ModelElement implements EnclosedElement {
   Map<String, CommentReferable> get referenceChildren {
     if (_referenceChildren == null) {
       _referenceChildren = {};
-      var _modelType = modelType;
-      if (_modelType is Callable) {
+      var modelType_ = modelType;
+      if (modelType_ is Callable) {
         _referenceChildren!.addEntriesIfAbsent(
-            _modelType.parameters.explicitOnCollisionWith(this));
+            modelType_.parameters.explicitOnCollisionWith(this));
       }
       _referenceChildren!.addEntriesIfAbsent(
           modelType.typeArguments.explicitOnCollisionWith(this));
-      if (_modelType is Callable) {
+      if (modelType_ is Callable) {
         _referenceChildren!.addEntriesIfAbsent(
-            _modelType.returnType.typeArguments.explicitOnCollisionWith(this));
+            modelType_.returnType.typeArguments.explicitOnCollisionWith(this));
       }
     }
     return _referenceChildren!;
