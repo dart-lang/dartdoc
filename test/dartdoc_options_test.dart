@@ -239,7 +239,13 @@ dartdoc:
     ''');
   });
 
-  tearDownAll(tempDir.delete);
+  tearDownAll(() {
+    try {
+      tempDir.delete();
+    } catch (e) {
+      print('Ignoring error trying to delete temp: $e');
+    }
+  });
 
   group('new style synthetic option', () {
     test('validate argument override changes value', () {
