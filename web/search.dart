@@ -331,9 +331,11 @@ void initializeSearch(
       return;
     }
 
-    if (event is! KeyEvent) {
+    if (event.type != 'keydown') {
       return;
     }
+
+    event = event as KeyboardEvent;
 
     if (event.code == 'Enter') {
       var selectingElement = selectedElement ?? 0;
