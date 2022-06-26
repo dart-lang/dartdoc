@@ -14,12 +14,13 @@ import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/src/generator/templates.dart';
 import 'package:dartdoc/src/model/package.dart';
 import 'package:dartdoc/src/model/package_graph.dart';
+import 'package:meta/meta.dart';
 
 /// Creates a [Generator] with an [HtmlGeneratorBackend] backend.
 ///
 /// [forceRuntimeTemplates] should only be given [true] during tests.
 Future<Generator> initHtmlGenerator(DartdocGeneratorOptionContext context,
-    {bool forceRuntimeTemplates = false}) async {
+    {@visibleForTesting bool forceRuntimeTemplates = false}) async {
   var templates = await Templates.fromContext(context,
       forceRuntimeTemplates: forceRuntimeTemplates);
   var options = DartdocGeneratorBackendOptions.fromContext(context);
@@ -28,7 +29,7 @@ Future<Generator> initHtmlGenerator(DartdocGeneratorOptionContext context,
   return GeneratorFrontEnd(backend);
 }
 
-/// Generator backend for html output.
+/// Generator backend for HTML output.
 class HtmlGeneratorBackend extends DartdocGeneratorBackend {
   HtmlGeneratorBackend(super.options, super.templates, super.resourceProvider);
 

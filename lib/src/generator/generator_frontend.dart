@@ -9,7 +9,7 @@ import 'package:dartdoc/src/model_utils.dart';
 import 'package:dartdoc/src/runtime_stats.dart';
 import 'package:dartdoc/src/warnings.dart';
 
-/// [Generator] that delegates rendering to a [GeneratorBackend] and delegates
+/// A [Generator] that delegates rendering to a [GeneratorBackend] and delegates
 /// file creation to a [FileWriter].
 class GeneratorFrontEnd implements Generator {
   final GeneratorBackend _generatorBackend;
@@ -32,7 +32,7 @@ class GeneratorFrontEnd implements Generator {
     _generatorBackend.generateSearchIndex(writer, indexElements);
   }
 
-  /// Traverses the package graph and generates documentation for all contained
+  /// Traverses the [packageGraph] and generates documentation for all contained
   /// elements.
   List<Indexable> _generateDocs(PackageGraph packageGraph, FileWriter writer) {
     runtimeStats.resetAccumulators({
@@ -303,71 +303,73 @@ class GeneratorFrontEnd implements Generator {
   }
 }
 
+/// An interface for classes which are responsible for outputing the generated
+/// documentation.
 abstract class GeneratorBackend {
-  /// Emit json describing the [categories] defined by the package.
+  /// Emits JSON describing the [categories] defined by the package.
   void generateCategoryJson(FileWriter writer, List<Categorization> categories);
 
-  /// Emit json catalog of [indexedElements] for use with a search index.
+  /// Emits a JSON catalog of [indexedElements] for use with a search index.
   void generateSearchIndex(FileWriter writer, List<Indexable> indexedElements);
 
-  /// Emit documentation content for the [package].
+  /// Emits documentation content for the [package].
   void generatePackage(FileWriter writer, PackageGraph graph, Package package);
 
-  /// Emit documentation content for the [category].
+  /// Emits documentation content for the [category].
   void generateCategory(
       FileWriter writer, PackageGraph graph, Category category);
 
-  /// Emit documentation content for the [library].
+  /// Emits documentation content for the [library].
   void generateLibrary(FileWriter writer, PackageGraph graph, Library library);
 
-  /// Emit documentation content for the [clazz].
+  /// Emits documentation content for the [clazz].
   void generateClass(
       FileWriter writer, PackageGraph graph, Library library, Class clazz);
 
-  /// Emit documentation content for the [eNum].
+  /// Emits documentation content for the [eNum].
   void generateEnum(
       FileWriter writer, PackageGraph graph, Library library, Enum eNum);
 
-  /// Emit documentation content for the [mixin].
+  /// Emits documentation content for the [mixin].
   void generateMixin(
       FileWriter writer, PackageGraph graph, Library library, Mixin mixin);
 
-  /// Emit documentation content for the [constructor].
+  /// Emits documentation content for the [constructor].
   void generateConstructor(FileWriter writer, PackageGraph graph,
       Library library, Constructable constructable, Constructor constructor);
 
-  /// Emit documentation content for the [field].
+  /// Emits documentation content for the [field].
   void generateConstant(FileWriter writer, PackageGraph graph, Library library,
       Container clazz, Field field);
 
-  /// Emit documentation content for the [field].
+  /// Emits documentation content for the [field].
   void generateProperty(FileWriter writer, PackageGraph graph, Library library,
       Container clazz, Field field);
 
-  /// Emit documentation content for the [method].
+  /// Emits documentation content for the [method].
   void generateMethod(FileWriter writer, PackageGraph graph, Library library,
       Container clazz, Method method);
 
-  /// Emit documentation content for the [extension].
+  /// Emits documentation content for the [extension].
   void generateExtension(FileWriter writer, PackageGraph graph, Library library,
       Extension extension);
 
-  /// Emit documentation content for the [function].
+  /// Emits documentation content for the [function].
   void generateFunction(FileWriter writer, PackageGraph graph, Library library,
       ModelFunction function);
 
-  /// Emit documentation content for the [constant].
+  /// Emits documentation content for the [constant].
   void generateTopLevelConstant(FileWriter writer, PackageGraph graph,
       Library library, TopLevelVariable constant);
 
-  /// Emit documentation content for the [property].
+  /// Emits documentation content for the [property].
   void generateTopLevelProperty(FileWriter writer, PackageGraph graph,
       Library library, TopLevelVariable property);
 
-  /// Emit documentation content for the [typedef].
+  /// Emits documentation content for the [typedef].
   void generateTypeDef(
       FileWriter writer, PackageGraph graph, Library library, Typedef typedef);
 
-  /// Emit files not specific to a Dart language element.
+  /// Emits files not specific to a Dart language element (like a favicon, etc).
   Future<void> generateAdditionalFiles(FileWriter writer);
 }

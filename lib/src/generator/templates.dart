@@ -2,6 +2,15 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+// Renderer annotations direct the Mustachio code generators to generate render
+// functions. These are generated into:
+//
+// * templates.aot_renderers_for_html.dart
+// * templates.aot_renderers_for_markdown.dart
+// * templates.runtime_renderers.dart
+//
+// See tool/mustachio/README.md for details.
+
 @Renderer(#renderCategory, Context<CategoryTemplateData>(), 'category',
     visibleTypes: _visibleTypes)
 @Renderer(#renderClass, Context<ClassTemplateData>(), 'class')
@@ -45,6 +54,11 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/mustachio/annotations.dart';
 import 'package:dartdoc/src/mustachio/renderer_base.dart';
 
+/// The set of types which are visible to the Mustachio renderers.
+///
+/// These are the types whose fields are referenced in templates. The set
+/// only needs to be specified on one `@Renderer` annotation; above, they are
+/// only referenced in the first.
 const _visibleTypes = {
   Annotation,
   Callable,
@@ -71,7 +85,7 @@ const _visibleTypes = {
   TypeParameter,
 };
 
-/// The collection of [Template] objects
+/// The collection of [Template] objects.
 abstract class Templates {
   String renderCategory(CategoryTemplateData context);
   String renderClass<T extends Class>(ClassTemplateData context);
@@ -119,6 +133,8 @@ abstract class Templates {
   }
 }
 
+/// The [Templates] implementation which uses the render functions generated
+/// from the default Dartdoc HTML templates.
 class HtmlAotTemplates implements Templates {
   @override
   String renderCategory(CategoryTemplateData context) =>
@@ -187,6 +203,8 @@ class HtmlAotTemplates implements Templates {
       aot_renderers_for_html.renderTypedef(context);
 }
 
+/// The [Templates] implementation which uses the render functions generated
+/// from the default Dartdoc Markdown templates.
 class MarkdownAotTemplates implements Templates {
   @override
   String renderCategory(CategoryTemplateData context) =>

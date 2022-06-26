@@ -8,6 +8,8 @@ typedef ContainerSidebar = String Function(
     Container, TemplateDataWithContainer);
 typedef LibrarySidebar = String Function(Library, TemplateDataWithLibrary);
 
+/// Shared options for [TemplateData] classes, which can be referenced across
+/// template files.
 abstract class TemplateOptions {
   String? get relCanonicalPrefix;
   String get toolVersion;
@@ -75,6 +77,8 @@ abstract class TemplateDataBase {
   }
 }
 
+/// A grab bag of data for a template that an element of type [T] can be
+/// rendered into.
 abstract class TemplateData<T extends Documentable> extends TemplateDataBase {
   TemplateData(super.htmlOptions, super.packageGraph);
 

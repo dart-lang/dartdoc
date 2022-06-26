@@ -133,7 +133,7 @@ class Dartdoc {
   ) {
     return Dartdoc._(
       config,
-      initEmptyGenerator(config),
+      initEmptyGenerator(),
       packageBuilder,
     );
   }
