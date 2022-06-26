@@ -45,15 +45,10 @@ class Extension extends Container implements EnclosedElement {
   @override
   String get kind => 'extension';
 
-  List<Method>? _methods;
-
   @override
-  List<Method>? get declaredMethods {
-    _methods ??= element.methods.map((e) {
-      return modelBuilder.from(e, library) as Method;
-    }).toList(growable: false);
-    return _methods;
-  }
+  late List<Method> declaredMethods = element.methods.map((e) {
+    return modelBuilder.from(e, library) as Method;
+  }).toList(growable: false);
 
   @override
   ExtensionElement get element => super.element as ExtensionElement;

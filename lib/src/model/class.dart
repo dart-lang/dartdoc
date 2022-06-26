@@ -36,6 +36,9 @@ class Class extends InheritingContainer
   String get filePath => '${library.dirName}/$fileName';
 
   @override
+  String get sidebarIdForContainer => fileName;
+
+  @override
   String get fullkind {
     if (isAbstract) return 'abstract $kind';
     return super.fullkind;

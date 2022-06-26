@@ -14,20 +14,19 @@ import 'package:meta/meta.dart';
 ///
 /// Member naming in [Container] follows these general rules:
 ///
-/// **instance** : Members named 'instance' contain the children of this
-/// container that can be referenced from within the container without a prefix.
-/// Usually overridden in subclasses with calls to super.
-/// **constant** : Members named 'constant' contain children declared constant.
-/// **variable** : The opposite of constant.  For the templating system.
-/// **static** : Members named 'static' are related to static children of this
-/// container.
-/// **public** : Filtered versions of the getters showing only public items.
-/// Mostly for the templating system.
-/// **sorted** : Filtered versions of the getters creating a sorted list by
-/// name.  For the templating system.
-/// **has** : boolean getters indicating whether the underlying getters are
-/// empty.  Mostly for the templating system.
-/// **all** : Referring to all children.
+/// * **instance** : children of this container that can be referenced from
+///   within the container without a prefix. These are usually overridden in
+///   subclasses with calls to 'super'.
+/// * **constant** : children declared constant.
+/// * **variable** : The opposite of constant. These are available for the
+///   templating system.
+/// * **static** : static children of this container.
+/// * **public** : Filtered versions of the above members, containing only
+///   public items. These are available mostly for the templating system.
+/// * **sorted** : Filtered versions of the above members as a list sorted by
+///   name.  These are available for the templating system.
+/// * **has** : boolean getters indicating whether the underlying collections
+///   are empty.  These are available mostly for the templating system.
 abstract class Container extends ModelElement
     with Categorization, TypeParameters {
   Container(super.element, super.library, super.packageGraph);
@@ -79,19 +78,17 @@ abstract class Container extends ModelElement
         ...staticMethods,
       ];
 
-  List<ModelElement>? _allCanonicalModelElements;
-
-  List<ModelElement> get allCanonicalModelElements {
-    return (_allCanonicalModelElements ??=
-        allModelElements.where((e) => e.isCanonical).toList());
-  }
+  late List<ModelElement> allCanonicalModelElements =
+      allModelElements.where((e) => e.isCanonical).toList();
 
   /// All methods, including operators and statics, declared as part of this
-  /// [Container].  [declaredMethods] must be the union of [instanceMethods],
+  /// [Container].
+  ///
+  /// [declaredMethods] must be the union of [instanceMethods],
   /// [staticMethods], and [instanceOperators].
-  Iterable<Method>? get declaredMethods;
+  Iterable<Method> get declaredMethods;
 
-  Iterable<Method> get instanceMethods => declaredMethods!
+  Iterable<Method> get instanceMethods => declaredMethods
       .where((m) => !m.isStatic && !m.isOperator)
       .toList(growable: false);
 
@@ -123,7 +120,7 @@ abstract class Container extends ModelElement
 
   @nonVirtual
   late final Iterable<Operator> declaredOperators =
-      declaredMethods!.whereType<Operator>().toList(growable: false);
+      declaredMethods.whereType<Operator>().toList(growable: false);
 
   @override
   ModelElement? get enclosingElement;
@@ -239,7 +236,7 @@ abstract class Container extends ModelElement
       publicVariableStaticFields.toList()..sort(byName);
 
   Iterable<Method> get staticMethods =>
-      declaredMethods!.where((m) => m.isStatic);
+      declaredMethods.where((m) => m.isStatic);
 
   bool get hasPublicStaticMethods =>
       model_utils.filterNonPublic(publicStaticMethodsSorted).isNotEmpty;

@@ -653,6 +653,8 @@ abstract class ModelElement extends Canonicalization
 
   String? get filePath;
 
+  //String get sidebarIdForContainer;
+
   /// Returns the fully qualified name.
   ///
   /// For example: libraryName.className.methodName
