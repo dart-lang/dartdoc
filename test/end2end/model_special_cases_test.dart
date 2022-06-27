@@ -87,12 +87,12 @@ void main() {
         Ft = constructorTearoffs.typedefs.firstWhere((t) => t.name == 'Ft');
         NotAClass = constructorTearoffs.typedefs
             .firstWhere((t) => t.name == 'NotAClass');
-        Anew = A.unnamedConstructor!;
-        Bnew = B.unnamedConstructor!;
-        Cnew = C.unnamedConstructor!;
-        Dnew = D.unnamedConstructor!;
-        Enew = E.unnamedConstructor!;
-        Fnew = F.unnamedConstructor!;
+        Anew = A.constructors.firstWhere((c) => c.isUnnamedConstructor);
+        Bnew = B.constructors.firstWhere((c) => c.isUnnamedConstructor);
+        Cnew = C.constructors.firstWhere((c) => c.isUnnamedConstructor);
+        Dnew = D.constructors.firstWhere((c) => c.isUnnamedConstructor);
+        Enew = E.constructors.firstWhere((c) => c.isUnnamedConstructor);
+        Fnew = F.constructors.firstWhere((c) => c.isUnnamedConstructor);
       });
 
       test('smoke test', () {

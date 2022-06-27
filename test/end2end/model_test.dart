@@ -2030,7 +2030,7 @@ void main() {
     });
 
     test('has enclosing element', () {
-      expect(Apple.enclosingElement!.name, equals(exLibrary.name));
+      expect(Apple.enclosingElement.name, equals(exLibrary.name));
     });
 
     test('class name with generics', () {
@@ -2076,11 +2076,11 @@ void main() {
     });
 
     test('get constructors', () {
-      expect(Apple.publicConstructors, hasLength(2));
+      expect(Apple.publicConstructorsSorted, hasLength(2));
     });
 
     test('get static fields', () {
-      expect(Apple.publicVariableStaticFields, hasLength(1));
+      expect(Apple.publicVariableStaticFieldsSorted, hasLength(1));
     });
 
     test('constructors have source', () {
@@ -3134,7 +3134,7 @@ void main() {
     });
 
     test('has enclosing element', () {
-      expect(ext.enclosingElement!.name, equals(exLibrary.name));
+      expect(ext.enclosingElement.name, equals(exLibrary.name));
     });
 
     test('member method has href', () {
@@ -3167,7 +3167,7 @@ void main() {
     });
 
     test('get static methods', () {
-      expect(fancyList.publicStaticMethods, hasLength(1));
+      expect(fancyList.publicStaticMethodsSorted, hasLength(1));
     });
 
     test('get properties', () {
@@ -4407,7 +4407,8 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
           .firstWhere((c) => c.name == 'ReferToADefaultConstructor');
       withSyntheticConstructor = exLibrary.classes
           .firstWhere((c) => c.name == 'WithSyntheticConstructor');
-      syntheticConstructor = withSyntheticConstructor.unnamedConstructor!;
+      syntheticConstructor = withSyntheticConstructor.constructors
+          .firstWhere((c) => c.isUnnamedConstructor);
     });
 
     test('calculates comment references to classes vs. constructors correctly',

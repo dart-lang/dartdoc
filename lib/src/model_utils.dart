@@ -85,13 +85,13 @@ Iterable<InheritingContainer> findCanonicalFor(
 // feature that uses it now that source code linking is possible.
 // TODO(srawlins): Evaluate whether this leads to a ton of memory usage.
 // An LRU of size 1 might be just fine.
-String? getFileContentsFor(Element e, ResourceProvider resourceProvider) {
+String getFileContentsFor(Element e, ResourceProvider resourceProvider) {
   var location = e.source?.fullName;
   if (location != null && !_fileContents.containsKey(location)) {
     var contents = resourceProvider.getFile(location).readAsStringSync();
     _fileContents.putIfAbsent(location, () => contents);
   }
-  return _fileContents[location];
+  return _fileContents[location]!;
 }
 
 bool hasPrivateName(Element e) {

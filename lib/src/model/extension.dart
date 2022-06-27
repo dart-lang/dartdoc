@@ -40,7 +40,7 @@ class Extension extends Container implements EnclosedElement {
 
   /// Returns the library that encloses this element.
   @override
-  ModelElement? get enclosingElement => library;
+  ModelElement get enclosingElement => library;
 
   @override
   String get kind => 'extension';

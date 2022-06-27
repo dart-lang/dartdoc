@@ -61,7 +61,7 @@ class ModelNode {
       return '';
     }
 
-    var contents = model_utils.getFileContentsFor(element, resourceProvider)!;
+    var contents = model_utils.getFileContentsFor(element, resourceProvider);
     // Find the start of the line, so that we can line up all of the indents.
     var i = _sourceOffset;
     while (i > 0) {

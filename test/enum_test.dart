@@ -90,7 +90,7 @@ $libraryContent
       var library = await bootPackageWithLibrary('enum E { one, two, three }');
       var eEnum = library.enums.named('E');
 
-      expect(eEnum.enclosingElement!.name, 'enums');
+      expect(eEnum.enclosingElement.name, 'enums');
     });
 
     test('has the correct number of constants', () async {

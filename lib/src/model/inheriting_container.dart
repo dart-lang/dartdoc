@@ -18,30 +18,17 @@ import 'package:meta/meta.dart';
 /// Note that [Constructor]s are not considered to be modifiers so a
 /// [hasModifiers] override is not necessary for this mixin.
 mixin Constructable on InheritingContainer {
-  List<Constructor>? _constructors;
-  Iterable<Constructor> get constructors => _constructors ??= [
-        ...element!.constructors
-            .map((e) => modelBuilder.from(e, library) as Constructor)
-      ];
+  late final Iterable<Constructor> constructors = [
+    ...element!.constructors
+        .map((e) => modelBuilder.from(e, library) as Constructor)
+  ];
 
   @override
   bool get hasPublicConstructors => publicConstructorsSorted.isNotEmpty;
 
-  @visibleForTesting
-  Iterable<Constructor> get publicConstructors =>
-      model_utils.filterNonPublic(constructors);
-
   @override
   late final List<Constructor> publicConstructorsSorted =
-      publicConstructors.toList()..sort(byName);
-
-  late final Constructor? unnamedConstructor =
-      constructors.firstWhereOrNull((c) => c.isUnnamedConstructor);
-
-  /// With constructor tearoffs, this is no longer equivalent to the unnamed
-  /// constructor and assumptions based on that are incorrect.
-  late final Constructor? defaultConstructor = unnamedConstructor ??
-      constructors.firstWhere((c) => c.isDefaultConstructor);
+      model_utils.filterNonPublic(constructors).sortedByName;
 
   static Iterable<MapEntry<String, CommentReferable>> _constructorGenerator(
       Iterable<Constructor> source) sync* {
@@ -241,7 +228,7 @@ abstract class InheritingContainer extends Container
 
   /// Returns the library that encloses this element.
   @override
-  ModelElement? get enclosingElement => library;
+  ModelElement get enclosingElement => library;
 
   @override
   String get filePath => '${library.dirName}/$fileName';
