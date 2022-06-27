@@ -28,7 +28,7 @@ mixin Constructable on InheritingContainer {
 
   @override
   late final List<Constructor> publicConstructorsSorted =
-      model_utils.filterNonPublic(constructors).sortedByName;
+      model_utils.filterNonPublic(constructors).toList()..sort();
 
   static Iterable<MapEntry<String, CommentReferable>> _constructorGenerator(
       Iterable<Constructor> source) sync* {

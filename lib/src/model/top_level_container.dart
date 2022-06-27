@@ -53,49 +53,49 @@ abstract class TopLevelContainer implements Nameable {
   // TODO(jcollins-g):  Setting this type parameter to `Container` magically
   // fixes a number of type problems in the AOT compiler, but I am mystified as
   // to why that should be the case.
-  late final Iterable<Container> publicClassesSorted =
-      publicClasses.sortedByName;
+  late final Iterable<Container> publicClassesSorted = publicClasses.toList()
+    ..sort();
 
   Iterable<Extension> get publicExtensions =>
       model_utils.filterNonPublic(extensions);
 
   late final Iterable<Extension> publicExtensionsSorted =
-      publicExtensions.sortedByName;
+      publicExtensions.toList()..sort();
 
   Iterable<TopLevelVariable> get publicConstants =>
       model_utils.filterNonPublic(constants);
 
   Iterable<TopLevelVariable> get publicConstantsSorted =>
-      publicConstants.sortedByName;
+      publicConstants.toList()..sort();
 
   Iterable<Enum> get publicEnums => model_utils.filterNonPublic(enums);
 
-  late final Iterable<Enum> publicEnumsSorted = publicEnums.sortedByName;
+  late final Iterable<Enum> publicEnumsSorted = publicEnums.toList()..sort();
 
   Iterable<Class> get _publicExceptions =>
       model_utils.filterNonPublic(exceptions);
 
-  late final Iterable<Class> publicExceptionsSorted =
-      _publicExceptions.sortedByName;
+  late final Iterable<Class> publicExceptionsSorted = _publicExceptions.toList()
+    ..sort();
 
   Iterable<ModelFunctionTyped> get publicFunctions =>
       model_utils.filterNonPublic(functions!);
 
   late final Iterable<ModelFunctionTyped> publicFunctionsSorted =
-      publicFunctions.sortedByName;
+      publicFunctions.toList()..sort();
 
   Iterable<Mixin> get publicMixins => model_utils.filterNonPublic(mixins);
 
-  late final Iterable<Mixin> publicMixinsSorted = publicMixins.sortedByName;
+  late final Iterable<Mixin> publicMixinsSorted = publicMixins.toList()..sort();
 
   Iterable<TopLevelVariable> get publicProperties =>
       model_utils.filterNonPublic(properties);
 
   late final Iterable<TopLevelVariable> publicPropertiesSorted =
-      publicProperties.sortedByName;
+      publicProperties.toList()..sort();
 
   Iterable<Typedef> get publicTypedefs => model_utils.filterNonPublic(typedefs);
 
-  late final Iterable<Typedef> publicTypedefsSorted =
-      publicTypedefs.sortedByName;
+  late final Iterable<Typedef> publicTypedefsSorted = publicTypedefs.toList()
+    ..sort();
 }
