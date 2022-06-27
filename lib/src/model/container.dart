@@ -114,7 +114,7 @@ abstract class Container extends ModelElement
       model_utils.filterNonPublic(instanceMethods);
 
   late final List<Method> publicInstanceMethodsSorted =
-      publicInstanceMethods.sortedByName;
+      publicInstanceMethods.toList()..sort();
 
   @nonVirtual
   late final Iterable<Operator> declaredOperators =
@@ -134,7 +134,7 @@ abstract class Container extends ModelElement
       model_utils.filterNonPublic(instanceOperators);
 
   late final List<Operator> publicInstanceOperatorsSorted =
-      publicInstanceOperators.sortedByName;
+      publicInstanceOperators.toList()..sort();
 
   /// Fields fully declared in this [Container].
   Iterable<Field> get declaredFields;
@@ -214,7 +214,7 @@ abstract class Container extends ModelElement
   bool get hasPublicStaticFields => publicStaticFieldsSorted.isNotEmpty;
 
   late final List<Field> publicStaticFieldsSorted =
-      model_utils.filterNonPublic(staticFields).sortedByName;
+      model_utils.filterNonPublic(staticFields).toList()..sort();
 
   Iterable<Field> get staticFields => declaredFields.where((f) => f.isStatic);
 
@@ -225,7 +225,7 @@ abstract class Container extends ModelElement
       publicVariableStaticFieldsSorted.isNotEmpty;
 
   late final List<Field> publicVariableStaticFieldsSorted =
-      model_utils.filterNonPublic(variableStaticFields).sortedByName;
+      model_utils.filterNonPublic(variableStaticFields).toList()..sort();
 
   Iterable<Method> get staticMethods =>
       declaredMethods.where((m) => m.isStatic);
@@ -234,7 +234,7 @@ abstract class Container extends ModelElement
       model_utils.filterNonPublic(publicStaticMethodsSorted).isNotEmpty;
 
   late final List<Method> publicStaticMethodsSorted =
-      model_utils.filterNonPublic(staticMethods).sortedByName;
+      model_utils.filterNonPublic(staticMethods).toList()..sort();
 
   /// For subclasses to add items after the main pass but before the
   /// parameter-global.
