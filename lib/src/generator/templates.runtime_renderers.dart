@@ -1709,11 +1709,11 @@ class _Renderer_Class extends RendererBase<Class> {
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
-                  isNullValue: (CT_ c) => c.enclosingElement == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_ModelElement(
-                        c.enclosingElement!, ast, r.template, sink,
+                        c.enclosingElement, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -2136,29 +2136,6 @@ class _Renderer_Constructable extends RendererBase<Constructable> {
                         parent: r));
                   },
                 ),
-                'defaultConstructor': Property(
-                  getValue: (CT_ c) => c.defaultConstructor,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_Constructor.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as Constructor,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => c.defaultConstructor == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_Constructor(
-                        c.defaultConstructor!, ast, r.template, sink,
-                        parent: r);
-                  },
-                ),
                 'hasPublicConstructors': Property(
                   getValue: (CT_ c) => c.hasPublicConstructors,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -2177,29 +2154,6 @@ class _Renderer_Constructable extends RendererBase<Constructable> {
                     return c.publicConstructorsSorted.map((e) =>
                         _render_Constructor(e, ast, r.template, sink,
                             parent: r));
-                  },
-                ),
-                'unnamedConstructor': Property(
-                  getValue: (CT_ c) => c.unnamedConstructor,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_Constructor.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as Constructor,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => c.unnamedConstructor == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_Constructor(
-                        c.unnamedConstructor!, ast, r.template, sink,
-                        parent: r);
                   },
                 ),
               }) as Map<String, Property<CT_>>;
@@ -2920,11 +2874,10 @@ class _Renderer_Container extends RendererBase<Container> {
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
                           c, remainingNames, 'Iterable<Method>'),
-                  isNullValue: (CT_ c) => c.declaredMethods == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.declaredMethods, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['Iterable']!);
+                    return c.declaredMethods.map((e) =>
+                        _render_Method(e, ast, r.template, sink, parent: r));
                   },
                 ),
                 'declaredOperators': Property(
@@ -2954,11 +2907,11 @@ class _Renderer_Container extends RendererBase<Container> {
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
-                  isNullValue: (CT_ c) => c.enclosingElement == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_ModelElement(
-                        c.enclosingElement!, ast, r.template, sink,
+                        c.enclosingElement, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -3202,7 +3155,7 @@ class _Renderer_Container extends RendererBase<Container> {
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<Constructor>'),
+                          c, remainingNames, 'List<Constructor>'),
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.publicConstructorsSorted.map((e) =>
@@ -3316,18 +3269,6 @@ class _Renderer_Container extends RendererBase<Container> {
                         _render_Operator(e, ast, r.template, sink, parent: r));
                   },
                 ),
-                'publicStaticFields': Property(
-                  getValue: (CT_ c) => c.publicStaticFields,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<Field>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.publicStaticFields.map((e) =>
-                        _render_Field(e, ast, r.template, sink, parent: r));
-                  },
-                ),
                 'publicStaticFieldsSorted': Property(
                   getValue: (CT_ c) => c.publicStaticFieldsSorted,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -3340,18 +3281,6 @@ class _Renderer_Container extends RendererBase<Container> {
                         _render_Field(e, ast, r.template, sink, parent: r));
                   },
                 ),
-                'publicStaticMethods': Property(
-                  getValue: (CT_ c) => c.publicStaticMethods,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<Method>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.publicStaticMethods.map((e) =>
-                        _render_Method(e, ast, r.template, sink, parent: r));
-                  },
-                ),
                 'publicStaticMethodsSorted': Property(
                   getValue: (CT_ c) => c.publicStaticMethodsSorted,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -3362,18 +3291,6 @@ class _Renderer_Container extends RendererBase<Container> {
                       List<MustachioNode> ast, StringSink sink) {
                     return c.publicStaticMethodsSorted.map((e) =>
                         _render_Method(e, ast, r.template, sink, parent: r));
-                  },
-                ),
-                'publicVariableStaticFields': Property(
-                  getValue: (CT_ c) => c.publicVariableStaticFields,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<Field>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.publicVariableStaticFields.map((e) =>
-                        _render_Field(e, ast, r.template, sink, parent: r));
                   },
                 ),
                 'publicVariableStaticFieldsSorted': Property(
@@ -4787,11 +4704,10 @@ class _Renderer_Extension extends RendererBase<Extension> {
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
                           c, remainingNames, 'List<Method>'),
-                  isNullValue: (CT_ c) => c.declaredMethods == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.declaredMethods, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['List']!);
+                    return c.declaredMethods.map((e) =>
+                        _render_Method(e, ast, r.template, sink, parent: r));
                   },
                 ),
                 'element': Property(
@@ -4823,11 +4739,11 @@ class _Renderer_Extension extends RendererBase<Extension> {
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
-                  isNullValue: (CT_ c) => c.enclosingElement == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_ModelElement(
-                        c.enclosingElement!, ast, r.template, sink,
+                        c.enclosingElement, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -7073,11 +6989,11 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
-                  isNullValue: (CT_ c) => c.enclosingElement == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_ModelElement(
-                        c.enclosingElement!, ast, r.template, sink,
+                        c.enclosingElement, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -14223,18 +14139,6 @@ class _Renderer_TopLevelContainer extends RendererBase<TopLevelContainer> {
                         _render_Enum(e, ast, r.template, sink, parent: r));
                   },
                 ),
-                'publicExceptions': Property(
-                  getValue: (CT_ c) => c.publicExceptions,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<Class>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.publicExceptions.map((e) =>
-                        _render_Class(e, ast, r.template, sink, parent: r));
-                  },
-                ),
                 'publicExceptionsSorted': Property(
                   getValue: (CT_ c) => c.publicExceptionsSorted,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -16145,12 +16049,9 @@ const _invisibleGetters = {
   },
   'Constructable': {
     'constructors',
-    'defaultConstructor',
     'extraReferenceChildren',
     'hasPublicConstructors',
-    'publicConstructors',
-    'publicConstructorsSorted',
-    'unnamedConstructor'
+    'publicConstructorsSorted'
   },
   'ConstructorElement': {
     'declaration',

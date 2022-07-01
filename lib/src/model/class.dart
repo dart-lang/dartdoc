@@ -27,7 +27,7 @@ class Class extends InheritingContainer
 
   /// Returns the library that encloses this element.
   @override
-  ModelElement? get enclosingElement => library;
+  ModelElement get enclosingElement => library;
 
   @override
   String get fileName => '$name-class.$fileType';

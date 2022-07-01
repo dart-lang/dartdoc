@@ -81,7 +81,7 @@ abstract class TemplateData<T extends Documentable> extends TemplateDataBase {
   @override
   T get self;
 
-  String _layoutTitle(String name, String kind, bool isDeprecated) =>
+  String _layoutTitle(String name, String kind, {required bool isDeprecated}) =>
       _packageGraph.rendererFactory.templateRenderer
           .composeLayoutTitle(name, kind, isDeprecated);
 }
@@ -113,7 +113,8 @@ class PackageTemplateData extends TemplateData<Package> {
   @override
   Package get self => package;
   @override
-  String get layoutTitle => _layoutTitle(package.name, package.kind, false);
+  String get layoutTitle =>
+      _layoutTitle(package.name, package.kind, isDeprecated: false);
   @override
   String get metaDescription =>
       '${package.name} API docs, for the Dart programming language.';
@@ -123,7 +124,8 @@ class PackageTemplateData extends TemplateData<Package> {
   @override
   String get homepage => package.homepage;
 
-  /// empty for packages because they are at the root – not needed
+  /// Empty for packages because they are at the root ('htmlBase' is not
+  /// needed).
   @override
   String get htmlBase => '';
 }
@@ -140,7 +142,8 @@ class CategoryTemplateData extends TemplateData<Category> {
   String get htmlBase => '../';
 
   @override
-  String get layoutTitle => _layoutTitle(category.name, category.kind, false);
+  String get layoutTitle =>
+      _layoutTitle(category.name, category.kind, isDeprecated: false);
 
   @override
   String get metaDescription =>
@@ -175,13 +178,13 @@ class LibraryTemplateData extends TemplateData<Library>
 
   @override
   String get layoutTitle =>
-      _layoutTitle(library.name, 'library', library.isDeprecated);
+      _layoutTitle(library.name, 'library', isDeprecated: library.isDeprecated);
 
   @override
   Library get self => library;
 }
 
-/// Template data for Dart 2.1-style mixin declarations.
+/// Template data for Mixin declarations.
 class MixinTemplateData extends InheritingContainerTemplateData<Mixin> {
   MixinTemplateData(super.htmlOptions, super.packageGraph, super.library,
       super.mixin, super.sidebarForLibrary, super.sidebarForContainer);
@@ -237,8 +240,9 @@ abstract class InheritingContainerTemplateData<T extends InheritingContainer>
       '${library.name} library, for the Dart programming language.';
 
   @override
-  String get layoutTitle => _layoutTitle(
-      clazz.nameWithLinkedGenerics, clazz.fullkind, clazz.isDeprecated);
+  String get layoutTitle =>
+      _layoutTitle(clazz.nameWithLinkedGenerics, clazz.fullkind,
+          isDeprecated: clazz.isDeprecated);
   @override
   List<Documentable> get navLinks => [_packageGraph.defaultPackage, library];
   @override
@@ -275,7 +279,8 @@ class ExtensionTemplateData<T extends Extension> extends TemplateData<T>
       '${library.name} library, for the Dart programming language.';
 
   @override
-  String get layoutTitle => _layoutTitle(extension.name, extension.kind, false);
+  String get layoutTitle =>
+      _layoutTitle(extension.name, extension.kind, isDeprecated: false);
   @override
   List<Documentable> get navLinks => [_packageGraph.defaultPackage, library];
   @override
@@ -302,8 +307,8 @@ class ConstructorTemplateData extends TemplateData<Constructor>
   @override
   Constructor get self => constructor;
   @override
-  String get layoutTitle => _layoutTitle(
-      constructor.name, constructor.fullKind, constructor.isDeprecated);
+  String get layoutTitle => _layoutTitle(constructor.name, constructor.fullKind,
+      isDeprecated: constructor.isDeprecated);
   @override
   List<Documentable> get navLinks => [_packageGraph.defaultPackage, library];
   @override
@@ -348,8 +353,8 @@ class FunctionTemplateData extends TemplateData<ModelFunction>
   String get title =>
       '${function.name} function - ${library.name} library - Dart API';
   @override
-  String get layoutTitle => _layoutTitle(
-      function.nameWithGenerics, 'function', function.isDeprecated);
+  String get layoutTitle => _layoutTitle(function.nameWithGenerics, 'function',
+      isDeprecated: function.isDeprecated);
   @override
   String get metaDescription =>
       'API docs for the ${function.name} function from the '
@@ -386,8 +391,9 @@ class MethodTemplateData extends TemplateData<Method>
       '${method.name} method - ${container.name} $_containerDescription - '
       '${library.name} library - Dart API';
   @override
-  String get layoutTitle => _layoutTitle(
-      method.nameWithGenerics, method.fullkind, method.isDeprecated);
+  String get layoutTitle =>
+      _layoutTitle(method.nameWithGenerics, method.fullkind,
+          isDeprecated: method.isDeprecated);
   @override
   String get metaDescription =>
       'API docs for the ${method.name} method from the '
@@ -427,8 +433,8 @@ class PropertyTemplateData extends TemplateData<Field>
       '${container.name} $_containerDescription - '
       '${library.name} library - Dart API';
   @override
-  String get layoutTitle =>
-      _layoutTitle(property.name, property.fullkind, property.isDeprecated);
+  String get layoutTitle => _layoutTitle(property.name, property.fullkind,
+      isDeprecated: property.isDeprecated);
   @override
   String get metaDescription =>
       'API docs for the ${property.name} ${property.kind} from the '
@@ -461,8 +467,8 @@ class TypedefTemplateData extends TemplateData<Typedef>
   String get title =>
       '${typeDef.name} typedef - ${library.name} library - Dart API';
   @override
-  String get layoutTitle =>
-      _layoutTitle(typeDef.nameWithGenerics, 'typedef', typeDef.isDeprecated);
+  String get layoutTitle => _layoutTitle(typeDef.nameWithGenerics, 'typedef',
+      isDeprecated: typeDef.isDeprecated);
   @override
   String get metaDescription =>
       'API docs for the ${typeDef.name} property from the '
@@ -493,7 +499,7 @@ class TopLevelPropertyTemplateData extends TemplateData<TopLevelVariable>
       '${property.name} $_type - ${library.name} library - Dart API';
   @override
   String get layoutTitle =>
-      _layoutTitle(property.name, _type, property.isDeprecated);
+      _layoutTitle(property.name, _type, isDeprecated: property.isDeprecated);
   @override
   String get metaDescription =>
       'API docs for the ${property.name} $_type from the '
