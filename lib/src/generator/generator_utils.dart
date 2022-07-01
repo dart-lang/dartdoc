@@ -12,7 +12,8 @@ import 'package:dartdoc/src/model/model_element.dart';
 
 String generateCategoryJson(Iterable<Categorization> categories, bool pretty) {
   final indexItems = [
-    for (final categorization in categories.sorted(_sortElementRepresentations))
+    for (final categorization
+        in categories.sorted(_compareElementRepresentations))
       <String, Object?>{
         'name': categorization.name,
         'qualifiedName': categorization.fullyQualifiedName,
@@ -36,7 +37,8 @@ String generateCategoryJson(Iterable<Categorization> categories, bool pretty) {
 String generateSearchIndexJson(
     Iterable<Indexable> indexedElements, bool pretty) {
   final indexItems = [
-    for (final indexable in indexedElements.sorted(_sortElementRepresentations))
+    for (final indexable
+        in indexedElements.sorted(_compareElementRepresentations))
       <String, Object?>{
         'name': indexable.name,
         'qualifiedName': indexable.fullyQualifiedName,
@@ -58,7 +60,8 @@ String generateSearchIndexJson(
   return encoder.convert(indexItems.toList());
 }
 
-int _sortElementRepresentations(Indexable a, Indexable b) {
+// Compares two elements, first by fully qualified name, then by kind.
+int _compareElementRepresentations(Indexable a, Indexable b) {
   final value = compareNatural(a.fullyQualifiedName, b.fullyQualifiedName);
   if (value == 0) {
     return compareNatural(a.kind, b.kind);

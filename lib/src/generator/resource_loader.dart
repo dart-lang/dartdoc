@@ -37,7 +37,7 @@ extension ResourceLoader on ResourceProvider {
     return getFolder(uri.toFilePath());
   }
 
-  /// Helper function for resolving to a non-relative, non-package URI.
+  /// Resolves a non-relative, non-package URI.
   @visibleForTesting
   Future<Uri> resolveResourceUri(Uri uri) async {
     if (uri.scheme == 'package') {

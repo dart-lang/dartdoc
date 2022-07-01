@@ -10,12 +10,13 @@ import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/src/generator/templates.dart';
 import 'package:dartdoc/src/model/package.dart';
 import 'package:dartdoc/src/model/package_graph.dart';
+import 'package:meta/meta.dart';
 
 /// Creates a [Generator] with an [MarkdownGeneratorBackend] backend.
 ///
 /// [forceRuntimeTemplates] should only be given [true] during tests.
 Future<Generator> initMarkdownGenerator(DartdocGeneratorOptionContext context,
-    {bool forceRuntimeTemplates = false}) async {
+    {@visibleForTesting bool forceRuntimeTemplates = false}) async {
   var templates = await Templates.fromContext(context);
   var options = DartdocGeneratorBackendOptions.fromContext(context);
   var backend =
@@ -23,7 +24,7 @@ Future<Generator> initMarkdownGenerator(DartdocGeneratorOptionContext context,
   return GeneratorFrontEnd(backend);
 }
 
-/// Generator backend for markdown output.
+/// Generator backend for Markdown output.
 class MarkdownGeneratorBackend extends DartdocGeneratorBackend {
   MarkdownGeneratorBackend(
       super.options, super.templates, super.resourceProvider);
