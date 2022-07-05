@@ -5,6 +5,7 @@
 import 'dart:async';
 
 import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
+import 'package:analyzer/dart/analysis/context_root.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
@@ -140,9 +141,14 @@ class PubPackageBuilder implements PackageBuilder {
     // handling it ourselves?
     resourceProvider: resourceProvider,
     sdkPath: config.sdkDir,
-    updateAnalysisOptions: (AnalysisOptionsImpl options) => options
-      ..hint = false
-      ..lint = false,
+    updateAnalysisOptions2: ({
+      required AnalysisOptionsImpl analysisOptions,
+      required ContextRoot contextRoot,
+      required DartSdk sdk,
+    }) =>
+        analysisOptions
+          ..hint = false
+          ..lint = false,
   );
 
   /// Returns an Iterable with the SDK files we should parse.
