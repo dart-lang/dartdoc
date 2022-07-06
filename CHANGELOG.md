@@ -1,5 +1,17 @@
-## 5.1.3-dev
+## 6.0.0
 
+* BREAKING CHANGE: Make `DartdocGeneratorBackend.sidebarForContainer`,
+  `DartdocGeneratorBackend.sidebarForLibrary` private.
+* BREAKING CHANGE: Change several fields from being nullable to late, final, and
+  non-nullable in the `Extension`, `InheritingContainer`, and `TopLevelContainer`
+  classes.
+* BREAKING CHANGE: Make `InheritingContiner.enclosingElement` non-nullable.
+* BREAKING CHANGE: Remove unused elements:
+  `InheritingContainer.publicConstructors`,
+  `InheritingContainer.unnamedConstructor`,
+  `TopLevelContainer.publicExceptions`.
+* Remove the parameter from `initEmptyGenerator`.
+* Fix up/down arrow feature in search box. Thanks @klr981!
 * Require Dart 2.17.0
 
 ## 5.1.2
