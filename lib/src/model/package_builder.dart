@@ -60,17 +60,14 @@ class PubPackageBuilder implements PackageBuilder {
           resourceProvider: packageMetaProvider.resourceProvider,
           sdkPath: config.sdkDir,
 
-
-    updateAnalysisOptions2: ({
-      required AnalysisOptionsImpl analysisOptions,
-      required ContextRoot contextRoot,
-      required DartSdk sdk,
-    }) =>
-        analysisOptions
-          ..hint = false
-          ..lint = false,
-
-
+          updateAnalysisOptions2: ({
+            required AnalysisOptionsImpl analysisOptions,
+            required ContextRoot contextRoot,
+            required DartSdk sdk,
+          }) =>
+              analysisOptions
+                ..hint = false
+                ..lint = false,
         ).contextFor(config.inputDir),
         _skipUnreachableSdkLibraries = skipUnreachableSdkLibraries;
 
