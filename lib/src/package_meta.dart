@@ -128,22 +128,26 @@ abstract class PackageMeta {
 
   String get name;
 
-  /// null if not a hosted pub package.  If set, the hostname
-  /// that the package is hosted at -- usually 'pub.dartlang.org'.
+  /// The hostname that the package is hosted at -- usually 'pub.dartlang.org',
+  /// or `null` if not a hosted pub package.
   String? get hostedAt;
 
   String get version;
 
+  @Deprecated('This getter will be removed.')
   String get description;
 
   String get homepage;
 
+  @Deprecated('This getter will be removed.')
   String get repository;
 
   File? getReadmeContents();
 
+  @Deprecated('This method will be removed.')
   File? getLicenseContents();
 
+  @Deprecated('This method will be removed.')
   File? getChangelogContents();
 
   /// Returns true if we are a valid package, valid enough to generate docs.
@@ -341,28 +345,29 @@ class _FilePackageMeta extends PubPackageMeta {
   bool get isSdk => false;
 
   @override
-  String get name => _pubspec['name'] ?? '';
+  String get name => _pubspec.getOptionalString('name') ?? '';
 
   @override
-  String get version => _pubspec['version'] ?? '0.0.0-unknown';
+  String get version =>
+      _pubspec.getOptionalString('version') ?? '0.0.0-unknown';
 
   @override
-  String get description => _pubspec['description'] ?? '';
+  String get description => _pubspec.getOptionalString('description') ?? '';
 
   @override
-  String get homepage => _pubspec['homepage'] ?? '';
+  String get homepage => _pubspec.getOptionalString('homepage') ?? '';
 
   @override
-  String get repository => _pubspec['repository'] ?? '';
+  String get repository => _pubspec.getOptionalString('repository') ?? '';
 
   @override
   bool get requiresFlutter =>
       _environment?.containsKey('flutter') == true ||
       _dependencies?.containsKey('flutter') == true;
 
-  YamlMap? get _environment => _pubspec['environment'];
+  YamlMap? get _environment => _pubspec.getOptionalMap('environment');
 
-  YamlMap? get _dependencies => _pubspec['environment'];
+  YamlMap? get _dependencies => _pubspec.getOptionalMap('dependencies');
 
   @override
   File? getReadmeContents() =>
@@ -466,4 +471,13 @@ class _SdkMeta extends PubPackageMeta {
 @visibleForTesting
 void clearPackageMetaCache() {
   _packageMetaCache.clear();
+}
+
+/// Extensions for a Map of YAML data, like a pubspec.
+extension on Map<dynamic, dynamic> {
+  /// Gets the value for [key], casting to a nullable [YamlMap].
+  YamlMap? getOptionalMap(dynamic key) => this[key] as YamlMap?;
+
+  /// Gets the value for [key], casting to a nullable [String].
+  String? getOptionalString(dynamic key) => this[key] as String?;
 }

@@ -8,6 +8,8 @@ analyzer:
     unused_import: warning
     unused_shown_name: warning
   language:
+    # TODO(srawlins) Enable strict-casts.
+    # strict-casts: true
     strict-raw-types: true
     strict-inference: true
   exclude:
