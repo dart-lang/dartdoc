@@ -1485,7 +1485,6 @@ List<DartdocOption> createDartdocOptions(
             if (inSdkVal != null) return inSdkVal;
           }
           var hostedAt = packageMeta.hostedAt;
-          // ignore: unnecessary_null_comparison
           if (hostedAt != null) {
             Map<String, String> hostMap = option.parent['hosted'].valueAt(dir);
             var hostedAtVal = hostMap[hostedAt];

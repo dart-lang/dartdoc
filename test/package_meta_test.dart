@@ -50,12 +50,14 @@ void main() {
 
     test('has a description', () {
       expect(
+          // ignore: deprecated_member_use_from_same_package
           p.description,
           equals(
               'A non-interactive HTML documentation generator for Dart source code.'));
     });
 
     test('has a repository', () {
+      // ignore: deprecated_member_use_from_same_package
       expect(p.repository, equals('https://github.com/dart-lang/dartdoc'));
     });
 
@@ -74,17 +76,21 @@ void main() {
     });
 
     test('has a license', () {
+      // ignore: deprecated_member_use_from_same_package
       expect(p.getLicenseContents(), isNotNull);
       expect(
           resourceProvider
+              // ignore: deprecated_member_use_from_same_package
               .readAsMalformedAllowedStringSync(p.getLicenseContents()!),
           contains('Copyright 2014, the Dart project authors.'));
     });
 
     test('has a changelog', () {
+      // ignore: deprecated_member_use_from_same_package
       expect(p.getChangelogContents(), isNotNull);
       expect(
           resourceProvider
+              // ignore: deprecated_member_use_from_same_package
               .readAsMalformedAllowedStringSync(p.getChangelogContents()!),
           contains('## 0.2.2'));
     });
@@ -110,6 +116,7 @@ void main() {
 
     test('has a description', () {
       expect(
+          // ignore: deprecated_member_use_from_same_package
           p.description,
           equals(
               'The Dart SDK is a set of tools and libraries for the Dart programming language.'));
@@ -128,6 +135,7 @@ void main() {
     });
 
     test('does not have a license', () {
+      // ignore: deprecated_member_use_from_same_package
       expect(p.getLicenseContents(), isNull);
     });
   });
