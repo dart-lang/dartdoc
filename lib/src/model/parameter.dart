@@ -104,9 +104,10 @@ class Parameter extends ModelElement implements EnclosedElement {
   }
 
   @override
-  Iterable<CommentReferable> get referenceParents => [
-        if (enclosingElement != null) enclosingElement!,
-      ];
+  Iterable<CommentReferable> get referenceParents {
+    final enclosingElement = this.enclosingElement;
+    return [if (enclosingElement != null) enclosingElement];
+  }
 
   @override
   ParameterElement? get element => super.element as ParameterElement?;
