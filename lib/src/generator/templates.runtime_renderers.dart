@@ -12462,11 +12462,11 @@ class _Renderer_Parameter extends RendererBase<Parameter> {
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
-                  isNullValue: (CT_ c) => false,
+                  isNullValue: (CT_ c) => c.enclosingElement == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_ModelElement(
-                        c.enclosingElement, ast, r.template, sink,
+                        c.enclosingElement!, ast, r.template, sink,
                         parent: r);
                   },
                 ),
