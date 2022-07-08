@@ -9941,7 +9941,7 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
                           c, remainingNames, 'CompilationUnitElement'),
-                  isNullValue: (CT_ c) => c.compilationUnitElement == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     renderSimple(

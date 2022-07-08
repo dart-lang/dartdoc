@@ -671,18 +671,19 @@ abstract class ModelElement extends Canonicalization
 
   @override
   late final CharacterLocation? characterLocation = () {
-    var lineInfo = compilationUnitElement!.lineInfo;
-    assert(element!.nameOffset >= 0,
+    final lineInfo = compilationUnitElement.lineInfo;
+    late final element = this.element!;
+    assert(element.nameOffset >= 0,
         'Invalid location data for element: $fullyQualifiedName');
-    var nameOffset = element!.nameOffset;
+    var nameOffset = element.nameOffset;
     if (nameOffset >= 0) {
       return lineInfo.getLocation(nameOffset);
     }
     return null;
   }();
 
-  CompilationUnitElement? get compilationUnitElement =>
-      element!.thisOrAncestorOfType<CompilationUnitElement>();
+  CompilationUnitElement get compilationUnitElement =>
+      element!.thisOrAncestorOfType<CompilationUnitElement>()!;
 
   bool get hasAnnotations => annotations.isNotEmpty;
 
