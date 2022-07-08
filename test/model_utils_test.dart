@@ -23,49 +23,4 @@ void main() {
       expect(matchGlobs([r'C:\a\b\*'], r'D:\a\b\d', isWindows: true), isFalse);
     });
   });
-
-  group('model_utils stripIndentFromSource', () {
-    test('no indent', () {
-      expect(stripIndentFromSource('void foo() {\n  print(1);\n}\n'),
-          'void foo() {\n  print(1);\n}\n');
-    });
-
-    test('same indent', () {
-      expect(stripIndentFromSource('  void foo() {\n    print(1);\n  }\n'),
-          'void foo() {\n  print(1);\n}\n');
-    });
-
-    test('odd indent', () {
-      expect(stripIndentFromSource('   void foo() {\n     print(1);\n   }\n'),
-          'void foo() {\n  print(1);\n}\n');
-    });
-  });
-
-  group('model_utils stripDartdocCommentsFromSource', () {
-    test('no comments', () {
-      expect(stripDartdocCommentsFromSource('void foo() {\n  print(1);\n}\n'),
-          'void foo() {\n  print(1);\n}\n');
-    });
-
-    test('line comments', () {
-      expect(
-          stripDartdocCommentsFromSource(
-              '/// foo comment\nvoid foo() {\n  print(1);\n}\n'),
-          'void foo() {\n  print(1);\n}\n');
-    });
-
-    test('block comments 1', () {
-      expect(
-          stripDartdocCommentsFromSource(
-              '/** foo comment */\nvoid foo() {\n  print(1);\n}\n'),
-          'void foo() {\n  print(1);\n}\n');
-    });
-
-    test('block comments 2', () {
-      expect(
-          stripDartdocCommentsFromSource(
-              '/**\n * foo comment\n */\nvoid foo() {\n  print(1);\n}\n'),
-          'void foo() {\n  print(1);\n}\n');
-    });
-  });
 }
