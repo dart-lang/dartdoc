@@ -9673,13 +9673,14 @@ class _Renderer_Mixin extends RendererBase<Mixin> {
                   getValue: (CT_ c) => c.superclassConstraints,
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames,
-                          'Iterable<ParameterizedElementType>'),
-                  isNullValue: (CT_ c) => c.superclassConstraints == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'List<ParameterizedElementType>'),
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.superclassConstraints, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['Iterable']!);
+                    return c.superclassConstraints.map((e) =>
+                        _render_ParameterizedElementType(
+                            e, ast, r.template, sink,
+                            parent: r));
                   },
                 ),
               }) as Map<String, Property<CT_>>;
