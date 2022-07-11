@@ -43,7 +43,7 @@ class ModelObjectBuilderImpl extends ModelObjectBuilder
   ModelObjectBuilderImpl(this.packageGraph);
 }
 
-/// Default implementation of the ModelBuilderInterface, requiring a
+/// Default implementation of [ModelBuilderInterface], requiring a
 /// [PackageGraph].
 mixin ModelBuilder implements ModelBuilderInterface {
   PackageGraph get packageGraph;
