@@ -165,7 +165,8 @@ void main() {
     });
 
     test('generate docs for ${p.basename(_testPackageBadDir.path)} fails',
-        () async {
+        skip: 'Blocked on getting analysis errors with correct interpretation '
+            'from analysis_options', () async {
       var dartdoc = await buildDartdoc([], _testPackageBadDir, tempDir);
 
       try {
@@ -174,9 +175,7 @@ void main() {
       } catch (e) {
         expect(e is DartdocFailure, isTrue);
       }
-    },
-        skip: 'Blocked on getting analysis errors with correct interpretation '
-            'from analysis_options');
+    });
 
     test('generate docs for package with embedder yaml', () async {
       var dartdoc = await buildDartdoc([], _testSkyEnginePackage, tempDir);

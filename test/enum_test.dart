@@ -250,7 +250,7 @@ enum E {
     });
   });
 
-  group('an enhanced enum', () {
+  group('an enhanced enum', skip: !enhancedEnumsAllowed, () {
     const placeholder = '%%__HTMLBASE_dartdoc_internal__%%';
     const linkPrefix = '$placeholder$libraryName';
 
@@ -652,5 +652,5 @@ class C {}
         '<p>Reference to <a href="$linkPrefix/E/f.html">E.f</a>.</p>',
       );
     });
-  }, skip: !enhancedEnumsAllowed);
+  });
 }

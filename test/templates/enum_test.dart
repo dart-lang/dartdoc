@@ -61,7 +61,7 @@ void main() async {
     );
   }
 
-  group('enhanced enums', () {
+  group('enhanced enums', skip: !enhancedEnumsAllowed, () {
     setUpAll(() async {
       packageMetaProvider = testPackageMetaProvider;
       resourceProvider =
@@ -420,5 +420,5 @@ enum EnumWithDefaultConstructor { four, five, six }
     // TODO(srawlins): Add rendering tests.
     // * Add tests for rendered supertype (Enum) HTML.
     // * Add tests for rendered field pages.
-  }, skip: !enhancedEnumsAllowed);
+  });
 }
