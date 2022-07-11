@@ -4376,28 +4376,6 @@ class _Renderer_ElementType extends RendererBase<ElementType> {
                         parent: r, getters: _invisibleGetters['PackageGraph']!);
                   },
                 ),
-                'returnedFrom': Property(
-                  getValue: (CT_ c) => c.returnedFrom,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_ElementType.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as ElementType,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => c.returnedFrom == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_ElementType(c.returnedFrom!, ast, r.template, sink,
-                        parent: r);
-                  },
-                ),
                 'type': Property(
                   getValue: (CT_ c) => c.type,
                   renderVariable: (CT_ c, Property<CT_> self,
