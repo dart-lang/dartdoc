@@ -160,15 +160,16 @@ void main() {
     });
 
     test(
-        'Verify annotations and their type arguments render on type parameters for typedefs',
-        () {
+        'Verify annotations and their type arguments render on type parameters '
+        'for typedefs',
+        skip: 'dart-lang/sdk#46064', () {
       expect((F.aliasedType as FunctionType).typeFormals.first.metadata,
           isNotEmpty);
       expect((F.aliasedType as FunctionType).parameters.first.metadata,
           isNotEmpty);
       // TODO(jcollins-g): add rendering verification once we have data from
       // analyzer.
-    }, skip: 'dart-lang/sdk#46064');
+    });
 
     test('Verify type arguments on annotations renders, including parameters',
         () {
@@ -260,14 +261,15 @@ void main() {
           g.modelType.parameters.last.modelType as Aliased, equals('T3'));
     });
 
-    test('typedef references to special types work', () {
+    test('typedef references to special types work',
+        skip: 'dart-lang/sdk#45291', () {
       var a = generalizedTypedefs.properties.firstWhere((p) => p.name == 'a');
       var b = C2.allFields.firstWhere((f) => f.name == 'b');
       var f = C.allFields.firstWhere((f) => f.name == 'f');
       expectAliasedTypeName(a.modelType as Aliased, equals('T0'));
       expectAliasedTypeName(b.modelType as Aliased, equals('T0'));
       expectAliasedTypeName(f.modelType as Aliased, equals('T0'));
-    }, skip: 'dart-lang/sdk#45291');
+    });
 
     test('basic non-function typedefs work', () {
       expectTypedefs(T0, 'void', []);
@@ -1410,12 +1412,15 @@ void main() {
                 '<a href="${htmlBasePlaceholder}fake/BaseForDocComments/operator_get.html">operator []</a> '));
       });
 
-      test('operator [] reference outside of a class works', () {
+      test('operator [] reference outside of a class works',
+          skip: 'https://github.com/dart-lang/dartdoc/issues/1285', () {
         expect(
-            docsAsHtml,
-            contains(
-                '<a href="${htmlBasePlaceholder}fake/SpecialList/operator_get.html">SpecialList.operator []</a> '));
-      }, skip: 'https://github.com/dart-lang/dartdoc/issues/1285');
+          docsAsHtml,
+          contains(
+              '<a href="${htmlBasePlaceholder}fake/SpecialList/operator_get.html">'
+              'SpecialList.operator []</a> '),
+        );
+      });
 
       test('adds <code> tag to a class from the SDK', () {
         expect(docsAsHtml, contains('<code>String</code>'));

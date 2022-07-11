@@ -182,9 +182,9 @@ const aTearOffUnnamedConstructorArgsTypedef = Ft<String>.new;
       expect(aTearOffUnnamedConstructorArgsTypedef.constantValue,
           equals('Ft&lt;String&gt;.new'));
     });
-  }, skip: !constructorTearoffsAllowed);
+  });
 
-  group('named-arguments-anywhere', () {
+  group('named-arguments-anywhere', skip: !namedArgumentsAnywhereAllowed, () {
     const placeholder = '%%__HTMLBASE_dartdoc_internal__%%';
     const libraryName = 'constant_values';
     const linkPrefix = '$placeholder$libraryName';
@@ -251,5 +251,5 @@ const r = C(c: 1, d: 2, 3, 4);
       expect(rConst.constantValue,
           equals('<a href="$linkPrefix/C/C.html">C</a>(c: 1, d: 2, 3, 4)'));
     });
-  }, skip: !namedArgumentsAnywhereAllowed);
+  });
 }

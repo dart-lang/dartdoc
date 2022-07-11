@@ -212,7 +212,7 @@ void main() {
         expect(referenceLookup(A, 'new'), equals(MatchingLinkResult(null)));
         expect(referenceLookup(At, 'new'), equals(MatchingLinkResult(null)));
       });
-    }, skip: !utils.constructorTearoffsAllowed);
+    });
   });
 
   group('HTML is sanitized when enabled', () {

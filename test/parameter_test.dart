@@ -160,7 +160,7 @@ class C {
     });
   });
 
-  group('super-parameters', () {
+  group('super-parameters', skip: !superParametersAllowed, () {
     late Library library;
 
     // It is expensive (~10s) to compute a package graph, even skipping
@@ -366,7 +366,7 @@ class E extends D {
         </span>
       '''));
     });
-  }, skip: !superParametersAllowed);
+  });
 }
 
 extension on Library {
