@@ -26,7 +26,7 @@ abstract class ModelElementBuilder {
 }
 
 abstract class ElementTypeBuilder {
-  ElementType typeFrom(DartType f, Library library, {ElementType returnedFrom});
+  ElementType typeFrom(DartType f, Library library);
 }
 
 abstract class ModelBuilderInterface {
