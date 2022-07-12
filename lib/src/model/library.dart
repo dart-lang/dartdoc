@@ -371,6 +371,9 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   @override
   String get filePath => '${library.dirName}/$fileName';
 
+  String get sidebarPath =>
+      '${library.dirName}/$dirName-library-sidebar.$fileType';
+
   @override
   late final List<ModelFunction> functions =
       _exportedAndLocalElements.whereType<FunctionElement>().map((e) {

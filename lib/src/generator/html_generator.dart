@@ -12,8 +12,10 @@ import 'package:dartdoc/src/generator/html_resources.g.dart' as resources;
 import 'package:dartdoc/src/generator/resource_loader.dart';
 import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/src/generator/templates.dart';
+import 'package:dartdoc/src/model/library.dart';
 import 'package:dartdoc/src/model/package.dart';
 import 'package:dartdoc/src/model/package_graph.dart';
+import 'package:dartdoc/src/runtime_stats.dart';
 import 'package:meta/meta.dart';
 
 /// Creates a [Generator] with an [HtmlGeneratorBackend] backend.
@@ -36,6 +38,15 @@ Future<Generator> initHtmlGenerator(
 class HtmlGeneratorBackend extends GeneratorBackendBase {
   HtmlGeneratorBackend(
       super.options, super.templates, super.writer, super.resourceProvider);
+
+  @override
+  void generateLibrary(PackageGraph packageGraph, Library library) {
+    super.generateLibrary(packageGraph, library);
+    var data = LibraryTemplateData(options, packageGraph, library);
+    var sidebarContent = templates.renderSidebarForLibrary(data);
+    write(writer, library.sidebarPath, data, sidebarContent);
+    runtimeStats.incrementAccumulator('writtenSidebarFileCount');
+  }
 
   @override
   void generatePackage(PackageGraph packageGraph, Package package) {

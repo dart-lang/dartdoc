@@ -142,10 +142,6 @@ abstract class GeneratorBackend {
 abstract class GeneratorBackendBase implements GeneratorBackend {
   final DartdocGeneratorBackendOptions options;
   final Templates templates;
-  final SidebarGenerator<TemplateDataWithLibrary<Documentable>>
-      _sidebarForLibrary;
-  final SidebarGenerator<TemplateDataWithContainer<Documentable>>
-      _sidebarForContainer;
 
   @override
   final FileWriter writer;
@@ -154,11 +150,7 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
 
   GeneratorBackendBase(
       this.options, this.templates, this.writer, this.resourceProvider)
-      : _sidebarForLibrary =
-            SidebarGenerator(templates.renderSidebarForLibrary),
-        _sidebarForContainer =
-            SidebarGenerator(templates.renderSidebarForContainer),
-        _pathContext = resourceProvider.pathContext;
+      : _pathContext = resourceProvider.pathContext;
 
   /// Binds template data and emits the content to the [writer].
   void write(
@@ -205,8 +197,7 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
 
   @override
   void generateClass(PackageGraph packageGraph, Library library, Class clazz) {
-    var data = ClassTemplateData(options, packageGraph, library, clazz,
-        _sidebarForLibrary.getRenderFor, _sidebarForContainer.getRenderFor);
+    var data = ClassTemplateData(options, packageGraph, library, clazz);
     var content = templates.renderClass(data);
     write(writer, clazz.filePath, data, content);
     runtimeStats.incrementAccumulator('writtenClassFileCount');
@@ -220,8 +211,8 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
   @override
   void generateConstructor(PackageGraph packageGraph, Library library,
       Constructable constructable, Constructor constructor) {
-    var data = ConstructorTemplateData(options, packageGraph, library,
-        constructable, constructor, _sidebarForContainer.getRenderFor);
+    var data = ConstructorTemplateData(
+        options, packageGraph, library, constructable, constructor);
     var content = templates.renderConstructor(data);
     write(writer, constructor.filePath, data, content);
     runtimeStats.incrementAccumulator('writtenConstructorFileCount');
@@ -229,8 +220,7 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
 
   @override
   void generateEnum(PackageGraph packageGraph, Library library, Enum eNum) {
-    var data = EnumTemplateData(options, packageGraph, library, eNum,
-        _sidebarForLibrary.getRenderFor, _sidebarForContainer.getRenderFor);
+    var data = EnumTemplateData(options, packageGraph, library, eNum);
     var content = templates.renderEnum(data);
     write(writer, eNum.filePath, data, content);
     runtimeStats.incrementAccumulator('writtenEnumFileCount');
@@ -239,8 +229,7 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
   @override
   void generateExtension(
       PackageGraph packageGraph, Library library, Extension extension) {
-    var data = ExtensionTemplateData(options, packageGraph, library, extension,
-        _sidebarForLibrary.getRenderFor, _sidebarForContainer.getRenderFor);
+    var data = ExtensionTemplateData(options, packageGraph, library, extension);
     var content = templates.renderExtension(data);
     write(writer, extension.filePath, data, content);
     runtimeStats.incrementAccumulator('writtenExtensionFileCount');
@@ -249,8 +238,7 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
   @override
   void generateFunction(
       PackageGraph packageGraph, Library library, ModelFunction function) {
-    var data = FunctionTemplateData(options, packageGraph, library, function,
-        _sidebarForLibrary.getRenderFor);
+    var data = FunctionTemplateData(options, packageGraph, library, function);
     var content = templates.renderFunction(data);
     write(writer, function.filePath, data, content);
     runtimeStats.incrementAccumulator('writtenFunctionFileCount');
@@ -258,8 +246,7 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
 
   @override
   void generateLibrary(PackageGraph packageGraph, Library library) {
-    var data = LibraryTemplateData(
-        options, packageGraph, library, _sidebarForLibrary.getRenderFor);
+    var data = LibraryTemplateData(options, packageGraph, library);
     var content = templates.renderLibrary(data);
     write(writer, library.filePath, data, content);
     runtimeStats.incrementAccumulator('writtenLibraryFileCount');
@@ -268,8 +255,8 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
   @override
   void generateMethod(PackageGraph packageGraph, Library library,
       Container clazz, Method method) {
-    var data = MethodTemplateData(options, packageGraph, library, clazz, method,
-        _sidebarForContainer.getRenderFor);
+    var data =
+        MethodTemplateData(options, packageGraph, library, clazz, method);
     var content = templates.renderMethod(data);
     write(writer, method.filePath, data, content);
     runtimeStats.incrementAccumulator('writtenMethodFileCount');
@@ -277,8 +264,7 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
 
   @override
   void generateMixin(PackageGraph packageGraph, Library library, Mixin mixin) {
-    var data = MixinTemplateData(options, packageGraph, library, mixin,
-        _sidebarForLibrary.getRenderFor, _sidebarForContainer.getRenderFor);
+    var data = MixinTemplateData(options, packageGraph, library, mixin);
     var content = templates.renderMixin(data);
     write(writer, mixin.filePath, data, content);
     runtimeStats.incrementAccumulator('writtenMixinFileCount');
@@ -295,8 +281,8 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
   @override
   void generateProperty(PackageGraph packageGraph, Library library,
       Container clazz, Field field) {
-    var data = PropertyTemplateData(options, packageGraph, library, clazz,
-        field, _sidebarForContainer.getRenderFor);
+    var data =
+        PropertyTemplateData(options, packageGraph, library, clazz, field);
     var content = templates.renderProperty(data);
     write(writer, field.filePath, data, content);
     runtimeStats.incrementAccumulator('writtenPropertyFileCount');
@@ -310,8 +296,8 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
   @override
   void generateTopLevelProperty(
       PackageGraph packageGraph, Library library, TopLevelVariable property) {
-    var data = TopLevelPropertyTemplateData(options, packageGraph, library,
-        property, _sidebarForLibrary.getRenderFor);
+    var data =
+        TopLevelPropertyTemplateData(options, packageGraph, library, property);
     var content = templates.renderTopLevelProperty(data);
     write(writer, property.filePath, data, content);
     runtimeStats.incrementAccumulator('writtenTopLevelPropertyFileCount');
@@ -320,8 +306,7 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
   @override
   void generateTypeDef(
       PackageGraph packageGraph, Library library, Typedef typedef) {
-    var data = TypedefTemplateData(options, packageGraph, library, typedef,
-        _sidebarForLibrary.getRenderFor);
+    var data = TypedefTemplateData(options, packageGraph, library, typedef);
     var content = templates.renderTypedef(data);
     write(writer, typedef.filePath, data, content);
     runtimeStats.incrementAccumulator('writtenTypedefFileCount');

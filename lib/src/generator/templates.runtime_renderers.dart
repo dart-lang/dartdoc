@@ -2586,28 +2586,6 @@ class _Renderer_ConstructorTemplateData
                         parent: r);
                   },
                 ),
-                'sidebarForContainer': Property(
-                  getValue: (CT_ c) => c.sidebarForContainer,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_String.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as String,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.sidebarForContainer, ast, r.template, sink,
-                        parent: r);
-                  },
-                ),
                 'title': Property(
                   getValue: (CT_ c) => c.title,
                   renderVariable:
@@ -5057,50 +5035,6 @@ class _Renderer_ExtensionTemplateData<T extends Extension>
                     _render_Extension(c.self, ast, r.template, sink, parent: r);
                   },
                 ),
-                'sidebarForContainer': Property(
-                  getValue: (CT_ c) => c.sidebarForContainer,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_String.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as String,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.sidebarForContainer, ast, r.template, sink,
-                        parent: r);
-                  },
-                ),
-                'sidebarForLibrary': Property(
-                  getValue: (CT_ c) => c.sidebarForLibrary,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_String.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as String,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.sidebarForLibrary, ast, r.template, sink,
-                        parent: r);
-                  },
-                ),
                 'title': Property(
                   getValue: (CT_ c) => c.title,
                   renderVariable:
@@ -5858,28 +5792,6 @@ class _Renderer_FunctionTemplateData
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_ModelFunction(c.self, ast, r.template, sink,
-                        parent: r);
-                  },
-                ),
-                'sidebarForLibrary': Property(
-                  getValue: (CT_ c) => c.sidebarForLibrary,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_String.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as String,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.sidebarForLibrary, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -7414,50 +7326,6 @@ class _Renderer_InheritingContainerTemplateData<T extends InheritingContainer>
                         parent: r);
                   },
                 ),
-                'sidebarForContainer': Property(
-                  getValue: (CT_ c) => c.sidebarForContainer,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_String.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as String,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.sidebarForContainer, ast, r.template, sink,
-                        parent: r);
-                  },
-                ),
-                'sidebarForLibrary': Property(
-                  getValue: (CT_ c) => c.sidebarForLibrary,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_String.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as String,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.sidebarForLibrary, ast, r.template, sink,
-                        parent: r);
-                  },
-                ),
                 'title': Property(
                   getValue: (CT_ c) => c.title,
                   renderVariable:
@@ -8176,6 +8044,28 @@ class _Renderer_Library extends RendererBase<Library> {
                         parent: r, getters: _invisibleGetters['SdkLibrary']!);
                   },
                 ),
+                'sidebarPath': Property(
+                  getValue: (CT_ c) => c.sidebarPath,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        _Renderer_String.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(
+                        self.getValue(c) as String,
+                        nextProperty,
+                        [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => false,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    _render_String(c.sidebarPath, ast, r.template, sink,
+                        parent: r);
+                  },
+                ),
                 'typeSystem': Property(
                   getValue: (CT_ c) => c.typeSystem,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -8479,28 +8369,6 @@ class _Renderer_LibraryTemplateData extends RendererBase<LibraryTemplateData> {
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_Library(c.self, ast, r.template, sink, parent: r);
-                  },
-                ),
-                'sidebarForLibrary': Property(
-                  getValue: (CT_ c) => c.sidebarForLibrary,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_String.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as String,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.sidebarForLibrary, ast, r.template, sink,
-                        parent: r);
                   },
                 ),
                 'title': Property(
@@ -9281,28 +9149,6 @@ class _Renderer_MethodTemplateData extends RendererBase<MethodTemplateData> {
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_Method(c.self, ast, r.template, sink, parent: r);
-                  },
-                ),
-                'sidebarForContainer': Property(
-                  getValue: (CT_ c) => c.sidebarForContainer,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_String.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as String,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.sidebarForContainer, ast, r.template, sink,
-                        parent: r);
                   },
                 ),
                 'title': Property(
@@ -12866,28 +12712,6 @@ class _Renderer_PropertyTemplateData
                     _render_Field(c.self, ast, r.template, sink, parent: r);
                   },
                 ),
-                'sidebarForContainer': Property(
-                  getValue: (CT_ c) => c.sidebarForContainer,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_String.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as String,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.sidebarForContainer, ast, r.template, sink,
-                        parent: r);
-                  },
-                ),
                 'title': Property(
                   getValue: (CT_ c) => c.title,
                   renderVariable:
@@ -14339,28 +14163,6 @@ class _Renderer_TopLevelPropertyTemplateData
                         parent: r);
                   },
                 ),
-                'sidebarForLibrary': Property(
-                  getValue: (CT_ c) => c.sidebarForLibrary,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_String.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as String,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.sidebarForLibrary, ast, r.template, sink,
-                        parent: r);
-                  },
-                ),
                 'title': Property(
                   getValue: (CT_ c) => c.title,
                   renderVariable:
@@ -15615,28 +15417,6 @@ class _Renderer_TypedefTemplateData extends RendererBase<TypedefTemplateData> {
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_Typedef(c.self, ast, r.template, sink, parent: r);
-                  },
-                ),
-                'sidebarForLibrary': Property(
-                  getValue: (CT_ c) => c.sidebarForLibrary,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_String.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as String,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.sidebarForLibrary, ast, r.template, sink,
-                        parent: r);
                   },
                 ),
                 'title': Property(
