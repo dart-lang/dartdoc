@@ -1545,14 +1545,14 @@ String renderSidebarForContainer<T extends _i3.Documentable>(
     if (context1.hasPublicEnumValues == true) {
       buffer.writeln();
       buffer.write('''
-    <li class="section-title"><a href="''');
+        <li class="section-title"><a href="''');
       buffer.write(context1.href);
       buffer.write('''#values">Values</a></li>''');
       var context4 = context1.publicEnumValues;
       for (var context5 in context4) {
         buffer.writeln();
         buffer.write('''
-    <li>''');
+          <li>''');
         buffer.write(context5.linkedName);
         buffer.write('''</li>''');
       }
@@ -1563,20 +1563,20 @@ String renderSidebarForContainer<T extends _i3.Documentable>(
     if (context1.hasPublicInstanceFields == true) {
       buffer.writeln();
       buffer.write('''
-    <li class="section-title''');
+        <li class="section-title''');
       if (context1.publicInheritedInstanceFields == true) {
         buffer.write(''' inherited''');
       }
       buffer.write('''">
-      <a href="''');
+          <a href="''');
       buffer.write(context1.href);
       buffer.write('''#instance-properties">Properties</a>
-    </li>''');
+        </li>''');
       var context6 = context1.publicInstanceFieldsSorted;
       for (var context7 in context6) {
         buffer.writeln();
         buffer.write('''
-    <li''');
+          <li''');
         if (context7.isInherited == true) {
           buffer.write(''' class="inherited"''');
         }
@@ -1589,7 +1589,7 @@ String renderSidebarForContainer<T extends _i3.Documentable>(
     if (context1.hasPublicInstanceMethods == true) {
       buffer.writeln();
       buffer.write('''
-    <li class="section-title''');
+        <li class="section-title''');
       if (context1.publicInheritedInstanceMethods == true) {
         buffer.write(''' inherited''');
       }
@@ -1600,7 +1600,7 @@ String renderSidebarForContainer<T extends _i3.Documentable>(
       for (var context9 in context8) {
         buffer.writeln();
         buffer.write('''
-    <li''');
+          <li''');
         if (context9.isInherited == true) {
           buffer.write(''' class="inherited"''');
         }
@@ -1613,7 +1613,7 @@ String renderSidebarForContainer<T extends _i3.Documentable>(
     if (context1.hasPublicInstanceOperators == true) {
       buffer.writeln();
       buffer.write('''
-    <li class="section-title''');
+        <li class="section-title''');
       if (context1.publicInheritedInstanceOperators == true) {
         buffer.write(''' inherited''');
       }
@@ -1624,7 +1624,7 @@ String renderSidebarForContainer<T extends _i3.Documentable>(
       for (var context11 in context10) {
         buffer.writeln();
         buffer.write('''
-    <li''');
+          <li''');
         if (context11.isInherited == true) {
           buffer.write(''' class="inherited"''');
         }
@@ -1639,15 +1639,14 @@ String renderSidebarForContainer<T extends _i3.Documentable>(
     if (context1.hasPublicInstanceFields == true) {
       buffer.writeln();
       buffer.write('''
-    <li class="section-title"> <a href="''');
+        <li class="section-title"> <a href="''');
       buffer.write(context1.href);
-      buffer.write('''#instance-properties">Properties</a>
-    </li>''');
+      buffer.write('''#instance-properties">Properties</a></li>''');
       var context12 = context1.publicInstanceFieldsSorted;
       for (var context13 in context12) {
         buffer.writeln();
         buffer.write('''
-    <li>''');
+          <li>''');
         buffer.write(context13.linkedName);
         buffer.write('''</li>''');
       }
@@ -1656,14 +1655,14 @@ String renderSidebarForContainer<T extends _i3.Documentable>(
     if (context1.hasPublicInstanceMethods == true) {
       buffer.writeln();
       buffer.write('''
-    <li class="section-title"><a href="''');
+        <li class="section-title"><a href="''');
       buffer.write(context1.href);
       buffer.write('''#instance-methods">Methods</a></li>''');
       var context14 = context1.publicInstanceMethodsSorted;
       for (var context15 in context14) {
         buffer.writeln();
         buffer.write('''
-    <li>''');
+          <li>''');
         buffer.write(context15.linkedName);
         buffer.write('''</li>''');
       }
@@ -1672,14 +1671,14 @@ String renderSidebarForContainer<T extends _i3.Documentable>(
     if (context1.hasPublicInstanceOperators == true) {
       buffer.writeln();
       buffer.write('''
-    <li class="section-title"><a href="''');
+        <li class="section-title"><a href="''');
       buffer.write(context1.href);
       buffer.write('''#operators">Operators</a></li>''');
       var context16 = context1.publicInstanceOperatorsSorted;
       for (var context17 in context16) {
         buffer.writeln();
         buffer.write('''
-    <li>''');
+          <li>''');
         buffer.write(context17.linkedName);
         buffer.write('''</li>''');
       }
@@ -1751,14 +1750,14 @@ String renderSidebarForLibrary<T extends _i3.Documentable>(
   if (context1.hasPublicClasses == true) {
     buffer.writeln();
     buffer.write('''
-  <li class="section-title"><a href="''');
+      <li class="section-title"><a href="''');
     buffer.write(context1.href);
     buffer.write('''#classes">Classes</a></li>''');
     var context2 = context1.publicClassesSorted;
     for (var context3 in context2) {
       buffer.writeln();
       buffer.write('''
-  <li>''');
+        <li>''');
       buffer.write(context3.linkedName);
       buffer.write('''</li>''');
     }
@@ -1767,14 +1766,14 @@ String renderSidebarForLibrary<T extends _i3.Documentable>(
   if (context1.hasPublicExtensions == true) {
     buffer.writeln();
     buffer.write('''
-  <li class="section-title"><a href="''');
+      <li class="section-title"><a href="''');
     buffer.write(context1.href);
     buffer.write('''#extensions">Extensions</a></li>''');
     var context4 = context1.publicExtensionsSorted;
     for (var context5 in context4) {
       buffer.writeln();
       buffer.write('''
-  <li>''');
+        <li>''');
       buffer.write(context5.linkedName);
       buffer.write('''</li>''');
     }
@@ -1783,14 +1782,14 @@ String renderSidebarForLibrary<T extends _i3.Documentable>(
   if (context1.hasPublicMixins == true) {
     buffer.writeln();
     buffer.write('''
-  <li class="section-title"><a href="''');
+      <li class="section-title"><a href="''');
     buffer.write(context1.href);
     buffer.write('''#mixins">Mixins</a></li>''');
     var context6 = context1.publicMixinsSorted;
     for (var context7 in context6) {
       buffer.writeln();
       buffer.write('''
-  <li>''');
+        <li>''');
       buffer.write(context7.linkedName);
       buffer.write('''</li>''');
     }
@@ -1799,14 +1798,14 @@ String renderSidebarForLibrary<T extends _i3.Documentable>(
   if (context1.hasPublicConstants == true) {
     buffer.writeln();
     buffer.write('''
-  <li class="section-title"><a href="''');
+      <li class="section-title"><a href="''');
     buffer.write(context1.href);
     buffer.write('''#constants">Constants</a></li>''');
     var context8 = context1.publicConstantsSorted;
     for (var context9 in context8) {
       buffer.writeln();
       buffer.write('''
-  <li>''');
+        <li>''');
       buffer.write(context9.linkedName);
       buffer.write('''</li>''');
     }
@@ -1815,14 +1814,14 @@ String renderSidebarForLibrary<T extends _i3.Documentable>(
   if (context1.hasPublicProperties == true) {
     buffer.writeln();
     buffer.write('''
-  <li class="section-title"><a href="''');
+      <li class="section-title"><a href="''');
     buffer.write(context1.href);
     buffer.write('''#properties">Properties</a></li>''');
     var context10 = context1.publicPropertiesSorted;
     for (var context11 in context10) {
       buffer.writeln();
       buffer.write('''
-  <li>''');
+        <li>''');
       buffer.write(context11.linkedName);
       buffer.write('''</li>''');
     }
@@ -1831,14 +1830,14 @@ String renderSidebarForLibrary<T extends _i3.Documentable>(
   if (context1.hasPublicFunctions == true) {
     buffer.writeln();
     buffer.write('''
-  <li class="section-title"><a href="''');
+      <li class="section-title"><a href="''');
     buffer.write(context1.href);
     buffer.write('''#functions">Functions</a></li>''');
     var context12 = context1.publicFunctionsSorted;
     for (var context13 in context12) {
       buffer.writeln();
       buffer.write('''
-  <li>''');
+        <li>''');
       buffer.write(context13.linkedName);
       buffer.write('''</li>''');
     }
@@ -1847,14 +1846,14 @@ String renderSidebarForLibrary<T extends _i3.Documentable>(
   if (context1.hasPublicEnums == true) {
     buffer.writeln();
     buffer.write('''
-  <li class="section-title"><a href="''');
+      <li class="section-title"><a href="''');
     buffer.write(context1.href);
     buffer.write('''#enums">Enums</a></li>''');
     var context14 = context1.publicEnumsSorted;
     for (var context15 in context14) {
       buffer.writeln();
       buffer.write('''
-  <li>''');
+        <li>''');
       buffer.write(context15.linkedName);
       buffer.write('''</li>''');
     }
@@ -1863,14 +1862,14 @@ String renderSidebarForLibrary<T extends _i3.Documentable>(
   if (context1.hasPublicTypedefs == true) {
     buffer.writeln();
     buffer.write('''
-  <li class="section-title"><a href="''');
+      <li class="section-title"><a href="''');
     buffer.write(context1.href);
     buffer.write('''#typedefs">Typedefs</a></li>''');
     var context16 = context1.publicTypedefsSorted;
     for (var context17 in context16) {
       buffer.writeln();
       buffer.write('''
-  <li>''');
+        <li>''');
       buffer.write(context17.linkedName);
       buffer.write('''</li>''');
     }
@@ -1879,14 +1878,14 @@ String renderSidebarForLibrary<T extends _i3.Documentable>(
   if (context1.hasPublicExceptions == true) {
     buffer.writeln();
     buffer.write('''
-  <li class="section-title"><a href="''');
+      <li class="section-title"><a href="''');
     buffer.write(context1.href);
     buffer.write('''#exceptions">Exceptions</a></li>''');
     var context18 = context1.publicExceptionsSorted;
     for (var context19 in context18) {
       buffer.writeln();
       buffer.write('''
-  <li>''');
+        <li>''');
       buffer.write(context19.linkedName);
       buffer.write('''</li>''');
     }
@@ -2130,7 +2129,7 @@ String _renderCategory_partial_sidebar_for_category_11(
   if (context1.hasPublicLibraries == true) {
     buffer.writeln();
     buffer.write('''
-  <li class="section-title"><a href="''');
+    <li class="section-title"><a href="''');
     buffer.write(context0.self.href);
     buffer.write('''#libraries">Libraries</a></li>''');
     var context2 = context0.self;
@@ -2138,7 +2137,7 @@ String _renderCategory_partial_sidebar_for_category_11(
     for (var context4 in context3) {
       buffer.writeln();
       buffer.write('''
-  <li>''');
+      <li>''');
       buffer.write(context4.linkedName);
       buffer.write('''</li>''');
     }
@@ -2148,7 +2147,7 @@ String _renderCategory_partial_sidebar_for_category_11(
   if (context5.hasPublicMixins == true) {
     buffer.writeln();
     buffer.write('''
-  <li class="section-title"><a href="''');
+    <li class="section-title"><a href="''');
     buffer.write(context0.self.href);
     buffer.write('''#mixins">Mixins</a></li>''');
     var context6 = context0.self;
@@ -2156,7 +2155,7 @@ String _renderCategory_partial_sidebar_for_category_11(
     for (var context8 in context7) {
       buffer.writeln();
       buffer.write('''
-  <li>''');
+      <li>''');
       buffer.write(context8.linkedName);
       buffer.write('''</li>''');
     }
@@ -2166,7 +2165,7 @@ String _renderCategory_partial_sidebar_for_category_11(
   if (context9.hasPublicClasses == true) {
     buffer.writeln();
     buffer.write('''
-  <li class="section-title"><a href="''');
+    <li class="section-title"><a href="''');
     buffer.write(context0.self.href);
     buffer.write('''#classes">Classes</a></li>''');
     var context10 = context0.self;
@@ -2174,7 +2173,7 @@ String _renderCategory_partial_sidebar_for_category_11(
     for (var context12 in context11) {
       buffer.writeln();
       buffer.write('''
-  <li>''');
+      <li>''');
       buffer.write(context12.linkedName);
       buffer.write('''</li>''');
     }
@@ -2184,7 +2183,7 @@ String _renderCategory_partial_sidebar_for_category_11(
   if (context13.hasPublicConstants == true) {
     buffer.writeln();
     buffer.write('''
-  <li class="section-title"><a href="''');
+    <li class="section-title"><a href="''');
     buffer.write(context0.self.href);
     buffer.write('''#constants">Constants</a></li>''');
     var context14 = context0.self;
@@ -2192,7 +2191,7 @@ String _renderCategory_partial_sidebar_for_category_11(
     for (var context16 in context15) {
       buffer.writeln();
       buffer.write('''
-  <li>''');
+      <li>''');
       buffer.write(context16.linkedName);
       buffer.write('''</li>''');
     }
@@ -2202,7 +2201,7 @@ String _renderCategory_partial_sidebar_for_category_11(
   if (context17.hasPublicProperties == true) {
     buffer.writeln();
     buffer.write('''
-  <li class="section-title"><a href="''');
+    <li class="section-title"><a href="''');
     buffer.write(context0.self.href);
     buffer.write('''#properties">Properties</a></li>''');
     var context18 = context0.self;
@@ -2210,7 +2209,7 @@ String _renderCategory_partial_sidebar_for_category_11(
     for (var context20 in context19) {
       buffer.writeln();
       buffer.write('''
-  <li>''');
+      <li>''');
       buffer.write(context20.linkedName);
       buffer.write('''</li>''');
     }
@@ -2220,7 +2219,7 @@ String _renderCategory_partial_sidebar_for_category_11(
   if (context21.hasPublicFunctions == true) {
     buffer.writeln();
     buffer.write('''
-  <li class="section-title"><a href="''');
+    <li class="section-title"><a href="''');
     buffer.write(context0.self.href);
     buffer.write('''#functions">Functions</a></li>''');
     var context22 = context0.self;
@@ -2228,7 +2227,7 @@ String _renderCategory_partial_sidebar_for_category_11(
     for (var context24 in context23) {
       buffer.writeln();
       buffer.write('''
-  <li>''');
+      <li>''');
       buffer.write(context24.linkedName);
       buffer.write('''</li>''');
     }
@@ -2238,7 +2237,7 @@ String _renderCategory_partial_sidebar_for_category_11(
   if (context25.hasPublicEnums == true) {
     buffer.writeln();
     buffer.write('''
-  <li class="section-title"><a href="''');
+    <li class="section-title"><a href="''');
     buffer.write(context0.self.href);
     buffer.write('''#enums">Enums</a></li>''');
     var context26 = context0.self;
@@ -2246,7 +2245,7 @@ String _renderCategory_partial_sidebar_for_category_11(
     for (var context28 in context27) {
       buffer.writeln();
       buffer.write('''
-  <li>''');
+      <li>''');
       buffer.write(context28.linkedName);
       buffer.write('''</li>''');
     }
