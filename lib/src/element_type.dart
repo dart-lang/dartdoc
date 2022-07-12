@@ -309,11 +309,11 @@ abstract class DefinedElementType extends ElementType {
     }
   }();
 
-  /// The instantiated to bounds type of this type is a subtype of
-  /// [t].
+  /// Returns whether the instantiated-to-bounds type of this type is a subtype
+  /// of [type].
   @override
-  bool isSubtypeOf(ElementType t) =>
-      library.typeSystem.isSubtypeOf(instantiatedType, t.instantiatedType);
+  bool isSubtypeOf(ElementType type) =>
+      library.typeSystem.isSubtypeOf(instantiatedType, type.instantiatedType);
 
   /// Returns true if at least one supertype (including via mixins and
   /// interfaces) is equivalent to or a subtype of [this] when

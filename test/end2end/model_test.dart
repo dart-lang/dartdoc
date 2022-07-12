@@ -2046,7 +2046,7 @@ void main() {
     });
 
     test('correctly finds all the classes', () {
-      expect(classes, hasLength(39));
+      expect(classes, hasLength(37));
     });
 
     test('abstract', () {
@@ -4898,58 +4898,6 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('library has the exact errors/exceptions we expect', () {
       expect(exLibrary.exceptions.map((e) => e.name),
           unorderedEquals(expectedNames));
-    });
-  });
-
-  group('Annotations', () {
-    late final Class forAnnotation, dog;
-    late final Method ctr;
-    setUpAll(() {
-      forAnnotation =
-          exLibrary.classes.firstWhere((c) => c.name == 'HasAnnotation');
-      dog = exLibrary.classes.firstWhere((c) => c.name == 'Dog');
-      ctr = dog.staticMethods.firstWhere((c) => c.name == 'createDog');
-    });
-
-    test('is not null', () => expect(forAnnotation, isNotNull));
-
-    test('has annotations', () => expect(forAnnotation.hasAnnotations, true));
-
-    test('has one annotation',
-        () => expect(forAnnotation.annotations, hasLength(1)));
-
-    test('has the right annotation and is escaped', () {
-      expect(
-          forAnnotation.annotations.first.linkedNameWithParameters,
-          equals(
-              '@<a href="${htmlBasePlaceholder}ex/ForAnnotation-class.html">ForAnnotation</a>'
-              '(&#39;my value&#39;)'));
-    });
-
-    test('methods has the right annotation', () {
-      var m = dog.instanceMethods.singleWhere((m) => m.name == 'getClassA');
-      expect(m.hasAnnotations, isTrue);
-      expect(
-          m.annotations.first.linkedNameWithParameters,
-          equals(
-              '@<a href="${htmlBasePlaceholder}ex/deprecated-constant.html">deprecated</a>'));
-    });
-
-    test('constructor annotations have the right link and are escaped', () {
-      expect(
-          ctr.annotations.first.linkedNameWithParameters,
-          equals(
-              '@<a href="${htmlBasePlaceholder}ex/Deprecated-class.html">Deprecated</a>'
-              '(&quot;Internal use&quot;)'));
-    });
-
-    test('const annotations have the right link and are escaped', () {
-      var createDog2 =
-          dog.staticMethods.firstWhere((c) => c.name == 'createDog2');
-      expect(
-          createDog2.annotations.first.linkedNameWithParameters,
-          equals(
-              '@<a href="${htmlBasePlaceholder}ex/deprecated-constant.html">deprecated</a>'));
     });
   });
 

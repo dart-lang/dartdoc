@@ -410,16 +410,6 @@ class Dog implements Cat, E {
     return arg;
   }
 
-  @Deprecated("Internal use")
-  static Dog createDog(String s) {
-    return Dog.deprecatedCreate(s);
-  }
-
-  @deprecated
-  static Dog createDog2(String s) {
-    return Dog.deprecatedCreate(s);
-  }
-
   @override
   void abstractMethod() {}
 }
@@ -429,14 +419,6 @@ abstract class E {}
 class F<T extends String> extends Dog with _PrivateAbstractClass {
   void methodWithGenericParam([List<Apple>? msgs]) {}
 }
-
-class ForAnnotation {
-  final String value;
-  const ForAnnotation(this.value);
-}
-
-@ForAnnotation('my value')
-class HasAnnotation {}
 
 /// A class
 class Klass {
