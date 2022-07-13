@@ -3,11 +3,18 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:dartdoc/src/generator/generator.dart';
+import 'package:dartdoc/src/generator/generator_backend.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
 import 'package:dartdoc/src/runtime_stats.dart';
 import 'package:dartdoc/src/warnings.dart';
+
+@Deprecated('Refer to GeneratorBackendBase directly')
+export 'package:dartdoc/src/generator/generator_backend.dart'
+    show
+        // ignore: deprecated_member_use_from_same_package
+        DartdocGeneratorBackend;
 
 /// A [Generator] that delegates rendering to a [GeneratorBackend] and delegates
 /// file creation to a [FileWriter].
@@ -301,75 +308,4 @@ class GeneratorFrontEnd implements Generator {
     }
     return indexAccumulator;
   }
-}
-
-/// An interface for classes which are responsible for outputing the generated
-/// documentation.
-abstract class GeneratorBackend {
-  /// Emits JSON describing the [categories] defined by the package.
-  void generateCategoryJson(FileWriter writer, List<Categorization> categories);
-
-  /// Emits a JSON catalog of [indexedElements] for use with a search index.
-  void generateSearchIndex(FileWriter writer, List<Indexable> indexedElements);
-
-  /// Emits documentation content for the [package].
-  void generatePackage(FileWriter writer, PackageGraph graph, Package package);
-
-  /// Emits documentation content for the [category].
-  void generateCategory(
-      FileWriter writer, PackageGraph graph, Category category);
-
-  /// Emits documentation content for the [library].
-  void generateLibrary(FileWriter writer, PackageGraph graph, Library library);
-
-  /// Emits documentation content for the [clazz].
-  void generateClass(
-      FileWriter writer, PackageGraph graph, Library library, Class clazz);
-
-  /// Emits documentation content for the [eNum].
-  void generateEnum(
-      FileWriter writer, PackageGraph graph, Library library, Enum eNum);
-
-  /// Emits documentation content for the [mixin].
-  void generateMixin(
-      FileWriter writer, PackageGraph graph, Library library, Mixin mixin);
-
-  /// Emits documentation content for the [constructor].
-  void generateConstructor(FileWriter writer, PackageGraph graph,
-      Library library, Constructable constructable, Constructor constructor);
-
-  /// Emits documentation content for the [field].
-  void generateConstant(FileWriter writer, PackageGraph graph, Library library,
-      Container clazz, Field field);
-
-  /// Emits documentation content for the [field].
-  void generateProperty(FileWriter writer, PackageGraph graph, Library library,
-      Container clazz, Field field);
-
-  /// Emits documentation content for the [method].
-  void generateMethod(FileWriter writer, PackageGraph graph, Library library,
-      Container clazz, Method method);
-
-  /// Emits documentation content for the [extension].
-  void generateExtension(FileWriter writer, PackageGraph graph, Library library,
-      Extension extension);
-
-  /// Emits documentation content for the [function].
-  void generateFunction(FileWriter writer, PackageGraph graph, Library library,
-      ModelFunction function);
-
-  /// Emits documentation content for the [constant].
-  void generateTopLevelConstant(FileWriter writer, PackageGraph graph,
-      Library library, TopLevelVariable constant);
-
-  /// Emits documentation content for the [property].
-  void generateTopLevelProperty(FileWriter writer, PackageGraph graph,
-      Library library, TopLevelVariable property);
-
-  /// Emits documentation content for the [typedef].
-  void generateTypeDef(
-      FileWriter writer, PackageGraph graph, Library library, Typedef typedef);
-
-  /// Emits files not specific to a Dart language element (like a favicon, etc).
-  Future<void> generateAdditionalFiles(FileWriter writer);
 }

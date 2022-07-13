@@ -3,8 +3,8 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:dartdoc/options.dart';
-import 'package:dartdoc/src/generator/dartdoc_generator_backend.dart';
 import 'package:dartdoc/src/generator/generator.dart';
+import 'package:dartdoc/src/generator/generator_backend.dart';
 import 'package:dartdoc/src/generator/generator_frontend.dart';
 import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/src/generator/templates.dart';
@@ -25,7 +25,7 @@ Future<Generator> initMarkdownGenerator(DartdocGeneratorOptionContext context,
 }
 
 /// Generator backend for Markdown output.
-class MarkdownGeneratorBackend extends DartdocGeneratorBackend {
+class MarkdownGeneratorBackend extends GeneratorBackendBase {
   MarkdownGeneratorBackend(
       super.options, super.templates, super.resourceProvider);
 
