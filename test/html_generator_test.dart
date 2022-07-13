@@ -54,10 +54,10 @@ void main() {
           packageMetaProvider);
       optionRoot.parseArguments([]);
 
-      var defaultOptions =
+      var defaultContext =
           DartdocGeneratorOptionContext.fromDefaultContextLocation(
               optionRoot, resourceProvider);
-      var options = DartdocGeneratorBackendOptions.fromContext(defaultOptions);
+      var options = DartdocGeneratorBackendOptions.fromContext(defaultContext);
       projectRoot = utils.writePackage(
           'my_package', resourceProvider, packageConfigProvider);
       projectPath = projectRoot.path;
