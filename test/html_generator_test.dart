@@ -32,7 +32,6 @@ void main() {
 
     final Templates templates = HtmlAotTemplates();
     late GeneratorFrontEnd generator;
-    late DartdocFileWriter writer;
 
     late Folder projectRoot;
     late String projectPath;
@@ -55,19 +54,18 @@ void main() {
           packageMetaProvider);
       optionRoot.parseArguments([]);
 
-      var defaultContext =
+      var defaultOptions =
           DartdocGeneratorOptionContext.fromDefaultContextLocation(
               optionRoot, resourceProvider);
-      var options = DartdocGeneratorBackendOptions.fromContext(defaultContext);
-
-      generator = GeneratorFrontEnd(
-          HtmlGeneratorBackend(options, templates, resourceProvider));
-
+      var options = DartdocGeneratorBackendOptions.fromContext(defaultOptions);
       projectRoot = utils.writePackage(
           'my_package', resourceProvider, packageConfigProvider);
       projectPath = projectRoot.path;
       var outputPath = projectRoot.getChildAssumingFolder('doc').path;
-      writer = DartdocFileWriter(outputPath, resourceProvider);
+      var writer = DartdocFileWriter(outputPath, resourceProvider);
+
+      generator = GeneratorFrontEnd(
+          HtmlGeneratorBackend(options, templates, writer, resourceProvider));
     });
 
     File getConvertedFile(String path) =>
@@ -76,7 +74,7 @@ void main() {
     tearDown(clearPackageMetaCache);
 
     test('a null package has some assets', () async {
-      await generator.generate(null, writer);
+      await generator.generate(null);
       var outputPath = projectRoot.getChildAssumingFolder('doc').path;
       var output = resourceProvider
           .getFolder(pathContext.join(outputPath, 'static-assets'));
@@ -96,7 +94,7 @@ void main() {
           .writeAsStringSync('library b;');
       var packageGraph = await utils.bootBasicPackage(
           projectPath, packageMetaProvider, packageConfigProvider);
-      await generator.generate(packageGraph, writer);
+      await generator.generate(packageGraph);
 
       expect(packageGraph.packageWarningCounter.errorCount, 0);
     }, onPlatform: {'windows': Skip('Test does not work on Windows (#2446)')});
@@ -108,7 +106,7 @@ void main() {
           .writeAsStringSync('library a;');
       var packageGraph = await utils.bootBasicPackage(
           projectPath, packageMetaProvider, packageConfigProvider);
-      await generator.generate(packageGraph, writer);
+      await generator.generate(packageGraph);
 
       var expectedPath = pathContext.join('a', 'a-library.html');
       expect(

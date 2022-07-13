@@ -105,15 +105,13 @@ class Dartdoc {
   Generator _generator;
   final PackageBuilder packageBuilder;
   final DartdocOptionContext config;
-  late final Folder _outputDir = config.resourceProvider
-      .getFolder(config.resourceProvider.pathContext.absolute(config.output))
-    ..create();
+  final Folder _outputDir;
 
   // Fires when the self checks make progress.
   final StreamController<String> _onCheckProgress =
       StreamController(sync: true);
 
-  Dartdoc._(this.config, this._generator, this.packageBuilder);
+  Dartdoc._(this.config, this._outputDir, this._generator, this.packageBuilder);
 
   // TODO(srawlins): Remove when https://github.com/dart-lang/linter/issues/2706
   // is fixed.
@@ -133,6 +131,7 @@ class Dartdoc {
   ) {
     return Dartdoc._(
       config,
+      config.resourceProvider.getFolder('UNUSED'),
       initEmptyGenerator(),
       packageBuilder,
     );
@@ -144,19 +143,24 @@ class Dartdoc {
     DartdocGeneratorOptionContext context,
     PackageBuilder packageBuilder,
   ) async {
+    var resourceProvider = context.resourceProvider;
+    var outputPath = resourceProvider.pathContext.absolute(context.output);
+    var outputDir = resourceProvider.getFolder(outputPath)..create();
+    var writer = DartdocFileWriter(outputPath, resourceProvider);
     Generator generator;
     switch (context.format) {
       case 'html':
-        generator = await initHtmlGenerator(context);
+        generator = await initHtmlGenerator(context, writer: writer);
         break;
       case 'md':
-        generator = await initMarkdownGenerator(context);
+        generator = await initMarkdownGenerator(context, writer: writer);
         break;
       default:
         throw DartdocFailure('Unsupported output format: ${context.format}');
     }
     return Dartdoc._(
       context,
+      outputDir,
       generator,
       packageBuilder,
     );
@@ -177,11 +181,10 @@ class Dartdoc {
     if (!_outputDir.exists) _outputDir.create();
 
     runtimeStats.startPerfTask('generator.generate');
-    var writer = DartdocFileWriter(_outputDir.path, config.resourceProvider);
-    await generator.generate(packageGraph, writer);
+    await generator.generate(packageGraph);
     runtimeStats.endPerfTask();
 
-    var writtenFiles = writer.writtenFiles;
+    var writtenFiles = generator.writtenFiles;
     if (config.validateLinks && writtenFiles.isNotEmpty) {
       runtimeStats.startPerfTask('validateLinks');
       Validator(packageGraph, config, _outputDir.path, writtenFiles,

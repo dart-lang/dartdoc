@@ -8,9 +8,9 @@ import 'package:dartdoc/src/model_utils.dart';
 /// A generator that does not generate files, but does traverse the
 /// [PackageGraph] and access [ModelElement.documentationAsHtml] for every
 /// element as though it were.
-class EmptyGenerator extends Generator {
+class EmptyGenerator implements Generator {
   @override
-  Future<void> generate(PackageGraph packageGraph, FileWriter writer) {
+  Future<void> generate(PackageGraph packageGraph) {
     logProgress(packageGraph.defaultPackage.documentationAsHtml);
     for (var package in {packageGraph.defaultPackage}
       ..addAll(packageGraph.localPackages)) {
@@ -23,8 +23,11 @@ class EmptyGenerator extends Generator {
             .forEach((m) => logProgress(m.documentationAsHtml));
       }
     }
-    return Future.value(null);
+    return Future.value();
   }
+
+  @override
+  Set<String> get writtenFiles => {};
 }
 
 Generator initEmptyGenerator() {

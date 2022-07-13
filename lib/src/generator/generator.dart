@@ -39,7 +39,10 @@ abstract class FileWriter {
 abstract class Generator {
   /// Generates the documentation for the given package using the specified
   /// writer. Completes the returned future when done.
-  Future<void> generate(PackageGraph packageGraph, FileWriter writer);
+  Future<void> generate(PackageGraph packageGraph);
+
+  /// The set of of files written by the generator backend.
+  Set<String> get writtenFiles;
 }
 
 List<DartdocOption> createGeneratorOptions(

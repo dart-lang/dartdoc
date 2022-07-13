@@ -19,23 +19,27 @@ import 'package:meta/meta.dart';
 /// Creates a [Generator] with an [HtmlGeneratorBackend] backend.
 ///
 /// [forceRuntimeTemplates] should only be given [true] during tests.
-Future<Generator> initHtmlGenerator(DartdocGeneratorOptionContext context,
-    {@visibleForTesting bool forceRuntimeTemplates = false}) async {
+Future<Generator> initHtmlGenerator(
+  DartdocGeneratorOptionContext context, {
+  required FileWriter writer,
+  @visibleForTesting bool forceRuntimeTemplates = false,
+}) async {
   var templates = await Templates.fromContext(context,
       forceRuntimeTemplates: forceRuntimeTemplates);
   var options = DartdocGeneratorBackendOptions.fromContext(context);
-  var backend =
-      HtmlGeneratorBackend(options, templates, context.resourceProvider);
+  var backend = HtmlGeneratorBackend(
+      options, templates, writer, context.resourceProvider);
   return GeneratorFrontEnd(backend);
 }
 
 /// Generator backend for HTML output.
 class HtmlGeneratorBackend extends DartdocGeneratorBackend {
-  HtmlGeneratorBackend(super.options, super.templates, super.resourceProvider);
+  HtmlGeneratorBackend(
+      super.options, super.templates, super.writer, super.resourceProvider);
 
   @override
-  void generatePackage(FileWriter writer, PackageGraph graph, Package package) {
-    super.generatePackage(writer, graph, package);
+  void generatePackage(PackageGraph graph, Package package) {
+    super.generatePackage(graph, package);
     // We have to construct the data again. This only happens once per package.
     var data = PackageTemplateData(options, graph, package);
     var content = templates.renderError(data);
@@ -43,7 +47,7 @@ class HtmlGeneratorBackend extends DartdocGeneratorBackend {
   }
 
   @override
-  Future<void> generateAdditionalFiles(FileWriter writer) async {
+  Future<void> generateAdditionalFiles() async {
     await _copyResources(writer);
     var favicon = options.favicon;
     if (favicon != null) {
