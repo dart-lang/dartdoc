@@ -51,7 +51,7 @@ class Method extends ModelElement
   }
 
   @override
-  ModelElement? get enclosingElement {
+  Container? get enclosingElement {
     _enclosingContainer ??=
         modelBuilder.from(element!.enclosingElement, library!) as Container?;
     return _enclosingContainer;
@@ -59,7 +59,7 @@ class Method extends ModelElement
 
   @override
   String get filePath =>
-      '${enclosingElement!.library!.dirName}/${enclosingElement!.name}/$fileName';
+      '${enclosingElement!.library.dirName}/${enclosingElement!.name}/$fileName';
 
   String get fullkind {
     if (element!.isAbstract) return 'abstract $kind';

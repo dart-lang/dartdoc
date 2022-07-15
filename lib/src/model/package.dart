@@ -70,6 +70,9 @@ class Package extends LibraryContainer
   @override
   Library? get canonicalLibrary => null;
 
+  @override
+  int? get overriddenDepth => 0;
+
   /// Number of times we have invoked a tool for this package.
   int toolInvocationIndex = 0;
 
@@ -124,7 +127,7 @@ class Package extends LibraryContainer
       isFirstPackage || documentedWhere != DocumentLocation.missing;
 
   @override
-  Warnable? get enclosingElement => null;
+  ModelElement? get enclosingElement => null;
 
   @override
 

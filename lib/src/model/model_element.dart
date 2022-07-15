@@ -913,12 +913,12 @@ abstract class ModelElement extends Canonicalization
     fqName ??= e.name;
 
     var enclosingElement = e.enclosingElement;
-    if (e is! EnclosedElement || enclosingElement == null) {
+    if (enclosingElement == null) {
       return fqName;
     }
 
     return _buildFullyQualifiedName(
-        enclosingElement as ModelElement?, '${enclosingElement.name}.$fqName');
+        enclosingElement, '${enclosingElement.name}.$fqName');
   }
 
   String _calculateLinkedName() {

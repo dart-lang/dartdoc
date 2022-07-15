@@ -33,12 +33,12 @@ class Constructor extends ModelElement
       (enclosingElement as Constructable).typeParameters;
 
   @override
-  ModelElement get enclosingElement =>
-      modelBuilder.from(element!.enclosingElement, library!);
+  Container get enclosingElement =>
+      modelBuilder.from(element!.enclosingElement, library!) as Container;
 
   @override
   String get filePath =>
-      '${enclosingElement.library!.dirName}/${enclosingElement.name}/$fileName';
+      '${enclosingElement.library.dirName}/${enclosingElement.name}/$fileName';
 
   String get fullKind {
     if (isConst) return 'const $kind';

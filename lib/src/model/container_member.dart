@@ -18,6 +18,9 @@ mixin ContainerMember on ModelElement implements EnclosedElement {
   // implemented.
   bool get isExtended => false;
 
+  @override
+  Container? get enclosingElement;
+
   late final Container definingEnclosingContainer =
       modelBuilder.fromElement(element!.enclosingElement!) as Container;
 
