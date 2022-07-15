@@ -25,37 +25,10 @@ class Class extends InheritingContainer
     ...constructors,
   ];
 
-  /// Returns the library that encloses this element.
-  @override
-  ModelElement get enclosingElement => library;
-
   @override
   String get fileName => '$name-class.$fileType';
 
-  @override
-  String get filePath => '${library.dirName}/$fileName';
-
-  @override
-  String get fullkind {
-    if (isAbstract) return 'abstract $kind';
-    return super.fullkind;
-  }
-
-  @override
-  String? get href {
-    if (!identical(canonicalModelElement, this)) {
-      return canonicalModelElement?.href;
-    }
-    assert(canonicalLibrary != null);
-    assert(canonicalLibrary == library);
-    var packageBaseHref = package.baseHref;
-    return '$packageBaseHref$filePath';
-  }
-
   bool get isAbstract => element!.isAbstract;
-
-  @override
-  bool get isCanonical => super.isCanonical && isPublic;
 
   bool get isErrorOrException {
     bool isError(ClassElement element) => (element.library.isDartCore &&
@@ -69,6 +42,13 @@ class Class extends InheritingContainer
 
   @override
   String get kind => 'class';
+
+  @override
+  String get fullkind {
+    if (isAbstract) return 'abstract $kind';
+    href;
+    return super.fullkind;
+  }
 
   @override
   late final List<InheritingContainer?> inheritanceChain = [
@@ -85,17 +65,6 @@ class Class extends InheritingContainer
     // implement them even when they aren't mentioned.
     ...interfaces.expandInheritanceChain,
   ];
-
-  @override
-  late final Iterable<Field> instanceFields =
-      allFields.where((f) => !f.isStatic);
-
-  @override
-  bool get publicInheritedInstanceFields =>
-      publicInstanceFields.every((f) => f.isInherited);
-
-  @override
-  Iterable<Field> get constantFields => allFields.where((f) => f.isConst);
 
   @override
   String get relationshipsClass => 'clazz-relationships';
