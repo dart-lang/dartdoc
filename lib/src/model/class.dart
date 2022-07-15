@@ -46,7 +46,6 @@ class Class extends InheritingContainer
   @override
   String get fullkind {
     if (isAbstract) return 'abstract $kind';
-    href;
     return super.fullkind;
   }
 
