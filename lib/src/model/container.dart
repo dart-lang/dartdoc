@@ -31,10 +31,6 @@ abstract class Container extends ModelElement
     with Categorization, TypeParameters {
   Container(super.element, super.library, super.packageGraph);
 
-  /// Containers must have associated libraries.
-  @override
-  Library get library => super.library!;
-
   /// Containers must have associated packages.
   @override
   Package get package => super.package!;

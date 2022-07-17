@@ -256,28 +256,6 @@ class _Renderer_Accessor extends RendererBase<Accessor> {
                     _render_String(c.kind, ast, r.template, sink, parent: r);
                   },
                 ),
-                'library': Property(
-                  getValue: (CT_ c) => c.library,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_Library.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as Library,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_Library(c.library, ast, r.template, sink,
-                        parent: r);
-                  },
-                ),
                 'modelType': Property(
                   getValue: (CT_ c) => c.modelType,
                   renderVariable:
@@ -3082,28 +3060,6 @@ class _Renderer_Container extends RendererBase<Container> {
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.isMixin == true,
                 ),
-                'library': Property(
-                  getValue: (CT_ c) => c.library,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_Library.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as Library,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_Library(c.library, ast, r.template, sink,
-                        parent: r);
-                  },
-                ),
                 'package': Property(
                   getValue: (CT_ c) => c.package,
                   renderVariable:
@@ -5700,28 +5656,6 @@ class _Renderer_Field extends RendererBase<Field> {
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_String(c.kind, ast, r.template, sink, parent: r);
-                  },
-                ),
-                'library': Property(
-                  getValue: (CT_ c) => c.library,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_Library.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as Library,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_Library(c.library, ast, r.template, sink,
-                        parent: r);
                   },
                 ),
                 'overriddenElement': Property(
@@ -10432,10 +10366,10 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
-                  isNullValue: (CT_ c) => c.library == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_Library(c.library!, ast, r.template, sink,
+                    _render_Library(c.library, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -14721,28 +14655,6 @@ class _Renderer_TopLevelVariable extends RendererBase<TopLevelVariable> {
                     _render_String(c.kind, ast, r.template, sink, parent: r);
                   },
                 ),
-                'library': Property(
-                  getValue: (CT_ c) => c.library,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_Library.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as Library,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_Library(c.library, ast, r.template, sink,
-                        parent: r);
-                  },
-                ),
                 'package': Property(
                   getValue: (CT_ c) => c.package,
                   renderVariable:
@@ -15487,28 +15399,6 @@ class _Renderer_Typedef extends RendererBase<Typedef> {
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_String(c.kind, ast, r.template, sink, parent: r);
-                  },
-                ),
-                'library': Property(
-                  getValue: (CT_ c) => c.library,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_Library.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as Library,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_Library(c.library, ast, r.template, sink,
-                        parent: r);
                   },
                 ),
                 'linkedGenericParameters': Property(

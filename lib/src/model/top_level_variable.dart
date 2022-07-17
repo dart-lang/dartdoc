@@ -16,7 +16,7 @@ class TopLevelVariable extends ModelElement
   @override
   final Accessor? setter;
 
-  TopLevelVariable(TopLevelVariableElement super.element, Library super.library,
+  TopLevelVariable(TopLevelVariableElement super.element, super.library,
       super.packageGraph, this.getter, this.setter) {
     if (getter != null) {
       getter!.enclosingCombo = this;
@@ -84,9 +84,6 @@ class TopLevelVariable extends ModelElement
 
   @override
   Package get package => super.package!;
-
-  @override
-  Library get library => super.library!;
 
   @override
   Iterable<CommentReferable> get referenceParents => [definingLibrary];

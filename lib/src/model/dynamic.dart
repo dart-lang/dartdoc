@@ -9,7 +9,7 @@ import 'package:dartdoc/src/model/model.dart';
 
 class Dynamic extends ModelElement {
   Dynamic(Element element, PackageGraph packageGraph)
-      : super(element, null, packageGraph);
+      : super(element, Library.sentinel, packageGraph);
 
   UndefinedElementType get modelType =>
       throw UnimplementedError('(${element.runtimeType}) $element');
