@@ -170,8 +170,5 @@ class Field extends ModelElement
   String get sourceCode => _sourceCode;
 
   @override
-  Package get package => super.package!;
-
-  @override
   Inheritable? get overriddenElement => null;
 }

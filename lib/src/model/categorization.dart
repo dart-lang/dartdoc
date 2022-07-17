@@ -96,7 +96,7 @@ abstract class Categorization implements ModelElement {
   }
 
   late final Iterable<Category> categories = [
-    ...?categoryNames?.map((n) => package?.nameToCategory[n]).whereNotNull()
+    ...?categoryNames?.map((n) => package.nameToCategory[n]).whereNotNull()
   ]..sort();
 
   @override

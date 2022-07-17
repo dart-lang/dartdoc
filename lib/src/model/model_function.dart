@@ -74,9 +74,6 @@ class ModelFunctionTyped extends ModelElement
   }();
 
   @override
-  Package get package => super.package!;
-
-  @override
   Iterable<CommentReferable> get referenceParents => [definingLibrary];
 
   @override

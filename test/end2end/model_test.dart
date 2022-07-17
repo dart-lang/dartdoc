@@ -4629,8 +4629,8 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('has enclosing element', () {
-      expect(processMessage.enclosingElement!.name, equals(exLibrary.name));
-      expect(generic.enclosingElement!.name, equals(fakeLibrary.name));
+      expect(processMessage.enclosingElement.name, equals(exLibrary.name));
+      expect(generic.enclosingElement.name, equals(fakeLibrary.name));
     });
 
     test('docs', () {

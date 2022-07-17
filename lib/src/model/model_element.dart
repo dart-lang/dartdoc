@@ -652,7 +652,7 @@ abstract class ModelElement extends Canonicalization
 
   String get fileName => '$name.$fileType';
 
-  String get fileType => package!.fileType;
+  String get fileType => package.fileType;
 
   String? get filePath;
 
@@ -704,11 +704,8 @@ abstract class ModelElement extends Canonicalization
     }
     assert(canonicalLibrary != null);
     assert(canonicalLibrary == library);
-    var packageBaseHref = package?.baseHref;
-    if (packageBaseHref != null) {
-      return '$packageBaseHref$filePath';
-    }
-    return null;
+    var packageBaseHref = package.baseHref;
+    return '$packageBaseHref$filePath';
   }
 
   String get htmlId => name;
@@ -815,11 +812,9 @@ abstract class ModelElement extends Canonicalization
   PackageGraph get packageGraph => _packageGraph;
 
   @override
-  // FIXME(nnbd): package should not have to be nullable just because of dynamic
-  Package? get package => library.package;
+  Package get package => library.package;
 
-  bool get isPublicAndPackageDocumented =>
-      isPublic && package?.isDocumented == true;
+  bool get isPublicAndPackageDocumented => isPublic && package.isDocumented;
 
   // TODO(jcollins-g): This is in the wrong place.  Move parts to
   // [GetterSetterCombo], elsewhere as appropriate?
