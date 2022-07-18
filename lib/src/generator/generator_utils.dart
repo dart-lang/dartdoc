@@ -36,6 +36,12 @@ String generateCategoryJson(Iterable<Categorization> categories, bool pretty) {
 
 String generateSearchIndexJson(
     Iterable<Indexable> indexedElements, bool pretty) {
+  for (final indexable
+      in indexedElements.sorted(_compareElementRepresentations)) {
+    if (indexable is EnclosedElement && indexable.enclosingElement == null) {
+      throw 'boo $indexable (${indexable.runtimeType})"s enclosing element is null)';
+    }
+  }
   final indexItems = [
     for (final indexable
         in indexedElements.sorted(_compareElementRepresentations))
