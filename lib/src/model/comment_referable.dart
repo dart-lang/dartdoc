@@ -57,22 +57,25 @@ mixin CommentReferable implements Nameable, ModelBuilderInterface {
   }) {
     parentOverrides ??= referenceParents;
     if (reference.isEmpty) {
-      if (tryParents == false) return this;
-      return null;
+      return tryParents ? null : this;
     }
 
     for (var referenceLookup in _childLookups(reference)) {
       if (scope != null) {
         var result = _lookupViaScope(referenceLookup,
             filter: filter, allowTree: allowTree);
-        if (result != null) return result;
+        if (result != null) {
+          return result;
+        }
       }
       final referenceChildren = this.referenceChildren;
       final childrenResult = referenceChildren[referenceLookup.lookup];
       if (childrenResult != null) {
         var result = _recurseChildrenAndFilter(referenceLookup, childrenResult,
             allowTree: allowTree, filter: filter);
-        if (result != null) return result;
+        if (result != null) {
+          return result;
+        }
       }
     }
     // If we can't find it in children, try searching parents if allowed.

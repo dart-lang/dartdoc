@@ -184,7 +184,10 @@ MatchingLinkResult _getMatchingLinkElement(
     String referenceText, Warnable element) {
   var commentReference = ModelCommentReference.synthetic(referenceText);
 
+  // A filter to be used by [CommentReferable.referenceBy].
   bool Function(CommentReferable?) filter;
+
+  // An "allow tree" filter to be used by [CommentReferable.referenceBy].
   bool Function(CommentReferable?) allowTree;
 
   // Constructor references are pretty ambiguous by nature since they can be
@@ -194,11 +197,11 @@ MatchingLinkResult _getMatchingLinkElement(
   // Maybe clean this up with inspiration from constructor tear-off syntax?
   if (commentReference.allowUnnamedConstructor) {
     allowTree = (_) => true;
-    // Neither reject, nor require, a default constructor in the event
-    // the comment reference structure implies one.  (We can not require it
-    // in case a library name is the same as a member class name and the class
-    // is the intended lookup).   For example, [FooClass.FooClass] structurally
-    // "looks like" a default constructor, so we should allow it here.
+    // Neither reject, nor require, a unnamed constructor in the event the
+    // comment reference structure implies one.  (We can not require it in case
+    // a library name is the same as a member class name and the class is the
+    // intended lookup).  For example, '[FooClass.FooClass]' structurally
+    // "looks like" an unnamed constructor, so we should allow it here.
     filter = commentReference.hasCallableHint ? _requireCallable : (_) => true;
   } else if (commentReference.hasConstructorHint &&
       commentReference.hasCallableHint) {
