@@ -11,7 +11,6 @@ import 'dart:core';
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/scope.dart';
-import 'package:collection/collection.dart';
 import 'package:dartdoc/src/model/accessor.dart';
 import 'package:dartdoc/src/model/container.dart';
 import 'package:dartdoc/src/model/library.dart';
@@ -154,11 +153,14 @@ mixin CommentReferable implements Nameable, ModelBuilderInterface {
   ///
   /// This allows us to deal with libraries that may have separators in them.
   /// [referenceBy] stops at the first one found.
-  Iterable<_ReferenceChildrenLookup> _childLookups(List<String> reference) =>
-      reference.skip(1).mapIndexed((index, name) => _ReferenceChildrenLookup(
-            reference.sublist(0, index).join('.'),
-            reference.sublist(index),
-          ));
+  Iterable<_ReferenceChildrenLookup> _childLookups(List<String> reference) {
+    var retval = <_ReferenceChildrenLookup>[];
+    for (var index = 1; index <= reference.length; index++) {
+      retval.add(_ReferenceChildrenLookup(
+          reference.sublist(0, index).join('.'), reference.sublist(index)));
+    }
+    return retval;
+  }
 
   /// Map of [referenceName] to the elements that are a member of [this], but
   /// not this model element itself.  Can be cached.
