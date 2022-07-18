@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-/// Utility code to convert markdown comments to html.
+/// Utility code to convert Markdown comments to HTML.
 library dartdoc.markdown_processor;
 
 import 'dart:convert';
@@ -115,10 +115,10 @@ const _validHtmlTags = [
   'ul',
   'var',
   'video',
-  'wbr'
+  'wbr',
 ];
 
-final RegExp _nonHTML =
+final RegExp _nonHtml =
     RegExp("</?(?!(${_validHtmlTags.join("|")})[> ])\\w+[> ]");
 
 final HtmlEscape _htmlEscape = const HtmlEscape(HtmlEscapeMode.element);
@@ -139,7 +139,7 @@ final List<md.BlockSyntax> _markdownBlockSyntaxes = [
 ];
 
 // Remove these schemas from the display text for hyperlinks.
-final RegExp _hideSchemes = RegExp('^(http|https)://');
+final RegExp _hideSchemas = RegExp('^(http|https)://');
 
 class _IterableBlockParser extends md.BlockParser {
   _IterableBlockParser(super.lines, super.document);
@@ -170,16 +170,17 @@ bool _rejectUnnamedAndShadowingConstructors(CommentReferable? referable) {
   return true;
 }
 
-/// Return false unless the passed [referable] represents a callable object.
+/// Returns false unless [referable] represents a callable object.
+///
 /// Allows constructors but does not require them.
 bool _requireCallable(CommentReferable? referable) =>
     referable is ModelElement && referable.isCallable;
 
-/// Return false unless the passed [referable] represents a constructor.
+/// Returns false unless the passed [referable] represents a constructor.
 bool _requireConstructor(CommentReferable? referable) =>
     referable is Constructor;
 
-/// Implements _getMatchingLinkElement via [CommentReferable.referenceBy].
+/// Implements [_getMatchingLinkElement] via [CommentReferable.referenceBy].
 MatchingLinkResult _getMatchingLinkElementCommentReferable(
     String codeRef, Warnable warnable) {
   var commentReference = ModelCommentReference.synthetic(codeRef);
@@ -243,8 +244,8 @@ md.Node _makeLinkNode(String codeRef, Warnable warnable) {
       }
       return anchor;
     }
-    // else this would be linkedElement.linkedName, but link bodies are slightly
-    // different for doc references, so fall out.
+    // Otherwise this would be `linkedElement.linkedName`, but link bodies are
+    // slightly different for doc references, so fall out.
   } else {
     if (result.warn) {
       // Avoid claiming documentation is inherited when it comes from the
@@ -269,46 +270,56 @@ MatchingLinkResult getMatchingLinkElement(Warnable warnable, String codeRef) {
   return result;
 }
 
-// Maximum number of characters to display before a suspected generic.
+/// Maximum number of characters to display before a suspected generic.
 const maxPriorContext = 20;
-// Maximum number of characters to display after the beginning of a suspected generic.
+
+/// Maximum number of characters to display after the beginning of a suspected
+/// generic.
 const maxPostContext = 30;
 
-final RegExp allBeforeFirstNewline = RegExp(r'^.*\n', multiLine: true);
-final RegExp allAfterLastNewline = RegExp(r'\n.*$', multiLine: true);
+@Deprecated('Public access to this variable is deprecated')
+final allBeforeFirstNewline = _allBeforeFirstNewline;
+@Deprecated('Public access to this variable is deprecated')
+final allAfterLastNewline = _allAfterLastNewline;
 
-// Generics should be wrapped into `[]` blocks, to avoid handling them as HTML tags
-// (like, [Apple<int>]). @Hixie asked for a warning when there's something, that looks
-// like a non HTML tag (a generic?) outside of a `[]` block.
-// https://github.com/dart-lang/dartdoc/issues/1250#issuecomment-269257942
+final RegExp _allBeforeFirstNewline = RegExp(r'^.*\n', multiLine: true);
+final RegExp _allAfterLastNewline = RegExp(r'\n.*$', multiLine: true);
+
+/// Warns about generics outside square brackets.
+///
+/// Generics should be wrapped in `[]`, to avoid handling them as HTML tags
+// (like, [Apple<int>]).
 void showWarningsForGenericsOutsideSquareBracketsBlocks(
     String text, Warnable element) {
   // Skip this if not warned for performance and for dart-lang/sdk#46419.
   if (element.config.packageWarningOptions
-          .warningModes[PackageWarning.typeAsHtml] !=
+          .warningModes[PackageWarning.typeAsHtml] ==
       PackageWarningMode.ignore) {
-    for (var position in findFreeHangingGenericsPositions(text)) {
-      var priorContext =
-          text.substring(max(position - maxPriorContext, 0), position);
-      var postContext =
-          text.substring(position, min(position + maxPostContext, text.length));
-      priorContext = priorContext.replaceAll(allBeforeFirstNewline, '');
-      postContext = postContext.replaceAll(allAfterLastNewline, '');
-      var errorMessage = '$priorContext$postContext';
-      // TODO(jcollins-g):  allow for more specific error location inside comments
-      element.warn(PackageWarning.typeAsHtml, message: errorMessage);
-    }
+    return;
+  }
+
+  for (var position in findFreeHangingGenericsPositions(text)) {
+    var priorContext =
+        text.substring(max(position - maxPriorContext, 0), position);
+    var postContext =
+        text.substring(position, min(position + maxPostContext, text.length));
+    priorContext = priorContext.replaceAll(_allBeforeFirstNewline, '');
+    postContext = postContext.replaceAll(_allAfterLastNewline, '');
+    var errorMessage = '$priorContext$postContext';
+    // TODO(jcollins-g):  allow for more specific error location inside comments
+    element.warn(PackageWarning.typeAsHtml, message: errorMessage);
   }
 }
 
+@visibleForTesting
 Iterable<int> findFreeHangingGenericsPositions(String string) sync* {
   var currentPosition = 0;
   var squareBracketsDepth = 0;
   while (true) {
     final nextOpenBracket = string.indexOf('[', currentPosition);
     final nextCloseBracket = string.indexOf(']', currentPosition);
-    final nextNonHTMLTag = string.indexOf(_nonHTML, currentPosition);
-    final nextPositions = [nextOpenBracket, nextCloseBracket, nextNonHTMLTag]
+    final nextNonHtmlTag = string.indexOf(_nonHtml, currentPosition);
+    final nextPositions = [nextOpenBracket, nextCloseBracket, nextNonHtmlTag]
         .where((p) => p != -1);
 
     if (nextPositions.isEmpty) {
@@ -320,7 +331,7 @@ Iterable<int> findFreeHangingGenericsPositions(String string) sync* {
       squareBracketsDepth += 1;
     } else if (nextCloseBracket == currentPosition) {
       squareBracketsDepth = max(squareBracketsDepth - 1, 0);
-    } else if (nextNonHTMLTag == currentPosition) {
+    } else if (nextNonHtmlTag == currentPosition) {
       if (squareBracketsDepth == 0) {
         yield currentPosition;
       }
@@ -339,24 +350,30 @@ class MarkdownDocument extends md.Document {
     }
 
     return MarkdownDocument(
-        inlineSyntaxes: _markdownSyntaxes,
-        blockSyntaxes: _markdownBlockSyntaxes,
-        linkResolver: linkResolver);
+      inlineSyntaxes: _markdownSyntaxes,
+      blockSyntaxes: _markdownBlockSyntaxes,
+      linkResolver: linkResolver,
+    );
   }
 
-  MarkdownDocument(
-      {super.blockSyntaxes,
-      super.inlineSyntaxes,
-      super.extensionSet,
-      super.linkResolver,
-      super.imageLinkResolver});
+  MarkdownDocument({
+    super.blockSyntaxes,
+    super.inlineSyntaxes,
+    super.extensionSet,
+    super.linkResolver,
+    super.imageLinkResolver,
+  });
 
   /// Parses markdown text, collecting the first [md.Node] or all of them
   /// if [processFullText] is `true`.
-  List<md.Node> parseMarkdownText(String text, bool processFullText) {
+  List<md.Node> parseMarkdownText(String text,
+      {required bool processFullText}) {
     var lines = LineSplitter.split(text).toList();
     md.Node? firstNode;
     var nodes = <md.Node>[];
+    // TODO(srawlins): Refactor this. I think with null safety, it is more clear
+    // that with `processFullText == true`, we only loop once. Refactor in that
+    // scenario to just not loop.
     for (var node in _IterableBlockParser(lines, this).parseLinesGenerator()) {
       if (firstNode != null && !processFullText) break;
       firstNode ??= node;
@@ -398,7 +415,7 @@ class _AutolinkWithoutScheme extends md.AutolinkSyntax {
   @override
   bool onMatch(md.InlineParser parser, Match match) {
     var url = match[1]!;
-    var text = _htmlEscape.convert(url).replaceFirst(_hideSchemes, '');
+    var text = _htmlEscape.convert(url).replaceFirst(_hideSchemas, '');
     var anchor = md.Element.text('a', text);
     anchor.attributes['href'] = url;
     parser.addNode(anchor);

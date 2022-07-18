@@ -11,6 +11,7 @@ import 'dart:core';
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/scope.dart';
+import 'package:collection/collection.dart';
 import 'package:dartdoc/src/model/accessor.dart';
 import 'package:dartdoc/src/model/container.dart';
 import 'package:dartdoc/src/model/library.dart';
@@ -18,63 +19,18 @@ import 'package:dartdoc/src/model/model_object_builder.dart';
 import 'package:dartdoc/src/model/nameable.dart';
 import 'package:meta/meta.dart';
 
-class ReferenceChildrenLookup {
+@Deprecated('Public access to this class is deprecated')
+typedef ReferenceChildrenLookup = _ReferenceChildrenLookup;
+
+class _ReferenceChildrenLookup {
   final String lookup;
   final List<String> remaining;
 
-  ReferenceChildrenLookup(this.lookup, this.remaining);
+  _ReferenceChildrenLookup(this.lookup, this.remaining);
 
   @override
   String toString() =>
       '$lookup ($lookup${remaining.isNotEmpty ? ".${remaining.join(".")}" : ''})';
-}
-
-extension on Scope {
-  /// Prefer the getter for a bundled lookup if both exist.
-  Element? lookupPreferGetter(String id) {
-    var result = lookup(id);
-    return result.getter ?? result.setter;
-  }
-}
-
-/// A set of utility methods for helping build
-/// [CommentReferable.referenceChildren] out of collections of other
-/// [CommentReferable]s.
-extension CommentReferableEntryGenerators on Iterable<CommentReferable> {
-  /// Creates ordinary references except if there is a conflict with
-  /// [referable], it will generate a [MapEntry] using [referable]'s
-  /// [CommentReferable.referenceName] as a prefix for the conflicting item.
-  Iterable<MapEntry<String, CommentReferable>> explicitOnCollisionWith(
-          CommentReferable referable) =>
-      map((r) {
-        if (r.referenceName == referable.referenceName) {
-          return MapEntry('${referable.referenceName}.${r.referenceName}', r);
-        }
-        return MapEntry(r.referenceName, r);
-      });
-
-  /// Just generate entries from this iterable.
-  Iterable<MapEntry<String, CommentReferable>> generateEntries() =>
-      map((r) => MapEntry(r.referenceName, r));
-
-  /// Return all values not of this type.
-  Iterable<CommentReferable> whereNotType<T>() sync* {
-    for (var r in this) {
-      if (r is! T) yield r;
-    }
-  }
-}
-
-/// A set of utility methods to add entries to
-/// [CommentReferable.referenceChildren].
-extension CommentReferableEntryBuilder on Map<String, CommentReferable> {
-  /// Like [Map.putIfAbsent] except works on an iterable of entries.
-  void addEntriesIfAbsent(
-      Iterable<MapEntry<String, CommentReferable>> entries) {
-    for (var entry in entries) {
-      if (!containsKey(entry.key)) this[entry.key] = entry.value;
-    }
-  }
 }
 
 /// Support comment reference lookups on a Nameable object.
@@ -106,7 +62,7 @@ mixin CommentReferable implements Nameable, ModelBuilderInterface {
       return null;
     }
 
-    for (var referenceLookup in childLookups(reference)) {
+    for (var referenceLookup in _childLookups(reference)) {
       if (scope != null) {
         var result = _lookupViaScope(referenceLookup,
             filter: filter, allowTree: allowTree);
@@ -141,7 +97,7 @@ mixin CommentReferable implements Nameable, ModelBuilderInterface {
   /// [CommentReferable], but you still want to have an implementation of
   /// [scope].
   CommentReferable? _lookupViaScope(
-    ReferenceChildrenLookup referenceLookup, {
+    _ReferenceChildrenLookup referenceLookup, {
     required bool Function(CommentReferable?) filter,
     required bool Function(CommentReferable?) allowTree,
   }) {
@@ -162,10 +118,10 @@ mixin CommentReferable implements Nameable, ModelBuilderInterface {
   }
 
   /// Given a [result] found in an implementation of [lookupViaScope] or
-  /// [ReferenceChildrenLookup], recurse through children, skipping over
+  /// [_ReferenceChildrenLookup], recurse through children, skipping over
   /// results that do not match the filter.
   CommentReferable? _recurseChildrenAndFilter(
-    ReferenceChildrenLookup referenceLookup,
+    _ReferenceChildrenLookup referenceLookup,
     CommentReferable result, {
     required bool Function(CommentReferable?) filter,
     required bool Function(CommentReferable?) allowTree,
@@ -188,18 +144,21 @@ mixin CommentReferable implements Nameable, ModelBuilderInterface {
     return returnValue;
   }
 
+  @Deprecated('Public access to this method is deprecated')
+  // ignore: library_private_types_in_public_api
+  Iterable<_ReferenceChildrenLookup> childLookups(List<String> reference) =>
+      _childLookups(reference);
+
   /// A list of lookups that should be attempted on children based on
-  /// [reference].  This allows us to deal with libraries that may have
-  /// separators in them. [referenceBy] stops at the first one found.
-  // TODO(jcollins-g): Convert to generator after dart-lang/sdk#46419
-  Iterable<ReferenceChildrenLookup> childLookups(List<String> reference) {
-    var retval = <ReferenceChildrenLookup>[];
-    for (var index = 1; index <= reference.length; index++) {
-      retval.add(ReferenceChildrenLookup(
-          reference.sublist(0, index).join('.'), reference.sublist(index)));
-    }
-    return retval;
-  }
+  /// [reference].
+  ///
+  /// This allows us to deal with libraries that may have separators in them.
+  /// [referenceBy] stops at the first one found.
+  Iterable<_ReferenceChildrenLookup> _childLookups(List<String> reference) =>
+      reference.mapIndexed((int index, name) => _ReferenceChildrenLookup(
+            reference.sublist(0, index).join('.'),
+            reference.sublist(index),
+          ));
 
   /// Map of [referenceName] to the elements that are a member of [this], but
   /// not this model element itself.  Can be cached.
@@ -234,4 +193,52 @@ mixin CommentReferable implements Nameable, ModelBuilderInterface {
   /// For testing / comparison only, get the comment referable from where this
   /// [ElementType] was defined.  Override where an [Element] is available.
   CommentReferable get definingCommentReferable => this;
+}
+
+extension on Scope {
+  /// Prefer the getter for a bundled lookup if both exist.
+  Element? lookupPreferGetter(String id) {
+    var result = lookup(id);
+    return result.getter ?? result.setter;
+  }
+}
+
+/// A set of utility methods for helping build
+/// [CommentReferable.referenceChildren] out of collections of other
+/// [CommentReferable]s.
+extension CommentReferableEntryGenerators on Iterable<CommentReferable> {
+  /// Creates reference entries for this Iterable.
+  ///
+  /// If there is a conflict with [referable], the included [MapEntry] uses
+  /// [referable]'s [CommentReferable.referenceName] as a prefix.
+  Iterable<MapEntry<String, CommentReferable>> explicitOnCollisionWith(
+          CommentReferable referable) =>
+      map((r) {
+        if (r.referenceName == referable.referenceName) {
+          return MapEntry('${referable.referenceName}.${r.referenceName}', r);
+        }
+        return MapEntry(r.referenceName, r);
+      });
+
+  /// Generates entries from this Iterable.
+  Iterable<MapEntry<String, CommentReferable>> generateEntries() =>
+      map((r) => MapEntry(r.referenceName, r));
+
+  /// Returns all values not of this type.
+  List<CommentReferable> whereNotType<T>() => [
+        for (var referable in this)
+          if (referable is! T) referable,
+      ];
+}
+
+/// A set of utility methods to add entries to
+/// [CommentReferable.referenceChildren].
+extension CommentReferableEntryBuilder on Map<String, CommentReferable> {
+  /// Like [Map.putIfAbsent] except works on an iterable of entries.
+  void addEntriesIfAbsent(
+      Iterable<MapEntry<String, CommentReferable>> entries) {
+    for (var entry in entries) {
+      if (!containsKey(entry.key)) this[entry.key] = entry.value;
+    }
+  }
 }
