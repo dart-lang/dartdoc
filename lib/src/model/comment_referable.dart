@@ -155,7 +155,7 @@ mixin CommentReferable implements Nameable, ModelBuilderInterface {
   /// This allows us to deal with libraries that may have separators in them.
   /// [referenceBy] stops at the first one found.
   Iterable<_ReferenceChildrenLookup> _childLookups(List<String> reference) =>
-      reference.mapIndexed((int index, name) => _ReferenceChildrenLookup(
+      reference.skip(1).mapIndexed((index, name) => _ReferenceChildrenLookup(
             reference.sublist(0, index).join('.'),
             reference.sublist(index),
           ));
