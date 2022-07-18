@@ -110,8 +110,11 @@ mixin CommentReferable implements Nameable, ModelBuilderInterface {
       result = result.enclosingCombo;
     }
     if (result.enclosingElement is Container) {
-      assert(false,
-          '[Container] member detected, support not implemented for analyzer scope inside containers');
+      assert(
+        false,
+        '[Container] member detected, support not implemented for analyzer '
+        'scope inside containers',
+      );
       return null;
     }
     if (!allowTree(result)) return null;
