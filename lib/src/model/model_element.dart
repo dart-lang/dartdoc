@@ -918,7 +918,7 @@ abstract class ModelElement extends Canonicalization
     }
 
     return _buildFullyQualifiedName(
-        enclosingElement, '${enclosingElement.name}.$fqName');
+        enclosingElement as ModelElement?, '${enclosingElement.name}.$fqName');
   }
 
   String _calculateLinkedName() {

@@ -293,8 +293,10 @@ const Map<PackageWarning, PackageWarningDefinition> packageWarningDefinitions =
 
 /// Something that package warnings can be called on.  Optionally associated
 /// with an analyzer [element].
-mixin Warnable implements Canonicalization, CommentReferable, EnclosedElement {
+mixin Warnable implements Canonicalization, CommentReferable {
   Element? get element;
+
+  Warnable? get enclosingElement;
 
   Package? get package;
 

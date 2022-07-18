@@ -38,7 +38,7 @@ class Prefix extends ModelElement implements EnclosedElement {
   PrefixElement? get element => super.element as PrefixElement?;
 
   @override
-  ModelElement? get enclosingElement => library;
+  ModelElement get enclosingElement => library!;
 
   @override
   String get filePath =>

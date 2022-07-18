@@ -3235,7 +3235,7 @@ void main() {
     });
 
     test('has enclosing element', () {
-      expect(f1.enclosingElement!.name, equals(exLibrary.name));
+      expect(f1.enclosingElement.name, equals(exLibrary.name));
     });
 
     test('name is function1', () {
@@ -3588,7 +3588,7 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     test(
         'an inherited method has class as the enclosing class, when superclass not in package',
         () {
-      expect(inheritedClear.enclosingElement!.name, equals('CatString'));
+      expect(inheritedClear.enclosingElement.name, equals('CatString'));
     });
 
     test(
@@ -3614,7 +3614,7 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('has enclosing element', () {
-      expect(m1.enclosingElement!.name, equals(classB.name));
+      expect(m1.enclosingElement.name, equals(classB.name));
     });
 
     test('overridden method', () {
@@ -3706,7 +3706,7 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('if inherited, and superclass not in package', () {
-      expect(plus.enclosingElement!.name, equals('SpecializedDuration'));
+      expect(plus.enclosingElement.name, equals('SpecializedDuration'));
     });
 
     test("if inherited, has the class's library", () {
@@ -4264,7 +4264,7 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('has enclosing element', () {
-      expect(v.enclosingElement!.name, equals(exLibrary.name));
+      expect(v.enclosingElement.name, equals(exLibrary.name));
     });
 
     test('found five properties', () {
@@ -4350,7 +4350,7 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('has enclosing element', () {
-      expect(greenConstant.enclosingElement!.name, equals(exLibrary.name));
+      expect(greenConstant.enclosingElement.name, equals(exLibrary.name));
     });
 
     test('found all the constants', () {
@@ -4629,8 +4629,8 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('has enclosing element', () {
-      expect(processMessage.enclosingElement!.name, equals(exLibrary.name));
-      expect(generic.enclosingElement!.name, equals(fakeLibrary.name));
+      expect(processMessage.enclosingElement.name, equals(exLibrary.name));
+      expect(generic.enclosingElement.name, equals(fakeLibrary.name));
     });
 
     test('docs', () {

@@ -24,7 +24,7 @@ abstract class Typedef extends ModelElement
       _modelType ??= modelBuilder.typeFrom(element!.aliasedType, library);
 
   @override
-  Library? get enclosingElement => library;
+  Library get enclosingElement => library;
 
   @override
   String get nameWithGenerics => '$name${super.genericParameters}';

@@ -124,7 +124,7 @@ class Accessor extends ModelElement implements EnclosedElement {
   }
 
   @override
-  ModelElement? get enclosingElement {
+  ModelElement get enclosingElement {
     if (element.enclosingElement is CompilationUnitElement) {
       return modelBuilder
           .fromElement(element.enclosingElement.enclosingElement!);
@@ -182,7 +182,7 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
 
   @override
   CharacterLocation? get characterLocation {
-    if (_isEnumSynthetic) return enclosingElement!.characterLocation;
+    if (_isEnumSynthetic) return enclosingElement.characterLocation;
     // TODO(jcollins-g): Remove the enclosingCombo case below once
     // https://github.com/dart-lang/sdk/issues/46154 is fixed.
     if (enclosingCombo is EnumField) return enclosingCombo.characterLocation;
@@ -208,9 +208,9 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
   bool get isInherited => _isInherited;
 
   @override
-  Container? get enclosingElement {
+  Container get enclosingElement {
     _enclosingElement ??= super.enclosingElement;
-    return _enclosingElement as Container?;
+    return _enclosingElement as Container;
   }
 
   bool _overriddenElementIsSet = false;
