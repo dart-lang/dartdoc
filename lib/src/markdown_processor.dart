@@ -246,14 +246,12 @@ md.Node _makeLinkNode(String codeRef, Warnable warnable) {
     // else this would be linkedElement.linkedName, but link bodies are slightly
     // different for doc references, so fall out.
   } else {
-    if (result.warn) {
-      // Avoid claiming documentation is inherited when it comes from the
-      // current element.
-      warnable.warn(PackageWarning.unresolvedDocReference,
-          message: codeRef,
-          referredFrom:
-              warnable.documentationIsLocal ? [] : warnable.documentationFrom);
-    }
+    // Avoid claiming documentation is inherited when it comes from the
+    // current element.
+    warnable.warn(PackageWarning.unresolvedDocReference,
+        message: codeRef,
+        referredFrom:
+            warnable.documentationIsLocal ? [] : warnable.documentationFrom);
   }
 
   return md.Element.text('code', textContent);
