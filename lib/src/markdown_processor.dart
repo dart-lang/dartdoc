@@ -180,10 +180,9 @@ bool _requireCallable(CommentReferable? referable) =>
 bool _requireConstructor(CommentReferable? referable) =>
     referable is Constructor;
 
-/// Implements [_getMatchingLinkElement] via [CommentReferable.referenceBy].
-MatchingLinkResult _getMatchingLinkElementCommentReferable(
-    String codeRef, Warnable warnable) {
-  var commentReference = ModelCommentReference.synthetic(codeRef);
+MatchingLinkResult _getMatchingLinkElement(
+    String referenceText, Warnable element) {
+  var commentReference = ModelCommentReference.synthetic(referenceText);
 
   bool Function(CommentReferable?) filter;
   bool Function(CommentReferable?) allowTree;
@@ -221,16 +220,17 @@ MatchingLinkResult _getMatchingLinkElementCommentReferable(
     // resolution to the class.
     filter = _rejectUnnamedAndShadowingConstructors;
   }
-  var lookupResult = warnable.referenceBy(commentReference.referenceBy,
+  var lookupResult = element.referenceBy(commentReference.referenceBy,
       allowTree: allowTree, filter: filter);
 
   // TODO(jcollins-g): Consider prioritizing analyzer resolution before custom.
   return MatchingLinkResult(lookupResult);
 }
 
-md.Node _makeLinkNode(String codeRef, Warnable warnable) {
-  var result = getMatchingLinkElement(warnable, codeRef);
-  var textContent = _htmlEscape.convert(codeRef);
+/// A link resolver which resolves [referenceText] as stemming from [element].
+md.Node _makeLinkNode(String referenceText, Warnable element) {
+  var result = getMatchingLinkElement(referenceText, element);
+  var textContent = _htmlEscape.convert(referenceText);
   var linkedElement = result.commentReferable;
   if (linkedElement != null) {
     if (linkedElement.href != null) {
@@ -243,26 +243,30 @@ md.Node _makeLinkNode(String codeRef, Warnable warnable) {
         anchor.attributes['href'] = href;
       }
       return anchor;
+    } else {
+      // Otherwise this would be `linkedElement.linkedName`, but link bodies are
+      // slightly different for doc references.
+      return md.Element.text('code', textContent);
     }
-    // Otherwise this would be `linkedElement.linkedName`, but link bodies are
-    // slightly different for doc references, so fall out.
   } else {
     if (result.warn) {
       // Avoid claiming documentation is inherited when it comes from the
       // current element.
-      warnable.warn(PackageWarning.unresolvedDocReference,
-          message: codeRef,
+      element.warn(PackageWarning.unresolvedDocReference,
+          message: referenceText,
           referredFrom:
-              warnable.documentationIsLocal ? [] : warnable.documentationFrom);
+              element.documentationIsLocal ? [] : element.documentationFrom);
     }
+    return md.Element.text('code', textContent);
   }
-
-  return md.Element.text('code', textContent);
 }
 
+/// Creates a [MatchingLinkResult] for [referenceText], the text of a doc
+/// comment reference found in the doc comment attached to [element].
 @visibleForTesting
-MatchingLinkResult getMatchingLinkElement(Warnable warnable, String codeRef) {
-  var result = _getMatchingLinkElementCommentReferable(codeRef, warnable);
+MatchingLinkResult getMatchingLinkElement(
+    String referenceText, Warnable element) {
+  var result = _getMatchingLinkElement(referenceText, element);
   runtimeStats.totalReferences++;
   if (result.commentReferable != null) {
     runtimeStats.resolvedReferences++;
@@ -341,6 +345,8 @@ Iterable<int> findFreeHangingGenericsPositions(String string) sync* {
 }
 
 class MarkdownDocument extends md.Document {
+  /// Creates a document which resolves comment references as stemming from
+  /// [element].
   factory MarkdownDocument.withElementLinkResolver(Warnable element) {
     md.Node? linkResolver(String name, [String? _]) {
       if (name.isEmpty) {
