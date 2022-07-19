@@ -157,9 +157,6 @@ class Accessor extends ModelElement implements EnclosedElement {
   String get namePart => _namePart;
 
   @override
-  Library get library => super.library!;
-
-  @override
 
   /// Accessors should never be participating directly in comment reference
   /// lookups.
@@ -197,7 +194,7 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
 
   ContainerAccessor(super.element, super.library, super.packageGraph);
 
-  ContainerAccessor.inherited(PropertyAccessorElement element, Library? library,
+  ContainerAccessor.inherited(PropertyAccessorElement element, Library library,
       PackageGraph packageGraph, this._enclosingElement,
       {ExecutableMember? originalMember})
       : super(element, library, packageGraph, originalMember) {

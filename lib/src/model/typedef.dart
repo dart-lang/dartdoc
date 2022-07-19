@@ -60,12 +60,6 @@ abstract class Typedef extends ModelElement
   String get kind => 'typedef';
 
   @override
-  Library get library => super.library!;
-
-  @override
-  Package get package => super.package!;
-
-  @override
   List<TypeParameter> get typeParameters => element!.typeParameters.map((f) {
         return modelBuilder.from(f, library) as TypeParameter;
       }).toList();

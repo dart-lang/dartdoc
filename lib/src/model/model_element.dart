@@ -39,7 +39,7 @@ import 'package:path/path.dart' as p show Context;
 /// the inheritance and interface chains from the analyzer.
 ModelElement resolveMultiplyInheritedElement(
     MultiplyInheritedExecutableElement e,
-    Library? library,
+    Library library,
     PackageGraph packageGraph,
     Class enclosingClass) {
   var inheritables = e.inheritedElements
@@ -128,27 +128,29 @@ abstract class ModelElement extends Canonicalization
 
   // TODO(jcollins-g): This really wants a "member that has a type" class.
   final Member? _originalMember;
-  final Library? _library;
+  final Library _library;
 
   ModelElement(this._element, this._library, this._packageGraph,
       [this._originalMember]);
 
   /// Creates a [ModelElement] from [e].
   factory ModelElement._fromElement(Element e, PackageGraph p) {
-    var lib = p.findButDoNotCreateLibraryFor(e);
+    var library = p.findButDoNotCreateLibraryFor(e);
+    library ??= library = Library.sentinel;
+
     if (e is PropertyInducingElement) {
       var elementGetter = e.getter;
       var getter = elementGetter != null
-          ? ModelElement._from(elementGetter, lib, p)
+          ? ModelElement._from(elementGetter, library, p)
           : null;
       var elementSetter = e.setter;
       var setter = elementSetter != null
-          ? ModelElement._from(elementSetter, lib, p)
+          ? ModelElement._from(elementSetter, library, p)
           : null;
-      return ModelElement._fromPropertyInducingElement(e, lib!, p,
+      return ModelElement._fromPropertyInducingElement(e, library, p,
           getter: getter as Accessor?, setter: setter as Accessor?);
     }
-    return ModelElement._from(e, lib, p);
+    return ModelElement._from(e, library, p);
   }
 
   /// Creates a [ModelElement] from [PropertyInducingElement] [e].
@@ -234,9 +236,9 @@ abstract class ModelElement extends Canonicalization
   // TODO(jcollins-g): Auto-vivify element's defining library for library
   // parameter when given a null.
   factory ModelElement._from(
-      Element e, Library? library, PackageGraph packageGraph,
+      Element e, Library library, PackageGraph packageGraph,
       {Container? enclosingContainer}) {
-    assert(library != null ||
+    assert(library != Library.sentinel ||
         e is ParameterElement ||
         e is TypeParameterElement ||
         e is GenericFunctionTypeElement ||
@@ -281,11 +283,11 @@ abstract class ModelElement extends Canonicalization
   /// Caches a newly-created [ModelElement] from [ModelElement._from] or
   /// [ModelElement._fromPropertyInducingElement].
   static void _cacheNewModelElement(
-      Element e, ModelElement? newModelElement, Library? library,
+      Element e, ModelElement? newModelElement, Library library,
       {Container? enclosingContainer}) {
     // TODO(jcollins-g): Reenable Parameter caching when dart-lang/sdk#30146
     //                   is fixed?
-    if (library != null && newModelElement is! Parameter) {
+    if (library != Library.sentinel && newModelElement is! Parameter) {
       var key =
           Tuple3<Element, Library, Container?>(e, library, enclosingContainer);
       library.packageGraph.allConstructedModelElements[key] = newModelElement;
@@ -299,7 +301,7 @@ abstract class ModelElement extends Canonicalization
   }
 
   static ModelElement? _fromParameters(
-      Element e, Library? library, PackageGraph packageGraph,
+      Element e, Library library, PackageGraph packageGraph,
       {Container? enclosingContainer, Member? originalMember}) {
     if (e is MultiplyInheritedExecutableElement) {
       return resolveMultiplyInheritedElement(
@@ -322,7 +324,7 @@ abstract class ModelElement extends Canonicalization
       }
     }
     if (e is ExtensionElement) {
-      return Extension(e, library!, packageGraph);
+      return Extension(e, library, packageGraph);
     }
     if (e is FunctionElement) {
       return ModelFunction(e, library, packageGraph);
@@ -394,7 +396,7 @@ abstract class ModelElement extends Canonicalization
   Iterable<Category?> get displayedCategories => const [];
 
   Set<Library>? get exportedInLibraries {
-    return library!.packageGraph.libraryElementReexportedBy[element!.library!];
+    return library.packageGraph.libraryElementReexportedBy[element!.library!];
   }
 
   @override
@@ -418,7 +420,8 @@ abstract class ModelElement extends Canonicalization
     if (name.isEmpty) {
       return false;
     }
-    if (this is! Library && (library == null || !library!.isPublic)) {
+    if (this is! Library &&
+        (library == Library.sentinel || !library.isPublic)) {
       return false;
     }
     if (enclosingElement is Class && !(enclosingElement as Class).isPublic) {
@@ -435,7 +438,7 @@ abstract class ModelElement extends Canonicalization
   @override
   late final DartdocOptionContext config =
       DartdocOptionContext.fromContextElement(
-          packageGraph.config, library!.element, packageGraph.resourceProvider);
+          packageGraph.config, library.element, packageGraph.resourceProvider);
 
   @override
   late final Set<String> locationPieces = element!.location
@@ -505,7 +508,7 @@ abstract class ModelElement extends Canonicalization
     if (enclosingElement is ModelElement) {
       return (enclosingElement as ModelElement).definingLibrary;
     } else {
-      return this.library!;
+      return this.library;
     }
   }
 
@@ -649,18 +652,18 @@ abstract class ModelElement extends Canonicalization
 
   String get fileName => '$name.$fileType';
 
-  String get fileType => package!.fileType;
+  String get fileType => package.fileType;
 
   String? get filePath;
 
   /// Returns the fully qualified name.
   ///
-  /// For example: libraryName.className.methodName
+  /// For example: 'libraryName.className.methodName'
   @override
   late final String fullyQualifiedName = _buildFullyQualifiedName();
 
   late final String _fullyQualifiedNameWithoutLibrary =
-      fullyQualifiedName.replaceFirst('${library!.fullyQualifiedName}.', '');
+      fullyQualifiedName.replaceFirst('${library.fullyQualifiedName}.', '');
 
   @override
   String get fullyQualifiedNameWithoutLibrary =>
@@ -701,11 +704,8 @@ abstract class ModelElement extends Canonicalization
     }
     assert(canonicalLibrary != null);
     assert(canonicalLibrary == library);
-    var packageBaseHref = package?.baseHref;
-    if (packageBaseHref != null) {
-      return '$packageBaseHref$filePath';
-    }
-    return null;
+    var packageBaseHref = package.baseHref;
+    return '$packageBaseHref$filePath';
   }
 
   String get htmlId => name;
@@ -769,8 +769,7 @@ abstract class ModelElement extends Canonicalization
   String get kind;
 
   @override
-  // FIXME(nnbd): library should not have to be nullable just because of dynamic
-  Library? get library => _library;
+  Library get library => _library;
 
   late final String linkedName = _calculateLinkedName();
 
@@ -813,11 +812,9 @@ abstract class ModelElement extends Canonicalization
   PackageGraph get packageGraph => _packageGraph;
 
   @override
-  // FIXME(nnbd): package should not have to be nullable just because of dynamic
-  Package? get package => library?.package;
+  Package get package => library.package;
 
-  bool get isPublicAndPackageDocumented =>
-      isPublic && package?.isDocumented == true;
+  bool get isPublicAndPackageDocumented => isPublic && package.isDocumented;
 
   // TODO(jcollins-g): This is in the wrong place.  Move parts to
   // [GetterSetterCombo], elsewhere as appropriate?

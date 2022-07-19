@@ -52,6 +52,12 @@ class _HashableChildLibraryElementVisitor
   }
 }
 
+class _LibrarySentinel implements Library {
+  @override
+  dynamic noSuchMethod(Invocation invocation) =>
+      throw UnimplementedError('No members on Library.sentinel are accessible');
+}
+
 class Library extends ModelElement with Categorization, TopLevelContainer {
   final Set<Element> _exportedAndLocalElements;
   final String _restoredUri;
@@ -59,9 +65,21 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   @override
   final Package package;
 
+  /// A [Library] value used as a sentinel in three cases:
+  ///
+  /// * the library for `dynamic` and `Never`
+  /// * the library for type parameters
+  /// * the library passed up to [ModelElement.library] when constructing a
+  /// `Library`, via the super constructor.
+  ///
+  /// TODO(srawlins): I think this last case demonstrates that
+  /// [ModelElement.library] should not be a field, and instead should be an
+  /// abstract getter.
+  static final Library sentinel = _LibrarySentinel();
+
   Library._(LibraryElement element, PackageGraph packageGraph, this.package,
       this._restoredUri, this._exportedAndLocalElements)
-      : super(element, null, packageGraph);
+      : super(element, sentinel, packageGraph);
 
   factory Library.fromLibraryResult(DartDocResolvedLibrary resolvedLibrary,
       PackageGraph packageGraph, Package package) {

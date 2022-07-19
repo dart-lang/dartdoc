@@ -11,7 +11,7 @@ import 'package:dartdoc/src/model/model.dart';
 
 class Parameter extends ModelElement /*implements EnclosedElement*/ {
   Parameter(
-      ParameterElement element, Library? library, PackageGraph packageGraph,
+      ParameterElement element, Library library, PackageGraph packageGraph,
       {ParameterMember? originalMember})
       : super(element, library, packageGraph, originalMember);
   String? get defaultValue {
@@ -24,7 +24,7 @@ class Parameter extends ModelElement /*implements EnclosedElement*/ {
     final enclosingElement = element!.enclosingElement;
     return enclosingElement == null
         ? null
-        : modelBuilder.from(enclosingElement, library!);
+        : modelBuilder.from(enclosingElement, library);
   }
 
   bool get hasDefaultValue {
@@ -117,5 +117,5 @@ class Parameter extends ModelElement /*implements EnclosedElement*/ {
       super.originalMember as ParameterMember?;
 
   late final ElementType modelType =
-      modelBuilder.typeFrom((originalMember ?? element)!.type, library!);
+      modelBuilder.typeFrom((originalMember ?? element)!.type, library);
 }
