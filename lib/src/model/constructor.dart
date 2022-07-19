@@ -34,7 +34,7 @@ class Constructor extends ModelElement
 
   @override
   Container get enclosingElement =>
-      modelBuilder.from(element!.enclosingElement, library!) as Container;
+      modelBuilder.from(element!.enclosingElement, library) as Container;
 
   @override
   String get filePath =>
