@@ -115,15 +115,9 @@ class Dartdoc {
 
   Dartdoc._(this.config, this._generator, this.packageBuilder);
 
-  // TODO(srawlins): Remove when https://github.com/dart-lang/linter/issues/2706
-  // is fixed.
-  // ignore: unnecessary_getters_setters
   Generator get generator => _generator;
 
   @visibleForTesting
-  // TODO(srawlins): Remove when https://github.com/dart-lang/linter/issues/2706
-  // is fixed.
-  // ignore: unnecessary_getters_setters
   set generator(Generator newGenerator) => _generator = newGenerator;
 
   /// Factory method that builds Dartdoc with an empty generator.
