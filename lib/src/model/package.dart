@@ -124,7 +124,7 @@ class Package extends LibraryContainer
       isFirstPackage || documentedWhere != DocumentLocation.missing;
 
   @override
-  Warnable? get enclosingElement => null;
+  ModelElement? get enclosingElement => null;
 
   @override
 

@@ -24,7 +24,7 @@ class Prefix extends ModelElement implements EnclosedElement {
   // TODO(jcollins-g): consider connecting PrefixElement to the imported library
   // in analyzer?
   Library get associatedLibrary =>
-      (_associatedLibrary ??= modelBuilder.fromElement(library!.element.imports
+      (_associatedLibrary ??= modelBuilder.fromElement(library.element.imports
           .firstWhere((i) => i.prefix == element)
           .importedLibrary!) as Library?)!;
 
@@ -38,7 +38,7 @@ class Prefix extends ModelElement implements EnclosedElement {
   PrefixElement? get element => super.element as PrefixElement?;
 
   @override
-  ModelElement? get enclosingElement => library;
+  ModelElement get enclosingElement => library;
 
   @override
   String get filePath =>

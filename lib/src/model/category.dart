@@ -58,7 +58,7 @@ class Category extends Nameable
   }
 
   @override
-  Warnable? get enclosingElement => null;
+  ModelElement? get enclosingElement => null;
 
   @override
   Element? get element => null;

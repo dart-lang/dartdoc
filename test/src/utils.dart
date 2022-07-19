@@ -309,7 +309,7 @@ MatchingLinkResult definingLinkResult(MatchingLinkResult originalResult) {
 
   if (definingReferable != null &&
       definingReferable != originalResult.commentReferable) {
-    return MatchingLinkResult(definingReferable, warn: originalResult.warn);
+    return MatchingLinkResult(definingReferable);
   }
   return originalResult;
 }

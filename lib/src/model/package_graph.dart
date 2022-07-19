@@ -828,18 +828,15 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
             .cast<InheritingContainer>()
             .toList();
         superChain.add(preferredClass);
-        matches.removeWhere((me) =>
-            !superChain.contains((me as EnclosedElement).enclosingElement));
+        matches.removeWhere((me) => !superChain.contains(me.enclosingElement));
         // Assumed all matches are EnclosedElement because we've been told about a
         // preferredClass.
         var enclosingElements = {
-          ...matches
-              .map((me) => (me as EnclosedElement).enclosingElement as Class?)
+          ...matches.map((me) => me.enclosingElement as Class?)
         };
         for (var c in superChain.reversed) {
           if (enclosingElements.contains(c)) {
-            matches.removeWhere(
-                (me) => (me as EnclosedElement).enclosingElement != c);
+            matches.removeWhere((me) => me.enclosingElement != c);
           }
           if (matches.length <= 1) break;
         }

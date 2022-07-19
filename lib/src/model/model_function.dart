@@ -37,17 +37,17 @@ class ModelFunctionTyped extends ModelElement
   @override
   late final List<TypeParameter> typeParameters = [
     for (var p in element!.typeParameters)
-      modelBuilder.from(p, library!) as TypeParameter,
+      modelBuilder.from(p, library) as TypeParameter,
   ];
 
   ModelFunctionTyped(
       FunctionTypedElement super.element, super.library, super.packageGraph);
 
   @override
-  ModelElement? get enclosingElement => library;
+  ModelElement get enclosingElement => library;
 
   @override
-  String get filePath => '${library!.dirName}/$fileName';
+  String get filePath => '${library.dirName}/$fileName';
 
   @override
   String? get href {
@@ -74,14 +74,11 @@ class ModelFunctionTyped extends ModelElement
   }();
 
   @override
-  Package get package => super.package!;
-
-  @override
   Iterable<CommentReferable> get referenceParents => [definingLibrary];
 
   @override
   FunctionTypedElement? get element => super.element as FunctionTypedElement?;
 
   late final Callable modelType =
-      modelBuilder.typeFrom(element!.type, library!) as Callable;
+      modelBuilder.typeFrom(element!.type, library) as Callable;
 }

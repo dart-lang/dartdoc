@@ -27,7 +27,7 @@ class Operator extends Method {
 
   @override
   String get fullyQualifiedName =>
-      '${library!.name}.${enclosingElement!.name}.${super.name}';
+      '${library.name}.${enclosingElement.name}.${super.name}';
 
   @override
   bool get isOperator => true;

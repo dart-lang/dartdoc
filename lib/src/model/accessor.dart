@@ -124,7 +124,7 @@ class Accessor extends ModelElement implements EnclosedElement {
   }
 
   @override
-  ModelElement? get enclosingElement {
+  ModelElement get enclosingElement {
     if (element.enclosingElement is CompilationUnitElement) {
       return modelBuilder
           .fromElement(element.enclosingElement.enclosingElement!);
@@ -157,9 +157,6 @@ class Accessor extends ModelElement implements EnclosedElement {
   String get namePart => _namePart;
 
   @override
-  Library get library => super.library!;
-
-  @override
 
   /// Accessors should never be participating directly in comment reference
   /// lookups.
@@ -182,7 +179,7 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
 
   @override
   CharacterLocation? get characterLocation {
-    if (_isEnumSynthetic) return enclosingElement!.characterLocation;
+    if (_isEnumSynthetic) return enclosingElement.characterLocation;
     // TODO(jcollins-g): Remove the enclosingCombo case below once
     // https://github.com/dart-lang/sdk/issues/46154 is fixed.
     if (enclosingCombo is EnumField) return enclosingCombo.characterLocation;
@@ -197,7 +194,7 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
 
   ContainerAccessor(super.element, super.library, super.packageGraph);
 
-  ContainerAccessor.inherited(PropertyAccessorElement element, Library? library,
+  ContainerAccessor.inherited(PropertyAccessorElement element, Library library,
       PackageGraph packageGraph, this._enclosingElement,
       {ExecutableMember? originalMember})
       : super(element, library, packageGraph, originalMember) {
@@ -208,9 +205,9 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
   bool get isInherited => _isInherited;
 
   @override
-  Container? get enclosingElement {
+  Container get enclosingElement {
     _enclosingElement ??= super.enclosingElement;
-    return _enclosingElement as Container?;
+    return _enclosingElement as Container;
   }
 
   bool _overriddenElementIsSet = false;

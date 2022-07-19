@@ -7,22 +7,20 @@ import 'package:dartdoc/src/model/model.dart';
 
 class MatchingLinkResult {
   final CommentReferable? commentReferable;
-  final bool warn;
 
-  MatchingLinkResult(this.commentReferable, {this.warn = true});
-
-  @override
-  bool operator ==(Object other) {
-    return other is MatchingLinkResult &&
-        commentReferable == other.commentReferable &&
-        warn == other.warn;
-  }
+  MatchingLinkResult(this.commentReferable);
 
   @override
-  int get hashCode => Object.hash(commentReferable, warn);
+  bool operator ==(Object other) =>
+      other is MatchingLinkResult && commentReferable == other.commentReferable;
+
+  @override
+  int get hashCode => commentReferable.hashCode;
 
   @override
   String toString() {
-    return 'element: [${commentReferable is Constructor ? 'new ' : ''}${commentReferable?.fullyQualifiedName}] warn: $warn';
+    // TODO(srawlins): Scrap the 'new' keyword?
+    final newKeyword = commentReferable is Constructor ? 'new ' : '';
+    return 'element: [$newKeyword${commentReferable?.fullyQualifiedName}]';
   }
 }

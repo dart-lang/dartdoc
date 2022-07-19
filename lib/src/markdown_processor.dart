@@ -252,14 +252,12 @@ md.Node _makeLinkNode(String referenceText, Warnable element) {
       return md.Element.text('code', textContent);
     }
   } else {
-    if (result.warn) {
-      // Avoid claiming documentation is inherited when it comes from the
-      // current element.
-      element.warn(PackageWarning.unresolvedDocReference,
-          message: referenceText,
-          referredFrom:
-              element.documentationIsLocal ? [] : element.documentationFrom);
-    }
+    // Avoid claiming documentation is inherited when it comes from the current
+    // element.
+    element.warn(PackageWarning.unresolvedDocReference,
+        message: referenceText,
+        referredFrom:
+            element.documentationIsLocal ? [] : element.documentationFrom);
     return md.Element.text('code', textContent);
   }
 }

@@ -33,12 +33,12 @@ class Constructor extends ModelElement
       (enclosingElement as Constructable).typeParameters;
 
   @override
-  ModelElement get enclosingElement =>
-      modelBuilder.from(element!.enclosingElement, library!);
+  Container get enclosingElement =>
+      modelBuilder.from(element!.enclosingElement, library) as Container;
 
   @override
   String get filePath =>
-      '${enclosingElement.library!.dirName}/${enclosingElement.name}/$fileName';
+      '${enclosingElement.library.dirName}/${enclosingElement.name}/$fileName';
 
   String get fullKind {
     if (isConst) return 'const $kind';
@@ -49,7 +49,7 @@ class Constructor extends ModelElement
   @override
   String get fullyQualifiedName {
     if (isUnnamedConstructor) return super.fullyQualifiedName;
-    return '${library!.name}.$name';
+    return '${library.name}.$name';
   }
 
   @override
@@ -66,7 +66,7 @@ class Constructor extends ModelElement
   String get kind => 'constructor';
 
   late final Callable modelType =
-      modelBuilder.typeFrom(element!.type, library!) as Callable;
+      modelBuilder.typeFrom(element!.type, library) as Callable;
 
   @override
   late final String name = () {

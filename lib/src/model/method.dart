@@ -24,7 +24,7 @@ class Method extends ModelElement
   }
 
   Method.inherited(MethodElement element, this._enclosingContainer,
-      Library? library, PackageGraph packageGraph,
+      Library library, PackageGraph packageGraph,
       {ExecutableMember? originalMember})
       : super(element, library, packageGraph, originalMember) {
     _isInherited = true;
@@ -33,7 +33,7 @@ class Method extends ModelElement
 
   void _calcTypeParameters() {
     typeParameters = element!.typeParameters.map((f) {
-      return modelBuilder.from(f, library!) as TypeParameter;
+      return modelBuilder.from(f, library) as TypeParameter;
     }).toList();
   }
 
@@ -45,21 +45,21 @@ class Method extends ModelElement
       // Just directly override our location with the Enum definition --
       // this is OK because Enums can not inherit from each other nor
       // have their definitions split between files.
-      return enclosingElement!.characterLocation;
+      return enclosingElement.characterLocation;
     }
     return super.characterLocation;
   }
 
   @override
-  ModelElement? get enclosingElement {
+  Container get enclosingElement {
     _enclosingContainer ??=
-        modelBuilder.from(element!.enclosingElement, library!) as Container?;
-    return _enclosingContainer;
+        modelBuilder.from(element!.enclosingElement, library) as Container?;
+    return _enclosingContainer!;
   }
 
   @override
   String get filePath =>
-      '${enclosingElement!.library!.dirName}/${enclosingElement!.name}/$fileName';
+      '${enclosingElement.library.dirName}/${enclosingElement.name}/$fileName';
 
   String get fullkind {
     if (element!.isAbstract) return 'abstract $kind';
@@ -96,7 +96,7 @@ class Method extends ModelElement
 
   Callable? _modelType;
   Callable get modelType => (_modelType ??= modelBuilder.typeFrom(
-      (originalMember ?? element)!.type, library!) as Callable?)!;
+      (originalMember ?? element)!.type, library) as Callable?)!;
 
   @override
   Method? get overriddenElement {
