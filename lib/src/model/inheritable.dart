@@ -144,7 +144,7 @@ mixin Inheritable on ContainerMember {
         return _isOverride;
       }
       var enclosingCanonical =
-          enclosingElement!.canonicalModelElement as InheritingContainer?;
+          enclosingElement.canonicalModelElement as InheritingContainer?;
       // The container in which this element was defined, canonical if available.
       Container? definingCanonical =
           definingEnclosingContainer.canonicalModelElement as Container? ??

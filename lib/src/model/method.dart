@@ -45,21 +45,21 @@ class Method extends ModelElement
       // Just directly override our location with the Enum definition --
       // this is OK because Enums can not inherit from each other nor
       // have their definitions split between files.
-      return enclosingElement!.characterLocation;
+      return enclosingElement.characterLocation;
     }
     return super.characterLocation;
   }
 
   @override
-  ModelElement? get enclosingElement {
+  Container get enclosingElement {
     _enclosingContainer ??=
         modelBuilder.from(element!.enclosingElement, library) as Container?;
-    return _enclosingContainer;
+    return _enclosingContainer!;
   }
 
   @override
   String get filePath =>
-      '${enclosingElement!.library.dirName}/${enclosingElement!.name}/$fileName';
+      '${enclosingElement.library.dirName}/${enclosingElement.name}/$fileName';
 
   String get fullkind {
     if (element!.isAbstract) return 'abstract $kind';

@@ -48,8 +48,8 @@ String generateSearchIndexJson(
         if (indexable is ModelElement) 'packageName': indexable.package.name,
         if (indexable is EnclosedElement)
           'enclosedBy': {
-            'name': indexable.enclosingElement!.name,
-            'type': indexable.enclosingElement!.kind
+            'name': indexable.enclosingElement.name,
+            'type': indexable.enclosingElement.kind
           },
       }
   ];

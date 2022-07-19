@@ -41,7 +41,7 @@ class TopLevelVariable extends ModelElement
   }
 
   @override
-  ModelElement? get enclosingElement => library;
+  ModelElement get enclosingElement => library;
 
   @override
   String get filePath => '${library.dirName}/$fileName';

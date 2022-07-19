@@ -44,7 +44,7 @@ class ModelFunctionTyped extends ModelElement
       FunctionTypedElement super.element, super.library, super.packageGraph);
 
   @override
-  ModelElement? get enclosingElement => library;
+  ModelElement get enclosingElement => library;
 
   @override
   String get filePath => '${library.dirName}/$fileName';

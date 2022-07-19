@@ -9,7 +9,7 @@ import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 
-class Parameter extends ModelElement implements EnclosedElement {
+class Parameter extends ModelElement /*implements EnclosedElement*/ {
   Parameter(
       ParameterElement element, Library library, PackageGraph packageGraph,
       {ParameterMember? originalMember})
