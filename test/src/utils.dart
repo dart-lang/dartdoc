@@ -315,7 +315,7 @@ MatchingLinkResult definingLinkResult(MatchingLinkResult originalResult) {
 }
 
 MatchingLinkResult referenceLookup(Warnable element, String codeRef) =>
-    definingLinkResult(getMatchingLinkElement(element, codeRef));
+    definingLinkResult(getMatchingLinkElement(codeRef, element));
 
 /// Returns a matcher which compresses consecutive whitespace in [text] into a
 /// single space.

@@ -18,7 +18,7 @@ class Documentation {
   String? get asHtml {
     if (_asHtml == null) {
       assert(_asOneLiner == null || _element.isCanonical);
-      _renderDocumentation(true);
+      _renderDocumentation(processFullText: true);
     }
     return _asHtml;
   }
@@ -28,25 +28,25 @@ class Documentation {
   String? get asOneLiner {
     if (_asOneLiner == null) {
       assert(_asHtml == null);
-      _renderDocumentation(_element.isCanonical);
+      _renderDocumentation(processFullText: _element.isCanonical);
     }
     return _asOneLiner;
   }
 
-  void _renderDocumentation(bool processFullDocs) {
-    var parseResult = _parseDocumentation(processFullDocs);
+  void _renderDocumentation({required bool processFullText}) {
+    var parseResult = _parseDocumentation(processFullText: processFullText);
 
     var renderResult = _renderer.render(parseResult,
-        processFullDocs: processFullDocs,
+        processFullDocs: processFullText,
         sanitizeHtml: _element.config.sanitizeHtml);
 
-    if (processFullDocs) {
+    if (processFullText) {
       _asHtml = renderResult.asHtml;
     }
     _asOneLiner ??= renderResult.asOneLiner;
   }
 
-  List<md.Node> _parseDocumentation(bool processFullDocs) {
+  List<md.Node> _parseDocumentation({required bool processFullText}) {
     final text = _element.documentation;
     if (text == null || text.isEmpty) {
       return const [];
@@ -55,7 +55,7 @@ class Documentation {
         text, _element as Warnable);
     var document =
         MarkdownDocument.withElementLinkResolver(_element as Warnable);
-    return document.parseMarkdownText(text, processFullDocs);
+    return document.parseMarkdownText(text, processFullText: processFullText);
   }
 
   DocumentationRenderer get _renderer =>
