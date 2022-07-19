@@ -230,9 +230,6 @@ abstract class InheritingContainer extends Container
   @override
   ModelElement get enclosingElement => library;
 
-  @override
-  String get filePath => '${library.dirName}/$fileName';
-
   String get fullkind => kind;
 
   @override
@@ -527,11 +524,8 @@ abstract class InheritingContainer extends Container
     return _typeParameters!;
   }
 
-  Iterable<Field>? _instanceFields;
-
   @override
-  Iterable<Field> get instanceFields =>
-      _instanceFields ??= allFields.where((f) => !f.isStatic);
+  Iterable<Field> get instanceFields => allFields.where((f) => !f.isStatic);
 
   @override
   bool get publicInheritedInstanceFields =>
