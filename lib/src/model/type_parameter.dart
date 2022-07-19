@@ -14,11 +14,11 @@ class TypeParameter extends ModelElement {
 
   @override
   ModelElement get enclosingElement =>
-      modelBuilder.from(element!.enclosingElement!, library!);
+      modelBuilder.from(element!.enclosingElement!, library);
 
   @override
   String get filePath =>
-      '${enclosingElement.library!.dirName}/${enclosingElement.name}/$name';
+      '${enclosingElement.library.dirName}/${enclosingElement.name}/$name';
 
   @override
 
@@ -34,7 +34,7 @@ class TypeParameter extends ModelElement {
     if (_boundType == null) {
       var bound = element!.bound;
       if (bound != null) {
-        _boundType = modelBuilder.typeFrom(bound, library!);
+        _boundType = modelBuilder.typeFrom(bound, library);
       }
     }
     return _boundType;

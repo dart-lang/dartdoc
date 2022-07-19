@@ -2263,7 +2263,7 @@ void main() {
         () {
       expect(
           ExtendingClass.superChain.last.name, equals('WithGetterAndSetter'));
-      expect(ExtendingClass.superChain.last.modelElement.library!.name,
+      expect(ExtendingClass.superChain.last.modelElement.library.name,
           equals('fake'));
     });
   });
@@ -3594,7 +3594,7 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     test(
         'inherited method has the current library, when superclass library not in package',
         () {
-      expect(inheritedClear.library!.name, equals('ex'));
+      expect(inheritedClear.library.name, equals('ex'));
     });
 
     test(
@@ -3710,7 +3710,7 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test("if inherited, has the class's library", () {
-      expect(plus.library!.name, 'ex');
+      expect(plus.library.name, 'ex');
     });
 
     test('if inherited, has a href relative to enclosed class', () {
@@ -4629,8 +4629,8 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('has enclosing element', () {
-      expect(processMessage.enclosingElement!.name, equals(exLibrary.name));
-      expect(generic.enclosingElement!.name, equals(fakeLibrary.name));
+      expect(processMessage.enclosingElement.name, equals(exLibrary.name));
+      expect(generic.enclosingElement.name, equals(fakeLibrary.name));
     });
 
     test('docs', () {
@@ -4794,7 +4794,7 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('param exported in library', () {
       var param = paramFromExportLib.parameters[0];
       expect(param.name, equals('helper'));
-      expect(param.library!.name, equals('ex'));
+      expect(param.library.name, equals('ex'));
     });
 
     test('typedef param is linked and does not include types', () {

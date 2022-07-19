@@ -14,7 +14,7 @@ import 'package:dartdoc/src/model/package_graph.dart';
 /// `@`.
 class Annotation extends Feature with ModelBuilder {
   final ElementAnnotation annotation;
-  final Library? library;
+  final Library library;
   @override
   final PackageGraph packageGraph;
 
@@ -35,7 +35,7 @@ class Annotation extends Feature with ModelBuilder {
   late final ElementType modelType = () {
     var annotatedWith = annotation.element;
     if (annotatedWith is ConstructorElement) {
-      return modelBuilder.typeFrom(annotatedWith.returnType, library!);
+      return modelBuilder.typeFrom(annotatedWith.returnType, library);
     } else if (annotatedWith is PropertyAccessorElement) {
       return (modelBuilder.fromElement(annotatedWith.variable)
               as GetterSetterCombo)

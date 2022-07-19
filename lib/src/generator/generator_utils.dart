@@ -45,7 +45,7 @@ String generateSearchIndexJson(
         'href': indexable.href,
         'type': indexable.kind,
         'overriddenDepth': indexable.overriddenDepth,
-        if (indexable is ModelElement) 'packageName': indexable.package?.name,
+        if (indexable is ModelElement) 'packageName': indexable.package.name,
         if (indexable is EnclosedElement)
           'enclosedBy': {
             'name': indexable.enclosingElement!.name,
