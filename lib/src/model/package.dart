@@ -408,7 +408,7 @@ class Package extends LibraryContainer
         publicLibrariesSorted.expand((l) => l.referenceChildren.entries));
 
   @override
-  Iterable<CommentReferable> get referenceParents => [packageGraph];
+  Iterable<CommentReferable> get referenceParents => [/*packageGraph*/];
 
   p.Context get _pathContext => packageGraph.resourceProvider.pathContext;
 

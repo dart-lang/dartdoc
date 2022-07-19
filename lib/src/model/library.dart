@@ -441,7 +441,7 @@ class Library extends ModelElement
   }
 
   @override
-  Iterable<CommentReferable> get referenceParents => [package];
+  Iterable<CommentReferable> get referenceParents => [/*package*/];
 
   /// Check [canonicalFor] for correctness and warn if it refers to
   /// non-existent elements (or those that this Library can not be canonical

@@ -66,7 +66,7 @@ mixin CommentReferable implements Nameable, ModelBuilderInterface {
           return result;
         }
       }
-      /*final referenceChildren = this.referenceChildren;
+      final referenceChildren = this.referenceChildren;
       final childrenResult = referenceChildren[referenceLookup.lookup];
       if (childrenResult != null) {
         var result = _recurseChildrenAndFilter(referenceLookup, childrenResult,
@@ -77,7 +77,7 @@ mixin CommentReferable implements Nameable, ModelBuilderInterface {
       }*/
     }
     // If we can't find it in children, try searching parents if allowed.
-    /*if (tryParents) {
+    if (tryParents) {
       for (var parent in parentOverrides) {
         var result = parent.referenceBy(reference,
             tryParents: true,
@@ -86,7 +86,7 @@ mixin CommentReferable implements Nameable, ModelBuilderInterface {
             filter: filter);
         if (result != null) return result;
       }
-    }*/
+    }
     return null;
   }
 
