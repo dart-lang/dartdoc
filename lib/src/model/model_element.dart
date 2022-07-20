@@ -135,8 +135,12 @@ abstract class ModelElement extends Canonicalization
 
   /// Creates a [ModelElement] from [e].
   factory ModelElement._fromElement(Element e, PackageGraph p) {
-    var library = p.findButDoNotCreateLibraryFor(e);
-    library ??= library = Library.sentinel;
+    if (e is MultiplyDefinedElement) {
+      // The code-to-document has static errors. We can pick the first
+      // conflicting element and move on.
+      e = e.conflictingElements.first;
+    }
+    var library = p.findButDoNotCreateLibraryFor(e) ?? Library.sentinel;
 
     if (e is PropertyInducingElement) {
       var elementGetter = e.getter;
@@ -268,9 +272,13 @@ abstract class ModelElement extends Canonicalization
       return cachedModelElement;
     }
 
-    var newModelElement = ModelElement._fromParameters(e, library, packageGraph,
-        enclosingContainer: enclosingContainer,
-        originalMember: originalMember)!;
+    var newModelElement = ModelElement._fromParameters(
+      e,
+      library,
+      packageGraph,
+      enclosingContainer: enclosingContainer,
+      originalMember: originalMember,
+    );
 
     if (enclosingContainer != null) assert(newModelElement is Inheritable);
     _cacheNewModelElement(e, newModelElement, library,
@@ -300,16 +308,19 @@ abstract class ModelElement extends Canonicalization
     }
   }
 
-  static ModelElement? _fromParameters(
-      Element e, Library library, PackageGraph packageGraph,
-      {Container? enclosingContainer, Member? originalMember}) {
+  static ModelElement _fromParameters(
+    Element e,
+    Library library,
+    PackageGraph packageGraph, {
+    Container? enclosingContainer,
+    Member? originalMember,
+  }) {
     if (e is MultiplyInheritedExecutableElement) {
       return resolveMultiplyInheritedElement(
           e, library, packageGraph, enclosingContainer as Class);
     }
-    assert(e is! MultiplyDefinedElement);
     if (e is LibraryElement) {
-      return packageGraph.findButDoNotCreateLibraryFor(e);
+      return packageGraph.findButDoNotCreateLibraryFor(e)!;
     }
     if (e is PrefixElement) {
       return Prefix(e, library, packageGraph);
