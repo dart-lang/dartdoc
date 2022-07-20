@@ -9,7 +9,7 @@ import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 
-class Parameter extends ModelElement /*implements EnclosedElement*/ {
+class Parameter extends ModelElement with HasNoPage {
   Parameter(
       ParameterElement element, Library library, PackageGraph packageGraph,
       {ParameterMember? originalMember})
@@ -33,11 +33,6 @@ class Parameter extends ModelElement /*implements EnclosedElement*/ {
   }
 
   @override
-  String get filePath {
-    throw UnimplementedError('Parameters have no generated files in dartdoc');
-  }
-
-  @override
   String? get href => null;
 
   @override
@@ -45,8 +40,8 @@ class Parameter extends ModelElement /*implements EnclosedElement*/ {
     if (element!.enclosingElement != null) {
       var enclosingName = element!.enclosingElement!.name;
       if (element!.enclosingElement is GenericFunctionTypeElement) {
-        // TODO(jcollins-g): Drop when GenericFunctionTypeElement populates name.
-        // Also, allowing null here is allowed as a workaround for
+        // TODO(jcollins-g): Drop when GenericFunctionTypeElement populates
+        // name. Also, allowing null here is allowed as a workaround for
         // dart-lang/sdk#32005.
         for (var e = element!.enclosingElement!;
             e.enclosingElement != null;
