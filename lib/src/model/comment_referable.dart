@@ -74,7 +74,7 @@ mixin CommentReferable implements Nameable, ModelBuilderInterface {
         if (result != null) {
           return result;
         }
-      }*/
+      }
     }
     // If we can't find it in children, try searching parents if allowed.
     if (tryParents) {
