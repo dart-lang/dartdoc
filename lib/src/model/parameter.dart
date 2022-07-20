@@ -16,20 +16,20 @@ class Parameter extends ModelElement with HasNoPage {
       : super(element, library, packageGraph, originalMember);
   String? get defaultValue {
     if (!hasDefaultValue) return null;
-    return element!.defaultValueCode;
+    return element.defaultValueCode;
   }
 
   @override
   ModelElement? get enclosingElement {
-    final enclosingElement = element!.enclosingElement;
+    final enclosingElement = element.enclosingElement;
     return enclosingElement == null
         ? null
         : modelBuilder.from(enclosingElement, library);
   }
 
   bool get hasDefaultValue {
-    return element!.defaultValueCode != null &&
-        element!.defaultValueCode!.isNotEmpty;
+    return element.defaultValueCode != null &&
+        element.defaultValueCode!.isNotEmpty;
   }
 
   @override
@@ -37,13 +37,13 @@ class Parameter extends ModelElement with HasNoPage {
 
   @override
   String get htmlId {
-    if (element!.enclosingElement != null) {
-      var enclosingName = element!.enclosingElement!.name;
-      if (element!.enclosingElement is GenericFunctionTypeElement) {
+    if (element.enclosingElement != null) {
+      var enclosingName = element.enclosingElement!.name;
+      if (element.enclosingElement is GenericFunctionTypeElement) {
         // TODO(jcollins-g): Drop when GenericFunctionTypeElement populates
         // name. Also, allowing null here is allowed as a workaround for
         // dart-lang/sdk#32005.
-        for (var e = element!.enclosingElement!;
+        for (var e = element.enclosingElement!;
             e.enclosingElement != null;
             e = e.enclosingElement!) {
           enclosingName = e.name;
@@ -57,22 +57,22 @@ class Parameter extends ModelElement with HasNoPage {
   }
 
   @override
-  int get hashCode => element == null ? 0 : element.hashCode;
+  int get hashCode => element.hashCode;
 
   @override
   bool operator ==(Object other) =>
-      other is Parameter && (element!.type == other.element!.type);
+      other is Parameter && (element.type == other.element.type);
 
-  bool get isCovariant => element!.isCovariant;
+  bool get isCovariant => element.isCovariant;
 
-  bool get isRequiredPositional => element!.isRequiredPositional;
+  bool get isRequiredPositional => element.isRequiredPositional;
 
-  bool get isNamed => element!.isNamed;
+  bool get isNamed => element.isNamed;
 
-  bool get isOptionalPositional => element!.isOptionalPositional;
+  bool get isOptionalPositional => element.isOptionalPositional;
 
   /// Only true if this is a required named parameter.
-  bool get isRequiredNamed => element!.isRequiredNamed;
+  bool get isRequiredNamed => element.isRequiredNamed;
 
   @override
   String get kind => 'parameter';
@@ -105,12 +105,12 @@ class Parameter extends ModelElement with HasNoPage {
   }
 
   @override
-  ParameterElement? get element => super.element as ParameterElement?;
+  ParameterElement get element => super.element as ParameterElement;
 
   @override
   ParameterMember? get originalMember =>
       super.originalMember as ParameterMember?;
 
   late final ElementType modelType =
-      modelBuilder.typeFrom((originalMember ?? element)!.type, library);
+      modelBuilder.typeFrom((originalMember ?? element).type, library);
 }

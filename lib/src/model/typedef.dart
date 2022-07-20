@@ -14,14 +14,14 @@ abstract class Typedef extends ModelElement
     implements EnclosedElement {
   Typedef(TypeAliasElement super.element, super.library, super.packageGraph);
 
-  DartType get aliasedType => element!.aliasedType;
+  DartType get aliasedType => element.aliasedType;
 
   @override
-  TypeAliasElement? get element => super.element as TypeAliasElement?;
+  TypeAliasElement get element => super.element as TypeAliasElement;
 
   ElementType? _modelType;
   ElementType get modelType =>
-      _modelType ??= modelBuilder.typeFrom(element!.aliasedType, library);
+      _modelType ??= modelBuilder.typeFrom(element.aliasedType, library);
 
   @override
   Library get enclosingElement => library;
@@ -60,9 +60,9 @@ abstract class Typedef extends ModelElement
   String get kind => 'typedef';
 
   @override
-  List<TypeParameter> get typeParameters => element!.typeParameters.map((f) {
-        return modelBuilder.from(f, library) as TypeParameter;
-      }).toList();
+  List<TypeParameter> get typeParameters => element.typeParameters
+      .map((f) => modelBuilder.from(f, library) as TypeParameter)
+      .toList();
 
   TypedefRenderer get _renderer => packageGraph.rendererFactory.typedefRenderer;
 

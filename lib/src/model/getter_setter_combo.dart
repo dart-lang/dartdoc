@@ -90,7 +90,7 @@ mixin GetterSetterCombo on ModelElement {
     // explicit setters/getters will be handled by those objects, but
     // if a warning comes up for an enclosing synthetic field we have to
     // put it somewhere.  So pick an accessor.
-    if (element!.isSynthetic) {
+    if (element.isSynthetic) {
       if (hasExplicitGetter) return getter!.characterLocation;
       if (hasExplicitSetter) return setter!.characterLocation;
       assert(false, 'Field and accessors can not all be synthetic: $element');
@@ -161,14 +161,14 @@ mixin GetterSetterCombo on ModelElement {
       : _documentationComment ??= () {
           _documentationCommentComputed = true;
           var docs = _getterSetterDocumentationComment;
-          if (docs.isEmpty) return element!.documentationComment ?? '';
+          if (docs.isEmpty) return element.documentationComment ?? '';
           return docs;
         }();
 
   @override
   bool get hasDocumentationComment =>
       _getterSetterDocumentationComment.isNotEmpty ||
-      element!.documentationComment != null;
+      element.documentationComment != null;
 
   /// Derive a documentation comment for the combo by copying documentation
   /// from the [getter] and/or [setter].

@@ -14,7 +14,7 @@ class TypeParameter extends ModelElement with HasNoPage {
 
   @override
   ModelElement get enclosingElement =>
-      modelBuilder.from(element!.enclosingElement!, library);
+      modelBuilder.from(element.enclosingElement!, library);
 
   /// [TypeParameter]s don't have documentation pages, and don't link to the
   /// element on which they are declared.
@@ -27,7 +27,7 @@ class TypeParameter extends ModelElement with HasNoPage {
   String get kind => 'type parameter';
 
   ElementType? get boundType {
-    var bound = element!.bound;
+    var bound = element.bound;
     return bound == null ? null : modelBuilder.typeFrom(bound, library);
   }
 
@@ -35,17 +35,17 @@ class TypeParameter extends ModelElement with HasNoPage {
   bool get hasParameters => false;
 
   @override
-  late final String name = element!.bound != null
-      ? '${element!.name} extends ${boundType!.nameWithGenerics}'
-      : element!.name;
+  late final String name = element.bound != null
+      ? '${element.name} extends ${boundType!.nameWithGenerics}'
+      : element.name;
 
   String? _linkedName;
 
   @override
   String get linkedName {
-    _linkedName ??= element!.bound != null
-        ? '${element!.name} extends ${boundType!.linkedName}'
-        : element!.name;
+    _linkedName ??= element.bound != null
+        ? '${element.name} extends ${boundType!.linkedName}'
+        : element.name;
     return _linkedName!;
   }
 
@@ -59,10 +59,10 @@ class TypeParameter extends ModelElement with HasNoPage {
   @override
   Iterable<CommentReferable> get referenceParents => [enclosingElement];
   @override
-  TypeParameterElement? get element => super.element as TypeParameterElement?;
+  TypeParameterElement get element => super.element as TypeParameterElement;
 
   @override
-  String get referenceName => element!.name;
+  String get referenceName => element.name;
 }
 
 /// A mixin for [ModelElement]s which have type parameters.

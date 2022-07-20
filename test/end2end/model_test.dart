@@ -233,7 +233,7 @@ void main() {
     void expectTypedefs(Typedef t, String modelTypeToString,
         Iterable<String> genericParameters) {
       expect(t.modelType.toString(), equals(modelTypeToString));
-      expect(t.element!.typeParameters.map((p) => p.toString()),
+      expect(t.element.typeParameters.map((p) => p.toString()),
           orderedEquals(genericParameters));
     }
 
@@ -1234,11 +1234,11 @@ void main() {
     });
 
     test('Verify behavior of imperfect resolver', () {
-      expect(aImplementingThingy.element!.enclosingElement,
+      expect(aImplementingThingy.element.enclosingElement,
           equals(BaseThingy2.element));
-      expect(aImplementingThingyMethod.element!.enclosingElement,
+      expect(aImplementingThingyMethod.element.enclosingElement,
           equals(BaseThingy.element));
-      expect(aImplementingThingyField.element!.enclosingElement,
+      expect(aImplementingThingyField.element.enclosingElement,
           equals(BaseThingy.element));
       expect(aImplementingThingyAccessor.element.enclosingElement,
           equals(BaseThingy.element));
@@ -1831,7 +1831,7 @@ void main() {
           .firstWhere((c) => c.name == 'MIEEMixinWithOverride');
       var problematicOperator = MIEEMixinWithOverride.inheritedOperators
           .firstWhere((o) => o.name == 'operator []=');
-      expect(problematicOperator.element!.enclosingElement.name,
+      expect(problematicOperator.element.enclosingElement.name,
           equals('_MIEEPrivateOverride'));
       expect(problematicOperator.canonicalModelElement!.enclosingElement!.name,
           equals('MIEEMixinWithOverride'));

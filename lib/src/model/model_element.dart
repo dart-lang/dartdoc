@@ -54,7 +54,7 @@ ModelElement resolveMultiplyInheritedElement(
       lowIndex = index;
     }
   }
-  return ModelElement._from(foundInheritable.element!, library, packageGraph,
+  return ModelElement._from(foundInheritable.element, library, packageGraph,
       enclosingContainer: enclosingClass);
 }
 
@@ -396,7 +396,7 @@ abstract class ModelElement extends Canonicalization
   Iterable<Category?> get displayedCategories => const [];
 
   Set<Library>? get exportedInLibraries {
-    return library.packageGraph.libraryElementReexportedBy[element!.library!];
+    return library.packageGraph.libraryElementReexportedBy[element.library!];
   }
 
   @override
@@ -406,11 +406,10 @@ abstract class ModelElement extends Canonicalization
   // supposed to be invisible (@pragma).  While technically, null elements
   // indicate invalid code from analyzer's perspective they are present in
   // sky_engine (@Native) so we don't want to crash here.
-  late final Iterable<Annotation> annotations = element!.metadata
+  late final Iterable<Annotation> annotations = element.metadata
       .whereNot((m) =>
           m.element == null ||
-          packageGraph
-              .specialClasses[SpecialClass.pragma]!.element!.constructors
+          packageGraph.specialClasses[SpecialClass.pragma]!.element.constructors
               .contains(m.element))
       .map((m) => Annotation(m, library, packageGraph))
       .toList(growable: false);
@@ -432,7 +431,7 @@ abstract class ModelElement extends Canonicalization
         !(enclosingElement as Extension).isPublic) {
       return false;
     }
-    return utils.hasPublicName(element!) && !hasNodoc;
+    return utils.hasPublicName(element) && !hasNodoc;
   }();
 
   @override
@@ -441,7 +440,7 @@ abstract class ModelElement extends Canonicalization
           packageGraph.config, library.element, packageGraph.resourceProvider);
 
   @override
-  late final Set<String> locationPieces = element!.location
+  late final Set<String> locationPieces = element.location
       .toString()
       .split(locationSplitter)
       .where((s) => s.isNotEmpty)
@@ -499,7 +498,7 @@ abstract class ModelElement extends Canonicalization
   late final String sourceHref = SourceLinker.fromElement(this).href();
 
   Library get definingLibrary {
-    var library = modelBuilder.fromElement(element!.library!) as Library?;
+    var library = modelBuilder.fromElement(element.library!) as Library?;
     if (library == null) {
       warn(PackageWarning.noDefiningLibraryFound);
     } else {
@@ -520,7 +519,7 @@ abstract class ModelElement extends Canonicalization
 
     // Privately named elements can never have a canonical library, so
     // just shortcut them out.
-    if (!utils.hasPublicName(element!)) {
+    if (!utils.hasPublicName(element)) {
       canonicalLibraryPossibility = null;
     } else if (!packageGraph.localPublicLibraries.contains(definingLibrary)) {
       canonicalLibraryPossibility = _searchForCanonicalLibrary();
@@ -552,7 +551,7 @@ abstract class ModelElement extends Canonicalization
 
     // Since we're looking for a library, find the [Element] immediately
     // contained by a [CompilationUnitElement] in the tree.
-    var topLevelElement = element;
+    Element? topLevelElement = element;
     while (topLevelElement != null &&
         topLevelElement.enclosingElement is! LibraryElement &&
         topLevelElement.enclosingElement is! CompilationUnitElement &&
@@ -637,7 +636,7 @@ abstract class ModelElement extends Canonicalization
   }
 
   @override
-  Element? get element => _element;
+  Element get element => _element;
 
   @override
   String get location {
@@ -670,12 +669,12 @@ abstract class ModelElement extends Canonicalization
       _fullyQualifiedNameWithoutLibrary;
 
   @override
-  String get sourceFileName => element!.source!.fullName;
+  String get sourceFileName => element.source!.fullName;
 
   @override
   late final CharacterLocation? characterLocation = () {
     final lineInfo = compilationUnitElement.lineInfo;
-    late final element = this.element!;
+    late final element = this.element;
     assert(element.nameOffset >= 0,
         'Invalid location data for element: $fullyQualifiedName');
     var nameOffset = element.nameOffset;
@@ -686,7 +685,7 @@ abstract class ModelElement extends Canonicalization
   }();
 
   CompilationUnitElement get compilationUnitElement =>
-      element!.thisOrAncestorOfType<CompilationUnitElement>()!;
+      element.thisOrAncestorOfType<CompilationUnitElement>()!;
 
   bool get hasAnnotations => annotations.isNotEmpty;
 
@@ -695,8 +694,8 @@ abstract class ModelElement extends Canonicalization
 
   bool get hasParameters => parameters.isNotEmpty;
 
-  /// If canonicalLibrary (or canonicalEnclosingElement, for Inheritable
-  /// subclasses) is null, href should be null.
+  /// If [canonicalLibrary] (or [canonicalEnclosingElement], for [Inheritable]
+  /// subclasses) is null, this is null.
   @override
   String? get href {
     if (!identical(canonicalModelElement, this)) {
@@ -718,7 +717,7 @@ abstract class ModelElement extends Canonicalization
   bool get isDeprecated {
     // If element.metadata is empty, it might be because this is a property
     // where the metadata belongs to the individual getter/setter
-    if (element!.metadata.isEmpty && element is PropertyInducingElement) {
+    if (element.metadata.isEmpty && element is PropertyInducingElement) {
       var pie = element as PropertyInducingElement;
 
       // The getter or the setter might be null – so the stored value may be
@@ -736,7 +735,7 @@ abstract class ModelElement extends Canonicalization
       // deprecated if both are deprecated.
       return deprecatedValues.every((d) => d);
     }
-    return element!.metadata.any((a) => a.isDeprecated);
+    return element.metadata.any((a) => a.isDeprecated);
   }
 
   @override
@@ -799,7 +798,7 @@ abstract class ModelElement extends Canonicalization
       .renderLinkedParams(parameters, showMetadata: false, showNames: false);
 
   @override
-  String get name => element!.name!;
+  String get name => element.name!;
 
   @override
   String? get oneLineDoc => elementDocumentation.asOneLiner;
@@ -884,10 +883,10 @@ abstract class ModelElement extends Canonicalization
   }();
 
   @override
-  String get documentationComment => element!.documentationComment ?? '';
+  String get documentationComment => element.documentationComment ?? '';
 
   @override
-  bool get hasDocumentationComment => element!.documentationComment != null;
+  bool get hasDocumentationComment => element.documentationComment != null;
 
   @override
   late final String sourceCode =
@@ -922,8 +921,8 @@ abstract class ModelElement extends Canonicalization
     // If we're calling this with an empty name, we probably have the wrong
     // element associated with a ModelElement or there's an analysis bug.
     assert(name.isNotEmpty ||
-        element?.kind == ElementKind.DYNAMIC ||
-        element?.kind == ElementKind.NEVER ||
+        element.kind == ElementKind.DYNAMIC ||
+        element.kind == ElementKind.NEVER ||
         this is ModelFunction);
 
     if (href == null) {
@@ -940,9 +939,7 @@ abstract class ModelElement extends Canonicalization
   @override
   CommentReferable get definingCommentReferable {
     var element = this.element;
-    return element == null
-        ? super.definingCommentReferable
-        : modelBuilder.fromElement(element);
+    return modelBuilder.fromElement(element);
   }
 
   String get linkedObjectType => _packageGraph.dartCoreObject;

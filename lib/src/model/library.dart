@@ -156,12 +156,12 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
         setter = modelBuilder.fromElement(elementSetter.element) as Accessor;
       }
       return modelBuilder
-          .fromPropertyInducingElement(e.element!,
-              modelBuilder.fromElement(e.element!.library!) as Library,
+          .fromPropertyInducingElement(e.element,
+              modelBuilder.fromElement(e.element.library!) as Library,
               getter: getter, setter: setter)
           .fullyQualifiedName;
     }
-    return modelBuilder.fromElement(e.element!).fullyQualifiedName;
+    return modelBuilder.fromElement(e.element).fullyQualifiedName;
   }).toList(growable: false);
 
   @override
@@ -459,7 +459,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
       ...library.mixins.expand((m) => [m, ...m.allModelElements]),
     ]) {
       modelElements
-          .putIfAbsent(modelElement.element!, () => {})
+          .putIfAbsent(modelElement.element, () => {})
           .add(modelElement);
     }
     modelElements.putIfAbsent(element, () => {}).add(this);

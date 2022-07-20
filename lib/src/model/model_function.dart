@@ -13,13 +13,13 @@ class ModelFunction extends ModelFunctionTyped with Categorization {
       FunctionElement super.element, super.library, super.packageGraph);
 
   @override
-  bool get isStatic => element!.isStatic;
+  bool get isStatic => element.isStatic;
 
   @override
-  String get name => element!.name;
+  String get name => element.name;
 
   @override
-  FunctionElement? get element => super.element as FunctionElement?;
+  FunctionElement get element => super.element as FunctionElement;
 }
 
 /// A [ModelElement] for a [FunctionTypedElement] that is part of an
@@ -28,7 +28,7 @@ class ModelFunctionTypedef extends ModelFunctionTyped {
   ModelFunctionTypedef(super.element, super.library, super.packageGraph);
 
   @override
-  String get name => element!.enclosingElement!.name!;
+  String get name => element.enclosingElement!.name!;
 }
 
 class ModelFunctionTyped extends ModelElement
@@ -36,7 +36,7 @@ class ModelFunctionTyped extends ModelElement
     implements EnclosedElement {
   @override
   late final List<TypeParameter> typeParameters = [
-    for (var p in element!.typeParameters)
+    for (var p in element.typeParameters)
       modelBuilder.from(p, library) as TypeParameter,
   ];
 
@@ -77,8 +77,8 @@ class ModelFunctionTyped extends ModelElement
   Iterable<CommentReferable> get referenceParents => [definingLibrary];
 
   @override
-  FunctionTypedElement? get element => super.element as FunctionTypedElement?;
+  FunctionTypedElement get element => super.element as FunctionTypedElement;
 
   late final Callable modelType =
-      modelBuilder.typeFrom(element!.type, library) as Callable;
+      modelBuilder.typeFrom(element.type, library) as Callable;
 }

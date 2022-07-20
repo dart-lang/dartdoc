@@ -28,14 +28,13 @@ class Class extends InheritingContainer
   @override
   String get fileName => '$name-class.$fileType';
 
-  bool get isAbstract => element!.isAbstract;
+  bool get isAbstract => element.isAbstract;
 
   bool get isErrorOrException {
     bool isError(ClassElement element) => (element.library.isDartCore &&
         (element.name == 'Exception' || element.name == 'Error'));
 
     final element = this.element;
-    if (element == null) return false;
     if (isError(element)) return true;
     return element.allSupertypes.map((t) => t.element).any(isError);
   }
