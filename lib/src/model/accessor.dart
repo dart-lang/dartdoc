@@ -232,7 +232,7 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
             possibleFields.addAll(parentContainer.staticFields);
             var fieldName = accessor!.name!.replaceFirst('=', '');
             var foundField = possibleFields
-                .firstWhereOrNull((f) => f.element!.name == fieldName);
+                .firstWhereOrNull((f) => f.element.name == fieldName);
             if (foundField != null) {
               if (isGetter) {
                 _overriddenElement = foundField.getter;

@@ -270,7 +270,7 @@ abstract class DefinedElementType extends ElementType {
   DefinedElementType(
       super.type, super.library, super.packageGraph, this.modelElement);
 
-  Element get element => modelElement.element!;
+  Element get element => modelElement.element;
 
   @override
   String get name => type.element!.name!;

@@ -14,7 +14,7 @@ class TypeParameter extends ModelElement {
 
   @override
   ModelElement get enclosingElement =>
-      modelBuilder.from(element!.enclosingElement!, library);
+      modelBuilder.from(element.enclosingElement!, library);
 
   @override
   String get filePath =>
@@ -32,7 +32,7 @@ class TypeParameter extends ModelElement {
 
   ElementType? get boundType {
     if (_boundType == null) {
-      var bound = element!.bound;
+      var bound = element.bound;
       if (bound != null) {
         _boundType = modelBuilder.typeFrom(bound, library);
       }
@@ -44,17 +44,17 @@ class TypeParameter extends ModelElement {
   bool get hasParameters => false;
 
   @override
-  late final String name = element!.bound != null
-      ? '${element!.name} extends ${boundType!.nameWithGenerics}'
-      : element!.name;
+  late final String name = element.bound != null
+      ? '${element.name} extends ${boundType!.nameWithGenerics}'
+      : element.name;
 
   String? _linkedName;
 
   @override
   String get linkedName {
-    _linkedName ??= element!.bound != null
-        ? '${element!.name} extends ${boundType!.linkedName}'
-        : element!.name;
+    _linkedName ??= element.bound != null
+        ? '${element.name} extends ${boundType!.linkedName}'
+        : element.name;
     return _linkedName!;
   }
 
@@ -68,10 +68,10 @@ class TypeParameter extends ModelElement {
   @override
   Iterable<CommentReferable> get referenceParents => [enclosingElement];
   @override
-  TypeParameterElement? get element => super.element as TypeParameterElement?;
+  TypeParameterElement get element => super.element as TypeParameterElement;
 
   @override
-  String get referenceName => element!.name;
+  String get referenceName => element.name;
 }
 
 /// A mixin for [ModelElement]s which have type parameters.

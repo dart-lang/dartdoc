@@ -32,10 +32,10 @@ class Prefix extends ModelElement implements EnclosedElement {
   Library? get canonicalModelElement => associatedLibrary.canonicalLibrary;
 
   @override
-  Scope get scope => element!.scope;
+  Scope get scope => element.scope;
 
   @override
-  PrefixElement? get element => super.element as PrefixElement?;
+  PrefixElement get element => super.element as PrefixElement;
 
   @override
   ModelElement get enclosingElement => library;
