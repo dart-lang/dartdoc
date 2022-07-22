@@ -246,12 +246,21 @@ mixin GetterSetterCombo on ModelElement {
   bool get hasPublicGetterNoSetter => (hasPublicGetter && !hasPublicSetter);
 
   String get arrow {
-    // →
-    if (readOnly) return r'&#8594;';
-    // ←
-    if (writeOnly) return r'&#8592;';
-    // ↔
-    if (readWrite) return r'&#8596;';
+    if (isPublic) {  // the arrow signifies what end users can do with the field
+      // →
+      if (readOnly) return r'&#8594;';
+      // ←
+      if (writeOnly) return r'&#8592;';
+      // ↔
+      if (readWrite) return r'&#8596;';
+    } else {  // the arrow signifies what can be done within its own library
+      // ↔
+      if (hasGetter && hasSetter) return r'&#8596;';
+      // →
+      if (hasGetter) return r'&#8594;';
+      // ←
+      if (hasSetter) return r'&#8592;';
+    }
     throw UnsupportedError(
         'GetterSetterCombo must be one of readOnly, writeOnly, or readWrite');
   }
