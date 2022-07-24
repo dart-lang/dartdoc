@@ -1341,6 +1341,10 @@ class DartdocOptionContext extends DartdocOptionContextBase
   // TODO(jdkoren): temporary while we confirm href base behavior doesn't break
   // important clients
   bool get useBaseHref => optionSet['useBaseHref'].valueAt(context);
+
+  bool get documentPrivate => optionSet['documentPrivate'].valueAt(context);
+
+  bool get privateLibrariesInSidebar => optionSet['privateLibrariesInSidebar'].valueAt(context);
 }
 
 /// Instantiate dartdoc's configuration file and options parser with the
@@ -1350,6 +1354,14 @@ List<DartdocOption> createDartdocOptions(
 ) {
   var resourceProvider = packageMetaProvider.resourceProvider;
   return [
+    DartdocOptionArgFile<bool>('documentPrivate', false, resourceProvider,
+        help: 'Document all private libraries, classes, members, and other declarations.',
+        negatable: true),
+    DartdocOptionArgFile<bool>('privateLibrariesInSidebar', false, resourceProvider,
+        help: 'Whether to include private libraries in the sidebar. Only applicable if '
+          'documentPrivate is true. Note that libraries with the same filename will have '
+          'the same name in the sidebar unless they contain an explicit library directive.',
+          negatable: true),
     DartdocOptionArgOnly<bool>('allowTools', false, resourceProvider,
         help: 'Execute user-defined tools to fill in @tool directives.',
         negatable: true),
