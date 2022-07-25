@@ -69,7 +69,7 @@ $libraryContent
 
     test('is found on the enclosing library', () async {
       var library = await bootPackageWithLibrary('enum E { one, two, three }');
-      expect(library.publicEnums, isNotEmpty);
+      expect(library.documentedEnums, isNotEmpty);
     });
 
     test('has a fully qualified names', () async {
@@ -97,7 +97,7 @@ $libraryContent
       var library = await bootPackageWithLibrary('enum E { one, two, three }');
       var eEnum = library.enums.named('E');
 
-      expect(eEnum.publicEnumValues, hasLength(3));
+      expect(eEnum.documentedEnumValues, hasLength(3));
     });
 
     test("has a (synthetic) 'values' constant", () async {
@@ -130,7 +130,7 @@ enum E {
 }
 
 ''');
-      var one = library.enums.named('E').publicEnumValues.named('one');
+      var one = library.enums.named('E').documentedEnumValues.named('one');
       expect(one.hasAnnotations, true);
       expect(one.annotations, hasLength(1));
       expect(one.isDeprecated, true);
@@ -186,7 +186,7 @@ class C {}
     test('value links to its anchor', () async {
       var library = await bootPackageWithLibrary('enum E { one, two, three }');
       var oneValue =
-          library.enums.named('E').publicEnumValues.named('one') as EnumField;
+          library.enums.named('E').documentedEnumValues.named('one') as EnumField;
       expect(oneValue.linkedName, '<a href="$linkPrefix/E.html#one">one</a>');
       expect(oneValue.constantValue,
           equals(EnumFieldRendererHtml().renderValue(oneValue)));
@@ -195,11 +195,11 @@ class C {}
     test('values have correct indices', () async {
       var library = await bootPackageWithLibrary('enum E { one, two, three }');
       var oneValue =
-          library.enums.named('E').publicEnumValues.named('one') as EnumField;
+          library.enums.named('E').documentedEnumValues.named('one') as EnumField;
       var twoValue =
-          library.enums.named('E').publicEnumValues.named('two') as EnumField;
+          library.enums.named('E').documentedEnumValues.named('two') as EnumField;
       var threeValue =
-          library.enums.named('E').publicEnumValues.named('three') as EnumField;
+          library.enums.named('E').documentedEnumValues.named('three') as EnumField;
 
       expect(oneValue.constantValue, equals('const E(0)'));
       expect(twoValue.constantValue, equals('const E(1)'));
@@ -243,7 +243,7 @@ enum E {
   three
 }
 ''');
-      var one = library.enums.named('E').publicEnumValues.named('one');
+      var one = library.enums.named('E').documentedEnumValues.named('one');
 
       expect(one.hasDocumentationComment, true);
       expect(one.documentationComment, '/// Doc comment for [E.one].');
@@ -528,16 +528,16 @@ enum E {
 
 enum F { one, two }
 ''');
-      var eOneValue = library.enums.named('E').publicEnumValues.named('one');
+      var eOneValue = library.enums.named('E').documentedEnumValues.named('one');
       expect(eOneValue.constantValueTruncated, 'E.named(1)');
 
-      var eTwoValue = library.enums.named('E').publicEnumValues.named('two');
+      var eTwoValue = library.enums.named('E').documentedEnumValues.named('two');
       expect(eTwoValue.constantValueTruncated, 'E.named(2)');
 
-      var fOneValue = library.enums.named('F').publicEnumValues.named('one');
+      var fOneValue = library.enums.named('F').documentedEnumValues.named('one');
       expect(fOneValue.constantValueTruncated, 'F()');
 
-      var fTwoValue = library.enums.named('F').publicEnumValues.named('two');
+      var fTwoValue = library.enums.named('F').documentedEnumValues.named('two');
       expect(fTwoValue.constantValueTruncated, 'F()');
     });
 

@@ -283,7 +283,7 @@ class Baz {}
     );
     final packageGraph =
         await (await createPackageBuilder()).buildPackageGraph();
-    expect(packageGraph.localPublicLibraries.map((l) => l.name),
+    expect(packageGraph.localDocumentedLibraries.map((l) => l.name),
         orderedEquals(['library_1', 'library_2']));
   });
 
@@ -314,7 +314,7 @@ class Baz {}
       additionalOptions: ['--include', 'library_3'],
     ))
         .buildPackageGraph();
-    expect(packageGraph.localPublicLibraries.map((l) => l.name),
+    expect(packageGraph.localDocumentedLibraries.map((l) => l.name),
         orderedEquals(['library_3']));
   });
 
@@ -341,7 +341,7 @@ class Bar {}
       additionalOptions: ['--exclude', 'library_1'],
     ))
         .buildPackageGraph();
-    expect(packageGraph.localPublicLibraries.map((l) => l.name),
+    expect(packageGraph.localDocumentedLibraries.map((l) => l.name),
         orderedEquals(['library_2']));
   });
 

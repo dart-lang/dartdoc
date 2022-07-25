@@ -99,7 +99,7 @@ int x;
         var packageGraph = await utils.bootBasicPackage(
             projectPath, packageMetaProvider, packageConfigProvider);
 
-        expect(packageGraph.localPublicLibraries, hasLength(1));
+        expect(packageGraph.localDocumentedLibraries, hasLength(1));
       });
 
       test('has private libraries', () async {
@@ -189,8 +189,8 @@ library bar;
           projectPath, packageMetaProvider, packageConfigProvider,
           additionalArguments: ['--include', 'foo']);
 
-      expect(packageGraph.localPublicLibraries, hasLength(1));
-      expect(packageGraph.localPublicLibraries.single.name, equals('foo'));
+      expect(packageGraph.localDocumentedLibraries, hasLength(1));
+      expect(packageGraph.localDocumentedLibraries.single.name, equals('foo'));
     });
 
     test('documents multiple explicitly included libraries', () async {
@@ -214,7 +214,7 @@ library baz;
           projectPath, packageMetaProvider, packageConfigProvider,
           additionalArguments: ['--include', 'foo', '--include', 'bar']);
 
-      var documentedLibraries = packageGraph.localPublicLibraries;
+      var documentedLibraries = packageGraph.localDocumentedLibraries;
       expect(documentedLibraries, hasLength(2));
       expect(
           documentedLibraries.map((e) => e.name), containsAll(['foo', 'bar']));
@@ -238,8 +238,8 @@ library bar;
           projectPath, packageMetaProvider, packageConfigProvider,
           additionalArguments: ['--exclude', 'foo']);
 
-      expect(packageGraph.localPublicLibraries, hasLength(1));
-      expect(packageGraph.localPublicLibraries.single.name, equals('bar'));
+      expect(packageGraph.localDocumentedLibraries, hasLength(1));
+      expect(packageGraph.localDocumentedLibraries.single.name, equals('bar'));
     });
 
     group('using --link-to-remote', () {
