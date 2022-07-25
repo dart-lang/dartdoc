@@ -48,13 +48,14 @@ abstract class TopLevelContainer implements Nameable {
 
   bool get hasDocumentedTypedefs => documentedTypedefs.isNotEmpty;
 
-  Iterable<Class> get documentedClasses => model_utils.filterNonDocumented(classes);
+  Iterable<Class> get documentedClasses =>
+      model_utils.filterNonDocumented(classes);
 
   // TODO(jcollins-g):  Setting this type parameter to `Container` magically
   // fixes a number of type problems in the AOT compiler, but I am mystified as
   // to why that should be the case.
-  late final Iterable<Container> documentedClassesSorted = documentedClasses.toList()
-    ..sort();
+  late final Iterable<Container> documentedClassesSorted =
+      documentedClasses.toList()..sort();
 
   Iterable<Extension> get documentedExtensions =>
       model_utils.filterNonDocumented(extensions);
@@ -70,13 +71,14 @@ abstract class TopLevelContainer implements Nameable {
 
   Iterable<Enum> get documentedEnums => model_utils.filterNonDocumented(enums);
 
-  late final Iterable<Enum> documentedEnumsSorted = documentedEnums.toList()..sort();
+  late final Iterable<Enum> documentedEnumsSorted = documentedEnums.toList()
+    ..sort();
 
   Iterable<Class> get _documentedExceptions =>
       model_utils.filterNonDocumented(exceptions);
 
-  late final Iterable<Class> documentedExceptionsSorted = _documentedExceptions.toList()
-    ..sort();
+  late final Iterable<Class> documentedExceptionsSorted =
+      _documentedExceptions.toList()..sort();
 
   Iterable<ModelFunctionTyped> get documentedFunctions =>
       model_utils.filterNonDocumented(functions!);
@@ -84,9 +86,11 @@ abstract class TopLevelContainer implements Nameable {
   late final Iterable<ModelFunctionTyped> documentedFunctionsSorted =
       documentedFunctions.toList()..sort();
 
-  Iterable<Mixin> get documentedMixins => model_utils.filterNonDocumented(mixins);
+  Iterable<Mixin> get documentedMixins =>
+      model_utils.filterNonDocumented(mixins);
 
-  late final Iterable<Mixin> documentedMixinsSorted = documentedMixins.toList()..sort();
+  late final Iterable<Mixin> documentedMixinsSorted = documentedMixins.toList()
+    ..sort();
 
   Iterable<TopLevelVariable> get documentedProperties =>
       model_utils.filterNonDocumented(properties);
@@ -94,8 +98,9 @@ abstract class TopLevelContainer implements Nameable {
   late final Iterable<TopLevelVariable> documentedPropertiesSorted =
       documentedProperties.toList()..sort();
 
-  Iterable<Typedef> get documentedTypedefs => model_utils.filterNonDocumented(typedefs);
+  Iterable<Typedef> get documentedTypedefs =>
+      model_utils.filterNonDocumented(typedefs);
 
-  late final Iterable<Typedef> documentedTypedefsSorted = documentedTypedefs.toList()
-    ..sort();
+  late final Iterable<Typedef> documentedTypedefsSorted =
+      documentedTypedefs.toList()..sort();
 }

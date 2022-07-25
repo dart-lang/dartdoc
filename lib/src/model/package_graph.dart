@@ -504,7 +504,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       ..sort();
   }();
 
-  Iterable<Package> get documentedPackages => 
+  Iterable<Package> get documentedPackages =>
       packages.where((p) => p.isDocumented);
 
   /// Local packages are to be documented locally vs. remote or not at all.

@@ -50,8 +50,9 @@ mixin Constructable on InheritingContainer {
     yield* _constructorGenerator(constructors);
     // TODO(jcollins-g): wean important users off of relying on static method
     // inheritance (dart-lang/dartdoc#2698)
-    for (var container
-        in documentedSuperChain.map((t) => t.modelElement).whereType<Container>()) {
+    for (var container in documentedSuperChain
+        .map((t) => t.modelElement)
+        .whereType<Container>()) {
       for (var modelElement in [
         ...container.staticFields,
         ...container.staticMethods,
@@ -95,7 +96,9 @@ mixin TypeImplementing on InheritingContainer {
 
   @override
   bool get hasModifiers =>
-      super.hasModifiers || hasDocumentedInterfaces || hasDocumentedImplementors;
+      super.hasModifiers ||
+      hasDocumentedInterfaces ||
+      hasDocumentedImplementors;
 
   /// The public interfaces may include substitutions for intermediate
   /// private interfaces, and so unlike other documented* methods, is not
@@ -170,7 +173,8 @@ mixin TypeImplementing on InheritingContainer {
   List<InheritingContainer>? _documentedImplementorsSorted;
 
   Iterable<InheritingContainer> get documentedImplementorsSorted =>
-      _documentedImplementorsSorted ??= documentedImplementors.toList()..sort(byName);
+      _documentedImplementorsSorted ??= documentedImplementors.toList()
+        ..sort(byName);
 }
 
 /// A [Container] that participates in inheritance in Dart.
@@ -236,7 +240,8 @@ abstract class InheritingContainer extends Container
       hasDocumentedSuperChainReversed ||
       hasPotentiallyApplicableExtensions;
 
-  bool get hasDocumentedSuperChainReversed => documentedSuperChainReversed.isNotEmpty;
+  bool get hasDocumentedSuperChainReversed =>
+      documentedSuperChainReversed.isNotEmpty;
 
   late final Iterable<Method> inheritedMethods = () {
     var methodNames = declaredMethods.map((m) => m.element.name).toSet();
@@ -256,7 +261,8 @@ abstract class InheritingContainer extends Container
   Iterable<Method> get documentedInheritedMethods =>
       model_utils.filterNonDocumented(inheritedMethods);
 
-  bool get hasDocumentedInheritedMethods => documentedInheritedMethods.isNotEmpty;
+  bool get hasDocumentedInheritedMethods =>
+      documentedInheritedMethods.isNotEmpty;
 
   late final List<Operator> inheritedOperators = () {
     var operatorNames = declaredOperators.map((o) => o.element.name).toSet();
@@ -319,9 +325,13 @@ abstract class InheritingContainer extends Container
     return typeChain;
   }
 
-  late final List<DefinedElementType> documentedSuperChain = config.documentPrivate
-    ? [for (final type in superChain) if (type.modelElement.isDocumented) type]
-    : superChain;
+  late final List<DefinedElementType> documentedSuperChain =
+      config.documentPrivate
+          ? [
+              for (final type in superChain)
+                if (type.modelElement.isDocumented) type
+            ]
+          : superChain;
 
   Iterable<DefinedElementType> get documentedSuperChainReversed =>
       documentedSuperChain.reversed;

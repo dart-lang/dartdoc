@@ -401,16 +401,17 @@ class Package extends LibraryContainer
   List<String> get containerOrder => config.packageOrder;
 
   @override
-  late final Map<String, CommentReferable> referenceChildren =
-      <String, CommentReferable>{
-    for (var library in documentedLibrariesSorted) library.referenceName: library,
+  late final Map<String, CommentReferable> referenceChildren = <String,
+      CommentReferable>{
+    for (var library in documentedLibrariesSorted)
+      library.referenceName: library,
   }
-        // Do not override any preexisting data, and insert based on the
-        // public library sort order.
-        // TODO(jcollins-g): warn when results require package-global
-        // lookups like this.
-        ..addEntriesIfAbsent(
-            documentedLibrariesSorted.expand((l) => l.referenceChildren.entries));
+    // Do not override any preexisting data, and insert based on the
+    // public library sort order.
+    // TODO(jcollins-g): warn when results require package-global
+    // lookups like this.
+    ..addEntriesIfAbsent(
+        documentedLibrariesSorted.expand((l) => l.referenceChildren.entries));
 
   @override
   Iterable<CommentReferable> get referenceParents => [packageGraph];

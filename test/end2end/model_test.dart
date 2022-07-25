@@ -1773,7 +1773,8 @@ void main() {
 
       expect(ImplementBase.documentedImplementors,
           contains(ImplementerOfDeclaredPrivateClasses));
-      expect(ImplementBase.documentedImplementors, contains(ImplementerOfThings));
+      expect(
+          ImplementBase.documentedImplementors, contains(ImplementerOfThings));
     });
 
     test('Overrides from intermediate abstract classes are picked up correctly',
@@ -1850,8 +1851,8 @@ void main() {
       var classes = fakeLibrary.documentedClasses;
       GenericClass = classes.firstWhere((c) => c.name == 'GenericClass');
       ModifierClass = classes.firstWhere((c) => c.name == 'ModifierClass');
-      GenericMixin =
-          fakeLibrary.documentedMixins.firstWhere((m) => m.name == 'GenericMixin');
+      GenericMixin = fakeLibrary.documentedMixins
+          .firstWhere((m) => m.name == 'GenericMixin');
       TypeInferenceMixedIn =
           classes.firstWhere((c) => c.name == 'TypeInferenceMixedIn');
       overrideByEverything = TypeInferenceMixedIn.instanceFields
@@ -2167,10 +2168,10 @@ void main() {
     });
 
     test('F has a single instance method', () {
-      expect(
-          F.documentedInstanceMethods.where((m) => !m.isInherited), hasLength(1));
-      expect(
-          F.documentedInstanceMethods.first.name, equals('methodWithGenericParam'));
+      expect(F.documentedInstanceMethods.where((m) => !m.isInherited),
+          hasLength(1));
+      expect(F.documentedInstanceMethods.first.name,
+          equals('methodWithGenericParam'));
     });
 
     test('F has many inherited methods', () {
@@ -2200,7 +2201,8 @@ void main() {
     });
 
     test('F has zero declared instance properties', () {
-      expect(F.documentedInstanceFields.where((f) => !f.isInherited), hasLength(0));
+      expect(F.documentedInstanceFields.where((f) => !f.isInherited),
+          hasLength(0));
     });
 
     test('F has a few inherited properties', () {
@@ -2251,7 +2253,8 @@ void main() {
           ExtendingClass.superChain.first.modelElement.isPublic, equals(false));
       // And it should still show up in the documentedSuperChain, because it is
       // exported.
-      expect(ExtendingClass.documentedSuperChain.first.name, equals('BaseClass'));
+      expect(
+          ExtendingClass.documentedSuperChain.first.name, equals('BaseClass'));
       expect(
           ExtendingClass
               .documentedSuperChain.first.modelElement.canonicalLibrary!.name,
@@ -4825,7 +4828,8 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('private classes do not break the implementor chain', () {
       var Super1 = fakeLibrary.classes.singleWhere((c) => c.name == 'Super1');
-      var documentedImplementors = Super1.documentedImplementors.map((i) => i.name);
+      var documentedImplementors =
+          Super1.documentedImplementors.map((i) => i.name);
       expect(documentedImplementors, hasLength(3));
       // A direct implementor.
       expect(documentedImplementors, contains('Super4'));

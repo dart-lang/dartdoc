@@ -179,5 +179,6 @@ mixin Inheritable on ContainerMember {
   }();
 
   @override
-  bool get isDocumented => (isCanonical || isInherited) && (config.documentPrivate || isPublic);
+  bool get isDocumented =>
+      (isCanonical || isInherited) && (config.documentPrivate || isPublic);
 }

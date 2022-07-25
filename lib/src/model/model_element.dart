@@ -533,7 +533,8 @@ abstract class ModelElement extends Canonicalization
     // just shortcut them out.
     if (!utils.hasPublicName(element)) {
       canonicalLibraryPossibility = null;
-    } else if (!packageGraph.localDocumentedLibraries.contains(definingLibrary)) {
+    } else if (!packageGraph.localDocumentedLibraries
+        .contains(definingLibrary)) {
       canonicalLibraryPossibility = _searchForCanonicalLibrary();
     } else {
       canonicalLibraryPossibility = definingLibrary;
@@ -627,10 +628,13 @@ abstract class ModelElement extends Canonicalization
   }
 
   @override
-  bool get isCanonical => (config.documentPrivate || isPublic) &&
-    library == canonicalLibrary &&
-    // Assuming this is Inheritable, this element is canonical if it's in its canon element. 
-    (this is! Inheritable || enclosingElement == (this as Inheritable).canonicalEnclosingContainer);
+  bool get isCanonical =>
+      (config.documentPrivate || isPublic) &&
+      library == canonicalLibrary &&
+      // Assuming this is Inheritable, this element is canonical if it's in its canon element.
+      (this is! Inheritable ||
+          enclosingElement ==
+              (this as Inheritable).canonicalEnclosingContainer);
 
   /// Returns the docs, stripped of their leading comments syntax.
   @override
@@ -817,7 +821,8 @@ abstract class ModelElement extends Canonicalization
   @override
   Package get package => library.package;
 
-  bool get isPackageDocumented => (config.documentPrivate || isPublic) && package.isDocumented;
+  bool get isPackageDocumented =>
+      (config.documentPrivate || isPublic) && package.isDocumented;
 
   // TODO(jcollins-g): This is in the wrong place.  Move parts to
   // [GetterSetterCombo], elsewhere as appropriate?
