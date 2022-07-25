@@ -21,8 +21,8 @@ import 'package:meta/meta.dart';
 /// * **variable** : The opposite of constant. These are available for the
 ///   templating system.
 /// * **static** : static children of this container.
-/// * **public** : Filtered versions of the above members, containing only
-///   public items. These are available mostly for the templating system.
+/// * **documented**: Filtered versions of the above members, containing only
+///   documented items. These are available mostly for the templating system.
 /// * **sorted** : Filtered versions of the above members as a list sorted by
 ///   name.  These are available for the templating system.
 /// * **has** : boolean getters indicating whether the underlying collections
@@ -86,28 +86,28 @@ abstract class Container extends ModelElement
       .toList(growable: false);
 
   /// Whether all instance fields are inherited.
-  bool get publicInheritedInstanceFields => false;
+  bool get documentedInheritedInstanceFields => false;
 
   /// Whether all instance methods are inherited.
-  bool get publicInheritedInstanceMethods => false;
+  bool get documentedInheritedInstanceMethods => false;
 
   /// Whether all instance operators are inherited.
-  bool get publicInheritedInstanceOperators => false;
+  bool get documentedInheritedInstanceOperators => false;
 
   /// Override if this is [Constructable].
-  bool get hasPublicConstructors => false;
+  bool get hasDocumentedConstructors => false;
 
-  List<Constructor> get publicConstructorsSorted => [];
+  List<Constructor> get documentedConstructorsSorted => [];
 
   @nonVirtual
-  bool get hasPublicInstanceMethods =>
-      model_utils.filterNonPublic(instanceMethods).isNotEmpty;
+  bool get hasDocumentedInstanceMethods =>
+      model_utils.filterNonDocumented(instanceMethods).isNotEmpty;
 
-  Iterable<Method> get publicInstanceMethods =>
-      model_utils.filterNonPublic(instanceMethods);
+  Iterable<Method> get documentedInstanceMethods =>
+      model_utils.filterNonDocumented(instanceMethods);
 
-  late final List<Method> publicInstanceMethodsSorted =
-      publicInstanceMethods.toList()..sort();
+  late final List<Method> documentedInstanceMethodsSorted =
+      documentedInstanceMethods.toList()..sort();
 
   @nonVirtual
   late final Iterable<Operator> declaredOperators =
@@ -119,15 +119,15 @@ abstract class Container extends ModelElement
   Iterable<Operator> get instanceOperators => declaredOperators;
 
   @nonVirtual
-  bool get hasPublicInstanceOperators =>
-      publicInstanceOperatorsSorted.isNotEmpty;
+  bool get hasDocumentedInstanceOperators =>
+      documentedInstanceOperatorsSorted.isNotEmpty;
 
   @nonVirtual
-  Iterable<Operator> get publicInstanceOperators =>
-      model_utils.filterNonPublic(instanceOperators);
+  Iterable<Operator> get documentedInstanceOperators =>
+      model_utils.filterNonDocumented(instanceOperators);
 
-  late final List<Operator> publicInstanceOperatorsSorted =
-      publicInstanceOperators.toList()..sort();
+  late final List<Operator> documentedInstanceOperatorsSorted =
+      documentedInstanceOperators.toList()..sort();
 
   /// Fields fully declared in this [Container].
   Iterable<Field> get declaredFields;
@@ -139,28 +139,28 @@ abstract class Container extends ModelElement
   bool get hasInstanceFields => instanceFields.isNotEmpty;
 
   @nonVirtual
-  Iterable<Field> get publicInstanceFields =>
-      model_utils.filterNonPublic(instanceFields);
+  Iterable<Field> get documentedInstanceFields =>
+      model_utils.filterNonDocumented(instanceFields);
 
   @nonVirtual
-  bool get hasPublicInstanceFields => publicInstanceFields.isNotEmpty;
+  bool get hasDocumentedInstanceFields => documentedInstanceFields.isNotEmpty;
 
-  late final List<Field> publicInstanceFieldsSorted =
-      publicInstanceFields.toList()..sort(byName);
+  late final List<Field> documentedInstanceFieldsSorted =
+      documentedInstanceFields.toList()..sort(byName);
 
   Iterable<Field> get constantFields => declaredFields.where((f) => f.isConst);
 
-  Iterable<Field> get publicConstantFields =>
-      model_utils.filterNonPublic(constantFields);
+  Iterable<Field> get documentedConstantFields =>
+      model_utils.filterNonDocumented(constantFields);
 
-  bool get hasPublicConstantFields => publicConstantFields.isNotEmpty;
+  bool get hasDocumentedConstantFields => documentedConstantFields.isNotEmpty;
 
-  late final List<Field> publicConstantFieldsSorted =
-      publicConstantFields.toList()..sort(byName);
+  late final List<Field> documentedConstantFieldsSorted =
+      documentedConstantFields.toList()..sort(byName);
 
-  Iterable<Field> get publicEnumValues => [];
+  Iterable<Field> get documentedEnumValues => [];
 
-  bool get hasPublicEnumValues => publicEnumValues.isNotEmpty;
+  bool get hasDocumentedEnumValues => documentedEnumValues.isNotEmpty;
 
   Iterable<Accessor> get instanceAccessors =>
       instanceFields.expand((f) => f.allAccessors);
@@ -204,30 +204,30 @@ abstract class Container extends ModelElement
     return member as T;
   }
 
-  bool get hasPublicStaticFields => publicStaticFieldsSorted.isNotEmpty;
+  bool get hasDocumentedStaticFields => documentedStaticFieldsSorted.isNotEmpty;
 
-  late final List<Field> publicStaticFieldsSorted =
-      model_utils.filterNonPublic(staticFields).toList()..sort();
+  late final List<Field> documentedStaticFieldsSorted =
+      model_utils.filterNonDocumented(staticFields).toList()..sort();
 
   Iterable<Field> get staticFields => declaredFields.where((f) => f.isStatic);
 
   Iterable<Field> get variableStaticFields =>
       staticFields.where((f) => !f.isConst);
 
-  bool get hasPublicVariableStaticFields =>
-      publicVariableStaticFieldsSorted.isNotEmpty;
+  bool get hasDocumentedVariableStaticFields =>
+      documentedVariableStaticFieldsSorted.isNotEmpty;
 
-  late final List<Field> publicVariableStaticFieldsSorted =
-      model_utils.filterNonPublic(variableStaticFields).toList()..sort();
+  late final List<Field> documentedVariableStaticFieldsSorted =
+      model_utils.filterNonDocumented(variableStaticFields).toList()..sort();
 
   Iterable<Method> get staticMethods =>
       declaredMethods.where((m) => m.isStatic);
 
-  bool get hasPublicStaticMethods =>
-      model_utils.filterNonPublic(publicStaticMethodsSorted).isNotEmpty;
+  bool get hasDocumentedStaticMethods =>
+      model_utils.filterNonDocumented(documentedStaticMethodsSorted).isNotEmpty;
 
-  late final List<Method> publicStaticMethodsSorted =
-      model_utils.filterNonPublic(staticMethods).toList()..sort();
+  late final List<Method> documentedStaticMethodsSorted =
+      model_utils.filterNonDocumented(staticMethods).toList()..sort();
 
   /// For subclasses to add items after the main pass but before the
   /// parameter-global.
