@@ -30,72 +30,72 @@ abstract class TopLevelContainer implements Nameable {
 
   Iterable<Typedef> get typedefs;
 
-  bool get hasPublicClasses => publicClasses.isNotEmpty;
+  bool get hasDocumentedClasses => documentedClasses.isNotEmpty;
 
-  bool get hasPublicExtensions => publicExtensions.isNotEmpty;
+  bool get hasDocumentedExtensions => documentedExtensions.isNotEmpty;
 
-  bool get hasPublicConstants => publicConstants.isNotEmpty;
+  bool get hasDocumentedConstants => documentedConstants.isNotEmpty;
 
-  bool get hasPublicEnums => publicEnums.isNotEmpty;
+  bool get hasDocumentedEnums => documentedEnums.isNotEmpty;
 
-  bool get hasPublicExceptions => _publicExceptions.isNotEmpty;
+  bool get hasDocumentedExceptions => _documentedExceptions.isNotEmpty;
 
-  bool get hasPublicFunctions => publicFunctions.isNotEmpty;
+  bool get hasDocumentedFunctions => documentedFunctions.isNotEmpty;
 
-  bool get hasPublicMixins => publicMixins.isNotEmpty;
+  bool get hasDocumentedMixins => documentedMixins.isNotEmpty;
 
-  bool get hasPublicProperties => publicProperties.isNotEmpty;
+  bool get hasDocumentedProperties => documentedProperties.isNotEmpty;
 
-  bool get hasPublicTypedefs => publicTypedefs.isNotEmpty;
+  bool get hasDocumentedTypedefs => documentedTypedefs.isNotEmpty;
 
-  Iterable<Class> get publicClasses => model_utils.filterNonPublic(classes);
+  Iterable<Class> get documentedClasses => model_utils.filterNonDocumented(classes);
 
   // TODO(jcollins-g):  Setting this type parameter to `Container` magically
   // fixes a number of type problems in the AOT compiler, but I am mystified as
   // to why that should be the case.
-  late final Iterable<Container> publicClassesSorted = publicClasses.toList()
+  late final Iterable<Container> documentedClassesSorted = documentedClasses.toList()
     ..sort();
 
-  Iterable<Extension> get publicExtensions =>
-      model_utils.filterNonPublic(extensions);
+  Iterable<Extension> get documentedExtensions =>
+      model_utils.filterNonDocumented(extensions);
 
-  late final Iterable<Extension> publicExtensionsSorted =
-      publicExtensions.toList()..sort();
+  late final Iterable<Extension> documentedExtensionsSorted =
+      documentedExtensions.toList()..sort();
 
-  Iterable<TopLevelVariable> get publicConstants =>
-      model_utils.filterNonPublic(constants);
+  Iterable<TopLevelVariable> get documentedConstants =>
+      model_utils.filterNonDocumented(constants);
 
-  Iterable<TopLevelVariable> get publicConstantsSorted =>
-      publicConstants.toList()..sort();
+  Iterable<TopLevelVariable> get documentedConstantsSorted =>
+      documentedConstants.toList()..sort();
 
-  Iterable<Enum> get publicEnums => model_utils.filterNonPublic(enums);
+  Iterable<Enum> get documentedEnums => model_utils.filterNonDocumented(enums);
 
-  late final Iterable<Enum> publicEnumsSorted = publicEnums.toList()..sort();
+  late final Iterable<Enum> documentedEnumsSorted = documentedEnums.toList()..sort();
 
-  Iterable<Class> get _publicExceptions =>
-      model_utils.filterNonPublic(exceptions);
+  Iterable<Class> get _documentedExceptions =>
+      model_utils.filterNonDocumented(exceptions);
 
-  late final Iterable<Class> publicExceptionsSorted = _publicExceptions.toList()
+  late final Iterable<Class> documentedExceptionsSorted = _documentedExceptions.toList()
     ..sort();
 
-  Iterable<ModelFunctionTyped> get publicFunctions =>
-      model_utils.filterNonPublic(functions!);
+  Iterable<ModelFunctionTyped> get documentedFunctions =>
+      model_utils.filterNonDocumented(functions!);
 
-  late final Iterable<ModelFunctionTyped> publicFunctionsSorted =
-      publicFunctions.toList()..sort();
+  late final Iterable<ModelFunctionTyped> documentedFunctionsSorted =
+      documentedFunctions.toList()..sort();
 
-  Iterable<Mixin> get publicMixins => model_utils.filterNonPublic(mixins);
+  Iterable<Mixin> get documentedMixins => model_utils.filterNonDocumented(mixins);
 
-  late final Iterable<Mixin> publicMixinsSorted = publicMixins.toList()..sort();
+  late final Iterable<Mixin> documentedMixinsSorted = documentedMixins.toList()..sort();
 
-  Iterable<TopLevelVariable> get publicProperties =>
-      model_utils.filterNonPublic(properties);
+  Iterable<TopLevelVariable> get documentedProperties =>
+      model_utils.filterNonDocumented(properties);
 
-  late final Iterable<TopLevelVariable> publicPropertiesSorted =
-      publicProperties.toList()..sort();
+  late final Iterable<TopLevelVariable> documentedPropertiesSorted =
+      documentedProperties.toList()..sort();
 
-  Iterable<Typedef> get publicTypedefs => model_utils.filterNonPublic(typedefs);
+  Iterable<Typedef> get documentedTypedefs => model_utils.filterNonDocumented(typedefs);
 
-  late final Iterable<Typedef> publicTypedefsSorted = publicTypedefs.toList()
+  late final Iterable<Typedef> documentedTypedefsSorted = documentedTypedefs.toList()
     ..sort();
 }

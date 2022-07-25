@@ -152,7 +152,7 @@ class GeneratorFrontEnd implements Generator {
           }
 
           for (var method
-              in filterNonDocumented(extension.publicInstanceMethods)) {
+              in filterNonDocumented(extension.documentedInstanceMethods)) {
             indexAccumulator.add(method);
             _generatorBackend.generateMethod(
                 writer, packageGraph, lib, extension, method);

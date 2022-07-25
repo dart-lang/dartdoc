@@ -114,7 +114,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
         _addToImplementors(library.mixins);
         _extensions.addAll(library.extensions);
       }
-      if (package.isLocal && !package.hasPublicLibraries) {
+      if (package.isLocal && !package.hasDocumentedLibraries) {
         package.warn(PackageWarning.noDocumentableLibrariesInPackage);
       }
     }
@@ -488,7 +488,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
 
   List<Package> get packages => packageMap.values.toList();
 
-  late final List<Package> publicPackages = () {
+  late final List<Package> documentedPackages = () {
     assert(allLibrariesAdded);
     // Help the user if they pass us a package that doesn't exist.
     var packageNames = packages.map((p) => p.name).toSet();
@@ -498,16 +498,14 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
             message: "$packageName, packages: ${packageNames.join(',')}");
       }
     }
-    return packages.where((p) => p.isPublic).toList()..sort();
+    return packages.where(
+      (p) => p.isDocumented && p.documentedWhere != DocumentLocation.missing
+    ).toList()..sort();
   }();
 
   /// Local packages are to be documented locally vs. remote or not at all.
   List<Package> get localPackages =>
-      publicPackages.where((p) => p.isLocal).toList();
-
-  /// Documented packages are documented somewhere (local or remote).
-  Iterable<Package> get documentedPackages =>
-      packages.where((p) => p.documentedWhere != DocumentLocation.missing);
+      documentedPackages.where((p) => p.isLocal).toList();
 
   Map<LibraryElement, Set<Library>> _libraryElementReexportedBy = {};
 
@@ -552,7 +550,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       _lastSizeOfAllLibraries = allLibraries.keys.length;
       _libraryElementReexportedBy = <LibraryElement, Set<Library>>{};
       _reexportsTagged = {};
-      for (var library in publicLibraries) {
+      for (var library in documentedLibraries) {
         _tagReexportsFor(library, library.element);
       }
     }
@@ -601,7 +599,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
 
     void checkAndAddContainer(
         InheritingContainer implemented, InheritingContainer implementor) {
-      if (!implemented.isPublic) {
+      if (!implemented.isDocumented) {
         privates.add(implemented);
       }
       implemented = implemented.canonicalModelElement as InheritingContainer? ??
@@ -628,7 +626,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
           checkAndAddContainer(type.modelElement as InheritingContainer, clazz);
         }
       }
-      for (var type in clazz.publicInterfaces) {
+      for (var type in clazz.documentedInterfaces) {
         checkAndAddContainer(type.modelElement as InheritingContainer, clazz);
       }
     }
@@ -649,9 +647,9 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   /// The number of libraries.
   late final int libraryCount = libraries.length;
 
-  late final Set<Library> publicLibraries = () {
+  late final Set<Library> documentedLibraries = () {
     assert(allLibrariesAdded);
-    return utils.filterNonPublic(libraries).toSet();
+    return utils.filterNonDocumented(libraries).toSet();
   }();
 
   late final List<Library> _localLibraries = () {
@@ -659,9 +657,9 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     return localPackages.expand((p) => p.libraries).toList()..sort();
   }();
 
-  late final Set<Library> localPublicLibraries = () {
+  late final Set<Library> localDocumentedLibraries = () {
     assert(allLibrariesAdded);
-    return utils.filterNonPublic(_localLibraries).toSet();
+    return utils.filterNonDocumented(_localLibraries).toSet();
   }();
 
   /// The String name representing the `Object` type.
@@ -733,7 +731,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       return _canonicalLibraryFor[e];
     }
     _canonicalLibraryFor[e] = null;
-    for (var library in publicLibraries) {
+    for (var library in documentedLibraries) {
       if (library.modelElementsMap.containsKey(searchElement)) {
         for (var modelElement in library.modelElementsMap[searchElement!]!) {
           if (modelElement.isCanonical) {
@@ -1001,23 +999,23 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     // scope?  Doing this is always going to be ambiguous and potentially
     // confusing.
     children.addEntriesIfAbsent(sortedDocumentedPackages
-        .expand((p) => p.publicLibrariesSorted)
+        .expand((p) => p.documentedLibrariesSorted)
         .generateEntries());
 
     // TODO(jcollins-g): Warn about directly referencing top level items
     // out of scope?  Doing this will be even more ambiguous and
     // potentially confusing than doing so with libraries.
     children.addEntriesIfAbsent(sortedDocumentedPackages
-        .expand((p) => p.publicLibrariesSorted)
+        .expand((p) => p.documentedLibrariesSorted)
         .expand((l) => [
-              ...l.publicConstants,
-              ...l.publicFunctions,
-              ...l.publicProperties,
-              ...l.publicTypedefs,
-              ...l.publicExtensions,
-              ...l.publicClasses,
-              ...l.publicEnums,
-              ...l.publicMixins
+              ...l.documentedConstants,
+              ...l.documentedFunctions,
+              ...l.documentedProperties,
+              ...l.documentedTypedefs,
+              ...l.documentedExtensions,
+              ...l.documentedClasses,
+              ...l.documentedEnums,
+              ...l.documentedMixins
             ])
         .generateEntries());
 

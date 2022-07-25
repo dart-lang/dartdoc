@@ -96,7 +96,7 @@ mixin ModelElementBuilderImpl implements ModelElementBuilder {
 /// documentation: canonicalization.
 ///
 /// A ModelElement is canonical if it is the element in the namespace where that
-/// element 'comes from' in the public interface to this [PackageGraph].  That
+/// element 'comes from' in the interface to this [PackageGraph].  That
 /// often means the [ModelElement.library] is contained in
 /// [PackageGraph.libraries], but there are many exceptions and ambiguities the
 /// code tries to address here.
@@ -111,7 +111,7 @@ mixin ModelElementBuilderImpl implements ModelElementBuilder {
 /// canonical instances of ModelElement ([ModelElement.isCanonical]).  This
 /// helps prevent subtle bugs as generated output for a non-canonical
 /// ModelElement will reference itself as part of the "wrong" [Library] from the
-/// public interface perspective.
+/// interface perspective.
 abstract class ModelElement extends Canonicalization
     with
         CommentReferable,
@@ -533,7 +533,7 @@ abstract class ModelElement extends Canonicalization
     // just shortcut them out.
     if (!utils.hasPublicName(element)) {
       canonicalLibraryPossibility = null;
-    } else if (!packageGraph.localPublicLibraries.contains(definingLibrary)) {
+    } else if (!packageGraph.localDocumentedLibraries.contains(definingLibrary)) {
       canonicalLibraryPossibility = _searchForCanonicalLibrary();
     } else {
       canonicalLibraryPossibility = definingLibrary;
@@ -542,7 +542,7 @@ abstract class ModelElement extends Canonicalization
     if (this is Inheritable && !config.linkToRemote) {
       if ((this as Inheritable).isInherited &&
           canonicalLibraryPossibility == null &&
-          packageGraph.publicLibraries.contains(library)) {
+          packageGraph.documentedLibraries.contains(library)) {
         // In the event we've inherited a field from an object that isn't
         // directly reexported, we may need to pretend we are canonical for
         // this.
@@ -550,7 +550,7 @@ abstract class ModelElement extends Canonicalization
       }
     }
     assert(canonicalLibraryPossibility == null ||
-        packageGraph.publicLibraries.contains(canonicalLibraryPossibility));
+        packageGraph.documentedLibraries.contains(canonicalLibraryPossibility));
     return canonicalLibraryPossibility;
   }();
 
@@ -750,7 +750,7 @@ abstract class ModelElement extends Canonicalization
   }
 
   @override
-  bool get isDocumented => isCanonical && isPublic;
+  bool get isDocumented => isCanonical && (config.documentPrivate || isPublic);
 
   /// Whether this element is an enum value.
   bool get isEnumValue => false;
@@ -824,7 +824,7 @@ abstract class ModelElement extends Canonicalization
   @override
   Package get package => library.package;
 
-  bool get isPublicAndPackageDocumented => isPublic && package.isDocumented;
+  bool get isPackageDocumented => package.isDocumented;
 
   // TODO(jcollins-g): This is in the wrong place.  Move parts to
   // [GetterSetterCombo], elsewhere as appropriate?
@@ -937,7 +937,7 @@ abstract class ModelElement extends Canonicalization
         this is ModelFunction);
 
     if (href == null) {
-      if (isPublicAndPackageDocumented) {
+      if (isPackageDocumented) {
         warn(PackageWarning.noCanonicalFound);
       }
       return htmlEscape.convert(name);

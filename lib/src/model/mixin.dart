@@ -7,7 +7,6 @@ import 'package:analyzer/dart/element/type.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
-import 'package:dartdoc/src/model_utils.dart' as model_utils;
 import 'package:dartdoc/src/special_elements.dart';
 import 'package:meta/meta.dart';
 
@@ -25,14 +24,19 @@ class Mixin extends InheritingContainer with TypeImplementing {
             t.modelElement != packageGraph.specialClasses[SpecialClass.object])
   ];
 
-  bool get hasPublicSuperclassConstraints =>
-      publicSuperclassConstraints.isNotEmpty;
+  bool get hasDocumentedSuperclassConstraints =>
+      documentedSuperclassConstraints.isNotEmpty;
 
-  Iterable<ParameterizedElementType> get publicSuperclassConstraints =>
-      model_utils.filterNonPublic(superclassConstraints);
+  Iterable<ParameterizedElementType> get documentedSuperclassConstraints sync* {
+    for (final constraint in superclassConstraints) {
+      if (constraint.modelElement.isDocumented) {
+        yield constraint;
+      }
+    }
+  }
 
   @override
-  bool get hasModifiers => super.hasModifiers || hasPublicSuperclassConstraints;
+  bool get hasModifiers => super.hasModifiers || hasDocumentedSuperclassConstraints;
 
   @override
   String get fileName => '$name-mixin.$fileType';

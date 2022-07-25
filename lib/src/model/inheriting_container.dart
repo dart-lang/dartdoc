@@ -24,11 +24,11 @@ mixin Constructable on InheritingContainer {
   ];
 
   @override
-  bool get hasPublicConstructors => publicConstructorsSorted.isNotEmpty;
+  bool get hasDocumentedConstructors => documentedConstructorsSorted.isNotEmpty;
 
   @override
-  late final List<Constructor> publicConstructorsSorted =
-      model_utils.filterNonPublic(constructors).toList()..sort();
+  late final List<Constructor> documentedConstructorsSorted =
+      model_utils.filterNonDocumented(constructors).toList()..sort();
 
   static Iterable<MapEntry<String, CommentReferable>> _constructorGenerator(
       Iterable<Constructor> source) sync* {
@@ -51,7 +51,7 @@ mixin Constructable on InheritingContainer {
     // TODO(jcollins-g): wean important users off of relying on static method
     // inheritance (dart-lang/dartdoc#2698)
     for (var container
-        in publicSuperChain.map((t) => t.modelElement).whereType<Container>()) {
+        in documentedSuperChain.map((t) => t.modelElement).whereType<Container>()) {
       for (var modelElement in [
         ...container.staticFields,
         ...container.staticMethods,
@@ -72,13 +72,12 @@ mixin MixedInTypes on InheritingContainer {
         .map((f) => modelBuilder.typeFrom(f, library) as DefinedElementType)
   ];
 
-  bool get hasPublicMixedInTypes => publicMixedInTypes.isNotEmpty;
+  bool get hasDocumentedMixedInTypes => documentedMixedInTypes.isNotEmpty;
 
   @override
-  bool get hasModifiers => super.hasModifiers || hasPublicMixedInTypes;
+  bool get hasModifiers => super.hasModifiers || hasDocumentedMixedInTypes;
 
-  Iterable<DefinedElementType> get publicMixedInTypes =>
-      model_utils.filterNonPublic(mixedInTypes);
+  Iterable<DefinedElementType> get documentedMixedInTypes => mixedInTypes;
 }
 
 /// Add the ability for an [InheritingContainer] to be implemented by other
@@ -92,17 +91,17 @@ mixin TypeImplementing on InheritingContainer {
   /// Interfaces directly implemented by this container.
   List<DefinedElementType> get interfaces => directInterfaces;
 
-  bool get hasPublicInterfaces => publicInterfaces.isNotEmpty;
+  bool get hasDocumentedInterfaces => documentedInterfaces.isNotEmpty;
 
   @override
   bool get hasModifiers =>
-      super.hasModifiers || hasPublicInterfaces || hasPublicImplementors;
+      super.hasModifiers || hasDocumentedInterfaces || hasDocumentedImplementors;
 
   /// The public interfaces may include substitutions for intermediate
-  /// private interfaces, and so unlike other public* methods, is not
+  /// private interfaces, and so unlike other documented* methods, is not
   /// a strict subset of [interfaces].
   @override
-  Iterable<DefinedElementType> get publicInterfaces sync* {
+  Iterable<DefinedElementType> get documentedInterfaces sync* {
     for (var i in directInterfaces) {
       /// Do not recurse if we can find an element here.
       if (i.modelElement.canonicalModelElement != null) {
@@ -121,10 +120,10 @@ mixin TypeImplementing on InheritingContainer {
       // directly referencing the canonical classes further up the chain.
       if (i.modelElement is InheritingContainer) {
         var hiddenContainer = i.modelElement as InheritingContainer;
-        if (hiddenContainer.publicSuperChain.isNotEmpty) {
-          yield hiddenContainer.publicSuperChain.first;
+        if (hiddenContainer.documentedSuperChain.isNotEmpty) {
+          yield hiddenContainer.documentedSuperChain.first;
         }
-        yield* hiddenContainer.publicInterfaces;
+        yield* hiddenContainer.documentedInterfaces;
       } else {
         assert(
             false,
@@ -136,24 +135,24 @@ mixin TypeImplementing on InheritingContainer {
     }
   }
 
-  bool get hasPublicImplementors => publicImplementors.isNotEmpty;
+  bool get hasDocumentedImplementors => documentedImplementors.isNotEmpty;
 
-  /// Returns all the "immediate" public implementors of this
+  /// Returns all the "immediate" documented implementors of this
   /// [TypeImplementing].  For a [Mixin], this is actually the mixin
   /// applications using the [Mixin].
   ///
-  /// If this [InheritingContainer] has a private implementor, then that is
-  /// counted as a proxy for any public implementors of that private container.
-  Iterable<InheritingContainer> get publicImplementors {
+  /// If this [InheritingContainer] has a non-documented implementor, then that is
+  /// counted as a proxy for any documented implementors of that container.
+  Iterable<InheritingContainer> get documentedImplementors {
     var result = <InheritingContainer>{};
     var seen = <InheritingContainer>{};
 
-    // Recursively adds [implementor] if public, or the implementors of
+    // Recursively adds [implementor] if documented, or the implementors of
     // [implementor] if not.
     void addToResult(InheritingContainer implementor) {
       if (seen.contains(implementor)) return;
       seen.add(implementor);
-      if (implementor.isPublicAndPackageDocumented) {
+      if (implementor.isPackageDocumented) {
         result.add(implementor);
       } else {
         model_utils
@@ -168,10 +167,10 @@ mixin TypeImplementing on InheritingContainer {
     return result;
   }
 
-  List<InheritingContainer>? _publicImplementorsSorted;
+  List<InheritingContainer>? _documentedImplementorsSorted;
 
-  Iterable<InheritingContainer> get publicImplementorsSorted =>
-      _publicImplementorsSorted ??= publicImplementors.toList()..sort(byName);
+  Iterable<InheritingContainer> get documentedImplementorsSorted =>
+      _documentedImplementorsSorted ??= documentedImplementors.toList()..sort(byName);
 }
 
 /// A [Container] that participates in inheritance in Dart.
@@ -202,7 +201,7 @@ abstract class InheritingContainer extends Container
       [...super.instanceMethods, ...inheritedMethods];
 
   @override
-  bool get publicInheritedInstanceMethods =>
+  bool get documentedInheritedInstanceMethods =>
       instanceMethods.every((f) => f.isInherited);
 
   @override
@@ -210,8 +209,8 @@ abstract class InheritingContainer extends Container
       [...super.instanceOperators, ...inheritedOperators];
 
   @override
-  bool get publicInheritedInstanceOperators =>
-      publicInstanceOperators.every((f) => f.isInherited);
+  bool get documentedInheritedInstanceOperators =>
+      documentedInstanceOperators.every((f) => f.isInherited);
 
   late final List<ModelElement> _allModelElements = [
     ...super.allModelElements,
@@ -234,10 +233,10 @@ abstract class InheritingContainer extends Container
   @override
   bool get hasModifiers =>
       hasAnnotations ||
-      hasPublicSuperChainReversed ||
+      hasDocumentedSuperChainReversed ||
       hasPotentiallyApplicableExtensions;
 
-  bool get hasPublicSuperChainReversed => publicSuperChainReversed.isNotEmpty;
+  bool get hasDocumentedSuperChainReversed => documentedSuperChainReversed.isNotEmpty;
 
   late final Iterable<Method> inheritedMethods = () {
     var methodNames = declaredMethods.map((m) => m.element.name).toSet();
@@ -254,10 +253,10 @@ abstract class InheritingContainer extends Container
     ];
   }();
 
-  Iterable<Method> get publicInheritedMethods =>
-      model_utils.filterNonPublic(inheritedMethods);
+  Iterable<Method> get documentedInheritedMethods =>
+      model_utils.filterNonDocumented(inheritedMethods);
 
-  bool get hasPublicInheritedMethods => publicInheritedMethods.isNotEmpty;
+  bool get hasDocumentedInheritedMethods => documentedInheritedMethods.isNotEmpty;
 
   late final List<Operator> inheritedOperators = () {
     var operatorNames = declaredOperators.map((o) => o.element.name).toSet();
@@ -274,13 +273,13 @@ abstract class InheritingContainer extends Container
 
   Iterable<Field> get inheritedFields => allFields.where((f) => f.isInherited);
 
-  Iterable<DefinedElementType> get publicInterfaces => [];
+  Iterable<DefinedElementType> get documentedInterfaces => [];
 
-  Iterable<Field> get publicInheritedFields =>
-      model_utils.filterNonPublic(inheritedFields);
+  Iterable<Field> get documentedInheritedFields =>
+      model_utils.filterNonDocumented(inheritedFields);
 
   @override
-  bool get isCanonical => super.isCanonical && isPublic;
+  bool get isCanonical => super.isCanonical && isDocumented;
 
   /// Returns true if [other] is a parent class for this class.
   bool _isInheritingFrom(InheritingContainer? other) => superChain
@@ -323,12 +322,12 @@ abstract class InheritingContainer extends Container
     return typeChain;
   }
 
-  late final List<DefinedElementType> publicSuperChain = [
-    ...model_utils.filterNonPublic(superChain)
-  ];
+  late final List<DefinedElementType> documentedSuperChain = config.documentPrivate
+    ? [for (final type in superChain) if (type.modelElement.isDocumented) type]
+    : superChain;
 
-  Iterable<DefinedElementType> get publicSuperChainReversed =>
-      publicSuperChain.reversed;
+  Iterable<DefinedElementType> get documentedSuperChainReversed =>
+      documentedSuperChain.reversed;
 
   List<ExecutableElement?>? __inheritedElements;
 
@@ -527,8 +526,8 @@ abstract class InheritingContainer extends Container
   Iterable<Field> get instanceFields => allFields.where((f) => !f.isStatic);
 
   @override
-  bool get publicInheritedInstanceFields =>
-      publicInstanceFields.every((f) => f.isInherited);
+  bool get documentedInheritedInstanceFields =>
+      documentedInstanceFields.every((f) => f.isInherited);
 
   @override
   Iterable<Field> get constantFields => allFields.where((f) => f.isConst);

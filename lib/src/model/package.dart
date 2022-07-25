@@ -258,9 +258,9 @@ class Package extends LibraryContainer
   // Workaround for mustache4dart issue where templates do not recognize
   // inherited properties as being in-context.
   @override
-  Iterable<Library> get publicLibraries {
+  Iterable<Library> get documentedLibraries {
     assert(libraries.every((l) => l.packageMeta == packageMeta));
-    return super.publicLibraries;
+    return super.documentedLibraries;
   }
 
   /// The default, unnamed category.
@@ -333,8 +333,8 @@ class Package extends LibraryContainer
   ].where((c) => c.name.isNotEmpty).toList()
     ..sort();
 
-  Iterable<Category> get categoriesWithPublicLibraries =>
-      categories.where((c) => c.publicLibraries.isNotEmpty);
+  Iterable<Category> get categoriesWithDocumentedLibraries =>
+      categories.where((c) => c.documentedLibraries.isNotEmpty);
 
   Iterable<Category> get documentedCategories =>
       categories.where((c) => c.isDocumented);
@@ -403,14 +403,14 @@ class Package extends LibraryContainer
   @override
   late final Map<String, CommentReferable> referenceChildren =
       <String, CommentReferable>{
-    for (var library in publicLibrariesSorted) library.referenceName: library,
+    for (var library in documentedLibrariesSorted) library.referenceName: library,
   }
         // Do not override any preexisting data, and insert based on the
         // public library sort order.
         // TODO(jcollins-g): warn when results require package-global
         // lookups like this.
         ..addEntriesIfAbsent(
-            publicLibrariesSorted.expand((l) => l.referenceChildren.entries));
+            documentedLibrariesSorted.expand((l) => l.referenceChildren.entries));
 
   @override
   Iterable<CommentReferable> get referenceParents => [packageGraph];

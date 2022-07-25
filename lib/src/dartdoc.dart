@@ -99,8 +99,7 @@ class DartdocFileWriter implements FileWriter {
   }
 }
 
-/// Generates Dart documentation for all public Dart libraries in the given
-/// directory.
+/// Generates Dart documentation for Dart libraries in the given directory.
 class Dartdoc {
   Generator _generator;
   final PackageBuilder packageBuilder;
@@ -194,7 +193,7 @@ class Dartdoc {
     }
 
     var seconds = stopwatch.elapsedMilliseconds / 1000.0;
-    libs = packageGraph.localPublicLibraries.length;
+    libs = packageGraph.localDocumentedLibraries.length;
     logInfo("Documented $libs public librar${libs == 1 ? 'y' : 'ies'} "
         'in ${seconds.toStringAsFixed(1)} seconds');
 
@@ -215,7 +214,7 @@ class Dartdoc {
       logInfo('Documenting ${config.topLevelPackageMeta}...');
 
       dartdocResults = await generateDocsBase();
-      if (dartdocResults.packageGraph.localPublicLibraries.isEmpty) {
+      if (dartdocResults.packageGraph.localDocumentedLibraries.isEmpty) {
         logWarning('dartdoc could not find any libraries to document');
       }
 
