@@ -36,12 +36,12 @@ class _HashableChildLibraryElementVisitor
   }
 
   @override
-  void visitExportElement(ExportElement element) {
+  void visitLibraryExportElement(LibraryExportElement element) {
     // [ExportElement]s are not always hashable; skip them.
   }
 
   @override
-  void visitImportElement(ImportElement element) {
+  void visitLibraryImportElement(LibraryImportElement element) {
     // [ImportElement]s are not always hashable; skip them.
   }
 
@@ -94,8 +94,13 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
       ...element.exportNamespace.definedNames.values,
       // TODO(jcollins-g): Consider switch to [_libraryElement.topLevelElements].
       ..._getDefinedElements(element.definingCompilationUnit),
-      for (var cu in element.parts) ..._getDefinedElements(cu),
     };
+    for (var part in element.parts2) {
+      var directiveUri = part.uri;
+      if (directiveUri is DirectiveUriWithUnit) {
+        exportedAndLocalElements.add(directiveUri.unit);
+      }
+    }
     var library = Library._(
         element,
         packageGraph,
@@ -219,8 +224,8 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   late final Map<String, Set<Library>> prefixToLibrary = () {
     var prefixToLibrary = <String, Set<Library>>{};
     // It is possible to have overlapping prefixes.
-    for (var i in element.imports) {
-      var prefixName = i.prefix?.name;
+    for (var i in element.libraryImports) {
+      var prefixName = i.prefix?.element.name;
       // Ignore invalid imports.
       if (prefixName != null && i.importedLibrary != null) {
         prefixToLibrary
