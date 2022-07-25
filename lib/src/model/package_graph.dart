@@ -488,7 +488,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
 
   List<Package> get packages => packageMap.values.toList();
 
-  late final List<Package> documentedPackages = () {
+  late final List<Package> _packagesHaveDocumentation = () {
     assert(allLibrariesAdded);
     // Help the user if they pass us a package that doesn't exist.
     var packageNames = packages.map((p) => p.name).toSet();
@@ -498,14 +498,18 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
             message: "$packageName, packages: ${packageNames.join(',')}");
       }
     }
-    return packages.where(
-      (p) => p.isDocumented && p.documentedWhere != DocumentLocation.missing
-    ).toList()..sort();
+    return packages
+        .where((p) => p.documentedWhere != DocumentLocation.missing)
+        .toList()
+      ..sort();
   }();
+
+  Iterable<Package> get documentedPackages => 
+      packages.where((p) => p.isDocumented);
 
   /// Local packages are to be documented locally vs. remote or not at all.
   List<Package> get localPackages =>
-      documentedPackages.where((p) => p.isLocal).toList();
+      _packagesHaveDocumentation.where((p) => p.isLocal).toList();
 
   Map<LibraryElement, Set<Library>> _libraryElementReexportedBy = {};
 

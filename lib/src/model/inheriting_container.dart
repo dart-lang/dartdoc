@@ -278,9 +278,6 @@ abstract class InheritingContainer extends Container
   Iterable<Field> get documentedInheritedFields =>
       model_utils.filterNonDocumented(inheritedFields);
 
-  @override
-  bool get isCanonical => super.isCanonical && isDocumented;
-
   /// Returns true if [other] is a parent class for this class.
   bool _isInheritingFrom(InheritingContainer? other) => superChain
       .map((et) => (et.modelElement as InheritingContainer))

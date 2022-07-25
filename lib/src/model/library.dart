@@ -215,6 +215,9 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   }
 
   @override
+  bool get isDocumented => (config.documentPrivate || isPublic);
+
+  @override
   Iterable<TopLevelVariable> get constants =>
       _variables.where((v) => v.isConst);
 
