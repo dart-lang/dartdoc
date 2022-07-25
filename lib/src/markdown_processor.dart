@@ -15,6 +15,7 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/runtime_stats.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:markdown/markdown.dart' as md;
+import 'package:markdown/markdown.dart';
 import 'package:meta/meta.dart';
 
 const _validHtmlTags = [
@@ -230,38 +231,6 @@ MatchingLinkResult _getMatchingLinkElement(
   return MatchingLinkResult(lookupResult);
 }
 
-/// A link resolver which resolves [referenceText] as stemming from [element].
-md.Node _makeLinkNode(String referenceText, Warnable element) {
-  var result = getMatchingLinkElement(referenceText, element);
-  var textContent = _htmlEscape.convert(referenceText);
-  var linkedElement = result.commentReferable;
-  if (linkedElement != null) {
-    if (linkedElement.href != null) {
-      var anchor = md.Element.text('a', textContent);
-      if (linkedElement is ModelElement && linkedElement.isDeprecated) {
-        anchor.attributes['class'] = 'deprecated';
-      }
-      var href = linkedElement.href;
-      if (href != null) {
-        anchor.attributes['href'] = href;
-      }
-      return anchor;
-    } else {
-      // Otherwise this would be `linkedElement.linkedName`, but link bodies are
-      // slightly different for doc references.
-      return md.Element.text('code', textContent);
-    }
-  } else {
-    // Avoid claiming documentation is inherited when it comes from the current
-    // element.
-    element.warn(PackageWarning.unresolvedDocReference,
-        message: referenceText,
-        referredFrom:
-            element.documentationIsLocal ? [] : element.documentationFrom);
-    return md.Element.text('code', textContent);
-  }
-}
-
 /// Creates a [MatchingLinkResult] for [referenceText], the text of a doc
 /// comment reference found in the doc comment attached to [element].
 @visibleForTesting
@@ -349,21 +318,30 @@ class MarkdownDocument extends md.Document {
   /// Creates a document which resolves comment references as stemming from
   /// [element].
   factory MarkdownDocument.withElementLinkResolver(Warnable element) {
-    md.Node? linkResolver(String name, [String? _]) {
-      if (name.isEmpty) {
-        return null;
-      }
-      return _makeLinkNode(name, element);
-    }
-
-    return MarkdownDocument(
+    return MarkdownDocument._(
       inlineSyntaxes: _markdownSyntaxes,
       blockSyntaxes: _markdownBlockSyntaxes,
-      linkResolver: linkResolver,
+      linkResolver: (String name, [String? _]) => _makeLinkNode(name, element),
     );
   }
 
+  @Deprecated("MarkdownDocument's unnamed constructor is deprecated. Use "
+      '[MarkdownDocument.withElementLinkResolver]')
   MarkdownDocument({
+    Iterable<BlockSyntax>? blockSyntaxes,
+    Iterable<InlineSyntax>? inlineSyntaxes,
+    ExtensionSet? extensionSet,
+    Resolver? linkResolver,
+    Resolver? imageLinkResolver,
+  }) : this._(
+          blockSyntaxes: blockSyntaxes,
+          inlineSyntaxes: inlineSyntaxes,
+          extensionSet: extensionSet,
+          linkResolver: linkResolver,
+          imageLinkResolver: imageLinkResolver,
+        );
+
+  MarkdownDocument._({
     super.blockSyntaxes,
     super.inlineSyntaxes,
     super.extensionSet,
@@ -403,6 +381,41 @@ class MarkdownDocument extends md.Document {
       } else if (node is md.Element && node.children != null) {
         _parseInlineContent(node.children!);
       }
+    }
+  }
+
+  /// A link resolver which resolves [referenceText] as stemming from [element].
+  static md.Node? _makeLinkNode(String referenceText, Warnable element) {
+    if (referenceText.isEmpty) {
+      return null;
+    }
+    var result = getMatchingLinkElement(referenceText, element);
+    var textContent = _htmlEscape.convert(referenceText);
+    var linkedElement = result.commentReferable;
+    if (linkedElement != null) {
+      if (linkedElement.href != null) {
+        var anchor = md.Element.text('a', textContent);
+        if (linkedElement is ModelElement && linkedElement.isDeprecated) {
+          anchor.attributes['class'] = 'deprecated';
+        }
+        var href = linkedElement.href;
+        if (href != null) {
+          anchor.attributes['href'] = href;
+        }
+        return anchor;
+      } else {
+        // Otherwise this would be `linkedElement.linkedName`, but link bodies
+        // are slightly different for doc references.
+        return md.Element.text('code', textContent);
+      }
+    } else {
+      // Avoid claiming documentation is inherited when it comes from the
+      // current element.
+      element.warn(PackageWarning.unresolvedDocReference,
+          message: referenceText,
+          referredFrom:
+              element.documentationIsLocal ? [] : element.documentationFrom);
+      return md.Element.text('code', textContent);
     }
   }
 }
