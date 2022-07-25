@@ -627,17 +627,10 @@ abstract class ModelElement extends Canonicalization
   }
 
   @override
-  bool get isCanonical {
-    if (!isPublic) return false;
-    if (library != canonicalLibrary) return false;
-    // If there's no inheritance to deal with, we're done.
-    if (this is! Inheritable) return true;
-    final self = this as Inheritable;
-    // If we're the defining element, or if the defining element is not in the
-    // set of libraries being documented, then this element should be treated as
-    // canonical (given `library == canonicalLibrary`).
-    return self.enclosingElement == self.canonicalEnclosingContainer;
-  }
+  bool get isCanonical => (config.documentPrivate || isPublic) &&
+    library == canonicalLibrary &&
+    // Assuming this is Inheritable, this element is canonical if it's in its canon element. 
+    (this is! Inheritable || enclosingElement == (this as Inheritable).canonicalEnclosingContainer);
 
   /// Returns the docs, stripped of their leading comments syntax.
   @override
@@ -824,7 +817,7 @@ abstract class ModelElement extends Canonicalization
   @override
   Package get package => library.package;
 
-  bool get isPackageDocumented => package.isDocumented;
+  bool get isPackageDocumented => (config.documentPrivate || isPublic) && package.isDocumented;
 
   // TODO(jcollins-g): This is in the wrong place.  Move parts to
   // [GetterSetterCombo], elsewhere as appropriate?
