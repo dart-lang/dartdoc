@@ -1,9 +1,9 @@
-{{ #hasPublicConstructors }}
+{{ #hasDocumentedConstructors }}
   <section class="summary offset-anchor" id="constructors">
     <h2>Constructors</h2>
 
     <dl class="constructor-summary-list">
-      {{ #publicConstructorsSorted }}
+      {{ #documentedConstructorsSorted }}
         <dt id="{{htmlId}}" class="callable">
           <span class="name">{{{ linkedName }}}</span><span class="signature">({{{ linkedParams }}})</span>
         </dt>
@@ -16,7 +16,7 @@
             <div class="constructor-modifier features">factory</div>
           {{ /isFactory }}
         </dd>
-      {{ /publicConstructorsSorted }}
+      {{ /documentedConstructorsSorted }}
     </dl>
   </section>
-{{ /hasPublicConstructors }}
+{{ /hasDocumentedConstructors }}

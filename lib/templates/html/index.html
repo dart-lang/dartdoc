@@ -14,15 +14,15 @@
           <h2>{{name}}</h2>
         {{/isFirstPackage}}
         <dl>
-        {{#defaultCategory.publicLibrariesSorted}}
+        {{#defaultCategory.documentedLibrariesSorted}}
           {{>library}}
-        {{/defaultCategory.publicLibrariesSorted}}
-        {{#categoriesWithPublicLibraries}}
+        {{/defaultCategory.documentedLibrariesSorted}}
+        {{#categoriesWithDocumentedLibraries}}
           <h3>{{name}}</h3>
-          {{#publicLibrariesSorted}}
+          {{#documentedLibrariesSorted}}
             {{>library}}
-          {{/publicLibrariesSorted}}
-        {{/categoriesWithPublicLibraries}}
+          {{/documentedLibrariesSorted}}
+        {{/categoriesWithDocumentedLibraries}}
         </dl>
       </section>
     {{/localPackages}}
