@@ -12,85 +12,85 @@
 {{>documentation}}
 {{/library}}
 
-{{#library.hasPublicClasses}}
+{{#library.hasDocumentedClasses}}
 ## Classes
 
-{{#library.publicClassesSorted}}
+{{#library.documentedClassesSorted}}
 {{>container}}
 
-{{/library.publicClassesSorted}}
-{{/library.hasPublicClasses}}
+{{/library.documentedClassesSorted}}
+{{/library.hasDocumentedClasses}}
 
-{{#library.hasPublicMixins}}
+{{#library.hasDocumentedMixins}}
 ## Mixins
 
-{{#library.publicMixinsSorted}}
+{{#library.documentedMixinsSorted}}
 {{>container}}
 
-{{/library.publicMixinsSorted}}
-{{/library.hasPublicMixins}}
+{{/library.documentedMixinsSorted}}
+{{/library.hasDocumentedMixins}}
 
-{{#library.hasPublicExtensions}}
+{{#library.hasDocumentedExtensions}}
 ## Extensions
 
-{{#library.publicExtensionsSorted}}
+{{#library.documentedExtensionsSorted}}
 {{>extension}}
 
-{{/library.publicExtensionsSorted}}
-{{/library.hasPublicExtensions}}
+{{/library.documentedExtensionsSorted}}
+{{/library.hasDocumentedExtensions}}
 
-{{#library.hasPublicConstants}}
+{{#library.hasDocumentedConstants}}
 ## Constants
 
-{{#library.publicConstantsSorted}}
+{{#library.documentedConstantsSorted}}
 {{>constant}}
 
-{{/library.publicConstantsSorted}}
-{{/library.hasPublicConstants}}
+{{/library.documentedConstantsSorted}}
+{{/library.hasDocumentedConstants}}
 
-{{#library.hasPublicProperties}}
+{{#library.hasDocumentedProperties}}
 ## Properties
 
-{{#library.publicPropertiesSorted}}
+{{#library.documentedPropertiesSorted}}
 {{>property}}
 
-{{/library.publicPropertiesSorted}}
-{{/library.hasPublicProperties}}
+{{/library.documentedPropertiesSorted}}
+{{/library.hasDocumentedProperties}}
 
-{{#library.hasPublicFunctions}}
+{{#library.hasDocumentedFunctions}}
 ## Functions
 
-{{#library.publicFunctionsSorted}}
+{{#library.documentedFunctionsSorted}}
 {{>callable}}
 
-{{/library.publicFunctionsSorted}}
-{{/library.hasPublicFunctions}}
+{{/library.documentedFunctionsSorted}}
+{{/library.hasDocumentedFunctions}}
 
-{{#library.hasPublicEnums}}
+{{#library.hasDocumentedEnums}}
 ## Enums
 
-{{#library.publicEnumsSorted}}
+{{#library.documentedEnumsSorted}}
 {{>container}}
 
-{{/library.publicEnumsSorted}}
-{{/library.hasPublicEnums}}
+{{/library.documentedEnumsSorted}}
+{{/library.hasDocumentedEnums}}
 
-{{#library.hasPublicTypedefs}}
+{{#library.hasDocumentedTypedefs}}
 ## Typedefs
 
-{{#library.publicTypedefsSorted}}
+{{#library.documentedTypedefsSorted}}
 {{>typedef}}
 
-{{/library.publicTypedefsSorted}}
-{{/library.hasPublicTypedefs}}
+{{/library.documentedTypedefsSorted}}
+{{/library.hasDocumentedTypedefs}}
 
-{{#library.hasPublicExceptions}}
+{{#library.hasDocumentedExceptions}}
 ## Exceptions / Errors
 
-{{#library.publicExceptionsSorted}}
+{{#library.documentedExceptionsSorted}}
 {{>container}}
 
-{{/library.publicExceptionsSorted}}
-{{/library.hasPublicExceptions}}
+{{/library.documentedExceptionsSorted}}
+{{/library.hasDocumentedExceptions}}
 
 {{>footer}}

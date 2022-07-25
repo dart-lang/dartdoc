@@ -1,8 +1,8 @@
-{{ #hasPublicInstanceOperators }}
+{{ #hasDocumentedInstanceOperators }}
 ## Operators
 
-{{ #publicInstanceOperatorsSorted }}
+{{ #documentedInstanceOperatorsSorted }}
 {{ >callable }}
 
-{{ /publicInstanceOperatorsSorted }}
-{{ /hasPublicInstanceOperators }}
+{{ /documentedInstanceOperatorsSorted }}
+{{ /hasDocumentedInstanceOperators }}

@@ -15,14 +15,14 @@ on {{#extendedType}}{{{linkedName}}}{{/extendedType}}
 
 {{ >annotations }}
 
-{{#hasPublicInstanceFields}}
+{{#hasDocumentedInstanceFields}}
 ## Properties
 
-{{#publicInstanceFieldsSorted}}
+{{#documentedInstanceFieldsSorted}}
 {{>property}}
 
-{{/publicInstanceFieldsSorted}}
-{{/hasPublicInstanceFields}}
+{{/documentedInstanceFieldsSorted}}
+{{/hasDocumentedInstanceFields}}
 
 {{> instance_methods }}
 

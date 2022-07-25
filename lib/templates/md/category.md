@@ -5,95 +5,95 @@
 
 {{>documentation}}
 
-{{#hasPublicLibraries}}
+{{#hasDocumentedLibraries}}
 ## Libraries
 
-{{#publicLibrariesSorted}}
+{{#documentedLibrariesSorted}}
 {{>library}}
 
-{{/publicLibrariesSorted}}
-{{/hasPublicLibraries}}
+{{/documentedLibrariesSorted}}
+{{/hasDocumentedLibraries}}
 
-{{#hasPublicClasses}}
+{{#hasDocumentedClasses}}
 ## Classes
 
-{{#publicClassesSorted}}
+{{#documentedClassesSorted}}
 {{>container}}
 
-{{/publicClassesSorted}}
-{{/hasPublicClasses}}
+{{/documentedClassesSorted}}
+{{/hasDocumentedClasses}}
 
-{{#hasPublicMixins}}
+{{#hasDocumentedMixins}}
 ## Mixins
 
-{{#publicMixinsSorted}}
+{{#documentedMixinsSorted}}
 {{>container}}
 
-{{/publicMixinsSorted}}
-{{/hasPublicMixins}}
+{{/documentedMixinsSorted}}
+{{/hasDocumentedMixins}}
 
-{{#hasPublicExtensions}}
+{{#hasDocumentedExtensions}}
 ## Extensions
 
-{{#publicExtensionsSorted}}
+{{#documentedExtensionsSorted}}
 {{>extension}}
 
-{{/publicExtensionsSorted}}
-{{/hasPublicExtensions}}
+{{/documentedExtensionsSorted}}
+{{/hasDocumentedExtensions}}
 
-{{#hasPublicConstants}}
+{{#hasDocumentedConstants}}
 ## Constants
 
-{{#publicConstantsSorted}}
+{{#documentedConstantsSorted}}
 {{>constant}}
 
-{{/publicConstantsSorted}}
-{{/hasPublicConstants}}
+{{/documentedConstantsSorted}}
+{{/hasDocumentedConstants}}
 
-{{#hasPublicProperties}}
+{{#hasDocumentedProperties}}
 ## Properties
 
-{{#publicPropertiesSorted}}
+{{#documentedPropertiesSorted}}
 {{>property}}
 
-{{/publicPropertiesSorted}}
-{{/hasPublicProperties}}
+{{/documentedPropertiesSorted}}
+{{/hasDocumentedProperties}}
 
-{{#hasPublicFunctions}}
+{{#hasDocumentedFunctions}}
 ## Functions
 
-{{#publicFunctionsSorted}}
+{{#documentedFunctionsSorted}}
 {{>callable}}
 
-{{/publicFunctionsSorted}}
-{{/hasPublicFunctions}}
+{{/documentedFunctionsSorted}}
+{{/hasDocumentedFunctions}}
 
-{{#hasPublicEnums}}
+{{#hasDocumentedEnums}}
 ## Enums
 
-{{#publicEnumsSorted}}
+{{#documentedEnumsSorted}}
 {{>container}}
 
-{{/publicEnumsSorted}}
-{{/hasPublicEnums}}
+{{/documentedEnumsSorted}}
+{{/hasDocumentedEnums}}
 
-{{#hasPublicTypedefs}}
+{{#hasDocumentedTypedefs}}
 ## Typedefs
 
-{{#publicTypedefsSorted}}
+{{#documentedTypedefsSorted}}
 {{>typedef}}
 
-{{/publicTypedefsSorted}}
-{{/hasPublicTypedefs}}
+{{/documentedTypedefsSorted}}
+{{/hasDocumentedTypedefs}}
 
-{{#hasPublicExceptions}}
+{{#hasDocumentedExceptions}}
 ## Exceptions / Errors
 
-{{#publicExceptionsSorted}}
+{{#documentedExceptionsSorted}}
 {{>container}}
 
-{{/publicExceptionsSorted}}
-{{/hasPublicExceptions}}
+{{/documentedExceptionsSorted}}
+{{/hasDocumentedExceptions}}
 {{/self}}
 
 {{>footer}}

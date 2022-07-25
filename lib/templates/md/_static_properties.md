@@ -1,8 +1,8 @@
-{{ #hasPublicVariableStaticFields }}
+{{ #hasDocumentedVariableStaticFields }}
 ## Static Properties
 
-{{ #publicVariableStaticFieldsSorted }}
+{{ #documentedVariableStaticFieldsSorted }}
 {{ >property }}
 
-{{ /publicVariableStaticFieldsSorted }}
-{{ /hasPublicVariableStaticFields }}
+{{ /documentedVariableStaticFieldsSorted }}
+{{ /hasDocumentedVariableStaticFields }}

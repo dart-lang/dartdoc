@@ -1,7 +1,7 @@
-{{ #hasPublicMixedInTypes }}
+{{ #hasDocumentedMixedInTypes }}
 **Mixed in types**
 
-{{ #publicMixedInTypes }}
+{{ #documentedMixedInTypes }}
 - {{{ linkedName }}}
-{{ /publicMixedInTypes }}
-{{ /hasPublicMixedInTypes }}
+{{ /documentedMixedInTypes }}
+{{ /hasDocumentedMixedInTypes }}
