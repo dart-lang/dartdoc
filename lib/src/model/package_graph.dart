@@ -524,10 +524,14 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     _reexportsTagged.add(key);
     if (libraryElement == null) {
       lastExportedElement!;
+      final lastExportedElementUri = lastExportedElement.uri;
+      final uri = lastExportedElementUri is DirectiveUriWithRelativeUriString
+          ? lastExportedElementUri.relativeUriString
+          : null;
       warnOnElement(
           findButDoNotCreateLibraryFor(lastExportedElement.enclosingElement2!),
           PackageWarning.unresolvedExport,
-          message: '"${lastExportedElement.uri}"',
+          message: '"$uri"',
           referredFrom: <Locatable>[topLevelLibrary]);
       return;
     }

@@ -94,13 +94,11 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
       ...element.exportNamespace.definedNames.values,
       // TODO(jcollins-g): Consider switch to [_libraryElement.topLevelElements].
       ..._getDefinedElements(element.definingCompilationUnit),
+      ...element.parts2
+          .map((e) => e.uri)
+          .whereType<DirectiveUriWithUnit>()
+          .map((part) => part.unit)
     };
-    for (var part in element.parts2) {
-      var directiveUri = part.uri;
-      if (directiveUri is DirectiveUriWithUnit) {
-        exportedAndLocalElements.add(directiveUri.unit);
-      }
-    }
     var library = Library._(
         element,
         packageGraph,
