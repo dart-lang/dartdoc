@@ -462,6 +462,7 @@ h1 .category {
   vertical-align: middle;
 }
 
+/* The badge under a declaration for things like "const", "read-only", etc. and for the badges inline like Null safety*/
 .feature {
   display: inline-block;
   background: white;
@@ -608,18 +609,6 @@ td {
   content: "";
   margin: 0;
   padding: 0;
-}
-
-/* The slug line under a declaration for things like "const", "read-only", etc. */
-.features {
-  display: inline-block;
-  background: white;
-  border: 1px solid #0175c2;
-  border-radius: 20px;
-  color: #0175c2;
-  font-size: 12px;
-  padding: 1px 6px;
-  margin: 0 8px 0 0;
 }
 
 .multi-line-signature {
