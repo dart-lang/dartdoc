@@ -192,7 +192,9 @@ class PubPackageBuilder implements PackageBuilder {
         for (var export in element.libraryExports) {
           _addKnownFiles(export.exportedLibrary);
         }
-        for (var part in element.parts2) {
+        for (var part in element.parts2
+            .map((e) => e.uri)
+            .whereType<DirectiveUriWithUnit>()) {
           _knownFiles.add(part.source.fullName);
         }
       }

@@ -953,11 +953,9 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     });
   }
 
-  String? getMacro(String? name) {
+  /// Returns a macro by [name], or `null` if no macro is found.
+  String? getMacro(String name) {
     assert(_localDocumentationBuilt);
-    if (name == null) {
-      return null;
-    }
     return _macros[name];
   }
 
