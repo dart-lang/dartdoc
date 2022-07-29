@@ -125,12 +125,12 @@ class Accessor extends ModelElement implements EnclosedElement {
 
   @override
   ModelElement get enclosingElement {
-    if (element.enclosingElement is CompilationUnitElement) {
+    if (element.enclosingElement2 is CompilationUnitElement) {
       return modelBuilder
-          .fromElement(element.enclosingElement.enclosingElement!);
+          .fromElement(element.enclosingElement2.enclosingElement2!);
     }
 
-    return modelBuilder.from(element.enclosingElement, library);
+    return modelBuilder.from(element.enclosingElement2, library);
   }
 
   @override
@@ -218,7 +218,7 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
     assert(packageGraph.allLibrariesAdded);
     if (!_overriddenElementIsSet) {
       _overriddenElementIsSet = true;
-      var parent = element.enclosingElement;
+      var parent = element.enclosingElement2;
       if (parent is ClassElement) {
         for (var t in parent.allSupertypes) {
           Element? accessor =

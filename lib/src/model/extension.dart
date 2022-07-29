@@ -76,7 +76,7 @@ class Extension extends Container implements EnclosedElement {
   @override
   List<TypeParameter> get typeParameters {
     _typeParameters ??= element.typeParameters.map((f) {
-      var lib = modelBuilder.fromElement(f.enclosingElement!.library!);
+      var lib = modelBuilder.fromElement(f.enclosingElement2!.library!);
       return modelBuilder.from(f, lib as Library) as TypeParameter;
     }).toList();
     return _typeParameters!;

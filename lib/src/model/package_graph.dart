@@ -516,7 +516,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
 
   void _tagReexportsFor(
       final Library topLevelLibrary, final LibraryElement? libraryElement,
-      [ExportElement? lastExportedElement]) {
+      [LibraryExportElement? lastExportedElement]) {
     var key = Tuple2<Library, LibraryElement?>(topLevelLibrary, libraryElement);
     if (_reexportsTagged.contains(key)) {
       return;
@@ -524,17 +524,21 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     _reexportsTagged.add(key);
     if (libraryElement == null) {
       lastExportedElement!;
+      final lastExportedElementUri = lastExportedElement.uri;
+      final uri = lastExportedElementUri is DirectiveUriWithRelativeUriString
+          ? lastExportedElementUri.relativeUriString
+          : null;
       warnOnElement(
-          findButDoNotCreateLibraryFor(lastExportedElement.enclosingElement!),
+          findButDoNotCreateLibraryFor(lastExportedElement.enclosingElement2!),
           PackageWarning.unresolvedExport,
-          message: '"${lastExportedElement.uri}"',
+          message: '"$uri"',
           referredFrom: <Locatable>[topLevelLibrary]);
       return;
     }
     _libraryElementReexportedBy
         .putIfAbsent(libraryElement, () => {})
         .add(topLevelLibrary);
-    for (var exportedElement in libraryElement.exports) {
+    for (var exportedElement in libraryElement.libraryExports) {
       _tagReexportsFor(
           topLevelLibrary, exportedElement.exportedLibrary, exportedElement);
     }
@@ -722,7 +726,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       searchElement = e.variable;
     }
     if (e is GenericFunctionTypeElement) {
-      searchElement = e.enclosingElement;
+      searchElement = e.enclosingElement2;
     }
 
     if (_canonicalLibraryFor.containsKey(e)) {
@@ -761,7 +765,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       lib = findCanonicalLibraryFor(preferredClass.element);
     }
     // For elements defined in extensions, they are canonical.
-    var enclosingElement = e?.enclosingElement;
+    var enclosingElement = e?.enclosingElement2;
     if (enclosingElement is ExtensionElement) {
       lib ??= modelBuilder.fromElement(enclosingElement.library) as Library?;
       // (TODO:keertip) Find a better way to exclude members of extensions
@@ -801,7 +805,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
                 .where((me) => me.isCanonical));
       }
 
-      var canonicalClass = findCanonicalModelElementFor(e.enclosingElement);
+      var canonicalClass = findCanonicalModelElementFor(e.enclosingElement2);
       if (canonicalClass is InheritingContainer) {
         candidates.addAll(canonicalClass.allCanonicalModelElements.where((m) {
           return m.element == e;
@@ -949,11 +953,9 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     });
   }
 
-  String? getMacro(String? name) {
+  /// Returns a macro by [name], or `null` if no macro is found.
+  String? getMacro(String name) {
     assert(_localDocumentationBuilt);
-    if (name == null) {
-      return null;
-    }
     return _macros[name];
   }
 

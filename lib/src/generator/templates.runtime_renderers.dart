@@ -4,7 +4,6 @@
 // files in the tool/mustachio/ directory.
 
 // ignore_for_file: camel_case_types, deprecated_member_use_from_same_package
-// ignore_for_file: no_leading_underscores_for_library_prefixes
 // ignore_for_file: non_constant_identifier_names, unnecessary_string_escapes
 // ignore_for_file: unused_import
 // ignore_for_file: use_super_parameters
@@ -15699,6 +15698,7 @@ const _invisibleGetters = {
     'constructors',
     'displayName',
     'enclosingElement',
+    'enclosingElement2',
     'fields',
     'hasNonFinalField',
     'hasStaticMember',
@@ -15756,6 +15756,7 @@ const _invisibleGetters = {
     'declaration',
     'displayName',
     'enclosingElement',
+    'enclosingElement2',
     'hashCode',
     'isConst',
     'isDefaultConstructor',
@@ -15861,6 +15862,7 @@ const _invisibleGetters = {
     'displayName',
     'documentationComment',
     'enclosingElement',
+    'enclosingElement2',
     'hasAlwaysThrows',
     'hasDeprecated',
     'hasDoNotStore',
@@ -15933,6 +15935,7 @@ const _invisibleGetters = {
     'displayName',
     'documentationComment',
     'enclosingElement',
+    'enclosingElement2',
     'hasAlwaysThrows',
     'hasDeprecated',
     'hasDoNotStore',
@@ -15999,6 +16002,7 @@ const _invisibleGetters = {
   'ExtensionElement': {
     'accessors',
     'enclosingElement',
+    'enclosingElement2',
     'extendedType',
     'fields',
     'hashCode',
@@ -16135,6 +16139,7 @@ const _invisibleGetters = {
     'loadLibraryFunction',
     'name',
     'parts',
+    'parts2',
     'publicNamespace',
     'runtimeType',
     'topLevelElements',
@@ -16166,6 +16171,7 @@ const _invisibleGetters = {
     'displayName',
     'documentationComment',
     'enclosingElement',
+    'enclosingElement2',
     'hasAlwaysThrows',
     'hasDeprecated',
     'hasDoNotStore',
@@ -16310,6 +16316,7 @@ const _invisibleGetters = {
     'displayName',
     'documentationComment',
     'enclosingElement',
+    'enclosingElement2',
     'hasAlwaysThrows',
     'hasDefaultValue',
     'hasDeprecated',
@@ -16370,6 +16377,7 @@ const _invisibleGetters = {
     'correspondingSetter',
     'declaration',
     'enclosingElement',
+    'enclosingElement2',
     'hashCode',
     'isGetter',
     'isSetter',
@@ -16415,6 +16423,7 @@ const _invisibleGetters = {
     'aliasedElement',
     'aliasedType',
     'enclosingElement',
+    'enclosingElement2',
     'hashCode',
     'name',
     'runtimeType'
