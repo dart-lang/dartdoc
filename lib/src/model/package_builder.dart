@@ -186,13 +186,15 @@ class PubPackageBuilder implements PackageBuilder {
     if (element != null) {
       var path = element.source.fullName;
       if (_knownFiles.add(path)) {
-        for (var import in element.imports) {
+        for (var import in element.libraryImports) {
           _addKnownFiles(import.importedLibrary);
         }
-        for (var export in element.exports) {
+        for (var export in element.libraryExports) {
           _addKnownFiles(export.exportedLibrary);
         }
-        for (var part in element.parts) {
+        for (var part in element.parts2
+            .map((e) => e.uri)
+            .whereType<DirectiveUriWithUnit>()) {
           _knownFiles.add(part.source.fullName);
         }
       }

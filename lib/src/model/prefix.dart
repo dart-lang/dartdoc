@@ -20,13 +20,12 @@ class Prefix extends ModelElement with HasNoPage implements EnclosedElement {
   @override
   bool get isCanonical => false;
 
-  Library? _associatedLibrary;
   // TODO(jcollins-g): consider connecting PrefixElement to the imported library
   // in analyzer?
-  Library get associatedLibrary =>
-      (_associatedLibrary ??= modelBuilder.fromElement(library.element.imports
-          .firstWhere((i) => i.prefix == element)
-          .importedLibrary!) as Library?)!;
+  late final Library associatedLibrary = modelBuilder.fromElement(library
+      .element.libraryImports
+      .firstWhere((i) => i.prefix?.element == element)
+      .importedLibrary!) as Library;
 
   @override
   Library? get canonicalModelElement => associatedLibrary.canonicalLibrary;
