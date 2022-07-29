@@ -309,13 +309,13 @@ MatchingLinkResult definingLinkResult(MatchingLinkResult originalResult) {
 
   if (definingReferable != null &&
       definingReferable != originalResult.commentReferable) {
-    return MatchingLinkResult(definingReferable, warn: originalResult.warn);
+    return MatchingLinkResult(definingReferable);
   }
   return originalResult;
 }
 
 MatchingLinkResult referenceLookup(Warnable element, String codeRef) =>
-    definingLinkResult(getMatchingLinkElement(element, codeRef));
+    definingLinkResult(getMatchingLinkElement(codeRef, element));
 
 /// Returns a matcher which compresses consecutive whitespace in [text] into a
 /// single space.

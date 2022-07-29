@@ -36,12 +36,12 @@ class _HashableChildLibraryElementVisitor
   }
 
   @override
-  void visitExportElement(ExportElement element) {
+  void visitLibraryExportElement(LibraryExportElement element) {
     // [ExportElement]s are not always hashable; skip them.
   }
 
   @override
-  void visitImportElement(ImportElement element) {
+  void visitLibraryImportElement(LibraryImportElement element) {
     // [ImportElement]s are not always hashable; skip them.
   }
 
@@ -52,6 +52,12 @@ class _HashableChildLibraryElementVisitor
   }
 }
 
+class _LibrarySentinel implements Library {
+  @override
+  dynamic noSuchMethod(Invocation invocation) =>
+      throw UnimplementedError('No members on Library.sentinel are accessible');
+}
+
 class Library extends ModelElement with Categorization, TopLevelContainer {
   final Set<Element> _exportedAndLocalElements;
   final String _restoredUri;
@@ -59,9 +65,21 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   @override
   final Package package;
 
+  /// A [Library] value used as a sentinel in three cases:
+  ///
+  /// * the library for `dynamic` and `Never`
+  /// * the library for type parameters
+  /// * the library passed up to [ModelElement.library] when constructing a
+  /// `Library`, via the super constructor.
+  ///
+  /// TODO(srawlins): I think this last case demonstrates that
+  /// [ModelElement.library] should not be a field, and instead should be an
+  /// abstract getter.
+  static final Library sentinel = _LibrarySentinel();
+
   Library._(LibraryElement element, PackageGraph packageGraph, this.package,
       this._restoredUri, this._exportedAndLocalElements)
-      : super(element, null, packageGraph);
+      : super(element, sentinel, packageGraph);
 
   factory Library.fromLibraryResult(DartDocResolvedLibrary resolvedLibrary,
       PackageGraph packageGraph, Package package) {
@@ -76,7 +94,10 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
       ...element.exportNamespace.definedNames.values,
       // TODO(jcollins-g): Consider switch to [_libraryElement.topLevelElements].
       ..._getDefinedElements(element.definingCompilationUnit),
-      for (var cu in element.parts) ..._getDefinedElements(cu),
+      ...element.parts2
+          .map((e) => e.uri)
+          .whereType<DirectiveUriWithUnit>()
+          .map((part) => part.unit)
     };
     var library = Library._(
         element,
@@ -138,12 +159,12 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
         setter = modelBuilder.fromElement(elementSetter.element) as Accessor;
       }
       return modelBuilder
-          .fromPropertyInducingElement(e.element!,
-              modelBuilder.fromElement(e.element!.library!) as Library,
+          .fromPropertyInducingElement(e.element,
+              modelBuilder.fromElement(e.element.library!) as Library,
               getter: getter, setter: setter)
           .fullyQualifiedName;
     }
-    return modelBuilder.fromElement(e.element!).fullyQualifiedName;
+    return modelBuilder.fromElement(e.element).fullyQualifiedName;
   }).toList(growable: false);
 
   @override
@@ -201,8 +222,8 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   late final Map<String, Set<Library>> prefixToLibrary = () {
     var prefixToLibrary = <String, Set<Library>>{};
     // It is possible to have overlapping prefixes.
-    for (var i in element.imports) {
-      var prefixName = i.prefix?.name;
+    for (var i in element.libraryImports) {
+      var prefixName = i.prefix?.element.name;
       // Ignore invalid imports.
       if (prefixName != null && i.importedLibrary != null) {
         prefixToLibrary
@@ -441,7 +462,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
       ...library.mixins.expand((m) => [m, ...m.allModelElements]),
     ]) {
       modelElements
-          .putIfAbsent(modelElement.element!, () => {})
+          .putIfAbsent(modelElement.element, () => {})
           .add(modelElement);
     }
     modelElements.putIfAbsent(element, () => {}).add(this);

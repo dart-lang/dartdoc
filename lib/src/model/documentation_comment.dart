@@ -949,9 +949,10 @@ mixin DocumentationComment
   ///
   String injectMacros(String rawDocs) {
     return rawDocs.replaceAllMapped(_macroRegExp, (match) {
-      var macro = packageGraph.getMacro(match[1]);
+      final macroName = match[1]!;
+      var macro = packageGraph.getMacro(macroName);
       if (macro == null) {
-        warn(PackageWarning.unknownMacro, message: match[1]);
+        warn(PackageWarning.unknownMacro, message: macroName);
       }
       macro = processCommentDirectives(macro ?? '');
       return macro;

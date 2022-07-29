@@ -8,53 +8,44 @@ import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/type_parameters_renderer.dart';
 
-class TypeParameter extends ModelElement {
+class TypeParameter extends ModelElement with HasNoPage {
   TypeParameter(
       TypeParameterElement super.element, super.library, super.packageGraph);
 
   @override
   ModelElement get enclosingElement =>
-      modelBuilder.from(element!.enclosingElement!, library!);
+      modelBuilder.from(element.enclosingElement2!, library);
 
+  /// [TypeParameter]s don't have documentation pages, and don't link to the
+  /// element on which they are declared.
+  // TODO(srawlins): But shouldn't they link to the element on which they are
+  // declared?
   @override
-  String get filePath =>
-      '${enclosingElement.library!.dirName}/${enclosingElement.name}/$name';
-
-  @override
-
-  /// [TypeParameter]s don't have documentation pages.
   String? get href => null;
 
   @override
   String get kind => 'type parameter';
 
-  ElementType? _boundType;
-
   ElementType? get boundType {
-    if (_boundType == null) {
-      var bound = element!.bound;
-      if (bound != null) {
-        _boundType = modelBuilder.typeFrom(bound, library!);
-      }
-    }
-    return _boundType;
+    var bound = element.bound;
+    return bound == null ? null : modelBuilder.typeFrom(bound, library);
   }
 
   @override
   bool get hasParameters => false;
 
   @override
-  late final String name = element!.bound != null
-      ? '${element!.name} extends ${boundType!.nameWithGenerics}'
-      : element!.name;
+  late final String name = element.bound != null
+      ? '${element.name} extends ${boundType!.nameWithGenerics}'
+      : element.name;
 
   String? _linkedName;
 
   @override
   String get linkedName {
-    _linkedName ??= element!.bound != null
-        ? '${element!.name} extends ${boundType!.linkedName}'
-        : element!.name;
+    _linkedName ??= element.bound != null
+        ? '${element.name} extends ${boundType!.linkedName}'
+        : element.name;
     return _linkedName!;
   }
 
@@ -68,10 +59,10 @@ class TypeParameter extends ModelElement {
   @override
   Iterable<CommentReferable> get referenceParents => [enclosingElement];
   @override
-  TypeParameterElement? get element => super.element as TypeParameterElement?;
+  TypeParameterElement get element => super.element as TypeParameterElement;
 
   @override
-  String get referenceName => element!.name;
+  String get referenceName => element.name;
 }
 
 /// A mixin for [ModelElement]s which have type parameters.

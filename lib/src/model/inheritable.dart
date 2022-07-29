@@ -59,7 +59,7 @@ mixin Inheritable on ContainerMember {
   @override
   Container? computeCanonicalEnclosingContainer() {
     if (isInherited) {
-      var searchElement = element!.declaration;
+      var searchElement = element.declaration;
       // TODO(jcollins-g): generate warning if an inherited element's definition
       // is in an intermediate non-canonical class in the inheritance chain?
       Container? previous;
@@ -104,7 +104,7 @@ mixin Inheritable on ContainerMember {
     } else if (!isInherited && definingEnclosingContainer is! Extension) {
       // TODO(jcollins-g): factor out extension logic into [Extendable].
       return packageGraph.findCanonicalModelElementFor(
-          element!.enclosingElement) as Container?;
+          element.enclosingElement2) as Container?;
     }
     return super.computeCanonicalEnclosingContainer();
   }
@@ -144,7 +144,7 @@ mixin Inheritable on ContainerMember {
         return _isOverride;
       }
       var enclosingCanonical =
-          enclosingElement!.canonicalModelElement as InheritingContainer?;
+          enclosingElement.canonicalModelElement as InheritingContainer?;
       // The container in which this element was defined, canonical if available.
       Container? definingCanonical =
           definingEnclosingContainer.canonicalModelElement as Container? ??

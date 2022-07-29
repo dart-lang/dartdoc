@@ -19,7 +19,7 @@ import 'package:meta/meta.dart';
 /// [hasModifiers] override is not necessary for this mixin.
 mixin Constructable on InheritingContainer {
   late final Iterable<Constructor> constructors = [
-    ...element!.constructors
+    ...element.constructors
         .map((e) => modelBuilder.from(e, library) as Constructor)
   ];
 
@@ -68,7 +68,7 @@ mixin Constructable on InheritingContainer {
 /// Add the ability to support mixed-in types to an [InheritingContainer].
 mixin MixedInTypes on InheritingContainer {
   late final List<DefinedElementType> mixedInTypes = [
-    ...element!.mixins
+    ...element.mixins
         .map((f) => modelBuilder.typeFrom(f, library) as DefinedElementType)
   ];
 
@@ -85,7 +85,7 @@ mixin MixedInTypes on InheritingContainer {
 /// InheritingContainers and to reference what it itself implements.
 mixin TypeImplementing on InheritingContainer {
   late final List<DefinedElementType> directInterfaces = [
-    for (var interface in element!.interfaces)
+    for (var interface in element.interfaces)
       modelBuilder.typeFrom(interface, library) as DefinedElementType
   ];
 
@@ -184,15 +184,14 @@ mixin TypeImplementing on InheritingContainer {
 abstract class InheritingContainer extends Container
     with ExtensionTarget
     implements EnclosedElement {
-  /// [ClassElement] is analogous to [InheritingContainer].
   @override
-  ClassElement? get element => super.element as ClassElement?;
+  ClassElement get element => super.element as ClassElement;
 
   DefinedElementType? _supertype;
   DefinedElementType? get supertype =>
-      _supertype ??= element!.supertype?.element.supertype == null
+      _supertype ??= element.supertype?.element.supertype == null
           ? null
-          : modelBuilder.typeFrom(element!.supertype!, library)
+          : modelBuilder.typeFrom(element.supertype!, library)
               as DefinedElementType?;
 
   InheritingContainer(
@@ -224,14 +223,11 @@ abstract class InheritingContainer extends Container
 
   /// Returns the [InheritingContainer] with the library in which [element] is defined.
   InheritingContainer get definingContainer =>
-      modelBuilder.from(element!, definingLibrary) as InheritingContainer;
+      modelBuilder.from(element, definingLibrary) as InheritingContainer;
 
   /// Returns the library that encloses this element.
   @override
   ModelElement get enclosingElement => library;
-
-  @override
-  String get filePath => '${library.dirName}/$fileName';
 
   String get fullkind => kind;
 
@@ -244,7 +240,7 @@ abstract class InheritingContainer extends Container
   bool get hasPublicSuperChainReversed => publicSuperChainReversed.isNotEmpty;
 
   late final Iterable<Method> inheritedMethods = () {
-    var methodNames = declaredMethods.map((m) => m.element!.name).toSet();
+    var methodNames = declaredMethods.map((m) => m.element.name).toSet();
     var inheritedMethodElements =
         _inheritedElements!.whereType<MethodElement>().where((e) {
       return (!e.isOperator &&
@@ -264,7 +260,7 @@ abstract class InheritingContainer extends Container
   bool get hasPublicInheritedMethods => publicInheritedMethods.isNotEmpty;
 
   late final List<Operator> inheritedOperators = () {
-    var operatorNames = declaredOperators.map((o) => o.element!.name).toSet();
+    var operatorNames = declaredOperators.map((o) => o.element.name).toSet();
     var inheritedOperatorElements = _inheritedElements!
         .whereType<MethodElement>()
         .where((e) => (e.isOperator && !operatorNames.contains(e.name)))
@@ -294,9 +290,8 @@ abstract class InheritingContainer extends Container
   DefinedElementType? _modelType;
 
   @override
-  DefinedElementType get modelType =>
-      (_modelType ??= modelBuilder.typeFrom(element!.thisType, library)
-          as DefinedElementType?)!;
+  DefinedElementType get modelType => (_modelType ??=
+      modelBuilder.typeFrom(element.thisType, library) as DefinedElementType?)!;
 
   /// Not the same as superChain as it may include mixins.
   ///
@@ -339,13 +334,13 @@ abstract class InheritingContainer extends Container
 
   List<ExecutableElement?>? get _inheritedElements {
     if (__inheritedElements == null) {
-      if (element!.isDartCoreObject) {
+      if (element.isDartCoreObject) {
         return __inheritedElements = <ExecutableElement>[];
       }
 
       var inheritance = definingLibrary.inheritanceManager;
-      var cmap = inheritance.getInheritedConcreteMap2(element!);
-      var imap = inheritance.getInheritedMap2(element!);
+      var cmap = inheritance.getInheritedConcreteMap2(element);
+      var imap = inheritance.getInheritedMap2(element);
 
       List<ClassElement?>? inheritanceChainElements;
 
@@ -363,9 +358,9 @@ abstract class InheritingContainer extends Container
           bool isDartCoreObject(ClassElement e) =>
               e.name == 'Object' && e.library.name == 'dart.core';
           assert(inheritanceChainElements
-                  .contains(imap[nameObj]!.enclosingElement) ||
+                  .contains(imap[nameObj]!.enclosingElement2) ||
               isDartCoreObject(
-                  imap[nameObj]!.enclosingElement as ClassElement));
+                  imap[nameObj]!.enclosingElement2 as ClassElement));
 
           // If the concrete object from [InheritanceManager3.getInheritedConcreteMap2]
           // is farther from this class in the inheritance chain than the one
@@ -373,9 +368,9 @@ abstract class InheritingContainer extends Container
           // correctly accounts for intermediate abstract classes that have
           // method/field implementations.
           if (inheritanceChainElements.indexOf(combinedMap[nameObj.name]!
-                  .enclosingElement as ClassElement?) <
+                  .enclosingElement2 as ClassElement?) <
               inheritanceChainElements
-                  .indexOf(imap[nameObj]!.enclosingElement as ClassElement?)) {
+                  .indexOf(imap[nameObj]!.enclosingElement2 as ClassElement?)) {
             combinedMap[nameObj.name] = imap[nameObj];
           }
         } else {
@@ -404,7 +399,7 @@ abstract class InheritingContainer extends Container
     // For half-inherited fields, the analyzer only links the non-inherited
     // to the [FieldElement].  Compose our [Field] class by hand by looking up
     // inherited accessors that may be related.
-    for (var f in element!.fields) {
+    for (var f in element.fields) {
       var getterElement = f.getter;
       if (getterElement == null && accessorMap.containsKey(f.name)) {
         getterElement =
@@ -512,7 +507,7 @@ abstract class InheritingContainer extends Container
 
   @override
   Iterable<Method> get declaredMethods =>
-      _declaredMethods ??= element!.methods.map((e) {
+      _declaredMethods ??= element.methods.map((e) {
         return modelBuilder.from(e, library) as Method;
       });
 
@@ -520,18 +515,15 @@ abstract class InheritingContainer extends Container
 
   @override
   List<TypeParameter> get typeParameters {
-    _typeParameters ??= element!.typeParameters.map((f) {
-      var lib = modelBuilder.fromElement(f.enclosingElement!.library!);
+    _typeParameters ??= element.typeParameters.map((f) {
+      var lib = modelBuilder.fromElement(f.enclosingElement2!.library!);
       return modelBuilder.from(f, lib as Library) as TypeParameter;
     }).toList();
     return _typeParameters!;
   }
 
-  Iterable<Field>? _instanceFields;
-
   @override
-  Iterable<Field> get instanceFields =>
-      _instanceFields ??= allFields.where((f) => !f.isStatic);
+  Iterable<Field> get instanceFields => allFields.where((f) => !f.isStatic);
 
   @override
   bool get publicInheritedInstanceFields =>

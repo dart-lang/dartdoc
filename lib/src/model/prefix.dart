@@ -12,7 +12,7 @@ import '../../dartdoc.dart';
 ///
 /// Like [Parameter], it doesn't have doc pages, but participates in lookups.
 /// Forwards to its referenced library if referred to directly.
-class Prefix extends ModelElement implements EnclosedElement {
+class Prefix extends ModelElement with HasNoPage implements EnclosedElement {
   /// [library] is the library the prefix is defined in, not the [Library]
   /// referred to by the [PrefixElement].
   Prefix(PrefixElement super.element, super.library, super.packageGraph);
@@ -20,29 +20,24 @@ class Prefix extends ModelElement implements EnclosedElement {
   @override
   bool get isCanonical => false;
 
-  Library? _associatedLibrary;
   // TODO(jcollins-g): consider connecting PrefixElement to the imported library
   // in analyzer?
-  Library get associatedLibrary =>
-      (_associatedLibrary ??= modelBuilder.fromElement(library!.element.imports
-          .firstWhere((i) => i.prefix == element)
-          .importedLibrary!) as Library?)!;
+  late final Library associatedLibrary = modelBuilder.fromElement(library
+      .element.libraryImports
+      .firstWhere((i) => i.prefix?.element == element)
+      .importedLibrary!) as Library;
 
   @override
   Library? get canonicalModelElement => associatedLibrary.canonicalLibrary;
 
   @override
-  Scope get scope => element!.scope;
+  Scope get scope => element.scope;
 
   @override
-  PrefixElement? get element => super.element as PrefixElement?;
+  PrefixElement get element => super.element as PrefixElement;
 
   @override
-  ModelElement? get enclosingElement => library;
-
-  @override
-  String get filePath =>
-      throw UnimplementedError('prefixes have no generated files in dartdoc');
+  ModelElement get enclosingElement => library;
 
   @override
   String? get href => canonicalModelElement?.href;

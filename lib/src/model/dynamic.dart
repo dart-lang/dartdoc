@@ -7,14 +7,14 @@ import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 
-class Dynamic extends ModelElement {
+class Dynamic extends ModelElement with HasNoPage {
   Dynamic(Element element, PackageGraph packageGraph)
-      : super(element, null, packageGraph);
+      : super(element, Library.sentinel, packageGraph);
 
   UndefinedElementType get modelType =>
       throw UnimplementedError('(${element.runtimeType}) $element');
 
-  /// [dynamic] is not a real object, and so we can't document it, so there
+  /// `dynamic` is not a real object, and so we can't document it, so there
   /// can be nothing canonical for it.
   @override
   ModelElement? get canonicalModelElement => null;
@@ -22,8 +22,7 @@ class Dynamic extends ModelElement {
   @override
   ModelElement? get enclosingElement => null;
 
-  /// And similarly, even if someone references it directly it can have
-  /// no hyperlink.
+  /// `dynamic` has no hyperlink.
   @override
   String? get href => null;
 
@@ -32,9 +31,6 @@ class Dynamic extends ModelElement {
 
   @override
   String get linkedName => 'dynamic';
-
-  @override
-  String? get filePath => null;
 
   @override
   Map<String, CommentReferable> get referenceChildren => {};

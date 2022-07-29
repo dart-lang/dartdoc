@@ -14,7 +14,7 @@ import 'package:dartdoc/src/model/model.dart';
 /// **inherited**: Filtered getters giving only inherited children.
 class Class extends InheritingContainer
     with Constructable, TypeImplementing, MixedInTypes {
-  Class(ClassElement element, Library? library, PackageGraph packageGraph)
+  Class(ClassElement element, Library library, PackageGraph packageGraph)
       : super(element, library, packageGraph) {
     packageGraph.specialClasses.addSpecial(this);
   }
@@ -25,50 +25,28 @@ class Class extends InheritingContainer
     ...constructors,
   ];
 
-  /// Returns the library that encloses this element.
-  @override
-  ModelElement get enclosingElement => library;
-
   @override
   String get fileName => '$name-class.$fileType';
 
-  @override
-  String get filePath => '${library.dirName}/$fileName';
-
-  @override
-  String get fullkind {
-    if (isAbstract) return 'abstract $kind';
-    return super.fullkind;
-  }
-
-  @override
-  String? get href {
-    if (!identical(canonicalModelElement, this)) {
-      return canonicalModelElement?.href;
-    }
-    assert(canonicalLibrary != null);
-    assert(canonicalLibrary == library);
-    var packageBaseHref = package.baseHref;
-    return '$packageBaseHref$filePath';
-  }
-
-  bool get isAbstract => element!.isAbstract;
-
-  @override
-  bool get isCanonical => super.isCanonical && isPublic;
+  bool get isAbstract => element.isAbstract;
 
   bool get isErrorOrException {
     bool isError(ClassElement element) => (element.library.isDartCore &&
         (element.name == 'Exception' || element.name == 'Error'));
 
     final element = this.element;
-    if (element == null) return false;
     if (isError(element)) return true;
     return element.allSupertypes.map((t) => t.element).any(isError);
   }
 
   @override
   String get kind => 'class';
+
+  @override
+  String get fullkind {
+    if (isAbstract) return 'abstract $kind';
+    return super.fullkind;
+  }
 
   @override
   late final List<InheritingContainer?> inheritanceChain = [
@@ -85,17 +63,6 @@ class Class extends InheritingContainer
     // implement them even when they aren't mentioned.
     ...interfaces.expandInheritanceChain,
   ];
-
-  @override
-  late final Iterable<Field> instanceFields =
-      allFields.where((f) => !f.isStatic);
-
-  @override
-  bool get publicInheritedInstanceFields =>
-      publicInstanceFields.every((f) => f.isInherited);
-
-  @override
-  Iterable<Field> get constantFields => allFields.where((f) => f.isConst);
 
   @override
   String get relationshipsClass => 'clazz-relationships';

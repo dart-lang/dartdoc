@@ -3,11 +3,18 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:dartdoc/src/generator/generator.dart';
+import 'package:dartdoc/src/generator/generator_backend.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
 import 'package:dartdoc/src/runtime_stats.dart';
 import 'package:dartdoc/src/warnings.dart';
+
+@Deprecated('Refer to GeneratorBackendBase directly')
+export 'package:dartdoc/src/generator/generator_backend.dart'
+    show
+        // ignore: deprecated_member_use_from_same_package
+        DartdocGeneratorBackend;
 
 /// A [Generator] that delegates rendering to a [GeneratorBackend] and delegates
 /// file creation to a [FileWriter].

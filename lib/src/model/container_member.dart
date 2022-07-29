@@ -18,8 +18,11 @@ mixin ContainerMember on ModelElement implements EnclosedElement {
   // implemented.
   bool get isExtended => false;
 
+  @override
+  Container get enclosingElement;
+
   late final Container definingEnclosingContainer =
-      modelBuilder.fromElement(element!.enclosingElement!) as Container;
+      modelBuilder.fromElement(element.enclosingElement2!) as Container;
 
   @override
   Set<Feature> get features => {
@@ -42,13 +45,13 @@ mixin ContainerMember on ModelElement implements EnclosedElement {
 
   Container? computeCanonicalEnclosingContainer() {
     // TODO(jcollins-g): move Extension specific code to [Extendable]
-    if (enclosingElement is Extension && enclosingElement!.isDocumented) {
-      return packageGraph.findCanonicalModelElementFor(
-          enclosingElement!.element) as Container?;
+    if (enclosingElement is Extension && enclosingElement.isDocumented) {
+      return packageGraph.findCanonicalModelElementFor(enclosingElement.element)
+          as Container?;
     }
     if (enclosingElement is! Extension) {
       return packageGraph.findCanonicalModelElementFor(
-          element!.enclosingElement) as Container?;
+          element.enclosingElement2) as Container?;
     }
     return null;
   }
@@ -62,8 +65,8 @@ mixin ContainerMember on ModelElement implements EnclosedElement {
       // that has to be resolved in the source by not inheriting
       // documentation.
       [
-        enclosingElement as Container,
-        documentationFrom.first.enclosingElement as Container
+        enclosingElement,
+        documentationFrom.first.enclosingElement as Container,
       ];
 
   @override

@@ -63,7 +63,7 @@ class EnumField extends Field {
 
   @override
   String get constantValueBase =>
-      element!.library!.featureSet.isEnabled(Feature.enhanced_enums)
+      element.library!.featureSet.isEnabled(Feature.enhanced_enums)
           ? super.constantValueBase
           : _fieldRenderer.renderValue(this);
 

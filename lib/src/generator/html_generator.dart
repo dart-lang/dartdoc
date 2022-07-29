@@ -5,8 +5,8 @@
 library dartdoc.html_generator;
 
 import 'package:dartdoc/options.dart';
-import 'package:dartdoc/src/generator/dartdoc_generator_backend.dart';
 import 'package:dartdoc/src/generator/generator.dart';
+import 'package:dartdoc/src/generator/generator_backend.dart';
 import 'package:dartdoc/src/generator/generator_frontend.dart';
 import 'package:dartdoc/src/generator/html_resources.g.dart' as resources;
 import 'package:dartdoc/src/generator/resource_loader.dart';
@@ -33,7 +33,7 @@ Future<Generator> initHtmlGenerator(
 }
 
 /// Generator backend for HTML output.
-class HtmlGeneratorBackend extends DartdocGeneratorBackend {
+class HtmlGeneratorBackend extends GeneratorBackendBase {
   HtmlGeneratorBackend(
       super.options, super.templates, super.writer, super.resourceProvider);
 

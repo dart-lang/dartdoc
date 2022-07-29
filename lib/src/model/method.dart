@@ -24,7 +24,7 @@ class Method extends ModelElement
   }
 
   Method.inherited(MethodElement element, this._enclosingContainer,
-      Library? library, PackageGraph packageGraph,
+      Library library, PackageGraph packageGraph,
       {ExecutableMember? originalMember})
       : super(element, library, packageGraph, originalMember) {
     _isInherited = true;
@@ -32,8 +32,8 @@ class Method extends ModelElement
   }
 
   void _calcTypeParameters() {
-    typeParameters = element!.typeParameters.map((f) {
-      return modelBuilder.from(f, library!) as TypeParameter;
+    typeParameters = element.typeParameters.map((f) {
+      return modelBuilder.from(f, library) as TypeParameter;
     }).toList();
   }
 
@@ -45,24 +45,24 @@ class Method extends ModelElement
       // Just directly override our location with the Enum definition --
       // this is OK because Enums can not inherit from each other nor
       // have their definitions split between files.
-      return enclosingElement!.characterLocation;
+      return enclosingElement.characterLocation;
     }
     return super.characterLocation;
   }
 
   @override
-  ModelElement? get enclosingElement {
+  Container get enclosingElement {
     _enclosingContainer ??=
-        modelBuilder.from(element!.enclosingElement, library!) as Container?;
-    return _enclosingContainer;
+        modelBuilder.from(element.enclosingElement2, library) as Container?;
+    return _enclosingContainer!;
   }
 
   @override
   String get filePath =>
-      '${enclosingElement!.library!.dirName}/${enclosingElement!.name}/$fileName';
+      '${enclosingElement.library.dirName}/${enclosingElement.name}/$fileName';
 
   String get fullkind {
-    if (element!.isAbstract) return 'abstract $kind';
+    if (element.isAbstract) return 'abstract $kind';
     return kind;
   }
 
@@ -85,7 +85,7 @@ class Method extends ModelElement
       };
 
   @override
-  bool get isStatic => element!.isStatic;
+  bool get isStatic => element.isStatic;
 
   @override
   String get kind => 'method';
@@ -94,20 +94,19 @@ class Method extends ModelElement
   ExecutableMember? get originalMember =>
       super.originalMember as ExecutableMember?;
 
-  Callable? _modelType;
-  Callable get modelType => (_modelType ??= modelBuilder.typeFrom(
-      (originalMember ?? element)!.type, library!) as Callable?)!;
+  late final Callable modelType = modelBuilder.typeFrom(
+      (originalMember ?? element).type, library) as Callable;
 
   @override
   Method? get overriddenElement {
     if (_enclosingContainer is Extension) {
       return null;
     }
-    var parent = element!.enclosingElement as ClassElement;
+    var parent = element.enclosingElement2 as ClassElement;
     for (var t in parent.allSupertypes) {
-      Element? e = t.getMethod(element!.name);
+      Element? e = t.getMethod(element.name);
       if (e != null) {
-        assert(e.enclosingElement is ClassElement);
+        assert(e.enclosingElement2 is ClassElement);
         return modelBuilder.fromElement(e) as Method?;
       }
     }
@@ -115,7 +114,7 @@ class Method extends ModelElement
   }
 
   @override
-  MethodElement? get element => super.element as MethodElement?;
+  MethodElement get element => super.element as MethodElement;
 
   /// Methods can not be covariant; always returns false.
   @override
