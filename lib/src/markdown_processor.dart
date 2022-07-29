@@ -15,7 +15,6 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/runtime_stats.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:markdown/markdown.dart' as md;
-import 'package:markdown/markdown.dart';
 import 'package:meta/meta.dart';
 
 const _validHtmlTags = [
@@ -328,11 +327,11 @@ class MarkdownDocument extends md.Document {
   @Deprecated("MarkdownDocument's unnamed constructor is deprecated. Use "
       '[MarkdownDocument.withElementLinkResolver]')
   MarkdownDocument({
-    Iterable<BlockSyntax>? blockSyntaxes,
-    Iterable<InlineSyntax>? inlineSyntaxes,
-    ExtensionSet? extensionSet,
-    Resolver? linkResolver,
-    Resolver? imageLinkResolver,
+    Iterable<md.BlockSyntax>? blockSyntaxes,
+    Iterable<md.InlineSyntax>? inlineSyntaxes,
+    md.ExtensionSet? extensionSet,
+    md.Resolver? linkResolver,
+    md.Resolver? imageLinkResolver,
   }) : this._(
           blockSyntaxes: blockSyntaxes,
           inlineSyntaxes: inlineSyntaxes,
