@@ -15,6 +15,9 @@ import 'package:dartdoc/src/version.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:path/path.dart' as p show Context;
 
+@Deprecated('Refer to GeneratorBackendBase directly')
+typedef DartdocGeneratorBackend = GeneratorBackendBase;
+
 /// Configuration options for Dartdoc's default backend.
 class DartdocGeneratorBackendOptions implements TemplateOptions {
   @override
@@ -67,8 +70,76 @@ class SidebarGenerator<T extends TemplateData> {
   }
 }
 
+/// An interface for classes which are responsible for outputing the generated
+/// documentation.
+abstract class GeneratorBackend {
+  FileWriter get writer;
+
+  /// Emits JSON describing the [categories] defined by the package.
+  void generateCategoryJson(List<Categorization> categories);
+
+  /// Emits a JSON catalog of [indexedElements] for use with a search index.
+  void generateSearchIndex(List<Indexable> indexedElements);
+
+  /// Emits documentation content for the [package].
+  void generatePackage(PackageGraph graph, Package package);
+
+  /// Emits documentation content for the [category].
+  void generateCategory(PackageGraph graph, Category category);
+
+  /// Emits documentation content for the [library].
+  void generateLibrary(PackageGraph graph, Library library);
+
+  /// Emits documentation content for the [clazz].
+  void generateClass(PackageGraph graph, Library library, Class clazz);
+
+  /// Emits documentation content for the [eNum].
+  void generateEnum(PackageGraph graph, Library library, Enum eNum);
+
+  /// Emits documentation content for the [mixin].
+  void generateMixin(PackageGraph graph, Library library, Mixin mixin);
+
+  /// Emits documentation content for the [constructor].
+  void generateConstructor(PackageGraph graph, Library library,
+      Constructable constructable, Constructor constructor);
+
+  /// Emits documentation content for the [field].
+  void generateConstant(
+      PackageGraph graph, Library library, Container clazz, Field field);
+
+  /// Emits documentation content for the [field].
+  void generateProperty(
+      PackageGraph graph, Library library, Container clazz, Field field);
+
+  /// Emits documentation content for the [method].
+  void generateMethod(
+      PackageGraph graph, Library library, Container clazz, Method method);
+
+  /// Emits documentation content for the [extension].
+  void generateExtension(
+      PackageGraph graph, Library library, Extension extension);
+
+  /// Emits documentation content for the [function].
+  void generateFunction(
+      PackageGraph graph, Library library, ModelFunction function);
+
+  /// Emits documentation content for the [constant].
+  void generateTopLevelConstant(
+      PackageGraph graph, Library library, TopLevelVariable constant);
+
+  /// Emits documentation content for the [property].
+  void generateTopLevelProperty(
+      PackageGraph graph, Library library, TopLevelVariable property);
+
+  /// Emits documentation content for the [typedef].
+  void generateTypeDef(PackageGraph graph, Library library, Typedef typedef);
+
+  /// Emits files not specific to a Dart language element (like a favicon, etc).
+  Future<void> generateAdditionalFiles();
+}
+
 /// Base [GeneratorBackend] for Dartdoc's supported formats.
-abstract class DartdocGeneratorBackend implements GeneratorBackend {
+abstract class GeneratorBackendBase implements GeneratorBackend {
   final DartdocGeneratorBackendOptions options;
   final Templates templates;
   final SidebarGenerator<TemplateDataWithLibrary<Documentable>>
@@ -81,7 +152,7 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
   final ResourceProvider resourceProvider;
   final p.Context _pathContext;
 
-  DartdocGeneratorBackend(
+  GeneratorBackendBase(
       this.options, this.templates, this.writer, this.resourceProvider)
       : _sidebarForLibrary =
             SidebarGenerator(templates.renderSidebarForLibrary),
