@@ -5,7 +5,6 @@
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/options.dart';
 import 'package:dartdoc/src/generator/generator.dart';
-import 'package:dartdoc/src/generator/generator_frontend.dart';
 import 'package:dartdoc/src/generator/generator_utils.dart' as generator_util;
 import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/src/generator/templates.dart';
