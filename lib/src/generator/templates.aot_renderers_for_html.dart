@@ -2969,7 +2969,7 @@ String _deduplicated_lib_templates_html__head_html(
   buffer.write('''<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">  <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">''');
   if (context0.includeVersion == true) {
@@ -3102,10 +3102,16 @@ String _deduplicated_lib_templates_html__head_html(
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
+  <div class="temp-box"></div>
+  <i class="fa fa-sun-o" style="font-size:24px;"></i>  <div class="toggle" id="theme-button">
+  <label for="theme" class="switch">
+    <input type="checkbox" id="theme" value="light">
+    <span class="slider round"></span>
+  </label>
+</div>
+  <i class="fa fa-moon-o"  style="font-size:24px;"></i>
 </header>
-
-<main>
-''');
+<main>''');
 
   return buffer.toString();
 }
