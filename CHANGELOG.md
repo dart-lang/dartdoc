@@ -1,3 +1,21 @@
+## 6.0.1
+
+* Allow `Parameter.enclosingElement` to be nullable.
+* Deprecate `PackageMeta.description`, `PackageMeta.repository`,
+  `PackageMeta.getLicenseContents`, `PackageMeta.getChangelogContents`.
+* Deprecate public access to `allBeforeFirstNewline`, `allAfterLastNewline`,
+  `findFreeHangingGenericsPositions`, `ReferenceChildrenLookup`, and
+  `childLookups`.
+* Make `Mixin.superclassConstraints`, `ModelElement.library` and `ModelElement. package` non-nullable late final.
+* Make `ModelElement.element` non-nullable.
+* Remove `ElementType.returnedFrom`, `MatchingLinkResult.warn`.
+* Rename `DartdocGeneratorBackend` to `GeneratorBackendBase`. Add a
+  typedef to preserve old behavior.
+* Make `ContainerMember.enclosingElement` a `Container`.
+* Deprecate MarkdownDocument's unnamed constructor.
+* Fix the search box's height constraint.
+* Move to analyzer ^4.3.1.
+
 ## 6.0.0
 
 * BREAKING CHANGE: Make `DartdocGeneratorBackend.sidebarForContainer`,
