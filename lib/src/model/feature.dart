@@ -60,4 +60,6 @@ class Feature implements Privacy {
   static const overrideFeature = Feature('override', 3);
   static const overrideGetter = Feature('override-getter', 3);
   static const overrideSetter = Feature('override-setter', 3);
+
+  String  cssClassName() => 'feature';
 }

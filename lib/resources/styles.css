@@ -463,6 +463,7 @@ h1 .category {
 }
 
 /* The badge under a declaration for things like "const", "read-only", etc. and for the badges inline like Null safety*/
+/* See https://github.com/dart-lang/dartdoc/blob/master/lib/src/model/feature.dart */
 .feature {
   display: inline-block;
   background: white;
