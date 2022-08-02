@@ -257,7 +257,7 @@ nav .container {
 }
 
 header {
-  background-color: #eeeeee;
+  background-color: var(--main-header-color);
   box-shadow: 0 3px 5px rgba(0,0,0,0.1);
 }
 
@@ -348,7 +348,7 @@ p {
 }
 
 a {
-  color: #0175C2;
+  color: var(--main-hyperlinks-color);
 }
 
 a:hover {
@@ -421,7 +421,7 @@ header h1 {
 header a,
 header p,
 header li {
-  color: #111111;
+  color: #0175C2;
 }
 
 header a:hover {
@@ -723,6 +723,8 @@ td {
   padding: 0;
 }
 
+li
+
 /* The slug line under a declaration for things like "const", "read-only", etc. */
 .features {
   font-style: italic;
@@ -757,6 +759,10 @@ td {
     margin: 0 0 24px 0;
     overflow-x: hidden;
   }
+}
+
+.breadcrumbs gt-separated dark hidden-xs{
+    color:var(--main-hyperlinks-color);
 }
 
 .self-crumb {
