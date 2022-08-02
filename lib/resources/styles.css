@@ -828,8 +828,9 @@ td {
   }
 }
 
-ol.breadcrumbs li a{
-    color: var(--main-hyperlinks-color);
+
+.breadcrumbs gt-separated dark hidden-xs{
+    color:var(--main-hyperlinks-color);
 }
 
 .self-crumb {
