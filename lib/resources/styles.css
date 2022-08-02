@@ -765,6 +765,14 @@ li
     color:var(--main-hyperlinks-color);
 }
 
+.breadcrumbs gt-separated dark hidden-xs li+li:before {
+    color: var(--main-h-text);
+}
+
+ol.breadcrumbs li a{
+    color: var(--main-hyperlinks-color);
+}
+
 .self-crumb {
   color: var(--main-h-text);
 }
