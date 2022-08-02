@@ -1511,6 +1511,42 @@ String renderProperty(_i1.PropertyTemplateData context0) {
   return buffer.toString();
 }
 
+String renderSearchPage(_i1.PackageTemplateData context0) {
+  final buffer = StringBuffer();
+  buffer.write(_renderSearchPage_partial_head_0(context0));
+  buffer.writeln();
+  buffer.write('''
+
+<div id="dartdoc-main-content" class="main-content">
+
+</div> <!-- /.main-content -->
+
+<div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+  ''');
+  buffer.write(_renderSearchPage_partial_search_sidebar_1(context0));
+  buffer.writeln();
+  buffer.write('''
+  <h5 class="hidden-xs"><span class="package-name">''');
+  buffer.writeEscaped(context0.self.name);
+  buffer.write('''</span> <span class="package-kind">''');
+  buffer.writeEscaped(context0.self.kind);
+  buffer.write('''</span></h5>
+  ''');
+  buffer.write(_renderSearchPage_partial_packages_2(context0));
+  buffer.writeln();
+  buffer.write('''
+</div>
+
+<div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+</div>
+
+''');
+  buffer.write(_renderSearchPage_partial_footer_3(context0));
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
 String renderSidebarForContainer<T extends _i3.Documentable>(
     _i1.TemplateDataWithContainer<T> context0) {
   final buffer = StringBuffer();
@@ -2822,6 +2858,15 @@ String _renderProperty_partial_search_sidebar_9(
         _i1.PropertyTemplateData context0) =>
     _deduplicated_lib_templates_html__search_sidebar_html(context0);
 String _renderProperty_partial_footer_10(_i1.PropertyTemplateData context0) =>
+    _deduplicated_lib_templates_html__footer_html(context0);
+String _renderSearchPage_partial_head_0(_i1.PackageTemplateData context0) =>
+    _deduplicated_lib_templates_html__head_html(context0);
+String _renderSearchPage_partial_search_sidebar_1(
+        _i1.PackageTemplateData context0) =>
+    _deduplicated_lib_templates_html__search_sidebar_html(context0);
+String _renderSearchPage_partial_packages_2(_i1.PackageTemplateData context0) =>
+    _deduplicated_lib_templates_html__packages_html(context0);
+String _renderSearchPage_partial_footer_3(_i1.PackageTemplateData context0) =>
     _deduplicated_lib_templates_html__footer_html(context0);
 String _renderTopLevelProperty_partial_head_0(
         _i1.TopLevelPropertyTemplateData context0) =>

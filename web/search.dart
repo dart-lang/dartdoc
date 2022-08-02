@@ -2,13 +2,13 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'dart:collection';
 import 'dart:convert';
 import 'dart:html';
 import 'dart:js_util' as js_util;
 
 void init() {
   final document = window.document;
-
   var searchBox = document.getElementById('search-box') as InputElement?;
   var searchBody = document.getElementById('search-body') as InputElement?;
   var searchSidebar =
@@ -139,16 +139,20 @@ List<IndexItem> findMatches(List<IndexItem> index, String query) {
 }
 
 const minLength = 1;
-const suggestionLimit = 10;
+var suggestionLimit = 10;
+var allResults=0;
+const HtmlEscape htmlEscape = HtmlEscape();
 
 void initializeSearch(
   InputElement input,
   List<IndexItem> index,
   String htmlBase,
 ) {
+
+  final uri = Uri.parse(window.location.href);
+
   input.disabled = false;
   input.setAttribute('placeholder', 'Search API Docs');
-
   // Handle grabbing focus when the users types / outside of the input
   document.addEventListener('keypress', (Event event) {
     if (event is! KeyEvent) {
@@ -189,10 +193,16 @@ void initializeSearch(
   listBox.style.display = 'none';
   listBox.classes.add('tt-menu');
 
-  var presentation = document.createElement('div');
-  presentation.classes.add('tt-elements');
+  // Element use in listbox to inform the functionality of hitting enter in search box
+  var moreResults = document.createElement('div');
+  moreResults.classes.add('enter-search-message');
+  //moreResults.innerHtml = 'Press "Enter" key to see more results if available';
+  listBox.append(moreResults);
 
-  listBox.append(presentation);
+  // Element that contains the search suggestions in a new format
+  var searchResults = document.createElement('div');
+  searchResults.classes.add('tt-search-results');
+  listBox.append(searchResults);
 
   wrapper.append(listBox);
 
@@ -203,24 +213,51 @@ void initializeSearch(
         query, "<strong class='tt-highlight'>$sanitizedText</strong>");
   }
 
+  Map<String,Element> categoriesMap = new LinkedHashMap();
+
+  // Function that takes the name of the library/class the search suggestion belongs to and puts in the map
+  void categories(Element suggestionLibrary, Element suggestion){
+    var input = suggestionLibrary.innerHtml;
+    if(categoriesMap[input]!=null){
+      var element = categoriesMap[input];
+      if(element!=null) {
+        element.append(suggestion);
+        categoriesMap.update(input!, (value) => element);
+      }
+    }
+    else{
+      var insert = suggestionLibrary;
+      insert.append(suggestion);
+      categoriesMap[input!]= insert;
+    }
+  }
+
+  // Using the name of the library/class creates the Element for it
+  Element createCategory(String lib, String href){
+    var categoryTitle = document.createElement('a');
+    categoryTitle.setAttribute('href', href);
+    categoryTitle.classes.add('tt-category-title');
+    categoryTitle.innerHtml = lib;
+    return categoryTitle;
+  }
+
   Element createSuggestion(String query, IndexItem match) {
     var suggestion = document.createElement('div');
     suggestion.setAttribute('data-href', match.href ?? '');
     suggestion.classes.add('tt-suggestion');
 
-    var suggestionTitle = document.createElement('span');
+    var suggestionTitle = document.createElement('div');
     suggestionTitle.classes.add('tt-suggestion-title');
     suggestionTitle.innerHtml =
         highlight('${match.name} ${match.type.toLowerCase()}', query);
-
     suggestion.append(suggestionTitle);
 
-    if (match.enclosedBy != null) {
-      var fromLib = document.createElement('div');
-      fromLib.classes.add('search-from-lib');
-      fromLib.innerHtml = 'from ${highlight(match.enclosedBy!.name, query)}';
-
-      suggestion.append(fromLib);
+    // The new one line description use in the search suggestions
+    if(match.desc!="") {
+      var inputDesc = document.createElement('div');
+      inputDesc.classes.add('one-line-description');
+      inputDesc.innerHtml = highlight(match.desc, query);
+      suggestion.append(inputDesc);
     }
 
     suggestion.addEventListener('mousedown', (event) {
@@ -234,6 +271,11 @@ void initializeSearch(
       }
     });
 
+    if(match.enclosedBy!=null) {
+      var category = '${match.enclosedBy!.name} ${match.enclosedBy!.type}';
+      var toMap = createCategory(category,match.enclosedBy!.href);
+      categories(toMap, suggestion);
+    }
     return suggestion;
   }
 
@@ -251,10 +293,50 @@ void initializeSearch(
   }
 
   void showSuggestions() {
-    if (presentation.hasChildNodes()) {
+    if (searchResults.hasChildNodes()) {
       listBox.style.display = 'block';
       listBox.setAttribute('aria-expanded', 'true');
     }
+  }
+
+  // Function that iterates through the map and appends it to the given HTML element
+  void iterateCategoriesMap(Element e) {
+    for (var k in categoriesMap.keys) {
+      if(categoriesMap[k]!=null) {
+        var values = categoriesMap[k];
+        e.append(values!);
+      }
+    }
+  }
+
+  // Function that creates the content displayed in the main-content element
+  void searchResultPage(String input){
+      var mainContent = document.getElementById('dartdoc-main-content');
+      mainContent?.text='';
+
+      var section = document.createElement('section');
+      section.classes.add('search-summary');
+      mainContent?.append(section);
+
+      var title = document.createElement('h2');
+      title.innerHtml = 'Search Results';
+      mainContent?.append(title);
+
+      var summary = document.createElement('div');
+      summary.classes.add('search-summary');
+      summary.innerHtml = '$allResults results for "$input"';
+      mainContent?.append(summary);
+
+      if (categoriesMap.isNotEmpty) {
+        iterateCategoriesMap(mainContent!);
+      }
+      else {
+        var noResults = document.createElement('div');
+        noResults.classes.add('search-summary');
+        noResults.innerHtml =
+        'There was not a match for "$input". Please try another search.';
+        mainContent?.append(noResults);
+      }
   }
 
   void hideSuggestions() {
@@ -265,7 +347,8 @@ void initializeSearch(
   void updateSuggestions(String query, List<IndexItem> suggestions) {
     suggestionsInfo = [];
     suggestionElements = [];
-    presentation.text = '';
+    categoriesMap = new LinkedHashMap();
+    searchResults.text = '';
 
     if (suggestions.length < minLength) {
       setHint(null);
@@ -276,9 +359,9 @@ void initializeSearch(
     for (final suggestion in suggestions) {
       var element = createSuggestion(query, suggestion);
       suggestionElements.add(element);
-      presentation.append(element);
     }
 
+    iterateCategoriesMap(searchResults);
     suggestionsInfo = suggestions;
 
     setHint(query + suggestions[0].name.substring(query.length));
@@ -287,7 +370,7 @@ void initializeSearch(
     showSuggestions();
   }
 
-  void handle(String? newValue, [bool forceUpdate = false]) {
+  void handle(String? newValue , [bool forceUpdate = false]) {
     if (actualValue == newValue && !forceUpdate) {
       return;
     }
@@ -298,7 +381,9 @@ void initializeSearch(
     }
 
     var suggestions = findMatches(index, newValue);
+    allResults = suggestions.length;
     if (suggestions.length > suggestionLimit) {
+      moreResults.innerHtml = 'Press "Enter" key to see all ${suggestions.length} results';
       suggestions = suggestions.sublist(0, suggestionLimit);
     }
 
@@ -327,10 +412,6 @@ void initializeSearch(
   });
 
   input.addEventListener('keydown', (Event event) {
-    if (suggestionElements.isEmpty) {
-      return;
-    }
-
     if (event.type != 'keydown') {
       return;
     }
@@ -338,12 +419,35 @@ void initializeSearch(
     event = event as KeyboardEvent;
 
     if (event.code == 'Enter') {
-      var selectingElement = selectedElement ?? 0;
-      var href = suggestionElements[selectingElement].dataset['href'];
-      if (href != null) {
-        window.location.assign('$htmlBase$href');
+      if(selectedElement!=null){
+        var selectingElement = selectedElement ?? 0;
+        var href = suggestionElements[selectingElement].dataset['href'];
+        if (href != null) {
+          window.location.assign('$htmlBase$href');
+        }
+        return;
       }
-      return;
+      // If there no search suggestion selected then change the window location to the search.html
+      if(selectedElement==null||listBox.getAttribute('aria-expanded')=='true'||suggestionElements.isEmpty){
+        // Saves the input in the search to be used for creating the query parameter
+        var input = htmlEscape.convert(actualValue);
+        if(document.querySelector('body')?.getAttribute('data-using-base-href')=='true' && document.querySelector('body')?.getAttribute('data-base-href') == ''){
+          var relativePath = document.querySelector('base')?.getAttribute('href');
+          var href = Uri.parse(window.location.href);
+          var base = href.resolve(relativePath!);
+          var search =Uri.parse(base.toString() + 'search_results_page.html');
+          search = search.replace(queryParameters: {'query': input});
+          window.location.assign(search.toString());
+        }
+        else {
+          var relativePath = document.querySelector('body')?.getAttribute('data-base-href');
+          var href = Uri.parse(window.location.href);
+          var base = href.resolve(relativePath!);
+          var search = Uri.parse(base.toString() + 'search_results_page.html');
+          search = search.replace(queryParameters: {'query': input});
+          window.location.assign(search.toString());
+        }
+      }
     }
 
     if (event.code == 'Tab') {
@@ -363,7 +467,6 @@ void initializeSearch(
       }
       return;
     }
-
     var lastIndex = suggestionElements.length - 1;
     var previousSelectedElement = selectedElement;
 
@@ -427,6 +530,17 @@ void initializeSearch(
 
     event.preventDefault();
   });
+
+  // Verifying the href to check if the search html was called to generate the main content elements that are going to be displayed
+  if(window.location.href.contains('search_results_page.html')){
+    var input = uri.queryParameters['query'];
+    input = htmlEscape.convert(input!);
+    suggestionLimit=allResults;
+    handle(input);
+    searchResultPage(input);
+    hideSuggestions();
+    suggestionLimit=10;
+  }
 }
 
 class SearchMatch {
@@ -442,12 +556,14 @@ class IndexItem {
   final String type;
   final String? href;
   final int? overriddenDepth;
+  final String desc;
   final EnclosedBy? enclosedBy;
 
   IndexItem._({
     required this.name,
     required this.qualifiedName,
     required this.type,
+    required this.desc,
     this.href,
     this.overriddenDepth,
     this.enclosedBy,
@@ -468,7 +584,7 @@ class IndexItem {
     EnclosedBy? enclosedBy;
     if (data['enclosedBy'] != null) {
       final map = data['enclosedBy'] as Map<String, dynamic>;
-      enclosedBy = EnclosedBy._(name: map['name'], type: map['type']);
+      enclosedBy = EnclosedBy._(name: map['name'], type: map['type'], href: map['href']);
     }
 
     return IndexItem._(
@@ -477,6 +593,7 @@ class IndexItem {
       href: data['href'],
       type: data['type'],
       overriddenDepth: data['overriddenDepth'],
+      desc: data['desc'],
       enclosedBy: enclosedBy,
     );
   }
@@ -485,10 +602,12 @@ class IndexItem {
 class EnclosedBy {
   final String name;
   final String type;
+  final String href;
 
-  // ["enclosedBy":{"name":"Accessor","type":"class"}]
+  // ["enclosedBy":{"name":"Accessor","type":"class","href":"link"}]
   EnclosedBy._({
     required this.name,
     required this.type,
+    required this.href
   });
 }

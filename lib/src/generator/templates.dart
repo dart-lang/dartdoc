@@ -24,6 +24,7 @@
 @Renderer(#renderMethod, Context<MethodTemplateData>(), 'method')
 @Renderer(#renderMixin, Context<MixinTemplateData>(), 'mixin')
 @Renderer(#renderProperty, Context<PropertyTemplateData>(), 'property')
+@Renderer(#renderSearchPage, Context<PackageTemplateData>(), 'search_results_page')
 @Renderer(
     #renderSidebarForContainer,
     Context<TemplateDataWithContainer<Documentable>>(),
@@ -99,6 +100,7 @@ abstract class Templates {
   String renderMethod(MethodTemplateData context);
   String renderMixin(MixinTemplateData context);
   String renderProperty(PropertyTemplateData context);
+  String renderSearchPage(PackageTemplateData context);
   String renderSidebarForContainer(
       TemplateDataWithContainer<Documentable> context);
   String renderSidebarForLibrary(TemplateDataWithLibrary<Documentable> context);
@@ -185,6 +187,10 @@ class HtmlAotTemplates implements Templates {
       aot_renderers_for_html.renderProperty(context);
 
   @override
+  String renderSearchPage(PackageTemplateData context) =>
+      aot_renderers_for_html.renderSearchPage(context);
+
+  @override
   String renderSidebarForContainer(
           TemplateDataWithContainer<Documentable> context) =>
       aot_renderers_for_html.renderSidebarForContainer(context);
@@ -253,6 +259,10 @@ class MarkdownAotTemplates implements Templates {
   @override
   String renderProperty(PropertyTemplateData context) =>
       aot_renderers_for_md.renderProperty(context);
+
+  @override
+  String renderSearchPage(PackageTemplateData context) =>
+      aot_renderers_for_md.renderSearchPage(context);
 
   @override
   String renderSidebarForContainer(
@@ -324,6 +334,10 @@ class RuntimeTemplates implements Templates {
       runtime_renderers.renderProperty(context, _propertyTemplate);
 
   @override
+  String renderSearchPage(PackageTemplateData context) =>
+      runtime_renderers.renderSearchPage(context, _searchPageTemplate);
+
+  @override
   String renderSidebarForContainer(
           TemplateDataWithContainer<Documentable> context) =>
       runtime_renderers.renderSidebarForContainer(
@@ -356,6 +370,7 @@ class RuntimeTemplates implements Templates {
   final Template _methodTemplate;
   final Template _mixinTemplate;
   final Template _propertyTemplate;
+  final Template _searchPageTemplate;
   final Template _sidebarContainerTemplate;
   final Template _sidebarLibraryTemplate;
   final Template _topLevelPropertyTemplate;
@@ -377,6 +392,7 @@ class RuntimeTemplates implements Templates {
 
     var indexTemplate = await loadTemplate('index');
     var libraryTemplate = await loadTemplate('library');
+    var searchPageTemplate = await loadTemplate('search_results_page');
     var sidebarContainerTemplate = await loadTemplate('_sidebar_for_container');
     var sidebarLibraryTemplate = await loadTemplate('_sidebar_for_library');
     var categoryTemplate = await loadTemplate('category');
@@ -405,6 +421,7 @@ class RuntimeTemplates implements Templates {
       methodTemplate,
       mixinTemplate,
       propertyTemplate,
+      searchPageTemplate,
       sidebarContainerTemplate,
       sidebarLibraryTemplate,
       topLevelPropertyTemplate,
@@ -425,6 +442,7 @@ class RuntimeTemplates implements Templates {
     this._methodTemplate,
     this._mixinTemplate,
     this._propertyTemplate,
+    this._searchPageTemplate,
     this._sidebarContainerTemplate,
     this._sidebarLibraryTemplate,
     this._topLevelPropertyTemplate,

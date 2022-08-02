@@ -36,5 +36,7 @@ class MarkdownGeneratorBackend extends GeneratorBackendBase {
     var data = PackageTemplateData(options, graph, package);
     var content = templates.renderError(data);
     write(writer, '__404error.md', data, content);
+    var searchContent = templates.renderError(data);
+    write(writer, 'search_results_page.md', data, searchContent);
   }
 }

@@ -12301,6 +12301,12 @@ String renderError(PackageTemplateData context, Template template) {
   return buffer.toString();
 }
 
+String renderSearchPage(PackageTemplateData context, Template template) {
+  var buffer = StringBuffer();
+  _render_PackageTemplateData(context, template.ast, template, buffer);
+  return buffer.toString();
+}
+
 void _render_Parameter(Parameter context, List<MustachioNode> ast,
     Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
