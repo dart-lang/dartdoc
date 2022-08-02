@@ -3103,12 +3103,13 @@ String _deduplicated_lib_templates_html__head_html(
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
   <div class="temp-box"></div>
-  <i class="fa fa-sun-o" style="font-size:24px;"></i>  <div class="toggle" id="theme-button">
-  <label for="theme" class="switch">
-    <input type="checkbox" id="theme" value="light">
-    <span class="slider round"></span>
-  </label>
-</div>
+  <i class="fa fa-sun-o" style="font-size:24px;"></i>
+  <div class="toggle" id="theme-button">
+    <label for="theme" class="switch">
+      <input type="checkbox" id="theme" value="light">
+      <span class="slider round"></span>
+    </label>
+  </div>
   <i class="fa fa-moon-o"  style="font-size:24px;"></i>
 </header>
 <main>''');
