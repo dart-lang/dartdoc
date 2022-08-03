@@ -344,6 +344,15 @@ void initializeSearch(
     listBox.setAttribute('aria-expanded', 'false');
   }
 
+  void enterMessage(){
+    if(allResults>10){
+      moreResults.innerHtml = 'Press "Enter" key to see all $allResults results';
+    }
+    else{
+      moreResults.innerHtml = '';
+    }
+  }
+
   void updateSuggestions(String query, List<IndexItem> suggestions) {
     suggestionsInfo = [];
     suggestionElements = [];
@@ -368,6 +377,7 @@ void initializeSearch(
     selectedElement = null;
 
     showSuggestions();
+    enterMessage();
   }
 
   void handle(String? newValue , [bool forceUpdate = false]) {
@@ -381,9 +391,10 @@ void initializeSearch(
     }
 
     var suggestions = findMatches(index, newValue);
+    print(suggestions.length);
     allResults = suggestions.length;
     if (suggestions.length > suggestionLimit) {
-      moreResults.innerHtml = 'Press "Enter" key to see all ${suggestions.length} results';
+      // moreResults.innerHtml = 'PressK "Enter" key to see all ${suggestions.length} results';
       suggestions = suggestions.sublist(0, suggestionLimit);
     }
 

@@ -1,5 +1,9 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 79180DD5565FA695D942A534DAD28E36
 =======
 DEF692FFCE0EE11A4ADBCF79DFB96D28
 >>>>>>> dd9a7690 (New Search)
+=======
+F4A1FA290889E156A2C05894F960585A
+>>>>>>> a36560f1 (Fixed enter message bug, now appears when more than 10 results are available)
