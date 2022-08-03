@@ -24,15 +24,14 @@ class ElementFeatureNotFoundError extends Error {
 /// as well as others added by the documentation system (`read-write`).
 class Feature implements Privacy {
   final String _name;
-  final String _cssClassName;
 
   /// Do not use this except in subclasses, prefer const members of this
   /// class instead.
-  const Feature(this._name, this._cssClassName, [this.sortGroup = 0]);
+  const Feature(this._name, [this.sortGroup = 0]);
 
   final String featurePrefix = '';
 
-  String get css => _cssClassName;
+  String get cssClassName => 'feature';
 
   String get name => _name;
 
@@ -50,17 +49,17 @@ class Feature implements Privacy {
   // TODO(jcollins-g): consider [Comparable]?
   final int sortGroup;
 
-  static const lateFeature = Feature('late', 'feature', 1);
-  static const readOnly = Feature('read-only', 'feature', 1);
-  static const finalFeature = Feature('final', 'feature', 2);
-  static const writeOnly = Feature('write-only', 'feature', 2);
-  static const readWrite = Feature('read / write', 'feature', 2);
-  static const covariant = Feature('covariant', 'feature', 2);
-  static const extended = Feature('extended', 'feature', 3);
-  static const inherited = Feature('inherited', 'feature', 3);
-  static const inheritedGetter = Feature('inherited-getter', 'feature', 3);
-  static const inheritedSetter = Feature('inherited-setter', 'feature', 3);
-  static const overrideFeature = Feature('override', 'feature', 3);
-  static const overrideGetter = Feature('override-getter', 'feature', 3);
-  static const overrideSetter = Feature('override-setter', 'feature', 3);
+  static const lateFeature = Feature('late', 1);
+  static const readOnly = Feature('read-only', 1);
+  static const finalFeature = Feature('final', 2);
+  static const writeOnly = Feature('write-only', 2);
+  static const readWrite = Feature('read / write', 2);
+  static const covariant = Feature('covariant', 2);
+  static const extended = Feature('extended', 3);
+  static const inherited = Feature('inherited', 3);
+  static const inheritedGetter = Feature('inherited-getter', 3);
+  static const inheritedSetter = Feature('inherited-setter', 3);
+  static const overrideFeature = Feature('override', 3);
+  static const overrideGetter = Feature('override-getter', 3);
+  static const overrideSetter = Feature('override-setter', 3);
 }
