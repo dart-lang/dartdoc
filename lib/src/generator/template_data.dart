@@ -79,13 +79,15 @@ abstract class TemplateDataBase {
 
 /// Implementation for template data which is rendered one directory down from
 /// the HTML base.
-mixin OneDirectoryDown {
+mixin OneDirectoryDown<T extends Documentable> on TemplateData<T> {
+  @override
   String get htmlBase => '../';
 }
 
 /// Implementation for template data which is rendered two directories down from
 /// the HTML base.
-mixin TwoDirectoriesDown {
+mixin TwoDirectoriesDown<T extends Documentable> on TemplateData<T> {
+  @override
   String get htmlBase => '../../';
 }
 

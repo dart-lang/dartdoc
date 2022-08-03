@@ -1471,7 +1471,7 @@ class _Renderer_CategoryTemplateData
           CT_,
           () => {
                 ..._Renderer_TemplateData.propertyMap<Category, CT_>(),
-                ..._Renderer_OneDirectoryDown.propertyMap<CT_>(),
+                ..._Renderer_OneDirectoryDown.propertyMap<Category, CT_>(),
                 'category': Property(
                   getValue: (CT_ c) => c.category,
                   renderVariable:
@@ -2380,7 +2380,7 @@ class _Renderer_ConstructorTemplateData
           CT_,
           () => {
                 ..._Renderer_TemplateData.propertyMap<Constructor, CT_>(),
-                ..._Renderer_TwoDirectoriesDown.propertyMap<CT_>(),
+                ..._Renderer_TwoDirectoriesDown.propertyMap<Constructor, CT_>(),
                 'constructable': Property(
                   getValue: (CT_ c) => c.constructable,
                   renderVariable:
@@ -4841,7 +4841,7 @@ class _Renderer_ExtensionTemplateData<T extends Extension>
           CT_,
           () => {
                 ..._Renderer_TemplateData.propertyMap<T, CT_>(),
-                ..._Renderer_OneDirectoryDown.propertyMap<CT_>(),
+                ..._Renderer_OneDirectoryDown.propertyMap<T, CT_>(),
                 'container': Property(
                   getValue: (CT_ c) => c.container,
                   renderVariable:
@@ -5638,7 +5638,7 @@ class _Renderer_FunctionTemplateData
           CT_,
           () => {
                 ..._Renderer_TemplateData.propertyMap<ModelFunction, CT_>(),
-                ..._Renderer_OneDirectoryDown.propertyMap<CT_>(),
+                ..._Renderer_OneDirectoryDown.propertyMap<ModelFunction, CT_>(),
                 'function': Property(
                   getValue: (CT_ c) => c.function,
                   renderVariable:
@@ -7104,7 +7104,7 @@ class _Renderer_InheritingContainerTemplateData<T extends InheritingContainer>
           CT_,
           () => {
                 ..._Renderer_TemplateData.propertyMap<T, CT_>(),
-                ..._Renderer_OneDirectoryDown.propertyMap<CT_>(),
+                ..._Renderer_OneDirectoryDown.propertyMap<T, CT_>(),
                 'clazz': Property(
                   getValue: (CT_ c) => c.clazz,
                   renderVariable:
@@ -8225,7 +8225,7 @@ class _Renderer_LibraryTemplateData extends RendererBase<LibraryTemplateData> {
           CT_,
           () => {
                 ..._Renderer_TemplateData.propertyMap<Library, CT_>(),
-                ..._Renderer_OneDirectoryDown.propertyMap<CT_>(),
+                ..._Renderer_OneDirectoryDown.propertyMap<Library, CT_>(),
                 'layoutTitle': Property(
                   getValue: (CT_ c) => c.layoutTitle,
                   renderVariable:
@@ -8973,7 +8973,7 @@ class _Renderer_MethodTemplateData extends RendererBase<MethodTemplateData> {
           CT_,
           () => {
                 ..._Renderer_TemplateData.propertyMap<Method, CT_>(),
-                ..._Renderer_TwoDirectoriesDown.propertyMap<CT_>(),
+                ..._Renderer_TwoDirectoriesDown.propertyMap<Method, CT_>(),
                 'container': Property(
                   getValue: (CT_ c) => c.container,
                   renderVariable:
@@ -10948,10 +10948,11 @@ class _Renderer_Object extends RendererBase<Object> {
   }
 }
 
-class _Renderer_OneDirectoryDown extends RendererBase<OneDirectoryDown> {
+class _Renderer_OneDirectoryDown<T extends Documentable>
+    extends RendererBase<OneDirectoryDown<T>> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>>
-      propertyMap<CT_ extends OneDirectoryDown>() =>
+      propertyMap<T extends Documentable, CT_ extends OneDirectoryDown>() =>
           _propertyMapCache.putIfAbsent(
               CT_,
               () => {
@@ -10979,14 +10980,14 @@ class _Renderer_OneDirectoryDown extends RendererBase<OneDirectoryDown> {
                     ),
                   }) as Map<String, Property<CT_>>;
 
-  _Renderer_OneDirectoryDown(OneDirectoryDown context,
+  _Renderer_OneDirectoryDown(OneDirectoryDown<T> context,
       RendererBase<Object>? parent, Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<OneDirectoryDown>? getProperty(String key) {
-    if (propertyMap<OneDirectoryDown>().containsKey(key)) {
-      return propertyMap<OneDirectoryDown>()[key];
+  Property<OneDirectoryDown<T>>? getProperty(String key) {
+    if (propertyMap<T, OneDirectoryDown<T>>().containsKey(key)) {
+      return propertyMap<T, OneDirectoryDown<T>>()[key];
     } else {
       return null;
     }
@@ -12530,7 +12531,7 @@ class _Renderer_PropertyTemplateData
           CT_,
           () => {
                 ..._Renderer_TemplateData.propertyMap<Field, CT_>(),
-                ..._Renderer_TwoDirectoriesDown.propertyMap<CT_>(),
+                ..._Renderer_TwoDirectoriesDown.propertyMap<Field, CT_>(),
                 'container': Property(
                   getValue: (CT_ c) => c.container,
                   renderVariable:
@@ -14034,7 +14035,8 @@ class _Renderer_TopLevelPropertyTemplateData
           CT_,
           () => {
                 ..._Renderer_TemplateData.propertyMap<TopLevelVariable, CT_>(),
-                ..._Renderer_OneDirectoryDown.propertyMap<CT_>(),
+                ..._Renderer_OneDirectoryDown.propertyMap<TopLevelVariable,
+                    CT_>(),
                 'layoutTitle': Property(
                   getValue: (CT_ c) => c.layoutTitle,
                   renderVariable:
@@ -14480,10 +14482,11 @@ class _Renderer_TopLevelVariable extends RendererBase<TopLevelVariable> {
   }
 }
 
-class _Renderer_TwoDirectoriesDown extends RendererBase<TwoDirectoriesDown> {
+class _Renderer_TwoDirectoriesDown<T extends Documentable>
+    extends RendererBase<TwoDirectoriesDown<T>> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>>
-      propertyMap<CT_ extends TwoDirectoriesDown>() =>
+      propertyMap<T extends Documentable, CT_ extends TwoDirectoriesDown>() =>
           _propertyMapCache.putIfAbsent(
               CT_,
               () => {
@@ -14511,14 +14514,14 @@ class _Renderer_TwoDirectoriesDown extends RendererBase<TwoDirectoriesDown> {
                     ),
                   }) as Map<String, Property<CT_>>;
 
-  _Renderer_TwoDirectoriesDown(TwoDirectoriesDown context,
+  _Renderer_TwoDirectoriesDown(TwoDirectoriesDown<T> context,
       RendererBase<Object>? parent, Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<TwoDirectoriesDown>? getProperty(String key) {
-    if (propertyMap<TwoDirectoriesDown>().containsKey(key)) {
-      return propertyMap<TwoDirectoriesDown>()[key];
+  Property<TwoDirectoriesDown<T>>? getProperty(String key) {
+    if (propertyMap<T, TwoDirectoriesDown<T>>().containsKey(key)) {
+      return propertyMap<T, TwoDirectoriesDown<T>>()[key];
     } else {
       return null;
     }
@@ -15320,7 +15323,7 @@ class _Renderer_TypedefTemplateData extends RendererBase<TypedefTemplateData> {
           CT_,
           () => {
                 ..._Renderer_TemplateData.propertyMap<Typedef, CT_>(),
-                ..._Renderer_OneDirectoryDown.propertyMap<CT_>(),
+                ..._Renderer_OneDirectoryDown.propertyMap<Typedef, CT_>(),
                 'layoutTitle': Property(
                   getValue: (CT_ c) => c.layoutTitle,
                   renderVariable:
