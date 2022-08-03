@@ -28,7 +28,7 @@ class ModelFunctionTypedef extends ModelFunctionTyped {
   ModelFunctionTypedef(super.element, super.library, super.packageGraph);
 
   @override
-  String get name => element.enclosingElement!.name!;
+  String get name => element.enclosingElement2!.name!;
 }
 
 class ModelFunctionTyped extends ModelElement

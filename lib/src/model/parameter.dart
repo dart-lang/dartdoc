@@ -21,7 +21,7 @@ class Parameter extends ModelElement with HasNoPage {
 
   @override
   ModelElement? get enclosingElement {
-    final enclosingElement = element.enclosingElement;
+    final enclosingElement = element.enclosingElement2;
     return enclosingElement == null
         ? null
         : modelBuilder.from(enclosingElement, library);
@@ -37,15 +37,16 @@ class Parameter extends ModelElement with HasNoPage {
 
   @override
   String get htmlId {
-    if (element.enclosingElement != null) {
-      var enclosingName = element.enclosingElement!.name;
-      if (element.enclosingElement is GenericFunctionTypeElement) {
+    final enclosingElement = element.enclosingElement2;
+    if (enclosingElement != null) {
+      var enclosingName = enclosingElement.name;
+      if (enclosingElement is GenericFunctionTypeElement) {
         // TODO(jcollins-g): Drop when GenericFunctionTypeElement populates
         // name. Also, allowing null here is allowed as a workaround for
         // dart-lang/sdk#32005.
-        for (var e = element.enclosingElement!;
-            e.enclosingElement != null;
-            e = e.enclosingElement!) {
+        for (Element e = enclosingElement;
+            e.enclosingElement2 != null;
+            e = e.enclosingElement2!) {
           enclosingName = e.name;
           if (enclosingName != null && enclosingName.isNotEmpty) break;
         }

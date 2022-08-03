@@ -198,7 +198,7 @@ abstract class ModelElement extends Canonicalization
           var index = constantIndex.toIntValue()!;
           newModelElement =
               EnumField.forConstant(index, e, library, packageGraph, getter);
-        } else if (e.enclosingElement is ExtensionElement) {
+        } else if (e.enclosingElement2 is ExtensionElement) {
           newModelElement = Field(e, library, packageGraph,
               getter as ContainerAccessor?, setter as ContainerAccessor?);
         } else {
@@ -340,8 +340,8 @@ abstract class ModelElement extends Canonicalization
     if (e is FunctionElement) {
       return ModelFunction(e, library, packageGraph);
     } else if (e is GenericFunctionTypeElement) {
-      assert(e.enclosingElement is TypeAliasElement);
-      assert(e.enclosingElement!.name != '');
+      assert(e.enclosingElement2 is TypeAliasElement);
+      assert(e.enclosingElement2!.name != '');
       return ModelFunctionTypedef(e, library, packageGraph);
     }
     if (e is TypeAliasElement) {
@@ -374,13 +374,13 @@ abstract class ModelElement extends Canonicalization
     }
     if (e is PropertyAccessorElement) {
       // Accessors can be part of a [Container], or a part of a [Library].
-      if (e.enclosingElement is ClassElement ||
-          e.enclosingElement is ExtensionElement ||
+      if (e.enclosingElement2 is ClassElement ||
+          e.enclosingElement2 is ExtensionElement ||
           e is MultiplyInheritedExecutableElement) {
         if (enclosingContainer == null) {
           return ContainerAccessor(e, library, packageGraph);
         } else {
-          assert(e.enclosingElement is! ExtensionElement);
+          assert(e.enclosingElement2 is! ExtensionElement);
           return ContainerAccessor.inherited(
               e, library, packageGraph, enclosingContainer,
               originalMember: originalMember as ExecutableMember?);
@@ -564,10 +564,10 @@ abstract class ModelElement extends Canonicalization
     // contained by a [CompilationUnitElement] in the tree.
     Element? topLevelElement = element;
     while (topLevelElement != null &&
-        topLevelElement.enclosingElement is! LibraryElement &&
-        topLevelElement.enclosingElement is! CompilationUnitElement &&
-        topLevelElement.enclosingElement != null) {
-      topLevelElement = topLevelElement.enclosingElement;
+        topLevelElement.enclosingElement2 is! LibraryElement &&
+        topLevelElement.enclosingElement2 is! CompilationUnitElement &&
+        topLevelElement.enclosingElement2 != null) {
+      topLevelElement = topLevelElement.enclosingElement2;
     }
 
     var candidateLibraries = thisAndExported

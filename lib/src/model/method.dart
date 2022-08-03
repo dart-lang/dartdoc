@@ -53,7 +53,7 @@ class Method extends ModelElement
   @override
   Container get enclosingElement {
     _enclosingContainer ??=
-        modelBuilder.from(element.enclosingElement, library) as Container?;
+        modelBuilder.from(element.enclosingElement2, library) as Container?;
     return _enclosingContainer!;
   }
 
@@ -102,11 +102,11 @@ class Method extends ModelElement
     if (_enclosingContainer is Extension) {
       return null;
     }
-    var parent = element.enclosingElement as ClassElement;
+    var parent = element.enclosingElement2 as ClassElement;
     for (var t in parent.allSupertypes) {
       Element? e = t.getMethod(element.name);
       if (e != null) {
-        assert(e.enclosingElement is ClassElement);
+        assert(e.enclosingElement2 is ClassElement);
         return modelBuilder.fromElement(e) as Method?;
       }
     }

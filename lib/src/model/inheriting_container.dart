@@ -358,9 +358,9 @@ abstract class InheritingContainer extends Container
           bool isDartCoreObject(ClassElement e) =>
               e.name == 'Object' && e.library.name == 'dart.core';
           assert(inheritanceChainElements
-                  .contains(imap[nameObj]!.enclosingElement) ||
+                  .contains(imap[nameObj]!.enclosingElement2) ||
               isDartCoreObject(
-                  imap[nameObj]!.enclosingElement as ClassElement));
+                  imap[nameObj]!.enclosingElement2 as ClassElement));
 
           // If the concrete object from [InheritanceManager3.getInheritedConcreteMap2]
           // is farther from this class in the inheritance chain than the one
@@ -368,9 +368,9 @@ abstract class InheritingContainer extends Container
           // correctly accounts for intermediate abstract classes that have
           // method/field implementations.
           if (inheritanceChainElements.indexOf(combinedMap[nameObj.name]!
-                  .enclosingElement as ClassElement?) <
+                  .enclosingElement2 as ClassElement?) <
               inheritanceChainElements
-                  .indexOf(imap[nameObj]!.enclosingElement as ClassElement?)) {
+                  .indexOf(imap[nameObj]!.enclosingElement2 as ClassElement?)) {
             combinedMap[nameObj.name] = imap[nameObj];
           }
         } else {
@@ -516,7 +516,7 @@ abstract class InheritingContainer extends Container
   @override
   List<TypeParameter> get typeParameters {
     _typeParameters ??= element.typeParameters.map((f) {
-      var lib = modelBuilder.fromElement(f.enclosingElement!.library!);
+      var lib = modelBuilder.fromElement(f.enclosingElement2!.library!);
       return modelBuilder.from(f, lib as Library) as TypeParameter;
     }).toList();
     return _typeParameters!;
