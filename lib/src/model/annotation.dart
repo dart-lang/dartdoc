@@ -19,7 +19,7 @@ class Annotation extends Feature with ModelBuilder {
   final PackageGraph packageGraph;
 
   Annotation(this.annotation, this.library, this.packageGraph)
-      : super(annotation.element!.name!);
+      : super(annotation.element!.name!, 'annotation');
 
   @override
   late final String linkedNameWithParameters =
@@ -74,7 +74,4 @@ class Annotation extends Feature with ModelBuilder {
 
   @override
   int get hashCode => annotation.hashCode;
-
-  @override
-  String cssClassName() => 'annotation';
 }

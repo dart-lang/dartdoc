@@ -5137,6 +5137,27 @@ class _Renderer_Feature extends RendererBase<Feature> {
           CT_,
           () => {
                 ..._Renderer_Object.propertyMap<CT_>(),
+                'css': Property(
+                  getValue: (CT_ c) => c.css,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        _Renderer_String.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(
+                        self.getValue(c) as String,
+                        nextProperty,
+                        [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => false,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    _render_String(c.css, ast, r.template, sink, parent: r);
+                  },
+                ),
                 'featurePrefix': Property(
                   getValue: (CT_ c) => c.featurePrefix,
                   renderVariable:
@@ -16010,6 +16031,7 @@ const _invisibleGetters = {
     'runtimeType'
   },
   'Feature': {
+    'css',
     'featurePrefix',
     'hashCode',
     'isPublic',
