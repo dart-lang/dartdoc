@@ -15810,7 +15810,6 @@ const _invisibleGetters = {
     'examplePathPrefix',
     'exclude',
     'excludeFooterVersion',
-    'excludePackages',
     'flutterRoot',
     'format',
     'hashCode',
