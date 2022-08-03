@@ -8,22 +8,22 @@ void init() {
 
   theme.addEventListener('change', (event) {
     if(theme.checked == true) {
-      if (theme.getAttribute('value') == 'light') {
-        elementB?.classes.remove('light');
-        elementB?.classes.toggle('dark');
-        theme.setAttribute('value', 'dark');
+      if (theme.getAttribute('value') == 'light-theme') {
+        elementB?.classes.remove('light-theme');
+        elementB?.classes.toggle('dark-theme');
+        theme.setAttribute('value', 'dark-theme');
       }
       else{
-        elementB?.classes.remove('light');
-        elementB?.classes.toggle('dark');
-        theme.setAttribute('value', 'dark');
+        elementB?.classes.remove('light-theme');
+        elementB?.classes.toggle('dark-theme');
+        theme.setAttribute('value', 'dark-theme');
       }
       window.localStorage['checked'] = 'true';
     }
     else{
-      elementB?.classes.remove('dark');
-      elementB?.classes.toggle('light');
-      theme.setAttribute('value', 'light');
+      elementB?.classes.remove('dark-theme');
+      elementB?.classes.toggle('light-theme');
+      theme.setAttribute('value', 'light-theme');
       window.localStorage['checked'] = 'false';
 
     }
@@ -31,23 +31,23 @@ void init() {
 
   void toggleTheme(){
     if(theme.checked == true) {
-      if (theme.getAttribute('value') == 'light') {
-        elementB?.classes.remove('light');
-        elementB?.classes.toggle('dark');
-        theme.setAttribute('value', 'dark');
+      if (theme.getAttribute('value') == 'light-theme') {
+        elementB?.classes.remove('light-theme');
+        elementB?.classes.toggle('dark-theme');
+        theme.setAttribute('value', 'dark-theme');
       }
       else{
-        elementB?.classes.remove('light');
-        elementB?.classes.toggle('dark');
-        theme.setAttribute('value', 'dark');
+        elementB?.classes.remove('light-theme');
+        elementB?.classes.toggle('dark-theme');
+        theme.setAttribute('value', 'dark-theme');
       }
       window.localStorage['checked'] = 'true';
       theme.checked=true;
     }
     else{
-      elementB?.classes.remove('dark');
-      elementB?.classes.toggle('light');
-      theme.setAttribute('value', 'light');
+      elementB?.classes.remove('dark-theme');
+      elementB?.classes.toggle('light-theme');
+      theme.setAttribute('value', 'light-theme');
       window.localStorage['checked'] = 'false';
       theme.checked=false;
     }

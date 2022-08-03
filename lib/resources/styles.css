@@ -9,7 +9,7 @@
 .secondary-text-color  { color: #727272; }
 .divider-color         { border-color: #B6B6B6; }
 
-.light{
+.light-theme{
 /*background-color body, listdropdown*/
 --main-bg-color: #fff;
 /*header id-tittle*/
@@ -28,9 +28,20 @@
 --main-h-text: black;
 /* hyperlinks*/
 --main-hyperlinks-color: #0175C2;
+/*search background*/
+--main-search-background: transparent;
+
+/*code snippets*/
+--main-code-bg: #f8f8f8;
+--main-keyword-color: #333;
+--main-tag-color: #000080;
+--main-section-color: #900;
+--main-comment-color: #998;
+--main-var-color: #008080;
+--main-string-color: #d14;
 }
 
-.dark{
+.dark-theme{
 /*background-color body, listdropdown*/
 --main-bg-color: #0E161F;
 /*header id-tittle*/
@@ -47,6 +58,17 @@
 --main-footer-background: #27323a;
 /* hyperlinks*/
 --main-hyperlinks-color: #00D2FA;
+/*search background*/
+--main-search-background: black;
+
+/*code snippets*/
+--main-code-bg: #1C2834;
+--main-keyword-color: white;
+--main-tag-color: #00D2FA;
+--main-section-color: #FF2D64;
+--main-comment-color: #909CC3;
+--main-var-color: #55A09B;
+--main-string-color: #FF2D64;
 }
 
 i.fa.fa-sun-o{
@@ -275,6 +297,47 @@ header .masthead {
 
 header .contents {
   padding: 0;
+}
+
+.pre {
+    border: 1px solid #ddd;
+    font-size: 14px;
+}
+
+.hljs-string, .hljs-doctag {
+    color: var(--main-string-color);
+}
+
+.hljs-number, .hljs-literal, .hljs-variable, .hljs-template-variable, .hljs-tag .hljs-attr {
+    color: var(--main-var-color);
+}
+
+.hljs-comment, .hljs-quote {
+    color: var(--main-comment-color);
+    font-style: italic;
+}
+
+.hljs-title, .hljs-section, .hljs-selector-id {
+    color: var(--main-section-color);
+    font-weight: bold;
+}
+
+.hljs-tag, .hljs-name, .hljs-attribute {
+    color: var(--main-tag-color);
+    font-weight: normal;
+}
+
+.hljs-keyword, .hljs-selector-tag, .hljs-subst {
+    color: var(--main-keyword-color);
+    font-weight: bold;
+}
+
+.hljs {
+    display: block;
+    overflow-x: auto;
+    padding: 0.5em;
+    color: var(--main-text-color);
+    background: var(--main-code-bg);
 }
 
 @media screen and (max-width:768px) {
@@ -507,7 +570,7 @@ dl dt.callable .name {
 
 .signature a {
   /* 50% mix of default-primary-color and primary-text-color. */
-  color: #4674a2;
+  color: var(--main-hyperlinks-color);
 }
 
 .optional {
@@ -761,14 +824,6 @@ li
   }
 }
 
-.breadcrumbs gt-separated dark hidden-xs{
-    color:var(--main-hyperlinks-color);
-}
-
-.breadcrumbs gt-separated dark hidden-xs li+li:before {
-    color: var(--main-h-text);
-}
-
 ol.breadcrumbs li a{
     color: var(--main-hyperlinks-color);
 }
@@ -1019,6 +1074,7 @@ button {
   padding: 2px 7px 1px 7px;
   line-height: 20px;
   outline: none;
+  color: var(--main-text-color);
 }
 
 .typeahead {
@@ -1034,7 +1090,7 @@ button {
 .tt-input {
   position: relative;
   vertical-align: top;
-  background-color: transparent;
+  background-color: var(--main-search-background);
 }
 
 .tt-query {
@@ -1108,6 +1164,10 @@ button {
 
 .search-from-lib {
   font-style: italic;
+  color: var(--main-text-color);
+}
+
+::placeholder {
   color: var(--main-text-color);
 }
 

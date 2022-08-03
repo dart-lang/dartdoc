@@ -3106,7 +3106,7 @@ String _deduplicated_lib_templates_html__head_html(
   <i class="fa fa-sun-o" style="font-size:24px;"></i>
   <div class="toggle" id="theme-button">
     <label for="theme" class="switch">
-      <input type="checkbox" id="theme" value="light">
+      <input type="checkbox" id="theme" value="light-theme">
       <span class="slider round"></span>
     </label>
   </div>
