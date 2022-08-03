@@ -990,8 +990,14 @@ String renderTypedef(_i1.TypedefTemplateData context0) {
   return buffer.toString();
 }
 
-String _renderCategory_partial_head_0(_i1.CategoryTemplateData context0) =>
-    _deduplicated_lib_templates_md__head_md(context0);
+String _renderCategory_partial_head_0(_i1.CategoryTemplateData context0) {
+  final buffer = StringBuffer();
+  buffer.write(context0.customHeader);
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
 String _renderCategory_partial_documentation_1(_i3.Category context1) =>
     _deduplicated_lib_templates_md__documentation_md(context1);
 String _renderCategory_partial_library_2(_i4.Library context2) =>
@@ -1035,10 +1041,25 @@ String __renderCategory_partial_callable_7_partial_features_1(
     _deduplicated_lib_templates_md__features_md(context2);
 String _renderCategory_partial_typedef_8(_i8.Typedef context2) =>
     _deduplicated_lib_templates_md__typedef_md(context2);
-String _renderCategory_partial_footer_9(_i1.CategoryTemplateData context0) =>
-    _deduplicated_lib_templates_md__footer_md(context0);
-String _renderClass_partial_head_0(_i1.ClassTemplateData context0) =>
-    _deduplicated_lib_templates_md__head_md(context0);
+String _renderCategory_partial_footer_9(_i1.CategoryTemplateData context0) {
+  final buffer = StringBuffer();
+  buffer.writeln();
+  buffer.write(context0.customInnerFooter);
+  buffer.writeln();
+  buffer.write(context0.customFooter);
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
+String _renderClass_partial_head_0(_i1.ClassTemplateData context0) {
+  final buffer = StringBuffer();
+  buffer.write(context0.customHeader);
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
 String _renderClass_partial_source_link_1(_i9.Class context1) =>
     _deduplicated_lib_templates_md__source_link_md(context1);
 String _renderClass_partial_categorization_2(_i9.Class context1) =>
@@ -1103,11 +1124,25 @@ String _renderClass_partial_static_methods_14(_i9.Class context1) =>
     _deduplicated_lib_templates_md__static_methods_md(context1);
 String _renderClass_partial_static_constants_15(_i9.Class context1) =>
     _deduplicated_lib_templates_md__static_constants_md(context1);
-String _renderClass_partial_footer_16(_i1.ClassTemplateData context0) =>
-    _deduplicated_lib_templates_md__footer_md(context0);
-String _renderConstructor_partial_head_0(
-        _i1.ConstructorTemplateData context0) =>
-    _deduplicated_lib_templates_md__head_md(context0);
+String _renderClass_partial_footer_16(_i1.ClassTemplateData context0) {
+  final buffer = StringBuffer();
+  buffer.writeln();
+  buffer.write(context0.customInnerFooter);
+  buffer.writeln();
+  buffer.write(context0.customFooter);
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
+String _renderConstructor_partial_head_0(_i1.ConstructorTemplateData context0) {
+  final buffer = StringBuffer();
+  buffer.write(context0.customHeader);
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
 String _renderConstructor_partial_source_link_1(_i11.Constructor context1) =>
     _deduplicated_lib_templates_md__source_link_md(context1);
 String _renderConstructor_partial_feature_set_2(_i11.Constructor context1) =>
@@ -1117,10 +1152,25 @@ String _renderConstructor_partial_documentation_3(_i11.Constructor context1) =>
 String _renderConstructor_partial_source_code_4(_i11.Constructor context1) =>
     _deduplicated_lib_templates_md__source_code_md(context1);
 String _renderConstructor_partial_footer_5(
-        _i1.ConstructorTemplateData context0) =>
-    _deduplicated_lib_templates_md__footer_md(context0);
-String _renderEnum_partial_head_0(_i1.EnumTemplateData context0) =>
-    _deduplicated_lib_templates_md__head_md(context0);
+    _i1.ConstructorTemplateData context0) {
+  final buffer = StringBuffer();
+  buffer.writeln();
+  buffer.write(context0.customInnerFooter);
+  buffer.writeln();
+  buffer.write(context0.customFooter);
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
+String _renderEnum_partial_head_0(_i1.EnumTemplateData context0) {
+  final buffer = StringBuffer();
+  buffer.write(context0.customHeader);
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
 String _renderEnum_partial_source_link_1(_i12.Enum context1) =>
     _deduplicated_lib_templates_md__source_link_md(context1);
 String _renderEnum_partial_feature_set_2(_i12.Enum context1) =>
@@ -1185,11 +1235,26 @@ String _renderEnum_partial_static_methods_14(_i12.Enum context1) =>
     _deduplicated_lib_templates_md__static_methods_md(context1);
 String _renderEnum_partial_static_constants_15(_i12.Enum context1) =>
     _deduplicated_lib_templates_md__static_constants_md(context1);
-String _renderEnum_partial_footer_16(_i1.EnumTemplateData context0) =>
-    _deduplicated_lib_templates_md__footer_md(context0);
+String _renderEnum_partial_footer_16(_i1.EnumTemplateData context0) {
+  final buffer = StringBuffer();
+  buffer.writeln();
+  buffer.write(context0.customInnerFooter);
+  buffer.writeln();
+  buffer.write(context0.customFooter);
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
 String _renderExtension_partial_head_0<T extends _i2.Extension>(
-        _i1.ExtensionTemplateData<T> context0) =>
-    _deduplicated_lib_templates_md__head_md(context0);
+    _i1.ExtensionTemplateData<T> context0) {
+  final buffer = StringBuffer();
+  buffer.write(context0.customHeader);
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
 String _renderExtension_partial_source_link_1(_i2.Extension context1) =>
     _deduplicated_lib_templates_md__source_link_md(context1);
 String _renderExtension_partial_categorization_2(_i2.Extension context1) =>
@@ -1213,10 +1278,25 @@ String _renderExtension_partial_static_methods_10(_i2.Extension context1) =>
 String _renderExtension_partial_static_constants_11(_i2.Extension context1) =>
     _deduplicated_lib_templates_md__static_constants_md(context1);
 String _renderExtension_partial_footer_12<T extends _i2.Extension>(
-        _i1.ExtensionTemplateData<T> context0) =>
-    _deduplicated_lib_templates_md__footer_md(context0);
-String _renderFunction_partial_head_0(_i1.FunctionTemplateData context0) =>
-    _deduplicated_lib_templates_md__head_md(context0);
+    _i1.ExtensionTemplateData<T> context0) {
+  final buffer = StringBuffer();
+  buffer.writeln();
+  buffer.write(context0.customInnerFooter);
+  buffer.writeln();
+  buffer.write(context0.customFooter);
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
+String _renderFunction_partial_head_0(_i1.FunctionTemplateData context0) {
+  final buffer = StringBuffer();
+  buffer.write(context0.customHeader);
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
 String _renderFunction_partial_source_link_1(_i7.ModelFunction context1) =>
     _deduplicated_lib_templates_md__source_link_md(context1);
 String _renderFunction_partial_categorization_2(_i7.ModelFunction context1) =>
@@ -1259,18 +1339,48 @@ String _renderFunction_partial_documentation_5(_i7.ModelFunction context1) =>
     _deduplicated_lib_templates_md__documentation_md(context1);
 String _renderFunction_partial_source_code_6(_i7.ModelFunction context1) =>
     _deduplicated_lib_templates_md__source_code_md(context1);
-String _renderFunction_partial_footer_7(_i1.FunctionTemplateData context0) =>
-    _deduplicated_lib_templates_md__footer_md(context0);
-String _renderIndex_partial_head_0(_i1.PackageTemplateData context0) =>
-    _deduplicated_lib_templates_md__head_md(context0);
+String _renderFunction_partial_footer_7(_i1.FunctionTemplateData context0) {
+  final buffer = StringBuffer();
+  buffer.writeln();
+  buffer.write(context0.customInnerFooter);
+  buffer.writeln();
+  buffer.write(context0.customFooter);
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
+String _renderIndex_partial_head_0(_i1.PackageTemplateData context0) {
+  final buffer = StringBuffer();
+  buffer.write(context0.customHeader);
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
 String _renderIndex_partial_documentation_1(_i13.Package context1) =>
     _deduplicated_lib_templates_md__documentation_md(context1);
 String _renderIndex_partial_library_2(_i4.Library context3) =>
     _deduplicated_lib_templates_md__library_md(context3);
-String _renderIndex_partial_footer_3(_i1.PackageTemplateData context0) =>
-    _deduplicated_lib_templates_md__footer_md(context0);
-String _renderLibrary_partial_head_0(_i1.LibraryTemplateData context0) =>
-    _deduplicated_lib_templates_md__head_md(context0);
+String _renderIndex_partial_footer_3(_i1.PackageTemplateData context0) {
+  final buffer = StringBuffer();
+  buffer.writeln();
+  buffer.write(context0.customInnerFooter);
+  buffer.writeln();
+  buffer.write(context0.customFooter);
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
+String _renderLibrary_partial_head_0(_i1.LibraryTemplateData context0) {
+  final buffer = StringBuffer();
+  buffer.write(context0.customHeader);
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
 String _renderLibrary_partial_source_link_1(_i4.Library context1) =>
     _deduplicated_lib_templates_md__source_link_md(context1);
 String _renderLibrary_partial_categorization_2(_i4.Library context1) =>
@@ -1317,10 +1427,25 @@ String __renderLibrary_partial_callable_9_partial_features_1(
     _deduplicated_lib_templates_md__features_md(context3);
 String _renderLibrary_partial_typedef_10(_i8.Typedef context3) =>
     _deduplicated_lib_templates_md__typedef_md(context3);
-String _renderLibrary_partial_footer_11(_i1.LibraryTemplateData context0) =>
-    _deduplicated_lib_templates_md__footer_md(context0);
-String _renderMethod_partial_head_0(_i1.MethodTemplateData context0) =>
-    _deduplicated_lib_templates_md__head_md(context0);
+String _renderLibrary_partial_footer_11(_i1.LibraryTemplateData context0) {
+  final buffer = StringBuffer();
+  buffer.writeln();
+  buffer.write(context0.customInnerFooter);
+  buffer.writeln();
+  buffer.write(context0.customFooter);
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
+String _renderMethod_partial_head_0(_i1.MethodTemplateData context0) {
+  final buffer = StringBuffer();
+  buffer.write(context0.customHeader);
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
 String _renderMethod_partial_source_link_1(_i14.Method context1) =>
     _deduplicated_lib_templates_md__source_link_md(context1);
 String _renderMethod_partial_feature_set_2(_i14.Method context1) =>
@@ -1362,10 +1487,25 @@ String _renderMethod_partial_documentation_5(_i14.Method context1) =>
     _deduplicated_lib_templates_md__documentation_md(context1);
 String _renderMethod_partial_source_code_6(_i14.Method context1) =>
     _deduplicated_lib_templates_md__source_code_md(context1);
-String _renderMethod_partial_footer_7(_i1.MethodTemplateData context0) =>
-    _deduplicated_lib_templates_md__footer_md(context0);
-String _renderMixin_partial_head_0(_i1.MixinTemplateData context0) =>
-    _deduplicated_lib_templates_md__head_md(context0);
+String _renderMethod_partial_footer_7(_i1.MethodTemplateData context0) {
+  final buffer = StringBuffer();
+  buffer.writeln();
+  buffer.write(context0.customInnerFooter);
+  buffer.writeln();
+  buffer.write(context0.customFooter);
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
+String _renderMixin_partial_head_0(_i1.MixinTemplateData context0) {
+  final buffer = StringBuffer();
+  buffer.write(context0.customHeader);
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
 String _renderMixin_partial_source_link_1(_i15.Mixin context1) =>
     _deduplicated_lib_templates_md__source_link_md(context1);
 String _renderMixin_partial_categorization_2(_i15.Mixin context1) =>
@@ -1409,10 +1549,25 @@ String _renderMixin_partial_static_methods_12(_i15.Mixin context1) =>
     _deduplicated_lib_templates_md__static_methods_md(context1);
 String _renderMixin_partial_static_constants_13(_i15.Mixin context1) =>
     _deduplicated_lib_templates_md__static_constants_md(context1);
-String _renderMixin_partial_footer_14(_i1.MixinTemplateData context0) =>
-    _deduplicated_lib_templates_md__footer_md(context0);
-String _renderProperty_partial_head_0(_i1.PropertyTemplateData context0) =>
-    _deduplicated_lib_templates_md__head_md(context0);
+String _renderMixin_partial_footer_14(_i1.MixinTemplateData context0) {
+  final buffer = StringBuffer();
+  buffer.writeln();
+  buffer.write(context0.customInnerFooter);
+  buffer.writeln();
+  buffer.write(context0.customFooter);
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
+String _renderProperty_partial_head_0(_i1.PropertyTemplateData context0) {
+  final buffer = StringBuffer();
+  buffer.write(context0.customHeader);
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
 String _renderProperty_partial_source_link_1(_i10.Field context1) =>
     _deduplicated_lib_templates_md__source_link_md(context1);
 String _renderProperty_partial_feature_set_2(_i10.Field context1) =>
@@ -1429,11 +1584,26 @@ String _renderProperty_partial_accessor_getter_7(_i10.Field context1) =>
     _deduplicated_lib_templates_md__accessor_getter_md(context1);
 String _renderProperty_partial_accessor_setter_8(_i10.Field context1) =>
     _deduplicated_lib_templates_md__accessor_setter_md(context1);
-String _renderProperty_partial_footer_9(_i1.PropertyTemplateData context0) =>
-    _deduplicated_lib_templates_md__footer_md(context0);
+String _renderProperty_partial_footer_9(_i1.PropertyTemplateData context0) {
+  final buffer = StringBuffer();
+  buffer.writeln();
+  buffer.write(context0.customInnerFooter);
+  buffer.writeln();
+  buffer.write(context0.customFooter);
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
 String _renderTopLevelProperty_partial_head_0(
-        _i1.TopLevelPropertyTemplateData context0) =>
-    _deduplicated_lib_templates_md__head_md(context0);
+    _i1.TopLevelPropertyTemplateData context0) {
+  final buffer = StringBuffer();
+  buffer.write(context0.customHeader);
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
 String _renderTopLevelProperty_partial_source_link_1(
         _i6.TopLevelVariable context1) =>
     _deduplicated_lib_templates_md__source_link_md(context1);
@@ -1462,10 +1632,25 @@ String _renderTopLevelProperty_partial_accessor_setter_9(
         _i6.TopLevelVariable context1) =>
     _deduplicated_lib_templates_md__accessor_setter_md(context1);
 String _renderTopLevelProperty_partial_footer_10(
-        _i1.TopLevelPropertyTemplateData context0) =>
-    _deduplicated_lib_templates_md__footer_md(context0);
-String _renderTypedef_partial_head_0(_i1.TypedefTemplateData context0) =>
-    _deduplicated_lib_templates_md__head_md(context0);
+    _i1.TopLevelPropertyTemplateData context0) {
+  final buffer = StringBuffer();
+  buffer.writeln();
+  buffer.write(context0.customInnerFooter);
+  buffer.writeln();
+  buffer.write(context0.customFooter);
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
+String _renderTypedef_partial_head_0(_i1.TypedefTemplateData context0) {
+  final buffer = StringBuffer();
+  buffer.write(context0.customHeader);
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
 String _renderTypedef_partial_source_link_1(_i8.Typedef context1) =>
     _deduplicated_lib_templates_md__source_link_md(context1);
 String _renderTypedef_partial_categorization_2(_i8.Typedef context1) =>
@@ -1536,11 +1721,12 @@ String _renderTypedef_partial_documentation_5(_i8.Typedef context1) =>
     _deduplicated_lib_templates_md__documentation_md(context1);
 String _renderTypedef_partial_source_code_6(_i8.Typedef context1) =>
     _deduplicated_lib_templates_md__source_code_md(context1);
-String _renderTypedef_partial_footer_7(_i1.TypedefTemplateData context0) =>
-    _deduplicated_lib_templates_md__footer_md(context0);
-String _deduplicated_lib_templates_md__head_md(_i1.TemplateDataBase context0) {
+String _renderTypedef_partial_footer_7(_i1.TypedefTemplateData context0) {
   final buffer = StringBuffer();
-  buffer.write(context0.customHeader);
+  buffer.writeln();
+  buffer.write(context0.customInnerFooter);
+  buffer.writeln();
+  buffer.write(context0.customFooter);
   buffer.writeln();
 
   return buffer.toString();
@@ -1945,18 +2131,6 @@ String __deduplicated_lib_templates_md__type_md_partial_features_1(
     buffer.write(context0.featuresAsString);
     buffer.write('''_''');
   }
-  buffer.writeln();
-
-  return buffer.toString();
-}
-
-String _deduplicated_lib_templates_md__footer_md(
-    _i1.TemplateDataBase context0) {
-  final buffer = StringBuffer();
-  buffer.writeln();
-  buffer.write(context0.customInnerFooter);
-  buffer.writeln();
-  buffer.write(context0.customFooter);
   buffer.writeln();
 
   return buffer.toString();

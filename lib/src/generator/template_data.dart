@@ -64,17 +64,29 @@ abstract class TemplateDataBase {
 
   String? get homepage => null;
 
+  /// The [Documentable] being documented.
   Documentable get self;
 
+  /// When not using the HTML 'base' tag (default behavior), this represents the
+  /// path from this page back to the HTML base.
+  ///
+  /// See [GeneratorBackendBase.write] for how this text is used in generating
+  /// link URLs.
   String get htmlBase;
 
-  String get bareHref {
-    if (self is Indexable) {
-      var selfHref = (self as Indexable).href ?? '';
-      return selfHref.replaceAll(htmlBasePlaceholder, '');
-    }
-    return '';
-  }
+  String get bareHref => (self.href ?? '').replaceAll(htmlBasePlaceholder, '');
+}
+
+/// Implementation for template data which is rendered one directory down from
+/// the HTML base.
+mixin OneDirectoryDown {
+  String get htmlBase => '../';
+}
+
+/// Implementation for template data which is rendered two directories down from
+/// the HTML base.
+mixin TwoDirectoriesDown {
+  String get htmlBase => '../../';
 }
 
 /// A grab bag of data for a template that an element of type [T] can be
@@ -132,18 +144,19 @@ class PackageTemplateData extends TemplateData<Package> {
   /// needed).
   @override
   String get htmlBase => '';
+
+  @override
+  String get bareHref => '';
 }
 
-class CategoryTemplateData extends TemplateData<Category> {
+class CategoryTemplateData extends TemplateData<Category>
+    with OneDirectoryDown {
   final Category category;
 
   CategoryTemplateData(super.htmlOptions, super.packageGraph, this.category);
 
   @override
   String get title => '${category.name} ${category.kind} - Dart API';
-
-  @override
-  String get htmlBase => '../';
 
   @override
   String get layoutTitle =>
@@ -161,6 +174,7 @@ class CategoryTemplateData extends TemplateData<Category> {
 }
 
 class LibraryTemplateData extends TemplateData<Library>
+    with OneDirectoryDown
     implements TemplateDataWithLibrary<Library> {
   @override
   final Library library;
@@ -172,8 +186,6 @@ class LibraryTemplateData extends TemplateData<Library>
   String get sidebarForLibrary => _sidebarForLibrary(library, this);
   @override
   String get title => '${library.name} library - Dart API';
-  @override
-  String get htmlBase => '../';
   @override
   String get metaDescription =>
       '${library.name} library API docs, for the Dart programming language.';
@@ -211,6 +223,7 @@ class ClassTemplateData extends InheritingContainerTemplateData<Class> {
 /// Base template data class for [Class], [Enum], and [Mixin].
 abstract class InheritingContainerTemplateData<T extends InheritingContainer>
     extends TemplateData<T>
+    with OneDirectoryDown
     implements TemplateDataWithLibrary<T>, TemplateDataWithContainer<T> {
   final T clazz;
   @override
@@ -249,12 +262,11 @@ abstract class InheritingContainerTemplateData<T extends InheritingContainer>
           isDeprecated: clazz.isDeprecated);
   @override
   List<Documentable> get navLinks => [_packageGraph.defaultPackage, library];
-  @override
-  String get htmlBase => '../';
 }
 
 /// Base template data class for [Extension].
 class ExtensionTemplateData<T extends Extension> extends TemplateData<T>
+    with OneDirectoryDown
     implements TemplateDataWithLibrary<T>, TemplateDataWithContainer<T> {
   final T extension;
   @override
@@ -287,11 +299,10 @@ class ExtensionTemplateData<T extends Extension> extends TemplateData<T>
       _layoutTitle(extension.name, extension.kind, isDeprecated: false);
   @override
   List<Documentable> get navLinks => [_packageGraph.defaultPackage, library];
-  @override
-  String get htmlBase => '../';
 }
 
 class ConstructorTemplateData extends TemplateData<Constructor>
+    with TwoDirectoriesDown
     implements
         TemplateDataWithLibrary<Constructor>,
         TemplateDataWithContainer<Constructor> {
@@ -318,9 +329,6 @@ class ConstructorTemplateData extends TemplateData<Constructor>
   @override
   List<Container> get navLinksWithGenerics => [constructable];
   @override
-  @override
-  String get htmlBase => '../../';
-  @override
   String get title =>
       '${constructor.name} constructor - ${constructable.name} - '
       '${library.name} library - Dart API';
@@ -340,6 +348,7 @@ class EnumTemplateData extends InheritingContainerTemplateData<Enum> {
 }
 
 class FunctionTemplateData extends TemplateData<ModelFunction>
+    with OneDirectoryDown
     implements TemplateDataWithLibrary<ModelFunction> {
   final ModelFunction function;
   @override
@@ -365,11 +374,10 @@ class FunctionTemplateData extends TemplateData<ModelFunction>
       '${library.name} library, for the Dart programming language.';
   @override
   List<Documentable> get navLinks => [_packageGraph.defaultPackage, library];
-  @override
-  String get htmlBase => '../';
 }
 
 class MethodTemplateData extends TemplateData<Method>
+    with TwoDirectoriesDown
     implements
         TemplateDataWithLibrary<Method>,
         TemplateDataWithContainer<Method> {
@@ -400,18 +408,16 @@ class MethodTemplateData extends TemplateData<Method>
           isDeprecated: method.isDeprecated);
   @override
   String get metaDescription =>
-      'API docs for the ${method.name} method from the '
-      '${container.name} $_containerDescription, '
-      'for the Dart programming language.';
+      'API docs for the ${method.name} method from the ${container.name} '
+      '$_containerDescription, for the Dart programming language.';
   @override
   List<Documentable> get navLinks => [_packageGraph.defaultPackage, library];
   @override
   List<Container> get navLinksWithGenerics => [container];
-  @override
-  String get htmlBase => '../../';
 }
 
 class PropertyTemplateData extends TemplateData<Field>
+    with TwoDirectoriesDown
     implements
         TemplateDataWithLibrary<Field>,
         TemplateDataWithContainer<Field> {
@@ -448,11 +454,10 @@ class PropertyTemplateData extends TemplateData<Field>
   List<Documentable> get navLinks => [_packageGraph.defaultPackage, library];
   @override
   List<Container> get navLinksWithGenerics => [container];
-  @override
-  String get htmlBase => '../../';
 }
 
 class TypedefTemplateData extends TemplateData<Typedef>
+    with OneDirectoryDown
     implements TemplateDataWithLibrary<Typedef> {
   @override
   final Library library;
@@ -479,11 +484,10 @@ class TypedefTemplateData extends TemplateData<Typedef>
       '${library.name} library, for the Dart programming language.';
   @override
   List<Documentable> get navLinks => [_packageGraph.defaultPackage, library];
-  @override
-  String get htmlBase => '../';
 }
 
 class TopLevelPropertyTemplateData extends TemplateData<TopLevelVariable>
+    with OneDirectoryDown
     implements TemplateDataWithLibrary<TopLevelVariable> {
   @override
   final Library library;
@@ -510,8 +514,6 @@ class TopLevelPropertyTemplateData extends TemplateData<TopLevelVariable>
       '${library.name} library, for the Dart programming language.';
   @override
   List<Documentable> get navLinks => [_packageGraph.defaultPackage, library];
-  @override
-  String get htmlBase => '../';
 
   String get _type => property.isConst ? 'constant' : 'property';
 }
