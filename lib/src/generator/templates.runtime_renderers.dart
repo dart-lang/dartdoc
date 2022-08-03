@@ -5159,13 +5159,6 @@ class _Renderer_Feature extends RendererBase<Feature> {
                         parent: r);
                   },
                 ),
-                'isPublic': Property(
-                  getValue: (CT_ c) => c.isPublic,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isPublic == true,
-                ),
                 'linkedName': Property(
                   getValue: (CT_ c) => c.linkedName,
                   renderVariable:
@@ -16012,7 +16005,6 @@ const _invisibleGetters = {
   'Feature': {
     'featurePrefix',
     'hashCode',
-    'isPublic',
     'linkedName',
     'linkedNameWithParameters',
     'name',
