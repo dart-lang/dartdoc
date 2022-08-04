@@ -76,5 +76,5 @@ class Annotation extends Feature with ModelBuilder {
   int get hashCode => annotation.hashCode;
 
   @override
-  String get cssClassName => 'annotation';
+  String get cssClassName => '';
 }
