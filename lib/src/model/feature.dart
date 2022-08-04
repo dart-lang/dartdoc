@@ -31,6 +31,8 @@ class Feature implements Privacy {
 
   final String featurePrefix = '';
 
+  String get cssClassName => 'feature';
+
   String get name => _name;
 
   String get linkedName => name;

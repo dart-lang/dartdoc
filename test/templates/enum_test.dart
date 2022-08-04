@@ -244,7 +244,7 @@ enum EnumWithDefaultConstructor { four, five, six }
             matches('<h2>Properties</h2>'),
             matches('<a href="../lib/E/ig1.html">ig1</a>'),
             matches('An instance getter.'),
-            matches('<div class="features">read-only</div>'),
+            matches('<span class="feature read-only">read-only</span>'),
           ]));
     });
 
@@ -255,7 +255,7 @@ enum EnumWithDefaultConstructor { four, five, six }
             matches('<h2>Properties</h2>'),
             matches('<a href="../lib/E/is1.html">is1</a>'),
             matches('An instance setter.'),
-            matches('<div class="features">write-only</div>'),
+            matches('<span class="feature write-only">write-only</span>'),
           ]));
     });
 
