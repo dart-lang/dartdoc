@@ -96,6 +96,7 @@ List<IndexItem> findMatches(List<IndexItem> index, String query) {
   for (var element in index) {
     void score(int value) {
       value -= (element.overriddenDepth ?? 0) * 10;
+      print(element.type);
       var weightFactor = weights[element.type] ?? 4;
       allMatches.add(SearchMatch(element, value / weightFactor));
     }
@@ -105,6 +106,8 @@ List<IndexItem> findMatches(List<IndexItem> index, String query) {
     var lowerName = name.toLowerCase();
     var lowerQualifiedName = qualifiedName.toLowerCase();
     var lowerQuery = query.toLowerCase();
+    var oneLineDescription = element.desc;
+
 
     if (name == query || qualifiedName == query || name == 'dart:$query') {
       score(2000);
@@ -115,6 +118,9 @@ List<IndexItem> findMatches(List<IndexItem> index, String query) {
     } else if (query.length > 1) {
       if (name.startsWith(query) || qualifiedName.startsWith(query)) {
         score(750);
+      } else if (oneLineDescription.runtimeType!=Null && oneLineDescription!='' && oneLineDescription?.contains(query)==true){
+        print('ok? ${oneLineDescription?.contains(query)==true}');
+        score(700);
       } else if (lowerName.startsWith(lowerQuery) ||
           lowerQualifiedName.startsWith(lowerQuery)) {
         score(650);
@@ -256,7 +262,11 @@ void initializeSearch(
     if(match.desc!="") {
       var inputDesc = document.createElement('div');
       inputDesc.classes.add('one-line-description');
-      inputDesc.innerHtml = highlight(match.desc, query);
+      var innerHtml = '';
+      if(match.desc!=null){
+        innerHtml = match.desc.toString();
+      }
+      inputDesc.innerHtml = highlight(innerHtml, query);
       suggestion.append(inputDesc);
     }
 
@@ -391,7 +401,6 @@ void initializeSearch(
     }
 
     var suggestions = findMatches(index, newValue);
-    print(suggestions.length);
     allResults = suggestions.length;
     if (suggestions.length > suggestionLimit) {
       // moreResults.innerHtml = 'PressK "Enter" key to see all ${suggestions.length} results';
@@ -567,14 +576,14 @@ class IndexItem {
   final String type;
   final String? href;
   final int? overriddenDepth;
-  final String desc;
+  final String? desc;
   final EnclosedBy? enclosedBy;
 
   IndexItem._({
     required this.name,
     required this.qualifiedName,
     required this.type,
-    required this.desc,
+    this.desc,
     this.href,
     this.overriddenDepth,
     this.enclosedBy,

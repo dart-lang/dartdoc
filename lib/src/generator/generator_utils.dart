@@ -35,6 +35,9 @@ String generateCategoryJson(Iterable<Categorization> categories, bool pretty) {
 }
 
 String regEx(String? input){
+  if(input==null){
+    return '';
+  }
   RegExp exp = RegExp(r"<[^>]*>",multiLine: true,caseSensitive: true);
   String test = input.toString();
   String parsedstring1 = test.replaceAll(exp, '');
