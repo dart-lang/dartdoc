@@ -71,25 +71,11 @@
 --main-string-color: #FF2D64;
 }
 
-i.fa.fa-sun-o{
-    font-size: 24px;
-    margin-right: 10px;
-    margin-left: 5px;
-    color: var(--main-text-color);
-}
-
-i.fa.fa-moon-o{
-    font-size: 24px;
-    margin-right: 30px;
-    margin-left: 10px;
-    color: var(--main-text-color);
-}
-
 .switch {
-  position: relative;
-  display: inline-block;
-  width: 60px;
-  height: 34px;
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
 }
 
 .switch input {
@@ -101,25 +87,23 @@ i.fa.fa-moon-o{
 .slider {
   position: absolute;
   cursor: pointer;
-  top: 0;
+  top: 5px;
   left: 0;
   right: 0;
   bottom: 0;
   background-color: #ccc;
-  -webkit-transition: .4s;
   transition: .4s;
 }
 
 .slider:before {
   position: absolute;
   content: "";
-  height: 26px;
-  width: 26px;
-  left: 4px;
-  bottom: 4px;
+  height: 22px;
+  width: 22px;
+  left: -5px;
   background-color: white;
-  -webkit-transition: .4s;
   transition: .4s;
+  top: -4px;
 }
 
 input:checked + .slider {
@@ -140,6 +124,32 @@ input:checked + .slider:before {
 
 .slider.round:before {
   border-radius: 50%;
+}
+
+.material-symbols-outlined {
+  padding-top: 6px;
+}
+
+.toggle{
+  padding-bottom: 4px;
+}
+
+.moon{
+  padding-right: 30px;
+  padding-left: 5px;
+}
+
+.sun{
+  padding-right: 5px;
+}
+
+@media (max-width: 768px) {
+  .moon {
+    padding-right: 0px;
+  }
+  .sun{
+    padding-left: 30px;
+  }
 }
 
 /* for layout */
@@ -1012,7 +1022,7 @@ button {
     top: 0;
     width: 280px; /* works all the way down to an iphone 4 */
     height: 90%;
-    background-color: white;
+    background-color: var(--main-bg-color);
     overflow-y: scroll; /* TODO: how to hide scroll bars? */
     padding: 10px;
     margin: 10px 10px;
@@ -1030,6 +1040,7 @@ button {
 
   .self-name {
     display: inline-block;
+    color: var(--main-hyperlinks-color);
   }
 }
 

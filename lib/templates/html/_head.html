@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">  <meta charset="utf-8">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+  <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
   {{#includeVersion}}
@@ -57,14 +59,21 @@
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
-  <div class="temp-box"></div>
-  <i class="fa fa-sun-o" style="font-size:24px;"></i>
+  <div class="sun">
+    <span class="material-symbols-outlined">
+      light_mode
+    </span>
+  </div>
   <div class="toggle" id="theme-button">
     <label for="theme" class="switch">
       <input type="checkbox" id="theme" value="light-theme">
       <span class="slider round"></span>
     </label>
   </div>
-  <i class="fa fa-moon-o"  style="font-size:24px;"></i>
+  <div class="moon">
+    <span class="material-symbols-outlined">
+      dark_mode
+    </span>
+  </div>
 </header>
 <main>
