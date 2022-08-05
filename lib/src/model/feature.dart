@@ -27,6 +27,13 @@ class ElementFeatureNotFoundError extends Error {
 abstract class Feature implements Privacy {
   final String name;
 
+  /// Numerical sort group for this feature.
+  /// Less than zero will sort before custom annotations.
+  /// Above zero will sort after custom annotations.
+  /// Zero will sort alphabetically among custom annotations.
+  // TODO(jcollins-g): consider [Comparable]?
+  final int sortGroup;
+
   const Feature(this.name, [this.sortGroup = 0]);
 
   const factory Feature._builtIn(String name, int sortGroup) = _BuiltInFeature;
@@ -37,12 +44,7 @@ abstract class Feature implements Privacy {
 
   String get linkedNameWithParameters;
 
-  /// Numerical sort group for this feature.
-  /// Less than zero will sort before custom annotations.
-  /// Above zero will sort after custom annotations.
-  /// Zero will sort alphabetically among custom annotations.
-  // TODO(jcollins-g): consider [Comparable]?
-  final int sortGroup;
+  String get cssClassName;
 
   static const lateFeature = Feature._builtIn('late', 1);
   // TODO(srawlins): Change to a Dart term, like "no setter".
@@ -73,4 +75,7 @@ class _BuiltInFeature extends Feature {
 
   @override
   String get linkedNameWithParameters => linkedName;
+
+  @override
+  String get cssClassName => 'feature';
 }

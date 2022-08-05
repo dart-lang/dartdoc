@@ -17,7 +17,10 @@ abstract class ModelElementRenderer {
 
   String renderFeatures(ModelElement modelElement) {
     var allFeatures = modelElement.features.toList()..sort(byFeatureOrdering);
-    return allFeatures.map((f) => f.linkedNameWithParameters).join(', ');
+    return allFeatures
+        .map((f) =>
+            '<span class="${f.cssClassName} ${f.linkedNameWithParameters}">${f.linkedNameWithParameters}</span>')
+        .join();
   }
 }
 
