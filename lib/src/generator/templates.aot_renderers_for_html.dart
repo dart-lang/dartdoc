@@ -3047,7 +3047,7 @@ String _deduplicated_lib_templates_html__head_html(
   buffer.write(context0.htmlBase);
   buffer.write('''" data-using-base-href="''');
   buffer.write(context0.useBaseHref.toString());
-  buffer.write('''">
+  buffer.write('''" class="light-theme">
 
 <div id="overlay-under-drawer"></div>
 

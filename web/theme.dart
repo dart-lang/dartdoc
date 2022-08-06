@@ -1,61 +1,47 @@
 import 'dart:html';
 
 void init() {
+
+  var bodyElement = document.body;
+
+  if( bodyElement == null ){
+    return;
+  }
+
   var theme = document.getElementById('theme') as InputElement;
 
-  var elementB = document.body;
-
   theme.addEventListener('change', (event) {
-    if (theme.checked == true) {
-      if (theme.getAttribute('value') == 'light-theme') {
-        elementB?.classes.remove('light-theme');
-        elementB?.classes.toggle('dark-theme');
-        theme.setAttribute('value', 'dark-theme');
-      } else {
-        elementB?.classes.remove('light-theme');
-        elementB?.classes.toggle('dark-theme');
-        theme.setAttribute('value', 'dark-theme');
-      }
-      window.localStorage['checked'] = 'true';
-    } else {
-      elementB?.classes.remove('dark-theme');
-      elementB?.classes.toggle('light-theme');
+    if (theme.checked==true) {
+      bodyElement.setAttribute('class','dark-theme');
+      theme.setAttribute('value', 'dark-theme');
+      window.localStorage['colorTheme'] = 'true';
+    }
+    else {
+      bodyElement.setAttribute('class','light-theme');
       theme.setAttribute('value', 'light-theme');
-      window.localStorage['checked'] = 'false';
+      window.localStorage['colorTheme'] = 'false';
     }
   });
 
-  void toggleTheme() {
-    if (theme.checked == true) {
-      if (theme.getAttribute('value') == 'light-theme') {
-        elementB?.classes.remove('light-theme');
-        elementB?.classes.toggle('dark-theme');
-        theme.setAttribute('value', 'dark-theme');
-      } else {
-        elementB?.classes.remove('light-theme');
-        elementB?.classes.toggle('dark-theme');
-        theme.setAttribute('value', 'dark-theme');
-      }
-      window.localStorage['checked'] = 'true';
+  void toggleTheme(){
+    if (theme.checked==true) {
+      bodyElement.setAttribute('class','dark-theme');
+      theme.setAttribute('value', 'dark-theme');
+      window.localStorage['colorTheme'] = 'true';
       theme.checked = true;
-    } else {
-      elementB?.classes.remove('dark-theme');
-      elementB?.classes.toggle('light-theme');
+    }
+    else {
+      bodyElement.setAttribute('class','light-theme');
       theme.setAttribute('value', 'light-theme');
-      window.localStorage['checked'] = 'false';
+      window.localStorage['colorTheme'] = 'false';
       theme.checked = false;
     }
   }
 
   void setChecked() {
-    if (window.localStorage['checked'] != null) {
-      if (window.localStorage['checked'] == 'true') {
-        theme.checked = true;
-        toggleTheme();
-      } else {
-        theme.checked = false;
-        toggleTheme();
-      }
+    if (window.localStorage['colorTheme'] != null) {
+      theme.checked = window.localStorage['colorTheme'] == 'true';
+      toggleTheme();
     }
   }
 
