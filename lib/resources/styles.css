@@ -654,7 +654,7 @@ h1 .category {
   background: var(--main-bg-color);
   border: 1px solid var(--main-hyperlinks-color);
   border-radius: 20px;
-  color: var(--main-hyperlinks-color);;
+  color: var(--main-hyperlinks-color);
 
   font-size: 12px;
   padding: 1px 6px;
