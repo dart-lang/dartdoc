@@ -92,7 +92,7 @@
   right: 0;
   bottom: 0;
   background-color: #ccc;
-  transition: .4s;
+  webkit-transition: .4s;
 }
 
 .slider:before {
@@ -102,7 +102,7 @@
   width: 22px;
   left: -5px;
   background-color: white;
-  transition: .4s;
+  webkit-transition: .4s;
   top: -4px;
 }
 
