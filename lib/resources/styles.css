@@ -1122,8 +1122,8 @@ button {
 .navbar-right .tt-menu {
   right:0;
   left: inherit !important;
-  width: 422px;
-  max-height: 250px;
+  width: 480px;
+  max-height: 280px;
   overflow-y: scroll;
 }
 
@@ -1222,7 +1222,7 @@ a.tt-category-title{
 }
 
 .tt-suggestion-title {
-  font-size: 14px;
+  font-size: 16px;
   margin-right:10px;
   margin-left: 10px;
   margin-bottom: 0px;

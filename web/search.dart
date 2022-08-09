@@ -118,9 +118,9 @@ List<IndexItem> findMatches(List<IndexItem> index, String query) {
     } else if (query.length > 1) {
       if (name.startsWith(query) || qualifiedName.startsWith(query)) {
         score(750);
-      } else if (oneLineDescription.runtimeType!=Null && oneLineDescription!='' && oneLineDescription?.contains(query)==true){
-        print('ok? ${oneLineDescription?.contains(query)==true}');
-        score(700);
+      // } else if (oneLineDescription.runtimeType!=Null && oneLineDescription!='' && oneLineDescription?.contains(query)==true){
+      //   print('ok? ${oneLineDescription?.contains(query)==true}');
+      //   score(700);
       } else if (lowerName.startsWith(lowerQuery) ||
           lowerQualifiedName.startsWith(lowerQuery)) {
         score(650);
@@ -451,22 +451,18 @@ void initializeSearch(
       if(selectedElement==null||listBox.getAttribute('aria-expanded')=='true'||suggestionElements.isEmpty){
         // Saves the input in the search to be used for creating the query parameter
         var input = htmlEscape.convert(actualValue);
+        var relativePath = '';
         if(document.querySelector('body')?.getAttribute('data-using-base-href')=='true' && document.querySelector('body')?.getAttribute('data-base-href') == ''){
-          var relativePath = document.querySelector('base')?.getAttribute('href');
-          var href = Uri.parse(window.location.href);
-          var base = href.resolve(relativePath!);
-          var search =Uri.parse(base.toString() + 'search_results_page.html');
-          search = search.replace(queryParameters: {'query': input});
-          window.location.assign(search.toString());
+          relativePath = document.querySelector('base')!.getAttribute('href')!;
         }
         else {
-          var relativePath = document.querySelector('body')?.getAttribute('data-base-href');
-          var href = Uri.parse(window.location.href);
-          var base = href.resolve(relativePath!);
-          var search = Uri.parse(base.toString() + 'search_results_page.html');
-          search = search.replace(queryParameters: {'query': input});
-          window.location.assign(search.toString());
+          relativePath = document.querySelector('body')!.getAttribute('data-base-href')!;
         }
+        var href = Uri.parse(window.location.href);
+        var base = href.resolve(relativePath!);
+        var search = Uri.parse(base.toString() + 'search_results_page.html');
+        search = search.replace(queryParameters: {'query': input});
+        window.location.assign(search.toString());
       }
     }
 
