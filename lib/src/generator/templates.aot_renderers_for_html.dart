@@ -2969,6 +2969,8 @@ String _deduplicated_lib_templates_html__head_html(
   buffer.write('''<!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">''');
@@ -3045,7 +3047,7 @@ String _deduplicated_lib_templates_html__head_html(
   buffer.write(context0.htmlBase);
   buffer.write('''" data-using-base-href="''');
   buffer.write(context0.useBaseHref.toString());
-  buffer.write('''">
+  buffer.write('''" class="light-theme">
 
 <div id="overlay-under-drawer"></div>
 
@@ -3102,10 +3104,24 @@ String _deduplicated_lib_templates_html__head_html(
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
+  <div class="sun">
+    <span class="material-symbols-outlined">
+      light_mode
+    </span>
+  </div>
+  <div class="toggle" id="theme-button">
+    <label for="theme" class="switch">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span class="slider round"></span>
+    </label>
+  </div>
+  <div class="moon">
+    <span class="material-symbols-outlined">
+      dark_mode
+    </span>
+  </div>
 </header>
-
-<main>
-''');
+<main>''');
 
   return buffer.toString();
 }
