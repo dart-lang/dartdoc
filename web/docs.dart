@@ -6,11 +6,13 @@ import 'dart:js' as js;
 
 import 'search.dart' as search;
 import 'sidenav.dart' as sidenav;
+import 'theme.dart' as theme;
 
 void main() {
   inithighlightJS();
   sidenav.init();
   search.init();
+  theme.init();
 }
 
 void inithighlightJS() {
