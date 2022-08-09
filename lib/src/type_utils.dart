@@ -11,16 +11,12 @@ extension DartTypeExtension on DartType {
     final self = this;
     if (self is InterfaceType) {
       return self.element2;
-    } else if (self is DynamicType) {
-      // This may be made available in analyzer.
-      // ignore: deprecated_member_use
-      return self.element as TypeDefiningElement;
     } else if (self is NeverType) {
       return self.element as TypeDefiningElement;
     } else if (self is TypeParameterType) {
       return self.element;
     } else {
-      // Remaining cases like `FunctionType` and `VoidType`.
+      // Remaining cases like `DynamicType`, `FunctionType`, and `VoidType`.
       return null;
     }
   }
