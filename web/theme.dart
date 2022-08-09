@@ -21,20 +21,16 @@ void init() {
     }
   });
 
-  void setChecked() {
-    if (window.localStorage['colorTheme'] != null) {
-      theme.checked = window.localStorage['colorTheme'] == 'true';
-      if (theme.checked == true) {
-        bodyElement.setAttribute('class', 'dark-theme');
-        theme.setAttribute('value', 'dark-theme');
-        window.localStorage['colorTheme'] = 'true';
-      } else {
-        bodyElement.setAttribute('class', 'light-theme');
-        theme.setAttribute('value', 'light-theme');
-        window.localStorage['colorTheme'] = 'false';
-      }
+  if (window.localStorage['colorTheme'] != null) {
+    theme.checked = window.localStorage['colorTheme'] == 'true';
+    if (theme.checked == true) {
+      bodyElement.setAttribute('class', 'dark-theme');
+      theme.setAttribute('value', 'dark-theme');
+      window.localStorage['colorTheme'] = 'true';
+    } else {
+      bodyElement.setAttribute('class', 'light-theme');
+      theme.setAttribute('value', 'light-theme');
+      window.localStorage['colorTheme'] = 'false';
     }
   }
-
-  setChecked();
 }
