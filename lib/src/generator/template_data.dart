@@ -386,7 +386,8 @@ class MethodTemplateData extends TemplateData<Method>
   MethodTemplateData(super.htmlOptions, super.packageGraph, this.library,
       this.container, this.method, this._sidebarForContainer)
       : _containerDescription =
-            container is ClassElement ? 'class' : 'extension';
+            // TODO(srawlins): No mixin? enum?
+            container is InterfaceElement ? 'class' : 'extension';
 
   String get sidebarForContainer => _sidebarForContainer(container, this);
 

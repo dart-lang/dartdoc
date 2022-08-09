@@ -208,8 +208,7 @@ Future<Method> _redirectingMethod(
 
   var parameters = <Parameter>[];
   for (var context in compiler._usedContextStack) {
-    var contextElement =
-        DartTypeExtension(context.type).element as ClassElement;
+    var contextElement = context.type.element2;
     var contextElementUri = await compiler._elementUri(contextElement);
     parameters.add(Parameter((b) => b
       ..type = TypeReference((b) => b
