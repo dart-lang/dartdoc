@@ -7,6 +7,7 @@ import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/extension_target.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/type_utils.dart';
 import 'package:meta/meta.dart';
 
 /// Extension methods
@@ -26,15 +27,22 @@ class Extension extends Container implements EnclosedElement {
       _couldApplyTo(c.modelType as DefinedElementType);
 
   /// Return true if this extension could apply to [t].
-  bool _couldApplyTo(DefinedElementType t) {
+  bool _couldApplyTo(DefinedElementType type) {
     if (extendedType.instantiatedType.isDynamic ||
         extendedType.instantiatedType.isVoid) {
       return true;
     }
-    return t.instantiatedType == extendedType.instantiatedType ||
-        (t.instantiatedType.element == extendedType.instantiatedType.element &&
-            extendedType.isSubtypeOf(t)) ||
-        extendedType.isBoundSupertypeTo(t);
+    var typeInstantiated = type.instantiatedType;
+    var extendedInstantiated = extendedType.instantiatedType;
+    if (typeInstantiated == extendedInstantiated) {
+      return true;
+    }
+    if (DartTypeExtension(typeInstantiated).element ==
+            DartTypeExtension(extendedInstantiated).element &&
+        extendedType.isSubtypeOf(type)) {
+      return true;
+    }
+    return extendedType.isBoundSupertypeTo(type);
   }
 
   /// Returns the library that encloses this element.
@@ -76,7 +84,7 @@ class Extension extends Container implements EnclosedElement {
   @override
   List<TypeParameter> get typeParameters {
     _typeParameters ??= element.typeParameters.map((f) {
-      var lib = modelBuilder.fromElement(f.enclosingElement2!.library!);
+      var lib = modelBuilder.fromElement(f.enclosingElement3!.library!);
       return modelBuilder.from(f, lib as Library) as TypeParameter;
     }).toList();
     return _typeParameters!;

@@ -64,7 +64,7 @@ class Field extends ModelElement
   @override
   Container get enclosingElement => isInherited
       ? _enclosingContainer
-      : modelBuilder.from(field!.enclosingElement2, library) as Container;
+      : modelBuilder.from(field!.enclosingElement3, library) as Container;
 
   @override
   String get filePath =>

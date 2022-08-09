@@ -74,23 +74,23 @@ class Baz {}
     test('for a class which is extended by a rendered class', () {
       // No render function is necessary.
       expect(renderersLibrary.getTopLevelFunction('_render_FooBase'), isNull);
-      expect(renderersLibrary.getType('_Renderer_FooBase'), isNotNull);
+      expect(renderersLibrary.getClass('_Renderer_FooBase'), isNotNull);
     });
 
     test('for a class which is mixed into a rendered class', () {
       // No render function is necessary.
       expect(renderersLibrary.getTopLevelFunction('_render_Mix'), isNull);
-      expect(renderersLibrary.getType('_Renderer_Mix'), isNotNull);
+      expect(renderersLibrary.getClass('_Renderer_Mix'), isNotNull);
     });
 
     test('for a type found in a getter', () {
       expect(renderersLibrary.getTopLevelFunction('_render_Bar'), isNotNull);
-      expect(renderersLibrary.getType('_Renderer_Bar'), isNotNull);
+      expect(renderersLibrary.getClass('_Renderer_Bar'), isNotNull);
     });
 
     test('for a generic, bounded type found in a getter', () {
       expect(renderersLibrary.getTopLevelFunction('_render_Baz'), isNotNull);
-      expect(renderersLibrary.getType('_Renderer_Baz'), isNotNull);
+      expect(renderersLibrary.getClass('_Renderer_Baz'), isNotNull);
     });
 
     test('with a property map', () {
@@ -176,8 +176,8 @@ import 'package:mustachio/annotations.dart';
 
     expect(renderersLibrary.getTopLevelFunction('renderFoo'), isNotNull);
     expect(renderersLibrary.getTopLevelFunction('renderBar'), isNotNull);
-    expect(renderersLibrary.getType('_Renderer_Foo'), isNotNull);
-    expect(renderersLibrary.getType('_Renderer_Bar'), isNotNull);
+    expect(renderersLibrary.getClass('_Renderer_Foo'), isNotNull);
+    expect(renderersLibrary.getClass('_Renderer_Bar'), isNotNull);
   });
 
   group('builds a renderer class for a generic type', () {
@@ -252,7 +252,7 @@ class Baz {}
     var fBound = fooRenderFunction.typeParameters.single.bound!;
     expect(fBound.getDisplayString(withNullability: false), equals('num'));
 
-    var fooRendererClass = renderersLibrary.getType('_Renderer_Foo')!;
+    var fooRendererClass = renderersLibrary.getClass('_Renderer_Foo')!;
     expect(fooRendererClass.typeParameters, hasLength(1));
     var cBound = fooRenderFunction.typeParameters.single.bound!;
     expect(cBound.getDisplayString(withNullability: false), equals('num'));
@@ -283,27 +283,27 @@ class Method {}
 
     test('found in a static getter', () {
       expect(renderersLibrary.getTopLevelFunction('_render_Static'), isNull);
-      expect(renderersLibrary.getType('_Renderer_Static'), isNull);
+      expect(renderersLibrary.getClass('_Renderer_Static'), isNull);
     });
 
     test('found in a private getter', () {
       expect(renderersLibrary.getTopLevelFunction('_render_Private'), isNull);
-      expect(renderersLibrary.getType('_Renderer_Private'), isNull);
+      expect(renderersLibrary.getClass('_Renderer_Private'), isNull);
     });
 
     test('found in a setter', () {
       expect(renderersLibrary.getTopLevelFunction('_render_Setter'), isNull);
-      expect(renderersLibrary.getType('_Renderer_Setter'), isNull);
+      expect(renderersLibrary.getClass('_Renderer_Setter'), isNull);
     });
 
     test('found in a method', () {
       expect(renderersLibrary.getTopLevelFunction('_render_Method'), isNull);
-      expect(renderersLibrary.getType('_Renderer_Method'), isNull);
+      expect(renderersLibrary.getClass('_Renderer_Method'), isNull);
     });
 
     test('for types not @visibleToMustache', () {
       expect(renderersLibrary.getTopLevelFunction('_render_String'), isNull);
-      expect(renderersLibrary.getType('_Renderer_String'), isNull);
+      expect(renderersLibrary.getClass('_Renderer_String'), isNull);
     });
   });
 }

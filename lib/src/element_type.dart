@@ -12,6 +12,7 @@ import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model/model_object_builder.dart';
 import 'package:dartdoc/src/render/element_type_renderer.dart';
+import 'package:dartdoc/src/type_utils.dart';
 import 'package:meta/meta.dart';
 
 mixin ElementTypeBuilderImpl implements ElementTypeBuilder {
@@ -36,7 +37,7 @@ abstract class ElementType extends Privacy
 
   factory ElementType._from(
       DartType f, Library library, PackageGraph packageGraph) {
-    var fElement = f.element;
+    var fElement = DartTypeExtension(f).element;
     if (fElement == null ||
         fElement.kind == ElementKind.DYNAMIC ||
         fElement.kind == ElementKind.NEVER) {
@@ -84,6 +85,9 @@ abstract class ElementType extends Privacy
         f as ParameterizedType, library, packageGraph, element);
   }
 
+  /// The element of [type].
+  TypeDefiningElement? get typeElement => DartTypeExtension(type).element;
+
   bool get canHaveParameters => false;
 
   bool get isTypedef => false;
@@ -129,9 +133,9 @@ class UndefinedElementType extends ElementType {
   @override
   String get name {
     if (type.isVoid) return 'void';
-    assert((const {'Never', 'void', 'dynamic'}).contains(type.element!.name),
+    assert((const {'Never', 'void', 'dynamic'}).contains(typeElement!.name),
         'Unrecognized type for UndefinedElementType: ${type.toString()}');
-    return type.element!.name!;
+    return typeElement!.name!;
   }
 
   @override
@@ -273,7 +277,7 @@ abstract class DefinedElementType extends ElementType {
   Element get element => modelElement.element;
 
   @override
-  String get name => type.element!.name!;
+  String get name => typeElement!.name!;
 
   @override
   String get fullyQualifiedName => modelElement.fullyQualifiedName;
@@ -296,13 +300,12 @@ abstract class DefinedElementType extends ElementType {
   /// Return this type, instantiated to bounds if it isn't already.
   @override
   late final DartType instantiatedType = () {
-    if (_bound is InterfaceType &&
-        !(_bound as InterfaceType)
-            .typeArguments
-            .every((t) => t is InterfaceType)) {
+    final bound = _bound;
+    if (bound is InterfaceType &&
+        !bound.typeArguments.every((t) => t is InterfaceType)) {
       var typeSystem = library.element.typeSystem;
       return typeSystem.instantiateToBounds2(
-          classElement: _bound.element as ClassElement,
+          classElement: bound.element2 as ClassElement,
           nullabilitySuffix: _bound.nullabilitySuffix);
     } else {
       return _bound;

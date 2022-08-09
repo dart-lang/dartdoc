@@ -4,7 +4,7 @@
 
 import 'package:analyzer/dart/element/element.dart';
 
-extension ClassExtensions on ClassElement {
+extension InterfaceElementExtension on InterfaceElement {
   /// The type parameters, if any, as a String, including bounds and the angled
   /// brackets, otherwise a blank String.
   String get typeParametersString {

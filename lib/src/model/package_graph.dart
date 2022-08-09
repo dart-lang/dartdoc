@@ -529,7 +529,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
           ? lastExportedElementUri.relativeUriString
           : null;
       warnOnElement(
-          findButDoNotCreateLibraryFor(lastExportedElement.enclosingElement2!),
+          findButDoNotCreateLibraryFor(lastExportedElement.enclosingElement3!),
           PackageWarning.unresolvedExport,
           message: '"$uri"',
           referredFrom: <Locatable>[topLevelLibrary]);
@@ -726,7 +726,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       searchElement = e.variable;
     }
     if (e is GenericFunctionTypeElement) {
-      searchElement = e.enclosingElement2;
+      searchElement = e.enclosingElement3;
     }
 
     if (_canonicalLibraryFor.containsKey(e)) {
@@ -765,7 +765,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       lib = findCanonicalLibraryFor(preferredClass.element);
     }
     // For elements defined in extensions, they are canonical.
-    var enclosingElement = e?.enclosingElement2;
+    var enclosingElement = e?.enclosingElement3;
     if (enclosingElement is ExtensionElement) {
       lib ??= modelBuilder.fromElement(enclosingElement.library) as Library?;
       // (TODO:keertip) Find a better way to exclude members of extensions
@@ -805,7 +805,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
                 .where((me) => me.isCanonical));
       }
 
-      var canonicalClass = findCanonicalModelElementFor(e.enclosingElement2);
+      var canonicalClass = findCanonicalModelElementFor(e.enclosingElement3);
       if (canonicalClass is InheritingContainer) {
         candidates.addAll(canonicalClass.allCanonicalModelElements.where((m) {
           return m.element == e;
