@@ -1076,6 +1076,10 @@ button {
   }
 }
 
+#search-box{
+  background-color: var(--main-search-background);
+}
+
 .typeahead,
 .tt-query,
 .tt-hint {
