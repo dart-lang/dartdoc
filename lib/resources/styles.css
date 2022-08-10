@@ -9,6 +9,149 @@
 .secondary-text-color  { color: #727272; }
 .divider-color         { border-color: #B6B6B6; }
 
+.light-theme{
+/*background-color body, listdropdown*/
+--main-bg-color: #fff;
+/*header id-tittle*/
+--main-header-color: #eeeeee;
+/*package-name*/
+--main-sidebar-color: #727272;
+/*section-title and section subtitle, desc markdown(body, dd, h3), header a*/
+--main-text-color: #111111;
+/*typehead search-box*/
+--main-search-bar: #fff;
+/* scrollbar-thumb */
+--main-scrollbar-color: #CCC;
+/* footer */
+--main-footer-background: #111111;
+/*header text color*/
+--main-h-text: black;
+/* hyperlinks*/
+--main-hyperlinks-color: #0175C2;
+/*search background*/
+--main-search-background: transparent;
+
+/*code snippets*/
+--main-code-bg: #f8f8f8;
+--main-keyword-color: #333;
+--main-tag-color: #000080;
+--main-section-color: #900;
+--main-comment-color: #998;
+--main-var-color: #008080;
+--main-string-color: #d14;
+}
+
+.dark-theme{
+/*background-color body, listdropdown*/
+--main-bg-color: #0E161F;
+/*header id-tittle*/
+--main-header-color: #1C2834;
+/*package-name*/
+--main-sidebar-color: #fff;
+/*section-title and section subtitle, desc markdown(body, dd, h3), header a*/
+--main-text-color: #fff;
+/*typehead search-box*/
+--main-search-bar: #454545;
+/* scrollbar-thumb */
+--main-scrollbar-color: #5f6368;
+/* footer */
+--main-footer-background: #27323a;
+/* hyperlinks*/
+--main-hyperlinks-color: #00D2FA;
+/*search background*/
+--main-search-background: black;
+
+/*code snippets*/
+--main-code-bg: #1C2834;
+--main-keyword-color: white;
+--main-tag-color: #00D2FA;
+--main-section-color: #FF2D64;
+--main-comment-color: #909CC3;
+--main-var-color: #55A09B;
+--main-string-color: #FF2D64;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 5px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  webkit-transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 22px;
+  width: 22px;
+  left: -5px;
+  background-color: white;
+  webkit-transition: .4s;
+  top: -4px;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+.material-symbols-outlined {
+  padding-top: 6px;
+}
+
+.toggle{
+  padding-bottom: 4px;
+}
+
+.moon{
+  padding-right: 30px;
+  padding-left: 5px;
+}
+
+.sun{
+  padding-right: 5px;
+}
+
+@media (max-width: 768px) {
+  .moon {
+    padding-right: 0px;
+  }
+  .sun{
+    padding-left: 30px;
+  }
+}
+
 /* for layout */
 html,
 body {
@@ -36,6 +179,7 @@ header {
   flex-direction: row;
   align-items: center;
   padding-left: 30px;
+  background-color: var(--main-header-color);
 }
 
 header ol {
@@ -84,8 +228,8 @@ main {
 
 ::-webkit-scrollbar-button{ display: none; height: 13px; border-radius: 0px; background-color: #AAA; }
 ::-webkit-scrollbar-button:hover{ background-color: #AAA; }
-::-webkit-scrollbar-thumb{ background-color: #CCC; }
-::-webkit-scrollbar-thumb:hover{ background-color: #CCC; }
+::-webkit-scrollbar-thumb{ background-color: var(--main-scrollbar-color); }
+::-webkit-scrollbar-thumb:hover{ background-color: var(--main-scrollbar-color); }
 ::-webkit-scrollbar{ width: 4px; }
 
 .main-content::-webkit-scrollbar{ width: 8px; }
@@ -113,8 +257,8 @@ body {
   font-family: Roboto, sans-serif;
   font-size: 16px;
   line-height: 1.42857143;
-  color: #111111;
-  background-color: #fff;
+  color: var(--main-text-color);
+  background-color: var(--main-bg-color);
 }
 
 /* some of this is to reset bootstrap */
@@ -145,7 +289,7 @@ nav .container {
 }
 
 header {
-  background-color: #eeeeee;
+  background-color: var(--main-header-color);
   box-shadow: 0 3px 5px rgba(0,0,0,0.1);
 }
 
@@ -163,6 +307,47 @@ header .masthead {
 
 header .contents {
   padding: 0;
+}
+
+.pre {
+    border: 1px solid #ddd;
+    font-size: 14px;
+}
+
+.hljs-string, .hljs-doctag {
+    color: var(--main-string-color);
+}
+
+.hljs-number, .hljs-literal, .hljs-variable, .hljs-template-variable, .hljs-tag .hljs-attr {
+    color: var(--main-var-color);
+}
+
+.hljs-comment, .hljs-quote {
+    color: var(--main-comment-color);
+    font-style: italic;
+}
+
+.hljs-title, .hljs-section, .hljs-selector-id {
+    color: var(--main-section-color);
+    font-weight: bold;
+}
+
+.hljs-tag, .hljs-name, .hljs-attribute {
+    color: var(--main-tag-color);
+    font-weight: normal;
+}
+
+.hljs-keyword, .hljs-selector-tag, .hljs-subst {
+    color: var(--main-keyword-color);
+    font-weight: bold;
+}
+
+.hljs {
+    display: block;
+    overflow-x: auto;
+    padding: 0.5em;
+    color: var(--main-text-color);
+    background: var(--main-code-bg);
 }
 
 @media screen and (max-width:768px) {
@@ -197,7 +382,7 @@ h6 {
   font-family: Roboto, sans-serif;
   font-weight: 400;
   margin-top: 1.5em;
-  color: #111111;
+  color: var(--main-text-color);
 }
 
 h1.title {
@@ -236,7 +421,7 @@ p {
 }
 
 a {
-  color: #0175C2;
+  color: var(--main-hyperlinks-color);
 }
 
 a:hover {
@@ -309,7 +494,7 @@ header h1 {
 header a,
 header p,
 header li {
-  color: #111111;
+  color: #0175C2;
 }
 
 header a:hover {
@@ -325,7 +510,7 @@ dt {
 }
 
 dd {
-  color: #212121;
+  color: var(--main-text-color);
   margin-bottom: 1em;
   margin-left: 0;
 }
@@ -390,12 +575,12 @@ dl dt.callable .name {
 }
 
 .signature {
-  color: #727272;
+  color: var(--main-text-color);
 }
 
 .signature a {
   /* 50% mix of default-primary-color and primary-text-color. */
-  color: #4674a2;
+  color: var(--main-hyperlinks-color);
 }
 
 .optional {
@@ -466,10 +651,10 @@ h1 .category {
 /* See https://github.com/dart-lang/dartdoc/blob/master/lib/src/model/feature.dart */
 .feature {
   display: inline-block;
-  background: white;
-  border: 1px solid #0175c2;
+  background: var(--main-bg-color);
+  border: 1px solid var(--main-hyperlinks-color);
   border-radius: 20px;
-  color: #0175c2;
+  color: var(--main-hyperlinks-color);
 
   font-size: 12px;
   padding: 1px 6px;
@@ -516,7 +701,7 @@ p.firstline {
 
 footer {
   color: #fff;
-  background-color: #111111;
+  background-color: var(--main-footer-background);
   width: 100%;
 }
 
@@ -556,6 +741,7 @@ footer a, footer a:hover {
 .markdown h3 {
   font-size: 18px;
   margin-bottom: 8px;
+  color: var(--main-text-color);
 }
 
 .markdown h4 {
@@ -642,8 +828,16 @@ td {
   }
 }
 
+.breadcrumbs gt-separated dark hidden-xs li+li:before {
+    color: var(--main-h-text);
+}
+
+ol.breadcrumbs li a{
+    color: var(--main-hyperlinks-color);
+}
+
 .self-crumb {
-  color: #555;
+  color: var(--main-h-text);
 }
 
 .self-name {
@@ -739,7 +933,7 @@ ul.subnav li:last-of-type {
 
 .sidebar h5 a,
 .sidebar h5 a:hover {
-  color: #727272;
+  color: var(--main-sidebar-color);
 }
 
 .sidebar h5,
@@ -750,7 +944,7 @@ ul.subnav li:last-of-type {
 }
 
 .sidebar h5 {
-  color: #727272;
+  color: var(--main-sidebar-color);
   font-size: 18px;
   margin: 0 0 22px 0;
   padding-top: 0;
@@ -826,7 +1020,7 @@ button {
     top: 0;
     width: 280px; /* works all the way down to an iphone 4 */
     height: 90%;
-    background-color: white;
+    background-color: var(--main-bg-color);
     overflow-y: scroll; /* TODO: how to hide scroll bars? */
     padding: 10px;
     margin: 10px 10px;
@@ -844,6 +1038,7 @@ button {
 
   .self-name {
     display: inline-block;
+    color: var(--main-hyperlinks-color);
   }
 }
 
@@ -881,6 +1076,10 @@ button {
   }
 }
 
+#search-box{
+  background-color: var(--main-search-background);
+}
+
 .typeahead,
 .tt-query,
 .tt-hint {
@@ -888,6 +1087,7 @@ button {
   padding: 2px 7px 1px 7px;
   line-height: 20px;
   outline: none;
+  color: var(--main-text-color);
 }
 
 .typeahead {
@@ -903,7 +1103,7 @@ button {
 .tt-input {
   position: relative;
   vertical-align: top;
-  background-color: transparent;
+  background-color: var(--main-search-background);
 }
 
 .tt-query {
@@ -939,9 +1139,9 @@ button {
   font-size: 14px;
   margin: 0;
   padding: 8px 0;
-  background-color: #fff;
+  background-color: var(--main-bg-color);
   border: 1px solid #ccc;
-  border: 1px solid rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--main-header-color);
   -webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
      -moz-box-shadow: 0 5px 10px rgba(0,0,0,.2);
           box-shadow: 0 5px 10px rgba(0,0,0,.2);
@@ -949,7 +1149,7 @@ button {
 
 .tt-suggestion {
   padding: 3px 20px;
-  color: #212121;
+  color: var(--main-text-color);
 }
 
 .tt-suggestion:hover {
@@ -977,7 +1177,11 @@ button {
 
 .search-from-lib {
   font-style: italic;
-  color: gray;
+  color: var(--main-text-color);
+}
+
+::placeholder {
+  color: var(--main-text-color);
 }
 
 .search-body {
