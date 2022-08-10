@@ -115,10 +115,10 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
       [
         ...compilationUnit.accessors,
         ...compilationUnit.classes,
-        ...compilationUnit.enums,
+        ...compilationUnit.enums2,
         ...compilationUnit.extensions,
         ...compilationUnit.functions,
-        ...compilationUnit.mixins,
+        ...compilationUnit.mixins2,
         ...compilationUnit.topLevelVariables,
         ...compilationUnit.typeAliases,
       ];
@@ -286,15 +286,13 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
   @override
   late final List<Enum> enums = _exportedAndLocalElements
-      .whereType<ClassElement>()
-      .where((element) => element.isEnum)
+      .whereType<EnumElement>()
       .map((e) => modelBuilder.from(e, this) as Enum)
       .toList(growable: false);
 
   @override
   late final List<Mixin> mixins = _exportedAndLocalElements
-      .whereType<ClassElement>()
-      .where((ClassElement c) => c.isMixin)
+      .whereType<MixinElement>()
       .map((e) => modelBuilder.from(e, this) as Mixin)
       .toList(growable: false);
 
@@ -388,7 +386,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
   late final List<Class> allClasses = _exportedAndLocalElements
       .whereType<ClassElement>()
-      .where((e) => !e.isMixin && !e.isEnum)
+      .where((e) => e is! EnumElement && e is! MixinElement)
       .map((e) => modelBuilder.from(e, this) as Class)
       .toList(growable: false);
 

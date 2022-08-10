@@ -22,7 +22,7 @@ mixin ContainerMember on ModelElement implements EnclosedElement {
   Container get enclosingElement;
 
   late final Container definingEnclosingContainer =
-      modelBuilder.fromElement(element.enclosingElement2!) as Container;
+      modelBuilder.fromElement(element.enclosingElement3!) as Container;
 
   @override
   Set<Feature> get features => {
@@ -51,7 +51,7 @@ mixin ContainerMember on ModelElement implements EnclosedElement {
     }
     if (enclosingElement is! Extension) {
       return packageGraph.findCanonicalModelElementFor(
-          element.enclosingElement2) as Container?;
+          element.enclosingElement3) as Container?;
     }
     return null;
   }

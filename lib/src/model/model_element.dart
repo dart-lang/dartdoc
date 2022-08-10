@@ -30,6 +30,7 @@ import 'package:dartdoc/src/render/source_code_renderer.dart';
 import 'package:dartdoc/src/source_linker.dart';
 import 'package:dartdoc/src/special_elements.dart';
 import 'package:dartdoc/src/tuple.dart';
+import 'package:dartdoc/src/type_utils.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p show Context;
@@ -198,7 +199,7 @@ abstract class ModelElement extends Canonicalization
           var index = constantIndex.toIntValue()!;
           newModelElement =
               EnumField.forConstant(index, e, library, packageGraph, getter);
-        } else if (e.enclosingElement2 is ExtensionElement) {
+        } else if (e.enclosingElement3 is ExtensionElement) {
           newModelElement = Field(e, library, packageGraph,
               getter as ContainerAccessor?, setter as ContainerAccessor?);
         } else {
@@ -325,14 +326,14 @@ abstract class ModelElement extends Canonicalization
     if (e is PrefixElement) {
       return Prefix(e, library, packageGraph);
     }
+    if (e is EnumElement) {
+      return Enum(e, library, packageGraph);
+    }
+    if (e is MixinElement) {
+      return Mixin(e, library, packageGraph);
+    }
     if (e is ClassElement) {
-      if (e.isMixin) {
-        return Mixin(e, library, packageGraph);
-      } else if (e.isEnum) {
-        return Enum(e, library, packageGraph);
-      } else {
-        return Class(e, library, packageGraph);
-      }
+      return Class(e, library, packageGraph);
     }
     if (e is ExtensionElement) {
       return Extension(e, library, packageGraph);
@@ -340,15 +341,15 @@ abstract class ModelElement extends Canonicalization
     if (e is FunctionElement) {
       return ModelFunction(e, library, packageGraph);
     } else if (e is GenericFunctionTypeElement) {
-      assert(e.enclosingElement2 is TypeAliasElement);
-      assert(e.enclosingElement2!.name != '');
+      assert(e.enclosingElement3 is TypeAliasElement);
+      assert(e.enclosingElement3!.name != '');
       return ModelFunctionTypedef(e, library, packageGraph);
     }
     if (e is TypeAliasElement) {
       if (e.aliasedType is FunctionType) {
         return FunctionTypedef(e, library, packageGraph);
       }
-      if (e.aliasedType.element is ClassElement) {
+      if (DartTypeExtension(e.aliasedType).element is ClassElement) {
         return ClassTypedef(e, library, packageGraph);
       }
       return GeneralizedTypedef(e, library, packageGraph);
@@ -374,13 +375,13 @@ abstract class ModelElement extends Canonicalization
     }
     if (e is PropertyAccessorElement) {
       // Accessors can be part of a [Container], or a part of a [Library].
-      if (e.enclosingElement2 is ClassElement ||
-          e.enclosingElement2 is ExtensionElement ||
+      if (e.enclosingElement3 is ClassElement ||
+          e.enclosingElement3 is ExtensionElement ||
           e is MultiplyInheritedExecutableElement) {
         if (enclosingContainer == null) {
           return ContainerAccessor(e, library, packageGraph);
         } else {
-          assert(e.enclosingElement2 is! ExtensionElement);
+          assert(e.enclosingElement3 is! ExtensionElement);
           return ContainerAccessor.inherited(
               e, library, packageGraph, enclosingContainer,
               originalMember: originalMember as ExecutableMember?);
@@ -562,12 +563,11 @@ abstract class ModelElement extends Canonicalization
 
     // Since we're looking for a library, find the [Element] immediately
     // contained by a [CompilationUnitElement] in the tree.
-    Element? topLevelElement = element;
-    while (topLevelElement != null &&
-        topLevelElement.enclosingElement2 is! LibraryElement &&
-        topLevelElement.enclosingElement2 is! CompilationUnitElement &&
-        topLevelElement.enclosingElement2 != null) {
-      topLevelElement = topLevelElement.enclosingElement2;
+    var topLevelElement = element;
+    while (topLevelElement.enclosingElement3 is! LibraryElement &&
+        topLevelElement.enclosingElement3 is! CompilationUnitElement &&
+        topLevelElement.enclosingElement3 != null) {
+      topLevelElement = topLevelElement.enclosingElement3!;
     }
 
     var candidateLibraries = thisAndExported
@@ -575,7 +575,7 @@ abstract class ModelElement extends Canonicalization
             l.isPublic && l.package.documentedWhere != DocumentLocation.missing)
         .where((l) {
       var lookup =
-          l.element.exportNamespace.definedNames[topLevelElement?.name!];
+          l.element.exportNamespace.definedNames[topLevelElement.name!];
       if (lookup is PropertyAccessorElement) {
         lookup = lookup.variable;
       }
@@ -603,7 +603,7 @@ abstract class ModelElement extends Canonicalization
     }
 
     // Start with our top-level element.
-    var warnable = ModelElement._fromElement(topLevelElement!, packageGraph);
+    var warnable = ModelElement._fromElement(topLevelElement, packageGraph);
     // Heuristic scoring to determine which library a human likely
     // considers this element to be primarily 'from', and therefore,
     // canonical.  Still warn if the heuristic isn't that confident.
