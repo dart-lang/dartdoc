@@ -27,7 +27,6 @@ linter:
     - avoid_unused_constructor_parameters
     - depend_on_referenced_packages
     - directives_ordering
-    - eol_at_end_of_file
     - no_adjacent_strings_in_list
     - omit_local_variable_types
     - package_api_docs
