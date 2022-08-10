@@ -307,7 +307,7 @@ abstract class DefinedElementType extends ElementType {
       var typeSystem = library.element.typeSystem;
       return typeSystem.instantiateInterfaceToBounds(
           // TODO(srawlins): It sure seems like this will crash on MixinElement.
-          element: bound.element2 as ClassElement,
+          element: bound.element2,
           nullabilitySuffix: _bound.nullabilitySuffix);
     } else {
       return _bound;
