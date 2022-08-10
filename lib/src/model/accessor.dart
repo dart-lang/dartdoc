@@ -125,12 +125,12 @@ class Accessor extends ModelElement implements EnclosedElement {
 
   @override
   ModelElement get enclosingElement {
-    if (element.enclosingElement2 is CompilationUnitElement) {
+    if (element.enclosingElement3 is CompilationUnitElement) {
       return modelBuilder
-          .fromElement(element.enclosingElement2.enclosingElement2!);
+          .fromElement(element.enclosingElement3.enclosingElement3!);
     }
 
-    return modelBuilder.from(element.enclosingElement2, library);
+    return modelBuilder.from(element.enclosingElement3, library);
   }
 
   @override
@@ -218,7 +218,7 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
     assert(packageGraph.allLibrariesAdded);
     if (!_overriddenElementIsSet) {
       _overriddenElementIsSet = true;
-      var parent = element.enclosingElement2;
+      var parent = element.enclosingElement3;
       if (parent is ClassElement) {
         for (var t in parent.allSupertypes) {
           Element? accessor =
@@ -226,7 +226,7 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
           if (accessor != null) {
             accessor = accessor.declaration;
             var parentContainer =
-                modelBuilder.fromElement(t.element) as InheritingContainer;
+                modelBuilder.fromElement(t.element2) as InheritingContainer;
             var possibleFields = <Field>[];
             possibleFields.addAll(parentContainer.instanceFields);
             possibleFields.addAll(parentContainer.staticFields);

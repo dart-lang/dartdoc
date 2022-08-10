@@ -87,6 +87,7 @@ class RendererSpec {
 
   final InterfaceType contextType;
 
+  // TODO(srawlins): I think this should be `Set<InterfaceType>`.
   final Set<DartType> visibleTypes;
 
   final String standardHtmlTemplate;
@@ -112,7 +113,7 @@ class RendererSpec {
   static Uri? _parseUriFromAnnotation(String unparsed) =>
       unparsed == 'null' ? null : Uri.parse(unparsed);
 
-  ClassElement get contextElement => contextType.element;
+  InterfaceElement get contextElement => contextType.element2;
 }
 
 enum TemplateFormat {

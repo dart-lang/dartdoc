@@ -104,7 +104,7 @@ mixin Inheritable on ContainerMember {
     } else if (!isInherited && definingEnclosingContainer is! Extension) {
       // TODO(jcollins-g): factor out extension logic into [Extendable].
       return packageGraph.findCanonicalModelElementFor(
-          element.enclosingElement2) as Container?;
+          element.enclosingElement3) as Container?;
     }
     return super.computeCanonicalEnclosingContainer();
   }
