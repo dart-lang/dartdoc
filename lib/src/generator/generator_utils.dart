@@ -34,14 +34,14 @@ String generateCategoryJson(Iterable<Categorization> categories, bool pretty) {
   return encoder.convert(indexItems.toList());
 }
 
-String regEx(String? input){
-  if(input==null){
+String removeHTMLTags(String? input) {
+  if (input == null) {
     return '';
   }
-  RegExp exp = RegExp(r"<[^>]*>",multiLine: true,caseSensitive: true);
-  String test = input.toString();
-  String parsedstring1 = test.replaceAll(exp, '');
-  return parsedstring1;
+  RegExp exp = RegExp(r"<[^>]*>", multiLine: true, caseSensitive: true);
+  String beforeParsing = input.toString();
+  String parsedString = beforeParsing.replaceAll(exp, '');
+  return parsedString;
 }
 
 String generateSearchIndexJson(
@@ -56,7 +56,8 @@ String generateSearchIndexJson(
         'type': indexable.kind,
         'overriddenDepth': indexable.overriddenDepth,
         if (indexable is ModelElement) 'packageName': indexable.package.name,
-        if (indexable is ModelElement) 'desc': regEx(indexable.oneLineDoc),
+        if (indexable is ModelElement)
+          'desc': removeHTMLTags(indexable.oneLineDoc),
         if (indexable is EnclosedElement)
           'enclosedBy': {
             'name': indexable.enclosingElement.name,

@@ -124,7 +124,7 @@ class Validator {
           if (const {'__404error.html', 'categories.json'}.contains(fullPath)) {
             _warn(PackageWarning.orphanedFile, fullPath, _origin);
           }
-          if (const {'search_results_page.html', 'categories.json'}.contains(fullPath)) {
+          if (const {'search.html', 'categories.json'}.contains(fullPath)) {
             _warn(PackageWarning.orphanedFile, fullPath, _origin);
           }
         }

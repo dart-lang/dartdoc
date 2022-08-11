@@ -37,6 +37,6 @@ class MarkdownGeneratorBackend extends GeneratorBackendBase {
     var content = templates.renderError(data);
     write(writer, '__404error.md', data, content);
     var searchContent = templates.renderError(data);
-    write(writer, 'search_results_page.md', data, searchContent);
+    write(writer, 'search.md', data, searchContent);
   }
 }

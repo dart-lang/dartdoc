@@ -24,7 +24,7 @@
 @Renderer(#renderMethod, Context<MethodTemplateData>(), 'method')
 @Renderer(#renderMixin, Context<MixinTemplateData>(), 'mixin')
 @Renderer(#renderProperty, Context<PropertyTemplateData>(), 'property')
-@Renderer(#renderSearchPage, Context<PackageTemplateData>(), 'search_results_page')
+@Renderer(#renderSearchPage, Context<PackageTemplateData>(), 'search')
 @Renderer(
     #renderSidebarForContainer,
     Context<TemplateDataWithContainer<Documentable>>(),
@@ -392,7 +392,7 @@ class RuntimeTemplates implements Templates {
 
     var indexTemplate = await loadTemplate('index');
     var libraryTemplate = await loadTemplate('library');
-    var searchPageTemplate = await loadTemplate('search_results_page');
+    var searchPageTemplate = await loadTemplate('search');
     var sidebarContainerTemplate = await loadTemplate('_sidebar_for_container');
     var sidebarLibraryTemplate = await loadTemplate('_sidebar_for_library');
     var categoryTemplate = await loadTemplate('category');

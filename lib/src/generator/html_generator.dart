@@ -41,7 +41,7 @@ class HtmlGeneratorBackend extends GeneratorBackendBase {
     var content = templates.renderError(data);
     write(writer, '__404error.html', data, content);
     var searchContent = templates.renderSearchPage(data);
-    write(writer, 'search_results_page.html', data, searchContent);
+    write(writer, 'search.html', data, searchContent);
   }
 
   @override
