@@ -12,9 +12,9 @@ extension DartTypeExtension on DartType {
     if (self is InterfaceType) {
       return self.element2;
     } else if (self is NeverType) {
-      return self.element as TypeDefiningElement;
+      return self.element2 as TypeDefiningElement;
     } else if (self is TypeParameterType) {
-      return self.element;
+      return self.element2;
     } else {
       // Remaining cases like `DynamicType`, `FunctionType`, and `VoidType`.
       return null;
