@@ -238,12 +238,12 @@ String renderClass(_i1.ClassTemplateData context0) {
       buffer.write('''
 **Available Extensions**
 ''');
-      var context5 = context2.potentiallyApplicableExtensions;
-      if (context5 != null) {
+      var context5 = context2.potentiallyApplicableExtensionsSorted;
+      for (var context6 in context5) {
         buffer.writeln();
         buffer.write('''
 - ''');
-        buffer.write(context2.linkedName);
+        buffer.write(context6.linkedName);
       }
     }
     buffer.write('\n\n');
@@ -257,10 +257,10 @@ String renderClass(_i1.ClassTemplateData context0) {
     buffer.write('''
 ## Properties
 ''');
-    var context6 = context2.publicInstanceFieldsSorted;
-    for (var context7 in context6) {
+    var context7 = context2.publicInstanceFieldsSorted;
+    for (var context8 in context7) {
       buffer.writeln();
-      buffer.write(_renderClass_partial_property_10(context7));
+      buffer.write(_renderClass_partial_property_10(context8));
       buffer.writeln();
     }
   }

@@ -3010,15 +3010,15 @@ void main() {
     });
 
     test('classes know about applicableExtensions', () {
-      expect(apple.potentiallyApplicableExtensions, orderedEquals([ext]));
-      expect(string.potentiallyApplicableExtensions,
+      expect(apple.potentiallyApplicableExtensionsSorted, orderedEquals([ext]));
+      expect(string.potentiallyApplicableExtensionsSorted,
           isNot(contains(documentOnceReexportOne)));
-      expect(string.potentiallyApplicableExtensions,
+      expect(string.potentiallyApplicableExtensionsSorted,
           contains(documentOnceReexportTwo));
-      expect(baseTest.potentiallyApplicableExtensions, isEmpty);
-      expect(anotherExtended.potentiallyApplicableExtensions,
+      expect(baseTest.potentiallyApplicableExtensionsSorted, isEmpty);
+      expect(anotherExtended.potentiallyApplicableExtensionsSorted,
           orderedEquals([uphill]));
-      expect(bigAnotherExtended.potentiallyApplicableExtensions,
+      expect(bigAnotherExtended.potentiallyApplicableExtensionsSorted,
           orderedEquals([uphill]));
     });
 
@@ -3090,10 +3090,10 @@ void main() {
     });
 
     test('type parameters and bounds work with applicableExtensions', () {
-      expect(
-          superMegaTron.potentiallyApplicableExtensions, orderedEquals([leg]));
-      expect(
-          megaTron.potentiallyApplicableExtensions, orderedEquals([arm, leg]));
+      expect(superMegaTron.potentiallyApplicableExtensionsSorted,
+          orderedEquals([leg]));
+      expect(megaTron.potentiallyApplicableExtensionsSorted,
+          orderedEquals([arm, leg]));
     });
 
     test('documentation links do not crash in base cases', () {

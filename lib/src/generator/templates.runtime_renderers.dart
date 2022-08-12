@@ -4867,14 +4867,11 @@ class _Renderer_ExtensionTarget extends RendererBase<ExtensionTarget> {
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<Extension>'),
-                  isNullValue: (CT_ c) =>
-                      c.potentiallyApplicableExtensions == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
+                          c, remainingNames, 'List<Extension>'),
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.potentiallyApplicableExtensions, ast,
-                        r.template, sink,
-                        parent: r, getters: _invisibleGetters['Iterable']!);
+                    return c.potentiallyApplicableExtensions.map((e) =>
+                        _render_Extension(e, ast, r.template, sink, parent: r));
                   },
                 ),
                 'potentiallyApplicableExtensionsSorted': Property(
