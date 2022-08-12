@@ -12,36 +12,36 @@
 {{>documentation}}
 
 {{#hasModifiers}}
-{{#hasPublicSuperclassConstraints}}
+{{#hasDocumentedSuperclassConstraints}}
 **Superclass Constraints**
 
-{{#publicSuperclassConstraints}}
+{{#documentedSuperclassConstraints}}
 - {{{linkedName}}}
-{{/publicSuperclassConstraints}}
-{{/hasPublicSuperclassConstraints}}
+{{/documentedSuperclassConstraints}}
+{{/hasDocumentedSuperclassConstraints}}
 
 {{ >super_chain }}
 {{ >interfaces }}
 
-{{#hasPublicImplementors}}
+{{#hasDocumentedImplementors}}
 **Mixin Applications**
 
-{{#publicImplementorsSorted}}
+{{#documentedImplementorsSorted}}
 - {{{linkedName}}}
-{{/publicImplementorsSorted}}
-{{/hasPublicImplementors}}
+{{/documentedImplementorsSorted}}
+{{/hasDocumentedImplementors}}
 
 {{ >annotations }}
 {{/hasModifiers}}
 
-{{#hasPublicInstanceFields}}
+{{#hasDocumentedInstanceFields}}
 ## Properties
 
-{{#publicInstanceFieldsSorted}}
+{{#documentedInstanceFieldsSorted}}
 {{>property}}
 
-{{/publicInstanceFieldsSorted}}
-{{/hasPublicInstanceFields}}
+{{/documentedInstanceFieldsSorted}}
+{{/hasDocumentedInstanceFields}}
 
 {{> instance_methods }}
 

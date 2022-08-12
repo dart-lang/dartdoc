@@ -11,45 +11,45 @@
     {{#hasModifiers}}
     <section>
       <dl class="dl-horizontal">
-        {{#hasPublicSuperclassConstraints}}
+        {{#hasDocumentedSuperclassConstraints}}
         <dt>Superclass Constraints</dt>
         <dd><ul class="comma-separated dark mixin-relationships">
-          {{#publicSuperclassConstraints}}
+          {{#documentedSuperclassConstraints}}
           <li>{{{linkedName}}}</li>
-          {{/publicSuperclassConstraints}}
+          {{/documentedSuperclassConstraints}}
         </ul></dd>
-        {{/hasPublicSuperclassConstraints}}
+        {{/hasDocumentedSuperclassConstraints}}
 
         {{ >super_chain }}
         {{ >interfaces }}
 
-        {{#hasPublicImplementors}}
+        {{#hasDocumentedImplementors}}
         <dt>Mixin Applications</dt>
         <dd>
           <ul class="comma-separated mixin-relationships">
-            {{#publicImplementorsSorted}}
+            {{#documentedImplementorsSorted}}
             <li>{{{linkedName}}}</li>
-            {{/publicImplementorsSorted}}
+            {{/documentedImplementorsSorted}}
           </ul>
         </dd>
-        {{/hasPublicImplementors}}
+        {{/hasDocumentedImplementors}}
 
         {{ >annotations }}
       </dl>
     </section>
     {{/hasModifiers}}
 
-    {{#hasPublicInstanceFields}}
-    <section class="summary offset-anchor{{ #publicInheritedInstanceFields }} inherited{{ /publicInheritedInstanceFields }}" id="instance-properties">
+    {{#hasDocumentedInstanceFields}}
+    <section class="summary offset-anchor{{ #documentedInheritedInstanceFields }} inherited{{ /documentedInheritedInstanceFields }}" id="instance-properties">
       <h2>Properties</h2>
 
       <dl class="properties">
-        {{#publicInstanceFields}}
+        {{#documentedInstanceFields}}
         {{>property}}
-        {{/publicInstanceFields}}
+        {{/documentedInstanceFields}}
       </dl>
     </section>
-    {{/hasPublicInstanceFields}}
+    {{/hasDocumentedInstanceFields}}
 
     {{ >instance_methods }}
     {{ >instance_operators }}

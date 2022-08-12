@@ -1,8 +1,8 @@
-{{ #hasPublicInstanceMethods }}
+{{ #hasDocumentedInstanceMethods }}
 ## Methods
 
-{{ #publicInstanceMethodsSorted }}
+{{ #documentedInstanceMethodsSorted }}
 {{ >callable }}
 
-{{ /publicInstanceMethodsSorted }}
-{{ /hasPublicInstanceMethods }}
+{{ /documentedInstanceMethodsSorted }}
+{{ /hasDocumentedInstanceMethods }}

@@ -16,13 +16,13 @@
 {{ >interfaces }}
 {{ >mixed_in_types }}
 
-{{#hasPublicImplementors}}
+{{#hasDocumentedImplementors}}
 **Implementers**
 
-{{#publicImplementorsSorted}}
+{{#documentedImplementorsSorted}}
 - {{{linkedName}}}
-{{/publicImplementorsSorted}}
-{{/hasPublicImplementors}}
+{{/documentedImplementorsSorted}}
+{{/hasDocumentedImplementors}}
 
 {{#hasPotentiallyApplicableExtensions}}
 **Available Extensions**
@@ -37,14 +37,14 @@
 
 {{ >constructors }}
 
-{{#hasPublicInstanceFields}}
+{{#hasDocumentedInstanceFields}}
 ## Properties
 
-{{#publicInstanceFieldsSorted}}
+{{#documentedInstanceFieldsSorted}}
 {{>property}}
 
-{{/publicInstanceFieldsSorted}}
-{{/hasPublicInstanceFields}}
+{{/documentedInstanceFieldsSorted}}
+{{/hasDocumentedInstanceFields}}
 
 {{ >instance_methods }}
 

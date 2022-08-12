@@ -1,9 +1,9 @@
-{{#hasPublicSuperChainReversed}}
+{{#hasDocumentedSuperChainReversed}}
 **Inheritance**
 
 - {{{linkedObjectType}}}
-{{#publicSuperChainReversed}}
+{{#documentedSuperChainReversed}}
 - {{{linkedName}}}
-{{/publicSuperChainReversed}}
+{{/documentedSuperChainReversed}}
 - {{{name}}}
-{{/hasPublicSuperChainReversed}}
+{{/hasDocumentedSuperChainReversed}}

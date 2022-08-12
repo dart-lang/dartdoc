@@ -1,11 +1,11 @@
 {{! All constants on classes, enums, extensions, and mixins are static, but the
     file is named this way for organization purposes. }}
 
-{{ #hasPublicConstantFields }}
+{{ #hasDocumentedConstantFields }}
 ## Constants
 
-{{ #publicConstantFieldsSorted }}
+{{ #documentedConstantFieldsSorted }}
 {{ >constant }}
 
-{{ /publicConstantFieldsSorted }}
-{{ /hasPublicConstantFields }}
+{{ /documentedConstantFieldsSorted }}
+{{ /hasDocumentedConstantFields }}

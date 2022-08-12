@@ -1,66 +1,66 @@
 <ol>
   {{ #library }}
-    {{ #hasPublicClasses }}
+    {{ #hasDocumentedClasses }}
       <li class="section-title"><a href="{{{ href }}}#classes">Classes</a></li>
-      {{ #publicClassesSorted }}
+      {{ #documentedClassesSorted }}
         <li>{{{ linkedName }}}</li>
-      {{ /publicClassesSorted }}
-    {{ /hasPublicClasses }}
+      {{ /documentedClassesSorted }}
+    {{ /hasDocumentedClasses }}
 
-    {{ #hasPublicExtensions }}
+    {{ #hasDocumentedExtensions }}
       <li class="section-title"><a href="{{{ href }}}#extensions">Extensions</a></li>
-      {{ #publicExtensionsSorted }}
+      {{ #documentedExtensionsSorted }}
         <li>{{{ linkedName }}}</li>
-      {{ /publicExtensionsSorted }}
-    {{ /hasPublicExtensions }}
+      {{ /documentedExtensionsSorted }}
+    {{ /hasDocumentedExtensions }}
 
-    {{ #hasPublicMixins }}
+    {{ #hasDocumentedMixins }}
       <li class="section-title"><a href="{{{ href }}}#mixins">Mixins</a></li>
-      {{ #publicMixinsSorted }}
+      {{ #documentedMixinsSorted }}
         <li>{{{ linkedName }}}</li>
-      {{ /publicMixinsSorted }}
-    {{ /hasPublicMixins }}
+      {{ /documentedMixinsSorted }}
+    {{ /hasDocumentedMixins }}
 
-    {{ #hasPublicConstants }}
+    {{ #hasDocumentedConstants }}
       <li class="section-title"><a href="{{{ href }}}#constants">Constants</a></li>
-      {{ #publicConstantsSorted }}
+      {{ #documentedConstantsSorted }}
         <li>{{{ linkedName }}}</li>
-      {{ /publicConstantsSorted }}
-    {{ /hasPublicConstants }}
+      {{ /documentedConstantsSorted }}
+    {{ /hasDocumentedConstants }}
 
-    {{ #hasPublicProperties }}
+    {{ #hasDocumentedProperties }}
       <li class="section-title"><a href="{{{ href }}}#properties">Properties</a></li>
-      {{ #publicPropertiesSorted }}
+      {{ #documentedPropertiesSorted }}
         <li>{{{ linkedName }}}</li>
-      {{ /publicPropertiesSorted }}
-    {{ /hasPublicProperties }}
+      {{ /documentedPropertiesSorted }}
+    {{ /hasDocumentedProperties }}
 
-    {{ #hasPublicFunctions }}
+    {{ #hasDocumentedFunctions }}
       <li class="section-title"><a href="{{{ href }}}#functions">Functions</a></li>
-      {{ #publicFunctionsSorted }}
+      {{ #documentedFunctionsSorted }}
         <li>{{{ linkedName }}}</li>
-      {{ /publicFunctionsSorted }}
-    {{ /hasPublicFunctions }}
+      {{ /documentedFunctionsSorted }}
+    {{ /hasDocumentedFunctions }}
 
-    {{ #hasPublicEnums }}
+    {{ #hasDocumentedEnums }}
       <li class="section-title"><a href="{{{ href }}}#enums">Enums</a></li>
-      {{ #publicEnumsSorted }}
+      {{ #documentedEnumsSorted }}
         <li>{{{ linkedName }}}</li>
-      {{ /publicEnumsSorted }}
-    {{ /hasPublicEnums }}
+      {{ /documentedEnumsSorted }}
+    {{ /hasDocumentedEnums }}
 
-    {{ #hasPublicTypedefs }}
+    {{ #hasDocumentedTypedefs }}
       <li class="section-title"><a href="{{{ href }}}#typedefs">Typedefs</a></li>
-      {{ #publicTypedefsSorted }}
+      {{ #documentedTypedefsSorted }}
         <li>{{{ linkedName }}}</li>
-      {{ /publicTypedefsSorted }}
-    {{ /hasPublicTypedefs }}
+      {{ /documentedTypedefsSorted }}
+    {{ /hasDocumentedTypedefs }}
 
-    {{ #hasPublicExceptions }}
+    {{ #hasDocumentedExceptions }}
       <li class="section-title"><a href="{{{ href }}}#exceptions">Exceptions</a></li>
-      {{ #publicExceptionsSorted }}
+      {{ #documentedExceptionsSorted }}
         <li>{{{ linkedName }}}</li>
-      {{ /publicExceptionsSorted }}
-    {{ /hasPublicExceptions }}
+      {{ /documentedExceptionsSorted }}
+    {{ /hasDocumentedExceptions }}
   {{ /library }}
 </ol>

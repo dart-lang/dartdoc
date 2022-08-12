@@ -103,13 +103,13 @@ void main() {
           ['--exclude-packages=args'], _testPackageDir, tempDir);
       var results = await dartdoc.generateDocs();
       var p = results.packageGraph;
-      var meta = p.publicPackages.firstWhere((p) => p.name == 'meta');
-      var args = p.publicPackages.firstWhere((p) => p.name == 'args');
-      var useSomethingInAnotherPackage = p.publicLibraries
+      var meta = p.documentedPackages.firstWhere((p) => p.name == 'meta');
+      var args = p.documentedPackages.firstWhere((p) => p.name == 'args');
+      var useSomethingInAnotherPackage = p.documentedLibraries
           .firstWhere((l) => l.name == 'fake')
           .properties
           .firstWhere((p) => p.name == 'useSomethingInAnotherPackage');
-      var useSomethingInTheSdk = p.publicLibraries
+      var useSomethingInTheSdk = p.documentedLibraries
           .firstWhere((l) => l.name == 'fake')
           .properties
           .firstWhere((p) => p.name == 'useSomethingInTheSdk');
@@ -141,9 +141,9 @@ void main() {
         var p = packageGraph.defaultPackage;
         expect(p.name, 'test_package');
         expect(p.packageMeta.getReadmeContents(), isNotNull);
-        // Total number of public libraries in test_package.
+        // Total number of documented libraries in test_package.
         // +2 since we are not manually excluding anything.
-        expect(packageGraph.defaultPackage.publicLibraries,
+        expect(packageGraph.defaultPackage.documentedLibraries,
             hasLength(kTestPackagePublicLibraries + 2));
         expect(packageGraph.localPackages.length, equals(1));
       });
@@ -197,7 +197,7 @@ void main() {
       expect(p.packageMap['sky_engine']!.isSdk, isFalse);
       // Should be true once dart-lang/sdk#32707 is fixed.
       //expect(
-      //    p.publicLibraries,
+      //    p.documentedLibraries,
       //    everyElement((Library l) =>
       //        (l.element as LibraryElement).isInSdk == l.packageMeta.isSdk));
       // Ensure that we actually parsed some source by checking for
@@ -206,7 +206,7 @@ void main() {
           dartPackage.libraries.firstWhere((lib) => lib.name == 'dart:bear');
       expect(
           dartBear.allClasses.map((cls) => cls.name).contains('Bear'), isTrue);
-      expect(dartPackage.publicLibraries, hasLength(3));
+      expect(dartPackage.documentedLibraries, hasLength(3));
     });
 
     test('rel canonical prefix does not include base href', () async {

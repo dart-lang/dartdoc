@@ -39,11 +39,11 @@ class Enum extends InheritingContainer
       declaredFields.where((f) => f is! EnumField && f.isConst);
 
   @override
-  late final Iterable<Field> publicEnumValues =
-      model_utils.filterNonPublic(allFields).whereType<EnumField>();
+  late final Iterable<Field> documentedEnumValues =
+      model_utils.filterNonDocumented(allFields).whereType<EnumField>();
 
   @override
-  bool get hasPublicEnumValues => publicEnumValues.isNotEmpty;
+  bool get hasDocumentedEnumValues => documentedEnumValues.isNotEmpty;
 }
 
 /// A field specific to an enum's values.

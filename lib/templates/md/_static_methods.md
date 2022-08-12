@@ -1,8 +1,8 @@
-{{ #hasPublicStaticMethods }}
+{{ #hasDocumentedStaticMethods }}
 ## Static Methods
 
-{{ #publicStaticMethodsSorted }}
+{{ #documentedStaticMethodsSorted }}
 {{ >callable }}
 
-{{ /publicStaticMethodsSorted }}
-{{ /hasPublicStaticMethods }}
+{{ /documentedStaticMethodsSorted }}
+{{ /hasDocumentedStaticMethods }}

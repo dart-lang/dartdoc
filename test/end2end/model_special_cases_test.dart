@@ -343,7 +343,7 @@ void main() {
     });
 
     test('Verify that SDK libraries are not canonical when missing', () {
-      expect(ginormousPackageGraph.publicPackages, isNotEmpty);
+      expect(ginormousPackageGraph.documentedPackages, isNotEmpty);
     });
 
     test(
@@ -377,9 +377,9 @@ void main() {
         () {
       var IAmAClassWithCategories = ginormousPackageGraph.localPackages
           .firstWhere((Package p) => p.name == 'test_package_imported')
-          .publicLibraries
+          .documentedLibraries
           .firstWhere((Library l) => l.name == 'categoriesExported')
-          .publicClasses
+          .documentedClasses
           .firstWhere((Class c) => c.name == 'IAmAClassWithCategories');
       expect(IAmAClassWithCategories.hasCategoryNames, isTrue);
       expect(IAmAClassWithCategories.categories, hasLength(1));
@@ -393,9 +393,9 @@ void main() {
     test('Verify that reexported classes pick up categories', () {
       var IAmAClassWithCategoriesReexport = ginormousPackageGraph.localPackages
           .firstWhere((Package p) => p.name == 'test_package')
-          .publicLibraries
+          .documentedLibraries
           .firstWhere((Library l) => l.name == 'fake')
-          .publicClasses
+          .documentedClasses
           .firstWhere((Class c) => c.name == 'IAmAClassWithCategories');
       expect(IAmAClassWithCategoriesReexport.hasCategoryNames, isTrue);
       expect(IAmAClassWithCategoriesReexport.categories, hasLength(1));
@@ -410,11 +410,11 @@ void main() {
     test('Verify that multiple categories work correctly', () {
       var fakeLibrary = ginormousPackageGraph.localPackages
           .firstWhere((Package p) => p.name == 'test_package')
-          .publicLibraries
+          .documentedLibraries
           .firstWhere((Library l) => l.name == 'fake');
-      var BaseForDocComments = fakeLibrary.publicClasses
+      var BaseForDocComments = fakeLibrary.documentedClasses
           .firstWhere((Class c) => c.name == 'BaseForDocComments');
-      var SubForDocComments = fakeLibrary.publicClasses
+      var SubForDocComments = fakeLibrary.documentedClasses
           .firstWhere((Class c) => c.name == 'SubForDocComments');
       expect(BaseForDocComments.hasCategoryNames, isTrue);
       // Display both, with the correct order and display name.
@@ -445,7 +445,7 @@ void main() {
           sdkAsPackageGraph.libraries.singleWhere((l) => l.name == 'dart:html');
       var eventTarget =
           htmlLibrary.allClasses.singleWhere((c) => c.name == 'EventTarget');
-      var hashCode = eventTarget.publicInstanceFields
+      var hashCode = eventTarget.documentedInstanceFields
           .singleWhere((f) => f.name == 'hashCode');
       var objectModelElement =
           sdkAsPackageGraph.specialClasses[SpecialClass.object];
@@ -459,7 +459,7 @@ void main() {
           equals('${htmlBasePlaceholder}dart-core/Object/hashCode.html'));
       expect(hashCode.canonicalEnclosingContainer, equals(objectModelElement));
       expect(
-          eventTarget.publicSuperChainReversed
+          eventTarget.documentedSuperChainReversed
               .any((et) => et.name == 'Interceptor'),
           isFalse);
     });

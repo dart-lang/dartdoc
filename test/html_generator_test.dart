@@ -112,7 +112,7 @@ void main() {
 
       var expectedPath = pathContext.join('a', 'a-library.html');
       expect(
-          packageGraph.localPublicLibraries,
+          packageGraph.localDocumentedLibraries,
           anyElement((Library l) => packageGraph.packageWarningCounter
               .hasWarning(l, PackageWarning.duplicateFile, expectedPath)));
     }, onPlatform: {'windows': Skip('Test does not work on Windows (#2446)')});

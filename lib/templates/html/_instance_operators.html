@@ -1,12 +1,12 @@
-{{ #hasPublicInstanceOperators }}
+{{ #hasDocumentedInstanceOperators }}
   <section
-      class="summary offset-anchor{{ #publicInheritedInstanceOperators }} inherited{{ /publicInheritedInstanceOperators }}"
+      class="summary offset-anchor{{ #documentedInheritedInstanceOperators }} inherited{{ /documentedInheritedInstanceOperators }}"
       id="operators">
     <h2>Operators</h2>
     <dl class="callables">
-      {{ #publicInstanceOperatorsSorted }}
+      {{ #documentedInstanceOperatorsSorted }}
         {{ >callable }}
-      {{ /publicInstanceOperatorsSorted }}
+      {{ /documentedInstanceOperatorsSorted }}
     </dl>
   </section>
-{{ /hasPublicInstanceOperators }}
+{{ /hasDocumentedInstanceOperators }}

@@ -14,17 +14,17 @@
 ## {{name}}
 {{/isFirstPackage}}
 
-{{#defaultCategory.publicLibrariesSorted}}
+{{#defaultCategory.documentedLibrariesSorted}}
 {{>library}}
-{{/defaultCategory.publicLibrariesSorted}}
+{{/defaultCategory.documentedLibrariesSorted}}
 
-{{#categoriesWithPublicLibraries}}
+{{#categoriesWithDocumentedLibraries}}
 ### Category {{{categoryLabel}}}
 
-{{#publicLibrariesSorted}}
+{{#documentedLibrariesSorted}}
 {{>library}}
-{{/publicLibrariesSorted}}
-{{/categoriesWithPublicLibraries}}
+{{/documentedLibrariesSorted}}
+{{/categoriesWithDocumentedLibraries}}
 {{/localPackages}}
 
 {{>footer}}

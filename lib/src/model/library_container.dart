@@ -16,13 +16,13 @@ abstract class LibraryContainer
 
   PackageGraph get packageGraph;
 
-  Iterable<Library> get publicLibraries =>
-      model_utils.filterNonPublic(libraries);
+  Iterable<Library> get documentedLibraries =>
+      model_utils.filterNonDocumented(libraries);
 
-  late final List<Library> publicLibrariesSorted =
-      publicLibraries.sorted(byName);
+  late final List<Library> documentedLibrariesSorted =
+      documentedLibraries.sorted(byName);
 
-  bool get hasPublicLibraries => publicLibraries.isNotEmpty;
+  bool get hasDocumentedLibraries => documentedLibraries.isNotEmpty;
 
   /// The name of the container or object that this LibraryContainer is a part
   /// of.  Used for sorting in [containerOrder].

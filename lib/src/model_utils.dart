@@ -61,11 +61,6 @@ Iterable<T> filterHasCanonical<T extends ModelElement>(
 Iterable<T> filterNonDocumented<T extends Documentable>(Iterable<T> items) =>
     items.where((me) => me.isDocumented);
 
-/// Returns an iterable containing only public elements from [privacyItems].
-Iterable<T> filterNonPublic<T extends Privacy>(Iterable<T> privacyItems) {
-  return privacyItems.where((me) => me.isPublic);
-}
-
 /// Finds canonical classes for all classes in the iterable, if possible.
 /// If a canonical class can not be found, returns the original class.
 Iterable<InheritingContainer> findCanonicalFor(

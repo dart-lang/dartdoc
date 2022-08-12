@@ -2,92 +2,92 @@
   {{ #container }}
 
     {{ #isClassOrEnum }}
-      {{ #hasPublicConstructors }}
+      {{ #hasDocumentedConstructors }}
         <li class="section-title"><a href="{{{ href }}}#constructors">Constructors</a></li>
-        {{ #publicConstructorsSorted }}
+        {{ #documentedConstructorsSorted }}
           <li><a{{ #isDeprecated }} class="deprecated"{{ /isDeprecated }} href="{{{ href }}}">{{ shortName }}</a></li>
-        {{ /publicConstructorsSorted }}
-      {{ /hasPublicConstructors }}
+        {{ /documentedConstructorsSorted }}
+      {{ /hasDocumentedConstructors }}
     {{ /isClassOrEnum }}
 
     {{ #isEnum }}
-      {{ #hasPublicEnumValues }}
+      {{ #hasDocumentedEnumValues }}
         <li class="section-title"><a href="{{{ href }}}#values">Values</a></li>
-        {{ #publicEnumValues }}
+        {{ #documentedEnumValues }}
           <li>{{{ linkedName }}}</li>
-        {{ /publicEnumValues }}
-      {{ /hasPublicEnumValues }}
+        {{ /documentedEnumValues }}
+      {{ /hasDocumentedEnumValues }}
     {{ /isEnum }}
 
     {{ #isClassOrEnum }}
-      {{ #hasPublicInstanceFields }}
-        <li class="section-title{{ #publicInheritedInstanceFields }} inherited{{ /publicInheritedInstanceFields }}">
+      {{ #hasDocumentedInstanceFields }}
+        <li class="section-title{{ #documentedInheritedInstanceFields }} inherited{{ /documentedInheritedInstanceFields }}">
           <a href="{{{ href }}}#instance-properties">Properties</a>
         </li>
-        {{ #publicInstanceFieldsSorted }}
+        {{ #documentedInstanceFieldsSorted }}
           <li{{ #isInherited }} class="inherited"{{ /isInherited }}>{{{ linkedName }}}</li>
-        {{ /publicInstanceFieldsSorted }}
-      {{ /hasPublicInstanceFields }}
+        {{ /documentedInstanceFieldsSorted }}
+      {{ /hasDocumentedInstanceFields }}
 
-      {{ #hasPublicInstanceMethods }}
-        <li class="section-title{{ #publicInheritedInstanceMethods }} inherited{{ /publicInheritedInstanceMethods }}"><a href="{{{ href }}}#instance-methods">Methods</a></li>
-        {{ #publicInstanceMethodsSorted }}
+      {{ #hasDocumentedInstanceMethods }}
+        <li class="section-title{{ #documentedInheritedInstanceMethods }} inherited{{ /documentedInheritedInstanceMethods }}"><a href="{{{ href }}}#instance-methods">Methods</a></li>
+        {{ #documentedInstanceMethodsSorted }}
           <li{{ #isInherited }} class="inherited"{{ /isInherited }}>{{{ linkedName }}}</li>
-        {{ /publicInstanceMethodsSorted }}
-      {{ /hasPublicInstanceMethods }}
+        {{ /documentedInstanceMethodsSorted }}
+      {{ /hasDocumentedInstanceMethods }}
 
-      {{ #hasPublicInstanceOperators }}
-        <li class="section-title{{ #publicInheritedInstanceOperators }} inherited{{ /publicInheritedInstanceOperators }}"><a href="{{{ href }}}#operators">Operators</a></li>
-        {{ #publicInstanceOperatorsSorted }}
+      {{ #hasDocumentedInstanceOperators }}
+        <li class="section-title{{ #documentedInheritedInstanceOperators }} inherited{{ /documentedInheritedInstanceOperators }}"><a href="{{{ href }}}#operators">Operators</a></li>
+        {{ #documentedInstanceOperatorsSorted }}
           <li{{ #isInherited }} class="inherited"{{ /isInherited }}>{{{ linkedName }}}</li>
-        {{ /publicInstanceOperatorsSorted }}
-      {{ /hasPublicInstanceOperators }}
+        {{ /documentedInstanceOperatorsSorted }}
+      {{ /hasDocumentedInstanceOperators }}
     {{ /isClassOrEnum }}
 
     {{ #isExtension }}
-      {{ #hasPublicInstanceFields }}
+      {{ #hasDocumentedInstanceFields }}
         <li class="section-title"> <a href="{{{ href }}}#instance-properties">Properties</a></li>
-        {{ #publicInstanceFieldsSorted }}
+        {{ #documentedInstanceFieldsSorted }}
           <li>{{{ linkedName }}}</li>
-        {{ /publicInstanceFieldsSorted }}
-      {{ /hasPublicInstanceFields }}
+        {{ /documentedInstanceFieldsSorted }}
+      {{ /hasDocumentedInstanceFields }}
 
-      {{ #hasPublicInstanceMethods }}
+      {{ #hasDocumentedInstanceMethods }}
         <li class="section-title"><a href="{{{ href }}}#instance-methods">Methods</a></li>
-        {{ #publicInstanceMethodsSorted }}
+        {{ #documentedInstanceMethodsSorted }}
           <li>{{{ linkedName }}}</li>
-        {{ /publicInstanceMethodsSorted }}
-      {{ /hasPublicInstanceMethods }}
+        {{ /documentedInstanceMethodsSorted }}
+      {{ /hasDocumentedInstanceMethods }}
 
-      {{ #hasPublicInstanceOperators }}
+      {{ #hasDocumentedInstanceOperators }}
         <li class="section-title"><a href="{{{ href }}}#operators">Operators</a></li>
-        {{ #publicInstanceOperatorsSorted }}
+        {{ #documentedInstanceOperatorsSorted }}
           <li>{{{ linkedName }}}</li>
-        {{ /publicInstanceOperatorsSorted }}
-      {{ /hasPublicInstanceOperators }}
+        {{ /documentedInstanceOperatorsSorted }}
+      {{ /hasDocumentedInstanceOperators }}
     {{ /isExtension }}
 
     {{ #isClassOrEnumOrExtension }}
-      {{ #hasPublicVariableStaticFields }}
+      {{ #hasDocumentedVariableStaticFields }}
         <li class="section-title"><a href="{{{ href }}}#static-properties">Static properties</a></li>
-        {{ #publicVariableStaticFieldsSorted }}
+        {{ #documentedVariableStaticFieldsSorted }}
           <li>{{{ linkedName }}}</li>
-        {{ /publicVariableStaticFieldsSorted }}
-      {{ /hasPublicVariableStaticFields }}
+        {{ /documentedVariableStaticFieldsSorted }}
+      {{ /hasDocumentedVariableStaticFields }}
 
-      {{ #hasPublicStaticMethods }}
+      {{ #hasDocumentedStaticMethods }}
         <li class="section-title"><a href="{{{ href }}}#static-methods">Static methods</a></li>
-        {{ #publicStaticMethodsSorted }}
+        {{ #documentedStaticMethodsSorted }}
           <li>{{{ linkedName }}}</li>
-        {{ /publicStaticMethodsSorted }}
-      {{ /hasPublicStaticMethods }}
+        {{ /documentedStaticMethodsSorted }}
+      {{ /hasDocumentedStaticMethods }}
 
-      {{ #hasPublicConstantFields }}
+      {{ #hasDocumentedConstantFields }}
         <li class="section-title"><a href="{{{ href }}}#constants">Constants</a></li>
-        {{ #publicConstantFieldsSorted }}
+        {{ #documentedConstantFieldsSorted }}
           <li>{{{ linkedName }}}</li>
-        {{ /publicConstantFieldsSorted }}
-      {{ /hasPublicConstantFields }}
+        {{ /documentedConstantFieldsSorted }}
+      {{ /hasDocumentedConstantFields }}
     {{ /isClassOrEnumOrExtension }}
   {{ /container }}
 </ol>

@@ -69,4 +69,8 @@ class Class extends InheritingContainer
 
   @override
   String get relationshipsClass => 'clazz-relationships';
+
+  /// Classes don't have to be canonical to be documented. Eg, exported classes from an implementation library.
+  @override
+  bool get isDocumented => config.documentPrivate || isPublic;
 }

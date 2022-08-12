@@ -1,7 +1,7 @@
-{{#hasPublicInterfaces}}
+{{#hasDocumentedInterfaces}}
 **Implemented types**
 
-{{#publicInterfaces}}
+{{#documentedInterfaces}}
 - {{{linkedName}}}
-{{/publicInterfaces}}
-{{/hasPublicInterfaces}}
+{{/documentedInterfaces}}
+{{/hasDocumentedInterfaces}}

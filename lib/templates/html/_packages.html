@@ -12,14 +12,14 @@
     {{^isFirstPackage}}
       <li class="section-title">{{name}}</li>
     {{/isFirstPackage}}
-    {{#defaultCategory.publicLibrariesSorted}}
+    {{#defaultCategory.documentedLibrariesSorted}}
       <li>{{{linkedName}}}</li>
-    {{/defaultCategory.publicLibrariesSorted}}
-    {{#categoriesWithPublicLibraries}}
+    {{/defaultCategory.documentedLibrariesSorted}}
+    {{#categoriesWithDocumentedLibraries}}
       <li class="section-subtitle">{{name}}</li>
-      {{#publicLibrariesSorted}}
+      {{#documentedLibrariesSorted}}
         <li class="section-subitem">{{{linkedName}}}</li>
-      {{/publicLibrariesSorted}}
-    {{/categoriesWithPublicLibraries}}
+      {{/documentedLibrariesSorted}}
+    {{/categoriesWithDocumentedLibraries}}
   {{/localPackages}}
 </ol>

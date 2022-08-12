@@ -20,23 +20,23 @@
 
 {{ >constructors }}
 
-{{ #hasPublicEnumValues }}
+{{ #hasDocumentedEnumValues }}
 ## Values
 
-{{ #publicEnumValues }}
+{{ #documentedEnumValues }}
 {{ >constant }}
 
-{{ /publicEnumValues }}
-{{ /hasPublicEnumValues }}
+{{ /documentedEnumValues }}
+{{ /hasDocumentedEnumValues }}
 
-{{ #hasPublicInstanceFields }}
+{{ #hasDocumentedInstanceFields }}
 ## Properties
 
-{{ #publicInstanceFieldsSorted }}
+{{ #documentedInstanceFieldsSorted }}
 {{ >property }}
 
-{{ /publicInstanceFieldsSorted }}
-{{ /hasPublicInstanceFields }}
+{{ /documentedInstanceFieldsSorted }}
+{{ /hasDocumentedInstanceFields }}
 
 {{ >instance_methods }}
 
