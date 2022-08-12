@@ -15830,6 +15830,7 @@ const _invisibleGetters = {
     'alias',
     'displayName',
     'element',
+    'element2',
     'hashCode',
     'isBottom',
     'isDartAsyncFuture',
