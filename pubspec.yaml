@@ -16,7 +16,7 @@ dependencies:
   glob: ^2.0.1
   html: ^0.15.0
   logging: ^1.0.2
-  markdown: ^5.0.0
+  markdown: ">=5.0.0 <7.0.0"
   meta: ^1.7.0
   package_config: ^2.0.2
   path: ^1.8.0
