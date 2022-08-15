@@ -217,7 +217,7 @@ void initializeSearch(
   void categorize(Element suggestionLibrary, Element suggestion) {
     var input = suggestionLibrary.innerHtml;
 
-    if(input == null){
+    if (input == null) {
       return;
     }
 
