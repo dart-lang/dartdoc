@@ -56,7 +56,7 @@ String generateSearchIndexJson(
         'overriddenDepth': indexable.overriddenDepth,
         if (indexable is ModelElement) 'packageName': indexable.package.name,
         if (indexable is ModelElement)
-          'desc': removeHTMLTags(indexable.oneLineDoc),
+          'desc': removeHtmlTags(indexable.oneLineDoc),
         if (indexable is EnclosedElement)
           'enclosedBy': {
             'name': indexable.enclosingElement.name,
