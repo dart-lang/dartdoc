@@ -38,7 +38,7 @@ String removeHTMLTags(String? input) {
   if (input == null) {
     return '';
   }
-  RegExp htmlTag = RegExp(r"<[^>]*>", multiLine: true, caseSensitive: true);
+  RegExp htmlTag = RegExp(r'<[^>]*>', multiLine: true, caseSensitive: true);
   String parsedString = input.replaceAll(htmlTag, '');
   return parsedString;
 }
