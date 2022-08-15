@@ -96,7 +96,6 @@ List<IndexItem> findMatches(List<IndexItem> index, String query) {
   for (var element in index) {
     void score(int value) {
       value -= (element.overriddenDepth ?? 0) * 10;
-      print(element.type);
       var weightFactor = weights[element.type] ?? 4;
       allMatches.add(SearchMatch(element, value / weightFactor));
     }
@@ -141,7 +140,7 @@ List<IndexItem> findMatches(List<IndexItem> index, String query) {
 
 const minLength = 1;
 var suggestionLimit = 10;
-var allResults = 0;
+var suggestionLength = 0;
 const HtmlEscape htmlEscape = HtmlEscape();
 
 void initializeSearch(
@@ -193,13 +192,12 @@ void initializeSearch(
   listBox.style.display = 'none';
   listBox.classes.add('tt-menu');
 
-  // Element use in listbox to inform the functionality of hitting enter in search box
+  // Element use in listbox to inform the functionality of hitting enter in search box.
   var moreResults = document.createElement('div');
   moreResults.classes.add('enter-search-message');
-  //moreResults.innerHtml = 'Press "Enter" key to see more results if available';
   listBox.append(moreResults);
 
-  // Element that contains the search suggestions in a new format
+  // Element that contains the search suggestions in a new format.
   var searchResults = document.createElement('div');
   searchResults.classes.add('tt-search-results');
   listBox.append(searchResults);
@@ -215,23 +213,28 @@ void initializeSearch(
 
   var categoriesMap = <String, Element>{};
 
-  // Function that takes the name of the library/class the search suggestion belongs to and puts in the map
-  void categories(Element suggestionLibrary, Element suggestion) {
+  // Function that takes the name of the library/class the search suggestion belongs to and puts in the map.
+  void categorize(Element suggestionLibrary, Element suggestion) {
     var input = suggestionLibrary.innerHtml;
+
+    if(input == null){
+      return;
+    }
+
     if (categoriesMap[input] != null) {
       var element = categoriesMap[input];
       if (element != null) {
         element.append(suggestion);
-        categoriesMap.update(input!, (value) => element);
+        categoriesMap.update(input, (value) => element);
       }
     } else {
       var insert = suggestionLibrary;
       insert.append(suggestion);
-      categoriesMap[input!] = insert;
+      categoriesMap[input] = insert;
     }
   }
 
-  // Using the name of the library/class creates the Element for it
+  // Using the name of the library/class creates the Element for it.
   Element createCategory(String lib, String href) {
     var categoryTitle = document.createElement('a');
     categoryTitle.setAttribute('href', href);
@@ -251,7 +254,7 @@ void initializeSearch(
         highlight('${match.name} ${match.type.toLowerCase()}', query);
     suggestion.append(suggestionTitle);
 
-    // The new one line description use in the search suggestions
+    // The new one line description use in the search suggestions.
     if (match.desc != '') {
       var inputDesc = document.createElement('div');
       inputDesc.classes.add('one-line-description');
@@ -277,7 +280,7 @@ void initializeSearch(
     if (match.enclosedBy != null) {
       var category = '${match.enclosedBy!.name} ${match.enclosedBy!.type}';
       var toMap = createCategory(category, match.enclosedBy!.href);
-      categories(toMap, suggestion);
+      categorize(toMap, suggestion);
     }
     return suggestion;
   }
@@ -302,7 +305,7 @@ void initializeSearch(
     }
   }
 
-  // Function that iterates through the map and appends it to the given HTML element
+  // Function that iterates through the map and appends it to the given HTML element.
   void iterateCategoriesMap(Element e) {
     for (var k in categoriesMap.keys) {
       if (categoriesMap[k] != null) {
@@ -312,7 +315,7 @@ void initializeSearch(
     }
   }
 
-  // Function that creates the content displayed in the main-content element
+  // Function that creates the content displayed in the main-content element.
   void searchResultPage(String input) {
     var mainContent = document.getElementById('dartdoc-main-content');
     mainContent?.text = '';
@@ -327,7 +330,7 @@ void initializeSearch(
 
     var summary = document.createElement('div');
     summary.classes.add('search-summary');
-    summary.innerHtml = '$allResults results for "$input"';
+    summary.innerHtml = '$suggestionLength results for "$input"';
     mainContent?.append(summary);
 
     if (categoriesMap.isNotEmpty) {
@@ -347,9 +350,9 @@ void initializeSearch(
   }
 
   void enterMessage() {
-    if (allResults > 10) {
+    if (suggestionLength > 10) {
       moreResults.innerHtml =
-          'Press "Enter" key to see all $allResults results';
+          'Press "Enter" key to see all $suggestionLength results';
     } else {
       moreResults.innerHtml = '';
     }
@@ -393,9 +396,8 @@ void initializeSearch(
     }
 
     var suggestions = findMatches(index, newValue);
-    allResults = suggestions.length;
+    suggestionLength = suggestions.length;
     if (suggestions.length > suggestionLimit) {
-      // moreResults.innerHtml = 'PressK "Enter" key to see all ${suggestions.length} results';
       suggestions = suggestions.sublist(0, suggestionLimit);
     }
 
@@ -439,11 +441,11 @@ void initializeSearch(
         }
         return;
       }
-      // If there no search suggestion selected then change the window location to the search.html
+      // If there no search suggestion selected then change the window location to the search.html.
       if (selectedElement == null ||
           listBox.getAttribute('aria-expanded') == 'true' ||
           suggestionElements.isEmpty) {
-        // Saves the input in the search to be used for creating the query parameter
+        // Saves the input in the search to be used for creating the query parameter.
         var input = htmlEscape.convert(actualValue);
         var relativePath = '';
         if (document
@@ -546,11 +548,11 @@ void initializeSearch(
     event.preventDefault();
   });
 
-  // Verifying the href to check if the search html was called to generate the main content elements that are going to be displayed
+  // Verifying the href to check if the search html was called to generate the main content elements that are going to be displayed.
   if (window.location.href.contains('search.html')) {
     var input = uri.queryParameters['query'];
     input = htmlEscape.convert(input!);
-    suggestionLimit = allResults;
+    suggestionLimit = suggestionLength;
     handle(input);
     searchResultPage(input);
     hideSuggestions();

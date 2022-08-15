@@ -130,16 +130,16 @@ input:checked + .slider:before {
   padding-top: 6px;
 }
 
-.toggle{
+.toggle {
   padding-bottom: 4px;
 }
 
-.moon{
+.moon {
   padding-right: 30px;
   padding-left: 5px;
 }
 
-.sun{
+.sun {
   padding-right: 5px;
 }
 
@@ -832,7 +832,7 @@ td {
   color: var(--main-h-text);
 }
 
-ol.breadcrumbs li a{
+ol.breadcrumbs li a {
   color: var(--main-hyperlinks-color);
 }
 
@@ -1120,7 +1120,7 @@ button {
 }
 
 .navbar-right .tt-menu {
-  right:0;
+  right: 0;
   left: inherit !important;
   width: 480px;
   max-height: 280px;
@@ -1134,7 +1134,6 @@ button {
   z-index: 100;
   font-size: 14px;
   margin: 0;
-  padding: 8px 0;
   background-color: var(--main-bg-color);
   border: 1px solid #ccc;
   border: 1px solid var(--main-header-color);
@@ -1156,16 +1155,16 @@ button {
 }
 
 .typeahead, .tt-query, .tt-hint {
-  padding:17px;
-  padding-left:50px;
-  width:422px;
+  padding: 17px;
+  padding-left: 50px;
+  width: 422px;
   height: 20px;
-  border:1px solid var(--main-header-color);
-  font-size:13px;
+  border: 1px solid var(--main-header-color);
+  font-size: 13px;
   background-image: url('https://img.icons8.com/search');
-  background-repeat:no-repeat;
-  background-position:4%;
-  outline:0;
+  background-repeat: no-repeat;
+  background-position: 4%;
+  outline: 0;
   background-size: 16px;
 }
 
@@ -1215,18 +1214,17 @@ a.tt-category-title {
 
 .tt-category-title {
   font-size: 14px;
-  margin-right:10px;
   margin-left: 10px;
   margin-bottom: 0px;
-  margin-top:15px;
+  margin-top: 15px;
 }
 
 .tt-suggestion-title {
   font-size: 16px;
-  margin-right:10px;
+  margin-right: 10px;
   margin-left: 10px;
   margin-bottom: 0px;
-  margin-top:4px;
+  margin-top: 4px;
 }
 
 .temp-box {
@@ -1235,16 +1233,15 @@ a.tt-category-title {
 
 @media screen and (max-width: 840px) {
  .typeahead, .tt-query, .tt-hint {
-   padding:17px;
+   padding: 17px;
    padding-left: 33px;
    width: 240px;
    height: 17px;
-   border:1px solid #f5f5f5;
-   font-size:13px;
+   border: 1px solid #f5f5f5;
+   font-size: 13px;
    background-image: url('https://img.icons8.com/search');
-   background-repeat:
-   no-repeat;
-   background-position:4%;
+   background-repeat: no-repeat;
+   background-position: 4%;
    outline:0;
    background-size: 16px;
    margin: 10px;
@@ -1255,29 +1252,29 @@ a.tt-category-title {
     padding-left: 0px;
   }
 
-  .temp-box{
+  .temp-box {
     width: 520px;
   }
 }
 
 @media screen and (max-width: 400px) {
-  .temp-box{
+  .temp-box {
     width: 100px;
   }
 }
 
 @media screen and (max-width: 320px) {
-  .temp-box{
+  .temp-box {
     width: 0px;
   }
 
   #sidenav-left-toggle {
-   margin-right:10px;
-   margin-left:20px;
+   margin-right: 10px;
+   margin-left: 20px;
   }
 
   .self-name {
-   margin-right:10px;
+   margin-right: 10px;
   }
 }
 
@@ -1286,7 +1283,7 @@ a.tt-category-title {
   margin-right:10px;
   margin-left: 10px;
   margin-bottom: 3px;
-  margin-top:2px;
+  margin-top: 2px;
 }
 
 .search-from-lib {
@@ -1330,10 +1327,10 @@ li.inherited a {
 
 @media print {
   .subnav, .sidebar {
-    display:none;
+    display: none;
   }
 
   a[href]:after {
-   content:"" !important;
+   content: "" !important;
   }
 }
