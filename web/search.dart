@@ -138,8 +138,8 @@ List<IndexItem> findMatches(List<IndexItem> index, String query) {
 }
 
 const minLength = 1;
-var suggestionLimit = 10;
-var suggestionLength = 0;
+int suggestionLimit = 10;
+int suggestionLength = 0;
 const HtmlEscape htmlEscape = HtmlEscape();
 
 void initializeSearch(
@@ -459,7 +459,7 @@ void initializeSearch(
               document.querySelector('body')!.getAttribute('data-base-href')!;
         }
         var href = Uri.parse(window.location.href);
-        var base = href.resolve(relativePath!);
+        var base = href.resolve(relativePath);
         var search = Uri.parse('${base}search.html');
         search = search.replace(queryParameters: {'query': input});
         window.location.assign(search.toString());
