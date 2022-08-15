@@ -1143,7 +1143,6 @@ button {
 }
 
 .tt-suggestion {
-  padding: 3px 20px;
   color: var(--main-text-color);
   margin-top: 5px;
   margin-bottom: 10px;
