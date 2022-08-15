@@ -212,7 +212,7 @@ void initializeSearch(
 
   var categoriesMap = <String, Element>{};
 
-  // Function that takes the name of the library/class the search suggestion belongs to and puts in the map.
+  // Maps a suggestions library to the  that takes the name of the library/class the search suggestion belongs to and puts in the map.
   void categorize(Element suggestionLibrary, Element suggestion) {
     var input = suggestionLibrary.innerHtml;
 

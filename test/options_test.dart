@@ -545,6 +545,7 @@ class Foo {}
           d.file('property.html', 'EMPTY'),
           d.file('top_level_property.html', 'EMPTY'),
           d.file('typedef.html', 'EMPTY'),
+          d.file('search.html', 'EMPTY'),
         ]),
       ],
       resourceProvider: resourceProvider,
