@@ -34,7 +34,7 @@ String generateCategoryJson(Iterable<Categorization> categories, bool pretty) {
   return encoder.convert(indexItems.toList());
 }
 
-String removeHTMLTags(String? input) {
+String removeHtmlTags(String? input) {
   if (input == null) {
     return '';
   }
