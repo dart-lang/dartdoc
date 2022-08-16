@@ -232,20 +232,21 @@ void initializeSearch(
   // Using the name of the library/class creates the Element for it.
   Element createCategory(String lib, String href) {
     var categoryTitle = document.createElement('a')
-    ..setAttribute('href', href)
-    ..classes.add('tt-category-title')
-    ..innerHtml = lib;
+      ..setAttribute('href', href)
+      ..classes.add('tt-category-title')
+      ..innerHtml = lib;
     return categoryTitle;
   }
 
   Element createSuggestion(String query, IndexItem match) {
     var suggestion = document.createElement('div')
-    ..setAttribute('data-href', match.href ?? '')
-    ..classes.add('tt-suggestion');
+      ..setAttribute('data-href', match.href ?? '')
+      ..classes.add('tt-suggestion');
 
     var suggestionTitle = document.createElement('div')
       ..classes.add('tt-suggestion-title')
-      ..innerHtml = highlight('${match.name} ${match.type.toLowerCase()}', query);
+      ..innerHtml =
+          highlight('${match.name} ${match.type.toLowerCase()}', query);
     suggestion.append(suggestionTitle);
 
     // The new one line description to use in the search suggestions.
@@ -316,11 +317,10 @@ void initializeSearch(
     mainContent.text = '';
 
     var section = document.createElement('section')
-    ..classes.add('search-summary');
+      ..classes.add('search-summary');
     mainContent.append(section);
 
-    var title = document.createElement('h2')
-    ..innerHtml = 'Search Results';
+    var title = document.createElement('h2')..innerHtml = 'Search Results';
     mainContent.append(title);
 
     var summary = document.createElement('div')
@@ -332,9 +332,9 @@ void initializeSearch(
       iterateCategoriesMap(mainContent);
     } else {
       var noResults = document.createElement('div')
-      ..classes.add('search-summary')
-      ..innerHtml =
-          'There was not a match for "$input". Please try another search.';
+        ..classes.add('search-summary')
+        ..innerHtml =
+            'There was not a match for "$input". Please try another search.';
       mainContent.append(noResults);
     }
   }
