@@ -162,7 +162,6 @@ void initializeSearch(
     }
   });
 
-  var body = document.querySelector('body');
   // Prepare elements
   var wrapper = document.createElement('div');
   wrapper.classes.add('tt-wrapper');
@@ -224,7 +223,7 @@ void initializeSearch(
     var element = categoriesMap[input];
     if (element != null) {
       element.append(suggestion);
-      categoriesMap.update(input, (value) => element);
+      categoriesMap[input] = element;
     } else {
       suggestionLibrary.append(suggestion);
       categoriesMap[input] = suggestionLibrary;
@@ -256,11 +255,9 @@ void initializeSearch(
       var inputDesc = document.createElement('div');
       inputDesc.classes.add('one-line-description');
       var innerHtml = '';
-      if (match.desc != null) {
-        innerHtml = match.desc.toString();
-        inputDesc.innerHtml = highlight(innerHtml, query);
-        suggestion.append(inputDesc);
-      }
+      innerHtml = match.desc.toString();
+      inputDesc.innerHtml = highlight(innerHtml, query);
+      suggestion.append(inputDesc);
     }
 
     suggestion.addEventListener('mousedown', (event) {
@@ -276,8 +273,7 @@ void initializeSearch(
     var suggestionEnclose = match.enclosedBy;
     if (suggestionEnclose != null) {
       var category = '${suggestionEnclose.name} ${suggestionEnclose.type}';
-      var toMap = createCategory(category, suggestionEnclose.href);
-      categorize(toMap, suggestion);
+      categorize(createCategory(category, suggestionEnclose.href), suggestion);
     }
     return suggestion;
   }
@@ -306,10 +302,8 @@ void initializeSearch(
   // The received Element is the one used for search results page or dropdown list in the search bar
   void iterateCategoriesMap(Element e) {
     categoriesMap.forEach((keys, values) {
-      if (categoriesMap[keys] != null) {
-        var value = categoriesMap[keys];
-        e.append(value!);
-      }
+      var value = categoriesMap[keys];
+      e.append(value!);
     });
   }
 
@@ -320,6 +314,7 @@ void initializeSearch(
     if (mainContent == null) {
       return;
     }
+
     mainContent.text = '';
 
     var section = document.createElement('section');
@@ -330,9 +325,9 @@ void initializeSearch(
     title.innerHtml = 'Search Results';
     mainContent.append(title);
 
-    var summary = document.createElement('div');
-    summary.classes.add('search-summary');
-    summary.innerHtml = '$suggestionLength results for "$input"';
+    var summary = document.createElement('div')
+      ..classes.add('search-summary')
+      ..innerHtml = '$suggestionLength results for "$input"';
     mainContent.append(summary);
 
     if (categoriesMap.isNotEmpty) {
@@ -352,12 +347,9 @@ void initializeSearch(
   }
 
   void enterMessage() {
-    if (suggestionLength > 10) {
-      moreResults.innerHtml =
-          'Press "Enter" key to see all $suggestionLength results';
-    } else {
-      moreResults.innerHtml = '';
-    }
+    moreResults.innerHtml = suggestionLength > 10
+        ? 'Press "Enter" key to see all $suggestionLength results'
+        : '';
   }
 
   void updateSuggestions(String query, List<IndexItem> suggestions) {
@@ -434,6 +426,8 @@ void initializeSearch(
 
     event = event as KeyboardEvent;
 
+    var body = document.querySelector('body');
+
     if (event.code == 'Enter') {
       if (selectedElement != null) {
         var selectingElement = selectedElement ?? 0;
@@ -443,7 +437,7 @@ void initializeSearch(
         }
         return;
       }
-      // If there are no search suggestion selected then change the window location to the search.html.
+      // If there are no search suggestions selected then change the window location to the search.html.
       if (selectedElement == null ||
           listBox.getAttribute('aria-expanded') == 'true' ||
           suggestionElements.isEmpty) {
@@ -456,10 +450,9 @@ void initializeSearch(
         } else {
           relativePath = body!.getAttribute('data-base-href')!;
         }
-        var href = Uri.parse(window.location.href);
-        var base = href.resolve(relativePath);
-        var search = Uri.parse('${base}search.html');
-        search = search.replace(queryParameters: {'query': input});
+        var href = Uri.parse(window.location.href).resolve(relativePath);
+        var search = Uri.parse('${href}search.html')
+            .replace(queryParameters: {'query': input});
         window.location.assign(search.toString());
       }
     }
@@ -548,7 +541,10 @@ void initializeSearch(
   // Verifying the href to check if the search html was called to generate the main content elements that are going to be displayed.
   if (window.location.href.contains('search.html')) {
     var input = uri.queryParameters['query'];
-    input = htmlEscape.convert(input!);
+    if (input == null) {
+      return;
+    }
+    input = htmlEscape.convert(input);
     suggestionLimit = suggestionLength;
     handle(input);
     searchResultPage(input);
