@@ -223,7 +223,6 @@ void initializeSearch(
     var element = categoriesMap[input];
     if (element != null) {
       element.append(suggestion);
-      categoriesMap[input] = element;
     } else {
       suggestionLibrary.append(suggestion);
       categoriesMap[input] = suggestionLibrary;
@@ -232,22 +231,21 @@ void initializeSearch(
 
   // Using the name of the library/class creates the Element for it.
   Element createCategory(String lib, String href) {
-    var categoryTitle = document.createElement('a');
-    categoryTitle.setAttribute('href', href);
-    categoryTitle.classes.add('tt-category-title');
-    categoryTitle.innerHtml = lib;
+    var categoryTitle = document.createElement('a')
+    ..setAttribute('href', href)
+    ..classes.add('tt-category-title')
+    ..innerHtml = lib;
     return categoryTitle;
   }
 
   Element createSuggestion(String query, IndexItem match) {
-    var suggestion = document.createElement('div');
-    suggestion.setAttribute('data-href', match.href ?? '');
-    suggestion.classes.add('tt-suggestion');
+    var suggestion = document.createElement('div')
+    ..setAttribute('data-href', match.href ?? '')
+    ..classes.add('tt-suggestion');
 
-    var suggestionTitle = document.createElement('div');
-    suggestionTitle.classes.add('tt-suggestion-title');
-    suggestionTitle.innerHtml =
-        highlight('${match.name} ${match.type.toLowerCase()}', query);
+    var suggestionTitle = document.createElement('div')
+      ..classes.add('tt-suggestion-title')
+      ..innerHtml = highlight('${match.name} ${match.type.toLowerCase()}', query);
     suggestion.append(suggestionTitle);
 
     // The new one line description to use in the search suggestions.
@@ -308,7 +306,7 @@ void initializeSearch(
   }
 
   // Function that creates the content displayed in the main-content element.
-  void searchResultPage(String input) {
+  void showSearchResultPage(String input) {
     var mainContent = document.getElementById('dartdoc-main-content');
 
     if (mainContent == null) {
@@ -317,12 +315,12 @@ void initializeSearch(
 
     mainContent.text = '';
 
-    var section = document.createElement('section');
-    section.classes.add('search-summary');
+    var section = document.createElement('section')
+    ..classes.add('search-summary');
     mainContent.append(section);
 
-    var title = document.createElement('h2');
-    title.innerHtml = 'Search Results';
+    var title = document.createElement('h2')
+    ..innerHtml = 'Search Results';
     mainContent.append(title);
 
     var summary = document.createElement('div')
@@ -333,9 +331,9 @@ void initializeSearch(
     if (categoriesMap.isNotEmpty) {
       iterateCategoriesMap(mainContent);
     } else {
-      var noResults = document.createElement('div');
-      noResults.classes.add('search-summary');
-      noResults.innerHtml =
+      var noResults = document.createElement('div')
+      ..classes.add('search-summary')
+      ..innerHtml =
           'There was not a match for "$input". Please try another search.';
       mainContent.append(noResults);
     }
@@ -346,8 +344,8 @@ void initializeSearch(
     listBox.setAttribute('aria-expanded', 'false');
   }
 
-  void enterMessage() {
-    moreResults.innerHtml = suggestionLength > 10
+  void showEnterMessage() {
+    moreResults.text = suggestionLength > 10
         ? 'Press "Enter" key to see all $suggestionLength results'
         : '';
   }
@@ -376,7 +374,7 @@ void initializeSearch(
     selectedElement = null;
 
     showSuggestions();
-    enterMessage();
+    showEnterMessage();
   }
 
   void handle(String? newValue, [bool forceUpdate = false]) {
@@ -426,7 +424,7 @@ void initializeSearch(
 
     event = event as KeyboardEvent;
 
-    var body = document.querySelector('body');
+    var body = document.querySelector('body')!;
 
     if (event.code == 'Enter') {
       if (selectedElement != null) {
@@ -444,11 +442,11 @@ void initializeSearch(
         // Saves the input in the search to be used for creating the query parameter.
         var input = htmlEscape.convert(actualValue);
         var relativePath = '';
-        if (body?.getAttribute('data-using-base-href') == 'true' &&
-            body?.getAttribute('data-base-href') == '') {
+        if (body.getAttribute('data-using-base-href') == 'true' &&
+            body.getAttribute('data-base-href') == '') {
           relativePath = document.querySelector('base')!.getAttribute('href')!;
         } else {
-          relativePath = body!.getAttribute('data-base-href')!;
+          relativePath = body.getAttribute('data-base-href')!;
         }
         var href = Uri.parse(window.location.href).resolve(relativePath);
         var search = Uri.parse('${href}search.html')
@@ -547,7 +545,7 @@ void initializeSearch(
     input = htmlEscape.convert(input);
     suggestionLimit = suggestionLength;
     handle(input);
-    searchResultPage(input);
+    showSearchResultPage(input);
     hideSuggestions();
     suggestionLimit = 10;
   }
