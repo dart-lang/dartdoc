@@ -230,11 +230,11 @@ void initializeSearch(
   }
 
   // Using the name of the library/class creates the Element for it.
-  Element createCategory(String lib, String href) {
+  Element createGroup(String encloser, String href) {
     var categoryTitle = document.createElement('a')
       ..setAttribute('href', href)
       ..classes.add('tt-category-title')
-      ..innerHtml = lib;
+      ..innerHtml = encloser;
     return categoryTitle;
   }
 
@@ -272,7 +272,7 @@ void initializeSearch(
     var suggestionEnclose = match.enclosedBy;
     if (suggestionEnclose != null) {
       var category = '${suggestionEnclose.name} ${suggestionEnclose.type}';
-      categorize(createCategory(category, suggestionEnclose.href), suggestion);
+      categorize(createGroup(category, suggestionEnclose.href), suggestion);
     }
     return suggestion;
   }
@@ -377,6 +377,23 @@ void initializeSearch(
     showEnterMessage();
   }
 
+  var body = document.querySelector('body')!;
+
+  String relativePath() {
+    var relativePath = '';
+    if (body.getAttribute('data-using-base-href') == 'true') {
+      relativePath = body.getAttribute('href')!;
+    } else if (body.getAttribute('data-base-href') == '') {
+      relativePath = './';
+    } else {
+      relativePath = body.getAttribute('data-base-href')!;
+    }
+    var href = Uri.parse(window.location.href);
+    var base = href.resolve(relativePath);
+    var search = Uri.parse('${base}search.html');
+    return search.toString();
+  }
+
   void handle(String? newValue, [bool forceUpdate = false]) {
     if (actualValue == newValue && !forceUpdate) {
       return;
@@ -424,10 +441,13 @@ void initializeSearch(
 
     event = event as KeyboardEvent;
 
-    var body = document.querySelector('body')!;
-
     if (event.code == 'Enter') {
-      if (selectedElement != null) {
+      if (suggestionElements.isEmpty) {
+        var input = htmlEscape.convert(actualValue);
+        var search = Uri.parse(relativePath());
+        search = search.replace(queryParameters: {'q': input});
+        window.location.assign(search.toString());
+      } else if (selectedElement != null) {
         var selectingElement = selectedElement ?? 0;
         var href = suggestionElements[selectingElement].dataset['href'];
         if (href != null) {
@@ -435,22 +455,13 @@ void initializeSearch(
         }
         return;
       }
-      // If there are no search suggestions selected then change the window location to the search.html.
-      if (selectedElement == null ||
-          listBox.getAttribute('aria-expanded') == 'true' ||
-          suggestionElements.isEmpty) {
-        // Saves the input in the search to be used for creating the query parameter.
+      // If there no search suggestion selected then change the window location to the search.html
+      else if (selectedElement == null ||
+          listBox.getAttribute('aria-expanded') == 'true') {
+        // Saves the input in the search to be used for creating the query parameter
         var input = htmlEscape.convert(actualValue);
-        var relativePath = '';
-        if (body.getAttribute('data-using-base-href') == 'true' &&
-            body.getAttribute('data-base-href') == '') {
-          relativePath = document.querySelector('base')!.getAttribute('href')!;
-        } else {
-          relativePath = body.getAttribute('data-base-href')!;
-        }
-        var href = Uri.parse(window.location.href).resolve(relativePath);
-        var search = Uri.parse('${href}search.html')
-            .replace(queryParameters: {'query': input});
+        var search = Uri.parse(relativePath());
+        search = search.replace(queryParameters: {'query': input});
         window.location.assign(search.toString());
       }
     }

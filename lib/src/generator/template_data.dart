@@ -135,6 +135,23 @@ class PackageTemplateData extends TemplateData<Package> {
   String get htmlBase => '';
 }
 
+class PackageTemplateDataForSearch extends PackageTemplateData {
+  PackageTemplateDataForSearch(
+      super.htmlOptions, super.packageGraph, super.package);
+
+  @override
+  List<Documentable> get navLinks => [defaultPackage];
+
+  @override
+  String get htmlBase => './';
+
+  @override
+  String get layoutTitle => 'Search';
+
+  @override
+  bool get hasHomepage => false;
+}
+
 class CategoryTemplateData extends TemplateData<Category> {
   final Category category;
 

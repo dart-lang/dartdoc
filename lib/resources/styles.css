@@ -39,6 +39,8 @@
 --main-comment-color: #998;
 --main-var-color: #008080;
 --main-string-color: #d14;
+
+--main-number-filter: invert(0%);
 }
 
 .dark-theme {
@@ -69,6 +71,8 @@
 --main-comment-color: #909CC3;
 --main-var-color: #55A09B;
 --main-string-color: #FF2D64;
+
+--main-number-filter: invert(100%);
 }
 
 .switch {
@@ -1077,10 +1081,6 @@ button {
   }
 }
 
-#search-box {
-  background-color: var(--main-search-background);
-}
-
 .typeahead,
 .tt-query,
 .tt-hint {
@@ -1088,7 +1088,6 @@ button {
   padding: 2px 7px 1px 7px;
   line-height: 20px;
   outline: none;
-  color: var(--main-text-color);
 }
 
 .tt-wrapper {
@@ -1099,7 +1098,6 @@ button {
 .tt-input {
   position: relative;
   vertical-align: top;
-  background-color: var(--main-search-background);
 }
 
 .tt-query {
@@ -1115,7 +1113,6 @@ button {
   box-shadow: none;
   background: none 0 0 / auto repeat scroll padding-box border-box rgb(255, 255, 255);
   border-color: transparent;
-  color: #999;
   border-width: 0;
 }
 
@@ -1158,13 +1155,14 @@ button {
   padding-left: 50px;
   width: 422px;
   height: 20px;
-  border: 1px solid var(--main-header-color);
   font-size: 13px;
-  background-image: url('https://img.icons8.com/search');
+  background-image: url("./search.png");
   background-repeat: no-repeat;
   background-position: 4%;
   outline: 0;
   background-size: 16px;
+  filter: var(--main-number-filter);
+    -webkit-filter: var(--main-number-filter);
 }
 
 .search-summary {
@@ -1292,7 +1290,7 @@ a.tt-category-title {
 }
 
 ::placeholder {
-  color: var(--main-text-color);
+  filter: brightness(0.85);
 }
 
 .search-body {
