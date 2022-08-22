@@ -38,8 +38,11 @@ class HtmlGeneratorBackend extends GeneratorBackendBase {
     super.generatePackage(writer, graph, package);
     // We have to construct the data again. This only happens once per package.
     var data = PackageTemplateData(options, graph, package);
+    var dataForSearch = PackageTemplateDataForSearch(options, graph, package);
     var content = templates.renderError(data);
     write(writer, '__404error.html', data, content);
+    var searchContent = templates.renderSearchPage(dataForSearch);
+    write(writer, 'search.html', data, searchContent);
   }
 
   @override

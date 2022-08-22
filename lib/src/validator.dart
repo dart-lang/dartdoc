@@ -121,7 +121,8 @@ class Validator {
         } else {
           // Error messages are orphaned by design and do not appear in the
           // search index.
-          if (const {'__404error.html', 'categories.json'}.contains(fullPath)) {
+          if (const {'__404error.html', 'search.html', 'categories.json'}
+              .contains(fullPath)) {
             _warn(PackageWarning.orphanedFile, fullPath, _origin);
           }
         }
