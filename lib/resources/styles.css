@@ -1178,12 +1178,13 @@ a.tt-category-title {
   position: -webkit-sticky;
   position: sticky;
   top: 0px;
-  background-color: #ccc;
+  background-color: #AAA;
   padding: 0px;
   font-size: 14px;
   margin: 0px;
   clear: both;
   text-align: center;
+  text-color: black;
 }
 
 .tt-suggestion:hover {
