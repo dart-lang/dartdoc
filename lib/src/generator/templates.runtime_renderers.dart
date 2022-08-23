@@ -11978,7 +11978,7 @@ class _Renderer_Package extends RendererBase<Package> {
   }
 }
 
-String renderIndex(PackageTemplateData context, Template template) {
+String renderSearchPage(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -12222,7 +12222,7 @@ String renderError(PackageTemplateData context, Template template) {
   return buffer.toString();
 }
 
-String renderSearchPage(PackageTemplateData context, Template template) {
+String renderIndex(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
