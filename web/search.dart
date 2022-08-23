@@ -356,9 +356,15 @@ void initializeSearch(
     categoriesMap = <String, Element>{};
     searchResults.text = '';
 
-    if (suggestions.length < minLength) {
+    if (query.isEmpty && suggestions.length < minLength) {
       setHint(null);
       hideSuggestions();
+      return;
+    }
+
+    if(query.isNotEmpty && suggestions.length < minLength){
+      setHint(null);
+      moreResults.innerHtml = 'Press "Enter" key to search in dart.dev and api.dart.dev';
       return;
     }
 
@@ -374,7 +380,7 @@ void initializeSearch(
     selectedElement = null;
 
     showSuggestions();
-    showEnterMessage();
+    moreResults.innerHtml = 'Press "Enter" key to all results';
   }
 
   var body = document.querySelector('body')!;
@@ -442,7 +448,15 @@ void initializeSearch(
     event = event as KeyboardEvent;
 
     if (event.code == 'Enter') {
-      if (selectedElement != null) {
+
+      if(suggestionElements.isEmpty){
+        var input = htmlEscape.convert(actualValue);
+        var search = Uri.parse(relativePath());
+        search = search.replace(queryParameters: {'q': input});
+        window.location.assign(search.toString());
+      }
+
+      else if(selectedElement!=null){
         var selectingElement = selectedElement ?? 0;
         var href = suggestionElements[selectingElement].dataset['href'];
         if (href != null) {
@@ -451,10 +465,11 @@ void initializeSearch(
         return;
       }
       // If there no search suggestion selected then change the window location to the search.html
-      else {
+      else if(selectedElement==null||listBox.getAttribute('aria-expanded')=='true'){
+        // Saves the input in the search to be used for creating the query parameter
         var input = htmlEscape.convert(actualValue);
         var search = Uri.parse(relativePath());
-        search = search.replace(queryParameters: {'q': input});
+        search = search.replace(queryParameters: {'query': input});
         window.location.assign(search.toString());
       }
     }
@@ -542,7 +557,7 @@ void initializeSearch(
 
   // Verifying the href to check if the search html was called to generate the main content elements that are going to be displayed.
   if (window.location.href.contains('search.html')) {
-    var input = uri.queryParameters['q'];
+    var input = uri.queryParameters['query'];
     if (input == null) {
       return;
     }
