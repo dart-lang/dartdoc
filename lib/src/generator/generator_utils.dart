@@ -34,6 +34,15 @@ String generateCategoryJson(Iterable<Categorization> categories, bool pretty) {
   return encoder.convert(indexItems.toList());
 }
 
+String removeHtmlTags(String? input) {
+  if (input == null) {
+    return '';
+  }
+  var htmlTag = RegExp(r'<[^>]*>', multiLine: true, caseSensitive: true);
+  var parsedString = input.replaceAll(htmlTag, '');
+  return parsedString;
+}
+
 String generateSearchIndexJson(
     Iterable<Indexable> indexedElements, bool pretty) {
   final indexItems = [
@@ -46,10 +55,13 @@ String generateSearchIndexJson(
         'type': indexable.kind,
         'overriddenDepth': indexable.overriddenDepth,
         if (indexable is ModelElement) 'packageName': indexable.package.name,
+        if (indexable is ModelElement)
+          'desc': removeHtmlTags(indexable.oneLineDoc),
         if (indexable is EnclosedElement)
           'enclosedBy': {
             'name': indexable.enclosingElement.name,
-            'type': indexable.enclosingElement.kind
+            'type': indexable.enclosingElement.kind,
+            'href': indexable.enclosingElement.href
           },
       }
   ];

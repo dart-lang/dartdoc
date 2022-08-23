@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
@@ -12,6 +13,9 @@ import 'package:meta/meta.dart';
 
 class Mixin extends InheritingContainer with TypeImplementing {
   Mixin(super.element, super.library, super.packageGraph);
+
+  @override
+  MixinElement get element => super.element as MixinElement;
 
   late final List<ParameterizedElementType> superclassConstraints = [
     ...element.superclassConstraints

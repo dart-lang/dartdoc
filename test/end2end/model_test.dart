@@ -1234,13 +1234,13 @@ void main() {
     });
 
     test('Verify behavior of imperfect resolver', () {
-      expect(aImplementingThingy.element.enclosingElement2,
+      expect(aImplementingThingy.element.enclosingElement3,
           equals(BaseThingy2.element));
-      expect(aImplementingThingyMethod.element.enclosingElement2,
+      expect(aImplementingThingyMethod.element.enclosingElement3,
           equals(BaseThingy.element));
-      expect(aImplementingThingyField.element.enclosingElement2,
+      expect(aImplementingThingyField.element.enclosingElement3,
           equals(BaseThingy.element));
-      expect(aImplementingThingyAccessor.element.enclosingElement2,
+      expect(aImplementingThingyAccessor.element.enclosingElement3,
           equals(BaseThingy.element));
     });
   });
@@ -1831,7 +1831,7 @@ void main() {
           .firstWhere((c) => c.name == 'MIEEMixinWithOverride');
       var problematicOperator = MIEEMixinWithOverride.inheritedOperators
           .firstWhere((o) => o.name == 'operator []=');
-      expect(problematicOperator.element.enclosingElement2.name,
+      expect(problematicOperator.element.enclosingElement3.name,
           equals('_MIEEPrivateOverride'));
       expect(problematicOperator.canonicalModelElement!.enclosingElement!.name,
           equals('MIEEMixinWithOverride'));
@@ -3010,15 +3010,15 @@ void main() {
     });
 
     test('classes know about applicableExtensions', () {
-      expect(apple.potentiallyApplicableExtensions, orderedEquals([ext]));
-      expect(string.potentiallyApplicableExtensions,
+      expect(apple.potentiallyApplicableExtensionsSorted, orderedEquals([ext]));
+      expect(string.potentiallyApplicableExtensionsSorted,
           isNot(contains(documentOnceReexportOne)));
-      expect(string.potentiallyApplicableExtensions,
+      expect(string.potentiallyApplicableExtensionsSorted,
           contains(documentOnceReexportTwo));
-      expect(baseTest.potentiallyApplicableExtensions, isEmpty);
-      expect(anotherExtended.potentiallyApplicableExtensions,
+      expect(baseTest.potentiallyApplicableExtensionsSorted, isEmpty);
+      expect(anotherExtended.potentiallyApplicableExtensionsSorted,
           orderedEquals([uphill]));
-      expect(bigAnotherExtended.potentiallyApplicableExtensions,
+      expect(bigAnotherExtended.potentiallyApplicableExtensionsSorted,
           orderedEquals([uphill]));
     });
 
@@ -3090,10 +3090,10 @@ void main() {
     });
 
     test('type parameters and bounds work with applicableExtensions', () {
-      expect(
-          superMegaTron.potentiallyApplicableExtensions, orderedEquals([leg]));
-      expect(
-          megaTron.potentiallyApplicableExtensions, orderedEquals([arm, leg]));
+      expect(superMegaTron.potentiallyApplicableExtensionsSorted,
+          orderedEquals([leg]));
+      expect(megaTron.potentiallyApplicableExtensionsSorted,
+          orderedEquals([arm, leg]));
     });
 
     test('documentation links do not crash in base cases', () {

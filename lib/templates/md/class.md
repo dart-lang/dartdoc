@@ -27,9 +27,9 @@
 {{#hasPotentiallyApplicableExtensions}}
 **Available Extensions**
 
-{{#potentiallyApplicableExtensions}}
+{{#potentiallyApplicableExtensionsSorted}}
 - {{{linkedName}}}
-{{/potentiallyApplicableExtensions}}
+{{/potentiallyApplicableExtensionsSorted}}
 {{/hasPotentiallyApplicableExtensions}}
 
 {{ >annotations }}

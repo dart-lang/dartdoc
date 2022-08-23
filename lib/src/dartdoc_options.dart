@@ -1266,8 +1266,8 @@ class DartdocOptionContext extends DartdocOptionContextBase
   late final Set<String> exclude =
       Set.of(optionSet['exclude'].valueAt(context));
 
-  List<String> get excludePackages =>
-      optionSet['excludePackages'].valueAt(context);
+  Set<String> get _excludePackages =>
+      {...optionSet['excludePackages'].valueAt(context)};
 
   String? get flutterRoot => optionSet['flutterRoot'].valueAt(context);
 
@@ -1331,8 +1331,7 @@ class DartdocOptionContext extends DartdocOptionContextBase
   bool isLibraryExcluded(String name) =>
       exclude.any((pattern) => name == pattern);
 
-  bool isPackageExcluded(String name) =>
-      excludePackages.any((pattern) => name == pattern);
+  bool isPackageExcluded(String name) => _excludePackages.contains(name);
 
   bool get showStats => optionSet['showStats'].valueAt(context);
 

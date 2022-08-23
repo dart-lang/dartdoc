@@ -1511,6 +1511,42 @@ String renderProperty(_i1.PropertyTemplateData context0) {
   return buffer.toString();
 }
 
+String renderSearchPage(_i1.PackageTemplateData context0) {
+  final buffer = StringBuffer();
+  buffer.write(_renderSearchPage_partial_head_0(context0));
+  buffer.writeln();
+  buffer.write('''
+
+<div id="dartdoc-main-content" class="main-content">
+
+</div> <!-- /.main-content -->
+
+<div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+  ''');
+  buffer.write(_renderSearchPage_partial_search_sidebar_1(context0));
+  buffer.writeln();
+  buffer.write('''
+  <h5 class="hidden-xs"><span class="package-name">''');
+  buffer.writeEscaped(context0.self.name);
+  buffer.write('''</span> <span class="package-kind">''');
+  buffer.writeEscaped(context0.self.kind);
+  buffer.write('''</span></h5>
+  ''');
+  buffer.write(_renderSearchPage_partial_packages_2(context0));
+  buffer.writeln();
+  buffer.write('''
+</div>
+
+<div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+</div>
+
+''');
+  buffer.write(_renderSearchPage_partial_footer_3(context0));
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
 String renderSidebarForContainer<T extends _i3.Documentable>(
     _i1.TemplateDataWithContainer<T> context0) {
   final buffer = StringBuffer();
@@ -2823,6 +2859,15 @@ String _renderProperty_partial_search_sidebar_9(
     _deduplicated_lib_templates_html__search_sidebar_html(context0);
 String _renderProperty_partial_footer_10(_i1.PropertyTemplateData context0) =>
     _deduplicated_lib_templates_html__footer_html(context0);
+String _renderSearchPage_partial_head_0(_i1.PackageTemplateData context0) =>
+    _deduplicated_lib_templates_html__head_html(context0);
+String _renderSearchPage_partial_search_sidebar_1(
+        _i1.PackageTemplateData context0) =>
+    _deduplicated_lib_templates_html__search_sidebar_html(context0);
+String _renderSearchPage_partial_packages_2(_i1.PackageTemplateData context0) =>
+    _deduplicated_lib_templates_html__packages_html(context0);
+String _renderSearchPage_partial_footer_3(_i1.PackageTemplateData context0) =>
+    _deduplicated_lib_templates_html__footer_html(context0);
 String _renderTopLevelProperty_partial_head_0(
         _i1.TopLevelPropertyTemplateData context0) =>
     _deduplicated_lib_templates_html__head_html(context0);
@@ -2969,6 +3014,8 @@ String _deduplicated_lib_templates_html__head_html(
   buffer.write('''<!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">''');
@@ -3045,7 +3092,7 @@ String _deduplicated_lib_templates_html__head_html(
   buffer.write(context0.htmlBase);
   buffer.write('''" data-using-base-href="''');
   buffer.write(context0.useBaseHref.toString());
-  buffer.write('''">
+  buffer.write('''" class="light-theme">
 
 <div id="overlay-under-drawer"></div>
 
@@ -3102,10 +3149,24 @@ String _deduplicated_lib_templates_html__head_html(
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
+  <div class="sun">
+    <span class="material-symbols-outlined">
+      light_mode
+    </span>
+  </div>
+  <div class="toggle" id="theme-button">
+    <label for="theme" class="switch">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span class="slider round"></span>
+    </label>
+  </div>
+  <div class="moon">
+    <span class="material-symbols-outlined">
+      dark_mode
+    </span>
+  </div>
 </header>
-
-<main>
-''');
+<main>''');
 
   return buffer.toString();
 }

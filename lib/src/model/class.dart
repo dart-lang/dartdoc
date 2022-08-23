@@ -20,6 +20,9 @@ class Class extends InheritingContainer
   }
 
   @override
+  ClassElement get element => super.element as ClassElement;
+
+  @override
   late final List<ModelElement> allModelElements = [
     ...super.allModelElements,
     ...constructors,
@@ -31,12 +34,12 @@ class Class extends InheritingContainer
   bool get isAbstract => element.isAbstract;
 
   bool get isErrorOrException {
-    bool isError(ClassElement element) => (element.library.isDartCore &&
+    bool isError(InterfaceElement element) => (element.library.isDartCore &&
         (element.name == 'Exception' || element.name == 'Error'));
 
     final element = this.element;
     if (isError(element)) return true;
-    return element.allSupertypes.map((t) => t.element).any(isError);
+    return element.allSupertypes.map((t) => t.element2).any(isError);
   }
 
   @override

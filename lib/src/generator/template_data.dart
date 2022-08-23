@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 typedef ContainerSidebar = String Function(
@@ -149,6 +150,23 @@ class PackageTemplateData extends TemplateData<Package> {
 
   @override
   String get bareHref => '';
+}
+
+class PackageTemplateDataForSearch extends PackageTemplateData {
+  PackageTemplateDataForSearch(
+      super.htmlOptions, super.packageGraph, super.package);
+
+  @override
+  List<Documentable> get navLinks => [defaultPackage];
+
+  @override
+  String get htmlBase => './';
+
+  @override
+  String get layoutTitle => 'Search';
+
+  @override
+  bool get hasHomepage => false;
 }
 
 class CategoryTemplateData extends TemplateData<Category>
@@ -394,7 +412,9 @@ class MethodTemplateData extends TemplateData<Method>
 
   MethodTemplateData(super.htmlOptions, super.packageGraph, this.library,
       this.container, this.method, this._sidebarForContainer)
-      : _containerDescription = container.isClass ? 'class' : 'extension';
+      : _containerDescription =
+            // TODO(srawlins): No mixin? enum?
+            container is InterfaceElement ? 'class' : 'extension';
 
   String get sidebarForContainer => _sidebarForContainer(container, this);
 
@@ -433,7 +453,8 @@ class PropertyTemplateData extends TemplateData<Field>
 
   PropertyTemplateData(super.htmlOptions, super.packageGraph, this.library,
       this.container, this.property, this._sidebarForContainer)
-      : _containerDescription = container.isClass ? 'class' : 'extension';
+      : _containerDescription =
+            container is ClassElement ? 'class' : 'extension';
 
   String get sidebarForContainer => _sidebarForContainer(container, this);
 
