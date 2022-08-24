@@ -344,12 +344,6 @@ void initializeSearch(
     listBox.setAttribute('aria-expanded', 'false');
   }
 
-  void showEnterMessage() {
-    moreResults.text = suggestionLength > 10
-        ? 'Press "Enter" key to see all $suggestionLength results'
-        : '';
-  }
-
   void updateSuggestions(String query, List<IndexItem> suggestions) {
     suggestionsInfo = [];
     suggestionElements = [];
@@ -362,9 +356,10 @@ void initializeSearch(
       return;
     }
 
-    if(query.isNotEmpty && suggestions.length < minLength){
+    if (query.isNotEmpty && suggestions.length < minLength) {
       setHint(null);
-      moreResults.innerHtml = 'Press "Enter" key to search in dart.dev and api.dart.dev';
+      moreResults.innerHtml =
+          'Press "Enter" key to search in dart.dev and api.dart.dev';
       return;
     }
 
@@ -448,15 +443,12 @@ void initializeSearch(
     event = event as KeyboardEvent;
 
     if (event.code == 'Enter') {
-
-      if(suggestionElements.isEmpty){
+      if (suggestionElements.isEmpty) {
         var input = htmlEscape.convert(actualValue);
         var search = Uri.parse(relativePath());
         search = search.replace(queryParameters: {'q': input});
         window.location.assign(search.toString());
-      }
-
-      else if(selectedElement!=null){
+      } else if (selectedElement != null) {
         var selectingElement = selectedElement ?? 0;
         var href = suggestionElements[selectingElement].dataset['href'];
         if (href != null) {
@@ -465,7 +457,8 @@ void initializeSearch(
         return;
       }
       // If there no search suggestion selected then change the window location to the search.html
-      else if(selectedElement==null||listBox.getAttribute('aria-expanded')=='true'){
+      else if (selectedElement == null ||
+          listBox.getAttribute('aria-expanded') == 'true') {
         // Saves the input in the search to be used for creating the query parameter
         var input = htmlEscape.convert(actualValue);
         var search = Uri.parse(relativePath());
