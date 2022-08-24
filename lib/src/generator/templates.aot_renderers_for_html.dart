@@ -1518,10 +1518,6 @@ String renderSearchPage(_i1.PackageTemplateData context0) {
   buffer.write('''
 
 <div id="dartdoc-main-content" class="main-content">
-  <div class="d-flex searchbar">
-    <script async src="https://cse.google.com/cse.js?cx=011220921317074318178:ufsd-ukx1ii"></script>
-    <div class="gcse-search"></div>
-  </div>
 </div>
 
 <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">

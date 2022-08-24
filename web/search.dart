@@ -334,7 +334,16 @@ void initializeSearch(
       var noResults = document.createElement('div')
         ..classes.add('search-summary')
         ..innerHtml =
-            'There was not a match for "$input". Please try another search.';
+            'There was not a match for "$input". Want to try searching from additional Dart-related sites? ';
+
+      var buildLink = Uri.parse(
+              'https://dart.dev/search?cx=011220921317074318178%3A_yy-tmb5t_i&ie=UTF-8&hl=en&q=')
+          .replace(queryParameters: {'q': input});
+      var link = document.createElement('a')
+        ..setAttribute('href', buildLink.toString())
+        ..classes.add('seach-options')
+        ..innerHtml = 'click here to search in dart.dev.';
+      noResults.append(link);
       mainContent.append(noResults);
     }
   }
@@ -344,22 +353,21 @@ void initializeSearch(
     listBox.setAttribute('aria-expanded', 'false');
   }
 
+  void showEnterMessage() {
+    moreResults.text = suggestionLength > 10
+        ? 'Press "Enter" key to see all $suggestionLength results'
+        : '';
+  }
+
   void updateSuggestions(String query, List<IndexItem> suggestions) {
     suggestionsInfo = [];
     suggestionElements = [];
     categoriesMap = <String, Element>{};
     searchResults.text = '';
 
-    if (query.isEmpty && suggestions.length < minLength) {
+    if (suggestions.length < minLength) {
       setHint(null);
       hideSuggestions();
-      return;
-    }
-
-    if (query.isNotEmpty && suggestions.length < minLength) {
-      setHint(null);
-      moreResults.innerHtml =
-          'Press "Enter" key to search in dart.dev and api.dart.dev';
       return;
     }
 
@@ -375,7 +383,7 @@ void initializeSearch(
     selectedElement = null;
 
     showSuggestions();
-    moreResults.innerHtml = 'Press "Enter" key to all results';
+    showEnterMessage();
   }
 
   var body = document.querySelector('body')!;
@@ -443,12 +451,7 @@ void initializeSearch(
     event = event as KeyboardEvent;
 
     if (event.code == 'Enter') {
-      if (suggestionElements.isEmpty) {
-        var input = htmlEscape.convert(actualValue);
-        var search = Uri.parse(relativePath());
-        search = search.replace(queryParameters: {'q': input});
-        window.location.assign(search.toString());
-      } else if (selectedElement != null) {
+      if (selectedElement != null) {
         var selectingElement = selectedElement ?? 0;
         var href = suggestionElements[selectingElement].dataset['href'];
         if (href != null) {
@@ -457,12 +460,10 @@ void initializeSearch(
         return;
       }
       // If there no search suggestion selected then change the window location to the search.html
-      else if (selectedElement == null ||
-          listBox.getAttribute('aria-expanded') == 'true') {
-        // Saves the input in the search to be used for creating the query parameter
+      else {
         var input = htmlEscape.convert(actualValue);
         var search = Uri.parse(relativePath());
-        search = search.replace(queryParameters: {'query': input});
+        search = search.replace(queryParameters: {'q': input});
         window.location.assign(search.toString());
       }
     }
@@ -550,7 +551,7 @@ void initializeSearch(
 
   // Verifying the href to check if the search html was called to generate the main content elements that are going to be displayed.
   if (window.location.href.contains('search.html')) {
-    var input = uri.queryParameters['query'];
+    var input = uri.queryParameters['q'];
     if (input == null) {
       return;
     }
