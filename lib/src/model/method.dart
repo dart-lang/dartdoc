@@ -62,7 +62,9 @@ class Method extends ModelElement
       '${enclosingElement.library.dirName}/${enclosingElement.name}/$fileName';
 
   String get fullkind {
+    // A method cannot be abstract and static at the same time.
     if (element.isAbstract) return 'abstract $kind';
+    if (element.isStatic) return 'static $kind';
     return kind;
   }
 
