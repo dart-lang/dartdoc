@@ -86,15 +86,6 @@ input[type=checkbox] {
   color: var(--main-icon-color);
 }
 
-@media (max-width: 768px) {
-  .moon {
-    padding-right: 0px;
-  }
-  .sun{
-    padding-left: 30px;
-  }
-}
-
 /* for layout */
 html,
 body {
@@ -1062,6 +1053,15 @@ button {
   width: 480px;
   max-height: 280px;
   overflow-y: scroll;
+}
+
+.navbar-right {
+  padding-right: 60px;
+}
+
+#theme-button.toggle {
+  position: absolute;
+  right: 30px;
 }
 
 .tt-menu {
