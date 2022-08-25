@@ -342,7 +342,7 @@ void initializeSearch(
       var link = document.createElement('a')
         ..setAttribute('href', buildLink.toString())
         ..classes.add('seach-options')
-        ..innerHtml = 'click here to search in dart.dev.';
+        ..text = 'Search on dart.dev.';
       noResults.append(link);
       mainContent.append(noResults);
     }
