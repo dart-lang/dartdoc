@@ -1234,7 +1234,7 @@ String renderMethod(_i1.MethodTemplateData context0) {
   buffer.write('''<h1><span class="kind-method">''');
   buffer.write(context1.nameWithGenerics);
   buffer.write('''</span> ''');
-  buffer.writeEscaped(context1.kind);
+  buffer.writeEscaped(context1.fullkind);
   buffer.write(' ');
   buffer.write(_renderMethod_partial_feature_set_2(context1));
   buffer.write('''</h1></div>''');
