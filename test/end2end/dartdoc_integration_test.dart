@@ -69,7 +69,7 @@ void main() {
           process.stderr, emitsThrough('Found 1 warning and 0 errors.'));
       await process.shouldExit(0);
       var docs = Directory(p.join(packagePath, 'doc', 'api'));
-      expect(docs.listSync(recursive: true), isEmpty);
+      expect(docs.existsSync(), isFalse);
     }, timeout: Timeout.factor(2));
 
     test('with --quiet is quiet and does generate docs', () async {

@@ -72,72 +72,69 @@ class SidebarGenerator<T extends TemplateData> {
 /// An interface for classes which are responsible for outputing the generated
 /// documentation.
 abstract class GeneratorBackend {
+  FileWriter get writer;
+
   /// Emits JSON describing the [categories] defined by the package.
-  void generateCategoryJson(FileWriter writer, List<Categorization> categories);
+  void generateCategoryJson(List<Categorization> categories);
 
   /// Emits a JSON catalog of [indexedElements] for use with a search index.
-  void generateSearchIndex(FileWriter writer, List<Indexable> indexedElements);
+  void generateSearchIndex(List<Indexable> indexedElements);
 
   /// Emits documentation content for the [package].
-  void generatePackage(FileWriter writer, PackageGraph graph, Package package);
+  void generatePackage(PackageGraph graph, Package package);
 
   /// Emits documentation content for the [category].
-  void generateCategory(
-      FileWriter writer, PackageGraph graph, Category category);
+  void generateCategory(PackageGraph graph, Category category);
 
   /// Emits documentation content for the [library].
-  void generateLibrary(FileWriter writer, PackageGraph graph, Library library);
+  void generateLibrary(PackageGraph graph, Library library);
 
   /// Emits documentation content for the [clazz].
-  void generateClass(
-      FileWriter writer, PackageGraph graph, Library library, Class clazz);
+  void generateClass(PackageGraph graph, Library library, Class clazz);
 
   /// Emits documentation content for the [eNum].
-  void generateEnum(
-      FileWriter writer, PackageGraph graph, Library library, Enum eNum);
+  void generateEnum(PackageGraph graph, Library library, Enum eNum);
 
   /// Emits documentation content for the [mixin].
-  void generateMixin(
-      FileWriter writer, PackageGraph graph, Library library, Mixin mixin);
+  void generateMixin(PackageGraph graph, Library library, Mixin mixin);
 
   /// Emits documentation content for the [constructor].
-  void generateConstructor(FileWriter writer, PackageGraph graph,
-      Library library, Constructable constructable, Constructor constructor);
+  void generateConstructor(PackageGraph graph, Library library,
+      Constructable constructable, Constructor constructor);
 
   /// Emits documentation content for the [field].
-  void generateConstant(FileWriter writer, PackageGraph graph, Library library,
-      Container clazz, Field field);
+  void generateConstant(
+      PackageGraph graph, Library library, Container clazz, Field field);
 
   /// Emits documentation content for the [field].
-  void generateProperty(FileWriter writer, PackageGraph graph, Library library,
-      Container clazz, Field field);
+  void generateProperty(
+      PackageGraph graph, Library library, Container clazz, Field field);
 
   /// Emits documentation content for the [method].
-  void generateMethod(FileWriter writer, PackageGraph graph, Library library,
-      Container clazz, Method method);
+  void generateMethod(
+      PackageGraph graph, Library library, Container clazz, Method method);
 
   /// Emits documentation content for the [extension].
-  void generateExtension(FileWriter writer, PackageGraph graph, Library library,
-      Extension extension);
+  void generateExtension(
+      PackageGraph graph, Library library, Extension extension);
 
   /// Emits documentation content for the [function].
-  void generateFunction(FileWriter writer, PackageGraph graph, Library library,
-      ModelFunction function);
+  void generateFunction(
+      PackageGraph graph, Library library, ModelFunction function);
 
   /// Emits documentation content for the [constant].
-  void generateTopLevelConstant(FileWriter writer, PackageGraph graph,
-      Library library, TopLevelVariable constant);
+  void generateTopLevelConstant(
+      PackageGraph graph, Library library, TopLevelVariable constant);
 
   /// Emits documentation content for the [property].
-  void generateTopLevelProperty(FileWriter writer, PackageGraph graph,
-      Library library, TopLevelVariable property);
+  void generateTopLevelProperty(
+      PackageGraph graph, Library library, TopLevelVariable property);
 
   /// Emits documentation content for the [typedef].
-  void generateTypeDef(
-      FileWriter writer, PackageGraph graph, Library library, Typedef typedef);
+  void generateTypeDef(PackageGraph graph, Library library, Typedef typedef);
 
   /// Emits files not specific to a Dart language element (like a favicon, etc).
-  Future<void> generateAdditionalFiles(FileWriter writer);
+  Future<void> generateAdditionalFiles();
 }
 
 /// Base [GeneratorBackend] for Dartdoc's supported formats.
@@ -148,10 +145,14 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
       _sidebarForLibrary;
   final SidebarGenerator<TemplateDataWithContainer<Documentable>>
       _sidebarForContainer;
+
+  @override
+  final FileWriter writer;
   final ResourceProvider resourceProvider;
   final p.Context _pathContext;
 
-  GeneratorBackendBase(this.options, this.templates, this.resourceProvider)
+  GeneratorBackendBase(
+      this.options, this.templates, this.writer, this.resourceProvider)
       : _sidebarForLibrary =
             SidebarGenerator(templates.renderSidebarForLibrary),
         _sidebarForContainer =
@@ -170,8 +171,7 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
   }
 
   @override
-  void generateCategoryJson(
-      FileWriter writer, List<Categorization> categories) {
+  void generateCategoryJson(List<Categorization> categories) {
     var json = '[]';
     if (categories.isNotEmpty) {
       json = generator_util.generateCategoryJson(
@@ -185,7 +185,7 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
   }
 
   @override
-  void generateSearchIndex(FileWriter writer, List<Indexable> indexedElements) {
+  void generateSearchIndex(List<Indexable> indexedElements) {
     var json = generator_util.generateSearchIndexJson(
         indexedElements, options.prettyIndexJson);
     if (!options.useBaseHref) {
@@ -195,8 +195,7 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
   }
 
   @override
-  void generateCategory(
-      FileWriter writer, PackageGraph packageGraph, Category category) {
+  void generateCategory(PackageGraph packageGraph, Category category) {
     var data = CategoryTemplateData(options, packageGraph, category);
     var content = templates.renderCategory(data);
     write(writer, category.filePath, data, content);
@@ -204,8 +203,7 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
   }
 
   @override
-  void generateClass(
-      FileWriter writer, PackageGraph packageGraph, Library lib, Class clazz) {
+  void generateClass(PackageGraph packageGraph, Library lib, Class clazz) {
     var data = ClassTemplateData(options, packageGraph, lib, clazz,
         _sidebarForLibrary.getRenderFor, _sidebarForContainer.getRenderFor);
     var content = templates.renderClass(data);
@@ -214,13 +212,13 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
   }
 
   @override
-  void generateConstant(FileWriter writer, PackageGraph packageGraph,
-          Library lib, Container clazz, Field property) =>
-      generateProperty(writer, packageGraph, lib, clazz, property);
+  void generateConstant(PackageGraph packageGraph, Library lib, Container clazz,
+          Field property) =>
+      generateProperty(packageGraph, lib, clazz, property);
 
   @override
-  void generateConstructor(FileWriter writer, PackageGraph packageGraph,
-      Library lib, Constructable constructable, Constructor constructor) {
+  void generateConstructor(PackageGraph packageGraph, Library lib,
+      Constructable constructable, Constructor constructor) {
     var data = ConstructorTemplateData(options, packageGraph, lib,
         constructable, constructor, _sidebarForContainer.getRenderFor);
     var content = templates.renderConstructor(data);
@@ -229,8 +227,7 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
   }
 
   @override
-  void generateEnum(
-      FileWriter writer, PackageGraph packageGraph, Library lib, Enum eNum) {
+  void generateEnum(PackageGraph packageGraph, Library lib, Enum eNum) {
     var data = EnumTemplateData(options, packageGraph, lib, eNum,
         _sidebarForLibrary.getRenderFor, _sidebarForContainer.getRenderFor);
     var content = templates.renderEnum(data);
@@ -239,8 +236,8 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
   }
 
   @override
-  void generateExtension(FileWriter writer, PackageGraph packageGraph,
-      Library lib, Extension extension) {
+  void generateExtension(
+      PackageGraph packageGraph, Library lib, Extension extension) {
     var data = ExtensionTemplateData(options, packageGraph, lib, extension,
         _sidebarForLibrary.getRenderFor, _sidebarForContainer.getRenderFor);
     var content = templates.renderExtension(data);
@@ -249,8 +246,8 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
   }
 
   @override
-  void generateFunction(FileWriter writer, PackageGraph packageGraph,
-      Library lib, ModelFunction function) {
+  void generateFunction(
+      PackageGraph packageGraph, Library lib, ModelFunction function) {
     var data = FunctionTemplateData(
         options, packageGraph, lib, function, _sidebarForLibrary.getRenderFor);
     var content = templates.renderFunction(data);
@@ -259,8 +256,7 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
   }
 
   @override
-  void generateLibrary(
-      FileWriter writer, PackageGraph packageGraph, Library lib) {
+  void generateLibrary(PackageGraph packageGraph, Library lib) {
     var data = LibraryTemplateData(
         options, packageGraph, lib, _sidebarForLibrary.getRenderFor);
     var content = templates.renderLibrary(data);
@@ -269,8 +265,8 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
   }
 
   @override
-  void generateMethod(FileWriter writer, PackageGraph packageGraph, Library lib,
-      Container clazz, Method method) {
+  void generateMethod(
+      PackageGraph packageGraph, Library lib, Container clazz, Method method) {
     var data = MethodTemplateData(options, packageGraph, lib, clazz, method,
         _sidebarForContainer.getRenderFor);
     var content = templates.renderMethod(data);
@@ -279,8 +275,7 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
   }
 
   @override
-  void generateMixin(
-      FileWriter writer, PackageGraph packageGraph, Library lib, Mixin mixin) {
+  void generateMixin(PackageGraph packageGraph, Library lib, Mixin mixin) {
     var data = MixinTemplateData(options, packageGraph, lib, mixin,
         _sidebarForLibrary.getRenderFor, _sidebarForContainer.getRenderFor);
     var content = templates.renderMixin(data);
@@ -289,7 +284,7 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
   }
 
   @override
-  void generatePackage(FileWriter writer, PackageGraph graph, Package package) {
+  void generatePackage(PackageGraph graph, Package package) {
     var data = PackageTemplateData(options, graph, package);
     var content = templates.renderIndex(data);
     write(writer, package.filePath, data, content);
@@ -297,8 +292,8 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
   }
 
   @override
-  void generateProperty(FileWriter writer, PackageGraph packageGraph,
-      Library lib, Container clazz, Field property) {
+  void generateProperty(
+      PackageGraph packageGraph, Library lib, Container clazz, Field property) {
     var data = PropertyTemplateData(options, packageGraph, lib, clazz, property,
         _sidebarForContainer.getRenderFor);
     var content = templates.renderProperty(data);
@@ -307,13 +302,13 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
   }
 
   @override
-  void generateTopLevelConstant(FileWriter writer, PackageGraph packageGraph,
-          Library lib, TopLevelVariable property) =>
-      generateTopLevelProperty(writer, packageGraph, lib, property);
+  void generateTopLevelConstant(
+          PackageGraph packageGraph, Library lib, TopLevelVariable property) =>
+      generateTopLevelProperty(packageGraph, lib, property);
 
   @override
-  void generateTopLevelProperty(FileWriter writer, PackageGraph packageGraph,
-      Library lib, TopLevelVariable property) {
+  void generateTopLevelProperty(
+      PackageGraph packageGraph, Library lib, TopLevelVariable property) {
     var data = TopLevelPropertyTemplateData(
         options, packageGraph, lib, property, _sidebarForLibrary.getRenderFor);
     var content = templates.renderTopLevelProperty(data);
@@ -322,8 +317,8 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
   }
 
   @override
-  void generateTypeDef(FileWriter writer, PackageGraph packageGraph,
-      Library lib, Typedef typeDef) {
+  void generateTypeDef(
+      PackageGraph packageGraph, Library lib, Typedef typeDef) {
     var data = TypedefTemplateData(
         options, packageGraph, lib, typeDef, _sidebarForLibrary.getRenderFor);
     var content = templates.renderTypedef(data);
@@ -332,5 +327,5 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
   }
 
   @override
-  Future<void> generateAdditionalFiles(FileWriter writer) async {}
+  Future<void> generateAdditionalFiles() async {}
 }

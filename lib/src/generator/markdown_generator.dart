@@ -12,26 +12,29 @@ import 'package:dartdoc/src/model/package.dart';
 import 'package:dartdoc/src/model/package_graph.dart';
 import 'package:meta/meta.dart';
 
-/// Creates a [Generator] with an [MarkdownGeneratorBackend] backend.
+/// Creates a [Generator] with a [MarkdownGeneratorBackend] backend.
 ///
 /// [forceRuntimeTemplates] should only be given [true] during tests.
-Future<Generator> initMarkdownGenerator(DartdocGeneratorOptionContext context,
-    {@visibleForTesting bool forceRuntimeTemplates = false}) async {
+Future<Generator> initMarkdownGenerator(
+  DartdocGeneratorOptionContext context, {
+  required FileWriter writer,
+  @visibleForTesting bool forceRuntimeTemplates = false,
+}) async {
   var templates = await Templates.fromContext(context);
   var options = DartdocGeneratorBackendOptions.fromContext(context);
-  var backend =
-      MarkdownGeneratorBackend(options, templates, context.resourceProvider);
+  var backend = MarkdownGeneratorBackend(
+      options, templates, writer, context.resourceProvider);
   return GeneratorFrontEnd(backend);
 }
 
 /// Generator backend for Markdown output.
 class MarkdownGeneratorBackend extends GeneratorBackendBase {
   MarkdownGeneratorBackend(
-      super.options, super.templates, super.resourceProvider);
+      super.options, super.templates, super.writer, super.resourceProvider);
 
   @override
-  void generatePackage(FileWriter writer, PackageGraph graph, Package package) {
-    super.generatePackage(writer, graph, package);
+  void generatePackage(PackageGraph graph, Package package) {
+    super.generatePackage(graph, package);
     // We have to construct the data again. This only happens once per package.
     var data = PackageTemplateData(options, graph, package);
     var content = templates.renderError(data);
