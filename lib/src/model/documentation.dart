@@ -13,37 +13,60 @@ class Documentation {
 
   Documentation.forElement(this._element);
 
-  String? _asHtml;
+  /// The documentation text, rendered with the appropriate
+  /// [DocumentationRenderer].
+  late final String _asHtml;
 
-  String? get asHtml {
-    if (_asHtml == null) {
-      assert(_asOneLiner == null || _element.isCanonical);
-      _renderDocumentation(processFullText: true);
+  /// The first sentence of the documentation text, rendered with the
+  /// appropriate [DocumentationRenderer].
+  late final String _asOneLiner;
+
+  /// A guard against re-computing [_asHtml].
+  bool _hasHtmlBeenRendered = false;
+
+  /// A guard against re-computing [_asHOneLiner].
+  bool _hasOneLinerBeenRendered = false;
+
+  String get asHtml {
+    if (_hasHtmlBeenRendered) {
+      return _asHtml;
     }
+    if (_hasOneLinerBeenRendered) {
+      // Since [_asHtml] and [_asOneLiner] _could_ have been set in
+      // [asOneLiner], we guard here against setting [asOneLiner] but not
+      // setting [asHtml] (unless [_element] is not canonical). It's an awkward
+      // situation where one public getter might set both fields, but might only
+      // set one. We have this awkward check to make sure we set both fields if
+      // we'll need both fields.
+      assert(_element.isCanonical);
+      return _asHtml;
+    }
+
+    _renderDocumentation(storeFullText: true);
+    _hasHtmlBeenRendered = true;
     return _asHtml;
   }
 
-  String? _asOneLiner;
-
-  String? get asOneLiner {
-    if (_asOneLiner == null) {
-      assert(_asHtml == null);
-      _renderDocumentation(processFullText: _element.isCanonical);
+  String get asOneLiner {
+    if (_hasOneLinerBeenRendered || _hasHtmlBeenRendered) {
+      return _asOneLiner;
     }
+    _renderDocumentation(storeFullText: _element.isCanonical);
+    _hasOneLinerBeenRendered = true;
     return _asOneLiner;
   }
 
-  void _renderDocumentation({required bool processFullText}) {
-    var parseResult = _parseDocumentation(processFullText: processFullText);
+  void _renderDocumentation({required bool storeFullText}) {
+    var parseResult = _parseDocumentation(processFullText: storeFullText);
 
     var renderResult = _renderer.render(parseResult,
-        processFullDocs: processFullText,
+        processFullDocs: storeFullText,
         sanitizeHtml: _element.config.sanitizeHtml);
 
-    if (processFullText) {
+    if (storeFullText) {
       _asHtml = renderResult.asHtml;
     }
-    _asOneLiner ??= renderResult.asOneLiner;
+    _asOneLiner = renderResult.asOneLiner;
   }
 
   List<md.Node> _parseDocumentation({required bool processFullText}) {

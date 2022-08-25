@@ -64,7 +64,7 @@ mixin DocumentationComment
       }();
 
   @override
-  late final String? documentationAsHtml =
+  late final String documentationAsHtml =
       _injectHtmlFragments(elementDocumentation.asHtml);
 
   late final Documentation elementDocumentation =
@@ -908,10 +908,10 @@ mixin DocumentationComment
   ///
   /// And the HTML fragment will not have been processed or changed by Markdown,
   /// but just injected verbatim.
-  String? _injectHtmlFragments(String? rawDocs) {
+  String _injectHtmlFragments(String rawDocs) {
     if (!config.injectHtml) return rawDocs;
 
-    return rawDocs!.replaceAllMapped(_htmlInjectRegExp, (match) {
+    return rawDocs.replaceAllMapped(_htmlInjectRegExp, (match) {
       var fragment = packageGraph.getHtmlFragment(match[1]);
       if (fragment == null) {
         warn(PackageWarning.unknownHtmlFragment, message: match[1]);

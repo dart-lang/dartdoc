@@ -138,15 +138,15 @@ mixin GetterSetterCombo on ModelElement {
       setter!.hasDocumentation);
 
   @override
-  late final String? oneLineDoc = () {
+  late final String oneLineDoc = () {
     if (!hasAccessorsWithDocs) {
       return super.oneLineDoc;
     } else {
       var buffer = StringBuffer();
-      if (hasPublicGetter && getter!.oneLineDoc!.isNotEmpty) {
+      if (hasPublicGetter && getter!.oneLineDoc.isNotEmpty) {
         buffer.write(getter!.oneLineDoc);
       }
-      if (hasPublicSetter && setter!.oneLineDoc!.isNotEmpty) {
+      if (hasPublicSetter && setter!.oneLineDoc.isNotEmpty) {
         buffer.write(getterSetterBothAvailable ? '' : setter!.oneLineDoc);
       }
       return buffer.toString();

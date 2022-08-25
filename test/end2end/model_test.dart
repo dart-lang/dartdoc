@@ -1298,7 +1298,7 @@ void main() {
       setUpAll(() {
         DocumentWithATable = fakeLibrary.classes
             .firstWhere((cls) => cls.name == 'DocumentWithATable');
-        docsAsHtml = DocumentWithATable.documentationAsHtml!;
+        docsAsHtml = DocumentWithATable.documentationAsHtml;
       });
 
       test('Verify table appearance', () {
@@ -1322,7 +1322,7 @@ void main() {
       test('Verify there is no emoji support', () {
         var tpvar = fakeLibrary.constants
             .firstWhere((t) => t.name == 'hasMarkdownInDoc');
-        var tpvarDocsAsHtml = tpvar.documentationAsHtml!;
+        var tpvarDocsAsHtml = tpvar.documentationAsHtml;
         expect(tpvarDocsAsHtml, contains('3ffe:2a00:100:7031::1'));
       });
     });
@@ -1347,7 +1347,7 @@ void main() {
       late final String docsAsHtml;
 
       setUpAll(() {
-        docsAsHtml = doAwesomeStuff.documentationAsHtml!;
+        docsAsHtml = doAwesomeStuff.documentationAsHtml;
       });
 
       test('Verify links to inherited members inside class', () {
@@ -1616,7 +1616,7 @@ void main() {
 
     test('single ref to class', () {
       expect(
-          B.documentationAsHtml!,
+          B.documentationAsHtml,
           contains(
               '<p>Extends class <a href="${htmlBasePlaceholder}ex/Apple-class.html">Apple</a>, use <a href="${htmlBasePlaceholder}ex/Apple/Apple.html">new Apple</a> or <a href="${htmlBasePlaceholder}ex/Apple/Apple.fromString.html">new Apple.fromString</a></p>'));
     });
@@ -1744,7 +1744,7 @@ void main() {
       var powers = superAwesomeClass.instanceFields
           .firstWhere((p) => p.name == 'powers');
       Iterable<Match> matches =
-          RegExp('In the super class').allMatches(powers.documentationAsHtml!);
+          RegExp('In the super class').allMatches(powers.documentationAsHtml);
       expect(matches, hasLength(1));
     });
   });

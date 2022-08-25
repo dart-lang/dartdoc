@@ -3791,11 +3791,10 @@ class _Renderer_Documentable extends RendererBase<Documentable> {
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
-                  isNullValue: (CT_ c) => c.documentationAsHtml == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(
-                        c.documentationAsHtml!, ast, r.template, sink,
+                    _render_String(c.documentationAsHtml, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -3929,11 +3928,10 @@ class _Renderer_DocumentationComment
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
-                  isNullValue: (CT_ c) => c.documentationAsHtml == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(
-                        c.documentationAsHtml!, ast, r.template, sink,
+                    _render_String(c.documentationAsHtml, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -6349,10 +6347,10 @@ class _Renderer_GetterSetterCombo extends RendererBase<GetterSetterCombo> {
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
-                  isNullValue: (CT_ c) => c.oneLineDoc == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.oneLineDoc!, ast, r.template, sink,
+                    _render_String(c.oneLineDoc, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -8600,11 +8598,10 @@ class _Renderer_MarkdownFileDocumentation
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
-                  isNullValue: (CT_ c) => c.documentationAsHtml == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(
-                        c.documentationAsHtml!, ast, r.template, sink,
+                    _render_String(c.documentationAsHtml, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -8697,10 +8694,10 @@ class _Renderer_MarkdownFileDocumentation
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
-                  isNullValue: (CT_ c) => c.oneLineDoc == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.oneLineDoc!, ast, r.template, sink,
+                    _render_String(c.oneLineDoc, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -10454,10 +10451,10 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
-                  isNullValue: (CT_ c) => c.oneLineDoc == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.oneLineDoc!, ast, r.template, sink,
+                    _render_String(c.oneLineDoc, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -11378,11 +11375,10 @@ class _Renderer_Package extends RendererBase<Package> {
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
-                  isNullValue: (CT_ c) => c.documentationAsHtml == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(
-                        c.documentationAsHtml!, ast, r.template, sink,
+                    _render_String(c.documentationAsHtml, ast, r.template, sink,
                         parent: r);
                   },
                 ),
