@@ -334,7 +334,16 @@ void initializeSearch(
       var noResults = document.createElement('div')
         ..classes.add('search-summary')
         ..innerHtml =
-            'There was not a match for "$input". Please try another search.';
+            'There was not a match for "$input". Want to try searching from additional Dart-related sites? ';
+
+      var buildLink = Uri.parse(
+              'https://dart.dev/search?cx=011220921317074318178%3A_yy-tmb5t_i&ie=UTF-8&hl=en&q=')
+          .replace(queryParameters: {'q': input});
+      var link = document.createElement('a')
+        ..setAttribute('href', buildLink.toString())
+        ..classes.add('seach-options')
+        ..text = 'Search on dart.dev.';
+      noResults.append(link);
       mainContent.append(noResults);
     }
   }
