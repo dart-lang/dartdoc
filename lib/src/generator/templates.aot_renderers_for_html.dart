@@ -3014,8 +3014,6 @@ String _deduplicated_lib_templates_html__head_html(
   buffer.write('''<!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">''');
@@ -3060,6 +3058,7 @@ String _deduplicated_lib_templates_html__head_html(
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
   ''');
   buffer.writeln();
   buffer.write('''
@@ -3149,21 +3148,13 @@ String _deduplicated_lib_templates_html__head_html(
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
-  <div class="sun">
-    <span class="material-symbols-outlined">
-      light_mode
-    </span>
-  </div>
   <div class="toggle" id="theme-button">
-    <label for="theme" class="switch">
+    <label for="theme">
       <input type="checkbox" id="theme" value="light-theme">
-      <span class="slider round"></span>
+      <span class="material-symbols-outlined">
+        brightness_4
+      </span>
     </label>
-  </div>
-  <div class="moon">
-    <span class="material-symbols-outlined">
-      dark_mode
-    </span>
   </div>
 </header>
 <main>''');
