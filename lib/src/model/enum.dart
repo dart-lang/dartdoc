@@ -99,7 +99,7 @@ class EnumField extends Field {
   }
 
   @override
-  String? get oneLineDoc => documentationAsHtml;
+  String get oneLineDoc => documentationAsHtml;
 
   @override
   Inheritable? get overriddenElement => null;
