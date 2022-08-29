@@ -369,9 +369,9 @@ abstract class InheritingContainer extends Container
           // correctly accounts for intermediate abstract classes that have
           // method/field implementations.
           if (inheritanceChainElements.indexOf(combinedMap[nameObj.name]!
-                  .enclosingElement3 as ClassElement?) <
-              inheritanceChainElements
-                  .indexOf(imap[nameObj]!.enclosingElement3 as ClassElement?)) {
+                  .enclosingElement3 as InterfaceElement?) <
+              inheritanceChainElements.indexOf(
+                  imap[nameObj]!.enclosingElement3 as InterfaceElement?)) {
             combinedMap[nameObj.name] = imap[nameObj];
           }
         } else {

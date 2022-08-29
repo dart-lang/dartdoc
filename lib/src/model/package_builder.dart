@@ -500,7 +500,15 @@ class DartDocResolvedLibrary {
       var unit = _units[fullName];
       if (unit != null) {
         var locator = NodeLocator2(element.nameOffset);
-        return locator.searchWithin(unit)?.parent;
+        var node = locator.searchWithin(unit);
+        if (node is SimpleIdentifier) {
+          // TODO(scheglov) Remove this branch after the breaking change for
+          // the analyzer, when we start returning the declaring node, not
+          // the name, which will be just a `Token`.
+          return node.parent;
+        } else {
+          return node;
+        }
       }
     }
     return null;

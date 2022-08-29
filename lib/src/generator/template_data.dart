@@ -454,7 +454,7 @@ class PropertyTemplateData extends TemplateData<Field>
   PropertyTemplateData(super.htmlOptions, super.packageGraph, this.library,
       this.container, this.property, this._sidebarForContainer)
       : _containerDescription =
-            container is ClassElement ? 'class' : 'extension';
+            container is InterfaceElement ? 'class' : 'extension';
 
   String get sidebarForContainer => _sidebarForContainer(container, this);
 
