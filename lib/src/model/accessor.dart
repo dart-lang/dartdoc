@@ -219,7 +219,7 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
     if (!_overriddenElementIsSet) {
       _overriddenElementIsSet = true;
       var parent = element.enclosingElement3;
-      if (parent is ClassElement) {
+      if (parent is InterfaceElement) {
         for (var t in parent.allSupertypes) {
           Element? accessor =
               isGetter ? t.getGetter(element.name) : t.getSetter(element.name);

@@ -349,7 +349,7 @@ abstract class ModelElement extends Canonicalization
       if (e.aliasedType is FunctionType) {
         return FunctionTypedef(e, library, packageGraph);
       }
-      if (DartTypeExtension(e.aliasedType).element is ClassElement) {
+      if (DartTypeExtension(e.aliasedType).element is InterfaceElement) {
         return ClassTypedef(e, library, packageGraph);
       }
       return GeneralizedTypedef(e, library, packageGraph);
@@ -375,8 +375,8 @@ abstract class ModelElement extends Canonicalization
     }
     if (e is PropertyAccessorElement) {
       // Accessors can be part of a [Container], or a part of a [Library].
-      if (e.enclosingElement3 is ClassElement ||
-          e.enclosingElement3 is ExtensionElement ||
+      if (e.enclosingElement3 is ExtensionElement ||
+          e.enclosingElement3 is InterfaceElement ||
           e is MultiplyInheritedExecutableElement) {
         if (enclosingContainer == null) {
           return ContainerAccessor(e, library, packageGraph);

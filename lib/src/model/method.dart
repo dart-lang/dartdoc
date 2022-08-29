@@ -104,7 +104,7 @@ class Method extends ModelElement
     if (_enclosingContainer is Extension) {
       return null;
     }
-    var parent = element.enclosingElement3 as ClassElement;
+    var parent = element.enclosingElement3 as InterfaceElement;
     for (var t in parent.allSupertypes) {
       Element? e = t.getMethod(element.name);
       if (e != null) {
