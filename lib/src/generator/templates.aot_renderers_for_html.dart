@@ -3056,7 +3056,6 @@ String _deduplicated_lib_templates_html__head_html(
   buffer.write('''
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
   ''');
   buffer.writeln();
@@ -3931,7 +3930,8 @@ String _deduplicated_lib_templates_html__source_link_html(
     buffer.write('''
   <div id="external-links" class="btn-group"><a title="View source code" class="source-link" href="''');
     buffer.write(context0.sourceHref);
-    buffer.write('''"><i class="material-icons">description</i></a></div>''');
+    buffer.write(
+        '''"><span class="material-symbols-outlined">description</span></a></div>''');
   }
   buffer.writeln();
 

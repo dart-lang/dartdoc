@@ -81,7 +81,7 @@
   display: none;
 }
 
-.material-symbols-outlined {
+#theme-button .material-symbols-outlined {
   padding-top: 6px;
   color: var(--main-icon-color);
 }
@@ -606,11 +606,8 @@ h1 .feature {
 
 .source-link {
   padding: 18px 4px;
-  vertical-align: middle;
-}
-
-.source-link .material-icons {
   font-size: 18px;
+  vertical-align: middle;
 }
 
 @media (max-width: 840px) {

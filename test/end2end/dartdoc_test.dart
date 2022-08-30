@@ -160,7 +160,7 @@ void main() {
             anonymousOutput.readAsStringSync(),
             contains(r'<a title="View source code" class="source-link" '
                 'href="https://github.com/dart-lang/dartdoc/blob/master/testing/test_package/lib/anonymous_library.dart#L1">'
-                '<i class="material-icons">description</i></a>'));
+                '<i class="material-symbols-outlined">description</i></a>'));
       });
     });
 
