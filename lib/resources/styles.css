@@ -81,9 +81,11 @@
   display: none;
 }
 
-.material-symbols-outlined {
+#theme-button .material-symbols-outlined {
   padding-top: 6px;
   color: var(--main-icon-color);
+  user-select: none;
+  cursor: pointer;
 }
 
 /* for layout */
@@ -1059,7 +1061,7 @@ button {
   padding-right: 60px;
 }
 
-#theme-button.toggle {
+#theme-button {
   position: absolute;
   right: 30px;
 }
