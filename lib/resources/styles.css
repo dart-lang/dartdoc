@@ -608,11 +608,8 @@ h1 .feature {
 
 .source-link {
   padding: 18px 4px;
-  vertical-align: middle;
-}
-
-.source-link .material-icons {
   font-size: 18px;
+  vertical-align: middle;
 }
 
 @media (max-width: 840px) {
