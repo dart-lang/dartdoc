@@ -34,8 +34,9 @@ class Class extends InheritingContainer
   bool get isAbstract => element.isAbstract;
 
   bool get isErrorOrException {
-    bool isError(InterfaceElement element) => (element.library.isDartCore &&
-        (element.name == 'Exception' || element.name == 'Error'));
+    bool isError(InterfaceElement element) =>
+        element.library.isDartCore &&
+        (element.name == 'Exception' || element.name == 'Error');
 
     final element = this.element;
     if (isError(element)) return true;

@@ -149,7 +149,7 @@ class _IterableBlockParser extends md.BlockParser {
       for (var syntax in blockSyntaxes) {
         if (syntax.canParse(this)) {
           var block = syntax.parse(this);
-          if (block != null) yield (block);
+          if (block != null) yield block;
           break;
         }
       }

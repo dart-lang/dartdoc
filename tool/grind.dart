@@ -102,7 +102,7 @@ Future<FlutterRepo> get cleanFlutterRepo async {
     cleanFlutterDir.createSync(recursive: true);
     await newRepo._init();
     await lastSynced
-        .writeAsString((DateTime.now()).millisecondsSinceEpoch.toString());
+        .writeAsString(DateTime.now().millisecondsSinceEpoch.toString());
   }
   repoCompleter.complete(newRepo);
   _cleanFlutterRepo = repoCompleter;

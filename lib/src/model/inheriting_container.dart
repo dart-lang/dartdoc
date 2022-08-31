@@ -243,9 +243,9 @@ abstract class InheritingContainer extends Container
     var methodNames = declaredMethods.map((m) => m.element.name).toSet();
     var inheritedMethodElements =
         _inheritedElements!.whereType<MethodElement>().where((e) {
-      return (!e.isOperator &&
+      return !e.isOperator &&
           e is! PropertyAccessorElement &&
-          !methodNames.contains(e.name));
+          !methodNames.contains(e.name);
     }).toSet();
 
     return [
@@ -263,7 +263,7 @@ abstract class InheritingContainer extends Container
     var operatorNames = declaredOperators.map((o) => o.element.name).toSet();
     var inheritedOperatorElements = _inheritedElements!
         .whereType<MethodElement>()
-        .where((e) => (e.isOperator && !operatorNames.contains(e.name)))
+        .where((e) => e.isOperator && !operatorNames.contains(e.name))
         .toSet();
 
     return [
@@ -284,7 +284,7 @@ abstract class InheritingContainer extends Container
 
   /// Returns true if [other] is a parent class for this class.
   bool _isInheritingFrom(InheritingContainer? other) => superChain
-      .map((et) => (et.modelElement as InheritingContainer))
+      .map((et) => et.modelElement as InheritingContainer)
       .contains(other);
 
   DefinedElementType? _modelType;
