@@ -1,3 +1,7 @@
+## 6.0.2-dev
+
+* Trimmed the implementation source code of fields to improve rendering.
+
 ## 6.0.1
 
 * Allow `Parameter.enclosingElement` to be nullable.

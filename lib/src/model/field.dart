@@ -163,7 +163,7 @@ class Field extends ModelElement
     if (fieldSourceCode != setterSourceCode) {
       buffer.write(setterSourceCode);
     }
-    return buffer.toString();
+    return buffer.toString().trim();
   }();
 
   @override
