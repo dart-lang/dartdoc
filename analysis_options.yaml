@@ -25,7 +25,6 @@ linter:
     - avoid_dynamic_calls
     - avoid_slow_async_io
     - avoid_unused_constructor_parameters
-    - depend_on_referenced_packages
     - directives_ordering
     - no_adjacent_strings_in_list
     - omit_local_variable_types
@@ -38,5 +37,5 @@ linter:
     - type_annotate_public_apis
     - unawaited_futures
     - unnecessary_lambdas
-    - unnecessary_null_aware_assignments
+    - unnecessary_parenthesis
     - use_super_parameters

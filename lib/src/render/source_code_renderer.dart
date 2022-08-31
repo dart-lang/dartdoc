@@ -22,6 +22,6 @@ class SourceCodeRendererHtml implements SourceCodeRenderer {
 
   @override
   String renderSourceCode(String source) {
-    return (const HtmlEscape()).convert(source);
+    return const HtmlEscape().convert(source);
   }
 }

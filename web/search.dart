@@ -494,7 +494,7 @@ void initializeSearch(
       } else if (selectedElement == 0) {
         selectedElement = null;
       } else {
-        selectedElement = (selectedElement! - 1);
+        selectedElement = selectedElement! - 1;
       }
     } else if (event.code == 'ArrowDown') {
       if (selectedElement == null) {
@@ -502,7 +502,7 @@ void initializeSearch(
       } else if (selectedElement == lastIndex) {
         selectedElement = null;
       } else {
-        selectedElement = (selectedElement! + 1);
+        selectedElement = selectedElement! + 1;
       }
     } else {
       if (storedValue != null) {

@@ -134,7 +134,7 @@ class UndefinedElementType extends ElementType {
   String get name {
     if (type.isVoid) return 'void';
     if (type.isDynamic) return 'dynamic';
-    assert((const {'Never'}).contains(typeElement!.name),
+    assert(const {'Never'}.contains(typeElement!.name),
         'Unrecognized type for UndefinedElementType: ${type.toString()}');
     return typeElement!.name!;
   }
@@ -283,7 +283,7 @@ abstract class DefinedElementType extends ElementType {
   @override
   String get fullyQualifiedName => modelElement.fullyQualifiedName;
 
-  bool get isParameterType => (type is TypeParameterType);
+  bool get isParameterType => type is TypeParameterType;
 
   /// This type is a public type if the underlying, canonical element is public.
   /// This avoids discarding the resolved type information as canonicalization
