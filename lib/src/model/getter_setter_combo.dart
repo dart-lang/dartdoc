@@ -129,13 +129,14 @@ mixin GetterSetterCombo on ModelElement {
   }();
 
   bool get hasAccessorsWithDocs =>
-      (hasPublicGetter && !getter!.isSynthetic && getter!.hasDocumentation ||
-          hasPublicSetter && !setter!.isSynthetic && setter!.hasDocumentation);
+      hasPublicGetter && !getter!.isSynthetic && getter!.hasDocumentation ||
+      hasPublicSetter && !setter!.isSynthetic && setter!.hasDocumentation;
 
-  bool get getterSetterBothAvailable => (hasPublicGetter &&
+  bool get getterSetterBothAvailable =>
+      hasPublicGetter &&
       getter!.hasDocumentation &&
       hasPublicSetter &&
-      setter!.hasDocumentation);
+      setter!.hasDocumentation;
 
   @override
   late final String oneLineDoc = () {
@@ -243,7 +244,7 @@ mixin GetterSetterCombo on ModelElement {
 
   bool get hasSetter => setter != null;
 
-  bool get hasPublicGetterNoSetter => (hasPublicGetter && !hasPublicSetter);
+  bool get hasPublicGetterNoSetter => hasPublicGetter && !hasPublicSetter;
 
   String get arrow {
     // →

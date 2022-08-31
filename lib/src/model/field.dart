@@ -135,7 +135,7 @@ class Field extends ModelElement
     return allFeatures;
   }
 
-  FieldElement? get field => (element as FieldElement?);
+  FieldElement? get field => element as FieldElement?;
 
   @override
   String get fileName => '${isConst ? '$name-constant' : name}.$fileType';

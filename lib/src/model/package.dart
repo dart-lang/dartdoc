@@ -47,8 +47,8 @@ class Package extends LibraryContainer
   factory Package.fromPackageMeta(
       PackageMeta packageMeta, PackageGraph packageGraph) {
     var packageName = packageMeta.name;
-    var expectNonLocal = (!packageGraph.packageMap.containsKey(packageName) &&
-        packageGraph.allLibrariesAdded);
+    var expectNonLocal = !packageGraph.packageMap.containsKey(packageName) &&
+        packageGraph.allLibrariesAdded;
     var packagePath = packageGraph.resourceProvider.pathContext
         .canonicalize(packageMeta.dir.path);
     var package = packageGraph.packageMap.putIfAbsent(

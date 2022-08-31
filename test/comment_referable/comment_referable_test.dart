@@ -164,7 +164,7 @@ void main() {
 
     test('Check that filters work', () {
       expect(referable.lookup('lib3'), isA<TopChild>());
-      expect(referable.lookup('lib3', filter: ((r) => r is GenericChild)),
+      expect(referable.lookup('lib3', filter: (r) => r is GenericChild),
           isA<GenericChild>());
     });
 
@@ -178,7 +178,7 @@ void main() {
       expect(sub2.lookup('lib4.sub1'), equals(tooDeepSub1));
       expect(
           sub2.lookup('lib4.sub1',
-              allowTree: ((r) => r is Base && (r.parent is Top))),
+              allowTree: (r) => r is Base && (r.parent is Top)),
           equals(sub1));
     });
 

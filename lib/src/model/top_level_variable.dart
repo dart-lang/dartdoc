@@ -79,8 +79,7 @@ class TopLevelVariable extends ModelElement
   @override
   String get fileName => '${isConst ? '$name-constant' : name}.$fileType';
 
-  TopLevelVariableElement? get _variable =>
-      (element as TopLevelVariableElement?);
+  TopLevelVariableElement? get _variable => element as TopLevelVariableElement?;
 
   @override
   Iterable<CommentReferable> get referenceParents => [definingLibrary];
