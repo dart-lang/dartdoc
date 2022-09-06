@@ -1,6 +1,17 @@
-## 6.0.2-dev
+## 6.1.0
 
 * Trimmed the implementation source code of fields to improve rendering.
+* Display various "features" of an element (like "read-only" or "final" or
+  "inherited") as badges.
+* Introduce a toggle for a "Dark Mode" style.
+* Bump markdown to 6.0.0.
+* Bump analyzer to 4.6.0.
+* Introduce a search results page. This allows linking to a page of search
+  results, and a full screen view of all results for a search.
+* Introduce a search fallback, in the case of no results, using the search
+  feature at <https://dart.dev/search>.
+* Display whether a method is `static`, on its page.
+
 
 ## 6.0.1
 
