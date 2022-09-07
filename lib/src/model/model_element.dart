@@ -805,6 +805,7 @@ abstract class ModelElement extends Canonicalization
   String? get linkedParamsNoMetadata =>
       _parameterRenderer.renderLinkedParams(parameters, showMetadata: false);
 
+  @Deprecated('Unused, will be removed')
   String get linkedParamsNoMetadataOrNames => _parameterRenderer
       .renderLinkedParams(parameters, showMetadata: false, showNames: false);
 
