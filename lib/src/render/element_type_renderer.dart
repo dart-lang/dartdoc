@@ -337,10 +337,17 @@ class CallableElementTypeRendererMd
   }
 
   @override
-  String renderNameWithGenerics(CallableElementType elementType) =>
-      _renderNameWithGenerics(
-        elementType,
-        elementType.name,
-        elementType.typeArguments,
-      );
+  String renderNameWithGenerics(CallableElementType elementType) {
+    var buffer = StringBuffer()..write(elementType.name);
+    if (elementType.typeArguments.isNotEmpty &&
+        !elementType.typeArguments.every((t) => t.name == 'dynamic')) {
+      buffer
+        ..write('&lt;')
+        ..writeAll(
+            elementType.typeArguments.map((t) => t.nameWithGenerics), ', ')
+        ..write('>');
+    }
+    buffer.write(elementType.nullabilitySuffix);
+    return buffer.toString();
+  }
 }

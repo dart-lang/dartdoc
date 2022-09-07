@@ -310,10 +310,7 @@ typedef int LotsAndLotsOfParameters(so, many, parameters, it, should, wrap,
     when, converted, to, html, documentation);
 
 /// This class is cool!
-class Cool {
-  // ignore: body_might_complete_normally
-  Cool returnCool() {}
-}
+class Cool {}
 
 /// A map initialization making use of optional const.
 const Map<int, String> myMap = {1: "hello"};
@@ -816,9 +813,6 @@ FutureOr thisIsFutureOr() => null;
 
 /// Explicitly return a `FutureOr<Null>`.
 FutureOr<Null> thisIsFutureOrNull() => null;
-
-/// Explicitly return a `FutureOr<T>`.
-FutureOr<T>? thisIsFutureOrT<T>() => null;
 
 /// Has a parameter explicitly typed `FutureOr<Null>`.
 void paramOfFutureOrNull(FutureOr<Null> future) {}
