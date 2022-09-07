@@ -15751,6 +15751,7 @@ const _invisibleGetters = {
     'isDartCoreNull',
     'isDartCoreNum',
     'isDartCoreObject',
+    'isDartCoreRecord',
     'isDartCoreSet',
     'isDartCoreString',
     'isDartCoreSymbol',
@@ -16010,6 +16011,8 @@ const _invisibleGetters = {
     'runtimeType'
   },
   'FunctionType': {
+    'element',
+    'element2',
     'hashCode',
     'namedParameterTypes',
     'normalParameterNames',
