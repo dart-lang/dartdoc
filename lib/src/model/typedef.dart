@@ -114,7 +114,12 @@ class ClassTypedef extends Typedef {
 /// A typedef referring to a function type.
 class FunctionTypedef extends Typedef {
   FunctionTypedef(super.element, super.library, super.packageGraph) {
-    assert(isCallable);
+    assert(
+        isCallable,
+        'Expected callable but: ${element.runtimeType} is FunctionTypedElement '
+        '|| (${element.runtimeType} is TypeAliasElement && '
+        '${element.aliasedElement.runtimeType} is FunctionTypedElement) is not '
+        'true');
   }
 
   @override
