@@ -119,7 +119,7 @@ class FunctionTypedef extends Typedef {
         'Expected callable but: ${element.runtimeType} is FunctionTypedElement '
         '|| (${element.runtimeType} is TypeAliasElement && '
         '${element.aliasedElement.runtimeType} is FunctionTypedElement) is not '
-        'true');
+        'true for "${element.name}" in "${element.library}"');
   }
 
   @override
