@@ -19,7 +19,7 @@ abstract class ModelElementRenderer {
     var allFeatures = modelElement.features.toList()..sort(byFeatureOrdering);
     return allFeatures
         .map((f) =>
-            '<span class="${f.cssClassName} ${f.linkedNameWithParameters}">${f.linkedNameWithParameters}</span>')
+            '<span class="${f.cssClassName}">${f.linkedNameWithParameters}</span>')
         .join();
   }
 }
