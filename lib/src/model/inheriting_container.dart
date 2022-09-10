@@ -28,7 +28,7 @@ mixin Constructable on InheritingContainer {
 
   @override
   late final List<Constructor> publicConstructorsSorted =
-      model_utils.filterNonPublic(constructors).toList()..sort();
+      model_utils.filterNonPublic(constructors).toList(growable: false)..sort();
 
   static Iterable<MapEntry<String, CommentReferable>> _constructorGenerator(
       Iterable<Constructor> source) sync* {
@@ -171,7 +171,8 @@ mixin TypeImplementing on InheritingContainer {
   List<InheritingContainer>? _publicImplementorsSorted;
 
   Iterable<InheritingContainer> get publicImplementorsSorted =>
-      _publicImplementorsSorted ??= publicImplementors.toList()..sort(byName);
+      _publicImplementorsSorted ??= publicImplementors.toList(growable: false)
+        ..sort(byName);
 }
 
 /// A [Container] that participates in inheritance in Dart.
@@ -354,7 +355,7 @@ abstract class InheritingContainer extends Container
           // Elements in the inheritance chain starting from [this.element]
           // down to, but not including, [Object].
           inheritanceChainElements ??=
-              inheritanceChain.map((c) => c!.element).toList();
+              inheritanceChain.map((c) => c!.element).toList(growable: false);
           // [packageGraph.specialClasses] is not available yet.
           bool isDartCoreObject(ClassElement e) =>
               e.name == 'Object' && e.library.name == 'dart.core';
@@ -379,7 +380,7 @@ abstract class InheritingContainer extends Container
         }
       }
 
-      __inheritedElements = combinedMap.values.toList();
+      __inheritedElements = combinedMap.values.toList(growable: false);
     }
     return __inheritedElements;
   }
@@ -419,7 +420,7 @@ abstract class InheritingContainer extends Container
     // Now we only have inherited accessors who aren't associated with
     // anything in cls._fields.
     for (var fieldName in accessorMap.keys) {
-      var elements = accessorMap[fieldName]!.toList();
+      var elements = accessorMap[fieldName]!.toList(growable: false);
       var getterElement = elements.firstWhereOrNull((e) => e.isGetter);
       var setterElement = elements.firstWhereOrNull((e) => e.isSetter);
       fields.add(_createSingleField(
@@ -519,7 +520,7 @@ abstract class InheritingContainer extends Container
     _typeParameters ??= element.typeParameters.map((f) {
       var lib = modelBuilder.fromElement(f.enclosingElement3!.library!);
       return modelBuilder.from(f, lib as Library) as TypeParameter;
-    }).toList();
+    }).toList(growable: false);
     return _typeParameters!;
   }
 

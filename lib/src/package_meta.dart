@@ -396,7 +396,7 @@ class _FilePackageMeta extends PubPackageMeta {
 }
 
 File? _locate(Folder dir, List<String> fileNames) {
-  var files = dir.getChildren().whereType<File>().toList();
+  var files = dir.getChildren().whereType<File>().toList(growable: false);
 
   for (var name in fileNames) {
     for (var f in files) {

@@ -87,7 +87,7 @@ List<DartdocOption<Object?>> createPackageWarningOptions(
 String _warningsListHelpText(PackageWarningMode mode) {
   return (packageWarningDefinitions.values
           .where((d) => d.defaultWarningMode == mode)
-          .toList()
+          .toList(growable: false)
         ..sort())
       .map((d) => '   ${d.warningName}: ${d.shortHelp}')
       .join('\n');

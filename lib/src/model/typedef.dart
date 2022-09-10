@@ -62,7 +62,7 @@ abstract class Typedef extends ModelElement
   @override
   List<TypeParameter> get typeParameters => element.typeParameters
       .map((f) => modelBuilder.from(f, library) as TypeParameter)
-      .toList();
+      .toList(growable: false);
 
   TypedefRenderer get _renderer => packageGraph.rendererFactory.typedefRenderer;
 
