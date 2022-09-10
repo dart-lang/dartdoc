@@ -18,10 +18,9 @@ import 'package:meta/meta.dart';
 /// Note that [Constructor]s are not considered to be modifiers so a
 /// [hasModifiers] override is not necessary for this mixin.
 mixin Constructable on InheritingContainer {
-  late final Iterable<Constructor> constructors = [
-    ...element.constructors
-        .map((e) => modelBuilder.from(e, library) as Constructor)
-  ];
+  late final Iterable<Constructor> constructors = element.constructors
+      .map((e) => modelBuilder.from(e, library) as Constructor)
+      .toList(growable: false);
 
   @override
   bool get hasPublicConstructors => publicConstructorsSorted.isNotEmpty;
@@ -67,10 +66,9 @@ mixin Constructable on InheritingContainer {
 
 /// Add the ability to support mixed-in types to an [InheritingContainer].
 mixin MixedInTypes on InheritingContainer {
-  late final List<DefinedElementType> mixedInTypes = [
-    ...element.mixins
-        .map((f) => modelBuilder.typeFrom(f, library) as DefinedElementType)
-  ];
+  late final List<DefinedElementType> mixedInTypes = element.mixins
+      .map((f) => modelBuilder.typeFrom(f, library) as DefinedElementType)
+      .toList(growable: false);
 
   bool get hasPublicMixedInTypes => publicMixedInTypes.isNotEmpty;
 
@@ -168,10 +166,8 @@ mixin TypeImplementing on InheritingContainer {
     return result;
   }
 
-  List<InheritingContainer>? _publicImplementorsSorted;
-
-  Iterable<InheritingContainer> get publicImplementorsSorted =>
-      _publicImplementorsSorted ??= publicImplementors.toList()..sort(byName);
+  late final List<InheritingContainer> publicImplementorsSorted =
+      publicImplementors.toList()..sort(byName);
 }
 
 /// A [Container] that participates in inheritance in Dart.
@@ -221,13 +217,12 @@ abstract class InheritingContainer extends Container
   @override
   List<ModelElement> get allModelElements => _allModelElements;
 
-  /// Returns the [InheritingContainer] with the library in which [element] is defined.
+  /// The [InheritingContainer] with the library in which [element] is defined.
   InheritingContainer get definingContainer =>
       modelBuilder.from(element, definingLibrary) as InheritingContainer;
 
-  /// Returns the library that encloses this element.
   @override
-  ModelElement get enclosingElement => library;
+  Library get enclosingElement => library;
 
   String get fullkind => kind;
 
@@ -241,12 +236,13 @@ abstract class InheritingContainer extends Container
 
   late final Iterable<Method> inheritedMethods = () {
     var methodNames = declaredMethods.map((m) => m.element.name).toSet();
-    var inheritedMethodElements =
-        _inheritedElements!.whereType<MethodElement>().where((e) {
-      return !e.isOperator &&
-          e is! PropertyAccessorElement &&
-          !methodNames.contains(e.name);
-    }).toSet();
+    var inheritedMethodElements = _inheritedElements
+        .whereType<MethodElement>()
+        .where((e) =>
+            !e.isOperator &&
+            e is! PropertyAccessorElement &&
+            !methodNames.contains(e.name))
+        .toSet();
 
     return [
       for (var e in inheritedMethodElements)
@@ -261,7 +257,7 @@ abstract class InheritingContainer extends Container
 
   late final List<Operator> inheritedOperators = () {
     var operatorNames = declaredOperators.map((o) => o.element.name).toSet();
-    var inheritedOperatorElements = _inheritedElements!
+    var inheritedOperatorElements = _inheritedElements
         .whereType<MethodElement>()
         .where((e) => e.isOperator && !operatorNames.contains(e.name))
         .toSet();
@@ -287,11 +283,9 @@ abstract class InheritingContainer extends Container
       .map((et) => et.modelElement as InheritingContainer)
       .contains(other);
 
-  DefinedElementType? _modelType;
-
   @override
-  DefinedElementType get modelType => (_modelType ??=
-      modelBuilder.typeFrom(element.thisType, library) as DefinedElementType?)!;
+  late final DefinedElementType modelType =
+      modelBuilder.typeFrom(element.thisType, library) as DefinedElementType;
 
   /// Not the same as superChain as it may include mixins.
   ///
@@ -323,16 +317,15 @@ abstract class InheritingContainer extends Container
     return typeChain;
   }
 
-  late final List<DefinedElementType> publicSuperChain = [
-    ...model_utils.filterNonPublic(superChain)
-  ];
+  late final List<DefinedElementType> publicSuperChain =
+      model_utils.filterNonPublic(superChain).toList(growable: false);
 
   Iterable<DefinedElementType> get publicSuperChainReversed =>
       publicSuperChain.reversed;
 
   List<ExecutableElement?>? __inheritedElements;
 
-  List<ExecutableElement?>? get _inheritedElements {
+  List<ExecutableElement?> get _inheritedElements {
     if (__inheritedElements == null) {
       if (element is ClassElement &&
           (element as ClassElement).isDartCoreObject) {
@@ -381,43 +374,46 @@ abstract class InheritingContainer extends Container
 
       __inheritedElements = combinedMap.values.toList();
     }
-    return __inheritedElements;
+    return __inheritedElements!;
   }
 
   late final List<Field> allFields = () {
-    var fields = <Field>[];
-    var inheritedAccessorElements = <PropertyAccessorElement>{}
-      ..addAll(_inheritedElements!.whereType<PropertyAccessorElement>());
+    var inheritedAccessorElements = {
+      ..._inheritedElements.whereType<PropertyAccessorElement>()
+    };
 
     // This structure keeps track of inherited accessors, allowing lookup
     // by field name (stripping the '=' from setters).
     var accessorMap = <String, List<PropertyAccessorElement>>{};
     for (var accessorElement in inheritedAccessorElements) {
-      var name = accessorElement.name.replaceFirst('=', '');
-      accessorMap.putIfAbsent(name, () => []).add(accessorElement);
+      accessorMap
+          .putIfAbsent(accessorElement.name.replaceFirst('=', ''), () => [])
+          .add(accessorElement);
     }
+
+    var fields = <Field>[];
 
     // For half-inherited fields, the analyzer only links the non-inherited
     // to the [FieldElement].  Compose our [Field] class by hand by looking up
     // inherited accessors that may be related.
-    for (var f in element.fields) {
-      var getterElement = f.getter;
-      if (getterElement == null && accessorMap.containsKey(f.name)) {
+    for (var field in element.fields) {
+      var getterElement = field.getter;
+      if (getterElement == null && accessorMap.containsKey(field.name)) {
         getterElement =
-            accessorMap[f.name]!.firstWhereOrNull((e) => e.isGetter);
+            accessorMap[field.name]!.firstWhereOrNull((e) => e.isGetter);
       }
-      var setterElement = f.setter;
-      if (setterElement == null && accessorMap.containsKey(f.name)) {
+      var setterElement = field.setter;
+      if (setterElement == null && accessorMap.containsKey(field.name)) {
         setterElement =
-            accessorMap[f.name]!.firstWhereOrNull((e) => e.isSetter);
+            accessorMap[field.name]!.firstWhereOrNull((e) => e.isSetter);
       }
       fields.add(_createSingleField(
-          getterElement, setterElement, inheritedAccessorElements, f));
-      accessorMap.remove(f.name);
+          getterElement, setterElement, inheritedAccessorElements, field));
+      accessorMap.remove(field.name);
     }
 
     // Now we only have inherited accessors who aren't associated with
-    // anything in cls._fields.
+    // anything in the fields.
     for (var fieldName in accessorMap.keys) {
       var elements = accessorMap[fieldName]!.toList();
       var getterElement = elements.firstWhereOrNull((e) => e.isGetter);
@@ -434,94 +430,86 @@ abstract class InheritingContainer extends Container
 
   /// Add a single Field to _fields.
   ///
-  /// If [f] is not specified, pick the FieldElement from the PropertyAccessorElement
+  /// If [field] is not specified, pick the FieldElement from the PropertyAccessorElement
   /// whose enclosing class inherits from the other (defaulting to the getter)
   /// and construct a Field using that.
   Field _createSingleField(
       PropertyAccessorElement? getterElement,
       PropertyAccessorElement? setterElement,
       Set<PropertyAccessorElement> inheritedAccessors,
-      [FieldElement? f]) {
-    /// Return an [ContainerAccessor] with isInherited = true
-    /// if [element] is in [inheritedAccessors].
-    ContainerAccessor? containerAccessorFrom(
-        PropertyAccessorElement? element,
-        Set<PropertyAccessorElement> inheritedAccessors,
-        Container enclosingContainer) {
-      ContainerAccessor accessor;
+      [FieldElement? field]) {
+    // Return an [ContainerAccessor] with `isInherited = true` if [element] is
+    // in [inheritedAccessors].
+    ContainerAccessor? containerAccessorFrom(PropertyAccessorElement? element,
+        Set<PropertyAccessorElement> inheritedAccessors) {
       if (element == null) return null;
       if (inheritedAccessors.contains(element)) {
-        accessor = modelBuilder.from(element, enclosingContainer.library,
-            enclosingContainer: enclosingContainer) as ContainerAccessor;
-      } else {
-        accessor = modelBuilder.from(element, enclosingContainer.library)
+        return modelBuilder.from(element, library, enclosingContainer: this)
             as ContainerAccessor;
+      } else {
+        return modelBuilder.from(element, library) as ContainerAccessor;
       }
-      return accessor;
     }
 
-    var getter = containerAccessorFrom(getterElement, inheritedAccessors, this);
-    var setter = containerAccessorFrom(setterElement, inheritedAccessors, this);
+    var getter = containerAccessorFrom(getterElement, inheritedAccessors);
+    var setter = containerAccessorFrom(setterElement, inheritedAccessors);
     // Rebind getterElement/setterElement as ModelElement.from can resolve
     // MultiplyInheritedExecutableElements or resolve Members.
     getterElement = getter?.element;
     setterElement = setter?.element;
-    assert(!(getter == null && setter == null));
-    if (f == null) {
-      // Pick an appropriate FieldElement to represent this element.
-      // Only hard when dealing with a synthetic Field.
+    assert(getter != null || setter != null);
+    if (field == null) {
+      // Pick an appropriate [FieldElement] to represent this element.
+      // Only hard when dealing with a synthetic [Field].
       if (getter != null && setter == null) {
-        f = getterElement!.variable as FieldElement?;
+        field = getterElement!.variable as FieldElement;
       } else if (getter == null && setter != null) {
-        f = setterElement!.variable as FieldElement?;
+        field = setterElement!.variable as FieldElement;
       } else {
-        /* getter != null && setter != null */
+        // In this case: `getter != null && setter != null`.
+        getter!;
+        setter!;
+        final setterEnclosingElement = setter.enclosingElement;
         // In cases where a Field is composed of two Accessors defined in
-        // different places in the inheritance chain, there are two FieldElements
-        // for this single Field we're trying to compose.  Pick the one closest
-        // to this class on the inheritance chain.
-        if (setter!.enclosingElement is Class &&
-            (setter.enclosingElement as Class)._isInheritingFrom(
-                getter!.enclosingElement as InheritingContainer?)) {
-          f = setterElement!.variable as FieldElement?;
+        // different places in the inheritance chain, there are two
+        // [FieldElement]s for this single [Field] we're trying to compose.
+        // Pick the one closest to this class on the inheritance chain.
+        if (setterEnclosingElement is Class &&
+            setterEnclosingElement._isInheritingFrom(
+                getter.enclosingElement as InheritingContainer?)) {
+          field = setterElement!.variable as FieldElement;
         } else {
-          f = getterElement!.variable as FieldElement?;
+          field = getterElement!.variable as FieldElement;
         }
       }
     }
+
     if ((getter == null || getter.isInherited) &&
         (setter == null || setter.isInherited)) {
       // Field is 100% inherited.
-      return modelBuilder.fromPropertyInducingElement(f!, library,
+      return modelBuilder.fromPropertyInducingElement(field, library,
           enclosingContainer: this, getter: getter, setter: setter) as Field;
     } else {
       // Field is <100% inherited (could be half-inherited).
       // TODO(jcollins-g): Navigation is probably still confusing for
       // half-inherited fields when traversing the inheritance tree.  Make
       // this better, somehow.
-      return modelBuilder.fromPropertyInducingElement(f!, library,
+      return modelBuilder.fromPropertyInducingElement(field, library,
           getter: getter, setter: setter) as Field;
     }
   }
 
-  Iterable<Method>? _declaredMethods;
+  @override
+  late final Iterable<Method> declaredMethods =
+      element.methods.map((e) => modelBuilder.from(e, library) as Method);
 
   @override
-  Iterable<Method> get declaredMethods =>
-      _declaredMethods ??= element.methods.map((e) {
-        return modelBuilder.from(e, library) as Method;
-      });
-
-  List<TypeParameter>? _typeParameters;
-
-  @override
-  List<TypeParameter> get typeParameters {
-    _typeParameters ??= element.typeParameters.map((f) {
-      var lib = modelBuilder.fromElement(f.enclosingElement3!.library!);
-      return modelBuilder.from(f, lib as Library) as TypeParameter;
-    }).toList();
-    return _typeParameters!;
-  }
+  late final List<TypeParameter> typeParameters = element.typeParameters
+      .map((typeParameter) => modelBuilder.from(
+          typeParameter,
+          modelBuilder.fromElement(typeParameter.enclosingElement3!.library!)
+              as Library) as TypeParameter)
+      .toList(growable: false);
 
   @override
   Iterable<Field> get instanceFields => allFields.where((f) => !f.isStatic);
