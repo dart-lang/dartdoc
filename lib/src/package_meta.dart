@@ -170,21 +170,15 @@ abstract class PackageMeta {
 abstract class PubPackageMeta extends PackageMeta {
   PubPackageMeta(super.dir, super.resourceProvider);
 
-  static final List<List<String>> _sdkDirFilePaths = () {
-    var pathsToReturn = <List<String>>[];
-    if (Platform.isWindows) {
-      for (var paths in _sdkDirFilePathsPosix) {
-        var windowsPaths = [
-          for (var path in paths)
-            p.joinAll(p.Context(style: p.Style.posix).split(path)),
-        ];
-        pathsToReturn.add(windowsPaths);
-      }
-    } else {
-      pathsToReturn = _sdkDirFilePathsPosix;
-    }
-    return pathsToReturn;
-  }();
+  static final List<List<String>> _sdkDirFilePaths = Platform.isWindows
+      ? [
+          for (var paths in _sdkDirFilePathsPosix)
+            [
+              for (var path in paths)
+                p.joinAll(p.Context(style: p.Style.posix).split(path)),
+            ],
+        ]
+      : _sdkDirFilePathsPosix;
 
   static final _sdkDirParent = <String, Folder?>{};
 
@@ -458,7 +452,7 @@ class _SdkMeta extends PubPackageMeta {
   }
 
   @override
-  List<String> getInvalidReasons() => [];
+  List<String> getInvalidReasons() => const [];
 
   @override
   File? getLicenseContents() => null;

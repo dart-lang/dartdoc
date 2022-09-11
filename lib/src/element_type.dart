@@ -156,13 +156,13 @@ class UndefinedElementType extends ElementType {
   String get linkedName => name;
 
   @override
-  Iterable<ElementType> get typeArguments => [];
+  Iterable<ElementType> get typeArguments => const [];
 
   @override
-  Map<String, CommentReferable> get referenceChildren => {};
+  Map<String, CommentReferable> get referenceChildren => const {};
 
   @override
-  Iterable<CommentReferable> get referenceParents => [];
+  Iterable<CommentReferable> get referenceParents => const [];
 
   @override
   Iterable<CommentReferable>? get referenceGrandparentOverrides => null;
@@ -400,10 +400,10 @@ class CallableElementType extends DefinedElementType with Rendered, Callable {
       packageGraph.rendererFactory.callableElementTypeRenderer;
 
   @override
-  late final Iterable<ElementType> typeArguments =
-      (type.alias?.typeArguments ?? [])
+  late final Iterable<ElementType> typeArguments = type.alias?.typeArguments
           .map((f) => modelBuilder.typeFrom(f, library))
-          .toList(growable: false);
+          .toList(growable: false) ??
+      const [];
 }
 
 /// A non-callable type backed by a [GenericTypeAliasElement].

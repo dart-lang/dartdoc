@@ -115,17 +115,16 @@ mixin GetterSetterCombo on ModelElement {
 
   @override
   late final List<DocumentationComment> documentationFrom = () {
-    var toReturn = <DocumentationComment>[];
-    if (hasPublicGetter) {
-      toReturn.addAll(getter!.documentationFrom);
-    } else if (hasPublicSetter) {
-      toReturn.addAll(setter!.documentationFrom);
-    }
-    if (toReturn.isEmpty ||
-        toReturn.every((e) => e.documentationComment == '')) {
-      toReturn = super.documentationFrom;
-    }
-    return toReturn;
+    var comments = [
+      if (hasPublicGetter)
+        ...getter!.documentationFrom
+      else if (hasPublicSetter)
+        ...setter!.documentationFrom,
+    ];
+    return (comments.isEmpty ||
+            comments.every((e) => e.documentationComment == ''))
+        ? super.documentationFrom
+        : comments;
   }();
 
   bool get hasAccessorsWithDocs =>

@@ -82,7 +82,7 @@ class CategoryConfiguration {
   CategoryConfiguration._(this.categoryDefinitions);
 
   static CategoryConfiguration get empty {
-    return CategoryConfiguration._({});
+    return CategoryConfiguration._(const {});
   }
 
   static CategoryConfiguration fromYamlMap(YamlMap yamlMap,
@@ -123,7 +123,7 @@ class ToolConfiguration {
   ToolConfiguration._(this.tools, this.resourceProvider);
 
   static ToolConfiguration empty(ResourceProvider resourceProvider) {
-    return ToolConfiguration._({}, resourceProvider);
+    return ToolConfiguration._(const {}, resourceProvider);
   }
 
   // TODO(jcollins-g): consider caching these.
@@ -1151,13 +1151,14 @@ abstract class _DartdocArgOption<T> implements DartdocOption<T> {
             hide: hide,
             splitCommas: splitCommas);
       } else {
-        var defaultsToList = <String>[];
+        List<String> defaultsToList;
         if (_isListString) {
           defaultsToList = defaultsTo as List<String>;
         } else {
-          defaultsToList.addAll((defaultsTo as Map<String, String>)
+          defaultsToList = (defaultsTo as Map<String, String>)
               .entries
-              .map((m) => '${m.key}::${m.value}'));
+              .map((m) => '${m.key}::${m.value}')
+              .toList(growable: false);
         }
         argParser.addMultiOption(argName,
             abbr: abbr,
@@ -1362,7 +1363,8 @@ List<DartdocOption> createDartdocOptions(
         help: 'Include all the used libraries into the docs, even the ones not '
             'in the current package or "include-external"',
         negatable: true),
-    DartdocOptionArgFile<List<String>>('categoryOrder', [], resourceProvider,
+    DartdocOptionArgFile<List<String>>(
+        'categoryOrder', const [], resourceProvider,
         splitCommas: true,
         help: 'A list of categories (not package names) to place first when '
             "grouping symbols on dartdoc's sidebar. Unmentioned categories are "
@@ -1394,7 +1396,7 @@ List<DartdocOption> createDartdocOptions(
           'dart.web_audio'
         ];
       }
-      return [];
+      return const [];
     }, resourceProvider,
         help: 'Remove text from libraries with the following names.'),
     DartdocOptionArgFile<String?>('examplePathPrefix', null, resourceProvider,

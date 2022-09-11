@@ -93,7 +93,7 @@ class Package extends LibraryContainer
 
   /// Pieces of the location, split to remove 'package:' and slashes.
   @override
-  Set<String> get locationPieces => {};
+  Set<String> get locationPieces => const {};
 
   /// Holds all libraries added to this package.  May include non-documented
   /// libraries, but is not guaranteed to include a complete list of

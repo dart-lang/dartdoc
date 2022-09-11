@@ -57,7 +57,8 @@ class Mixin extends InheritingContainer with TypeImplementing {
 
   @override
   @visibleForOverriding
-  Iterable<MapEntry<String, CommentReferable>> get extraReferenceChildren => [];
+  Iterable<MapEntry<String, CommentReferable>> get extraReferenceChildren =>
+      const [];
 
   @override
   String get relationshipsClass => 'mixin-relationships';

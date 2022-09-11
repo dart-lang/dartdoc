@@ -17,7 +17,7 @@ class Method extends ModelElement
   bool _isInherited = false;
   Container? _enclosingContainer;
   @override
-  List<TypeParameter> typeParameters = [];
+  late final List<TypeParameter> typeParameters;
 
   Method(MethodElement super.element, super.library, super.packageGraph) {
     _calcTypeParameters();

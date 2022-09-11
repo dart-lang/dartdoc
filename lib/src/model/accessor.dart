@@ -224,13 +224,14 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
           Element? accessor =
               isGetter ? t.getGetter(element.name) : t.getSetter(element.name);
           if (accessor != null) {
-            accessor = accessor.declaration;
+            accessor = accessor.declaration!;
             var parentContainer =
                 modelBuilder.fromElement(t.element2) as InheritingContainer;
-            var possibleFields = <Field>[];
-            possibleFields.addAll(parentContainer.instanceFields);
-            possibleFields.addAll(parentContainer.staticFields);
-            var fieldName = accessor!.name!.replaceFirst('=', '');
+            var possibleFields = [
+              ...parentContainer.instanceFields,
+              ...parentContainer.staticFields,
+            ];
+            var fieldName = accessor.name!.replaceFirst('=', '');
             var foundField = possibleFields
                 .firstWhereOrNull((f) => f.element.name == fieldName);
             if (foundField != null) {

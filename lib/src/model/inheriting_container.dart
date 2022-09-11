@@ -157,13 +157,14 @@ mixin TypeImplementing on InheritingContainer {
         result.add(implementor);
       } else {
         model_utils
-            .findCanonicalFor(packageGraph.implementors[implementor] ?? [])
+            .findCanonicalFor(
+                packageGraph.implementors[implementor] ?? const [])
             .forEach(addToResult);
       }
     }
 
     model_utils
-        .findCanonicalFor(packageGraph.implementors[this] ?? [])
+        .findCanonicalFor(packageGraph.implementors[this] ?? const [])
         .forEach(addToResult);
     return result;
   }
@@ -274,7 +275,7 @@ abstract class InheritingContainer extends Container
 
   Iterable<Field> get inheritedFields => allFields.where((f) => f.isInherited);
 
-  Iterable<DefinedElementType> get publicInterfaces => [];
+  Iterable<DefinedElementType> get publicInterfaces => const [];
 
   Iterable<Field> get publicInheritedFields =>
       model_utils.filterNonPublic(inheritedFields);
@@ -336,7 +337,7 @@ abstract class InheritingContainer extends Container
     if (__inheritedElements == null) {
       if (element is ClassElement &&
           (element as ClassElement).isDartCoreObject) {
-        return __inheritedElements = <ExecutableElement>[];
+        return __inheritedElements = const <ExecutableElement>[];
       }
 
       var inheritance = definingLibrary.inheritanceManager;
