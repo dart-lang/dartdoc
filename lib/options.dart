@@ -106,12 +106,12 @@ DartdocProgramOptionContext? parseOptions(
     exitCode = 64;
     return null;
   }
-  if (optionRoot['help'].valueAtCurrent()) {
+  if (optionRoot['help'].valueAtCurrent() as bool) {
     _printHelp(optionRoot.argParser);
     exitCode = 0;
     return null;
   }
-  if (optionRoot['version'].valueAtCurrent()) {
+  if (optionRoot['version'].valueAtCurrent() as bool) {
     _printVersion(optionRoot.argParser);
     exitCode = 0;
     return null;
