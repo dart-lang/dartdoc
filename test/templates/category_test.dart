@@ -110,6 +110,11 @@ var p1 = 1;
 /// A typedef.
 /// {@category One}
 typedef T1 = void Function();
+
+/// A typedef.
+/// {@category One}
+// TODO(srawlins): Properly unit-test "typedef pointing to typedef".
+typedef T2 = T1;
 '''),
       ],
       files: [
