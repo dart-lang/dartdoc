@@ -5958,7 +5958,7 @@ class _Renderer_GetterSetterCombo extends RendererBase<GetterSetterCombo> {
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<Accessor>'),
+                          c, remainingNames, 'List<Accessor>'),
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.allAccessors.map((e) =>
@@ -6145,11 +6145,11 @@ class _Renderer_GetterSetterCombo extends RendererBase<GetterSetterCombo> {
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
-                  isNullValue: (CT_ c) => c.enclosingElement == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_ModelElement(
-                        c.enclosingElement!, ast, r.template, sink,
+                        c.enclosingElement, ast, r.template, sink,
                         parent: r);
                   },
                 ),
