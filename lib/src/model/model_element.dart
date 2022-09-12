@@ -489,7 +489,7 @@ abstract class ModelElement extends Canonicalization
   bool get isCallable =>
       element is FunctionTypedElement ||
       (element is TypeAliasElement &&
-          (element as TypeAliasElement).aliasedElement is FunctionTypedElement);
+          (element as TypeAliasElement).aliasedType is FunctionType);
 
   // The canonical ModelElement for this ModelElement,
   // or null if there isn't one.
