@@ -34,7 +34,7 @@ class GeneratorFrontEnd implements Generator {
     var categories = indexElements
         .whereType<Categorization>()
         .where((e) => e.hasCategorization)
-        .toList();
+        .toList(growable: false);
     _generatorBackend.generateCategoryJson(categories);
     _generatorBackend.generateSearchIndex(indexElements);
   }

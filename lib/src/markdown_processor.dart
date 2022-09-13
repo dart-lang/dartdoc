@@ -352,7 +352,7 @@ class MarkdownDocument extends md.Document {
   /// if [processFullText] is `true`.
   List<md.Node> parseMarkdownText(String text,
       {required bool processFullText}) {
-    var lines = LineSplitter.split(text).toList();
+    var lines = LineSplitter.split(text).toList(growable: false);
     md.Node? firstNode;
     var nodes = <md.Node>[];
     // TODO(srawlins): Refactor this. I think with null safety, it is more clear
