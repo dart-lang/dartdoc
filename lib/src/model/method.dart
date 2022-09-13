@@ -34,7 +34,7 @@ class Method extends ModelElement
   void _calcTypeParameters() {
     typeParameters = element.typeParameters.map((f) {
       return modelBuilder.from(f, library) as TypeParameter;
-    }).toList();
+    }).toList(growable: false);
   }
 
   @override

@@ -486,7 +486,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     return locatable.fullyQualifiedName.replaceFirst(':', '-');
   }
 
-  List<Package> get packages => packageMap.values.toList();
+  List<Package> get packages => packageMap.values.toList(growable: false);
 
   late final List<Package> publicPackages = () {
     assert(allLibrariesAdded);
@@ -498,12 +498,12 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
             message: "$packageName, packages: ${packageNames.join(',')}");
       }
     }
-    return packages.where((p) => p.isPublic).toList()..sort();
+    return packages.where((p) => p.isPublic).toList(growable: false)..sort();
   }();
 
   /// Local packages are to be documented locally vs. remote or not at all.
   List<Package> get localPackages =>
-      publicPackages.where((p) => p.isLocal).toList();
+      publicPackages.where((p) => p.isLocal).toList(growable: false);
 
   /// Documented packages are documented somewhere (local or remote).
   Iterable<Package> get documentedPackages =>
@@ -644,7 +644,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
 
   @visibleForTesting
   late final Iterable<Library> libraries =
-      packages.expand((p) => p.libraries).toList()..sort();
+      packages.expand((p) => p.libraries).toList(growable: false)..sort();
 
   /// The number of libraries.
   late final int libraryCount = libraries.length;
@@ -656,7 +656,8 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
 
   late final List<Library> _localLibraries = () {
     assert(allLibrariesAdded);
-    return localPackages.expand((p) => p.libraries).toList()..sort();
+    return localPackages.expand((p) => p.libraries).toList(growable: false)
+      ..sort();
   }();
 
   late final Set<Library> localPublicLibraries = () {
@@ -812,13 +813,15 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
         }));
       }
 
-      var matches = <ModelElement>{...candidates.where((me) => me.isCanonical)};
+      var matches = {...candidates.where((me) => me.isCanonical)};
 
       // It's possible to find accessors but no combos.  Be sure that if we
       // have Accessors, we find their combos too.
       if (matches.any((me) => me is Accessor)) {
-        var combos =
-            matches.whereType<Accessor>().map((a) => a.enclosingCombo).toList();
+        var combos = matches
+            .whereType<Accessor>()
+            .map((a) => a.enclosingCombo)
+            .toList(growable: false);
         matches.addAll(combos);
         assert(combos.every((c) => c.isCanonical));
       }
@@ -827,11 +830,12 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       // for an inherited element whose defining Class is not canonical.
       if (matches.length > 1 && preferredClass != null) {
         // Search for matches inside our superchain.
-        var superChain = preferredClass.superChain
-            .map((et) => et.modelElement)
-            .cast<InheritingContainer>()
-            .toList();
-        superChain.add(preferredClass);
+        var superChain = [
+          for (final elementType in preferredClass.superChain)
+            elementType.modelElement as InheritingContainer,
+          preferredClass,
+        ];
+
         matches.removeWhere((me) => !superChain.contains(me.enclosingElement));
         // Assumed all matches are EnclosedElement because we've been told about a
         // preferredClass.
@@ -991,8 +995,9 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     // We have to use a stable order or otherwise references depending
     // on ambiguous resolution (see below) will change where they
     // resolve based on internal implementation details.
-    var sortedPackages = packages.toList()..sort(byName);
-    var sortedDocumentedPackages = documentedPackages.toList()..sort(byName);
+    var sortedPackages = packages.toList(growable: false)..sort(byName);
+    var sortedDocumentedPackages = documentedPackages.toList(growable: false)
+      ..sort(byName);
     // Packages are the top priority.
     children.addEntries(sortedPackages.generateEntries());
 

@@ -263,7 +263,7 @@ abstract class RendererBase<T extends Object?> {
         // An inverted section is rendered with the current context.
         renderBlock(node.children);
       } else if (!node.invert && renderedIterable.isNotEmpty) {
-        renderedIterable.toList();
+        renderedIterable.toList(growable: false);
       }
       // Otherwise, render nothing.
 

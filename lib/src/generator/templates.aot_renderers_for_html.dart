@@ -3094,7 +3094,7 @@ String _deduplicated_lib_templates_html__head_html(
 <div id="overlay-under-drawer"></div>
 
 <header id="title">
-  <button id="sidenav-left-toggle" type="button">&nbsp;</button>
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
   <ol class="breadcrumbs gt-separated dark hidden-xs">''');
   var context3 = context0.navLinks;
   for (var context4 in context3) {

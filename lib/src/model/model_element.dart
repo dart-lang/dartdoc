@@ -489,7 +489,7 @@ abstract class ModelElement extends Canonicalization
   bool get isCallable =>
       element is FunctionTypedElement ||
       (element is TypeAliasElement &&
-          (element as TypeAliasElement).aliasedElement is FunctionTypedElement);
+          (element as TypeAliasElement).aliasedType is FunctionType);
 
   // The canonical ModelElement for this ModelElement,
   // or null if there isn't one.
@@ -570,7 +570,7 @@ abstract class ModelElement extends Canonicalization
       topLevelElement = topLevelElement.enclosingElement3!;
     }
 
-    var candidateLibraries = thisAndExported
+    final candidateLibraries = thisAndExported
         .where((l) =>
             l.isPublic && l.package.documentedWhere != DocumentLocation.missing)
         .where((l) {
@@ -580,7 +580,7 @@ abstract class ModelElement extends Canonicalization
         lookup = lookup.variable;
       }
       return topLevelElement == lookup;
-    }).toList();
+    }).toList(growable: true);
 
     // Avoid claiming canonicalization for elements outside of this element's
     // defining package.
@@ -609,21 +609,22 @@ abstract class ModelElement extends Canonicalization
     // canonical.  Still warn if the heuristic isn't that confident.
     var scoredCandidates =
         warnable.scoreCanonicalCandidates(candidateLibraries);
-    candidateLibraries = scoredCandidates.map((s) => s.library).toList();
+    final librariesByScore = scoredCandidates.map((s) => s.library).toList();
     var secondHighestScore =
         scoredCandidates[scoredCandidates.length - 2].score;
     var highestScore = scoredCandidates.last.score;
     var confidence = highestScore - secondHighestScore;
+    final canonicalLibrary = librariesByScore.last;
 
     if (confidence < config.ambiguousReexportScorerMinConfidence) {
-      var libraryNames = candidateLibraries.map((l) => l.name);
-      var message = '$libraryNames -> ${candidateLibraries.last.name} '
+      var libraryNames = librariesByScore.map((l) => l.name);
+      var message = '$libraryNames -> ${canonicalLibrary.name} '
           '(confidence ${confidence.toStringAsPrecision(4)})';
       warnable.warn(PackageWarning.ambiguousReexport,
           message: message, extendedDebug: scoredCandidates.map((s) => '$s'));
     }
 
-    return candidateLibraries.last;
+    return canonicalLibrary;
   }
 
   @override
@@ -737,7 +738,7 @@ abstract class ModelElement extends Canonicalization
       var setterDeprecated = pie.setter?.metadata.any((a) => a.isDeprecated);
 
       var deprecatedValues =
-          [getterDeprecated, setterDeprecated].whereNotNull().toList();
+          [getterDeprecated, setterDeprecated].whereNotNull();
 
       // At least one of these should be non-null. Otherwise things are weird
       assert(deprecatedValues.isNotEmpty);
@@ -854,7 +855,7 @@ abstract class ModelElement extends Canonicalization
         }
       }
     }
-    return recursedParameters.toList();
+    return recursedParameters.toList(growable: false);
   }();
 
   @override

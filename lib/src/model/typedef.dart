@@ -62,7 +62,7 @@ abstract class Typedef extends ModelElement
   @override
   List<TypeParameter> get typeParameters => element.typeParameters
       .map((f) => modelBuilder.from(f, library) as TypeParameter)
-      .toList();
+      .toList(growable: false);
 
   TypedefRenderer get _renderer => packageGraph.rendererFactory.typedefRenderer;
 
@@ -110,8 +110,8 @@ class FunctionTypedef extends Typedef {
         isCallable,
         'Expected callable but: ${element.runtimeType} is FunctionTypedElement '
         '|| (${element.runtimeType} is TypeAliasElement && '
-        '${element.aliasedElement.runtimeType} is FunctionTypedElement) is not '
-        'true for "${element.name}" in "${element.library}"');
+        '${element.aliasedType.runtimeType} is FunctionType) is not true for '
+        '"${element.name}" in "${element.library}"');
   }
 
   @override
