@@ -16,7 +16,8 @@ abstract class ModelElementRenderer {
       String uniqueId, int width, int height, Uri movieUrl, String overlayId);
 
   String renderFeatures(ModelElement modelElement) {
-    var allFeatures = modelElement.features.toList()..sort(byFeatureOrdering);
+    var allFeatures = modelElement.features.toList(growable: false)
+      ..sort(byFeatureOrdering);
     return allFeatures
         .map((f) =>
             '<span class="${f.cssClassName}">${f.linkedNameWithParameters}</span>')

@@ -257,7 +257,7 @@ mixin DocumentationComment
     var invocationIndex = 0;
     return await _replaceAllMappedAsync(rawDocs, _basicToolPattern,
         (basicMatch) async {
-      var args = _splitUpQuotedArgs(basicMatch[1]!).toList();
+      final args = _splitUpQuotedArgs(basicMatch[1]!);
       // Tool name must come first.
       if (args.isEmpty) {
         warn(PackageWarning.toolError,
@@ -267,8 +267,8 @@ mixin DocumentationComment
       // Count the number of invocations of tools in this dartdoc block,
       // so that tools can differentiate different blocks from each other.
       invocationIndex++;
-      return await config.tools.runner.run(args, content: basicMatch[2]!,
-          toolErrorCallback: (String message) async {
+      return await config.tools.runner.run(args.toList(),
+          content: basicMatch[2]!, toolErrorCallback: (String message) async {
         warn(PackageWarning.toolError, message: message);
       }, environment: _toolsEnvironment(invocationIndex: invocationIndex));
     });

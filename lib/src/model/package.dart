@@ -329,7 +329,7 @@ class Package extends LibraryContainer
   late final List<Category> categories = [
     defaultCategory,
     ...nameToCategory.values,
-  ].where((c) => c.name.isNotEmpty).toList()
+  ].where((c) => c.name.isNotEmpty).toList(growable: false)
     ..sort();
 
   Iterable<Category> get categoriesWithPublicLibraries =>
@@ -346,7 +346,8 @@ class Package extends LibraryContainer
   /// ordered by name.
   Iterable<Category> get documentedCategoriesSorted {
     if (config.categoryOrder.isNotEmpty) {
-      final documentedCategories = this.documentedCategories.toList();
+      final documentedCategories =
+          this.documentedCategories.toList(growable: false);
       return documentedCategories
         ..sort((a, b) {
           var aIndex = config.categoryOrder.indexOf(a.name);

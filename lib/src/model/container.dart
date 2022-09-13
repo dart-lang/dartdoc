@@ -73,7 +73,7 @@ abstract class Container extends ModelElement
       ];
 
   late final List<ModelElement> allCanonicalModelElements =
-      allModelElements.where((e) => e.isCanonical).toList();
+      allModelElements.where((e) => e.isCanonical).toList(growable: false);
 
   /// All methods, including operators and statics, declared as part of this
   /// [Container].
@@ -108,7 +108,7 @@ abstract class Container extends ModelElement
       model_utils.filterNonPublic(instanceMethods);
 
   late final List<Method> publicInstanceMethodsSorted =
-      publicInstanceMethods.toList()..sort();
+      publicInstanceMethods.toList(growable: false)..sort();
 
   @nonVirtual
   late final Iterable<Operator> declaredOperators =
@@ -128,7 +128,7 @@ abstract class Container extends ModelElement
       model_utils.filterNonPublic(instanceOperators);
 
   late final List<Operator> publicInstanceOperatorsSorted =
-      publicInstanceOperators.toList()..sort();
+      publicInstanceOperators.toList(growable: false)..sort();
 
   /// Fields fully declared in this [Container].
   Iterable<Field> get declaredFields;
@@ -147,7 +147,7 @@ abstract class Container extends ModelElement
   bool get hasPublicInstanceFields => publicInstanceFields.isNotEmpty;
 
   late final List<Field> publicInstanceFieldsSorted =
-      publicInstanceFields.toList()..sort(byName);
+      publicInstanceFields.toList(growable: false)..sort(byName);
 
   Iterable<Field> get constantFields => declaredFields.where((f) => f.isConst);
 
@@ -157,7 +157,7 @@ abstract class Container extends ModelElement
   bool get hasPublicConstantFields => publicConstantFields.isNotEmpty;
 
   late final List<Field> publicConstantFieldsSorted =
-      publicConstantFields.toList()..sort(byName);
+      publicConstantFields.toList(growable: false)..sort(byName);
 
   Iterable<Field> get publicEnumValues => [];
 
@@ -208,7 +208,7 @@ abstract class Container extends ModelElement
   bool get hasPublicStaticFields => publicStaticFieldsSorted.isNotEmpty;
 
   late final List<Field> publicStaticFieldsSorted =
-      model_utils.filterNonPublic(staticFields).toList()..sort();
+      model_utils.filterNonPublic(staticFields).toList(growable: false)..sort();
 
   Iterable<Field> get staticFields => declaredFields.where((f) => f.isStatic);
 
@@ -218,8 +218,10 @@ abstract class Container extends ModelElement
   bool get hasPublicVariableStaticFields =>
       publicVariableStaticFieldsSorted.isNotEmpty;
 
-  late final List<Field> publicVariableStaticFieldsSorted =
-      model_utils.filterNonPublic(variableStaticFields).toList()..sort();
+  late final List<Field> publicVariableStaticFieldsSorted = model_utils
+      .filterNonPublic(variableStaticFields)
+      .toList(growable: false)
+    ..sort();
 
   Iterable<Method> get staticMethods =>
       declaredMethods.where((m) => m.isStatic);
@@ -227,8 +229,10 @@ abstract class Container extends ModelElement
   bool get hasPublicStaticMethods =>
       model_utils.filterNonPublic(publicStaticMethodsSorted).isNotEmpty;
 
-  late final List<Method> publicStaticMethodsSorted =
-      model_utils.filterNonPublic(staticMethods).toList()..sort();
+  late final List<Method> publicStaticMethodsSorted = model_utils
+      .filterNonPublic(staticMethods)
+      .toList(growable: false)
+    ..sort();
 
   /// For subclasses to add items after the main pass but before the
   /// parameter-global.
