@@ -832,9 +832,9 @@ abstract class ModelElement extends Canonicalization
   late final List<Parameter> allParameters = () {
     var recursedParameters = <Parameter>{};
     var newParameters = <Parameter>{};
-    if (this is GetterSetterCombo &&
-        (this as GetterSetterCombo).setter != null) {
-      newParameters.addAll((this as GetterSetterCombo).setter!.parameters);
+    final self = this;
+    if (self is GetterSetterCombo && self.setter != null) {
+      newParameters.addAll(self.setter!.parameters);
     } else {
       if (isCallable) newParameters.addAll(parameters);
     }
