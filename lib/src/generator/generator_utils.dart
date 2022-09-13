@@ -31,7 +31,7 @@ String generateCategoryJson(Iterable<Categorization> categories, bool pretty) {
   final encoder =
       pretty ? const JsonEncoder.withIndent(' ') : const JsonEncoder();
 
-  return encoder.convert(indexItems.toList());
+  return encoder.convert(indexItems.toList(growable: false));
 }
 
 String removeHtmlTags(String? input) {
@@ -69,7 +69,7 @@ String generateSearchIndexJson(
   final encoder =
       pretty ? const JsonEncoder.withIndent(' ') : const JsonEncoder();
 
-  return encoder.convert(indexItems.toList());
+  return encoder.convert(indexItems);
 }
 
 // Compares two elements, first by fully qualified name, then by kind.

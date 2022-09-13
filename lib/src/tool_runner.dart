@@ -73,7 +73,7 @@ class ToolRunner {
       Map<String, String> environment,
       ToolErrorCallback toolErrorCallback) async {
     var isDartSetup = ToolDefinition.isDartExecutable(tool.setupCommand[0]);
-    var args = tool.setupCommand.toList();
+    var args = tool.setupCommand.toList(growable: true);
     String commandPath;
 
     if (isDartSetup) {

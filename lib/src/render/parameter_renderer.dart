@@ -97,11 +97,14 @@ abstract class ParameterRenderer {
 
   String renderLinkedParams(List<Parameter> parameters,
       {bool showMetadata = true, bool showNames = true}) {
-    var positionalParams =
-        parameters.where((Parameter p) => p.isRequiredPositional).toList();
-    var optionalPositionalParams =
-        parameters.where((Parameter p) => p.isOptionalPositional).toList();
-    var namedParams = parameters.where((Parameter p) => p.isNamed).toList();
+    var positionalParams = parameters
+        .where((Parameter p) => p.isRequiredPositional)
+        .toList(growable: false);
+    var optionalPositionalParams = parameters
+        .where((Parameter p) => p.isOptionalPositional)
+        .toList(growable: false);
+    var namedParams =
+        parameters.where((Parameter p) => p.isNamed).toList(growable: false);
 
     var output = StringBuffer();
     if (positionalParams.isNotEmpty) {
