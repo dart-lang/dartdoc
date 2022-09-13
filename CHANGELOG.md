@@ -1,3 +1,11 @@
+## 6.1.1
+
+* Fix corrupted HTML of features.
+* Adjust menu button color according to theme.
+* Deprecate `ModelElement.linkedParamsNoMetadataOrNames`.
+* Make `Extension.typeParameters` late final non-nullable.
+* Allow analyzer 5.0.0
+
 ## 6.1.0
 
 * Trimmed the implementation source code of fields to improve rendering.
