@@ -15636,10 +15636,10 @@ class _Renderer_Warnable extends RendererBase<Warnable> {
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
-                  isNullValue: (CT_ c) => c.package == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_Package(c.package!, ast, r.template, sink,
+                    _render_Package(c.package, ast, r.template, sink,
                         parent: r);
                   },
                 ),

@@ -1,4 +1,3 @@
-import 'package:analyzer/file_system/file_system.dart';
 import 'package:args/args.dart';
 import 'package:crypto/crypto.dart' as crypto;
 import 'package:dartdoc/src/model/documentable.dart';
@@ -280,15 +279,15 @@ mixin DocumentationComment
     var env = {
       'SOURCE_LINE': characterLocation?.lineNumber.toString(),
       'SOURCE_COLUMN': characterLocation?.columnNumber.toString(),
-      if (sourceFileName != null && package?.packagePath != null)
+      if (sourceFileName != null)
         'SOURCE_PATH':
-            pathContext.relative(sourceFileName!, from: package!.packagePath),
-      'PACKAGE_PATH': package?.packagePath,
-      'PACKAGE_NAME': package?.name,
+            pathContext.relative(sourceFileName!, from: package.packagePath),
+      'PACKAGE_PATH': package.packagePath,
+      'PACKAGE_NAME': package.name,
       'LIBRARY_NAME': library?.fullyQualifiedName,
       'ELEMENT_NAME': fullyQualifiedNameWithoutLibrary,
       'INVOCATION_INDEX': invocationIndex.toString(),
-      'PACKAGE_INVOCATION_INDEX': (package?.toolInvocationIndex++).toString(),
+      'PACKAGE_INVOCATION_INDEX': (package.toolInvocationIndex++).toString(),
     };
     return (env..removeWhere((key, value) => value == null))
         .cast<String, String>();
@@ -311,7 +310,7 @@ mixin DocumentationComment
   ///     &#123;@example abc/def/xyz_component.dart region=template lang=html&#125;
   ///
   String _injectExamples(String rawdocs) {
-    final dirPath = package?.packageMeta.dir.path;
+    final dirPath = package.packageMeta.dir.path;
     return rawdocs.replaceAllMapped(_examplePattern, (match) {
       var args = _getExampleArgs(match[1]!);
       if (args == null) {
@@ -321,29 +320,25 @@ mixin DocumentationComment
       var lang = args['lang'] ??
           pathContext.extension(args['src']!).replaceFirst('.', '');
 
-      var replacement = match[0]; // default to fully matched string.
+      var replacement = match[0]!; // default to fully matched string.
 
-      File? fragmentFile;
+      var fragmentFile = packageGraph.resourceProvider.getFile(
+          pathContext.canonicalize(pathContext.join(dirPath, args['file'])));
 
-      if (dirPath != null) {
-        fragmentFile = packageGraph.resourceProvider.getFile(
-            pathContext.canonicalize(pathContext.join(dirPath, args['file'])));
-      }
-      if (fragmentFile != null && fragmentFile.exists == true) {
+      if (fragmentFile.exists) {
         replacement = fragmentFile.readAsStringSync();
         if (lang.isNotEmpty) {
           replacement = replacement.replaceFirst('```', '```$lang');
         }
       } else {
-        var filePath =
-            element!.source!.fullName.substring((dirPath?.length ?? -1) + 1);
+        var filePath = element!.source!.fullName.substring(dirPath.length + 1);
 
         // TODO(srawlins): If a file exists at the location without the
         // appended 'md' extension, note this.
         warn(PackageWarning.missingExampleFile,
-            message: '${fragmentFile?.path}; path listed at $filePath');
+            message: '${fragmentFile.path}; path listed at $filePath');
       }
-      return replacement!;
+      return replacement;
     });
   }
 
@@ -515,7 +510,7 @@ mixin DocumentationComment
       var id = '$base$animationIdCount';
       // We check for duplicate IDs so that we make sure not to collide with
       // user-supplied ids on the same page.
-      while (package!.usedAnimationIdsByHref[href]!.contains(id)) {
+      while (package.usedAnimationIdsByHref[href]!.contains(id)) {
         animationIdCount++;
         id = '$base$animationIdCount';
       }
@@ -524,7 +519,7 @@ mixin DocumentationComment
 
     return rawDocs.replaceAllMapped(_basicAnimationPattern, (basicMatch) {
       // Make sure we have a set to keep track of used IDs for this href.
-      package!.usedAnimationIdsByHref[href] ??= {};
+      package.usedAnimationIdsByHref[href] ??= {};
 
       var args = _parseArgs(basicMatch[1]!, _animationArgParser, 'animation');
       if (args == null) {
@@ -556,13 +551,13 @@ mixin DocumentationComment
                 'and must not begin with a number.');
         return '';
       }
-      if (package!.usedAnimationIdsByHref[href]!.contains(uniqueId)) {
+      if (package.usedAnimationIdsByHref[href]!.contains(uniqueId)) {
         warn(PackageWarning.invalidParameter,
             message: 'An animation has a non-unique identifier, "$uniqueId". '
                 'Animation identifiers must be unique.');
         return '';
       }
-      package!.usedAnimationIdsByHref[href]!.add(uniqueId);
+      package.usedAnimationIdsByHref[href]!.add(uniqueId);
 
       int width;
       try {

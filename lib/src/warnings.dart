@@ -298,7 +298,7 @@ mixin Warnable implements Canonicalization, CommentReferable {
 
   Warnable? get enclosingElement;
 
-  Package? get package;
+  Package get package;
 
   void warn(
     PackageWarning kind, {
@@ -546,7 +546,7 @@ class PackageWarningCounter {
     PackageWarningOptionContext config =
         element?.config ?? packageGraph.defaultPackage.config;
     PackageWarningMode? warningMode;
-    var isLocal = element?.package?.isLocal ?? true;
+    var isLocal = element?.package.isLocal ?? true;
     if (!config.allowNonLocalWarnings && !isLocal) {
       warningMode = PackageWarningMode.ignore;
     } else {
