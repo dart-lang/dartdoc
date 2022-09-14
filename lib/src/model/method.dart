@@ -108,7 +108,11 @@ class Method extends ModelElement
     for (var t in parent.allSupertypes) {
       Element? e = t.getMethod(element.name);
       if (e != null) {
-        assert(e.enclosingElement3 is ClassElement);
+        assert(
+          e.enclosingElement3 is ClassElement,
+          'Expected "${e.enclosingElement3?.name}" to be a ClassElement, but '
+          'was ${e.enclosingElement3.runtimeType}',
+        );
         return modelBuilder.fromElement(e) as Method?;
       }
     }
