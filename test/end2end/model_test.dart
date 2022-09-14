@@ -444,51 +444,25 @@ void main() {
     test('complex nullable elements are detected and rendered correctly', () {
       var complexNullableMembers = nullableElements.allClasses
           .firstWhere((c) => c.name == 'ComplexNullableMembers');
-      var aComplexType = complexNullableMembers.allFields
-          .firstWhere((f) => f.name == 'aComplexType');
-      var aComplexSetterOnlyType = complexNullableMembers.allFields
-          .firstWhere((f) => f.name == 'aComplexSetterOnlyType');
       expect(complexNullableMembers.isNullSafety, isTrue);
       expect(
           complexNullableMembers.nameWithGenerics,
           equals(
               'ComplexNullableMembers&lt;<wbr><span class="type-parameter">T extends String?</span>&gt;'));
-      expect(
-          aComplexType.modelType.linkedName,
-          equals(
-              'Map<span class="signature">&lt;<wbr><span class="type-parameter">T?</span>, <span class="type-parameter">String?</span>&gt;</span>'));
-      expect(
-          aComplexSetterOnlyType.modelType.linkedName,
-          equals(
-              'List<span class="signature">&lt;<wbr><span class="type-parameter">Map<span class="signature">&lt;<wbr><span class="type-parameter">T?</span>, <span class="type-parameter">String?</span>&gt;</span>?</span>&gt;</span>'));
     });
 
     test('simple nullable elements are detected and rendered correctly', () {
       var nullableMembers = nullableElements.allClasses
           .firstWhere((c) => c.name == 'NullableMembers');
-      var initialized =
-          nullableMembers.allFields.firstWhere((f) => f.name == 'initialized');
-      var nullableField = nullableMembers.allFields
-          .firstWhere((f) => f.name == 'nullableField');
       var methodWithNullables = nullableMembers.publicInstanceMethods
           .firstWhere((f) => f.name == 'methodWithNullables');
       var operatorStar = nullableMembers.publicInstanceOperators
           .firstWhere((f) => f.name == 'operator *');
       expect(nullableMembers.isNullSafety, isTrue);
       expect(
-          nullableField.modelType.linkedName,
-          equals(
-              'Iterable<span class="signature">&lt;<wbr><span class="type-parameter">BigInt</span>&gt;</span>?'));
-      expect(
           methodWithNullables.linkedParams,
           equals(
               '<span class="parameter" id="methodWithNullables-param-foo"><span class="type-annotation">String?</span> <span class="parameter-name">foo</span></span>'));
-      expect(
-          methodWithNullables.modelType.returnType.linkedName, equals('int?'));
-      expect(
-          initialized.modelType.linkedName,
-          equals(
-              'Map<span class="signature">&lt;<wbr><span class="type-parameter">String</span>, <span class="type-parameter">Map</span>&gt;</span>?'));
       expect(
           operatorStar.linkedParams,
           equals(
@@ -1995,7 +1969,7 @@ void main() {
 
   group('Class', () {
     late final List<Class> classes;
-    late final Class Apple, B, Cat, Cool, Dog, F, Dep, SpecialList;
+    late final Class Apple, B, Cat, Dog, F, Dep, SpecialList;
     late final Class ExtendingClass, CatString;
 
     setUpAll(() {
@@ -2006,7 +1980,6 @@ void main() {
       Dog = classes.firstWhere((c) => c.name == 'Dog');
       F = classes.firstWhere((c) => c.name == 'F');
       Dep = classes.firstWhere((c) => c.name == 'Deprecated');
-      Cool = classes.firstWhere((c) => c.name == 'Cool');
       SpecialList =
           fakeLibrary.classes.firstWhere((c) => c.name == 'SpecialList');
       ExtendingClass =
@@ -2153,17 +2126,6 @@ void main() {
           equals('${htmlBasePlaceholder}ex/Deprecated/toString.html'));
       expect(Dep.instanceFields.firstWhere((m) => m.name == 'expires').href,
           equals('${htmlBasePlaceholder}ex/Deprecated/expires.html'));
-    });
-
-    test(
-        'exported class should have modelType.returnType.linkedName for the current library',
-        () {
-      var returnCool =
-          Cool.instanceMethods.firstWhere((m) => m.name == 'returnCool');
-      expect(
-          returnCool.modelType.returnType.linkedName,
-          equals(
-              '<a href="${htmlBasePlaceholder}fake/Cool-class.html">Cool</a>'));
     });
 
     test('F has a single instance method', () {
@@ -3199,7 +3161,6 @@ void main() {
     late final ModelFunction thisIsAsync;
     late final ModelFunction thisIsFutureOr;
     late final ModelFunction thisIsFutureOrNull;
-    late final ModelFunction thisIsFutureOrT;
     late final ModelFunction topLevelFunction;
     late final ModelFunction typeParamOfFutureOr;
     late final ModelFunction doAComplicatedThing;
@@ -3216,8 +3177,6 @@ void main() {
           fakeLibrary.functions.firstWhere((f) => f.name == 'thisIsFutureOr');
       thisIsFutureOrNull = fakeLibrary.functions
           .firstWhere((f) => f.name == 'thisIsFutureOrNull');
-      thisIsFutureOrT =
-          fakeLibrary.functions.firstWhere((f) => f.name == 'thisIsFutureOrT');
       topLevelFunction =
           fakeLibrary.functions.firstWhere((f) => f.name == 'topLevelFunction');
       typeParamOfFutureOr = fakeLibrary.functions
@@ -3261,7 +3220,6 @@ void main() {
 
     test('async function', () {
       expect(thisIsAsync.isAsynchronous, isTrue);
-      expect(thisIsAsync.modelType.returnType.linkedName, equals('dynamic'));
       expect(
           thisIsAsync.documentation,
           equals(
@@ -3274,24 +3232,14 @@ void main() {
 
     test('function returning FutureOr', () {
       expect(thisIsFutureOr.isAsynchronous, isFalse);
-      expect(
-          thisIsFutureOr.modelType.returnType.linkedName, equals('FutureOr'));
     });
 
     test('function returning FutureOr<Null>', () {
       expect(thisIsFutureOrNull.isAsynchronous, isFalse);
-      expect(
-          thisIsFutureOrNull.modelType.returnType.linkedName,
-          equals(
-              'FutureOr<span class="signature">&lt;<wbr><span class="type-parameter">Null</span>&gt;</span>'));
     });
 
     test('function returning FutureOr<T>', () {
       expect(thisIsFutureOrNull.isAsynchronous, isFalse);
-      expect(
-          thisIsFutureOrT.modelType.returnType.linkedName,
-          equals(
-              'FutureOr<span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span>?'));
     });
 
     test('function with a parameter having type FutureOr<Null>', () {
@@ -3393,15 +3341,6 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
               r'dynamic Function<span class="signature">\(<span class="parameter" id="(f-)?param-bar"><span class="type-annotation">int</span> <span class="parameter-name">bar</span>, </span><span class="parameter" id="(f-)?param-baz"><span class="type-annotation"><a href="%%__HTMLBASE_dartdoc_internal__%%fake/Cool-class.html">Cool</a></span> <span class="parameter-name">baz</span>, </span><span class="parameter" id="(f-)?param-macTruck"><span class="type-annotation">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span> <span class="parameter-name">macTruck</span></span>\)</span>')));
     });
 
-    test('parameterized type from field is correctly displayed', () {
-      var aField = TemplatedInterface.instanceFields
-          .singleWhere((f) => f.name == 'aField');
-      expect(
-          aField.modelType.linkedName,
-          '<a href="${htmlBasePlaceholder}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a>'
-          '<span class="signature">&lt;<wbr><span class="type-parameter">Stream<span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span></span>&gt;</span>?');
-    });
-
     test('parameterized type from inherited field is correctly displayed', () {
       var aInheritedField = TemplatedInterface.inheritedFields
           .singleWhere((f) => f.name == 'aInheritedField');
@@ -3409,16 +3348,6 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
           aInheritedField.modelType.linkedName,
           '<a href="${htmlBasePlaceholder}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a>'
           '<span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>?');
-    });
-
-    test(
-        'parameterized type for return value from explicit getter is correctly displayed',
-        () {
-      Accessor aGetter = TemplatedInterface.instanceFields
-          .singleWhere((f) => f.name == 'aGetter')
-          .getter!;
-      expect(aGetter.modelType.returnType.linkedName,
-          '<a href="${htmlBasePlaceholder}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">Map<span class="signature">&lt;<wbr><span class="type-parameter">A</span>, <span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">String</span>&gt;</span></span>&gt;</span></span>&gt;</span>');
     });
 
     test(

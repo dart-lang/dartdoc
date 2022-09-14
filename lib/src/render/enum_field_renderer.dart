@@ -16,7 +16,9 @@ class EnumFieldRendererHtml implements EnumFieldRenderer {
   @override
   String renderValue(EnumField field) {
     if (field.name == 'values') {
-      return 'const List&lt;<wbr><span class="type-parameter">${field.enclosingElement.name}</span>&gt;';
+      return 'const List&lt;<wbr>'
+          '<span class="type-parameter">${field.enclosingElement.name}</span>'
+          '&gt;';
     } else {
       return 'const ${field.enclosingElement.name}(${field.index})';
     }
