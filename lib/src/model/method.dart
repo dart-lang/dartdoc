@@ -109,9 +109,9 @@ class Method extends ModelElement
       Element? e = t.getMethod(element.name);
       if (e != null) {
         assert(
-          e.enclosingElement3 is ClassElement,
-          'Expected "${e.enclosingElement3?.name}" to be a ClassElement, but '
-          'was ${e.enclosingElement3.runtimeType}',
+          e.enclosingElement3 is InterfaceElement,
+          'Expected "${e.enclosingElement3?.name}" to be a InterfaceElement, '
+          'but was ${e.enclosingElement3.runtimeType}',
         );
         return modelBuilder.fromElement(e) as Method?;
       }
