@@ -30,12 +30,7 @@ Never? almostNeverReturns() {}
 void some(int? nullable, String? parameters) {}
 
 class NullableMembers {
-  final Map<String, Map>? initialized;
-
-  /// Nullable constructor parameters.
-  NullableMembers(this.initialized);
-
-  Iterable<BigInt>? nullableField;
+  NullableMembers();
 
   operator *(NullableMembers? nullableOther) => this;
 
@@ -43,9 +38,5 @@ class NullableMembers {
 }
 
 class ComplexNullableMembers<T extends String?> {
-  Map<T?, String?> aComplexType = <T?, String?>{null: null};
-
-  void set aComplexSetterOnlyType(List<Map<T?, String?>?> value) => null;
-
   X? aMethod<X extends T?>(X? f) => null;
 }
