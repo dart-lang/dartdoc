@@ -16,7 +16,7 @@ abstract class TypedefRenderer {
   String renderLinkedGenericParameters(Typedef typedef);
 }
 
-/// A HTML renderer for a [Typedef].
+/// An HTML renderer for a [Typedef].
 class TypedefRendererHtml extends TypedefRenderer {
   const TypedefRendererHtml();
 
