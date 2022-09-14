@@ -102,7 +102,6 @@ abstract class TemplatedInterface<A> implements ParameterizedClass<List<int>> {
   AnotherParameterizedClass<List<int>> aMethodInterface(A value);
   ParameterizedTypedef<List<String>> aTypedefReturningMethodInterface();
   AnotherParameterizedClass<Stream<List<int>>>? aField;
-  AnotherParameterizedClass<Map<A, List<String>>> get aGetter;
   set aSetter(AnotherParameterizedClass<List<bool>> thingToSet);
 }
 
