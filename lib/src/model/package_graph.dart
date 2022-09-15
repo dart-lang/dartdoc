@@ -786,11 +786,9 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       e = declaration;
       var candidates = <ModelElement>{};
       var iKey = Tuple2<Element, Library?>(e, lib);
-      var key =
-          Tuple4<Element, Library?, Class?, ModelElement?>(e, lib, null, null);
-      var keyWithClass =
-          Tuple4<Element, Library?, InheritingContainer?, ModelElement?>(
-              e, lib, preferredClass as InheritingContainer?, null);
+      var key = Tuple3<Element, Library?, Class?>(e, lib, null);
+      var keyWithClass = Tuple3<Element, Library?, InheritingContainer?>(
+          e, lib, preferredClass as InheritingContainer?);
       var constructedWithKey = allConstructedModelElements[key];
       if (constructedWithKey != null) {
         candidates.add(constructedWithKey);
