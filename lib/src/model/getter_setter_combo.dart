@@ -33,9 +33,13 @@ mixin GetterSetterCombo on ModelElement {
         if (hasSetter) ...setter!.annotations,
       ];
 
-  Iterable<Accessor> get allAccessors sync* {
-    for (var a in [getter, setter]) {
-      if (a != null) yield a;
+  List<Accessor> get allAccessors {
+    final getter = this.getter;
+    final setter = this.setter;
+    if (getter == null) {
+      return setter == null ? const [] : [setter];
+    } else {
+      return setter == null ? [getter] : [getter, setter];
     }
   }
 
@@ -49,7 +53,7 @@ mixin GetterSetterCombo on ModelElement {
       };
 
   @override
-  ModelElement? enclosingElement;
+  ModelElement get enclosingElement;
 
   bool get isInherited;
 
@@ -147,24 +151,20 @@ mixin GetterSetterCombo on ModelElement {
       if (hasPublicGetter && getter!.oneLineDoc.isNotEmpty) {
         buffer.write(getter!.oneLineDoc);
       }
-      if (hasPublicSetter && setter!.oneLineDoc.isNotEmpty) {
-        buffer.write(getterSetterBothAvailable ? '' : setter!.oneLineDoc);
+      if (hasPublicSetter &&
+          setter!.oneLineDoc.isNotEmpty &&
+          !getterSetterBothAvailable) {
+        buffer.write(setter!.oneLineDoc);
       }
       return buffer.toString();
     }
   }();
 
-  bool _documentationCommentComputed = false;
-  String? _documentationComment;
   @override
-  String get documentationComment => _documentationCommentComputed
-      ? _documentationComment!
-      : _documentationComment ??= () {
-          _documentationCommentComputed = true;
-          var docs = _getterSetterDocumentationComment;
-          if (docs.isEmpty) return element.documentationComment ?? '';
-          return docs;
-        }();
+  late final String documentationComment =
+      _getterSetterDocumentationComment.isEmpty
+          ? element.documentationComment ?? ''
+          : _getterSetterDocumentationComment;
 
   @override
   bool get hasDocumentationComment =>
@@ -227,10 +227,7 @@ mixin GetterSetterCombo on ModelElement {
   List<Parameter> get parameters => setter!.parameters;
 
   @override
-  String? get linkedParamsNoMetadata {
-    if (hasSetter) return setter!.linkedParamsNoMetadata;
-    return null;
-  }
+  String? get linkedParamsNoMetadata => setter?.linkedParamsNoMetadata;
 
   bool get hasExplicitGetter => hasPublicGetter && !getter!.isSynthetic;
 
@@ -263,18 +260,9 @@ mixin GetterSetterCombo on ModelElement {
 
   bool get writeOnly => hasPublicSetter && !hasPublicGetter;
 
-  Map<String, CommentReferable>? _referenceChildren;
   @override
-  Map<String, CommentReferable> get referenceChildren {
-    if (_referenceChildren == null) {
-      _referenceChildren = {};
-      if (hasParameters) {
-        _referenceChildren!
-            .addEntries(parameters.explicitOnCollisionWith(this));
-      }
-      _referenceChildren!
-          .addEntries(modelType.typeArguments.explicitOnCollisionWith(this));
-    }
-    return _referenceChildren!;
-  }
+  late final Map<String, CommentReferable> referenceChildren = {
+    if (hasParameters) ...parameters.explicitOnCollisionWith(this),
+    ...modelType.typeArguments.explicitOnCollisionWith(this),
+  };
 }

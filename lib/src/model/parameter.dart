@@ -78,26 +78,17 @@ class Parameter extends ModelElement with HasNoPage {
   @override
   String get kind => 'parameter';
 
-  Map<String, CommentReferable>? _referenceChildren;
-
   @override
-  Map<String, CommentReferable> get referenceChildren {
-    if (_referenceChildren == null) {
-      _referenceChildren = {};
-      var modelType_ = modelType;
-      if (modelType_ is Callable) {
-        _referenceChildren!.addEntriesIfAbsent(
-            modelType_.parameters.explicitOnCollisionWith(this));
-      }
-      _referenceChildren!.addEntriesIfAbsent(
-          modelType.typeArguments.explicitOnCollisionWith(this));
-      if (modelType_ is Callable) {
-        _referenceChildren!.addEntriesIfAbsent(
-            modelType_.returnType.typeArguments.explicitOnCollisionWith(this));
-      }
-    }
-    return _referenceChildren!;
-  }
+  late final Map<String, CommentReferable> referenceChildren = {
+    if (modelType is Callable)
+      ...(modelType as Callable)
+          .returnType
+          .typeArguments
+          .explicitOnCollisionWith(this),
+    ...modelType.typeArguments.explicitOnCollisionWith(this),
+    if (modelType is Callable)
+      ...(modelType as Callable).parameters.explicitOnCollisionWith(this),
+  };
 
   @override
   Iterable<CommentReferable> get referenceParents {
