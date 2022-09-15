@@ -186,13 +186,15 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
     return super.characterLocation;
   }
 
-  ModelElement? _enclosingElement;
+  late final Container _enclosingElement;
   bool _isInherited = false;
 
   @override
   bool get isCovariant => isSetter && parameters.first.isCovariant;
 
-  ContainerAccessor(super.element, super.library, super.packageGraph);
+  ContainerAccessor(super.element, super.library, super.packageGraph) {
+    _enclosingElement = super.enclosingElement as Container;
+  }
 
   ContainerAccessor.inherited(PropertyAccessorElement element, Library library,
       PackageGraph packageGraph, this._enclosingElement,
@@ -205,47 +207,38 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
   bool get isInherited => _isInherited;
 
   @override
-  Container get enclosingElement {
-    _enclosingElement ??= super.enclosingElement;
-    return _enclosingElement as Container;
-  }
-
-  bool _overriddenElementIsSet = false;
-  ModelElement? _overriddenElement;
+  Container get enclosingElement => _enclosingElement;
 
   @override
-  ContainerAccessor? get overriddenElement {
+  late final ContainerAccessor? overriddenElement = () {
     assert(packageGraph.allLibrariesAdded);
-    if (!_overriddenElementIsSet) {
-      _overriddenElementIsSet = true;
-      var parent = element.enclosingElement3;
-      if (parent is InterfaceElement) {
-        for (var t in parent.allSupertypes) {
-          Element? accessor =
-              isGetter ? t.getGetter(element.name) : t.getSetter(element.name);
-          if (accessor != null) {
-            accessor = accessor.declaration;
-            var parentContainer =
-                modelBuilder.fromElement(t.element2) as InheritingContainer;
-            var possibleFields = <Field>[];
-            possibleFields.addAll(parentContainer.instanceFields);
-            possibleFields.addAll(parentContainer.staticFields);
-            var fieldName = accessor!.name!.replaceFirst('=', '');
-            var foundField = possibleFields
-                .firstWhereOrNull((f) => f.element.name == fieldName);
-            if (foundField != null) {
-              if (isGetter) {
-                _overriddenElement = foundField.getter;
-              } else {
-                _overriddenElement = foundField.setter;
-              }
-              assert(!(_overriddenElement as ContainerAccessor).isInherited);
-              break;
+    var parent = element.enclosingElement3;
+    if (parent is InterfaceElement) {
+      for (var t in parent.allSupertypes) {
+        var accessor =
+            isGetter ? t.getGetter(element.name) : t.getSetter(element.name);
+        if (accessor != null) {
+          accessor = accessor.declaration;
+          var parentContainer =
+              modelBuilder.fromElement(t.element2) as InheritingContainer;
+          var possibleFields = <Field>[];
+          possibleFields.addAll(parentContainer.instanceFields);
+          possibleFields.addAll(parentContainer.staticFields);
+          var fieldName = accessor.name.replaceFirst('=', '');
+          var foundField = possibleFields
+              .firstWhereOrNull((f) => f.element.name == fieldName);
+          if (foundField != null) {
+            final ContainerAccessor element;
+            if (isGetter) {
+              element = foundField.getter!;
+            } else {
+              element = foundField.setter!;
             }
+            assert(!element.isInherited);
+            return element;
           }
         }
       }
     }
-    return _overriddenElement as ContainerAccessor?;
-  }
+  }();
 }
