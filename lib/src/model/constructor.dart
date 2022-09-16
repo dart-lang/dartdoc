@@ -110,11 +110,9 @@ class Constructor extends ModelElement
       }
     }
 
-    var parameterElements = allParameters.map((param) {
-      var paramElement = dereferenceParameter(param.element);
-      return paramElement == null
-          ? param
-          : modelBuilder.fromElement(paramElement);
+    var parameterElements = parameters.map((parameter) {
+      var element = dereferenceParameter(parameter.element);
+      return element == null ? parameter : modelBuilder.fromElement(element);
     });
     return {
       for (var element in parameterElements) element.referenceName: element,

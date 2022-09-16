@@ -136,7 +136,7 @@ class Method extends ModelElement
     return _referenceChildren ??= <String, CommentReferable>{
       ...modelType.returnType.typeArguments.explicitOnCollisionWith(this),
       ...modelType.typeArguments.explicitOnCollisionWith(this),
-      ...allParameters.explicitOnCollisionWith(this),
+      ...parameters.explicitOnCollisionWith(this),
       ...typeParameters.explicitOnCollisionWith(this),
     };
   }

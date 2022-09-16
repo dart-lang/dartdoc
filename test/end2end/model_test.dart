@@ -341,8 +341,8 @@ void main() {
 
     test('method parameters with required', () {
       var m1 = b.instanceMethods.firstWhere((m) => m.name == 'm1');
-      var p1 = m1.allParameters.firstWhere((p) => p.name == 'p1');
-      var p2 = m1.allParameters.firstWhere((p) => p.name == 'p2');
+      var p1 = m1.parameters.firstWhere((p) => p.name == 'p1');
+      var p2 = m1.parameters.firstWhere((p) => p.name == 'p2');
       expect(p1.isRequiredNamed, isTrue);
       expect(p2.isRequiredNamed, isFalse);
       expect(p2.isNamed, isTrue);
@@ -362,8 +362,8 @@ void main() {
 
     test('verify no regression on ordinary optionals', () {
       var m2 = b.instanceMethods.firstWhere((m) => m.name == 'm2');
-      var sometimes = m2.allParameters.firstWhere((p) => p.name == 'sometimes');
-      var optionals = m2.allParameters.firstWhere((p) => p.name == 'optionals');
+      var sometimes = m2.parameters.firstWhere((p) => p.name == 'sometimes');
+      var optionals = m2.parameters.firstWhere((p) => p.name == 'optionals');
       expect(sometimes.isRequiredNamed, isFalse);
       expect(sometimes.isRequiredPositional, isTrue);
       expect(sometimes.isOptionalPositional, isFalse);
@@ -383,8 +383,8 @@ void main() {
 
     test('anonymous callback parameters are correctly marked as nullable', () {
       var m3 = c.instanceMethods.firstWhere((m) => m.name == 'm3');
-      var listen = m3.allParameters.firstWhere((p) => p.name == 'listen');
-      var onDone = m3.allParameters.firstWhere((p) => p.name == 'onDone');
+      var listen = m3.parameters.firstWhere((p) => p.name == 'listen');
+      var onDone = m3.parameters.firstWhere((p) => p.name == 'onDone');
       expect(listen.isRequiredPositional, isTrue);
       expect(onDone.isNamed, isTrue);
 
@@ -2559,7 +2559,7 @@ void main() {
             (c) => c.name == 'BaseForDocComments.aNonDefaultConstructor');
         defaultConstructor = baseForDocComments.constructors
             .firstWhere((c) => c.name == 'BaseForDocComments');
-        somethingShadowyParameter = defaultConstructor.allParameters
+        somethingShadowyParameter = defaultConstructor.parameters
             .firstWhere((p) => p.name == 'somethingShadowy');
         initializeMe = baseForDocComments.allFields
             .firstWhere((f) => f.name == 'initializeMe');
@@ -2623,14 +2623,14 @@ void main() {
         factoryConstructorThingsDefault = FactoryConstructorThings.constructors
             .firstWhere((c) => c.name == 'FactoryConstructorThings');
 
-        aName = anotherName.allParameters.firstWhere((p) => p.name == 'aName');
-        anotherNameParameter = anotherName.allParameters
-            .firstWhere((p) => p.name == 'anotherName');
-        anotherDifferentName = anotherName.allParameters
+        aName = anotherName.parameters.firstWhere((p) => p.name == 'aName');
+        anotherNameParameter =
+            anotherName.parameters.firstWhere((p) => p.name == 'anotherName');
+        anotherDifferentName = anotherName.parameters
             .firstWhere((p) => p.name == 'anotherDifferentName');
-        differentName = anotherName.allParameters
-            .firstWhere((p) => p.name == 'differentName');
-        redHerring = anotherConstructor.allParameters
+        differentName =
+            anotherName.parameters.firstWhere((p) => p.name == 'differentName');
+        redHerring = anotherConstructor.parameters
             .firstWhere((p) => p.name == 'redHerring');
 
         aNameField = FactoryConstructorThings.allFields
@@ -2643,7 +2643,7 @@ void main() {
         aMethod = FactoryConstructorThings.instanceMethods
             .firstWhere((m) => m.name == 'aMethod');
         yetAnotherName =
-            aMethod.allParameters.firstWhere((p) => p.name == 'yetAnotherName');
+            aMethod.parameters.firstWhere((p) => p.name == 'yetAnotherName');
       });
 
       group('Parameter references work properly', () {
@@ -3366,7 +3366,7 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
       Accessor aInheritedSetter = TemplatedInterface.inheritedFields
           .singleWhere((f) => f.name == 'aInheritedSetter')
           .setter!;
-      expect(aInheritedSetter.allParameters.first.modelType.linkedName,
+      expect(aInheritedSetter.parameters.first.modelType.linkedName,
           '<a href="${htmlBasePlaceholder}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
       expect(aInheritedSetter.enclosingCombo.modelType.linkedName,
           '<a href="%%__HTMLBASE_dartdoc_internal__%%ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
