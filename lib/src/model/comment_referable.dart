@@ -218,14 +218,15 @@ extension CommentReferableEntryGenerators on Iterable<CommentReferable> {
   ///
   /// If there is a conflict with [referable], the included [MapEntry] uses
   /// [referable]'s [CommentReferable.referenceName] as a prefix.
-  Iterable<MapEntry<String, CommentReferable>> explicitOnCollisionWith(
+  Map<String, CommentReferable> explicitOnCollisionWith(
           CommentReferable referable) =>
-      map((r) {
-        if (r.referenceName == referable.referenceName) {
-          return MapEntry('${referable.referenceName}.${r.referenceName}', r);
-        }
-        return MapEntry(r.referenceName, r);
-      });
+      {
+        for (var r in this)
+          if (r.referenceName == referable.referenceName)
+            '${referable.referenceName}.${r.referenceName}': r
+          else
+            r.referenceName: r,
+      };
 
   /// Generates entries from this Iterable.
   Iterable<MapEntry<String, CommentReferable>> generateEntries() =>

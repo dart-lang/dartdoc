@@ -5957,7 +5957,7 @@ class _Renderer_GetterSetterCombo extends RendererBase<GetterSetterCombo> {
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<Accessor>'),
+                          c, remainingNames, 'List<Accessor>'),
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.allAccessors.map((e) =>
@@ -6144,11 +6144,11 @@ class _Renderer_GetterSetterCombo extends RendererBase<GetterSetterCombo> {
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
-                  isNullValue: (CT_ c) => c.enclosingElement == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_ModelElement(
-                        c.enclosingElement!, ast, r.template, sink,
+                        c.enclosingElement, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -6830,17 +6830,16 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                     }
                     var name = remainingNames.first;
                     var nextProperty =
-                        _Renderer_ModelElement.propertyMap().getValue(name);
+                        _Renderer_Library.propertyMap().getValue(name);
                     return nextProperty.renderVariable(
-                        self.getValue(c) as ModelElement,
+                        self.getValue(c) as Library,
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
                   isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_ModelElement(
-                        c.enclosingElement, ast, r.template, sink,
+                    _render_Library(c.enclosingElement, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -9625,18 +9624,6 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                 ..._Renderer_FeatureSet.propertyMap<CT_>(),
                 ..._Renderer_DocumentationComment.propertyMap<CT_>(),
                 ..._Renderer_ModelBuilder.propertyMap<CT_>(),
-                'allParameters': Property(
-                  getValue: (CT_ c) => c.allParameters,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'List<Parameter>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.allParameters.map((e) =>
-                        _render_Parameter(e, ast, r.template, sink, parent: r));
-                  },
-                ),
                 'annotations': Property(
                   getValue: (CT_ c) => c.annotations,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -14676,7 +14663,7 @@ class _Renderer_TypeImplementing extends RendererBase<TypeImplementing> {
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<InheritingContainer>'),
+                          c, remainingNames, 'List<InheritingContainer>'),
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.publicImplementorsSorted.map((e) =>

@@ -133,15 +133,11 @@ class Method extends ModelElement
     if (!identical(this, from)) {
       return from.referenceChildren;
     }
-    if (_referenceChildren == null) {
-      _referenceChildren = {};
-      _referenceChildren!.addEntriesIfAbsent([
-        ...typeParameters.explicitOnCollisionWith(this),
-        ...allParameters.explicitOnCollisionWith(this),
-        ...modelType.typeArguments.explicitOnCollisionWith(this),
-        ...modelType.returnType.typeArguments.explicitOnCollisionWith(this),
-      ]);
-    }
-    return _referenceChildren!;
+    return _referenceChildren ??= <String, CommentReferable>{
+      ...modelType.returnType.typeArguments.explicitOnCollisionWith(this),
+      ...modelType.typeArguments.explicitOnCollisionWith(this),
+      ...parameters.explicitOnCollisionWith(this),
+      ...typeParameters.explicitOnCollisionWith(this),
+    };
   }
 }
