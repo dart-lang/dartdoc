@@ -184,8 +184,9 @@ class ToolConfiguration {
             if (compileArgs is String) {
               args = [toolMap[compileArgsTagName].toString()];
             } else if (compileArgs is YamlList) {
-              args =
-                  compileArgs.map<String>((node) => node.toString()).toList();
+              args = compileArgs
+                  .map<String>((node) => node.toString())
+                  .toList(growable: false);
             } else {
               throw DartdocOptionError(
                   'Tool compile arguments must be a list of strings. The tool '
@@ -308,7 +309,7 @@ class _OptionValueWithContext<T> {
       return value
           .map((v) => pathContext.canonicalizeWithTilde(v))
           .cast<String>()
-          .toList() as T;
+          .toList(growable: false) as T;
     } else if (value is String) {
       return pathContext.canonicalizeWithTilde(value) as T;
     } else if (value is Map<String, String>) {

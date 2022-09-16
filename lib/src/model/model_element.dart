@@ -15,7 +15,6 @@ import 'package:analyzer/src/dart/element/member.dart'
     show ExecutableMember, Member, ParameterMember;
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
-import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/annotation.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/feature.dart';
@@ -489,7 +488,7 @@ abstract class ModelElement extends Canonicalization
   bool get isCallable =>
       element is FunctionTypedElement ||
       (element is TypeAliasElement &&
-          (element as TypeAliasElement).aliasedElement is FunctionTypedElement);
+          (element as TypeAliasElement).aliasedType is FunctionType);
 
   // The canonical ModelElement for this ModelElement,
   // or null if there isn't one.
@@ -570,7 +569,7 @@ abstract class ModelElement extends Canonicalization
       topLevelElement = topLevelElement.enclosingElement3!;
     }
 
-    var candidateLibraries = thisAndExported
+    final candidateLibraries = thisAndExported
         .where((l) =>
             l.isPublic && l.package.documentedWhere != DocumentLocation.missing)
         .where((l) {
@@ -580,7 +579,7 @@ abstract class ModelElement extends Canonicalization
         lookup = lookup.variable;
       }
       return topLevelElement == lookup;
-    }).toList();
+    }).toList(growable: true);
 
     // Avoid claiming canonicalization for elements outside of this element's
     // defining package.
@@ -609,21 +608,22 @@ abstract class ModelElement extends Canonicalization
     // canonical.  Still warn if the heuristic isn't that confident.
     var scoredCandidates =
         warnable.scoreCanonicalCandidates(candidateLibraries);
-    candidateLibraries = scoredCandidates.map((s) => s.library).toList();
+    final librariesByScore = scoredCandidates.map((s) => s.library).toList();
     var secondHighestScore =
         scoredCandidates[scoredCandidates.length - 2].score;
     var highestScore = scoredCandidates.last.score;
     var confidence = highestScore - secondHighestScore;
+    final canonicalLibrary = librariesByScore.last;
 
     if (confidence < config.ambiguousReexportScorerMinConfidence) {
-      var libraryNames = candidateLibraries.map((l) => l.name);
-      var message = '$libraryNames -> ${candidateLibraries.last.name} '
+      var libraryNames = librariesByScore.map((l) => l.name);
+      var message = '$libraryNames -> ${canonicalLibrary.name} '
           '(confidence ${confidence.toStringAsPrecision(4)})';
       warnable.warn(PackageWarning.ambiguousReexport,
           message: message, extendedDebug: scoredCandidates.map((s) => '$s'));
     }
 
-    return candidateLibraries.last;
+    return canonicalLibrary;
   }
 
   @override
@@ -737,7 +737,7 @@ abstract class ModelElement extends Canonicalization
       var setterDeprecated = pie.setter?.metadata.any((a) => a.isDeprecated);
 
       var deprecatedValues =
-          [getterDeprecated, setterDeprecated].whereNotNull().toList();
+          [getterDeprecated, setterDeprecated].whereNotNull();
 
       // At least one of these should be non-null. Otherwise things are weird
       assert(deprecatedValues.isNotEmpty);
@@ -826,36 +826,6 @@ abstract class ModelElement extends Canonicalization
   Package get package => library.package;
 
   bool get isPublicAndPackageDocumented => isPublic && package.isDocumented;
-
-  // TODO(jcollins-g): This is in the wrong place.  Move parts to
-  // [GetterSetterCombo], elsewhere as appropriate?
-  late final List<Parameter> allParameters = () {
-    var recursedParameters = <Parameter>{};
-    var newParameters = <Parameter>{};
-    if (this is GetterSetterCombo &&
-        (this as GetterSetterCombo).setter != null) {
-      newParameters.addAll((this as GetterSetterCombo).setter!.parameters);
-    } else {
-      if (isCallable) newParameters.addAll(parameters);
-    }
-    // TODO(jcollins-g): This part probably belongs in [ElementType].
-    while (newParameters.isNotEmpty) {
-      recursedParameters.addAll(newParameters);
-      newParameters.clear();
-      for (var p in recursedParameters) {
-        var parameterModelType = p.modelType;
-        if (parameterModelType is Callable) {
-          newParameters.addAll(parameterModelType.parameters
-              .where((pm) => !recursedParameters.contains(pm)));
-        }
-        if (parameterModelType is AliasedElementType) {
-          newParameters.addAll(parameterModelType.aliasedParameters
-              .where((pm) => !recursedParameters.contains(pm)));
-        }
-      }
-    }
-    return recursedParameters.toList();
-  }();
 
   @override
   p.Context get pathContext => packageGraph.resourceProvider.pathContext;

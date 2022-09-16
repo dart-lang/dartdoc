@@ -62,23 +62,19 @@ abstract class Typedef extends ModelElement
   @override
   List<TypeParameter> get typeParameters => element.typeParameters
       .map((f) => modelBuilder.from(f, library) as TypeParameter)
-      .toList();
+      .toList(growable: false);
 
   TypedefRenderer get _renderer => packageGraph.rendererFactory.typedefRenderer;
 
   @override
   Iterable<CommentReferable> get referenceParents => [definingLibrary];
 
-  Map<String, CommentReferable>? _referenceChildren;
+  late final Map<String, CommentReferable> _referenceChildren = {
+    ...typeParameters.explicitOnCollisionWith(this),
+  };
+
   @override
-  Map<String, CommentReferable> get referenceChildren {
-    if (_referenceChildren == null) {
-      _referenceChildren = {};
-      _referenceChildren!
-          .addEntriesIfAbsent(typeParameters.explicitOnCollisionWith(this));
-    }
-    return _referenceChildren!;
-  }
+  Map<String, CommentReferable> get referenceChildren => _referenceChildren;
 }
 
 /// A typedef referring to a non-function typedef that is nevertheless not
@@ -101,14 +97,10 @@ class ClassTypedef extends Typedef {
   DefinedElementType get modelType => super.modelType as DefinedElementType;
 
   @override
-  Map<String, CommentReferable> get referenceChildren {
-    if (_referenceChildren == null) {
-      _referenceChildren = super.referenceChildren;
-      _referenceChildren!
-          .addEntriesIfAbsent(modelType.modelElement.referenceChildren.entries);
-    }
-    return _referenceChildren!;
-  }
+  late final Map<String, CommentReferable> referenceChildren = {
+    ...modelType.modelElement.referenceChildren,
+    ...super.referenceChildren,
+  };
 }
 
 /// A typedef referring to a function type.
@@ -118,20 +110,16 @@ class FunctionTypedef extends Typedef {
         isCallable,
         'Expected callable but: ${element.runtimeType} is FunctionTypedElement '
         '|| (${element.runtimeType} is TypeAliasElement && '
-        '${element.aliasedElement.runtimeType} is FunctionTypedElement) is not '
-        'true for "${element.name}" in "${element.library}"');
+        '${element.aliasedType.runtimeType} is FunctionType) is not true for '
+        '"${element.name}" in "${element.library}"');
   }
 
   @override
   Callable get modelType => super.modelType as Callable;
 
   @override
-  Map<String, CommentReferable> get referenceChildren {
-    if (_referenceChildren == null) {
-      _referenceChildren = super.referenceChildren;
-      _referenceChildren!
-          .addEntriesIfAbsent(parameters.explicitOnCollisionWith(this));
-    }
-    return _referenceChildren!;
-  }
+  late final Map<String, CommentReferable> referenceChildren = {
+    ...parameters.explicitOnCollisionWith(this),
+    ...super.referenceChildren,
+  };
 }

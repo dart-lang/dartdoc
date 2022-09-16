@@ -66,12 +66,10 @@ class ModelFunctionTyped extends ModelElement
   bool get isInherited => false;
 
   @override
-  late final Map<String, CommentReferable> referenceChildren = () {
-    var children = <String, CommentReferable>{};
-    children.addEntriesIfAbsent(typeParameters.explicitOnCollisionWith(this));
-    children.addEntriesIfAbsent(parameters.explicitOnCollisionWith(this));
-    return children;
-  }();
+  late final Map<String, CommentReferable> referenceChildren = {
+    ...parameters.explicitOnCollisionWith(this),
+    ...typeParameters.explicitOnCollisionWith(this),
+  };
 
   @override
   Iterable<CommentReferable> get referenceParents => [definingLibrary];

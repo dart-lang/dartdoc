@@ -34,7 +34,8 @@ abstract class ModelCommentReference {
 /// and [ResourceProvider] after construction.
 class _ModelCommentReferenceImpl implements ModelCommentReference {
   void _initAllowCache() {
-    var referencePieces = parsed.whereType<IdentifierNode>().toList();
+    final referencePieces =
+        parsed.whereType<IdentifierNode>().toList(growable: false);
     _allowUnnamedConstructor = false;
     _allowUnnamedConstructorParameter = false;
     if (referencePieces.length >= 2) {
@@ -51,7 +52,7 @@ class _ModelCommentReferenceImpl implements ModelCommentReference {
           }
         }
       }
-      // e.g. [C.new], which may be the unnamed constructor
+      // e.g. [C.new], which may be the unnamed constructor.
       if (referencePieces.isNotEmpty && referencePieces.last.text == 'new') {
         _allowUnnamedConstructor = true;
       }

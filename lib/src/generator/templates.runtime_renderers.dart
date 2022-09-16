@@ -4610,17 +4610,16 @@ class _Renderer_Extension extends RendererBase<Extension> {
                     }
                     var name = remainingNames.first;
                     var nextProperty =
-                        _Renderer_ModelElement.propertyMap().getValue(name);
+                        _Renderer_Library.propertyMap().getValue(name);
                     return nextProperty.renderVariable(
-                        self.getValue(c) as ModelElement,
+                        self.getValue(c) as Library,
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
                   isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_ModelElement(
-                        c.enclosingElement, ast, r.template, sink,
+                    _render_Library(c.enclosingElement, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -5958,7 +5957,7 @@ class _Renderer_GetterSetterCombo extends RendererBase<GetterSetterCombo> {
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<Accessor>'),
+                          c, remainingNames, 'List<Accessor>'),
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.allAccessors.map((e) =>
@@ -6145,11 +6144,11 @@ class _Renderer_GetterSetterCombo extends RendererBase<GetterSetterCombo> {
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
-                  isNullValue: (CT_ c) => c.enclosingElement == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_ModelElement(
-                        c.enclosingElement!, ast, r.template, sink,
+                        c.enclosingElement, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -6831,17 +6830,16 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                     }
                     var name = remainingNames.first;
                     var nextProperty =
-                        _Renderer_ModelElement.propertyMap().getValue(name);
+                        _Renderer_Library.propertyMap().getValue(name);
                     return nextProperty.renderVariable(
-                        self.getValue(c) as ModelElement,
+                        self.getValue(c) as Library,
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
                   isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_ModelElement(
-                        c.enclosingElement, ast, r.template, sink,
+                    _render_Library(c.enclosingElement, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -9626,18 +9624,6 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                 ..._Renderer_FeatureSet.propertyMap<CT_>(),
                 ..._Renderer_DocumentationComment.propertyMap<CT_>(),
                 ..._Renderer_ModelBuilder.propertyMap<CT_>(),
-                'allParameters': Property(
-                  getValue: (CT_ c) => c.allParameters,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'List<Parameter>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.allParameters.map((e) =>
-                        _render_Parameter(e, ast, r.template, sink, parent: r));
-                  },
-                ),
                 'annotations': Property(
                   getValue: (CT_ c) => c.annotations,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -14677,7 +14663,7 @@ class _Renderer_TypeImplementing extends RendererBase<TypeImplementing> {
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<InheritingContainer>'),
+                          c, remainingNames, 'List<InheritingContainer>'),
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.publicImplementorsSorted.map((e) =>
@@ -15637,10 +15623,10 @@ class _Renderer_Warnable extends RendererBase<Warnable> {
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
-                  isNullValue: (CT_ c) => c.package == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_Package(c.package!, ast, r.template, sink,
+                    _render_Package(c.package, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -15674,7 +15660,18 @@ const _invisibleGetters = {
     'lineNumber',
     'runtimeType'
   },
-  'ClassElement': {'augmented', 'hashCode', 'runtimeType'},
+  'ClassElement': {
+    'augmented',
+    'hasNonFinalField',
+    'hashCode',
+    'isAbstract',
+    'isDartCoreEnum',
+    'isDartCoreObject',
+    'isMixinApplication',
+    'isValidMixin',
+    'runtimeType',
+    'superclassConstraints'
+  },
   'CommentReferable': {
     'definingCommentReferable',
     'href',
@@ -15688,16 +15685,12 @@ const _invisibleGetters = {
   'CompilationUnitElement': {
     'accessors',
     'classes',
-    'enclosingElement',
-    'enclosingElement2',
     'enclosingElement3',
-    'enums',
     'enums2',
     'extensions',
     'functions',
     'hashCode',
     'lineInfo',
-    'mixins',
     'mixins2',
     'runtimeType',
     'session',
@@ -15714,8 +15707,6 @@ const _invisibleGetters = {
     'augmentation',
     'declaration',
     'displayName',
-    'enclosingElement',
-    'enclosingElement2',
     'enclosingElement3',
     'hashCode',
     'isConst',
@@ -15732,8 +15723,6 @@ const _invisibleGetters = {
   'Context': {'current', 'hashCode', 'runtimeType', 'separator', 'style'},
   'DartType': {
     'alias',
-    'displayName',
-    'element',
     'element2',
     'hashCode',
     'isBottom',
@@ -15822,8 +15811,6 @@ const _invisibleGetters = {
     'declaration',
     'displayName',
     'documentationComment',
-    'enclosingElement',
-    'enclosingElement2',
     'enclosingElement3',
     'hasAlwaysThrows',
     'hasDeprecated',
@@ -15898,8 +15885,6 @@ const _invisibleGetters = {
     'declaration',
     'displayName',
     'documentationComment',
-    'enclosingElement',
-    'enclosingElement2',
     'enclosingElement3',
     'hasAlwaysThrows',
     'hasDeprecated',
@@ -15967,8 +15952,6 @@ const _invisibleGetters = {
   },
   'ExtensionElement': {
     'accessors',
-    'enclosingElement',
-    'enclosingElement2',
     'enclosingElement3',
     'extendedType',
     'fields',
@@ -16011,7 +15994,6 @@ const _invisibleGetters = {
     'runtimeType'
   },
   'FunctionType': {
-    'element',
     'element2',
     'hashCode',
     'namedParameterTypes',
@@ -16116,7 +16098,6 @@ const _invisibleGetters = {
     'isInSdk',
     'loadLibraryFunction',
     'name',
-    'parts',
     'parts2',
     'publicNamespace',
     'runtimeType',
@@ -16148,8 +16129,6 @@ const _invisibleGetters = {
     'declaration',
     'displayName',
     'documentationComment',
-    'enclosingElement',
-    'enclosingElement2',
     'enclosingElement3',
     'hasAlwaysThrows',
     'hasDeprecated',
@@ -16280,7 +16259,6 @@ const _invisibleGetters = {
     'isCovariant',
     'isInitializingFormal',
     'isNamed',
-    'isNotOptional',
     'isOptional',
     'isOptionalNamed',
     'isOptionalPositional',
@@ -16301,8 +16279,6 @@ const _invisibleGetters = {
     'defaultValueCode',
     'displayName',
     'documentationComment',
-    'enclosingElement',
-    'enclosingElement2',
     'enclosingElement3',
     'hasAlwaysThrows',
     'hasDefaultValue',
@@ -16365,8 +16341,6 @@ const _invisibleGetters = {
     'correspondingGetter',
     'correspondingSetter',
     'declaration',
-    'enclosingElement',
-    'enclosingElement2',
     'enclosingElement3',
     'hashCode',
     'isGetter',
@@ -16412,8 +16386,6 @@ const _invisibleGetters = {
   'TypeAliasElement': {
     'aliasedElement',
     'aliasedType',
-    'enclosingElement',
-    'enclosingElement2',
     'enclosingElement3',
     'hashCode',
     'name',

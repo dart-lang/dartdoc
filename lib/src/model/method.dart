@@ -34,7 +34,7 @@ class Method extends ModelElement
   void _calcTypeParameters() {
     typeParameters = element.typeParameters.map((f) {
       return modelBuilder.from(f, library) as TypeParameter;
-    }).toList();
+    }).toList(growable: false);
   }
 
   @override
@@ -108,7 +108,11 @@ class Method extends ModelElement
     for (var t in parent.allSupertypes) {
       Element? e = t.getMethod(element.name);
       if (e != null) {
-        assert(e.enclosingElement3 is ClassElement);
+        assert(
+          e.enclosingElement3 is InterfaceElement,
+          'Expected "${e.enclosingElement3?.name}" to be a InterfaceElement, '
+          'but was ${e.enclosingElement3.runtimeType}',
+        );
         return modelBuilder.fromElement(e) as Method?;
       }
     }
@@ -129,15 +133,11 @@ class Method extends ModelElement
     if (!identical(this, from)) {
       return from.referenceChildren;
     }
-    if (_referenceChildren == null) {
-      _referenceChildren = {};
-      _referenceChildren!.addEntriesIfAbsent([
-        ...typeParameters.explicitOnCollisionWith(this),
-        ...allParameters.explicitOnCollisionWith(this),
-        ...modelType.typeArguments.explicitOnCollisionWith(this),
-        ...modelType.returnType.typeArguments.explicitOnCollisionWith(this),
-      ]);
-    }
-    return _referenceChildren!;
+    return _referenceChildren ??= <String, CommentReferable>{
+      ...modelType.returnType.typeArguments.explicitOnCollisionWith(this),
+      ...modelType.typeArguments.explicitOnCollisionWith(this),
+      ...parameters.explicitOnCollisionWith(this),
+      ...typeParameters.explicitOnCollisionWith(this),
+    };
   }
 }
