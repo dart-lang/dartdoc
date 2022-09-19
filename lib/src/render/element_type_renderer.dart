@@ -90,7 +90,6 @@ class FunctionTypeElementTypeRendererHtml
           ..write('</span>&gt;');
       }
     }
-    buffer.write(elementType.nullabilitySuffix);
     return buffer.toString();
   }
 }
@@ -253,7 +252,7 @@ class FunctionTypeElementTypeRendererMd
           ..write('>');
       }
     }
-    return wrapNullabilityParens(elementType, buffer.toString());
+    return buffer.toString();
   }
 }
 

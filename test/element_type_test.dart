@@ -176,31 +176,34 @@ void f(int Function(String)? p) {}
       expect(
         parameterType.linkedName,
         // TODO(https://github.com/dart-lang/dartdoc/issues/2381): Fix.
-        '($intLink Function?'
+        '($intLink Function'
         '<span class="signature">'
         '(<span class="parameter" id="param-">'
         '<span class="type-annotation">$stringLink</span>'
         '</span>)</span>?)',
       );
-      expect(parameterType.nameWithGenerics, equals('Function?'));
+      expect(parameterType.nameWithGenerics, equals('Function'));
     });
 
     test('generic function type has rendered names', () async {
       final library = await bootPackageWithLibrary('''
-void f(int Function(String) p) {}
+void f(int Function<T>(T)? p) {}
 ''');
       final fFunction = library.functions.named('f');
       final parameterType = fFunction.parameters.single.modelType;
 
       expect(
         parameterType.linkedName,
-        '$intLink Function'
+        '($intLink Function'
+        '&lt;<wbr><span class="type-parameter">T</span>&gt;'
         '<span class="signature">'
         '(<span class="parameter" id="param-">'
-        '<span class="type-annotation">$stringLink</span>'
-        '</span>)</span>',
+        '<span class="type-annotation">T</span></span>)</span>?)',
       );
-      expect(parameterType.nameWithGenerics, equals('Function'));
+      expect(
+        parameterType.nameWithGenerics,
+        'Function&lt;<wbr><span class="type-parameter">T</span>&gt;',
+      );
     });
   });
 
