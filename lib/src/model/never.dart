@@ -29,8 +29,8 @@ class NeverType extends ModelElement with HasNoPage {
   String get linkedName => 'Never';
 
   @override
-  Map<String, CommentReferable> get referenceChildren => {};
+  Map<String, CommentReferable> get referenceChildren => const {};
 
   @override
-  Iterable<CommentReferable> get referenceParents => [];
+  Iterable<CommentReferable> get referenceParents => const [];
 }

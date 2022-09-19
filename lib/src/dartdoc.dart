@@ -79,8 +79,8 @@ class DartdocFileWriter implements FileWriter {
       assert(element != null,
           'Attempted overwrite of $outFile without corresponding element');
       var originalElement = _fileElementMap[outFile];
-      var referredFrom = <Warnable>[];
-      if (originalElement != null) referredFrom.add(originalElement);
+      var referredFrom =
+          originalElement == null ? const <Warnable>[] : [originalElement];
       element?.warn(PackageWarning.duplicateFile,
           message: outFile, referredFrom: referredFrom);
     }

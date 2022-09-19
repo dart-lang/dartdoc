@@ -33,10 +33,10 @@ class Dynamic extends ModelElement with HasNoPage {
   String get linkedName => 'dynamic';
 
   @override
-  Map<String, CommentReferable> get referenceChildren => {};
+  Map<String, CommentReferable> get referenceChildren => const {};
 
   @override
-  Iterable<CommentReferable> get referenceParents => [];
+  Iterable<CommentReferable> get referenceParents => const [];
 
   @override
   bool operator ==(Object other) => other is Dynamic;

@@ -349,7 +349,7 @@ class PubPackageBuilder implements PackageBuilder {
       Iterable<Resource> Function(Folder dir)? listDir}) {
     listDir ??= (Folder dir) => dir.getChildren();
 
-    return _doList(dir, <String>{}, recursive, listDir);
+    return _doList(dir, const <String>{}, recursive, listDir);
   }
 
   Iterable<String> _doList(String dir, Set<String> listedDirectories,
@@ -358,8 +358,10 @@ class PubPackageBuilder implements PackageBuilder {
     var resolvedPath =
         resourceProvider.getFolder(dir).resolveSymbolicLinksSync().path;
     if (!listedDirectories.contains(resolvedPath)) {
-      listedDirectories = Set<String>.from(listedDirectories);
-      listedDirectories.add(resolvedPath);
+      listedDirectories = {
+        ...listedDirectories,
+        resolvedPath,
+      };
 
       for (var resource in listDir(resourceProvider.getFolder(dir))) {
         // Skip hidden files and directories
@@ -413,9 +415,9 @@ class PubPackageBuilder implements PackageBuilder {
   bool get hasEmbedderSdkFiles => _embedderSdkUris.isNotEmpty;
 
   Iterable<String> get _embedderSdkUris {
-    if (config.topLevelPackageMeta.isSdk) return [];
+    if (config.topLevelPackageMeta.isSdk) return const [];
 
-    return embedderSdk?.urlMappings.keys ?? [];
+    return embedderSdk?.urlMappings.keys ?? const [];
   }
 
   Future<void> getLibraries(PackageGraph uninitializedPackageGraph) async {

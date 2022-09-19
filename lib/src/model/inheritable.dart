@@ -110,9 +110,9 @@ mixin Inheritable on ContainerMember {
   }
 
   List<InheritingContainer?> get inheritance {
-    var inheritance = <InheritingContainer?>[];
-    inheritance
-        .addAll((enclosingElement as InheritingContainer).inheritanceChain);
+    var inheritance = [
+      ...(enclosingElement as InheritingContainer).inheritanceChain,
+    ];
     var object = packageGraph.specialClasses[SpecialClass.object];
     if (!inheritance.contains(definingEnclosingContainer)) {
       assert(definingEnclosingContainer == object);

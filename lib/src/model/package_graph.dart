@@ -1028,5 +1028,5 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   }();
 
   @override
-  Iterable<CommentReferable> get referenceParents => [];
+  Iterable<CommentReferable> get referenceParents => const [];
 }

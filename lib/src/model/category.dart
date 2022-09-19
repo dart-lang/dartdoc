@@ -161,9 +161,9 @@ class Category extends Nameable
 
   @override
   // TODO: implement referenceChildren
-  Map<String, CommentReferable> get referenceChildren => {};
+  Map<String, CommentReferable> get referenceChildren => const {};
 
   @override
   // TODO: implement referenceParents
-  Iterable<CommentReferable> get referenceParents => [];
+  Iterable<CommentReferable> get referenceParents => const [];
 }

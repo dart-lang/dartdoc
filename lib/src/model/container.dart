@@ -98,7 +98,7 @@ abstract class Container extends ModelElement
   /// Override if this is [Constructable].
   bool get hasPublicConstructors => false;
 
-  List<Constructor> get publicConstructorsSorted => [];
+  List<Constructor> get publicConstructorsSorted => const [];
 
   @nonVirtual
   bool get hasPublicInstanceMethods =>
@@ -159,7 +159,7 @@ abstract class Container extends ModelElement
   late final List<Field> publicConstantFieldsSorted =
       publicConstantFields.toList(growable: false)..sort(byName);
 
-  Iterable<Field> get publicEnumValues => [];
+  Iterable<Field> get publicEnumValues => const [];
 
   bool get hasPublicEnumValues => publicEnumValues.isNotEmpty;
 

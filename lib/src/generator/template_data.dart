@@ -53,7 +53,7 @@ abstract class TemplateDataBase {
   bool get includeVersion => false;
 
   List<Documentable> get navLinks;
-  List<Container> get navLinksWithGenerics => [];
+  List<Container> get navLinksWithGenerics => const [];
   Documentable? get parent {
     if (navLinksWithGenerics.isEmpty) {
       return navLinks.isNotEmpty ? navLinks.last : null;
@@ -126,7 +126,7 @@ class PackageTemplateData extends TemplateData<Package> {
   @override
   bool get includeVersion => true;
   @override
-  List<Documentable> get navLinks => [];
+  List<Documentable> get navLinks => const [];
   @override
   String get title => '${package.name} - Dart API docs';
   @override

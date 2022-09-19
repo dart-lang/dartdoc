@@ -412,8 +412,9 @@ class MarkdownDocument extends md.Document {
       // current element.
       element.warn(PackageWarning.unresolvedDocReference,
           message: referenceText,
-          referredFrom:
-              element.documentationIsLocal ? [] : element.documentationFrom);
+          referredFrom: element.documentationIsLocal
+              ? const []
+              : element.documentationFrom);
       return md.Element.text('code', textContent);
     }
   }

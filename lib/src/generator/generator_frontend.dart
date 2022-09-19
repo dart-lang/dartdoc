@@ -25,8 +25,9 @@ class GeneratorFrontEnd implements Generator {
 
   @override
   Future<void> generate(PackageGraph? packageGraph) async {
-    var indexElements =
-        packageGraph == null ? <Indexable>[] : _generateDocs(packageGraph);
+    var indexElements = packageGraph == null
+        ? const <Indexable>[]
+        : _generateDocs(packageGraph);
 
     await _generatorBackend.generateAdditionalFiles();
 

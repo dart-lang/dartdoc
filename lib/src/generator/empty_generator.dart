@@ -29,7 +29,7 @@ class EmptyGenerator implements Generator {
   }
 
   @override
-  Set<String> get writtenFiles => {};
+  Set<String> get writtenFiles => const {};
 }
 
 Generator initEmptyGenerator() {
