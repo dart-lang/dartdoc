@@ -162,22 +162,10 @@ void initializeSearch(
     }
   });
 
-  // Prepare elements
+  // Prepare elements.
   var wrapper = document.createElement('div');
   wrapper.classes.add('tt-wrapper');
   input.replaceWith(wrapper);
-
-  var inputHint = document.createElement('input') as InputElement;
-  inputHint.setAttribute('type', 'text');
-  inputHint.setAttribute('autocomplete', 'off');
-  inputHint.setAttribute('readonly', 'true');
-  inputHint.setAttribute('spellcheck', 'false');
-  inputHint.setAttribute('tabindex', '-1');
-  inputHint.classes
-    ..add('typeahead')
-    ..add('tt-hint');
-
-  wrapper.append(inputHint);
 
   input.setAttribute('autocomplete', 'off');
   input.setAttribute('spellcheck', 'false');
@@ -279,16 +267,10 @@ void initializeSearch(
 
   String? storedValue;
   var actualValue = '';
-  String? hint;
 
   var suggestionElements = <Element>[];
   var suggestionsInfo = <IndexItem>[];
   int? selectedElement;
-
-  void setHint(String? value) {
-    hint = value;
-    inputHint.value = value ?? '';
-  }
 
   void showSuggestions() {
     if (searchResults.hasChildNodes()) {
@@ -366,7 +348,6 @@ void initializeSearch(
     searchResults.text = '';
 
     if (suggestions.length < minLength) {
-      setHint(null);
       hideSuggestions();
       return;
     }
@@ -379,7 +360,6 @@ void initializeSearch(
     iterateCategoriesMap(searchResults);
     suggestionsInfo = suggestions;
 
-    setHint(query + suggestions[0].name.substring(query.length));
     selectedElement = null;
 
     showSuggestions();
@@ -436,7 +416,6 @@ void initializeSearch(
       storedValue = null;
     }
     hideSuggestions();
-    setHint(null);
   });
 
   input.addEventListener('input', (event) {
@@ -468,23 +447,6 @@ void initializeSearch(
       }
     }
 
-    if (event.code == 'Tab') {
-      if (selectedElement == null) {
-        // The user wants to fill the field with the hint
-        if (hint != null) {
-          input.value = hint;
-          handle(hint);
-          event.preventDefault();
-        }
-      } else {
-        // The user wants to fill the input field with their currently selected suggestion
-        handle(suggestionsInfo[selectedElement!].name);
-        storedValue = null;
-        selectedElement = null;
-        event.preventDefault();
-      }
-      return;
-    }
     var lastIndex = suggestionElements.length - 1;
     var previousSelectedElement = selectedElement;
 
@@ -537,12 +499,9 @@ void initializeSearch(
       // Store the actual input value to display their currently selected item.
       storedValue ??= input.value;
       input.value = suggestionsInfo[selectedElement!].name;
-      setHint('');
     } else if (storedValue != null && previousSelectedElement != null) {
       // They are moving back to the input field, so return the stored value.
       input.value = storedValue;
-      setHint(storedValue! +
-          suggestionsInfo[0].name.substring(storedValue!.length));
       storedValue = null;
     }
 
