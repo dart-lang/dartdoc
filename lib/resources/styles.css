@@ -1051,7 +1051,7 @@ button {
 .navbar-right .tt-menu {
   right: 0;
   left: inherit !important;
-  width: 480px;
+  width: 540px;
   max-height: 280px;
   overflow-y: scroll;
 }
@@ -1080,16 +1080,6 @@ button {
           box-shadow: 0 5px 10px rgba(0,0,0,.2);
 }
 
-.tt-suggestion {
-  color: var(--main-text-color);
-  margin-top: 5px;
-  margin-bottom: 10px;
-  margin-right: 10px;
-  margin-left: 10px;
-  border-style: solid;
-  border-color: lightgrey;
-  border-width: 0.5px;
-}
 
 .typeahead, .tt-query, .tt-hint {
   padding: 17px;
@@ -1110,7 +1100,7 @@ button {
   margin-bottom: 10px;
 }
 
-a.tt-category-title {
+a.tt-container {
   font-size: 16px;
   color: var(--main-hyperlinks-color);
 }
@@ -1125,7 +1115,7 @@ a.tt-category-title {
   margin: 0px;
   clear: both;
   text-align: center;
-  text-color: black;
+  color: black;
 }
 
 .tt-suggestion:hover {
@@ -1151,19 +1141,92 @@ a.tt-category-title {
   margin: 0;
 }
 
-.tt-category-title {
+.tt-container {
   font-size: 14px;
-  margin-left: 10px;
   margin-bottom: 0px;
   margin-top: 15px;
 }
 
-.tt-suggestion-title {
-  font-size: 16px;
+.tt-container-text {
+  color: var(--main-text-color);
+}
+
+
+/* Search results formatting for mini results below search bar. */
+
+/* Do not show the container as a section. */
+.tt-search-results a.tt-container-text {
+  display: none
+}
+
+/* An inline style. */
+.tt-search-results .tt-suggestion {
+  color: var(--main-text-color);
+  margin-top: 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tt-search-results .tt-suggestion-title {
+  font-size: 14px;
+  font-weight: 500;
+  padding-right: 5px;
+}
+
+.tt-search-results .tt-suggestion-container {
+  color: var(--main-keyword-color);
+  font-size: 14px;
+  padding-right: 5px;
+}
+
+.tt-search-results .one-line-description {
+  color: var(--main-keyword-color);
+  display: inline;
+  margin-left: 0;
+}
+
+
+.tt-search-results .one-line-description::before {
+  content: open-quote;
+}
+
+.tt-search-results .one-line-description::after {
+  content: close-quote;
+}
+
+/* Search results formatting for `search.html`. */
+
+/* A block style. */
+#dartdoc-main-content .tt-suggestion {
+  color: var(--main-text-color);
+  margin-top: 5px;
+  margin-bottom: 10px;
+  border-style: solid;
+  border-color: lightgrey;
+  border-width: 0.5px;
+}
+
+#dartdoc-main-content .tt-suggestion-title {
+  display: block;
+  font-weight: 500;
   margin-right: 10px;
   margin-left: 10px;
   margin-bottom: 0px;
   margin-top: 4px;
+}
+
+#dartdoc-main-content .one-line-description {
+  display: block;
+  margin-right:10px;
+  margin-left: 10px;
+  margin-bottom: 3px;
+  margin-top: 2px;
+}
+
+/* Do not show a result's container. */
+#dartdoc-main-content .tt-suggestion-container {
+  display: none;
 }
 
 .temp-box {
@@ -1215,14 +1278,6 @@ a.tt-category-title {
   .self-name {
    margin-right: 10px;
   }
-}
-
-.one-line-description {
-  font-size: 12px;
-  margin-right:10px;
-  margin-left: 10px;
-  margin-bottom: 3px;
-  margin-top: 2px;
 }
 
 .search-from-lib {

@@ -6,6 +6,19 @@ import 'dart:convert';
 import 'dart:html';
 import 'dart:js_util' as js_util;
 
+final String _htmlBase = () {
+  final body = document.querySelector('body')!;
+
+  // If dartdoc did not add a base-href tag, we will need to add the relative
+  // path ourselves.
+  if (body.attributes['data-using-base-href'] == 'false') {
+    // Dartdoc stores the htmlBase in 'body[data-base-href]'.
+    return body.attributes['data-base-href'] ?? '';
+  } else {
+    return '';
+  }
+}();
+
 void init() {
   final document = window.document;
   var searchBox = document.getElementById('search-box') as InputElement?;
@@ -21,17 +34,7 @@ void init() {
     searchSidebar?.placeholder = 'Failed to initialize search';
   }
 
-  var body = document.querySelector('body')!;
-
-  // If dartdoc did not add a base-href tag, we will need to add the relative
-  // path ourselves.
-  var htmlBase = '';
-  if (body.attributes['data-using-base-href'] == 'false') {
-    // Dartdoc stores the htmlBase in 'body[data-base-href]'.
-    htmlBase = body.attributes['data-base-href'] ?? '';
-  }
-
-  window.fetch('${htmlBase}index.json').then((response) async {
+  window.fetch('${_htmlBase}index.json').then((response) async {
     int code = js_util.getProperty(response, 'status');
     if (code == 404) {
       disableSearch();
@@ -52,7 +55,7 @@ void init() {
       if (matches.isNotEmpty) {
         final href = matches.first.href;
         if (href != null) {
-          window.location.assign('$htmlBase$href');
+          window.location.assign('$_htmlBase$href');
           return;
         }
       }
@@ -60,13 +63,13 @@ void init() {
 
     // Initialize all three search fields.
     if (searchBox != null) {
-      initializeSearch(searchBox, index, htmlBase);
+      initializeSearch(searchBox, index);
     }
     if (searchBody != null) {
-      initializeSearch(searchBody, index, htmlBase);
+      initializeSearch(searchBody, index);
     }
     if (searchSidebar != null) {
-      initializeSearch(searchSidebar, index, htmlBase);
+      initializeSearch(searchSidebar, index);
     }
   });
 }
@@ -142,10 +145,11 @@ int suggestionLimit = 10;
 int suggestionLength = 0;
 const HtmlEscape htmlEscape = HtmlEscape();
 
+Map<String, Element> containerMap = {};
+
 void initializeSearch(
   InputElement input,
   List<IndexItem> index,
-  String htmlBase,
 ) {
   final uri = Uri.parse(window.location.href);
 
@@ -191,80 +195,6 @@ void initializeSearch(
 
   wrapper.append(listBox);
 
-  // Set up various search functionality.
-  String highlight(String text, String query) {
-    final sanitizedText = const HtmlEscape().convert(query);
-    return text.replaceAll(
-        query, "<strong class='tt-highlight'>$sanitizedText</strong>");
-  }
-
-  var categoriesMap = <String, Element>{};
-
-  // Maps a suggestions library/class to the other suggestions that search found if any.
-  void categorize(Element suggestionLibrary, Element suggestion) {
-    var input = suggestionLibrary.innerHtml;
-
-    if (input == null) {
-      return;
-    }
-
-    var element = categoriesMap[input];
-    if (element != null) {
-      element.append(suggestion);
-    } else {
-      suggestionLibrary.append(suggestion);
-      categoriesMap[input] = suggestionLibrary;
-    }
-  }
-
-  // Using the name of the library/class creates the Element for it.
-  Element createGroup(String encloser, String href) {
-    var categoryTitle = document.createElement('a')
-      ..setAttribute('href', href)
-      ..classes.add('tt-category-title')
-      ..innerHtml = encloser;
-    return categoryTitle;
-  }
-
-  Element createSuggestion(String query, IndexItem match) {
-    var suggestion = document.createElement('div')
-      ..setAttribute('data-href', match.href ?? '')
-      ..classes.add('tt-suggestion');
-
-    var suggestionTitle = document.createElement('div')
-      ..classes.add('tt-suggestion-title')
-      ..innerHtml =
-          highlight('${match.name} ${match.type.toLowerCase()}', query);
-    suggestion.append(suggestionTitle);
-
-    // The new one line description to use in the search suggestions.
-    if (match.desc != '') {
-      var inputDesc = document.createElement('div');
-      inputDesc.classes.add('one-line-description');
-      var innerHtml = '';
-      innerHtml = match.desc.toString();
-      inputDesc.innerHtml = highlight(innerHtml, query);
-      suggestion.append(inputDesc);
-    }
-
-    suggestion.addEventListener('mousedown', (event) {
-      event.preventDefault();
-    });
-
-    suggestion.addEventListener('click', (event) {
-      if (match.href != null) {
-        window.location.assign('$htmlBase${match.href}');
-        event.preventDefault();
-      }
-    });
-    var suggestionEnclose = match.enclosedBy;
-    if (suggestionEnclose != null) {
-      var category = '${suggestionEnclose.name} ${suggestionEnclose.type}';
-      categorize(createGroup(category, suggestionEnclose.href), suggestion);
-    }
-    return suggestion;
-  }
-
   String? storedValue;
   var actualValue = '';
 
@@ -279,48 +209,37 @@ void initializeSearch(
     }
   }
 
-  // Function that iterates through the categoriesMap and appends it to the given HTML element
-  // The received Element is the one used for search results page or dropdown list in the search bar
-  void iterateCategoriesMap(Element e) {
-    categoriesMap.forEach((keys, values) {
-      var value = categoriesMap[keys];
-      e.append(value!);
-    });
-  }
-
-  // Function that creates the content displayed in the main-content element.
-  void showSearchResultPage(String input) {
-    var mainContent = document.getElementById('dartdoc-main-content');
+  /// Creates the content displayed in the main-content element, for the search
+  /// results page.
+  void showSearchResultPage(String searchText) {
+    final mainContent = document.getElementById('dartdoc-main-content');
 
     if (mainContent == null) {
       return;
     }
 
-    mainContent.text = '';
+    mainContent
+      ..text = ''
+      ..append(document.createElement('section')..classes.add('search-summary'))
+      ..append(document.createElement('h2')..innerHtml = 'Search Results')
+      ..append(document.createElement('div')
+        ..classes.add('search-summary')
+        ..innerHtml = '$suggestionLength results for "$searchText"');
 
-    var section = document.createElement('section')
-      ..classes.add('search-summary');
-    mainContent.append(section);
-
-    var title = document.createElement('h2')..innerHtml = 'Search Results';
-    mainContent.append(title);
-
-    var summary = document.createElement('div')
-      ..classes.add('search-summary')
-      ..innerHtml = '$suggestionLength results for "$input"';
-    mainContent.append(summary);
-
-    if (categoriesMap.isNotEmpty) {
-      iterateCategoriesMap(mainContent);
+    if (containerMap.isNotEmpty) {
+      for (final element in containerMap.values) {
+        mainContent.append(element);
+      }
     } else {
       var noResults = document.createElement('div')
         ..classes.add('search-summary')
         ..innerHtml =
-            'There was not a match for "$input". Want to try searching from additional Dart-related sites? ';
+            'There was not a match for "$searchText". Want to try searching '
+                'from additional Dart-related sites? ';
 
       var buildLink = Uri.parse(
               'https://dart.dev/search?cx=011220921317074318178%3A_yy-tmb5t_i&ie=UTF-8&hl=en&q=')
-          .replace(queryParameters: {'q': input});
+          .replace(queryParameters: {'q': searchText});
       var link = document.createElement('a')
         ..setAttribute('href', buildLink.toString())
         ..classes.add('seach-options')
@@ -344,7 +263,7 @@ void initializeSearch(
   void updateSuggestions(String query, List<IndexItem> suggestions) {
     suggestionsInfo = [];
     suggestionElements = [];
-    categoriesMap = <String, Element>{};
+    containerMap = <String, Element>{};
     searchResults.text = '';
 
     if (suggestions.length < minLength) {
@@ -353,11 +272,12 @@ void initializeSearch(
     }
 
     for (final suggestion in suggestions) {
-      var element = createSuggestion(query, suggestion);
-      suggestionElements.add(element);
+      suggestionElements.add(_createSuggestion(query, suggestion));
     }
 
-    iterateCategoriesMap(searchResults);
+    for (final element in containerMap.values) {
+      searchResults.append(element);
+    }
     suggestionsInfo = suggestions;
 
     selectedElement = null;
@@ -383,30 +303,30 @@ void initializeSearch(
     return search.toString();
   }
 
-  void handle(String? newValue, [bool forceUpdate = false]) {
-    if (actualValue == newValue && !forceUpdate) {
+  /// Handles [searchText] by generating suggestions.
+  void handleSearch(String? searchText, {bool forceUpdate = false}) {
+    if (actualValue == searchText && !forceUpdate) {
       return;
     }
 
-    if (newValue == null || newValue.isEmpty) {
+    if (searchText == null || searchText.isEmpty) {
       updateSuggestions('', []);
       return;
     }
 
-    var suggestions = findMatches(index, newValue);
+    var suggestions = findMatches(index, searchText);
     suggestionLength = suggestions.length;
     if (suggestions.length > suggestionLimit) {
       suggestions = suggestions.sublist(0, suggestionLimit);
     }
 
-    actualValue = newValue;
-
-    updateSuggestions(newValue, suggestions);
+    actualValue = searchText;
+    updateSuggestions(searchText, suggestions);
   }
 
-  // Hook up events
+  // Hook up events.
   input.addEventListener('focus', (Event event) {
-    handle(input.value, true);
+    handleSearch(input.value, forceUpdate: true);
   });
 
   input.addEventListener('blur', (Event event) {
@@ -419,7 +339,7 @@ void initializeSearch(
   });
 
   input.addEventListener('input', (event) {
-    handle(input.value);
+    handleSearch(input.value);
   });
 
   input.addEventListener('keydown', (Event event) {
@@ -434,11 +354,12 @@ void initializeSearch(
         var selectingElement = selectedElement ?? 0;
         var href = suggestionElements[selectingElement].dataset['href'];
         if (href != null) {
-          window.location.assign('$htmlBase$href');
+          window.location.assign('$_htmlBase$href');
         }
         return;
       }
-      // If there no search suggestion selected then change the window location to the search.html
+      // If there is no search suggestion selected, then change the window
+      // location to `search.html`.
       else {
         var input = htmlEscape.convert(actualValue);
         var search = Uri.parse(relativePath());
@@ -469,7 +390,7 @@ void initializeSearch(
     } else {
       if (storedValue != null) {
         storedValue = null;
-        handle(input.value);
+        handleSearch(input.value);
       }
       return;
     }
@@ -516,11 +437,105 @@ void initializeSearch(
     }
     input = htmlEscape.convert(input);
     suggestionLimit = suggestionLength;
-    handle(input);
+    handleSearch(input);
     showSearchResultPage(input);
     hideSuggestions();
     suggestionLimit = 10;
   }
+}
+
+Element _createSuggestion(String query, IndexItem match) {
+  final suggestion = document.createElement('div')
+    ..setAttribute('data-href', match.href ?? '')
+    ..classes.add('tt-suggestion');
+
+  final suggestionTitle = document.createElement('span')
+    ..classes.add('tt-suggestion-title')
+    ..innerHtml =
+        _highlight('${match.name} ${match.type.toLowerCase()}', query);
+  suggestion.append(suggestionTitle);
+
+  final enclosingElement = match.enclosedBy;
+  if (enclosingElement != null) {
+    suggestion.append(document.createElement('span')
+      ..classes.add('tt-suggestion-container')
+      ..innerHtml = '(in ${_highlight(enclosingElement.name, query)})');
+  }
+
+  // The one line description to use in the search suggestions.
+  if (match.desc != '') {
+    final inputDescription = document.createElement('blockquote')
+      ..classes.add('one-line-description')
+      ..attributes['title'] = _decodeHtml(match.desc.toString())
+      ..innerHtml = _highlight(match.desc.toString(), query);
+    suggestion.append(inputDescription);
+  }
+
+  suggestion.addEventListener('mousedown', (event) {
+    event.preventDefault();
+  });
+
+  suggestion.addEventListener('click', (event) {
+    if (match.href != null) {
+      window.location.assign('$_htmlBase${match.href}');
+      event.preventDefault();
+    }
+  });
+
+  if (enclosingElement != null) {
+    _mapToContainer(
+      _createContainer(
+        '${enclosingElement.name} ${enclosingElement.type}',
+        enclosingElement.href,
+      ),
+      suggestion,
+    );
+  }
+  return suggestion;
+}
+
+/// Maps a suggestion library/class [Element] to the other suggestions, if any.
+void _mapToContainer(Element containerElement, Element suggestion) {
+  final input = containerElement.innerHtml;
+
+  if (input == null) {
+    return;
+  }
+
+  final element = containerMap[input];
+  if (element != null) {
+    element.append(suggestion);
+  } else {
+    containerElement.append(suggestion);
+    containerMap[input] = containerElement;
+  }
+}
+
+/// Creates an `<a>` [Element] for enclosing library/class.
+Element _createContainer(String encloser, String href) =>
+    document.createElement('div')
+      ..classes.add('tt-container')
+      ..append(document.createElement('p')
+        ..text = 'Results from '
+        ..classes.add('tt-container-text')
+        ..append(document.createElement('a')
+          ..setAttribute('href', href)
+          ..innerHtml = encloser));
+
+/// Wraps [query] in [text] with a `<strong>` tag, as HTML text.
+String _highlight(String text, String query) {
+  final sanitizedText = const HtmlEscape().convert(query);
+  return text.replaceAll(
+      query, "<strong class='tt-highlight'>$sanitizedText</strong>");
+}
+
+/// Decodes HTML entities (like `&lt;`) into their HTML elements (like `<`).
+///
+/// This is safe for use in an HTML attribute like `title`.
+String _decodeHtml(String html) {
+  return ((document.createElement('textarea') as TextAreaElement)
+        ..innerHtml = html)
+      .value!;
 }
 
 class SearchMatch {
@@ -585,6 +600,7 @@ class EnclosedBy {
   final String type;
   final String href;
 
+  // Built from JSON structure:
   // ["enclosedBy":{"name":"Accessor","type":"class","href":"link"}]
   EnclosedBy._({required this.name, required this.type, required this.href});
 }
