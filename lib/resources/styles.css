@@ -88,6 +88,18 @@
   cursor: pointer;
 }
 
+/*
+Only show images that fit their theme using GitHub's syntax, see:
+https://github.blog/changelog/2021-11-24-specify-theme-context-for-images-in-markdown/
+*/
+.dark-theme img[src$="#gh-light-mode-only"] {
+  display: none;
+}
+
+.light-theme img[src$="#gh-dark-mode-only"] {
+  display: none;
+}
+
 /* for layout */
 html,
 body {
