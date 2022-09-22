@@ -156,11 +156,11 @@ void initializeSearch(
   input.disabled = false;
   input.setAttribute('placeholder', 'Search API Docs');
   // Handle grabbing focus when the users types / outside of the input
-  document.addEventListener('keypress', (Event event) {
-    if (event is! KeyEvent) {
+  document.addEventListener('keydown', (Event event) {
+    if (event is! KeyboardEvent) {
       return;
     }
-    if (event.code == 'Slash' && document.activeElement is! InputElement) {
+    if (event.key == '/' && document.activeElement is! InputElement) {
       event.preventDefault();
       input.focus();
     }
