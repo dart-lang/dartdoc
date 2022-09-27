@@ -89,6 +89,8 @@ void runPubGet(String dirPath) {
   }
 }
 
+/// Creates a package at [dirPath] and returns the [PackageGraph] built with
+/// [PubPackageBuilder.buildPackageGraph].
 Future<PackageGraph> bootBasicPackage(
   String dirPath,
   PackageMetaProvider packageMetaProvider,
@@ -97,11 +99,11 @@ Future<PackageGraph> bootBasicPackage(
   List<String> additionalArguments = const [],
   bool skipUnreachableSdkLibraries = true,
 }) async {
-  var resourceProvider = packageMetaProvider.resourceProvider;
+  final resourceProvider = packageMetaProvider.resourceProvider;
   if (resourceProvider == PhysicalResourceProvider.INSTANCE) {
     runPubGet(dirPath);
   }
-  var dir = resourceProvider.getFolder(resourceProvider.pathContext
+  final dir = resourceProvider.getFolder(resourceProvider.pathContext
       .absolute(resourceProvider.pathContext.normalize(dirPath)));
   return PubPackageBuilder(
     await contextFromArgv([

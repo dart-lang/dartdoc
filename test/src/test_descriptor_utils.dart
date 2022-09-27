@@ -14,7 +14,7 @@ const _defaultPubspec = '''
 name: test_package
 version: 0.0.1
 environment:
-  sdk: '>=2.12.0 <3.0.0'
+  sdk: '>=2.15.0 <3.0.0'
 ''';
 
 /// Creates a pub package in a directory named [name].

@@ -117,6 +117,7 @@ class Package extends LibraryContainer
   @override
   late final String documentationAsHtml = Documentation.forElement(this).asHtml;
 
+  /// The documentation from the README contents.
   @override
   late final String? documentation = () {
     final docFile = packageMeta.getReadmeContents();

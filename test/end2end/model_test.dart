@@ -4521,15 +4521,19 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('anonymous nested functions inside typedefs are handled correctly',
         () {
       expect(
-          aComplexTypedef.modelType.returnType.linkedName,
-          equals(
-              'void Function<span class="signature">(<span class="parameter" id="param-"><span class="type-annotation">A1</span>, </span><span class="parameter" id="param-"><span class="type-annotation">A2</span>, </span><span class="parameter" id="param-"><span class="type-annotation">A3</span></span>)</span>'));
+        aComplexTypedef.modelType.returnType.linkedName,
+        'void Function<span class="signature">'
+        '(<span class="parameter" id="param-"><span class="type-annotation">A1</span>, '
+        '</span><span class="parameter" id="param-"><span class="type-annotation">A2</span>, </span>'
+        '<span class="parameter" id="param-"><span class="type-annotation">A3</span></span>)</span>',
+      );
       expect(
-          aComplexTypedef.linkedParamsLines,
-          equals(
-              '<ol class="parameter-list"><li><span class="parameter" id="aComplexTypedef-param-"><span class="type-annotation">A3</span>, </span></li>\n'
-              '<li><span class="parameter" id="aComplexTypedef-param-"><span class="type-annotation">String</span></span></li>\n'
-              '</ol>'));
+        aComplexTypedef.linkedParamsLines,
+        '<ol class="parameter-list">'
+        '<li><span class="parameter" id="param-"><span class="type-annotation">A3</span>, </span></li>\n'
+        '<li><span class="parameter" id="param-"><span class="type-annotation">String</span></span></li>\n'
+        '</ol>',
+      );
     });
 
     test('has a fully qualified name', () {

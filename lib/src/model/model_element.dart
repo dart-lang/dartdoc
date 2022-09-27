@@ -181,7 +181,7 @@ abstract class ModelElement extends Canonicalization
       return cachedModelElement;
     }
 
-    ModelElement? newModelElement;
+    ModelElement newModelElement;
     if (e is FieldElement) {
       if (enclosingContainer == null) {
         if (e.isEnumConstant) {
@@ -639,7 +639,7 @@ abstract class ModelElement extends Canonicalization
     return self.enclosingElement == self.canonicalEnclosingContainer;
   }
 
-  /// Returns the docs, stripped of their leading comments syntax.
+  /// The documentaion, stripped of its comment syntax, like `///` characters.
   @override
   String get documentation {
     return injectMacros(
@@ -830,38 +830,45 @@ abstract class ModelElement extends Canonicalization
   @override
   p.Context get pathContext => packageGraph.resourceProvider.pathContext;
 
+  // TODO(srawlins): This really smells like it should just be implemented in
+  // the subclasses.
   late final List<Parameter> parameters = () {
+    final element = this.element;
     if (!isCallable) {
       throw StateError(
           '$element (${element.runtimeType}) cannot have parameters');
     }
 
+    final List<ParameterElement> params;
     if (element is TypeAliasElement) {
-      return ModelElement._fromElement(
-              (element as TypeAliasElement).aliasedElement!, packageGraph)
-          .parameters;
-    }
-    List<ParameterElement>? params;
-    if (element is ExecutableElement) {
+      final aliasedType = element.aliasedType;
+      if (aliasedType is FunctionType) {
+        params = aliasedType.parameters;
+      } else {
+        return const <Parameter>[];
+      }
+    } else if (element is ExecutableElement) {
       if (_originalMember != null) {
         assert(_originalMember is ExecutableMember);
         params = (_originalMember as ExecutableMember).parameters;
       } else {
-        params = (element as ExecutableElement).parameters;
+        params = element.parameters;
       }
-    }
-    if (params == null && element is FunctionTypedElement) {
+    } else if (element is FunctionTypedElement) {
       if (_originalMember != null) {
         params = (_originalMember as FunctionTypedElement).parameters;
       } else {
-        params = (element as FunctionTypedElement).parameters;
+        params = element.parameters;
       }
+    } else {
+      return const <Parameter>[];
     }
 
-    return <Parameter>[
-      ...?params?.map(
-          (p) => ModelElement._from(p, library, packageGraph) as Parameter)
-    ];
+    return List.of(
+      params.map(
+          (p) => ModelElement._from(p, library, packageGraph) as Parameter),
+      growable: false,
+    );
   }();
 
   @override
