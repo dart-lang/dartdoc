@@ -324,59 +324,53 @@ abstract class InheritingContainer extends Container
   Iterable<DefinedElementType> get publicSuperChainReversed =>
       publicSuperChain.reversed;
 
-  List<ExecutableElement?>? __inheritedElements;
-
-  List<ExecutableElement?> get _inheritedElements {
-    if (__inheritedElements == null) {
-      if (element is ClassElement &&
-          (element as ClassElement).isDartCoreObject) {
-        return __inheritedElements = const <ExecutableElement>[];
-      }
-
-      var inheritance = definingLibrary.inheritanceManager;
-      var cmap = inheritance.getInheritedConcreteMap2(element);
-      var imap = inheritance.getInheritedMap2(element);
-
-      List<InterfaceElement?>? inheritanceChainElements;
-
-      var combinedMap = <String, ExecutableElement?>{};
-      for (var nameObj in cmap.keys) {
-        combinedMap[nameObj.name] = cmap[nameObj];
-      }
-      for (var nameObj in imap.keys) {
-        if (combinedMap[nameObj.name] != null) {
-          // Elements in the inheritance chain starting from [this.element]
-          // down to, but not including, [Object].
-          inheritanceChainElements ??=
-              inheritanceChain.map((c) => c!.element).toList(growable: false);
-          // [packageGraph.specialClasses] is not available yet.
-          bool isDartCoreObject(ClassElement e) =>
-              e.name == 'Object' && e.library.name == 'dart.core';
-          assert(inheritanceChainElements
-                  .contains(imap[nameObj]!.enclosingElement3) ||
-              isDartCoreObject(
-                  imap[nameObj]!.enclosingElement3 as ClassElement));
-
-          // If the concrete object from [InheritanceManager3.getInheritedConcreteMap2]
-          // is farther from this class in the inheritance chain than the one
-          // provided by InheritedMap2, prefer InheritedMap2.  This
-          // correctly accounts for intermediate abstract classes that have
-          // method/field implementations.
-          if (inheritanceChainElements.indexOf(combinedMap[nameObj.name]!
-                  .enclosingElement3 as InterfaceElement?) <
-              inheritanceChainElements.indexOf(
-                  imap[nameObj]!.enclosingElement3 as InterfaceElement?)) {
-            combinedMap[nameObj.name] = imap[nameObj];
-          }
-        } else {
-          combinedMap[nameObj.name] = imap[nameObj];
-        }
-      }
-
-      __inheritedElements = combinedMap.values.toList(growable: false);
+  late final List<ExecutableElement?> _inheritedElements = () {
+    if (element is ClassElement && (element as ClassElement).isDartCoreObject) {
+      return const <ExecutableElement>[];
     }
-    return __inheritedElements!;
-  }
+
+    final inheritance = definingLibrary.inheritanceManager;
+    final concreteInheritenceMap =
+        inheritance.getInheritedConcreteMap2(element);
+    final inheritenceMap = inheritance.getInheritedMap2(element);
+
+    List<InterfaceElement?>? inheritanceChainElements;
+
+    final combinedMap = {
+      for (final name in concreteInheritenceMap.keys)
+        name.name: concreteInheritenceMap[name],
+    };
+    for (final name in inheritenceMap.keys) {
+      final inheritenceElement = inheritenceMap[name]!;
+      final combinedMapElement = combinedMap[name.name];
+      if (combinedMapElement == null) {
+        combinedMap[name.name] = inheritenceElement;
+        continue;
+      }
+
+      // Elements in the inheritance chain starting from `this.element` down to,
+      // but not including, [Object].
+      inheritanceChainElements ??=
+          inheritanceChain.map((c) => c!.element).toList(growable: false);
+      final enclosingElement =
+          inheritenceElement.enclosingElement3 as InterfaceElement;
+      assert(inheritanceChainElements.contains(enclosingElement) ||
+          enclosingElement.isDartCoreObject);
+
+      // If the concrete object from
+      // [InheritanceManager3.getInheritedConcreteMap2] is farther from this
+      // class in the inheritance chain than the one provided by
+      // `inheritedMap2`, prefer `inheritedMap2`. This correctly accounts for
+      // intermediate abstract classes that have method/field implementations.
+      if (inheritanceChainElements.indexOf(
+              combinedMapElement.enclosingElement3 as InterfaceElement?) <
+          inheritanceChainElements.indexOf(enclosingElement)) {
+        combinedMap[name.name] = inheritenceElement;
+      }
+    }
+
+    return combinedMap.values.toList(growable: false);
+  }();
 
   late final List<Field> allFields = () {
     var inheritedAccessorElements = {
@@ -531,4 +525,8 @@ extension DefinedElementTypeIterableExtensions on Iterable<DefinedElementType> {
   /// Expands the `ModelElement` for each element to its inheritance chain.
   Iterable<InheritingContainer?> get expandInheritanceChain =>
       expand((e) => (e.modelElement as InheritingContainer).inheritanceChain);
+}
+
+extension on InterfaceElement {
+  bool get isDartCoreObject => name == 'Object' && library.name == 'dart.core';
 }
