@@ -917,14 +917,6 @@ void main() {
       expect(exLibrary.characterLocation, isNotNull);
     });
 
-    test('packageName', () {
-      expect(exLibrary.packageName, 'test_package');
-    });
-
-    test('has a fully qualified name', () {
-      expect(exLibrary.fullyQualifiedName, 'ex');
-    });
-
     test('can be deprecated', () {
       expect(isDeprecated.isDeprecated, isTrue);
       expect(anonLib.isDeprecated, isFalse);
@@ -937,18 +929,6 @@ void main() {
 
     test('that is deprecated has a deprecated css class in linkedName', () {
       expect(isDeprecated.linkedName, contains('class="deprecated"'));
-    });
-
-    test('has documentation', () {
-      expect(exLibrary.documentation,
-          'a library. testing string escaping: `var s = \'a string\'` <cool>\n');
-    });
-
-    test('has one line docs', () {
-      expect(
-          fakeLibrary.oneLineDoc,
-          equals(
-              'WOW FAKE PACKAGE IS <strong>BEST</strong> <a href="http://example.org">PACKAGE</a>'));
     });
 
     test('has properties', () {
