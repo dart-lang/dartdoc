@@ -234,11 +234,9 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     return prefixToLibrary;
   }();
 
-  late final String dirName = () {
-    var directoryName = isAnonymous ? nameFromPath : name;
-    directoryName = directoryName.replaceAll(':', '-').replaceAll('/', '_');
-    return directoryName;
-  }();
+  late final String dirName = (isAnonymous ? nameFromPath : name)
+      .replaceAll(':', '-')
+      .replaceAll('/', '_');
 
   Set<String?>? _canonicalFor;
 
@@ -366,10 +364,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
   /// The real packageMeta, as opposed to the package we are documenting with.
   late final PackageMeta? packageMeta =
-      packageGraph.packageMetaProvider.fromElement(
-    element,
-    config.sdkDir,
-  );
+      packageGraph.packageMetaProvider.fromElement(element, config.sdkDir);
 
   /// All variables ("properties") except constants.
   @override
