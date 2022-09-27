@@ -471,15 +471,15 @@ mixin DocumentationComment
     });
   }
 
-  /// Matches all animation directives (even some invalid ones). This is so
-  /// we can give good error messages if the directive is malformed, instead of
+  /// Matches all animation directives (even some invalid ones). This is so we
+  /// can give good error messages if the directive is malformed, instead of
   /// just silently emitting it as-is.
-  final _basicAnimationPattern = RegExp(r'''{@animation\s+([^}]+)}''');
+  static final _basicAnimationPattern = RegExp(r'''{@animation\s+([^}]+)}''');
 
-  /// Matches valid javascript identifiers.
-  final _validIdPattern = RegExp(r'^[a-zA-Z_]\w*$');
+  /// Matches valid JavaScript identifiers.
+  static final _validIdPattern = RegExp(r'^[a-zA-Z_]\w*$');
 
-  /// An argument parser used in [_injectAnimations] to parse a `{@animation}`
+  /// An argument parser used in [_injectAnimations] to parse an `{@animation}`
   /// directive.
   static final _animationArgParser = ArgParser()..addOption('id');
 
