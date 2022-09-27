@@ -20,7 +20,6 @@ final String _htmlBase = () {
 }();
 
 void init() {
-  final document = window.document;
   var searchBox = document.getElementById('search-box') as InputElement?;
   var searchBody = document.getElementById('search-body') as InputElement?;
   var searchSidebar =
@@ -44,14 +43,14 @@ void init() {
     var textPromise = js_util.callMethod<Object>(response, 'text', []);
     var text = await promiseToFuture<String>(textPromise);
     var jsonIndex = (jsonDecode(text) as List).cast<Map<String, dynamic>>();
-    final index = jsonIndex.map(IndexItem.fromMap).toList();
+    final index = jsonIndex.map(_IndexItem.fromMap).toList();
 
     // Navigate to the first result from the 'search' query parameter
     // if specified and found.
     final url = Uri.parse(window.location.toString());
     final search = url.queryParameters['search'];
     if (search != null) {
-      final matches = findMatches(index, search);
+      final matches = _findMatches(index, search);
       if (matches.isNotEmpty) {
         final href = matches.first.href;
         if (href != null) {
@@ -63,18 +62,18 @@ void init() {
 
     // Initialize all three search fields.
     if (searchBox != null) {
-      initializeSearch(searchBox, index);
+      _initializeSearch(searchBox, index);
     }
     if (searchBody != null) {
-      initializeSearch(searchBody, index);
+      _initializeSearch(searchBody, index);
     }
     if (searchSidebar != null) {
-      initializeSearch(searchSidebar, index);
+      _initializeSearch(searchSidebar, index);
     }
   });
 }
 
-const weights = {
+const _weights = {
   'library': 2,
   'class': 2,
   'mixin': 3,
@@ -88,18 +87,18 @@ const weights = {
   'constructor': 4,
 };
 
-List<IndexItem> findMatches(List<IndexItem> index, String query) {
+List<_IndexItem> _findMatches(List<_IndexItem> index, String query) {
   if (query.isEmpty) {
     return [];
   }
 
-  var allMatches = <SearchMatch>[];
+  var allMatches = <_SearchMatch>[];
 
   for (var element in index) {
     void score(int value) {
       value -= (element.overriddenDepth ?? 0) * 10;
-      var weightFactor = weights[element.type] ?? 4;
-      allMatches.add(SearchMatch(element, value / weightFactor));
+      var weightFactor = _weights[element.type] ?? 4;
+      allMatches.add(_SearchMatch(element, value / weightFactor));
     }
 
     var name = element.name;
@@ -129,7 +128,7 @@ List<IndexItem> findMatches(List<IndexItem> index, String query) {
     }
   }
 
-  allMatches.sort((SearchMatch a, SearchMatch b) {
+  allMatches.sort((_SearchMatch a, _SearchMatch b) {
     var x = (b.score - a.score).round();
     if (x == 0) {
       return a.element.name.length - b.element.name.length;
@@ -140,16 +139,16 @@ List<IndexItem> findMatches(List<IndexItem> index, String query) {
   return allMatches.map((match) => match.element).toList();
 }
 
-const minLength = 1;
-int suggestionLimit = 10;
-int suggestionLength = 0;
-const HtmlEscape htmlEscape = HtmlEscape();
+const _minLength = 1;
+int _suggestionLimit = 10;
+int _suggestionLength = 0;
+const _htmlEscape = HtmlEscape();
 
-Map<String, Element> containerMap = {};
+final _containerMap = <String, Element>{};
 
-void initializeSearch(
+void _initializeSearch(
   InputElement input,
-  List<IndexItem> index,
+  List<_IndexItem> index,
 ) {
   final uri = Uri.parse(window.location.href);
 
@@ -198,8 +197,8 @@ void initializeSearch(
   String? storedValue;
   var actualValue = '';
 
-  var suggestionElements = <Element>[];
-  var suggestionsInfo = <IndexItem>[];
+  final suggestionElements = <Element>[];
+  var suggestionsInfo = <_IndexItem>[];
   int? selectedElement;
 
   void showSuggestions() {
@@ -224,10 +223,10 @@ void initializeSearch(
       ..append(document.createElement('h2')..innerHtml = 'Search Results')
       ..append(document.createElement('div')
         ..classes.add('search-summary')
-        ..innerHtml = '$suggestionLength results for "$searchText"');
+        ..innerHtml = '$_suggestionLength results for "$searchText"');
 
-    if (containerMap.isNotEmpty) {
-      for (final element in containerMap.values) {
+    if (_containerMap.isNotEmpty) {
+      for (final element in _containerMap.values) {
         mainContent.append(element);
       }
     } else {
@@ -255,18 +254,18 @@ void initializeSearch(
   }
 
   void showEnterMessage() {
-    moreResults.text = suggestionLength > 10
-        ? 'Press "Enter" key to see all $suggestionLength results'
+    moreResults.text = _suggestionLength > 10
+        ? 'Press "Enter" key to see all $_suggestionLength results'
         : '';
   }
 
-  void updateSuggestions(String query, List<IndexItem> suggestions) {
+  void updateSuggestions(String query, List<_IndexItem> suggestions) {
     suggestionsInfo = [];
-    suggestionElements = [];
-    containerMap = <String, Element>{};
+    suggestionElements.clear();
+    _containerMap.clear();
     searchResults.text = '';
 
-    if (suggestions.length < minLength) {
+    if (suggestions.length < _minLength) {
       hideSuggestions();
       return;
     }
@@ -275,7 +274,7 @@ void initializeSearch(
       suggestionElements.add(_createSuggestion(query, suggestion));
     }
 
-    for (final element in containerMap.values) {
+    for (final element in _containerMap.values) {
       searchResults.append(element);
     }
     suggestionsInfo = suggestions;
@@ -284,23 +283,6 @@ void initializeSearch(
 
     showSuggestions();
     showEnterMessage();
-  }
-
-  var body = document.querySelector('body')!;
-
-  String relativePath() {
-    var relativePath = '';
-    if (body.getAttribute('data-using-base-href') == 'true') {
-      relativePath = body.getAttribute('href')!;
-    } else if (body.getAttribute('data-base-href') == '') {
-      relativePath = './';
-    } else {
-      relativePath = body.getAttribute('data-base-href')!;
-    }
-    var href = Uri.parse(window.location.href);
-    var base = href.resolve(relativePath);
-    var search = Uri.parse('${base}search.html');
-    return search.toString();
   }
 
   /// Handles [searchText] by generating suggestions.
@@ -314,10 +296,10 @@ void initializeSearch(
       return;
     }
 
-    var suggestions = findMatches(index, searchText);
-    suggestionLength = suggestions.length;
-    if (suggestions.length > suggestionLimit) {
-      suggestions = suggestions.sublist(0, suggestionLimit);
+    var suggestions = _findMatches(index, searchText);
+    _suggestionLength = suggestions.length;
+    if (suggestions.length > _suggestionLimit) {
+      suggestions = suggestions.sublist(0, _suggestionLimit);
     }
 
     actualValue = searchText;
@@ -362,8 +344,8 @@ void initializeSearch(
       // If there is no search suggestion selected, then change the window
       // location to `search.html`.
       else {
-        var input = htmlEscape.convert(actualValue);
-        var search = Uri.parse(relativePath());
+        var input = _htmlEscape.convert(actualValue);
+        var search = _relativePath;
         search = search.replace(queryParameters: {'q': input});
         window.location.assign(search.toString());
         event.stopPropagation();
@@ -438,16 +420,16 @@ void initializeSearch(
     if (input == null) {
       return;
     }
-    input = htmlEscape.convert(input);
-    suggestionLimit = suggestionLength;
+    input = _htmlEscape.convert(input);
+    _suggestionLimit = _suggestionLength;
     handleSearch(input);
     showSearchResultPage(input);
     hideSuggestions();
-    suggestionLimit = 10;
+    _suggestionLimit = 10;
   }
 }
 
-Element _createSuggestion(String query, IndexItem match) {
+Element _createSuggestion(String query, _IndexItem match) {
   final suggestion = document.createElement('div')
     ..setAttribute('data-href', match.href ?? '')
     ..classes.add('tt-suggestion');
@@ -505,12 +487,12 @@ void _mapToContainer(Element containerElement, Element suggestion) {
     return;
   }
 
-  final element = containerMap[input];
+  final element = _containerMap[input];
   if (element != null) {
     element.append(suggestion);
   } else {
     containerElement.append(suggestion);
-    containerMap[input] = containerElement;
+    _containerMap[input] = containerElement;
   }
 }
 
@@ -541,23 +523,39 @@ String _decodeHtml(String html) {
       .value!;
 }
 
-class SearchMatch {
-  final IndexItem element;
+final _relativePath = () {
+  var body = document.querySelector('body')!;
+  var relativePath = '';
+  if (body.getAttribute('data-using-base-href') == 'true') {
+    relativePath = body.getAttribute('href')!;
+  } else if (body.getAttribute('data-base-href') == '') {
+    relativePath = './';
+  } else {
+    relativePath = body.getAttribute('data-base-href')!;
+  }
+  var href = Uri.parse(window.location.href);
+  var base = href.resolve(relativePath);
+  var search = Uri.parse('${base}search.html');
+  return search;
+}();
+
+class _SearchMatch {
+  final _IndexItem element;
   final double score;
 
-  SearchMatch(this.element, this.score);
+  _SearchMatch(this.element, this.score);
 }
 
-class IndexItem {
+class _IndexItem {
   final String name;
   final String qualifiedName;
   final String type;
   final String? href;
   final int? overriddenDepth;
   final String? desc;
-  final EnclosedBy? enclosedBy;
+  final _EnclosedBy? enclosedBy;
 
-  IndexItem._({
+  _IndexItem._({
     required this.name,
     required this.qualifiedName,
     required this.type,
@@ -575,18 +573,18 @@ class IndexItem {
   // "packageName":"dartdoc"
   // ["enclosedBy":{"name":"Accessor","type":"class"}]
 
-  factory IndexItem.fromMap(Map<String, dynamic> data) {
+  factory _IndexItem.fromMap(Map<String, dynamic> data) {
     // Note that this map also contains 'packageName', but we're not currently
     // using that info.
 
-    EnclosedBy? enclosedBy;
+    _EnclosedBy? enclosedBy;
     if (data['enclosedBy'] != null) {
       final map = data['enclosedBy'] as Map<String, dynamic>;
-      enclosedBy =
-          EnclosedBy._(name: map['name'], type: map['type'], href: map['href']);
+      enclosedBy = _EnclosedBy._(
+          name: map['name'], type: map['type'], href: map['href']);
     }
 
-    return IndexItem._(
+    return _IndexItem._(
       name: data['name'],
       qualifiedName: data['qualifiedName'],
       href: data['href'],
@@ -598,12 +596,12 @@ class IndexItem {
   }
 }
 
-class EnclosedBy {
+class _EnclosedBy {
   final String name;
   final String type;
   final String href;
 
   // Built from JSON structure:
   // ["enclosedBy":{"name":"Accessor","type":"class","href":"link"}]
-  EnclosedBy._({required this.name, required this.type, required this.href});
+  _EnclosedBy._({required this.name, required this.type, required this.href});
 }
