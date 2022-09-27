@@ -24,6 +24,9 @@ class Mixin extends InheritingContainer with TypeImplementing {
   ];
 
   @override
+  String get sidebarPath => '${library.dirName}/$name-mixin-sidebar.$fileType';
+
+  @override
   late final List<InheritingContainer> inheritanceChain = [
     this,
 

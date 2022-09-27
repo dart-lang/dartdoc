@@ -640,11 +640,25 @@ abstract class ModelElement extends Canonicalization
     return '($sourceUri)';
   }
 
+  /// The name of the output file in which this element will be primarily
+  /// documented.
   String get fileName => '$name.$fileType';
 
   String get fileType => package.fileType;
 
+  /// The full path of the output file in which this element will be primarily
+  /// documented.
   String get filePath;
+
+  /// The full path of the sidebar for elements "above" this element.
+  ///
+  /// A `null` value indicates no content is displayed in the "above" sidebar.
+  String? get aboveSidebarPath;
+
+  /// The full path of the sidebar for elements "below" this element.
+  ///
+  /// A `null` value indicates no content is displayed in the "below" sidebar.
+  String? get belowSidebarPath;
 
   /// Returns the fully qualified name.
   ///

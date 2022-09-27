@@ -1,6 +1,10 @@
 {{>head}}
 
-  <div id="dartdoc-main-content" class="main-content">
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="{{ aboveSidebarPath }}"
+      data-below-sidebar="{{ belowSidebarPath }}">
     {{ #self }}
       <div>{{ >source_link }}
         <h1>

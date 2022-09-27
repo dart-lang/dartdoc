@@ -57,6 +57,7 @@ class GeneratorFrontEnd implements Generator {
       'writtenMixinFileCount',
       'writtenPackageFileCount',
       'writtenPropertyFileCount',
+      'writtenSidebarFileCount',
       'writtenTopLevelPropertyFileCount',
       'writtenTypedefFileCount'
     });

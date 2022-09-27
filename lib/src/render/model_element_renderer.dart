@@ -30,8 +30,12 @@ class ModelElementRendererHtml extends ModelElementRenderer {
 
   @override
   String renderLinkedName(ModelElement modelElement) {
-    var cssClass = modelElement.isDeprecated ? ' class="deprecated"' : '';
-    return '<a$cssClass href="${modelElement.href}">${modelElement.name}</a>';
+    var cssClass = [
+      'spa-link',
+      if (modelElement.isDeprecated) 'deprecated',
+    ].join(' ');
+    return '<a class="$cssClass" href="${modelElement.href}">'
+        '${modelElement.name}</a>';
   }
 
   @override

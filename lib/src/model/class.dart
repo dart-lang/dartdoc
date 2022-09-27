@@ -24,6 +24,15 @@ class Class extends InheritingContainer
   ];
 
   @override
+  String get sidebarPath => '${library.dirName}/$name-class-sidebar.$fileType';
+
+  @override
+  String get fullkind {
+    if (isAbstract) return 'abstract $kind';
+    return super.fullkind;
+  }
+
+  @override
   late final List<InheritingContainer> inheritanceChain = [
     this,
 

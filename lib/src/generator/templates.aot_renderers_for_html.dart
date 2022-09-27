@@ -283,7 +283,15 @@ String renderClass(_i1.ClassTemplateData context0) {
   buffer.writeln();
   buffer.write('''
 
-  <div id="dartdoc-main-content" class="main-content">''');
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="''');
+  buffer.writeEscaped(context0.aboveSidebarPath);
+  buffer.write('''"
+      data-below-sidebar="''');
+  buffer.writeEscaped(context0.belowSidebarPath);
+  buffer.write('''">''');
   var context1 = context0.self;
   buffer.writeln();
   buffer.write('''
@@ -401,11 +409,12 @@ String renderClass(_i1.ClassTemplateData context0) {
   buffer.write(_renderClass_partial_search_sidebar_16(context0));
   buffer.writeln();
   buffer.write('''
-    <h5>''');
+    <!--<h5>''');
   buffer.writeEscaped(context0.parent!.name);
   buffer.write(' ');
   buffer.writeEscaped(context0.parent!.kind);
-  buffer.write('''</h5>
+  buffer.write('''</h5>-->
+    <div id="dartdoc-sidebar-left-content"></div>
   </div>
 
   <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
@@ -424,7 +433,15 @@ String renderConstructor(_i1.ConstructorTemplateData context0) {
   buffer.writeln();
   buffer.write('''
 
-  <div id="dartdoc-main-content" class="main-content">''');
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="''');
+  buffer.writeEscaped(context0.aboveSidebarPath);
+  buffer.write('''"
+      data-below-sidebar="''');
+  buffer.writeEscaped(context0.belowSidebarPath);
+  buffer.write('''">''');
   var context1 = context0.self;
   buffer.writeln();
   buffer.write('''
@@ -499,7 +516,15 @@ String renderEnum(_i1.EnumTemplateData context0) {
   buffer.writeln();
   buffer.write('''
 
-  <div id="dartdoc-main-content" class="main-content">''');
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="''');
+  buffer.writeEscaped(context0.aboveSidebarPath);
+  buffer.write('''"
+      data-below-sidebar="''');
+  buffer.writeEscaped(context0.belowSidebarPath);
+  buffer.write('''">''');
   var context1 = context0.self;
   buffer.writeln();
   buffer.write('''
@@ -679,8 +704,15 @@ String renderExtension<T extends _i2.Extension>(
   buffer.write(_renderExtension_partial_head_0(context0));
   buffer.writeln();
   buffer.write('''
-
-<div id="dartdoc-main-content" class="main-content">''');
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="''');
+  buffer.writeEscaped(context0.aboveSidebarPath);
+  buffer.write('''"
+    data-below-sidebar="''');
+  buffer.writeEscaped(context0.belowSidebarPath);
+  buffer.write('''">''');
   var context1 = context0.self;
   buffer.writeln();
   buffer.write('''
@@ -784,7 +816,15 @@ String renderFunction(_i1.FunctionTemplateData context0) {
   buffer.writeln();
   buffer.write('''
 
-  <div id="dartdoc-main-content" class="main-content">''');
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="''');
+  buffer.writeEscaped(context0.aboveSidebarPath);
+  buffer.write('''"
+      data-below-sidebar="''');
+  buffer.writeEscaped(context0.belowSidebarPath);
+  buffer.write('''">''');
   var context1 = context0.self;
   buffer.writeln();
   buffer.write('''
@@ -934,8 +974,16 @@ String renderLibrary(_i1.LibraryTemplateData context0) {
   buffer.writeln();
   buffer.write('''
 
-  <div id="dartdoc-main-content" class="main-content">
-    ''');
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="''');
+  buffer.writeEscaped(context0.aboveSidebarPath);
+  buffer.write('''"
+      data-below-sidebar="''');
+  buffer.writeEscaped(context0.belowSidebarPath);
+  buffer.write('''">
+      ''');
   var context1 = context0.self;
   buffer.writeln();
   buffer.write('''
@@ -1176,7 +1224,15 @@ String renderMethod(_i1.MethodTemplateData context0) {
   buffer.writeln();
   buffer.write('''
 
-  <div id="dartdoc-main-content" class="main-content">''');
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="''');
+  buffer.writeEscaped(context0.aboveSidebarPath);
+  buffer.write('''"
+      data-below-sidebar="''');
+  buffer.writeEscaped(context0.belowSidebarPath);
+  buffer.write('''">''');
   var context1 = context0.self;
   buffer.writeln();
   buffer.write('''
@@ -1238,7 +1294,15 @@ String renderMixin(_i1.MixinTemplateData context0) {
   buffer.writeln();
   buffer.write('''
 
-  <div id="dartdoc-main-content" class="main-content">''');
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="''');
+  buffer.writeEscaped(context0.aboveSidebarPath);
+  buffer.write('''"
+      data-below-sidebar="''');
+  buffer.writeEscaped(context0.belowSidebarPath);
+  buffer.write('''">''');
   var context1 = context0.self;
   buffer.writeln();
   buffer.write('''
@@ -1375,7 +1439,15 @@ String renderProperty(_i1.PropertyTemplateData context0) {
   buffer.writeln();
   buffer.write('''
 
-  <div id="dartdoc-main-content" class="main-content">''');
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="''');
+  buffer.writeEscaped(context0.aboveSidebarPath);
+  buffer.write('''"
+      data-below-sidebar="''');
+  buffer.writeEscaped(context0.belowSidebarPath);
+  buffer.write('''">''');
   var context1 = context0.self;
   buffer.writeln();
   buffer.write('''
@@ -1486,7 +1558,7 @@ String renderSearchPage(_i1.PackageTemplateData context0) {
 String renderSidebarForContainer<T extends _i3.Documentable>(
     _i1.TemplateDataWithContainer<T> context0) {
   final buffer = StringBuffer();
-  buffer.write('''<ol>''');
+  buffer.write('''<ol class="spa-links">''');
   var context1 = context0.container;
   buffer.writeln();
   if (context1.isClassOrEnum == true) {
@@ -1717,7 +1789,7 @@ String renderSidebarForContainer<T extends _i3.Documentable>(
 String renderSidebarForLibrary<T extends _i3.Documentable>(
     _i1.TemplateDataWithLibrary<T> context0) {
   final buffer = StringBuffer();
-  buffer.write('''<ol>''');
+  buffer.write('''<ol class="spa-links">''');
   var context1 = context0.library;
   if (context1.hasPublicClasses == true) {
     buffer.writeln();
@@ -1876,7 +1948,15 @@ String renderTopLevelProperty(_i1.TopLevelPropertyTemplateData context0) {
   buffer.writeln();
   buffer.write('''
 
-  <div id="dartdoc-main-content" class="main-content">''');
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="''');
+  buffer.writeEscaped(context0.aboveSidebarPath);
+  buffer.write('''"
+      data-below-sidebar="''');
+  buffer.writeEscaped(context0.belowSidebarPath);
+  buffer.write('''">''');
   var context1 = context0.self;
   buffer.writeln();
   buffer.write('''
@@ -1954,7 +2034,15 @@ String renderTypedef(_i1.TypedefTemplateData context0) {
   buffer.writeln();
   buffer.write('''
 
-  <div id="dartdoc-main-content" class="main-content">''');
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="''');
+  buffer.writeEscaped(context0.aboveSidebarPath);
+  buffer.write('''"
+      data-below-sidebar="''');
+  buffer.writeEscaped(context0.belowSidebarPath);
+  buffer.write('''">''');
   var context1 = context0.self;
   buffer.writeln();
   buffer.write('''
@@ -2090,7 +2178,7 @@ String _renderCategory_partial_packages_10(_i1.CategoryTemplateData context0) =>
 String _renderCategory_partial_sidebar_for_category_11(
     _i1.CategoryTemplateData context0) {
   final buffer = StringBuffer();
-  buffer.write('''<ol>''');
+  buffer.write('''<ol class="spa-links">''');
   var context1 = context0.self;
   if (context1.hasPublicLibraries == true) {
     buffer.writeln();

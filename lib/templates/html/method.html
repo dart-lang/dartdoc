@@ -1,6 +1,10 @@
 {{>head}}
 
-  <div id="dartdoc-main-content" class="main-content">
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="{{ aboveSidebarPath }}"
+      data-below-sidebar="{{ belowSidebarPath }}">
     {{#self}}
       <div>{{>source_link}}<h1><span class="kind-method">{{{nameWithGenerics}}}</span> {{fullkind}} {{>feature_set}}</h1></div>
     {{/self}}

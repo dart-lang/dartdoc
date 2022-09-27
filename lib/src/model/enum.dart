@@ -35,6 +35,9 @@ class Enum extends InheritingContainer
   ];
 
   @override
+  String get sidebarPath => '${library.dirName}/$name-enum-sidebar.$fileType';
+
+  @override
   String get kind => 'enum';
 
   @override
@@ -135,6 +138,12 @@ class EnumField extends Field {
 
   @override
   Inheritable? get overriddenElement => null;
+
+  @override
+  String get aboveSidebarPath => enclosingElement.sidebarPath;
+
+  @override
+  String? get belowSidebarPath => null;
 
   EnumFieldRenderer get _fieldRenderer =>
       packageGraph.rendererFactory.enumFieldRenderer;
