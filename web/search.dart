@@ -355,6 +355,7 @@ void initializeSearch(
         var href = suggestionElements[selectingElement].dataset['href'];
         if (href != null) {
           window.location.assign('$_htmlBase$href');
+          event.stopPropagation();
         }
         return;
       }
@@ -365,6 +366,8 @@ void initializeSearch(
         var search = Uri.parse(relativePath());
         search = search.replace(queryParameters: {'q': input});
         window.location.assign(search.toString());
+        event.stopPropagation();
+        return;
       }
     }
 
