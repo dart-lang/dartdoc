@@ -127,12 +127,13 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   @override
   Scope get scope => element.scope;
 
-  /// Return true if this library is in a package configured to be treated as
-  /// as using Null safety and itself uses Null safety.
+  /// Whether this library is in a package configured to be treated as using
+  /// null safety and itself uses null safety.
   bool get _allowsNullSafety => element.isNonNullableByDefault;
 
-  /// Return true if this library should be documented as using Null safety.
-  /// A library may use Null safety but not documented that way.
+  /// Whether this library should be documented as using null safety.
+  ///
+  /// A library may use null safety but not be documented that way.
   @override
   bool get isNullSafety =>
       config.enableExperiment.contains('non-nullable') && _allowsNullSafety;
@@ -193,12 +194,8 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
       .map((e) => modelBuilder.from(e, this) as Extension)
       .toList(growable: false);
 
-  SdkLibrary? get sdkLib {
-    if (packageGraph.sdkLibrarySources.containsKey(element.librarySource)) {
-      return packageGraph.sdkLibrarySources[element.librarySource];
-    }
-    return null;
-  }
+  SdkLibrary? get sdkLib =>
+      packageGraph.sdkLibrarySources[element.librarySource];
 
   @override
   bool get isPublic {
@@ -333,18 +330,22 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   late final String name = () {
     var source = element.source;
     if (source.uri.isScheme('dart')) {
-      // There are inconsistencies in library naming + URIs for the dart
-      // internal libraries; rationalize them here.
+      // There are inconsistencies in library naming + URIs for the Dart
+      // SDK libraries; we rationalize them here.
       if (source.uri.toString().contains('/')) {
         return element.name.replaceFirst('dart.', 'dart:');
       }
       return source.uri.toString();
     } else if (element.name.isNotEmpty) {
+      // An empty name indicates that the library is "implicitly named" with the
+      // empty string. That is, it either has no `library` directive, or it has
+      // a `library` directive with no name.
       return element.name;
     }
     var baseName = pathContext.basename(source.fullName);
     if (baseName.endsWith('.dart')) {
-      return baseName.substring(0, baseName.length - '.dart'.length);
+      const dartExtensionLength = '.dart'.length;
+      return baseName.substring(0, baseName.length - dartExtensionLength);
     }
     return baseName;
   }();
