@@ -670,7 +670,7 @@ abstract class ModelElement extends Canonicalization
   ///
   /// For example: 'libraryName.className.methodName'
   @override
-  late final String fullyQualifiedName = _buildFullyQualifiedName();
+  late final String fullyQualifiedName = _buildFullyQualifiedName(this, name);
 
   late final String _fullyQualifiedNameWithoutLibrary =
       fullyQualifiedName.replaceFirst('${library.fullyQualifiedName}.', '');
@@ -886,17 +886,16 @@ abstract class ModelElement extends Canonicalization
   @override
   String toString() => '$runtimeType $name';
 
-  String _buildFullyQualifiedName([ModelElement? e, String? fqName]) {
-    e ??= this;
-    fqName ??= e.name;
+  String _buildFullyQualifiedName(ModelElement e, String? fullyQualifiedName) {
+    fullyQualifiedName ??= e.name;
 
     var enclosingElement = e.enclosingElement;
     if (enclosingElement == null) {
-      return fqName;
+      return fullyQualifiedName;
     }
 
-    return _buildFullyQualifiedName(
-        enclosingElement as ModelElement?, '${enclosingElement.name}.$fqName');
+    return _buildFullyQualifiedName(enclosingElement as ModelElement,
+        '${enclosingElement.name}.$fullyQualifiedName');
   }
 
   String _calculateLinkedName() {
