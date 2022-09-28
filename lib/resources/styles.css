@@ -1166,8 +1166,13 @@ a.tt-container {
 
 /* Search results formatting for mini results below search bar. */
 
+.tt-search-results .tt-container {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
 /* Do not show the container as a section. */
-.tt-search-results a.tt-container-text {
+.tt-search-results .tt-container-text {
   display: none
 }
 
@@ -1176,19 +1181,21 @@ a.tt-container {
   color: var(--main-text-color);
   margin-top: 5px;
   overflow: hidden;
+  padding-left: 10px;
+  padding-right: 10px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .tt-search-results .tt-suggestion-title {
   font-size: 14px;
-  font-weight: 500;
   padding-right: 5px;
 }
 
 .tt-search-results .tt-suggestion-container {
   color: var(--main-keyword-color);
   font-size: 14px;
+  font-style: italic;
   padding-right: 5px;
 }
 

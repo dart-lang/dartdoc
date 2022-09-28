@@ -509,12 +509,12 @@ Element _createContainer(String encloser, String href) =>
           ..setAttribute('href', href)
           ..innerHtml = encloser));
 
-/// Wraps [query] in [text] with a `<strong>` tag, as HTML text.
-String _highlight(String text, String query) {
-  final sanitizedText = const HtmlEscape().convert(query);
-  return text.replaceAll(
-      query, "<strong class='tt-highlight'>$sanitizedText</strong>");
-}
+/// Wraps each instance of [query] in [text] with a `<strong>` tag, as HTML
+/// text.
+String _highlight(String text, String query) => text.replaceAllMapped(
+      RegExp(query, caseSensitive: false),
+      (match) => "<strong class='tt-highlight'>${match[0]}</strong>",
+    );
 
 /// Decodes HTML entities (like `&lt;`) into their HTML elements (like `<`).
 ///
