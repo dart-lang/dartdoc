@@ -304,16 +304,16 @@ class _OptionValueWithContext<T> {
   ///
   /// Throws [UnsupportedError] if [T] isn't a [String] or [List<String>].
   T get resolvedValue {
+    final value = this.value;
     if (value is List<String>) {
-      return (value as List<String>)
+      return value
           .map((v) => pathContext.canonicalizeWithTilde(v))
           .cast<String>()
           .toList(growable: false) as T;
     } else if (value is String) {
-      return pathContext.canonicalizeWithTilde(value as String) as T;
+      return pathContext.canonicalizeWithTilde(value) as T;
     } else if (value is Map<String, String>) {
-      return (value as Map<String, String>)
-          .map<String, String>((String key, String value) {
+      return value.map<String, String>((String key, String value) {
         return MapEntry(key, pathContext.canonicalizeWithTilde(value));
       }) as T;
     } else {
@@ -497,7 +497,7 @@ abstract class DartdocOption<T extends Object?> {
 
   /// Calls [valueAt] with the working directory at the start of the program.
   // TODO(jcollins-g): use of dynamic.  https://github.com/dart-lang/dartdoc/issues/2814
-  dynamic valueAtCurrent() => valueAt(_directoryCurrent);
+  Object? valueAtCurrent() => valueAt(_directoryCurrent);
 
   late final Folder _directoryCurrent =
       resourceProvider.getFolder(_directoryCurrentPath);
@@ -806,15 +806,11 @@ class DartdocOptionArgFile<T> extends DartdocOption<T>
     }
   }
 
-  /// Try to find an explicit argument setting this value, but if not, fall back
-  /// to files finally, the default.
+  /// Try to find an explicit argument setting this value, and fall back first
+  /// to files, then to the default.
   @override
-  T? valueAt(Folder dir) {
-    var value = _valueAtFromArgs();
-    value ??= _valueAtFromFiles(dir);
-    value ??= defaultsTo;
-    return value;
-  }
+  T? valueAt(Folder dir) =>
+      _valueAtFromArgs() ?? _valueAtFromFiles(dir) ?? defaultsTo;
 }
 
 class DartdocOptionFileOnly<T> extends DartdocOption<T>
@@ -867,10 +863,9 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
 
   /// Searches for a value in configuration files relative to [dir], and if not
   /// found, returns [defaultsTo].
-  T? valueAt(Folder dir) {
-    return _valueAtFromFiles(dir) ?? defaultsTo;
-  }
+  T? valueAt(Folder dir) => _valueAtFromFiles(dir) ?? defaultsTo;
 
+  /// The backing store for [_valueAtFromFiles].
   final Map<String, T?> __valueAtFromFiles = {};
 
   // The value of this option from files will not change unless files are
@@ -991,8 +986,8 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
             .join(dir.path, 'dartdoc_options.yaml'));
         if (dartdocOptionsFile.exists) {
           final yaml = loadYaml(dartdocOptionsFile.readAsStringSync());
-          // [loadYaml()] will return null for empty (or all comment) yaml files,
-          // so we must check for that case.
+          // [loadYaml] will return `null` for empty (or all comment) YAML
+          // files, so we must check for that case.
           if (yaml != null) {
             yamlData = _YamlFileData(
                 yaml, resourceProvider.pathContext.canonicalize(dir.path));
