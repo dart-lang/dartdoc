@@ -146,6 +146,10 @@ const _htmlEscape = HtmlEscape();
 
 final _containerMap = <String, Element>{};
 
+// TODO(srawlins): Break up this huge function into smaller parts. One big trick
+// here is maintaining how `selectedElement` is used. I suspect a class with
+// fields maintaining state would be a good solution. Another big trick is
+// testing. Perhaps testing should be added first :(.
 void _initializeSearch(
   InputElement input,
   List<_IndexItem> index,
@@ -332,23 +336,21 @@ void _initializeSearch(
     event = event as KeyboardEvent;
 
     if (event.code == 'Enter') {
+      event.preventDefault();
       if (selectedElement != null) {
         var selectingElement = selectedElement ?? 0;
         var href = suggestionElements[selectingElement].dataset['href'];
         if (href != null) {
           window.location.assign('$_htmlBase$href');
-          event.stopPropagation();
         }
         return;
       }
       // If there is no search suggestion selected, then change the window
       // location to `search.html`.
       else {
-        var input = _htmlEscape.convert(actualValue);
-        var search = _relativePath;
-        search = search.replace(queryParameters: {'q': input});
-        window.location.assign(search.toString());
-        event.stopPropagation();
+        var query = _htmlEscape.convert(actualValue);
+        var searchPath = _relativePath.replace(queryParameters: {'q': query});
+        window.location.assign(searchPath.toString());
         return;
       }
     }
