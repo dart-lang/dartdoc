@@ -1,4 +1,4 @@
-# 6.1.2
+## 6.1.2
 
 * Reduce memory usage by much more extensive use of non-growable Lists, and
   constant empty lists. (#3151 and #3154)
