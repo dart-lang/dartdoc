@@ -33,7 +33,10 @@ abstract class ElementType extends Privacy
   @override
   final Library library;
 
-  ElementType(this.type, this.library, this.packageGraph);
+  final String nullabilitySuffix;
+
+  ElementType(this.type, this.library, this.packageGraph)
+      : nullabilitySuffix = type.nullabilitySuffixWithin(library);
 
   factory ElementType._from(
       DartType f, Library library, PackageGraph packageGraph) {
@@ -97,20 +100,6 @@ abstract class ElementType extends Privacy
   /// Name with generics and nullability indication.
   String get nameWithGenerics;
 
-  /// Return a dartdoc nullability suffix for this type.
-  String get nullabilitySuffix {
-    if (library.isNullSafety && !type.isVoid && !type.isBottom) {
-      /// If a legacy type appears inside the public interface of a Null
-      /// safety library, we pretend it is nullable for the purpose of
-      /// documentation (since star-types are not supposed to be public).
-      if (type.nullabilitySuffix == NullabilitySuffix.question ||
-          type.nullabilitySuffix == NullabilitySuffix.star) {
-        return '?';
-      }
-    }
-    return '';
-  }
-
   DartType get instantiatedType;
 
   Iterable<ElementType> get typeArguments;
@@ -122,8 +111,8 @@ abstract class ElementType extends Privacy
   String toString() => '$type';
 }
 
-/// An [ElementType] that isn't pinned to an Element (or one that is, but whose
-/// element is irrelevant).
+/// An [ElementType] that isn't pinned to an [Element] (or one that is, but
+/// whose element is irrelevant).
 class UndefinedElementType extends ElementType {
   UndefinedElementType(super.f, super.library, super.packageGraph);
 
@@ -168,13 +157,12 @@ class UndefinedElementType extends ElementType {
   Iterable<CommentReferable>? get referenceGrandparentOverrides => null;
 }
 
-/// A FunctionType that does not have an underpinning Element.
+/// A [FunctionType] that does not have an underpinning [Element].
 class FunctionTypeElementType extends UndefinedElementType
     with Rendered, Callable {
   FunctionTypeElementType(
       FunctionType super.f, super.library, super.packageGraph);
 
-  /// An unmodifiable list of this function element's type parameters.
   List<TypeParameter> get typeFormals => type.typeFormals
       .map((p) => packageGraph.modelBuilder.from(p, library) as TypeParameter)
       .toList(growable: false);
@@ -285,7 +273,8 @@ abstract class DefinedElementType extends ElementType {
 
   bool get isParameterType => type is TypeParameterType;
 
-  /// This type is a public type if the underlying, canonical element is public.
+  /// Whether the underlying, canonical element is public.
+  ///
   /// This avoids discarding the resolved type information as canonicalization
   /// would ordinarily do.
   @override
@@ -298,7 +287,7 @@ abstract class DefinedElementType extends ElementType {
 
   DartType get _bound => type;
 
-  /// Return this type, instantiated to bounds if it isn't already.
+  /// This type, instantiated to bounds if it isn't already.
   @override
   late final DartType instantiatedType = () {
     final bound = _bound;
@@ -318,9 +307,8 @@ abstract class DefinedElementType extends ElementType {
   bool isSubtypeOf(ElementType type) =>
       library.typeSystem.isSubtypeOf(instantiatedType, type.instantiatedType);
 
-  /// Returns true if at least one supertype (including via mixins and
-  /// interfaces) is equivalent to or a subtype of [this] when
-  /// instantiated to bounds.
+  /// Whether at least one supertype (including via mixins and interfaces) is
+  /// equivalent to or a subtype of `this` when instantiated to bounds.
   @override
   bool isBoundSupertypeTo(ElementType t) {
     var type = t.instantiatedType;
@@ -356,7 +344,7 @@ abstract class DefinedElementType extends ElementType {
       modelBuilder.fromElement(element);
 }
 
-/// Any callable ElementType will mix-in this class, whether anonymous or not,
+/// Any callable [ElementType] will mix-in this class, whether anonymous or not,
 /// unless it is an alias reference.
 mixin Callable on ElementType {
   List<Parameter> get parameters => type.parameters
@@ -374,8 +362,8 @@ mixin Callable on ElementType {
   FunctionType get type => super.type as FunctionType;
 }
 
-/// This [ElementType] uses an [ElementTypeRenderer] to generate
-/// some of its parameters.
+/// This [ElementType] uses an [ElementTypeRenderer] to generate some of its
+/// parameters.
 mixin Rendered implements ElementType {
   @override
   late final String linkedName = _renderer.renderLinkedName(this);
@@ -386,8 +374,8 @@ mixin Rendered implements ElementType {
   ElementTypeRenderer<ElementType> get _renderer;
 }
 
-/// A callable type that may or may not be backed by a declaration using the generic
-/// function syntax.
+/// A callable type that may or may not be backed by a declaration using the
+/// generic function syntax.
 class CallableElementType extends DefinedElementType with Rendered, Callable {
   CallableElementType(
       FunctionType super.t, super.library, super.packageGraph, super.element);
@@ -410,4 +398,20 @@ class CallableElementType extends DefinedElementType with Rendered, Callable {
 class GenericTypeAliasElementType extends TypeParameterElementType {
   GenericTypeAliasElementType(
       super.t, super.library, super.packageGraph, super.element);
+}
+
+extension on DartType {
+  /// The dartdoc nullability suffix for this type in [library].
+  String nullabilitySuffixWithin(Library library) {
+    if (library.isNullSafety && !isVoid && !isBottom) {
+      /// If a legacy type appears inside the public interface of a Null
+      /// safety library, we pretend it is nullable for the purpose of
+      /// documentation (since star-types are not supposed to be public).
+      if (nullabilitySuffix == NullabilitySuffix.question ||
+          nullabilitySuffix == NullabilitySuffix.star) {
+        return '?';
+      }
+    }
+    return '';
+  }
 }
