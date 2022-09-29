@@ -154,7 +154,7 @@ abstract class ParameterRenderer {
       } else {
         suffix += ', ';
       }
-      var renderedParameter = _renderParameter(
+      final renderedParameter = _renderParameter(
         p,
         prefix: prefix,
         suffix: suffix,
@@ -172,14 +172,12 @@ abstract class ParameterRenderer {
     bool showMetadata = true,
     bool showNames = true,
   }) {
-    var buffer = StringBuffer();
-    buffer.write(prefix);
-    var paramModelType = param.modelType;
+    final buffer = StringBuffer(prefix);
+    final modelType = param.modelType;
 
     if (showMetadata && param.hasAnnotations) {
-      for (var a in param.annotations) {
-        buffer.write(annotation(a.linkedNameWithParameters));
-        buffer.write(' ');
+      for (final a in param.annotations) {
+        buffer.write('${annotation(a.linkedNameWithParameters)} ');
       }
     }
     if (param.isRequiredNamed) {
@@ -188,41 +186,38 @@ abstract class ParameterRenderer {
     if (param.isCovariant) {
       buffer.write('${covariant('covariant')} ');
     }
-    if (paramModelType is Callable) {
-      String returnTypeName;
-      if (paramModelType.isTypedef) {
-        returnTypeName = paramModelType.linkedName;
-      } else {
-        returnTypeName = paramModelType.returnType.linkedName;
-      }
+    if (modelType is Callable) {
+      final returnTypeName = modelType.isTypedef
+          ? modelType.linkedName
+          : modelType.returnType.linkedName;
       buffer.write(typeName(returnTypeName));
       if (showNames) {
         buffer.write(' ${parameterName(param.name)}');
       } else {
-        buffer.write(' ${parameterName(paramModelType.name)}');
+        buffer.write(' ${parameterName(modelType.name)}');
       }
-      if (!paramModelType.isTypedef && paramModelType is DefinedElementType) {
+      if (!modelType.isTypedef && modelType is DefinedElementType) {
         buffer.write('(');
         buffer.write(renderLinkedParams(
-          (paramModelType as DefinedElementType).modelElement.parameters,
+          (modelType as DefinedElementType).modelElement.parameters,
           showMetadata: showMetadata,
           showNames: showNames,
         ));
         buffer.write(')');
-        buffer.write(paramModelType.nullabilitySuffix);
+        buffer.write(modelType.nullabilitySuffix);
       }
-      if (!paramModelType.isTypedef) {
+      if (!modelType.isTypedef) {
         buffer.write('(');
         buffer.write(renderLinkedParams(
-          paramModelType.parameters,
+          modelType.parameters,
           showMetadata: showMetadata,
           showNames: showNames,
         ));
         buffer.write(')');
-        buffer.write(paramModelType.nullabilitySuffix);
+        buffer.write(modelType.nullabilitySuffix);
       }
     } else {
-      var linkedTypeName = paramModelType.linkedName;
+      final linkedTypeName = modelType.linkedName;
       if (linkedTypeName.isNotEmpty) {
         buffer.write(typeName(linkedTypeName));
         if (showNames && param.name.isNotEmpty) {
