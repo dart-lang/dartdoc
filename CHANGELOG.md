@@ -1,14 +1,45 @@
+## 6.1.2
+
+* Reduce memory usage by much more extensive use of non-growable Lists, and
+  constant empty lists. (#3151 and #3154)
+* Make `Warnable.package` non-nullable. (#3155)
+* Refactor the various `Renderer` classses. Specifically add abstract
+  `ElementTypeRendererHtml` and `ElementTypeRendererMd` classes which implement
+  some shared calculations. (#3163)
+* Deprecate `ElementTypeRenderer.wrapNullability`. (#3163)
+* Simplify `referenceChildren` implementations by using fewer
+  `Iterable<MapEntry>`s. `explicitOnCollisionWith` now returns a
+  `Map<String, CommentReferable>` instead of a
+  `Iterable<MapEntry<String, CommentReferable>>`. (#3157)
+* Make many `referenceChildren` fields late final non-nullable. (#3157)
+* Remove `sync*` from `GetterSetterCombo.allAccessors`. (#3157)
+* Make `GetterSetterCombo.documentationComment`,
+  `ContainerAccessor.enclosingElement`, `ContainerAccessor.overriddenElement`
+  each late final non-nullable. (#3157 and #3167)
+* Remove `ModelElement.allParameters`. (#3166)
+* Remove extra `?` character sometimes printed in function types. (#3177)
+* Remove broken search typeahead hint feature. (#3179)
+* Overhaul the style of the mini search results. (#3181 and #3197)
+* Add support for GitHub's light/dark mode image syntax. (#3182)
+* Fix the slash focusing search feature. (#3183)
+* Fix 'Return' key behavior in search. (#3185 and #3195)
+* Add support for unnamed libraries. (#3189)
+* Fix handling of a typedef pointing to a typedef pointing to a function.
+  (#3193)
+* Make two regular expressions on DocumentationComment static; should save
+  memory. (#3194)
+
 ## 6.1.1
 
-* Fix corrupted HTML of features.
-* Adjust menu button color according to theme.
-* Deprecate `ModelElement.linkedParamsNoMetadataOrNames`.
-* Make `Extension.typeParameters` late final non-nullable.
-* Allow analyzer 5.0.0
+* Fix corrupted HTML of features. (#3147)
+* Adjust menu button color according to theme. (#3153)
+* Deprecate `ModelElement.linkedParamsNoMetadataOrNames`. (#3143)
+* Make `Extension.typeParameters` late final non-nullable. (#3150)
+* Allow analyzer 5.0.0. (#3160)
 
 ## 6.1.0
 
-* Trimmed the implementation source code of fields to improve rendering.
+* Trim the implementation source code of fields to improve rendering.
 * Display various "features" of an element (like "read-only" or "final" or
   "inherited") as badges.
 * Introduce a toggle for a "Dark Mode" style.
