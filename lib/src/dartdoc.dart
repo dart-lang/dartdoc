@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-library src.dartdoc;
-
 import 'dart:async';
 import 'dart:io' show Platform, exitCode, stderr;
 
@@ -207,7 +205,7 @@ class Dartdoc {
     return DartdocResults(config.topLevelPackageMeta, packageGraph, _outputDir);
   }
 
-  /// Generate Dartdoc documentation.
+  /// Generates Dartdoc documentation.
   ///
   /// [DartdocResults] is returned if dartdoc succeeds. [DartdocFailure] is
   /// thrown if dartdoc fails in an expected way, for example if there is an
@@ -244,14 +242,14 @@ class Dartdoc {
     Future<void> Function(DartdocOptionContext)? postProcessCallback,
   ]) {
     onCheckProgress.listen(logProgress);
-    // This function should *never* await `runZonedGuarded` because the errors
-    // thrown in generateDocs are uncaught. We want this because uncaught errors
-    // cause IDE debugger to automatically stop at the exception.
+    // This function should *never* `await runZonedGuarded` because the errors
+    // thrown in [generateDocs] are uncaught. We want this because uncaught
+    // errors cause IDE debugger to automatically stop at the exception.
     //
     // If you await the zone, the code that comes after the await is not
-    // executed if the zone dies due to uncaught error. To avoid this confusion,
-    // never await `runZonedGuarded` and never change the return value of
-    // [executeGuarded].
+    // executed if the zone dies due to an uncaught error. To avoid this,
+    // confusion, never `await runZonedGuarded` and never change the return
+    // value of [executeGuarded].
     runZonedGuarded(
       () async {
         runtimeStats.startPerfTask('generateDocs');
