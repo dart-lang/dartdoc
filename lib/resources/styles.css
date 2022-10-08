@@ -1328,14 +1328,14 @@ li.inherited a {
 #instance-methods dt.inherited .name,
 #instance-properties dt.inherited .name,
 #operators dt.inherited .name {
-  font-weight: 300;
+  font-weight: 400;
   font-style: italic;
 }
 
 #instance-methods dt.inherited .signature,
 #instance-properties dt.inherited .signature,
 #operators dt.inherited .signature {
-  font-weight: 300;
+  font-weight: 400;
 }
 
 @media print {
