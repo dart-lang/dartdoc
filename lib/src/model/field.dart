@@ -20,8 +20,8 @@ class Field extends ModelElement
   Field(FieldElement super.element, super.library, super.packageGraph,
       this.getter, this.setter)
       : assert(getter != null || setter != null) {
-    if (getter != null) getter!.enclosingCombo = this;
-    if (setter != null) setter!.enclosingCombo = this;
+    getter?.enclosingCombo = this;
+    setter?.enclosingCombo = this;
   }
 
   factory Field.inherited(
