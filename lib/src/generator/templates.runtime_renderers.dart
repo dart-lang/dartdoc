@@ -171,10 +171,10 @@ class _Renderer_Accessor extends RendererBase<Accessor> {
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
-                  isNullValue: (CT_ c) => c.filePath == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.filePath!, ast, r.template, sink,
+                    _render_String(c.filePath, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -5574,6 +5574,13 @@ class _Renderer_Field extends RendererBase<Field> {
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.isLate == true,
                 ),
+                'isStatic': Property(
+                  getValue: (CT_ c) => c.isStatic,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.isStatic == true,
+                ),
                 'kind': Property(
                   getValue: (CT_ c) => c.kind,
                   renderVariable:
@@ -5973,7 +5980,7 @@ class _Renderer_GetterSetterCombo extends RendererBase<GetterSetterCombo> {
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<Annotation>'),
+                          c, remainingNames, 'List<Annotation>'),
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.annotations.map((e) => _render_Annotation(
@@ -9640,7 +9647,7 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<Annotation>'),
+                          c, remainingNames, 'List<Annotation>'),
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.annotations.map((e) => _render_Annotation(
@@ -9827,6 +9834,29 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                         parent: r, getters: _invisibleGetters['Element']!);
                   },
                 ),
+                'enclosingElement': Property(
+                  getValue: (CT_ c) => c.enclosingElement,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        _Renderer_ModelElement.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(
+                        self.getValue(c) as ModelElement,
+                        nextProperty,
+                        [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => c.enclosingElement == null,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    _render_ModelElement(
+                        c.enclosingElement!, ast, r.template, sink,
+                        parent: r);
+                  },
+                ),
                 'exportedInLibraries': Property(
                   getValue: (CT_ c) => c.exportedInLibraries,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -9912,10 +9942,10 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
-                  isNullValue: (CT_ c) => c.filePath == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.filePath!, ast, r.template, sink,
+                    _render_String(c.filePath, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -10636,6 +10666,13 @@ class _Renderer_ModelFunction extends RendererBase<ModelFunction> {
                         parent: r,
                         getters: _invisibleGetters['FunctionElement']!);
                   },
+                ),
+                'isAsynchronous': Property(
+                  getValue: (CT_ c) => c.isAsynchronous,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.isAsynchronous == true,
                 ),
                 'isStatic': Property(
                   getValue: (CT_ c) => c.isStatic,

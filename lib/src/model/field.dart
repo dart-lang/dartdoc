@@ -105,6 +105,11 @@ class Field extends ModelElement
   bool get isInherited => _isInherited;
 
   @override
+  bool get isStatic {
+    return (element as PropertyInducingElement).isStatic;
+  }
+
+  @override
   String get kind => isConst ? 'constant' : 'property';
 
   String get fullkind => element.isAbstract ? 'abstract $kind' : kind;

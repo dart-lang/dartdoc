@@ -27,7 +27,7 @@ mixin GetterSetterCombo on ModelElement {
   Accessor? get setter;
 
   @override
-  Iterable<Annotation> get annotations => [
+  List<Annotation> get annotations => [
         ...super.annotations,
         if (hasGetter) ...getter!.annotations,
         if (hasSetter) ...setter!.annotations,

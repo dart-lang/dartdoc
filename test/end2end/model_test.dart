@@ -3181,14 +3181,6 @@ void main() {
       expect(f1.name, 'function1');
     });
 
-    test('local element', () {
-      expect(f1.isLocalElement, true);
-    });
-
-    test('is executable', () {
-      expect(f1.isExecutable, true);
-    });
-
     test('is static', () {
       expect(f1.isStatic, true);
     });

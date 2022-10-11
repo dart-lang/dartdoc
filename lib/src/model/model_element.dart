@@ -398,6 +398,9 @@ abstract class ModelElement extends Canonicalization
     throw UnimplementedError('Unknown type ${e.runtimeType}');
   }
 
+  @override
+  ModelElement? get enclosingElement;
+
   // Stub for mustache, which would otherwise search enclosing elements to find
   // names for members.
   bool get hasCategoryNames => false;
@@ -416,7 +419,7 @@ abstract class ModelElement extends Canonicalization
   // supposed to be invisible (@pragma).  While technically, null elements
   // indicate invalid code from analyzer's perspective they are present in
   // sky_engine (@Native) so we don't want to crash here.
-  late final Iterable<Annotation> annotations = element.metadata
+  late final List<Annotation> annotations = element.metadata
       .whereNot((m) =>
           m.element == null ||
           packageGraph.specialClasses[SpecialClass.pragma]!.element.constructors
@@ -507,19 +510,8 @@ abstract class ModelElement extends Canonicalization
 
   late final String sourceHref = SourceLinker.fromElement(this).href();
 
-  Library get definingLibrary {
-    var library = modelBuilder.fromElement(element.library!) as Library?;
-    if (library == null) {
-      warn(PackageWarning.noDefiningLibraryFound);
-    } else {
-      return library;
-    }
-    if (enclosingElement is ModelElement) {
-      return (enclosingElement as ModelElement).definingLibrary;
-    } else {
-      return this.library;
-    }
-  }
+  Library get definingLibrary =>
+      modelBuilder.fromElement(element.library!) as Library;
 
   @override
   late final Library? canonicalLibrary = () {
@@ -640,10 +632,8 @@ abstract class ModelElement extends Canonicalization
 
   /// The documentaion, stripped of its comment syntax, like `///` characters.
   @override
-  String get documentation {
-    return injectMacros(
-        documentationFrom.map((e) => e.documentationLocal).join('<p>'));
-  }
+  String get documentation => injectMacros(
+      documentationFrom.map((e) => e.documentationLocal).join('<p>'));
 
   @override
   Element get element;
@@ -663,7 +653,7 @@ abstract class ModelElement extends Canonicalization
 
   String get fileType => package.fileType;
 
-  String? get filePath;
+  String get filePath;
 
   /// Returns the fully qualified name.
   ///
@@ -719,6 +709,7 @@ abstract class ModelElement extends Canonicalization
 
   String get htmlId => name;
 
+  @Deprecated('Will soon only be defined on ModelFunction')
   bool get isAsynchronous =>
       isExecutable && (element as ExecutableElement).isAsynchronous;
 
@@ -754,18 +745,23 @@ abstract class ModelElement extends Canonicalization
   /// Whether this element is an enum value.
   bool get isEnumValue => false;
 
+  @Deprecated('Will soon only be defined on ModelFunction')
   bool get isExecutable => element is ExecutableElement;
 
   bool get isFinal => false;
 
   bool get isLate => false;
 
+  @Deprecated('Will be removed in the next release')
   bool get isLocalElement => element is LocalElement;
 
+  @Deprecated('Will be removed in the next release')
   bool get isPropertyAccessor => element is PropertyAccessorElement;
 
+  @Deprecated('Will be removed in the next release')
   bool get isPropertyInducer => element is PropertyInducingElement;
 
+  @Deprecated('Will be removed in the next release')
   bool get isStatic {
     if (isPropertyInducer) {
       return (element as PropertyInducingElement).isStatic;
@@ -780,7 +776,23 @@ abstract class ModelElement extends Canonicalization
   @override
   Library get library => _library;
 
-  late final String linkedName = _calculateLinkedName();
+  late final String linkedName = () {
+    // If we're calling this with an empty name, we probably have the wrong
+    // element associated with a ModelElement or there's an analysis bug.
+    assert(name.isNotEmpty ||
+        element.kind == ElementKind.DYNAMIC ||
+        element.kind == ElementKind.NEVER ||
+        this is ModelFunction);
+
+    if (href == null) {
+      if (isPublicAndPackageDocumented) {
+        warn(PackageWarning.noCanonicalFound);
+      }
+      return htmlEscape.convert(name);
+    }
+
+    return modelElementRenderer.renderLinkedName(this);
+  }();
 
   @visibleForTesting
   @override
@@ -879,7 +891,7 @@ abstract class ModelElement extends Canonicalization
       _sourceCodeRenderer.renderSourceCode(super.sourceCode);
 
   @override
-  int compareTo(dynamic other) {
+  int compareTo(Object other) {
     if (other is ModelElement) {
       return name.toLowerCase().compareTo(other.name.toLowerCase());
     } else {
@@ -890,34 +902,12 @@ abstract class ModelElement extends Canonicalization
   @override
   String toString() => '$runtimeType $name';
 
-  String _buildFullyQualifiedName(ModelElement e, String? fullyQualifiedName) {
-    fullyQualifiedName ??= e.name;
-
-    var enclosingElement = e.enclosingElement;
-    if (enclosingElement == null) {
-      return fullyQualifiedName;
-    }
-
-    return _buildFullyQualifiedName(enclosingElement as ModelElement,
-        '${enclosingElement.name}.$fullyQualifiedName');
-  }
-
-  String _calculateLinkedName() {
-    // If we're calling this with an empty name, we probably have the wrong
-    // element associated with a ModelElement or there's an analysis bug.
-    assert(name.isNotEmpty ||
-        element.kind == ElementKind.DYNAMIC ||
-        element.kind == ElementKind.NEVER ||
-        this is ModelFunction);
-
-    if (href == null) {
-      if (isPublicAndPackageDocumented) {
-        warn(PackageWarning.noCanonicalFound);
-      }
-      return htmlEscape.convert(name);
-    }
-
-    return modelElementRenderer.renderLinkedName(this);
+  String _buildFullyQualifiedName(ModelElement e, String fullyQualifiedName) {
+    final enclosingElement = e.enclosingElement;
+    return enclosingElement == null
+        ? fullyQualifiedName
+        : _buildFullyQualifiedName(
+            enclosingElement, '${enclosingElement.name}.$fullyQualifiedName');
   }
 
   @internal
