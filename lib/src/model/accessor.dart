@@ -16,12 +16,14 @@ import 'package:dartdoc/src/warnings.dart';
 
 /// Getters and setters.
 class Accessor extends ModelElement implements EnclosedElement {
+  @override
+  final PropertyAccessorElement element;
+
   /// The combo ([Field] or [TopLevelVariable]) containing this accessor.
   /// Initialized by the combo's constructor.
   late final GetterSetterCombo enclosingCombo;
 
-  Accessor(
-      PropertyAccessorElement super.element, super.library, super.packageGraph,
+  Accessor(this.element, super.library, super.packageGraph,
       [ExecutableMember? super.originalMember]);
 
   @override
@@ -33,10 +35,6 @@ class Accessor extends ModelElement implements EnclosedElement {
     }
     return super.characterLocation;
   }
-
-  @override
-  PropertyAccessorElement get element =>
-      super.element as PropertyAccessorElement;
 
   @override
   ExecutableMember? get originalMember =>

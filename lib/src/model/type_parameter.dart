@@ -9,8 +9,10 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/type_parameters_renderer.dart';
 
 class TypeParameter extends ModelElement with HasNoPage {
-  TypeParameter(
-      TypeParameterElement super.element, super.library, super.packageGraph);
+  @override
+  final TypeParameterElement element;
+
+  TypeParameter(this.element, super.library, super.packageGraph);
 
   @override
   ModelElement get enclosingElement =>
@@ -58,8 +60,6 @@ class TypeParameter extends ModelElement with HasNoPage {
 
   @override
   Iterable<CommentReferable> get referenceParents => [enclosingElement];
-  @override
-  TypeParameterElement get element => super.element as TypeParameterElement;
 
   @override
   String get referenceName => element.name;

@@ -10,14 +10,14 @@ import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 class Parameter extends ModelElement with HasNoPage {
-  Parameter(
-      ParameterElement element, Library library, PackageGraph packageGraph,
+  @override
+  final ParameterElement element;
+
+  Parameter(this.element, Library library, PackageGraph packageGraph,
       {ParameterMember? originalMember})
-      : super(element, library, packageGraph, originalMember);
-  String? get defaultValue {
-    if (!hasDefaultValue) return null;
-    return element.defaultValueCode;
-  }
+      : super(library, packageGraph, originalMember);
+
+  String? get defaultValue => hasDefaultValue ? element.defaultValueCode : null;
 
   @override
   ModelElement? get enclosingElement {
@@ -95,9 +95,6 @@ class Parameter extends ModelElement with HasNoPage {
     final enclosingElement = this.enclosingElement;
     return [if (enclosingElement != null) enclosingElement];
   }
-
-  @override
-  ParameterElement get element => super.element as ParameterElement;
 
   @override
   ParameterMember? get originalMember =>

@@ -8,8 +8,11 @@ import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 class Dynamic extends ModelElement with HasNoPage {
-  Dynamic(Element element, PackageGraph packageGraph)
-      : super(element, Library.sentinel, packageGraph);
+  @override
+  final Element element;
+
+  Dynamic(this.element, PackageGraph packageGraph)
+      : super(Library.sentinel, packageGraph);
 
   UndefinedElementType get modelType =>
       throw UnimplementedError('(${element.runtimeType}) $element');

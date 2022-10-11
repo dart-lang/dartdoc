@@ -12,12 +12,15 @@ class TopLevelVariable extends ModelElement
     with GetterSetterCombo, Categorization
     implements EnclosedElement {
   @override
+  final TopLevelVariableElement element;
+
+  @override
   final Accessor? getter;
   @override
   final Accessor? setter;
 
-  TopLevelVariable(TopLevelVariableElement super.element, super.library,
-      super.packageGraph, this.getter, this.setter) {
+  TopLevelVariable(this.element, super.library, super.packageGraph, this.getter,
+      this.setter) {
     if (getter != null) {
       getter!.enclosingCombo = this;
     }
@@ -57,18 +60,18 @@ class TopLevelVariable extends ModelElement
   }
 
   @override
-  bool get isConst => _variable!.isConst;
+  bool get isConst => element.isConst;
 
   @override
   bool get isFinal {
     /// isFinal returns true for the variable even if it has an explicit getter
     /// (which means we should not document it as "final").
     if (hasExplicitGetter) return false;
-    return _variable!.isFinal;
+    return element.isFinal;
   }
 
   @override
-  bool get isLate => isFinal && _variable!.isLate;
+  bool get isLate => isFinal && element.isLate;
 
   @override
   String get kind => isConst ? 'top-level constant' : 'top-level property';
@@ -78,8 +81,6 @@ class TopLevelVariable extends ModelElement
 
   @override
   String get fileName => '${isConst ? '$name-constant' : name}.$fileType';
-
-  TopLevelVariableElement? get _variable => element as TopLevelVariableElement?;
 
   @override
   Iterable<CommentReferable> get referenceParents => [definingLibrary];

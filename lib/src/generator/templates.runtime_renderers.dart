@@ -2970,28 +2970,6 @@ class _Renderer_Container extends RendererBase<Container> {
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.isMixin == true,
                 ),
-                'package': Property(
-                  getValue: (CT_ c) => c.package,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_Package.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as Package,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_Package(c.package, ast, r.template, sink,
-                        parent: r);
-                  },
-                ),
                 'publicConstantFields': Property(
                   getValue: (CT_ c) => c.publicConstantFields,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -4358,6 +4336,19 @@ class _Renderer_Enum extends RendererBase<Enum> {
                         _render_Field(e, ast, r.template, sink, parent: r));
                   },
                 ),
+                'element': Property(
+                  getValue: (CT_ c) => c.element,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'EnumElement'),
+                  isNullValue: (CT_ c) => false,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    renderSimple(c.element, ast, r.template, sink,
+                        parent: r, getters: _invisibleGetters['EnumElement']!);
+                  },
+                ),
                 'hasPublicEnumValues': Property(
                   getValue: (CT_ c) => c.hasPublicEnumValues,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -5376,6 +5367,19 @@ class _Renderer_Field extends RendererBase<Field> {
                       List<MustachioNode> ast, StringSink sink) {
                     _render_String(c.documentation, ast, r.template, sink,
                         parent: r);
+                  },
+                ),
+                'element': Property(
+                  getValue: (CT_ c) => c.element,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'FieldElement'),
+                  isNullValue: (CT_ c) => false,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    renderSimple(c.element, ast, r.template, sink,
+                        parent: r, getters: _invisibleGetters['FieldElement']!);
                   },
                 ),
                 'enclosingElement': Property(
@@ -12198,13 +12202,13 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
   }
 }
 
-String renderError(PackageTemplateData context, Template template) {
+String renderIndex(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
 }
 
-String renderIndex(PackageTemplateData context, Template template) {
+String renderError(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -14321,6 +14325,20 @@ class _Renderer_TopLevelVariable extends RendererBase<TopLevelVariable> {
                         parent: r);
                   },
                 ),
+                'element': Property(
+                  getValue: (CT_ c) => c.element,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'TopLevelVariableElement'),
+                  isNullValue: (CT_ c) => false,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    renderSimple(c.element, ast, r.template, sink,
+                        parent: r,
+                        getters: _invisibleGetters['TopLevelVariableElement']!);
+                  },
+                ),
                 'enclosingElement': Property(
                   getValue: (CT_ c) => c.enclosingElement,
                   renderVariable:
@@ -15880,6 +15898,7 @@ const _invisibleGetters = {
     'isVisibleForTesting',
     'runtimeType'
   },
+  'EnumElement': {'augmented', 'hashCode', 'runtimeType'},
   'ExecutableMember': {
     'context',
     'declaration',
@@ -16382,6 +16401,12 @@ const _invisibleGetters = {
     'runtimeType',
     'toolVersion',
     'useBaseHref'
+  },
+  'TopLevelVariableElement': {
+    'declaration',
+    'hashCode',
+    'isExternal',
+    'runtimeType'
   },
   'TypeAliasElement': {
     'aliasedElement',

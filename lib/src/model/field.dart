@@ -10,6 +10,9 @@ import 'package:dartdoc/src/render/source_code_renderer.dart';
 class Field extends ModelElement
     with GetterSetterCombo, ContainerMember, Inheritable
     implements EnclosedElement {
+  @override
+  final FieldElement element;
+
   bool _isInherited = false;
   late final Container _enclosingContainer;
   @override
@@ -17,8 +20,8 @@ class Field extends ModelElement
   @override
   final ContainerAccessor? setter;
 
-  Field(FieldElement super.element, super.library, super.packageGraph,
-      this.getter, this.setter)
+  Field(
+      this.element, super.library, super.packageGraph, this.getter, this.setter)
       : assert(getter != null || setter != null) {
     if (getter != null) getter!.enclosingCombo = this;
     if (setter != null) setter!.enclosingCombo = this;
@@ -135,7 +138,7 @@ class Field extends ModelElement
     return allFeatures;
   }
 
-  FieldElement? get field => element as FieldElement?;
+  FieldElement? get field => element;
 
   @override
   String get fileName => '${isConst ? '$name-constant' : name}.$fileType';
