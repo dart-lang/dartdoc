@@ -3375,13 +3375,17 @@ String _deduplicated_lib_templates_html__constant_html(
   buffer.write(
       __deduplicated_lib_templates_html__constant_html_partial_features_1(
           context0));
+  if (context0.hasConstantValueForDisplay == true) {
+    buffer.writeln();
+    buffer.write('''
+    <div>
+      <span class="signature"><code>''');
+    buffer.write(context0.constantValueTruncated);
+    buffer.write('''</code></span>
+    </div>''');
+  }
   buffer.writeln();
   buffer.write('''
-  <div>
-    <span class="signature"><code>''');
-  buffer.write(context0.constantValueTruncated);
-  buffer.write('''</code></span>
-  </div>
 </dd>
 ''');
 
@@ -4573,13 +4577,17 @@ String
   buffer.write(
       ___deduplicated_lib_templates_html__static_constants_html_partial_constant_0_partial_features_1(
           context1));
+  if (context1.hasConstantValueForDisplay == true) {
+    buffer.writeln();
+    buffer.write('''
+    <div>
+      <span class="signature"><code>''');
+    buffer.write(context1.constantValueTruncated);
+    buffer.write('''</code></span>
+    </div>''');
+  }
   buffer.writeln();
   buffer.write('''
-  <div>
-    <span class="signature"><code>''');
-  buffer.write(context1.constantValueTruncated);
-  buffer.write('''</code></span>
-  </div>
 </dd>
 ''');
 

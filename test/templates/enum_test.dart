@@ -126,7 +126,16 @@ enum E<T> with M<T> implements C<T> {
   static void set gs1(int value) {}
 }
 
-enum EnumWithDefaultConstructor { four, five, six }
+enum EnumWithDefaultConstructor {
+  /// Doc comment for [four].
+  four,
+
+  /// Doc comment for [five].
+  five,
+
+  /// Doc comment for [six].
+  six;
+}
 '''),
         ],
         resourceProvider: resourceProvider,
@@ -178,14 +187,32 @@ enum EnumWithDefaultConstructor { four, five, six }
 
     test('enum page contains values', () async {
       expect(
-          eLines,
-          containsAllInOrder([
-            matches('<h2>Values</h2>'),
-            matches('<span class="name ">one</span>'),
-            matches('<p>Doc comment for <a href="../lib/E.html">one</a>.</p>'),
-            matches(
-                r'<span class="signature"><code>E&lt;int&gt;.named\(1\)</code></span>'),
-          ]));
+        eLines,
+        containsAllInOrder([
+          matches('<h2>Values</h2>'),
+          matches('<span class="name ">one</span>'),
+          matches('<p>Doc comment for <a href="../lib/E.html">one</a>.</p>'),
+          matches(
+              r'<span class="signature"><code>E&lt;int&gt;.named\(1\)</code></span>'),
+        ]),
+      );
+    });
+
+    test('enum page contains classic values', () async {
+      expect(
+        enumWithDefaultConstructorLines,
+        containsAllInOrder([
+          matches('<h2>Values</h2>'),
+          matches('<span class="name ">four</span>'),
+          matches(
+              '<p>Doc comment for <a href="../lib/EnumWithDefaultConstructor.html">six</a>.</p>'),
+        ]),
+      );
+      expect(
+        enumWithDefaultConstructorLines.join('\n'),
+        isNot(contains(
+            '<span class="signature"><code>EnumWithDefaultConstructor')),
+      );
     });
 
     test('enum page contains values with deprecated annotation', () async {
@@ -419,6 +446,5 @@ enum EnumWithDefaultConstructor { four, five, six }
 
     // TODO(srawlins): Add rendering tests.
     // * Add tests for rendered supertype (Enum) HTML.
-    // * Add tests for rendered field pages.
   });
 }
