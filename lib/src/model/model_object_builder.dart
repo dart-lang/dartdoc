@@ -15,7 +15,8 @@ abstract class ModelObjectBuilder
     implements ModelElementBuilder, ElementTypeBuilder {}
 
 abstract class ModelElementBuilder {
-  ModelElement from(Element e, Library library, {Container enclosingContainer});
+  ModelElement from(Element e, Library library,
+      {Container? enclosingContainer});
 
   ModelElement fromElement(Element e);
 

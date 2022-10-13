@@ -1727,7 +1727,7 @@ class _Renderer_Class extends RendererBase<Class> {
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.inheritanceChain.map((e) =>
-                        _render_InheritingContainer(e!, ast, r.template, sink,
+                        _render_InheritingContainer(e, ast, r.template, sink,
                             parent: r));
                   },
                 ),
@@ -4374,7 +4374,7 @@ class _Renderer_Enum extends RendererBase<Enum> {
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.inheritanceChain.map((e) =>
-                        _render_InheritingContainer(e!, ast, r.template, sink,
+                        _render_InheritingContainer(e, ast, r.template, sink,
                             parent: r));
                   },
                 ),
@@ -6895,7 +6895,7 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.inheritanceChain.map((e) =>
-                        _render_InheritingContainer(e!, ast, r.template, sink,
+                        _render_InheritingContainer(e, ast, r.template, sink,
                             parent: r));
                   },
                 ),
@@ -9380,7 +9380,7 @@ class _Renderer_Mixin extends RendererBase<Mixin> {
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.inheritanceChain.map((e) =>
-                        _render_InheritingContainer(e!, ast, r.template, sink,
+                        _render_InheritingContainer(e, ast, r.template, sink,
                             parent: r));
                   },
                 ),

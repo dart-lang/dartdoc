@@ -212,34 +212,30 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
   @override
   late final ContainerAccessor? overriddenElement = () {
     assert(packageGraph.allLibrariesAdded);
-    var parent = element.enclosingElement3;
-    if (parent is InterfaceElement) {
-      for (var t in parent.allSupertypes) {
-        var accessor =
-            isGetter ? t.getGetter(element.name) : t.getSetter(element.name);
-        if (accessor != null) {
-          accessor = accessor.declaration;
-          var parentContainer =
-              modelBuilder.fromElement(t.element2) as InheritingContainer;
-          var possibleFields = [
-            ...parentContainer.instanceFields,
-            ...parentContainer.staticFields,
-          ];
-          var fieldName = accessor.name.replaceFirst('=', '');
-          var foundField = possibleFields
-              .firstWhereOrNull((f) => f.element.name == fieldName);
-          if (foundField != null) {
-            final ContainerAccessor element;
-            if (isGetter) {
-              element = foundField.getter!;
-            } else {
-              element = foundField.setter!;
-            }
-            assert(!element.isInherited);
-            return element;
-          }
-        }
+    final parent = element.enclosingElement3;
+    if (parent is! InterfaceElement) {
+      return null;
+    }
+    for (final supertype in parent.allSupertypes) {
+      var accessor = isGetter
+          ? supertype.getGetter(element.name)?.declaration
+          : supertype.getSetter(element.name)?.declaration;
+      if (accessor == null) {
+        continue;
       }
+      final parentContainer =
+          modelBuilder.fromElement(supertype.element2) as InheritingContainer;
+      final possibleFields =
+          parentContainer.declaredFields.where((f) => !f.isStatic);
+      final fieldName = accessor.name.replaceFirst('=', '');
+      final foundField =
+          possibleFields.firstWhereOrNull((f) => f.element.name == fieldName);
+      if (foundField == null) {
+        continue;
+      }
+      final overridden = isGetter ? foundField.getter! : foundField.setter!;
+      assert(!overridden.isInherited);
+      return overridden;
     }
   }();
 }
