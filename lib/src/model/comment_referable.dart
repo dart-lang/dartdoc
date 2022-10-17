@@ -12,9 +12,9 @@ import 'dart:core';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/scope.dart';
 import 'package:collection/collection.dart';
-import 'package:dartdoc/src/model/accessor.dart';
 import 'package:dartdoc/src/model/container.dart';
 import 'package:dartdoc/src/model/library.dart';
+import 'package:dartdoc/src/model/model_element.dart';
 import 'package:dartdoc/src/model/model_object_builder.dart';
 import 'package:dartdoc/src/model/nameable.dart';
 import 'package:meta/meta.dart';
@@ -94,7 +94,7 @@ mixin CommentReferable implements Nameable, ModelBuilderInterface {
   }
 
   /// Looks up references by [scope], skipping over results that do not match
-  /// the given filter.
+  /// [filter].
   ///
   /// Override if [Scope.lookup] may return elements not corresponding to a
   /// [CommentReferable], but you still want to have an implementation of
@@ -104,11 +104,18 @@ mixin CommentReferable implements Nameable, ModelBuilderInterface {
     required bool Function(CommentReferable?) filter,
     required bool Function(CommentReferable?) allowTree,
   }) {
-    var resultElement = scope!.lookupPreferGetter(referenceLookup.lookup);
+    final resultElement = scope!.lookupPreferGetter(referenceLookup.lookup);
     if (resultElement == null) return null;
-    var result = modelBuilder.fromElement(resultElement);
-    if (result is Accessor) {
-      result = result.enclosingCombo;
+    ModelElement result;
+    if (resultElement is PropertyAccessorElement) {
+      final variable = resultElement.variable;
+      if (variable.isSynthetic) {
+        result = modelBuilder.fromElement(resultElement);
+      } else {
+        result = modelBuilder.fromElement(variable);
+      }
+    } else {
+      result = modelBuilder.fromElement(resultElement);
     }
     if (result.enclosingElement is Container) {
       assert(

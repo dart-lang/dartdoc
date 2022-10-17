@@ -11,7 +11,9 @@
 <dd>
   {{{ oneLineDoc }}}
   {{ >features }}
-  <div>
-    <span class="signature"><code>{{{ constantValueTruncated }}}</code></span>
-  </div>
+  {{ #hasConstantValueForDisplay }}
+    <div>
+      <span class="signature"><code>{{{ constantValueTruncated }}}</code></span>
+    </div>
+  {{ /hasConstantValueForDisplay }}
 </dd>

@@ -17,8 +17,12 @@ import 'package:dartdoc/src/warnings.dart';
 /// Getters and setters.
 class Accessor extends ModelElement implements EnclosedElement {
   /// The combo ([Field] or [TopLevelVariable]) containing this accessor.
-  /// Initialized by the combo's constructor.
-  late final GetterSetterCombo enclosingCombo;
+  ///
+  /// Initialized in [Field]'s constructor and in [TopLevelVariable]'s
+  /// constructor.
+  // TODO(srawlins): This might be super fragile. This field should somehow be
+  // initialized by code inside this library.
+  late GetterSetterCombo enclosingCombo;
 
   Accessor(
       PropertyAccessorElement super.element, super.library, super.packageGraph,

@@ -57,6 +57,13 @@ mixin GetterSetterCombo on ModelElement {
 
   bool get isInherited;
 
+  /// Whether this has a constant value which should be displayed.
+  bool get hasConstantValueForDisplay {
+    final element = this.element;
+    if (element is! ConstVariableElement) return false;
+    return element.constantInitializer != null;
+  }
+
   Expression? get constantInitializer =>
       (element as ConstVariableElement).constantInitializer;
 

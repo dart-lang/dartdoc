@@ -5378,6 +5378,19 @@ class _Renderer_Field extends RendererBase<Field> {
                         parent: r);
                   },
                 ),
+                'element': Property(
+                  getValue: (CT_ c) => c.element,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'FieldElement'),
+                  isNullValue: (CT_ c) => false,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    renderSimple(c.element, ast, r.template, sink,
+                        parent: r, getters: _invisibleGetters['FieldElement']!);
+                  },
+                ),
                 'enclosingElement': Property(
                   getValue: (CT_ c) => c.enclosingElement,
                   renderVariable:
@@ -6187,6 +6200,13 @@ class _Renderer_GetterSetterCombo extends RendererBase<GetterSetterCombo> {
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.hasAccessorsWithDocs == true,
+                ),
+                'hasConstantValueForDisplay': Property(
+                  getValue: (CT_ c) => c.hasConstantValueForDisplay,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.hasConstantValueForDisplay == true,
                 ),
                 'hasDocumentationComment': Property(
                   getValue: (CT_ c) => c.hasDocumentationComment,
@@ -16029,6 +16049,7 @@ const _invisibleGetters = {
     'getter',
     'getterSetterBothAvailable',
     'hasAccessorsWithDocs',
+    'hasConstantValueForDisplay',
     'hasDocumentationComment',
     'hasExplicitGetter',
     'hasExplicitSetter',
