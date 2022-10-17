@@ -23,8 +23,8 @@ class Field extends ModelElement
   Field(
       this.element, super.library, super.packageGraph, this.getter, this.setter)
       : assert(getter != null || setter != null) {
-    if (getter != null) getter!.enclosingCombo = this;
-    if (setter != null) setter!.enclosingCombo = this;
+    getter?.enclosingCombo = this;
+    setter?.enclosingCombo = this;
   }
 
   factory Field.inherited(
@@ -67,7 +67,7 @@ class Field extends ModelElement
   @override
   Container get enclosingElement => isInherited
       ? _enclosingContainer
-      : modelBuilder.from(field!.enclosingElement3, library) as Container;
+      : modelBuilder.from(element.enclosingElement3, library) as Container;
 
   @override
   String get filePath =>
@@ -81,23 +81,25 @@ class Field extends ModelElement
   }
 
   @override
-  bool get isConst => field!.isConst;
+  bool get isConst => element.isConst;
 
   /// Returns true if the FieldElement is covariant, or if the first parameter
   /// for the setter is covariant.
   @override
-  bool get isCovariant => setter?.isCovariant == true || field!.isCovariant;
+  bool get isCovariant => setter?.isCovariant == true || element.isCovariant;
 
+  /// Whether this field is final.
+  ///
+  /// `Element.isFinal` returns `true` even if it has an explicit getter (which
+  /// means we should not document it as "final").
   @override
   bool get isFinal {
-    /// isFinal returns true for the field even if it has an explicit getter
-    /// (which means we should not document it as "final").
     if (hasExplicitGetter) return false;
-    return field!.isFinal;
+    return element.isFinal;
   }
 
   @override
-  bool get isLate => isFinal && field!.isLate;
+  bool get isLate => isFinal && element.isLate;
 
   @override
   bool get isInherited => _isInherited;
@@ -105,10 +107,7 @@ class Field extends ModelElement
   @override
   String get kind => isConst ? 'constant' : 'property';
 
-  String get fullkind {
-    if (field!.isAbstract) return 'abstract $kind';
-    return kind;
-  }
+  String get fullkind => element.isAbstract ? 'abstract $kind' : kind;
 
   @override
   Set<Feature> get features {
@@ -138,6 +137,7 @@ class Field extends ModelElement
     return allFeatures;
   }
 
+  @Deprecated('Use `element`')
   FieldElement? get field => element;
 
   @override

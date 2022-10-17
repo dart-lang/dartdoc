@@ -21,12 +21,8 @@ class TopLevelVariable extends ModelElement
 
   TopLevelVariable(this.element, super.library, super.packageGraph, this.getter,
       this.setter) {
-    if (getter != null) {
-      getter!.enclosingCombo = this;
-    }
-    if (setter != null) {
-      setter!.enclosingCombo = this;
-    }
+    getter?.enclosingCombo = this;
+    setter?.enclosingCombo = this;
   }
 
   @override

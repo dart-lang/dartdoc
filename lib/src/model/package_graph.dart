@@ -875,7 +875,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
         modelElement = null;
       }
     }
-    // Prefer Fields.
+    // Prefer fields and top-level variables.
     if (e is PropertyAccessorElement && modelElement is Accessor) {
       modelElement = modelElement.enclosingCombo;
     }

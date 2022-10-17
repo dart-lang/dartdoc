@@ -6192,6 +6192,13 @@ class _Renderer_GetterSetterCombo extends RendererBase<GetterSetterCombo> {
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.hasAccessorsWithDocs == true,
                 ),
+                'hasConstantValueForDisplay': Property(
+                  getValue: (CT_ c) => c.hasConstantValueForDisplay,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.hasConstantValueForDisplay == true,
+                ),
                 'hasDocumentationComment': Property(
                   getValue: (CT_ c) => c.hasDocumentationComment,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -16048,6 +16055,7 @@ const _invisibleGetters = {
     'getter',
     'getterSetterBothAvailable',
     'hasAccessorsWithDocs',
+    'hasConstantValueForDisplay',
     'hasDocumentationComment',
     'hasExplicitGetter',
     'hasExplicitSetter',
