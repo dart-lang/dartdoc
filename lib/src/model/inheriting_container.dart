@@ -289,13 +289,13 @@ abstract class InheritingContainer extends Container
   late final DefinedElementType modelType =
       modelBuilder.typeFrom(element.thisType, library) as DefinedElementType;
 
-  /// Not the same as superChain as it may include mixins.
+  /// Not the same as [superChain] as it may include mixins.
   ///
   /// It's really not even the same as ordinary Dart inheritance, either,
   /// because we pretend that interfaces are part of the inheritance chain
   /// to include them in the set of things we might link to for documentation
   /// purposes in abstract classes.
-  List<InheritingContainer?> get inheritanceChain;
+  List<InheritingContainer> get inheritanceChain;
 
   List<DefinedElementType> get superChain {
     var typeChain = <DefinedElementType>[];
@@ -325,7 +325,7 @@ abstract class InheritingContainer extends Container
   Iterable<DefinedElementType> get publicSuperChainReversed =>
       publicSuperChain.reversed;
 
-  late final List<ExecutableElement?> _inheritedElements = () {
+  late final List<ExecutableElement> _inheritedElements = () {
     if (element is ClassElement && (element as ClassElement).isDartCoreObject) {
       return const <ExecutableElement>[];
     }
@@ -335,11 +335,11 @@ abstract class InheritingContainer extends Container
         inheritance.getInheritedConcreteMap2(element);
     final inheritenceMap = inheritance.getInheritedMap2(element);
 
-    List<InterfaceElement?>? inheritanceChainElements;
+    List<InterfaceElement>? inheritanceChainElements;
 
     final combinedMap = {
       for (final name in concreteInheritenceMap.keys)
-        name.name: concreteInheritenceMap[name],
+        name.name: concreteInheritenceMap[name]!,
     };
     for (final name in inheritenceMap.keys) {
       final inheritenceElement = inheritenceMap[name]!;
@@ -352,7 +352,7 @@ abstract class InheritingContainer extends Container
       // Elements in the inheritance chain starting from `this.element` down to,
       // but not including, [Object].
       inheritanceChainElements ??=
-          inheritanceChain.map((c) => c!.element).toList(growable: false);
+          inheritanceChain.map((c) => c.element).toList(growable: false);
       final enclosingElement =
           inheritenceElement.enclosingElement3 as InterfaceElement;
       assert(inheritanceChainElements.contains(enclosingElement) ||
@@ -364,7 +364,7 @@ abstract class InheritingContainer extends Container
       // `inheritedMap2`, prefer `inheritedMap2`. This correctly accounts for
       // intermediate abstract classes that have method/field implementations.
       if (inheritanceChainElements.indexOf(
-              combinedMapElement.enclosingElement3 as InterfaceElement?) <
+              combinedMapElement.enclosingElement3 as InterfaceElement) <
           inheritanceChainElements.indexOf(enclosingElement)) {
         combinedMap[name.name] = inheritenceElement;
       }
@@ -373,6 +373,7 @@ abstract class InheritingContainer extends Container
     return combinedMap.values.toList(growable: false);
   }();
 
+  /// All fields defined on this container, _including inherited fields_.
   late final List<Field> allFields = () {
     var inheritedAccessorElements = {
       ..._inheritedElements.whereType<PropertyAccessorElement>()
@@ -380,6 +381,11 @@ abstract class InheritingContainer extends Container
 
     // This structure keeps track of inherited accessors, allowing lookup
     // by field name (stripping the '=' from setters).
+    // TODO(srawlins): Each value List should only contain 1 or 2 elements:
+    // up to one getter and one setter. We then perform repeated
+    // `.firstWhereOrNull((e) => e.isGetter)` and
+    // `.firstWhereOrNull((e) => e.isSetter)` calls, which would be much simpler
+    // if we used some sort of "pair" class instead.
     var accessorMap = <String, List<PropertyAccessorElement>>{};
     for (var accessorElement in inheritedAccessorElements) {
       accessorMap
@@ -410,13 +416,12 @@ abstract class InheritingContainer extends Container
 
     // Now we only have inherited accessors who aren't associated with
     // anything in the fields.
-    for (var fieldName in accessorMap.keys) {
-      var elements = accessorMap[fieldName]!.toList(growable: false);
-      var getterElement = elements.firstWhereOrNull((e) => e.isGetter);
-      var setterElement = elements.firstWhereOrNull((e) => e.isSetter);
+    accessorMap.forEach((fieldName, elements) {
+      final getterElement = elements.firstWhereOrNull((e) => e.isGetter);
+      final setterElement = elements.firstWhereOrNull((e) => e.isSetter);
       fields.add(_createSingleField(
           getterElement, setterElement, inheritedAccessorElements));
-    }
+    });
 
     return fields;
   }();
@@ -434,23 +439,20 @@ abstract class InheritingContainer extends Container
       PropertyAccessorElement? setterElement,
       Set<PropertyAccessorElement> inheritedAccessors,
       [FieldElement? field]) {
-    // Return an [ContainerAccessor] with `isInherited = true` if [element] is
+    // Return a [ContainerAccessor] with `isInherited = true` if [element] is
     // in [inheritedAccessors].
-    ContainerAccessor? containerAccessorFrom(PropertyAccessorElement? element,
-        Set<PropertyAccessorElement> inheritedAccessors) {
+    ContainerAccessor? containerAccessorFrom(PropertyAccessorElement? element) {
       if (element == null) return null;
-      if (inheritedAccessors.contains(element)) {
-        return modelBuilder.from(element, library, enclosingContainer: this)
-            as ContainerAccessor;
-      } else {
-        return modelBuilder.from(element, library) as ContainerAccessor;
-      }
+      final enclosingContainer =
+          inheritedAccessors.contains(element) ? this : null;
+      return modelBuilder.from(element, library,
+          enclosingContainer: enclosingContainer) as ContainerAccessor;
     }
 
-    var getter = containerAccessorFrom(getterElement, inheritedAccessors);
-    var setter = containerAccessorFrom(setterElement, inheritedAccessors);
-    // Rebind getterElement/setterElement as ModelElement.from can resolve
-    // MultiplyInheritedExecutableElements or resolve Members.
+    var getter = containerAccessorFrom(getterElement);
+    var setter = containerAccessorFrom(setterElement);
+    // Rebind [getterElement], [setterElement] as [ModelElement.from] can
+    // resolve [MultiplyInheritedExecutableElement]s or resolve [Member]s.
     getterElement = getter?.element;
     setterElement = setter?.element;
     assert(getter != null || setter != null);
@@ -524,7 +526,7 @@ extension DefinedElementTypeIterableExtensions on Iterable<DefinedElementType> {
       map((e) => e.modelElement as InheritingContainer);
 
   /// Expands the `ModelElement` for each element to its inheritance chain.
-  Iterable<InheritingContainer?> get expandInheritanceChain =>
+  Iterable<InheritingContainer> get expandInheritanceChain =>
       expand((e) => (e.modelElement as InheritingContainer).inheritanceChain);
 }
 

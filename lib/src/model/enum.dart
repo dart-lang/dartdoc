@@ -22,7 +22,7 @@ class Enum extends InheritingContainer
   ];
 
   @override
-  late final List<InheritingContainer?> inheritanceChain = [
+  late final List<InheritingContainer> inheritanceChain = [
     this,
     for (var container in mixedInTypes.reversed.modelElements)
       ...container.inheritanceChain,
