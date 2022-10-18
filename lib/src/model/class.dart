@@ -53,7 +53,7 @@ class Class extends InheritingContainer
   }
 
   @override
-  late final List<InheritingContainer?> inheritanceChain = [
+  late final List<InheritingContainer> inheritanceChain = [
     this,
 
     // Caching should make this recursion a little less painful.

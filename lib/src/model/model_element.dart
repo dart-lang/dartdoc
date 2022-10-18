@@ -48,7 +48,7 @@ ModelElement resolveMultiplyInheritedElement(
   var lowIndex = enclosingClass.inheritanceChain.length;
   for (var inheritable in inheritables) {
     var index = enclosingClass.inheritanceChain
-        .indexOf(inheritable.enclosingElement as InheritingContainer?);
+        .indexOf(inheritable.enclosingElement as InheritingContainer);
     if (index < lowIndex) {
       foundInheritable = inheritable;
       lowIndex = index;

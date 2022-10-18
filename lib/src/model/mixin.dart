@@ -41,7 +41,7 @@ class Mixin extends InheritingContainer with TypeImplementing {
   String get kind => 'mixin';
 
   @override
-  late final List<InheritingContainer?> inheritanceChain = [
+  late final List<InheritingContainer> inheritanceChain = [
     this,
 
     // Mix-in interfaces come before other interfaces.
