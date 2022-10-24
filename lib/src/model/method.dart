@@ -14,20 +14,26 @@ import 'package:dartdoc/src/model/model.dart';
 class Method extends ModelElement
     with ContainerMember, Inheritable, TypeParameters
     implements EnclosedElement {
-  bool _isInherited = false;
+  @override
+  final MethodElement element;
+
   Container? _enclosingContainer;
+
+  final bool _isInherited;
+
   @override
   late final List<TypeParameter> typeParameters;
 
-  Method(MethodElement super.element, super.library, super.packageGraph) {
+  Method(this.element, super.library, super.packageGraph)
+      : _isInherited = false {
     _calcTypeParameters();
   }
 
-  Method.inherited(MethodElement element, this._enclosingContainer,
-      Library library, PackageGraph packageGraph,
+  Method.inherited(this.element, this._enclosingContainer, Library library,
+      PackageGraph packageGraph,
       {ExecutableMember? originalMember})
-      : super(element, library, packageGraph, originalMember) {
-    _isInherited = true;
+      : _isInherited = true,
+        super(library, packageGraph, originalMember) {
     _calcTypeParameters();
   }
 
@@ -51,11 +57,8 @@ class Method extends ModelElement
   }
 
   @override
-  Container get enclosingElement {
-    _enclosingContainer ??=
-        modelBuilder.from(element.enclosingElement3, library) as Container?;
-    return _enclosingContainer!;
-  }
+  Container get enclosingElement => _enclosingContainer ??=
+      modelBuilder.from(element.enclosingElement3, library) as Container;
 
   @override
   String get filePath =>
@@ -118,9 +121,6 @@ class Method extends ModelElement
     }
     return null;
   }
-
-  @override
-  MethodElement get element => super.element as MethodElement;
 
   /// Methods can not be covariant; always returns false.
   @override

@@ -124,14 +124,13 @@ abstract class ModelElement extends Canonicalization
         DocumentationComment,
         ModelBuilder
     implements Comparable<ModelElement>, Documentable {
-  final Element _element;
-
   // TODO(jcollins-g): This really wants a "member that has a type" class.
   final Member? _originalMember;
   final Library _library;
 
-  ModelElement(this._element, this._library, this._packageGraph,
-      [this._originalMember]);
+  final PackageGraph _packageGraph;
+
+  ModelElement(this._library, this._packageGraph, [this._originalMember]);
 
   /// Creates a [ModelElement] from [e].
   factory ModelElement._fromElement(Element e, PackageGraph p) {
@@ -647,7 +646,7 @@ abstract class ModelElement extends Canonicalization
   }
 
   @override
-  Element get element => _element;
+  Element get element;
 
   @override
   String get location {
@@ -816,8 +815,6 @@ abstract class ModelElement extends Canonicalization
   String get oneLineDoc => elementDocumentation.asOneLiner;
 
   Member? get originalMember => _originalMember;
-
-  final PackageGraph _packageGraph;
 
   @override
   PackageGraph get packageGraph => _packageGraph;

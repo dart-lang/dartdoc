@@ -59,6 +59,9 @@ class _LibrarySentinel implements Library {
 }
 
 class Library extends ModelElement with Categorization, TopLevelContainer {
+  @override
+  final LibraryElement element;
+
   final Set<Element> _exportedAndLocalElements;
   final String _restoredUri;
 
@@ -77,9 +80,9 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   /// abstract getter.
   static final Library sentinel = _LibrarySentinel();
 
-  Library._(LibraryElement element, PackageGraph packageGraph, this.package,
+  Library._(this.element, PackageGraph packageGraph, this.package,
       this._restoredUri, this._exportedAndLocalElements)
-      : super(element, sentinel, packageGraph);
+      : super(sentinel, packageGraph);
 
   factory Library.fromLibraryResult(DartDocResolvedLibrary resolvedLibrary,
       PackageGraph packageGraph, Package package) {
@@ -184,9 +187,6 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
   @override
   Iterable<Class> get classes => allClasses.where((c) => !c.isErrorOrException);
-
-  @override
-  LibraryElement get element => super.element as LibraryElement;
 
   @override
   late final Iterable<Extension> extensions = _exportedAndLocalElements

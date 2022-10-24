@@ -12,10 +12,13 @@ import 'package:meta/meta.dart';
 
 /// Extension methods
 class Extension extends Container implements EnclosedElement {
+  @override
+  final ExtensionElement element;
+
   late final ElementType extendedType =
       modelBuilder.typeFrom(element.extendedType, library);
 
-  Extension(ExtensionElement super.element, super.library, super.packageGraph);
+  Extension(this.element, super.library, super.packageGraph);
 
   /// Detect if this extension applies to every object.
   bool get alwaysApplies =>
@@ -55,9 +58,6 @@ class Extension extends Container implements EnclosedElement {
   late List<Method> declaredMethods = element.methods
       .map((e) => modelBuilder.from(e, library) as Method)
       .toList(growable: false);
-
-  @override
-  ExtensionElement get element => super.element as ExtensionElement;
 
   @override
   String get name => element.name == null ? '' : super.name;

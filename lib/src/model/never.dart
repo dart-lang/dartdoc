@@ -7,8 +7,11 @@ import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 class NeverType extends ModelElement with HasNoPage {
-  NeverType(Element element, PackageGraph packageGraph)
-      : super(element, Library.sentinel, packageGraph);
+  @override
+  final Element element;
+
+  NeverType(this.element, PackageGraph packageGraph)
+      : super(Library.sentinel, packageGraph);
 
   /// `Never` is not a real object, and so we can't document it, so there
   /// can be nothing canonical for it.

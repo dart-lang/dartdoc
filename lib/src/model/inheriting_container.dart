@@ -182,17 +182,18 @@ abstract class InheritingContainer extends Container
     with ExtensionTarget
     implements EnclosedElement {
   @override
-  InterfaceElement get element => super.element as InterfaceElement;
+  InterfaceElement get element;
 
-  DefinedElementType? _supertype;
-  DefinedElementType? get supertype =>
-      _supertype ??= element.supertype?.element2.supertype == null
-          ? null
-          : modelBuilder.typeFrom(element.supertype!, library)
-              as DefinedElementType?;
+  late final DefinedElementType? supertype = () {
+    final elementSupertype = element.supertype;
+    return elementSupertype == null ||
+            elementSupertype.element2.supertype == null
+        ? null
+        : modelBuilder.typeFrom(elementSupertype, library)
+            as DefinedElementType;
+  }();
 
-  InheritingContainer(
-      InterfaceElement super.element, super.library, super.packageGraph);
+  InheritingContainer(super.library, super.packageGraph);
 
   @override
   Iterable<Method> get instanceMethods =>

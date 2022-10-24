@@ -35,13 +35,15 @@ class ModelFunctionTyped extends ModelElement
     with TypeParameters
     implements EnclosedElement {
   @override
+  final FunctionTypedElement element;
+
+  @override
   late final List<TypeParameter> typeParameters = [
     for (var p in element.typeParameters)
       modelBuilder.from(p, library) as TypeParameter,
   ];
 
-  ModelFunctionTyped(
-      FunctionTypedElement super.element, super.library, super.packageGraph);
+  ModelFunctionTyped(this.element, super.library, super.packageGraph);
 
   @override
   ModelElement get enclosingElement => library;
@@ -73,9 +75,6 @@ class ModelFunctionTyped extends ModelElement
 
   @override
   Iterable<CommentReferable> get referenceParents => [definingLibrary];
-
-  @override
-  FunctionTypedElement get element => super.element as FunctionTypedElement;
 
   late final Callable modelType =
       modelBuilder.typeFrom(element.type, library) as Callable;

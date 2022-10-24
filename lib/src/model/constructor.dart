@@ -11,8 +11,10 @@ import 'package:dartdoc/src/model/model.dart';
 class Constructor extends ModelElement
     with TypeParameters, ContainerMember
     implements EnclosedElement {
-  Constructor(
-      ConstructorElement super.element, super.library, super.packageGraph);
+  @override
+  final ConstructorElement element;
+
+  Constructor(this.element, super.library, super.packageGraph);
 
   @override
   CharacterLocation? get characterLocation {
@@ -24,9 +26,6 @@ class Constructor extends ModelElement
     }
     return super.characterLocation;
   }
-
-  @override
-  ConstructorElement get element => super.element as ConstructorElement;
 
   @override
   List<TypeParameter> get typeParameters =>

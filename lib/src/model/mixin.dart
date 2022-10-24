@@ -12,10 +12,10 @@ import 'package:dartdoc/src/special_elements.dart';
 import 'package:meta/meta.dart';
 
 class Mixin extends InheritingContainer with TypeImplementing {
-  Mixin(super.element, super.library, super.packageGraph);
-
   @override
-  MixinElement get element => super.element as MixinElement;
+  final MixinElement element;
+
+  Mixin(this.element, super.library, super.packageGraph);
 
   late final List<ParameterizedElementType> superclassConstraints = [
     ...element.superclassConstraints

@@ -10,6 +10,9 @@ import 'package:dartdoc/src/render/source_code_renderer.dart';
 class Field extends ModelElement
     with GetterSetterCombo, ContainerMember, Inheritable
     implements EnclosedElement {
+  @override
+  final FieldElement element;
+
   bool _isInherited = false;
   late final Container _enclosingContainer;
   @override
@@ -17,8 +20,8 @@ class Field extends ModelElement
   @override
   final ContainerAccessor? setter;
 
-  Field(FieldElement super.element, super.library, super.packageGraph,
-      this.getter, this.setter)
+  Field(
+      this.element, super.library, super.packageGraph, this.getter, this.setter)
       : assert(getter != null || setter != null) {
     getter?.enclosingCombo = this;
     setter?.enclosingCombo = this;
@@ -40,9 +43,6 @@ class Field extends ModelElement
     assert(newField.enclosingElement != newField.definingEnclosingContainer);
     return newField;
   }
-
-  @override
-  FieldElement get element => super.element as FieldElement;
 
   @override
   String get documentation {

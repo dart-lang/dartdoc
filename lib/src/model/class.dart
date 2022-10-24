@@ -14,13 +14,13 @@ import 'package:dartdoc/src/model/model.dart';
 /// **inherited**: Filtered getters giving only inherited children.
 class Class extends InheritingContainer
     with Constructable, TypeImplementing, MixedInTypes {
-  Class(ClassElement element, Library library, PackageGraph packageGraph)
-      : super(element, library, packageGraph) {
+  @override
+  final ClassElement element;
+
+  Class(this.element, Library library, PackageGraph packageGraph)
+      : super(library, packageGraph) {
     packageGraph.specialClasses.addSpecial(this);
   }
-
-  @override
-  ClassElement get element => super.element as ClassElement;
 
   @override
   late final List<ModelElement> allModelElements = [

@@ -12,16 +12,15 @@ import 'package:dartdoc/src/render/typedef_renderer.dart';
 abstract class Typedef extends ModelElement
     with TypeParameters, Categorization
     implements EnclosedElement {
-  Typedef(TypeAliasElement super.element, super.library, super.packageGraph);
+  @override
+  final TypeAliasElement element;
+
+  Typedef(this.element, super.library, super.packageGraph);
 
   DartType get aliasedType => element.aliasedType;
 
-  @override
-  TypeAliasElement get element => super.element as TypeAliasElement;
-
-  ElementType? _modelType;
-  ElementType get modelType =>
-      _modelType ??= modelBuilder.typeFrom(element.aliasedType, library);
+  late final ElementType modelType =
+      modelBuilder.typeFrom(element.aliasedType, library);
 
   @override
   Library get enclosingElement => library;

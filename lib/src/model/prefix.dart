@@ -12,9 +12,12 @@ import 'package:dartdoc/src/model/model.dart';
 /// Like [Parameter], it doesn't have doc pages, but participates in lookups.
 /// Forwards to its referenced library if referred to directly.
 class Prefix extends ModelElement with HasNoPage implements EnclosedElement {
+  @override
+  final PrefixElement element;
+
   /// [library] is the library the prefix is defined in, not the [Library]
   /// referred to by the [PrefixElement].
-  Prefix(PrefixElement super.element, super.library, super.packageGraph);
+  Prefix(this.element, super.library, super.packageGraph);
 
   @override
   bool get isCanonical => false;
@@ -31,9 +34,6 @@ class Prefix extends ModelElement with HasNoPage implements EnclosedElement {
 
   @override
   Scope get scope => element.scope;
-
-  @override
-  PrefixElement get element => super.element as PrefixElement;
 
   @override
   ModelElement get enclosingElement => library;
