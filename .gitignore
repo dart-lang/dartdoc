@@ -10,7 +10,6 @@
 build/
 doc/
 lcov.info
-pub.dartlang.org/
 test_data/
 testing/**/doc
 pubspec.lock

@@ -922,7 +922,7 @@ Future<String> _buildPubPackageDocs(
     pubPackageName,
   ]);
   var cache =
-      Directory(p.join(env['PUB_CACHE']!, 'hosted', 'pub.dartlang.org'));
+      Directory(p.join(env['PUB_CACHE']!, 'hosted', 'pub.dev'));
   var pubPackageDirOrig =
       cache.listSync().firstWhere((e) => e.path.contains(pubPackageName));
   var pubPackageDir = Directory.systemTemp.createTempSync(pubPackageName);
@@ -1100,7 +1100,7 @@ Future<void> checkBuild() async {
   }
 }
 
-@Task('Dry run of publish to pub.dartlang')
+@Task('Dry run of publish to pub.dev')
 @Depends(checkChangelogHasVersion)
 Future<void> tryPublish() async {
   var launcher = SubprocessLauncher('try-publish');
