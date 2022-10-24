@@ -14,7 +14,6 @@ analyzer:
     strict-inference: true
   exclude:
     - 'doc/**'
-    - 'pub.dartlang.org/**'
     - 'testing/**'
 
 linter:

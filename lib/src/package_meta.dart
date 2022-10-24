@@ -128,8 +128,8 @@ abstract class PackageMeta {
 
   String get name;
 
-  /// The hostname that the package is hosted at -- usually 'pub.dartlang.org',
-  /// or `null` if not a hosted pub package.
+  /// The hostname that the package is hosted at, usually 'pub.dev', or `null`
+  /// if not a hosted pub package.
   String? get hostedAt;
 
   String get version;

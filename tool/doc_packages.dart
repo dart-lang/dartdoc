@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-/// A CLI tool to generate documentation for packages from pub.dartlang.org.
+/// A CLI tool to generate documentation for packages from pub.dev.
 library dartdoc.doc_packages;
 
 import 'dart:async';
@@ -14,7 +14,7 @@ import 'package:http/http.dart' as http;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:yaml/yaml.dart';
 
-const String _rootDir = 'pub.dartlang.org';
+const String _rootDir = 'pub.dev';
 
 /// To use:
 ///
@@ -54,8 +54,7 @@ ArgParser _createArgsParser() {
   parser.addFlag('generate',
       help: 'Generate docs for available pub packages.', negatable: false);
   parser.addOption('page',
-      help: 'The pub.dartlang.org page to list or generate for.',
-      defaultsTo: '1');
+      help: 'The pub.dev page to list or generate for.', defaultsTo: '1');
   return parser;
 }
 
@@ -95,8 +94,7 @@ void generateForPackages(List<String> packages) {
   print('Generating docs into $_rootDir/');
   print('');
 
-  var urls =
-      packages.map((s) => 'https://pub.dartlang.org/packages/$s.json').toList();
+  var urls = packages.map((s) => 'https://pub.dev/packages/$s.json').toList();
 
   _getPackageInfos(urls).then((List<PackageInfo> infos) {
     return Future.forEach(infos, (PackageInfo info) {
@@ -122,7 +120,7 @@ Future<void> _printGenerationResult(
 
 Future<List<String>> _packageUrls(int page) {
   return http
-      .get(Uri.parse('https://pub.dartlang.org/packages.json?page=$page'))
+      .get(Uri.parse('https://pub.dev/packages.json?page=$page'))
       .then((response) {
     var decodedJson = json.decode(response.body) as Map;
     return (decodedJson['packages'] as List).cast<String>();
@@ -250,7 +248,7 @@ class PackageInfo {
   PackageInfo(this.name, this.version);
 
   String get archiveUrl =>
-      'https://storage.googleapis.com/pub.dartlang.org/packages/$name-$version.tar.gz';
+      'https://storage.googleapis.com/pub.dev/packages/$name-$version.tar.gz';
 
   @override
   String toString() => '$name, $version';

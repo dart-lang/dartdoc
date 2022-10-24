@@ -39,6 +39,11 @@ jobs:
             job: flutter
           - sdk: stable
             job: sdk-docs
+            # Do not run the "packages" job on "stable", until "stable"
+            # means >= 2.19. This is where pub switches the hosted
+            # directory on disk from pub.dartlang.org to pub.dev.
+          - sdk: stable
+            job: packages
 
     steps:
       - name: Store date
