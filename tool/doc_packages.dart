@@ -94,8 +94,7 @@ void generateForPackages(List<String> packages) {
   print('Generating docs into $_rootDir/');
   print('');
 
-  var urls =
-      packages.map((s) => 'https://pub.dev/packages/$s.json').toList();
+  var urls = packages.map((s) => 'https://pub.dev/packages/$s.json').toList();
 
   _getPackageInfos(urls).then((List<PackageInfo> infos) {
     return Future.forEach(infos, (PackageInfo info) {

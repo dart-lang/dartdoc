@@ -921,8 +921,7 @@ Future<String> _buildPubPackageDocs(
     if (version != null) ...['-v', version],
     pubPackageName,
   ]);
-  var cache =
-      Directory(p.join(env['PUB_CACHE']!, 'hosted', 'pub.dev'));
+  var cache = Directory(p.join(env['PUB_CACHE']!, 'hosted', 'pub.dev'));
   var pubPackageDirOrig =
       cache.listSync().firstWhere((e) => e.path.contains(pubPackageName));
   var pubPackageDir = Directory.systemTemp.createTempSync(pubPackageName);
