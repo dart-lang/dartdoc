@@ -295,7 +295,7 @@ abstract class DefinedElementType extends ElementType {
         !bound.typeArguments.every((t) => t is InterfaceType)) {
       var typeSystem = library.element.typeSystem;
       return typeSystem.instantiateInterfaceToBounds(
-          element: bound.element2, nullabilitySuffix: _bound.nullabilitySuffix);
+          element: bound.element, nullabilitySuffix: _bound.nullabilitySuffix);
     } else {
       return _bound;
     }

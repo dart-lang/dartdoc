@@ -1188,13 +1188,13 @@ void main() {
     });
 
     test('Verify behavior of imperfect resolver', () {
-      expect(aImplementingThingy.element.enclosingElement3,
+      expect(aImplementingThingy.element.enclosingElement,
           equals(BaseThingy2.element));
-      expect(aImplementingThingyMethod.element.enclosingElement3,
+      expect(aImplementingThingyMethod.element.enclosingElement,
           equals(BaseThingy.element));
-      expect(aImplementingThingyField.element.enclosingElement3,
+      expect(aImplementingThingyField.element.enclosingElement,
           equals(BaseThingy.element));
-      expect(aImplementingThingyAccessor.element.enclosingElement3,
+      expect(aImplementingThingyAccessor.element.enclosingElement,
           equals(BaseThingy.element));
     });
   });
@@ -1785,7 +1785,7 @@ void main() {
           .firstWhere((c) => c.name == 'MIEEMixinWithOverride');
       var problematicOperator = MIEEMixinWithOverride.inheritedOperators
           .firstWhere((o) => o.name == 'operator []=');
-      expect(problematicOperator.element.enclosingElement3.name,
+      expect(problematicOperator.element.enclosingElement.name,
           equals('_MIEEPrivateOverride'));
       expect(problematicOperator.canonicalModelElement!.enclosingElement!.name,
           equals('MIEEMixinWithOverride'));

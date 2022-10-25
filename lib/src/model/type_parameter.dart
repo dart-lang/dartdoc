@@ -16,7 +16,7 @@ class TypeParameter extends ModelElement with HasNoPage {
 
   @override
   ModelElement get enclosingElement =>
-      modelBuilder.from(element.enclosingElement3!, library);
+      modelBuilder.from(element.enclosingElement!, library);
 
   /// [TypeParameter]s don't have documentation pages, and don't link to the
   /// element on which they are declared.
