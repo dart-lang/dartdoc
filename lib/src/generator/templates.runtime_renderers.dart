@@ -15710,12 +15710,15 @@ const _invisibleGetters = {
   'CompilationUnitElement': {
     'accessors',
     'classes',
+    'enclosingElement',
     'enclosingElement3',
+    'enums',
     'enums2',
     'extensions',
     'functions',
     'hashCode',
     'lineInfo',
+    'mixins',
     'mixins2',
     'runtimeType',
     'session',
@@ -15732,6 +15735,7 @@ const _invisibleGetters = {
     'augmentation',
     'declaration',
     'displayName',
+    'enclosingElement',
     'enclosingElement3',
     'hashCode',
     'isConst',
@@ -15748,6 +15752,7 @@ const _invisibleGetters = {
   'Context': {'current', 'hashCode', 'runtimeType', 'separator', 'style'},
   'DartType': {
     'alias',
+    'element',
     'element2',
     'hashCode',
     'isBottom',
@@ -15832,10 +15837,12 @@ const _invisibleGetters = {
     'sourceFileName'
   },
   'Element': {
+    'children',
     'context',
     'declaration',
     'displayName',
     'documentationComment',
+    'enclosingElement',
     'enclosingElement3',
     'hasAlwaysThrows',
     'hasDeprecated',
@@ -15907,10 +15914,12 @@ const _invisibleGetters = {
   },
   'EnumElement': {'augmented', 'hashCode', 'runtimeType'},
   'ExecutableMember': {
+    'children',
     'context',
     'declaration',
     'displayName',
     'documentationComment',
+    'enclosingElement',
     'enclosingElement3',
     'hasAlwaysThrows',
     'hasDeprecated',
@@ -15978,6 +15987,7 @@ const _invisibleGetters = {
   },
   'ExtensionElement': {
     'accessors',
+    'enclosingElement',
     'enclosingElement3',
     'extendedType',
     'fields',
@@ -16020,6 +16030,7 @@ const _invisibleGetters = {
     'runtimeType'
   },
   'FunctionType': {
+    'element',
     'element2',
     'hashCode',
     'namedParameterTypes',
@@ -16125,6 +16136,7 @@ const _invisibleGetters = {
     'isInSdk',
     'loadLibraryFunction',
     'name',
+    'parts',
     'parts2',
     'publicNamespace',
     'runtimeType',
@@ -16152,10 +16164,12 @@ const _invisibleGetters = {
     'values'
   },
   'Member': {
+    'children',
     'context',
     'declaration',
     'displayName',
     'documentationComment',
+    'enclosingElement',
     'enclosingElement3',
     'hasAlwaysThrows',
     'hasDeprecated',
@@ -16301,11 +16315,13 @@ const _invisibleGetters = {
     'typeParameters'
   },
   'ParameterMember': {
+    'children',
     'context',
     'declaration',
     'defaultValueCode',
     'displayName',
     'documentationComment',
+    'enclosingElement',
     'enclosingElement3',
     'hasAlwaysThrows',
     'hasDefaultValue',
@@ -16368,6 +16384,7 @@ const _invisibleGetters = {
     'correspondingGetter',
     'correspondingSetter',
     'declaration',
+    'enclosingElement',
     'enclosingElement3',
     'hashCode',
     'isGetter',
@@ -16419,6 +16436,7 @@ const _invisibleGetters = {
   'TypeAliasElement': {
     'aliasedElement',
     'aliasedType',
+    'enclosingElement',
     'enclosingElement3',
     'hashCode',
     'name',
