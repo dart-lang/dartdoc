@@ -37,8 +37,8 @@ class DartdocFileWriter implements FileWriter {
   @override
   final Set<String> writtenFiles = {};
 
-  final int? _maxFileCount;
-  final int? _maxTotalSize;
+  final int _maxFileCount;
+  final int _maxTotalSize;
 
   int _fileCount = 0;
   int _totalSize = 0;
@@ -48,22 +48,18 @@ class DartdocFileWriter implements FileWriter {
     this.resourceProvider, {
     int? maxFileCount,
     int? maxTotalSize,
-  })  : _maxFileCount = maxFileCount,
-        _maxTotalSize = maxTotalSize;
+  })  : _maxFileCount = maxFileCount ?? 0,
+        _maxTotalSize = maxTotalSize ?? 0;
 
   void _aboutToWrite(String filePath, int length) {
     _fileCount++;
     _totalSize += length;
     print([filePath, _fileCount, _totalSize, _maxFileCount, _maxTotalSize]);
-    if (_maxFileCount != null &&
-        _maxFileCount! > 0 &&
-        _maxFileCount! < _fileCount) {
+    if (_maxFileCount > 0 && _maxFileCount < _fileCount) {
       throw DartdocFailure(
           'Maximum file count reached: $_maxFileCount ($filePath)');
     }
-    if (_maxTotalSize != null &&
-        _maxTotalSize! > 0 &&
-        _maxTotalSize! < _totalSize) {
+    if (_maxTotalSize > 0 && _maxTotalSize < _totalSize) {
       throw DartdocFailure(
           'Maximum total size reached: $_maxTotalSize ($filePath)');
     }
