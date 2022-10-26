@@ -584,4 +584,50 @@ class Foo {}
         throwsA(const TypeMatcher<DartdocFailure>().having((f) => f.message,
             'message', startsWith('Missing required template file'))));
   });
+
+  group('limit files created', () {
+    test('maxFileCount', () async {
+      packagePath = await d.createPackage(
+        packageName,
+        libFiles: [
+          d.file('library_1.dart', '''
+library library_1;
+class Foo {
+  void x() {}
+  void y() {}
+}
+'''),
+        ],
+        resourceProvider: resourceProvider,
+      );
+      final dartdoc =
+          await buildDartdoc(additionalOptions: ['--max-file-count', '2']);
+      await expectLater(
+          dartdoc.generateDocs,
+          throwsA(const TypeMatcher<DartdocFailure>().having((f) => f.message,
+              'message', startsWith('Maximum file count reached: '))));
+    });
+
+    test('maxTotalSize', () async {
+      packagePath = await d.createPackage(
+        packageName,
+        libFiles: [
+          d.file('library_1.dart', '''
+library library_1;
+class Foo {
+  void x() {}
+  void y() {}
+}
+'''),
+        ],
+        resourceProvider: resourceProvider,
+      );
+      final dartdoc =
+          await buildDartdoc(additionalOptions: ['--max-total-size', '15000']);
+      await expectLater(
+          dartdoc.generateDocs,
+          throwsA(const TypeMatcher<DartdocFailure>().having((f) => f.message,
+              'message', startsWith('Maximum total size reached: '))));
+    });
+  });
 }
