@@ -103,7 +103,7 @@ bool hasPrivateName(Element e) {
   // GenericFunctionTypeElements have the name we care about in the enclosing
   // element.
   if (e is GenericFunctionTypeElement) {
-    var enclosingElementName = e.enclosingElement3?.name;
+    var enclosingElementName = e.enclosingElement?.name;
     if (enclosingElementName != null && enclosingElementName.startsWith('_')) {
       return true;
     }

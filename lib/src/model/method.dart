@@ -58,7 +58,7 @@ class Method extends ModelElement
 
   @override
   Container get enclosingElement => _enclosingContainer ??=
-      modelBuilder.from(element.enclosingElement3, library) as Container;
+      modelBuilder.from(element.enclosingElement, library) as Container;
 
   @override
   String get filePath =>
@@ -107,14 +107,14 @@ class Method extends ModelElement
     if (_enclosingContainer is Extension) {
       return null;
     }
-    var parent = element.enclosingElement3 as InterfaceElement;
+    var parent = element.enclosingElement as InterfaceElement;
     for (var t in parent.allSupertypes) {
       Element? e = t.getMethod(element.name);
       if (e != null) {
         assert(
-          e.enclosingElement3 is InterfaceElement,
-          'Expected "${e.enclosingElement3?.name}" to be a InterfaceElement, '
-          'but was ${e.enclosingElement3.runtimeType}',
+          e.enclosingElement is InterfaceElement,
+          'Expected "${e.enclosingElement?.name}" to be a InterfaceElement, '
+          'but was ${e.enclosingElement.runtimeType}',
         );
         return modelBuilder.fromElement(e) as Method?;
       }

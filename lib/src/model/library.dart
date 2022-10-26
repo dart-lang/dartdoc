@@ -97,7 +97,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
       ...element.exportNamespace.definedNames.values,
       // TODO(jcollins-g): Consider switch to [_libraryElement.topLevelElements].
       ..._getDefinedElements(element.definingCompilationUnit),
-      ...element.parts2
+      ...element.parts
           .map((e) => e.uri)
           .whereType<DirectiveUriWithUnit>()
           .map((part) => part.unit)
@@ -118,10 +118,10 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
       [
         ...compilationUnit.accessors,
         ...compilationUnit.classes,
-        ...compilationUnit.enums2,
+        ...compilationUnit.enums,
         ...compilationUnit.extensions,
         ...compilationUnit.functions,
-        ...compilationUnit.mixins2,
+        ...compilationUnit.mixins,
         ...compilationUnit.topLevelVariables,
         ...compilationUnit.typeAliases,
       ];

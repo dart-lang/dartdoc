@@ -99,11 +99,11 @@ class _RendererGatherer {
     void addRendererSpecs(List<ElementAnnotation> annotations) {
       for (var annotation in annotations) {
         if (annotation.element is ConstructorElement) {
-          if (annotation.element!.enclosingElement3!.name == 'Renderer') {
+          if (annotation.element!.enclosingElement!.name == 'Renderer') {
             rendererSpecs.add(_buildRendererSpec(annotation));
           }
         } else if (annotation.element is ConstructorMember) {
-          if (annotation.element!.enclosingElement3!.name == 'Renderer') {
+          if (annotation.element!.enclosingElement!.name == 'Renderer') {
             rendererSpecs.add(_buildRendererSpec(annotation));
           }
         }

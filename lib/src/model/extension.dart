@@ -81,7 +81,7 @@ class Extension extends Container implements EnclosedElement {
   late final List<TypeParameter> typeParameters = element.typeParameters
       .map((typeParameter) => modelBuilder.from(
           typeParameter,
-          modelBuilder.fromElement(typeParameter.enclosingElement3!.library!)
+          modelBuilder.fromElement(typeParameter.enclosingElement!.library!)
               as Library) as TypeParameter)
       .toList(growable: false);
 

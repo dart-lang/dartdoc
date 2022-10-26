@@ -127,12 +127,12 @@ class Accessor extends ModelElement implements EnclosedElement {
 
   @override
   ModelElement get enclosingElement {
-    if (element.enclosingElement3 is CompilationUnitElement) {
+    if (element.enclosingElement is CompilationUnitElement) {
       return modelBuilder
-          .fromElement(element.enclosingElement3.enclosingElement3!);
+          .fromElement(element.enclosingElement.enclosingElement!);
     }
 
-    return modelBuilder.from(element.enclosingElement3, library);
+    return modelBuilder.from(element.enclosingElement, library);
   }
 
   @override
@@ -214,7 +214,7 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
   @override
   late final ContainerAccessor? overriddenElement = () {
     assert(packageGraph.allLibrariesAdded);
-    final parent = element.enclosingElement3;
+    final parent = element.enclosingElement;
     if (parent is! InterfaceElement) {
       return null;
     }
@@ -226,7 +226,7 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
         continue;
       }
       final parentContainer =
-          modelBuilder.fromElement(supertype.element2) as InheritingContainer;
+          modelBuilder.fromElement(supertype.element) as InheritingContainer;
       final possibleFields =
           parentContainer.declaredFields.where((f) => !f.isStatic);
       final fieldName = accessor.name.replaceFirst('=', '');
