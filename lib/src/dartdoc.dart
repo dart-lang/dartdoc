@@ -54,7 +54,6 @@ class DartdocFileWriter implements FileWriter {
   void _aboutToWrite(String filePath, int length) {
     _fileCount++;
     _totalSize += length;
-    print([filePath, _fileCount, _totalSize, _maxFileCount, _maxTotalSize]);
     if (_maxFileCount > 0 && _maxFileCount < _fileCount) {
       throw DartdocFailure(
           'Maximum file count reached: $_maxFileCount ($filePath)');
