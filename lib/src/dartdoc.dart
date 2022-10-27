@@ -51,9 +51,9 @@ class DartdocFileWriter implements FileWriter {
   })  : _maxFileCount = maxFileCount ?? 0,
         _maxTotalSize = maxTotalSize ?? 0;
 
-  void _aboutToWrite(String filePath, int length) {
+  void _validateMaxWriteStats(String filePath, int size) {
     _fileCount++;
-    _totalSize += length;
+    _totalSize += size;
     if (_maxFileCount > 0 && _maxFileCount < _fileCount) {
       throw DartdocFailure(
           'Maximum file count reached: $_maxFileCount ($filePath)');
@@ -70,7 +70,7 @@ class DartdocFileWriter implements FileWriter {
     List<int> content, {
     bool allowOverwrite = false,
   }) {
-    _aboutToWrite(filePath, content.length);
+    _validateMaxWriteStats(filePath, content.length);
     // Replace '/' separators with proper separators for the platform.
     var outFile = p.joinAll(filePath.split('/'));
 
@@ -88,7 +88,7 @@ class DartdocFileWriter implements FileWriter {
   @override
   void write(String filePath, String content, {Warnable? element}) {
     final bytes = utf8.encode(content);
-    _aboutToWrite(filePath, bytes.length);
+    _validateMaxWriteStats(filePath, bytes.length);
 
     // Replace '/' separators with proper separators for the platform.
     var outFile = p.joinAll(filePath.split('/'));
