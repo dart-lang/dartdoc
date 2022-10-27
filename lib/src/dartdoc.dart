@@ -60,7 +60,7 @@ class DartdocFileWriter implements FileWriter {
     }
     if (_maxTotalSize > 0 && _maxTotalSize < _totalSize) {
       throw DartdocFailure(
-          'Maximum total size reached: $_maxTotalSize ($filePath)');
+          'Maximum total size reached: $_maxTotalSize bytes ($filePath)');
     }
   }
 

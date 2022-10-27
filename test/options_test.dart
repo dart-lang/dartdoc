@@ -586,7 +586,7 @@ class Foo {}
   });
 
   group('limit files created', () {
-    test('maxFileCount', () async {
+    test('maxFileCount is reached', () async {
       packagePath = await d.createPackage(
         packageName,
         libFiles: [
@@ -600,6 +600,7 @@ class Foo {
         ],
         resourceProvider: resourceProvider,
       );
+      await utils.writeDartdocResources(resourceProvider);
       final dartdoc =
           await buildDartdoc(additionalOptions: ['--max-file-count', '2']);
       await expectLater(
@@ -608,7 +609,7 @@ class Foo {
               'message', startsWith('Maximum file count reached: '))));
     });
 
-    test('maxTotalSize', () async {
+    test('maxFileCount is not reached', () async {
       packagePath = await d.createPackage(
         packageName,
         libFiles: [
@@ -622,12 +623,53 @@ class Foo {
         ],
         resourceProvider: resourceProvider,
       );
+      await utils.writeDartdocResources(resourceProvider);
+      final dartdoc =
+          await buildDartdoc(additionalOptions: ['--max-file-count', '2000']);
+      await dartdoc.generateDocs();
+    });
+
+    test('maxTotalSize is reached', () async {
+      packagePath = await d.createPackage(
+        packageName,
+        libFiles: [
+          d.file('library_1.dart', '''
+library library_1;
+class Foo {
+  void x() {}
+  void y() {}
+}
+'''),
+        ],
+        resourceProvider: resourceProvider,
+      );
+      await utils.writeDartdocResources(resourceProvider);
       final dartdoc =
           await buildDartdoc(additionalOptions: ['--max-total-size', '15000']);
       await expectLater(
           dartdoc.generateDocs,
           throwsA(const TypeMatcher<DartdocFailure>().having((f) => f.message,
               'message', startsWith('Maximum total size reached: '))));
+    });
+
+    test('maxTotalSize is not reached', () async {
+      packagePath = await d.createPackage(
+        packageName,
+        libFiles: [
+          d.file('library_1.dart', '''
+library library_1;
+class Foo {
+  void x() {}
+  void y() {}
+}
+'''),
+        ],
+        resourceProvider: resourceProvider,
+      );
+      await utils.writeDartdocResources(resourceProvider);
+      final dartdoc = await buildDartdoc(
+          additionalOptions: ['--max-total-size', '15000000']);
+      await dartdoc.generateDocs();
     });
   });
 }
