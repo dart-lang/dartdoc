@@ -46,10 +46,10 @@ class DartdocFileWriter implements FileWriter {
   DartdocFileWriter(
     this._outputDir,
     this.resourceProvider, {
-    int? maxFileCount,
-    int? maxTotalSize,
-  })  : _maxFileCount = maxFileCount ?? 0,
-        _maxTotalSize = maxTotalSize ?? 0;
+    int maxFileCount = 0,
+    int maxTotalSize = 0,
+  })  : _maxFileCount = maxFileCount,
+        _maxTotalSize = maxTotalSize;
 
   void _validateMaxWriteStats(String filePath, int size) {
     _fileCount++;
