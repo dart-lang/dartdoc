@@ -1600,11 +1600,11 @@ List<DartdocOption> createDartdocOptions(
     DartdocOptionArgOnly<String>('maxFileCount', '0', resourceProvider,
         help:
             'The maximum number of files dartdoc is allowed to create (0 for no limit).',
-        hide: false),
+        hide: true),
     DartdocOptionArgOnly<String>('maxTotalSize', '0', resourceProvider,
         help:
             'The maximum total size dartdoc is allowed to create (0 for no limit).',
-        hide: false),
+        hide: true),
     // TODO(jcollins-g): refactor so there is a single static "create" for
     // each DartdocOptionContext that traverses the inheritance tree itself.
     ...createExperimentOptions(resourceProvider),
