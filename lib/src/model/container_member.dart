@@ -30,27 +30,22 @@ mixin ContainerMember on ModelElement implements EnclosedElement {
         if (isExtended) Feature.extended,
       };
 
-  bool _canonicalEnclosingContainerIsSet = false;
-  Container? _canonicalEnclosingContainer;
-
-  Container? get canonicalEnclosingContainer {
-    if (!_canonicalEnclosingContainerIsSet) {
-      _canonicalEnclosingContainer = computeCanonicalEnclosingContainer();
-      _canonicalEnclosingContainerIsSet = true;
-      assert(_canonicalEnclosingContainer == null ||
-          _canonicalEnclosingContainer!.isDocumented);
-    }
-    return _canonicalEnclosingContainer;
-  }
+  late final Container? canonicalEnclosingContainer = () {
+    final canonicalEnclosingContainer = computeCanonicalEnclosingContainer();
+    assert(canonicalEnclosingContainer == null ||
+        canonicalEnclosingContainer.isDocumented);
+    return canonicalEnclosingContainer;
+  }();
 
   Container? computeCanonicalEnclosingContainer() {
-    // TODO(jcollins-g): move Extension specific code to [Extendable]
-    if (enclosingElement is Extension && enclosingElement.isDocumented) {
-      return packageGraph.findCanonicalModelElementFor(enclosingElement.element)
-          as Container?;
-    }
+    final enclosingElement = this.enclosingElement;
     if (enclosingElement is! Extension) {
       return packageGraph.findCanonicalModelElementFor(element.enclosingElement)
+          as Container?;
+    }
+    // TODO(jcollins-g): move Extension specific code to [Extendable]
+    if (enclosingElement.isDocumented) {
+      return packageGraph.findCanonicalModelElementFor(enclosingElement.element)
           as Container?;
     }
     return null;
