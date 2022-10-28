@@ -312,19 +312,20 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       {required String message,
       Iterable<Locatable>? referredFrom,
       Iterable<String>? extendedDebug}) {
-    if (warnable != null) {
+    if (warnable is ModelElement) {
       // This sort of warning is only applicable to top level elements.
       if (kind == PackageWarning.ambiguousReexport) {
         var enclosingElement = warnable.enclosingElement;
         while (enclosingElement != null && enclosingElement is! Library) {
-          warnable = enclosingElement;
+          warnable = enclosingElement as ModelElement;
           enclosingElement = warnable.enclosingElement;
         }
       }
-    } else {
-      // If we don't have an element, we need a message to disambiguate.
-      assert(message.isNotEmpty);
     }
+
+    // If we don't have an element, we need a message to disambiguate.
+    assert(warnable != null || message.isNotEmpty);
+
     if (packageWarningCounter.hasWarning(warnable, kind, message)) {
       return;
     }

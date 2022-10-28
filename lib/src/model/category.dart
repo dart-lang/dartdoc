@@ -58,9 +58,6 @@ class Category extends Nameable
   }
 
   @override
-  ModelElement? get enclosingElement => null;
-
-  @override
   Element? get element => null;
 
   @override
