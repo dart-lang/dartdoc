@@ -344,6 +344,13 @@ bool get namedArgumentsAnywhereAllowed =>
 /// We can not use [ExperimentalFeature.releaseVersion] or even
 /// [ExperimentalFeature.experimentalReleaseVersion] as these are set to `null`
 /// even when partial analyzer implementations are available.
+bool get recordsAllowed =>
+    VersionRange(min: Version.parse('2.19.0-0'), includeMin: true)
+        .allows(platformVersion);
+
+/// We can not use [ExperimentalFeature.releaseVersion] or even
+/// [ExperimentalFeature.experimentalReleaseVersion] as these are set to `null`
+/// even when partial analyzer implementations are available.
 bool get superParametersAllowed =>
     VersionRange(min: Version.parse('2.17.0-0'), includeMin: true)
         .allows(platformVersion);

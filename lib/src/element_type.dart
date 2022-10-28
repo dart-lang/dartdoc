@@ -40,6 +40,9 @@ abstract class ElementType extends Privacy
 
   factory ElementType._from(
       DartType f, Library library, PackageGraph packageGraph) {
+    if (f is RecordType) {
+      return RecordElementType(f, library, packageGraph);
+    }
     var fElement = DartTypeExtension(f).element;
     if (fElement == null ||
         fElement.kind == ElementKind.DYNAMIC ||
@@ -55,10 +58,10 @@ abstract class ElementType extends Privacy
     }
     // [DefinedElementType]s.
     var element = packageGraph.modelBuilder.fromElement(fElement);
-    // [TypeAliasElement.aliasElement] has different implications.
-    // In that case it is an actual type alias of some kind (generic
-    // or otherwise.   Here however aliasElement signals that this is a
-    // type referring to an alias.
+    // `TypeAliasElement.alias.element` has different implications.
+    // In that case it is an actual type alias of some kind (generic or
+    // otherwise). Here however `alias.element` signals that this is a type
+    // referring to an alias.
     if (f is! TypeAliasElement && f.alias?.element != null) {
       return AliasedElementType(
           f as ParameterizedType, library, packageGraph, element);
@@ -69,7 +72,7 @@ abstract class ElementType extends Privacy
     var isGenericTypeAlias = f.alias?.element != null && f is! InterfaceType;
     if (f is FunctionType) {
       assert(f is ParameterizedType);
-      // This is an indication we have an extremely out of date analyzer....
+      // This is an indication we have an extremely out of date analyzer.
       assert(!isGenericTypeAlias, 'should never occur: out of date analyzer?');
       // And finally, delete this case and its associated class
       // after https://dart-review.googlesource.com/c/sdk/+/201520
@@ -173,6 +176,25 @@ class FunctionTypeElementType extends UndefinedElementType
   @override
   ElementTypeRenderer get _renderer =>
       packageGraph.rendererFactory.functionTypeElementTypeRenderer;
+}
+
+/// A [RecordType] which does not have an underpinning Element.
+class RecordElementType extends UndefinedElementType with Rendered {
+  RecordElementType(RecordType super.f, super.library, super.packageGraph);
+
+  @override
+  String get name => 'Record';
+
+  @override
+  ElementTypeRenderer get _renderer =>
+      packageGraph.rendererFactory.recordElementTypeRenderer;
+
+  List<RecordTypeField> get positionalFields => type.positionalFields;
+
+  List<RecordTypeField> get namedFields => type.namedFields;
+
+  @override
+  RecordType get type => super.type as RecordType;
 }
 
 class AliasedFunctionTypeElementType extends FunctionTypeElementType
