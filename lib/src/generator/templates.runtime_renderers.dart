@@ -6642,7 +6642,7 @@ class _Renderer_Inheritable extends RendererBase<Inheritable> {
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.inheritance.map((e) => _render_InheritingContainer(
-                        e!, ast, r.template, sink,
+                        e, ast, r.template, sink,
                         parent: r));
                   },
                 ),
