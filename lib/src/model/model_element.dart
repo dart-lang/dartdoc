@@ -444,6 +444,8 @@ abstract class ModelElement extends Canonicalization
     return utils.hasPublicName(element) && !hasNodoc;
   }();
 
+  Warnable? get enclosingElement;
+
   @override
   late final DartdocOptionContext config =
       DartdocOptionContext.fromContextElement(
