@@ -16,7 +16,8 @@ extension DartTypeExtension on DartType {
     } else if (self is TypeParameterType) {
       return self.element;
     } else {
-      // Remaining cases like `DynamicType`, `FunctionType`, and `VoidType`.
+      // Remaining cases like `DynamicType`, `FunctionType`, `RecordType`, and
+      // `VoidType`.
       return null;
     }
   }

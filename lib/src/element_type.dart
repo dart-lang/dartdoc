@@ -72,14 +72,13 @@ abstract class ElementType extends Privacy
     var isGenericTypeAlias = f.alias?.element != null && f is! InterfaceType;
     if (f is FunctionType) {
       assert(f is ParameterizedType);
-      // This is an indication we have an extremely out of date analyzer.
-      assert(!isGenericTypeAlias, 'should never occur: out of date analyzer?');
       // And finally, delete this case and its associated class
       // after https://dart-review.googlesource.com/c/sdk/+/201520
       // is in all published versions of analyzer this version of dartdoc
       // is compatible with.
       return CallableElementType(f, library, packageGraph, element);
-    } else if (isGenericTypeAlias) {
+    }
+    if (isGenericTypeAlias) {
       return GenericTypeAliasElementType(
           f as TypeParameterType, library, packageGraph, element);
     }
@@ -315,8 +314,7 @@ abstract class DefinedElementType extends ElementType {
     final bound = _bound;
     if (bound is InterfaceType &&
         !bound.typeArguments.every((t) => t is InterfaceType)) {
-      var typeSystem = library.element.typeSystem;
-      return typeSystem.instantiateInterfaceToBounds(
+      return library.typeSystem.instantiateInterfaceToBounds(
           element: bound.element, nullabilitySuffix: _bound.nullabilitySuffix);
     } else {
       return _bound;

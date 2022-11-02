@@ -220,7 +220,7 @@ import '${p.basename(_sourceUri.path)}';
         return _relevantTypeFrom(bound);
       }
     } else {
-      // We can do nothing with function types, etc.
+      // We can do nothing with function types, record types, etc.
       return null;
     }
   }
