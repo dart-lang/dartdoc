@@ -3804,7 +3804,7 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('inheritance of docs from SDK works for getter/setter combos', () {
       expect(
           ExtraSpecialListLength
-              .getter!.documentationFrom.first.element!.library!.name,
+              .getter!.documentationFrom.first.element.library!.name,
           equals('dart.core'));
       expect(ExtraSpecialListLength.oneLineDoc == '', isFalse);
     });

@@ -871,12 +871,6 @@ abstract class ModelElement extends Canonicalization
   }();
 
   @override
-  String get documentationComment => element.documentationComment ?? '';
-
-  @override
-  bool get hasDocumentationComment => element.documentationComment != null;
-
-  @override
   late final String sourceCode =
       _sourceCodeRenderer.renderSourceCode(super.sourceCode);
 
