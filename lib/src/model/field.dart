@@ -123,16 +123,16 @@ class Field extends ModelElement
         if (getter!.isInherited) allFeatures.add(Feature.inheritedGetter);
         if (setter!.isInherited) allFeatures.add(Feature.inheritedSetter);
       }
-      if (getter!.isOverride! && setter!.isOverride!) {
+      if (getter!.isOverride && setter!.isOverride) {
         allFeatures.add(Feature.overrideFeature);
       } else {
         allFeatures.remove(Feature.overrideFeature);
-        if (getter!.isOverride!) allFeatures.add(Feature.overrideGetter);
-        if (setter!.isOverride!) allFeatures.add(Feature.overrideSetter);
+        if (getter!.isOverride) allFeatures.add(Feature.overrideGetter);
+        if (setter!.isOverride) allFeatures.add(Feature.overrideSetter);
       }
     } else {
       if (isInherited) allFeatures.add(Feature.inherited);
-      if (isOverride!) allFeatures.add(Feature.overrideFeature);
+      if (isOverride) allFeatures.add(Feature.overrideFeature);
     }
     return allFeatures;
   }

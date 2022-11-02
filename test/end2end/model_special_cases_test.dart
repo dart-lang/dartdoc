@@ -452,7 +452,7 @@ void main() {
       // If this fails, EventTarget might have been changed to no longer
       // inherit from Interceptor.  If that's true, adjust test case to
       // another class that does.
-      expect(hashCode.inheritance.any((c) => c?.name == 'Interceptor'), isTrue);
+      expect(hashCode.inheritance.any((c) => c.name == 'Interceptor'), isTrue);
       // If EventTarget really does start implementing hashCode, this will
       // fail.
       expect(hashCode.href,
