@@ -235,9 +235,9 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
       .replaceAll(':', '-')
       .replaceAll('/', '_');
 
-  Set<String?>? _canonicalFor;
+  Set<String>? _canonicalFor;
 
-  Set<String?> get canonicalFor {
+  Set<String> get canonicalFor {
     if (_canonicalFor == null) {
       // TODO(jcollins-g): restructure to avoid using side effects.
       buildDocumentationAddition(documentationComment);
