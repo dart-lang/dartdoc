@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'package:analyzer/dart/element/element.dart';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:dartdoc/src/model/feature.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -53,7 +54,8 @@ mixin Inheritable on ContainerMember {
     }
     return canonicalEnclosingContainer.allCanonicalModelElements
         .firstWhereOrNull((m) =>
-            m.name == name && m.isPropertyAccessor == isPropertyAccessor);
+            m.name == name &&
+            m is PropertyAccessorElement == this is PropertyAccessorElement);
   }();
 
   @override

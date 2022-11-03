@@ -317,7 +317,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       if (kind == PackageWarning.ambiguousReexport) {
         var enclosingElement = warnable.enclosingElement;
         while (enclosingElement != null && enclosingElement is! Library) {
-          warnable = enclosingElement as ModelElement;
+          warnable = enclosingElement;
           enclosingElement = warnable.enclosingElement;
         }
       }

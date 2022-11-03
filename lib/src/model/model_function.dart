@@ -20,6 +20,9 @@ class ModelFunction extends ModelFunctionTyped with Categorization {
 
   @override
   FunctionElement get element => super.element as FunctionElement;
+
+  @override
+  bool get isAsynchronous => element.isAsynchronous;
 }
 
 /// A [ModelElement] for a [FunctionTypedElement] that is part of an
