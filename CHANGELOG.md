@@ -1,7 +1,7 @@
 ## 6.1.3-dev
 
 * Bump analyzer to 5.2.0.
-
+* `--max-file-count` and `--max-total-size` command-line arguments to limit file system resource use.
 
 ## 6.1.2
 

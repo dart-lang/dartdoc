@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io' show Platform, exitCode, stderr;
 
 import 'package:analyzer/file_system/file_system.dart';
@@ -36,7 +37,32 @@ class DartdocFileWriter implements FileWriter {
   @override
   final Set<String> writtenFiles = {};
 
-  DartdocFileWriter(this._outputDir, this.resourceProvider);
+  final int _maxFileCount;
+  final int _maxTotalSize;
+
+  int _fileCount = 0;
+  int _totalSize = 0;
+
+  DartdocFileWriter(
+    this._outputDir,
+    this.resourceProvider, {
+    int maxFileCount = 0,
+    int maxTotalSize = 0,
+  })  : _maxFileCount = maxFileCount,
+        _maxTotalSize = maxTotalSize;
+
+  void _validateMaxWriteStats(String filePath, int size) {
+    _fileCount++;
+    _totalSize += size;
+    if (_maxFileCount > 0 && _maxFileCount < _fileCount) {
+      throw DartdocFailure(
+          'Maximum file count reached: $_maxFileCount ($filePath)');
+    }
+    if (_maxTotalSize > 0 && _maxTotalSize < _totalSize) {
+      throw DartdocFailure(
+          'Maximum total size reached: $_maxTotalSize bytes ($filePath)');
+    }
+  }
 
   @override
   void writeBytes(
@@ -44,6 +70,7 @@ class DartdocFileWriter implements FileWriter {
     List<int> content, {
     bool allowOverwrite = false,
   }) {
+    _validateMaxWriteStats(filePath, content.length);
     // Replace '/' separators with proper separators for the platform.
     var outFile = p.joinAll(filePath.split('/'));
 
@@ -60,6 +87,9 @@ class DartdocFileWriter implements FileWriter {
 
   @override
   void write(String filePath, String content, {Warnable? element}) {
+    final bytes = utf8.encode(content);
+    _validateMaxWriteStats(filePath, bytes.length);
+
     // Replace '/' separators with proper separators for the platform.
     var outFile = p.joinAll(filePath.split('/'));
 
@@ -67,7 +97,7 @@ class DartdocFileWriter implements FileWriter {
     _fileElementMap[outFile] = element;
 
     var file = _getFile(outFile);
-    file.writeAsStringSync(content);
+    file.writeAsBytesSync(bytes);
     writtenFiles.add(outFile);
     logProgress(outFile);
   }
@@ -138,7 +168,12 @@ class Dartdoc {
     var resourceProvider = context.resourceProvider;
     var outputPath = resourceProvider.pathContext.absolute(context.output);
     var outputDir = resourceProvider.getFolder(outputPath)..create();
-    var writer = DartdocFileWriter(outputPath, resourceProvider);
+    var writer = DartdocFileWriter(
+      outputPath,
+      resourceProvider,
+      maxFileCount: context.maxFileCount,
+      maxTotalSize: context.maxTotalSize,
+    );
     Generator generator;
     switch (context.format) {
       case 'html':

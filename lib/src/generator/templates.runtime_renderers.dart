@@ -15756,6 +15756,8 @@ const _invisibleGetters = {
     'inputDir',
     'linkToRemote',
     'linkToUrl',
+    'maxFileCount',
+    'maxTotalSize',
     'nodoc',
     'optionSet',
     'output',
