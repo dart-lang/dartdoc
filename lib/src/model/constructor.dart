@@ -33,7 +33,7 @@ class Constructor extends ModelElement
 
   @override
   Container get enclosingElement =>
-      modelBuilder.from(element.enclosingElement3, library) as Container;
+      modelBuilder.from(element.enclosingElement, library) as Container;
 
   @override
   String get filePath =>
@@ -90,7 +90,7 @@ class Constructor extends ModelElement
 
   String? get shortName {
     if (name.contains('.')) {
-      return name.substring(element.enclosingElement3.name.length + 1);
+      return name.substring(element.enclosingElement.name.length + 1);
     } else {
       return name;
     }

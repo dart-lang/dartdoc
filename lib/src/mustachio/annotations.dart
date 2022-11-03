@@ -113,7 +113,7 @@ class RendererSpec {
   static Uri? _parseUriFromAnnotation(String unparsed) =>
       unparsed == 'null' ? null : Uri.parse(unparsed);
 
-  InterfaceElement get contextElement => contextType.element2;
+  InterfaceElement get contextElement => contextType.element;
 }
 
 enum TemplateFormat {

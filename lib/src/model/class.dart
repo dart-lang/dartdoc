@@ -40,7 +40,7 @@ class Class extends InheritingContainer
 
     final element = this.element;
     if (isError(element)) return true;
-    return element.allSupertypes.map((t) => t.element2).any(isError);
+    return element.allSupertypes.map((t) => t.element).any(isError);
   }
 
   @override

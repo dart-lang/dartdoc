@@ -191,7 +191,7 @@ Future<Method> _redirectingMethod(
     _AotCompiler compiler, _AotCompiler lubCompiler) async {
   var typeParameters = <TypeReference>[];
   for (var context in compiler._usedContextStack) {
-    for (var typeParameter in context.type.element2.typeParameters) {
+    for (var typeParameter in context.type.element.typeParameters) {
       var bound = typeParameter.bound;
       if (bound == null) {
         typeParameters
@@ -208,7 +208,7 @@ Future<Method> _redirectingMethod(
 
   var parameters = <Parameter>[];
   for (var context in compiler._usedContextStack) {
-    var contextElement = context.type.element2;
+    var contextElement = context.type.element;
     var contextElementUri = await compiler._elementUri(contextElement);
     parameters.add(Parameter((b) => b
       ..type = TypeReference((b) => b
@@ -339,7 +339,7 @@ class _AotCompiler {
     // this should be perfectly possible.
     var typeParameters = <TypeReference>[];
     for (var context in _usedContexts) {
-      for (var typeParameter in context.type.element2.typeParameters) {
+      for (var typeParameter in context.type.element.typeParameters) {
         var bound = typeParameter.bound;
         if (bound == null) {
           typeParameters
@@ -356,7 +356,7 @@ class _AotCompiler {
 
     var parameters = <Parameter>[];
     for (var context in _usedContexts) {
-      var contextElement = context.type.element2;
+      var contextElement = context.type.element;
       var contextElementUri = await _elementUri(contextElement);
       parameters.add(Parameter((b) => b
         ..type = TypeReference((b) => b
@@ -614,7 +614,7 @@ class _BlockCompiler {
     late _VariableLookup context;
     PropertyAccessorElement? getter;
     for (var c in _contextStack) {
-      getter = c.type.lookUpGetter2(primaryName, contextType.element2.library);
+      getter = c.type.lookUpGetter2(primaryName, contextType.element.library);
       if (getter != null) {
         context = c;
         _usedContextTypes.add(c);
@@ -639,7 +639,7 @@ class _BlockCompiler {
         : '${context.name}.$primaryName';
     var remainingNames = [...key.skip(1)];
     for (var secondaryKey in remainingNames) {
-      getter = type.lookUpGetter2(secondaryKey, type.element2.library);
+      getter = type.lookUpGetter2(secondaryKey, type.element.library);
       if (getter == null) {
         throw MustachioResolutionError(node.keySpan.message(
             "Failed to resolve '$secondaryKey' on ${context.type} while "

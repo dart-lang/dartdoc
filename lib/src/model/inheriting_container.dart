@@ -187,7 +187,7 @@ abstract class InheritingContainer extends Container
   late final DefinedElementType? supertype = () {
     final elementSupertype = element.supertype;
     return elementSupertype == null ||
-            elementSupertype.element2.supertype == null
+            elementSupertype.element.supertype == null
         ? null
         : modelBuilder.typeFrom(elementSupertype, library)
             as DefinedElementType;
@@ -302,14 +302,14 @@ abstract class InheritingContainer extends Container
     var parent = supertype;
     while (parent != null) {
       typeChain.add(parent);
-      if (parent.type is InterfaceType) {
-        // Avoid adding [Object] to the superChain (_supertype already has this
-        // check)
-        if ((parent.type as InterfaceType).superclass?.superclass == null) {
-          parent = null;
+      final parentType = parent.type;
+      if (parentType is InterfaceType) {
+        // Avoid adding [Object] to the [superChain] ([_supertype] already has
+        // this check).
+        if (parentType.superclass?.superclass == null) {
+          break;
         } else {
-          parent = modelBuilder.typeFrom(
-                  (parent.type as InterfaceType).superclass!, library)
+          parent = modelBuilder.typeFrom(parentType.superclass!, library)
               as DefinedElementType?;
         }
       } else {
@@ -354,7 +354,7 @@ abstract class InheritingContainer extends Container
       inheritanceChainElements ??=
           inheritanceChain.map((c) => c.element).toList(growable: false);
       final enclosingElement =
-          inheritenceElement.enclosingElement3 as InterfaceElement;
+          inheritenceElement.enclosingElement as InterfaceElement;
       assert(inheritanceChainElements.contains(enclosingElement) ||
           enclosingElement.isDartCoreObject);
 
@@ -364,7 +364,7 @@ abstract class InheritingContainer extends Container
       // `inheritedMap2`, prefer `inheritedMap2`. This correctly accounts for
       // intermediate abstract classes that have method/field implementations.
       if (inheritanceChainElements.indexOf(
-              combinedMapElement.enclosingElement3 as InterfaceElement) <
+              combinedMapElement.enclosingElement as InterfaceElement) <
           inheritanceChainElements.indexOf(enclosingElement)) {
         combinedMap[name.name] = inheritenceElement;
       }
@@ -505,7 +505,7 @@ abstract class InheritingContainer extends Container
   late final List<TypeParameter> typeParameters = element.typeParameters
       .map((typeParameter) => modelBuilder.from(
           typeParameter,
-          modelBuilder.fromElement(typeParameter.enclosingElement3!.library!)
+          modelBuilder.fromElement(typeParameter.enclosingElement!.library!)
               as Library) as TypeParameter)
       .toList(growable: false);
 

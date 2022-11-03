@@ -137,9 +137,6 @@ class Package extends LibraryContainer
   bool get isDocumented =>
       isFirstPackage || documentedWhere != DocumentLocation.missing;
 
-  @override
-  ModelElement? get enclosingElement => null;
-
   /// If we have public libraries, this is the default package, or we are
   /// auto-including dependencies, this package is public.
   @override

@@ -20,35 +20,113 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart' show PackageMeta;
 import 'package:dartdoc/src/warnings.dart';
 
-/// Find all hashable children of a given element that are defined in the
+/// Finds all hashable children of a given element that are defined in the
 /// [LibraryElement] given at initialization.
+// TODO(srawlins): Do we not need to visit the parameters in
+// [ConstructorElement], [FunctionElement], [MethodElement],
+// [PropertyAccessorElement], [TypeAliasElement]?
 class _HashableChildLibraryElementVisitor
-    extends GeneralizingElementVisitor<void> {
+    extends RecursiveElementVisitor<void> {
   final DartDocResolvedLibrary resolvedLibrary;
   final PackageGraph packageGraph;
 
   _HashableChildLibraryElementVisitor(this.resolvedLibrary, this.packageGraph);
 
   @override
-  void visitElement(Element element) {
+  void visitClassElement(ClassElement element) {
     packageGraph.populateModelNodeFor(element, resolvedLibrary);
-    super.visitElement(element);
+    super.visitClassElement(element);
   }
 
   @override
-  void visitLibraryExportElement(LibraryExportElement element) {
-    // [ExportElement]s are not always hashable; skip them.
+  void visitConstructorElement(ConstructorElement element) {
+    packageGraph.populateModelNodeFor(element, resolvedLibrary);
   }
 
   @override
-  void visitLibraryImportElement(LibraryImportElement element) {
-    // [ImportElement]s are not always hashable; skip them.
+  void visitEnumElement(EnumElement element) {
+    packageGraph.populateModelNodeFor(element, resolvedLibrary);
+    super.visitEnumElement(element);
+  }
+
+  @override
+  void visitExtensionElement(ExtensionElement element) {
+    packageGraph.populateModelNodeFor(element, resolvedLibrary);
+    super.visitExtensionElement(element);
+  }
+
+  @override
+  void visitFieldElement(FieldElement element) {
+    packageGraph.populateModelNodeFor(element, resolvedLibrary);
+  }
+
+  @override
+  void visitFieldFormalParameterElement(FieldFormalParameterElement element) {
+    packageGraph.populateModelNodeFor(element, resolvedLibrary);
+  }
+
+  @override
+  void visitFunctionElement(FunctionElement element) {
+    packageGraph.populateModelNodeFor(element, resolvedLibrary);
+  }
+
+  @override
+  void visitLibraryElement(LibraryElement element) {
+    packageGraph.populateModelNodeFor(element, resolvedLibrary);
+    super.visitLibraryElement(element);
+  }
+
+  @override
+  void visitMixinElement(MixinElement element) {
+    packageGraph.populateModelNodeFor(element, resolvedLibrary);
+    super.visitMixinElement(element);
+  }
+
+  @override
+  void visitMultiplyDefinedElement(MultiplyDefinedElement element) {
+    packageGraph.populateModelNodeFor(element, resolvedLibrary);
+    super.visitMultiplyDefinedElement(element);
+  }
+
+  @override
+  void visitMethodElement(MethodElement element) {
+    packageGraph.populateModelNodeFor(element, resolvedLibrary);
   }
 
   @override
   void visitParameterElement(ParameterElement element) {
     // [ParameterElement]s without names do not provide sufficiently distinct
     // hashes / comparison, so just skip them all. (dart-lang/sdk#30146)
+  }
+
+  @override
+  void visitPrefixElement(PrefixElement element) {
+    packageGraph.populateModelNodeFor(element, resolvedLibrary);
+  }
+
+  @override
+  void visitPropertyAccessorElement(PropertyAccessorElement element) {
+    packageGraph.populateModelNodeFor(element, resolvedLibrary);
+  }
+
+  @override
+  void visitSuperFormalParameterElement(SuperFormalParameterElement element) {
+    packageGraph.populateModelNodeFor(element, resolvedLibrary);
+  }
+
+  @override
+  void visitTopLevelVariableElement(TopLevelVariableElement element) {
+    packageGraph.populateModelNodeFor(element, resolvedLibrary);
+  }
+
+  @override
+  void visitTypeAliasElement(TypeAliasElement element) {
+    packageGraph.populateModelNodeFor(element, resolvedLibrary);
+  }
+
+  @override
+  void visitTypeParameterElement(TypeParameterElement element) {
+    packageGraph.populateModelNodeFor(element, resolvedLibrary);
   }
 }
 
@@ -89,7 +167,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     var element = resolvedLibrary.element;
 
     _HashableChildLibraryElementVisitor(resolvedLibrary, packageGraph)
-        .visitElement(element);
+        .visitLibraryElement(element);
 
     var exportedAndLocalElements = {
       // Initialize the list of elements defined in this library and
@@ -97,7 +175,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
       ...element.exportNamespace.definedNames.values,
       // TODO(jcollins-g): Consider switch to [_libraryElement.topLevelElements].
       ..._getDefinedElements(element.definingCompilationUnit),
-      ...element.parts2
+      ...element.parts
           .map((e) => e.uri)
           .whereType<DirectiveUriWithUnit>()
           .map((part) => part.unit)
@@ -118,10 +196,10 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
       [
         ...compilationUnit.accessors,
         ...compilationUnit.classes,
-        ...compilationUnit.enums2,
+        ...compilationUnit.enums,
         ...compilationUnit.extensions,
         ...compilationUnit.functions,
-        ...compilationUnit.mixins2,
+        ...compilationUnit.mixins,
         ...compilationUnit.topLevelVariables,
         ...compilationUnit.typeAliases,
       ];
@@ -235,9 +313,9 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
       .replaceAll(':', '-')
       .replaceAll('/', '_');
 
-  Set<String?>? _canonicalFor;
+  Set<String>? _canonicalFor;
 
-  Set<String?> get canonicalFor {
+  Set<String> get canonicalFor {
     if (_canonicalFor == null) {
       // TODO(jcollins-g): restructure to avoid using side effects.
       buildDocumentationAddition(documentationComment);

@@ -197,7 +197,7 @@ abstract class ModelElement extends Canonicalization
           var index = constantIndex.toIntValue()!;
           newModelElement =
               EnumField.forConstant(index, e, library, packageGraph, getter);
-        } else if (e.enclosingElement3 is ExtensionElement) {
+        } else if (e.enclosingElement is ExtensionElement) {
           newModelElement = Field(e, library, packageGraph,
               getter as ContainerAccessor?, setter as ContainerAccessor?);
         } else {
@@ -339,8 +339,8 @@ abstract class ModelElement extends Canonicalization
     if (e is FunctionElement) {
       return ModelFunction(e, library, packageGraph);
     } else if (e is GenericFunctionTypeElement) {
-      assert(e.enclosingElement3 is TypeAliasElement);
-      assert(e.enclosingElement3!.name != '');
+      assert(e.enclosingElement is TypeAliasElement);
+      assert(e.enclosingElement!.name != '');
       return ModelFunctionTypedef(e, library, packageGraph);
     }
     if (e is TypeAliasElement) {
@@ -373,13 +373,13 @@ abstract class ModelElement extends Canonicalization
     }
     if (e is PropertyAccessorElement) {
       // Accessors can be part of a [Container], or a part of a [Library].
-      if (e.enclosingElement3 is ExtensionElement ||
-          e.enclosingElement3 is InterfaceElement ||
+      if (e.enclosingElement is ExtensionElement ||
+          e.enclosingElement is InterfaceElement ||
           e is MultiplyInheritedExecutableElement) {
         if (enclosingContainer == null) {
           return ContainerAccessor(e, library, packageGraph);
         } else {
-          assert(e.enclosingElement3 is! ExtensionElement);
+          assert(e.enclosingElement is! ExtensionElement);
           return ContainerAccessor.inherited(
               e, library, packageGraph, enclosingContainer,
               originalMember: originalMember as ExecutableMember?);
@@ -446,6 +446,8 @@ abstract class ModelElement extends Canonicalization
     }
     return utils.hasPublicName(element) && !hasNodoc;
   }();
+
+  Warnable? get enclosingElement;
 
   @override
   late final DartdocOptionContext config =
@@ -554,10 +556,10 @@ abstract class ModelElement extends Canonicalization
     // Since we're looking for a library, find the [Element] immediately
     // contained by a [CompilationUnitElement] in the tree.
     var topLevelElement = element;
-    while (topLevelElement.enclosingElement3 is! LibraryElement &&
-        topLevelElement.enclosingElement3 is! CompilationUnitElement &&
-        topLevelElement.enclosingElement3 != null) {
-      topLevelElement = topLevelElement.enclosingElement3!;
+    while (topLevelElement.enclosingElement is! LibraryElement &&
+        topLevelElement.enclosingElement is! CompilationUnitElement &&
+        topLevelElement.enclosingElement != null) {
+      topLevelElement = topLevelElement.enclosingElement!;
     }
 
     final candidateLibraries = thisAndExported

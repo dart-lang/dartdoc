@@ -4,7 +4,6 @@
 
 import 'package:dartdoc/src/model/feature.dart';
 import 'package:dartdoc/src/model/model.dart';
-import 'package:meta/meta.dart';
 
 /// A [ModelElement] that is a [Container] member.
 mixin ContainerMember on ModelElement implements EnclosedElement {
@@ -22,7 +21,7 @@ mixin ContainerMember on ModelElement implements EnclosedElement {
   Container get enclosingElement;
 
   late final Container definingEnclosingContainer =
-      modelBuilder.fromElement(element.enclosingElement3!) as Container;
+      modelBuilder.fromElement(element.enclosingElement!) as Container;
 
   @override
   Set<Feature> get features => {
@@ -30,43 +29,36 @@ mixin ContainerMember on ModelElement implements EnclosedElement {
         if (isExtended) Feature.extended,
       };
 
-  bool _canonicalEnclosingContainerIsSet = false;
-  Container? _canonicalEnclosingContainer;
-
-  Container? get canonicalEnclosingContainer {
-    if (!_canonicalEnclosingContainerIsSet) {
-      _canonicalEnclosingContainer = computeCanonicalEnclosingContainer();
-      _canonicalEnclosingContainerIsSet = true;
-      assert(_canonicalEnclosingContainer == null ||
-          _canonicalEnclosingContainer!.isDocumented);
-    }
-    return _canonicalEnclosingContainer;
-  }
+  late final Container? canonicalEnclosingContainer = () {
+    final canonicalEnclosingContainer = computeCanonicalEnclosingContainer();
+    assert(canonicalEnclosingContainer == null ||
+        canonicalEnclosingContainer.isDocumented);
+    return canonicalEnclosingContainer;
+  }();
 
   Container? computeCanonicalEnclosingContainer() {
-    // TODO(jcollins-g): move Extension specific code to [Extendable]
-    if (enclosingElement is Extension && enclosingElement.isDocumented) {
-      return packageGraph.findCanonicalModelElementFor(enclosingElement.element)
+    final enclosingElement = this.enclosingElement;
+    if (enclosingElement is! Extension) {
+      return packageGraph.findCanonicalModelElementFor(element.enclosingElement)
           as Container?;
     }
-    if (enclosingElement is! Extension) {
-      return packageGraph.findCanonicalModelElementFor(
-          element.enclosingElement3) as Container?;
+    // TODO(jcollins-g): move Extension specific code to [Extendable]
+    if (enclosingElement.isDocumented) {
+      return packageGraph.findCanonicalModelElementFor(enclosingElement.element)
+          as Container?;
     }
     return null;
   }
 
   @override
-  @nonVirtual
   // TODO(jcollins-g): dart-lang/dartdoc#2693.
   Iterable<Container> get referenceParents =>
-      // If you don't want the ambiguity of where your comment
-      // references are resolved wrt documentation inheritance,
-      // that has to be resolved in the source by not inheriting
-      // documentation.
+      // If you don't want the ambiguity of where your comment references are
+      // resolved with respect to documentation inheritance, that has to be
+      // resolved in the source by not inheriting documentation.
       [
         enclosingElement,
-        documentationFrom.first.enclosingElement as Container,
+        (documentationFrom.first as ContainerMember).enclosingElement,
       ];
 
   @override

@@ -1097,29 +1097,6 @@ class _Renderer_Category extends RendererBase<Category> {
                         parent: r, getters: _invisibleGetters['Element']!);
                   },
                 ),
-                'enclosingElement': Property(
-                  getValue: (CT_ c) => c.enclosingElement,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_ModelElement.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as ModelElement,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => c.enclosingElement == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_ModelElement(
-                        c.enclosingElement!, ast, r.template, sink,
-                        parent: r);
-                  },
-                ),
                 'enclosingName': Property(
                   getValue: (CT_ c) => c.enclosingName,
                   renderVariable:
@@ -6649,7 +6626,7 @@ class _Renderer_Inheritable extends RendererBase<Inheritable> {
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.inheritance.map((e) => _render_InheritingContainer(
-                        e!, ast, r.template, sink,
+                        e, ast, r.template, sink,
                         parent: r));
                   },
                 ),
@@ -7580,7 +7557,7 @@ class _Renderer_Library extends RendererBase<Library> {
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.canonicalFor.map((e) =>
-                        _render_String(e!, ast, r.template, sink, parent: r));
+                        _render_String(e, ast, r.template, sink, parent: r));
                   },
                 ),
                 'characterLocation': Property(
@@ -9857,6 +9834,28 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                         parent: r);
                   },
                 ),
+                'enclosingElement': Property(
+                  getValue: (CT_ c) => c.enclosingElement,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        _Renderer_Warnable.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(
+                        self.getValue(c) as Warnable,
+                        nextProperty,
+                        [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => c.enclosingElement == null,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    renderSimple(c.enclosingElement, ast, r.template, sink,
+                        parent: r, getters: _invisibleGetters['Warnable']!);
+                  },
+                ),
                 'exportedInLibraries': Property(
                   getValue: (CT_ c) => c.exportedInLibraries,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -11477,29 +11476,6 @@ class _Renderer_Package extends RendererBase<Package> {
                       List<MustachioNode> ast, StringSink sink) {
                     renderSimple(c.element, ast, r.template, sink,
                         parent: r, getters: _invisibleGetters['Element']!);
-                  },
-                ),
-                'enclosingElement': Property(
-                  getValue: (CT_ c) => c.enclosingElement,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_ModelElement.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as ModelElement,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => c.enclosingElement == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_ModelElement(
-                        c.enclosingElement!, ast, r.template, sink,
-                        parent: r);
                   },
                 ),
                 'enclosingName': Property(
@@ -15648,28 +15624,6 @@ class _Renderer_Warnable extends RendererBase<Warnable> {
                         parent: r, getters: _invisibleGetters['Element']!);
                   },
                 ),
-                'enclosingElement': Property(
-                  getValue: (CT_ c) => c.enclosingElement,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_Warnable.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as Warnable,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => c.enclosingElement == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.enclosingElement, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['Warnable']!);
-                  },
-                ),
                 'package': Property(
                   getValue: (CT_ c) => c.package,
                   renderVariable:
@@ -15747,12 +15701,15 @@ const _invisibleGetters = {
   'CompilationUnitElement': {
     'accessors',
     'classes',
+    'enclosingElement',
     'enclosingElement3',
+    'enums',
     'enums2',
     'extensions',
     'functions',
     'hashCode',
     'lineInfo',
+    'mixins',
     'mixins2',
     'runtimeType',
     'session',
@@ -15769,6 +15726,7 @@ const _invisibleGetters = {
     'augmentation',
     'declaration',
     'displayName',
+    'enclosingElement',
     'enclosingElement3',
     'hashCode',
     'isConst',
@@ -15785,6 +15743,7 @@ const _invisibleGetters = {
   'Context': {'current', 'hashCode', 'runtimeType', 'separator', 'style'},
   'DartType': {
     'alias',
+    'element',
     'element2',
     'hashCode',
     'isBottom',
@@ -15834,6 +15793,8 @@ const _invisibleGetters = {
     'inputDir',
     'linkToRemote',
     'linkToUrl',
+    'maxFileCount',
+    'maxTotalSize',
     'nodoc',
     'optionSet',
     'output',
@@ -15869,10 +15830,12 @@ const _invisibleGetters = {
     'sourceFileName'
   },
   'Element': {
+    'children',
     'context',
     'declaration',
     'displayName',
     'documentationComment',
+    'enclosingElement',
     'enclosingElement3',
     'hasAlwaysThrows',
     'hasDeprecated',
@@ -15944,10 +15907,12 @@ const _invisibleGetters = {
   },
   'EnumElement': {'augmented', 'hashCode', 'runtimeType'},
   'ExecutableMember': {
+    'children',
     'context',
     'declaration',
     'displayName',
     'documentationComment',
+    'enclosingElement',
     'enclosingElement3',
     'hasAlwaysThrows',
     'hasDeprecated',
@@ -16015,6 +15980,7 @@ const _invisibleGetters = {
   },
   'ExtensionElement': {
     'accessors',
+    'enclosingElement',
     'enclosingElement3',
     'extendedType',
     'fields',
@@ -16057,6 +16023,7 @@ const _invisibleGetters = {
     'runtimeType'
   },
   'FunctionType': {
+    'element',
     'element2',
     'hashCode',
     'namedParameterTypes',
@@ -16162,6 +16129,7 @@ const _invisibleGetters = {
     'isInSdk',
     'loadLibraryFunction',
     'name',
+    'parts',
     'parts2',
     'publicNamespace',
     'runtimeType',
@@ -16189,10 +16157,12 @@ const _invisibleGetters = {
     'values'
   },
   'Member': {
+    'children',
     'context',
     'declaration',
     'displayName',
     'documentationComment',
+    'enclosingElement',
     'enclosingElement3',
     'hasAlwaysThrows',
     'hasDeprecated',
@@ -16338,11 +16308,13 @@ const _invisibleGetters = {
     'typeParameters'
   },
   'ParameterMember': {
+    'children',
     'context',
     'declaration',
     'defaultValueCode',
     'displayName',
     'documentationComment',
+    'enclosingElement',
     'enclosingElement3',
     'hasAlwaysThrows',
     'hasDefaultValue',
@@ -16405,6 +16377,7 @@ const _invisibleGetters = {
     'correspondingGetter',
     'correspondingSetter',
     'declaration',
+    'enclosingElement',
     'enclosingElement3',
     'hashCode',
     'isGetter',
@@ -16456,6 +16429,7 @@ const _invisibleGetters = {
   'TypeAliasElement': {
     'aliasedElement',
     'aliasedType',
+    'enclosingElement',
     'enclosingElement3',
     'hashCode',
     'name',
@@ -16471,7 +16445,7 @@ const _invisibleGetters = {
     'runtimeType'
   },
   'TypeSystem': {'hashCode', 'runtimeType'},
-  'Warnable': {'element', 'enclosingElement', 'package'},
+  'Warnable': {'element', 'package'},
   'int': {
     'bitLength',
     'hashCode',

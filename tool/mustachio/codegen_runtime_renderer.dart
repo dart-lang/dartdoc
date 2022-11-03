@@ -132,21 +132,21 @@ import '${p.basename(_sourceUri.path)}';
     spec.contextType.accessors.forEach(_addPropertyToProcess);
 
     for (var mixin in spec.contextElement.mixins) {
-      _addTypeToProcess(mixin.element2,
+      _addTypeToProcess(mixin.element,
           isFullRenderer: true, includeRenderFunction: false);
     }
     var superclass = spec.contextElement.supertype;
 
     while (superclass != null) {
       // Any type specified with a renderer spec (`@Renderer`) is full.
-      _addTypeToProcess(superclass.element2,
+      _addTypeToProcess(superclass.element,
           isFullRenderer: true, includeRenderFunction: false);
-      for (var mixin in superclass.element2.mixins) {
-        _addTypeToProcess(mixin.element2,
+      for (var mixin in superclass.element.mixins) {
+        _addTypeToProcess(mixin.element,
             isFullRenderer: true, includeRenderFunction: false);
       }
       superclass.accessors.forEach(_addPropertyToProcess);
-      superclass = superclass.element2.supertype;
+      superclass = superclass.element.supertype;
     }
   }
 
@@ -167,8 +167,7 @@ import '${p.basename(_sourceUri.path)}';
     var type = _relevantTypeFrom(property.type.returnType);
     if (type == null) return;
 
-    var types =
-        _typesToProcess.where((rs) => rs._contextClass == type.element2);
+    var types = _typesToProcess.where((rs) => rs._contextClass == type.element);
     if (types.isNotEmpty) {
       assert(types.length == 1);
       if (types.first.includeRenderFunction) {
@@ -180,10 +179,10 @@ import '${p.basename(_sourceUri.path)}';
 
     _addTypeHierarchyToProcess(
       type,
-      isFullRenderer: _isVisibleToMustache(type.element2),
+      isFullRenderer: _isVisibleToMustache(type.element),
       // If [type.element] is not visible to mustache, then [renderSimple] will
       // be used, not [type.element]'s render function.
-      includeRenderFunction: _isVisibleToMustache(type.element2),
+      includeRenderFunction: _isVisibleToMustache(type.element),
     );
   }
 
@@ -221,7 +220,7 @@ import '${p.basename(_sourceUri.path)}';
         return _relevantTypeFrom(bound);
       }
     } else {
-      // We can do nothing with function types, etc.
+      // We can do nothing with function types, record types, etc.
       return null;
     }
   }
@@ -239,7 +238,7 @@ import '${p.basename(_sourceUri.path)}';
   }) {
     while (type != null) {
       _addTypeToProcess(
-        type.element2,
+        type.element,
         isFullRenderer: isFullRenderer,
         includeRenderFunction: includeRenderFunction,
       );
@@ -250,18 +249,18 @@ import '${p.basename(_sourceUri.path)}';
           _addPropertyToProcess(accessor);
         }
       }
-      for (var mixin in type.element2.mixins) {
+      for (var mixin in type.element.mixins) {
         _addTypeHierarchyToProcess(
           mixin,
           isFullRenderer: isFullRenderer,
           includeRenderFunction: false,
         );
       }
-      final typeElement = type.element2;
+      final typeElement = type.element;
       if (typeElement is MixinElement) {
         for (var constraint in typeElement.superclassConstraints) {
           _addTypeToProcess(
-            constraint.element2,
+            constraint.element,
             isFullRenderer: isFullRenderer,
             includeRenderFunction: false,
           );
@@ -330,7 +329,7 @@ import '${p.basename(_sourceUri.path)}';
     if (supertype == null) {
       return false;
     }
-    return _isVisibleToMustache(supertype.element2);
+    return _isVisibleToMustache(supertype.element);
   }
 
   /// Builds render functions and the renderer class for [renderer].
@@ -427,7 +426,7 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
         _propertyMapCache.putIfAbsent($_contextTypeVariable, () => {''');
     var supertype = contextClass.supertype;
     if (supertype != null) {
-      var superclassRendererName = _typeToRendererClassName[supertype.element2];
+      var superclassRendererName = _typeToRendererClassName[supertype.element];
       if (superclassRendererName != null) {
         var superMapName = '$superclassRendererName.propertyMap';
         var generics = asGenerics([
@@ -445,7 +444,7 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
     // E. Similarly, `{...a, ...b, ...c}` will feature elements from `c` which
     // override `b` and `a`.
     for (var mixin in contextClass.mixins) {
-      var mixinRendererName = _typeToRendererClassName[mixin.element2];
+      var mixinRendererName = _typeToRendererClassName[mixin.element];
       if (mixinRendererName != null) {
         var mixinMapName = '$mixinRendererName.propertyMap';
         var generics = asGenerics([
@@ -492,8 +491,8 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
     var getterTypeString = getterType.getDisplayString(withNullability: false);
     // Only add a `getProperties` function, which returns the property map for
     // [getterType], if [getterType] is a renderable type.
-    if (_typeToRendererClassName.containsKey(getterType.element2)) {
-      var rendererClassName = _typeToRendererClassName[getterType.element2];
+    if (_typeToRendererClassName.containsKey(getterType.element)) {
+      var rendererClassName = _typeToRendererClassName[getterType.element];
       _buffer.writeln('''
 renderVariable:
     ($_contextTypeVariable c, Property<$_contextTypeVariable> self, List<String> remainingNames) {
@@ -540,7 +539,7 @@ renderVariable:
             var typeName = innerTypeElement!.name!;
             if (innerType is InterfaceType) {
               _invisibleGetters.putIfAbsent(
-                  typeName, () => innerType.element2.allAccessorNames);
+                  typeName, () => innerType.element.allAccessorNames);
             }
             renderCall = 'renderSimple(e, ast, r.template, sink, parent: r, '
                 "getters: _invisibleGetters['$typeName']!)";
@@ -565,12 +564,12 @@ renderIterable:
       // TODO(srawlins): Find a solution for this. We can track all of the
       // concrete types substituted for `E` for example.
       if (getterName is! TypeParameterType) {
-        var renderFunctionName = _typeToRenderFunctionName[getterType.element2];
+        var renderFunctionName = _typeToRenderFunctionName[getterType.element];
         String renderCall;
         if (renderFunctionName == null) {
-          var typeName = getterType.element2.name;
+          var typeName = getterType.element.name;
           _invisibleGetters.putIfAbsent(
-              typeName, () => getterType.element2.allAccessorNames);
+              typeName, () => getterType.element.allAccessorNames);
           renderCall =
               'renderSimple(c.$getterName, ast, r.template, sink, parent: r, '
               "getters: _invisibleGetters['$typeName']!)";
@@ -706,7 +705,7 @@ extension on InterfaceElement {
   /// Returns a set of the names of all accessors on this [ClassElement], including supertypes.
   Set<String> get allAccessorNames {
     return {
-      ...?supertype?.element2.allAccessorNames,
+      ...?supertype?.element.allAccessorNames,
       ...accessors
           .where((e) => e.isPublic && !e.isStatic && !e.isSetter)
           .map((e) => e.name),

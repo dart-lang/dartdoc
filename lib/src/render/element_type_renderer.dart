@@ -4,6 +4,7 @@
 
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/render/parameter_renderer.dart';
+import 'package:dartdoc/src/render/record_type_field_renderer.dart';
 
 abstract class ElementTypeRenderer<T extends ElementType> {
   const ElementTypeRenderer();
@@ -113,6 +114,28 @@ class ParameterizedElementTypeRendererHtml
         elementType.modelElement.name,
         elementType.typeArguments,
       );
+}
+
+class RecordElementTypeRendererHtml
+    extends ElementTypeRendererHtml<RecordElementType> {
+  const RecordElementTypeRendererHtml();
+
+  @override
+  String renderLinkedName(RecordElementType elementType) {
+    var buffer = StringBuffer()
+      ..write(elementType.nameWithGenerics)
+      ..write('(')
+      ..write(const RecordTypeFieldListHtmlRenderer()
+          .renderLinkedFields(elementType)
+          .trim())
+      ..write(')');
+    return wrapNullabilityParens(elementType, buffer.toString());
+  }
+
+  @override
+  String renderNameWithGenerics(RecordElementType elementType) {
+    return '${elementType.name}${elementType.nullabilitySuffix}';
+  }
 }
 
 class AliasedFunctionTypeElementTypeRendererHtml
@@ -275,6 +298,26 @@ class ParameterizedElementTypeRendererMd
         elementType.modelElement.name,
         elementType.typeArguments,
       );
+}
+
+class RecordElementTypeRendererMd
+    extends ElementTypeRendererMd<RecordElementType> {
+  const RecordElementTypeRendererMd();
+
+  @override
+  String renderLinkedName(RecordElementType elementType) {
+    var buffer = StringBuffer()
+      ..write('(')
+      ..write(
+          const RecordTypeFieldListMdRenderer().renderLinkedFields(elementType))
+      ..write(')');
+    return wrapNullabilityParens(elementType, buffer.toString());
+  }
+
+  @override
+  String renderNameWithGenerics(RecordElementType elementType) {
+    return '${elementType.name}${elementType.nullabilitySuffix}';
+  }
 }
 
 class AliasedElementTypeRendererMd

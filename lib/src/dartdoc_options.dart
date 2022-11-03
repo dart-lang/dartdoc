@@ -1338,6 +1338,11 @@ class DartdocOptionContext extends DartdocOptionContextBase
   // TODO(jdkoren): temporary while we confirm href base behavior doesn't break
   // important clients
   bool get useBaseHref => optionSet['useBaseHref'].valueAt(context);
+
+  int get maxFileCount =>
+      int.parse(optionSet['maxFileCount'].valueAt(context) ?? '0');
+  int get maxTotalSize =>
+      int.parse(optionSet['maxTotalSize'].valueAt(context) ?? '0');
 }
 
 /// Instantiate dartdoc's configuration file and options parser with the
@@ -1592,6 +1597,14 @@ List<DartdocOption> createDartdocOptions(
         help: 'The format of documentation to generate: `md` for markdown, '
             '`html` for html.',
         hide: false),
+    DartdocOptionArgOnly<String>('maxFileCount', '0', resourceProvider,
+        help:
+            'The maximum number of files dartdoc is allowed to create (0 for no limit).',
+        hide: true),
+    DartdocOptionArgOnly<String>('maxTotalSize', '0', resourceProvider,
+        help:
+            'The maximum total size (in bytes) dartdoc is allowed to write (0 for no limit).',
+        hide: true),
     // TODO(jcollins-g): refactor so there is a single static "create" for
     // each DartdocOptionContext that traverses the inheritance tree itself.
     ...createExperimentOptions(resourceProvider),

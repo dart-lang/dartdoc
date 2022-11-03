@@ -33,7 +33,7 @@ mixin Inheritable on ContainerMember {
   @override
   Set<Feature> get features => {
         ...super.features,
-        if (isOverride!) Feature.overrideFeature,
+        if (isOverride) Feature.overrideFeature,
         if (isInherited) Feature.inherited,
         if (isCovariant) Feature.covariant,
       };
@@ -69,7 +69,7 @@ mixin Inheritable on ContainerMember {
       Container? found;
       for (var c in inheritance.reversed) {
         // Filter out mixins.
-        if (c!.containsElement(searchElement)) {
+        if (c.containsElement(searchElement)) {
           if ((packageGraph.inheritThrough.contains(previous) &&
                   c != definingEnclosingContainer) ||
               (packageGraph.inheritThrough.contains(c) &&
@@ -103,22 +103,22 @@ mixin Inheritable on ContainerMember {
       if (found != null) {
         return found;
       }
-    } else if (!isInherited && definingEnclosingContainer is! Extension) {
+    } else if (definingEnclosingContainer is! Extension) {
       // TODO(jcollins-g): factor out extension logic into [Extendable].
-      return packageGraph.findCanonicalModelElementFor(
-          element.enclosingElement3) as Container?;
+      return packageGraph.findCanonicalModelElementFor(element.enclosingElement)
+          as Container?;
     }
     return super.computeCanonicalEnclosingContainer();
   }
 
-  List<InheritingContainer?> get inheritance {
+  List<InheritingContainer> get inheritance {
     var inheritance = [
       ...(enclosingElement as InheritingContainer).inheritanceChain,
     ];
     var object = packageGraph.specialClasses[SpecialClass.object];
-    if (!inheritance.contains(definingEnclosingContainer)) {
-      assert(definingEnclosingContainer == object);
-    }
+    assert(definingEnclosingContainer == object ||
+        inheritance.contains(definingEnclosingContainer));
+
     // Unless the code explicitly extends dart-core's Object, we won't get
     // an entry here.  So add it.
     if (inheritance.last != object && object != null) {
@@ -130,44 +130,49 @@ mixin Inheritable on ContainerMember {
 
   Inheritable? get overriddenElement;
 
-  bool? _isOverride;
-
   /// True if this [Inheritable] is overriding a superclass.
-  bool? get isOverride {
-    if (_isOverride == null) {
-      // The canonical version of the enclosing element -- not canonicalEnclosingElement,
-      // as that is the element enclosing the canonical version of this element,
-      // two different things.  Defaults to the enclosing element.
-      //
-      // We use canonical elements here where possible to deal with reexports
-      // as seen in Flutter.
-      if (enclosingElement is Extension) {
-        _isOverride = false;
-        return _isOverride;
-      }
-      var enclosingCanonical =
-          enclosingElement.canonicalModelElement as InheritingContainer?;
-      // The container in which this element was defined, canonical if available.
-      Container? definingCanonical =
-          definingEnclosingContainer.canonicalModelElement as Container? ??
-              definingEnclosingContainer;
-      // The canonical version of the element we're overriding, if available.
-      var overriddenCanonical =
-          overriddenElement?.canonicalModelElement ?? overriddenElement;
+  late final bool isOverride = () {
+    // The canonical version of the enclosing element -- not
+    // [canonicalEnclosingElement], as that is the element enclosing the
+    // canonical version of this element; two different things.  Defaults to the
+    // enclosing element.
+    //
+    // We use canonical elements here where possible to deal with reexports
+    // as seen in Flutter.
+    if (enclosingElement is Extension) {
+      return false;
+    }
 
+    final overriddenElement = this.overriddenElement;
+    if (overriddenElement == null) {
       // We have to have an overridden element for it to be possible for this
       // element to be an override.
-      _isOverride = overriddenElement != null &&
-          // The defining class and the enclosing class for this element
-          // must be the same (element is defined here).
-          enclosingCanonical == definingCanonical &&
-          // If the overridden element isn't public, we shouldn't be an
-          // override in most cases.  Approximation until #1623 is fixed.
-          overriddenCanonical!.isPublic;
-      assert(!(_isOverride! && isInherited));
+      return false;
     }
-    return _isOverride;
-  }
+
+    final enclosingCanonical =
+        enclosingElement.canonicalModelElement as InheritingContainer?;
+    // The container in which this element was defined, canonical if available.
+    final definingCanonical =
+        definingEnclosingContainer.canonicalModelElement as Container? ??
+            definingEnclosingContainer;
+    if (enclosingCanonical != definingCanonical) {
+      // The defining class and the enclosing class for this element must be the
+      // same (element is defined here).
+      assert(isInherited);
+      return false;
+    }
+
+    // The canonical version of the element we're overriding, if available.
+    final overriddenCanonical =
+        overriddenElement.canonicalModelElement ?? overriddenElement;
+
+    // If the overridden element isn't public, we shouldn't be an override in
+    // most cases.  Approximation until #1623 is fixed.
+    final isOverride = overriddenCanonical.isPublic;
+    assert(!isOverride || !isInherited);
+    return isOverride;
+  }();
 
   @override
   late final int overriddenDepth = () {
