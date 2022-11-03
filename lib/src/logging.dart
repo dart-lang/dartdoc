@@ -23,23 +23,23 @@ const Level progressLevel = Level('PROGRESS', 501);
 /// Has a value of `1201` – one more than [Level.SHOUT].
 const Level printLevel = Level('PRINT', 1201);
 
-void logWarning(String? message) {
+void logWarning(String message) {
   _logger.log(Level.WARNING, message);
 }
 
-void logInfo(String? message) {
+void logInfo(String message) {
   _logger.log(Level.INFO, message);
 }
 
-void logDebug(String? message) {
+void logDebug(String message) {
   _logger.log(Level.FINE, message);
 }
 
-void logProgress(String? message) {
+void logProgress(String message) {
   _logger.log(progressLevel, message);
 }
 
-void logPrint(String? message) {
+void logPrint(String message) {
   _logger.log(printLevel, message);
 }
 
@@ -57,6 +57,7 @@ abstract class Jsonable {
 void startLogging(LoggingContext config) {
   // By default, get all log output at `progressLevel` or greater.
   // This allows us to capture progress events and print `...`.
+  // Change this to `Level.FINE` for debug logging.
   Logger.root.level = progressLevel;
   if (config.json) {
     Logger.root.onRecord.listen((record) {

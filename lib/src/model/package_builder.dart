@@ -162,9 +162,7 @@ class PubPackageBuilder implements PackageBuilder {
   /// Parse a single library at [filePath] using the current analysis driver.
   /// If [filePath] is not a library, returns null.
   Future<DartDocResolvedLibrary?> processLibrary(String filePath) async {
-    logDebug('parsing $filePath...');
-    // TODO(scheglov) Do we need this? Maybe the argument is already valid?
-    filePath = pathContext.normalize(pathContext.absolute(filePath));
+    logDebug('Resolving $filePath...');
 
     var analysisContext = _contextCollection.contextFor(config.inputDir);
     // Allow dart source files with inappropriate suffixes (#1897).
