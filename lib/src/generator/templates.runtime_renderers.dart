@@ -9834,28 +9834,6 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                         parent: r);
                   },
                 ),
-                'enclosingElement': Property(
-                  getValue: (CT_ c) => c.enclosingElement,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_Warnable.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as Warnable,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => c.enclosingElement == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.enclosingElement, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['Warnable']!);
-                  },
-                ),
                 'exportedInLibraries': Property(
                   getValue: (CT_ c) => c.exportedInLibraries,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -16445,7 +16423,6 @@ const _invisibleGetters = {
     'runtimeType'
   },
   'TypeSystem': {'hashCode', 'runtimeType'},
-  'Warnable': {'element', 'package'},
   'int': {
     'bitLength',
     'hashCode',

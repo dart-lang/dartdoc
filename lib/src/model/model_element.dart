@@ -398,7 +398,6 @@ abstract class ModelElement extends Canonicalization
     throw UnimplementedError('Unknown type ${e.runtimeType}');
   }
 
-  @override
   ModelElement? get enclosingElement;
 
   // Stub for mustache, which would otherwise search enclosing elements to find
@@ -446,8 +445,6 @@ abstract class ModelElement extends Canonicalization
     }
     return utils.hasPublicName(element) && !hasNodoc;
   }();
-
-  Warnable? get enclosingElement;
 
   @override
   late final DartdocOptionContext config =
