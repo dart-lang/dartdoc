@@ -1,7 +1,29 @@
-## 6.1.3-dev
+## 6.1.3
 
+* Deprecate `lib/src/model/model.dart` as public API. (#3208)
+* Remove 300 font weights, for improvements in dark mode. (#3213)
+* Do not display a constant implementation value for enums with a default
+  constructor. (#3216)
+* Simplify `Accessor.overriddenElement`; in this change,
+  `InheritingContainer.inheritenceChain` is now a `List<InheritingContainer>`
+  and `InheritingContainer.expandInheritenceChain` is now an
+  `Iterable<InheritingContainer>`. #3220
+* Make `ModelElement.element` a getter; subclasses provide the field. #3217
+* Switch all references from 'pub.dartlang.org' to 'pub.dev'. #3229
+* Support displaying record types. #3233
+* Make `ContainerMember.canonicalEnclosingContainer` late final. #3234
+* Move `Warnable.enclosingElement` to ModelElement. #3236
+* Make `Accessor.documentationComment` late final non-nullable. #3240
+* Make `Inheritable.isOverride` late final non-nullable. #3235
+* Make `Inheritable.inheritance` a `List<InheritingContainer>`. #3235
+* Deprecate `ModelElement.isExecutable`, `ModelElement.isLocalElement`,
+  `ModelElement.isPropertyAccessor`, `ModelElement.isPropertyInducer`,
+  `ModelElement.isAsynchronous`, `ModelElement.isStatic`. #3218
+* Make `ModelElement.annotations` a List, `ModelElement.filePath` non-nullable,
+  `ModelElement.enclosingElement` a `ModelElement?`. #3218
 * Bump analyzer to 5.2.0.
-* `--max-file-count` and `--max-total-size` command-line arguments to limit file system resource use.
+* `--max-file-count` and `--max-total-size` command-line arguments to limit file
+  system resource use.
 
 ## 6.1.2
 
