@@ -303,28 +303,10 @@ class MarkdownDocument extends md.Document {
     );
   }
 
-  @Deprecated("MarkdownDocument's unnamed constructor is deprecated. Use "
-      '[MarkdownDocument.withElementLinkResolver]')
-  MarkdownDocument({
-    Iterable<md.BlockSyntax>? blockSyntaxes,
-    Iterable<md.InlineSyntax>? inlineSyntaxes,
-    md.ExtensionSet? extensionSet,
-    md.Resolver? linkResolver,
-    md.Resolver? imageLinkResolver,
-  }) : this._(
-          blockSyntaxes: blockSyntaxes,
-          inlineSyntaxes: inlineSyntaxes,
-          extensionSet: extensionSet,
-          linkResolver: linkResolver,
-          imageLinkResolver: imageLinkResolver,
-        );
-
   MarkdownDocument._({
     super.blockSyntaxes,
     super.inlineSyntaxes,
-    super.extensionSet,
     super.linkResolver,
-    super.imageLinkResolver,
   });
 
   /// Parses markdown text, collecting the first [md.Node] or all of them
