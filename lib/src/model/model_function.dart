@@ -12,7 +12,6 @@ class ModelFunction extends ModelFunctionTyped with Categorization {
   ModelFunction(
       FunctionElement super.element, super.library, super.packageGraph);
 
-  @override
   bool get isStatic => element.isStatic;
 
   @override
@@ -21,7 +20,6 @@ class ModelFunction extends ModelFunctionTyped with Categorization {
   @override
   FunctionElement get element => super.element as FunctionElement;
 
-  @override
   bool get isAsynchronous => element.isAsynchronous;
 }
 

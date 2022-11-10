@@ -234,11 +234,6 @@ const maxPriorContext = 20;
 /// generic.
 const maxPostContext = 30;
 
-@Deprecated('Public access to this variable is deprecated')
-final allBeforeFirstNewline = _allBeforeFirstNewline;
-@Deprecated('Public access to this variable is deprecated')
-final allAfterLastNewline = _allAfterLastNewline;
-
 final RegExp _allBeforeFirstNewline = RegExp(r'^.*\n', multiLine: true);
 final RegExp _allAfterLastNewline = RegExp(r'\n.*$', multiLine: true);
 

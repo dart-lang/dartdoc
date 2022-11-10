@@ -19,9 +19,6 @@ import 'package:dartdoc/src/model/model_object_builder.dart';
 import 'package:dartdoc/src/model/nameable.dart';
 import 'package:meta/meta.dart';
 
-@Deprecated('Public access to this class is deprecated')
-typedef ReferenceChildrenLookup = _ReferenceChildrenLookup;
-
 class _ReferenceChildrenLookup {
   final String lookup;
   final List<String> remaining;
@@ -157,11 +154,6 @@ mixin CommentReferable implements Nameable, ModelBuilderInterface {
     return returnValue;
   }
 
-  @Deprecated('Public access to this method is deprecated')
-  // ignore: library_private_types_in_public_api
-  Iterable<_ReferenceChildrenLookup> childLookups(List<String> reference) =>
-      _childLookups(reference);
-
   /// A list of lookups that should be attempted on children based on
   /// [reference].
   ///
@@ -202,10 +194,9 @@ mixin CommentReferable implements Nameable, ModelBuilderInterface {
   // TODO(jcollins-g): Eliminate need for this in markdown_processor.
   Library? get library => null;
 
-  @internal
-
   /// For testing / comparison only, get the comment referable from where this
   /// [ElementType] was defined.  Override where an [Element] is available.
+  @internal
   CommentReferable get definingCommentReferable => this;
 }
 

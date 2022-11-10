@@ -95,7 +95,6 @@ class Method extends ModelElement
         if (isInherited) Feature.inherited,
       };
 
-  @override
   bool get isStatic => element.isStatic;
 
   @override
