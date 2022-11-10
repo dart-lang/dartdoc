@@ -1225,7 +1225,7 @@ Future<void> testDartdocRemote() async {
   expectFileContains(p.join(_dartdocDocsPath, 'index.html'),
       ['<title>dartdoc - Dart API docs</title>']);
   expectFileContains(
-      p.join(_dartdocDocsPath, 'dartdoc', 'ModelElement-class.html'), [object]);
+      p.join(_dartdocDocsPath, 'dartdoc', 'PackageGraph-class.html'), [object]);
 }
 
 @Task('serve docs for a package that requires flutter with remote linking')
