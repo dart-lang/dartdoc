@@ -38,3 +38,11 @@ linter:
     - unnecessary_lambdas
     - unnecessary_parenthesis
     - use_super_parameters
+    - unnecessary_to_list_in_spreads
+    - combinators_ordering
+    # Enable when we go to 2.19.0
+    # - unreachable_from_main
+    # - unnecessary_library_directive
+    # - implicit_call_tearoffs
+    # - collection_methods_unrelated_type
+    # - dangling_library_doc_comments

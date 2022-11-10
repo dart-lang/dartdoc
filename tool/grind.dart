@@ -17,6 +17,9 @@ import 'package:yaml/yaml.dart' as yaml;
 
 import 'subprocess_launcher.dart';
 
+// Grind scripts must use public names, so things look "unreachable."
+// ignore_for_file: unreachable_from_main
+
 void main(List<String> args) => grind(args);
 
 /// Thrown on failure to find something in a file.

@@ -1,4 +1,4 @@
-import 'dart:io' show stderr, exitCode;
+import 'dart:io' show exitCode, stderr;
 
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:args/args.dart';

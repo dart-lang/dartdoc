@@ -4,8 +4,6 @@
 
 // ignore_for_file: non_constant_identifier_names
 
-library dartdoc.model_test;
-
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/source/line_info.dart';
@@ -25,7 +23,7 @@ import 'package:dartdoc/src/warnings.dart';
 import 'package:test/test.dart';
 
 import '../src/utils.dart'
-    show bootBasicPackage, referenceLookup, kTestPackagePublicLibraries;
+    show bootBasicPackage, kTestPackagePublicLibraries, referenceLookup;
 
 final _testPackageGraphMemo = AsyncMemoizer<PackageGraph>();
 Future<PackageGraph> get testPackageGraph async =>
