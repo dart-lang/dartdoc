@@ -1796,35 +1796,14 @@ void _render_ClassTemplateData(ClassTemplateData context,
 
 class _Renderer_ClassTemplateData extends RendererBase<ClassTemplateData> {
   static final Map<Type, Object> _propertyMapCache = {};
-  static Map<String, Property<CT_>> propertyMap<
-          CT_ extends ClassTemplateData>() =>
-      _propertyMapCache.putIfAbsent(
-          CT_,
-          () => {
-                ..._Renderer_InheritingContainerTemplateData.propertyMap<Class,
-                    CT_>(),
-                'clazz': Property(
-                  getValue: (CT_ c) => c.clazz,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_Class.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as Class,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_Class(c.clazz, ast, r.template, sink, parent: r);
-                  },
-                ),
-              }) as Map<String, Property<CT_>>;
+  static Map<String, Property<CT_>>
+      propertyMap<CT_ extends ClassTemplateData>() =>
+          _propertyMapCache.putIfAbsent(
+              CT_,
+              () => {
+                    ..._Renderer_InheritingContainerTemplateData.propertyMap<
+                        Class, CT_>(),
+                  }) as Map<String, Property<CT_>>;
 
   _Renderer_ClassTemplateData(ClassTemplateData context,
       RendererBase<Object>? parent, Template template, StringSink sink)
