@@ -24,7 +24,7 @@ class PackageMetaFailure extends DartdocFailure {
 }
 
 /// For each list in this list, at least one of the given paths must exist
-/// for this to be detected as an SDK.  Update [_writeMockSdkBinFiles] in
+/// for this to be detected as an SDK.  Update `_writeMockSdkBinFiles` in
 /// `test/src/utils.dart` if removing any entries here.
 const List<List<String>> _sdkDirFilePathsPosix = [
   ['bin/dart.bat', 'bin/dart.exe', 'bin/dart'],

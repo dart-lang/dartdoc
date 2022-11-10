@@ -22,6 +22,7 @@ import 'package:args/args.dart';
 import 'package:dartdoc/src/experiment_options.dart';
 import 'package:dartdoc/src/failure.dart';
 import 'package:dartdoc/src/io_utils.dart';
+import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/source_linker.dart';
 import 'package:dartdoc/src/tool_definition.dart';

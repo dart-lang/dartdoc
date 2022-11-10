@@ -309,7 +309,7 @@ class WarningsCollection {
     warningKeyCounts.update(key, (e) => e + 1, ifAbsent: () => 1);
   }
 
-  /// Output formatter for comparing warnings.  [this] is the original.
+  /// Output formatter for comparing warnings. `this` is the original.
   String getPrintableWarningDelta(String title, WarningsCollection current) {
     var printBuffer = StringBuffer();
     var quantityChangedOuts = <String>{};

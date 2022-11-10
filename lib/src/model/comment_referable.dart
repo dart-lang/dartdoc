@@ -127,7 +127,7 @@ mixin CommentReferable implements Nameable, ModelBuilderInterface {
         allowTree: allowTree, filter: filter);
   }
 
-  /// Given a [result] found in an implementation of [lookupViaScope] or
+  /// Given a [result] found in an implementation of [_lookupViaScope] or
   /// [_ReferenceChildrenLookup], recurse through children, skipping over
   /// results that do not match the filter.
   CommentReferable? _recurseChildrenAndFilter(
@@ -166,7 +166,7 @@ mixin CommentReferable implements Nameable, ModelBuilderInterface {
               reference.sublist(index + 1)))
           .toList(growable: false);
 
-  /// Map of [referenceName] to the elements that are a member of [this], but
+  /// Map of [referenceName] to the elements that are a member of `this`, but
   /// not this model element itself.  Can be cached.
   ///
   /// There is no need to duplicate references here that can be found via
@@ -195,7 +195,7 @@ mixin CommentReferable implements Nameable, ModelBuilderInterface {
   Library? get library => null;
 
   /// For testing / comparison only, get the comment referable from where this
-  /// [ElementType] was defined.  Override where an [Element] is available.
+  /// `ElementType` was defined.  Override where an [Element] is available.
   @internal
   CommentReferable get definingCommentReferable => this;
 }
