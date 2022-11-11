@@ -1,3 +1,4 @@
+import 'package:analyzer/dart/element/element.dart';
 import 'package:args/args.dart';
 import 'package:crypto/crypto.dart' as crypto;
 import 'package:dartdoc/src/model/documentable.dart';
@@ -37,6 +38,9 @@ final _htmlInjectRegExp = RegExp(r'<dartdoc-html>([a-f0-9]+)</dartdoc-html>');
 /// entrypoints.
 mixin DocumentationComment
     on Documentable, Warnable, Locatable, SourceCodeMixin {
+  @override
+  Element get element;
+
   List<DocumentationComment>? _documentationFrom;
 
   /// The [ModelElement](s) from which we will get documentation.
@@ -56,7 +60,7 @@ mixin DocumentationComment
         if (!hasDocumentationComment && self.overriddenElement != null) {
           return self.overriddenElement!.documentationFrom;
         } else if (self.isInherited) {
-          return modelBuilder.fromElement(element!).documentationFrom;
+          return modelBuilder.fromElement(element).documentationFrom;
         } else {
           return [this];
         }
@@ -71,15 +75,15 @@ mixin DocumentationComment
 
   /// The rawest form of the documentation comment, including comment delimiters
   /// like `///`, `//`, `/*`, `*/`.
-  String get documentationComment;
+  String get documentationComment => element.documentationComment ?? '';
 
   /// True if [this] has a synthetic/inherited or local documentation
   /// comment.  False otherwise.
-  bool get hasDocumentationComment;
+  bool get hasDocumentationComment => element.documentationComment != null;
 
   /// Returns true if the raw documentation comment has a 'nodoc' indication.
   late final bool hasNodoc = () {
-    if (packageGraph.configSetsNodocFor(element!.source!.fullName)) {
+    if (packageGraph.configSetsNodocFor(element.source!.fullName)) {
       return true;
     }
     if (!hasDocumentationComment) {
@@ -331,7 +335,7 @@ mixin DocumentationComment
           replacement = replacement.replaceFirst('```', '```$lang');
         }
       } else {
-        var filePath = element!.source!.fullName.substring(dirPath.length + 1);
+        var filePath = element.source!.fullName.substring(dirPath.length + 1);
 
         // TODO(srawlins): If a file exists at the location without the
         // appended 'md' extension, note this.
@@ -753,20 +757,28 @@ mixin DocumentationComment
     }
   }
 
-  /// Returns the documentation for this literal element unless
-  /// [config.dropTextFrom] indicates it should not be returned.  Macro
-  /// definitions are stripped, but macros themselves are not injected.  This
-  /// is a two stage process to avoid ordering problems.
-  String? _documentationLocal;
+  bool _documentationLocalIsSet = false;
 
-  String? get documentationLocal =>
-      _documentationLocal ??= _buildDocumentationLocal();
+  /// Returns the documentation for this literal element unless
+  /// `config.dropTextFrom` indicates it should not be returned.  Macro
+  /// definitions are stripped, but macros themselves are not injected.  This is
+  /// a two stage process to avoid ordering problems.
+  late final String _documentationLocal;
+
+  String get documentationLocal {
+    if (!_documentationLocalIsSet) {
+      _documentationLocal = _buildDocumentationBaseSync();
+      _documentationLocalIsSet = true;
+    }
+    return _documentationLocal;
+  }
 
   /// Unconditionally precache local documentation.
   ///
   /// Use only in factory for [PackageGraph].
   Future<void> precacheLocalDocs() async {
     _documentationLocal = await _buildDocumentationBase();
+    _documentationLocalIsSet = true;
   }
 
   late final bool _hasNodoc;
@@ -833,20 +845,17 @@ mixin DocumentationComment
 
   String? _rawDocs;
 
-  String? _buildDocumentationLocal() => _buildDocumentationBaseSync();
-
   /// Override this to add more features to the documentation builder in a
   /// subclass.
   String buildDocumentationAddition(String docs) => docs;
 
-  /// Separate from [_buildDocumentationLocal] for overriding.
-  String? _buildDocumentationBaseSync() {
+  String _buildDocumentationBaseSync() {
     assert(_rawDocs == null,
         'reentrant calls to _buildDocumentation* not allowed');
     // Do not use the sync method if we need to evaluate tools or templates.
     assert(!isCanonical || !needsPrecache);
     String rawDocs;
-    if (config.dropTextFrom.contains(element!.library!.name)) {
+    if (config.dropTextFrom.contains(element.library!.name)) {
       rawDocs = '';
     } else {
       rawDocs = _processCommentWithoutTools(documentationComment);
@@ -854,14 +863,13 @@ mixin DocumentationComment
     return _rawDocs = buildDocumentationAddition(rawDocs);
   }
 
-  /// Separate from [_buildDocumentationLocal] for overriding.  Can only be
-  /// used as part of [PackageGraph.setUpPackageGraph].
-  Future<String?> _buildDocumentationBase() async {
+  /// Can only be used as part of `PackageGraph.setUpPackageGraph`.
+  Future<String> _buildDocumentationBase() async {
     assert(_rawDocs == null,
         'reentrant calls to _buildDocumentation* not allowed');
     String rawDocs;
     // Do not use the sync method if we need to evaluate tools or templates.
-    if (config.dropTextFrom.contains(element!.library!.name)) {
+    if (config.dropTextFrom.contains(element.library!.name)) {
       rawDocs = '';
     } else {
       rawDocs = await processComment(documentationComment);

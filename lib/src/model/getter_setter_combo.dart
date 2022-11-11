@@ -190,7 +190,7 @@ mixin GetterSetterCombo on ModelElement {
         // We have to check against `dropTextFrom` here since
         // `documentationFrom` doesn't yield the real elements for
         // [GetterSetterCombo]s.
-        if (!config.dropTextFrom.contains(fromGetter.element!.library!.name)) {
+        if (!config.dropTextFrom.contains(fromGetter.element.library!.name)) {
           if (fromGetter.hasDocumentationComment) {
             getterComment = fromGetter.documentationComment;
           }
@@ -206,7 +206,7 @@ mixin GetterSetterCombo on ModelElement {
     if (!setter.isSynthetic && setter.isPublic) {
       assert(setter.documentationFrom.length == 1);
       var fromSetter = setter.documentationFrom.first;
-      if (!config.dropTextFrom.contains(fromSetter.element!.library!.name)) {
+      if (!config.dropTextFrom.contains(fromSetter.element.library!.name)) {
         if (fromSetter.hasDocumentationComment) {
           return getterComment.isEmpty
               ? fromSetter.documentationComment

@@ -3824,10 +3824,10 @@ class _Renderer_Documentable extends RendererBase<Documentable> {
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
-                  isNullValue: (CT_ c) => c.oneLineDoc == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.oneLineDoc!, ast, r.template, sink,
+                    _render_String(c.oneLineDoc, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -3942,11 +3942,23 @@ class _Renderer_DocumentationComment
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
-                  isNullValue: (CT_ c) => c.documentationLocal == null,
+                  isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.documentationLocal!, ast, r.template, sink,
+                    _render_String(c.documentationLocal, ast, r.template, sink,
                         parent: r);
+                  },
+                ),
+                'element': Property(
+                  getValue: (CT_ c) => c.element,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'Element'),
+                  isNullValue: (CT_ c) => false,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    renderSimple(c.element, ast, r.template, sink,
+                        parent: r, getters: _invisibleGetters['Element']!);
                   },
                 ),
                 'elementDocumentation': Property(
@@ -9776,29 +9788,6 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                         parent: r);
                   },
                 ),
-                'documentationComment': Property(
-                  getValue: (CT_ c) => c.documentationComment,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_String.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as String,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_String(
-                        c.documentationComment, ast, r.template, sink,
-                        parent: r);
-                  },
-                ),
                 'element': Property(
                   getValue: (CT_ c) => c.element,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -10013,13 +10002,6 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.hasDocumentation == true,
-                ),
-                'hasDocumentationComment': Property(
-                  getValue: (CT_ c) => c.hasDocumentationComment,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasDocumentationComment == true,
                 ),
                 'hasFeatures': Property(
                   getValue: (CT_ c) => c.hasFeatures,
@@ -15798,6 +15780,7 @@ const _invisibleGetters = {
     'documentationComment',
     'documentationFrom',
     'documentationLocal',
+    'element',
     'elementDocumentation',
     'fullyQualifiedNameWithoutLibrary',
     'hasDocumentationComment',

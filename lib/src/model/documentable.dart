@@ -17,7 +17,7 @@ abstract class Documentable extends Nameable {
 
   bool get hasDocumentation;
 
-  String? get oneLineDoc;
+  String get oneLineDoc;
 
   PackageGraph get packageGraph;
 
