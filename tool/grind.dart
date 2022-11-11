@@ -1211,7 +1211,7 @@ Future<void> testDartdoc() async {
       ['<title>dartdoc - Dart API docs</title>']);
   var object = RegExp('<li>Object</li>', multiLine: true);
   expectFileContains(
-      p.join(_dartdocDocsPath, 'dartdoc', 'Package-class.html'), [object]);
+      p.join(_dartdocDocsPath, 'dartdoc', 'PackageMeta-class.html'), [object]);
 }
 
 @Task('Generate docs for dartdoc with remote linking')
@@ -1225,7 +1225,7 @@ Future<void> testDartdocRemote() async {
   expectFileContains(p.join(_dartdocDocsPath, 'index.html'),
       ['<title>dartdoc - Dart API docs</title>']);
   expectFileContains(
-      p.join(_dartdocDocsPath, 'dartdoc', 'Package-class.html'), [object]);
+      p.join(_dartdocDocsPath, 'dartdoc', 'PackageMeta-class.html'), [object]);
 }
 
 @Task('serve docs for a package that requires flutter with remote linking')
