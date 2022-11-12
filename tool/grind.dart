@@ -1211,7 +1211,7 @@ Future<void> testDartdoc() async {
       ['<title>dartdoc - Dart API docs</title>']);
   var object = RegExp('<li>Object</li>', multiLine: true);
   expectFileContains(
-      p.join(_dartdocDocsPath, 'dartdoc', 'PackageMeta-class.html'), [object]);
+      p.join(_dartdocDocsPath, 'dartdoc', 'PubPackageMeta-class.html'), [object]);
 }
 
 @Task('Generate docs for dartdoc with remote linking')
