@@ -292,8 +292,8 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
 
   void warnOnElement(Warnable? warnable, PackageWarning kind,
       {String? message,
-      Iterable<Locatable>? referredFrom,
-      Iterable<String>? extendedDebug}) {
+      Iterable<Locatable> referredFrom = const [],
+      Iterable<String> extendedDebug = const []}) {
     var newEntry = Tuple3(warnable?.element, kind, message);
     if (_warnAlreadySeen.contains(newEntry)) {
       return;
@@ -310,16 +310,14 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
 
   void _warnOnElement(Warnable? warnable, PackageWarning kind,
       {required String message,
-      Iterable<Locatable>? referredFrom,
-      Iterable<String>? extendedDebug}) {
-    if (warnable is ModelElement) {
+      Iterable<Locatable> referredFrom = const [],
+      Iterable<String> extendedDebug = const []}) {
+    if (warnable is ModelElement && kind == PackageWarning.ambiguousReexport) {
       // This sort of warning is only applicable to top level elements.
-      if (kind == PackageWarning.ambiguousReexport) {
-        var enclosingElement = warnable.enclosingElement;
-        while (enclosingElement != null && enclosingElement is! Library) {
-          warnable = enclosingElement;
-          enclosingElement = warnable.enclosingElement;
-        }
+      var enclosingElement = warnable.enclosingElement;
+      while (enclosingElement != null && enclosingElement is! Library) {
+        warnable = enclosingElement;
+        enclosingElement = warnable.enclosingElement;
       }
     }
 
@@ -329,7 +327,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     if (packageWarningCounter.hasWarning(warnable, kind, message)) {
       return;
     }
-    // Some kinds of warnings it is OK to drop if we're not documenting them.
+    // Some kinds of warnings are OK to drop if we're not documenting them.
     // TODO(jcollins-g): drop this and use new flag system instead.
     if (warnable != null &&
         skipWarningIfNotDocumentedFor.contains(kind) &&
@@ -337,157 +335,64 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       return;
     }
     // Elements that are part of the Dart SDK can have colons in their FQNs.
-    // This confuses IntelliJ and makes it so it can't link to the location
-    // of the error in the console window, so separate out the library from
-    // the path.
-    // TODO(jcollins-g): What about messages that may include colons?  Substituting
-    //                   them out doesn't work as well there since it might confuse
-    //                   the user, yet we still want IntelliJ to link properly.
-    final warnableName = _safeWarnableName(warnable);
+    // This confuses IntelliJ and makes it so it can't link to the location of
+    // the error in the console window, so separate out the library from the
+    // path.
+    // TODO(jcollins-g): What about messages that may include colons?
+    // Substituting them out doesn't work as well there since it might confuse
+    // the user, yet we still want IntelliJ to link properly.
+    final warnableName = warnable.safeWarnableName;
 
-    var warnablePrefix = 'from';
-    var referredFromPrefix = 'referred to by';
     String warningMessage;
     switch (kind) {
-      case PackageWarning.noCanonicalFound:
-        // Fix these warnings by adding libraries with --include, or by using
-        // --auto-include-dependencies.
-        // TODO(jcollins-g): pipeline references through linkedName for error
-        //                   messages and warn for non-public canonicalization
-        //                   errors.
-        warningMessage =
-            'no canonical library found for $warnableName, not linking';
-        break;
       case PackageWarning.ambiguousReexport:
-        // Fix these warnings by adding the original library exporting the
-        // symbol with --include, by using --auto-include-dependencies,
-        // or by using --exclude to hide one of the libraries involved
-        warningMessage =
-            'ambiguous reexport of $warnableName, canonicalization candidates: $message';
+        warningMessage = kind.messageFor([warnableName, message]);
         break;
+      case PackageWarning.noCanonicalFound:
       case PackageWarning.noDefiningLibraryFound:
-        warningMessage =
-            'could not find the defining library for $warnableName; the '
-            'library may be imported or exported with a non-standard URI';
+        warningMessage = kind.messageFor([warnableName]);
         break;
       case PackageWarning.noLibraryLevelDocs:
-        warningMessage =
-            '${warnable!.fullyQualifiedName} has no library level documentation comments';
-        break;
       case PackageWarning.noDocumentableLibrariesInPackage:
-        warningMessage =
-            '${warnable!.fullyQualifiedName} has no documentable libraries';
+        warningMessage = kind.messageFor([warnable!.fullyQualifiedName]);
         break;
       case PackageWarning.ambiguousDocReference:
-        warningMessage = 'ambiguous doc reference $message';
-        break;
       case PackageWarning.ignoredCanonicalFor:
-        warningMessage =
-            "library says it is {@canonicalFor $message} but $message can't be canonical there";
-        break;
       case PackageWarning.packageOrderGivesMissingPackageName:
-        warningMessage =
-            "--package-order gives invalid package name: '$message'";
-        break;
       case PackageWarning.reexportedPrivateApiAcrossPackages:
-        warningMessage =
-            'private API of $message is reexported by libraries in other packages: ';
-        break;
       case PackageWarning.notImplemented:
-        warningMessage = message;
-        break;
       case PackageWarning.unresolvedDocReference:
-        warningMessage = 'unresolved doc reference [$message]';
-        referredFromPrefix = 'in documentation inherited from';
-        break;
       case PackageWarning.unknownDirective:
-        warningMessage = 'undefined directive: $message';
-        break;
       case PackageWarning.unknownMacro:
-        warningMessage = 'undefined macro [$message]';
-        break;
       case PackageWarning.unknownHtmlFragment:
-        warningMessage = 'undefined HTML fragment identifier [$message]';
-        break;
       case PackageWarning.brokenLink:
-        warningMessage = 'dartdoc generated a broken link to: $message';
-        warnablePrefix = 'to element';
-        referredFromPrefix = 'linked to from';
-        break;
-      case PackageWarning.orphanedFile:
-        warningMessage = 'dartdoc generated a file orphan: $message';
-        break;
-      case PackageWarning.unknownFile:
-        warningMessage =
-            'dartdoc detected an unknown file in the doc tree: $message';
-        break;
-      case PackageWarning.missingFromSearchIndex:
-        warningMessage =
-            'dartdoc generated a file not in the search index: $message';
-        break;
-      case PackageWarning.typeAsHtml:
-        // The message for this warning can contain many punctuation and other symbols,
-        // so bracket with a triple quote for defense.
-        warningMessage = 'generic type handled as HTML: """$message"""';
-        break;
-      case PackageWarning.invalidParameter:
-        warningMessage = 'invalid parameter to dartdoc directive: $message';
-        break;
-      case PackageWarning.toolError:
-        warningMessage = 'tool execution failed: $message';
-        break;
-      case PackageWarning.deprecated:
-        warningMessage = 'deprecated dartdoc usage: $message';
-        break;
-      case PackageWarning.unresolvedExport:
-        warningMessage = 'unresolved export uri: $message';
-        break;
       case PackageWarning.duplicateFile:
-        warningMessage = 'failed to write file at: $message';
-        warnablePrefix = 'for symbol';
-        referredFromPrefix = 'conflicting with file already generated by';
-        break;
+      case PackageWarning.orphanedFile:
+      case PackageWarning.unknownFile:
+      case PackageWarning.missingFromSearchIndex:
+      case PackageWarning.typeAsHtml:
+      case PackageWarning.invalidParameter:
+      case PackageWarning.toolError:
+      case PackageWarning.deprecated:
+      case PackageWarning.unresolvedExport:
       case PackageWarning.missingConstantConstructor:
-        warningMessage = 'constant constructor missing: $message';
-        break;
       case PackageWarning.missingExampleFile:
-        warningMessage = 'example file not found: $message';
-        break;
       case PackageWarning.missingCodeBlockLanguage:
-        warningMessage = 'missing code block language: $message';
-        break;
+        warningMessage = kind.messageFor([message]);
     }
 
-    var messageParts = <String>[warningMessage];
-    if (warnable != null) {
-      messageParts.add('$warnablePrefix $warnableName: ${warnable.location}');
-    }
-    if (referredFrom != null) {
-      for (var referral in referredFrom) {
-        if (referral != warnable) {
-          var referredFromStrings = _safeWarnableName(referral);
-          messageParts.add(
-              '$referredFromPrefix $referredFromStrings: ${referral.location}');
-        }
-      }
-    }
-    if (config.verboseWarnings && extendedDebug != null) {
-      messageParts.addAll(extendedDebug.map((s) => '    $s'));
-    }
-    var fullMessage = messageParts.join('\n    ');
+    var fullMessage = [
+      warningMessage,
+      if (warnable != null) kind.messageForWarnable(warnable),
+      for (var referral in referredFrom)
+        if (referral != warnable) kind.messageForReferral(referral),
+      if (config.verboseWarnings) ...extendedDebug.map((s) => '    $s')
+    ].join('\n    ');
 
     packageWarningCounter.addWarning(warnable, kind, message, fullMessage);
   }
 
-  String _safeWarnableName(Locatable? locatable) {
-    if (locatable == null) {
-      return '<unknown>';
-    }
-
-    return locatable.fullyQualifiedName.replaceFirst(':', '-');
-  }
-
-  List<Package> get packages => packageMap.values.toList(growable: false);
+  Iterable<Package> get packages => packageMap.values;
 
   late final List<Package> publicPackages = () {
     assert(allLibrariesAdded);
