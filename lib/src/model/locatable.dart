@@ -22,3 +22,8 @@ abstract class Locatable {
 }
 
 final RegExp locationSplitter = RegExp(r'(package:|[\\/;.])');
+
+extension NullableLocatable on Locatable? {
+  String get safeWarnableName =>
+      this?.fullyQualifiedName.replaceFirst(':', '-') ?? '<unknown>';
+}
