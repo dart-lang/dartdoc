@@ -148,21 +148,6 @@ void main() {
             hasLength(kTestPackagePublicLibraries + 2));
         expect(packageGraph.localPackages.length, equals(1));
       });
-
-      test('source code links are visible', () async {
-        // Picked this object as this library explicitly should never contain
-        // a library directive, so we can predict what line number it will be.
-        var anonymousOutput = _resourceProvider.getFile(_pathContext.join(
-            tempDir.path,
-            'anonymous_library',
-            'anonymous_library-library.html'));
-        expect(anonymousOutput.exists, isTrue);
-        expect(
-            anonymousOutput.readAsStringSync(),
-            contains(r'<a title="View source code" class="source-link" '
-                'href="https://github.com/dart-lang/dartdoc/blob/master/testing/test_package/lib/anonymous_library.dart#L1">'
-                '<span class="material-symbols-outlined">description</span></a>'));
-      });
     });
 
     test('generate docs for ${p.basename(_testPackageBadDir.path)} fails',
