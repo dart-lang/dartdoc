@@ -235,9 +235,6 @@ class MixinTemplateData extends InheritingContainerTemplateData<Mixin> {
 class ClassTemplateData extends InheritingContainerTemplateData<Class> {
   ClassTemplateData(super.htmlOptions, super.packageGraph, super.library,
       super.clazz, super.sidebarForLibrary, super.sidebarForContainer);
-
-  @override
-  Class get clazz => super.clazz;
 }
 
 /// Base template data class for [Class], [Enum], and [Mixin].
