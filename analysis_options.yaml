@@ -45,3 +45,4 @@ linter:
     # - implicit_call_tearoffs
     # - collection_methods_unrelated_type
     # - dangling_library_doc_comments
+    # - combinators_ordering
