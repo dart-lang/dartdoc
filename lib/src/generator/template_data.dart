@@ -237,6 +237,9 @@ class ClassTemplateData extends InheritingContainerTemplateData<Class> {
       super.clazz, super.sidebarForLibrary, super.sidebarForContainer);
 
   @override
+  // Mustachio generation requires this unnecessary override.
+  // Likely a bug or serious missing feature in Mustachio.
+  // ignore: unnecessary_overrides
   Class get clazz => super.clazz;
 }
 
