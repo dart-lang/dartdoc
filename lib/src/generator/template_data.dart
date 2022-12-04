@@ -408,13 +408,8 @@ class MethodTemplateData extends TemplateData<Method>
   final Container container;
   final ContainerSidebar _sidebarForContainer;
 
-  final String _containerDescription;
-
   MethodTemplateData(super.htmlOptions, super.packageGraph, this.library,
-      this.container, this.method, this._sidebarForContainer)
-      : _containerDescription =
-            // TODO(srawlins): No mixin? enum?
-            container is InterfaceElement ? 'class' : 'extension';
+      this.container, this.method, this._sidebarForContainer);
 
   String get sidebarForContainer => _sidebarForContainer(container, this);
 
@@ -422,7 +417,7 @@ class MethodTemplateData extends TemplateData<Method>
   Method get self => method;
   @override
   String get title =>
-      '${method.name} method - ${container.name} $_containerDescription - '
+      '${method.name} method - ${container.name} ${container.kind} - '
       '${library.name} library - Dart API';
   @override
   String get layoutTitle =>
@@ -431,7 +426,7 @@ class MethodTemplateData extends TemplateData<Method>
   @override
   String get metaDescription =>
       'API docs for the ${method.name} method from the ${container.name} '
-      '$_containerDescription, for the Dart programming language.';
+      '${container.kind}, for the Dart programming language.';
   @override
   List<Documentable> get navLinks => [_packageGraph.defaultPackage, library];
   @override
@@ -449,12 +444,9 @@ class PropertyTemplateData extends TemplateData<Field>
   final Container container;
   final Field property;
   final ContainerSidebar _sidebarForContainer;
-  final String _containerDescription;
 
   PropertyTemplateData(super.htmlOptions, super.packageGraph, this.library,
-      this.container, this.property, this._sidebarForContainer)
-      : _containerDescription =
-            container is InterfaceElement ? 'class' : 'extension';
+      this.container, this.property, this._sidebarForContainer);
 
   String get sidebarForContainer => _sidebarForContainer(container, this);
 
@@ -463,7 +455,7 @@ class PropertyTemplateData extends TemplateData<Field>
 
   @override
   String get title => '${property.name} ${property.kind} - '
-      '${container.name} $_containerDescription - '
+      '${container.name} ${container.kind} - '
       '${library.name} library - Dart API';
   @override
   String get layoutTitle => _layoutTitle(property.name, property.fullkind,
@@ -471,7 +463,7 @@ class PropertyTemplateData extends TemplateData<Field>
   @override
   String get metaDescription =>
       'API docs for the ${property.name} ${property.kind} from the '
-      '${container.name} $_containerDescription, '
+      '${container.name} ${container.kind}, '
       'for the Dart programming language.';
   @override
   List<Documentable> get navLinks => [_packageGraph.defaultPackage, library];
@@ -503,7 +495,7 @@ class TypedefTemplateData extends TemplateData<Typedef>
       isDeprecated: typeDef.isDeprecated);
   @override
   String get metaDescription =>
-      'API docs for the ${typeDef.name} property from the '
+      'API docs for the ${typeDef.name} typedef from the '
       '${library.name} library, for the Dart programming language.';
   @override
   List<Documentable> get navLinks => [_packageGraph.defaultPackage, library];
