@@ -528,16 +528,15 @@ String _decodeHtml(String html) {
 final _relativePath = () {
   var body = document.querySelector('body')!;
   var relativePath = '';
-  if (body.getAttribute('data-using-base-href') == 'true') {
-    relativePath = body.getAttribute('href')!;
-  } else if (body.getAttribute('data-base-href') == '') {
-    relativePath = './';
-  } else {
-    relativePath = body.getAttribute('data-base-href')!;
+  if (body.getAttribute('data-using-base-href') == 'false') {
+    var baseHref = body.getAttribute('data-base-href');
+    if (baseHref == null || baseHref.isEmpty) {
+      relativePath = './';
+    } else {
+      relativePath = baseHref;
+    }
   }
-  var href = Uri.parse(window.location.href);
-  var base = href.resolve(relativePath);
-  var search = Uri.parse('${base}search.html');
+  var search = Uri.parse('${relativePath}search.html');
   return search;
 }();
 
