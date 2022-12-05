@@ -76,9 +76,11 @@ void init() {
 const _weights = {
   'library': 2,
   'class': 2,
+  'enum': 2,
   'mixin': 3,
   'extension': 3,
   'typedef': 3,
+  'function': 4,
   'method': 4,
   'accessor': 4,
   'operator': 4,
