@@ -833,10 +833,6 @@ mixin DocumentationComment
         }
       }
     }
-    if (!hasNodoc && docComment.contains('<nodoc>')) {
-      // TODO(srawlins): Stop supporting this old format.
-      hasNodoc = true;
-    }
     _hasNodoc = hasNodoc;
     _hasInjectHtml = hasInjectHtml;
     _hasTemplate = hasTemplate;
