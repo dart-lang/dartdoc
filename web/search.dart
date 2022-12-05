@@ -349,7 +349,8 @@ void _initializeSearch(
       // location to `search.html`.
       else {
         var query = _htmlEscape.convert(actualValue);
-        var searchPath = _relativePath.replace(queryParameters: {'q': query});
+        var searchPath = Uri.parse('${_htmlBase}search.html')
+            .replace(queryParameters: {'q': query});
         window.location.assign(searchPath.toString());
         return;
       }
@@ -524,21 +525,6 @@ String _decodeHtml(String html) {
         ..innerHtml = html)
       .value!;
 }
-
-final _relativePath = () {
-  var body = document.querySelector('body')!;
-  var relativePath = '';
-  if (body.getAttribute('data-using-base-href') == 'false') {
-    var baseHref = body.getAttribute('data-base-href');
-    if (baseHref == null || baseHref.isEmpty) {
-      relativePath = './';
-    } else {
-      relativePath = baseHref;
-    }
-  }
-  var search = Uri.parse('${relativePath}search.html');
-  return search;
-}();
 
 class _SearchMatch {
   final _IndexItem element;
