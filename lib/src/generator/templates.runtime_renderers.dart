@@ -15967,6 +15967,7 @@ const _invisibleGetters = {
     'isCovariant',
     'isEnumConstant',
     'isExternal',
+    'isPromotable',
     'isStatic',
     'runtimeType'
   },
