@@ -12,6 +12,7 @@ import 'package:crypto/crypto.dart' as crypto;
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:grinder/grinder.dart';
+import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:yaml/yaml.dart' as yaml;
 
@@ -20,74 +21,75 @@ import 'subprocess_launcher.dart';
 void main(List<String> args) => grind(args);
 
 /// Thrown on failure to find something in a file.
-class GrindTestFailure implements Exception {
+class _GrindTestFailure implements Exception {
   final String message;
 
-  GrindTestFailure(this.message);
+  _GrindTestFailure(this.message);
 
   @override
   String toString() => message;
 }
 
 /// Kind of an inefficient grepper for now.
-void expectFileContains(String path, List<Pattern> items) {
+void _expectFileContains(String path, List<Pattern> items) {
   var source = File(path);
   if (!source.existsSync()) {
-    throw GrindTestFailure('file not found: $path');
+    throw _GrindTestFailure('file not found: $path');
   }
   for (var item in items) {
     if (!File(path).readAsStringSync().contains(item)) {
-      throw GrindTestFailure('"$item" not found in $path');
+      throw _GrindTestFailure('"$item" not found in $path');
     }
   }
 }
 
 /// Enable the following experiments for language tests.
-final List<String> languageExperiments =
+final List<String> _languageExperiments =
     (Platform.environment['LANGUAGE_EXPERIMENTS'] ?? '').split(RegExp(r'\s+'));
 
 /// The pub cache inherited by grinder.
-final String defaultPubCache = Platform.environment['PUB_CACHE'] ??
+final String _defaultPubCache = Platform.environment['PUB_CACHE'] ??
     p.context.resolveTildePath('~/.pub-cache');
 
 /// Run no more than the number of processors available in parallel.
-final TaskQueue testFutures = TaskQueue(
+final TaskQueue _testFutures = TaskQueue(
     maxJobs: int.tryParse(Platform.environment['MAX_TEST_FUTURES'] ?? '') ??
         Platform.numberOfProcessors);
 
 // Directory.systemTemp is not a constant.  So wrap it.
-Directory createTempSync(String prefix) =>
+Directory _createTempSync(String prefix) =>
     Directory.systemTemp.createTempSync(prefix);
 
 /// Global so that the lock is retained for the life of the process.
 Future<void>? _lockFuture;
-Completer<FlutterRepo>? _cleanFlutterRepo;
+Completer<_FlutterRepo>? __cleanFlutterRepo;
 
-/// Returns true if we need to replace the existing flutter.  We never release
-/// this lock until the program exits to prevent edge case runs from
-/// spontaneously deciding to download a new Flutter SDK in the middle of a run.
+/// Whether we need to replace the existing flutter.
+/// We never release this lock until the program exits to prevent edge case runs
+/// from spontaneously deciding to download a new Flutter SDK in the middle of a
+/// run.
 // TODO(srawlins): The above comment is outdated.
-Future<FlutterRepo> get cleanFlutterRepo async {
-  var repoCompleter = _cleanFlutterRepo;
+Future<_FlutterRepo> get _cleanFlutterRepo async {
+  var repoCompleter = __cleanFlutterRepo;
   if (repoCompleter != null) {
     return repoCompleter.future;
   }
 
-  // No await is allowed between check of _cleanFlutterRepo and its assignment,
-  // to prevent reentering this function.
+  // No await is allowed between check of `__cleanFlutterRepo` and its
+  // assignment, to prevent reentering this function.
   repoCompleter = Completer();
   _cleanFlutterRepo = repoCompleter;
 
   // Figure out where the repository is supposed to be and lock updates for
   // it.
-  await cleanFlutterDir.parent.create(recursive: true);
+  await _cleanFlutterDir.parent.create(recursive: true);
   assert(_lockFuture == null);
-  _lockFuture = File(p.join(cleanFlutterDir.parent.path, 'lock'))
+  _lockFuture = File(p.join(_cleanFlutterDir.parent.path, 'lock'))
       .openSync(mode: FileMode.write)
       .lock();
   await _lockFuture;
-  var lastSynced = File(p.join(cleanFlutterDir.parent.path, 'lastSynced'));
-  var newRepo = FlutterRepo.fromPath(cleanFlutterDir.path, {}, 'clean');
+  var lastSynced = File(p.join(_cleanFlutterDir.parent.path, 'lastSynced'));
+  var newRepo = _FlutterRepo.fromPath(_cleanFlutterDir.path, {}, 'clean');
 
   // We have a repository, but is it up to date?
   DateTime? lastSyncedTime;
@@ -98,49 +100,50 @@ Future<FlutterRepo> get cleanFlutterRepo async {
   if (lastSyncedTime == null ||
       DateTime.now().difference(lastSyncedTime) > Duration(hours: 24)) {
     // Rebuild the repository.
-    if (cleanFlutterDir.existsSync()) {
-      cleanFlutterDir.deleteSync(recursive: true);
+    if (_cleanFlutterDir.existsSync()) {
+      _cleanFlutterDir.deleteSync(recursive: true);
     }
-    cleanFlutterDir.createSync(recursive: true);
+    _cleanFlutterDir.createSync(recursive: true);
     await newRepo._init();
     await lastSynced
         .writeAsString(DateTime.now().millisecondsSinceEpoch.toString());
   }
   repoCompleter.complete(newRepo);
-  _cleanFlutterRepo = repoCompleter;
+  __cleanFlutterRepo = repoCompleter;
   return repoCompleter.future;
 }
 
-final String _dartdocDocsPath = createTempSync('dartdoc').path;
+final String _dartdocDocsPath = _createTempSync('dartdoc').path;
 
-final Directory _sdkDocsDir = createTempSync('sdkdocs').absolute;
+final Directory _sdkDocsDir = _createTempSync('sdkdocs').absolute;
 
-Directory cleanFlutterDir = Directory(
+Directory _cleanFlutterDir = Directory(
     p.join(p.context.resolveTildePath('~/.dartdoc_grinder'), 'cleanFlutter'));
 
-final Directory _flutterDir = createTempSync('flutter');
+final Directory _flutterDir = _createTempSync('flutter');
 
 final Directory _languageTestPackageDir =
-    createTempSync('languageTestPackageDir');
+    _createTempSync('languageTestPackageDir');
 
-Directory get testPackage => Directory(p.joinAll(['testing', 'test_package']));
+String get _testPackagePath =>
+    Directory(p.joinAll(['testing', 'test_package'])).absolute.path;
 
-Directory get testPackageExperiments =>
-    Directory(p.joinAll(['testing', 'test_package_experiments']));
+String get _testPackageExperimentsPath =>
+    Directory(p.joinAll(['testing', 'test_package_experiments'])).absolute.path;
 
-Directory get testPackageFlutterPlugin => Directory(
-    p.joinAll(['testing', 'flutter_packages', 'test_package_flutter_plugin']));
+String get _testPackageFlutterPluginPath => Directory(p.joinAll(
+    ['testing', 'flutter_packages', 'test_package_flutter_plugin'])).path;
 
-final Directory _testPackageDocsDir = createTempSync('test_package');
+final Directory _testPackageDocsDir = _createTempSync('test_package');
 
 final Directory _testPackageExperimentsDocsDir =
-    createTempSync('test_package_experiments');
+    _createTempSync('test_package_experiments');
 
 final String _pluginPackageDocsPath =
-    createTempSync('test_package_flutter_plugin').path;
+    _createTempSync('test_package_flutter_plugin').path;
 
 /// Version of dartdoc we should use when making comparisons.
-String get dartdocOriginalBranch {
+String get _dartdocOriginalBranch {
   var branch = Platform.environment['DARTDOC_ORIGINAL'];
   if (branch == null) {
     return 'main';
@@ -156,15 +159,12 @@ final List<String> _extraDartdocParameters = [
   ...?Platform.environment['DARTDOC_PARAMS']?.split(_whitespacePattern),
 ];
 
-final Directory flutterDirDevTools =
-    Directory(p.join(_flutterDir.path, 'dev', 'tools'));
-
 /// Creates a throwaway pub cache and returns the environment variables
 /// necessary to use it.
 Map<String, String> _createThrowawayPubCache() {
   var pubCache = Directory.systemTemp.createTempSync('pubcache');
   var pubCacheBin = Directory(p.join(pubCache.path, 'bin'));
-  var defaultCache = Directory(defaultPubCache);
+  var defaultCache = Directory(_defaultPubCache);
   if (defaultCache.existsSync()) {
     copy(defaultCache, pubCache);
   } else {
@@ -190,10 +190,10 @@ void analyze() async {
 
 @Task('Analyze the test packages')
 void analyzeTestPackages() async {
-  var testPackagePaths = [testPackage.path];
-  if (Platform.version.contains('dev')) {
-    testPackagePaths.add(testPackageExperiments.path);
-  }
+  var testPackagePaths = [
+    _testPackagePath,
+    if (Platform.version.contains('dev')) _testPackageExperimentsPath,
+  ];
   for (var testPackagePath in testPackagePaths) {
     await SubprocessLauncher('pub-get').runStreamed(
       Platform.resolvedExecutable,
@@ -212,61 +212,62 @@ void analyzeTestPackages() async {
 
 @Task('Check for dart format cleanliness')
 void checkFormat() async {
-  if (Platform.version.contains('dev')) {
-    var filesToFix = <String>[];
-    // Filter out test packages as they always have strange formatting.
-    // Passing parameters to dart format for directories to search results in
-    // filenames being stripped of the dirname so we have to filter here.
-    void addFileToFix(String line) {
-      if (!line.startsWith('Changed ')) return;
-      var fileName = line.substring(8);
-      var pathComponents = p.split(fileName);
-      if (pathComponents.isNotEmpty && pathComponents.first == 'testing') {
-        return;
-      }
-      filesToFix.add(fileName);
-    }
-
-    log('Validating dart format with version ${Platform.version}');
-    await SubprocessLauncher('dart format').runStreamed(
-        Platform.resolvedExecutable,
-        [
-          'format',
-          '-o',
-          'none',
-          'bin',
-          'lib',
-          'test',
-          'tool',
-          'web',
-        ],
-        perLine: addFileToFix);
-    if (filesToFix.isNotEmpty) {
-      fail(
-          'dart format found files needing reformatting. Use this command to reformat:\n'
-          'dart format ${filesToFix.map((f) => "'$f'").join(' ')}');
-    }
-  } else {
+  if (!Platform.version.contains('dev')) {
     log('Skipping dart format check, requires latest dev version of SDK');
+    return;
+  }
+
+  var filesToFix = <String>[];
+  // Filter out test packages as they always have strange formatting.
+  // Passing parameters to dart format for directories to search results in
+  // filenames being stripped of the dirname so we have to filter here.
+  void addFileToFix(String line) {
+    if (!line.startsWith('Changed ')) return;
+    var fileName = line.substring(8);
+    var pathComponents = p.split(fileName);
+    if (pathComponents.isNotEmpty && pathComponents.first == 'testing') {
+      return;
+    }
+    filesToFix.add(fileName);
+  }
+
+  log('Validating dart format with version ${Platform.version}');
+  await SubprocessLauncher('dart format').runStreamed(
+      Platform.resolvedExecutable,
+      [
+        'format',
+        '-o',
+        'none',
+        'bin',
+        'lib',
+        'test',
+        'tool',
+        'web',
+      ],
+      perLine: addFileToFix);
+  if (filesToFix.isNotEmpty) {
+    fail('dart format found files needing reformatting. Use this command to '
+        'reformat:\n'
+        'dart format ${filesToFix.map((f) => "'$f'").join(' ')}');
   }
 }
 
-@Task('Run quick presubmit checks.')
+@Task('Run presubmit checks.')
 @Depends(
   analyze,
   checkFormat,
   checkBuild,
   tryPublish,
-  smokeTest,
+  test,
 )
 void presubmit() {}
 
 @Task('Run long tests, self-test dartdoc, and run the publish test')
-@Depends(presubmit, longTest, testDartdoc)
+@Depends(presubmit, test, testDartdoc)
 void buildbot() {}
 
 @Task('Run buildbot tests, but without publish test')
-@Depends(analyze, checkFormat, checkBuild, smokeTest, longTest, testDartdoc)
+@Depends(analyze, checkFormat, checkBuild, test, test, testDartdoc)
 void buildbotNoPublish() {}
 
 @Task('Generate docs for the Dart SDK')
@@ -275,38 +276,39 @@ Future<void> buildSdkDocs() async {
   await _buildSdkDocs(_sdkDocsDir.path, Future.value(Directory.current.path));
 }
 
+@visibleForTesting
 class WarningsCollection {
-  final String tempDir;
-  final Map<String, int> warningKeyCounts;
-  final String branch;
-  final String? pubCachePath;
+  final String _tempDir;
+  final Map<String, int> _warningKeyCounts;
+  final String _branch;
+  final String? _pubCachePath;
 
-  WarningsCollection(this.tempDir, this.pubCachePath, this.branch)
-      : warningKeyCounts = {};
+  WarningsCollection(this._tempDir, this._pubCachePath, this._branch)
+      : _warningKeyCounts = {};
 
-  static const String kPubCachePathReplacement = '_xxxPubDirectoryxxx_';
-  static const String kTempDirReplacement = '_xxxTempDirectoryxxx_';
+  static const String _pubCachePathReplacement = '_xxxPubDirectoryxxx_';
+  static const String _tempDirReplacement = '_xxxTempDirectoryxxx_';
 
   String _toKey(String text) {
-    var key = text.replaceAll(tempDir, kTempDirReplacement);
-    var pubCachePath = this.pubCachePath;
+    var key = text.replaceAll(_tempDir, _tempDirReplacement);
+    var pubCachePath = _pubCachePath;
     if (pubCachePath != null) {
-      key = key.replaceAll(pubCachePath, kPubCachePathReplacement);
+      key = key.replaceAll(pubCachePath, _pubCachePathReplacement);
     }
     return key;
   }
 
   String _fromKey(String text) {
-    var key = text.replaceAll(kTempDirReplacement, tempDir);
-    if (pubCachePath != null) {
-      key = key.replaceAll(kPubCachePathReplacement, pubCachePath!);
+    var key = text.replaceAll(_tempDirReplacement, _tempDir);
+    if (_pubCachePath != null) {
+      key = key.replaceAll(_pubCachePathReplacement, _pubCachePath!);
     }
     return key;
   }
 
   void add(String text) {
     var key = _toKey(text);
-    warningKeyCounts.update(key, (e) => e + 1, ifAbsent: () => 1);
+    _warningKeyCounts.update(key, (e) => e + 1, ifAbsent: () => 1);
   }
 
   /// Output formatter for comparing warnings.  [this] is the original.
@@ -317,20 +319,20 @@ class WarningsCollection {
     var onlyCurrent = <String>{};
     var identical = <String>{};
     var allKeys = <String>{
-      ...warningKeyCounts.keys,
-      ...current.warningKeyCounts.keys
+      ..._warningKeyCounts.keys,
+      ...current._warningKeyCounts.keys
     };
 
     for (var key in allKeys) {
-      if (warningKeyCounts.containsKey(key) &&
-          !current.warningKeyCounts.containsKey(key)) {
+      if (_warningKeyCounts.containsKey(key) &&
+          !current._warningKeyCounts.containsKey(key)) {
         onlyOriginal.add(key);
-      } else if (!warningKeyCounts.containsKey(key) &&
-          current.warningKeyCounts.containsKey(key)) {
+      } else if (!_warningKeyCounts.containsKey(key) &&
+          current._warningKeyCounts.containsKey(key)) {
         onlyCurrent.add(key);
-      } else if (warningKeyCounts.containsKey(key) &&
-          current.warningKeyCounts.containsKey(key) &&
-          warningKeyCounts[key] != current.warningKeyCounts[key]) {
+      } else if (_warningKeyCounts.containsKey(key) &&
+          current._warningKeyCounts.containsKey(key) &&
+          _warningKeyCounts[key] != current._warningKeyCounts[key]) {
         quantityChangedOuts.add(key);
       } else {
         identical.add(key);
@@ -339,14 +341,15 @@ class WarningsCollection {
 
     if (onlyOriginal.isNotEmpty) {
       printBuffer.writeln(
-          '*** $title : ${onlyOriginal.length} warnings from $branch, missing in ${current.branch}:');
+          '*** $title : ${onlyOriginal.length} warnings from $_branch, missing '
+          'in ${current._branch}:');
       for (var key in onlyOriginal) {
         printBuffer.writeln(_fromKey(key));
       }
     }
     if (onlyCurrent.isNotEmpty) {
-      printBuffer.writeln(
-          '*** $title : ${onlyCurrent.length} new warnings in ${current.branch}, missing in $branch');
+      printBuffer.writeln('*** $title : ${onlyCurrent.length} new warnings in '
+          '${current._branch}, missing in $_branch');
       for (var key in onlyCurrent) {
         printBuffer.writeln(current._fromKey(key));
       }
@@ -354,8 +357,9 @@ class WarningsCollection {
     if (quantityChangedOuts.isNotEmpty) {
       printBuffer.writeln('*** $title : Identical warning quantity changed');
       for (var key in quantityChangedOuts) {
-        printBuffer.writeln(
-            '* Appeared ${warningKeyCounts[key]} times in $branch, ${current.warningKeyCounts[key]} in ${current.branch}:');
+        printBuffer
+            .writeln('* Appeared ${_warningKeyCounts[key]} times in $_branch, '
+                '${current._warningKeyCounts[key]} in ${current._branch}:');
         printBuffer.writeln(current._fromKey(key));
       }
     }
@@ -363,17 +367,20 @@ class WarningsCollection {
         onlyCurrent.isEmpty &&
         quantityChangedOuts.isEmpty) {
       printBuffer.writeln(
-          '*** $title : No difference in warning output from $branch to ${current.branch}${allKeys.isEmpty ? "" : " (${allKeys.length} warnings found)"}');
+          '*** $title : No difference in warning output from $_branch to '
+          '${current._branch}'
+          '${allKeys.isEmpty ? "" : " (${allKeys.length} warnings found)"}');
     } else if (identical.isNotEmpty) {
-      printBuffer.writeln(
-          '*** $title : Difference in warning output found for ${allKeys.length - identical.length} warnings (${allKeys.length} warnings found)"');
+      printBuffer.writeln('*** $title : Difference in warning output found for '
+          '${allKeys.length - identical.length} warnings (${allKeys.length} '
+          'warnings found)"');
     }
     return printBuffer.toString();
   }
 }
 
 /// Returns a map of warning texts to the number of times each has been seen.
-WarningsCollection jsonMessageIterableToWarnings(
+WarningsCollection _jsonMessageIterableToWarnings(
     Iterable<Map<Object, Object?>> messageIterable,
     String tempPath,
     String? pubDir,
@@ -394,32 +401,33 @@ WarningsCollection jsonMessageIterableToWarnings(
 Future<void> compareSdkWarnings() async {
   var originalDartdocSdkDocs =
       Directory.systemTemp.createTempSync('dartdoc-comparison-sdkdocs');
-  var originalDartdoc = createComparisonDartdoc();
+  var originalDartdoc = _createComparisonDartdoc();
   var currentDartdocSdkBuild = _buildSdkDocs(
       _sdkDocsDir.path, Future.value(Directory.current.path), 'current');
   var originalDartdocSdkBuild =
       _buildSdkDocs(originalDartdocSdkDocs.path, originalDartdoc, 'original');
-  var currentDartdocWarnings = jsonMessageIterableToWarnings(
+  var currentDartdocWarnings = _jsonMessageIterableToWarnings(
       await currentDartdocSdkBuild, _sdkDocsDir.path, null, 'HEAD');
-  var originalDartdocWarnings = jsonMessageIterableToWarnings(
+  var originalDartdocWarnings = _jsonMessageIterableToWarnings(
       await originalDartdocSdkBuild,
       originalDartdocSdkDocs.absolute.path,
       null,
-      dartdocOriginalBranch);
+      _dartdocOriginalBranch);
 
   print(originalDartdocWarnings.getPrintableWarningDelta(
       'SDK docs', currentDartdocWarnings));
 }
 
 /// Helper function to create a clean version of dartdoc (based on the current
-/// directory, assumed to be a git repository).  Uses [dartdocOriginalBranch]
-/// to checkout a branch or tag.
-Future<String> createComparisonDartdoc() async {
+/// directory, assumed to be a git repository).
+///
+/// Uses [_dartdocOriginalBranch] to checkout a branch or tag.
+Future<String> _createComparisonDartdoc() async {
   var launcher = SubprocessLauncher('create-comparison-dartdoc');
   var dartdocClean = Directory.systemTemp.createTempSync('dartdoc-comparison');
   await launcher
       .runStreamed('git', ['clone', Directory.current.path, dartdocClean.path]);
-  await launcher.runStreamed('git', ['checkout', dartdocOriginalBranch],
+  await launcher.runStreamed('git', ['checkout', _dartdocOriginalBranch],
       workingDirectory: dartdocClean.path);
   await launcher.runStreamed(Platform.resolvedExecutable, ['pub', 'get'],
       workingDirectory: dartdocClean.path);
@@ -432,7 +440,7 @@ Future<String> createComparisonDartdoc() async {
 /// This copy of dartdoc depends on the HEAD versions of various packages
 /// developed within the SDK, such as 'analyzer', '_fe_analyzer_shared',
 /// and 'meta'.
-Future<String> createSdkDartdoc() async {
+Future<String> _createSdkDartdoc() async {
   var launcher = SubprocessLauncher('create-sdk-dartdoc');
   var dartdocSdk = Directory.systemTemp.createTempSync('dartdoc-sdk');
   await launcher
@@ -481,11 +489,9 @@ dependency_overrides:
 Future<void> testWithAnalyzerSdk() async {
   var launcher = SubprocessLauncher('test-with-analyzer-sdk');
   // Do not override meta on branches outside of stable.
-  var sdkDartdoc = await createSdkDartdoc();
+  var sdkDartdoc = await _createSdkDartdoc();
   var defaultGrindParameter =
       Platform.environment['DARTDOC_GRIND_STEP'] ?? 'test';
-  // TODO(srawlins): Re-enable sdk-analyzer when dart_style is published using
-  // analyzer 3.0.0.
   try {
     await launcher.runStreamed(
         Platform.resolvedExecutable, ['run', 'grinder', defaultGrindParameter],
@@ -519,13 +525,13 @@ Future<Iterable<Map<String, Object?>>> _buildSdkDocs(
 }
 
 Future<Iterable<Map<String, Object?>>> _buildTestPackageDocs(
-    String outputDir, String cwd,
-    {List<String> params = const [],
-    String label = '',
-    String? testPackagePath}) async {
-  if (label != '') label = '-$label';
-  testPackagePath ??= testPackage.absolute.path;
-  var launcher = SubprocessLauncher('build-test-package-docs$label');
+  String outputDir,
+  String cwd, {
+  String? testPackagePath,
+  List<String> params = const [],
+}) async {
+  testPackagePath ??= _testPackagePath;
+  var launcher = SubprocessLauncher('build-test-package-docs');
   var testPackagePubGet = launcher.runStreamed(
       Platform.resolvedExecutable, ['pub', 'get'],
       workingDirectory: testPackagePath);
@@ -557,7 +563,7 @@ Future<Iterable<Map<String, Object?>>> _buildTestPackageDocs(
 Future<void> buildTestExperimentsPackageDocs() async {
   await _buildTestPackageDocs(
       _testPackageExperimentsDocsDir.absolute.path, Directory.current.path,
-      testPackagePath: testPackageExperiments.absolute.path,
+      testPackagePath: _testPackageExperimentsPath,
       params: [
         '--enable-experiment',
         'non-nullable,generic-metadata',
@@ -658,7 +664,7 @@ Future<void> serveSdkDocs() async {
 Future<void> compareFlutterWarnings() async {
   var originalDartdocFlutter =
       Directory.systemTemp.createTempSync('dartdoc-comparison-flutter');
-  var originalDartdoc = createComparisonDartdoc();
+  var originalDartdoc = _createComparisonDartdoc();
   var envCurrent = _createThrowawayPubCache();
   var envOriginal = _createThrowawayPubCache();
   var currentDartdocFlutterBuild = _buildFlutterDocs(_flutterDir.path,
@@ -668,16 +674,16 @@ Future<void> compareFlutterWarnings() async {
       originalDartdoc,
       envOriginal,
       'docs-original');
-  var currentDartdocWarnings = jsonMessageIterableToWarnings(
+  var currentDartdocWarnings = _jsonMessageIterableToWarnings(
       await currentDartdocFlutterBuild,
       _flutterDir.absolute.path,
       envCurrent['PUB_CACHE'],
       'HEAD');
-  var originalDartdocWarnings = jsonMessageIterableToWarnings(
+  var originalDartdocWarnings = _jsonMessageIterableToWarnings(
       await originalDartdocFlutterBuild,
       originalDartdocFlutter.absolute.path,
       envOriginal['PUB_CACHE'],
-      dartdocOriginalBranch);
+      _dartdocOriginalBranch);
 
   print(originalDartdocWarnings.getPrintableWarningDelta(
       'Flutter repo', currentDartdocWarnings));
@@ -763,7 +769,7 @@ environment:
 
   var analyzerOptionsFile =
       File(p.join(_languageTestPackageDir.path, 'analysis_options.yaml'));
-  var analyzerOptions = languageExperiments.map((e) => '    - $e').join('\n');
+  var analyzerOptions = _languageExperiments.map((e) => '    - $e').join('\n');
   analyzerOptionsFile.writeAsStringSync('''analyzer:
    enable-experiment:
 $analyzerOptions
@@ -781,10 +787,12 @@ $analyzerOptions
         entry.existsSync() &&
         !entry.path.endsWith('_error_test.dart') &&
         !entry.path.endsWith('_error_lib.dart')) {
-      var destDir = Directory(p.join(
-          libDir.path,
-          p.dirname(entry.absolute.path
-              .replaceFirst(languageTestDir.absolute.path + p.separator, ''))));
+      var languageTestDirWithSeparator =
+          languageTestDir.absolute.path + p.separator;
+      var entryWithoutLanguageTestDir =
+          entry.absolute.path.replaceFirst(languageTestDirWithSeparator, '');
+      var destDir = Directory(
+          p.join(libDir.path, p.dirname(entryWithoutLanguageTestDir)));
       if (!destDir.existsSync()) destDir.createSync(recursive: true);
       copy(entry, destDir);
     }
@@ -801,7 +809,7 @@ $analyzerOptions
         '--link-to-remote',
         '--show-progress',
         '--enable-experiment',
-        languageExperiments.join(','),
+        _languageExperiments.join(','),
         ..._extraDartdocParameters,
       ],
       workingDirectory: _languageTestPackageDir.absolute.path);
@@ -824,7 +832,7 @@ Future<void> buildFlutterDocs() async {
 }
 
 /// A class wrapping a flutter SDK.
-class FlutterRepo {
+class _FlutterRepo {
   final String flutterPath;
   final Map<String, String> env;
   final String flutterCmd = p.join('bin', 'flutter');
@@ -832,7 +840,7 @@ class FlutterRepo {
   final String cacheDart;
   final SubprocessLauncher launcher;
 
-  FlutterRepo._(this.flutterPath, this.env, this.cacheDart, this.launcher);
+  _FlutterRepo._(this.flutterPath, this.env, this.cacheDart, this.launcher);
 
   Future<void> _init() async {
     Directory(flutterPath).createSync(recursive: true);
@@ -851,40 +859,37 @@ class FlutterRepo {
     );
   }
 
-  factory FlutterRepo.fromPath(String flutterPath, Map<String, String> env,
-      [String? label]) {
+  factory _FlutterRepo.fromPath(
+      String flutterPath, Map<String, String> env, String? label) {
     var cacheDart =
         p.join(flutterPath, 'bin', 'cache', 'dart-sdk', 'bin', 'dart');
-    env['PATH'] =
-        '${p.join(p.canonicalize(flutterPath), "bin")}:${env['PATH'] ?? Platform.environment['PATH']}';
+    var existingPath = env['PATH'] ?? Platform.environment['PATH'];
+    env['PATH'] = '${p.join(p.canonicalize(flutterPath), "bin")}:$existingPath';
     env['FLUTTER_ROOT'] = flutterPath;
     var launcher =
         SubprocessLauncher('flutter${label == null ? "" : "-$label"}', env);
-    return FlutterRepo._(flutterPath, env, cacheDart, launcher);
+    return _FlutterRepo._(flutterPath, env, cacheDart, launcher);
   }
 
-  /// Copy an existing, initialized flutter repo.
-  static Future<FlutterRepo> copyFromExistingFlutterRepo(
-      FlutterRepo origRepo, String flutterPath, Map<String, String> env,
-      [String? label]) async {
+  /// Copies an existing, initialized flutter repo.
+  static Future<_FlutterRepo> copyFromExistingFlutterRepo(_FlutterRepo origRepo,
+      String flutterPath, Map<String, String> env, String label) async {
     copy(Directory(origRepo.flutterPath), Directory(flutterPath));
-    var flutterRepo = FlutterRepo.fromPath(flutterPath, env, label);
-    return flutterRepo;
+    return _FlutterRepo.fromPath(flutterPath, env, label);
   }
 
   /// Doesn't actually copy the existing repo; use for read-only operations
   /// only.
-  static Future<FlutterRepo> fromExistingFlutterRepo(FlutterRepo origRepo,
+  static Future<_FlutterRepo> fromExistingFlutterRepo(_FlutterRepo origRepo,
       [String? label]) async {
-    return FlutterRepo.fromPath(origRepo.flutterPath, {}, label);
+    return _FlutterRepo.fromPath(origRepo.flutterPath, {}, label);
   }
 }
 
-Future<Iterable<Map<String, Object?>>> _buildFlutterDocs(
-    String flutterPath, Future<String> futureCwd, Map<String, String> env,
-    [String? label]) async {
-  var flutterRepo = await FlutterRepo.copyFromExistingFlutterRepo(
-      await cleanFlutterRepo, flutterPath, env, label);
+Future<Iterable<Map<String, Object?>>> _buildFlutterDocs(String flutterPath,
+    Future<String> futureCwd, Map<String, String> env, String label) async {
+  var flutterRepo = await _FlutterRepo.copyFromExistingFlutterRepo(
+      await _cleanFlutterRepo, flutterPath, env, label);
   await flutterRepo.launcher.runStreamed(
     flutterRepo.cacheDart,
     ['pub', 'get'],
@@ -902,8 +907,8 @@ Future<Iterable<Map<String, Object?>>> _buildFlutterDocs(
     flutterRepo.cacheDart,
     ['pub', 'global', 'activate', 'snippets'],
   );
-  // TODO(jcollins-g): flutter's dart SDK pub tries to precompile the universe
-  // when using -spath.  Why?
+  // TODO(jcollins-g): flutter's Dart SDK pub tries to precompile the universe
+  // when using `-spath`.  Why?
   await flutterRepo.launcher.runStreamed(flutterRepo.cacheDart,
       ['pub', 'global', 'activate', '-spath', '.', '-x', 'dartdoc'],
       workingDirectory: await futureCwd);
@@ -946,7 +951,7 @@ Future<String> _buildPubPackageDocs(
       .fromDir(PhysicalResourceProvider.INSTANCE.getFolder(pubPackageDir.path))!
       .requiresFlutter) {
     var flutterRepo =
-        await FlutterRepo.fromExistingFlutterRepo(await cleanFlutterRepo);
+        await _FlutterRepo.fromExistingFlutterRepo(await _cleanFlutterRepo);
     await launcher.runStreamed(flutterRepo.cacheDart, ['pub', 'get'],
         environment: flutterRepo.env,
         workingDirectory: pubPackageDir.absolute.path);
@@ -981,7 +986,8 @@ Future<String> _buildPubPackageDocs(
 }
 
 @Task(
-    'Build an arbitrary pub package based on PACKAGE_NAME and PACKAGE_VERSION environment variables')
+    'Build an arbitrary pub package based on PACKAGE_NAME and PACKAGE_VERSION '
+    'environment variables')
 Future<String> buildPubPackage() async {
   var packageName = Platform.environment['PACKAGE_NAME']!;
   var version = Platform.environment['PACKAGE_VERSION'];
@@ -994,7 +1000,8 @@ Future<String> buildPubPackage() async {
 }
 
 @Task(
-    'Serve an arbitrary pub package based on PACKAGE_NAME and PACKAGE_VERSION environment variables')
+    'Serve an arbitrary pub package based on PACKAGE_NAME and PACKAGE_VERSION '
+    'environment variables')
 Future<void> servePubPackage() async {
   await _serveDocsFrom(await buildPubPackage(), 9000, 'serve-pub-package');
 }
@@ -1006,14 +1013,12 @@ Future<void> checkChangelogHasVersion() async {
     fail('ERROR: No CHANGELOG.md found in ${Directory.current}');
   }
 
-  var version = _getPackageVersion();
-
-  if (!changelog.readAsLinesSync().contains('## $version')) {
-    fail('ERROR: CHANGELOG.md does not mention version $version');
+  if (!changelog.readAsLinesSync().contains('## $_packageVersion')) {
+    fail('ERROR: CHANGELOG.md does not mention version $_packageVersion');
   }
 }
 
-String _getPackageVersion() {
+String get _packageVersion {
   var pubspec = File('pubspec.yaml');
   if (!pubspec.existsSync()) {
     fail('Cannot find pubspec.yaml in ${Directory.current}');
@@ -1030,7 +1035,7 @@ Future<void> build() async {
       ['run', 'build_runner', 'build', '--delete-conflicting-outputs']);
 
   // TODO(jcollins-g): port to build system?
-  var version = _getPackageVersion();
+  var version = _packageVersion;
   var dartdocOptions = File('dartdoc_options.yaml');
   await dartdocOptions.writeAsString('''dartdoc:
   linkToSource:
@@ -1092,7 +1097,8 @@ Future<void> checkBuild() async {
       differentFiles.add(relPath);
     } else if (originalFileContents[relPath] !=
         await newVersion.readAsString()) {
-      log('${newVersion.path} has changed to: \n${newVersion.readAsStringSync()})');
+      log('${newVersion.path} has changed to: \n'
+          '${newVersion.readAsStringSync()})');
       differentFiles.add(relPath);
     }
   }
@@ -1123,25 +1129,22 @@ Future<void> tryPublish() async {
       .runStreamed(Platform.resolvedExecutable, ['pub', 'publish', '-n']);
 }
 
-@Task('Run a smoke test, only')
-@Depends(clean)
-Future<void> smokeTest() async {
-  await testDart(smokeTestFiles);
-  await testFutures.tasksComplete;
-}
-
-@Task('Run non-smoke tests, only')
-@Depends(clean)
-Future<void> longTest() async {
-  await testDart(testFiles);
-  await testFutures.tasksComplete;
-}
-
 @Task('Run all the tests.')
 @Depends(clean)
 Future<void> test() async {
-  await testDart(smokeTestFiles.followedBy(testFiles));
-  await testFutures.tasksComplete;
+  var parameters = <String>['--enable-asserts'];
+
+  for (var dartFile in testFiles) {
+    await _testFutures.add(() =>
+        CoverageSubprocessLauncher('dart-${p.basename(dartFile.path)}')
+            .runStreamed(Platform.resolvedExecutable,
+                <String>[...parameters, dartFile.path]));
+  }
+
+  await CoverageSubprocessLauncher.generateCoverageToFile(
+      PhysicalResourceProvider.INSTANCE.getFile(p.canonicalize('lcov.info')),
+      PhysicalResourceProvider.INSTANCE);
+  await _testFutures.tasksComplete;
 }
 
 @Task('Clean up test directories and delete build cache')
@@ -1169,33 +1172,10 @@ Iterable<Directory> get buildCacheDirectories => Directory('.dart_tool')
     .whereType<Directory>()
     .where((e) => ['build', 'build_resolvers'].contains(p.basename(e.path)));
 
-List<File> get smokeTestFiles => Directory('test')
+Iterable<File> get testFiles => Directory('test')
     .listSync(recursive: true)
     .whereType<File>()
-    .where((e) => p.basename(e.path) == 'model_test.dart')
-    .toList(growable: false);
-
-List<File> get testFiles => Directory('test')
-    .listSync(recursive: true)
-    .whereType<File>()
-    .where((e) => e.path.endsWith('test.dart'))
-    .where((e) => p.basename(e.path) != 'model_test.dart')
-    .toList(growable: false);
-
-Future<void> testDart(Iterable<File> tests) async {
-  var parameters = <String>['--enable-asserts'];
-
-  for (var dartFile in tests) {
-    await testFutures.add(() =>
-        CoverageSubprocessLauncher('dart-${p.basename(dartFile.path)}')
-            .runStreamed(Platform.resolvedExecutable,
-                <String>[...parameters, dartFile.path]));
-  }
-
-  return CoverageSubprocessLauncher.generateCoverageToFile(
-      PhysicalResourceProvider.INSTANCE.getFile(p.canonicalize('lcov.info')),
-      PhysicalResourceProvider.INSTANCE);
-}
+    .where((e) => e.path.endsWith('test.dart'));
 
 @Task('Generate docs for dartdoc without link-to-remote')
 Future<void> testDartdoc() async {
@@ -1207,10 +1187,10 @@ Future<void> testDartdoc() async {
     _dartdocDocsPath,
     '--no-link-to-remote',
   ]);
-  expectFileContains(p.join(_dartdocDocsPath, 'index.html'),
+  _expectFileContains(p.join(_dartdocDocsPath, 'index.html'),
       ['<title>dartdoc - Dart API docs</title>']);
   var object = RegExp('<li>Object</li>', multiLine: true);
-  expectFileContains(
+  _expectFileContains(
       p.join(_dartdocDocsPath, 'dartdoc', 'ModelElement-class.html'), [object]);
 }
 
@@ -1222,9 +1202,9 @@ Future<void> testDartdocRemote() async {
       multiLine: true);
   await launcher.runStreamed(Platform.resolvedExecutable,
       ['--enable-asserts', 'bin/dartdoc.dart', '--output', _dartdocDocsPath]);
-  expectFileContains(p.join(_dartdocDocsPath, 'index.html'),
+  _expectFileContains(p.join(_dartdocDocsPath, 'index.html'),
       ['<title>dartdoc - Dart API docs</title>']);
-  expectFileContains(
+  _expectFileContains(
       p.join(_dartdocDocsPath, 'dartdoc', 'ModelElement-class.html'), [object]);
 }
 
@@ -1236,13 +1216,13 @@ Future<void> serveDartdocFlutterPluginDocs() async {
 }
 
 Future<WarningsCollection> _buildDartdocFlutterPluginDocs() async {
-  var flutterRepo = await FlutterRepo.fromExistingFlutterRepo(
-      await cleanFlutterRepo, 'docs-flutter-plugin');
+  var flutterRepo = await _FlutterRepo.fromExistingFlutterRepo(
+      await _cleanFlutterRepo, 'docs-flutter-plugin');
 
   await flutterRepo.launcher.runStreamed(flutterRepo.cacheDart, ['pub', 'get'],
-      workingDirectory: testPackageFlutterPlugin.path);
+      workingDirectory: _testPackageFlutterPluginPath);
 
-  return jsonMessageIterableToWarnings(
+  return _jsonMessageIterableToWarnings(
     await flutterRepo.launcher.runStreamed(
       flutterRepo.cacheDart,
       [
@@ -1253,10 +1233,10 @@ Future<WarningsCollection> _buildDartdocFlutterPluginDocs() async {
         '--output',
         _pluginPackageDocsPath
       ],
-      workingDirectory: testPackageFlutterPlugin.path,
+      workingDirectory: _testPackageFlutterPluginPath,
     ),
     _pluginPackageDocsPath,
-    defaultPubCache,
+    _defaultPubCache,
     'HEAD',
   );
 }
@@ -1270,11 +1250,11 @@ Future<void> buildDartdocFlutterPluginDocs() async {
 @Task('Verify docs for a package that requires flutter with remote linking')
 Future<void> testDartdocFlutterPlugin() async {
   var warnings = await _buildDartdocFlutterPluginDocs();
-  if (warnings.warningKeyCounts.isNotEmpty) {
-    fail('No warnings should exist in : ${warnings.warningKeyCounts}');
+  if (warnings._warningKeyCounts.isNotEmpty) {
+    fail('No warnings should exist in : ${warnings._warningKeyCounts}');
   }
   // Verify that links to Dart SDK and Flutter SDK go to the flutter site.
-  expectFileContains(
+  _expectFileContains(
       p.join(_pluginPackageDocsPath, 'testlib', 'MyAwesomeWidget-class.html'), [
     '<a href="https://api.flutter.dev/flutter/widgets/Widget-class.html">Widget</a>',
     '<a href="https://api.flutter.dev/flutter/dart-core/Object-class.html">Object</a>'
