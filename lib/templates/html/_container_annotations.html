@@ -1,9 +1,10 @@
 {{ #hasAnnotations }}
-  <div>
-    <ol class="annotation-list">
+  <dt>Annotations</dt>
+  <dd>
+    <ul class="annotation-list {{ relationshipsClass }}">
       {{ #annotations }}
         <li>{{{ linkedNameWithParameters }}}</li>
       {{ /annotations }}
-    </ol>
-  </div>
+    </ul>
+  </dd>
 {{ /hasAnnotations }}

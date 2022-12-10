@@ -360,6 +360,22 @@ extension ModelElementIterableExtensions<T extends ModelElement>
   T named(String name) => firstWhere((e) => e.name == name);
 }
 
+extension IterableStringExtensions on Iterable<String> {
+  /// The main content line of `this`.
+  Iterable<String> get mainContent =>
+      skipWhile((line) => !line.contains('"dartdoc-main-content"'))
+          .takeWhile((line) => !line.contains('/.main-content'));
+
+  /// Verifies that [mainContent] contains [matchers] in order.
+  void expectMainContentContainsAllInOrder(Iterable<Object?> matchers) {
+    expect(
+      mainContent,
+      containsAllInOrder(matchers),
+      reason: 'main content:\n\n${mainContent.join('\n')}',
+    );
+  }
+}
+
 /// Extension methods just for tests.
 extension on ResourceProvider {
   Future<void> writeDartdocResource(String path, String content) async {

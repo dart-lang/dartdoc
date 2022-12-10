@@ -7,15 +7,7 @@
 
     {{#constructor}}
     <section class="multi-line-signature">
-      {{#hasAnnotations}}
-      <div>
-        <ol class="annotation-list">
-          {{#annotations}}
-          <li>{{{linkedNameWithParameters}}}</li>
-          {{/annotations}}
-        </ol>
-      </div>
-      {{/hasAnnotations}}
+      {{ >annotations }}
       {{#isConst}}const{{/isConst}}
       <span class="name {{#isDeprecated}}deprecated{{/isDeprecated}}">{{{nameWithGenerics}}}</span>(<wbr>{{#hasParameters}}{{{linkedParamsLines}}}{{/hasParameters}})
     </section>
