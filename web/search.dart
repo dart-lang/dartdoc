@@ -89,6 +89,7 @@ const _weights = {
   'constructor': 4,
 };
 
+/// Returns the sorted suggestions for [query] from [index] data.
 List<_IndexItem> _findMatches(List<_IndexItem> index, String query) {
   if (query.isEmpty) {
     return [];
@@ -146,6 +147,12 @@ int _suggestionLimit = 10;
 int _suggestionLength = 0;
 const _htmlEscape = HtmlEscape();
 
+/// A limited tree of element containers.
+///
+/// Each key is the inner HTML of a container suggestion element. Each value is
+/// an element for the container, and which contains one or more child
+/// suggestions, all of whom have the container as their parent. This is only
+/// useful for the search results page.
 final _containerMap = <String, Element>{};
 
 // TODO(srawlins): Break up this huge function into smaller parts. One big trick
@@ -207,6 +214,7 @@ void _initializeSearch(
   var suggestionsInfo = <_IndexItem>[];
   int? selectedElement;
 
+  /// Displays the suggestions [searchResults] list box.
   void showSuggestions() {
     if (searchResults.hasChildNodes()) {
       listBox.style.display = 'block';
@@ -265,6 +273,10 @@ void _initializeSearch(
         : '';
   }
 
+  /// Updates the suggestions displayed below the search bar to [suggestions].
+  ///
+  /// [query] is only required here so that it can be displayed with emphasis
+  /// (as a prefix, for example).
   void updateSuggestions(String query, List<_IndexItem> suggestions) {
     suggestionsInfo = [];
     suggestionElements.clear();
@@ -280,7 +292,7 @@ void _initializeSearch(
       suggestionElements.add(_createSuggestion(query, suggestion));
     }
 
-    for (final element in _containerMap.values) {
+    for (final element in suggestionElements) {
       searchResults.append(element);
     }
     suggestionsInfo = suggestions;
@@ -418,7 +430,8 @@ void _initializeSearch(
     event.preventDefault();
   });
 
-  // Verifying the href to check if the search html was called to generate the main content elements that are going to be displayed.
+  // Display the search results in the main body, if we're rendering the search
+  // page.
   if (window.location.href.contains('search.html')) {
     var input = uri.queryParameters['q'];
     if (input == null) {
