@@ -115,7 +115,7 @@ class Category extends Nameable
       config.categories.categoryDefinitions.containsKey(sortKey);
 
   @override
-  String get kind => 'Topic';
+  String get kind => 'topic';
 
   @override
   late final File? documentationFile = () {
