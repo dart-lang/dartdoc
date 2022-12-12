@@ -3993,6 +3993,7 @@ String _deduplicated_lib_templates_html__container_annotations_html(
     </ul>
   </dd>''');
   }
+  buffer.write('\n\n');
 
   return buffer.toString();
 }
