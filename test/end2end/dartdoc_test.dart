@@ -98,8 +98,7 @@ void main() {
           contains('Tool "drill" returned non-zero exit code'));
     });
 
-    test('basic interlinking test', skip: Platform.version.contains('2.18'),
-        () async {
+    test('basic interlinking test', () async {
       var dartdoc = await buildDartdoc(
           ['--exclude-packages=args'], _testPackageDir, tempDir);
       var results = await dartdoc.generateDocs();
