@@ -6,9 +6,10 @@
 
       {{#hasNoGetterSetter}}
         <section class="multi-line-signature">
+          {{ >annotations }}
           {{{ modelType.linkedName }}}
-          {{>name_summary}}
-          {{>features}}
+          {{ >name_summary }}
+          {{ >features }}
         </section>
         {{>documentation}}
         {{>source_code}}

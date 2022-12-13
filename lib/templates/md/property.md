@@ -9,8 +9,9 @@
 
 {{#self}}
 {{#hasNoGetterSetter}}
-{{{ modelType.linkedName }}} {{>name_summary}}  {{!two spaces intentional}}
-{{>features}}
+{{ >annotations }}
+{{{ modelType.linkedName }}} {{ >name_summary }}  {{ !two spaces intentional }}
+{{ >features }}
 
 {{>documentation}}
 

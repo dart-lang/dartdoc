@@ -131,6 +131,7 @@ typedef T2 = T1;
   });
 
   test('category page links to classes annotated with category', () async {
+    // TODO(srawlins): Use expectMainContentContainsAllInOrder throughout.
     expect(
         topicOneLines,
         containsAllInOrder([

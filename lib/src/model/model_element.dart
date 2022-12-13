@@ -414,10 +414,12 @@ abstract class ModelElement extends Canonicalization
   @override
   late final ModelNode? modelNode = packageGraph.getModelNodeFor(element);
 
-  // Skips over annotations with null elements or that are otherwise
-  // supposed to be invisible (@pragma).  While technically, null elements
-  // indicate invalid code from analyzer's perspective they are present in
-  // sky_engine (@Native) so we don't want to crash here.
+  /// This element's [Annotation]s.
+  ///
+  /// Does not include annotations with `null` elements or that are otherwise
+  /// supposed to be invisible (like `@pragma`). While `null` elements indicate
+  /// invalid code from analyzer's perspective, some are present in `sky_engine`
+  /// (`@Native`) so we don't want to crash here.
   late final List<Annotation> annotations = element.metadata
       .whereNot((m) =>
           m.element == null ||
@@ -458,24 +460,14 @@ abstract class ModelElement extends Canonicalization
       .where((s) => s.isNotEmpty)
       .toSet();
 
-  static const Set<String> _specialFeatures = {
-    // Replace the @override annotation with a feature that explicitly
-    // indicates whether an override has occurred.
-    'override',
-    // Drop the plain "deprecated" annotation; that's indicated via
-    // strikethroughs. Custom @Deprecated() will still appear.
-    'deprecated'
-  };
-
   bool get hasFeatures => features.isNotEmpty;
 
-  /// Usually a superset of [annotations] except where [_specialFeatures]
-  /// replace them, a list of annotations as well as tags applied by
-  /// Dartdoc itself when it notices characteristics of an element
-  /// that need to be documented.  See [Feature] for a list.
+  /// The set of attributes or "features" of this element.
+  ///
+  /// This includes tags applied by Dartdoc for various attributes that should
+  /// be called out. See [Feature] for a list.
   Set<Feature> get features {
     return {
-      ...annotations.whereNot((a) => _specialFeatures.contains(a.name)),
       // 'const' and 'static' are not needed here because 'const' and 'static'
       // elements get their own sections in the doc.
       if (isFinal) Feature.finalFeature,

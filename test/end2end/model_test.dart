@@ -190,23 +190,6 @@ void main() {
           mn.parameters
               .map((p) => p.annotations.first.linkedNameWithParameters),
           everyElement(equals(ab0)));
-
-      expect(genericMetadata.features.map((f) => f.linkedNameWithParameters),
-          contains(ab0));
-      expect(f.features.map((f) => f.linkedNameWithParameters), contains(ab0));
-      expect(C.features.map((f) => f.linkedNameWithParameters), contains(ab0));
-      expect(
-          C.typeParameters.first.features
-              .map((f) => f.linkedNameWithParameters),
-          contains(ab0));
-      expect(
-          mp.parameters
-              .map((p) => p.features.map((f) => f.linkedNameWithParameters)),
-          everyElement(contains(ab0)));
-      expect(
-          mn.parameters
-              .map((p) => p.features.map((f) => f.linkedNameWithParameters)),
-          everyElement(contains(ab0)));
     });
   });
 
@@ -3747,13 +3730,6 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
               '  }\n'
               '}\n'
               '```'));
-    });
-
-    test('annotations from getters and setters are accumulated in Fields', () {
-      expect(explicitGetterSetter.featuresAsString,
-          contains('a Getter Annotation'));
-      expect(explicitGetterSetter.featuresAsString,
-          contains('a Setter Annotation'));
     });
 
     test('Docs from inherited implicit accessors are preserved', () {

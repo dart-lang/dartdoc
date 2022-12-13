@@ -114,6 +114,7 @@ dartdoc:
     });
 
     test('extension page contains extension name with generics', () async {
+      // TODO(srawlins): Use expectMainContentContainsAllInOrder throughout.
       expect(
           eLines,
           containsAllInOrder([
