@@ -784,7 +784,7 @@ void main() {
       var renderer = CategoryRendererHtml();
       expect(
           renderer.renderCategoryLabel(category),
-          '<span class="category superb cp-0 linked" title="This is part of the Superb Topic.">'
+          '<span class="category superb cp-0 linked" title="This is part of the Superb topic.">'
           '<a href="${htmlBasePlaceholder}topics/Superb-topic.html">Superb</a></span>');
     });
 

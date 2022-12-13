@@ -74,6 +74,7 @@ void init() {
 }
 
 const _weights = {
+  'topic': 2,
   'library': 2,
   'class': 2,
   'enum': 2,
@@ -465,11 +466,12 @@ Element _createSuggestion(String query, _IndexItem match) {
   }
 
   // The one line description to use in the search suggestions.
-  if (match.desc != '') {
+  final matchDescription = match.desc;
+  if (matchDescription != null && matchDescription.isNotEmpty) {
     final inputDescription = document.createElement('blockquote')
       ..classes.add('one-line-description')
-      ..attributes['title'] = _decodeHtml(match.desc.toString())
-      ..innerHtml = _highlight(match.desc.toString(), query);
+      ..attributes['title'] = _decodeHtml(matchDescription)
+      ..innerHtml = _highlight(matchDescription, query);
     suggestion.append(inputDescription);
   }
 
