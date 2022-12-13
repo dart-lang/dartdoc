@@ -9,7 +9,8 @@
 {{/self}}
 
 {{#function}}
-{{>callable_multiline}}
+{{ >callable_multiline }}
+{{ >features }}
 
 {{>documentation}}
 

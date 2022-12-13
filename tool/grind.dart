@@ -921,7 +921,9 @@ Future<String> _buildPubPackageDocs(
     if (version != null) ...['-v', version],
     pubPackageName,
   ]);
-  var cache = Directory(p.join(env['PUB_CACHE']!, 'hosted', 'pub.dev'));
+  var pubHost =
+      Platform.version.contains('2.18') ? 'pub.dartlang.org' : 'pub.dev';
+  var cache = Directory(p.join(env['PUB_CACHE']!, 'hosted', pubHost));
   var pubPackageDirOrig =
       cache.listSync().firstWhere((e) => e.path.contains(pubPackageName));
   var pubPackageDir = Directory.systemTemp.createTempSync(pubPackageName);

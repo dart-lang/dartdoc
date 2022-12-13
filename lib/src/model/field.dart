@@ -114,7 +114,7 @@ class Field extends ModelElement
 
   @override
   Set<Feature> get features {
-    var allFeatures = super.features..addAll(comboFeatures);
+    var allFeatures = {...super.features, ...comboFeatures};
     // Combo features can indicate 'inherited' and 'override' if
     // either the getter or setter has one of those properties, but that's not
     // really specific enough for [Field]s that have public getter/setters.

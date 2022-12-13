@@ -271,7 +271,7 @@ class Package extends LibraryContainer
   late final Map<String?, Category> nameToCategory;
 
   /// Adds [categorization] to one or more categories in the [nameToCategory]
-  /// map, if it is annoated with `{@category}`, or `[defaultCategory], if not,
+  /// map, if it is annotated with `{@category}`, or `[defaultCategory], if not,
   /// via the [addTo] callback.
   void addToCategories(
       Categorization categorization, void Function(Category) addTo) {

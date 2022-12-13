@@ -1459,7 +1459,10 @@ List<DartdocOption> createDartdocOptions(
       ..addAll([
         DartdocOptionArgOnly<Map<String, String>>(
             'hosted',
-            {'pub.dev': 'https://pub.dev/documentation/%n%/%v%'},
+            {
+              'pub.dartlang.org': 'https://pub.dev/documentation/%n%/%v%',
+              'pub.dev': 'https://pub.dev/documentation/%n%/%v%',
+            },
             resourceProvider,
             help: 'Specify URLs for hosted pub packages'),
         DartdocOptionArgOnly<Map<String, String>>(

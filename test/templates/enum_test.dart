@@ -3,10 +3,8 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/file_system/memory_file_system.dart';
-import 'package:dartdoc/options.dart';
 import 'package:dartdoc/src/dartdoc.dart';
 import 'package:dartdoc/src/model/model.dart';
-import 'package:dartdoc/src/package_meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
@@ -16,57 +14,15 @@ import '../src/utils.dart';
 void main() async {
   const packageName = 'test_package';
 
-  late String packagePath;
-  late MemoryResourceProvider resourceProvider;
-  late PackageMetaProvider packageMetaProvider;
-  late DartdocGeneratorOptionContext context;
   late List<String> eLines;
   late List<String> enumWithDefaultConstructorLines;
 
-  Future<PubPackageBuilder> createPackageBuilder({
-    List<String> additionalOptions = const [],
-  }) async {
-    context = await generatorContextFromArgv([
-      '--input',
-      packagePath,
-      '--output',
-      p.join(packagePath, 'doc'),
-      '--sdk-dir',
-      packageMetaProvider.defaultSdkDir.path,
-      '--no-link-to-remote',
-      ...additionalOptions,
-    ], packageMetaProvider);
-
-    var packageConfigProvider =
-        getTestPackageConfigProvider(packageMetaProvider.defaultSdkDir.path);
-    packageConfigProvider.addPackageToConfigFor(
-        packagePath, packageName, Uri.file('$packagePath/'));
-    return PubPackageBuilder(
-      context,
-      packageMetaProvider,
-      packageConfigProvider,
-      skipUnreachableSdkLibraries: true,
-    );
-  }
-
-  Future<Dartdoc> buildDartdoc({
-    List<String> additionalOptions = const [],
-  }) async {
-    final packageBuilder = await createPackageBuilder(
-      additionalOptions: additionalOptions,
-    );
-    return await Dartdoc.fromContext(
-      context,
-      packageBuilder,
-    );
-  }
-
   group('enhanced enums', skip: !enhancedEnumsAllowed, () {
     setUpAll(() async {
-      packageMetaProvider = testPackageMetaProvider;
-      resourceProvider =
+      final packageMetaProvider = testPackageMetaProvider;
+      final resourceProvider =
           packageMetaProvider.resourceProvider as MemoryResourceProvider;
-      packagePath = await d.createPackage(
+      final packagePath = await d.createPackage(
         packageName,
         pubspec: '''
 name: enums
@@ -81,10 +37,13 @@ analyzer:
 ''',
         libFiles: [
           d.file('lib.dart', '''
-class C<T> {}
+class C<T> {
+  const C(String m);
+}
 
 mixin M<T> {}
 
+@C('message')
 enum E<T> with M<T> implements C<T> {
   /// Doc comment for [one].
   one<int>.named(1),
@@ -102,7 +61,7 @@ enum E<T> with M<T> implements C<T> {
   bool operator >(E other) => false;
 
   /// A field.
-  int f1 = 0;
+  final int f1 = 0;
 
   /// An instance getter.
   int get ig1 => 1;
@@ -123,7 +82,7 @@ enum E<T> with M<T> implements C<T> {
   static int get gs1 => 3;
 
   /// A static setter.
-  static void set gs1(int value) {}
+  static set gs1(int value) {}
 }
 
 enum EnumWithDefaultConstructor {
@@ -141,7 +100,27 @@ enum EnumWithDefaultConstructor {
         resourceProvider: resourceProvider,
       );
       await writeDartdocResources(resourceProvider);
-      await (await buildDartdoc()).generateDocs();
+      final context = await generatorContextFromArgv([
+        '--input',
+        packagePath,
+        '--output',
+        p.join(packagePath, 'doc'),
+        '--sdk-dir',
+        packageMetaProvider.defaultSdkDir.path,
+        '--no-link-to-remote',
+      ], packageMetaProvider);
+
+      var packageConfigProvider =
+          getTestPackageConfigProvider(packageMetaProvider.defaultSdkDir.path);
+      packageConfigProvider.addPackageToConfigFor(
+          packagePath, packageName, Uri.file('$packagePath/'));
+      final packageBuilder = PubPackageBuilder(
+        context,
+        packageMetaProvider,
+        packageConfigProvider,
+        skipUnreachableSdkLibraries: true,
+      );
+      await (await Dartdoc.fromContext(context, packageBuilder)).generateDocs();
       eLines = resourceProvider
           .getFile(p.join(packagePath, 'doc', 'lib', 'E.html'))
           .readAsStringSync()
@@ -154,6 +133,7 @@ enum EnumWithDefaultConstructor {
     });
 
     test('enum page contains enum name with generics', () async {
+      // TODO(srawlins): Use expectMainContentContainsAllInOrder throughout.
       expect(
           eLines,
           containsAllInOrder([
@@ -183,6 +163,16 @@ enum EnumWithDefaultConstructor {
                 '<span class="signature">&lt;<wbr>'
                 '<span class="type-parameter">T</span>&gt;</span>'),
           ]));
+    });
+
+    test('enum page contains annotations', () async {
+      eLines.expectMainContentContainsAllInOrder([
+        matches('<dt>Annotations</dt>'),
+        matches('<ul class="annotation-list eNum-relationships">'),
+        matches(
+            r'<li>@<a href="../lib/C-class.html">C</a>\(&#39;message&#39;\)</li>'),
+        matches('</ul>'),
+      ]);
     });
 
     test('enum page contains values', () async {
