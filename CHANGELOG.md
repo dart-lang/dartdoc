@@ -1,3 +1,10 @@
+## 6.1.5
+
+* Fix remote linking in Dart 2.18. (#3267)
+* Fix arrow key functions in search. (#3271)
+* Don't show `null` in search results with topics. (#3273)
+* Remove annotations from the features section of each element. (#3268)
+
 ## 6.1.4
 
 * Fix using the Enter key in the search bar, on Flutter. (#3256)
