@@ -2087,8 +2087,6 @@ void main() {
           Dep.href, equals('${htmlBasePlaceholder}ex/Deprecated-class.html'));
       expect(Dep.instanceMethods.firstWhere((m) => m.name == 'toString').href,
           equals('${htmlBasePlaceholder}ex/Deprecated/toString.html'));
-      expect(Dep.instanceFields.firstWhere((m) => m.name == 'expires').href,
-          equals('${htmlBasePlaceholder}ex/Deprecated/expires.html'));
     });
 
     test('F has a single instance method', () {
