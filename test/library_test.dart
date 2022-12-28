@@ -9,6 +9,8 @@ import 'package:test/test.dart';
 import 'src/test_descriptor_utils.dart' as d;
 import 'src/utils.dart';
 
+// TODO(srawlins): Migrate to test_reflective_loader tests.
+
 void main() {
   test('A named library', () async {
     var packageMetaProvider = testPackageMetaProvider;

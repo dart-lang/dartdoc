@@ -10,6 +10,8 @@ import 'package:test/test.dart';
 import 'src/test_descriptor_utils.dart' as d;
 import 'src/utils.dart';
 
+// TODO(srawlins): Migrate to test_reflective_loader tests.
+
 void main() async {
   const libraryName = 'element_types';
   const placeholder = '%%__HTMLBASE_dartdoc_internal__%%';

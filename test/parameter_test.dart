@@ -2,65 +2,36 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:analyzer/file_system/memory_file_system.dart';
 import 'package:dartdoc/src/model/model.dart';
-import 'package:dartdoc/src/package_config_provider.dart';
-import 'package:dartdoc/src/package_meta.dart';
 import 'package:test/test.dart';
+import 'package:test_reflective_loader/test_reflective_loader.dart';
 
-import 'src/test_descriptor_utils.dart' as d;
+import 'dartdoc_test_base.dart';
 import 'src/utils.dart';
 
 void main() {
-  group('parameters', () {
-    late Library library;
-
-    // It is expensive (~10s) to compute a package graph, even skipping
-    // unreachable Dart SDK libraries, so we set up this package once.
-    setUpAll(() async {
-      const libraryName = 'super_parameters';
-      var packageMetaProvider = testPackageMetaProvider;
-
-      var packagePath = await d.createPackage(
-        libraryName,
-        libFiles: [
-          d.file('lib.dart', '''
-library $libraryName;
-
-class C {
-  int? f;
-
-  C.requiredPositional(this.f);
-  C.optionalPositional([this.f]);
-  C.defaultValue([this.f = 0]);
-  C.requiredNamed({required this.f});
-  C.named({this.f});
-  C.namedWithDefault({this.f = 0});
+  defineReflectiveSuite(() {
+    defineReflectiveTests(ParameterTest);
+  });
 }
-'''),
-        ],
-        resourceProvider:
-            packageMetaProvider.resourceProvider as MemoryResourceProvider,
-      );
-      var packageConfigProvider =
-          getTestPackageConfigProvider(packageMetaProvider.defaultSdkDir.path);
-      packageConfigProvider.addPackageToConfigFor(
-          packagePath, libraryName, Uri.file('$packagePath/'));
 
-      var packageGraph = await bootBasicPackage(
-        packagePath,
-        packageMetaProvider,
-        packageConfigProvider,
-      );
-      library = packageGraph.libraries.named(libraryName);
-    });
+@reflectiveTest
+class ParameterTest extends DartdocTestBase {
+  @override
+  String get libraryName => 'parameters';
+  @override
+  String get sdkConstraint => '>=2.17.0 <3.0.0';
 
-    test(
-        'required positional field formal parameters are presented with a '
-        'linked type', () async {
-      var requiredPositional = library.constructor('C.requiredPositional');
+  void test_requiredPositionalFieldFormalParameter() async {
+    var library = await bootPackageWithLibrary('''
+class A {
+  int? f;
+  A.requiredPositional(this.f);
+}
+''');
+    var requiredPositional = library.constructor('A.requiredPositional');
 
-      expect(requiredPositional.linkedParams, matchesCompressed(r'''
+    expect(requiredPositional.linkedParams, matchesCompressed(r'''
         <span class="parameter" id="requiredPositional-param-f">
           <span class="type-annotation">
             <a href=".*/dart-core/int-class\.html">int</a>\?
@@ -68,14 +39,18 @@ class C {
           <span class="parameter-name">f</span>
         </span>
       '''));
-    });
+  }
 
-    test(
-        'optional positional field formal parameters are presented with a '
-        'linked type', () async {
-      var optionalPositional = library.constructor('C.optionalPositional');
+  void test_optionalPositionalFieldFormalParameter() async {
+    var library = await bootPackageWithLibrary('''
+class A {
+  int? f;
+  A.optionalPositional([this.f]);
+}
+''');
+    var optionalPositional = library.constructor('A.optionalPositional');
 
-      expect(optionalPositional.linkedParams, matchesCompressed(r'''
+    expect(optionalPositional.linkedParams, matchesCompressed(r'''
         <span class="parameter" id="optionalPositional-param-f">
           \[
           <span class="type-annotation">
@@ -85,14 +60,18 @@ class C {
           \]
         </span>
       '''));
-    });
+  }
 
-    test(
-        'optional positional field formal parameters, with a default value, '
-        'are presented with a linked type', () async {
-      var defaultValue = library.constructor('C.defaultValue');
+  void test_optionalPositionalFieldFormalParameterWithDefaultValue() async {
+    var library = await bootPackageWithLibrary('''
+class A {
+  int? f;
+  A.defaultValue([this.f = 0]);
+}
+''');
+    var defaultValue = library.constructor('A.defaultValue');
 
-      expect(defaultValue.linkedParams, matchesCompressed(r'''
+    expect(defaultValue.linkedParams, matchesCompressed(r'''
         <span class="parameter" id="defaultValue-param-f">
           \[
           <span class="type-annotation">
@@ -104,14 +83,18 @@ class C {
           \]
         </span>
       '''));
-    });
+  }
 
-    test(
-        'required named field formal parameters are presented with a '
-        'linked type', () async {
-      var requiredNamed = library.constructor('C.requiredNamed');
+  void test_requiredNamedFieldFormalParameter() async {
+    var library = await bootPackageWithLibrary('''
+class A {
+  int? f;
+  A.requiredNamed({required this.f});
+}
+''');
+    var requiredNamed = library.constructor('A.requiredNamed');
 
-      expect(requiredNamed.linkedParams, matchesCompressed(r'''
+    expect(requiredNamed.linkedParams, matchesCompressed(r'''
         <span class="parameter" id="requiredNamed-param-f">
           \{
           <span>required</span>
@@ -122,13 +105,18 @@ class C {
           \}
         </span>
       '''));
-    });
+  }
 
-    test('named field formal parameters are presented with a linked type',
-        () async {
-      var named = library.constructor('C.named');
+  void test_namedFieldFormalParameter() async {
+    var library = await bootPackageWithLibrary('''
+class A {
+  int? f;
+  A.named({this.f});
+}
+''');
+    var named = library.constructor('A.named');
 
-      expect(named.linkedParams, matchesCompressed(r'''
+    expect(named.linkedParams, matchesCompressed(r'''
         <span class="parameter" id="named-param-f">
           \{
           <span class="type-annotation">
@@ -138,14 +126,18 @@ class C {
           \}
         </span>
       '''));
-    });
+  }
 
-    test(
-        'named field formal parameters, with a default value, are presented '
-        'with a linked type', () async {
-      var namedWithDefault = library.constructor('C.namedWithDefault');
+  void test_namedFieldFormalParameterWithDefaultValue() async {
+    var library = await bootPackageWithLibrary('''
+class A {
+  int? f;
+  A.namedWithDefault({this.f = 0});
+}
+''');
+    var namedWithDefault = library.constructor('A.namedWithDefault');
 
-      expect(namedWithDefault.linkedParams, matchesCompressed(r'''
+    expect(namedWithDefault.linkedParams, matchesCompressed(r'''
         <span class="parameter" id="namedWithDefault-param-f">
           \{
           <span class="type-annotation">
@@ -157,81 +149,20 @@ class C {
           \}
         </span>
       '''));
-    });
-  });
+  }
 
-  group('super-parameters', skip: !superParametersAllowed, () {
-    late Library library;
-
-    // It is expensive (~10s) to compute a package graph, even skipping
-    // unreachable Dart SDK libraries, so we set up this package once.
-    setUpAll(() async {
-      const libraryName = 'super_parameters';
-
-      await d.createPackage(
-        libraryName,
-        pubspec: '''
-name: super_parameters
-version: 0.0.1
-environment:
-  sdk: '>=2.17.0-0 <3.0.0'
-''',
-        analysisOptions: '''
-analyzer:
-  enable-experiment:
-    - super-parameters
-''',
-        libFiles: [
-          d.file('lib.dart', '''
-library $libraryName;
-
+  void test_requiredPositionalSuperParameter() async {
+    var library = await bootPackageWithLibrary('''
 class C {
   C.requiredPositional(int a);
-  C.optionalPositional([int? a]);
-  C.defaultValue([int a = 0]);
-  C.requiredNamed({required int a});
-  C.named({int? a});
-  C.namedWithDefault({int a = 0});
-
-  int f;
-  C.fieldFormal(this.f);
-
-  C.positionalNum(num g);
 }
-
 class D extends C {
   D.requiredPositional(super.a) : super.requiredPositional();
-  D.optionalPositional([super.a]) : super.optionalPositional();
-  D.defaultValue([super.a = 0]) : super.defaultValue();
-  D.requiredNamed({required super.a}) : super.requiredNamed();
-  D.named({super.a}) : super.named();
-  D.namedWithDefault({int a = 0}) : super.namedWithDefault();
-
-  D.fieldFormal(super.f) : super.fieldFormal();
-  D.positionalNum(int super.g) : super.positionalNum();
 }
+''');
+    var requiredPositional = library.constructor('D.requiredPositional');
 
-class E extends D {
-  E.superIsSuper(super.a) : super.requiredPositional();
-}
-'''),
-        ],
-      );
-
-      var packageGraph = await bootBasicPackage(
-        d.dir(libraryName).io.path,
-        pubPackageMetaProvider,
-        PhysicalPackageConfigProvider(),
-      );
-      library = packageGraph.libraries.named(libraryName);
-    });
-
-    test(
-        'required positional super-parameters are presented with a linked type',
-        () async {
-      var requiredPositional = library.constructor('D.requiredPositional');
-
-      expect(requiredPositional.linkedParams, matchesCompressed(r'''
+    expect(requiredPositional.linkedParams, matchesCompressed(r'''
         <span class="parameter" id="requiredPositional-param-a">
           <span class="type-annotation">
             <a href=".*/dart-core/int-class\.html">int</a>
@@ -239,14 +170,20 @@ class E extends D {
           <span class="parameter-name">a</span>
         </span>
       '''));
-    });
+  }
 
-    test(
-        'optional positional super-parameters are presented with a linked type',
-        () async {
-      var optionalPositional = library.constructor('D.optionalPositional');
+  void test_optionalPositionalSuperParameter() async {
+    var library = await bootPackageWithLibrary('''
+class C {
+  C.optionalPositional([int? a]);
+}
+class D extends C {
+  D.optionalPositional([super.a]) : super.optionalPositional();
+}
+''');
+    var optionalPositional = library.constructor('D.optionalPositional');
 
-      expect(optionalPositional.linkedParams, matchesCompressed(r'''
+    expect(optionalPositional.linkedParams, matchesCompressed(r'''
         <span class="parameter" id="optionalPositional-param-a">
           \[
           <span class="type-annotation">
@@ -256,14 +193,20 @@ class E extends D {
           \]
         </span>
       '''));
-    });
+  }
 
-    test(
-        'optional positional super-parameters, with a default, are presented '
-        'with a linked type', () async {
-      var defaultValue = library.constructor('D.defaultValue');
+  void test_optionalPositionalSuperParameterWithDefault() async {
+    var library = await bootPackageWithLibrary('''
+class C {
+  C.defaultValue([int a = 0]);
+}
+class D extends C {
+  D.defaultValue([super.a = 0]) : super.defaultValue();
+}
+''');
+    var defaultValue = library.constructor('D.defaultValue');
 
-      expect(defaultValue.linkedParams, matchesCompressed(r'''
+    expect(defaultValue.linkedParams, matchesCompressed(r'''
         <span class="parameter" id="defaultValue-param-a">
           \[
           <span class="type-annotation">
@@ -275,13 +218,20 @@ class E extends D {
           \]
         </span>
       '''));
-    });
+  }
 
-    test('required named super-parameters are presented with a linked type',
-        () async {
-      var requiredNamed = library.constructor('D.requiredNamed');
+  void test_requiredNamedSuperParameters() async {
+    var library = await bootPackageWithLibrary('''
+class C {
+  C.requiredNamed({required int a});
+}
+class D extends C {
+  D.requiredNamed({required super.a}) : super.requiredNamed();
+}
+''');
+    var requiredNamed = library.constructor('D.requiredNamed');
 
-      expect(requiredNamed.linkedParams, matchesCompressed(r'''
+    expect(requiredNamed.linkedParams, matchesCompressed(r'''
         <span class="parameter" id="requiredNamed-param-a">
           \{
           <span>required</span>
@@ -292,12 +242,20 @@ class E extends D {
           \}
         </span>
       '''));
-    });
+  }
 
-    test('named super-parameters are presented with a linked type', () async {
-      var named = library.constructor('D.named');
+  void test_namedSuperParameter() async {
+    var library = await bootPackageWithLibrary('''
+class C {
+  C.named({int? a});
+}
+class D extends C {
+  D.named({super.a}) : super.named();
+}
+''');
+    var named = library.constructor('D.named');
 
-      expect(named.linkedParams, matchesCompressed(r'''
+    expect(named.linkedParams, matchesCompressed(r'''
         <span class="parameter" id="named-param-a">
           \{
           <span class="type-annotation">
@@ -307,14 +265,20 @@ class E extends D {
           \}
         </span>
       '''));
-    });
+  }
 
-    test(
-        'named super-parameters, with a default, are presented with a linked '
-        'type', () async {
-      var namedWithDefault = library.constructor('D.namedWithDefault');
+  void test_namedSuperParameterWithDefault() async {
+    var library = await bootPackageWithLibrary('''
+class C {
+  C.namedWithDefault({int a = 0});
+}
+class D extends C {
+  D.namedWithDefault({int a = 0}) : super.namedWithDefault();
+}
+''');
+    var namedWithDefault = library.constructor('D.namedWithDefault');
 
-      expect(namedWithDefault.linkedParams, matchesCompressed(r'''
+    expect(namedWithDefault.linkedParams, matchesCompressed(r'''
         <span class="parameter" id="namedWithDefault-param-a">
           \{
           <span class="type-annotation">
@@ -326,12 +290,21 @@ class E extends D {
           \}
         </span>
       '''));
-    });
+  }
 
-    test('super-constructor parameter is field formal', () async {
-      var fieldFormal = library.constructor('D.fieldFormal');
+  void test_superConstructorParameterIsFieldFormal() async {
+    var library = await bootPackageWithLibrary('''
+class C {
+  int f;
+  C.fieldFormal(this.f);
+}
+class D extends C {
+  D.fieldFormal(super.f) : super.fieldFormal();
+}
+''');
+    var fieldFormal = library.constructor('D.fieldFormal');
 
-      expect(fieldFormal.linkedParams, matchesCompressed(r'''
+    expect(fieldFormal.linkedParams, matchesCompressed(r'''
         <span class="parameter" id="fieldFormal-param-f">
           <span class="type-annotation">
             <a href=".*/dart-core/int-class\.html">int</a>
@@ -339,12 +312,23 @@ class E extends D {
           <span class="parameter-name">f</span>
         </span>
       '''));
-    });
+  }
 
-    test('super-constructor parameter is super-parameter', () async {
-      var superIsSuper = library.constructor('E.superIsSuper');
+  void test_superConstructorParameterIsSuperParameter() async {
+    var library = await bootPackageWithLibrary('''
+class C {
+  C.requiredPositional(int a);
+}
+class D extends C {
+  D.requiredPositional(super.a) : super.requiredPositional();
+}
+class E extends D {
+  E.superIsSuper(super.a) : super.requiredPositional();
+}
+''');
+    var superIsSuper = library.constructor('E.superIsSuper');
 
-      expect(superIsSuper.linkedParams, matchesCompressed(r'''
+    expect(superIsSuper.linkedParams, matchesCompressed(r'''
         <span class="parameter" id="superIsSuper-param-a">
           <span class="type-annotation">
             <a href=".*/dart-core/int-class\.html">int</a>
@@ -352,12 +336,20 @@ class E extends D {
           <span class="parameter-name">a</span>
         </span>
       '''));
-    });
+  }
 
-    test('parameter is subtype of super-constructor parameter', () async {
-      var positionalNum = library.constructor('D.positionalNum');
+  void testParameterIsSubtypeOfSuperConstructorParameter() async {
+    var library = await bootPackageWithLibrary('''
+class C {
+  C.positionalNum(num g);
+}
+class D extends C {
+  D.positionalNum(int super.g) : super.positionalNum();
+}
+''');
+    var positionalNum = library.constructor('D.positionalNum');
 
-      expect(positionalNum.linkedParams, matchesCompressed(r'''
+    expect(positionalNum.linkedParams, matchesCompressed(r'''
         <span class="parameter" id="positionalNum-param-g">
           <span class="type-annotation">
             <a href=".*/dart-core/int-class\.html">int</a>
@@ -365,8 +357,7 @@ class E extends D {
           <span class="parameter-name">g</span>
         </span>
       '''));
-    });
-  });
+  }
 }
 
 extension on Library {
