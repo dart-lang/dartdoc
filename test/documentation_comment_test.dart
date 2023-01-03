@@ -15,6 +15,8 @@ import 'package:test/test.dart';
 
 import 'src/utils.dart' as utils;
 
+// TODO(srawlins): Migrate to test_reflective_loader tests.
+
 void main() {
   Matcher hasInvalidParameterWarning(String message) =>
       _HasWarning(PackageWarning.invalidParameter, message);

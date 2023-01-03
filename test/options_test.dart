@@ -14,6 +14,8 @@ import 'package:test/test.dart';
 import 'src/test_descriptor_utils.dart' as d;
 import 'src/utils.dart' as utils;
 
+// TODO(srawlins): Migrate to test_reflective_loader tests.
+
 void main() async {
   const packageName = 'test_package';
 

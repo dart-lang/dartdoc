@@ -2,65 +2,25 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:analyzer/file_system/memory_file_system.dart';
 import 'package:dartdoc/src/model/model.dart';
-import 'package:dartdoc/src/package_config_provider.dart';
-import 'package:dartdoc/src/package_meta.dart';
 import 'package:test/test.dart';
+import 'package:test_reflective_loader/test_reflective_loader.dart';
 
-import 'src/test_descriptor_utils.dart' as d;
+import 'dartdoc_test_base.dart';
 import 'src/utils.dart';
 
 void main() {
-  const libraryName = 'annotations';
-
-  const dartCoreUrlPrefix = 'https://api.dart.dev/stable/2.16.0/dart-core';
-
-  late PackageMetaProvider packageMetaProvider;
-  late MemoryResourceProvider resourceProvider;
-  late FakePackageConfigProvider packageConfigProvider;
-  late String packagePath;
-
-  setUp(() async {
-    packageMetaProvider = testPackageMetaProvider;
-    resourceProvider =
-        packageMetaProvider.resourceProvider as MemoryResourceProvider;
-
-    packagePath = await d.createPackage(
-      libraryName,
-      pubspec: '''
-name: annotations
-version: 0.0.1
-environment:
-  sdk: '>=2.15.0 <3.0.0'
-''',
-      resourceProvider: resourceProvider,
-    );
-
-    packageConfigProvider =
-        getTestPackageConfigProvider(packageMetaProvider.defaultSdkDir.path);
-    packageConfigProvider.addPackageToConfigFor(
-        packagePath, libraryName, Uri.file('$packagePath/'));
+  defineReflectiveSuite(() {
+    defineReflectiveTests(AnnotationTest);
   });
+}
 
-  Future<Library> bootPackageWithLibrary(String libraryContent) async {
-    await d.dir('lib', [
-      d.file('lib.dart', '''
-library $libraryName;
+@reflectiveTest
+class AnnotationTest extends DartdocTestBase {
+  @override
+  final libraryName = 'annotations';
 
-$libraryContent
-'''),
-    ]).createInMemory(resourceProvider, packagePath);
-
-    var packageGraph = await bootBasicPackage(
-      packagePath,
-      packageMetaProvider,
-      packageConfigProvider,
-    );
-    return packageGraph.libraries.named(libraryName);
-  }
-
-  test('deprecated constant is linked', () async {
+  void test_deprecatedConstant() async {
     var library = await bootPackageWithLibrary('''
 @deprecated
 int value = 0;
@@ -76,9 +36,9 @@ int value = 0;
       annotation.linkedNameWithParameters,
       '@<a href="$dartCoreUrlPrefix/deprecated-constant.html">deprecated</a>',
     );
-  });
+  }
 
-  test('Deprecated() constructor call is linked', () async {
+  void test_DeprecatedConstructorCall() async {
     var library = await bootPackageWithLibrary('''
 @Deprecated('text')
 int value = 0;
@@ -95,9 +55,9 @@ int value = 0;
       '@<a href="$dartCoreUrlPrefix/Deprecated-class.html">Deprecated</a>'
       '(&#39;text&#39;)',
     );
-  });
+  }
 
-  test('locally declared constant is linked', () async {
+  void test_locallyDeclaredConstant() async {
     var library = await bootPackageWithLibrary('''
 class MyAnnotation {
   const MyAnnotation();
@@ -121,9 +81,9 @@ int value = 0;
       '@<a href="${htmlBasePlaceholder}annotations/myAnnotation-constant.html">'
       'myAnnotation</a>',
     );
-  });
+  }
 
-  test('locally declared constructor call is linked', () async {
+  void test_locallyDeclaredConstructorCall() async {
     var library = await bootPackageWithLibrary('''
 class MyAnnotation {
   const MyAnnotation(bool b);
@@ -145,9 +105,9 @@ int value = 0;
       '@<a href="${htmlBasePlaceholder}annotations/MyAnnotation-class.html">'
       'MyAnnotation</a>(true)',
     );
-  });
+  }
 
-  test('generic constructor call is linked', () async {
+  void test_genericConstructorCall() async {
     var library = await bootPackageWithLibrary('''
 class Ann<T> {
   final T f;
@@ -172,5 +132,5 @@ int value = 0;
       '<span class="signature">&lt;<wbr><span class="type-parameter">'
       '<a href="$dartCoreUrlPrefix/bool-class.html">bool</a></span>&gt;</span>(true)',
     );
-  });
+  }
 }

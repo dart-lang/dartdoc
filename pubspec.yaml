@@ -39,6 +39,7 @@ dev_dependencies:
   test: ^1.19.0
   test_descriptor: ^2.0.0
   test_process: ^2.0.2
+  test_reflective_loader: ^0.2.0
 
 executables:
   dartdoc: null
