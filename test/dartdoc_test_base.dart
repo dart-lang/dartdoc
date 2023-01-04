@@ -38,10 +38,7 @@ abstract class DartdocTestBase {
     await setUpPackage(libraryName);
   }
 
-  Future<void> setUpPackage(String name /*, {
-    String? analysisOptions,
-  }*/
-      ) async {
+  Future<void> setUpPackage(String name) async {
     var pubspec = d.buildPubspecText(sdkConstraint: sdkConstraint);
     String? analysisOptions;
     if (experiments.isNotEmpty) {
