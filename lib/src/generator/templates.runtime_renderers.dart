@@ -15924,7 +15924,6 @@ const _invisibleGetters = {
     'returnType',
     'runtimeType',
     'session',
-    'source',
     'substitution',
     'type',
     'typeParameters'
@@ -16164,7 +16163,6 @@ const _invisibleGetters = {
     'nonSynthetic',
     'runtimeType',
     'session',
-    'source',
     'substitution'
   },
   'MethodElement': {'augmentation', 'declaration', 'hashCode', 'runtimeType'},
