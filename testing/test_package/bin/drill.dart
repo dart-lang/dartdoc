@@ -38,7 +38,7 @@ void main(List<String> argList) {
     'INVOCATION_INDEX',
     'PACKAGE_INVOCATION_INDEX',
   ]);
-  Map<String, String> env = <String, String>{}..addAll(Platform.environment);
+  Map<String, String> env = <String, String>{...Platform.environment};
   env.removeWhere((String key, String value) => !variableNames.contains(key));
   env.updateAll(
       (key, value) => inputFileRegExp.hasMatch(value) ? '<INPUT_FILE>' : value);

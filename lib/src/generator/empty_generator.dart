@@ -14,8 +14,10 @@ class EmptyGenerator implements Generator {
   @override
   Future<void> generate(PackageGraph packageGraph) {
     logProgress(packageGraph.defaultPackage.documentationAsHtml);
-    for (var package in {packageGraph.defaultPackage}
-      ..addAll(packageGraph.localPackages)) {
+    for (var package in {
+      packageGraph.defaultPackage,
+      ...packageGraph.localPackages
+    }) {
       for (var category in filterNonDocumented(package.categories)) {
         logProgress(category.documentationAsHtml);
       }
