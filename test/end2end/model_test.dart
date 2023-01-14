@@ -270,7 +270,6 @@ void main() {
   group('NNBD cases', () {
     late final Library lateFinalWithoutInitializer,
         nullSafetyClassMemberDeclarations,
-        optOutOfNullSafety,
         nullableElements;
     late final Class b;
     late final Class c;
@@ -282,8 +281,6 @@ void main() {
           .firstWhere((lib) => lib.name == 'late_final_without_initializer');
       nullSafetyClassMemberDeclarations = packageGraph.libraries
           .firstWhere((lib) => lib.name == 'nnbd_class_member_declarations');
-      optOutOfNullSafety = packageGraph.libraries
-          .firstWhere((lib) => lib.name == 'opt_out_of_nnbd');
       nullableElements = packageGraph.libraries
           .firstWhere((lib) => lib.name == 'nullable_elements');
       b = nullSafetyClassMemberDeclarations.allClasses
@@ -410,12 +407,6 @@ void main() {
       expect(initializeMe.isLate, isTrue);
       expect(initializeMe.features, contains(Feature.lateFeature));
       expect(initializeMe.features, isNot(contains(Feature.readWrite)));
-    });
-
-    test('Opt out of Null safety', () {
-      var notOptedIn = optOutOfNullSafety.publicProperties
-          .firstWhere((v) => v.name == 'notOptedIn');
-      expect(notOptedIn.modelType.nullabilitySuffix, isEmpty);
     });
 
     test('complex nullable elements are detected and rendered correctly', () {
