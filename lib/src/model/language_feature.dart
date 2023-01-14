@@ -4,13 +4,9 @@
 
 import 'package:dartdoc/src/render/language_feature_renderer.dart';
 
-const Map<String, String> _featureDescriptions = {
-  'Null safety': 'Supports the null safety language feature.',
-};
+const Map<String, String> _featureDescriptions = {};
 
-const Map<String, String> _featureUrls = {
-  'Null safety': 'https://dart.dev/null-safety',
-};
+const Map<String, String> _featureUrls = {};
 
 /// An abstraction for a language feature; used to render tags to notify
 /// the user that the documentation should be specially interpreted.
