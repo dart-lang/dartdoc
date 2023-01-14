@@ -4,7 +4,8 @@
 
 import 'dart:convert';
 import 'dart:html';
-import 'dart:js_util' as js_util;
+
+import 'web_interop.dart';
 
 final String _htmlBase = () {
   final body = document.querySelector('body')!;
@@ -34,14 +35,14 @@ void init() {
   }
 
   window.fetch('${_htmlBase}index.json').then((response) async {
-    int code = js_util.getProperty(response, 'status');
+    response = response as FetchResponse;
+    var code = response.status;
     if (code == 404) {
       disableSearch();
       return;
     }
 
-    var textPromise = js_util.callMethod<Object>(response, 'text', []);
-    var text = await promiseToFuture<String>(textPromise);
+    var text = await response.text;
     var jsonIndex = (jsonDecode(text) as List).cast<Map<String, dynamic>>();
     final index = jsonIndex.map(_IndexItem.fromMap).toList();
 
@@ -167,7 +168,7 @@ class _Search {
     ..append(moreResults)
     ..append(searchResults);
 
-  /// Element used in [listbox] to inform the functionality of hitting enter in
+  /// Element used in [listBox] to inform the functionality of hitting enter in
   /// search box.
   late final moreResults = document.createElement('div')
     ..classes.add('enter-search-message');
@@ -516,10 +517,8 @@ void _mapToContainer(Element containerElement, Element suggestion) {
 
   final element = _containerMap[containerInnerHtml];
   if (element != null) {
-    print('appending! ${suggestion.innerHtml}');
     element.append(suggestion);
   } else {
-    print('appending2! ${suggestion.innerHtml}');
     containerElement.append(suggestion);
     _containerMap[containerInnerHtml] = containerElement;
   }
