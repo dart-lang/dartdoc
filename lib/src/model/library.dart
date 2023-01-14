@@ -208,17 +208,6 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   @override
   Scope get scope => element.scope;
 
-  /// Whether this library is in a package configured to be treated as using
-  /// null safety and itself uses null safety.
-  bool get _allowsNullSafety => element.isNonNullableByDefault;
-
-  /// Whether this library should be documented as using null safety.
-  ///
-  /// A library may use null safety but not be documented that way.
-  @override
-  bool get isNullSafety =>
-      config.enableExperiment.contains('non-nullable') && _allowsNullSafety;
-
   bool get isInSdk => element.isInSdk;
 
   /// [allModelElements] resolved to their original names.
