@@ -199,7 +199,6 @@ body {
   background-color: var(--main-bg-color);
 }
 
-/* some of this is to reset bootstrap */
 nav.navbar {
   background-color: inherit;
   min-height: 50px;
@@ -229,22 +228,6 @@ nav .container {
 header {
   background-color: var(--main-header-color);
   box-shadow: 0 3px 5px rgba(0,0,0,0.1);
-}
-
-header.header-fixed nav.navbar-fixed-top {
-  box-shadow: 0 3px 5px rgba(0,0,0,0.1);
-}
-
-header.container-fluid {
-  padding: 0;
-}
-
-header .masthead {
-  padding-top: 64px;
-}
-
-header .contents {
-  padding: 0;
 }
 
 .pre {
@@ -288,19 +271,8 @@ header .contents {
     background: var(--main-code-bg);
 }
 
-@media screen and (max-width:768px) {
-  header .contents {
-    padding-left: 15px;
-    padding-right: 15px;
-  }
-}
-
 a {
   text-decoration: none;
-}
-
-.body {
-  margin-top: 90px;
 }
 
 section {
@@ -340,17 +312,6 @@ h2 {
 
 h5 {
   font-size: 16px;
-}
-
-.subtitle {
-  font-size: 17px;
-  min-height: 1.4em;
-}
-
-.title-description .subtitle {
-  white-space: nowrap;
-  overflow-x: hidden;
-  text-overflow: ellipsis;
 }
 
 p {
@@ -396,7 +357,6 @@ pre {
 
 code {
   font-family: 'Roboto Mono', Menlo, monospace;
-  /* overriding bootstrap */
   color: inherit;
   padding: 0.2em 0.4em;
   font-size: 85%;
@@ -415,12 +375,6 @@ code {
 
   pre {
     margin: 16px 0;
-  }
-}
-
-@media (min-width: 840px) {
-  ul.subnav li {
-    font-size: 17px;
   }
 }
 
@@ -629,10 +583,6 @@ h1 .feature {
   vertical-align: middle;
 }
 
-p.firstline {
-  font-weight: bold;
-}
-
 footer {
   color: #fff;
   background-color: var(--main-footer-background);
@@ -647,8 +597,7 @@ footer .no-break {
   white-space: nowrap;
 }
 
-footer .container,
-footer .container-fluid {
+footer .container {
   padding-left: 0;
   padding-right: 0;
 }
@@ -819,42 +768,6 @@ section.multi-line-signature div.parameters {
   margin-left: 24px;
 }
 
-/* subnav styles */
-
-ul.subnav {
-  overflow: auto;
-  white-space: nowrap;
-  padding-left: 0;
-  min-height: 25px;
-}
-
-ul.subnav::-webkit-scrollbar {
-  display: none;
-}
-
-ul.subnav li {
-  display: inline-block;
-  text-transform: uppercase;
-}
-
-ul.subnav li a {
-  color: #111;
-}
-
-ul.subnav li {
-  margin-right: 24px;
-}
-
-ul.subnav li:last-of-type {
-  margin-right: 0;
-}
-
-@media(max-width: 840px) {
-  ul.subnav li {
-    margin-right: 16px;
-  }
-}
-
 /* sidebar styles */
 
 .sidebar ol {
@@ -1001,7 +914,6 @@ button {
 
 /* find-as-you-type search box */
 
-/* override bootstrap defaults */
 .form-control {
   border-radius: 0;
   border: 0;
@@ -1013,9 +925,7 @@ button {
   }
 }
 
-.typeahead,
-.tt-query,
-.tt-hint {
+.typeahead {
   width: 200px;
   padding: 2px 7px 1px 7px;
   line-height: 20px;
@@ -1030,22 +940,6 @@ button {
 .tt-input {
   position: relative;
   vertical-align: top;
-}
-
-.tt-query {
-  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-     -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-}
-
-.tt-hint {
-  position: absolute;
-  top: 0;
-  left: 0;
-  box-shadow: none;
-  background: none 0 0 / auto repeat scroll padding-box border-box rgb(255, 255, 255);
-  border-color: transparent;
-  border-width: 0;
 }
 
 .navbar-right .tt-menu {
@@ -1080,7 +974,7 @@ button {
 }
 
 
-.typeahead, .tt-query, .tt-hint {
+.typeahead {
   padding: 17px 17px 17px 50px;
   width: 422px;
   height: 20px;
@@ -1228,12 +1122,8 @@ a.tt-container {
   display: none;
 }
 
-.temp-box {
-  width: 0;
-}
-
 @media screen and (max-width: 840px) {
- .typeahead, .tt-query, .tt-hint {
+ .typeahead {
    padding: 17px 17px 17px 33px;
    width: 240px;
    height: 17px;
@@ -1245,37 +1135,17 @@ a.tt-container {
   header {
     padding-left: 0;
   }
-
-  .temp-box {
-    width: 520px;
-  }
-}
-
-@media screen and (max-width: 400px) {
-  .temp-box {
-    width: 100px;
-  }
 }
 
 @media screen and (max-width: 320px) {
-  .temp-box {
-    width: 0;
-  }
-
   #sidenav-left-toggle {
-   margin-right: 10px;
-   margin-left: 20px;
+    margin-right: 10px;
+    margin-left: 20px;
   }
 
   .self-name {
-   margin-right: 10px;
+    margin-right: 10px;
   }
-}
-
-.search-from-lib {
-  font-style: italic;
-  color: var(--main-text-color);
-  font-size: 11px;
 }
 
 ::placeholder {
