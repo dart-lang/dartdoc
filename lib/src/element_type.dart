@@ -423,7 +423,7 @@ class GenericTypeAliasElementType extends TypeParameterElementType {
 extension on DartType {
   /// The dartdoc nullability suffix for this type in [library].
   String nullabilitySuffixWithin(Library library) {
-    if (library.isNullSafety && !isVoid && !isBottom) {
+    if (!isVoid && !isBottom) {
       /// If a legacy type appears inside the public interface of a Null
       /// safety library, we pretend it is nullable for the purpose of
       /// documentation (since star-types are not supposed to be public).
