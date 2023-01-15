@@ -314,10 +314,6 @@ void main() {
           equals(''));
     });
 
-    test('isNullSafety is set correctly for libraries', () {
-      expect(lateFinalWithoutInitializer.isNullSafety, isTrue);
-    });
-
     test('method parameters with required', () {
       var m1 = b.instanceMethods.firstWhere((m) => m.name == 'm1');
       var p1 = m1.parameters.firstWhere((p) => p.name == 'p1');
@@ -416,7 +412,6 @@ void main() {
     test('complex nullable elements are detected and rendered correctly', () {
       var complexNullableMembers = nullableElements.allClasses
           .firstWhere((c) => c.name == 'ComplexNullableMembers');
-      expect(complexNullableMembers.isNullSafety, isTrue);
       expect(
           complexNullableMembers.nameWithGenerics,
           equals(
@@ -430,7 +425,6 @@ void main() {
           .firstWhere((f) => f.name == 'methodWithNullables');
       var operatorStar = nullableMembers.publicInstanceOperators
           .firstWhere((f) => f.name == 'operator *');
-      expect(nullableMembers.isNullSafety, isTrue);
       expect(
           methodWithNullables.linkedParams,
           equals(

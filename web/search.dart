@@ -516,10 +516,8 @@ void _mapToContainer(Element containerElement, Element suggestion) {
 
   final element = _containerMap[containerInnerHtml];
   if (element != null) {
-    print('appending! ${suggestion.innerHtml}');
     element.append(suggestion);
   } else {
-    print('appending2! ${suggestion.innerHtml}');
     containerElement.append(suggestion);
     _containerMap[containerInnerHtml] = containerElement;
   }
