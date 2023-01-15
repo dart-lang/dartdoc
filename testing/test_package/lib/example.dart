@@ -167,7 +167,7 @@ class Apple {
 
   operator *(Apple other) => this;
 
-  bool isGreaterThan(int number, {int check: 5}) {
+  bool isGreaterThan(int number, {int check = 5}) {
     return number > check;
   }
 

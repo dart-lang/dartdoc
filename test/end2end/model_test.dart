@@ -190,23 +190,6 @@ void main() {
           mn.parameters
               .map((p) => p.annotations.first.linkedNameWithParameters),
           everyElement(equals(ab0)));
-
-      expect(genericMetadata.features.map((f) => f.linkedNameWithParameters),
-          contains(ab0));
-      expect(f.features.map((f) => f.linkedNameWithParameters), contains(ab0));
-      expect(C.features.map((f) => f.linkedNameWithParameters), contains(ab0));
-      expect(
-          C.typeParameters.first.features
-              .map((f) => f.linkedNameWithParameters),
-          contains(ab0));
-      expect(
-          mp.parameters
-              .map((p) => p.features.map((f) => f.linkedNameWithParameters)),
-          everyElement(contains(ab0)));
-      expect(
-          mn.parameters
-              .map((p) => p.features.map((f) => f.linkedNameWithParameters)),
-          everyElement(contains(ab0)));
     });
   });
 
@@ -287,7 +270,6 @@ void main() {
   group('NNBD cases', () {
     late final Library lateFinalWithoutInitializer,
         nullSafetyClassMemberDeclarations,
-        optOutOfNullSafety,
         nullableElements;
     late final Class b;
     late final Class c;
@@ -299,8 +281,6 @@ void main() {
           .firstWhere((lib) => lib.name == 'late_final_without_initializer');
       nullSafetyClassMemberDeclarations = packageGraph.libraries
           .firstWhere((lib) => lib.name == 'nnbd_class_member_declarations');
-      optOutOfNullSafety = packageGraph.libraries
-          .firstWhere((lib) => lib.name == 'opt_out_of_nnbd');
       nullableElements = packageGraph.libraries
           .firstWhere((lib) => lib.name == 'nullable_elements');
       b = nullSafetyClassMemberDeclarations.allClasses
@@ -332,11 +312,6 @@ void main() {
       expect(anotherOddFunction.modelType.returnType.name, equals('dynamic'));
       expect(anotherOddFunction.modelType.returnType.nullabilitySuffix,
           equals(''));
-    });
-
-    test('isNullSafety is set correctly for libraries', () {
-      expect(lateFinalWithoutInitializer.isNullSafety, isTrue);
-      expect(optOutOfNullSafety.isNullSafety, isFalse);
     });
 
     test('method parameters with required', () {
@@ -434,17 +409,9 @@ void main() {
       expect(initializeMe.features, isNot(contains(Feature.readWrite)));
     });
 
-    test('Opt out of Null safety', () {
-      var notOptedIn = optOutOfNullSafety.publicProperties
-          .firstWhere((v) => v.name == 'notOptedIn');
-      expect(notOptedIn.isNullSafety, isFalse);
-      expect(notOptedIn.modelType.nullabilitySuffix, isEmpty);
-    });
-
     test('complex nullable elements are detected and rendered correctly', () {
       var complexNullableMembers = nullableElements.allClasses
           .firstWhere((c) => c.name == 'ComplexNullableMembers');
-      expect(complexNullableMembers.isNullSafety, isTrue);
       expect(
           complexNullableMembers.nameWithGenerics,
           equals(
@@ -458,7 +425,6 @@ void main() {
           .firstWhere((f) => f.name == 'methodWithNullables');
       var operatorStar = nullableMembers.publicInstanceOperators
           .firstWhere((f) => f.name == 'operator *');
-      expect(nullableMembers.isNullSafety, isTrue);
       expect(
           methodWithNullables.linkedParams,
           equals(
@@ -784,7 +750,7 @@ void main() {
       var renderer = CategoryRendererHtml();
       expect(
           renderer.renderCategoryLabel(category),
-          '<span class="category superb cp-0 linked" title="This is part of the Superb Topic.">'
+          '<span class="category superb cp-0 linked" title="This is part of the Superb topic.">'
           '<a href="${htmlBasePlaceholder}topics/Superb-topic.html">Superb</a></span>');
     });
 
@@ -905,12 +871,6 @@ void main() {
 
     test('has a name', () {
       expect(exLibrary.name, 'ex');
-    });
-
-    test('does not have a null safety label if not null safe', () {
-      var optOutLibrary = packageGraph.libraries
-          .firstWhere((lib) => lib.name == 'opt_out_of_nnbd');
-      expect(optOutLibrary.isNullSafety, isFalse);
     });
 
     test('has a line number and column', () {
@@ -2104,8 +2064,6 @@ void main() {
           Dep.href, equals('${htmlBasePlaceholder}ex/Deprecated-class.html'));
       expect(Dep.instanceMethods.firstWhere((m) => m.name == 'toString').href,
           equals('${htmlBasePlaceholder}ex/Deprecated/toString.html'));
-      expect(Dep.instanceFields.firstWhere((m) => m.name == 'expires').href,
-          equals('${htmlBasePlaceholder}ex/Deprecated/expires.html'));
     });
 
     test('F has a single instance method', () {
@@ -3747,13 +3705,6 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
               '  }\n'
               '}\n'
               '```'));
-    });
-
-    test('annotations from getters and setters are accumulated in Fields', () {
-      expect(explicitGetterSetter.featuresAsString,
-          contains('a Getter Annotation'));
-      expect(explicitGetterSetter.featuresAsString,
-          contains('a Setter Annotation'));
     });
 
     test('Docs from inherited implicit accessors are preserved', () {

@@ -3,227 +3,197 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/dart/element/type.dart';
-import 'package:analyzer/file_system/memory_file_system.dart';
-import 'package:dartdoc/src/model/model.dart';
 import 'package:test/test.dart';
+import 'package:test_reflective_loader/test_reflective_loader.dart';
 
-import 'src/test_descriptor_utils.dart' as d;
+import 'dartdoc_test_base.dart';
 import 'src/utils.dart';
 
 void main() {
-  group('typedefs of function types', () {
-    late Library library;
+  defineReflectiveSuite(() {
+    if (recordsAllowed) {
+      defineReflectiveTests(TypedefTest);
+    }
+  });
+}
 
-    // It is expensive (~10s) to compute a package graph, even skipping
-    // unreachable Dart SDK libraries, so we set up this package once.
-    setUpAll(() async {
-      const libraryName = 'typedefs';
-      final packageMetaProvider = testPackageMetaProvider;
+@reflectiveTest
+class TypedefTest extends DartdocTestBase {
+  @override
+  String get libraryName => 'typedefs';
 
-      final packagePath = await d.createPackage(
-        libraryName,
-        libFiles: [
-          d.file('lib.dart', '''
-library $libraryName;
+  @override
+  String get sdkConstraint => '>=2.19.0-0 <3.0.0';
 
+  @override
+  List<String> get experiments => ['records'];
+
+  void test_basicFunctionTypedef() async {
+    var library = await bootPackageWithLibrary('''
 /// Line _one_.
 ///
 /// Line _two_.
 typedef Cb1 = void Function();
+''');
+    final cb1Typedef = library.typedefs.named('Cb1');
 
+    expect(cb1Typedef.nameWithGenerics, 'Cb1');
+    expect(cb1Typedef.genericParameters, '');
+    expect(cb1Typedef.aliasedType, isA<FunctionType>());
+    expect(cb1Typedef.documentationComment, '''
+/// Line _one_.
+///
+/// Line _two_.''');
+    expect(cb1Typedef.documentation, '''
+Line _one_.
+
+Line _two_.''');
+    expect(cb1Typedef.oneLineDoc, 'Line <em>one</em>.');
+    expect(cb1Typedef.documentationAsHtml, '''
+<p>Line <em>one</em>.</p>
+<p>Line <em>two</em>.</p>''');
+  }
+
+  void test_genericFunctionTypedef() async {
+    var library = await bootPackageWithLibrary('''
+typedef Cb2<T> = T Function(T);
+''');
+    final cb2Typedef = library.typedefs.named('Cb2');
+
+    expect(
+      cb2Typedef.nameWithGenerics,
+      'Cb2&lt;<wbr><span class="type-parameter">T</span>&gt;',
+    );
+    expect(
+      cb2Typedef.genericParameters,
+      '&lt;<wbr><span class="type-parameter">T</span>&gt;',
+    );
+    expect(cb2Typedef.aliasedType, isA<FunctionType>());
+  }
+
+  void test_genericFunctionTypedefReferringToGenericTypedef() async {
+    var library = await bootPackageWithLibrary('''
 typedef Cb2<T> = T Function(T);
 
 /// Not unlike [Cb2].
 typedef Cb3<T> = Cb2<List<T>>;
-'''),
-        ],
-        resourceProvider:
-            packageMetaProvider.resourceProvider as MemoryResourceProvider,
-      );
-      final packageConfigProvider =
-          getTestPackageConfigProvider(packageMetaProvider.defaultSdkDir.path);
-      packageConfigProvider.addPackageToConfigFor(
-          packagePath, libraryName, Uri.file('$packagePath/'));
+''');
+    final cb3Typedef = library.typedefs.named('Cb3');
 
-      final packageGraph = await bootBasicPackage(
-        packagePath,
-        packageMetaProvider,
-        packageConfigProvider,
-      );
-      library = packageGraph.libraries.named(libraryName);
-    });
+    expect(
+      cb3Typedef.nameWithGenerics,
+      'Cb3&lt;<wbr><span class="type-parameter">T</span>&gt;',
+    );
+    expect(
+      cb3Typedef.genericParameters,
+      '&lt;<wbr><span class="type-parameter">T</span>&gt;',
+    );
+    expect(cb3Typedef.aliasedType, isA<FunctionType>());
+    expect(cb3Typedef.parameters, hasLength(1));
 
-    test('basic function typedef', () async {
-      final cb1Typedef = library.typedefs.named('Cb1');
+    // TODO(srawlins): Dramatically improve typedef testing.
+  }
 
-      expect(cb1Typedef.nameWithGenerics, 'Cb1');
-      expect(cb1Typedef.genericParameters, '');
-      expect(cb1Typedef.aliasedType, isA<FunctionType>());
-      expect(cb1Typedef.documentationComment, '''
-/// Line _one_.
-///
-/// Line _two_.''');
-      expect(cb1Typedef.documentation, '''
-Line _one_.
+  void test_typedefInDocCommentReference() async {
+    var library = await bootPackageWithLibrary('''
+typedef Cb2<T> = T Function(T);
 
-Line _two_.''');
-      expect(cb1Typedef.oneLineDoc, 'Line <em>one</em>.');
-      expect(cb1Typedef.documentationAsHtml, '''
-<p>Line <em>one</em>.</p>
-<p>Line <em>two</em>.</p>''');
-    });
+/// Not unlike [Cb2].
+typedef Cb3<T> = Cb2<List<T>>;
+''');
+    final cb3Typedef = library.typedefs.named('Cb3');
 
-    test('generic function typedef', () async {
-      final cb2Typedef = library.typedefs.named('Cb2');
+    expect(cb3Typedef.isDocumented, isTrue);
+    expect(cb3Typedef.documentation, 'Not unlike [Cb2].');
+    expect(
+      cb3Typedef.documentationAsHtml,
+      '<p>Not unlike '
+      '<a href="%%__HTMLBASE_dartdoc_internal__%%typedefs/Cb2.html">Cb2</a>.'
+      '</p>',
+    );
+  }
 
-      expect(
-        cb2Typedef.nameWithGenerics,
-        'Cb2&lt;<wbr><span class="type-parameter">T</span>&gt;',
-      );
-      expect(
-        cb2Typedef.genericParameters,
-        '&lt;<wbr><span class="type-parameter">T</span>&gt;',
-      );
-      expect(cb2Typedef.aliasedType, isA<FunctionType>());
-    });
-
-    test('generic function typedef referring to a generic typedef', () async {
-      final cb3Typedef = library.typedefs.named('Cb3');
-
-      expect(
-        cb3Typedef.nameWithGenerics,
-        'Cb3&lt;<wbr><span class="type-parameter">T</span>&gt;',
-      );
-      expect(
-        cb3Typedef.genericParameters,
-        '&lt;<wbr><span class="type-parameter">T</span>&gt;',
-      );
-      expect(cb3Typedef.aliasedType, isA<FunctionType>());
-
-      expect(cb3Typedef.parameters, hasLength(1));
-
-      // TODO(srawlins): Dramatically improve typedef testing.
-    });
-
-    test('typedef in a doc comment reference', () {
-      final cb3Typedef = library.typedefs.named('Cb3');
-
-      expect(cb3Typedef.isDocumented, isTrue);
-
-      expect(cb3Typedef.documentation, 'Not unlike [Cb2].');
-
-      expect(
-        cb3Typedef.documentationAsHtml,
-        '<p>Not unlike '
-        '<a href="%%__HTMLBASE_dartdoc_internal__%%typedefs/Cb2.html">Cb2</a>.'
-        '</p>',
-      );
-    });
-  });
-
-  group('typedefs of record types', skip: !recordsAllowed, () {
-    late Library library;
-
-    // It is expensive (~10s) to compute a package graph, even skipping
-    // unreachable Dart SDK libraries, so we set up this package once.
-    setUpAll(() async {
-      const libraryName = 'typedefs';
-      final packageMetaProvider = testPackageMetaProvider;
-
-      final packagePath = await d.createPackage(
-        libraryName,
-        libFiles: [
-          d.file('lib.dart', '''
-library $libraryName;
-
+  void test_basicRecordTypedef() async {
+    var library = await bootPackageWithLibrary('''
 /// Line _one_.
 ///
 /// Line _two_.
 typedef R1 = (int, String);
+''');
+    final r1Typedef = library.typedefs.named('R1');
 
+    expect(r1Typedef.nameWithGenerics, 'R1');
+    expect(r1Typedef.genericParameters, '');
+    expect(r1Typedef.aliasedType, isA<RecordType>());
+    expect(r1Typedef.documentationComment, '''
+/// Line _one_.
+///
+/// Line _two_.''');
+    expect(r1Typedef.documentation, '''
+Line _one_.
+
+Line _two_.''');
+    expect(r1Typedef.oneLineDoc, 'Line <em>one</em>.');
+    expect(r1Typedef.documentationAsHtml, '''
+<p>Line <em>one</em>.</p>
+<p>Line <em>two</em>.</p>''');
+  }
+
+  void test_genericRecordTypedef() async {
+    var library = await bootPackageWithLibrary('''
+typedef R2<T> = (T, String);
+''');
+    final r2Typedef = library.typedefs.named('R2');
+
+    expect(
+      r2Typedef.nameWithGenerics,
+      'R2&lt;<wbr><span class="type-parameter">T</span>&gt;',
+    );
+    expect(
+      r2Typedef.genericParameters,
+      '&lt;<wbr><span class="type-parameter">T</span>&gt;',
+    );
+    expect(r2Typedef.aliasedType, isA<RecordType>());
+  }
+
+  void test_genericRecordTypedefReferringToGenericTypedef() async {
+    var library = await bootPackageWithLibrary('''
 typedef R2<T> = (T, String);
 
 /// Not unlike [R2].
 typedef R3<T> = R2<List<T>>;
-'''),
-        ],
-        resourceProvider:
-            packageMetaProvider.resourceProvider as MemoryResourceProvider,
-      );
-      final packageConfigProvider =
-          getTestPackageConfigProvider(packageMetaProvider.defaultSdkDir.path);
-      packageConfigProvider.addPackageToConfigFor(
-          packagePath, libraryName, Uri.file('$packagePath/'));
+''');
+    final r3Typedef = library.typedefs.named('R3');
 
-      final packageGraph = await bootBasicPackage(
-        packagePath,
-        packageMetaProvider,
-        packageConfigProvider,
-      );
-      library = packageGraph.libraries.named(libraryName);
-    });
+    expect(
+      r3Typedef.nameWithGenerics,
+      'R3&lt;<wbr><span class="type-parameter">T</span>&gt;',
+    );
+    expect(
+      r3Typedef.genericParameters,
+      '&lt;<wbr><span class="type-parameter">T</span>&gt;',
+    );
+    expect(r3Typedef.aliasedType, isA<RecordType>());
+  }
 
-    test('basic record typedef', () async {
-      final r1Typedef = library.typedefs.named('R1');
+  void test_typedefInDocCommentReference2() async {
+    var library = await bootPackageWithLibrary('''
+typedef R2<T> = (T, String);
 
-      expect(r1Typedef.nameWithGenerics, 'R1');
-      expect(r1Typedef.genericParameters, '');
-      expect(r1Typedef.aliasedType, isA<RecordType>());
-      expect(r1Typedef.documentationComment, '''
-/// Line _one_.
-///
-/// Line _two_.''');
-      expect(r1Typedef.documentation, '''
-Line _one_.
+/// Not unlike [R2].
+typedef R3<T> = R2<List<T>>;
+''');
+    final r3Typedef = library.typedefs.named('R3');
 
-Line _two_.''');
-      expect(r1Typedef.oneLineDoc, 'Line <em>one</em>.');
-      expect(r1Typedef.documentationAsHtml, '''
-<p>Line <em>one</em>.</p>
-<p>Line <em>two</em>.</p>''');
-    });
+    expect(r3Typedef.isDocumented, isTrue);
 
-    test('generic record typedef', () async {
-      final r2Typedef = library.typedefs.named('R2');
+    expect(r3Typedef.documentation, 'Not unlike [R2].');
 
-      expect(
-        r2Typedef.nameWithGenerics,
-        'R2&lt;<wbr><span class="type-parameter">T</span>&gt;',
-      );
-      expect(
-        r2Typedef.genericParameters,
-        '&lt;<wbr><span class="type-parameter">T</span>&gt;',
-      );
-      expect(r2Typedef.aliasedType, isA<RecordType>());
-    });
-
-    test('generic record typedef referring to a generic typedef', () async {
-      final r3Typedef = library.typedefs.named('R3');
-
-      expect(
-        r3Typedef.nameWithGenerics,
-        'R3&lt;<wbr><span class="type-parameter">T</span>&gt;',
-      );
-      expect(
-        r3Typedef.genericParameters,
-        '&lt;<wbr><span class="type-parameter">T</span>&gt;',
-      );
-      expect(r3Typedef.aliasedType, isA<RecordType>());
-    });
-
-    test('typedef in a doc comment reference', () {
-      final r3Typedef = library.typedefs.named('R3');
-
-      expect(r3Typedef.isDocumented, isTrue);
-
-      expect(r3Typedef.documentation, 'Not unlike [R2].');
-
-      expect(
-        r3Typedef.documentationAsHtml,
-        '<p>Not unlike '
-        '<a href="%%__HTMLBASE_dartdoc_internal__%%typedefs/R2.html">R2</a>.'
-        '</p>',
-      );
-    });
-  });
+    expect(
+      r3Typedef.documentationAsHtml,
+      '<p>Not unlike '
+      '<a href="%%__HTMLBASE_dartdoc_internal__%%typedefs/R2.html">R2</a>.'
+      '</p>',
+    );
+  }
 }

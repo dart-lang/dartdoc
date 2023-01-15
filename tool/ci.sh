@@ -29,7 +29,6 @@ elif [ "$DARTDOC_BOT" = "packages" ]; then
   PACKAGE_NAME=access PACKAGE_VERSION=">=1.0.1+2" dart run grinder build-pub-package
   # Negative test for flutter_plugin_tools, make sure right error message is displayed.
   PACKAGE_NAME=flutter_plugin_tools PACKAGE_VERSION=">=0.0.14+1" dart run grinder build-pub-package 2>&1 | grep "warning: package:flutter_plugin_tools has no documentable libraries"
-  PACKAGE_NAME=shelf_exception_handler PACKAGE_VERSION=">=0.2.0" dart run grinder build-pub-package
 elif [ "$DARTDOC_BOT" = "sdk-analyzer" ]; then
   echo "Running all tests against the SDK analyzer"
   unset COVERAGE_TOKEN

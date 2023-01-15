@@ -1,3 +1,18 @@
+## 6.1.5
+
+* Fix remote linking in Dart 2.18. (#3267)
+* Fix arrow key functions in search. (#3271)
+* Don't show `null` in search results with topics. (#3273)
+* Remove annotations from the features section of each element. (#3268)
+
+## 6.1.4
+
+* Fix using the Enter key in the search bar, on Flutter. (#3256)
+* Make many Strings in DocumentationComment non-nullable. (#3243)
+* Differentiate between enums and mixins and classes, in container titles and
+  descriptions. (#3258)
+* Weigh enums the same as classes in search results. (#3260)
+
 ## 6.1.3
 
 * Deprecate `lib/src/model/model.dart` as public API. (#3208)

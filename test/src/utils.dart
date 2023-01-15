@@ -31,7 +31,7 @@ import 'package:test/test.dart';
 /// The number of public libraries in testing/test_package, minus 2 for
 /// the excluded libraries listed in the initializers for _testPackageGraphMemo
 /// and minus 1 for the @nodoc tag in the 'excluded' library.
-const int kTestPackagePublicLibraries = 27;
+const int kTestPackagePublicLibraries = 26;
 
 final _resourceProvider = pubPackageMetaProvider.resourceProvider;
 final _pathContext = _resourceProvider.pathContext;
@@ -358,6 +358,22 @@ bool get superParametersAllowed =>
 extension ModelElementIterableExtensions<T extends ModelElement>
     on Iterable<T> {
   T named(String name) => firstWhere((e) => e.name == name);
+}
+
+extension IterableStringExtensions on Iterable<String> {
+  /// The main content line of `this`.
+  Iterable<String> get mainContent =>
+      skipWhile((line) => !line.contains('"dartdoc-main-content"'))
+          .takeWhile((line) => !line.contains('/.main-content'));
+
+  /// Verifies that [mainContent] contains [matchers] in order.
+  void expectMainContentContainsAllInOrder(Iterable<Object?> matchers) {
+    expect(
+      mainContent,
+      containsAllInOrder(matchers),
+      reason: 'main content:\n\n${mainContent.join('\n')}',
+    );
+  }
 }
 
 /// Extension methods just for tests.

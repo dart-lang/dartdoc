@@ -5261,13 +5261,6 @@ class _Renderer_FeatureSet extends RendererBase<FeatureSet> {
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.hasFeatureSet == true,
                 ),
-                'isNullSafety': Property(
-                  getValue: (CT_ c) => c.isNullSafety,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isNullSafety == true,
-                ),
                 'library': Property(
                   getValue: (CT_ c) => c.library,
                   renderVariable:
@@ -7825,13 +7818,6 @@ class _Renderer_Library extends RendererBase<Library> {
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.isInSdk == true,
-                ),
-                'isNullSafety': Property(
-                  getValue: (CT_ c) => c.isNullSafety,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isNullSafety == true,
                 ),
                 'isPublic': Property(
                   getValue: (CT_ c) => c.isPublic,
@@ -15924,7 +15910,6 @@ const _invisibleGetters = {
     'returnType',
     'runtimeType',
     'session',
-    'source',
     'substitution',
     'type',
     'typeParameters'
@@ -15967,6 +15952,7 @@ const _invisibleGetters = {
     'isCovariant',
     'isEnumConstant',
     'isExternal',
+    'isPromotable',
     'isStatic',
     'runtimeType'
   },
@@ -16163,7 +16149,6 @@ const _invisibleGetters = {
     'nonSynthetic',
     'runtimeType',
     'session',
-    'source',
     'substitution'
   },
   'MethodElement': {'augmentation', 'declaration', 'hashCode', 'runtimeType'},

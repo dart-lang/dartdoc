@@ -797,7 +797,7 @@ void onlyPositionalWithNoDefaultNoType([@greatestAnnotation anything]) {}
 
 /// Top-level function with 1 param and 2 optional named params, 1 with a
 /// default value.
-void soIntense(anything, {bool flag: true, int? value}) {}
+void soIntense(anything, {bool flag = true, int? value}) {}
 
 /// [FooBar] comes from another library.
 void paramFromAnotherLib(Apple thing) {}
@@ -1013,7 +1013,7 @@ void paintImage1(
     required int rect,
     required ExtraSpecialList image,
     BaseForDocComments? colorFilter,
-    String repeat: LongFirstLine.THING}) {
+    String repeat = LongFirstLine.THING}) {
   // nothing to do here -
 }
 

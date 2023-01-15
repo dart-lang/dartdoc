@@ -2,96 +2,48 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:analyzer/file_system/memory_file_system.dart';
-import 'package:dartdoc/src/model/model.dart';
-import 'package:dartdoc/src/package_config_provider.dart';
-import 'package:dartdoc/src/package_meta.dart';
 import 'package:test/test.dart';
+import 'package:test_reflective_loader/test_reflective_loader.dart';
 
-import 'src/test_descriptor_utils.dart' as d;
+import 'dartdoc_test_base.dart';
 import 'src/utils.dart';
 
 void main() {
-  const libraryName = 'records';
+  defineReflectiveSuite(() {
+    if (recordsAllowed) {
+      defineReflectiveTests(RecordTest);
+    }
+  });
+}
 
-  late PackageMetaProvider packageMetaProvider;
-  late MemoryResourceProvider resourceProvider;
-  late FakePackageConfigProvider packageConfigProvider;
-  late String packagePath;
+@reflectiveTest
+class RecordTest extends DartdocTestBase {
+  @override
+  String get libraryName => 'records';
 
-  Future<void> setUpPackage(
-    String name, {
-    String? pubspec,
-    String? analysisOptions,
-  }) async {
-    packagePath = await d.createPackage(
-      name,
-      pubspec: pubspec,
-      analysisOptions: analysisOptions,
-      resourceProvider: resourceProvider,
-    );
+  @override
+  String get sdkConstraint => '>=2.19.0-0 <3.0.0';
 
-    packageConfigProvider =
-        getTestPackageConfigProvider(packageMetaProvider.defaultSdkDir.path);
-    packageConfigProvider.addPackageToConfigFor(
-        packagePath, name, Uri.file('$packagePath/'));
-  }
+  @override
+  List<String> get experiments => ['records'];
 
-  Future<Library> bootPackageWithLibrary(String libraryContent) async {
-    await d.dir('lib', [
-      d.file('lib.dart', '''
-library $libraryName;
-
-$libraryContent
-'''),
-    ]).createInMemory(resourceProvider, packagePath);
-
-    var packageGraph = await bootBasicPackage(
-      packagePath,
-      packageMetaProvider,
-      packageConfigProvider,
-    );
-    return packageGraph.libraries.named(libraryName);
-  }
-
-  group('records', skip: !recordsAllowed, () {
-    setUp(() async {
-      packageMetaProvider = testPackageMetaProvider;
-      resourceProvider =
-          packageMetaProvider.resourceProvider as MemoryResourceProvider;
-      await setUpPackage(
-        libraryName,
-        pubspec: '''
-name: records
-version: 0.0.1
-environment:
-  sdk: '>=2.19.0-0 <3.0.0'
-''',
-        analysisOptions: '''
-analyzer:
-  enable-experiment:
-    - records
-''',
-      );
-    });
-
-    test('with no fields is presented with display names', () async {
-      var library = await bootPackageWithLibrary('''
+  void test_noFields() async {
+    var library = await bootPackageWithLibrary('''
 void f(() record) {}
 ''');
-      var fFunction = library.functions.named('f');
-      var recordType = fFunction.modelType.parameters.first.modelType;
-      expect(recordType.linkedName, equals('Record()'));
-      expect(recordType.nameWithGenerics, equals('Record'));
-    });
+    var fFunction = library.functions.named('f');
+    var recordType = fFunction.modelType.parameters.first.modelType;
+    expect(recordType.linkedName, equals('Record()'));
+    expect(recordType.nameWithGenerics, equals('Record'));
+  }
 
-    test('with one positional field is presented with a linked name', () async {
-      var library = await bootPackageWithLibrary('''
+  void test_onePositionalField() async {
+    var library = await bootPackageWithLibrary('''
 void f((int) record) {}
 ''');
-      var fFunction = library.functions.named('f');
-      var recordType = fFunction.modelType.parameters.first.modelType;
-      expect(recordType.linkedName, matchesCompressed(r'''
+    var fFunction = library.functions.named('f');
+    var recordType = fFunction.modelType.parameters.first.modelType;
+    expect(recordType.linkedName, matchesCompressed(r'''
         Record\(
           <span class="field">
             <span class="type-annotation">
@@ -101,16 +53,16 @@ void f((int) record) {}
           </span>
         \)
       '''));
-      expect(recordType.nameWithGenerics, equals('Record'));
-    });
+    expect(recordType.nameWithGenerics, equals('Record'));
+  }
 
-    test('with positional fields is presented with a linked name', () async {
-      var library = await bootPackageWithLibrary('''
+  void test_positionalFields() async {
+    var library = await bootPackageWithLibrary('''
 void f((int, String) record) {}
 ''');
-      var fFunction = library.functions.named('f');
-      var recordType = fFunction.modelType.parameters.first.modelType;
-      expect(recordType.linkedName, matchesCompressed(r'''
+    var fFunction = library.functions.named('f');
+    var recordType = fFunction.modelType.parameters.first.modelType;
+    expect(recordType.linkedName, matchesCompressed(r'''
         Record\(
           <span class="field">
             <span class="type-annotation">
@@ -126,16 +78,16 @@ void f((int, String) record) {}
           </span>
         \)
       '''));
-      expect(recordType.nameWithGenerics, equals('Record'));
-    });
+    expect(recordType.nameWithGenerics, equals('Record'));
+  }
 
-    test('with named fields is presented with a linked name', () async {
-      var library = await bootPackageWithLibrary('''
+  void test_namedFields() async {
+    var library = await bootPackageWithLibrary('''
 void f(({int bbb, String aaa}) record) {}
 ''');
-      var fFunction = library.functions.named('f');
-      var recordType = fFunction.modelType.parameters.first.modelType;
-      expect(recordType.linkedName, matchesCompressed(r'''
+    var fFunction = library.functions.named('f');
+    var recordType = fFunction.modelType.parameters.first.modelType;
+    expect(recordType.linkedName, matchesCompressed(r'''
         Record\(
           <span class="field">
             \{
@@ -153,17 +105,16 @@ void f(({int bbb, String aaa}) record) {}
           </span>
         \)
       '''));
-      expect(recordType.nameWithGenerics, equals('Record'));
-    });
+    expect(recordType.nameWithGenerics, equals('Record'));
+  }
 
-    test('with positional and named fields is presented with a linked name',
-        () async {
-      var library = await bootPackageWithLibrary('''
+  void test_positionalAndNamedFields() async {
+    var library = await bootPackageWithLibrary('''
 void f((int one, String two, {int ccc, String aaa, int bbb}) record) {}
 ''');
-      var fFunction = library.functions.named('f');
-      var recordType = fFunction.modelType.parameters.first.modelType;
-      expect(recordType.linkedName, matchesCompressed(r'''
+    var fFunction = library.functions.named('f');
+    var recordType = fFunction.modelType.parameters.first.modelType;
+    expect(recordType.linkedName, matchesCompressed(r'''
         Record\(
           <span class="field">
             <span class="type-annotation">
@@ -199,7 +150,6 @@ void f((int one, String two, {int ccc, String aaa, int bbb}) record) {}
           </span>
         \)
       '''));
-      expect(recordType.nameWithGenerics, equals('Record'));
-    });
-  });
+    expect(recordType.nameWithGenerics, equals('Record'));
+  }
 }

@@ -62,23 +62,26 @@ void init() {
 
     // Initialize all three search fields.
     if (searchBox != null) {
-      _initializeSearch(searchBox, index);
+      _Search(index).initialize(searchBox);
     }
     if (searchBody != null) {
-      _initializeSearch(searchBody, index);
+      _Search(index).initialize(searchBody);
     }
     if (searchSidebar != null) {
-      _initializeSearch(searchSidebar, index);
+      _Search(index).initialize(searchSidebar);
     }
   });
 }
 
 const _weights = {
+  'topic': 2,
   'library': 2,
   'class': 2,
+  'enum': 2,
   'mixin': 3,
   'extension': 3,
   'typedef': 3,
+  'function': 4,
   'method': 4,
   'accessor': 4,
   'operator': 4,
@@ -87,6 +90,7 @@ const _weights = {
   'constructor': 4,
 };
 
+/// Returns the sorted suggestions for [query] from [index] data.
 List<_IndexItem> _findMatches(List<_IndexItem> index, String query) {
   if (query.isEmpty) {
     return [];
@@ -139,76 +143,97 @@ List<_IndexItem> _findMatches(List<_IndexItem> index, String query) {
   return allMatches.map((match) => match.element).toList();
 }
 
-const _minLength = 1;
 int _suggestionLimit = 10;
 int _suggestionLength = 0;
 const _htmlEscape = HtmlEscape();
 
+/// A limited tree of element containers.
+///
+/// Each key is the inner HTML of a container suggestion element. Each value is
+/// an element for the container, and which contains one or more child
+/// suggestions, all of whom have the container as their parent. This is only
+/// useful for the search results page.
 final _containerMap = <String, Element>{};
 
-// TODO(srawlins): Break up this huge function into smaller parts. One big trick
-// here is maintaining how `selectedElement` is used. I suspect a class with
-// fields maintaining state would be a good solution. Another big trick is
-// testing. Perhaps testing should be added first :(.
-void _initializeSearch(
-  InputElement input,
-  List<_IndexItem> index,
-) {
-  final uri = Uri.parse(window.location.href);
+class _Search {
+  final List<_IndexItem> index;
+  final Uri uri;
 
-  input.disabled = false;
-  input.setAttribute('placeholder', 'Search API Docs');
-  // Handle grabbing focus when the users types / outside of the input
-  document.addEventListener('keydown', (Event event) {
-    if (event is! KeyboardEvent) {
-      return;
-    }
-    if (event.key == '/' && document.activeElement is! InputElement) {
-      event.preventDefault();
-      input.focus();
-    }
-  });
+  late final listBox = document.createElement('div')
+    ..setAttribute('role', 'listbox')
+    ..setAttribute('aria-expanded', 'false')
+    ..style.display = 'none'
+    ..classes.add('tt-menu')
+    ..append(moreResults)
+    ..append(searchResults);
 
-  // Prepare elements.
-  var wrapper = document.createElement('div');
-  wrapper.classes.add('tt-wrapper');
-  input.replaceWith(wrapper);
+  /// Element used in [listbox] to inform the functionality of hitting enter in
+  /// search box.
+  late final moreResults = document.createElement('div')
+    ..classes.add('enter-search-message');
 
-  input.setAttribute('autocomplete', 'off');
-  input.setAttribute('spellcheck', 'false');
-  input.classes.add('tt-input');
-
-  wrapper.append(input);
-
-  var listBox = document.createElement('div');
-  listBox.setAttribute('role', 'listbox');
-  listBox.setAttribute('aria-expanded', 'false');
-  listBox.style.display = 'none';
-  listBox.classes.add('tt-menu');
-
-  // Element use in listbox to inform the functionality of hitting enter in search box.
-  var moreResults = document.createElement('div');
-  moreResults.classes.add('enter-search-message');
-  listBox.append(moreResults);
-
-  // Element that contains the search suggestions in a new format.
-  var searchResults = document.createElement('div');
-  searchResults.classes.add('tt-search-results');
-  listBox.append(searchResults);
-
-  wrapper.append(listBox);
+  /// Element that contains the search suggestions in a new format.
+  late final searchResults = document.createElement('div')
+    ..classes.add('tt-search-results');
 
   String? storedValue;
-  var actualValue = '';
+  String actualValue = '';
+  final List<Element> suggestionElements = <Element>[];
+  List<_IndexItem> suggestionsInfo = <_IndexItem>[];
+  int selectedElement = -1;
 
-  final suggestionElements = <Element>[];
-  var suggestionsInfo = <_IndexItem>[];
-  int? selectedElement;
+  _Search(this.index) : uri = Uri.parse(window.location.href);
 
+  void initialize(InputElement inputElement) {
+    inputElement.disabled = false;
+    inputElement.setAttribute('placeholder', 'Search API Docs');
+    // Handle grabbing focus when the users types / outside of the input
+    document.addEventListener('keydown', (Event event) {
+      if (event is! KeyboardEvent) {
+        return;
+      }
+      if (event.key == '/' && document.activeElement is! InputElement) {
+        event.preventDefault();
+        inputElement.focus();
+      }
+    });
+
+    // Prepare elements.
+    var wrapper = document.createElement('div')..classes.add('tt-wrapper');
+    inputElement
+      ..replaceWith(wrapper)
+      ..setAttribute('autocomplete', 'off')
+      ..setAttribute('spellcheck', 'false')
+      ..classes.add('tt-input');
+
+    wrapper
+      ..append(inputElement)
+      ..append(listBox);
+
+    setEventListeners(inputElement);
+
+    // Display the search results in the main body, if we're rendering the
+    // search page.
+    if (window.location.href.contains('search.html')) {
+      var query = uri.queryParameters['q'];
+      if (query == null) {
+        return;
+      }
+      query = _htmlEscape.convert(query);
+      _suggestionLimit = _suggestionLength;
+      handleSearch(query, isSearchPage: true);
+      showSearchResultPage(query);
+      hideSuggestions();
+      _suggestionLimit = 10;
+    }
+  }
+
+  /// Displays the suggestions [searchResults] list box.
   void showSuggestions() {
     if (searchResults.hasChildNodes()) {
-      listBox.style.display = 'block';
-      listBox.setAttribute('aria-expanded', 'true');
+      listBox
+        ..style.display = 'block'
+        ..setAttribute('aria-expanded', 'true');
     }
   }
 
@@ -252,24 +277,26 @@ void _initializeSearch(
     }
   }
 
-  void hideSuggestions() {
-    listBox.style.display = 'none';
-    listBox.setAttribute('aria-expanded', 'false');
-  }
+  void hideSuggestions() => listBox
+    ..style.display = 'none'
+    ..setAttribute('aria-expanded', 'false');
 
-  void showEnterMessage() {
-    moreResults.text = _suggestionLength > 10
-        ? 'Press "Enter" key to see all $_suggestionLength results'
-        : '';
-  }
+  void showEnterMessage() => moreResults.text = _suggestionLength > 10
+      ? 'Press "Enter" key to see all $_suggestionLength results'
+      : '';
 
-  void updateSuggestions(String query, List<_IndexItem> suggestions) {
+  /// Updates the suggestions displayed below the search bar to [suggestions].
+  ///
+  /// [query] is only required here so that it can be displayed with emphasis
+  /// (as a prefix, for example).
+  void updateSuggestions(String query, List<_IndexItem> suggestions,
+      {bool isSearchPage = false}) {
     suggestionsInfo = [];
     suggestionElements.clear();
     _containerMap.clear();
     searchResults.text = '';
 
-    if (suggestions.length < _minLength) {
+    if (suggestions.isEmpty) {
       hideSuggestions();
       return;
     }
@@ -278,19 +305,22 @@ void _initializeSearch(
       suggestionElements.add(_createSuggestion(query, suggestion));
     }
 
-    for (final element in _containerMap.values) {
+    var suggestionSource =
+        isSearchPage ? _containerMap.values : suggestionElements;
+    for (final element in suggestionSource) {
       searchResults.append(element);
     }
     suggestionsInfo = suggestions;
 
-    selectedElement = null;
+    removeSelectedElement();
 
     showSuggestions();
     showEnterMessage();
   }
 
   /// Handles [searchText] by generating suggestions.
-  void handleSearch(String? searchText, {bool forceUpdate = false}) {
+  void handleSearch(String? searchText,
+      {bool forceUpdate = false, bool isSearchPage = false}) {
     if (actualValue == searchText && !forceUpdate) {
       return;
     }
@@ -307,128 +337,122 @@ void _initializeSearch(
     }
 
     actualValue = searchText;
-    updateSuggestions(searchText, suggestions);
+    updateSuggestions(searchText, suggestions, isSearchPage: isSearchPage);
   }
 
-  // Hook up events.
-  input.addEventListener('focus', (Event event) {
-    handleSearch(input.value, forceUpdate: true);
-  });
-
-  input.addEventListener('blur', (Event event) {
-    selectedElement = null;
+  /// Clears the search box and suggestions.
+  void clearSearch(InputElement inputElement) {
+    removeSelectedElement();
     if (storedValue != null) {
-      input.value = storedValue;
+      inputElement.value = storedValue;
       storedValue = null;
     }
     hideSuggestions();
-  });
-
-  input.addEventListener('input', (event) {
-    handleSearch(input.value);
-  });
-
-  input.addEventListener('keydown', (Event event) {
-    if (event.type != 'keydown') {
-      return;
-    }
-
-    event = event as KeyboardEvent;
-
-    if (event.code == 'Enter') {
-      event.preventDefault();
-      if (selectedElement != null) {
-        var selectingElement = selectedElement ?? 0;
-        var href = suggestionElements[selectingElement].dataset['href'];
-        if (href != null) {
-          window.location.assign('$_htmlBase$href');
-        }
-        return;
-      }
-      // If there is no search suggestion selected, then change the window
-      // location to `search.html`.
-      else {
-        var query = _htmlEscape.convert(actualValue);
-        var searchPath = _relativePath.replace(queryParameters: {'q': query});
-        window.location.assign(searchPath.toString());
-        return;
-      }
-    }
-
-    var lastIndex = suggestionElements.length - 1;
-    var previousSelectedElement = selectedElement;
-
-    if (event.code == 'ArrowUp') {
-      if (selectedElement == null) {
-        selectedElement = lastIndex;
-      } else if (selectedElement == 0) {
-        selectedElement = null;
-      } else {
-        selectedElement = selectedElement! - 1;
-      }
-    } else if (event.code == 'ArrowDown') {
-      if (selectedElement == null) {
-        selectedElement = 0;
-      } else if (selectedElement == lastIndex) {
-        selectedElement = null;
-      } else {
-        selectedElement = selectedElement! + 1;
-      }
-    } else {
-      if (storedValue != null) {
-        storedValue = null;
-        handleSearch(input.value);
-      }
-      return;
-    }
-
-    if (previousSelectedElement != null) {
-      suggestionElements[previousSelectedElement].classes.remove('tt-cursor');
-    }
-
-    if (selectedElement != null) {
-      var selected = suggestionElements[selectedElement!];
-      selected.classes.add('tt-cursor');
-
-      // Guarantee the selected element is visible
-      if (selectedElement == 0) {
-        listBox.scrollTop = 0;
-      } else if (selectedElement == lastIndex) {
-        listBox.scrollTop = listBox.scrollHeight;
-      } else {
-        var offsetTop = selected.offsetTop;
-        var parentOffsetHeight = listBox.offsetHeight;
-        if (offsetTop < parentOffsetHeight ||
-            parentOffsetHeight < (offsetTop + selected.offsetHeight)) {
-          selected.scrollIntoView();
-        }
-      }
-
-      // Store the actual input value to display their currently selected item.
-      storedValue ??= input.value;
-      input.value = suggestionsInfo[selectedElement!].name;
-    } else if (storedValue != null && previousSelectedElement != null) {
-      // They are moving back to the input field, so return the stored value.
-      input.value = storedValue;
-      storedValue = null;
-    }
-
-    event.preventDefault();
-  });
-
-  // Verifying the href to check if the search html was called to generate the main content elements that are going to be displayed.
-  if (window.location.href.contains('search.html')) {
-    var input = uri.queryParameters['q'];
-    if (input == null) {
-      return;
-    }
-    input = _htmlEscape.convert(input);
-    _suggestionLimit = _suggestionLength;
-    handleSearch(input);
-    showSearchResultPage(input);
-    hideSuggestions();
-    _suggestionLimit = 10;
   }
+
+  void setEventListeners(InputElement inputElement) {
+    inputElement.addEventListener('focus', (Event event) {
+      handleSearch(inputElement.value, forceUpdate: true);
+    });
+
+    inputElement.addEventListener('blur', (Event event) {
+      clearSearch(inputElement);
+    });
+
+    inputElement.addEventListener('input', (event) {
+      handleSearch(inputElement.value);
+    });
+
+    inputElement.addEventListener('keydown', (Event event) {
+      if (event.type != 'keydown') {
+        return;
+      }
+
+      event = event as KeyboardEvent;
+
+      if (event.code == 'Enter') {
+        event.preventDefault();
+        if (!selectedElement.isBlurred) {
+          var href = suggestionElements[selectedElement].dataset['href'];
+          if (href != null) {
+            window.location.assign('$_htmlBase$href');
+          }
+          return;
+        }
+        // If there is no search suggestion selected, then change the window
+        // location to `search.html`.
+        else {
+          var query = _htmlEscape.convert(actualValue);
+          var searchPath = Uri.parse('${_htmlBase}search.html')
+              .replace(queryParameters: {'q': query});
+          window.location.assign(searchPath.toString());
+          return;
+        }
+      }
+
+      var lastIndex = suggestionElements.length - 1;
+      var previousSelectedElement = selectedElement;
+
+      if (event.code == 'ArrowUp') {
+        if (selectedElement.isBlurred) {
+          selectedElement = lastIndex;
+        } else {
+          selectedElement = selectedElement - 1;
+        }
+      } else if (event.code == 'ArrowDown') {
+        if (selectedElement == lastIndex) {
+          removeSelectedElement();
+        } else {
+          selectedElement = selectedElement + 1;
+        }
+      } else if (event.code == 'Escape') {
+        clearSearch(inputElement);
+      } else {
+        if (storedValue != null) {
+          storedValue = null;
+          handleSearch(inputElement.value);
+        }
+        return;
+      }
+
+      if (!previousSelectedElement.isBlurred) {
+        suggestionElements[previousSelectedElement].classes.remove('tt-cursor');
+      }
+
+      if (!selectedElement.isBlurred) {
+        var selected = suggestionElements[selectedElement];
+        selected.classes.add('tt-cursor');
+
+        // Guarantee the selected element is visible.
+        if (selectedElement == 0) {
+          listBox.scrollTop = 0;
+        } else if (selectedElement == lastIndex) {
+          listBox.scrollTop = listBox.scrollHeight;
+        } else {
+          var offsetTop = selected.offsetTop;
+          var parentOffsetHeight = listBox.offsetHeight;
+          if (offsetTop < parentOffsetHeight ||
+              parentOffsetHeight < (offsetTop + selected.offsetHeight)) {
+            selected.scrollIntoView();
+          }
+        }
+
+        // Store the actual input value to display their currently selected
+        // item.
+        storedValue ??= inputElement.value;
+        inputElement.value = suggestionsInfo[selectedElement].name;
+      } else if (storedValue != null && !previousSelectedElement.isBlurred) {
+        // They are moving back to the input field, so return the stored value.
+        inputElement.value = storedValue;
+        storedValue = null;
+      }
+
+      event.preventDefault();
+    });
+  }
+
+  /// Sets the selection index to `-1`.
+  void removeSelectedElement() => selectedElement = -1;
 }
 
 Element _createSuggestion(String query, _IndexItem match) {
@@ -450,11 +474,12 @@ Element _createSuggestion(String query, _IndexItem match) {
   }
 
   // The one line description to use in the search suggestions.
-  if (match.desc != '') {
+  final matchDescription = match.desc;
+  if (matchDescription != null && matchDescription.isNotEmpty) {
     final inputDescription = document.createElement('blockquote')
       ..classes.add('one-line-description')
-      ..attributes['title'] = _decodeHtml(match.desc.toString())
-      ..innerHtml = _highlight(match.desc.toString(), query);
+      ..attributes['title'] = _decodeHtml(matchDescription)
+      ..innerHtml = _highlight(matchDescription, query);
     suggestion.append(inputDescription);
   }
 
@@ -483,18 +508,18 @@ Element _createSuggestion(String query, _IndexItem match) {
 
 /// Maps a suggestion library/class [Element] to the other suggestions, if any.
 void _mapToContainer(Element containerElement, Element suggestion) {
-  final input = containerElement.innerHtml;
+  final containerInnerHtml = containerElement.innerHtml;
 
-  if (input == null) {
+  if (containerInnerHtml == null) {
     return;
   }
 
-  final element = _containerMap[input];
+  final element = _containerMap[containerInnerHtml];
   if (element != null) {
     element.append(suggestion);
   } else {
     containerElement.append(suggestion);
-    _containerMap[input] = containerElement;
+    _containerMap[containerInnerHtml] = containerElement;
   }
 }
 
@@ -524,21 +549,6 @@ String _decodeHtml(String html) {
         ..innerHtml = html)
       .value!;
 }
-
-final _relativePath = () {
-  var body = document.querySelector('body')!;
-  var relativePath = '';
-  if (body.getAttribute('data-using-base-href') == 'false') {
-    var baseHref = body.getAttribute('data-base-href');
-    if (baseHref == null || baseHref.isEmpty) {
-      relativePath = './';
-    } else {
-      relativePath = baseHref;
-    }
-  }
-  var search = Uri.parse('${relativePath}search.html');
-  return search;
-}();
 
 class _SearchMatch {
   final _IndexItem element;
@@ -605,4 +615,9 @@ class _EnclosedBy {
   // Built from JSON structure:
   // ["enclosedBy":{"name":"Accessor","type":"class","href":"link"}]
   _EnclosedBy._({required this.name, required this.type, required this.href});
+}
+
+extension on int {
+  // TODO(srawlins): Re-implement in inline class someday.
+  bool get isBlurred => this == -1;
 }
