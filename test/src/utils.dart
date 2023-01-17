@@ -289,7 +289,7 @@ Future<void> writeDartdocResources(ResourceProvider resourceProvider) async {
     'docs.dart.js',
     'docs.dart.js.map',
     'favicon.png',
-    'search.png',
+    'search.svg',
     'github.css',
     'highlight.pack.js',
     'play_button.svg',
