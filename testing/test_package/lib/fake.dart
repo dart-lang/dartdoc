@@ -464,9 +464,8 @@ class _ExtendsFutureVoidImpl implements ExtendsFutureVoid {
 abstract class ImplementsFutureVoid implements Future<void> {}
 
 /// This class takes a type, and it might be void.
-class ATypeTakingClass<T> {
-  // ignore: missing_return
-  T? aMethodMaybeReturningVoid() {}
+abstract class ATypeTakingClass<T> {
+  T? aMethodMaybeReturningVoid();
 }
 
 class ABaseClass {}
@@ -1041,7 +1040,7 @@ class OperatorReferenceClass {
   OperatorReferenceClass();
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return false;
   }
 }
@@ -1283,7 +1282,7 @@ class FactoryConstructorThings {
 
 DTypeParam?
     aTopLevelTypeParameterFunction<DTypeParam extends TypeParameterThings>(
-        DTypeParam typedParam) {}
+        DTypeParam typedParam) => typedParam;
 
 abstract class TypeParameterThings<ATypeParam,
     BTypeParam extends FactoryConstructorThings> {
