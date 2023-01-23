@@ -464,8 +464,8 @@ class _ExtendsFutureVoidImpl implements ExtendsFutureVoid {
 abstract class ImplementsFutureVoid implements Future<void> {}
 
 /// This class takes a type, and it might be void.
-abstract class ATypeTakingClass<T> {
-  T? aMethodMaybeReturningVoid();
+class ATypeTakingClass<T> {
+  T? aMethodMaybeReturningVoid() => null;
 }
 
 class ABaseClass {}
