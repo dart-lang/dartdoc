@@ -24,7 +24,7 @@ T0 a;
 class C2 {
   T0 b;
   T1? c;
-  T2? d(T3 e, T4 f) {}
+  T2? d(T3 e, T4 f) => null;
 }
 
 class C1<T extends T3> {
