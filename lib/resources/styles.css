@@ -70,11 +70,24 @@
   display: none;
 }
 
+#theme-button {
+  position: absolute;
+  right: 30px;
+  height: 24px;
+}
+
 #theme-button .material-symbols-outlined {
-  padding-top: 6px;
   color: var(--main-icon-color);
   user-select: none;
   cursor: pointer;
+}
+
+.light-theme #light-theme-button {
+  display: none;
+}
+
+.dark-theme #dark-theme-button {
+  display: none;
 }
 
 /*
@@ -951,11 +964,6 @@ button {
 
 .navbar-right {
   padding-right: 60px;
-}
-
-#theme-button {
-  position: absolute;
-  right: 30px;
 }
 
 .tt-menu {
