@@ -4,7 +4,6 @@
 
 library dartdoc.model_utils;
 
-import 'dart:convert';
 import 'dart:io' show Platform;
 
 import 'package:analyzer/dart/element/element.dart';
@@ -85,13 +84,13 @@ Iterable<InheritingContainer> findCanonicalFor(
 // feature that uses it now that source code linking is possible.
 // TODO(srawlins): Evaluate whether this leads to a ton of memory usage.
 // An LRU of size 1 might be just fine.
-String? getFileContentsFor(Element e, ResourceProvider resourceProvider) {
+String getFileContentsFor(Element e, ResourceProvider resourceProvider) {
   var location = e.source?.fullName;
   if (location != null && !_fileContents.containsKey(location)) {
     var contents = resourceProvider.getFile(location).readAsStringSync();
     _fileContents.putIfAbsent(location, () => contents);
   }
-  return _fileContents[location];
+  return _fileContents[location]!;
 }
 
 bool hasPrivateName(Element e) {
@@ -125,59 +124,3 @@ bool hasPrivateName(Element e) {
 }
 
 bool hasPublicName(Element e) => !hasPrivateName(e);
-
-/// Strip leading dartdoc comments from the given source code.
-String stripDartdocCommentsFromSource(String source) {
-  var remainder = source.trimLeft();
-  var lineComments = remainder.startsWith(_tripleSlash) ||
-      remainder.startsWith(_escapedTripleSlash);
-  var blockComments = remainder.startsWith(_slashStarStar) ||
-      remainder.startsWith(_escapedSlashStarStar);
-
-  return source.split('\n').where((String line) {
-    if (lineComments) {
-      if (line.startsWith(_tripleSlash) ||
-          line.startsWith(_escapedTripleSlash)) {
-        return false;
-      }
-      lineComments = false;
-      return true;
-    } else if (blockComments) {
-      if (line.contains(_starSlash) || line.contains(_escapedStarSlash)) {
-        blockComments = false;
-        return false;
-      }
-      if (line.startsWith(_slashStarStar) ||
-          line.startsWith(_escapedSlashStarStar)) {
-        return false;
-      }
-      return false;
-    }
-
-    return true;
-  }).join('\n');
-}
-
-const HtmlEscape _escape = HtmlEscape();
-
-const String _tripleSlash = '///';
-
-final String _escapedTripleSlash = _escape.convert(_tripleSlash);
-
-const String _slashStarStar = '/**';
-
-final String _escapedSlashStarStar = _escape.convert(_slashStarStar);
-
-const String _starSlash = '*/';
-
-final String _escapedStarSlash = _escape.convert(_starSlash);
-
-/// Strip the common indent from the given source fragment.
-String stripIndentFromSource(String source) {
-  var remainder = source.trimLeft();
-  var indent = source.substring(0, source.length - remainder.length);
-  return source.split('\n').map((line) {
-    line = line.trimRight();
-    return line.startsWith(indent) ? line.substring(indent.length) : line;
-  }).join('\n');
-}

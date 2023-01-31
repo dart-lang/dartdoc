@@ -6,9 +6,12 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 
-class NeverType extends ModelElement {
-  NeverType(Element element, PackageGraph packageGraph)
-      : super(element, null, packageGraph);
+class NeverType extends ModelElement with HasNoPage {
+  @override
+  final Element element;
+
+  NeverType(this.element, PackageGraph packageGraph)
+      : super(Library.sentinel, packageGraph);
 
   /// `Never` is not a real object, and so we can't document it, so there
   /// can be nothing canonical for it.
@@ -16,10 +19,9 @@ class NeverType extends ModelElement {
   ModelElement? get canonicalModelElement => null;
 
   @override
-  ModelElement get enclosingElement => throw UnsupportedError('');
+  ModelElement? get enclosingElement => null;
 
-  /// And similarly, even if someone references it directly it can have
-  /// no hyperlink.
+  /// The `Never` type has no hyperlink.
   @override
   String? get href => null;
 
@@ -30,11 +32,8 @@ class NeverType extends ModelElement {
   String get linkedName => 'Never';
 
   @override
-  String? get filePath => null;
+  Map<String, CommentReferable> get referenceChildren => const {};
 
   @override
-  Map<String, CommentReferable> get referenceChildren => {};
-
-  @override
-  Iterable<CommentReferable> get referenceParents => [];
+  Iterable<CommentReferable> get referenceParents => const [];
 }

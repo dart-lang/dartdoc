@@ -46,7 +46,7 @@ extension ResourceProviderExtensions on ResourceProvider {
     if (this is PhysicalResourceProvider) {
       return getFolder(io.Directory.systemTemp.createTempSync(prefix).path);
     } else {
-      return getFolder(pathContext.join(pathContext.separator + 'tmp', prefix))
+      return getFolder(pathContext.join('${pathContext.separator}tmp', prefix))
         ..create();
     }
   }

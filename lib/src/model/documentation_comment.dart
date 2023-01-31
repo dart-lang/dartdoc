@@ -1,4 +1,4 @@
-import 'package:analyzer/file_system/file_system.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:args/args.dart';
 import 'package:crypto/crypto.dart' as crypto;
 import 'package:dartdoc/src/model/documentable.dart';
@@ -38,6 +38,9 @@ final _htmlInjectRegExp = RegExp(r'<dartdoc-html>([a-f0-9]+)</dartdoc-html>');
 /// entrypoints.
 mixin DocumentationComment
     on Documentable, Warnable, Locatable, SourceCodeMixin {
+  @override
+  Element get element;
+
   List<DocumentationComment>? _documentationFrom;
 
   /// The [ModelElement](s) from which we will get documentation.
@@ -57,14 +60,14 @@ mixin DocumentationComment
         if (!hasDocumentationComment && self.overriddenElement != null) {
           return self.overriddenElement!.documentationFrom;
         } else if (self.isInherited) {
-          return modelBuilder.fromElement(element!).documentationFrom;
+          return modelBuilder.fromElement(element).documentationFrom;
         } else {
           return [this];
         }
       }();
 
   @override
-  late final String? documentationAsHtml =
+  late final String documentationAsHtml =
       _injectHtmlFragments(elementDocumentation.asHtml);
 
   late final Documentation elementDocumentation =
@@ -72,15 +75,15 @@ mixin DocumentationComment
 
   /// The rawest form of the documentation comment, including comment delimiters
   /// like `///`, `//`, `/*`, `*/`.
-  String get documentationComment;
+  String get documentationComment => element.documentationComment ?? '';
 
   /// True if [this] has a synthetic/inherited or local documentation
   /// comment.  False otherwise.
-  bool get hasDocumentationComment;
+  bool get hasDocumentationComment => element.documentationComment != null;
 
   /// Returns true if the raw documentation comment has a 'nodoc' indication.
   late final bool hasNodoc = () {
-    if (packageGraph.configSetsNodocFor(element!.source!.fullName)) {
+    if (packageGraph.configSetsNodocFor(element.source!.fullName)) {
       return true;
     }
     if (!hasDocumentationComment) {
@@ -258,7 +261,7 @@ mixin DocumentationComment
     var invocationIndex = 0;
     return await _replaceAllMappedAsync(rawDocs, _basicToolPattern,
         (basicMatch) async {
-      var args = _splitUpQuotedArgs(basicMatch[1]!).toList();
+      final args = _splitUpQuotedArgs(basicMatch[1]!);
       // Tool name must come first.
       if (args.isEmpty) {
         warn(PackageWarning.toolError,
@@ -268,8 +271,8 @@ mixin DocumentationComment
       // Count the number of invocations of tools in this dartdoc block,
       // so that tools can differentiate different blocks from each other.
       invocationIndex++;
-      return await config.tools.runner.run(args, content: basicMatch[2]!,
-          toolErrorCallback: (String message) async {
+      return await config.tools.runner.run(args.toList(),
+          content: basicMatch[2]!, toolErrorCallback: (String message) async {
         warn(PackageWarning.toolError, message: message);
       }, environment: _toolsEnvironment(invocationIndex: invocationIndex));
     });
@@ -280,15 +283,15 @@ mixin DocumentationComment
     var env = {
       'SOURCE_LINE': characterLocation?.lineNumber.toString(),
       'SOURCE_COLUMN': characterLocation?.columnNumber.toString(),
-      if (sourceFileName != null && package?.packagePath != null)
+      if (sourceFileName != null)
         'SOURCE_PATH':
-            pathContext.relative(sourceFileName!, from: package!.packagePath),
-      'PACKAGE_PATH': package?.packagePath,
-      'PACKAGE_NAME': package?.name,
+            pathContext.relative(sourceFileName!, from: package.packagePath),
+      'PACKAGE_PATH': package.packagePath,
+      'PACKAGE_NAME': package.name,
       'LIBRARY_NAME': library?.fullyQualifiedName,
       'ELEMENT_NAME': fullyQualifiedNameWithoutLibrary,
       'INVOCATION_INDEX': invocationIndex.toString(),
-      'PACKAGE_INVOCATION_INDEX': (package?.toolInvocationIndex++).toString(),
+      'PACKAGE_INVOCATION_INDEX': (package.toolInvocationIndex++).toString(),
     };
     return (env..removeWhere((key, value) => value == null))
         .cast<String, String>();
@@ -311,7 +314,7 @@ mixin DocumentationComment
   ///     &#123;@example abc/def/xyz_component.dart region=template lang=html&#125;
   ///
   String _injectExamples(String rawdocs) {
-    final dirPath = package?.packageMeta.dir.path;
+    final dirPath = package.packageMeta.dir.path;
     return rawdocs.replaceAllMapped(_examplePattern, (match) {
       var args = _getExampleArgs(match[1]!);
       if (args == null) {
@@ -321,29 +324,25 @@ mixin DocumentationComment
       var lang = args['lang'] ??
           pathContext.extension(args['src']!).replaceFirst('.', '');
 
-      var replacement = match[0]; // default to fully matched string.
+      var replacement = match[0]!; // default to fully matched string.
 
-      File? fragmentFile;
+      var fragmentFile = packageGraph.resourceProvider.getFile(
+          pathContext.canonicalize(pathContext.join(dirPath, args['file'])));
 
-      if (dirPath != null) {
-        fragmentFile = packageGraph.resourceProvider.getFile(
-            pathContext.canonicalize(pathContext.join(dirPath, args['file'])));
-      }
-      if (fragmentFile != null && fragmentFile.exists == true) {
+      if (fragmentFile.exists) {
         replacement = fragmentFile.readAsStringSync();
         if (lang.isNotEmpty) {
           replacement = replacement.replaceFirst('```', '```$lang');
         }
       } else {
-        var filePath =
-            element!.source!.fullName.substring((dirPath?.length ?? -1) + 1);
+        var filePath = element.source!.fullName.substring(dirPath.length + 1);
 
         // TODO(srawlins): If a file exists at the location without the
         // appended 'md' extension, note this.
         warn(PackageWarning.missingExampleFile,
-            message: '${fragmentFile?.path}; path listed at $filePath');
+            message: '${fragmentFile.path}; path listed at $filePath');
       }
-      return replacement!;
+      return replacement;
     });
   }
 
@@ -471,21 +470,20 @@ mixin DocumentationComment
         return '';
       }
       var youTubeId = url.group(url.groupCount)!;
-      var aspectRatio = (height / width * 100).toStringAsFixed(2);
 
-      return modelElementRenderer.renderYoutubeUrl(youTubeId, aspectRatio);
+      return modelElementRenderer.renderYoutubeUrl(youTubeId, width, height);
     });
   }
 
-  /// Matches all animation directives (even some invalid ones). This is so
-  /// we can give good error messages if the directive is malformed, instead of
+  /// Matches all animation directives (even some invalid ones). This is so we
+  /// can give good error messages if the directive is malformed, instead of
   /// just silently emitting it as-is.
-  final _basicAnimationPattern = RegExp(r'''{@animation\s+([^}]+)}''');
+  static final _basicAnimationPattern = RegExp(r'''{@animation\s+([^}]+)}''');
 
-  /// Matches valid javascript identifiers.
-  final _validIdPattern = RegExp(r'^[a-zA-Z_]\w*$');
+  /// Matches valid JavaScript identifiers.
+  static final _validIdPattern = RegExp(r'^[a-zA-Z_]\w*$');
 
-  /// An argument parser used in [_injectAnimations] to parse a `{@animation}`
+  /// An argument parser used in [_injectAnimations] to parse an `{@animation}`
   /// directive.
   static final _animationArgParser = ArgParser()..addOption('id');
 
@@ -516,7 +514,7 @@ mixin DocumentationComment
       var id = '$base$animationIdCount';
       // We check for duplicate IDs so that we make sure not to collide with
       // user-supplied ids on the same page.
-      while (package!.usedAnimationIdsByHref[href]!.contains(id)) {
+      while (package.usedAnimationIdsByHref[href]!.contains(id)) {
         animationIdCount++;
         id = '$base$animationIdCount';
       }
@@ -525,7 +523,7 @@ mixin DocumentationComment
 
     return rawDocs.replaceAllMapped(_basicAnimationPattern, (basicMatch) {
       // Make sure we have a set to keep track of used IDs for this href.
-      package!.usedAnimationIdsByHref[href] ??= {};
+      package.usedAnimationIdsByHref[href] ??= {};
 
       var args = _parseArgs(basicMatch[1]!, _animationArgParser, 'animation');
       if (args == null) {
@@ -557,13 +555,13 @@ mixin DocumentationComment
                 'and must not begin with a number.');
         return '';
       }
-      if (package!.usedAnimationIdsByHref[href]!.contains(uniqueId)) {
+      if (package.usedAnimationIdsByHref[href]!.contains(uniqueId)) {
         warn(PackageWarning.invalidParameter,
             message: 'An animation has a non-unique identifier, "$uniqueId". '
                 'Animation identifiers must be unique.');
         return '';
       }
-      package!.usedAnimationIdsByHref[href]!.add(uniqueId);
+      package.usedAnimationIdsByHref[href]!.add(uniqueId);
 
       int width;
       try {
@@ -759,20 +757,28 @@ mixin DocumentationComment
     }
   }
 
-  /// Returns the documentation for this literal element unless
-  /// [config.dropTextFrom] indicates it should not be returned.  Macro
-  /// definitions are stripped, but macros themselves are not injected.  This
-  /// is a two stage process to avoid ordering problems.
-  String? _documentationLocal;
+  bool _documentationLocalIsSet = false;
 
-  String? get documentationLocal =>
-      _documentationLocal ??= _buildDocumentationLocal();
+  /// Returns the documentation for this literal element unless
+  /// `config.dropTextFrom` indicates it should not be returned.  Macro
+  /// definitions are stripped, but macros themselves are not injected.  This is
+  /// a two stage process to avoid ordering problems.
+  late final String _documentationLocal;
+
+  String get documentationLocal {
+    if (!_documentationLocalIsSet) {
+      _documentationLocal = _buildDocumentationBaseSync();
+      _documentationLocalIsSet = true;
+    }
+    return _documentationLocal;
+  }
 
   /// Unconditionally precache local documentation.
   ///
   /// Use only in factory for [PackageGraph].
   Future<void> precacheLocalDocs() async {
     _documentationLocal = await _buildDocumentationBase();
+    _documentationLocalIsSet = true;
   }
 
   late final bool _hasNodoc;
@@ -839,20 +845,17 @@ mixin DocumentationComment
 
   String? _rawDocs;
 
-  String? _buildDocumentationLocal() => _buildDocumentationBaseSync();
-
   /// Override this to add more features to the documentation builder in a
   /// subclass.
   String buildDocumentationAddition(String docs) => docs;
 
-  /// Separate from [_buildDocumentationLocal] for overriding.
-  String? _buildDocumentationBaseSync() {
+  String _buildDocumentationBaseSync() {
     assert(_rawDocs == null,
         'reentrant calls to _buildDocumentation* not allowed');
     // Do not use the sync method if we need to evaluate tools or templates.
     assert(!isCanonical || !needsPrecache);
     String rawDocs;
-    if (config.dropTextFrom.contains(element!.library!.name)) {
+    if (config.dropTextFrom.contains(element.library!.name)) {
       rawDocs = '';
     } else {
       rawDocs = _processCommentWithoutTools(documentationComment);
@@ -860,14 +863,13 @@ mixin DocumentationComment
     return _rawDocs = buildDocumentationAddition(rawDocs);
   }
 
-  /// Separate from [_buildDocumentationLocal] for overriding.  Can only be
-  /// used as part of [PackageGraph.setUpPackageGraph].
-  Future<String?> _buildDocumentationBase() async {
+  /// Can only be used as part of `PackageGraph.setUpPackageGraph`.
+  Future<String> _buildDocumentationBase() async {
     assert(_rawDocs == null,
         'reentrant calls to _buildDocumentation* not allowed');
     String rawDocs;
     // Do not use the sync method if we need to evaluate tools or templates.
-    if (config.dropTextFrom.contains(element!.library!.name)) {
+    if (config.dropTextFrom.contains(element.library!.name)) {
       rawDocs = '';
     } else {
       rawDocs = await processComment(documentationComment);
@@ -909,10 +911,10 @@ mixin DocumentationComment
   ///
   /// And the HTML fragment will not have been processed or changed by Markdown,
   /// but just injected verbatim.
-  String? _injectHtmlFragments(String? rawDocs) {
+  String _injectHtmlFragments(String rawDocs) {
     if (!config.injectHtml) return rawDocs;
 
-    return rawDocs!.replaceAllMapped(_htmlInjectRegExp, (match) {
+    return rawDocs.replaceAllMapped(_htmlInjectRegExp, (match) {
       var fragment = packageGraph.getHtmlFragment(match[1]);
       if (fragment == null) {
         warn(PackageWarning.unknownHtmlFragment, message: match[1]);
@@ -950,9 +952,10 @@ mixin DocumentationComment
   ///
   String injectMacros(String rawDocs) {
     return rawDocs.replaceAllMapped(_macroRegExp, (match) {
-      var macro = packageGraph.getMacro(match[1]);
+      final macroName = match[1]!;
+      var macro = packageGraph.getMacro(macroName);
       if (macro == null) {
-        warn(PackageWarning.unknownMacro, message: match[1]);
+        warn(PackageWarning.unknownMacro, message: macroName);
       }
       macro = processCommentDirectives(macro ?? '');
       return macro;

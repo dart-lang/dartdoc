@@ -9,28 +9,27 @@ import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 
-class Parameter extends ModelElement implements EnclosedElement {
-  Parameter(
-      ParameterElement element, Library? library, PackageGraph packageGraph,
+class Parameter extends ModelElement with HasNoPage {
+  @override
+  final ParameterElement element;
+
+  Parameter(this.element, Library library, PackageGraph packageGraph,
       {ParameterMember? originalMember})
-      : super(element, library, packageGraph, originalMember);
-  String? get defaultValue {
-    if (!hasDefaultValue) return null;
-    return element!.defaultValueCode;
-  }
+      : super(library, packageGraph, originalMember);
+
+  String? get defaultValue => hasDefaultValue ? element.defaultValueCode : null;
 
   @override
-  ModelElement get enclosingElement =>
-      modelBuilder.from(element!.enclosingElement!, library!);
+  ModelElement? get enclosingElement {
+    final enclosingElement = element.enclosingElement;
+    return enclosingElement == null
+        ? null
+        : modelBuilder.from(enclosingElement, library);
+  }
 
   bool get hasDefaultValue {
-    return element!.defaultValueCode != null &&
-        element!.defaultValueCode!.isNotEmpty;
-  }
-
-  @override
-  String get filePath {
-    throw UnimplementedError('Parameters have no generated files in dartdoc');
+    return element.defaultValueCode != null &&
+        element.defaultValueCode!.isNotEmpty;
   }
 
   @override
@@ -38,13 +37,14 @@ class Parameter extends ModelElement implements EnclosedElement {
 
   @override
   String get htmlId {
-    if (element!.enclosingElement != null) {
-      var enclosingName = element!.enclosingElement!.name;
-      if (element!.enclosingElement is GenericFunctionTypeElement) {
-        // TODO(jcollins-g): Drop when GenericFunctionTypeElement populates name.
-        // Also, allowing null here is allowed as a workaround for
+    final enclosingElement = element.enclosingElement;
+    if (enclosingElement != null) {
+      var enclosingName = enclosingElement.name;
+      if (enclosingElement is GenericFunctionTypeElement) {
+        // TODO(jcollins-g): Drop when GenericFunctionTypeElement populates
+        // name. Also, allowing null here is allowed as a workaround for
         // dart-lang/sdk#32005.
-        for (var e = element!.enclosingElement!;
+        for (Element e = enclosingElement;
             e.enclosingElement != null;
             e = e.enclosingElement!) {
           enclosingName = e.name;
@@ -58,56 +58,48 @@ class Parameter extends ModelElement implements EnclosedElement {
   }
 
   @override
-  int get hashCode => element == null ? 0 : element.hashCode;
+  int get hashCode => element.hashCode;
 
   @override
   bool operator ==(Object other) =>
-      other is Parameter && (element!.type == other.element!.type);
+      other is Parameter && (element.type == other.element.type);
 
-  bool get isCovariant => element!.isCovariant;
+  bool get isCovariant => element.isCovariant;
 
-  bool get isRequiredPositional => element!.isRequiredPositional;
+  bool get isRequiredPositional => element.isRequiredPositional;
 
-  bool get isNamed => element!.isNamed;
+  bool get isNamed => element.isNamed;
 
-  bool get isOptionalPositional => element!.isOptionalPositional;
+  bool get isOptionalPositional => element.isOptionalPositional;
 
   /// Only true if this is a required named parameter.
-  bool get isRequiredNamed => element!.isRequiredNamed;
+  bool get isRequiredNamed => element.isRequiredNamed;
 
   @override
   String get kind => 'parameter';
 
-  Map<String, CommentReferable>? _referenceChildren;
+  @override
+  late final Map<String, CommentReferable> referenceChildren = {
+    if (modelType is Callable)
+      ...(modelType as Callable)
+          .returnType
+          .typeArguments
+          .explicitOnCollisionWith(this),
+    ...modelType.typeArguments.explicitOnCollisionWith(this),
+    if (modelType is Callable)
+      ...(modelType as Callable).parameters.explicitOnCollisionWith(this),
+  };
 
   @override
-  Map<String, CommentReferable> get referenceChildren {
-    if (_referenceChildren == null) {
-      _referenceChildren = {};
-      var _modelType = modelType;
-      if (_modelType is Callable) {
-        _referenceChildren!.addEntriesIfAbsent(
-            _modelType.parameters.explicitOnCollisionWith(this));
-      }
-      _referenceChildren!.addEntriesIfAbsent(
-          modelType.typeArguments.explicitOnCollisionWith(this));
-      if (_modelType is Callable) {
-        _referenceChildren!.addEntriesIfAbsent(
-            _modelType.returnType.typeArguments.explicitOnCollisionWith(this));
-      }
-    }
-    return _referenceChildren!;
+  Iterable<CommentReferable> get referenceParents {
+    final enclosingElement = this.enclosingElement;
+    return [if (enclosingElement != null) enclosingElement];
   }
-
-  @override
-  Iterable<CommentReferable> get referenceParents => [enclosingElement];
-  @override
-  ParameterElement? get element => super.element as ParameterElement?;
 
   @override
   ParameterMember? get originalMember =>
       super.originalMember as ParameterMember?;
 
   late final ElementType modelType =
-      modelBuilder.typeFrom((originalMember ?? element)!.type, library!);
+      modelBuilder.typeFrom((originalMember ?? element).type, library);
 }

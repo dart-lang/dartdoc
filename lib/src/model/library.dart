@@ -20,29 +20,77 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart' show PackageMeta;
 import 'package:dartdoc/src/warnings.dart';
 
-/// Find all hashable children of a given element that are defined in the
+/// Finds all hashable children of a given element that are defined in the
 /// [LibraryElement] given at initialization.
+// TODO(srawlins): Do we not need to visit the parameters in
+// [ConstructorElement], [FunctionElement], [MethodElement],
+// [PropertyAccessorElement], [TypeAliasElement]?
 class _HashableChildLibraryElementVisitor
-    extends GeneralizingElementVisitor<void> {
+    extends RecursiveElementVisitor<void> {
   final DartDocResolvedLibrary resolvedLibrary;
   final PackageGraph packageGraph;
 
   _HashableChildLibraryElementVisitor(this.resolvedLibrary, this.packageGraph);
 
   @override
-  void visitElement(Element element) {
+  void visitClassElement(ClassElement element) {
     packageGraph.populateModelNodeFor(element, resolvedLibrary);
-    super.visitElement(element);
+    super.visitClassElement(element);
   }
 
   @override
-  void visitExportElement(ExportElement element) {
-    // [ExportElement]s are not always hashable; skip them.
+  void visitConstructorElement(ConstructorElement element) {
+    packageGraph.populateModelNodeFor(element, resolvedLibrary);
   }
 
   @override
-  void visitImportElement(ImportElement element) {
-    // [ImportElement]s are not always hashable; skip them.
+  void visitEnumElement(EnumElement element) {
+    packageGraph.populateModelNodeFor(element, resolvedLibrary);
+    super.visitEnumElement(element);
+  }
+
+  @override
+  void visitExtensionElement(ExtensionElement element) {
+    packageGraph.populateModelNodeFor(element, resolvedLibrary);
+    super.visitExtensionElement(element);
+  }
+
+  @override
+  void visitFieldElement(FieldElement element) {
+    packageGraph.populateModelNodeFor(element, resolvedLibrary);
+  }
+
+  @override
+  void visitFieldFormalParameterElement(FieldFormalParameterElement element) {
+    packageGraph.populateModelNodeFor(element, resolvedLibrary);
+  }
+
+  @override
+  void visitFunctionElement(FunctionElement element) {
+    packageGraph.populateModelNodeFor(element, resolvedLibrary);
+  }
+
+  @override
+  void visitLibraryElement(LibraryElement element) {
+    packageGraph.populateModelNodeFor(element, resolvedLibrary);
+    super.visitLibraryElement(element);
+  }
+
+  @override
+  void visitMixinElement(MixinElement element) {
+    packageGraph.populateModelNodeFor(element, resolvedLibrary);
+    super.visitMixinElement(element);
+  }
+
+  @override
+  void visitMultiplyDefinedElement(MultiplyDefinedElement element) {
+    packageGraph.populateModelNodeFor(element, resolvedLibrary);
+    super.visitMultiplyDefinedElement(element);
+  }
+
+  @override
+  void visitMethodElement(MethodElement element) {
+    packageGraph.populateModelNodeFor(element, resolvedLibrary);
   }
 
   @override
@@ -50,25 +98,76 @@ class _HashableChildLibraryElementVisitor
     // [ParameterElement]s without names do not provide sufficiently distinct
     // hashes / comparison, so just skip them all. (dart-lang/sdk#30146)
   }
+
+  @override
+  void visitPrefixElement(PrefixElement element) {
+    packageGraph.populateModelNodeFor(element, resolvedLibrary);
+  }
+
+  @override
+  void visitPropertyAccessorElement(PropertyAccessorElement element) {
+    packageGraph.populateModelNodeFor(element, resolvedLibrary);
+  }
+
+  @override
+  void visitSuperFormalParameterElement(SuperFormalParameterElement element) {
+    packageGraph.populateModelNodeFor(element, resolvedLibrary);
+  }
+
+  @override
+  void visitTopLevelVariableElement(TopLevelVariableElement element) {
+    packageGraph.populateModelNodeFor(element, resolvedLibrary);
+  }
+
+  @override
+  void visitTypeAliasElement(TypeAliasElement element) {
+    packageGraph.populateModelNodeFor(element, resolvedLibrary);
+  }
+
+  @override
+  void visitTypeParameterElement(TypeParameterElement element) {
+    packageGraph.populateModelNodeFor(element, resolvedLibrary);
+  }
+}
+
+class _LibrarySentinel implements Library {
+  @override
+  dynamic noSuchMethod(Invocation invocation) =>
+      throw UnimplementedError('No members on Library.sentinel are accessible');
 }
 
 class Library extends ModelElement with Categorization, TopLevelContainer {
+  @override
+  final LibraryElement element;
+
   final Set<Element> _exportedAndLocalElements;
   final String _restoredUri;
 
   @override
   final Package package;
 
-  Library._(LibraryElement element, PackageGraph packageGraph, this.package,
+  /// A [Library] value used as a sentinel in three cases:
+  ///
+  /// * the library for `dynamic` and `Never`
+  /// * the library for type parameters
+  /// * the library passed up to [ModelElement.library] when constructing a
+  /// `Library`, via the super constructor.
+  ///
+  /// TODO(srawlins): I think this last case demonstrates that
+  /// [ModelElement.library] should not be a field, and instead should be an
+  /// abstract getter.
+  static final Library sentinel = _LibrarySentinel();
+
+  Library._(this.element, PackageGraph packageGraph, this.package,
       this._restoredUri, this._exportedAndLocalElements)
-      : super(element, null, packageGraph);
+      : super(sentinel, packageGraph);
 
   factory Library.fromLibraryResult(DartDocResolvedLibrary resolvedLibrary,
       PackageGraph packageGraph, Package package) {
     var element = resolvedLibrary.element;
 
     _HashableChildLibraryElementVisitor(resolvedLibrary, packageGraph)
-        .visitElement(element);
+        .visitLibraryElement(element);
 
     var exportedAndLocalElements = {
       // Initialize the list of elements defined in this library and
@@ -76,7 +175,10 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
       ...element.exportNamespace.definedNames.values,
       // TODO(jcollins-g): Consider switch to [_libraryElement.topLevelElements].
       ..._getDefinedElements(element.definingCompilationUnit),
-      for (var cu in element.parts) ..._getDefinedElements(cu),
+      ...element.parts
+          .map((e) => e.uri)
+          .whereType<DirectiveUriWithUnit>()
+          .map((part) => part.unit)
     };
     var library = Library._(
         element,
@@ -106,16 +208,6 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   @override
   Scope get scope => element.scope;
 
-  /// Return true if this library is in a package configured to be treated as
-  /// as using Null safety and itself uses Null safety.
-  bool get _allowsNullSafety => element.isNonNullableByDefault;
-
-  /// Return true if this library should be documented as using Null safety.
-  /// A library may use Null safety but not documented that way.
-  @override
-  bool get isNullSafety =>
-      config.enableExperiment.contains('non-nullable') && _allowsNullSafety;
-
   bool get isInSdk => element.isInSdk;
 
   /// [allModelElements] resolved to their original names.
@@ -138,12 +230,12 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
         setter = modelBuilder.fromElement(elementSetter.element) as Accessor;
       }
       return modelBuilder
-          .fromPropertyInducingElement(e.element!,
-              modelBuilder.fromElement(e.element!.library!) as Library,
+          .fromPropertyInducingElement(e.element,
+              modelBuilder.fromElement(e.element.library!) as Library,
               getter: getter, setter: setter)
           .fullyQualifiedName;
     }
-    return modelBuilder.fromElement(e.element!).fullyQualifiedName;
+    return modelBuilder.fromElement(e.element).fullyQualifiedName;
   }).toList(growable: false);
 
   @override
@@ -164,20 +256,13 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   Iterable<Class> get classes => allClasses.where((c) => !c.isErrorOrException);
 
   @override
-  LibraryElement get element => super.element as LibraryElement;
-
-  @override
   late final Iterable<Extension> extensions = _exportedAndLocalElements
       .whereType<ExtensionElement>()
       .map((e) => modelBuilder.from(e, this) as Extension)
       .toList(growable: false);
 
-  SdkLibrary? get sdkLib {
-    if (packageGraph.sdkLibrarySources.containsKey(element.librarySource)) {
-      return packageGraph.sdkLibrarySources[element.librarySource];
-    }
-    return null;
-  }
+  SdkLibrary? get sdkLib =>
+      packageGraph.sdkLibrarySources[element.librarySource];
 
   @override
   bool get isPublic {
@@ -201,8 +286,8 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   late final Map<String, Set<Library>> prefixToLibrary = () {
     var prefixToLibrary = <String, Set<Library>>{};
     // It is possible to have overlapping prefixes.
-    for (var i in element.imports) {
-      var prefixName = i.prefix?.name;
+    for (var i in element.libraryImports) {
+      var prefixName = i.prefix?.element.name;
       // Ignore invalid imports.
       if (prefixName != null && i.importedLibrary != null) {
         prefixToLibrary
@@ -213,15 +298,13 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     return prefixToLibrary;
   }();
 
-  late final String dirName = () {
-    var directoryName = isAnonymous ? nameFromPath : name;
-    directoryName = directoryName.replaceAll(':', '-').replaceAll('/', '_');
-    return directoryName;
-  }();
+  late final String dirName = (isAnonymous ? nameFromPath : name)
+      .replaceAll(':', '-')
+      .replaceAll('/', '_');
 
-  Set<String?>? _canonicalFor;
+  Set<String>? _canonicalFor;
 
-  Set<String?> get canonicalFor {
+  Set<String> get canonicalFor {
     if (_canonicalFor == null) {
       // TODO(jcollins-g): restructure to avoid using side effects.
       buildDocumentationAddition(documentationComment);
@@ -265,15 +348,13 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
   @override
   late final List<Enum> enums = _exportedAndLocalElements
-      .whereType<ClassElement>()
-      .where((element) => element.isEnum)
+      .whereType<EnumElement>()
       .map((e) => modelBuilder.from(e, this) as Enum)
       .toList(growable: false);
 
   @override
   late final List<Mixin> mixins = _exportedAndLocalElements
-      .whereType<ClassElement>()
-      .where((ClassElement c) => c.isMixin)
+      .whereType<MixinElement>()
       .map((e) => modelBuilder.from(e, this) as Mixin)
       .toList(growable: false);
 
@@ -316,18 +397,22 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   late final String name = () {
     var source = element.source;
     if (source.uri.isScheme('dart')) {
-      // There are inconsistencies in library naming + URIs for the dart
-      // internal libraries; rationalize them here.
+      // There are inconsistencies in library naming + URIs for the Dart
+      // SDK libraries; we rationalize them here.
       if (source.uri.toString().contains('/')) {
         return element.name.replaceFirst('dart.', 'dart:');
       }
       return source.uri.toString();
     } else if (element.name.isNotEmpty) {
+      // An empty name indicates that the library is "implicitly named" with the
+      // empty string. That is, it either has no `library` directive, or it has
+      // a `library` directive with no name.
       return element.name;
     }
     var baseName = pathContext.basename(source.fullName);
     if (baseName.endsWith('.dart')) {
-      return baseName.substring(0, baseName.length - '.dart'.length);
+      const dartExtensionLength = '.dart'.length;
+      return baseName.substring(0, baseName.length - dartExtensionLength);
     }
     return baseName;
   }();
@@ -347,10 +432,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
   /// The real packageMeta, as opposed to the package we are documenting with.
   late final PackageMeta? packageMeta =
-      packageGraph.packageMetaProvider.fromElement(
-    element,
-    config.sdkDir,
-  );
+      packageGraph.packageMetaProvider.fromElement(element, config.sdkDir);
 
   /// All variables ("properties") except constants.
   @override
@@ -367,7 +449,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
   late final List<Class> allClasses = _exportedAndLocalElements
       .whereType<ClassElement>()
-      .where((e) => !e.isMixin && !e.isEnum)
+      .where((e) => e is! EnumElement && e is! MixinElement)
       .map((e) => modelBuilder.from(e, this) as Class)
       .toList(growable: false);
 
@@ -441,7 +523,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
       ...library.mixins.expand((m) => [m, ...m.allModelElements]),
     ]) {
       modelElements
-          .putIfAbsent(modelElement.element!, () => {})
+          .putIfAbsent(modelElement.element, () => {})
           .add(modelElement);
     }
     modelElements.putIfAbsent(element, () => {}).add(this);
@@ -456,7 +538,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   late final Map<String, CommentReferable> referenceChildren = () {
     var referenceChildrenBuilder = <String, CommentReferable>{};
     var definedNamesModelElements = element.exportNamespace.definedNames.values
-        .map((v) => modelBuilder.fromElement(v));
+        .map(modelBuilder.fromElement);
     referenceChildrenBuilder.addEntries(
         definedNamesModelElements.whereNotType<Accessor>().generateEntries());
     // TODO(jcollins-g): warn and get rid of this case where it shows up.

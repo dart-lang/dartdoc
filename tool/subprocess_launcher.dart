@@ -149,7 +149,7 @@ class SubprocessLauncher {
           .expand(filter)
           .map(
         (String line) {
-          final value = '$prefix$line'.trim() + '\n';
+          final value = '${'$prefix$line'.trim()}\n';
           output.write(value);
           return value;
         },
@@ -175,9 +175,7 @@ class SubprocessLauncher {
       Map<String, String>? environment,
       bool includeParentEnvironment = true,
       void Function(String)? perLine}) async {
-    environment = {}
-      ..addAll(environmentDefaults)
-      ..addAll(environment ?? {});
+    environment = {...environmentDefaults, ...?environment};
     var jsonObjects = <Map<String, Object?>>[];
 
     /// Allow us to pretend we didn't pass the JSON flag in to dartdoc by

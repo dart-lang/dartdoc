@@ -13,6 +13,7 @@ import 'package:dart_style/dart_style.dart';
 import 'package:dartdoc/src/mustachio/annotations.dart';
 import 'package:dartdoc/src/mustachio/parser.dart';
 import 'package:dartdoc/src/mustachio/renderer_base.dart';
+import 'package:dartdoc/src/type_utils.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 
@@ -79,6 +80,7 @@ Future<String> compileTemplatesToRenderers(
 // non-bool, non-Iterable field is non-null.
 // ignore_for_file: unused_local_variable
 // ignore_for_file: non_constant_identifier_names, unnecessary_string_escapes
+// ignore_for_file: use_super_parameters
 
 ${library.accept(DartEmitter.scoped(orderDirectives: true))}
 ''');
@@ -195,7 +197,7 @@ Future<Method> _redirectingMethod(
         typeParameters
             .add(TypeReference((b) => b..symbol = typeParameter.name));
       } else {
-        var boundElement = bound.element!;
+        var boundElement = DartTypeExtension(bound).element!;
         var boundUri = await compiler._elementUri(boundElement);
         typeParameters.add(TypeReference((b) => b
           ..symbol = typeParameter.name
@@ -258,7 +260,7 @@ class _AotCompiler {
   final Set<_VariableLookup> _usedContexts = {};
 
   List<_VariableLookup> get _usedContextStack =>
-      [..._contextStack.where((c) => _usedContexts.contains(c))];
+      [..._contextStack.where(_usedContexts.contains)];
 
   /// A counter for naming partial render functions.
   ///
@@ -343,7 +345,7 @@ class _AotCompiler {
           typeParameters
               .add(TypeReference((b) => b..symbol = typeParameter.name));
         } else {
-          var boundElement = bound.element!;
+          var boundElement = DartTypeExtension(bound).element!;
           var boundUri = await _elementUri(boundElement);
           typeParameters.add(TypeReference((b) => b
             ..symbol = typeParameter.name

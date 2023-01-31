@@ -105,7 +105,7 @@ class DartToolDefinition extends ToolDefinition {
     // Set up flags to create a new snapshot, if needed, and use the first run
     // as the training run.
     var snapshotCache = SnapshotCache.instanceFor(_resourceProvider);
-    var snapshot = snapshotCache.getSnapshot(command.first);
+    var snapshot = snapshotCache._getSnapshot(command.first);
     var snapshotFile = snapshot._snapshotFile;
     var snapshotPath =
         _resourceProvider.pathContext.absolute(snapshotFile.path);
@@ -139,10 +139,9 @@ class DartToolDefinition extends ToolDefinition {
     }
   }
 
-  DartToolDefinition(List<String> command, List<String> setupCommand,
-      String description, this._resourceProvider,
-      {this.compileArgs = const []})
-      : super(command, setupCommand, description);
+  DartToolDefinition(super.command, super.setupCommand, super.description,
+      this._resourceProvider,
+      {this.compileArgs = const []});
 }
 
 /// Manages the creation of a single snapshot file in a context where multiple
@@ -212,7 +211,7 @@ class SnapshotCache {
 
   final Folder snapshotCache;
   final ResourceProvider _resourceProvider;
-  final Map<String, _Snapshot> snapshots = {};
+  final Map<String, _Snapshot> _snapshots = {};
   int _serial = 0;
 
   SnapshotCache._(this._resourceProvider)
@@ -226,14 +225,14 @@ class SnapshotCache {
         resourceProvider, () => SnapshotCache._(resourceProvider));
   }
 
-  _Snapshot getSnapshot(String toolPath) {
-    var toolSnapshot = snapshots[toolPath];
+  _Snapshot _getSnapshot(String toolPath) {
+    var toolSnapshot = _snapshots[toolPath];
     if (toolSnapshot != null) {
       return toolSnapshot;
     }
     toolSnapshot =
         _Snapshot(snapshotCache, toolPath, _serial, _resourceProvider);
-    snapshots[toolPath] = toolSnapshot;
+    _snapshots[toolPath] = toolSnapshot;
     _serial++;
     return toolSnapshot;
   }

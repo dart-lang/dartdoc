@@ -10,48 +10,49 @@ import 'package:dartdoc/src/model/model.dart';
 /// A [ModelElement] for a [FunctionElement] that isn't part of a type definition.
 class ModelFunction extends ModelFunctionTyped with Categorization {
   ModelFunction(
-      FunctionElement element, Library? library, PackageGraph packageGraph)
-      : super(element, library, packageGraph);
+      FunctionElement super.element, super.library, super.packageGraph);
 
   @override
-  bool get isStatic => element!.isStatic;
+  bool get isStatic => element.isStatic;
 
   @override
-  String get name => element!.name;
+  String get name => element.name;
 
   @override
-  FunctionElement? get element => super.element as FunctionElement?;
+  FunctionElement get element => super.element as FunctionElement;
+
+  @override
+  bool get isAsynchronous => element.isAsynchronous;
 }
 
 /// A [ModelElement] for a [FunctionTypedElement] that is part of an
 /// explicit typedef.
 class ModelFunctionTypedef extends ModelFunctionTyped {
-  ModelFunctionTypedef(
-      FunctionTypedElement element, Library? library, PackageGraph packageGraph)
-      : super(element, library, packageGraph);
+  ModelFunctionTypedef(super.element, super.library, super.packageGraph);
 
   @override
-  String get name => element!.enclosingElement!.name!;
+  String get name => element.enclosingElement!.name!;
 }
 
 class ModelFunctionTyped extends ModelElement
     with TypeParameters
     implements EnclosedElement {
   @override
+  final FunctionTypedElement element;
+
+  @override
   late final List<TypeParameter> typeParameters = [
-    for (var p in element!.typeParameters)
-      modelBuilder.from(p, library!) as TypeParameter,
+    for (var p in element.typeParameters)
+      modelBuilder.from(p, library) as TypeParameter,
   ];
 
-  ModelFunctionTyped(
-      FunctionTypedElement element, Library? library, PackageGraph packageGraph)
-      : super(element, library, packageGraph);
+  ModelFunctionTyped(this.element, super.library, super.packageGraph);
 
   @override
-  ModelElement? get enclosingElement => library;
+  ModelElement get enclosingElement => library;
 
   @override
-  String get filePath => '${library!.dirName}/$fileName';
+  String get filePath => '${library.dirName}/$fileName';
 
   @override
   String? get href {
@@ -70,22 +71,14 @@ class ModelFunctionTyped extends ModelElement
   bool get isInherited => false;
 
   @override
-  late final Map<String, CommentReferable> referenceChildren = () {
-    var children = <String, CommentReferable>{};
-    children.addEntriesIfAbsent(typeParameters.explicitOnCollisionWith(this));
-    children.addEntriesIfAbsent(parameters.explicitOnCollisionWith(this));
-    return children;
-  }();
-
-  @override
-  Package get package => super.package!;
+  late final Map<String, CommentReferable> referenceChildren = {
+    ...parameters.explicitOnCollisionWith(this),
+    ...typeParameters.explicitOnCollisionWith(this),
+  };
 
   @override
   Iterable<CommentReferable> get referenceParents => [definingLibrary];
 
-  @override
-  FunctionTypedElement? get element => super.element as FunctionTypedElement?;
-
   late final Callable modelType =
-      modelBuilder.typeFrom(element!.type, library!) as Callable;
+      modelBuilder.typeFrom(element.type, library) as Callable;
 }

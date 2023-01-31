@@ -9,6 +9,9 @@ on:
   schedule:
     - cron: 0 15 * * *
 
+# Declare default permissions as read only.
+permissions: read-all
+
 env:
   PUB_ENVIRONMENT: bot.github
 
@@ -43,7 +46,7 @@ jobs:
         run: echo "::set-output name=today::$(date +'%Y-%m-%d')"
         shell: bash
       - name: Cache clean flutter
-        uses: actions/cache@v3.0.1
+        uses: actions/cache@58c146cc91c5b9e778e71775dfe9bf1442ad9a12
         if: matrix.job == 'flutter'
         env:
           # Increment version to invalidate bad/obsolete caches.
@@ -52,7 +55,7 @@ jobs:
           path: ~/.dartdoc_grinder
           key: ${{ runner.os }}-test-${{ env.cache-name }}-${{ steps.date.outputs.today }}
       - name: Cache .pub-cache
-        uses: actions/cache@v3.0.1
+        uses: actions/cache@58c146cc91c5b9e778e71775dfe9bf1442ad9a12
         if: matrix.job == 'flutter'
         env:
           # Increment version to invalidate bad/obsolete caches.
@@ -63,8 +66,8 @@ jobs:
       - name: Configure git
         if: runner.os == 'Windows'
         run: git config --global core.autocrlf input
-      - uses: actions/checkout@v3
-      - uses: dart-lang/setup-dart@v1.3
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
+      - uses: dart-lang/setup-dart@a57a6c04cf7d4840e88432aad6281d1e125f0d46
         with:
           sdk: ${{ matrix.sdk }}
       - name: Install dependencies

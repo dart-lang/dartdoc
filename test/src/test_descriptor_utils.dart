@@ -10,11 +10,11 @@ import 'package:yaml/yaml.dart' as yaml;
 
 export 'package:test_descriptor/test_descriptor.dart';
 
-const _defaultPubspec = '''
+String buildPubspecText({String sdkConstraint = '>=2.15.0 <3.0.0'}) => '''
 name: test_package
 version: 0.0.1
 environment:
-  sdk: '>=2.12.0 <3.0.0'
+  sdk: '$sdkConstraint'
 ''';
 
 /// Creates a pub package in a directory named [name].
@@ -31,7 +31,7 @@ Future<String> createPackage(
   List<d.Descriptor> files = const [],
   MemoryResourceProvider? resourceProvider,
 }) async {
-  pubspec ??= _defaultPubspec;
+  pubspec ??= buildPubspecText();
   final parsedYaml = yaml.loadYaml(pubspec) as Map;
   final packageName = parsedYaml['name'];
   final versionConstraint = (parsedYaml['environment'] as Map)['sdk'];

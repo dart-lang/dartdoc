@@ -12,33 +12,20 @@ int byFeatureOrdering(Feature a, Feature b) {
 }
 
 class ElementFeatureNotFoundError extends Error {
-  final String? message;
+  final String message;
 
-  ElementFeatureNotFoundError([this.message]);
+  ElementFeatureNotFoundError(this.message);
 
   @override
   String toString() => 'ElementFeatureNotFoundError: $message';
 }
 
 /// A "feature" includes both explicit annotations in code (e.g. `deprecated`)
-/// as well as others added by the documentation system (`read-write`);
-class Feature implements Privacy {
-  final String _name;
-
-  /// Do not use this except in subclasses, prefer const members of this
-  /// class instead.
-  const Feature(this._name, [this.sortGroup = 0]);
-
-  final String featurePrefix = '';
-
-  String get name => _name;
-
-  String get linkedName => name;
-
-  String get linkedNameWithParameters => linkedName;
-
-  @override
-  bool get isPublic => !name.startsWith('_');
+/// as well as others added by the documentation system (`read-write`).
+// TODO(srawlins): Rename to avoid confusion with the language feature concept
+// and class from package:analyzer. 'Attribute' isn't a bad name.
+abstract class Feature implements Privacy {
+  final String name;
 
   /// Numerical sort group for this feature.
   /// Less than zero will sort before custom annotations.
@@ -47,17 +34,48 @@ class Feature implements Privacy {
   // TODO(jcollins-g): consider [Comparable]?
   final int sortGroup;
 
-  static const lateFeature = Feature('late', 1);
-  static const readOnly = Feature('read-only', 1);
-  static const finalFeature = Feature('final', 2);
-  static const writeOnly = Feature('write-only', 2);
-  static const readWrite = Feature('read / write', 2);
-  static const covariant = Feature('covariant', 2);
-  static const extended = Feature('extended', 3);
-  static const inherited = Feature('inherited', 3);
-  static const inheritedGetter = Feature('inherited-getter', 3);
-  static const inheritedSetter = Feature('inherited-setter', 3);
-  static const overrideFeature = Feature('override', 3);
-  static const overrideGetter = Feature('override-getter', 3);
-  static const overrideSetter = Feature('override-setter', 3);
+  const Feature(this.name, [this.sortGroup = 0]);
+
+  const factory Feature._builtIn(String name, int sortGroup) = _BuiltInFeature;
+
+  String get featurePrefix => '';
+
+  String get linkedName;
+
+  String get linkedNameWithParameters;
+
+  String get cssClassName;
+
+  static const lateFeature = Feature._builtIn('late', 1);
+  // TODO(srawlins): Change to a Dart term, like "no setter".
+  static const readOnly = Feature._builtIn('read-only', 1);
+  static const finalFeature = Feature._builtIn('final', 2);
+  // TODO(srawlins): Change to a Dart term, like "no getter".
+  static const writeOnly = Feature._builtIn('write-only', 2);
+  // TODO(srawlins): Change to a Dart term, like "getter/setter pair".
+  static const readWrite = Feature._builtIn('read / write', 2);
+  static const covariant = Feature._builtIn('covariant', 2);
+  static const extended = Feature._builtIn('extended', 3);
+  static const inherited = Feature._builtIn('inherited', 3);
+  static const inheritedGetter = Feature._builtIn('inherited-getter', 3);
+  static const inheritedSetter = Feature._builtIn('inherited-setter', 3);
+  static const overrideFeature = Feature._builtIn('override', 3);
+  static const overrideGetter = Feature._builtIn('override-getter', 3);
+  static const overrideSetter = Feature._builtIn('override-setter', 3);
+}
+
+class _BuiltInFeature extends Feature {
+  const _BuiltInFeature(super.name, super.sortGroup);
+
+  @override
+  bool get isPublic => false;
+
+  @override
+  String get linkedName => name;
+
+  @override
+  String get linkedNameWithParameters => linkedName;
+
+  @override
+  String get cssClassName => 'feature';
 }

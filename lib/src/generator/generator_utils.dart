@@ -12,7 +12,8 @@ import 'package:dartdoc/src/model/model_element.dart';
 
 String generateCategoryJson(Iterable<Categorization> categories, bool pretty) {
   final indexItems = [
-    for (final categorization in categories.sorted(_sortElementRepresentations))
+    for (final categorization
+        in categories.sorted(_compareElementRepresentations))
       <String, Object?>{
         'name': categorization.name,
         'qualifiedName': categorization.fullyQualifiedName,
@@ -30,24 +31,37 @@ String generateCategoryJson(Iterable<Categorization> categories, bool pretty) {
   final encoder =
       pretty ? const JsonEncoder.withIndent(' ') : const JsonEncoder();
 
-  return encoder.convert(indexItems.toList());
+  return encoder.convert(indexItems.toList(growable: false));
+}
+
+String removeHtmlTags(String? input) {
+  if (input == null) {
+    return '';
+  }
+  var htmlTag = RegExp(r'<[^>]*>', multiLine: true, caseSensitive: true);
+  var parsedString = input.replaceAll(htmlTag, '');
+  return parsedString;
 }
 
 String generateSearchIndexJson(
     Iterable<Indexable> indexedElements, bool pretty) {
   final indexItems = [
-    for (final indexable in indexedElements.sorted(_sortElementRepresentations))
+    for (final indexable
+        in indexedElements.sorted(_compareElementRepresentations))
       <String, Object?>{
         'name': indexable.name,
         'qualifiedName': indexable.fullyQualifiedName,
         'href': indexable.href,
         'type': indexable.kind,
         'overriddenDepth': indexable.overriddenDepth,
-        if (indexable is ModelElement) 'packageName': indexable.package?.name,
+        if (indexable is ModelElement) 'packageName': indexable.package.name,
+        if (indexable is ModelElement)
+          'desc': removeHtmlTags(indexable.oneLineDoc),
         if (indexable is EnclosedElement)
           'enclosedBy': {
-            'name': indexable.enclosingElement!.name,
-            'type': indexable.enclosingElement!.kind
+            'name': indexable.enclosingElement.name,
+            'type': indexable.enclosingElement.kind,
+            'href': indexable.enclosingElement.href
           },
       }
   ];
@@ -55,10 +69,11 @@ String generateSearchIndexJson(
   final encoder =
       pretty ? const JsonEncoder.withIndent(' ') : const JsonEncoder();
 
-  return encoder.convert(indexItems.toList());
+  return encoder.convert(indexItems);
 }
 
-int _sortElementRepresentations(Indexable a, Indexable b) {
+// Compares two elements, first by fully qualified name, then by kind.
+int _compareElementRepresentations(Indexable a, Indexable b) {
   final value = compareNatural(a.fullyQualifiedName, b.fullyQualifiedName);
   if (value == 0) {
     return compareNatural(a.kind, b.kind);

@@ -33,14 +33,16 @@ abstract class FileWriter {
   });
 }
 
-/// An abstract class that defines a generator that generates documentation for
-/// a given package.
+/// A generator generates documentation for a given package.
 ///
-/// Generators can generate documentation in different formats: html, json etc.
+/// Generators can generate documentation in different formats: HTML, JSON, etc.
 abstract class Generator {
-  /// Generate the documentation for the given package using the specified
+  /// Generates the documentation for the given package using the specified
   /// writer. Completes the returned future when done.
-  Future<void> generate(PackageGraph packageGraph, FileWriter writer);
+  Future<void> generate(PackageGraph packageGraph);
+
+  /// The set of of files written by the generator backend.
+  Set<String> get writtenFiles;
 }
 
 List<DartdocOption> createGeneratorOptions(

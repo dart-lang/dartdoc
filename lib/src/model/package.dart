@@ -3,7 +3,6 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/dart/element/element.dart';
-import 'package:dartdoc/src/comment_references/model_comment_reference.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
@@ -38,20 +37,29 @@ class Package extends LibraryContainer
         CommentReferable,
         ModelBuilder
     implements Privacy, Documentable {
-  String _name;
-  PackageGraph _packageGraph;
+  @override
+  final String name;
+
+  @override
+  final PackageGraph packageGraph;
 
   // Creates a package, if necessary, and adds it to the [packageGraph].
   factory Package.fromPackageMeta(
       PackageMeta packageMeta, PackageGraph packageGraph) {
     var packageName = packageMeta.name;
-
-    var expectNonLocal = false;
-
-    if (!packageGraph.packageMap.containsKey(packageName) &&
-        packageGraph.allLibrariesAdded) expectNonLocal = true;
-    var package = packageGraph.packageMap.putIfAbsent(packageMeta.name,
-        () => Package._(packageMeta.name, packageGraph, packageMeta));
+    var expectNonLocal = !packageGraph.packageMap.containsKey(packageName) &&
+        packageGraph.allLibrariesAdded;
+    var packagePath = packageGraph.resourceProvider.pathContext
+        .canonicalize(packageMeta.dir.path);
+    var package = packageGraph.packageMap.putIfAbsent(
+      packageMeta.name,
+      () => Package._(
+        packageMeta.name,
+        packageGraph,
+        packageMeta,
+        packagePath,
+      ),
+    );
     // Verify that we don't somehow decide to document locally a package picked
     // up after all documented libraries are added, because that breaks the
     // assumption that we've picked up all documented libraries and packages
@@ -63,7 +71,12 @@ class Package extends LibraryContainer
     return package;
   }
 
-  Package._(this._name, this._packageGraph, this._packageMeta);
+  Package._(this.name, this.packageGraph, this.packageMeta, this.packagePath)
+      : config = DartdocOptionContext.fromContext(
+          packageGraph.config,
+          packageGraph.resourceProvider.getFolder(packagePath),
+          packageGraph.resourceProvider,
+        );
 
   @override
   bool get isCanonical => true;
@@ -80,7 +93,7 @@ class Package extends LibraryContainer
 
   /// Pieces of the location, split to remove 'package:' and slashes.
   @override
-  Set<String> get locationPieces => {};
+  Set<String> get locationPieces => const {};
 
   /// Holds all libraries added to this package.  May include non-documented
   /// libraries, but is not guaranteed to include a complete list of
@@ -92,7 +105,7 @@ class Package extends LibraryContainer
   String get homepage => packageMeta.homepage;
 
   @override
-  String get kind => (isSdk) ? 'SDK' : 'package';
+  String get kind => isSdk ? 'SDK' : 'package';
 
   @override
   List<Locatable> get documentationFrom => [this];
@@ -102,9 +115,9 @@ class Package extends LibraryContainer
   bool get hasCategories => categories.isNotEmpty;
 
   @override
-  late final String? documentationAsHtml =
-      Documentation.forElement(this).asHtml;
+  late final String documentationAsHtml = Documentation.forElement(this).asHtml;
 
+  /// The documentation from the README contents.
   @override
   late final String? documentation = () {
     final docFile = packageMeta.getReadmeContents();
@@ -124,14 +137,10 @@ class Package extends LibraryContainer
   bool get isDocumented =>
       isFirstPackage || documentedWhere != DocumentLocation.missing;
 
-  @override
-  Warnable? get enclosingElement => null;
-
-  @override
-
   /// If we have public libraries, this is the default package, or we are
   /// auto-including dependencies, this package is public.
-  late final bool isPublic =
+  @override
+  bool get isPublic =>
       _isLocalPublicByDefault || libraries.any((l) => l.isPublic);
 
   /// Return true if this is the default package, this is part of an embedder
@@ -154,13 +163,13 @@ class Package extends LibraryContainer
   }();
 
   /// True if the global config excludes this package by name.
-  late final bool _isExcluded = packageGraph.config.isPackageExcluded(name);
+  bool get _isExcluded => packageGraph.config.isPackageExcluded(name);
 
   /// True if this is the package being documented by default, or the
   /// global config indicates we are auto-including dependencies.
-  late final bool _isLocalPublicByDefault =
-      (packageMeta == packageGraph.packageMeta ||
-          packageGraph.config.autoIncludeDependencies);
+  bool get _isLocalPublicByDefault =>
+      packageMeta == packageGraph.packageMeta ||
+      packageGraph.config.autoIncludeDependencies;
 
   /// Returns the location of documentation for this package, for linkToRemote
   /// and canonicalization decision making.
@@ -187,10 +196,9 @@ class Package extends LibraryContainer
   // In theory, a remote package could be documented in any supported format.
   // In practice, devs depend on Dart, Flutter, and/or packages fetched
   // from pub.dev, and we know that all of those use html docs.
-  late final String fileType =
-      (package.documentedWhere == DocumentLocation.remote)
-          ? 'html'
-          : config.format;
+  String get fileType => package.documentedWhere == DocumentLocation.remote
+      ? 'html'
+      : config.format;
 
   @override
   String get fullyQualifiedName => 'package:$name';
@@ -242,19 +250,13 @@ class Package extends LibraryContainer
   String get location => _pathContext.toUri(packageMeta.resolvedDir).toString();
 
   @override
-  String get name => _name;
-
-  @override
   Package get package => this;
-
-  @override
-  PackageGraph get packageGraph => _packageGraph;
 
   // Workaround for mustache4dart issue where templates do not recognize
   // inherited properties as being in-context.
   @override
   Iterable<Library> get publicLibraries {
-    assert(libraries.every((l) => l.packageMeta == _packageMeta));
+    assert(libraries.every((l) => l.packageMeta == packageMeta));
     return super.publicLibraries;
   }
 
@@ -269,7 +271,7 @@ class Package extends LibraryContainer
   late final Map<String?, Category> nameToCategory;
 
   /// Adds [categorization] to one or more categories in the [nameToCategory]
-  /// map, if it is annoated with `{@category}`, or `[defaultCategory], if not,
+  /// map, if it is annotated with `{@category}`, or `[defaultCategory], if not,
   /// via the [addTo] callback.
   void addToCategories(
       Categorization categorization, void Function(Category) addTo) {
@@ -325,7 +327,7 @@ class Package extends LibraryContainer
   late final List<Category> categories = [
     defaultCategory,
     ...nameToCategory.values,
-  ].where((c) => c.name.isNotEmpty).toList()
+  ].where((c) => c.name.isNotEmpty).toList(growable: false)
     ..sort();
 
   Iterable<Category> get categoriesWithPublicLibraries =>
@@ -342,7 +344,8 @@ class Package extends LibraryContainer
   /// ordered by name.
   Iterable<Category> get documentedCategoriesSorted {
     if (config.categoryOrder.isNotEmpty) {
-      final documentedCategories = this.documentedCategories.toList();
+      final documentedCategories =
+          this.documentedCategories.toList(growable: false);
       return documentedCategories
         ..sort((a, b) {
           var aIndex = config.categoryOrder.indexOf(a.name);
@@ -372,10 +375,7 @@ class Package extends LibraryContainer
   bool get hasDocumentedCategories => documentedCategories.isNotEmpty;
 
   @override
-  late final DartdocOptionContext config = DartdocOptionContext.fromContext(
-      packageGraph.config,
-      packageGraph.resourceProvider.getFolder(packagePath),
-      packageGraph.resourceProvider);
+  final DartdocOptionContext config;
 
   /// Is this the package at the top of the list?  We display the first
   /// package specially (with "Libraries" rather than the package name).
@@ -386,14 +386,11 @@ class Package extends LibraryContainer
   @override
   bool get isSdk => packageMeta.isSdk;
 
-  late final String packagePath =
-      _pathContext.canonicalize(packageMeta.dir.path);
+  final String packagePath;
 
   String get version => packageMeta.version;
 
-  final PackageMeta _packageMeta;
-
-  PackageMeta get packageMeta => _packageMeta;
+  final PackageMeta packageMeta;
 
   @override
   Element? get element => null;
@@ -416,12 +413,7 @@ class Package extends LibraryContainer
   @override
   Iterable<CommentReferable> get referenceParents => [packageGraph];
 
-  p.Context get _pathContext => _packageGraph.resourceProvider.pathContext;
-
-  @override
-  // Packages are not interpreted by the analyzer in such a way to generate
-  // [CommentReference] nodes, so this is always empty.
-  Map<String, ModelCommentReference> get commentRefs => {};
+  p.Context get _pathContext => packageGraph.resourceProvider.pathContext;
 
   @override
   String get referenceName => 'package:$name';

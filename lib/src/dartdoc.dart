@@ -2,9 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-library src.dartdoc;
-
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io' show Platform, exitCode, stderr;
 
 import 'package:analyzer/file_system/file_system.dart';
@@ -38,7 +37,32 @@ class DartdocFileWriter implements FileWriter {
   @override
   final Set<String> writtenFiles = {};
 
-  DartdocFileWriter(this._outputDir, this.resourceProvider);
+  final int _maxFileCount;
+  final int _maxTotalSize;
+
+  int _fileCount = 0;
+  int _totalSize = 0;
+
+  DartdocFileWriter(
+    this._outputDir,
+    this.resourceProvider, {
+    int maxFileCount = 0,
+    int maxTotalSize = 0,
+  })  : _maxFileCount = maxFileCount,
+        _maxTotalSize = maxTotalSize;
+
+  void _validateMaxWriteStats(String filePath, int size) {
+    _fileCount++;
+    _totalSize += size;
+    if (_maxFileCount > 0 && _maxFileCount < _fileCount) {
+      throw DartdocFailure(
+          'Maximum file count reached: $_maxFileCount ($filePath)');
+    }
+    if (_maxTotalSize > 0 && _maxTotalSize < _totalSize) {
+      throw DartdocFailure(
+          'Maximum total size reached: $_maxTotalSize bytes ($filePath)');
+    }
+  }
 
   @override
   void writeBytes(
@@ -46,6 +70,7 @@ class DartdocFileWriter implements FileWriter {
     List<int> content, {
     bool allowOverwrite = false,
   }) {
+    _validateMaxWriteStats(filePath, content.length);
     // Replace '/' separators with proper separators for the platform.
     var outFile = p.joinAll(filePath.split('/'));
 
@@ -62,6 +87,9 @@ class DartdocFileWriter implements FileWriter {
 
   @override
   void write(String filePath, String content, {Warnable? element}) {
+    final bytes = utf8.encode(content);
+    _validateMaxWriteStats(filePath, bytes.length);
+
     // Replace '/' separators with proper separators for the platform.
     var outFile = p.joinAll(filePath.split('/'));
 
@@ -69,7 +97,7 @@ class DartdocFileWriter implements FileWriter {
     _fileElementMap[outFile] = element;
 
     var file = _getFile(outFile);
-    file.writeAsStringSync(content);
+    file.writeAsBytesSync(bytes);
     writtenFiles.add(outFile);
     logProgress(outFile);
   }
@@ -79,8 +107,8 @@ class DartdocFileWriter implements FileWriter {
       assert(element != null,
           'Attempted overwrite of $outFile without corresponding element');
       var originalElement = _fileElementMap[outFile];
-      var referredFrom = <Warnable>[];
-      if (originalElement != null) referredFrom.add(originalElement);
+      var referredFrom =
+          originalElement == null ? const <Warnable>[] : [originalElement];
       element?.warn(PackageWarning.duplicateFile,
           message: outFile, referredFrom: referredFrom);
     }
@@ -105,25 +133,17 @@ class Dartdoc {
   Generator _generator;
   final PackageBuilder packageBuilder;
   final DartdocOptionContext config;
-  late final Folder _outputDir = config.resourceProvider
-      .getFolder(config.resourceProvider.pathContext.absolute(config.output))
-    ..create();
+  final Folder _outputDir;
 
   // Fires when the self checks make progress.
   final StreamController<String> _onCheckProgress =
       StreamController(sync: true);
 
-  Dartdoc._(this.config, this._generator, this.packageBuilder);
+  Dartdoc._(this.config, this._outputDir, this._generator, this.packageBuilder);
 
-  // TODO(srawlins): Remove when https://github.com/dart-lang/linter/issues/2706
-  // is fixed.
-  // ignore: unnecessary_getters_setters
   Generator get generator => _generator;
 
   @visibleForTesting
-  // TODO(srawlins): Remove when https://github.com/dart-lang/linter/issues/2706
-  // is fixed.
-  // ignore: unnecessary_getters_setters
   set generator(Generator newGenerator) => _generator = newGenerator;
 
   /// Factory method that builds Dartdoc with an empty generator.
@@ -133,7 +153,8 @@ class Dartdoc {
   ) {
     return Dartdoc._(
       config,
-      initEmptyGenerator(config),
+      config.resourceProvider.getFolder('UNUSED'),
+      initEmptyGenerator(),
       packageBuilder,
     );
   }
@@ -144,19 +165,29 @@ class Dartdoc {
     DartdocGeneratorOptionContext context,
     PackageBuilder packageBuilder,
   ) async {
+    var resourceProvider = context.resourceProvider;
+    var outputPath = resourceProvider.pathContext.absolute(context.output);
+    var outputDir = resourceProvider.getFolder(outputPath)..create();
+    var writer = DartdocFileWriter(
+      outputPath,
+      resourceProvider,
+      maxFileCount: context.maxFileCount,
+      maxTotalSize: context.maxTotalSize,
+    );
     Generator generator;
     switch (context.format) {
       case 'html':
-        generator = await initHtmlGenerator(context);
+        generator = await initHtmlGenerator(context, writer: writer);
         break;
       case 'md':
-        generator = await initMarkdownGenerator(context);
+        generator = await initMarkdownGenerator(context, writer: writer);
         break;
       default:
         throw DartdocFailure('Unsupported output format: ${context.format}');
     }
     return Dartdoc._(
       context,
+      outputDir,
       generator,
       packageBuilder,
     );
@@ -177,11 +208,10 @@ class Dartdoc {
     if (!_outputDir.exists) _outputDir.create();
 
     runtimeStats.startPerfTask('generator.generate');
-    var writer = DartdocFileWriter(_outputDir.path, config.resourceProvider);
-    await generator.generate(packageGraph, writer);
+    await generator.generate(packageGraph);
     runtimeStats.endPerfTask();
 
-    var writtenFiles = writer.writtenFiles;
+    var writtenFiles = generator.writtenFiles;
     if (config.validateLinks && writtenFiles.isNotEmpty) {
       runtimeStats.startPerfTask('validateLinks');
       Validator(packageGraph, config, _outputDir.path, writtenFiles,
@@ -210,7 +240,7 @@ class Dartdoc {
     return DartdocResults(config.topLevelPackageMeta, packageGraph, _outputDir);
   }
 
-  /// Generate Dartdoc documentation.
+  /// Generates Dartdoc documentation.
   ///
   /// [DartdocResults] is returned if dartdoc succeeds. [DartdocFailure] is
   /// thrown if dartdoc fails in an expected way, for example if there is an
@@ -247,14 +277,14 @@ class Dartdoc {
     Future<void> Function(DartdocOptionContext)? postProcessCallback,
   ]) {
     onCheckProgress.listen(logProgress);
-    // This function should *never* await `runZonedGuarded` because the errors
-    // thrown in generateDocs are uncaught. We want this because uncaught errors
-    // cause IDE debugger to automatically stop at the exception.
+    // This function should *never* `await runZonedGuarded` because the errors
+    // thrown in [generateDocs] are uncaught. We want this because uncaught
+    // errors cause IDE debugger to automatically stop at the exception.
     //
     // If you await the zone, the code that comes after the await is not
-    // executed if the zone dies due to uncaught error. To avoid this confusion,
-    // never await `runZonedGuarded` and never change the return value of
-    // [executeGuarded].
+    // executed if the zone dies due to an uncaught error. To avoid this,
+    // confusion, never `await runZonedGuarded` and never change the return
+    // value of [executeGuarded].
     runZonedGuarded(
       () async {
         runtimeStats.startPerfTask('generateDocs');

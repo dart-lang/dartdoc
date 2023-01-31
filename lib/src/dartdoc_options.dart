@@ -46,11 +46,11 @@ int get _usageLineLength => stdout.hasTerminal ? stdout.terminalColumns : 80;
 typedef ConvertYamlToType<T> = T Function(YamlMap, String, ResourceProvider);
 
 class DartdocOptionError extends DartdocFailure {
-  DartdocOptionError(String details) : super(details);
+  DartdocOptionError(super.details);
 }
 
 class DartdocFileMissing extends DartdocOptionError {
-  DartdocFileMissing(String details) : super(details);
+  DartdocFileMissing(super.details);
 }
 
 /// Defines the attributes of a category in the options file, corresponding to
@@ -82,7 +82,7 @@ class CategoryConfiguration {
   CategoryConfiguration._(this.categoryDefinitions);
 
   static CategoryConfiguration get empty {
-    return CategoryConfiguration._({});
+    return CategoryConfiguration._(const {});
   }
 
   static CategoryConfiguration fromYamlMap(YamlMap yamlMap,
@@ -123,7 +123,7 @@ class ToolConfiguration {
   ToolConfiguration._(this.tools, this.resourceProvider);
 
   static ToolConfiguration empty(ResourceProvider resourceProvider) {
-    return ToolConfiguration._({}, resourceProvider);
+    return ToolConfiguration._(const {}, resourceProvider);
   }
 
   // TODO(jcollins-g): consider caching these.
@@ -184,8 +184,9 @@ class ToolConfiguration {
             if (compileArgs is String) {
               args = [toolMap[compileArgsTagName].toString()];
             } else if (compileArgs is YamlList) {
-              args =
-                  compileArgs.map<String>((node) => node.toString()).toList();
+              args = compileArgs
+                  .map<String>((node) => node.toString())
+                  .toList(growable: false);
             } else {
               throw DartdocOptionError(
                   'Tool compile arguments must be a list of strings. The tool '
@@ -303,16 +304,16 @@ class _OptionValueWithContext<T> {
   ///
   /// Throws [UnsupportedError] if [T] isn't a [String] or [List<String>].
   T get resolvedValue {
+    final value = this.value;
     if (value is List<String>) {
-      return (value as List<String>)
+      return value
           .map((v) => pathContext.canonicalizeWithTilde(v))
           .cast<String>()
-          .toList() as T;
+          .toList(growable: false) as T;
     } else if (value is String) {
-      return pathContext.canonicalizeWithTilde(value as String) as T;
+      return pathContext.canonicalizeWithTilde(value) as T;
     } else if (value is Map<String, String>) {
-      return (value as Map<String, String>)
-          .map<String, String>((String key, String value) {
+      return value.map<String, String>((String key, String value) {
         return MapEntry(key, pathContext.canonicalizeWithTilde(value));
       }) as T;
     } else {
@@ -496,7 +497,7 @@ abstract class DartdocOption<T extends Object?> {
 
   /// Calls [valueAt] with the working directory at the start of the program.
   // TODO(jcollins-g): use of dynamic.  https://github.com/dart-lang/dartdoc/issues/2814
-  dynamic valueAtCurrent() => valueAt(_directoryCurrent);
+  Object? valueAtCurrent() => valueAt(_directoryCurrent);
 
   late final Folder _directoryCurrent =
       resourceProvider.getFolder(_directoryCurrentPath);
@@ -668,8 +669,7 @@ typedef OptionGenerator = List<DartdocOption> Function(PackageMetaProvider);
 
 /// This is a [DartdocOptionSet] used as a root node.
 class DartdocOptionRoot extends DartdocOptionSet {
-  DartdocOptionRoot(String name, ResourceProvider resourceProvider)
-      : super(name, resourceProvider);
+  DartdocOptionRoot(super.name, super.resourceProvider);
 
   late final ArgParser _argParser =
       ArgParser(usageLineLength: _usageLineLength);
@@ -806,15 +806,11 @@ class DartdocOptionArgFile<T> extends DartdocOption<T>
     }
   }
 
-  /// Try to find an explicit argument setting this value, but if not, fall back
-  /// to files finally, the default.
+  /// Try to find an explicit argument setting this value, and fall back first
+  /// to files, then to the default.
   @override
-  T? valueAt(Folder dir) {
-    var value = _valueAtFromArgs();
-    value ??= _valueAtFromFiles(dir);
-    value ??= defaultsTo;
-    return value;
-  }
+  T? valueAt(Folder dir) =>
+      _valueAtFromArgs() ?? _valueAtFromFiles(dir) ?? defaultsTo;
 }
 
 class DartdocOptionFileOnly<T> extends DartdocOption<T>
@@ -867,10 +863,9 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
 
   /// Searches for a value in configuration files relative to [dir], and if not
   /// found, returns [defaultsTo].
-  T? valueAt(Folder dir) {
-    return _valueAtFromFiles(dir) ?? defaultsTo;
-  }
+  T? valueAt(Folder dir) => _valueAtFromFiles(dir) ?? defaultsTo;
 
+  /// The backing store for [_valueAtFromFiles].
   final Map<String, T?> __valueAtFromFiles = {};
 
   // The value of this option from files will not change unless files are
@@ -990,9 +985,13 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
             .pathContext
             .join(dir.path, 'dartdoc_options.yaml'));
         if (dartdocOptionsFile.exists) {
-          yamlData = _YamlFileData(
-              loadYaml(dartdocOptionsFile.readAsStringSync()),
-              resourceProvider.pathContext.canonicalize(dir.path));
+          final yaml = loadYaml(dartdocOptionsFile.readAsStringSync());
+          // [loadYaml] will return `null` for empty (or all comment) YAML
+          // files, so we must check for that case.
+          if (yaml != null) {
+            yamlData = _YamlFileData(
+                yaml, resourceProvider.pathContext.canonicalize(dir.path));
+          }
           break;
         }
       }
@@ -1148,13 +1147,14 @@ abstract class _DartdocArgOption<T> implements DartdocOption<T> {
             hide: hide,
             splitCommas: splitCommas);
       } else {
-        var defaultsToList = <String>[];
+        List<String> defaultsToList;
         if (_isListString) {
           defaultsToList = defaultsTo as List<String>;
         } else {
-          defaultsToList.addAll((defaultsTo as Map<String, String>)
+          defaultsToList = (defaultsTo as Map<String, String>)
               .entries
-              .map((m) => '${m.key}::${m.value}'));
+              .map((m) => '${m.key}::${m.value}')
+              .toList(growable: false);
         }
         argParser.addMultiOption(argName,
             abbr: abbr,
@@ -1263,8 +1263,8 @@ class DartdocOptionContext extends DartdocOptionContextBase
   late final Set<String> exclude =
       Set.of(optionSet['exclude'].valueAt(context));
 
-  List<String> get excludePackages =>
-      optionSet['excludePackages'].valueAt(context);
+  Set<String> get _excludePackages =>
+      {...optionSet['excludePackages'].valueAt(context)};
 
   String? get flutterRoot => optionSet['flutterRoot'].valueAt(context);
 
@@ -1328,8 +1328,7 @@ class DartdocOptionContext extends DartdocOptionContextBase
   bool isLibraryExcluded(String name) =>
       exclude.any((pattern) => name == pattern);
 
-  bool isPackageExcluded(String name) =>
-      excludePackages.any((pattern) => name == pattern);
+  bool isPackageExcluded(String name) => _excludePackages.contains(name);
 
   bool get showStats => optionSet['showStats'].valueAt(context);
 
@@ -1339,6 +1338,11 @@ class DartdocOptionContext extends DartdocOptionContextBase
   // TODO(jdkoren): temporary while we confirm href base behavior doesn't break
   // important clients
   bool get useBaseHref => optionSet['useBaseHref'].valueAt(context);
+
+  int get maxFileCount =>
+      int.parse(optionSet['maxFileCount'].valueAt(context) ?? '0');
+  int get maxTotalSize =>
+      int.parse(optionSet['maxTotalSize'].valueAt(context) ?? '0');
 }
 
 /// Instantiate dartdoc's configuration file and options parser with the
@@ -1360,7 +1364,8 @@ List<DartdocOption> createDartdocOptions(
         help: 'Include all the used libraries into the docs, even the ones not '
             'in the current package or "include-external"',
         negatable: true),
-    DartdocOptionArgFile<List<String>>('categoryOrder', [], resourceProvider,
+    DartdocOptionArgFile<List<String>>(
+        'categoryOrder', const [], resourceProvider,
         splitCommas: true,
         help: 'A list of categories (not package names) to place first when '
             "grouping symbols on dartdoc's sidebar. Unmentioned categories are "
@@ -1392,7 +1397,7 @@ List<DartdocOption> createDartdocOptions(
           'dart.web_audio'
         ];
       }
-      return [];
+      return const [];
     }, resourceProvider,
         help: 'Remove text from libraries with the following names.'),
     DartdocOptionArgFile<String?>('examplePathPrefix', null, resourceProvider,
@@ -1454,7 +1459,10 @@ List<DartdocOption> createDartdocOptions(
       ..addAll([
         DartdocOptionArgOnly<Map<String, String>>(
             'hosted',
-            {'pub.dartlang.org': 'https://pub.dev/documentation/%n%/%v%'},
+            {
+              'pub.dartlang.org': 'https://pub.dev/documentation/%n%/%v%',
+              'pub.dev': 'https://pub.dev/documentation/%n%/%v%',
+            },
             resourceProvider,
             help: 'Specify URLs for hosted pub packages'),
         DartdocOptionArgOnly<Map<String, String>>(
@@ -1482,7 +1490,6 @@ List<DartdocOption> createDartdocOptions(
             if (inSdkVal != null) return inSdkVal;
           }
           var hostedAt = packageMeta.hostedAt;
-          // ignore: unnecessary_null_comparison
           if (hostedAt != null) {
             Map<String, String> hostMap = option.parent['hosted'].valueAt(dir);
             var hostedAtVal = hostMap[hostedAt];
@@ -1593,6 +1600,14 @@ List<DartdocOption> createDartdocOptions(
         help: 'The format of documentation to generate: `md` for markdown, '
             '`html` for html.',
         hide: false),
+    DartdocOptionArgOnly<String>('maxFileCount', '0', resourceProvider,
+        help:
+            'The maximum number of files dartdoc is allowed to create (0 for no limit).',
+        hide: true),
+    DartdocOptionArgOnly<String>('maxTotalSize', '0', resourceProvider,
+        help:
+            'The maximum total size (in bytes) dartdoc is allowed to write (0 for no limit).',
+        hide: true),
     // TODO(jcollins-g): refactor so there is a single static "create" for
     // each DartdocOptionContext that traverses the inheritance tree itself.
     ...createExperimentOptions(resourceProvider),

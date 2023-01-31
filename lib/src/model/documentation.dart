@@ -2,7 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:dartdoc/src/comment_references/model_comment_reference.dart';
 import 'package:dartdoc/src/markdown_processor.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/documentation_renderer.dart';
@@ -14,42 +13,63 @@ class Documentation {
 
   Documentation.forElement(this._element);
 
-  String? _asHtml;
+  /// The documentation text, rendered with the appropriate
+  /// [DocumentationRenderer].
+  late final String _asHtml;
 
-  String? get asHtml {
-    if (_asHtml == null) {
-      assert(_asOneLiner == null || _element.isCanonical);
-      _renderDocumentation(true);
+  /// The first sentence of the documentation text, rendered with the
+  /// appropriate [DocumentationRenderer].
+  late final String _asOneLiner;
+
+  /// A guard against re-computing [_asHtml].
+  bool _hasHtmlBeenRendered = false;
+
+  /// A guard against re-computing [_asHOneLiner].
+  bool _hasOneLinerBeenRendered = false;
+
+  String get asHtml {
+    if (_hasHtmlBeenRendered) {
+      return _asHtml;
     }
+    if (_hasOneLinerBeenRendered) {
+      // Since [_asHtml] and [_asOneLiner] _could_ have been set in
+      // [asOneLiner], we guard here against setting [asOneLiner] but not
+      // setting [asHtml] (unless [_element] is not canonical). It's an awkward
+      // situation where one public getter might set both fields, but might only
+      // set one. We have this awkward check to make sure we set both fields if
+      // we'll need both fields.
+      assert(_element.isCanonical);
+      return _asHtml;
+    }
+
+    _renderDocumentation(storeFullText: true);
+    _hasHtmlBeenRendered = true;
     return _asHtml;
   }
 
-  String? _asOneLiner;
-
-  String? get asOneLiner {
-    if (_asOneLiner == null) {
-      assert(_asHtml == null);
-      _renderDocumentation(_element.isCanonical);
+  String get asOneLiner {
+    if (_hasOneLinerBeenRendered || _hasHtmlBeenRendered) {
+      return _asOneLiner;
     }
+    _renderDocumentation(storeFullText: _element.isCanonical);
+    _hasOneLinerBeenRendered = true;
     return _asOneLiner;
   }
 
-  Map<String, ModelCommentReference>? get commentRefs => _element.commentRefs;
-
-  void _renderDocumentation(bool processFullDocs) {
-    var parseResult = _parseDocumentation(processFullDocs);
+  void _renderDocumentation({required bool storeFullText}) {
+    var parseResult = _parseDocumentation(processFullText: storeFullText);
 
     var renderResult = _renderer.render(parseResult,
-        processFullDocs: processFullDocs,
+        processFullDocs: storeFullText,
         sanitizeHtml: _element.config.sanitizeHtml);
 
-    if (processFullDocs) {
+    if (storeFullText) {
       _asHtml = renderResult.asHtml;
     }
-    _asOneLiner ??= renderResult.asOneLiner;
+    _asOneLiner = renderResult.asOneLiner;
   }
 
-  List<md.Node> _parseDocumentation(bool processFullDocs) {
+  List<md.Node> _parseDocumentation({required bool processFullText}) {
     final text = _element.documentation;
     if (text == null || text.isEmpty) {
       return const [];
@@ -58,7 +78,7 @@ class Documentation {
         text, _element as Warnable);
     var document =
         MarkdownDocument.withElementLinkResolver(_element as Warnable);
-    return document.parseMarkdownText(text, processFullDocs);
+    return document.parseMarkdownText(text, processFullText: processFullText);
   }
 
   DocumentationRenderer get _renderer =>

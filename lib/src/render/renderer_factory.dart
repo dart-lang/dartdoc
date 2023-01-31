@@ -49,6 +49,8 @@ abstract class RendererFactory {
   ElementTypeRenderer<ParameterizedElementType>
       get parameterizedElementTypeRenderer;
 
+  ElementTypeRenderer<RecordElementType> get recordElementTypeRenderer;
+
   ElementTypeRenderer<AliasedElementType> get aliasedElementTypeRenderer;
 
   ElementTypeRenderer<AliasedFunctionTypeElementType>
@@ -97,6 +99,10 @@ class HtmlRenderFactory extends RendererFactory {
   ElementTypeRenderer<ParameterizedElementType>
       get parameterizedElementTypeRenderer =>
           const ParameterizedElementTypeRendererHtml();
+
+  @override
+  ElementTypeRenderer<RecordElementType> get recordElementTypeRenderer =>
+      const RecordElementTypeRendererHtml();
 
   @override
   ElementTypeRenderer<AliasedElementType> get aliasedElementTypeRenderer =>
@@ -167,6 +173,10 @@ class MdRenderFactory extends RendererFactory {
   ElementTypeRenderer<ParameterizedElementType>
       get parameterizedElementTypeRenderer =>
           const ParameterizedElementTypeRendererMd();
+
+  @override
+  ElementTypeRenderer<RecordElementType> get recordElementTypeRenderer =>
+      const RecordElementTypeRendererMd();
 
   @override
   ElementTypeRenderer<AliasedElementType> get aliasedElementTypeRenderer =>

@@ -12,7 +12,9 @@
 // non-bool, non-Iterable field is non-null.
 // ignore_for_file: unused_local_variable
 // ignore_for_file: non_constant_identifier_names, unnecessary_string_escapes
+// ignore_for_file: use_super_parameters
 
+// ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:convert' as _i22;
 
 import 'package:dartdoc/src/generator/template_data.dart' as _i1;
@@ -236,12 +238,12 @@ String renderClass(_i1.ClassTemplateData context0) {
       buffer.write('''
 **Available Extensions**
 ''');
-      var context5 = context2.potentiallyApplicableExtensions;
-      if (context5 != null) {
+      var context5 = context2.potentiallyApplicableExtensionsSorted;
+      for (var context6 in context5) {
         buffer.writeln();
         buffer.write('''
 - ''');
-        buffer.write(context2.linkedName);
+        buffer.write(context6.linkedName);
       }
     }
     buffer.write('\n\n');
@@ -255,10 +257,10 @@ String renderClass(_i1.ClassTemplateData context0) {
     buffer.write('''
 ## Properties
 ''');
-    var context6 = context2.publicInstanceFieldsSorted;
-    for (var context7 in context6) {
+    var context7 = context2.publicInstanceFieldsSorted;
+    for (var context8 in context7) {
       buffer.writeln();
-      buffer.write(_renderClass_partial_property_10(context7));
+      buffer.write(_renderClass_partial_property_10(context8));
       buffer.writeln();
     }
   }
@@ -497,13 +499,15 @@ String renderFunction(_i1.FunctionTemplateData context0) {
   var context2 = context0.function;
   buffer.writeln();
   buffer.write(_renderFunction_partial_callable_multiline_4(context2));
+  buffer.writeln();
+  buffer.write(_renderFunction_partial_features_5(context2));
   buffer.write('\n\n');
-  buffer.write(_renderFunction_partial_documentation_5(context2));
+  buffer.write(_renderFunction_partial_documentation_6(context2));
   buffer.write('\n\n');
-  buffer.write(_renderFunction_partial_source_code_6(context2));
+  buffer.write(_renderFunction_partial_source_code_7(context2));
   buffer.writeln();
   buffer.write('\n\n');
-  buffer.write(_renderFunction_partial_footer_7(context0));
+  buffer.write(_renderFunction_partial_footer_8(context0));
   buffer.writeln();
 
   return buffer.toString();
@@ -569,6 +573,7 @@ String renderLibrary(_i1.LibraryTemplateData context0) {
   buffer.write(_renderLibrary_partial_head_0(context0));
   buffer.writeln();
   var context1 = context0.self;
+  buffer.writeln();
   buffer.writeln();
   buffer.write('''
 # ''');
@@ -866,31 +871,88 @@ String renderProperty(_i1.PropertyTemplateData context0) {
   var context2 = context0.self;
   if (context2.hasNoGetterSetter == true) {
     buffer.writeln();
+    buffer.write(_renderProperty_partial_annotations_3(context2));
+    buffer.writeln();
     buffer.write(context2.modelType.linkedName);
     buffer.write(' ');
-    buffer.write(_renderProperty_partial_name_summary_3(context2));
+    buffer.write(_renderProperty_partial_name_summary_4(context2));
     buffer.write('  ');
     buffer.writeln();
-    buffer.write(_renderProperty_partial_features_4(context2));
+    buffer.write(_renderProperty_partial_features_5(context2));
     buffer.write('\n\n');
-    buffer.write(_renderProperty_partial_documentation_5(context2));
+    buffer.write(_renderProperty_partial_documentation_6(context2));
     buffer.write('\n\n');
-    buffer.write(_renderProperty_partial_source_code_6(context2));
+    buffer.write(_renderProperty_partial_source_code_7(context2));
   }
   buffer.writeln();
   if (context2.hasGetterOrSetter == true) {
     if (context2.hasGetter == true) {
       buffer.writeln();
-      buffer.write(_renderProperty_partial_accessor_getter_7(context2));
+      buffer.write(_renderProperty_partial_accessor_getter_8(context2));
     }
     buffer.writeln();
     if (context2.hasSetter == true) {
       buffer.writeln();
-      buffer.write(_renderProperty_partial_accessor_setter_8(context2));
+      buffer.write(_renderProperty_partial_accessor_setter_9(context2));
     }
   }
   buffer.write('\n\n');
-  buffer.write(_renderProperty_partial_footer_9(context0));
+  buffer.write(_renderProperty_partial_footer_10(context0));
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
+String renderSearchPage(_i1.PackageTemplateData context0) {
+  final buffer = StringBuffer();
+  buffer.write(_renderSearchPage_partial_head_0(context0));
+  buffer.writeln();
+  buffer.write('''
+
+# ''');
+  buffer.writeEscaped(context0.title);
+  buffer.writeln();
+  var context1 = context0.defaultPackage;
+  buffer.writeln();
+  buffer.write(_renderSearchPage_partial_documentation_1(context1));
+  buffer.writeln();
+  var context2 = context0.localPackages;
+  for (var context3 in context2) {
+    if (context3.isFirstPackage == true) {
+      buffer.writeln();
+      buffer.write('''
+## Libraries''');
+    }
+    if (context3.isFirstPackage != true) {
+      buffer.writeln();
+      buffer.write('''
+## ''');
+      buffer.writeEscaped(context3.name);
+    }
+    buffer.writeln();
+    var context4 = context3.defaultCategory;
+    var context5 = context4.publicLibrariesSorted;
+    for (var context6 in context5) {
+      buffer.writeln();
+      buffer.write(_renderSearchPage_partial_library_2(context6));
+    }
+    buffer.writeln();
+    var context7 = context3.categoriesWithPublicLibraries;
+    for (var context8 in context7) {
+      buffer.writeln();
+      buffer.write('''
+### Category ''');
+      buffer.write(context8.categoryLabel);
+      buffer.writeln();
+      var context9 = context8.publicLibrariesSorted;
+      for (var context10 in context9) {
+        buffer.writeln();
+        buffer.write(_renderSearchPage_partial_library_2(context10));
+      }
+    }
+  }
+  buffer.write('\n\n');
+  buffer.write(_renderSearchPage_partial_footer_3(context0));
   buffer.writeln();
 
   return buffer.toString();
@@ -928,29 +990,31 @@ String renderTopLevelProperty(_i1.TopLevelPropertyTemplateData context0) {
   buffer.writeln();
   if (context1.hasNoGetterSetter == true) {
     buffer.writeln();
+    buffer.write(_renderTopLevelProperty_partial_annotations_4(context1));
+    buffer.writeln();
     buffer.write(context1.modelType.linkedName);
     buffer.write(' ');
-    buffer.write(_renderTopLevelProperty_partial_name_summary_4(context1));
+    buffer.write(_renderTopLevelProperty_partial_name_summary_5(context1));
     buffer.write('  ');
     buffer.writeln();
-    buffer.write(_renderTopLevelProperty_partial_features_5(context1));
+    buffer.write(_renderTopLevelProperty_partial_features_6(context1));
     buffer.write('\n\n');
-    buffer.write(_renderTopLevelProperty_partial_documentation_6(context1));
+    buffer.write(_renderTopLevelProperty_partial_documentation_7(context1));
     buffer.write('\n\n');
-    buffer.write(_renderTopLevelProperty_partial_source_code_7(context1));
+    buffer.write(_renderTopLevelProperty_partial_source_code_8(context1));
   }
   buffer.writeln();
   if (context1.hasExplicitGetter == true) {
     buffer.writeln();
-    buffer.write(_renderTopLevelProperty_partial_accessor_getter_8(context1));
+    buffer.write(_renderTopLevelProperty_partial_accessor_getter_9(context1));
   }
   buffer.writeln();
   if (context1.hasExplicitSetter == true) {
     buffer.writeln();
-    buffer.write(_renderTopLevelProperty_partial_accessor_setter_9(context1));
+    buffer.write(_renderTopLevelProperty_partial_accessor_setter_10(context1));
   }
   buffer.write('\n\n');
-  buffer.write(_renderTopLevelProperty_partial_footer_10(context0));
+  buffer.write(_renderTopLevelProperty_partial_footer_11(context0));
   buffer.writeln();
 
   return buffer.toString();
@@ -1253,11 +1317,13 @@ String _renderFunction_partial_callable_multiline_4(
 String __renderFunction_partial_callable_multiline_4_partial_name_summary_0(
         _i7.ModelFunction context1) =>
     _deduplicated_lib_templates_md__name_summary_md(context1);
-String _renderFunction_partial_documentation_5(_i7.ModelFunction context1) =>
+String _renderFunction_partial_features_5(_i7.ModelFunction context1) =>
+    _deduplicated_lib_templates_md__features_md(context1);
+String _renderFunction_partial_documentation_6(_i7.ModelFunction context1) =>
     _deduplicated_lib_templates_md__documentation_md(context1);
-String _renderFunction_partial_source_code_6(_i7.ModelFunction context1) =>
+String _renderFunction_partial_source_code_7(_i7.ModelFunction context1) =>
     _deduplicated_lib_templates_md__source_code_md(context1);
-String _renderFunction_partial_footer_7(_i1.FunctionTemplateData context0) =>
+String _renderFunction_partial_footer_8(_i1.FunctionTemplateData context0) =>
     _deduplicated_lib_templates_md__footer_md(context0);
 String _renderIndex_partial_head_0(_i1.PackageTemplateData context0) =>
     _deduplicated_lib_templates_md__head_md(context0);
@@ -1415,19 +1481,29 @@ String _renderProperty_partial_source_link_1(_i10.Field context1) =>
     _deduplicated_lib_templates_md__source_link_md(context1);
 String _renderProperty_partial_feature_set_2(_i10.Field context1) =>
     _deduplicated_lib_templates_md__feature_set_md(context1);
-String _renderProperty_partial_name_summary_3(_i10.Field context1) =>
+String _renderProperty_partial_annotations_3(_i10.Field context1) =>
+    _deduplicated_lib_templates_md__annotations_md(context1);
+String _renderProperty_partial_name_summary_4(_i10.Field context1) =>
     _deduplicated_lib_templates_md__name_summary_md(context1);
-String _renderProperty_partial_features_4(_i10.Field context1) =>
+String _renderProperty_partial_features_5(_i10.Field context1) =>
     _deduplicated_lib_templates_md__features_md(context1);
-String _renderProperty_partial_documentation_5(_i10.Field context1) =>
+String _renderProperty_partial_documentation_6(_i10.Field context1) =>
     _deduplicated_lib_templates_md__documentation_md(context1);
-String _renderProperty_partial_source_code_6(_i10.Field context1) =>
+String _renderProperty_partial_source_code_7(_i10.Field context1) =>
     _deduplicated_lib_templates_md__source_code_md(context1);
-String _renderProperty_partial_accessor_getter_7(_i10.Field context1) =>
+String _renderProperty_partial_accessor_getter_8(_i10.Field context1) =>
     _deduplicated_lib_templates_md__accessor_getter_md(context1);
-String _renderProperty_partial_accessor_setter_8(_i10.Field context1) =>
+String _renderProperty_partial_accessor_setter_9(_i10.Field context1) =>
     _deduplicated_lib_templates_md__accessor_setter_md(context1);
-String _renderProperty_partial_footer_9(_i1.PropertyTemplateData context0) =>
+String _renderProperty_partial_footer_10(_i1.PropertyTemplateData context0) =>
+    _deduplicated_lib_templates_md__footer_md(context0);
+String _renderSearchPage_partial_head_0(_i1.PackageTemplateData context0) =>
+    _deduplicated_lib_templates_md__head_md(context0);
+String _renderSearchPage_partial_documentation_1(_i13.Package context1) =>
+    _deduplicated_lib_templates_md__documentation_md(context1);
+String _renderSearchPage_partial_library_2(_i4.Library context3) =>
+    _deduplicated_lib_templates_md__library_md(context3);
+String _renderSearchPage_partial_footer_3(_i1.PackageTemplateData context0) =>
     _deduplicated_lib_templates_md__footer_md(context0);
 String _renderTopLevelProperty_partial_head_0(
         _i1.TopLevelPropertyTemplateData context0) =>
@@ -1441,25 +1517,28 @@ String _renderTopLevelProperty_partial_categorization_2(
 String _renderTopLevelProperty_partial_feature_set_3(
         _i6.TopLevelVariable context1) =>
     _deduplicated_lib_templates_md__feature_set_md(context1);
-String _renderTopLevelProperty_partial_name_summary_4(
+String _renderTopLevelProperty_partial_annotations_4(
+        _i6.TopLevelVariable context1) =>
+    _deduplicated_lib_templates_md__annotations_md(context1);
+String _renderTopLevelProperty_partial_name_summary_5(
         _i6.TopLevelVariable context1) =>
     _deduplicated_lib_templates_md__name_summary_md(context1);
-String _renderTopLevelProperty_partial_features_5(
+String _renderTopLevelProperty_partial_features_6(
         _i6.TopLevelVariable context1) =>
     _deduplicated_lib_templates_md__features_md(context1);
-String _renderTopLevelProperty_partial_documentation_6(
+String _renderTopLevelProperty_partial_documentation_7(
         _i6.TopLevelVariable context1) =>
     _deduplicated_lib_templates_md__documentation_md(context1);
-String _renderTopLevelProperty_partial_source_code_7(
+String _renderTopLevelProperty_partial_source_code_8(
         _i6.TopLevelVariable context1) =>
     _deduplicated_lib_templates_md__source_code_md(context1);
-String _renderTopLevelProperty_partial_accessor_getter_8(
+String _renderTopLevelProperty_partial_accessor_getter_9(
         _i6.TopLevelVariable context1) =>
     _deduplicated_lib_templates_md__accessor_getter_md(context1);
-String _renderTopLevelProperty_partial_accessor_setter_9(
+String _renderTopLevelProperty_partial_accessor_setter_10(
         _i6.TopLevelVariable context1) =>
     _deduplicated_lib_templates_md__accessor_setter_md(context1);
-String _renderTopLevelProperty_partial_footer_10(
+String _renderTopLevelProperty_partial_footer_11(
         _i1.TopLevelPropertyTemplateData context0) =>
     _deduplicated_lib_templates_md__footer_md(context0);
 String _renderTypedef_partial_head_0(_i1.TypedefTemplateData context0) =>
@@ -2016,7 +2095,8 @@ String _deduplicated_lib_templates_md__super_chain_md(
   return buffer.toString();
 }
 
-String _deduplicated_lib_templates_md__annotations_md(_i5.Container context0) {
+String _deduplicated_lib_templates_md__annotations_md(
+    _i17.ModelElement context0) {
   final buffer = StringBuffer();
   if (context0.hasAnnotations == true) {
     buffer.writeln();
@@ -2510,23 +2590,27 @@ String _deduplicated_lib_templates_md__accessor_getter_md(
   var context1 = context0.getter;
   if (context1 != null) {
     buffer.writeln();
+    buffer.write(
+        __deduplicated_lib_templates_md__accessor_getter_md_partial_annotations_0(
+            context1));
+    buffer.writeln();
     buffer.write(context1.modelType.returnType.linkedName);
     buffer.write(' ');
     buffer.write(
-        __deduplicated_lib_templates_md__accessor_getter_md_partial_name_summary_0(
+        __deduplicated_lib_templates_md__accessor_getter_md_partial_name_summary_1(
             context1));
     buffer.write('  ');
     buffer.writeln();
     buffer.write(
-        __deduplicated_lib_templates_md__accessor_getter_md_partial_features_1(
+        __deduplicated_lib_templates_md__accessor_getter_md_partial_features_2(
             context1));
     buffer.write('\n\n');
     buffer.write(
-        __deduplicated_lib_templates_md__accessor_getter_md_partial_documentation_2(
+        __deduplicated_lib_templates_md__accessor_getter_md_partial_documentation_3(
             context1));
     buffer.write('\n\n');
     buffer.write(
-        __deduplicated_lib_templates_md__accessor_getter_md_partial_source_code_3(
+        __deduplicated_lib_templates_md__accessor_getter_md_partial_source_code_4(
             context1));
   }
   buffer.writeln();
@@ -2535,7 +2619,28 @@ String _deduplicated_lib_templates_md__accessor_getter_md(
 }
 
 String
-    __deduplicated_lib_templates_md__accessor_getter_md_partial_name_summary_0(
+    __deduplicated_lib_templates_md__accessor_getter_md_partial_annotations_0(
+        _i21.Accessor context1) {
+  final buffer = StringBuffer();
+  if (context1.hasAnnotations == true) {
+    buffer.writeln();
+    buffer.write('''
+**Annotations**
+''');
+    var context2 = context1.annotations;
+    for (var context3 in context2) {
+      buffer.writeln();
+      buffer.write('''
+- ''');
+      buffer.write(context3.linkedNameWithParameters);
+    }
+  }
+
+  return buffer.toString();
+}
+
+String
+    __deduplicated_lib_templates_md__accessor_getter_md_partial_name_summary_1(
         _i21.Accessor context1) {
   final buffer = StringBuffer();
   if (context1.isConst == true) {
@@ -2553,7 +2658,7 @@ String
   return buffer.toString();
 }
 
-String __deduplicated_lib_templates_md__accessor_getter_md_partial_features_1(
+String __deduplicated_lib_templates_md__accessor_getter_md_partial_features_2(
     _i21.Accessor context1) {
   final buffer = StringBuffer();
   if (context1.hasFeatures == true) {
@@ -2567,7 +2672,7 @@ String __deduplicated_lib_templates_md__accessor_getter_md_partial_features_1(
 }
 
 String
-    __deduplicated_lib_templates_md__accessor_getter_md_partial_documentation_2(
+    __deduplicated_lib_templates_md__accessor_getter_md_partial_documentation_3(
         _i21.Accessor context1) {
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
@@ -2580,7 +2685,7 @@ String
 }
 
 String
-    __deduplicated_lib_templates_md__accessor_getter_md_partial_source_code_3(
+    __deduplicated_lib_templates_md__accessor_getter_md_partial_source_code_4(
         _i21.Accessor context1) {
   final buffer = StringBuffer();
   if (context1.hasSourceCode == true) {
@@ -2607,22 +2712,26 @@ String _deduplicated_lib_templates_md__accessor_setter_md(
   if (context1 != null) {
     buffer.writeln();
     buffer.write(
-        __deduplicated_lib_templates_md__accessor_setter_md_partial_name_summary_0(
+        __deduplicated_lib_templates_md__accessor_setter_md_partial_annotations_0(
+            context1));
+    buffer.writeln();
+    buffer.write(
+        __deduplicated_lib_templates_md__accessor_setter_md_partial_name_summary_1(
             context1));
     buffer.write('''(''');
     buffer.write(context1.linkedParamsNoMetadata);
     buffer.write(''')  ''');
     buffer.writeln();
     buffer.write(
-        __deduplicated_lib_templates_md__accessor_setter_md_partial_features_1(
+        __deduplicated_lib_templates_md__accessor_setter_md_partial_features_2(
             context1));
     buffer.write('\n\n');
     buffer.write(
-        __deduplicated_lib_templates_md__accessor_setter_md_partial_documentation_2(
+        __deduplicated_lib_templates_md__accessor_setter_md_partial_documentation_3(
             context1));
     buffer.write('\n\n');
     buffer.write(
-        __deduplicated_lib_templates_md__accessor_setter_md_partial_source_code_3(
+        __deduplicated_lib_templates_md__accessor_setter_md_partial_source_code_4(
             context1));
   }
   buffer.writeln();
@@ -2631,7 +2740,28 @@ String _deduplicated_lib_templates_md__accessor_setter_md(
 }
 
 String
-    __deduplicated_lib_templates_md__accessor_setter_md_partial_name_summary_0(
+    __deduplicated_lib_templates_md__accessor_setter_md_partial_annotations_0(
+        _i21.Accessor context1) {
+  final buffer = StringBuffer();
+  if (context1.hasAnnotations == true) {
+    buffer.writeln();
+    buffer.write('''
+**Annotations**
+''');
+    var context2 = context1.annotations;
+    for (var context3 in context2) {
+      buffer.writeln();
+      buffer.write('''
+- ''');
+      buffer.write(context3.linkedNameWithParameters);
+    }
+  }
+
+  return buffer.toString();
+}
+
+String
+    __deduplicated_lib_templates_md__accessor_setter_md_partial_name_summary_1(
         _i21.Accessor context1) {
   final buffer = StringBuffer();
   if (context1.isConst == true) {
@@ -2649,7 +2779,7 @@ String
   return buffer.toString();
 }
 
-String __deduplicated_lib_templates_md__accessor_setter_md_partial_features_1(
+String __deduplicated_lib_templates_md__accessor_setter_md_partial_features_2(
     _i21.Accessor context1) {
   final buffer = StringBuffer();
   if (context1.hasFeatures == true) {
@@ -2663,7 +2793,7 @@ String __deduplicated_lib_templates_md__accessor_setter_md_partial_features_1(
 }
 
 String
-    __deduplicated_lib_templates_md__accessor_setter_md_partial_documentation_2(
+    __deduplicated_lib_templates_md__accessor_setter_md_partial_documentation_3(
         _i21.Accessor context1) {
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
@@ -2676,7 +2806,7 @@ String
 }
 
 String
-    __deduplicated_lib_templates_md__accessor_setter_md_partial_source_code_3(
+    __deduplicated_lib_templates_md__accessor_setter_md_partial_source_code_4(
         _i21.Accessor context1) {
   final buffer = StringBuffer();
   if (context1.hasSourceCode == true) {

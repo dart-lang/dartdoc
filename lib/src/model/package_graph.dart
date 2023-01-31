@@ -292,8 +292,8 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
 
   void warnOnElement(Warnable? warnable, PackageWarning kind,
       {String? message,
-      Iterable<Locatable>? referredFrom,
-      Iterable<String>? extendedDebug}) {
+      Iterable<Locatable> referredFrom = const [],
+      Iterable<String> extendedDebug = const []}) {
     var newEntry = Tuple3(warnable?.element, kind, message);
     if (_warnAlreadySeen.contains(newEntry)) {
       return;
@@ -310,25 +310,24 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
 
   void _warnOnElement(Warnable? warnable, PackageWarning kind,
       {required String message,
-      Iterable<Locatable>? referredFrom,
-      Iterable<String>? extendedDebug}) {
-    if (warnable != null) {
+      Iterable<Locatable> referredFrom = const [],
+      Iterable<String> extendedDebug = const []}) {
+    if (warnable is ModelElement && kind == PackageWarning.ambiguousReexport) {
       // This sort of warning is only applicable to top level elements.
-      if (kind == PackageWarning.ambiguousReexport) {
-        var enclosingElement = warnable.enclosingElement;
-        while (enclosingElement != null && enclosingElement is! Library) {
-          warnable = enclosingElement;
-          enclosingElement = warnable.enclosingElement;
-        }
+      var enclosingElement = warnable.enclosingElement;
+      while (enclosingElement != null && enclosingElement is! Library) {
+        warnable = enclosingElement;
+        enclosingElement = warnable.enclosingElement;
       }
-    } else {
-      // If we don't have an element, we need a message to disambiguate.
-      assert(message.isNotEmpty);
     }
+
+    // If we don't have an element, we need a message to disambiguate.
+    assert(warnable != null || message.isNotEmpty);
+
     if (packageWarningCounter.hasWarning(warnable, kind, message)) {
       return;
     }
-    // Some kinds of warnings it is OK to drop if we're not documenting them.
+    // Some kinds of warnings are OK to drop if we're not documenting them.
     // TODO(jcollins-g): drop this and use new flag system instead.
     if (warnable != null &&
         skipWarningIfNotDocumentedFor.contains(kind) &&
@@ -336,157 +335,64 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       return;
     }
     // Elements that are part of the Dart SDK can have colons in their FQNs.
-    // This confuses IntelliJ and makes it so it can't link to the location
-    // of the error in the console window, so separate out the library from
-    // the path.
-    // TODO(jcollins-g): What about messages that may include colons?  Substituting
-    //                   them out doesn't work as well there since it might confuse
-    //                   the user, yet we still want IntelliJ to link properly.
-    final warnableName = _safeWarnableName(warnable);
+    // This confuses IntelliJ and makes it so it can't link to the location of
+    // the error in the console window, so separate out the library from the
+    // path.
+    // TODO(jcollins-g): What about messages that may include colons?
+    // Substituting them out doesn't work as well there since it might confuse
+    // the user, yet we still want IntelliJ to link properly.
+    final warnableName = warnable.safeWarnableName;
 
-    var warnablePrefix = 'from';
-    var referredFromPrefix = 'referred to by';
     String warningMessage;
     switch (kind) {
-      case PackageWarning.noCanonicalFound:
-        // Fix these warnings by adding libraries with --include, or by using
-        // --auto-include-dependencies.
-        // TODO(jcollins-g): pipeline references through linkedName for error
-        //                   messages and warn for non-public canonicalization
-        //                   errors.
-        warningMessage =
-            'no canonical library found for $warnableName, not linking';
-        break;
       case PackageWarning.ambiguousReexport:
-        // Fix these warnings by adding the original library exporting the
-        // symbol with --include, by using --auto-include-dependencies,
-        // or by using --exclude to hide one of the libraries involved
-        warningMessage =
-            'ambiguous reexport of $warnableName, canonicalization candidates: $message';
+        warningMessage = kind.messageFor([warnableName, message]);
         break;
+      case PackageWarning.noCanonicalFound:
       case PackageWarning.noDefiningLibraryFound:
-        warningMessage =
-            'could not find the defining library for $warnableName; the '
-            'library may be imported or exported with a non-standard URI';
+        warningMessage = kind.messageFor([warnableName]);
         break;
       case PackageWarning.noLibraryLevelDocs:
-        warningMessage =
-            '${warnable!.fullyQualifiedName} has no library level documentation comments';
-        break;
       case PackageWarning.noDocumentableLibrariesInPackage:
-        warningMessage =
-            '${warnable!.fullyQualifiedName} has no documentable libraries';
+        warningMessage = kind.messageFor([warnable!.fullyQualifiedName]);
         break;
       case PackageWarning.ambiguousDocReference:
-        warningMessage = 'ambiguous doc reference $message';
-        break;
       case PackageWarning.ignoredCanonicalFor:
-        warningMessage =
-            "library says it is {@canonicalFor $message} but $message can't be canonical there";
-        break;
       case PackageWarning.packageOrderGivesMissingPackageName:
-        warningMessage =
-            "--package-order gives invalid package name: '$message'";
-        break;
       case PackageWarning.reexportedPrivateApiAcrossPackages:
-        warningMessage =
-            'private API of $message is reexported by libraries in other packages: ';
-        break;
       case PackageWarning.notImplemented:
-        warningMessage = message;
-        break;
       case PackageWarning.unresolvedDocReference:
-        warningMessage = 'unresolved doc reference [$message]';
-        referredFromPrefix = 'in documentation inherited from';
-        break;
       case PackageWarning.unknownDirective:
-        warningMessage = 'undefined directive: $message';
-        break;
       case PackageWarning.unknownMacro:
-        warningMessage = 'undefined macro [$message]';
-        break;
       case PackageWarning.unknownHtmlFragment:
-        warningMessage = 'undefined HTML fragment identifier [$message]';
-        break;
       case PackageWarning.brokenLink:
-        warningMessage = 'dartdoc generated a broken link to: $message';
-        warnablePrefix = 'to element';
-        referredFromPrefix = 'linked to from';
-        break;
-      case PackageWarning.orphanedFile:
-        warningMessage = 'dartdoc generated a file orphan: $message';
-        break;
-      case PackageWarning.unknownFile:
-        warningMessage =
-            'dartdoc detected an unknown file in the doc tree: $message';
-        break;
-      case PackageWarning.missingFromSearchIndex:
-        warningMessage =
-            'dartdoc generated a file not in the search index: $message';
-        break;
-      case PackageWarning.typeAsHtml:
-        // The message for this warning can contain many punctuation and other symbols,
-        // so bracket with a triple quote for defense.
-        warningMessage = 'generic type handled as HTML: """$message"""';
-        break;
-      case PackageWarning.invalidParameter:
-        warningMessage = 'invalid parameter to dartdoc directive: $message';
-        break;
-      case PackageWarning.toolError:
-        warningMessage = 'tool execution failed: $message';
-        break;
-      case PackageWarning.deprecated:
-        warningMessage = 'deprecated dartdoc usage: $message';
-        break;
-      case PackageWarning.unresolvedExport:
-        warningMessage = 'unresolved export uri: $message';
-        break;
       case PackageWarning.duplicateFile:
-        warningMessage = 'failed to write file at: $message';
-        warnablePrefix = 'for symbol';
-        referredFromPrefix = 'conflicting with file already generated by';
-        break;
+      case PackageWarning.orphanedFile:
+      case PackageWarning.unknownFile:
+      case PackageWarning.missingFromSearchIndex:
+      case PackageWarning.typeAsHtml:
+      case PackageWarning.invalidParameter:
+      case PackageWarning.toolError:
+      case PackageWarning.deprecated:
+      case PackageWarning.unresolvedExport:
       case PackageWarning.missingConstantConstructor:
-        warningMessage = 'constant constructor missing: $message';
-        break;
       case PackageWarning.missingExampleFile:
-        warningMessage = 'example file not found: $message';
-        break;
       case PackageWarning.missingCodeBlockLanguage:
-        warningMessage = 'missing code block language: $message';
-        break;
+        warningMessage = kind.messageFor([message]);
     }
 
-    var messageParts = <String>[warningMessage];
-    if (warnable != null) {
-      messageParts.add('$warnablePrefix $warnableName: ${warnable.location}');
-    }
-    if (referredFrom != null) {
-      for (var referral in referredFrom) {
-        if (referral != warnable) {
-          var referredFromStrings = _safeWarnableName(referral);
-          messageParts.add(
-              '$referredFromPrefix $referredFromStrings: ${referral.location}');
-        }
-      }
-    }
-    if (config.verboseWarnings && extendedDebug != null) {
-      messageParts.addAll(extendedDebug.map((s) => '    $s'));
-    }
-    var fullMessage = messageParts.join('\n    ');
+    var fullMessage = [
+      warningMessage,
+      if (warnable != null) kind.messageForWarnable(warnable),
+      for (var referral in referredFrom)
+        if (referral != warnable) kind.messageForReferral(referral),
+      if (config.verboseWarnings) ...extendedDebug.map((s) => '    $s')
+    ].join('\n    ');
 
     packageWarningCounter.addWarning(warnable, kind, message, fullMessage);
   }
 
-  String _safeWarnableName(Locatable? locatable) {
-    if (locatable == null) {
-      return '<unknown>';
-    }
-
-    return locatable.fullyQualifiedName.replaceFirst(':', '-');
-  }
-
-  List<Package> get packages => packageMap.values.toList();
+  Iterable<Package> get packages => packageMap.values;
 
   late final List<Package> publicPackages = () {
     assert(allLibrariesAdded);
@@ -498,12 +404,12 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
             message: "$packageName, packages: ${packageNames.join(',')}");
       }
     }
-    return packages.where((p) => p.isPublic).toList()..sort();
+    return packages.where((p) => p.isPublic).toList(growable: false)..sort();
   }();
 
   /// Local packages are to be documented locally vs. remote or not at all.
   List<Package> get localPackages =>
-      publicPackages.where((p) => p.isLocal).toList();
+      publicPackages.where((p) => p.isLocal).toList(growable: false);
 
   /// Documented packages are documented somewhere (local or remote).
   Iterable<Package> get documentedPackages =>
@@ -516,7 +422,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
 
   void _tagReexportsFor(
       final Library topLevelLibrary, final LibraryElement? libraryElement,
-      [ExportElement? lastExportedElement]) {
+      [LibraryExportElement? lastExportedElement]) {
     var key = Tuple2<Library, LibraryElement?>(topLevelLibrary, libraryElement);
     if (_reexportsTagged.contains(key)) {
       return;
@@ -524,17 +430,21 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     _reexportsTagged.add(key);
     if (libraryElement == null) {
       lastExportedElement!;
+      final lastExportedElementUri = lastExportedElement.uri;
+      final uri = lastExportedElementUri is DirectiveUriWithRelativeUriString
+          ? lastExportedElementUri.relativeUriString
+          : null;
       warnOnElement(
           findButDoNotCreateLibraryFor(lastExportedElement.enclosingElement!),
           PackageWarning.unresolvedExport,
-          message: '"${lastExportedElement.uri}"',
+          message: '"$uri"',
           referredFrom: <Locatable>[topLevelLibrary]);
       return;
     }
     _libraryElementReexportedBy
         .putIfAbsent(libraryElement, () => {})
         .add(topLevelLibrary);
-    for (var exportedElement in libraryElement.exports) {
+    for (var exportedElement in libraryElement.libraryExports) {
       _tagReexportsFor(
           topLevelLibrary, exportedElement.exportedLibrary, exportedElement);
     }
@@ -640,7 +550,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
 
   @visibleForTesting
   late final Iterable<Library> libraries =
-      packages.expand((p) => p.libraries).toList()..sort();
+      packages.expand((p) => p.libraries).toList(growable: false)..sort();
 
   /// The number of libraries.
   late final int libraryCount = libraries.length;
@@ -652,7 +562,8 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
 
   late final List<Library> _localLibraries = () {
     assert(allLibrariesAdded);
-    return localPackages.expand((p) => p.libraries).toList()..sort();
+    return localPackages.expand((p) => p.libraries).toList(growable: false)
+      ..sort();
   }();
 
   late final Set<Library> localPublicLibraries = () {
@@ -781,11 +692,9 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       e = declaration;
       var candidates = <ModelElement>{};
       var iKey = Tuple2<Element, Library?>(e, lib);
-      var key =
-          Tuple4<Element, Library?, Class?, ModelElement?>(e, lib, null, null);
-      var keyWithClass =
-          Tuple4<Element, Library?, InheritingContainer?, ModelElement?>(
-              e, lib, preferredClass as InheritingContainer?, null);
+      var key = Tuple3<Element, Library?, Class?>(e, lib, null);
+      var keyWithClass = Tuple3<Element, Library?, InheritingContainer?>(
+          e, lib, preferredClass as InheritingContainer?);
       var constructedWithKey = allConstructedModelElements[key];
       if (constructedWithKey != null) {
         candidates.add(constructedWithKey);
@@ -808,13 +717,15 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
         }));
       }
 
-      var matches = <ModelElement>{...candidates.where((me) => me.isCanonical)};
+      var matches = {...candidates.where((me) => me.isCanonical)};
 
       // It's possible to find accessors but no combos.  Be sure that if we
       // have Accessors, we find their combos too.
       if (matches.any((me) => me is Accessor)) {
-        var combos =
-            matches.whereType<Accessor>().map((a) => a.enclosingCombo).toList();
+        var combos = matches
+            .whereType<Accessor>()
+            .map((a) => a.enclosingCombo)
+            .toList(growable: false);
         matches.addAll(combos);
         assert(combos.every((c) => c.isCanonical));
       }
@@ -823,23 +734,21 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       // for an inherited element whose defining Class is not canonical.
       if (matches.length > 1 && preferredClass != null) {
         // Search for matches inside our superchain.
-        var superChain = preferredClass.superChain
-            .map((et) => et.modelElement)
-            .cast<InheritingContainer>()
-            .toList();
-        superChain.add(preferredClass);
-        matches.removeWhere((me) =>
-            !superChain.contains((me as EnclosedElement).enclosingElement));
+        var superChain = [
+          for (final elementType in preferredClass.superChain)
+            elementType.modelElement as InheritingContainer,
+          preferredClass,
+        ];
+
+        matches.removeWhere((me) => !superChain.contains(me.enclosingElement));
         // Assumed all matches are EnclosedElement because we've been told about a
         // preferredClass.
         var enclosingElements = {
-          ...matches
-              .map((me) => (me as EnclosedElement).enclosingElement as Class?)
+          ...matches.map((me) => me.enclosingElement as Class?)
         };
         for (var c in superChain.reversed) {
           if (enclosingElements.contains(c)) {
-            matches.removeWhere(
-                (me) => (me as EnclosedElement).enclosingElement != c);
+            matches.removeWhere((me) => me.enclosingElement != c);
           }
           if (matches.length <= 1) break;
         }
@@ -872,7 +781,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
         modelElement = null;
       }
     }
-    // Prefer Fields.
+    // Prefer fields and top-level variables.
     if (e is PropertyAccessorElement && modelElement is Accessor) {
       modelElement = modelElement.enclosingCombo;
     }
@@ -952,11 +861,9 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     });
   }
 
-  String? getMacro(String? name) {
+  /// Returns a macro by [name], or `null` if no macro is found.
+  String? getMacro(String name) {
     assert(_localDocumentationBuilt);
-    if (name == null) {
-      return null;
-    }
     return _macros[name];
   }
 
@@ -992,8 +899,9 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     // We have to use a stable order or otherwise references depending
     // on ambiguous resolution (see below) will change where they
     // resolve based on internal implementation details.
-    var sortedPackages = packages.toList()..sort(byName);
-    var sortedDocumentedPackages = documentedPackages.toList()..sort(byName);
+    var sortedPackages = packages.toList(growable: false)..sort(byName);
+    var sortedDocumentedPackages = documentedPackages.toList(growable: false)
+      ..sort(byName);
     // Packages are the top priority.
     children.addEntries(sortedPackages.generateEntries());
 
@@ -1026,5 +934,5 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   }();
 
   @override
-  Iterable<CommentReferable> get referenceParents => [];
+  Iterable<CommentReferable> get referenceParents => const [];
 }

@@ -10,6 +10,9 @@ import 'package:dartdoc/src/render/source_code_renderer.dart';
 class Field extends ModelElement
     with GetterSetterCombo, ContainerMember, Inheritable
     implements EnclosedElement {
+  @override
+  final FieldElement element;
+
   bool _isInherited = false;
   late final Container _enclosingContainer;
   @override
@@ -17,12 +20,11 @@ class Field extends ModelElement
   @override
   final ContainerAccessor? setter;
 
-  Field(FieldElement element, Library library, PackageGraph packageGraph,
-      this.getter, this.setter)
-      : assert(getter != null || setter != null),
-        super(element, library, packageGraph) {
-    if (getter != null) getter!.enclosingCombo = this;
-    if (setter != null) setter!.enclosingCombo = this;
+  Field(
+      this.element, super.library, super.packageGraph, this.getter, this.setter)
+      : assert(getter != null || setter != null) {
+    getter?.enclosingCombo = this;
+    setter?.enclosingCombo = this;
   }
 
   factory Field.inherited(
@@ -65,7 +67,7 @@ class Field extends ModelElement
   @override
   Container get enclosingElement => isInherited
       ? _enclosingContainer
-      : modelBuilder.from(field!.enclosingElement, library) as Container;
+      : modelBuilder.from(element.enclosingElement, library) as Container;
 
   @override
   String get filePath =>
@@ -79,38 +81,40 @@ class Field extends ModelElement
   }
 
   @override
-  bool get isConst => field!.isConst;
+  bool get isConst => element.isConst;
 
   /// Returns true if the FieldElement is covariant, or if the first parameter
   /// for the setter is covariant.
   @override
-  bool get isCovariant => setter?.isCovariant == true || field!.isCovariant;
+  bool get isCovariant => setter?.isCovariant == true || element.isCovariant;
 
+  /// Whether this field is final.
+  ///
+  /// `Element.isFinal` returns `true` even if it has an explicit getter (which
+  /// means we should not document it as "final").
   @override
   bool get isFinal {
-    /// isFinal returns true for the field even if it has an explicit getter
-    /// (which means we should not document it as "final").
     if (hasExplicitGetter) return false;
-    return field!.isFinal;
+    return element.isFinal;
   }
 
   @override
-  bool get isLate => isFinal && field!.isLate;
+  bool get isLate => isFinal && element.isLate;
 
   @override
   bool get isInherited => _isInherited;
 
   @override
+  bool get isStatic => element.isStatic;
+
+  @override
   String get kind => isConst ? 'constant' : 'property';
 
-  String get fullkind {
-    if (field!.isAbstract) return 'abstract $kind';
-    return kind;
-  }
+  String get fullkind => element.isAbstract ? 'abstract $kind' : kind;
 
   @override
   Set<Feature> get features {
-    var allFeatures = super.features..addAll(comboFeatures);
+    var allFeatures = {...super.features, ...comboFeatures};
     // Combo features can indicate 'inherited' and 'override' if
     // either the getter or setter has one of those properties, but that's not
     // really specific enough for [Field]s that have public getter/setters.
@@ -122,21 +126,22 @@ class Field extends ModelElement
         if (getter!.isInherited) allFeatures.add(Feature.inheritedGetter);
         if (setter!.isInherited) allFeatures.add(Feature.inheritedSetter);
       }
-      if (getter!.isOverride! && setter!.isOverride!) {
+      if (getter!.isOverride && setter!.isOverride) {
         allFeatures.add(Feature.overrideFeature);
       } else {
         allFeatures.remove(Feature.overrideFeature);
-        if (getter!.isOverride!) allFeatures.add(Feature.overrideGetter);
-        if (setter!.isOverride!) allFeatures.add(Feature.overrideSetter);
+        if (getter!.isOverride) allFeatures.add(Feature.overrideGetter);
+        if (setter!.isOverride) allFeatures.add(Feature.overrideSetter);
       }
     } else {
       if (isInherited) allFeatures.add(Feature.inherited);
-      if (isOverride!) allFeatures.add(Feature.overrideFeature);
+      if (isOverride) allFeatures.add(Feature.overrideFeature);
     }
     return allFeatures;
   }
 
-  FieldElement? get field => (element as FieldElement?);
+  @Deprecated('Use `element`')
+  FieldElement? get field => element;
 
   @override
   String get fileName => '${isConst ? '$name-constant' : name}.$fileType';
@@ -164,17 +169,11 @@ class Field extends ModelElement
     if (fieldSourceCode != setterSourceCode) {
       buffer.write(setterSourceCode);
     }
-    return buffer.toString();
+    return buffer.toString().trim();
   }();
 
   @override
   String get sourceCode => _sourceCode;
-
-  @override
-  Library get library => super.library!;
-
-  @override
-  Package get package => super.package!;
 
   @override
   Inheritable? get overriddenElement => null;

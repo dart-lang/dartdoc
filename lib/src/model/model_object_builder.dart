@@ -15,7 +15,8 @@ abstract class ModelObjectBuilder
     implements ModelElementBuilder, ElementTypeBuilder {}
 
 abstract class ModelElementBuilder {
-  ModelElement from(Element e, Library library, {Container enclosingContainer});
+  ModelElement from(Element e, Library library,
+      {Container? enclosingContainer});
 
   ModelElement fromElement(Element e);
 
@@ -26,7 +27,7 @@ abstract class ModelElementBuilder {
 }
 
 abstract class ElementTypeBuilder {
-  ElementType typeFrom(DartType f, Library library, {ElementType returnedFrom});
+  ElementType typeFrom(DartType f, Library library);
 }
 
 abstract class ModelBuilderInterface {
@@ -43,7 +44,7 @@ class ModelObjectBuilderImpl extends ModelObjectBuilder
   ModelObjectBuilderImpl(this.packageGraph);
 }
 
-/// Default implementation of the ModelBuilderInterface, requiring a
+/// Default implementation of [ModelBuilderInterface], requiring a
 /// [PackageGraph].
 mixin ModelBuilder implements ModelBuilderInterface {
   PackageGraph get packageGraph;

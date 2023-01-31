@@ -263,7 +263,7 @@ abstract class RendererBase<T extends Object?> {
         // An inverted section is rendered with the current context.
         renderBlock(node.children);
       } else if (!node.invert && renderedIterable.isNotEmpty) {
-        renderedIterable.toList();
+        renderedIterable.toList(growable: false);
       }
       // Otherwise, render nothing.
 
@@ -300,13 +300,12 @@ String renderSimple(Object? context, List<MustachioNode> ast, Template template,
 
 class SimpleRenderer extends RendererBase<Object?> {
   SimpleRenderer(
-    Object? context,
-    RendererBase<Object> parent,
-    Template template,
-    StringSink sink,
+    super.context,
+    RendererBase<Object> super.parent,
+    super.template,
+    super.sink,
     Set<String> invisibleGetters,
-  ) : super(context, parent, template, sink,
-            invisibleGetters: invisibleGetters);
+  ) : super(invisibleGetters: invisibleGetters);
 
   @override
   Property<Object>? getProperty(String key) {

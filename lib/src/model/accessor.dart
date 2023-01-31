@@ -16,14 +16,19 @@ import 'package:dartdoc/src/warnings.dart';
 
 /// Getters and setters.
 class Accessor extends ModelElement implements EnclosedElement {
-  /// The combo ([Field] or [TopLevelVariable]) containing this accessor.
-  /// Initialized by the combo's constructor.
-  late final GetterSetterCombo enclosingCombo;
+  @override
+  final PropertyAccessorElement element;
 
-  Accessor(PropertyAccessorElement element, Library? library,
-      PackageGraph packageGraph,
-      [ExecutableMember? originalMember])
-      : super(element, library, packageGraph, originalMember);
+  /// The combo ([Field] or [TopLevelVariable]) containing this accessor.
+  ///
+  /// Initialized in [Field]'s constructor and in [TopLevelVariable]'s
+  /// constructor.
+  // TODO(srawlins): This might be super fragile. This field should somehow be
+  // initialized by code inside this library.
+  late GetterSetterCombo enclosingCombo;
+
+  Accessor(this.element, super.library, super.packageGraph,
+      [ExecutableMember? super.originalMember]);
 
   @override
   CharacterLocation? get characterLocation {
@@ -34,10 +39,6 @@ class Accessor extends ModelElement implements EnclosedElement {
     }
     return super.characterLocation;
   }
-
-  @override
-  PropertyAccessorElement get element =>
-      super.element as PropertyAccessorElement;
 
   @override
   ExecutableMember? get originalMember =>
@@ -63,39 +64,30 @@ class Accessor extends ModelElement implements EnclosedElement {
   @override
   String get sourceCode => _sourceCode;
 
-  bool _documentationCommentComputed = false;
-  String? _documentationComment;
   @override
-  String get documentationComment => _documentationCommentComputed
-      ? _documentationComment!
-      : _documentationComment ??= () {
-          _documentationCommentComputed = true;
-          if (isSynthetic) {
-            return _syntheticDocumentationComment;
-          }
-          return stripComments(super.documentationComment);
-        }();
-
-  /// Build a documentation comment for this accessor assuming it is synthetic.
-  /// Value here is not useful if [isSynthetic] is false.
-  late final String _syntheticDocumentationComment = () {
-    if (_hasSyntheticDocumentationComment) {
-      return definingCombo.documentationComment;
+  late final String documentationComment = () {
+    if (isSynthetic) {
+      /// Build a documentation comment for this accessor.
+      return _hasSyntheticDocumentationComment
+          ? definingCombo.documentationComment
+          : '';
     }
-    return '';
+    // TODO(srawlins): This doesn't seem right... the super value has delimiters
+    // (like `///`), but this one doesn't?
+    return stripComments(super.documentationComment);
   }();
 
   /// If this is a getter, assume we want synthetic documentation.
-  /// If the definingCombo has a nodoc tag, we want synthetic documentation
-  /// for a synthetic accessor just in case it is inherited somewhere
-  /// down the line due to split inheritance.
+  ///
+  /// If the [definingCombo] has a `nodoc` tag, we want synthetic documentation
+  /// for a synthetic accessor just in case it is inherited somewhere down the
+  /// line due to split inheritance.
   bool get _hasSyntheticDocumentationComment =>
       (isGetter || definingCombo.hasNodoc || _comboDocsAreIndependent) &&
       definingCombo.hasDocumentationComment;
 
-  // If we're a setter, and a getter exists, do not add synthetic
-  // documentation if the combo's documentation is actually derived
-  // from that getter.
+  // If we're a setter, and a getter exists, do not add synthetic documentation
+  // if the combo's documentation is actually derived from that getter.
   bool get _comboDocsAreIndependent {
     if (isSetter && definingCombo.hasGetter) {
       if (definingCombo.getter!.isSynthetic ||
@@ -125,7 +117,7 @@ class Accessor extends ModelElement implements EnclosedElement {
   }
 
   @override
-  ModelElement? get enclosingElement {
+  ModelElement get enclosingElement {
     if (element.enclosingElement is CompilationUnitElement) {
       return modelBuilder
           .fromElement(element.enclosingElement.enclosingElement!);
@@ -135,7 +127,7 @@ class Accessor extends ModelElement implements EnclosedElement {
   }
 
   @override
-  String? get filePath => enclosingCombo.filePath;
+  String get filePath => enclosingCombo.filePath;
 
   @override
   bool get isCanonical => enclosingCombo.isCanonical;
@@ -156,9 +148,6 @@ class Accessor extends ModelElement implements EnclosedElement {
 
   @override
   String get namePart => _namePart;
-
-  @override
-  Library get library => super.library!;
 
   @override
 
@@ -183,24 +172,24 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
 
   @override
   CharacterLocation? get characterLocation {
-    if (_isEnumSynthetic) return enclosingElement!.characterLocation;
+    if (_isEnumSynthetic) return enclosingElement.characterLocation;
     // TODO(jcollins-g): Remove the enclosingCombo case below once
     // https://github.com/dart-lang/sdk/issues/46154 is fixed.
     if (enclosingCombo is EnumField) return enclosingCombo.characterLocation;
     return super.characterLocation;
   }
 
-  ModelElement? _enclosingElement;
+  late final Container _enclosingElement;
   bool _isInherited = false;
 
   @override
   bool get isCovariant => isSetter && parameters.first.isCovariant;
 
-  ContainerAccessor(PropertyAccessorElement element, Library? library,
-      PackageGraph packageGraph)
-      : super(element, library, packageGraph);
+  ContainerAccessor(super.element, super.library, super.packageGraph) {
+    _enclosingElement = super.enclosingElement as Container;
+  }
 
-  ContainerAccessor.inherited(PropertyAccessorElement element, Library? library,
+  ContainerAccessor.inherited(PropertyAccessorElement element, Library library,
       PackageGraph packageGraph, this._enclosingElement,
       {ExecutableMember? originalMember})
       : super(element, library, packageGraph, originalMember) {
@@ -211,47 +200,35 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
   bool get isInherited => _isInherited;
 
   @override
-  Container? get enclosingElement {
-    _enclosingElement ??= super.enclosingElement;
-    return _enclosingElement as Container?;
-  }
-
-  bool _overriddenElementIsSet = false;
-  ModelElement? _overriddenElement;
+  Container get enclosingElement => _enclosingElement;
 
   @override
-  ContainerAccessor? get overriddenElement {
+  late final ContainerAccessor? overriddenElement = () {
     assert(packageGraph.allLibrariesAdded);
-    if (!_overriddenElementIsSet) {
-      _overriddenElementIsSet = true;
-      var parent = element.enclosingElement;
-      if (parent is ClassElement) {
-        for (var t in parent.allSupertypes) {
-          Element? accessor =
-              isGetter ? t.getGetter(element.name) : t.getSetter(element.name);
-          if (accessor != null) {
-            accessor = accessor.declaration;
-            var parentContainer =
-                modelBuilder.fromElement(t.element) as InheritingContainer;
-            var possibleFields = <Field>[];
-            possibleFields.addAll(parentContainer.instanceFields);
-            possibleFields.addAll(parentContainer.staticFields);
-            var fieldName = accessor!.name!.replaceFirst('=', '');
-            var foundField = possibleFields
-                .firstWhereOrNull((f) => f.element!.name == fieldName);
-            if (foundField != null) {
-              if (isGetter) {
-                _overriddenElement = foundField.getter;
-              } else {
-                _overriddenElement = foundField.setter;
-              }
-              assert(!(_overriddenElement as ContainerAccessor).isInherited);
-              break;
-            }
-          }
-        }
-      }
+    final parent = element.enclosingElement;
+    if (parent is! InterfaceElement) {
+      return null;
     }
-    return _overriddenElement as ContainerAccessor?;
-  }
+    for (final supertype in parent.allSupertypes) {
+      var accessor = isGetter
+          ? supertype.getGetter(element.name)?.declaration
+          : supertype.getSetter(element.name)?.declaration;
+      if (accessor == null) {
+        continue;
+      }
+      final parentContainer =
+          modelBuilder.fromElement(supertype.element) as InheritingContainer;
+      final possibleFields =
+          parentContainer.declaredFields.where((f) => !f.isStatic);
+      final fieldName = accessor.name.replaceFirst('=', '');
+      final foundField =
+          possibleFields.firstWhereOrNull((f) => f.element.name == fieldName);
+      if (foundField == null) {
+        continue;
+      }
+      final overridden = isGetter ? foundField.getter! : foundField.setter!;
+      assert(!overridden.isInherited);
+      return overridden;
+    }
+  }();
 }

@@ -11,31 +11,25 @@ import 'package:dartdoc/src/model_utils.dart' as model_utils;
 import 'package:dartdoc/src/special_elements.dart';
 import 'package:meta/meta.dart';
 
-/// Implements the Dart 2.1 "mixin" style of mixin declarations.
 class Mixin extends InheritingContainer with TypeImplementing {
-  Mixin(ClassElement element, Library? library, PackageGraph packageGraph)
-      : super(element, library, packageGraph);
+  @override
+  final MixinElement element;
 
-  List<ParameterizedElementType>? _superclassConstraints;
+  Mixin(this.element, super.library, super.packageGraph);
 
-  /// Returns a list of superclass constraints for this mixin.
-  Iterable<ParameterizedElementType>? get superclassConstraints {
-    _superclassConstraints ??= [
-      ...element!.superclassConstraints
-          .map<ParameterizedElementType>((InterfaceType i) =>
-              modelBuilder.typeFrom(i, library) as ParameterizedElementType)
-          .where((t) =>
-              t.modelElement !=
-              packageGraph.specialClasses[SpecialClass.object])
-    ];
-    return _superclassConstraints;
-  }
+  late final List<ParameterizedElementType> superclassConstraints = [
+    ...element.superclassConstraints
+        .map((InterfaceType i) =>
+            modelBuilder.typeFrom(i, library) as ParameterizedElementType)
+        .where((t) =>
+            t.modelElement != packageGraph.specialClasses[SpecialClass.object])
+  ];
 
   bool get hasPublicSuperclassConstraints =>
       publicSuperclassConstraints.isNotEmpty;
 
   Iterable<ParameterizedElementType> get publicSuperclassConstraints =>
-      model_utils.filterNonPublic(superclassConstraints!);
+      model_utils.filterNonPublic(superclassConstraints);
 
   @override
   bool get hasModifiers => super.hasModifiers || hasPublicSuperclassConstraints;
@@ -47,11 +41,11 @@ class Mixin extends InheritingContainer with TypeImplementing {
   String get kind => 'mixin';
 
   @override
-  late final List<InheritingContainer?> inheritanceChain = [
+  late final List<InheritingContainer> inheritanceChain = [
     this,
 
     // Mix-in interfaces come before other interfaces.
-    ...superclassConstraints!.expandInheritanceChain,
+    ...superclassConstraints.expandInheritanceChain,
 
     for (var container in superChain.modelElements)
       ...container.inheritanceChain,
@@ -63,7 +57,8 @@ class Mixin extends InheritingContainer with TypeImplementing {
 
   @override
   @visibleForOverriding
-  Iterable<MapEntry<String, CommentReferable>> get extraReferenceChildren => [];
+  Iterable<MapEntry<String, CommentReferable>> get extraReferenceChildren =>
+      const [];
 
   @override
   String get relationshipsClass => 'mixin-relationships';

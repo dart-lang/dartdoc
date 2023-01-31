@@ -102,7 +102,6 @@ abstract class TemplatedInterface<A> implements ParameterizedClass<List<int>> {
   AnotherParameterizedClass<List<int>> aMethodInterface(A value);
   ParameterizedTypedef<List<String>> aTypedefReturningMethodInterface();
   AnotherParameterizedClass<Stream<List<int>>>? aField;
-  AnotherParameterizedClass<Map<A, List<String>>> get aGetter;
   set aSetter(AnotherParameterizedClass<List<bool>> thingToSet);
 }
 
@@ -167,7 +166,7 @@ class Apple {
 
   operator *(Apple other) => this;
 
-  bool isGreaterThan(int number, {int check: 5}) {
+  bool isGreaterThan(int number, {int check = 5}) {
     return number > check;
   }
 
@@ -410,16 +409,6 @@ class Dog implements Cat, E {
     return arg;
   }
 
-  @Deprecated("Internal use")
-  static Dog createDog(String s) {
-    return Dog.deprecatedCreate(s);
-  }
-
-  @deprecated
-  static Dog createDog2(String s) {
-    return Dog.deprecatedCreate(s);
-  }
-
   @override
   void abstractMethod() {}
 }
@@ -429,14 +418,6 @@ abstract class E {}
 class F<T extends String> extends Dog with _PrivateAbstractClass {
   void methodWithGenericParam([List<Apple>? msgs]) {}
 }
-
-class ForAnnotation {
-  final String value;
-  const ForAnnotation(this.value);
-}
-
-@ForAnnotation('my value')
-class HasAnnotation {}
 
 /// A class
 class Klass {

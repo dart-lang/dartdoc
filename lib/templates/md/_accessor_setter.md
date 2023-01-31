@@ -1,6 +1,7 @@
 {{#setter}}
-{{>name_summary}}({{{ linkedParamsNoMetadata }}})  {{!two spaces intentional}}
-{{>features}}
+{{ >annotations }}
+{{ >name_summary }}({{{ linkedParamsNoMetadata }}})  {{ !two spaces intentional }}
+{{ >features }}
 
 {{>documentation}}
 

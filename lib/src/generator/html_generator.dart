@@ -4,10 +4,9 @@
 
 library dartdoc.html_generator;
 
-import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/options.dart';
-import 'package:dartdoc/src/generator/dartdoc_generator_backend.dart';
 import 'package:dartdoc/src/generator/generator.dart';
+import 'package:dartdoc/src/generator/generator_backend.dart';
 import 'package:dartdoc/src/generator/generator_frontend.dart';
 import 'package:dartdoc/src/generator/html_resources.g.dart' as resources;
 import 'package:dartdoc/src/generator/resource_loader.dart';
@@ -15,37 +14,43 @@ import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/src/generator/templates.dart';
 import 'package:dartdoc/src/model/package.dart';
 import 'package:dartdoc/src/model/package_graph.dart';
+import 'package:meta/meta.dart';
 
 /// Creates a [Generator] with an [HtmlGeneratorBackend] backend.
 ///
 /// [forceRuntimeTemplates] should only be given [true] during tests.
-Future<Generator> initHtmlGenerator(DartdocGeneratorOptionContext context,
-    {bool forceRuntimeTemplates = false}) async {
+Future<Generator> initHtmlGenerator(
+  DartdocGeneratorOptionContext context, {
+  required FileWriter writer,
+  @visibleForTesting bool forceRuntimeTemplates = false,
+}) async {
   var templates = await Templates.fromContext(context,
       forceRuntimeTemplates: forceRuntimeTemplates);
   var options = DartdocGeneratorBackendOptions.fromContext(context);
-  var backend =
-      HtmlGeneratorBackend(options, templates, context.resourceProvider);
+  var backend = HtmlGeneratorBackend(
+      options, templates, writer, context.resourceProvider);
   return GeneratorFrontEnd(backend);
 }
 
-/// Generator backend for html output.
-class HtmlGeneratorBackend extends DartdocGeneratorBackend {
-  HtmlGeneratorBackend(DartdocGeneratorBackendOptions options,
-      Templates templates, ResourceProvider resourceProvider)
-      : super(options, templates, resourceProvider);
+/// Generator backend for HTML output.
+class HtmlGeneratorBackend extends GeneratorBackendBase {
+  HtmlGeneratorBackend(
+      super.options, super.templates, super.writer, super.resourceProvider);
 
   @override
-  void generatePackage(FileWriter writer, PackageGraph graph, Package package) {
-    super.generatePackage(writer, graph, package);
+  void generatePackage(PackageGraph graph, Package package) {
+    super.generatePackage(graph, package);
     // We have to construct the data again. This only happens once per package.
     var data = PackageTemplateData(options, graph, package);
+    var dataForSearch = PackageTemplateDataForSearch(options, graph, package);
     var content = templates.renderError(data);
     write(writer, '__404error.html', data, content);
+    var searchContent = templates.renderSearchPage(dataForSearch);
+    write(writer, 'search.html', data, searchContent);
   }
 
   @override
-  Future<void> generateAdditionalFiles(FileWriter writer) async {
+  Future<void> generateAdditionalFiles() async {
     await _copyResources(writer);
     var favicon = options.favicon;
     if (favicon != null) {

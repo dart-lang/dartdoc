@@ -14,7 +14,8 @@ import 'package:dartdoc/src/model/package_graph.dart';
 /// `@`.
 class Annotation extends Feature with ModelBuilder {
   final ElementAnnotation annotation;
-  final Library? library;
+  final Library library;
+
   @override
   final PackageGraph packageGraph;
 
@@ -25,7 +26,6 @@ class Annotation extends Feature with ModelBuilder {
   late final String linkedNameWithParameters =
       packageGraph.rendererFactory.featureRenderer.renderAnnotation(this);
 
-  /// Return the linked name of the annotation.
   @override
   String get linkedName => annotation.element is PropertyAccessorElement
       ? modelBuilder.fromElement(annotation.element!).linkedName
@@ -35,7 +35,7 @@ class Annotation extends Feature with ModelBuilder {
   late final ElementType modelType = () {
     var annotatedWith = annotation.element;
     if (annotatedWith is ConstructorElement) {
-      return modelBuilder.typeFrom(annotatedWith.returnType, library!);
+      return modelBuilder.typeFrom(annotatedWith.returnType, library);
     } else if (annotatedWith is PropertyAccessorElement) {
       return (modelBuilder.fromElement(annotatedWith.variable)
               as GetterSetterCombo)
@@ -65,13 +65,12 @@ class Annotation extends Feature with ModelBuilder {
           .contains((modelType as DefinedElementType).modelElement);
 
   @override
-  bool operator ==(Object other) {
-    if (other is Annotation) {
-      return other.annotation == annotation;
-    }
-    return false;
-  }
+  bool operator ==(Object other) =>
+      other is Annotation && other.annotation == annotation;
 
   @override
   int get hashCode => annotation.hashCode;
+
+  @override
+  String get cssClassName => '';
 }

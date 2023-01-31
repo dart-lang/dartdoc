@@ -79,13 +79,13 @@ class DocumentationRenderResult {
 bool _allowClassName(String className) =>
     className == 'deprecated' || className.startsWith('language-');
 
-Iterable<String> _addLinkRel(String uri) {
-  final u = Uri.tryParse(uri);
-  if (u != null && u.host.isNotEmpty) {
+Iterable<String> _addLinkRel(String uriString) {
+  final uri = Uri.tryParse(uriString);
+  if (uri != null && uri.host.isNotEmpty) {
     // TODO(jonasfj): Consider allowing non-ugc links for trusted sites.
-    return ['ugc'];
+    return const ['ugc'];
   }
-  return [];
+  return const [];
 }
 
 void _sanitize(dom.Node node) {

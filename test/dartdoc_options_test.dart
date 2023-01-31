@@ -240,7 +240,11 @@ dartdoc:
   });
 
   tearDownAll(() {
-    tempDir.delete();
+    try {
+      tempDir.delete();
+    } catch (e) {
+      print('Ignoring error trying to delete temp: $e');
+    }
   });
 
   group('new style synthetic option', () {

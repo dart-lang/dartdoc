@@ -310,10 +310,7 @@ typedef int LotsAndLotsOfParameters(so, many, parameters, it, should, wrap,
     when, converted, to, html, documentation);
 
 /// This class is cool!
-class Cool {
-  // ignore: body_might_complete_normally
-  Cool returnCool() {}
-}
+class Cool {}
 
 /// A map initialization making use of optional const.
 const Map<int, String> myMap = {1: "hello"};
@@ -468,8 +465,7 @@ abstract class ImplementsFutureVoid implements Future<void> {}
 
 /// This class takes a type, and it might be void.
 class ATypeTakingClass<T> {
-  // ignore: missing_return
-  T? aMethodMaybeReturningVoid() {}
+  T? aMethodMaybeReturningVoid() => null;
 }
 
 class ABaseClass {}
@@ -800,7 +796,7 @@ void onlyPositionalWithNoDefaultNoType([@greatestAnnotation anything]) {}
 
 /// Top-level function with 1 param and 2 optional named params, 1 with a
 /// default value.
-void soIntense(anything, {bool flag: true, int? value}) {}
+void soIntense(anything, {bool flag = true, int? value}) {}
 
 /// [FooBar] comes from another library.
 void paramFromAnotherLib(Apple thing) {}
@@ -816,9 +812,6 @@ FutureOr thisIsFutureOr() => null;
 
 /// Explicitly return a `FutureOr<Null>`.
 FutureOr<Null> thisIsFutureOrNull() => null;
-
-/// Explicitly return a `FutureOr<T>`.
-FutureOr<T>? thisIsFutureOrT<T>() => null;
 
 /// Has a parameter explicitly typed `FutureOr<Null>`.
 void paramOfFutureOrNull(FutureOr<Null> future) {}
@@ -1019,7 +1012,7 @@ void paintImage1(
     required int rect,
     required ExtraSpecialList image,
     BaseForDocComments? colorFilter,
-    String repeat: LongFirstLine.THING}) {
+    String repeat = LongFirstLine.THING}) {
   // nothing to do here -
 }
 
@@ -1047,7 +1040,7 @@ class OperatorReferenceClass {
   OperatorReferenceClass();
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return false;
   }
 }
@@ -1289,7 +1282,7 @@ class FactoryConstructorThings {
 
 DTypeParam?
     aTopLevelTypeParameterFunction<DTypeParam extends TypeParameterThings>(
-        DTypeParam typedParam) {}
+        DTypeParam typedParam) => typedParam;
 
 abstract class TypeParameterThings<ATypeParam,
     BTypeParam extends FactoryConstructorThings> {

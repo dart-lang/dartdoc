@@ -9,22 +9,11 @@ import 'package:dartdoc/src/model/model.dart';
 /// the user interpretation of the interface.
 mixin FeatureSet {
   PackageGraph get packageGraph;
-  Library? get library;
+  Library get library;
 
   /// A list of language features that both apply to this [ModelElement] and
   /// make sense to display in context.
-  Iterable<LanguageFeature> get displayedLanguageFeatures sync* {
-    // TODO(jcollins-g): Implement mixed-mode handling and the tagging of
-    // legacy interfaces.
-    if (isNullSafety) {
-      yield LanguageFeature(
-          'Null safety', packageGraph.rendererFactory.languageFeatureRenderer);
-    }
-  }
+  Iterable<LanguageFeature> get displayedLanguageFeatures => const [];
 
   bool get hasFeatureSet => displayedLanguageFeatures.isNotEmpty;
-
-  // TODO(jcollins-g): This is an approximation and not strictly true for
-  // inheritance/reexports.
-  bool get isNullSafety => library!.isNullSafety;
 }

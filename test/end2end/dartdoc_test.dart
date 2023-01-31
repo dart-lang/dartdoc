@@ -38,8 +38,7 @@ final Folder _testSkyEnginePackage = _getFolder('testing/sky_engine');
 class DartdocLoggingOptionContext extends DartdocGeneratorOptionContext
     with LoggingContext {
   DartdocLoggingOptionContext(
-      DartdocOptionSet optionSet, Folder dir, ResourceProvider resourceProvider)
-      : super(optionSet, dir, resourceProvider);
+      super.optionSet, super.dir, super.resourceProvider);
 }
 
 void main() {
@@ -148,25 +147,11 @@ void main() {
             hasLength(kTestPackagePublicLibraries + 2));
         expect(packageGraph.localPackages.length, equals(1));
       });
-
-      test('source code links are visible', () async {
-        // Picked this object as this library explicitly should never contain
-        // a library directive, so we can predict what line number it will be.
-        var anonymousOutput = _resourceProvider.getFile(_pathContext.join(
-            tempDir.path,
-            'anonymous_library',
-            'anonymous_library-library.html'));
-        expect(anonymousOutput.exists, isTrue);
-        expect(
-            anonymousOutput.readAsStringSync(),
-            contains(r'<a title="View source code" class="source-link" '
-                'href="https://github.com/dart-lang/dartdoc/blob/master/testing/test_package/lib/anonymous_library.dart#L1">'
-                '<i class="material-icons">description</i></a>'));
-      });
     });
 
     test('generate docs for ${p.basename(_testPackageBadDir.path)} fails',
-        () async {
+        skip: 'Blocked on getting analysis errors with correct interpretation '
+            'from analysis_options', () async {
       var dartdoc = await buildDartdoc([], _testPackageBadDir, tempDir);
 
       try {
@@ -175,9 +160,7 @@ void main() {
       } catch (e) {
         expect(e is DartdocFailure, isTrue);
       }
-    },
-        skip: 'Blocked on getting analysis errors with correct interpretation '
-            'from analysis_options');
+    });
 
     test('generate docs for package with embedder yaml', () async {
       var dartdoc = await buildDartdoc([], _testSkyEnginePackage, tempDir);

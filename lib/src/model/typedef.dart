@@ -12,20 +12,18 @@ import 'package:dartdoc/src/render/typedef_renderer.dart';
 abstract class Typedef extends ModelElement
     with TypeParameters, Categorization
     implements EnclosedElement {
-  Typedef(TypeAliasElement element, Library? library, PackageGraph packageGraph)
-      : super(element, library, packageGraph);
+  @override
+  final TypeAliasElement element;
 
-  DartType get aliasedType => element!.aliasedType;
+  Typedef(this.element, super.library, super.packageGraph);
+
+  DartType get aliasedType => element.aliasedType;
+
+  late final ElementType modelType =
+      modelBuilder.typeFrom(element.aliasedType, library);
 
   @override
-  TypeAliasElement? get element => super.element as TypeAliasElement?;
-
-  ElementType? _modelType;
-  ElementType get modelType =>
-      _modelType ??= modelBuilder.typeFrom(element!.aliasedType, library);
-
-  @override
-  Library? get enclosingElement => library;
+  Library get enclosingElement => library;
 
   @override
   String get nameWithGenerics => '$name${super.genericParameters}';
@@ -61,49 +59,35 @@ abstract class Typedef extends ModelElement
   String get kind => 'typedef';
 
   @override
-  Library get library => super.library!;
-
-  @override
-  Package get package => super.package!;
-
-  @override
-  List<TypeParameter> get typeParameters => element!.typeParameters.map((f) {
-        return modelBuilder.from(f, library) as TypeParameter;
-      }).toList();
+  List<TypeParameter> get typeParameters => element.typeParameters
+      .map((f) => modelBuilder.from(f, library) as TypeParameter)
+      .toList(growable: false);
 
   TypedefRenderer get _renderer => packageGraph.rendererFactory.typedefRenderer;
 
   @override
   Iterable<CommentReferable> get referenceParents => [definingLibrary];
 
-  Map<String, CommentReferable>? _referenceChildren;
+  late final Map<String, CommentReferable> _referenceChildren = {
+    ...typeParameters.explicitOnCollisionWith(this),
+  };
+
   @override
-  Map<String, CommentReferable> get referenceChildren {
-    if (_referenceChildren == null) {
-      _referenceChildren = {};
-      _referenceChildren!
-          .addEntriesIfAbsent(typeParameters.explicitOnCollisionWith(this));
-    }
-    return _referenceChildren!;
-  }
+  Map<String, CommentReferable> get referenceChildren => _referenceChildren;
 }
 
 /// A typedef referring to a non-function typedef that is nevertheless not
 /// referring to a defined class.  An example is a typedef alias for `void` or
 /// for `Function` itself.
 class GeneralizedTypedef extends Typedef {
-  GeneralizedTypedef(
-      TypeAliasElement element, Library? library, PackageGraph packageGraph)
-      : super(element, library, packageGraph) {
+  GeneralizedTypedef(super.element, super.library, super.packageGraph) {
     assert(!isCallable);
   }
 }
 
 /// A typedef referring to a non-function, defined type.
 class ClassTypedef extends Typedef {
-  ClassTypedef(
-      TypeAliasElement element, Library? library, PackageGraph packageGraph)
-      : super(element, library, packageGraph) {
+  ClassTypedef(super.element, super.library, super.packageGraph) {
     assert(!isCallable);
     assert(modelType.modelElement is Class);
   }
@@ -112,34 +96,29 @@ class ClassTypedef extends Typedef {
   DefinedElementType get modelType => super.modelType as DefinedElementType;
 
   @override
-  Map<String, CommentReferable> get referenceChildren {
-    if (_referenceChildren == null) {
-      _referenceChildren = super.referenceChildren;
-      _referenceChildren!
-          .addEntriesIfAbsent(modelType.modelElement.referenceChildren.entries);
-    }
-    return _referenceChildren!;
-  }
+  late final Map<String, CommentReferable> referenceChildren = {
+    ...modelType.modelElement.referenceChildren,
+    ...super.referenceChildren,
+  };
 }
 
 /// A typedef referring to a function type.
 class FunctionTypedef extends Typedef {
-  FunctionTypedef(
-      TypeAliasElement element, Library? library, PackageGraph packageGraph)
-      : super(element, library, packageGraph) {
-    assert(isCallable);
+  FunctionTypedef(super.element, super.library, super.packageGraph) {
+    assert(
+        isCallable,
+        'Expected callable but: ${element.runtimeType} is FunctionTypedElement '
+        '|| (${element.runtimeType} is TypeAliasElement && '
+        '${element.aliasedType.runtimeType} is FunctionType) is not true for '
+        '"${element.name}" in "${element.library}"');
   }
 
   @override
   Callable get modelType => super.modelType as Callable;
 
   @override
-  Map<String, CommentReferable> get referenceChildren {
-    if (_referenceChildren == null) {
-      _referenceChildren = super.referenceChildren;
-      _referenceChildren!
-          .addEntriesIfAbsent(parameters.explicitOnCollisionWith(this));
-    }
-    return _referenceChildren!;
-  }
+  late final Map<String, CommentReferable> referenceChildren = {
+    ...parameters.explicitOnCollisionWith(this),
+    ...super.referenceChildren,
+  };
 }

@@ -3,9 +3,11 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io' hide ProcessException;
 
 import 'package:analyzer/file_system/physical_file_system.dart';
+import 'package:collection/collection.dart';
 import 'package:crypto/crypto.dart' as crypto;
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/package_meta.dart';
@@ -101,7 +103,7 @@ Future<FlutterRepo> get cleanFlutterRepo async {
     cleanFlutterDir.createSync(recursive: true);
     await newRepo._init();
     await lastSynced
-        .writeAsString((DateTime.now()).millisecondsSinceEpoch.toString());
+        .writeAsString(DateTime.now().millisecondsSinceEpoch.toString());
   }
   repoCompleter.complete(newRepo);
   _cleanFlutterRepo = repoCompleter;
@@ -919,8 +921,9 @@ Future<String> _buildPubPackageDocs(
     if (version != null) ...['-v', version],
     pubPackageName,
   ]);
-  var cache =
-      Directory(p.join(env['PUB_CACHE']!, 'hosted', 'pub.dartlang.org'));
+  var pubHost =
+      Platform.version.contains('2.18') ? 'pub.dartlang.org' : 'pub.dev';
+  var cache = Directory(p.join(env['PUB_CACHE']!, 'hosted', pubHost));
   var pubPackageDirOrig =
       cache.listSync().firstWhere((e) => e.path.contains(pubPackageName));
   var pubPackageDir = Directory.systemTemp.createTempSync(pubPackageName);
@@ -1011,7 +1014,7 @@ String _getPackageVersion() {
 Future<void> build() async {
   var launcher = SubprocessLauncher('build');
   await launcher.runStreamed(Platform.resolvedExecutable,
-      ['pub', 'run', 'build_runner', 'build', '--delete-conflicting-outputs']);
+      ['run', 'build_runner', 'build', '--delete-conflicting-outputs']);
 
   // TODO(jcollins-g): port to build system?
   var version = _getPackageVersion();
@@ -1032,12 +1035,12 @@ Future<void> buildWeb() async {
     'js',
     '--output=lib/resources/docs.dart.js',
     'web/docs.dart',
+    '-O4',
   ]);
   delete(File('lib/resources/docs.dart.js.deps'));
-  delete(File('lib/resources/docs.dart.js.map'));
 
-  final compileSig = calcDartFilesSig(Directory('web'));
-  File(p.join('web', 'sig.txt')).writeAsStringSync(compileSig);
+  final compileSig = await _calcDartFilesSig(Directory('web'));
+  File(p.join('web', 'sig.txt')).writeAsStringSync('$compileSig\n');
 }
 
 /// Paths in this list are relative to lib/.
@@ -1087,15 +1090,18 @@ Future<void> checkBuild() async {
   }
 
   // Verify that the web frontend has been compiled.
-  final currentCodeSig = calcDartFilesSig(Directory('web'));
-  final lastCompileSig = File(p.join('web', 'sig.txt')).readAsStringSync();
+  final currentCodeSig = await _calcDartFilesSig(Directory('web'));
+  final lastCompileSig =
+      File(p.join('web', 'sig.txt')).readAsStringSync().trim();
   if (currentCodeSig != lastCompileSig) {
+    log('current files: $currentCodeSig');
+    log('cached sig   : $lastCompileSig');
     fail('The web frontend (web/docs.dart) needs to be recompiled; rebuild it '
         'with "grind build-web" or "grind build".');
   }
 }
 
-@Task('Dry run of publish to pub.dartlang')
+@Task('Dry run of publish to pub.dev')
 @Depends(checkChangelogHasVersion)
 Future<void> tryPublish() async {
   var launcher = SubprocessLauncher('try-publish');
@@ -1310,43 +1316,29 @@ int _findCount(String str, String match) {
   return count;
 }
 
-String calcDartFilesSig(Directory dir) {
-  final files = dir
-      .listSync(recursive: true)
-      .whereType<File>()
-      .where((file) => file.path.endsWith('.dart'))
-      .toList();
+Future<String> _calcDartFilesSig(Directory dir) async {
+  final digest = await _dartFileLines(dir)
+      .transform(utf8.encoder)
+      .transform(crypto.md5)
+      .single;
 
-  var output = AccumulatorSink<crypto.Digest>();
-  var input = crypto.md5.startChunkedConversion(output);
-  for (var file in files) {
-    input.add(file.readAsBytesSync());
-  }
-  input.close();
-
-  var result = output.events.single;
-  return result.bytes
+  return digest.bytes
       .map((byte) => byte.toRadixString(16).padLeft(2, '0').toUpperCase())
       .join();
 }
 
-class AccumulatorSink<T> implements Sink<T> {
-  List<T> get events => _events;
-  final _events = <T>[];
+/// Yields all of the trimmed lines of all of the `.dart` files in [dir].
+Stream<String> _dartFileLines(Directory dir) async* {
+  final files = dir
+      .listSync(recursive: true)
+      .whereType<File>()
+      .where((file) => file.path.endsWith('.dart'))
+      .toList()
+    ..sort((a, b) => compareAsciiLowerCase(a.path, b.path));
 
-  var _isClosed = false;
-
-  @override
-  void add(T event) {
-    if (_isClosed) {
-      throw StateError("Can't add to a closed sink.");
+  for (var file in files) {
+    for (var line in file.readAsLinesSync()) {
+      yield line.trim();
     }
-
-    _events.add(event);
-  }
-
-  @override
-  void close() {
-    _isClosed = true;
   }
 }

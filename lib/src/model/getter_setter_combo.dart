@@ -27,15 +27,19 @@ mixin GetterSetterCombo on ModelElement {
   Accessor? get setter;
 
   @override
-  Iterable<Annotation> get annotations => [
+  List<Annotation> get annotations => [
         ...super.annotations,
         if (hasGetter) ...getter!.annotations,
         if (hasSetter) ...setter!.annotations,
       ];
 
-  Iterable<Accessor> get allAccessors sync* {
-    for (var a in [getter, setter]) {
-      if (a != null) yield a;
+  List<Accessor> get allAccessors {
+    final getter = this.getter;
+    final setter = this.setter;
+    if (getter == null) {
+      return setter == null ? const [] : [setter];
+    } else {
+      return setter == null ? [getter] : [getter, setter];
     }
   }
 
@@ -49,9 +53,16 @@ mixin GetterSetterCombo on ModelElement {
       };
 
   @override
-  ModelElement? enclosingElement;
+  ModelElement get enclosingElement;
 
   bool get isInherited;
+
+  /// Whether this has a constant value which should be displayed.
+  bool get hasConstantValueForDisplay {
+    final element = this.element;
+    if (element is! ConstVariableElement) return false;
+    return element.constantInitializer != null;
+  }
 
   Expression? get constantInitializer =>
       (element as ConstVariableElement).constantInitializer;
@@ -90,7 +101,7 @@ mixin GetterSetterCombo on ModelElement {
     // explicit setters/getters will be handled by those objects, but
     // if a warning comes up for an enclosing synthetic field we have to
     // put it somewhere.  So pick an accessor.
-    if (element!.isSynthetic) {
+    if (element.isSynthetic) {
       if (hasExplicitGetter) return getter!.characterLocation;
       if (hasExplicitSetter) return setter!.characterLocation;
       assert(false, 'Field and accessors can not all be synthetic: $element');
@@ -115,60 +126,56 @@ mixin GetterSetterCombo on ModelElement {
 
   @override
   late final List<DocumentationComment> documentationFrom = () {
-    var toReturn = <DocumentationComment>[];
-    if (hasPublicGetter) {
-      toReturn.addAll(getter!.documentationFrom);
-    } else if (hasPublicSetter) {
-      toReturn.addAll(setter!.documentationFrom);
-    }
-    if (toReturn.isEmpty ||
-        toReturn.every((e) => e.documentationComment == '')) {
-      toReturn = super.documentationFrom;
-    }
-    return toReturn;
+    var comments = [
+      if (hasPublicGetter)
+        ...getter!.documentationFrom
+      else if (hasPublicSetter)
+        ...setter!.documentationFrom,
+    ];
+    return (comments.isEmpty ||
+            comments.every((e) => e.documentationComment == ''))
+        ? super.documentationFrom
+        : comments;
   }();
 
   bool get hasAccessorsWithDocs =>
-      (hasPublicGetter && !getter!.isSynthetic && getter!.hasDocumentation ||
-          hasPublicSetter && !setter!.isSynthetic && setter!.hasDocumentation);
+      hasPublicGetter && !getter!.isSynthetic && getter!.hasDocumentation ||
+      hasPublicSetter && !setter!.isSynthetic && setter!.hasDocumentation;
 
-  bool get getterSetterBothAvailable => (hasPublicGetter &&
+  bool get getterSetterBothAvailable =>
+      hasPublicGetter &&
       getter!.hasDocumentation &&
       hasPublicSetter &&
-      setter!.hasDocumentation);
+      setter!.hasDocumentation;
 
   @override
-  late final String? oneLineDoc = () {
+  late final String oneLineDoc = () {
     if (!hasAccessorsWithDocs) {
       return super.oneLineDoc;
     } else {
       var buffer = StringBuffer();
-      if (hasPublicGetter && getter!.oneLineDoc!.isNotEmpty) {
+      if (hasPublicGetter && getter!.oneLineDoc.isNotEmpty) {
         buffer.write(getter!.oneLineDoc);
       }
-      if (hasPublicSetter && setter!.oneLineDoc!.isNotEmpty) {
-        buffer.write(getterSetterBothAvailable ? '' : setter!.oneLineDoc);
+      if (hasPublicSetter &&
+          setter!.oneLineDoc.isNotEmpty &&
+          !getterSetterBothAvailable) {
+        buffer.write(setter!.oneLineDoc);
       }
       return buffer.toString();
     }
   }();
 
-  bool _documentationCommentComputed = false;
-  String? _documentationComment;
   @override
-  String get documentationComment => _documentationCommentComputed
-      ? _documentationComment!
-      : _documentationComment ??= () {
-          _documentationCommentComputed = true;
-          var docs = _getterSetterDocumentationComment;
-          if (docs.isEmpty) return element!.documentationComment ?? '';
-          return docs;
-        }();
+  late final String documentationComment =
+      _getterSetterDocumentationComment.isEmpty
+          ? element.documentationComment ?? ''
+          : _getterSetterDocumentationComment;
 
   @override
   bool get hasDocumentationComment =>
       _getterSetterDocumentationComment.isNotEmpty ||
-      element!.documentationComment != null;
+      element.documentationComment != null;
 
   /// Derive a documentation comment for the combo by copying documentation
   /// from the [getter] and/or [setter].
@@ -183,7 +190,7 @@ mixin GetterSetterCombo on ModelElement {
         // We have to check against `dropTextFrom` here since
         // `documentationFrom` doesn't yield the real elements for
         // [GetterSetterCombo]s.
-        if (!config.dropTextFrom.contains(fromGetter.element!.library!.name)) {
+        if (!config.dropTextFrom.contains(fromGetter.element.library!.name)) {
           if (fromGetter.hasDocumentationComment) {
             getterComment = fromGetter.documentationComment;
           }
@@ -199,7 +206,7 @@ mixin GetterSetterCombo on ModelElement {
     if (!setter.isSynthetic && setter.isPublic) {
       assert(setter.documentationFrom.length == 1);
       var fromSetter = setter.documentationFrom.first;
-      if (!config.dropTextFrom.contains(fromSetter.element!.library!.name)) {
+      if (!config.dropTextFrom.contains(fromSetter.element.library!.name)) {
         if (fromSetter.hasDocumentationComment) {
           return getterComment.isEmpty
               ? fromSetter.documentationComment
@@ -226,10 +233,7 @@ mixin GetterSetterCombo on ModelElement {
   List<Parameter> get parameters => setter!.parameters;
 
   @override
-  String? get linkedParamsNoMetadata {
-    if (hasSetter) return setter!.linkedParamsNoMetadata;
-    return null;
-  }
+  String? get linkedParamsNoMetadata => setter?.linkedParamsNoMetadata;
 
   bool get hasExplicitGetter => hasPublicGetter && !getter!.isSynthetic;
 
@@ -243,7 +247,7 @@ mixin GetterSetterCombo on ModelElement {
 
   bool get hasSetter => setter != null;
 
-  bool get hasPublicGetterNoSetter => (hasPublicGetter && !hasPublicSetter);
+  bool get hasPublicGetterNoSetter => hasPublicGetter && !hasPublicSetter;
 
   String get arrow {
     // →
@@ -262,18 +266,9 @@ mixin GetterSetterCombo on ModelElement {
 
   bool get writeOnly => hasPublicSetter && !hasPublicGetter;
 
-  Map<String, CommentReferable>? _referenceChildren;
   @override
-  Map<String, CommentReferable> get referenceChildren {
-    if (_referenceChildren == null) {
-      _referenceChildren = {};
-      if (hasParameters) {
-        _referenceChildren!
-            .addEntries(parameters.explicitOnCollisionWith(this));
-      }
-      _referenceChildren!
-          .addEntries(modelType.typeArguments.explicitOnCollisionWith(this));
-    }
-    return _referenceChildren!;
-  }
+  late final Map<String, CommentReferable> referenceChildren = {
+    if (hasParameters) ...parameters.explicitOnCollisionWith(this),
+    ...modelType.typeArguments.explicitOnCollisionWith(this),
+  };
 }

@@ -89,7 +89,7 @@ echo:
     });
 
     runner = ToolRunner(toolMap);
-    errorCallback = (String message) => errors.add(message);
+    errorCallback = errors.add;
   });
 
   tearDownAll(() {
@@ -99,9 +99,7 @@ echo:
   });
 
   group('ToolRunner', () {
-    setUp(() {
-      errors.clear();
-    });
+    setUp(errors.clear);
     // This test must come first, to verify that the first run creates
     // a snapshot.
     test('Tool definition includes compile arguments.', () async {

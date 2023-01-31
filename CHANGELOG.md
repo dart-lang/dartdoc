@@ -1,3 +1,141 @@
+## 6.1.5
+
+* Fix remote linking in Dart 2.18. (#3267)
+* Fix arrow key functions in search. (#3271)
+* Don't show `null` in search results with topics. (#3273)
+* Remove annotations from the features section of each element. (#3268)
+
+## 6.1.4
+
+* Fix using the Enter key in the search bar, on Flutter. (#3256)
+* Make many Strings in DocumentationComment non-nullable. (#3243)
+* Differentiate between enums and mixins and classes, in container titles and
+  descriptions. (#3258)
+* Weigh enums the same as classes in search results. (#3260)
+
+## 6.1.3
+
+* Deprecate `lib/src/model/model.dart` as public API. (#3208)
+* Remove 300 font weights, for improvements in dark mode. (#3213)
+* Do not display a constant implementation value for enums with a default
+  constructor. (#3216)
+* Simplify `Accessor.overriddenElement`; in this change,
+  `InheritingContainer.inheritenceChain` is now a `List<InheritingContainer>`
+  and `InheritingContainer.expandInheritenceChain` is now an
+  `Iterable<InheritingContainer>`. #3220
+* Make `ModelElement.element` a getter; subclasses provide the field. #3217
+* Switch all references from 'pub.dartlang.org' to 'pub.dev'. #3229
+* Support displaying record types. #3233
+* Make `ContainerMember.canonicalEnclosingContainer` late final. #3234
+* Move `Warnable.enclosingElement` to ModelElement. #3236
+* Make `Accessor.documentationComment` late final non-nullable. #3240
+* Make `Inheritable.isOverride` late final non-nullable. #3235
+* Make `Inheritable.inheritance` a `List<InheritingContainer>`. #3235
+* Deprecate `ModelElement.isExecutable`, `ModelElement.isLocalElement`,
+  `ModelElement.isPropertyAccessor`, `ModelElement.isPropertyInducer`,
+  `ModelElement.isAsynchronous`, `ModelElement.isStatic`. #3218
+* Make `ModelElement.annotations` a List, `ModelElement.filePath` non-nullable,
+  `ModelElement.enclosingElement` a `ModelElement?`. #3218
+* Bump analyzer to 5.2.0.
+* `--max-file-count` and `--max-total-size` command-line arguments to limit file
+  system resource use.
+
+## 6.1.2
+
+* Reduce memory usage by much more extensive use of non-growable Lists, and
+  constant empty lists. (#3151 and #3154)
+* Make `Warnable.package` non-nullable. (#3155)
+* Refactor the various `Renderer` classses. Specifically add abstract
+  `ElementTypeRendererHtml` and `ElementTypeRendererMd` classes which implement
+  some shared calculations. (#3163)
+* Deprecate `ElementTypeRenderer.wrapNullability`. (#3163)
+* Simplify `referenceChildren` implementations by using fewer
+  `Iterable<MapEntry>`s. `explicitOnCollisionWith` now returns a
+  `Map<String, CommentReferable>` instead of a
+  `Iterable<MapEntry<String, CommentReferable>>`. (#3157)
+* Make many `referenceChildren` fields late final non-nullable. (#3157)
+* Remove `sync*` from `GetterSetterCombo.allAccessors`. (#3157)
+* Make `GetterSetterCombo.documentationComment`,
+  `ContainerAccessor.enclosingElement`, `ContainerAccessor.overriddenElement`
+  each late final non-nullable. (#3157 and #3167)
+* Remove `ModelElement.allParameters`. (#3166)
+* Remove extra `?` character sometimes printed in function types. (#3177)
+* Remove broken search typeahead hint feature. (#3179)
+* Overhaul the style of the mini search results. (#3181 and #3197)
+* Add support for GitHub's light/dark mode image syntax. (#3182)
+* Fix the slash focusing search feature. (#3183)
+* Fix 'Return' key behavior in search. (#3185 and #3195)
+* Add support for unnamed libraries. (#3189)
+* Fix handling of a typedef pointing to a typedef pointing to a function.
+  (#3193)
+* Make two regular expressions on DocumentationComment static; should save
+  memory. (#3194)
+
+## 6.1.1
+
+* Fix corrupted HTML of features. (#3147)
+* Adjust menu button color according to theme. (#3153)
+* Deprecate `ModelElement.linkedParamsNoMetadataOrNames`. (#3143)
+* Make `Extension.typeParameters` late final non-nullable. (#3150)
+* Allow analyzer 5.0.0. (#3160)
+
+## 6.1.0
+
+* Trim the implementation source code of fields to improve rendering.
+* Display various "features" of an element (like "read-only" or "final" or
+  "inherited") as badges.
+* Introduce a toggle for a "Dark Mode" style.
+* Bump markdown to 6.0.0.
+* Bump analyzer to 4.6.0.
+* Introduce a search results page. This allows linking to a page of search
+  results, and a full screen view of all results for a search.
+* Introduce a search fallback, in the case of no results, using the search
+  feature at <https://dart.dev/search>.
+* Display whether a method is `static`, on its page.
+
+
+## 6.0.1
+
+* Allow `Parameter.enclosingElement` to be nullable.
+* Deprecate `PackageMeta.description`, `PackageMeta.repository`,
+  `PackageMeta.getLicenseContents`, `PackageMeta.getChangelogContents`.
+* Deprecate public access to `allBeforeFirstNewline`, `allAfterLastNewline`,
+  `findFreeHangingGenericsPositions`, `ReferenceChildrenLookup`, and
+  `childLookups`.
+* Make `Mixin.superclassConstraints`, `ModelElement.library` and `ModelElement. package` non-nullable late final.
+* Make `ModelElement.element` non-nullable.
+* Remove `ElementType.returnedFrom`, `MatchingLinkResult.warn`.
+* Rename `DartdocGeneratorBackend` to `GeneratorBackendBase`. Add a
+  typedef to preserve old behavior.
+* Make `ContainerMember.enclosingElement` a `Container`.
+* Deprecate MarkdownDocument's unnamed constructor.
+* Fix the search box's height constraint.
+* Move to analyzer ^4.3.1.
+
+## 6.0.0
+
+* BREAKING CHANGE: Make `DartdocGeneratorBackend.sidebarForContainer`,
+  `DartdocGeneratorBackend.sidebarForLibrary` private.
+* BREAKING CHANGE: Change several fields from being nullable to late, final, and
+  non-nullable in the `Extension`, `InheritingContainer`, and `TopLevelContainer`
+  classes.
+* BREAKING CHANGE: Make `InheritingContiner.enclosingElement` non-nullable.
+* BREAKING CHANGE: Remove unused elements:
+  `InheritingContainer.publicConstructors`,
+  `InheritingContainer.unnamedConstructor`,
+  `TopLevelContainer.publicExceptions`.
+* Remove the parameter from `initEmptyGenerator`.
+* Fix up/down arrow feature in search box. Thanks @klr981!
+* Require Dart 2.17.0
+
+## 5.1.2
+* Include `lib/resources/docs.dart.js.map`
+* Reintroduce query param search. (#3026)
+
+## 5.1.1
+* Include `lib/resources/docs.dart.js`
+* Optimize compiled Dart web code with `-04`. (#3028)
+
 ## 5.1.0
 * Support new enhanced enums feature.
 * Removed superfluous `[...]` links. (#2928)
@@ -9,6 +147,7 @@
 * Mustachio: Remove parameters which are unused in AOT renderers. (#2943)
 * Mustachio: Deduplicate AOT partial renderers. (#2978)
 * Mustachio: Allow whitespace after section and partial delimiters. (#2964)
+* Fixed the `{@youtube}` directive to respect the provided width and height. (#3030)
 
 ## 5.0.1
 * Add support for new VM service message. (#2931)

@@ -11,11 +11,10 @@ import 'package:dartdoc/src/package_meta.dart';
 /// Helper class that consolidates option contexts for instantiating generators.
 class DartdocGeneratorOptionContext extends DartdocOptionContext {
   DartdocGeneratorOptionContext(
-      DartdocOptionSet optionSet, Folder dir, ResourceProvider resourceProvider)
-      : super(optionSet, dir, resourceProvider);
+      super.optionSet, Folder super.dir, super.resourceProvider);
   DartdocGeneratorOptionContext.fromDefaultContextLocation(
-      DartdocOptionSet optionSet, ResourceProvider resourceProvider)
-      : super.fromDefaultContextLocation(optionSet, resourceProvider);
+      super.optionSet, super.resourceProvider)
+      : super.fromDefaultContextLocation();
 
   /// Returns the joined contents of any 'header' files specified in options.
   late final String header =
@@ -55,11 +54,10 @@ class DartdocGeneratorOptionContext extends DartdocOptionContext {
 class DartdocProgramOptionContext extends DartdocGeneratorOptionContext
     with LoggingContext {
   DartdocProgramOptionContext(
-      DartdocOptionSet optionSet, Folder dir, ResourceProvider resourceProvider)
-      : super(optionSet, dir, resourceProvider);
+      super.optionSet, super.dir, super.resourceProvider);
   DartdocProgramOptionContext.fromDefaultContextLocation(
-      DartdocOptionSet optionSet, ResourceProvider resourceProvider)
-      : super.fromDefaultContextLocation(optionSet, resourceProvider);
+      super.optionSet, super.resourceProvider)
+      : super.fromDefaultContextLocation();
 
   bool get generateDocs => optionSet['generateDocs'].valueAt(context);
   bool get help => optionSet['help'].valueAt(context);
@@ -108,12 +106,12 @@ DartdocProgramOptionContext? parseOptions(
     exitCode = 64;
     return null;
   }
-  if (optionRoot['help'].valueAtCurrent()) {
+  if (optionRoot['help'].valueAtCurrent() as bool) {
     _printHelp(optionRoot.argParser);
     exitCode = 0;
     return null;
   }
-  if (optionRoot['version'].valueAtCurrent()) {
+  if (optionRoot['version'].valueAtCurrent() as bool) {
     _printVersion(optionRoot.argParser);
     exitCode = 0;
     return null;

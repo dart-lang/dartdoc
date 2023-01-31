@@ -5,45 +5,38 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/scope.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
-
-import '../../dartdoc.dart';
+import 'package:dartdoc/src/model/model.dart';
 
 /// Represents a [PrefixElement] for dartdoc.
 ///
 /// Like [Parameter], it doesn't have doc pages, but participates in lookups.
 /// Forwards to its referenced library if referred to directly.
-class Prefix extends ModelElement implements EnclosedElement {
+class Prefix extends ModelElement with HasNoPage implements EnclosedElement {
+  @override
+  final PrefixElement element;
+
   /// [library] is the library the prefix is defined in, not the [Library]
   /// referred to by the [PrefixElement].
-  Prefix(PrefixElement element, Library? library, PackageGraph packageGraph)
-      : super(element, library, packageGraph);
+  Prefix(this.element, super.library, super.packageGraph);
 
   @override
   bool get isCanonical => false;
 
-  Library? _associatedLibrary;
   // TODO(jcollins-g): consider connecting PrefixElement to the imported library
   // in analyzer?
-  Library get associatedLibrary =>
-      (_associatedLibrary ??= modelBuilder.fromElement(library!.element.imports
-          .firstWhere((i) => i.prefix == element)
-          .importedLibrary!) as Library?)!;
+  late final Library associatedLibrary = modelBuilder.fromElement(library
+      .element.libraryImports
+      .firstWhere((i) => i.prefix?.element == element)
+      .importedLibrary!) as Library;
 
   @override
   Library? get canonicalModelElement => associatedLibrary.canonicalLibrary;
 
   @override
-  Scope get scope => element!.scope;
+  Scope get scope => element.scope;
 
   @override
-  PrefixElement? get element => super.element as PrefixElement?;
-
-  @override
-  ModelElement? get enclosingElement => library;
-
-  @override
-  String get filePath =>
-      throw UnimplementedError('prefixes have no generated files in dartdoc');
+  ModelElement get enclosingElement => library;
 
   @override
   String? get href => canonicalModelElement?.href;

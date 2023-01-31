@@ -31,7 +31,7 @@ import 'package:test/test.dart';
 /// The number of public libraries in testing/test_package, minus 2 for
 /// the excluded libraries listed in the initializers for _testPackageGraphMemo
 /// and minus 1 for the <nodoc> tag in the 'excluded' library.
-const int kTestPackagePublicLibraries = 27;
+const int kTestPackagePublicLibraries = 26;
 
 final _resourceProvider = pubPackageMetaProvider.resourceProvider;
 final _pathContext = _resourceProvider.pathContext;
@@ -89,6 +89,8 @@ void runPubGet(String dirPath) {
   }
 }
 
+/// Creates a package at [dirPath] and returns the [PackageGraph] built with
+/// [PubPackageBuilder.buildPackageGraph].
 Future<PackageGraph> bootBasicPackage(
   String dirPath,
   PackageMetaProvider packageMetaProvider,
@@ -97,11 +99,11 @@ Future<PackageGraph> bootBasicPackage(
   List<String> additionalArguments = const [],
   bool skipUnreachableSdkLibraries = true,
 }) async {
-  var resourceProvider = packageMetaProvider.resourceProvider;
+  final resourceProvider = packageMetaProvider.resourceProvider;
   if (resourceProvider == PhysicalResourceProvider.INSTANCE) {
     runPubGet(dirPath);
   }
-  var dir = resourceProvider.getFolder(resourceProvider.pathContext
+  final dir = resourceProvider.getFolder(resourceProvider.pathContext
       .absolute(resourceProvider.pathContext.normalize(dirPath)));
   return PubPackageBuilder(
     await contextFromArgv([
@@ -285,12 +287,13 @@ Future<void> writeDartdocResources(ResourceProvider resourceProvider) async {
 
   for (var resource in [
     'docs.dart.js',
+    'docs.dart.js.map',
     'favicon.png',
+    'search.svg',
     'github.css',
     'highlight.pack.js',
     'play_button.svg',
     'readme.md',
-    'script.js',
     'styles.css',
   ]) {
     await resourceProvider.writeDartdocResource(
@@ -309,13 +312,13 @@ MatchingLinkResult definingLinkResult(MatchingLinkResult originalResult) {
 
   if (definingReferable != null &&
       definingReferable != originalResult.commentReferable) {
-    return MatchingLinkResult(definingReferable, warn: originalResult.warn);
+    return MatchingLinkResult(definingReferable);
   }
   return originalResult;
 }
 
 MatchingLinkResult referenceLookup(Warnable element, String codeRef) =>
-    definingLinkResult(getMatchingLinkElement(element, codeRef));
+    definingLinkResult(getMatchingLinkElement(codeRef, element));
 
 /// Returns a matcher which compresses consecutive whitespace in [text] into a
 /// single space.
@@ -323,13 +326,6 @@ Matcher matchesCompressed(String text) => matches(RegExp(text.replaceAll(
       RegExp(r'\s\s+', multiLine: true),
       ' *',
     )));
-
-/// We can not use [ExperimentalFeature.releaseVersion] or even
-/// [ExperimentalFeature.experimentalReleaseVersion] as these are set to `null`
-/// even when partial analyzer implementations are available.
-bool get constructorTearoffsAllowed =>
-    VersionRange(min: Version.parse('2.15.0-0'), includeMin: true)
-        .allows(platformVersion);
 
 /// We can not use [ExperimentalFeature.releaseVersion] or even
 /// [ExperimentalFeature.experimentalReleaseVersion] as these are set to `null`
@@ -348,6 +344,13 @@ bool get namedArgumentsAnywhereAllowed =>
 /// We can not use [ExperimentalFeature.releaseVersion] or even
 /// [ExperimentalFeature.experimentalReleaseVersion] as these are set to `null`
 /// even when partial analyzer implementations are available.
+bool get recordsAllowed =>
+    VersionRange(min: Version.parse('2.19.0-0'), includeMin: true)
+        .allows(platformVersion);
+
+/// We can not use [ExperimentalFeature.releaseVersion] or even
+/// [ExperimentalFeature.experimentalReleaseVersion] as these are set to `null`
+/// even when partial analyzer implementations are available.
 bool get superParametersAllowed =>
     VersionRange(min: Version.parse('2.17.0-0'), includeMin: true)
         .allows(platformVersion);
@@ -355,6 +358,22 @@ bool get superParametersAllowed =>
 extension ModelElementIterableExtensions<T extends ModelElement>
     on Iterable<T> {
   T named(String name) => firstWhere((e) => e.name == name);
+}
+
+extension IterableStringExtensions on Iterable<String> {
+  /// The main content line of `this`.
+  Iterable<String> get mainContent =>
+      skipWhile((line) => !line.contains('"dartdoc-main-content"'))
+          .takeWhile((line) => !line.contains('/.main-content'));
+
+  /// Verifies that [mainContent] contains [matchers] in order.
+  void expectMainContentContainsAllInOrder(Iterable<Object?> matchers) {
+    expect(
+      mainContent,
+      containsAllInOrder(matchers),
+      reason: 'main content:\n\n${mainContent.join('\n')}',
+    );
+  }
 }
 
 /// Extension methods just for tests.

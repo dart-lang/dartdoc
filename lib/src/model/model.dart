@@ -20,6 +20,7 @@ export 'extendable.dart';
 export 'extension.dart';
 export 'field.dart';
 export 'getter_setter_combo.dart';
+export 'has_no_page.dart';
 export 'indexable.dart';
 export 'inheritable.dart';
 export 'inheriting_container.dart';

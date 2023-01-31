@@ -97,6 +97,12 @@ extension E<T> on C<T> {
 }
 '''),
         ],
+        dartdocOptions: '''
+dartdoc:
+  linkToSource:
+    root: '.'
+    uriTemplate: 'https://github.com/dart-lang/TEST_PKG/%f%#L%l%'
+''',
         resourceProvider: resourceProvider,
       );
       await writeDartdocResources(resourceProvider);
@@ -108,6 +114,7 @@ extension E<T> on C<T> {
     });
 
     test('extension page contains extension name with generics', () async {
+      // TODO(srawlins): Use expectMainContentContainsAllInOrder throughout.
       expect(
           eLines,
           containsAllInOrder([
@@ -200,14 +207,15 @@ extension E<T> on C<T> {
 
     test('enum sidebar contains static properties', () async {
       expect(
-          eLines,
-          containsAllInOrder([
-            matches('<div id="dartdoc-sidebar-right"'),
-            matches(
-                '<a href="../lib/E.html#static-properties">Static properties</a>'),
-            matches('<a href="../lib/E/gs1.html">gs1</a>'),
-            matches('<a href="../lib/E/sf1.html">sf1</a>'),
-          ]));
+        eLines,
+        containsAllInOrder([
+          matches('<div id="dartdoc-sidebar-right"'),
+          matches(
+              '<a href="../lib/E.html#static-properties">Static properties</a>'),
+          matches('<a href="../lib/E/gs1.html">gs1</a>'),
+          matches('<a href="../lib/E/sf1.html">sf1</a>'),
+        ]),
+      );
     });
 
     test('enum sidebar contains static methods', () async {
@@ -219,6 +227,17 @@ extension E<T> on C<T> {
                 '<a href="../lib/E.html#static-methods">Static methods</a>'),
             matches('<a href="../lib/E/s1.html">s1</a>'),
           ]));
+    });
+
+    test('extension page contains source link', () async {
+      expect(
+        eLines,
+        containsAllInOrder([
+          matches('<a title="View source code" class="source-link" '
+              'href="https://github.com/dart-lang/TEST_PKG/lib/lib.dart#L5">'
+              '<span class="material-symbols-outlined">description</span></a>'),
+        ]),
+      );
     });
   });
 }

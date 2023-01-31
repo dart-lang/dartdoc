@@ -1,6 +1,7 @@
 {{>head}}
 
 {{#self}}
+{{ !-- TODO(srawlins): Add annotations. }}
 # {{{ name }}} {{ kind }}
 
 {{>source_link}}

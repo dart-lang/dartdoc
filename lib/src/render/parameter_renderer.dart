@@ -7,14 +7,14 @@ import 'dart:convert';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/parameter.dart';
 
-/// Render HTML in an extended vertical format using <ol> tag.
+/// Render HTML in an extended vertical format using an `<ol>` tag.
 class ParameterRendererHtmlList extends ParameterRendererHtml {
   const ParameterRendererHtmlList();
 
   @override
   String listItem(String item) => '<li>$item</li>\n';
   @override
-  // TODO(jcollins-g): consider comma separated lists and more advanced css.
+  // TODO(jcollins-g): consider comma separated lists and more advanced CSS.
   String orderedList(String listItems) =>
       '<ol class="parameter-list">$listItems</ol>\n';
 }
@@ -97,22 +97,25 @@ abstract class ParameterRenderer {
 
   String renderLinkedParams(List<Parameter> parameters,
       {bool showMetadata = true, bool showNames = true}) {
-    var positionalParams =
-        parameters.where((Parameter p) => p.isRequiredPositional).toList();
-    var optionalPositionalParams =
-        parameters.where((Parameter p) => p.isOptionalPositional).toList();
-    var namedParams = parameters.where((Parameter p) => p.isNamed).toList();
+    var positionalParams = parameters
+        .where((Parameter p) => p.isRequiredPositional)
+        .toList(growable: false);
+    var optionalPositionalParams = parameters
+        .where((Parameter p) => p.isOptionalPositional)
+        .toList(growable: false);
+    var namedParams =
+        parameters.where((Parameter p) => p.isNamed).toList(growable: false);
 
-    var output = StringBuffer();
+    var buffer = StringBuffer();
     if (positionalParams.isNotEmpty) {
-      _renderLinkedParameterSublist(positionalParams, output,
+      _renderLinkedParameterSublist(positionalParams, buffer,
           trailingComma:
               optionalPositionalParams.isNotEmpty || namedParams.isNotEmpty,
           showMetadata: showMetadata,
           showNames: showNames);
     }
     if (optionalPositionalParams.isNotEmpty) {
-      _renderLinkedParameterSublist(optionalPositionalParams, output,
+      _renderLinkedParameterSublist(optionalPositionalParams, buffer,
           trailingComma: namedParams.isNotEmpty,
           openBracket: '[',
           closeBracket: ']',
@@ -120,23 +123,25 @@ abstract class ParameterRenderer {
           showNames: showNames);
     }
     if (namedParams.isNotEmpty) {
-      _renderLinkedParameterSublist(namedParams, output,
+      _renderLinkedParameterSublist(namedParams, buffer,
           trailingComma: false,
           openBracket: '{',
           closeBracket: '}',
           showMetadata: showMetadata,
           showNames: showNames);
     }
-    return orderedList(output.toString());
+    return orderedList(buffer.toString());
   }
 
   void _renderLinkedParameterSublist(
-      List<Parameter> parameters, StringBuffer output,
-      {required bool trailingComma,
-      String openBracket = '',
-      String closeBracket = '',
-      bool showMetadata = true,
-      bool showNames = true}) {
+    List<Parameter> parameters,
+    StringBuffer buffer, {
+    required bool trailingComma,
+    String openBracket = '',
+    String closeBracket = '',
+    bool showMetadata = true,
+    bool showNames = true,
+  }) {
     for (var p in parameters) {
       var prefix = '';
       var suffix = '';
@@ -149,86 +154,87 @@ abstract class ParameterRenderer {
       } else {
         suffix += ', ';
       }
-      var renderedParam = _renderParam(p,
-          prefix: prefix,
-          suffix: suffix,
-          showMetadata: showMetadata,
-          showNames: showNames);
-      output.write(listItem(parameter(renderedParam, p.htmlId)));
+      final renderedParameter = _renderParameter(
+        p,
+        prefix: prefix,
+        suffix: suffix,
+        showMetadata: showMetadata,
+        showNames: showNames,
+      );
+      buffer.write(listItem(parameter(renderedParameter, p.htmlId)));
     }
   }
 
-  String _renderParam(
+  String _renderParameter(
     Parameter param, {
     required String prefix,
     required String suffix,
     bool showMetadata = true,
     bool showNames = true,
   }) {
-    var buf = StringBuffer();
-    buf.write(prefix);
-    var paramModelType = param.modelType;
+    final buffer = StringBuffer(prefix);
+    final modelType = param.modelType;
 
     if (showMetadata && param.hasAnnotations) {
-      for (var a in param.annotations) {
-        buf.write(annotation(a.linkedNameWithParameters));
-        buf.write(' ');
+      for (final a in param.annotations) {
+        buffer.write('${annotation(a.linkedNameWithParameters)} ');
       }
     }
     if (param.isRequiredNamed) {
-      buf.write(required('required') + ' ');
+      buffer.write('${required('required')} ');
     }
     if (param.isCovariant) {
-      buf.write(covariant('covariant') + ' ');
+      buffer.write('${covariant('covariant')} ');
     }
-    if (paramModelType is Callable) {
-      String returnTypeName;
-      if (paramModelType.isTypedef) {
-        returnTypeName = paramModelType.linkedName;
-      } else {
-        returnTypeName = paramModelType.returnType.linkedName;
-      }
-      buf.write(typeName(returnTypeName));
+    if (modelType is Callable) {
+      final returnTypeName = modelType.isTypedef
+          ? modelType.linkedName
+          : modelType.returnType.linkedName;
+      buffer.write(typeName(returnTypeName));
       if (showNames) {
-        buf.write(' ${parameterName(param.name)}');
+        buffer.write(' ${parameterName(param.name)}');
       } else {
-        buf.write(' ${parameterName(paramModelType.name)}');
+        buffer.write(' ${parameterName(modelType.name)}');
       }
-      if (!paramModelType.isTypedef && paramModelType is DefinedElementType) {
-        buf.write('(');
-        buf.write(renderLinkedParams(
-            (paramModelType as DefinedElementType).modelElement.parameters,
-            showMetadata: showMetadata,
-            showNames: showNames));
-        buf.write(')');
-        buf.write(paramModelType.nullabilitySuffix);
+      if (!modelType.isTypedef && modelType is DefinedElementType) {
+        buffer.write('(');
+        buffer.write(renderLinkedParams(
+          (modelType as DefinedElementType).modelElement.parameters,
+          showMetadata: showMetadata,
+          showNames: showNames,
+        ));
+        buffer.write(')');
+        buffer.write(modelType.nullabilitySuffix);
       }
-      if (!paramModelType.isTypedef) {
-        buf.write('(');
-        buf.write(renderLinkedParams(paramModelType.parameters,
-            showMetadata: showMetadata, showNames: showNames));
-        buf.write(')');
-        buf.write(paramModelType.nullabilitySuffix);
+      if (!modelType.isTypedef) {
+        buffer.write('(');
+        buffer.write(renderLinkedParams(
+          modelType.parameters,
+          showMetadata: showMetadata,
+          showNames: showNames,
+        ));
+        buffer.write(')');
+        buffer.write(modelType.nullabilitySuffix);
       }
     } else {
-      var linkedTypeName = paramModelType.linkedName;
+      final linkedTypeName = modelType.linkedName;
       if (linkedTypeName.isNotEmpty) {
-        buf.write(typeName(linkedTypeName));
+        buffer.write(typeName(linkedTypeName));
         if (showNames && param.name.isNotEmpty) {
-          buf.write(' ');
+          buffer.write(' ');
         }
       }
       if (showNames && param.name.isNotEmpty) {
-        buf.write(parameterName(param.name));
+        buffer.write(parameterName(param.name));
       }
     }
 
     if (param.hasDefaultValue) {
-      buf.write(' = ');
-      buf.write(defaultValue(param.defaultValue!));
+      buffer.write(' = ');
+      buffer.write(defaultValue(param.defaultValue!));
     }
 
-    buf.write(suffix);
-    return buf.toString();
+    buffer.write(suffix);
+    return buffer.toString();
   }
 }

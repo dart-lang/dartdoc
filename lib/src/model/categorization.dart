@@ -43,8 +43,8 @@ abstract class Categorization implements ModelElement {
       return '';
     });
 
-    _categoryNames = categorySet.toList()..sort();
-    _subCategoryNames = subCategorySet.toList()..sort();
+    _categoryNames = categorySet.toList(growable: false)..sort();
+    _subCategoryNames = subCategorySet.toList(growable: false)..sort();
     _image ??= '';
     _samples ??= '';
     return rawDocs;
@@ -96,7 +96,7 @@ abstract class Categorization implements ModelElement {
   }
 
   late final Iterable<Category> categories = [
-    ...?categoryNames?.map((n) => package?.nameToCategory[n]).whereNotNull()
+    ...?categoryNames?.map((n) => package.nameToCategory[n]).whereNotNull()
   ]..sort();
 
   @override

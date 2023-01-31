@@ -3,10 +3,8 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/file_system/memory_file_system.dart';
-import 'package:dartdoc/options.dart';
 import 'package:dartdoc/src/dartdoc.dart';
 import 'package:dartdoc/src/model/model.dart';
-import 'package:dartdoc/src/package_meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
@@ -16,57 +14,15 @@ import '../src/utils.dart';
 void main() async {
   const packageName = 'test_package';
 
-  late String packagePath;
-  late MemoryResourceProvider resourceProvider;
-  late PackageMetaProvider packageMetaProvider;
-  late DartdocGeneratorOptionContext context;
   late List<String> eLines;
   late List<String> enumWithDefaultConstructorLines;
 
-  Future<PubPackageBuilder> createPackageBuilder({
-    List<String> additionalOptions = const [],
-  }) async {
-    context = await generatorContextFromArgv([
-      '--input',
-      packagePath,
-      '--output',
-      p.join(packagePath, 'doc'),
-      '--sdk-dir',
-      packageMetaProvider.defaultSdkDir.path,
-      '--no-link-to-remote',
-      ...additionalOptions,
-    ], packageMetaProvider);
-
-    var packageConfigProvider =
-        getTestPackageConfigProvider(packageMetaProvider.defaultSdkDir.path);
-    packageConfigProvider.addPackageToConfigFor(
-        packagePath, packageName, Uri.file('$packagePath/'));
-    return PubPackageBuilder(
-      context,
-      packageMetaProvider,
-      packageConfigProvider,
-      skipUnreachableSdkLibraries: true,
-    );
-  }
-
-  Future<Dartdoc> buildDartdoc({
-    List<String> additionalOptions = const [],
-  }) async {
-    final packageBuilder = await createPackageBuilder(
-      additionalOptions: additionalOptions,
-    );
-    return await Dartdoc.fromContext(
-      context,
-      packageBuilder,
-    );
-  }
-
-  group('enhanced enums', () {
+  group('enhanced enums', skip: !enhancedEnumsAllowed, () {
     setUpAll(() async {
-      packageMetaProvider = testPackageMetaProvider;
-      resourceProvider =
+      final packageMetaProvider = testPackageMetaProvider;
+      final resourceProvider =
           packageMetaProvider.resourceProvider as MemoryResourceProvider;
-      packagePath = await d.createPackage(
+      final packagePath = await d.createPackage(
         packageName,
         pubspec: '''
 name: enums
@@ -81,10 +37,13 @@ analyzer:
 ''',
         libFiles: [
           d.file('lib.dart', '''
-class C<T> {}
+class C<T> {
+  const C(String m);
+}
 
 mixin M<T> {}
 
+@C('message')
 enum E<T> with M<T> implements C<T> {
   /// Doc comment for [one].
   one<int>.named(1),
@@ -102,7 +61,7 @@ enum E<T> with M<T> implements C<T> {
   bool operator >(E other) => false;
 
   /// A field.
-  int f1 = 0;
+  final int f1 = 0;
 
   /// An instance getter.
   int get ig1 => 1;
@@ -123,16 +82,45 @@ enum E<T> with M<T> implements C<T> {
   static int get gs1 => 3;
 
   /// A static setter.
-  static void set gs1(int value) {}
+  static set gs1(int value) {}
 }
 
-enum EnumWithDefaultConstructor { four, five, six }
+enum EnumWithDefaultConstructor {
+  /// Doc comment for [four].
+  four,
+
+  /// Doc comment for [five].
+  five,
+
+  /// Doc comment for [six].
+  six;
+}
 '''),
         ],
         resourceProvider: resourceProvider,
       );
       await writeDartdocResources(resourceProvider);
-      await (await buildDartdoc()).generateDocs();
+      final context = await generatorContextFromArgv([
+        '--input',
+        packagePath,
+        '--output',
+        p.join(packagePath, 'doc'),
+        '--sdk-dir',
+        packageMetaProvider.defaultSdkDir.path,
+        '--no-link-to-remote',
+      ], packageMetaProvider);
+
+      var packageConfigProvider =
+          getTestPackageConfigProvider(packageMetaProvider.defaultSdkDir.path);
+      packageConfigProvider.addPackageToConfigFor(
+          packagePath, packageName, Uri.file('$packagePath/'));
+      final packageBuilder = PubPackageBuilder(
+        context,
+        packageMetaProvider,
+        packageConfigProvider,
+        skipUnreachableSdkLibraries: true,
+      );
+      await (await Dartdoc.fromContext(context, packageBuilder)).generateDocs();
       eLines = resourceProvider
           .getFile(p.join(packagePath, 'doc', 'lib', 'E.html'))
           .readAsStringSync()
@@ -145,6 +133,7 @@ enum EnumWithDefaultConstructor { four, five, six }
     });
 
     test('enum page contains enum name with generics', () async {
+      // TODO(srawlins): Use expectMainContentContainsAllInOrder throughout.
       expect(
           eLines,
           containsAllInOrder([
@@ -176,16 +165,44 @@ enum EnumWithDefaultConstructor { four, five, six }
           ]));
     });
 
+    test('enum page contains annotations', () async {
+      eLines.expectMainContentContainsAllInOrder([
+        matches('<dt>Annotations</dt>'),
+        matches('<ul class="annotation-list eNum-relationships">'),
+        matches(
+            r'<li>@<a href="../lib/C-class.html">C</a>\(&#39;message&#39;\)</li>'),
+        matches('</ul>'),
+      ]);
+    });
+
     test('enum page contains values', () async {
       expect(
-          eLines,
-          containsAllInOrder([
-            matches('<h2>Values</h2>'),
-            matches('<span class="name ">one</span>'),
-            matches('<p>Doc comment for <a href="../lib/E.html">one</a>.</p>'),
-            matches(
-                r'<span class="signature"><code>E&lt;int&gt;.named\(1\)</code></span>'),
-          ]));
+        eLines,
+        containsAllInOrder([
+          matches('<h2>Values</h2>'),
+          matches('<span class="name ">one</span>'),
+          matches('<p>Doc comment for <a href="../lib/E.html">one</a>.</p>'),
+          matches(
+              r'<span class="signature"><code>E&lt;int&gt;.named\(1\)</code></span>'),
+        ]),
+      );
+    });
+
+    test('enum page contains classic values', () async {
+      expect(
+        enumWithDefaultConstructorLines,
+        containsAllInOrder([
+          matches('<h2>Values</h2>'),
+          matches('<span class="name ">four</span>'),
+          matches(
+              '<p>Doc comment for <a href="../lib/EnumWithDefaultConstructor.html">six</a>.</p>'),
+        ]),
+      );
+      expect(
+        enumWithDefaultConstructorLines.join('\n'),
+        isNot(contains(
+            '<span class="signature"><code>EnumWithDefaultConstructor')),
+      );
     });
 
     test('enum page contains values with deprecated annotation', () async {
@@ -244,7 +261,7 @@ enum EnumWithDefaultConstructor { four, five, six }
             matches('<h2>Properties</h2>'),
             matches('<a href="../lib/E/ig1.html">ig1</a>'),
             matches('An instance getter.'),
-            matches('<div class="features">read-only</div>'),
+            matches('<span class="feature">read-only</span>'),
           ]));
     });
 
@@ -255,7 +272,7 @@ enum EnumWithDefaultConstructor { four, five, six }
             matches('<h2>Properties</h2>'),
             matches('<a href="../lib/E/is1.html">is1</a>'),
             matches('An instance setter.'),
-            matches('<div class="features">write-only</div>'),
+            matches('<span class="feature">write-only</span>'),
           ]));
     });
 
@@ -419,6 +436,5 @@ enum EnumWithDefaultConstructor { four, five, six }
 
     // TODO(srawlins): Add rendering tests.
     // * Add tests for rendered supertype (Enum) HTML.
-    // * Add tests for rendered field pages.
-  }, skip: !enhancedEnumsAllowed);
+  });
 }

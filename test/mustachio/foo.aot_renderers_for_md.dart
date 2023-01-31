@@ -12,7 +12,9 @@
 // non-bool, non-Iterable field is non-null.
 // ignore_for_file: unused_local_variable
 // ignore_for_file: non_constant_identifier_names, unnecessary_string_escapes
+// ignore_for_file: use_super_parameters
 
+// ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:convert' as _i2;
 
 import 'foo.dart' as _i1;

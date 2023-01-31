@@ -5,6 +5,7 @@
 import 'dart:async';
 
 import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
+import 'package:analyzer/dart/analysis/context_root.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
@@ -140,9 +141,14 @@ class PubPackageBuilder implements PackageBuilder {
     // handling it ourselves?
     resourceProvider: resourceProvider,
     sdkPath: config.sdkDir,
-    updateAnalysisOptions: (AnalysisOptionsImpl options) => options
-      ..hint = false
-      ..lint = false,
+    updateAnalysisOptions2: ({
+      required AnalysisOptionsImpl analysisOptions,
+      required ContextRoot contextRoot,
+      required DartSdk sdk,
+    }) =>
+        analysisOptions
+          ..hint = false
+          ..lint = false,
   );
 
   /// Returns an Iterable with the SDK files we should parse.
@@ -156,9 +162,7 @@ class PubPackageBuilder implements PackageBuilder {
   /// Parse a single library at [filePath] using the current analysis driver.
   /// If [filePath] is not a library, returns null.
   Future<DartDocResolvedLibrary?> processLibrary(String filePath) async {
-    logDebug('parsing $filePath...');
-    // TODO(scheglov) Do we need this? Maybe the argument is already valid?
-    filePath = pathContext.normalize(pathContext.absolute(filePath));
+    logDebug('Resolving $filePath...');
 
     var analysisContext = _contextCollection.contextFor(config.inputDir);
     // Allow dart source files with inappropriate suffixes (#1897).
@@ -180,13 +184,15 @@ class PubPackageBuilder implements PackageBuilder {
     if (element != null) {
       var path = element.source.fullName;
       if (_knownFiles.add(path)) {
-        for (var import in element.imports) {
+        for (var import in element.libraryImports) {
           _addKnownFiles(import.importedLibrary);
         }
-        for (var export in element.exports) {
+        for (var export in element.libraryExports) {
           _addKnownFiles(export.exportedLibrary);
         }
-        for (var part in element.parts) {
+        for (var part in element.parts
+            .map((e) => e.uri)
+            .whereType<DirectiveUriWithUnit>()) {
           _knownFiles.add(part.source.fullName);
         }
       }
@@ -341,7 +347,7 @@ class PubPackageBuilder implements PackageBuilder {
       Iterable<Resource> Function(Folder dir)? listDir}) {
     listDir ??= (Folder dir) => dir.getChildren();
 
-    return _doList(dir, <String>{}, recursive, listDir);
+    return _doList(dir, const <String>{}, recursive, listDir);
   }
 
   Iterable<String> _doList(String dir, Set<String> listedDirectories,
@@ -350,8 +356,10 @@ class PubPackageBuilder implements PackageBuilder {
     var resolvedPath =
         resourceProvider.getFolder(dir).resolveSymbolicLinksSync().path;
     if (!listedDirectories.contains(resolvedPath)) {
-      listedDirectories = Set<String>.from(listedDirectories);
-      listedDirectories.add(resolvedPath);
+      listedDirectories = {
+        ...listedDirectories,
+        resolvedPath,
+      };
 
       for (var resource in listDir(resourceProvider.getFolder(dir))) {
         // Skip hidden files and directories
@@ -405,9 +413,9 @@ class PubPackageBuilder implements PackageBuilder {
   bool get hasEmbedderSdkFiles => _embedderSdkUris.isNotEmpty;
 
   Iterable<String> get _embedderSdkUris {
-    if (config.topLevelPackageMeta.isSdk) return [];
+    if (config.topLevelPackageMeta.isSdk) return const [];
 
-    return embedderSdk?.urlMappings.keys ?? [];
+    return embedderSdk?.urlMappings.keys ?? const [];
   }
 
   Future<void> getLibraries(PackageGraph uninitializedPackageGraph) async {
@@ -492,7 +500,15 @@ class DartDocResolvedLibrary {
       var unit = _units[fullName];
       if (unit != null) {
         var locator = NodeLocator2(element.nameOffset);
-        return locator.searchWithin(unit)?.parent;
+        var node = locator.searchWithin(unit);
+        if (node is SimpleIdentifier) {
+          // TODO(scheglov) Remove this branch after the breaking change for
+          // the analyzer, when we start returning the declaring node, not
+          // the name, which will be just a `Token`.
+          return node.parent;
+        } else {
+          return node;
+        }
       }
     }
     return null;

@@ -59,16 +59,18 @@ void main() {
     if (!tempDirForAot.exists) tempDirForAot.create();
     var writerForAot =
         DartdocFileWriter(tempDirForAot.path, reourceProviderForWriting);
-    await dartdoc.generator.generate(packageGraph, writerForAot);
+    dartdoc.generator = await initHtmlGenerator(context,
+        writer: writerForAot, forceRuntimeTemplates: true);
+    await dartdoc.generator.generate(packageGraph);
 
     var tempDirForRuntime =
         reourceProviderForWriting.createSystemTemp('runtime.');
     if (!tempDirForRuntime.exists) tempDirForRuntime.create();
     var writerForRuntime =
         DartdocFileWriter(tempDirForRuntime.path, reourceProviderForWriting);
-    dartdoc.generator =
-        await initHtmlGenerator(context, forceRuntimeTemplates: true);
-    await dartdoc.generator.generate(packageGraph, writerForRuntime);
+    dartdoc.generator = await initHtmlGenerator(context,
+        writer: writerForRuntime, forceRuntimeTemplates: true);
+    await dartdoc.generator.generate(packageGraph);
 
     var filesInAot = 0;
     var filesInRuntime = 0;

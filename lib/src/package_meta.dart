@@ -20,7 +20,7 @@ import 'package:yaml/yaml.dart';
 final Map<String, PackageMeta?> _packageMetaCache = {};
 
 class PackageMetaFailure extends DartdocFailure {
-  PackageMetaFailure(String message) : super(message);
+  PackageMetaFailure(super.message);
 }
 
 /// For each list in this list, at least one of the given paths must exist
@@ -128,20 +128,26 @@ abstract class PackageMeta {
 
   String get name;
 
-  /// null if not a hosted pub package.  If set, the hostname
-  /// that the package is hosted at -- usually 'pub.dartlang.org'.
+  /// The hostname that the package is hosted at, usually 'pub.dev', or `null`
+  /// if not a hosted pub package.
   String? get hostedAt;
 
   String get version;
 
+  @Deprecated('This getter will be removed.')
   String get description;
 
   String get homepage;
 
+  @Deprecated('This getter will be removed.')
+  String get repository;
+
   File? getReadmeContents();
 
+  @Deprecated('This method will be removed.')
   File? getLicenseContents();
 
+  @Deprecated('This method will be removed.')
   File? getChangelogContents();
 
   /// Returns true if we are a valid package, valid enough to generate docs.
@@ -162,24 +168,17 @@ abstract class PackageMeta {
 
 /// Default implementation of [PackageMeta] depends on pub packages.
 abstract class PubPackageMeta extends PackageMeta {
-  PubPackageMeta(Folder dir, ResourceProvider resourceProvider)
-      : super(dir, resourceProvider);
+  PubPackageMeta(super.dir, super.resourceProvider);
 
-  static final List<List<String>> _sdkDirFilePaths = () {
-    var pathsToReturn = <List<String>>[];
-    if (Platform.isWindows) {
-      for (var paths in _sdkDirFilePathsPosix) {
-        var windowsPaths = [
-          for (var path in paths)
-            p.joinAll(p.Context(style: p.Style.posix).split(path)),
-        ];
-        pathsToReturn.add(windowsPaths);
-      }
-    } else {
-      pathsToReturn = _sdkDirFilePathsPosix;
-    }
-    return pathsToReturn;
-  }();
+  static final List<List<String>> _sdkDirFilePaths = Platform.isWindows
+      ? [
+          for (var paths in _sdkDirFilePathsPosix)
+            [
+              for (var path in paths)
+                p.joinAll(p.Context(style: p.Style.posix).split(path)),
+            ],
+        ]
+      : _sdkDirFilePathsPosix;
 
   static final _sdkDirParent = <String, Folder?>{};
 
@@ -305,12 +304,11 @@ class _FilePackageMeta extends PubPackageMeta {
     return loadYaml(pubspec.readAsStringSync());
   }();
 
-  _FilePackageMeta(Folder dir, ResourceProvider resourceProvider)
-      : super(dir, resourceProvider);
+  _FilePackageMeta(super.dir, super.resourceProvider);
 
   @override
   late final String? hostedAt = () {
-    String? _hostedAt;
+    String? hostedAt;
     // Search for 'hosted/host.domain' as the immediate parent directories,
     // and verify that a directory "_temp" exists alongside "hosted".  Those
     // seem to be the only guaranteed things to exist if we're from a pub
@@ -330,36 +328,40 @@ class _FilePackageMeta extends PubPackageMeta {
             resourceProvider
                 .getFolder(pathContext.join(pubCacheRoot, '_temp'))
                 .exists) {
-          _hostedAt = pathContext.basename(hostname);
+          hostedAt = pathContext.basename(hostname);
         }
       }
     }
-    return _hostedAt;
+    return hostedAt;
   }();
 
   @override
   bool get isSdk => false;
 
   @override
-  String get name => _pubspec['name'] ?? '';
+  String get name => _pubspec.getOptionalString('name') ?? '';
 
   @override
-  String get version => _pubspec['version'] ?? '0.0.0-unknown';
+  String get version =>
+      _pubspec.getOptionalString('version') ?? '0.0.0-unknown';
 
   @override
-  String get description => _pubspec['description'] ?? '';
+  String get description => _pubspec.getOptionalString('description') ?? '';
 
   @override
-  String get homepage => _pubspec['homepage'] ?? '';
+  String get homepage => _pubspec.getOptionalString('homepage') ?? '';
+
+  @override
+  String get repository => _pubspec.getOptionalString('repository') ?? '';
 
   @override
   bool get requiresFlutter =>
       _environment?.containsKey('flutter') == true ||
       _dependencies?.containsKey('flutter') == true;
 
-  YamlMap? get _environment => _pubspec['environment'];
+  YamlMap? get _environment => _pubspec.getOptionalMap('environment');
 
-  YamlMap? get _dependencies => _pubspec['environment'];
+  YamlMap? get _dependencies => _pubspec.getOptionalMap('dependencies');
 
   @override
   File? getReadmeContents() =>
@@ -388,7 +390,7 @@ class _FilePackageMeta extends PubPackageMeta {
 }
 
 File? _locate(Folder dir, List<String> fileNames) {
-  var files = dir.getChildren().whereType<File>().toList();
+  var files = dir.getChildren().whereType<File>().toList(growable: false);
 
   for (var name in fileNames) {
     for (var f in files) {
@@ -405,8 +407,7 @@ class _SdkMeta extends PubPackageMeta {
   late final String sdkReadmePath =
       resourceProvider.pathContext.join(dir.path, 'lib', 'api_readme.md');
 
-  _SdkMeta(Folder dir, ResourceProvider resourceProvider)
-      : super(dir, resourceProvider);
+  _SdkMeta(super.dir, super.resourceProvider);
 
   @override
   String? get hostedAt => null;
@@ -434,6 +435,9 @@ class _SdkMeta extends PubPackageMeta {
   String get homepage => 'https://github.com/dart-lang/sdk';
 
   @override
+  String get repository => 'https://github.com/dart-lang/sdk';
+
+  @override
   bool get requiresFlutter => false;
 
   @override
@@ -448,7 +452,7 @@ class _SdkMeta extends PubPackageMeta {
   }
 
   @override
-  List<String> getInvalidReasons() => [];
+  List<String> getInvalidReasons() => const [];
 
   @override
   File? getLicenseContents() => null;
@@ -461,4 +465,13 @@ class _SdkMeta extends PubPackageMeta {
 @visibleForTesting
 void clearPackageMetaCache() {
   _packageMetaCache.clear();
+}
+
+/// Extensions for a Map of YAML data, like a pubspec.
+extension on Map<dynamic, dynamic> {
+  /// Gets the value for [key], casting to a nullable [YamlMap].
+  YamlMap? getOptionalMap(dynamic key) => this[key] as YamlMap?;
+
+  /// Gets the value for [key], casting to a nullable [String].
+  String? getOptionalString(dynamic key) => this[key] as String?;
 }

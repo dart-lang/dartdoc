@@ -4,7 +4,6 @@
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
-import 'package:dartdoc/src/comment_references/model_comment_reference.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -57,9 +56,6 @@ class Category extends Nameable
       _classes.add(class_);
     }
   }
-
-  @override
-  Warnable? get enclosingElement => null;
 
   @override
   Element? get element => null;
@@ -119,7 +115,7 @@ class Category extends Nameable
       config.categories.categoryDefinitions.containsKey(sortKey);
 
   @override
-  String get kind => 'Topic';
+  String get kind => 'topic';
 
   @override
   late final File? documentationFile = () {
@@ -162,14 +158,9 @@ class Category extends Nameable
 
   @override
   // TODO: implement referenceChildren
-  Map<String, CommentReferable> get referenceChildren => {};
+  Map<String, CommentReferable> get referenceChildren => const {};
 
   @override
   // TODO: implement referenceParents
-  Iterable<CommentReferable> get referenceParents => [];
-
-  @override
-  // Categories are not analyzed by the analyzer, so they can't have
-  // comment references.
-  Map<String, ModelCommentReference> get commentRefs => {};
+  Iterable<CommentReferable> get referenceParents => const [];
 }

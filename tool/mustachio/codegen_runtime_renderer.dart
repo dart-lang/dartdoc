@@ -11,6 +11,7 @@ import 'package:analyzer/dart/element/type_provider.dart';
 import 'package:analyzer/dart/element/type_system.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:dartdoc/src/mustachio/annotations.dart';
+import 'package:dartdoc/src/type_utils.dart';
 import 'package:path/path.dart' as p;
 
 import 'utilities.dart';
@@ -22,7 +23,7 @@ String buildRuntimeRenderers(Set<RendererSpec> specs, Uri sourceUri,
   var visibleElements = specs
       .map((spec) => spec.visibleTypes)
       .reduce((value, element) => value.union(element))
-      .map((type) => type.element!)
+      .map((type) => DartTypeExtension(type).element!)
       .toSet();
   var raw = RuntimeRenderersBuilder(
           sourceUri, typeProvider, typeSystem, visibleElements,
@@ -43,11 +44,11 @@ class RuntimeRenderersBuilder {
 
   /// Maps a type to the name of the render function which can render that type
   /// as a context type.
-  final _typeToRenderFunctionName = <ClassElement, String>{};
+  final _typeToRenderFunctionName = <InterfaceElement, String>{};
 
   /// Maps a type to the name of the renderer class which can render that type
   /// as a context type.
-  final _typeToRendererClassName = <ClassElement, String>{};
+  final _typeToRendererClassName = <InterfaceElement, String>{};
 
   final Uri _sourceUri;
 
@@ -82,6 +83,7 @@ class RuntimeRenderersBuilder {
 // ignore_for_file: camel_case_types, deprecated_member_use_from_same_package
 // ignore_for_file: non_constant_identifier_names, unnecessary_string_escapes
 // ignore_for_file: unused_import
+// ignore_for_file: use_super_parameters
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/src/model/annotation.dart';
@@ -99,7 +101,7 @@ import '${p.basename(_sourceUri.path)}';
 ''');
 
     specs.forEach(_addTypesForRendererSpec);
-    var builtRenderers = <ClassElement>{};
+    var builtRenderers = <InterfaceElement>{};
     var elementsToProcess = _typesToProcess.toList()
       ..sort((a, b) => a._typeName.compareTo(b._typeName));
 
@@ -218,7 +220,7 @@ import '${p.basename(_sourceUri.path)}';
         return _relevantTypeFrom(bound);
       }
     } else {
-      // We can do nothing with function types, etc.
+      // We can do nothing with function types, record types, etc.
       return null;
     }
   }
@@ -254,8 +256,9 @@ import '${p.basename(_sourceUri.path)}';
           includeRenderFunction: false,
         );
       }
-      if (type.element.isMixin) {
-        for (var constraint in type.element.superclassConstraints) {
+      final typeElement = type.element;
+      if (typeElement is MixinElement) {
+        for (var constraint in typeElement.superclassConstraints) {
           _addTypeToProcess(
             constraint.element,
             isFullRenderer: isFullRenderer,
@@ -273,7 +276,7 @@ import '${p.basename(_sourceUri.path)}';
 
   /// Adds [type] to the [_typesToProcess] queue, if it is not already there.
   void _addTypeToProcess(
-    ClassElement element, {
+    InterfaceElement element, {
     required bool isFullRenderer,
     required bool includeRenderFunction,
   }) {
@@ -318,7 +321,7 @@ import '${p.basename(_sourceUri.path)}';
 
   /// Returns whether [element] or any of its supertypes are "visible" to
   /// Mustache.
-  bool _isVisibleToMustache(ClassElement element) {
+  bool _isVisibleToMustache(InterfaceElement element) {
     if (_allVisibleElements.contains(element)) {
       return true;
     }
@@ -529,10 +532,11 @@ renderVariable:
         // TODO(srawlins): Find a solution for this. We can track all of the
         // concrete types substituted for `E` for example.
         if (innerType is! TypeParameterType) {
-          var renderFunctionName = _typeToRenderFunctionName[innerType.element];
+          var innerTypeElement = DartTypeExtension(innerType).element;
+          var renderFunctionName = _typeToRenderFunctionName[innerTypeElement];
           String renderCall;
           if (renderFunctionName == null) {
-            var typeName = innerType.element!.name!;
+            var typeName = innerTypeElement!.name!;
             if (innerType is InterfaceType) {
               _invisibleGetters.putIfAbsent(
                   typeName, () => innerType.element.allAccessorNames);
@@ -612,7 +616,7 @@ renderValue:
 /// functions and the renderer class), and also to refer from one renderer to
 /// another.
 class _RendererInfo {
-  final ClassElement _contextClass;
+  final InterfaceElement _contextClass;
 
   /// The name of the top level render function.
   ///
@@ -636,7 +640,7 @@ class _RendererInfo {
   String? publicApiFunctionName;
 
   factory _RendererInfo(
-    ClassElement contextClass, {
+    InterfaceElement contextClass, {
     bool public = false,
     bool isFullRenderer = true,
     bool includeRenderFunction = true,
@@ -697,7 +701,7 @@ class _RendererInfo {
   }
 }
 
-extension on ClassElement {
+extension on InterfaceElement {
   /// Returns a set of the names of all accessors on this [ClassElement], including supertypes.
   Set<String> get allAccessorNames {
     return {

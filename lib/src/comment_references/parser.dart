@@ -1,10 +1,10 @@
 // Copyright (c) 2021, the Dart project authors. Please see the AUTHORS file
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
-//
 
-import 'package:charcode/charcode.dart';
 import 'package:meta/meta.dart';
+
+import '../charcode.dart';
 
 const _operatorKeyword = 'operator';
 const Map<String, String> operatorNames = {
@@ -59,7 +59,7 @@ class StringTrie {
   void addWord(String toAdd) {
     var currentTrie = this;
     for (var i in toAdd.codeUnits) {
-      currentTrie.children.putIfAbsent(i, () => StringTrie());
+      currentTrie.children.putIfAbsent(i, StringTrie.new);
       currentTrie = currentTrie.children[i]!;
     }
     currentTrie.valid = true;
@@ -67,11 +67,11 @@ class StringTrie {
 }
 
 final StringTrie operatorParseTrie = () {
-  var _operatorParseTrie = StringTrie();
+  var operatorParseTrie = StringTrie();
   for (var name in operatorNames.keys) {
-    _operatorParseTrie.addWord(name);
+    operatorParseTrie.addWord(name);
   }
-  return _operatorParseTrie;
+  return operatorParseTrie;
 }();
 
 /// A parser for comment references.

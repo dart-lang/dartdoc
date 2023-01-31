@@ -64,22 +64,16 @@ List<DartdocOption<Object?>> createPackageWarningOptions(
     // will override.
     DartdocOptionArgFile<List<String>?>('errors', null, resourceProvider,
         splitCommas: true,
-        help: 'Additional warning names to force as errors.  Specify an empty '
-                'list to force defaults (overriding '
-                'dartdoc_options.yaml)\nDefaults:\n' +
-            _warningsListHelpText(PackageWarningMode.error)),
+        help:
+            'Additional warning names to force as errors.  Specify an empty list to force defaults (overriding dartdoc_options.yaml)\nDefaults:\n${_warningsListHelpText(PackageWarningMode.error)}'),
     DartdocOptionArgFile<List<String>?>('ignore', null, resourceProvider,
         splitCommas: true,
-        help: 'Additional warning names to ignore.  Specify an empty list to '
-                'force defaults (overriding '
-                'dartdoc_options.yaml).\nDefaults:\n' +
-            _warningsListHelpText(PackageWarningMode.ignore)),
+        help:
+            'Additional warning names to ignore.  Specify an empty list to force defaults (overriding dartdoc_options.yaml).\nDefaults:\n${_warningsListHelpText(PackageWarningMode.ignore)}'),
     DartdocOptionArgFile<List<String>?>('warnings', null, resourceProvider,
         splitCommas: true,
         help:
-            'Additional warning names to show as warnings (instead of error or '
-                    'ignore, if not warning by default).\nDefaults:\n' +
-                _warningsListHelpText(PackageWarningMode.warn)),
+            'Additional warning names to show as warnings (instead of error or ignore, if not warning by default).\nDefaults:\n${_warningsListHelpText(PackageWarningMode.warn)}'),
     // Synthetic option uses a factory to build a PackageWarningOptions from all the above flags.
     DartdocOptionSyntheticOnly<PackageWarningOptions>(
       'packageWarningOptions',
@@ -93,7 +87,7 @@ List<DartdocOption<Object?>> createPackageWarningOptions(
 String _warningsListHelpText(PackageWarningMode mode) {
   return (packageWarningDefinitions.values
           .where((d) => d.defaultWarningMode == mode)
-          .toList()
+          .toList(growable: false)
         ..sort())
       .map((d) => '   ${d.warningName}: ${d.shortHelp}')
       .join('\n');
@@ -302,9 +296,7 @@ const Map<PackageWarning, PackageWarningDefinition> packageWarningDefinitions =
 mixin Warnable implements Canonicalization, CommentReferable {
   Element? get element;
 
-  Warnable? get enclosingElement;
-
-  Package? get package;
+  Package get package;
 
   void warn(
     PackageWarning kind, {
@@ -321,33 +313,82 @@ mixin Warnable implements Canonicalization, CommentReferable {
 
 // The kinds of warnings that can be displayed when documenting a package.
 enum PackageWarning {
-  ambiguousDocReference,
-  ambiguousReexport,
-  ignoredCanonicalFor,
-  noCanonicalFound,
-  noDefiningLibraryFound,
-  notImplemented,
-  noDocumentableLibrariesInPackage,
-  noLibraryLevelDocs,
-  packageOrderGivesMissingPackageName,
-  reexportedPrivateApiAcrossPackages,
-  unresolvedDocReference,
-  unknownDirective,
-  unknownMacro,
-  unknownHtmlFragment,
-  brokenLink,
-  duplicateFile,
-  orphanedFile,
-  unknownFile,
-  missingFromSearchIndex,
-  typeAsHtml,
-  invalidParameter,
-  toolError,
-  deprecated,
-  unresolvedExport,
-  missingConstantConstructor,
-  missingExampleFile,
-  missingCodeBlockLanguage,
+  ambiguousDocReference('ambiguous doc reference {0}'),
+
+  // Fix these warnings by adding the original library exporting the symbol with
+  // `--include`, by using `--auto-include-dependencies`, or by using
+  // `--exclude` to hide one of the libraries involved.
+  ambiguousReexport(
+      'ambiguous reexport of {0}, canonicalization candidates: {1}'),
+  ignoredCanonicalFor(
+      "library says it is {@canonicalFor {0}} but {0} can't be canonical "
+      'there'),
+
+  // Fix these warnings by adding libraries with `--include`, or by using
+  // `--auto-include-dependencies`.
+  // TODO(jcollins-g): pipeline references through `linkedName` for error
+  // messages and warn for non-public canonicalization errors.
+  noCanonicalFound('no canonical library found for {0}, not linking'),
+  noDefiningLibraryFound('could not find the defining library for {0}; the '
+      'library may be imported or exported with a non-standard URI'),
+  notImplemented('{0}'),
+  noDocumentableLibrariesInPackage('{0} has no documentable libraries'),
+  noLibraryLevelDocs('{0} has no library level documentation comments'),
+  packageOrderGivesMissingPackageName(
+      "--package-order gives invalid package name: '{0}'"),
+  reexportedPrivateApiAcrossPackages(
+      'private API of {0} is reexported by libraries in other packages: '),
+  unresolvedDocReference('unresolved doc reference [{0}]',
+      referredFromPrefix: 'in documentation inherited from'),
+  unknownDirective('undefined directive: {0}'),
+  unknownMacro('undefined macro [{0}]'),
+  unknownHtmlFragment('undefined HTML fragment identifier [{0}]'),
+  brokenLink('dartdoc generated a broken link to: {0}',
+      warnablePrefix: 'to element', referredFromPrefix: 'linked to from'),
+  duplicateFile('failed to write file at: {0}',
+      warnablePrefix: 'for symbol',
+      referredFromPrefix: 'conflicting with file already generated by'),
+  orphanedFile('dartdoc generated a file orphan: {0}'),
+  unknownFile('dartdoc detected an unknown file in the doc tree: {0}'),
+  missingFromSearchIndex(
+      'dartdoc generated a file not in the search index: {0}'),
+
+  // The message for this warning can contain many punctuation and other
+  // symbols, so bracket with a triple quote for defense.
+  typeAsHtml('generic type handled as HTML: """{0}"""'),
+  invalidParameter('invalid parameter to dartdoc directive: {0}'),
+  toolError('tool execution failed: {0}'),
+  deprecated('deprecated dartdoc usage: {0}'),
+  unresolvedExport('unresolved export uri: {0}'),
+  missingConstantConstructor('constant constructor missing: {0}'),
+  missingExampleFile('example file not found: {0}'),
+  missingCodeBlockLanguage('missing code block language: {0}');
+
+  final String template;
+
+  final String warnablePrefix;
+
+  final String referredFromPrefix;
+
+  const PackageWarning(
+    this.template, {
+    this.warnablePrefix = 'from',
+    this.referredFromPrefix = 'referred to by',
+  });
+
+  String messageFor(List<String> messageParts) {
+    var message = template;
+    for (var i = 0; i < messageParts.length; i++) {
+      message = message.replaceAll('{$i}', messageParts[i]);
+    }
+    return message;
+  }
+
+  String messageForWarnable(Warnable warnable) =>
+      '$warnablePrefix ${warnable.safeWarnableName}: ${warnable.location}';
+
+  String messageForReferral(Locatable referral) =>
+      '$referredFromPrefix ${referral.safeWarnableName}: ${referral.location}';
 }
 
 /// Used to declare defaults for a particular package warning.
@@ -552,7 +593,7 @@ class PackageWarningCounter {
     PackageWarningOptionContext config =
         element?.config ?? packageGraph.defaultPackage.config;
     PackageWarningMode? warningMode;
-    var isLocal = element?.package?.isLocal ?? true;
+    var isLocal = element?.package.isLocal ?? true;
     if (!config.allowNonLocalWarnings && !isLocal) {
       warningMode = PackageWarningMode.ignore;
     } else {

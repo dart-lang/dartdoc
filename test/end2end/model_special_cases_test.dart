@@ -87,12 +87,12 @@ void main() {
         Ft = constructorTearoffs.typedefs.firstWhere((t) => t.name == 'Ft');
         NotAClass = constructorTearoffs.typedefs
             .firstWhere((t) => t.name == 'NotAClass');
-        Anew = A.unnamedConstructor!;
-        Bnew = B.unnamedConstructor!;
-        Cnew = C.unnamedConstructor!;
-        Dnew = D.unnamedConstructor!;
-        Enew = E.unnamedConstructor!;
-        Fnew = F.unnamedConstructor!;
+        Anew = A.constructors.firstWhere((c) => c.isUnnamedConstructor);
+        Bnew = B.constructors.firstWhere((c) => c.isUnnamedConstructor);
+        Cnew = C.constructors.firstWhere((c) => c.isUnnamedConstructor);
+        Dnew = D.constructors.firstWhere((c) => c.isUnnamedConstructor);
+        Enew = E.constructors.firstWhere((c) => c.isUnnamedConstructor);
+        Fnew = F.constructors.firstWhere((c) => c.isUnnamedConstructor);
       });
 
       test('smoke test', () {
@@ -212,7 +212,7 @@ void main() {
         expect(referenceLookup(A, 'new'), equals(MatchingLinkResult(null)));
         expect(referenceLookup(At, 'new'), equals(MatchingLinkResult(null)));
       });
-    }, skip: !utils.constructorTearoffsAllowed);
+    });
   });
 
   group('HTML is sanitized when enabled', () {
@@ -452,7 +452,7 @@ void main() {
       // If this fails, EventTarget might have been changed to no longer
       // inherit from Interceptor.  If that's true, adjust test case to
       // another class that does.
-      expect(hashCode.inheritance.any((c) => c?.name == 'Interceptor'), isTrue);
+      expect(hashCode.inheritance.any((c) => c.name == 'Interceptor'), isTrue);
       // If EventTarget really does start implementing hashCode, this will
       // fail.
       expect(hashCode.href,

@@ -10,8 +10,10 @@ import 'package:dartdoc/src/render/enum_field_renderer.dart';
 
 class Enum extends InheritingContainer
     with Constructable, TypeImplementing, MixedInTypes {
-  Enum(ClassElement element, Library? library, PackageGraph packageGraph)
-      : super(element, library, packageGraph);
+  @override
+  final EnumElement element;
+
+  Enum(this.element, super.library, super.packageGraph);
 
   @override
   late final List<ModelElement> allModelElements = [
@@ -20,7 +22,7 @@ class Enum extends InheritingContainer
   ];
 
   @override
-  late final List<InheritingContainer?> inheritanceChain = [
+  late final List<InheritingContainer> inheritanceChain = [
     this,
     for (var container in mixedInTypes.reversed.modelElements)
       ...container.inheritanceChain,
@@ -54,17 +56,28 @@ class Enum extends InheritingContainer
 class EnumField extends Field {
   final int index;
 
-  @override
-  bool get isEnumValue => true;
-
   EnumField.forConstant(this.index, FieldElement element, Library library,
       PackageGraph packageGraph, Accessor? getter)
       : super(
             element, library, packageGraph, getter as ContainerAccessor?, null);
 
   @override
+  bool get isEnumValue => true;
+
+  @override
+  bool get hasConstantValueForDisplay {
+    final enum_ = element.enclosingElement as EnumElement;
+    final enumHasDefaultConstructor =
+        enum_.constructors.any((c) => c.isDefaultConstructor);
+    // If this enum does not have any explicit constructors (and so only has a
+    // default constructor), then there is no meaningful constant initializer to
+    // display.
+    return !enumHasDefaultConstructor;
+  }
+
+  @override
   String get constantValueBase =>
-      element!.library!.featureSet.isEnabled(Feature.enhanced_enums)
+      element.library.featureSet.isEnabled(Feature.enhanced_enums)
           ? super.constantValueBase
           : _fieldRenderer.renderValue(this);
 
@@ -100,7 +113,7 @@ class EnumField extends Field {
   }
 
   @override
-  String? get oneLineDoc => documentationAsHtml;
+  String get oneLineDoc => documentationAsHtml;
 
   @override
   Inheritable? get overriddenElement => null;

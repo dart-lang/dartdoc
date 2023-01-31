@@ -75,8 +75,11 @@ class _RuntimeStats {
   }
 }
 
-/// TODO(jcollins-g): re-write to something that isn't process-global?
-final _RuntimeStats runtimeStats = _RuntimeStats();
+/// Statistics that get populated as the package graph is built up (like a count
+/// of all comment references) and as files are written (like the number of
+/// class files that are written).
+// TODO(jcollins-g): re-write to something that isn't process-global?
+final runtimeStats = _RuntimeStats();
 
 class _PerfTask {
   final String name;

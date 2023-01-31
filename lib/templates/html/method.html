@@ -2,13 +2,13 @@
 
   <div id="dartdoc-main-content" class="main-content">
     {{#self}}
-      <div>{{>source_link}}<h1><span class="kind-method">{{{nameWithGenerics}}}</span> {{kind}} {{>feature_set}}</h1></div>
+      <div>{{>source_link}}<h1><span class="kind-method">{{{nameWithGenerics}}}</span> {{fullkind}} {{>feature_set}}</h1></div>
     {{/self}}
 
     {{#method}}
     <section class="multi-line-signature">
-      {{>callable_multiline}}
-      {{>features}}
+      {{ >callable_multiline }}
+      {{ >features }}
     </section>
     {{>documentation}}
 
