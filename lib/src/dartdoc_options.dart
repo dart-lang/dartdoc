@@ -1323,8 +1323,6 @@ class DartdocOptionContext extends DartdocOptionContextBase
 
   bool get useCategories => optionSet['useCategories'].valueAt(context);
 
-  bool get validateLinks => optionSet['validateLinks'].valueAt(context);
-
   bool isLibraryExcluded(String name) =>
       exclude.any((pattern) => name == pattern);
 
@@ -1570,10 +1568,6 @@ List<DartdocOption> createDartdocOptions(
     }, resourceProvider, help: 'PackageMeta object for the default package.'),
     DartdocOptionArgOnly<bool>('useCategories', true, resourceProvider,
         help: 'Display categories in the sidebar of packages'),
-    DartdocOptionArgOnly<bool>('validateLinks', true, resourceProvider,
-        help: 'Runs the built-in link checker to display Dart context aware '
-            'warnings for broken links (slow)',
-        negatable: true),
     DartdocOptionArgOnly<bool>('verboseWarnings', true, resourceProvider,
         help: 'Display extra debugging information and help with warnings.',
         negatable: true),

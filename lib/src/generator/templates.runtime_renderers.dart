@@ -15756,8 +15756,7 @@ const _invisibleGetters = {
     'tools',
     'topLevelPackageMeta',
     'useBaseHref',
-    'useCategories',
-    'validateLinks'
+    'useCategories'
   },
   'DocumentLocation': {'hashCode', 'index', 'runtimeType'},
   'Documentation': {'asHtml', 'asOneLiner', 'hashCode', 'runtimeType'},
