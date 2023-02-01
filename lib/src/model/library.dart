@@ -14,7 +14,6 @@ import 'package:analyzer/src/dart/element/inheritance_manager3.dart'
     show InheritanceManager3;
 // ignore: implementation_imports
 import 'package:analyzer/src/generated/sdk.dart' show SdkLibrary;
-import 'package:collection/collection.dart' show IterableExtension;
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart' show PackageMeta;
@@ -261,14 +260,16 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
       .map((e) => modelBuilder.from(e, this) as Extension)
       .toList(growable: false);
 
-  SdkLibrary? get sdkLib =>
-      packageGraph.sdkLibrarySources[element.librarySource];
+  SdkLibrary get _sdkLib =>
+      packageGraph.sdkLibrarySources[element.librarySource]!;
+
+  @Deprecated('Will be removed soon')
+  SdkLibrary? get sdkLib => _sdkLib;
 
   @override
   bool get isPublic {
     if (!super.isPublic) return false;
-    var sdkLib = this.sdkLib;
-    if (sdkLib != null && (sdkLib.isInternal || !sdkLib.isDocumented)) {
+    if (_sdkLib.isInternal || !_sdkLib.isDocumented) {
       return false;
     }
     if (config.isLibraryExcluded(name) ||
@@ -282,7 +283,8 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   Iterable<TopLevelVariable> get constants =>
       _variables.where((v) => v.isConst);
 
-  /// Map of import prefixes ('import "foo" as prefix;') to [Library].
+  /// Map of each import prefix ('import "foo" as prefix;') to the set of
+  /// libraries which are imported via that prefix.
   late final Map<String, Set<Library>> prefixToLibrary = () {
     var prefixToLibrary = <String, Set<Library>>{};
     // It is possible to have overlapping prefixes.
@@ -452,10 +454,6 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
       .where((e) => e is! EnumElement && e is! MixinElement)
       .map((e) => modelBuilder.from(e, this) as Class)
       .toList(growable: false);
-
-  Class? getClassByName(String name) {
-    return allClasses.firstWhereOrNull((it) => it.name == name);
-  }
 
   late final List<TopLevelVariable> _variables = () {
     var elements =
