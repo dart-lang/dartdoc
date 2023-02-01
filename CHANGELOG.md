@@ -1,3 +1,11 @@
+## 6.2.0-dev
+
+* Stop generating a null-safety badge for elements
+  in a null-safe library. (#3295)
+* Use a sun icon for switching to the light theme. (#3309)
+* Standardize the search icon style to a new SVG. (#3302)
+* Remove CSS classes no longer used in dartdoc generated content. (#3302)
+
 ## 6.1.5
 
 * Fix remote linking in Dart 2.18. (#3267)
@@ -45,7 +53,7 @@
 * Reduce memory usage by much more extensive use of non-growable Lists, and
   constant empty lists. (#3151 and #3154)
 * Make `Warnable.package` non-nullable. (#3155)
-* Refactor the various `Renderer` classses. Specifically add abstract
+* Refactor the various `Renderer` classes. Specifically add abstract
   `ElementTypeRendererHtml` and `ElementTypeRendererMd` classes which implement
   some shared calculations. (#3163)
 * Deprecate `ElementTypeRenderer.wrapNullability`. (#3163)
