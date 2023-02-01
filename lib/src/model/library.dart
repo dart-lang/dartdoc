@@ -260,8 +260,8 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
       .map((e) => modelBuilder.from(e, this) as Extension)
       .toList(growable: false);
 
-  SdkLibrary get _sdkLib =>
-      packageGraph.sdkLibrarySources[element.librarySource]!;
+  SdkLibrary? get _sdkLib =>
+      packageGraph.sdkLibrarySources[element.librarySource];
 
   @Deprecated('Will be removed soon')
   SdkLibrary? get sdkLib => _sdkLib;
@@ -269,7 +269,8 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   @override
   bool get isPublic {
     if (!super.isPublic) return false;
-    if (_sdkLib.isInternal || !_sdkLib.isDocumented) {
+    final sdkLib = _sdkLib;
+    if (sdkLib != null && (sdkLib.isInternal || !sdkLib.isDocumented)) {
       return false;
     }
     if (config.isLibraryExcluded(name) ||
