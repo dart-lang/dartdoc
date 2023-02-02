@@ -574,7 +574,8 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   /// The String name representing the `Object` type.
   late final String dartCoreObject = libraries
           .firstWhereOrNull((library) => library.name == 'dart:core')
-          ?.getClassByName('Object')
+          ?.allClasses
+          .firstWhereOrNull((c) => c.name == 'Object')
           ?.linkedName ??
       'Object';
 

@@ -859,11 +859,11 @@ void main() {
           .firstWhere((lib) => lib.name == 'reexport_two');
       reexportThreeLib = packageGraph.libraries
           .firstWhere((lib) => lib.name == 'reexport_three');
-      SomeClass = someLib.getClassByName('SomeClass')!;
-      SomeOtherClass = someLib.getClassByName('SomeOtherClass')!;
-      YetAnotherClass = someLib.getClassByName('YetAnotherClass')!;
-      AUnicornClass = someLib.getClassByName('AUnicornClass')!;
-      ADuplicateClass = reexportThreeLib.getClassByName('ADuplicateClass')!;
+      SomeClass = someLib.getClassByName('SomeClass');
+      SomeOtherClass = someLib.getClassByName('SomeOtherClass');
+      YetAnotherClass = someLib.getClassByName('YetAnotherClass');
+      AUnicornClass = someLib.getClassByName('AUnicornClass');
+      ADuplicateClass = reexportThreeLib.getClassByName('ADuplicateClass');
 
       isDeprecated = packageGraph.libraries
           .firstWhere((lib) => lib.name == 'is_deprecated');
@@ -4913,4 +4913,10 @@ class StringNameHashCode extends Nameable {
   @override
   // ignore: unnecessary_overrides
   bool operator ==(Object other) => super == other;
+}
+
+extension on Library {
+  Class getClassByName(String name) {
+    return allClasses.firstWhere((c) => c.name == name);
+  }
 }
