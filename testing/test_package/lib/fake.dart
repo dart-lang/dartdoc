@@ -45,6 +45,8 @@
 ///
 /// [pkg]: http://example.org
 
+// ignore_for_file: unused_element, unused_import
+
 library fake;
 
 import 'dart:async';
@@ -332,7 +334,6 @@ class NotAMixin {
 }
 
 class AMixinCallingSuper extends Object {
-  @override
   String get superString => "${super.toString()} but not as important as this";
 }
 
