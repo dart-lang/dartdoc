@@ -33,16 +33,18 @@ const List<List<String>> _sdkDirFilePathsPosix = [
 ];
 
 final PackageMetaProvider pubPackageMetaProvider = PackageMetaProvider(
-    PubPackageMeta.fromElement,
-    PubPackageMeta.fromFilename,
-    PubPackageMeta.fromDir,
-    PhysicalResourceProvider.INSTANCE,
-    PhysicalResourceProvider.INSTANCE
-        .getFile(PhysicalResourceProvider.INSTANCE.pathContext
-            .absolute(Platform.resolvedExecutable))
-        .parent
-        .parent,
-    messageForMissingPackageMeta: PubPackageMeta.messageForMissingPackageMeta);
+  PubPackageMeta.fromElement,
+  PubPackageMeta.fromFilename,
+  PubPackageMeta.fromDir,
+  PhysicalResourceProvider.INSTANCE,
+  PhysicalResourceProvider.INSTANCE
+      .getFile(PhysicalResourceProvider.INSTANCE.pathContext
+          .absolute(Platform.resolvedExecutable))
+      .parent
+      .parent,
+  Platform.environment,
+  messageForMissingPackageMeta: PubPackageMeta.messageForMissingPackageMeta,
+);
 
 /// Sets the supported way of constructing [PackageMeta] objects.
 ///
@@ -51,18 +53,33 @@ final PackageMetaProvider pubPackageMetaProvider = PackageMetaProvider(
 /// provide their own [PackageMeta] types.
 ///
 /// By using a different provider, these implementations can control how
-/// [PackageMeta] objects is built.
+/// [PackageMeta] objects are built.
 class PackageMetaProvider {
-  final ResourceProvider resourceProvider;
-  final Folder defaultSdkDir;
-  final DartSdk? defaultSdk;
-
   final PackageMeta? Function(LibraryElement, String, ResourceProvider)
       _fromElement;
   final PackageMeta? Function(String, ResourceProvider) _fromFilename;
   final PackageMeta? Function(Folder, ResourceProvider) _fromDir;
+
+  final ResourceProvider resourceProvider;
+  final Folder defaultSdkDir;
+  final DartSdk? defaultSdk;
+  final Map<String, String> environmentProvider;
+
   final String Function(LibraryElement, DartdocOptionContext)
       _messageForMissingPackageMeta;
+
+  PackageMetaProvider(
+    this._fromElement,
+    this._fromFilename,
+    this._fromDir,
+    this.resourceProvider,
+    this.defaultSdkDir,
+    this.environmentProvider, {
+    this.defaultSdk,
+    String Function(LibraryElement, DartdocOptionContext)?
+        messageForMissingPackageMeta,
+  }) : _messageForMissingPackageMeta = messageForMissingPackageMeta ??
+            _defaultMessageForMissingPackageMeta;
 
   PackageMeta? fromElement(LibraryElement library, String s) =>
       _fromElement(library, s, resourceProvider);
@@ -72,14 +89,6 @@ class PackageMetaProvider {
   String getMessageForMissingPackageMeta(
           LibraryElement library, DartdocOptionContext optionContext) =>
       _messageForMissingPackageMeta(library, optionContext);
-
-  PackageMetaProvider(this._fromElement, this._fromFilename, this._fromDir,
-      this.resourceProvider, this.defaultSdkDir,
-      {this.defaultSdk,
-      String Function(LibraryElement, DartdocOptionContext)?
-          messageForMissingPackageMeta})
-      : _messageForMissingPackageMeta = messageForMissingPackageMeta ??
-            _defaultMessageForMissingPackageMeta;
 
   static String _defaultMessageForMissingPackageMeta(
       LibraryElement library, DartdocOptionContext optionContext) {

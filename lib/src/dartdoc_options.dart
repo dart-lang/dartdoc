@@ -1410,9 +1410,10 @@ List<DartdocOption> createDartdocOptions(
         help: 'Package names to ignore.', splitCommas: true),
     DartdocOptionSyntheticOnly<String?>('flutterRoot',
         (DartdocSyntheticOption<String?> option, Folder dir) {
-      var envFlutterRoot = Platform.environment['FLUTTER_ROOT'];
-      if (envFlutterRoot == null) return null;
-      return resourceProvider.pathContext.resolveTildePath(envFlutterRoot);
+      var flutterRootEnv =
+          packageMetaProvider.environmentProvider['FLUTTER_ROOT'];
+      if (flutterRootEnv == null) return null;
+      return resourceProvider.pathContext.resolveTildePath(flutterRootEnv);
     }, resourceProvider,
         optionIs: OptionKind.dir,
         help: 'Root of the Flutter SDK, specified from environment.',
@@ -1483,7 +1484,6 @@ List<DartdocOption> createDartdocOptions(
               .sdkType(option.parent.parent['flutterRoot'].valueAt(dir));
           // Analyzer may be confused because package_meta still needs
           // migrating.  It can definitely return null.
-          // ignore: unnecessary_null_comparison
           if (inSdk != null) {
             Map<String, String> sdks = option.parent['sdks'].valueAt(dir);
             var inSdkVal = sdks[inSdk];
@@ -1513,7 +1513,6 @@ List<DartdocOption> createDartdocOptions(
       'packageMeta',
       (DartdocSyntheticOption<PackageMeta> option, Folder dir) {
         var packageMeta = packageMetaProvider.fromDir(dir);
-        // ignore: unnecessary_null_comparison
         if (packageMeta == null) {
           throw DartdocOptionError(
               'Unable to determine package for directory: ${dir.path}');
@@ -1557,7 +1556,6 @@ List<DartdocOption> createDartdocOptions(
         (DartdocSyntheticOption<PackageMeta> option, Folder dir) {
       var packageMeta = packageMetaProvider.fromDir(
           resourceProvider.getFolder(option.parent['inputDir'].valueAt(dir)));
-      // ignore: unnecessary_null_comparison
       if (packageMeta == null) {
         throw DartdocOptionError(
             'Unable to generate documentation: no package found');
