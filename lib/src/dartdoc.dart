@@ -19,7 +19,6 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/runtime_stats.dart';
 import 'package:dartdoc/src/utils.dart';
-import 'package:dartdoc/src/validator.dart';
 import 'package:dartdoc/src/version.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:meta/meta.dart';
@@ -210,15 +209,6 @@ class Dartdoc {
     runtimeStats.startPerfTask('generator.generate');
     await generator.generate(packageGraph);
     runtimeStats.endPerfTask();
-
-    var writtenFiles = generator.writtenFiles;
-    if (config.validateLinks && writtenFiles.isNotEmpty) {
-      runtimeStats.startPerfTask('validateLinks');
-      Validator(packageGraph, config, _outputDir.path, writtenFiles,
-              _onCheckProgress)
-          .validateLinks();
-      runtimeStats.endPerfTask();
-    }
 
     var warnings = packageGraph.packageWarningCounter.warningCount;
     var errors = packageGraph.packageWarningCounter.errorCount;
