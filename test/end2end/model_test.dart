@@ -1216,7 +1216,10 @@ void main() {
       });
 
       test('Verify table appearance', () {
-        expect(docsAsHtml, contains('<table><thead><tr><th>Component</th>'));
+        expect(
+          docsAsHtml,
+          contains('<table>\n<thead>\n<tr>\n<th>Component</th>'),
+        );
       });
 
       test('Verify links inside of table headers', () {
@@ -1228,9 +1231,11 @@ void main() {
 
       test('Verify links inside of table body', () {
         expect(
-            docsAsHtml,
-            contains(
-                '<tbody><tr><td><a href="${htmlBasePlaceholder}fake/DocumentWithATable/foo-constant.html">foo</a></td>'));
+          docsAsHtml,
+          contains('<tbody>\n'
+              '<tr>\n'
+              '<td><a href="${htmlBasePlaceholder}fake/DocumentWithATable/foo-constant.html">foo</a></td>'),
+        );
       });
 
       test('Verify there is no emoji support', () {
@@ -1523,7 +1528,8 @@ void main() {
     test('no references', () {
       expect(
           Apple.documentationAsHtml,
-          '<p>Sample class <code>String</code></p><pre class="language-dart">  A\n'
+          '<p>Sample class <code>String</code></p>\n'
+          '<pre class="language-dart">  A\n'
           '   B\n'
           '</pre>');
     });
