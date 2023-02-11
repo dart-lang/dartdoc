@@ -8,7 +8,7 @@ environment:
   sdk: '>=2.18.0 <3.0.0'
 
 dependencies:
-  analyzer: "^5.2.0"
+  analyzer: ^5.2.0
   args: ^2.3.0
   cli_util: ^0.3.5
   collection: ^1.15.0
@@ -16,7 +16,7 @@ dependencies:
   glob: ^2.0.1
   html: ^0.15.0
   logging: ^1.0.2
-  markdown: ">=5.0.0 <7.0.0"
+  markdown: ^7.0.0
   meta: ^1.7.0
   package_config: ^2.0.2
   path: ^1.8.0
@@ -44,12 +44,3 @@ dev_dependencies:
 
 executables:
   dartdoc: null
-
-dependency_overrides:
-  # TODO(srawlins): Bump this to '>=7.0.0' when 7.0.0 is released.
-  markdown:
-    git:
-      url: https://github.com/dart-lang/markdown.git
-      # This commit includes the breaking changes for markdown 7.0.0,
-      # but does not include the markdown 7.0.0 release.
-      ref: f51c24c5c5603ac20b6d88aded78ef3aa23619ac
