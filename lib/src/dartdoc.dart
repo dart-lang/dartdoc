@@ -204,9 +204,6 @@ class Dartdoc {
     var libs = packageGraph.libraryCount;
     logInfo("Initialized dartdoc with $libs librar${libs == 1 ? 'y' : 'ies'}");
 
-    // Create the out directory.
-    if (!_outputDir.exists) _outputDir.create();
-
     runtimeStats.startPerfTask('generator.generate');
     await generator.generate(packageGraph);
     runtimeStats.endPerfTask();

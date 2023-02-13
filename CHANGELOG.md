@@ -1,10 +1,12 @@
 ## 6.2.0-dev
 
-* Stop generating a null-safety badge for elements
-  in a null-safe library. (#3295)
+* Stop generating a null-safety badge for elements in a null-safe library.
+  (#3295)
 * Use a sun icon for switching to the light theme. (#3309)
 * Standardize the search icon style to a new SVG. (#3302)
 * Remove CSS classes no longer used in dartdoc generated content. (#3302)
+* Fix an issue where we created a temporary directory when performing a dry run.
+  (#3333)
 
 ## 6.1.5
 

@@ -59,6 +59,7 @@ class DartdocProgramOptionContext extends DartdocGeneratorOptionContext
       super.optionSet, super.resourceProvider)
       : super.fromDefaultContextLocation();
 
+  /// Whether to generate docs or perform a dry run.
   bool get generateDocs => optionSet['generateDocs'].valueAt(context);
   bool get help => optionSet['help'].valueAt(context);
   bool get version => optionSet['version'].valueAt(context);
