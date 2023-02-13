@@ -185,9 +185,10 @@ class SubprocessLauncher {
       if (perLine != null) perLine(line);
       Map<String, Object?>? result;
       try {
-        result = json.decoder.convert(line);
+        result = json.decoder.convert(line) as Map<String, dynamic>?;
       } on FormatException {
         // Assume invalid JSON is actually a line of normal text.
+        // ignore: avoid_catching_errors
       } on TypeError catch (e, st) {
         // The convert function returns a String if there is no JSON in the
         // line.  Just ignore it and leave result null.
@@ -200,7 +201,7 @@ class SubprocessLauncher {
           line = result['message'] as String;
         } else if (result.containsKey('data')) {
           var data = result['data'] as Map;
-          line = data['text'];
+          line = data['text'] as String;
         }
       }
       return line.split('\n');

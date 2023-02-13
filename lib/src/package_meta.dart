@@ -310,7 +310,7 @@ class _FilePackageMeta extends PubPackageMeta {
   late final Map<dynamic, dynamic> _pubspec = () {
     var pubspec = dir.getChildAssumingFile('pubspec.yaml');
     assert(pubspec.exists);
-    return loadYaml(pubspec.readAsStringSync());
+    return loadYaml(pubspec.readAsStringSync()) as YamlMap;
   }();
 
   _FilePackageMeta(super.dir, super.resourceProvider);

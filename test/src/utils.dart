@@ -194,7 +194,7 @@ homepage: https://github.com/dart-lang
   var projectsFolder = resourceProvider.getFolder(
       pathContext.canonicalize(resourceProvider.convertPath('/projects')));
   var projectFolder = projectsFolder.getChildAssumingFolder(packageName)
-    ..create;
+    ..create();
   var projectRoot = projectFolder.path;
   projectFolder
       .getChildAssumingFile('pubspec.yaml')

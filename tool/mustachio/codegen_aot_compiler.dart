@@ -151,6 +151,7 @@ Future<Map<_AotCompiler, Method>> _deduplicateRenderers(
     Method compiledLubRenderer;
     try {
       compiledLubRenderer = await lubCompiler._compileToRenderer();
+      // ignore: avoid_catching_errors
     } on MustachioResolutionError {
       // Oops, switching to the LUB type prevents the renderer from compiling;
       // likely the properties accessed in the partial are not all declared on

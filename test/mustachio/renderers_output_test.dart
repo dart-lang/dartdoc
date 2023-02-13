@@ -5,6 +5,7 @@
 library dartdoc.dartdoc_test;
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/memory_file_system.dart';
@@ -25,18 +26,27 @@ import 'package:test/test.dart';
 Future<DartdocGeneratorOptionContext> _generatorContextFromArgv(
     List<String> argv) async {
   var optionSet = DartdocOptionRoot.fromOptionGenerators(
-      'dartdoc',
-      [
-        createDartdocOptions,
-        createGeneratorOptions,
-      ],
-      pubPackageMetaProvider);
+    'dartdoc',
+    [
+      createDartdocOptions,
+      createGeneratorOptions,
+    ],
+    pubPackageMetaProvider,
+  );
   optionSet.parseArguments(argv);
   return DartdocGeneratorOptionContext.fromDefaultContextLocation(
       optionSet, pubPackageMetaProvider.resourceProvider);
 }
 
 void main() {
+  late Directory tempDir;
+
+  setUp(() {
+    tempDir = Directory.systemTemp.createTempSync('render_test');
+  });
+
+  tearDown(() => tempDir.deleteSync(recursive: true));
+
   test('source code links are visible', () async {
     var resourceProvider = pubPackageMetaProvider.resourceProvider;
     var pathContext = resourceProvider.pathContext;
@@ -44,7 +54,7 @@ void main() {
         pathContext.absolute(pathContext.canonicalize('testing/test_package')));
 
     var context = await _generatorContextFromArgv(
-        ['--input', testPackageDir.path, '--output', 'UNUSED']);
+        ['--input', testPackageDir.path, '--output', tempDir.path]);
     var dartdoc = await Dartdoc.fromContext(
       context,
       PubPackageBuilder(
