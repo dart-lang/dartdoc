@@ -20,7 +20,7 @@ import 'subprocess_launcher.dart';
 void main(List<String> args) => grind(args);
 
 /// Thrown on failure to find something in a file.
-class GrindTestFailure {
+class GrindTestFailure implements Exception {
   final String message;
 
   GrindTestFailure(this.message);
@@ -379,7 +379,7 @@ WarningsCollection jsonMessageIterableToWarnings(
         message['level'] == 'WARNING' &&
         message.containsKey('data')) {
       var data = message['data'] as Map;
-      warningTexts.add(data['text']);
+      warningTexts.add(data['text'] as String);
     }
   }
   return warningTexts;
@@ -1006,7 +1006,7 @@ String _getPackageVersion() {
     fail('Cannot find pubspec.yaml in ${Directory.current}');
   }
   var yamlDoc = yaml.loadYaml(pubspec.readAsStringSync()) as yaml.YamlMap;
-  return yamlDoc['version'];
+  return yamlDoc['version'] as String;
 }
 
 @Task('Rebuild generated files')

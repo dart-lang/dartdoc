@@ -6,7 +6,7 @@
 ///
 /// An instance of this is returned if dartdoc fails in an expected way (for
 /// instance, if there is an analysis error in the library).
-class DartdocFailure {
+class DartdocFailure implements Exception {
   final String message;
 
   DartdocFailure(this.message);

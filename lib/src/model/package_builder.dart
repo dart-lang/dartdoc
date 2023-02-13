@@ -444,8 +444,8 @@ class PubPackageBuilder implements PackageBuilder {
           .difference(Set.of(knownLibraryNames))
           .difference(config.exclude);
       if (notFound.isNotEmpty) {
-        throw 'Did not find: [${notFound.join(', ')}] in '
-            'known libraries: [${knownLibraryNames.join(', ')}]';
+        throw StateError('Did not find: [${notFound.join(', ')}] in '
+            'known libraries: [${knownLibraryNames.join(', ')}]');
       }
     }
     // Include directive does not apply to special libraries.

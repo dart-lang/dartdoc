@@ -153,9 +153,10 @@ class Validator {
     // The package index isn't supposed to be in the search, so suppress the
     // warning.
     found.add(indexPath);
-    for (Map<String, dynamic> entry in jsonData) {
+    for (var entry in jsonData.cast<Map<String, dynamic>>()) {
       if (entry.containsKey('href')) {
-        final entryPath = p.joinAll([_origin, ...p.posix.split(entry['href'])]);
+        final entryPath =
+            p.joinAll([_origin, ...p.posix.split(entry['href'] as String)]);
         if (!_visited.contains(entryPath)) {
           _warn(PackageWarning.brokenLink, entryPath, _origin,
               referredFrom: fullPath);

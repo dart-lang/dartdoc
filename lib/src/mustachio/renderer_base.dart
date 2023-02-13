@@ -189,6 +189,7 @@ abstract class RendererBase<T extends Object?> {
       if (property != null) {
         try {
           return property.renderVariable(context, property, remainingNames);
+          // ignore: avoid_catching_errors
         } on PartialMustachioResolutionError catch (e) {
           // The error thrown by [Property.renderVariable] does not have all of
           // the names required for a decent error. We throw a new error here.
@@ -199,6 +200,7 @@ abstract class RendererBase<T extends Object?> {
               "'$firstName' to a property on $T"));
         }
       }
+      // ignore: avoid_catching_errors
     } on _MustachioResolutionErrorWithoutSpan catch (e) {
       throw MustachioResolutionError(node.keySpan.message(e.message));
     }
