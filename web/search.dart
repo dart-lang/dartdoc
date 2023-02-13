@@ -271,7 +271,6 @@ class _Search {
           .replace(queryParameters: {'q': searchText});
       var link = document.createElement('a')
         ..setAttribute('href', buildLink.toString())
-        ..classes.add('seach-options')
         ..text = 'Search on dart.dev.';
       noResults.append(link);
       mainContent.append(noResults);
