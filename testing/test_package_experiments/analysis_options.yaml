@@ -6,3 +6,4 @@ analyzer:
     - triple-shift
     - generic-metadata
     - constructor-tearoffs
+    - records
