@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/dart/element/type.dart';
+import 'package:dartdoc/src/element_type.dart';
 import 'package:test/test.dart';
 import 'package:test_reflective_loader/test_reflective_loader.dart';
 
@@ -195,5 +196,22 @@ typedef R3<T> = R2<List<T>>;
       '<a href="%%__HTMLBASE_dartdoc_internal__%%typedefs/R2.html">R2</a>.'
       '</p>',
     );
+  }
+
+  void test_typedefRetainsAliasWhenUsed() async {
+    var library = await bootPackageWithLibrary('''
+typedef R<T> = (T, String);
+
+R<int> f(int a, String b) {
+  return R<int>(a, b);
+}
+''');
+    final rTypedef = library.typedefs.named('R');
+    final fFunc = library.functions.named('f');
+
+    expect(
+        fFunc.modelType.returnType,
+        isA<AliasedUndefinedElementType>().having((e) => e.typeAliasElement,
+            'typeAliasElement', equals(rTypedef.element)));
   }
 }
