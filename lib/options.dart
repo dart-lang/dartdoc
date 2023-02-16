@@ -1,6 +1,5 @@
 import 'dart:io' show stderr, exitCode;
 
-import 'package:analyzer/file_system/file_system.dart';
 import 'package:args/args.dart';
 import 'package:dartdoc/dartdoc.dart' show dartdocVersion, programName;
 import 'package:dartdoc/src/dartdoc_options.dart';
@@ -11,22 +10,21 @@ import 'package:dartdoc/src/package_meta.dart';
 /// Helper class that consolidates option contexts for instantiating generators.
 class DartdocGeneratorOptionContext extends DartdocOptionContext {
   DartdocGeneratorOptionContext(
-      super.optionSet, Folder super.dir, super.resourceProvider);
+      super.optionSet, super.dir, super.resourceProvider);
   DartdocGeneratorOptionContext.fromDefaultContextLocation(
       super.optionSet, super.resourceProvider)
       : super.fromDefaultContextLocation();
 
-  /// Returns the joined contents of any 'header' files specified in options.
-  late final String header =
+  /// The joined contents of any 'header' files specified in options.
+  String get header =>
       _joinCustomTextFiles(optionSet['header'].valueAt(context));
 
-  /// Returns the joined contents of any 'footer' files specified in options.
-  late final String footer =
+  /// The joined contents of any 'footer' files specified in options.
+  String get footer =>
       _joinCustomTextFiles(optionSet['footer'].valueAt(context));
 
-  /// Returns the joined contents of any 'footer-text' files specified in
-  /// options.
-  late final String footerText =
+  /// The joined contents of any 'footer-text' files specified in options.
+  String get footerText =>
       _joinCustomTextFiles(optionSet['footerText'].valueAt(context));
 
   String _joinCustomTextFiles(Iterable<String> paths) => paths
@@ -40,14 +38,12 @@ class DartdocGeneratorOptionContext extends DartdocOptionContext {
   String? get relCanonicalPrefix =>
       optionSet['relCanonicalPrefix'].valueAt(context);
 
-  /// The 'templatesDir' dartdoc option if one was specified; otherwise `null`.
   String? get templatesDir => optionSet['templatesDir'].valueAt(context);
 
   // TODO(jdkoren): duplicated temporarily so that GeneratorContext is enough for configuration.
   @override
   bool get useBaseHref => optionSet['useBaseHref'].valueAt(context);
 
-  /// The 'resourcesDir' dartdoc option if one was specified; otherwise `null`.
   String? get resourcesDir => optionSet['resourcesDir'].valueAt(context);
 }
 
@@ -55,6 +51,7 @@ class DartdocProgramOptionContext extends DartdocGeneratorOptionContext
     with LoggingContext {
   DartdocProgramOptionContext(
       super.optionSet, super.dir, super.resourceProvider);
+
   DartdocProgramOptionContext.fromDefaultContextLocation(
       super.optionSet, super.resourceProvider)
       : super.fromDefaultContextLocation();
@@ -83,9 +80,8 @@ List<DartdocOption<bool>> createDartdocProgramOptions(
 
 DartdocProgramOptionContext? parseOptions(
   PackageMetaProvider packageMetaProvider,
-  List<String> arguments, {
-  OptionGenerator? additionalOptions,
-}) {
+  List<String> arguments,
+) {
   var optionRoot = DartdocOptionRoot.fromOptionGenerators(
       'dartdoc',
       [
@@ -93,7 +89,6 @@ DartdocProgramOptionContext? parseOptions(
         createDartdocProgramOptions,
         createLoggingOptions,
         createGeneratorOptions,
-        if (additionalOptions != null) additionalOptions,
       ],
       packageMetaProvider);
 
@@ -103,7 +98,7 @@ DartdocProgramOptionContext? parseOptions(
     stderr.writeln(' fatal error: ${e.message}');
     stderr.writeln('');
     _printUsage(optionRoot.argParser);
-    // Do not use exit() as this bypasses --pause-isolates-on-exit
+    // Do not use `exit()` as this bypasses `--pause-isolates-on-exit`.
     exitCode = 64;
     return null;
   }
