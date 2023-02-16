@@ -1538,7 +1538,7 @@ void main() {
       expect(
           B.documentationAsHtml,
           contains(
-              '<p>Extends class <a href="${htmlBasePlaceholder}ex/Apple-class.html">Apple</a>, use <a href="${htmlBasePlaceholder}ex/Apple/Apple.html">Apple.Apple</a> or <a href="${htmlBasePlaceholder}ex/Apple/Apple.fromString.html">Apple.fromString</a></p>'));
+              '<p>Extends class <a href="${htmlBasePlaceholder}ex/Apple-class.html">Apple</a>, use <a href="${htmlBasePlaceholder}ex/Apple/Apple.html">Apple.new</a> or <a href="${htmlBasePlaceholder}ex/Apple/Apple.fromString.html">Apple.fromString</a></p>'));
     });
 
     test('doc ref to class in SDK does not render as link', () {
@@ -1572,7 +1572,7 @@ void main() {
       expect(
           comment,
           contains(
-              'use <a href="${htmlBasePlaceholder}ex/Apple/Apple.html">Apple.Apple</a>'));
+              'use <a href="${htmlBasePlaceholder}ex/Apple/Apple.html">Apple.new</a>'));
       expect(
           comment,
           contains(

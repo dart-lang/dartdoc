@@ -215,7 +215,7 @@ class WithGenericSub extends WithGeneric<Apple> {
   WithGenericSub(Apple prop) : super(prop);
 }
 
-/// Extends class [Apple], use [Apple.Apple] or [Apple.fromString]
+/// Extends class [Apple], use [Apple.new] or [Apple.fromString]
 ///
 /// <pre>
 ///  B extends A
