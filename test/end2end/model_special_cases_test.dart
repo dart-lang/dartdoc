@@ -20,14 +20,6 @@ import 'package:test/test.dart';
 import '../src/utils.dart' as utils;
 import '../src/utils.dart';
 
-final _testPackageGraphExperimentsMemo = AsyncMemoizer<PackageGraph>();
-Future<PackageGraph> get _testPackageGraphExperiments =>
-    _testPackageGraphExperimentsMemo.runOnce(() => utils.bootBasicPackage(
-        'testing/test_package_experiments',
-        pubPackageMetaProvider,
-        PhysicalPackageConfigProvider(),
-        additionalArguments: ['--no-link-to-remote']));
-
 final _testPackageGraphGinormousMemo = AsyncMemoizer<PackageGraph>();
 Future<PackageGraph> get _testPackageGraphGinormous =>
     _testPackageGraphGinormousMemo.runOnce(() => utils.bootBasicPackage(

@@ -632,6 +632,7 @@ class HtmlEscapableProperties extends HtmlEscapableImplicitProperties {
 /// The rest of this is not in the first paragraph.
 @Annotation('value')
 // ignore: deprecated_member_use
+// ignore: deprecated_member_use_from_same_package
 class LongFirstLine extends SuperAwesomeClass
     with MixMeIn
     implements Interface, AnotherInterface {
@@ -913,6 +914,7 @@ class BaseForDocComments {
   /// Reference to another method in this class [anotherMethod] xx
   ///
   // ignore: deprecated_member_use
+  // ignore: deprecated_member_use_from_same_package
   /// Reference to a top-level function in this library [topLevelFunction] xx
   ///
   /// Reference to a top-level function in another library that is imported into this library (example lib) [function1] xx
