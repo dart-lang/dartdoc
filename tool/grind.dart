@@ -233,7 +233,11 @@ void checkFormat() async {
           'format',
           '-o',
           'none',
-          '.',
+          'bin',
+          'lib',
+          'test',
+          'tool',
+          'web',
         ],
         perLine: addFileToFix);
     if (filesToFix.isNotEmpty) {

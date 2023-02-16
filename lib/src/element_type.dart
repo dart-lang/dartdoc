@@ -40,54 +40,14 @@ abstract class ElementType extends Privacy
 
   factory ElementType._from(
       DartType f, Library library, PackageGraph packageGraph) {
-    if (f is RecordType) {
-      return RecordElementType(f, library, packageGraph);
-    }
     var fElement = DartTypeExtension(f).element;
     if (fElement == null ||
         fElement.kind == ElementKind.DYNAMIC ||
         fElement.kind == ElementKind.NEVER) {
-      // [UndefinedElementType]s.
-      if (f is FunctionType) {
-        if (f.alias?.element != null) {
-          return AliasedFunctionTypeElementType(f, library, packageGraph);
-        }
-        return FunctionTypeElementType(f, library, packageGraph);
-      }
-      return UndefinedElementType(f, library, packageGraph);
+      return UndefinedElementType._from(f, library, packageGraph);
     }
-    // [DefinedElementType]s.
-    var element = packageGraph.modelBuilder.fromElement(fElement);
-    // `TypeAliasElement.alias.element` has different implications.
-    // In that case it is an actual type alias of some kind (generic or
-    // otherwise). Here however `alias.element` signals that this is a type
-    // referring to an alias.
-    if (f is! TypeAliasElement && f.alias?.element != null) {
-      return AliasedElementType(
-          f as ParameterizedType, library, packageGraph, element);
-    }
-    assert(f is ParameterizedType || f is TypeParameterType);
-    // TODO(jcollins-g): strip out all the cruft that's accumulated
-    // here for non-generic type aliases.
-    var isGenericTypeAlias = f.alias?.element != null && f is! InterfaceType;
-    if (f is FunctionType) {
-      assert(f is ParameterizedType);
-      // And finally, delete this case and its associated class
-      // after https://dart-review.googlesource.com/c/sdk/+/201520
-      // is in all published versions of analyzer this version of dartdoc
-      // is compatible with.
-      return CallableElementType(f, library, packageGraph, element);
-    }
-    if (isGenericTypeAlias) {
-      return GenericTypeAliasElementType(
-          f as TypeParameterType, library, packageGraph, element);
-    }
-    if (f is TypeParameterType) {
-      return TypeParameterElementType(f, library, packageGraph, element);
-    }
-    assert(f is ParameterizedType);
-    return ParameterizedElementType(
-        f as ParameterizedType, library, packageGraph, element);
+    var modelElement = packageGraph.modelBuilder.fromElement(fElement);
+    return DefinedElementType._from(f, modelElement, library, packageGraph);
   }
 
   /// The element of [type].
@@ -117,6 +77,24 @@ abstract class ElementType extends Privacy
 /// whose element is irrelevant).
 class UndefinedElementType extends ElementType {
   UndefinedElementType(super.f, super.library, super.packageGraph);
+
+  factory UndefinedElementType._from(
+      DartType f, Library library, PackageGraph packageGraph) {
+    // [UndefinedElementType]s.
+    if (f.alias?.element != null) {
+      if (f is FunctionType) {
+        return AliasedUndefinedFunctionElementType(f, library, packageGraph);
+      }
+      return AliasedUndefinedElementType(f, library, packageGraph);
+    }
+    if (f is RecordType) {
+      return RecordElementType(f, library, packageGraph);
+    }
+    if (f is FunctionType) {
+      return FunctionTypeElementType(f, library, packageGraph);
+    }
+    return UndefinedElementType(f, library, packageGraph);
+  }
 
   @override
   bool get isPublic => true;
@@ -196,16 +174,22 @@ class RecordElementType extends UndefinedElementType with Rendered {
   RecordType get type => super.type as RecordType;
 }
 
-class AliasedFunctionTypeElementType extends FunctionTypeElementType
-    with Aliased {
-  AliasedFunctionTypeElementType(super.f, super.library, super.packageGraph) {
+class AliasedUndefinedFunctionElementType extends AliasedUndefinedElementType
+    with Callable {
+  AliasedUndefinedFunctionElementType(
+      super.f, super.library, super.packageGraph);
+}
+
+class AliasedUndefinedElementType extends UndefinedElementType
+    with Aliased, Rendered {
+  AliasedUndefinedElementType(super.f, super.library, super.packageGraph) {
     assert(type.alias?.element != null);
     assert(type.alias?.typeArguments != null);
   }
 
   @override
-  ElementTypeRenderer<AliasedFunctionTypeElementType> get _renderer =>
-      packageGraph.rendererFactory.aliasedFunctionTypeElementTypeRenderer;
+  ElementTypeRenderer get _renderer =>
+      packageGraph.rendererFactory.aliasedUndefinedElementTypeRenderer;
 }
 
 class ParameterizedElementType extends DefinedElementType with Rendered {
@@ -283,6 +267,35 @@ abstract class DefinedElementType extends ElementType {
 
   DefinedElementType(
       super.type, super.library, super.packageGraph, this.modelElement);
+
+  factory DefinedElementType._from(DartType f, ModelElement modelElement,
+      Library library, PackageGraph packageGraph) {
+    // `TypeAliasElement.alias.element` has different implications.
+    // In that case it is an actual type alias of some kind (generic or
+    // otherwise). Here however `alias.element` signals that this is a type
+    // referring to an alias.
+    if (f is! TypeAliasElement && f.alias?.element != null) {
+      return AliasedElementType(
+          f as ParameterizedType, library, packageGraph, modelElement);
+    }
+    assert(f is ParameterizedType || f is TypeParameterType);
+    assert(f is! FunctionType,
+        'detected DefinedElementType for FunctionType: analyzer version too old?');
+    // TODO(jcollins-g): strip out all the cruft that's accumulated
+    // here for non-generic type aliases.
+    var isGenericTypeAlias = f.alias?.element != null && f is! InterfaceType;
+    if (isGenericTypeAlias) {
+      assert(false);
+      return GenericTypeAliasElementType(
+          f as TypeParameterType, library, packageGraph, modelElement);
+    }
+    if (f is TypeParameterType) {
+      return TypeParameterElementType(f, library, packageGraph, modelElement);
+    }
+    assert(f is ParameterizedType);
+    return ParameterizedElementType(
+        f as ParameterizedType, library, packageGraph, modelElement);
+  }
 
   Element get element => modelElement.element;
 
