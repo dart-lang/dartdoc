@@ -86,14 +86,12 @@ abstract class _RecordTypeFieldListRenderer {
         var linkedTypeName = typeName(modelType.linkedName);
         if (linkedTypeName.isNotEmpty) {
           fieldBuffer.write(linkedTypeName);
-          fieldBuffer.write(' ');
         }
-        var name = field is RecordTypeNamedField
-            ? field.name
-            : _fieldName(field, index);
-        fieldBuffer.write(fieldName(name));
+        if (field is RecordTypeNamedField) {
+          fieldBuffer.write(' ');
+          fieldBuffer.write(fieldName(field.name));
+        }
         fieldBuffer.write(suffix);
-
         buffer.write(listItem(this.field(fieldBuffer.toString())));
       });
     }
@@ -114,6 +112,4 @@ abstract class _RecordTypeFieldListRenderer {
     }
     return orderedList(buffer.toString());
   }
-
-  String _fieldName(RecordTypeField field, int index) => '\$$index';
 }

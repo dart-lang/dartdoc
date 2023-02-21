@@ -22,34 +22,33 @@ class RecordTest extends DartdocTestBase {
   String get libraryName => 'records';
 
   @override
-  String get sdkConstraint => '>=2.19.0-0 <3.0.0';
+  String get sdkConstraint => '>=2.19.0-0 <4.0.0';
 
   @override
   List<String> get experiments => ['records'];
 
   void test_noFields() async {
     var library = await bootPackageWithLibrary('''
-void f(() record) {}
+void f(() r) {}
 ''');
     var fFunction = library.functions.named('f');
     var recordType = fFunction.modelType.parameters.first.modelType;
-    expect(recordType.linkedName, equals('Record()'));
+    expect(recordType.linkedName, equals('()'));
     expect(recordType.nameWithGenerics, equals('Record'));
   }
 
   void test_onePositionalField() async {
     var library = await bootPackageWithLibrary('''
-void f((int) record) {}
+void f((int) r) {}
 ''');
     var fFunction = library.functions.named('f');
     var recordType = fFunction.modelType.parameters.first.modelType;
     expect(recordType.linkedName, matchesCompressed(r'''
-        Record\(
+        \(
           <span class="field">
             <span class="type-annotation">
               <a href=".*/dart-core/int-class.html">int</a>
             </span>
-            <span class="field-name">\$0</span>
           </span>
         \)
       '''));
@@ -58,23 +57,21 @@ void f((int) record) {}
 
   void test_positionalFields() async {
     var library = await bootPackageWithLibrary('''
-void f((int, String) record) {}
+void f((int, String) r) {}
 ''');
     var fFunction = library.functions.named('f');
     var recordType = fFunction.modelType.parameters.first.modelType;
     expect(recordType.linkedName, matchesCompressed(r'''
-        Record\(
+        \(
           <span class="field">
             <span class="type-annotation">
               <a href=".*/dart-core/int-class.html">int</a>
-            </span>
-            <span class="field-name">\$0</span>,
+            </span>,
           </span>
           <span class="field">
             <span class="type-annotation">
               <a href=".*/dart-core/String-class.html">String</a>
             </span>
-            <span class="field-name">\$1</span>
           </span>
         \)
       '''));
@@ -88,7 +85,7 @@ void f(({int bbb, String aaa}) record) {}
     var fFunction = library.functions.named('f');
     var recordType = fFunction.modelType.parameters.first.modelType;
     expect(recordType.linkedName, matchesCompressed(r'''
-        Record\(
+        \(
           <span class="field">
             \{
             <span class="type-annotation">
@@ -115,18 +112,16 @@ void f((int one, String two, {int ccc, String aaa, int bbb}) record) {}
     var fFunction = library.functions.named('f');
     var recordType = fFunction.modelType.parameters.first.modelType;
     expect(recordType.linkedName, matchesCompressed(r'''
-        Record\(
+        \(
           <span class="field">
             <span class="type-annotation">
               <a href=".*/dart-core/int-class.html">int</a>
-            </span>
-            <span class="field-name">\$0</span>,
+            </span>,
           </span>
           <span class="field">
             <span class="type-annotation">
               <a href=".*/dart-core/String-class.html">String</a>
-            </span>
-            <span class="field-name">\$1</span>,
+            </span>,
           </span>
           <span class="field">
             \{
