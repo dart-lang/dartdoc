@@ -123,7 +123,6 @@ class RecordElementTypeRendererHtml
   @override
   String renderLinkedName(RecordElementType elementType) {
     var buffer = StringBuffer()
-      ..write(elementType.nameWithGenerics)
       ..write('(')
       ..write(const RecordTypeFieldListHtmlRenderer()
           .renderLinkedFields(elementType)
