@@ -2,3 +2,6 @@ analyzer:
   # enable for analysis on test package sources.
   enable-experiment:
     - records
+    - patterns
+    - sealed-class
+    - class-modifiers
