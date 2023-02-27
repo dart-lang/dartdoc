@@ -9,6 +9,7 @@ typedef TypedefName<T, U> = (T, U);
 
 TypedefName<T, U> recordGenerator<T, U>(T a, U b) => (a, b);
 
-var a, b = recordGenerator<int, double>(5, 6.5);
-
-var c, d = (12, recordGenerator<int, String>(7, 'hello'));
+(int, int) position = (5, 6);
+(String, int) aRecord = recordGenerator<String, int>('hello', 1);
+var a, b = position;
+var c, d = aRecord;
