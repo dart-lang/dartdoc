@@ -1673,28 +1673,6 @@ class _Renderer_Class extends RendererBase<Class> {
                         parent: r);
                   },
                 ),
-                'fullkind': Property(
-                  getValue: (CT_ c) => c.fullkind,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_String.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as String,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.fullkind, ast, r.template, sink,
-                        parent: r);
-                  },
-                ),
                 'inheritanceChain': Property(
                   getValue: (CT_ c) => c.inheritanceChain,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -1715,12 +1693,47 @@ class _Renderer_Class extends RendererBase<Class> {
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.isAbstract == true,
                 ),
+                'isBase': Property(
+                  getValue: (CT_ c) => c.isBase,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.isBase == true,
+                ),
                 'isErrorOrException': Property(
                   getValue: (CT_ c) => c.isErrorOrException,
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.isErrorOrException == true,
+                ),
+                'isFinal': Property(
+                  getValue: (CT_ c) => c.isFinal,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.isFinal == true,
+                ),
+                'isInterface': Property(
+                  getValue: (CT_ c) => c.isInterface,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.isInterface == true,
+                ),
+                'isMixinClass': Property(
+                  getValue: (CT_ c) => c.isMixinClass,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.isMixinClass == true,
+                ),
+                'isSealed': Property(
+                  getValue: (CT_ c) => c.isSealed,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.isSealed == true,
                 ),
                 'kind': Property(
                   getValue: (CT_ c) => c.kind,
@@ -4358,6 +4371,41 @@ class _Renderer_Enum extends RendererBase<Enum> {
                             parent: r));
                   },
                 ),
+                'isAbstract': Property(
+                  getValue: (CT_ c) => c.isAbstract,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.isAbstract == true,
+                ),
+                'isBase': Property(
+                  getValue: (CT_ c) => c.isBase,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.isBase == true,
+                ),
+                'isInterface': Property(
+                  getValue: (CT_ c) => c.isInterface,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.isInterface == true,
+                ),
+                'isMixinClass': Property(
+                  getValue: (CT_ c) => c.isMixinClass,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.isMixinClass == true,
+                ),
+                'isSealed': Property(
+                  getValue: (CT_ c) => c.isSealed,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.isSealed == true,
+                ),
                 'kind': Property(
                   getValue: (CT_ c) => c.kind,
                   renderVariable:
@@ -6971,12 +7019,54 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                         _render_Operator(e, ast, r.template, sink, parent: r));
                   },
                 ),
+                'isAbstract': Property(
+                  getValue: (CT_ c) => c.isAbstract,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.isAbstract == true,
+                ),
+                'isBase': Property(
+                  getValue: (CT_ c) => c.isBase,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.isBase == true,
+                ),
                 'isCanonical': Property(
                   getValue: (CT_ c) => c.isCanonical,
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.isCanonical == true,
+                ),
+                'isFinal': Property(
+                  getValue: (CT_ c) => c.isFinal,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.isFinal == true,
+                ),
+                'isInterface': Property(
+                  getValue: (CT_ c) => c.isInterface,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.isInterface == true,
+                ),
+                'isMixinClass': Property(
+                  getValue: (CT_ c) => c.isMixinClass,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.isMixinClass == true,
+                ),
+                'isSealed': Property(
+                  getValue: (CT_ c) => c.isSealed,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.isSealed == true,
                 ),
                 'modelType': Property(
                   getValue: (CT_ c) => c.modelType,
@@ -6999,6 +7089,28 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                       List<MustachioNode> ast, StringSink sink) {
                     _render_DefinedElementType(
                         c.modelType, ast, r.template, sink,
+                        parent: r);
+                  },
+                ),
+                'modifiers': Property(
+                  getValue: (CT_ c) => c.modifiers,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        _Renderer_String.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(
+                        self.getValue(c) as String,
+                        nextProperty,
+                        [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => false,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    _render_String(c.modifiers, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -9376,6 +9488,48 @@ class _Renderer_Mixin extends RendererBase<Mixin> {
                         _render_InheritingContainer(e, ast, r.template, sink,
                             parent: r));
                   },
+                ),
+                'isAbstract': Property(
+                  getValue: (CT_ c) => c.isAbstract,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.isAbstract == true,
+                ),
+                'isBase': Property(
+                  getValue: (CT_ c) => c.isBase,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.isBase == true,
+                ),
+                'isFinal': Property(
+                  getValue: (CT_ c) => c.isFinal,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.isFinal == true,
+                ),
+                'isInterface': Property(
+                  getValue: (CT_ c) => c.isInterface,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.isInterface == true,
+                ),
+                'isMixinClass': Property(
+                  getValue: (CT_ c) => c.isMixinClass,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.isMixinClass == true,
+                ),
+                'isSealed': Property(
+                  getValue: (CT_ c) => c.isSealed,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.isSealed == true,
                 ),
                 'kind': Property(
                   getValue: (CT_ c) => c.kind,
