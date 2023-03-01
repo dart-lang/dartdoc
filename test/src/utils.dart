@@ -352,6 +352,13 @@ bool get recordsAllowed =>
 /// We can not use [ExperimentalFeature.releaseVersion] or even
 /// [ExperimentalFeature.experimentalReleaseVersion] as these are set to `null`
 /// even when partial analyzer implementations are available.
+bool get classModifiersAllowed =>
+    VersionRange(min: Version.parse('3.0.0-0.0-dev'), includeMin: true)
+        .allows(platformVersion);
+
+/// We can not use [ExperimentalFeature.releaseVersion] or even
+/// [ExperimentalFeature.experimentalReleaseVersion] as these are set to `null`
+/// even when partial analyzer implementations are available.
 bool get superParametersAllowed =>
     VersionRange(min: Version.parse('2.17.0-0'), includeMin: true)
         .allows(platformVersion);

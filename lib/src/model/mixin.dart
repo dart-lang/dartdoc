@@ -15,8 +15,6 @@ class Mixin extends InheritingContainer with TypeImplementing {
   @override
   final MixinElement element;
 
-  Mixin(this.element, super.library, super.packageGraph);
-
   late final List<ParameterizedElementType> superclassConstraints = [
     ...element.superclassConstraints
         .map((InterfaceType i) =>
@@ -24,21 +22,6 @@ class Mixin extends InheritingContainer with TypeImplementing {
         .where((t) =>
             t.modelElement != packageGraph.specialClasses[SpecialClass.object])
   ];
-
-  bool get hasPublicSuperclassConstraints =>
-      publicSuperclassConstraints.isNotEmpty;
-
-  Iterable<ParameterizedElementType> get publicSuperclassConstraints =>
-      model_utils.filterNonPublic(superclassConstraints);
-
-  @override
-  bool get hasModifiers => super.hasModifiers || hasPublicSuperclassConstraints;
-
-  @override
-  String get fileName => '$name-mixin.$fileType';
-
-  @override
-  String get kind => 'mixin';
 
   @override
   late final List<InheritingContainer> inheritanceChain = [
@@ -55,10 +38,47 @@ class Mixin extends InheritingContainer with TypeImplementing {
     ...interfaces.expandInheritanceChain,
   ];
 
+  Mixin(this.element, super.library, super.packageGraph);
+
   @override
   @visibleForOverriding
   Iterable<MapEntry<String, CommentReferable>> get extraReferenceChildren =>
       const [];
+
+  @override
+  String get fileName => '$name-mixin.$fileType';
+
+  @override
+  bool get hasModifiers => super.hasModifiers || hasPublicSuperclassConstraints;
+
+  bool get hasPublicSuperclassConstraints =>
+      publicSuperclassConstraints.isNotEmpty;
+
+  @override
+  bool get isAbstract => false;
+
+  @override
+  bool get isBase => element.isBase;
+
+  @override
+  bool get isFinal => element.isFinal;
+
+  @override
+  bool get isInterface => element.isInterface;
+
+  @override
+
+  /// Mixins are not mixin classes by definition.
+  bool get isMixinClass => false;
+
+  @override
+  bool get isSealed => element.isSealed;
+
+  @override
+  String get kind => 'mixin';
+
+  Iterable<ParameterizedElementType> get publicSuperclassConstraints =>
+      model_utils.filterNonPublic(superclassConstraints);
 
   @override
   String get relationshipsClass => 'mixin-relationships';

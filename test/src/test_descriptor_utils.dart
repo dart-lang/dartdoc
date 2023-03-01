@@ -36,7 +36,7 @@ Future<String> createPackage(
   final packageName = parsedYaml['name'];
   final versionConstraint = (parsedYaml['environment'] as Map)['sdk'] as String;
   final languageVersion =
-      RegExp(r'>=(\S*)\.0(-0)? ').firstMatch(versionConstraint)!.group(1);
+      RegExp(r'>=(\S*)\.0(-0)?(-0.0-dev)? ').firstMatch(versionConstraint)!.group(1);
   final packagesInfo = StringBuffer('''{
   "name": "$packageName",
   "rootUri": "../",
