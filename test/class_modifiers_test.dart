@@ -49,43 +49,43 @@ interface mixin P {}
 final mixin Q {}
 sealed mixin R {}
 ''');
-  // This almost seems worth a map and loop, but leaving expanded for now for
-  // test clarity.
-  var Aclass = library.classes.named('A');
-  var Bclass = library.classes.named('B');
-  var Cclass = library.classes.named('C');
-  var Dclass = library.classes.named('D');
-  var Eclass = library.classes.named('E');
-  var Fclass = library.classes.named('F');
-  var Gclass = library.classes.named('G');
-  var Hclass = library.classes.named('H');
-  var Iclass = library.classes.named('I');
-  var Jclass = library.classes.named('J');
-  var Kclass = library.classes.named('K');
-  var Lclass = library.classes.named('L');
-  var Mclass = library.classes.named('M');
-  var Nmixin = library.mixins.named('N');
-  var Omixin = library.mixins.named('O');
-  var Pmixin = library.mixins.named('P');
-  var Qmixin = library.mixins.named('Q');
-  var Rmixin = library.mixins.named('R');
-  expect(Aclass.fullkind, equals('class'));
-  expect(Bclass.fullkind, equals('base class'));
-  expect(Cclass.fullkind, equals('interface class'));
-  expect(Dclass.fullkind, equals('final class'));
-  expect(Eclass.fullkind, equals('sealed class'));
-  expect(Fclass.fullkind, equals('abstract class'));
-  expect(Gclass.fullkind, equals('abstract base class'));
-  expect(Hclass.fullkind, equals('abstract interface class'));
-  expect(Iclass.fullkind, equals('abstract final class'));
-  expect(Jclass.fullkind, equals('mixin class'));
-  expect(Kclass.fullkind, equals('base mixin class'));
-  expect(Lclass.fullkind, equals('abstract mixin class'));
-  expect(Mclass.fullkind, equals('abstract base mixin class'));
-  expect(Nmixin.fullkind, equals('mixin'));
-  expect(Omixin.fullkind, equals('base mixin'));
-  expect(Pmixin.fullkind, equals('interface mixin'));
-  expect(Qmixin.fullkind, equals('final mixin'));
-  expect(Rmixin.fullkind, equals('sealed mixin'));
+    // This almost seems worth a map and loop, but leaving expanded for now for
+    // test clarity.
+    var Aclass = library.classes.named('A');
+    var Bclass = library.classes.named('B');
+    var Cclass = library.classes.named('C');
+    var Dclass = library.classes.named('D');
+    var Eclass = library.classes.named('E');
+    var Fclass = library.classes.named('F');
+    var Gclass = library.classes.named('G');
+    var Hclass = library.classes.named('H');
+    var Iclass = library.classes.named('I');
+    var Jclass = library.classes.named('J');
+    var Kclass = library.classes.named('K');
+    var Lclass = library.classes.named('L');
+    var Mclass = library.classes.named('M');
+    var Nmixin = library.mixins.named('N');
+    var Omixin = library.mixins.named('O');
+    var Pmixin = library.mixins.named('P');
+    var Qmixin = library.mixins.named('Q');
+    var Rmixin = library.mixins.named('R');
+    expect(Aclass.fullkind, equals('class'));
+    expect(Bclass.fullkind, equals('base class'));
+    expect(Cclass.fullkind, equals('interface class'));
+    expect(Dclass.fullkind, equals('final class'));
+    expect(Eclass.fullkind, equals('sealed class'));
+    expect(Fclass.fullkind, equals('abstract class'));
+    expect(Gclass.fullkind, equals('abstract base class'));
+    expect(Hclass.fullkind, equals('abstract interface class'));
+    expect(Iclass.fullkind, equals('abstract final class'));
+    expect(Jclass.fullkind, equals('mixin class'));
+    expect(Kclass.fullkind, equals('base mixin class'));
+    expect(Lclass.fullkind, equals('abstract mixin class'));
+    expect(Mclass.fullkind, equals('abstract base mixin class'));
+    expect(Nmixin.fullkind, equals('mixin'));
+    expect(Omixin.fullkind, equals('base mixin'));
+    expect(Pmixin.fullkind, equals('interface mixin'));
+    expect(Qmixin.fullkind, equals('final mixin'));
+    expect(Rmixin.fullkind, equals('sealed mixin'));
   }
 }
