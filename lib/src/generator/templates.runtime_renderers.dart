@@ -15782,6 +15782,7 @@ const _invisibleGetters = {
     'hashCode',
     'isAbstract',
     'isBase',
+    'isConstructable',
     'isDartCoreEnum',
     'isDartCoreObject',
     'isExhaustive',
