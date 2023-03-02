@@ -1014,7 +1014,7 @@ String _getPackageVersion() {
 }
 
 @Task('Rebuild generated files')
-@Depends(buildWeb)
+@Depends(clean, buildWeb)
 Future<void> build() async {
   var launcher = SubprocessLauncher('build');
   await launcher.runStreamed(Platform.resolvedExecutable,
@@ -1059,6 +1059,7 @@ final _generatedFilesList = <String>[
 ].map((s) => p.joinAll(p.posix.split(s)));
 
 @Task('Verify generated files are up to date')
+@Depends(clean)
 Future<void> checkBuild() async {
   var originalFileContents = <String, String>{};
   var differentFiles = <String>[];
@@ -1134,9 +1135,9 @@ Future<void> test() async {
   await testFutures.tasksComplete;
 }
 
-@Task('Clean up pub data from test directories')
+@Task('Clean up test directories and delete build cache')
 Future<void> clean() async {
-  var toDelete = nonRootPubData;
+  var toDelete = [...nonRootPubData, ...buildCacheDirectories];
   for (var e in toDelete) {
     e.deleteSync(recursive: true);
   }
@@ -1153,6 +1154,11 @@ Iterable<FileSystemEntity> get nonRootPubData {
       .where((e) => <String>['.dart_tool', '.packages', 'pubspec.lock']
           .contains(p.basename(e.path)));
 }
+
+Iterable<Directory> get buildCacheDirectories => Directory('.dart_tool')
+    .listSync(recursive: false)
+    .whereType<Directory>()
+    .where((e) => ['build', 'build_resolvers'].contains(p.basename(e.path)));
 
 List<File> get smokeTestFiles => Directory('test')
     .listSync(recursive: true)
