@@ -8,6 +8,9 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as model_utils;
 import 'package:dartdoc/src/render/enum_field_renderer.dart';
 
+/// The [Enum] class only inherits from [InheritingContainer] because declared
+/// `enum`s inherit methods from [Object].  It can't actually participate
+/// meaningfully in other inheritance or have class modifiers.
 class Enum extends InheritingContainer
     with Constructable, TypeImplementing, MixedInTypes {
   @override
@@ -47,6 +50,21 @@ class Enum extends InheritingContainer
 
   @override
   bool get hasPublicEnumValues => publicEnumValues.isNotEmpty;
+
+  @override
+  bool get isAbstract => false;
+
+  @override
+  bool get isBase => false;
+
+  @override
+  bool get isInterface => false;
+
+  @override
+  bool get isMixinClass => false;
+
+  @override
+  bool get isSealed => false;
 }
 
 /// A field specific to an enum's values.

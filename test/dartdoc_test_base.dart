@@ -44,7 +44,7 @@ abstract class DartdocTestBase {
     if (experiments.isNotEmpty) {
       analysisOptions = '''
 analyzer:
-  enable-experiment:${experiments.map((experiment) => '\n  - $experiment')}
+  enable-experiment:${experiments.map((experiment) => '\n  - $experiment').join('')}
 ''';
     }
     packagePath = await d.createPackage(
