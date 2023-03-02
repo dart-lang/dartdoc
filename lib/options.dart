@@ -80,8 +80,10 @@ List<DartdocOption<bool>> createDartdocProgramOptions(
 
 DartdocProgramOptionContext? parseOptions(
   PackageMetaProvider packageMetaProvider,
-  List<String> arguments,
-) {
+  List<String> arguments, {
+  // Additional options are given in google3.
+  OptionGenerator? additionalOptions,
+}) {
   var optionRoot = DartdocOptionRoot.fromOptionGenerators(
       'dartdoc',
       [
@@ -89,6 +91,7 @@ DartdocProgramOptionContext? parseOptions(
         createDartdocProgramOptions,
         createLoggingOptions,
         createGeneratorOptions,
+        if (additionalOptions != null) additionalOptions,
       ],
       packageMetaProvider);
 
