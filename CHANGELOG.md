@@ -1,5 +1,7 @@
-## 6.2.0-dev
+## 6.2.0
 
+* Add basic support for Dart 3.0 features, including records and class
+  modifiers.  (#3340, #3354)
 * Stop generating a null-safety badge for elements in a null-safe library.
   (#3295)
 * Use a sun icon for switching to the light theme. (#3309)
