@@ -1,3 +1,9 @@
+/// My library
+///
+/// See [heading](#heading-with-id).
+///
+/// # Heading with id
+///  * what a topic
 library ex;
 
 abstract class SanitizableHtml {

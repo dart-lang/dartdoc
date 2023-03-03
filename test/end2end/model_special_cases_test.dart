@@ -16,6 +16,7 @@ import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/special_elements.dart';
 import 'package:test/test.dart';
+import 'package:html/parser.dart' as html;
 
 import '../src/utils.dart' as utils;
 import '../src/utils.dart';
@@ -211,9 +212,8 @@ void main() {
     Class classWithHtml;
     late final Method blockHtml;
     late final Method inlineHtml;
-
-    PackageGraph packageGraph;
-    Library exLibrary;
+    late final PackageGraph packageGraph;
+    late final Library exLibrary;
 
     setUpAll(() async {
       packageGraph = await utils.bootBasicPackage(
@@ -235,6 +235,11 @@ void main() {
       for (var modelElement in packageGraph.allLocalModelElements) {
         modelElement.documentation;
       }
+    });
+
+    test('can haveid attributes on headings', () {
+      final dom = html.parseFragment(exLibrary.documentationAsHtml);
+      expect(dom.querySelector('h1[id="heading-with-id"]'), isNotNull);
     });
 
     test('can have inline HTML', () {
