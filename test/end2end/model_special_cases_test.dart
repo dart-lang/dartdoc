@@ -15,8 +15,8 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/special_elements.dart';
-import 'package:test/test.dart';
 import 'package:html/parser.dart' as html;
+import 'package:test/test.dart';
 
 import '../src/utils.dart' as utils;
 import '../src/utils.dart';
