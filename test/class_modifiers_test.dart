@@ -45,9 +45,6 @@ abstract mixin class L {}
 abstract base mixin class M {}
 mixin N {}
 base mixin O {}
-interface mixin P {}
-final mixin Q {}
-sealed mixin R {}
 ''');
     // This almost seems worth a map and loop, but leaving expanded for now for
     // test clarity.
@@ -66,9 +63,6 @@ sealed mixin R {}
     var Mclass = library.classes.named('M');
     var Nmixin = library.mixins.named('N');
     var Omixin = library.mixins.named('O');
-    var Pmixin = library.mixins.named('P');
-    var Qmixin = library.mixins.named('Q');
-    var Rmixin = library.mixins.named('R');
     expect(Aclass.fullkind, equals('class'));
     expect(Bclass.fullkind, equals('base class'));
     expect(Cclass.fullkind, equals('interface class'));
@@ -84,8 +78,5 @@ sealed mixin R {}
     expect(Mclass.fullkind, equals('abstract base mixin class'));
     expect(Nmixin.fullkind, equals('mixin'));
     expect(Omixin.fullkind, equals('base mixin'));
-    expect(Pmixin.fullkind, equals('interface mixin'));
-    expect(Qmixin.fullkind, equals('final mixin'));
-    expect(Rmixin.fullkind, equals('sealed mixin'));
   }
 }
