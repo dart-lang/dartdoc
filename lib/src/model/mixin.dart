@@ -67,6 +67,7 @@ class Mixin extends InheritingContainer with TypeImplementing {
   bool get isInterface => false;
 
   @override
+
   /// Mixins are not mixin classes by definition.
   bool get isMixinClass => false;
 
