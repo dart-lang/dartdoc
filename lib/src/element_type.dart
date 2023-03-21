@@ -101,7 +101,7 @@ class UndefinedElementType extends ElementType {
 
   @override
   String get name {
-    if (type.isVoid) return 'void';
+    if (type is VoidType) return 'void';
     if (type.isDynamic) return 'dynamic';
     assert(const {'Never'}.contains(typeElement!.name),
         'Unrecognized type for UndefinedElementType: ${type.toString()}');
@@ -436,7 +436,7 @@ class GenericTypeAliasElementType extends TypeParameterElementType {
 extension on DartType {
   /// The dartdoc nullability suffix for this type in [library].
   String nullabilitySuffixWithin(Library library) {
-    if (!isVoid && !isBottom) {
+    if (this is! VoidType && !isBottom) {
       /// If a legacy type appears inside the public interface of a Null
       /// safety library, we pretend it is nullable for the purpose of
       /// documentation (since star-types are not supposed to be public).

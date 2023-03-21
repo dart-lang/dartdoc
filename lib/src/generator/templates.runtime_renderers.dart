@@ -15982,6 +15982,7 @@ const _invisibleGetters = {
     'nonSynthetic',
     'runtimeType',
     'session',
+    'sinceSdkVersion',
     'source'
   },
   'ElementAnnotation': {
@@ -16074,6 +16075,7 @@ const _invisibleGetters = {
     'returnType',
     'runtimeType',
     'session',
+    'sinceSdkVersion',
     'substitution',
     'type',
     'typeParameters'
@@ -16314,6 +16316,7 @@ const _invisibleGetters = {
     'nonSynthetic',
     'runtimeType',
     'session',
+    'sinceSdkVersion',
     'substitution'
   },
   'MethodElement': {'augmentation', 'declaration', 'hashCode', 'runtimeType'},
@@ -16483,6 +16486,7 @@ const _invisibleGetters = {
     'parameters',
     'runtimeType',
     'session',
+    'sinceSdkVersion',
     'source',
     'substitution',
     'type',
