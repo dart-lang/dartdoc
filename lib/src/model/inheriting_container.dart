@@ -12,6 +12,52 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as model_utils;
 import 'package:meta/meta.dart';
 
+/// Represents a single modifier applicable to containers.
+class ContainerModifier implements Comparable<ContainerModifier> {
+  final String name;
+  final String displayName;
+
+  /// If this modifier is present with any of these modifiers, it should
+  /// not be displayed.
+  final Set<ContainerModifier> hideIfPresent;
+
+  /// The display order of this modifier.
+  final int order;
+  const ContainerModifier._(this.name,{
+      required this.order,
+      String? displayName,
+      Set<ContainerModifier>? hideIfPresent,
+    })
+    : displayName = displayName ?? name,
+      hideIfPresent = hideIfPresent ?? const <ContainerModifier>{};
+
+  @override
+  String toString() => displayName;
+
+  @override
+  int compareTo(ContainerModifier a) => order.compareTo(a.order);
+}
+
+abstract class ContainerModifiers {
+  static const ContainerModifier sealed = ContainerModifier._('sealed', order: 0);
+  static const ContainerModifier abstract = ContainerModifier._('abstract', order: 0, hideIfPresent: {sealed});
+  static const ContainerModifier base = ContainerModifier._('base', order: 1);
+  static const ContainerModifier inferredBase = ContainerModifier._('base', order: 1, displayName: '/* extends from base */', hideIfPresent: {sealed});
+  static const ContainerModifier interface = ContainerModifier._('interface', order: 2);
+  static const ContainerModifier inferredInterface = ContainerModifier._('interface', order: 2, displayName: '/* extends from interface */', hideIfPresent: {sealed});
+  static const ContainerModifier finalModifier = ContainerModifier._('final', order: 3);
+  static const ContainerModifier inferredFinalModifier = ContainerModifier._('final', order: 3, displayName: '/* extends from final */', hideIfPresent: {sealed});
+  static const ContainerModifier mixin = ContainerModifier._('mixin', order: 4);
+
+  /// Returns a string suitable for prefixing the class name in Dartdoc
+  /// title bars based on given modifiers.
+  static String modifiersAsFullKindPrefix(Iterable<ContainerModifier> modifiers) {
+    return modifiers.sorted((a, b) => a.compareTo(b))
+        .where((m) => !m.hideIfPresent.any((h) => modifiers.contains(h)))
+        .join(' ');
+  }
+}
+
 /// A mixin to build an [InheritingContainer] capable of being constructed
 /// with a direct call to a [Constructor] in Dart.
 ///

@@ -79,4 +79,41 @@ base mixin O {}
     expect(Nmixin.fullkind, equals('mixin'));
     expect(Omixin.fullkind, equals('base mixin'));
   }
+
+  void test_inferredModifiers() async {
+    var library = await bootPackageWithLibrary('''
+base class A {}
+sealed class B extends A {}
+base class C extends B {}
+
+interface class D {}
+sealed class E extends D {}
+interface class F extends E {}
+
+final class G {}
+sealed class H extends G {}
+final class I extends H {}
+
+class J {}
+base mixin K on J {}
+sealed class L extends J with K {}
+base class M extends L {}
+''');
+    var Bclass = library.classes.named('B');
+    var Cclass = library.classes.named('C');
+    var Eclass = library.classes.named('E');
+    var Fclass = library.classes.named('F');
+    var Hclass = library.classes.named('H');
+    var Iclass = library.classes.named('I');
+    var Lclass = library.classes.named('L');
+    var Mclass = library.classes.named('M');
+    expect(Bclass.fullkind, equals('sealed class')); // *not* sealed base
+    expect(Cclass.fullkind, equals('base class'));
+    expect(Eclass.fullkind, equals('sealed class'));
+    expect(Fclass.fullkind, equals('interface class'));
+    expect(Hclass.fullkind, equals('sealed class'));
+    expect(Iclass.fullkind, equals('final class'));
+    expect(Lclass.fullkind, equals('sealed class'));
+    expect(Mclass.fullkind, equals('base class'));
+  }
 }
