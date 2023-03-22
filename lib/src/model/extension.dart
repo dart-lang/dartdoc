@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/type.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/extension_target.dart';
@@ -23,7 +24,7 @@ class Extension extends Container implements EnclosedElement {
   /// Detect if this extension applies to every object.
   bool get alwaysApplies =>
       extendedType.instantiatedType.isDynamic ||
-      extendedType.instantiatedType.isVoid ||
+      extendedType.instantiatedType is VoidType ||
       extendedType.instantiatedType.isDartCoreObject;
 
   bool couldApplyTo<T extends ExtensionTarget>(T c) =>
@@ -32,7 +33,7 @@ class Extension extends Container implements EnclosedElement {
   /// Whether this extension could apply to [type].
   bool _couldApplyTo(DefinedElementType type) {
     if (extendedType.instantiatedType.isDynamic ||
-        extendedType.instantiatedType.isVoid) {
+        extendedType.instantiatedType is VoidType) {
       return true;
     }
     var typeInstantiated = type.instantiatedType;

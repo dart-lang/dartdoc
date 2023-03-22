@@ -61,10 +61,10 @@ class Mixin extends InheritingContainer with TypeImplementing {
   bool get isBase => element.isBase;
 
   @override
-  bool get isFinal => element.isFinal;
+  bool get isFinal => false;
 
   @override
-  bool get isInterface => element.isInterface;
+  bool get isInterface => false;
 
   @override
 
@@ -72,7 +72,7 @@ class Mixin extends InheritingContainer with TypeImplementing {
   bool get isMixinClass => false;
 
   @override
-  bool get isSealed => element.isSealed;
+  bool get isSealed => false;
 
   @override
   String get kind => 'mixin';
