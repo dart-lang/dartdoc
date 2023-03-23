@@ -7,6 +7,7 @@ import 'package:analyzer/dart/element/type.dart';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
+import 'package:dartdoc/src/model/container_modifiers.dart';
 import 'package:dartdoc/src/model/extension_target.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as model_utils;
@@ -86,16 +87,14 @@ abstract class InheritingContainer extends Container
   /// Class modifiers from the Dart feature specification.
   ///
   /// These apply to or have some meaning for [Class]es and [Mixin]s.
-  late String modifiers = [
-    if (isSealed) 'sealed' else if (isAbstract) 'abstract',
-    if (isBase)
-      'base'
-    else if (isInterface)
-      'interface'
-    else if (isFinal)
-      'final',
-    if (isMixinClass) 'mixin',
-  ].join(' ');
+  late List<ContainerModifier> containerModifiers = [
+    if (isAbstract) ContainerModifier.abstract,
+    if (isSealed) ContainerModifier.sealed,
+    if (isBase) ContainerModifier.base,
+    if (isInterface) ContainerModifier.interface,
+    if (isFinal) ContainerModifier.finalModifier,
+    if (isMixinClass) ContainerModifier.mixin,
+  ];
 
   late final List<ModelElement> _allModelElements = [
     ...super.allModelElements,
@@ -269,8 +268,8 @@ abstract class InheritingContainer extends Container
   Library get enclosingElement => library;
 
   String get fullkind {
-    if (modifiers.isNotEmpty) {
-      return '$modifiers $kind';
+    if (containerModifiers.isNotEmpty) {
+      return '${containerModifiers.modifiersAsFullKindPrefix()} $kind';
     }
     return kind;
   }
