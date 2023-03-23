@@ -16,13 +16,8 @@ void main() {
       expect(l.modifiersAsFullKindPrefix(), equals('abstract base interface'));
     });
 
-    test('inferred', () {
-      var l = {
-        ContainerModifier.inducedBase,
-        ContainerModifier.inducedInterface,
-        ContainerModifier.inducedFinalModifier,
-        ContainerModifier.sealed
-      };
+    test('hide abstract on sealed', () {
+      var l = {ContainerModifier.abstract, ContainerModifier.sealed};
       expect(l.modifiersAsFullKindPrefix(), equals('sealed'));
     });
 

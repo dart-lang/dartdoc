@@ -1714,27 +1714,6 @@ class _Renderer_Class extends RendererBase<Class> {
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.isFinal == true,
                 ),
-                'isInducedBase': Property(
-                  getValue: (CT_ c) => c.isInducedBase,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isInducedBase == true,
-                ),
-                'isInducedFinal': Property(
-                  getValue: (CT_ c) => c.isInducedFinal,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isInducedFinal == true,
-                ),
-                'isInducedInterface': Property(
-                  getValue: (CT_ c) => c.isInducedInterface,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isInducedInterface == true,
-                ),
                 'isInterface': Property(
                   getValue: (CT_ c) => c.isInterface,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -7081,27 +7060,6 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.isFinal == true,
-                ),
-                'isInducedBase': Property(
-                  getValue: (CT_ c) => c.isInducedBase,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isInducedBase == true,
-                ),
-                'isInducedFinal': Property(
-                  getValue: (CT_ c) => c.isInducedFinal,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isInducedFinal == true,
-                ),
-                'isInducedInterface': Property(
-                  getValue: (CT_ c) => c.isInducedInterface,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isInducedInterface == true,
                 ),
                 'isInterface': Property(
                   getValue: (CT_ c) => c.isInterface,

@@ -53,9 +53,6 @@ class Class extends InheritingContainer
   @override
   bool get isBase => element.isBase && !element.isSealed;
 
-  @override
-  bool get isInducedBase => element.isBase && element.isSealed;
-
   bool get isErrorOrException {
     bool isError(InterfaceElement element) =>
         element.library.isDartCore &&
@@ -70,13 +67,7 @@ class Class extends InheritingContainer
   bool get isFinal => element.isFinal && !element.isSealed;
 
   @override
-  bool get isInducedFinal => element.isFinal && element.isSealed;
-
-  @override
   bool get isInterface => element.isInterface && !element.isSealed;
-
-  @override
-  bool get isInducedInterface => element.isInterface && element.isSealed;
 
   @override
   bool get isMixinClass => element.isMixinClass;

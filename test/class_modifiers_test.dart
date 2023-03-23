@@ -80,6 +80,15 @@ base mixin O {}
     expect(Omixin.fullkind, equals('base mixin'));
   }
 
+  void test_abstractSealed() async {
+    var library = await bootPackageWithLibrary('''
+abstract class A {}
+sealed class B extends A {}
+''');
+    var Bclass = library.classes.named('B');
+    expect(Bclass.fullkind, equals('sealed class')); // *not* sealed abstract
+  }
+
   void test_inferredModifiers() async {
     var library = await bootPackageWithLibrary('''
 base class A {}

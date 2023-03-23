@@ -34,24 +34,10 @@ class ContainerModifier implements Comparable<ContainerModifier> {
   static const ContainerModifier abstract =
       ContainerModifier._('abstract', order: 0, hideIfPresent: {sealed});
   static const ContainerModifier base = ContainerModifier._('base', order: 1);
-  static const ContainerModifier inducedBase = ContainerModifier._('base',
-      order: 1,
-      displayName: '/* extends from base */',
-      hideIfPresent: {sealed});
   static const ContainerModifier interface =
       ContainerModifier._('interface', order: 2);
-  static const ContainerModifier inducedInterface = ContainerModifier._(
-      'interface',
-      order: 2,
-      displayName: '/* extends from interface */',
-      hideIfPresent: {sealed});
   static const ContainerModifier finalModifier =
       ContainerModifier._('final', order: 3);
-  static const ContainerModifier inducedFinalModifier = ContainerModifier._(
-      'final',
-      order: 3,
-      displayName: '/* extends from final */',
-      hideIfPresent: {sealed});
   static const ContainerModifier mixin = ContainerModifier._('mixin', order: 4);
 }
 

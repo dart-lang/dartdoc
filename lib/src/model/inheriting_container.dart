@@ -91,11 +91,8 @@ abstract class InheritingContainer extends Container
     if (isAbstract) ContainerModifier.abstract,
     if (isSealed) ContainerModifier.sealed,
     if (isBase) ContainerModifier.base,
-    if (isInducedBase) ContainerModifier.inducedBase,
     if (isInterface) ContainerModifier.interface,
-    if (isInducedInterface) ContainerModifier.inducedInterface,
     if (isFinal) ContainerModifier.finalModifier,
-    if (isInducedFinal) ContainerModifier.inducedFinalModifier,
     if (isMixinClass) ContainerModifier.mixin,
   ];
 
@@ -312,19 +309,13 @@ abstract class InheritingContainer extends Container
 
   bool get isBase;
 
-  bool get isInducedBase => false;
-
   @override
   bool get isCanonical => super.isCanonical && isPublic;
 
   @override
   bool get isFinal;
 
-  bool get isInducedFinal => false;
-
   bool get isInterface;
-
-  bool get isInducedInterface => false;
 
   bool get isMixinClass;
 
