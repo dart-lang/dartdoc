@@ -395,6 +395,17 @@ abstract class DartdocOption<T extends Object?> {
 
   bool get _isDouble => _kDoubleVal is T;
 
+  String get _expectedTypeForDisplay {
+    if (_isString) return 'String';
+    if (_isListString) return 'list of Strings';
+    if (_isMapString) return 'map of String to String';
+    if (_isBool) return 'boolean';
+    if (_isInt) return 'int';
+    if (_isDouble) return 'double';
+    assert(false, 'Expecting an unknown type');
+    return '<<unknown>>';
+  }
+
   final Map<String, _YamlFileData> __yamlAtCanonicalPathCache = {};
 
   /// Implementation detail for [DartdocOptionFileOnly].  Make sure we use
@@ -945,9 +956,8 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
         };
       }
       if (convertYamlToType == null) {
-        throw DartdocOptionError(
-            'Unable to convert yaml to type for option: $fieldName, method not '
-            'defined');
+        throw UnsupportedError(
+            '$fieldName: convertYamlToType method not defined');
       }
       var canonicalDirectoryPath =
           resourceProvider.pathContext.canonicalize(contextPath);
@@ -963,6 +973,10 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
       }
     } else {
       throw UnsupportedError('Type $T is not supported');
+    }
+    if (returnData == null) {
+      throw DartdocOptionError('Error in dartdoc_options.yaml, $fieldName: '
+          'expecting a $_expectedTypeForDisplay, got `$yamlData`');
     }
     return _OptionValueWithContext(returnData as T, contextPath,
         definingFile: 'dartdoc_options.yaml');
