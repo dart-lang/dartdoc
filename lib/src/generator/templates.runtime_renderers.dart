@@ -1714,6 +1714,27 @@ class _Renderer_Class extends RendererBase<Class> {
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.isFinal == true,
                 ),
+                'isInducedBase': Property(
+                  getValue: (CT_ c) => c.isInducedBase,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.isInducedBase == true,
+                ),
+                'isInducedFinal': Property(
+                  getValue: (CT_ c) => c.isInducedFinal,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.isInducedFinal == true,
+                ),
+                'isInducedInterface': Property(
+                  getValue: (CT_ c) => c.isInducedInterface,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.isInducedInterface == true,
+                ),
                 'isInterface': Property(
                   getValue: (CT_ c) => c.isInterface,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -6807,6 +6828,20 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                         _render_Field(e, ast, r.template, sink, parent: r));
                   },
                 ),
+                'containerModifiers': Property(
+                  getValue: (CT_ c) => c.containerModifiers,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'List<ContainerModifier>'),
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    return c.containerModifiers.map((e) => renderSimple(
+                        e, ast, r.template, sink,
+                        parent: r,
+                        getters: _invisibleGetters['ContainerModifier']!));
+                  },
+                ),
                 'declaredFields': Property(
                   getValue: (CT_ c) => c.declaredFields,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -7047,6 +7082,27 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.isFinal == true,
                 ),
+                'isInducedBase': Property(
+                  getValue: (CT_ c) => c.isInducedBase,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.isInducedBase == true,
+                ),
+                'isInducedFinal': Property(
+                  getValue: (CT_ c) => c.isInducedFinal,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.isInducedFinal == true,
+                ),
+                'isInducedInterface': Property(
+                  getValue: (CT_ c) => c.isInducedInterface,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.isInducedInterface == true,
+                ),
                 'isInterface': Property(
                   getValue: (CT_ c) => c.isInterface,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -7089,28 +7145,6 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                       List<MustachioNode> ast, StringSink sink) {
                     _render_DefinedElementType(
                         c.modelType, ast, r.template, sink,
-                        parent: r);
-                  },
-                ),
-                'modifiers': Property(
-                  getValue: (CT_ c) => c.modifiers,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_String.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as String,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.modifiers, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -15845,6 +15879,14 @@ const _invisibleGetters = {
     'periodOffset',
     'redirectedConstructor',
     'returnType',
+    'runtimeType'
+  },
+  'ContainerModifier': {
+    'displayName',
+    'hashCode',
+    'hideIfPresent',
+    'name',
+    'order',
     'runtimeType'
   },
   'Context': {'current', 'hashCode', 'runtimeType', 'separator', 'style'},
