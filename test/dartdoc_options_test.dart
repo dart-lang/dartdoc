@@ -40,6 +40,7 @@ class ConvertedOption {
 
 void main() {
   var resourceProvider = pubPackageMetaProvider.resourceProvider;
+  var path = pubPackageMetaProvider.resourceProvider.pathContext;
 
   late final DartdocOptionRoot dartdocOptionSetFiles;
   late final DartdocOptionRoot dartdocOptionSetArgs;
@@ -174,34 +175,30 @@ void main() {
     ));
 
     tempDir = resourceProvider.createSystemTemp('options_test');
-    firstDir = resourceProvider
-        .getFolder(resourceProvider.pathContext.join(tempDir.path, 'firstDir'))
+    firstDir = resourceProvider.getFolder(path.join(tempDir.path, 'firstDir'))
       ..create();
-    firstExisting = resourceProvider.getFile(
-        resourceProvider.pathContext.join(firstDir.path, 'existing.dart'))
+    firstExisting = resourceProvider
+        .getFile(path.join(firstDir.path, 'existing.dart'))
       ..writeAsStringSync('');
-    secondDir = resourceProvider
-        .getFolder(resourceProvider.pathContext.join(tempDir.path, 'secondDir'))
+    secondDir = resourceProvider.getFolder(path.join(tempDir.path, 'secondDir'))
       ..create();
     resourceProvider
-        .getFile(
-            resourceProvider.pathContext.join(secondDir.path, 'existing.dart'))
+        .getFile(path.join(secondDir.path, 'existing.dart'))
         .writeAsStringSync('');
 
-    secondDirFirstSub = resourceProvider.getFolder(
-        resourceProvider.pathContext.join(secondDir.path, 'firstSub'))
+    secondDirFirstSub = resourceProvider
+        .getFolder(path.join(secondDir.path, 'firstSub'))
       ..create();
-    secondDirSecondSub = resourceProvider.getFolder(
-        resourceProvider.pathContext.join(secondDir.path, 'secondSub'))
+    secondDirSecondSub = resourceProvider
+        .getFolder(path.join(secondDir.path, 'secondSub'))
       ..create();
 
-    dartdocOptionsOne = resourceProvider.getFile(resourceProvider.pathContext
-        .join(firstDir.path, 'dartdoc_options.yaml'));
-    dartdocOptionsTwo = resourceProvider.getFile(resourceProvider.pathContext
-        .join(secondDir.path, 'dartdoc_options.yaml'));
-    var dartdocOptionsTwoFirstSub = resourceProvider.getFile(resourceProvider
-        .pathContext
-        .join(secondDirFirstSub.path, 'dartdoc_options.yaml'));
+    dartdocOptionsOne = resourceProvider
+        .getFile(path.join(firstDir.path, 'dartdoc_options.yaml'));
+    dartdocOptionsTwo = resourceProvider
+        .getFile(path.join(secondDir.path, 'dartdoc_options.yaml'));
+    var dartdocOptionsTwoFirstSub = resourceProvider
+        .getFile(path.join(secondDirFirstSub.path, 'dartdoc_options.yaml'));
 
     dartdocOptionsOne.writeAsStringSync('''
 dartdoc:
@@ -247,6 +244,42 @@ dartdoc:
     }
   });
 
+  group('invalid data in yaml', () {
+    late Folder invalid;
+    late File dartdocOptionsInvalid;
+
+    setUp(() {
+      invalid = resourceProvider.getFolder(path.join(tempDir.path, 'invalid'))
+        ..create();
+      dartdocOptionsInvalid = resourceProvider
+          .getFile(path.join(invalid.path, 'dartdoc_options.yaml'));
+      dartdocOptionsInvalid.writeAsStringSync('''
+dartdoc:
+  categoryOrder: 'options_one'
+      ''');
+    });
+
+    tearDown(() {
+      try {
+        invalid.delete();
+      } catch (e) {
+        print('Ignoring error trying to delete temp: $e');
+      }
+    });
+
+    test('validate correct throw for wrong data type', () {
+      dartdocOptionSetFiles.parseArguments([]);
+      expect(() {
+        dartdocOptionSetFiles['categoryOrder'].valueAt(invalid);
+      },
+          throwsA(const TypeMatcher<DartdocOptionError>().having(
+              (e) => e.message,
+              'message',
+              equals('Error in dartdoc_options.yaml, dartdoc.categoryOrder: '
+                  'expecting a list of Strings, got `options_one`'))));
+    });
+  });
+
   group('new style synthetic option', () {
     test('validate argument override changes value', () {
       dartdocOptionSetSynthetic.parseArguments(['--my-special-integer', '12']);
@@ -272,10 +305,8 @@ dartdoc:
       } on DartdocFileMissing catch (e) {
         errorMessage = e.message;
       }
-      var missingPath = resourceProvider.pathContext.canonicalize(
-          resourceProvider.pathContext.join(
-              resourceProvider.pathContext.absolute(tempDir.path),
-              'existing.dart'));
+      var missingPath = path.canonicalize(
+          path.join(path.absolute(tempDir.path), 'existing.dart'));
       expect(
           errorMessage,
           equals('Synthetic configuration option vegetableLoaderChecked from '
@@ -296,7 +327,7 @@ dartdoc:
       // Since this is an ArgSynth, it ignores the yaml option and resolves to the CWD
       expect(
           dartdocOptionSetSynthetic['nonCriticalFileOption'].valueAt(firstDir),
-          equals(resourceProvider.pathContext.canonicalize('stuff.zip')));
+          equals(path.canonicalize('stuff.zip')));
     });
 
     test('ArgSynth defaults to synthetic', () {
@@ -320,10 +351,8 @@ dartdoc:
       } on DartdocFileMissing catch (e) {
         errorMessage = e.message;
       }
-      var missingPath = resourceProvider.pathContext.join(
-          resourceProvider.pathContext
-              .canonicalize(resourceProvider.pathContext.current),
-          'override-not-existing.dart');
+      var missingPath = path.join(
+          path.canonicalize(path.current), 'override-not-existing.dart');
       expect(
           errorMessage,
           equals('Argument --file-option, set to override-not-existing.dart, '
@@ -386,8 +415,7 @@ dartdoc:
     });
 
     group('glob options', () {
-      String canonicalize(String path) =>
-          resourceProvider.pathContext.canonicalize(path);
+      String canonicalize(String inputPath) => path.canonicalize(inputPath);
 
       test('work via the command line', () {
         dartdocOptionSetAll
@@ -395,11 +423,7 @@ dartdoc:
         expect(
             dartdocOptionSetAll['globOption'].valueAtCurrent(),
             equals([
-              resourceProvider.pathContext.joinAll([
-                canonicalize(resourceProvider.pathContext.current),
-                'foo',
-                '**'
-              ])
+              path.joinAll([canonicalize(path.current), 'foo', '**'])
             ]));
       });
 
@@ -408,25 +432,21 @@ dartdoc:
         expect(
             dartdocOptionSetAll['globOption'].valueAt(secondDir),
             equals([
-              canonicalize(
-                  resourceProvider.pathContext.join(secondDir.path, 'q*.html')),
-              canonicalize(
-                  resourceProvider.pathContext.join(secondDir.path, 'e*.dart')),
+              canonicalize(path.join(secondDir.path, 'q*.html')),
+              canonicalize(path.join(secondDir.path, 'e*.dart')),
             ]));
         // No child override, should be the same as parent
         expect(
             dartdocOptionSetAll['globOption'].valueAt(secondDirSecondSub),
             equals([
-              canonicalize(
-                  resourceProvider.pathContext.join(secondDir.path, 'q*.html')),
-              canonicalize(
-                  resourceProvider.pathContext.join(secondDir.path, 'e*.dart')),
+              canonicalize(path.join(secondDir.path, 'q*.html')),
+              canonicalize(path.join(secondDir.path, 'e*.dart')),
             ]));
         // Child directory overrides
         expect(
             dartdocOptionSetAll['globOption'].valueAt(secondDirFirstSub),
             equals([
-              resourceProvider.pathContext.joinAll(
+              path.joinAll(
                   [canonicalize(secondDirFirstSub.path), '**', '*.dart'])
             ]));
       });
@@ -464,10 +484,8 @@ dartdoc:
       } on DartdocFileMissing catch (e) {
         errorMessage = e.message;
       }
-      var missingPath = resourceProvider.pathContext.join(
-          resourceProvider.pathContext
-              .canonicalize(resourceProvider.pathContext.current),
-          'not_found.txt');
+      var missingPath =
+          path.join(path.canonicalize(path.current), 'not_found.txt');
       expect(
           errorMessage,
           equals('Argument --single-file, set to not_found.txt, resolves to '
@@ -478,7 +496,7 @@ dartdoc:
       String? errorMessage;
       dartdocOptionSetArgs.parseArguments([
         '--files-flag',
-        resourceProvider.pathContext.absolute(firstExisting.path),
+        path.absolute(firstExisting.path),
         '--files-flag',
         'other_not_found.txt'
       ]);
@@ -487,14 +505,12 @@ dartdoc:
       } on DartdocFileMissing catch (e) {
         errorMessage = e.message;
       }
-      var missingPath = resourceProvider.pathContext.join(
-          resourceProvider.pathContext
-              .canonicalize(resourceProvider.pathContext.current),
-          'other_not_found.txt');
+      var missingPath =
+          path.join(path.canonicalize(path.current), 'other_not_found.txt');
       expect(
           errorMessage,
           equals('Argument --files-flag, set to '
-              '[${resourceProvider.pathContext.absolute(firstExisting.path)}, '
+              '[${path.absolute(firstExisting.path)}, '
               'other_not_found.txt], resolves to missing path: '
               '"$missingPath"'));
     });
@@ -506,10 +522,8 @@ dartdoc:
           .parseArguments(['--unimportant-file', 'this-will-never-exist']);
       expect(
           dartdocOptionSetArgs['unimportantFile'].valueAt(tempDir),
-          equals(resourceProvider.pathContext.join(
-              resourceProvider.pathContext
-                  .canonicalize(resourceProvider.pathContext.current),
-              'this-will-never-exist')));
+          equals(path.join(
+              path.canonicalize(path.current), 'this-will-never-exist')));
     });
 
     test('DartdocOptionArgOnly has correct flag names', () {
