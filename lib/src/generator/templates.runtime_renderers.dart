@@ -15872,6 +15872,7 @@ const _invisibleGetters = {
     'isDartCoreSet',
     'isDartCoreString',
     'isDartCoreSymbol',
+    'isDartCoreType',
     'isDynamic',
     'isVoid',
     'name',

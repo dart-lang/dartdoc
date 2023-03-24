@@ -1,3 +1,10 @@
+## 6.2.1
+* Do not show induced modifiers from analyzer in class headers.
+  (#3371)
+* Drop support for final, interface, and sealed mixins. (#3369)
+* Display an error message instead of crashing on wrong data type
+  in dartdoc_options.yaml. (#3372)
+
 ## 6.2.0
 
 * Add basic support for Dart 3.0 features, including records and class
