@@ -8,8 +8,10 @@ import 'package:dartdoc/src/model/model.dart';
 /// extension methods.
 mixin Extendable on ContainerMember {
   /// Returns this Extendable from the [Extension] in which it was declared.
-  Extendable get definingExtension => throw UnimplementedError;
+  Extendable get definingExtension =>
+      throw UnimplementedError('definingExtension');
 
   @override
-  Container get canonicalEnclosingContainer => throw UnimplementedError;
+  Container get canonicalEnclosingContainer =>
+      throw UnimplementedError('canonicalEnclosingContainer');
 }

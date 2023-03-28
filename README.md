@@ -3,7 +3,7 @@
 [![Build Status](https://github.com/dart-lang/dartdoc/workflows/Test/badge.svg)](https://github.com/dart-lang/dartdoc/actions?query=workflow%3ATest)
 [![Coverage Status](https://coveralls.io/repos/github/dart-lang/dartdoc/badge.svg?branch=master)](https://coveralls.io/github/dart-lang/dartdoc?branch=master)
 [![OpenSSF
-Scorecard](https://api.securityscorecards.dev/projects/github.com/dart-lang/dartdoc/badge)](https://api.securityscorecards.dev/projects/github.com/dart-lang/dartdoc)
+Scorecard](https://api.securityscorecards.dev/projects/github.com/dart-lang/dartdoc/badge)](https://deps.dev/project/github/dart-lang%2Fdartdoc)
 
 Use `dart doc` to generate HTML documentation for your Dart package.
 

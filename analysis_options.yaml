@@ -1,5 +1,3 @@
-# Change analysis_options.yaml and analysis_options_presubmit.yaml
-# together.
 include: package:lints/recommended.yaml
 
 analyzer:
@@ -21,12 +19,14 @@ linter:
     - always_declare_return_types
     - always_put_required_named_parameters_first
     - avoid_bool_literals_in_conditional_expressions
+    - avoid_catching_errors
     - avoid_dynamic_calls
     - avoid_slow_async_io
     - avoid_unused_constructor_parameters
     - directives_ordering
     - no_adjacent_strings_in_list
     - omit_local_variable_types
+    - only_throw_errors
     - package_api_docs
     - prefer_asserts_in_initializer_lists
     - prefer_null_aware_method_calls
@@ -37,4 +37,5 @@ linter:
     - unawaited_futures
     - unnecessary_lambdas
     - unnecessary_parenthesis
+    - unnecessary_statements
     - use_super_parameters

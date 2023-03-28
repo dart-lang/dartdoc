@@ -31,7 +31,7 @@ import 'package:test/test.dart';
 /// The number of public libraries in testing/test_package, minus 2 for
 /// the excluded libraries listed in the initializers for _testPackageGraphMemo
 /// and minus 1 for the @nodoc tag in the 'excluded' library.
-const int kTestPackagePublicLibraries = 26;
+const int kTestPackagePublicLibraries = 27;
 
 final _resourceProvider = pubPackageMetaProvider.resourceProvider;
 final _pathContext = _resourceProvider.pathContext;
@@ -151,6 +151,7 @@ PackageMetaProvider get testPackageMetaProvider {
     PubPackageMeta.fromDir,
     resourceProvider,
     sdkRoot,
+    {},
     defaultSdk: FolderBasedDartSdk(resourceProvider, sdkRoot),
     messageForMissingPackageMeta: PubPackageMeta.messageForMissingPackageMeta,
   );
@@ -193,7 +194,7 @@ homepage: https://github.com/dart-lang
   var projectsFolder = resourceProvider.getFolder(
       pathContext.canonicalize(resourceProvider.convertPath('/projects')));
   var projectFolder = projectsFolder.getChildAssumingFolder(packageName)
-    ..create;
+    ..create();
   var projectRoot = projectFolder.path;
   projectFolder
       .getChildAssumingFile('pubspec.yaml')
@@ -289,7 +290,7 @@ Future<void> writeDartdocResources(ResourceProvider resourceProvider) async {
     'docs.dart.js',
     'docs.dart.js.map',
     'favicon.png',
-    'search.png',
+    'search.svg',
     'github.css',
     'highlight.pack.js',
     'play_button.svg',
@@ -346,6 +347,13 @@ bool get namedArgumentsAnywhereAllowed =>
 /// even when partial analyzer implementations are available.
 bool get recordsAllowed =>
     VersionRange(min: Version.parse('2.19.0-0'), includeMin: true)
+        .allows(platformVersion);
+
+/// We can not use [ExperimentalFeature.releaseVersion] or even
+/// [ExperimentalFeature.experimentalReleaseVersion] as these are set to `null`
+/// even when partial analyzer implementations are available.
+bool get classModifiersAllowed =>
+    VersionRange(min: Version.parse('3.0.0-0.0-dev'), includeMin: true)
         .allows(platformVersion);
 
 /// We can not use [ExperimentalFeature.releaseVersion] or even

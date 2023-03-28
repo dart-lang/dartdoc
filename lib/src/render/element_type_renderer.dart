@@ -123,7 +123,6 @@ class RecordElementTypeRendererHtml
   @override
   String renderLinkedName(RecordElementType elementType) {
     var buffer = StringBuffer()
-      ..write(elementType.nameWithGenerics)
       ..write('(')
       ..write(const RecordTypeFieldListHtmlRenderer()
           .renderLinkedFields(elementType)
@@ -138,12 +137,12 @@ class RecordElementTypeRendererHtml
   }
 }
 
-class AliasedFunctionTypeElementTypeRendererHtml
-    extends ElementTypeRendererHtml<AliasedFunctionTypeElementType> {
-  const AliasedFunctionTypeElementTypeRendererHtml();
+class AliasedUndefinedElementTypeRendererHtml
+    extends ElementTypeRendererHtml<AliasedUndefinedElementType> {
+  const AliasedUndefinedElementTypeRendererHtml();
 
   @override
-  String renderLinkedName(AliasedFunctionTypeElementType elementType) =>
+  String renderLinkedName(AliasedUndefinedElementType elementType) =>
       _renderLinkedName(
         elementType,
         elementType.aliasElement.linkedName,
@@ -151,7 +150,7 @@ class AliasedFunctionTypeElementTypeRendererHtml
       );
 
   @override
-  String renderNameWithGenerics(AliasedFunctionTypeElementType elementType) =>
+  String renderNameWithGenerics(AliasedUndefinedElementType elementType) =>
       _renderNameWithGenerics(
         elementType,
         elementType.aliasElement.name,
@@ -340,12 +339,12 @@ class AliasedElementTypeRendererMd
       );
 }
 
-class AliasedFunctionTypeElementTypeRendererMd
-    extends ElementTypeRendererMd<AliasedFunctionTypeElementType> {
-  const AliasedFunctionTypeElementTypeRendererMd();
+class AliasedUndefinedElementTypeRendererMd
+    extends ElementTypeRendererMd<AliasedUndefinedElementType> {
+  const AliasedUndefinedElementTypeRendererMd();
 
   @override
-  String renderLinkedName(AliasedFunctionTypeElementType elementType) =>
+  String renderLinkedName(AliasedUndefinedElementType elementType) =>
       _renderLinkedName(
         elementType,
         elementType.aliasElement.linkedName,
@@ -353,7 +352,7 @@ class AliasedFunctionTypeElementTypeRendererMd
       );
 
   @override
-  String renderNameWithGenerics(AliasedFunctionTypeElementType elementType) =>
+  String renderNameWithGenerics(AliasedUndefinedElementType elementType) =>
       _renderNameWithGenerics(
         elementType,
         elementType.aliasElement.name,

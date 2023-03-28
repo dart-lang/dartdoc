@@ -141,22 +141,6 @@ final List<md.BlockSyntax> _markdownBlockSyntaxes = [
 // Remove these schemas from the display text for hyperlinks.
 final RegExp _hideSchemas = RegExp('^(http|https)://');
 
-class _IterableBlockParser extends md.BlockParser {
-  _IterableBlockParser(super.lines, super.document);
-
-  Iterable<md.Node> parseLinesGenerator() sync* {
-    while (!isDone) {
-      for (var syntax in blockSyntaxes) {
-        if (syntax.canParse(this)) {
-          var block = syntax.parse(this);
-          if (block != null) yield block;
-          break;
-        }
-      }
-    }
-  }
-}
-
 /// Returns false if [referable] is an unnamed [Constructor], or if it is
 /// shadowing another type of element, or is a parameter of one of the above.
 bool _rejectUnnamedAndShadowingConstructors(CommentReferable? referable) {
@@ -352,16 +336,12 @@ class MarkdownDocument extends md.Document {
   /// if [processFullText] is `true`.
   List<md.Node> parseMarkdownText(String text,
       {required bool processFullText}) {
-    var lines = LineSplitter.split(text).toList(growable: false);
-    md.Node? firstNode;
-    var nodes = <md.Node>[];
-    // TODO(srawlins): Refactor this. I think with null safety, it is more clear
-    // that with `processFullText == true`, we only loop once. Refactor in that
-    // scenario to just not loop.
-    for (var node in _IterableBlockParser(lines, this).parseLinesGenerator()) {
-      if (firstNode != null && !processFullText) break;
-      firstNode ??= node;
-      nodes.add(node);
+    var lines =
+        LineSplitter.split(text).map(md.Line.new).toList(growable: false);
+    var nodes =
+        md.BlockParser(lines, this).parseLines().toList(growable: false);
+    if (!processFullText && nodes.isNotEmpty) {
+      nodes = [nodes.first];
     }
     _parseInlineContent(nodes);
     return nodes;

@@ -17,40 +17,11 @@ class Class extends InheritingContainer
   @override
   final ClassElement element;
 
-  Class(this.element, Library library, PackageGraph packageGraph)
-      : super(library, packageGraph) {
-    packageGraph.specialClasses.addSpecial(this);
-  }
-
   @override
   late final List<ModelElement> allModelElements = [
     ...super.allModelElements,
     ...constructors,
   ];
-
-  @override
-  String get fileName => '$name-class.$fileType';
-
-  bool get isAbstract => element.isAbstract;
-
-  bool get isErrorOrException {
-    bool isError(InterfaceElement element) =>
-        element.library.isDartCore &&
-        (element.name == 'Exception' || element.name == 'Error');
-
-    final element = this.element;
-    if (isError(element)) return true;
-    return element.allSupertypes.map((t) => t.element).any(isError);
-  }
-
-  @override
-  String get kind => 'class';
-
-  @override
-  String get fullkind {
-    if (isAbstract) return 'abstract $kind';
-    return super.fullkind;
-  }
 
   @override
   late final List<InheritingContainer> inheritanceChain = [
@@ -67,6 +38,45 @@ class Class extends InheritingContainer
     // implement them even when they aren't mentioned.
     ...interfaces.expandInheritanceChain,
   ];
+
+  Class(this.element, Library library, PackageGraph packageGraph)
+      : super(library, packageGraph) {
+    packageGraph.specialClasses.addSpecial(this);
+  }
+
+  @override
+  String get fileName => '$name-class.$fileType';
+
+  @override
+  bool get isAbstract => element.isAbstract;
+
+  @override
+  bool get isBase => element.isBase && !element.isSealed;
+
+  bool get isErrorOrException {
+    bool isError(InterfaceElement element) =>
+        element.library.isDartCore &&
+        (element.name == 'Exception' || element.name == 'Error');
+
+    final element = this.element;
+    if (isError(element)) return true;
+    return element.allSupertypes.map((t) => t.element).any(isError);
+  }
+
+  @override
+  bool get isFinal => element.isFinal && !element.isSealed;
+
+  @override
+  bool get isInterface => element.isInterface && !element.isSealed;
+
+  @override
+  bool get isMixinClass => element.isMixinClass;
+
+  @override
+  bool get isSealed => element.isSealed;
+
+  @override
+  String get kind => 'class';
 
   @override
   String get relationshipsClass => 'clazz-relationships';

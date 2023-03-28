@@ -155,4 +155,4 @@ class _RendererGatherer {
 
 Builder mustachioBuilder(BuilderOptions options) => MustachioBuilder(
     rendererClassesArePublic:
-        options.config[rendererClassesArePublicOption] ?? false);
+        options.config[rendererClassesArePublicOption] as bool? ?? false);

@@ -1,8 +1,6 @@
 analyzer:
   # enable for analysis on test package sources.
   enable-experiment:
-    - non-nullable
-    - nonfunction-type-aliases
-    - triple-shift
-    - generic-metadata
-    - constructor-tearoffs
+    - records
+    - sealed-class
+    - class-modifiers

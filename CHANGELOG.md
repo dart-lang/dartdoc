@@ -1,3 +1,22 @@
+## 6.2.1
+* Do not show induced modifiers from analyzer in class headers.
+  (#3371)
+* Drop support for final, interface, and sealed mixins. (#3369)
+* Display an error message instead of crashing on wrong data type
+  in dartdoc_options.yaml. (#3372)
+
+## 6.2.0
+
+* Add basic support for Dart 3.0 features, including records and class
+  modifiers.  (#3340, #3354)
+* Stop generating a null-safety badge for elements in a null-safe library.
+  (#3295)
+* Use a sun icon for switching to the light theme. (#3309)
+* Standardize the search icon style to a new SVG. (#3302)
+* Remove CSS classes no longer used in dartdoc generated content. (#3302)
+* Fix an issue where we created a temporary directory when performing a dry run.
+  (#3333)
+
 ## 6.1.5
 
 * Fix remote linking in Dart 2.18. (#3267)
@@ -45,7 +64,7 @@
 * Reduce memory usage by much more extensive use of non-growable Lists, and
   constant empty lists. (#3151 and #3154)
 * Make `Warnable.package` non-nullable. (#3155)
-* Refactor the various `Renderer` classses. Specifically add abstract
+* Refactor the various `Renderer` classes. Specifically add abstract
   `ElementTypeRendererHtml` and `ElementTypeRendererMd` classes which implement
   some shared calculations. (#3163)
 * Deprecate `ElementTypeRenderer.wrapNullability`. (#3163)

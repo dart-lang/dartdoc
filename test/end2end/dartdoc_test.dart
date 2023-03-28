@@ -5,7 +5,6 @@
 library dartdoc.dartdoc_test;
 
 import 'dart:async';
-import 'dart:io' show Platform;
 
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/dartdoc.dart' show Dartdoc, DartdocResults;
@@ -119,9 +118,8 @@ void main() {
           useSomethingInAnotherPackage.modelType.linkedName,
           matches(
               r'<a href="https://pub.dev/documentation/meta/[^"]*/meta/Required-class.html">Required</a>'));
-      var stringLink = RegExp(
-          'https://api.dart.dev/(dev|stable|edge|be|beta)/${Platform.version.split(' ').first}/dart-core/String-class.html">String</a>');
-      expect(useSomethingInTheSdk.modelType.linkedName, contains(stringLink));
+      var link = RegExp('/dart-core/String-class.html">String</a>');
+      expect(useSomethingInTheSdk.modelType.linkedName, contains(link));
     });
 
     group('validate basic doc generation', () {

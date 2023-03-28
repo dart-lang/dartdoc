@@ -77,7 +77,7 @@ echo:
   description: 'Works on everything'
 ''';
     toolMap = ToolConfiguration.fromYamlMap(
-        loadYaml(yamlMap),
+        loadYaml(yamlMap) as YamlMap,
         pubPackageMetaProvider.resourceProvider.pathContext
             .absolute(_testPackageDir.path),
         pubPackageMetaProvider.resourceProvider);

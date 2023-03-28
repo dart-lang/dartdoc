@@ -215,20 +215,19 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   ///
   /// This mapping must be complete before [initializePackageGraph] is called.
   @visibleForTesting
-  final allLibraries = <String, Library>{};
+  final Map<String, Library> allLibraries = {};
 
   /// All [ModelElement]s constructed for this package; a superset of
   /// [_allModelElements].
-  final HashMap<Tuple3<Element, Library, Container?>, ModelElement?>
-      allConstructedModelElements =
-      HashMap<Tuple3<Element, Library, Container?>, ModelElement?>();
+  final Map<Tuple3<Element, Library, Container?>, ModelElement?>
+      allConstructedModelElements = {};
 
   /// Anything that might be inheritable, place here for later lookup.
-  final allInheritableElements =
-      HashMap<Tuple2<Element, Library>, Set<ModelElement>>();
+  final Map<Tuple2<Element, Library>, Set<ModelElement>>
+      allInheritableElements = {};
 
   /// A mapping of the list of classes which implement each class.
-  final _implementors =
+  final Map<InheritingContainer, List<InheritingContainer>> _implementors =
       LinkedHashMap<InheritingContainer, List<InheritingContainer>>(
           equals: (InheritingContainer a, InheritingContainer b) =>
               a.definingContainer == b.definingContainer,
@@ -574,7 +573,8 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   /// The String name representing the `Object` type.
   late final String dartCoreObject = libraries
           .firstWhereOrNull((library) => library.name == 'dart:core')
-          ?.getClassByName('Object')
+          ?.allClasses
+          .firstWhereOrNull((c) => c.name == 'Object')
           ?.linkedName ??
       'Object';
 
@@ -856,7 +856,8 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       // might not be where the element was defined, which is what's important
       // for nodoc's semantics.  Looking up the defining element just to pull
       // a context is again, slow.
-      var globs = config.optionSet['nodoc'].valueAt(file.parent);
+      var globs = (config.optionSet['nodoc'].valueAt(file.parent) as List)
+          .cast<String>();
       return utils.matchGlobs(globs, fullName);
     });
   }

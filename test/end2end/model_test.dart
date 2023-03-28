@@ -859,11 +859,11 @@ void main() {
           .firstWhere((lib) => lib.name == 'reexport_two');
       reexportThreeLib = packageGraph.libraries
           .firstWhere((lib) => lib.name == 'reexport_three');
-      SomeClass = someLib.getClassByName('SomeClass')!;
-      SomeOtherClass = someLib.getClassByName('SomeOtherClass')!;
-      YetAnotherClass = someLib.getClassByName('YetAnotherClass')!;
-      AUnicornClass = someLib.getClassByName('AUnicornClass')!;
-      ADuplicateClass = reexportThreeLib.getClassByName('ADuplicateClass')!;
+      SomeClass = someLib.getClassByName('SomeClass');
+      SomeOtherClass = someLib.getClassByName('SomeOtherClass');
+      YetAnotherClass = someLib.getClassByName('YetAnotherClass');
+      AUnicornClass = someLib.getClassByName('AUnicornClass');
+      ADuplicateClass = reexportThreeLib.getClassByName('ADuplicateClass');
 
       isDeprecated = packageGraph.libraries
           .firstWhere((lib) => lib.name == 'is_deprecated');
@@ -1216,7 +1216,10 @@ void main() {
       });
 
       test('Verify table appearance', () {
-        expect(docsAsHtml, contains('<table><thead><tr><th>Component</th>'));
+        expect(
+          docsAsHtml,
+          contains('<table>\n<thead>\n<tr>\n<th>Component</th>'),
+        );
       });
 
       test('Verify links inside of table headers', () {
@@ -1228,9 +1231,11 @@ void main() {
 
       test('Verify links inside of table body', () {
         expect(
-            docsAsHtml,
-            contains(
-                '<tbody><tr><td><a href="${htmlBasePlaceholder}fake/DocumentWithATable/foo-constant.html">foo</a></td>'));
+          docsAsHtml,
+          contains('<tbody>\n'
+              '<tr>\n'
+              '<td><a href="${htmlBasePlaceholder}fake/DocumentWithATable/foo-constant.html">foo</a></td>'),
+        );
       });
 
       test('Verify there is no emoji support', () {
@@ -1523,7 +1528,8 @@ void main() {
     test('no references', () {
       expect(
           Apple.documentationAsHtml,
-          '<p>Sample class <code>String</code></p><pre class="language-dart">  A\n'
+          '<p>Sample class <code>String</code></p>\n'
+          '<pre class="language-dart">  A\n'
           '   B\n'
           '</pre>');
     });
@@ -1532,7 +1538,7 @@ void main() {
       expect(
           B.documentationAsHtml,
           contains(
-              '<p>Extends class <a href="${htmlBasePlaceholder}ex/Apple-class.html">Apple</a>, use <a href="${htmlBasePlaceholder}ex/Apple/Apple.html">new Apple</a> or <a href="${htmlBasePlaceholder}ex/Apple/Apple.fromString.html">new Apple.fromString</a></p>'));
+              '<p>Extends class <a href="${htmlBasePlaceholder}ex/Apple-class.html">Apple</a>, use <a href="${htmlBasePlaceholder}ex/Apple/Apple.html">Apple.new</a> or <a href="${htmlBasePlaceholder}ex/Apple/Apple.fromString.html">Apple.fromString</a></p>'));
     });
 
     test('doc ref to class in SDK does not render as link', () {
@@ -1566,11 +1572,11 @@ void main() {
       expect(
           comment,
           contains(
-              'use <a href="${htmlBasePlaceholder}ex/Apple/Apple.html">new Apple</a>'));
+              'use <a href="${htmlBasePlaceholder}ex/Apple/Apple.html">Apple.new</a>'));
       expect(
           comment,
           contains(
-              '<a href="${htmlBasePlaceholder}ex/Apple/Apple.fromString.html">new Apple.fromString</a>'));
+              '<a href="${htmlBasePlaceholder}ex/Apple/Apple.fromString.html">Apple.fromString</a>'));
     });
 
     test('references to nullable type and null-checked variable', () {
@@ -4913,4 +4919,10 @@ class StringNameHashCode extends Nameable {
   @override
   // ignore: unnecessary_overrides
   bool operator ==(Object other) => super == other;
+}
+
+extension on Library {
+  Class getClassByName(String name) {
+    return allClasses.firstWhere((c) => c.name == name);
+  }
 }

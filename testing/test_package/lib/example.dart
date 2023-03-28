@@ -1,6 +1,8 @@
 /// a library. testing string escaping: `var s = 'a string'` <cool>
 /// {@category Real Libraries}
 
+// ignore_for_file: unused_element, unused_import
+
 library ex;
 
 import 'dart:async';
@@ -214,7 +216,7 @@ class WithGenericSub extends WithGeneric<Apple> {
   WithGenericSub(Apple prop) : super(prop);
 }
 
-/// Extends class [Apple], use [new Apple] or [new Apple.fromString]
+/// Extends class [Apple], use [Apple.new] or [Apple.fromString]
 ///
 /// <pre>
 ///  B extends A
@@ -434,7 +436,7 @@ class Klass {
 
   /// Not really a factory, but...
   @factory
-  imAFactoryNoReally() {}
+  imAFactoryNoReally() => Klass();
 
   /// A shadowed method
   @override

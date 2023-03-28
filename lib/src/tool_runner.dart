@@ -108,7 +108,7 @@ class ToolRunner {
             'Stderr output was:\n${result.stderr}\n');
         return '';
       } else {
-        return result.stdout;
+        return result.stdout as String;
       }
     } on ProcessException catch (exception) {
       toolErrorCallback('Failed to run tool "$name" as '
