@@ -237,9 +237,19 @@ void main() {
       }
     });
 
-    test('can haveid attributes on headings', () {
+    test('can have auto-generated id attributes on headings', () {
       final dom = html.parseFragment(exLibrary.documentationAsHtml);
       expect(dom.querySelector('h1[id="heading-with-id"]'), isNotNull);
+    });
+
+    test('can have id attributes on headings', () {
+      final dom = html.parseFragment(exLibrary.documentationAsHtml);
+      expect(dom.querySelector('h1[id="my-id"]'), isNotNull);
+    });
+
+    test('cannot have capital id attributes on headings', () {
+      final dom = html.parseFragment(exLibrary.documentationAsHtml);
+      expect(dom.querySelector('h1[id="MY-ID"]'), isNull);
     });
 
     test('can have inline HTML', () {
