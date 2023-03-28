@@ -15,6 +15,7 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/special_elements.dart';
+import 'package:html/parser.dart' as html;
 import 'package:test/test.dart';
 
 import '../src/utils.dart' as utils;
@@ -211,9 +212,8 @@ void main() {
     Class classWithHtml;
     late final Method blockHtml;
     late final Method inlineHtml;
-
-    PackageGraph packageGraph;
-    Library exLibrary;
+    late final PackageGraph packageGraph;
+    late final Library exLibrary;
 
     setUpAll(() async {
       packageGraph = await utils.bootBasicPackage(
@@ -235,6 +235,21 @@ void main() {
       for (var modelElement in packageGraph.allLocalModelElements) {
         modelElement.documentation;
       }
+    });
+
+    test('can have auto-generated id attributes on headings', () {
+      final dom = html.parseFragment(exLibrary.documentationAsHtml);
+      expect(dom.querySelector('h1[id="heading-with-id"]'), isNotNull);
+    });
+
+    test('can have id attributes on headings', () {
+      final dom = html.parseFragment(exLibrary.documentationAsHtml);
+      expect(dom.querySelector('h1[id="my-id"]'), isNotNull);
+    });
+
+    test('cannot have capital id attributes on headings', () {
+      final dom = html.parseFragment(exLibrary.documentationAsHtml);
+      expect(dom.querySelector('h1[id="MY-ID"]'), isNull);
     });
 
     test('can have inline HTML', () {

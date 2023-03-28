@@ -1,3 +1,13 @@
+/// My library
+///
+/// See [heading](#heading-with-id).
+///
+/// <h1 id="my-id">headline with custom id</h1>
+///
+/// <h1 id="MY-ID">headline with disallowed id</h1>
+///
+/// # Heading with id
+///  * what a topic
 library ex;
 
 abstract class SanitizableHtml {
