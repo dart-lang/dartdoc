@@ -14,7 +14,7 @@ import 'package:dartdoc/src/package_meta.dart';
 
 const _namePlaceholder = '@@name@@';
 
-abstract class PackageWarningOptionContext implements DartdocOptionContextBase {
+mixin PackageWarningOptionContext implements DartdocOptionContextBase {
   bool get allowNonLocalWarnings =>
       optionSet['allowNonLocalWarnings'].valueAt(context);
 

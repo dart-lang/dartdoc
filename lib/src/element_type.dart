@@ -25,8 +25,9 @@ mixin ElementTypeBuilderImpl implements ElementTypeBuilder {
 
 /// Base class representing a type in Dartdoc.  It wraps a [DartType], and
 /// may link to a [ModelElement].
-abstract class ElementType extends Privacy
-    with CommentReferable, Nameable, ModelBuilder {
+abstract class ElementType
+    with CommentReferable, Nameable, ModelBuilder
+    implements Privacy {
   final DartType type;
   @override
   final PackageGraph packageGraph;

@@ -36,8 +36,7 @@ final _htmlInjectRegExp = RegExp(r'<dartdoc-html>([a-f0-9]+)</dartdoc-html>');
 ///
 /// [_processCommentWithoutTools] and [processComment] are the primary
 /// entrypoints.
-mixin DocumentationComment
-    on Documentable, Warnable, Locatable, SourceCodeMixin {
+mixin DocumentationComment on Documentable, Warnable, Locatable, SourceCode {
   @override
   Element get element;
 

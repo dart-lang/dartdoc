@@ -131,7 +131,7 @@ void main() {
       expect(
           resourceProvider
               .readAsMalformedAllowedStringSync(p.getReadmeContents()!),
-          startsWith('Welcome'));
+          contains('Welcome to the Dart API reference documentation'));
     });
 
     test('does not have a license', () {

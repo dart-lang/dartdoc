@@ -11,7 +11,7 @@ import 'package:dartdoc/src/model_utils.dart' as model_utils;
 ///
 /// Do not call any methods or members excepting [name] and the private Lists
 /// below before finishing initialization of a [TopLevelContainer].
-abstract class TopLevelContainer implements Nameable {
+mixin TopLevelContainer implements Nameable {
   Iterable<Class> get classes;
 
   Iterable<Extension> get extensions;
