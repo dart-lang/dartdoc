@@ -3,6 +3,6 @@
 // BSD-style license that can be found in the LICENSE file.
 
 /// Classes implementing this have a public/private distinction.
-abstract interface class Privacy {
+abstract /*interface*/ class Privacy {
   bool get isPublic;
 }
