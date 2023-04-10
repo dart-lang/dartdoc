@@ -5,7 +5,7 @@
 import 'package:dartdoc/src/model/model.dart';
 
 /// Something able to be indexed.
-abstract class Indexable implements Nameable {
+mixin Indexable implements Nameable {
   String? get href;
 
   String get kind;

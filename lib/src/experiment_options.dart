@@ -13,8 +13,7 @@ import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/src/dart/analysis/experiments.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 
-abstract class DartdocExperimentOptionContext
-    implements DartdocOptionContextBase {
+mixin DartdocExperimentOptionContext implements DartdocOptionContextBase {
   List<String> get enableExperiment =>
       optionSet['enable-experiment'].valueAt(context);
 }

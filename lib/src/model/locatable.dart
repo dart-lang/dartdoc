@@ -5,7 +5,7 @@
 import 'package:analyzer/dart/element/element.dart' show Element;
 
 /// Something that can be located for warning purposes.
-abstract class Locatable {
+mixin Locatable {
   List<Locatable> get documentationFrom;
 
   /// True if documentationFrom contains only one item, [this].
