@@ -801,7 +801,6 @@ class _Renderer_Categorization extends RendererBase<Categorization> {
       _propertyMapCache.putIfAbsent(
           CT_,
           () => {
-                ..._Renderer_Object.propertyMap<CT_>(),
                 'categories': Property(
                   getValue: (CT_ c) => c.categories,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -4352,7 +4351,7 @@ class _Renderer_ElementType extends RendererBase<ElementType> {
       _propertyMapCache.putIfAbsent(
           CT_,
           () => {
-                ..._Renderer_Privacy.propertyMap<CT_>(),
+                ..._Renderer_Object.propertyMap<CT_>(),
                 ..._Renderer_CommentReferable.propertyMap<CT_>(),
                 ..._Renderer_Nameable.propertyMap<CT_>(),
                 ..._Renderer_ModelBuilder.propertyMap<CT_>(),
@@ -6931,7 +6930,6 @@ class _Renderer_Indexable extends RendererBase<Indexable> {
       _propertyMapCache.putIfAbsent(
           CT_,
           () => {
-                ..._Renderer_Object.propertyMap<CT_>(),
                 'href': Property(
                   getValue: (CT_ c) => c.href,
                   renderVariable:
@@ -9030,7 +9028,6 @@ class _Renderer_Locatable extends RendererBase<Locatable> {
       _propertyMapCache.putIfAbsent(
           CT_,
           () => {
-                ..._Renderer_Object.propertyMap<CT_>(),
                 'documentationFrom': Property(
                   getValue: (CT_ c) => c.documentationFrom,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -10326,11 +10323,10 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
           () => {
                 ..._Renderer_Canonicalization.propertyMap<CT_>(),
                 ..._Renderer_CommentReferable.propertyMap<CT_>(),
-                ..._Renderer_Privacy.propertyMap<CT_>(),
                 ..._Renderer_Warnable.propertyMap<CT_>(),
                 ..._Renderer_Locatable.propertyMap<CT_>(),
                 ..._Renderer_Nameable.propertyMap<CT_>(),
-                ..._Renderer_SourceCodeMixin.propertyMap<CT_>(),
+                ..._Renderer_SourceCode.propertyMap<CT_>(),
                 ..._Renderer_Indexable.propertyMap<CT_>(),
                 ..._Renderer_FeatureSet.propertyMap<CT_>(),
                 ..._Renderer_DocumentationComment.propertyMap<CT_>(),
@@ -13360,36 +13356,6 @@ class _Renderer_ParameterizedElementType
   }
 }
 
-class _Renderer_Privacy extends RendererBase<Privacy> {
-  static final Map<Type, Object> _propertyMapCache = {};
-  static Map<String, Property<CT_>> propertyMap<CT_ extends Privacy>() =>
-      _propertyMapCache.putIfAbsent(
-          CT_,
-          () => {
-                ..._Renderer_Object.propertyMap<CT_>(),
-                'isPublic': Property(
-                  getValue: (CT_ c) => c.isPublic,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isPublic == true,
-                ),
-              }) as Map<String, Property<CT_>>;
-
-  _Renderer_Privacy(Privacy context, RendererBase<Object>? parent,
-      Template template, StringSink sink)
-      : super(context, parent, template, sink);
-
-  @override
-  Property<Privacy>? getProperty(String key) {
-    if (propertyMap<Privacy>().containsKey(key)) {
-      return propertyMap<Privacy>()[key];
-    } else {
-      return null;
-    }
-  }
-}
-
 String renderProperty(PropertyTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PropertyTemplateData(context, template.ast, template, buffer);
@@ -13716,14 +13682,12 @@ class _Renderer_Rendered extends RendererBase<Rendered> {
   }
 }
 
-class _Renderer_SourceCodeMixin extends RendererBase<SourceCodeMixin> {
+class _Renderer_SourceCode extends RendererBase<SourceCode> {
   static final Map<Type, Object> _propertyMapCache = {};
-  static Map<String, Property<CT_>> propertyMap<
-          CT_ extends SourceCodeMixin>() =>
+  static Map<String, Property<CT_>> propertyMap<CT_ extends SourceCode>() =>
       _propertyMapCache.putIfAbsent(
           CT_,
           () => {
-                ..._Renderer_Object.propertyMap<CT_>(),
                 'characterLocation': Property(
                   getValue: (CT_ c) => c.characterLocation,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -13815,14 +13779,14 @@ class _Renderer_SourceCodeMixin extends RendererBase<SourceCodeMixin> {
                 ),
               }) as Map<String, Property<CT_>>;
 
-  _Renderer_SourceCodeMixin(SourceCodeMixin context,
-      RendererBase<Object>? parent, Template template, StringSink sink)
+  _Renderer_SourceCode(SourceCode context, RendererBase<Object>? parent,
+      Template template, StringSink sink)
       : super(context, parent, template, sink);
 
   @override
-  Property<SourceCodeMixin>? getProperty(String key) {
-    if (propertyMap<SourceCodeMixin>().containsKey(key)) {
-      return propertyMap<SourceCodeMixin>()[key];
+  Property<SourceCode>? getProperty(String key) {
+    if (propertyMap<SourceCode>().containsKey(key)) {
+      return propertyMap<SourceCode>()[key];
     } else {
       return null;
     }
@@ -14558,7 +14522,6 @@ class _Renderer_TopLevelContainer extends RendererBase<TopLevelContainer> {
       _propertyMapCache.putIfAbsent(
           CT_,
           () => {
-                ..._Renderer_Object.propertyMap<CT_>(),
                 'classes': Property(
                   getValue: (CT_ c) => c.classes,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -17155,10 +17118,8 @@ const _invisibleGetters = {
     'documentationFrom',
     'documentationIsLocal',
     'fullyQualifiedName',
-    'hashCode',
     'href',
-    'location',
-    'runtimeType'
+    'location'
   },
   'Map': {
     'entries',

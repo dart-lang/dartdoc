@@ -10,7 +10,7 @@ final RegExp _categoryRegExp = RegExp(
     multiLine: true);
 
 /// Mixin implementing dartdoc categorization for ModelElements.
-abstract class Categorization implements ModelElement {
+mixin Categorization implements ModelElement {
   @override
   String buildDocumentationAddition(String rawDocs) =>
       _stripAndSetDartdocCategories(rawDocs);

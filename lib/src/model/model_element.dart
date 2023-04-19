@@ -114,16 +114,15 @@ mixin ModelElementBuilderImpl implements ModelElementBuilder {
 abstract class ModelElement extends Canonicalization
     with
         CommentReferable,
-        Privacy,
         Warnable,
         Locatable,
         Nameable,
-        SourceCodeMixin,
+        SourceCode,
         Indexable,
         FeatureSet,
         DocumentationComment,
         ModelBuilder
-    implements Comparable<ModelElement>, Documentable {
+    implements Comparable<ModelElement>, Documentable, Privacy {
   // TODO(jcollins-g): This really wants a "member that has a type" class.
   final Member? _originalMember;
   final Library _library;

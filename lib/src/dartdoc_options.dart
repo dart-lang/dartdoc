@@ -651,7 +651,7 @@ class DartdocOptionSyntheticOnly<T> extends DartdocOption<T>
       : super(name, null, help, optionIs, mustExist, null, resourceProvider);
 }
 
-abstract class DartdocSyntheticOption<T> implements DartdocOption<T> {
+mixin DartdocSyntheticOption<T> implements DartdocOption<T> {
   T Function(DartdocSyntheticOption<T>, Folder) get _compute;
 
   @override
@@ -841,7 +841,7 @@ class DartdocOptionFileOnly<T> extends DartdocOption<T>
 }
 
 /// Implements checking for options contained in dartdoc.yaml.
-abstract class _DartdocFileOption<T> implements DartdocOption<T> {
+mixin _DartdocFileOption<T> implements DartdocOption<T> {
   /// If true, the parent directory's value overrides the child's.
   ///
   /// Otherwise, the child's value overrides values in parents.
@@ -1018,7 +1018,7 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
 }
 
 /// Mixin class implementing command-line arguments for [DartdocOption].
-abstract class _DartdocArgOption<T> implements DartdocOption<T> {
+mixin _DartdocArgOption<T> implements DartdocOption<T> {
   /// For [ArgParser], set to true if the argument can be negated with `--no` on
   /// the command line.
   bool get negatable;
