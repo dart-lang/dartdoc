@@ -22,9 +22,17 @@ void initializeSidebars() {
   if (body == null) {
     return;
   }
-  final baseHref = body.dataset['base-href'];
-  if (baseHref == null) {
+  final dataUsingBaseHref = body.dataset['using-base-href'];
+  if (dataUsingBaseHref == null) {
     return;
+  }
+  var baseHref = '';
+  if (dataUsingBaseHref != 'true') {
+    final dataBaseHref = body.dataset['base-href'];
+    if (dataBaseHref == null) {
+      return;
+    }
+    baseHref = dataBaseHref;
   }
   final mainContent = document.querySelector('#dartdoc-main-content');
   if (mainContent == null) {
