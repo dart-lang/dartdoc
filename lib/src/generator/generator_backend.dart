@@ -56,19 +56,6 @@ class DartdocGeneratorBackendOptions implements TemplateOptions {
         resourcesDir = context.resourcesDir;
 }
 
-class SidebarGenerator<T extends TemplateData> {
-  final String Function(T context) renderFunction;
-  final Map<Documentable, String> _renderCache = {};
-
-  SidebarGenerator(this.renderFunction);
-
-  /// Retrieves the render for a specific [key], or generates it using the given
-  /// [templateData] if needed.
-  String getRenderFor(Documentable key, T templateData) {
-    return _renderCache[key] ??= renderFunction(templateData);
-  }
-}
-
 /// An interface for classes which are responsible for outputing the generated
 /// documentation.
 abstract class GeneratorBackend {
