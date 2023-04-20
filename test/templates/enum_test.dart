@@ -15,7 +15,9 @@ void main() async {
   const packageName = 'test_package';
 
   late List<String> eLines;
+  late List<String> eRightSidebarLines;
   late List<String> enumWithDefaultConstructorLines;
+  late List<String> enumWithDefaultConstructorRightSidebarLines;
 
   group('enhanced enums', skip: !enhancedEnumsAllowed, () {
     setUpAll(() async {
@@ -125,9 +127,18 @@ enum EnumWithDefaultConstructor {
           .getFile(p.join(packagePath, 'doc', 'lib', 'E.html'))
           .readAsStringSync()
           .split('\n');
+      eRightSidebarLines = resourceProvider
+          .getFile(p.join(packagePath, 'doc', 'lib', 'E-enum-sidebar.html'))
+          .readAsStringSync()
+          .split('\n');
       enumWithDefaultConstructorLines = resourceProvider
           .getFile(p.join(
               packagePath, 'doc', 'lib', 'EnumWithDefaultConstructor.html'))
+          .readAsStringSync()
+          .split('\n');
+      enumWithDefaultConstructorRightSidebarLines = resourceProvider
+          .getFile(p.join(packagePath, 'doc', 'lib',
+              'EnumWithDefaultConstructor-enum-sidebar.html'))
           .readAsStringSync()
           .split('\n');
     });
@@ -338,100 +349,100 @@ enum EnumWithDefaultConstructor {
 
     test('enum sidebar contains default constructors', () async {
       expect(
-          enumWithDefaultConstructorLines,
-          containsAllInOrder([
-            matches('<div id="dartdoc-sidebar-right"'),
-            matches(
-                '<a href="../lib/EnumWithDefaultConstructor.html#constructors">Constructors</a>'),
-            matches(
-                '<a href="../lib/EnumWithDefaultConstructor/EnumWithDefaultConstructor.html">EnumWithDefaultConstructor</a>'),
-          ]));
+        enumWithDefaultConstructorRightSidebarLines,
+        containsAllInOrder([
+          matches(
+              '<a href="../lib/EnumWithDefaultConstructor.html#constructors">'
+              'Constructors</a>'),
+          matches(
+              '<a href="../lib/EnumWithDefaultConstructor/EnumWithDefaultConstructor.html">'
+              'EnumWithDefaultConstructor</a>'),
+        ]),
+      );
     });
 
     test('enum sidebar contains explicit constructors', () async {
       expect(
-          eLines,
-          containsAllInOrder([
-            matches('<div id="dartdoc-sidebar-right"'),
-            matches('<a href="../lib/E.html#constructors">Constructors</a>'),
-            matches('<a href="../lib/E/E.named.html">named</a>'),
-          ]));
+        eRightSidebarLines,
+        containsAllInOrder([
+          matches('<a href="../lib/E.html#constructors">Constructors</a>'),
+          matches('<a href="../lib/E/E.named.html">named</a>'),
+        ]),
+      );
     });
 
     test('enum sidebar contains values', () async {
       expect(
-          eLines,
-          containsAllInOrder([
-            matches('<div id="dartdoc-sidebar-right"'),
-            matches('<a href="../lib/E.html#values">Values</a>'),
-            matches('<li><a href="../lib/E.html#one">one</a></li>'),
-          ]));
+        eRightSidebarLines,
+        containsAllInOrder([
+          matches('<a href="../lib/E.html#values">Values</a>'),
+          matches('<li><a href="../lib/E.html#one">one</a></li>'),
+        ]),
+      );
     });
 
     test('enum sidebar contains properties', () async {
       expect(
-          eLines,
-          containsAllInOrder([
-            matches('<div id="dartdoc-sidebar-right"'),
-            matches(
-                '<a href="../lib/E.html#instance-properties">Properties</a>'),
-            matches('<a href="../lib/E/f1.html">f1</a>'),
-            matches('<a href="../lib/E/index.html">index</a>'),
-          ]));
+        eRightSidebarLines,
+        containsAllInOrder([
+          matches('<a href="../lib/E.html#instance-properties">Properties</a>'),
+          matches('<a href="../lib/E/f1.html">f1</a>'),
+          matches('<a href="../lib/E/index.html">index</a>'),
+        ]),
+      );
     });
 
     test('enum sidebar contains methods', () async {
       expect(
-          eLines,
-          containsAllInOrder([
-            matches('<div id="dartdoc-sidebar-right"'),
-            matches('<a href="../lib/E.html#instance-methods">Methods</a>'),
-            matches('<a href="../lib/E/m1.html">m1</a>'),
-          ]));
+        eRightSidebarLines,
+        containsAllInOrder([
+          matches('<a href="../lib/E.html#instance-methods">Methods</a>'),
+          matches('<a href="../lib/E/m1.html">m1</a>'),
+        ]),
+      );
     });
 
     test('enum sidebar contains operators', () async {
       expect(
-          eLines,
-          containsAllInOrder([
-            matches('<div id="dartdoc-sidebar-right"'),
-            matches('<a href="../lib/E.html#operators">Operators</a>'),
-            matches('<a href="../lib/E/operator_greater.html">operator ></a>'),
-          ]));
+        eRightSidebarLines,
+        containsAllInOrder([
+          matches('<a href="../lib/E.html#operators">Operators</a>'),
+          matches('<a href="../lib/E/operator_greater.html">operator ></a>'),
+        ]),
+      );
     });
 
     test('enum sidebar contains static properties', () async {
       expect(
-          eLines,
-          containsAllInOrder([
-            matches('<div id="dartdoc-sidebar-right"'),
-            matches(
-                '<a href="../lib/E.html#static-properties">Static properties</a>'),
-            matches('<a href="../lib/E/gs1.html">gs1</a>'),
-            matches('<a href="../lib/E/sf1.html">sf1</a>'),
-          ]));
+        eRightSidebarLines,
+        containsAllInOrder([
+          matches(
+              '<a href="../lib/E.html#static-properties">Static properties</a>'),
+          matches('<a href="../lib/E/gs1.html">gs1</a>'),
+          matches('<a href="../lib/E/sf1.html">sf1</a>'),
+        ]),
+      );
     });
 
     test('enum sidebar contains static methods', () async {
       expect(
-          eLines,
-          containsAllInOrder([
-            matches('<div id="dartdoc-sidebar-right"'),
-            matches(
-                '<a href="../lib/E.html#static-methods">Static methods</a>'),
-            matches('<a href="../lib/E/s1.html">s1</a>'),
-          ]));
+        eRightSidebarLines,
+        containsAllInOrder([
+          matches('<a href="../lib/E.html#static-methods">Static methods</a>'),
+          matches('<a href="../lib/E/s1.html">s1</a>'),
+        ]),
+      );
     });
 
     test('enum sidebar contains constants', () async {
       expect(
-          eLines,
-          containsAllInOrder([
-            matches('<div id="dartdoc-sidebar-right"'),
-            matches('<a href="../lib/E.html#constants">Constants</a>'),
-            matches('<a href="../lib/E/c1-constant.html">c1</a>'),
-            matches('<a href="../lib/E/values-constant.html">values</a>'),
-          ]));
+        eRightSidebarLines,
+        containsAllInOrder([
+          matches('<a href="../lib/E.html#constants">Constants</a>'),
+          matches('<a href="../lib/E/c1-constant.html">c1</a>'),
+          matches('<a href="../lib/E/values-constant.html">values</a>'),
+        ]),
+      );
     });
 
     // TODO(srawlins): Add rendering tests.

@@ -139,12 +139,6 @@ class EnumField extends Field {
   @override
   Inheritable? get overriddenElement => null;
 
-  @override
-  String get aboveSidebarPath => enclosingElement.sidebarPath;
-
-  @override
-  String? get belowSidebarPath => null;
-
   EnumFieldRenderer get _fieldRenderer =>
       packageGraph.rendererFactory.enumFieldRenderer;
 }

@@ -1558,7 +1558,7 @@ String renderSearchPage(_i1.PackageTemplateData context0) {
 String renderSidebarForContainer<T extends _i3.Documentable>(
     _i1.TemplateDataWithContainer<T> context0) {
   final buffer = StringBuffer();
-  buffer.write('''<ol class="spa-links">''');
+  buffer.write('''<ol>''');
   var context1 = context0.container;
   buffer.writeln();
   if (context1.isClassOrEnum == true) {
@@ -1789,7 +1789,7 @@ String renderSidebarForContainer<T extends _i3.Documentable>(
 String renderSidebarForLibrary<T extends _i3.Documentable>(
     _i1.TemplateDataWithLibrary<T> context0) {
   final buffer = StringBuffer();
-  buffer.write('''<ol class="spa-links">''');
+  buffer.write('''<ol>''');
   var context1 = context0.library;
   if (context1.hasPublicClasses == true) {
     buffer.writeln();
@@ -2178,7 +2178,7 @@ String _renderCategory_partial_packages_10(_i1.CategoryTemplateData context0) =>
 String _renderCategory_partial_sidebar_for_category_11(
     _i1.CategoryTemplateData context0) {
   final buffer = StringBuffer();
-  buffer.write('''<ol class="spa-links">''');
+  buffer.write('''<ol>''');
   var context1 = context0.self;
   if (context1.hasPublicLibraries == true) {
     buffer.writeln();
