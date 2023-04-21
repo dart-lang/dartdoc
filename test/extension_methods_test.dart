@@ -45,28 +45,28 @@ var aPublicFunction() {}
     var anExtension = library.package.publicLibraries.named('${libraryName}_lib').extensions.named('AnExtension');
     var anExtensionMethod = anExtension.instanceMethods.named('aMethod');
     var anExtensionReference = getMatchingLinkElement('AnExtension', aPublicFunction).commentReferable as Extension;
-    expect(anExtensionReference.href, endsWith('%extension_methods_lib/AnExtension.html'));
     expect(identical(anExtensionReference.canonicalModelElement, anExtension), isTrue);
     expect(anExtension.isCanonical, isTrue);
+    expect(anExtensionReference.href, endsWith('%extension_methods_lib/AnExtension.html'));
     var anExtensionReferenceMethod = getMatchingLinkElement('AnExtension.aMethod', aPublicFunction).commentReferable as Method;
     expect(identical(anExtensionReferenceMethod.canonicalModelElement, anExtensionMethod), isTrue);
     expect(anExtensionMethod.isCanonical, isTrue);
     expect(anExtensionReferenceMethod.href, endsWith('%extension_methods_lib/AnExtension/aMethod.html'));
   }
 
-  /*void test_reexportWithHide() async {
+  void test_reexportWithHide() async {
     var library = await bootPackageWithReexportedLibrary(reexportedContent, libraryContent, reexportPrivate: true, hide: ['AClassNotNeedingExtending']);
     var aPublicFunction = library.functions.named('aPublicFunction');
     var anExtension = library.package.publicLibraries.named('${libraryName}_lib').extensions.named('AnExtension');
     var anExtensionMethod = anExtension.instanceMethods.named('aMethod');
     var anExtensionReference = getMatchingLinkElement('AnExtension', aPublicFunction).commentReferable as Extension;
-    expect(anExtensionReference.href, endsWith('%extension_methods_lib/AnExtension.html'));
     expect(identical(anExtensionReference.canonicalModelElement, anExtension), isTrue);
     expect(anExtension.isCanonical, isTrue);
+    expect(anExtensionReference.href, endsWith('%extension_methods_lib/AnExtension.html'));
     var anExtensionReferenceMethod = getMatchingLinkElement('AnExtension.aMethod', aPublicFunction).commentReferable as Method;
-    expect(anExtensionReferenceMethod.href, endsWith('%extension_methods_lib/AnExtension/aMethod.html'));
     expect(identical(anExtensionReferenceMethod.canonicalModelElement, anExtensionMethod), isTrue);
     expect(anExtensionMethod.isCanonical, isTrue);
+    expect(anExtensionReferenceMethod.href, endsWith('%extension_methods_lib/AnExtension/aMethod.html'));
   }
 
   void test_reexportFull() async {
@@ -75,12 +75,12 @@ var aPublicFunction() {}
     var anExtension = library.package.publicLibraries.named('${libraryName}_lib').extensions.named('AnExtension');
     var anExtensionMethod = anExtension.instanceMethods.named('aMethod');
     var anExtensionReference = getMatchingLinkElement('AnExtension', aPublicFunction).commentReferable as Extension;
-    expect(anExtensionReference.href, endsWith('%extension_methods_lib/AnExtension.html'));
     expect(identical(anExtensionReference.canonicalModelElement, anExtension), isTrue);
     expect(anExtension.isCanonical, isTrue);
+    expect(anExtensionReference.href, endsWith('%extension_methods_lib/AnExtension.html'));
     var anExtensionReferenceMethod = getMatchingLinkElement('AnExtension.aMethod', aPublicFunction).commentReferable as Method;
-    expect(anExtensionReferenceMethod.href, endsWith('%extension_methods_lib/AnExtension/aMethod.html'));
     expect(identical(anExtensionReferenceMethod.canonicalModelElement, anExtensionMethod), isTrue);
     expect(anExtensionMethod.isCanonical, isTrue);
-  }*/
+    expect(anExtensionReferenceMethod.href, endsWith('%extension_methods_lib/AnExtension/aMethod.html'));
+  }
 }
