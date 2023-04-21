@@ -104,7 +104,6 @@ $libraryContent
       {bool reexportPrivate = false,
       List<String> show = const [],
       List<String> hide = const []}) async {
-
     final subdir = reexportPrivate ? 'src' : 'subdir';
     await d.dir('lib', [
       d.dir(subdir, [

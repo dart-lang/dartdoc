@@ -40,42 +40,76 @@ extension AnExtension on AClassNeedingExtending {
 var aPublicFunction() {}
 ''';
 
-  void expectReferenceValid(ModelElement reference, ModelElement expected, String href) {
+  void expectReferenceValid(
+      ModelElement reference, ModelElement expected, String href) {
     expect(identical(reference.canonicalModelElement, expected), isTrue);
     expect(expected.isCanonical, isTrue);
-    expect(expected.href, endsWith(href)); 
+    expect(expected.href, endsWith(href));
   }
 
   void test_reexportWithShow() async {
-    var library = await bootPackageWithReexportedLibrary(reexportedContent, libraryContent, reexportPrivate: true, show: ['AClassNeedingExtending', 'AnExtension']);
+    var library = await bootPackageWithReexportedLibrary(
+        reexportedContent, libraryContent,
+        reexportPrivate: true, show: ['AClassNeedingExtending', 'AnExtension']);
     var aPublicFunction = library.functions.named('aPublicFunction');
-    var anExtension = library.package.publicLibraries.named('${libraryName}_lib').extensions.named('AnExtension');
+    var anExtension = library.package.publicLibraries
+        .named('${libraryName}_lib')
+        .extensions
+        .named('AnExtension');
     var anExtensionMethod = anExtension.instanceMethods.named('aMethod');
-    var anExtensionReference = getMatchingLinkElement('AnExtension', aPublicFunction).commentReferable as Extension;
-    expectReferenceValid(anExtensionReference, anExtension, '%extension_methods_lib/AnExtension.html');
-    var anExtensionMethodReference = getMatchingLinkElement('AnExtension.aMethod', aPublicFunction).commentReferable as Method;
-    expectReferenceValid(anExtensionMethodReference, anExtensionMethod, '%extension_methods_lib/AnExtension/aMethod.html');
+    var anExtensionReference =
+        getMatchingLinkElement('AnExtension', aPublicFunction).commentReferable
+            as Extension;
+    expectReferenceValid(anExtensionReference, anExtension,
+        '%extension_methods_lib/AnExtension.html');
+    var anExtensionMethodReference =
+        getMatchingLinkElement('AnExtension.aMethod', aPublicFunction)
+            .commentReferable as Method;
+    expectReferenceValid(anExtensionMethodReference, anExtensionMethod,
+        '%extension_methods_lib/AnExtension/aMethod.html');
   }
 
   void test_reexportWithHide() async {
-    var library = await bootPackageWithReexportedLibrary(reexportedContent, libraryContent, reexportPrivate: true, hide: ['AClassNotNeedingExtending']);
+    var library = await bootPackageWithReexportedLibrary(
+        reexportedContent, libraryContent,
+        reexportPrivate: true, hide: ['AClassNotNeedingExtending']);
     var aPublicFunction = library.functions.named('aPublicFunction');
-    var anExtension = library.package.publicLibraries.named('${libraryName}_lib').extensions.named('AnExtension');
+    var anExtension = library.package.publicLibraries
+        .named('${libraryName}_lib')
+        .extensions
+        .named('AnExtension');
     var anExtensionMethod = anExtension.instanceMethods.named('aMethod');
-    var anExtensionReference = getMatchingLinkElement('AnExtension', aPublicFunction).commentReferable as Extension;
-    expectReferenceValid(anExtensionReference, anExtension, '%extension_methods_lib/AnExtension.html');
-    var anExtensionMethodReference = getMatchingLinkElement('AnExtension.aMethod', aPublicFunction).commentReferable as Method;
-    expectReferenceValid(anExtensionMethodReference, anExtensionMethod, '%extension_methods_lib/AnExtension/aMethod.html');
+    var anExtensionReference =
+        getMatchingLinkElement('AnExtension', aPublicFunction).commentReferable
+            as Extension;
+    expectReferenceValid(anExtensionReference, anExtension,
+        '%extension_methods_lib/AnExtension.html');
+    var anExtensionMethodReference =
+        getMatchingLinkElement('AnExtension.aMethod', aPublicFunction)
+            .commentReferable as Method;
+    expectReferenceValid(anExtensionMethodReference, anExtensionMethod,
+        '%extension_methods_lib/AnExtension/aMethod.html');
   }
 
   void test_reexportFull() async {
-    var library = await bootPackageWithReexportedLibrary(reexportedContent, libraryContent, reexportPrivate: true);
+    var library = await bootPackageWithReexportedLibrary(
+        reexportedContent, libraryContent,
+        reexportPrivate: true);
     var aPublicFunction = library.functions.named('aPublicFunction');
-    var anExtension = library.package.publicLibraries.named('${libraryName}_lib').extensions.named('AnExtension');
+    var anExtension = library.package.publicLibraries
+        .named('${libraryName}_lib')
+        .extensions
+        .named('AnExtension');
     var anExtensionMethod = anExtension.instanceMethods.named('aMethod');
-    var anExtensionReference = getMatchingLinkElement('AnExtension', aPublicFunction).commentReferable as Extension;
-    expectReferenceValid(anExtensionReference, anExtension, '%extension_methods_lib/AnExtension.html');
-    var anExtensionMethodReference = getMatchingLinkElement('AnExtension.aMethod', aPublicFunction).commentReferable as Method;
-    expectReferenceValid(anExtensionMethodReference, anExtensionMethod, '%extension_methods_lib/AnExtension/aMethod.html');
+    var anExtensionReference =
+        getMatchingLinkElement('AnExtension', aPublicFunction).commentReferable
+            as Extension;
+    expectReferenceValid(anExtensionReference, anExtension,
+        '%extension_methods_lib/AnExtension.html');
+    var anExtensionMethodReference =
+        getMatchingLinkElement('AnExtension.aMethod', aPublicFunction)
+            .commentReferable as Method;
+    expectReferenceValid(anExtensionMethodReference, anExtensionMethod,
+        '%extension_methods_lib/AnExtension/aMethod.html');
   }
 }
