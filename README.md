@@ -1,7 +1,7 @@
 # Dart documentation generator
 
 [![Build Status](https://github.com/dart-lang/dartdoc/workflows/Test/badge.svg)](https://github.com/dart-lang/dartdoc/actions?query=workflow%3ATest)
-[![Coverage Status](https://coveralls.io/repos/github/dart-lang/dartdoc/badge.svg?branch=master)](https://coveralls.io/github/dart-lang/dartdoc?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/dart-lang/dartdoc/badge.svg?branch=main)](https://coveralls.io/github/dart-lang/dartdoc?branch=main)
 [![OpenSSF
 Scorecard](https://api.securityscorecards.dev/projects/github.com/dart-lang/dartdoc/badge)](https://deps.dev/project/github/dart-lang%2Fdartdoc)
 
@@ -505,9 +505,9 @@ Please see the [dartdoc license][].
 Generated docs include:
 
  * Highlight.js -
-   [LICENSE](https://github.com/isagalaev/highlight.js/blob/master/LICENSE)
+   [LICENSE](https://github.com/isagalaev/highlight.js/blob/main/LICENSE)
    * With `github.css` (c) Vasily Polovnyov <vast@whiteants.net>
 
 [GitHub Issue Tracker]: https://github.com/dart-lang/dartdoc/issues
-[contributor docs]: https://github.com/dart-lang/dartdoc/blob/master/CONTRIBUTING.md
-[dartdoc license]: https://github.com/dart-lang/dartdoc/blob/master/LICENSE
+[contributor docs]: https://github.com/dart-lang/dartdoc/blob/main/CONTRIBUTING.md
+[dartdoc license]: https://github.com/dart-lang/dartdoc/blob/main/LICENSE

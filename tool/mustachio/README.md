@@ -153,11 +153,11 @@ types:
   tag is inverted, and the syntax tree of the section block
 * [Partial][] node - a node containing the partial tag key
 
-[Parser]: https://github.com/dart-lang/dartdoc/blob/master/lib/src/mustachio/parser.dart
-[Text]: https://github.com/dart-lang/dartdoc/blob/master/lib/src/mustachio/parser.dart#L422
-[Variable]: https://github.com/dart-lang/dartdoc/blob/master/lib/src/mustachio/parser.dart#L436
-[Section]: https://github.com/dart-lang/dartdoc/blob/master/lib/src/mustachio/parser.dart#L456
-[Partial]: https://github.com/dart-lang/dartdoc/blob/master/lib/src/mustachio/parser.dart#L477
+[Parser]: https://github.com/dart-lang/dartdoc/blob/main/lib/src/mustachio/parser.dart
+[Text]: https://github.com/dart-lang/dartdoc/blob/main/lib/src/mustachio/parser.dart#L422
+[Variable]: https://github.com/dart-lang/dartdoc/blob/main/lib/src/mustachio/parser.dart#L436
+[Section]: https://github.com/dart-lang/dartdoc/blob/main/lib/src/mustachio/parser.dart#L456
+[Partial]: https://github.com/dart-lang/dartdoc/blob/main/lib/src/mustachio/parser.dart#L477
 
 ## Generated renderer for a specific type which interprets templates at runtime
 

@@ -40,10 +40,10 @@ void main() {
               lineNumber: 71,
               root: 'path',
               sourceFileName: 'path/to/file.dart',
-              uriTemplate: 'http://github.com/base/master/%f%/L%l%')
+              uriTemplate: 'http://github.com/base/main/%f%/L%l%')
           .href();
       expect(sourceLinkerHref(),
-          equals('http://github.com/base/master/to/file.dart/L71'));
+          equals('http://github.com/base/main/to/file.dart/L71'));
     });
 
     test('Throw if only revision specified', () {

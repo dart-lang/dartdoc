@@ -142,7 +142,7 @@ final String _pluginPackageDocsPath =
 String get dartdocOriginalBranch {
   var branch = Platform.environment['DARTDOC_ORIGINAL'];
   if (branch == null) {
-    return 'master';
+    return 'main';
   } else {
     log('using branch/tag: $branch for comparison from \$DARTDOC_ORIGINAL');
     return branch;
@@ -443,7 +443,7 @@ Future<String> createSdkDartdoc() async {
   await launcher.runStreamed('git', [
     'clone',
     '--branch',
-    'master',
+    'main',
     '--depth',
     '1',
     'https://dart.googlesource.com/sdk.git',
