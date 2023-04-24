@@ -11,7 +11,7 @@ import 'package:meta/meta.dart';
 import 'src/test_descriptor_utils.dart' as d;
 import 'src/utils.dart';
 
-/// Exception thrown for invalid use of [DartdocTestBase]'s api/
+/// Exception thrown for invalid use of [DartdocTestBase]'s api.
 class DartdocTestBaseFailure implements Exception {
   final String message;
 
