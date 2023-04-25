@@ -5,14 +5,16 @@
 import 'package:dartdoc/src/model/documentation_comment.dart';
 import 'package:dartdoc/src/model/model_element.dart';
 
-final _hideConstantImplementationsRegExp = RegExp(r'{@hideConstantImplementations}');
+final _hideConstantImplementationsRegExp =
+    RegExp(r'{@hideConstantImplementations}');
 
 /// Implement parsing the hideConstantImplementations dartdoc directive
 /// for this [ModelElement].  Used by [Container].
 mixin HideConstantImplementations on DocumentationComment {
   bool? _hideConstantImplementations;
+
   /// [true] if the {@hideConstantImplementations} dartdoc directive is present
-  /// in the documentation for this class. 
+  /// in the documentation for this class.
   bool get hideConstantImplementations {
     if (_hideConstantImplementations == null) {
       buildDocumentationAddition(documentationComment);
@@ -29,7 +31,8 @@ mixin HideConstantImplementations on DocumentationComment {
   String buildDocumentationAddition(String rawDocs) {
     rawDocs = super.buildDocumentationAddition(rawDocs);
     _hideConstantImplementations = false;
-    rawDocs = rawDocs.replaceAllMapped(_hideConstantImplementationsRegExp, (Match match) {
+    rawDocs = rawDocs.replaceAllMapped(_hideConstantImplementationsRegExp,
+        (Match match) {
       _hideConstantImplementations = true;
       return '';
     });

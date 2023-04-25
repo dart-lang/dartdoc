@@ -135,7 +135,12 @@ class _LibrarySentinel implements Library {
       throw UnimplementedError('No members on Library.sentinel are accessible');
 }
 
-class Library extends ModelElement with Categorization, TopLevelContainer, CanonicalFor, HideConstantImplementations {
+class Library extends ModelElement
+    with
+        Categorization,
+        TopLevelContainer,
+        CanonicalFor,
+        HideConstantImplementations {
   @override
   final LibraryElement element;
 
@@ -304,8 +309,6 @@ class Library extends ModelElement with Categorization, TopLevelContainer, Canon
   late final String dirName = (isAnonymous ? nameFromPath : name)
       .replaceAll(':', '-')
       .replaceAll('/', '_');
-
-
 
   /// Libraries are not enclosed by anything.
   @override
