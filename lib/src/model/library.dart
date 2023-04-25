@@ -135,7 +135,7 @@ class _LibrarySentinel implements Library {
       throw UnimplementedError('No members on Library.sentinel are accessible');
 }
 
-class Library extends ModelElement with Categorization, TopLevelContainer, CanonicalFor {
+class Library extends ModelElement with Categorization, TopLevelContainer, CanonicalFor, HideConstantImplementations {
   @override
   final LibraryElement element;
 

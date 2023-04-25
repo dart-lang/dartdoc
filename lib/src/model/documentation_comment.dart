@@ -156,10 +156,11 @@ mixin DocumentationComment on Documentable, Warnable, Locatable, SourceCode {
     'tool',
     'youtube',
 
-    // Categorization directives, parsed elsewhere:
+    // Other directives, parsed by `model/directives/*.dart`:
     'api',
     'canonicalFor',
     'category',
+    'hideConstantImplementations',
     'image',
     'samples',
     'subCategory',

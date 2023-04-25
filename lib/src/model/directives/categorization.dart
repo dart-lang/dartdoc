@@ -10,7 +10,7 @@ final RegExp _categoryRegExp = RegExp(
     multiLine: true);
 
 /// Mixin parsing the `@category` directive for ModelElements.
-mixin Categorization on ModelElement {
+mixin Categorization on DocumentationComment implements Indexable {
   @override
   String buildDocumentationAddition(String rawDocs) =>
       _stripAndSetDartdocCategories(super.buildDocumentationAddition(rawDocs));
@@ -61,7 +61,6 @@ mixin Categorization on ModelElement {
     return _subCategoryNames;
   }
 
-  @override
   bool get hasCategoryNames => categoryNames?.isNotEmpty ?? false;
   List<String>? _categoryNames;
 
@@ -99,7 +98,6 @@ mixin Categorization on ModelElement {
     ...?categoryNames?.map((n) => package.nameToCategory[n]).whereNotNull()
   ]..sort();
 
-  @override
   Iterable<Category> get displayedCategories {
     if (config.showUndocumentedCategories) return categories;
     return categories.where((c) => c.isDocumented);

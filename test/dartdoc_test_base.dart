@@ -70,9 +70,10 @@ analyzer:
         packagePath, name, Uri.file('$packagePath/'));
   }
 
-  Future<Library> bootPackageWithLibrary(String libraryContent) async {
+  Future<Library> bootPackageWithLibrary(String libraryContent, {String libraryPreamble = ''}) async {
     await d.dir('lib', [
       d.file('lib.dart', '''
+$libraryPreamble
 library $libraryName;
 
 $libraryContent

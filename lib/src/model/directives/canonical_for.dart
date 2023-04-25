@@ -2,13 +2,13 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'package:dartdoc/src/model/documentation_comment.dart';
 import 'package:dartdoc/src/model/library.dart';
-import 'package:dartdoc/src/model/model_element.dart';
 
 final _canonicalRegExp = RegExp(r'{@canonicalFor\s([^}]+)}');
 
 /// Used by [Library] to implement the canonicalFor directive.
-mixin CanonicalFor on ModelElement {
+mixin CanonicalFor on DocumentationComment {
   Set<String>? _canonicalFor;
 
   Set<String> get canonicalFor {
