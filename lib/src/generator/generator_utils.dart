@@ -5,7 +5,7 @@
 import 'dart:convert';
 
 import 'package:collection/collection.dart';
-import 'package:dartdoc/src/model/categorization.dart';
+import 'package:dartdoc/src/model/directives/categorization.dart';
 import 'package:dartdoc/src/model/enclosed_element.dart';
 import 'package:dartdoc/src/model/indexable.dart';
 import 'package:dartdoc/src/model/model_element.dart';

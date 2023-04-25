@@ -686,6 +686,40 @@ class _Renderer_Callable extends RendererBase<Callable> {
   }
 }
 
+class _Renderer_CanonicalFor extends RendererBase<CanonicalFor> {
+  static final Map<Type, Object> _propertyMapCache = {};
+  static Map<String, Property<CT_>> propertyMap<CT_ extends CanonicalFor>() =>
+      _propertyMapCache.putIfAbsent(
+          CT_,
+          () => {
+                'canonicalFor': Property(
+                  getValue: (CT_ c) => c.canonicalFor,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'Set<String>'),
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    return c.canonicalFor.map((e) =>
+                        _render_String(e, ast, r.template, sink, parent: r));
+                  },
+                ),
+              }) as Map<String, Property<CT_>>;
+
+  _Renderer_CanonicalFor(CanonicalFor context, RendererBase<Object>? parent,
+      Template template, StringSink sink)
+      : super(context, parent, template, sink);
+
+  @override
+  Property<CanonicalFor>? getProperty(String key) {
+    if (propertyMap<CanonicalFor>().containsKey(key)) {
+      return propertyMap<CanonicalFor>()[key];
+    } else {
+      return null;
+    }
+  }
+}
+
 class _Renderer_Canonicalization extends RendererBase<Canonicalization> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<
@@ -7630,6 +7664,7 @@ class _Renderer_Library extends RendererBase<Library> {
                 ..._Renderer_ModelElement.propertyMap<CT_>(),
                 ..._Renderer_Categorization.propertyMap<CT_>(),
                 ..._Renderer_TopLevelContainer.propertyMap<CT_>(),
+                ..._Renderer_CanonicalFor.propertyMap<CT_>(),
                 'allClasses': Property(
                   getValue: (CT_ c) => c.allClasses,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -7655,15 +7690,15 @@ class _Renderer_Library extends RendererBase<Library> {
                         parent: r));
                   },
                 ),
-                'canonicalFor': Property(
-                  getValue: (CT_ c) => c.canonicalFor,
+                'allOriginalModelElementNames': Property(
+                  getValue: (CT_ c) => c.allOriginalModelElementNames,
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
-                          c, remainingNames, 'Set<String>'),
+                          c, remainingNames, 'Iterable<String>'),
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    return c.canonicalFor.map((e) =>
+                    return c.allOriginalModelElementNames.map((e) =>
                         _render_String(e, ast, r.template, sink, parent: r));
                   },
                 ),
@@ -12072,7 +12107,7 @@ class _Renderer_Package extends RendererBase<Package> {
   }
 }
 
-String renderSearchPage(PackageTemplateData context, Template template) {
+String renderIndex(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -12310,7 +12345,7 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
   }
 }
 
-String renderIndex(PackageTemplateData context, Template template) {
+String renderSearchPage(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();

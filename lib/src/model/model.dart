@@ -4,12 +4,14 @@
 
 export 'accessor.dart';
 export 'canonicalization.dart';
-export 'categorization.dart';
 export 'category.dart';
 export 'class.dart';
 export 'constructor.dart';
 export 'container.dart';
 export 'container_member.dart';
+export 'directives/canonical_for.dart';
+export 'directives/categorization.dart';
+export 'directives/hide_constant_implementations.dart';
 export 'documentable.dart';
 export 'documentation.dart';
 export 'documentation_comment.dart';

@@ -9,11 +9,11 @@ final RegExp _categoryRegExp = RegExp(
     r'[ ]*{@(api|category|subCategory|image|samples) (.+?)}[ ]*\n?',
     multiLine: true);
 
-/// Mixin implementing dartdoc categorization for ModelElements.
-mixin Categorization implements ModelElement {
+/// Mixin parsing the `@category` directive for ModelElements.
+mixin Categorization on ModelElement {
   @override
   String buildDocumentationAddition(String rawDocs) =>
-      _stripAndSetDartdocCategories(rawDocs);
+      _stripAndSetDartdocCategories(super.buildDocumentationAddition(rawDocs));
 
   /// Parse `{@category ...}` and related information in API comments, stripping
   /// out that information from the given comments and returning the stripped
