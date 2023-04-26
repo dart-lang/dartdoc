@@ -16286,10 +16286,6 @@ const _invisibleGetters = {
     'augmented',
     'hashCode',
     'isBase',
-    'isExhaustive',
-    'isFinal',
-    'isInterface',
-    'isSealed',
     'runtimeType',
     'superclassConstraints'
   },
