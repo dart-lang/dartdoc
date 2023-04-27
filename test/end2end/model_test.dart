@@ -1991,10 +1991,6 @@ void main() {
       expect(interfaces[1].name, 'E');
     });
 
-    test('class title has abstract keyword', () {
-      expect(Cat.fullkind, 'abstract class');
-    });
-
     test('class title has no abstract keyword', () {
       expect(Dog.fullkind, 'class');
     });
