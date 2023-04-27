@@ -1,3 +1,8 @@
+## 6.2.2
+* Add chips to class pages for class modifiers (#3401)
+* Fix a case where dartdoc was not properly handling extension
+  method resolution. (#3393)
+
 ## 6.2.1
 * Do not show induced modifiers from analyzer in class headers.
   (#3371)
