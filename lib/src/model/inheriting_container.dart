@@ -9,6 +9,7 @@ import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/container_modifiers.dart';
 import 'package:dartdoc/src/model/extension_target.dart';
+import 'package:dartdoc/src/model/language_feature.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as model_utils;
 import 'package:meta/meta.dart';
@@ -87,14 +88,21 @@ abstract class InheritingContainer extends Container
   /// Class modifiers from the Dart feature specification.
   ///
   /// These apply to or have some meaning for [Class]es and [Mixin]s.
-  late List<ContainerModifier> containerModifiers = [
+  late final List<ContainerModifier> containerModifiers = [
     if (isAbstract) ContainerModifier.abstract,
     if (isSealed) ContainerModifier.sealed,
     if (isBase) ContainerModifier.base,
     if (isInterface) ContainerModifier.interface,
     if (isFinal) ContainerModifier.finalModifier,
     if (isMixinClass) ContainerModifier.mixin,
-  ];
+  ]..sort();
+
+  @override
+  late final List<LanguageFeature> displayedLanguageFeatures =
+      containerModifiers
+          .asLanguageFeatureSet(
+              packageGraph.rendererFactory.languageFeatureRenderer)
+          .toList();
 
   late final List<ModelElement> _allModelElements = [
     ...super.allModelElements,
@@ -267,12 +275,7 @@ abstract class InheritingContainer extends Container
   @override
   Library get enclosingElement => library;
 
-  String get fullkind {
-    if (containerModifiers.isNotEmpty) {
-      return '${containerModifiers.modifiersAsFullKindPrefix()} $kind';
-    }
-    return kind;
-  }
+  String get fullkind => kind;
 
   @override
   bool get hasModifiers =>

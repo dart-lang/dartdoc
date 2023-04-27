@@ -6867,6 +6867,19 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                         parent: r);
                   },
                 ),
+                'displayedLanguageFeatures': Property(
+                  getValue: (CT_ c) => c.displayedLanguageFeatures,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'List<LanguageFeature>'),
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    return c.displayedLanguageFeatures.map((e) =>
+                        _render_LanguageFeature(e, ast, r.template, sink,
+                            parent: r));
+                  },
+                ),
                 'element': Property(
                   getValue: (CT_ c) => c.element,
                   renderVariable: (CT_ c, Property<CT_> self,
