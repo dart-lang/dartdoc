@@ -1276,26 +1276,26 @@ Future<void> testDartdocFlutterPlugin() async {
 @Depends(buildSdkDocs)
 void validateSdkDocs() {
   const expectedLibCounts = 0;
-  const expectedSubLibCount = {18, 19};
-  const expectedTotalCount = {18, 19};
+  const expectedSubLibCount = {18, 19, 20};
+  const expectedTotalCount = {18, 19, 20};
   var indexHtml = joinFile(_sdkDocsDir, ['index.html']);
   if (!indexHtml.existsSync()) {
-    fail('no index.html found for SDK docs');
+    fail("No 'index.html' found for the SDK docs");
   }
-  log('found index.html');
+  log("Found 'index.html'");
   var indexContents = indexHtml.readAsStringSync();
   var foundLibs = _findCount(indexContents, '  <li><a href="dart-');
   if (expectedLibCounts != foundLibs) {
-    fail('expected $expectedLibCounts "dart:" index.html entries, found '
-        '$foundLibs');
+    fail("Expected $expectedLibCounts 'dart:' entries in 'index.html', but "
+        'found $foundLibs');
   }
-  log('$foundLibs index.html dart: entries found');
+  log("Found $foundLibs 'dart:' entries in 'index.html'");
 
   var foundSubLibs =
       _findCount(indexContents, '<li class="section-subitem"><a href="dart-');
   if (!expectedSubLibCount.contains(foundSubLibs)) {
-    fail('expected $expectedSubLibCount "dart:" index.html entries in '
-        'categories, found $foundSubLibs');
+    fail("Expected $expectedSubLibCount 'dart:' entries in 'index.html' to be "
+        'in categories, but found $foundSubLibs');
   }
   log('$foundSubLibs index.html dart: entries in categories found');
 
@@ -1303,10 +1303,11 @@ void validateSdkDocs() {
   var libsLength =
       _sdkDocsDir.listSync().where((fs) => fs.path.contains('dart-')).length;
   if (!expectedTotalCount.contains(libsLength)) {
-    fail('docs not generated for all the SDK libraries, '
-        'expected $expectedTotalCount directories, generated $libsLength directories');
+    fail('Docs not generated for all the SDK libraries; expected '
+        '$expectedTotalCount directories, but $libsLength directories were '
+        'generated');
   }
-  log('$libsLength dart: libraries found');
+  log("Found $libsLength 'dart:' libraries");
 
   var futureConstFile =
       joinFile(_sdkDocsDir, [p.join('dart-async', 'Future', 'Future.html')]);
