@@ -890,10 +890,14 @@ Future<Iterable<Map<String, Object?>>> _buildFlutterDocs(
     ['pub', 'get'],
     workingDirectory: p.join(flutterPath, 'dev', 'tools'),
   );
+  try {
   await flutterRepo.launcher.runStreamed(
     flutterRepo.cacheDart,
     ['pub', 'global', 'deactivate', 'snippets'],
   );
+  } on ProcessException {
+    // Ignore failure to deactivate so this works on completely clean bots.
+  }
   await flutterRepo.launcher.runStreamed(
     flutterRepo.cacheDart,
     ['pub', 'global', 'activate', 'snippets'],
@@ -1281,8 +1285,8 @@ Future<void> testDartdocFlutterPlugin() async {
 @Depends(buildSdkDocs)
 void validateSdkDocs() {
   const expectedLibCounts = 0;
-  const expectedSubLibCount = {18, 19};
-  const expectedTotalCount = {18, 19};
+  const expectedSubLibCount = {19, 20};
+  const expectedTotalCount = {19, 20};
   var indexHtml = joinFile(_sdkDocsDir, ['index.html']);
   if (!indexHtml.existsSync()) {
     fail('no index.html found for SDK docs');
