@@ -7,7 +7,7 @@ import 'package:dartdoc/src/model/library.dart';
 
 final _canonicalRegExp = RegExp(r'{@canonicalFor\s([^}]+)}');
 
-/// Used by [Library] to implement the canonicalFor directive.
+/// Used by [Library] to implement the `canonicalFor` directive.
 mixin CanonicalFor on DocumentationComment {
   Set<String>? _canonicalFor;
 
@@ -18,7 +18,7 @@ mixin CanonicalFor on DocumentationComment {
     return _canonicalFor!;
   }
 
-  /// Hides [canonicalFor] from doc while leaving a note to ourselves to
+  /// Hides `canonicalFor` from doc while leaving a note to ourselves to
   /// help with ambiguous canonicalization determination.
   ///
   /// Example:
