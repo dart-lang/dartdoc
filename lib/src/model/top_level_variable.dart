@@ -83,5 +83,5 @@ class TopLevelVariable extends ModelElement
 
   @override
   bool get hideConstantImplementation =>
-      definingLibrary.hideConstantImplementations;
+      definingLibrary.hasHideConstantImplementations;
 }

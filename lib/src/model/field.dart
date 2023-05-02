@@ -180,5 +180,5 @@ class Field extends ModelElement
 
   @override
   bool get hideConstantImplementation =>
-      definingEnclosingContainer.hideConstantImplementations;
+      definingEnclosingContainer.hasHideConstantImplementations;
 }

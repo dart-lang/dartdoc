@@ -101,12 +101,11 @@ mixin DocumentationComment on Documentable, Warnable, Locatable, SourceCode {
       docs = _injectExamples(docs);
       docs = _injectYouTube(docs);
       docs = _injectAnimations(docs);
+      // TODO(srawlins): Processing templates here causes #2281. But leaving
+      // them unprocessed causes #2272.
+      docs = _stripHtmlAndAddToIndex(docs);
     }
     _analyzeCodeBlocks(docs);
-
-    // TODO(srawlins): Processing templates here causes #2281. But leaving them
-    // unprocessed causes #2272.
-    docs = _stripHtmlAndAddToIndex(docs);
     return docs;
   }
 

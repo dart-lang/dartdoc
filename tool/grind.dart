@@ -72,6 +72,7 @@ Future<FlutterRepo> get cleanFlutterRepo async {
   if (repoCompleter != null) {
     return repoCompleter.future;
   }
+  _cleanFlutterRepo = repoCompleter;
 
   // No await is allowed between check of _cleanFlutterRepo and its assignment,
   // to prevent reentering this function.
@@ -888,6 +889,10 @@ Future<Iterable<Map<String, Object?>>> _buildFlutterDocs(
     flutterRepo.cacheDart,
     ['pub', 'get'],
     workingDirectory: p.join(flutterPath, 'dev', 'tools'),
+  );
+  await flutterRepo.launcher.runStreamed(
+    flutterRepo.cacheDart,
+    ['pub', 'global', 'deactivate', 'snippets'],
   );
   await flutterRepo.launcher.runStreamed(
     flutterRepo.cacheDart,

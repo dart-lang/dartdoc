@@ -11,18 +11,18 @@ final _hideConstantImplementationsRegExp =
 /// Implement parsing the hideConstantImplementations dartdoc directive
 /// for this [ModelElement].  Used by [Container].
 mixin HideConstantImplementations on DocumentationComment {
-  bool? _hideConstantImplementations;
+  bool? _hasHideConstantImplementations;
 
   /// [true] if the {@hideConstantImplementations} dartdoc directive is present
   /// in the documentation for this class.
-  bool get hideConstantImplementations {
-    if (_hideConstantImplementations == null) {
+  bool get hasHideConstantImplementations {
+    if (_hasHideConstantImplementations == null) {
       buildDocumentationAddition(documentationComment);
     }
-    return _hideConstantImplementations!;
+    return _hasHideConstantImplementations!;
   }
 
-  /// Hides [hideConstantImplementations] from doc while leaving a note to
+  /// Hides [hasHideConstantImplementations] from doc while leaving a note to
   /// ourselves to change rendering for these constants.
   /// Example:
   ///
@@ -30,10 +30,10 @@ mixin HideConstantImplementations on DocumentationComment {
   @override
   String buildDocumentationAddition(String rawDocs) {
     rawDocs = super.buildDocumentationAddition(rawDocs);
-    _hideConstantImplementations = false;
+    _hasHideConstantImplementations = false;
     rawDocs = rawDocs.replaceAllMapped(_hideConstantImplementationsRegExp,
         (Match match) {
-      _hideConstantImplementations = true;
+      _hasHideConstantImplementations = true;
       return '';
     });
     return rawDocs;

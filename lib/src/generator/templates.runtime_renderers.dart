@@ -6586,11 +6586,12 @@ class _Renderer_HideConstantImplementations
               CT_,
               () => {
                     'hideConstantImplementations': Property(
-                      getValue: (CT_ c) => c.hideConstantImplementations,
+                      getValue: (CT_ c) => c.hasHideConstantImplementations,
                       renderVariable: (CT_ c, Property<CT_> self,
                               List<String> remainingNames) =>
                           self.renderSimpleVariable(c, remainingNames, 'bool'),
-                      getBool: (CT_ c) => c.hideConstantImplementations == true,
+                      getBool: (CT_ c) =>
+                          c.hasHideConstantImplementations == true,
                     ),
                   }) as Map<String, Property<CT_>>;
 
