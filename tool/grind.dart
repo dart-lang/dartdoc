@@ -891,10 +891,10 @@ Future<Iterable<Map<String, Object?>>> _buildFlutterDocs(
     workingDirectory: p.join(flutterPath, 'dev', 'tools'),
   );
   try {
-  await flutterRepo.launcher.runStreamed(
-    flutterRepo.cacheDart,
-    ['pub', 'global', 'deactivate', 'snippets'],
-  );
+    await flutterRepo.launcher.runStreamed(
+      flutterRepo.cacheDart,
+      ['pub', 'global', 'deactivate', 'snippets'],
+    );
   } on ProcessException {
     // Ignore failure to deactivate so this works on completely clean bots.
   }
