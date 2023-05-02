@@ -6585,7 +6585,7 @@ class _Renderer_HideConstantImplementations
           _propertyMapCache.putIfAbsent(
               CT_,
               () => {
-                    'hideConstantImplementations': Property(
+                    'hasHideConstantImplementations': Property(
                       getValue: (CT_ c) => c.hasHideConstantImplementations,
                       renderVariable: (CT_ c, Property<CT_> self,
                               List<String> remainingNames) =>
