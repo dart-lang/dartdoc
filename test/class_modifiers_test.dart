@@ -2,11 +2,17 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'package:dartdoc/src/model/model.dart';
 import 'package:test/test.dart';
 import 'package:test_reflective_loader/test_reflective_loader.dart';
 
 import 'dartdoc_test_base.dart';
 import 'src/utils.dart';
+
+extension on InheritingContainer {
+  String languageFeatureChips() =>
+      displayedLanguageFeatures.map((l) => l.name).join(' ');
+}
 
 void main() {
   defineReflectiveSuite(() {
@@ -63,21 +69,21 @@ base mixin O {}
     var Mclass = library.classes.named('M');
     var Nmixin = library.mixins.named('N');
     var Omixin = library.mixins.named('O');
-    expect(Aclass.fullkind, equals('class'));
-    expect(Bclass.fullkind, equals('base class'));
-    expect(Cclass.fullkind, equals('interface class'));
-    expect(Dclass.fullkind, equals('final class'));
-    expect(Eclass.fullkind, equals('sealed class'));
-    expect(Fclass.fullkind, equals('abstract class'));
-    expect(Gclass.fullkind, equals('abstract base class'));
-    expect(Hclass.fullkind, equals('abstract interface class'));
-    expect(Iclass.fullkind, equals('abstract final class'));
-    expect(Jclass.fullkind, equals('mixin class'));
-    expect(Kclass.fullkind, equals('base mixin class'));
-    expect(Lclass.fullkind, equals('abstract mixin class'));
-    expect(Mclass.fullkind, equals('abstract base mixin class'));
-    expect(Nmixin.fullkind, equals('mixin'));
-    expect(Omixin.fullkind, equals('base mixin'));
+    expect(Aclass.languageFeatureChips(), equals(''));
+    expect(Bclass.languageFeatureChips(), equals('base'));
+    expect(Cclass.languageFeatureChips(), equals('interface'));
+    expect(Dclass.languageFeatureChips(), equals('final'));
+    expect(Eclass.languageFeatureChips(), equals('sealed'));
+    expect(Fclass.languageFeatureChips(), equals('abstract'));
+    expect(Gclass.languageFeatureChips(), equals('abstract base'));
+    expect(Hclass.languageFeatureChips(), equals('abstract interface'));
+    expect(Iclass.languageFeatureChips(), equals('abstract final'));
+    expect(Jclass.languageFeatureChips(), equals('mixin'));
+    expect(Kclass.languageFeatureChips(), equals('base mixin'));
+    expect(Lclass.languageFeatureChips(), equals('abstract mixin'));
+    expect(Mclass.languageFeatureChips(), equals('abstract base mixin'));
+    expect(Nmixin.languageFeatureChips(), equals(''));
+    expect(Omixin.languageFeatureChips(), equals('base'));
   }
 
   void test_abstractSealed() async {
@@ -86,7 +92,8 @@ abstract class A {}
 sealed class B extends A {}
 ''');
     var Bclass = library.classes.named('B');
-    expect(Bclass.fullkind, equals('sealed class')); // *not* sealed abstract
+    expect(Bclass.languageFeatureChips(),
+        equals('sealed')); // *not* sealed abstract
   }
 
   void test_inferredModifiers() async {
@@ -116,13 +123,14 @@ base class M extends L {}
     var Iclass = library.classes.named('I');
     var Lclass = library.classes.named('L');
     var Mclass = library.classes.named('M');
-    expect(Bclass.fullkind, equals('sealed class')); // *not* sealed base
-    expect(Cclass.fullkind, equals('base class'));
-    expect(Eclass.fullkind, equals('sealed class'));
-    expect(Fclass.fullkind, equals('interface class'));
-    expect(Hclass.fullkind, equals('sealed class'));
-    expect(Iclass.fullkind, equals('final class'));
-    expect(Lclass.fullkind, equals('sealed class'));
-    expect(Mclass.fullkind, equals('base class'));
+    expect(
+        Bclass.languageFeatureChips(), equals('sealed')); // *not* sealed base
+    expect(Cclass.languageFeatureChips(), equals('base'));
+    expect(Eclass.languageFeatureChips(), equals('sealed'));
+    expect(Fclass.languageFeatureChips(), equals('interface'));
+    expect(Hclass.languageFeatureChips(), equals('sealed'));
+    expect(Iclass.languageFeatureChips(), equals('final'));
+    expect(Lclass.languageFeatureChips(), equals('sealed'));
+    expect(Mclass.languageFeatureChips(), equals('base'));
   }
 }

@@ -3,9 +3,9 @@ name: Test
 on:
   # Run CI on pushes to the main branch, and on PRs against main.
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
   schedule:
     - cron: 0 15 * * *
 

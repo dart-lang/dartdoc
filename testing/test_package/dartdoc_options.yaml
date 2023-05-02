@@ -24,4 +24,4 @@ dartdoc:
     - broken-link
   linkToSource:
     root: '.'
-    uriTemplate: 'https://github.com/dart-lang/dartdoc/blob/master/testing/test_package/%f%#L%l%'
+    uriTemplate: 'https://github.com/dart-lang/dartdoc/blob/main/testing/test_package/%f%#L%l%'
