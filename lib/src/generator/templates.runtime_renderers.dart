@@ -5582,12 +5582,12 @@ class _Renderer_Field extends RendererBase<Field> {
                         parent: r);
                   },
                 ),
-                'hideConstantImplementation': Property(
-                  getValue: (CT_ c) => c.hideConstantImplementation,
+                'hasHideConstantImplementation': Property(
+                  getValue: (CT_ c) => c.hasHideConstantImplementation,
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hideConstantImplementation == true,
+                  getBool: (CT_ c) => c.hasHideConstantImplementation == true,
                 ),
                 'href': Property(
                   getValue: (CT_ c) => c.href,
@@ -6312,6 +6312,13 @@ class _Renderer_GetterSetterCombo extends RendererBase<GetterSetterCombo> {
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.hasGetterOrSetter == true,
                 ),
+                'hasHideConstantImplementation': Property(
+                  getValue: (CT_ c) => c.hasHideConstantImplementation,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.hasHideConstantImplementation == true,
+                ),
                 'hasNoGetterSetter': Property(
                   getValue: (CT_ c) => c.hasNoGetterSetter,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -6353,13 +6360,6 @@ class _Renderer_GetterSetterCombo extends RendererBase<GetterSetterCombo> {
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.hasSetter == true,
-                ),
-                'hideConstantImplementation': Property(
-                  getValue: (CT_ c) => c.hideConstantImplementation,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hideConstantImplementation == true,
                 ),
                 'isCallable': Property(
                   getValue: (CT_ c) => c.isCallable,
@@ -14612,12 +14612,12 @@ class _Renderer_TopLevelVariable extends RendererBase<TopLevelVariable> {
                         parent: r);
                   },
                 ),
-                'hideConstantImplementation': Property(
-                  getValue: (CT_ c) => c.hideConstantImplementation,
+                'hasHideConstantImplementation': Property(
+                  getValue: (CT_ c) => c.hasHideConstantImplementation,
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hideConstantImplementation == true,
+                  getBool: (CT_ c) => c.hasHideConstantImplementation == true,
                 ),
                 'href': Property(
                   getValue: (CT_ c) => c.href,
@@ -16245,13 +16245,13 @@ const _invisibleGetters = {
     'hasExplicitSetter',
     'hasGetter',
     'hasGetterOrSetter',
+    'hasHideConstantImplementation',
     'hasNoGetterSetter',
     'hasParameters',
     'hasPublicGetter',
     'hasPublicGetterNoSetter',
     'hasPublicSetter',
     'hasSetter',
-    'hideConstantImplementation',
     'isCallable',
     'isInherited',
     'isPublic',

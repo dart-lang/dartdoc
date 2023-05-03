@@ -82,6 +82,6 @@ class TopLevelVariable extends ModelElement
   Iterable<CommentReferable> get referenceParents => [definingLibrary];
 
   @override
-  bool get hideConstantImplementation =>
+  bool get hasHideConstantImplementation =>
       definingLibrary.hasHideConstantImplementations;
 }
