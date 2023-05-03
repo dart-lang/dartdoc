@@ -38,7 +38,7 @@ dev_dependencies:
   js: ^0.6.5
   lints: ^2.0.0
   matcher: ^0.12.14
-  test: ">=1.23.1 <1.24.0"
+  test: ^1.23.1
   test_descriptor: ^2.0.0
   test_process: ^2.0.2
   test_reflective_loader: ^0.2.0
