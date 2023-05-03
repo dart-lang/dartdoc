@@ -13,8 +13,8 @@ final _hideConstantImplementationsRegExp =
 mixin HideConstantImplementations on DocumentationComment {
   bool? _hasHideConstantImplementations;
 
-  /// [true] if the {@hideConstantImplementations} dartdoc directive is present
-  /// in the documentation for this class.
+  /// [true] if the `{@hideConstantImplementations}` dartdoc directive is
+  /// present in the documentation for this class.
   bool get hasHideConstantImplementations {
     if (_hasHideConstantImplementations == null) {
       buildDocumentationAddition(documentationComment);
@@ -22,7 +22,7 @@ mixin HideConstantImplementations on DocumentationComment {
     return _hasHideConstantImplementations!;
   }
 
-  /// Hides [hasHideConstantImplementations] from doc while leaving a note to
+  /// Hides `{@hideConstantImplementations}` from doc while leaving a note to
   /// ourselves to change rendering for these constants.
   /// Example:
   ///
