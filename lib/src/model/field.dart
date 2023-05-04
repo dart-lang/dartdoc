@@ -177,4 +177,8 @@ class Field extends ModelElement
 
   @override
   Inheritable? get overriddenElement => null;
+
+  @override
+  bool get hasHideConstantImplementation =>
+      definingEnclosingContainer.hasHideConstantImplementations;
 }

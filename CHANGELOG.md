@@ -1,3 +1,7 @@
+## 6.2.2-dev
+* Add a hideImplementations directive to disable showing constant
+  implementations alongside one-line docs on class pages (#3398)
+
 ## 6.2.2
 * Add chips to class pages for class modifiers (#3401)
 * Fix a case where dartdoc was not properly handling extension

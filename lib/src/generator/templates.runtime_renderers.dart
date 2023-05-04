@@ -686,6 +686,40 @@ class _Renderer_Callable extends RendererBase<Callable> {
   }
 }
 
+class _Renderer_CanonicalFor extends RendererBase<CanonicalFor> {
+  static final Map<Type, Object> _propertyMapCache = {};
+  static Map<String, Property<CT_>> propertyMap<CT_ extends CanonicalFor>() =>
+      _propertyMapCache.putIfAbsent(
+          CT_,
+          () => {
+                'canonicalFor': Property(
+                  getValue: (CT_ c) => c.canonicalFor,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'Set<String>'),
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    return c.canonicalFor.map((e) =>
+                        _render_String(e, ast, r.template, sink, parent: r));
+                  },
+                ),
+              }) as Map<String, Property<CT_>>;
+
+  _Renderer_CanonicalFor(CanonicalFor context, RendererBase<Object>? parent,
+      Template template, StringSink sink)
+      : super(context, parent, template, sink);
+
+  @override
+  Property<CanonicalFor>? getProperty(String key) {
+    if (propertyMap<CanonicalFor>().containsKey(key)) {
+      return propertyMap<CanonicalFor>()[key];
+    } else {
+      return null;
+    }
+  }
+}
+
 class _Renderer_Canonicalization extends RendererBase<Canonicalization> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<
@@ -2660,6 +2694,7 @@ class _Renderer_Container extends RendererBase<Container> {
                 ..._Renderer_ModelElement.propertyMap<CT_>(),
                 ..._Renderer_Categorization.propertyMap<CT_>(),
                 ..._Renderer_TypeParameters.propertyMap<CT_>(),
+                ..._Renderer_HideConstantImplementations.propertyMap<CT_>(),
                 'allCanonicalModelElements': Property(
                   getValue: (CT_ c) => c.allCanonicalModelElements,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -5547,6 +5582,13 @@ class _Renderer_Field extends RendererBase<Field> {
                         parent: r);
                   },
                 ),
+                'hasHideConstantImplementation': Property(
+                  getValue: (CT_ c) => c.hasHideConstantImplementation,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.hasHideConstantImplementation == true,
+                ),
                 'href': Property(
                   getValue: (CT_ c) => c.href,
                   renderVariable:
@@ -6270,6 +6312,13 @@ class _Renderer_GetterSetterCombo extends RendererBase<GetterSetterCombo> {
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.hasGetterOrSetter == true,
                 ),
+                'hasHideConstantImplementation': Property(
+                  getValue: (CT_ c) => c.hasHideConstantImplementation,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.hasHideConstantImplementation == true,
+                ),
                 'hasNoGetterSetter': Property(
                   getValue: (CT_ c) => c.hasNoGetterSetter,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -6522,6 +6571,38 @@ class _Renderer_HasNoPage extends RendererBase<HasNoPage> {
   Property<HasNoPage>? getProperty(String key) {
     if (propertyMap<HasNoPage>().containsKey(key)) {
       return propertyMap<HasNoPage>()[key];
+    } else {
+      return null;
+    }
+  }
+}
+
+class _Renderer_HideConstantImplementations
+    extends RendererBase<HideConstantImplementations> {
+  static final Map<Type, Object> _propertyMapCache = {};
+  static Map<String, Property<CT_>>
+      propertyMap<CT_ extends HideConstantImplementations>() =>
+          _propertyMapCache.putIfAbsent(
+              CT_,
+              () => {
+                    'hasHideConstantImplementations': Property(
+                      getValue: (CT_ c) => c.hasHideConstantImplementations,
+                      renderVariable: (CT_ c, Property<CT_> self,
+                              List<String> remainingNames) =>
+                          self.renderSimpleVariable(c, remainingNames, 'bool'),
+                      getBool: (CT_ c) =>
+                          c.hasHideConstantImplementations == true,
+                    ),
+                  }) as Map<String, Property<CT_>>;
+
+  _Renderer_HideConstantImplementations(HideConstantImplementations context,
+      RendererBase<Object>? parent, Template template, StringSink sink)
+      : super(context, parent, template, sink);
+
+  @override
+  Property<HideConstantImplementations>? getProperty(String key) {
+    if (propertyMap<HideConstantImplementations>().containsKey(key)) {
+      return propertyMap<HideConstantImplementations>()[key];
     } else {
       return null;
     }
@@ -7643,6 +7724,8 @@ class _Renderer_Library extends RendererBase<Library> {
                 ..._Renderer_ModelElement.propertyMap<CT_>(),
                 ..._Renderer_Categorization.propertyMap<CT_>(),
                 ..._Renderer_TopLevelContainer.propertyMap<CT_>(),
+                ..._Renderer_CanonicalFor.propertyMap<CT_>(),
+                ..._Renderer_HideConstantImplementations.propertyMap<CT_>(),
                 'allClasses': Property(
                   getValue: (CT_ c) => c.allClasses,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -7668,15 +7751,15 @@ class _Renderer_Library extends RendererBase<Library> {
                         parent: r));
                   },
                 ),
-                'canonicalFor': Property(
-                  getValue: (CT_ c) => c.canonicalFor,
+                'allOriginalModelElementNames': Property(
+                  getValue: (CT_ c) => c.allOriginalModelElementNames,
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
-                          c, remainingNames, 'Set<String>'),
+                          c, remainingNames, 'Iterable<String>'),
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    return c.canonicalFor.map((e) =>
+                    return c.allOriginalModelElementNames.map((e) =>
                         _render_String(e, ast, r.template, sink, parent: r));
                   },
                 ),
@@ -12085,7 +12168,7 @@ class _Renderer_Package extends RendererBase<Package> {
   }
 }
 
-String renderSearchPage(PackageTemplateData context, Template template) {
+String renderIndex(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -12323,7 +12406,7 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
   }
 }
 
-String renderIndex(PackageTemplateData context, Template template) {
+String renderSearchPage(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -14529,6 +14612,13 @@ class _Renderer_TopLevelVariable extends RendererBase<TopLevelVariable> {
                         parent: r);
                   },
                 ),
+                'hasHideConstantImplementation': Property(
+                  getValue: (CT_ c) => c.hasHideConstantImplementation,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.hasHideConstantImplementation == true,
+                ),
                 'href': Property(
                   getValue: (CT_ c) => c.href,
                   renderVariable:
@@ -16155,6 +16245,7 @@ const _invisibleGetters = {
     'hasExplicitSetter',
     'hasGetter',
     'hasGetterOrSetter',
+    'hasHideConstantImplementation',
     'hasNoGetterSetter',
     'hasParameters',
     'hasPublicGetter',

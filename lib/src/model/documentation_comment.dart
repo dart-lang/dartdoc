@@ -97,19 +97,15 @@ mixin DocumentationComment on Documentable, Warnable, Locatable, SourceCode {
   /// result.
   String _processCommentWithoutTools(String documentationComment) {
     var docs = stripComments(documentationComment);
-    if (!docs.contains('{@')) {
-      _analyzeCodeBlocks(docs);
-      return docs;
+    if (docs.contains('{@')) {
+      docs = _injectExamples(docs);
+      docs = _injectYouTube(docs);
+      docs = _injectAnimations(docs);
+      // TODO(srawlins): Processing templates here causes #2281. But leaving
+      // them unprocessed causes #2272.
+      docs = _stripHtmlAndAddToIndex(docs);
     }
-    docs = _injectExamples(docs);
-    docs = _injectYouTube(docs);
-    docs = _injectAnimations(docs);
-
     _analyzeCodeBlocks(docs);
-
-    // TODO(srawlins): Processing templates here causes #2281. But leaving them
-    // unprocessed causes #2272.
-    docs = _stripHtmlAndAddToIndex(docs);
     return docs;
   }
 
@@ -159,10 +155,11 @@ mixin DocumentationComment on Documentable, Warnable, Locatable, SourceCode {
     'tool',
     'youtube',
 
-    // Categorization directives, parsed elsewhere:
+    // Other directives, parsed by `model/directives/*.dart`:
     'api',
     'canonicalFor',
     'category',
+    'hideConstantImplementations',
     'image',
     'samples',
     'subCategory',
@@ -845,7 +842,12 @@ mixin DocumentationComment on Documentable, Warnable, Locatable, SourceCode {
   String? _rawDocs;
 
   /// Override this to add more features to the documentation builder in a
-  /// subclass.
+  /// subclass.  This function is allowed to have side-effects such as caching
+  /// the presence of dartdoc directives within the class, but implementations
+  /// must be safe to call multiple times.
+  /// TODO(jcollins-g): Consider a restructure that avoids relying on
+  /// side-effects and repeatedly traversing the doc string.
+  @mustCallSuper
   String buildDocumentationAddition(String docs) => docs;
 
   String _buildDocumentationBaseSync() {

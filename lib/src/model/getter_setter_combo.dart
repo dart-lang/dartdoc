@@ -61,6 +61,7 @@ mixin GetterSetterCombo on ModelElement {
   bool get hasConstantValueForDisplay {
     final element = this.element;
     if (element is! ConstVariableElement) return false;
+    if (hasHideConstantImplementation) return false;
     return element.constantInitializer != null;
   }
 
@@ -265,6 +266,10 @@ mixin GetterSetterCombo on ModelElement {
   bool get readWrite => hasPublicGetter && hasPublicSetter;
 
   bool get writeOnly => hasPublicSetter && !hasPublicGetter;
+
+  /// True if the @hideConstantImplementations directive is present
+  /// in the defining enclosing element.
+  bool get hasHideConstantImplementation;
 
   @override
   late final Map<String, CommentReferable> referenceChildren = {
