@@ -4,6 +4,9 @@
 
 import 'package:dartdoc/src/model/model_element.dart';
 
+const _html = 'html';
+const _md = 'md';
+
 enum FileStructureMode {
   htmlOriginal,
   mdOriginal,
@@ -28,13 +31,17 @@ abstract class FileStructure {
 
   /// Link to the [ModelElement] the information for this [FileStructure]
   /// applies to.
+  // TODO(jcollins): consider not carrying a reference to a ModelElement and
+  // calculating necessary bits at construction time.  Might be challenging
+  // if we want to calculate [hasIndependentFile] based on documentation
+  // length or other variables not always available.
   ModelElement get modelElement;
 
   /// True if an independent file should be created for this `ModelElement`.
   bool get hasIndependentFile;
 
-  /// Returns a string suitable for use as an htmlId for this element in
-  /// its [ModelElement.enclosingElement].
+  /// Returns a string suitable for use as an in-page anchor for this element in
+  /// its [ModelElement.enclosingElement] page.
   String get htmlId;
 
   /// Returns a link fragment relative to the HTML base for this `modelElement`.
@@ -63,7 +70,7 @@ class _FileStructureHtml implements FileStructure {
   String get fileName => throw UnimplementedError();
 
   @override
-  String get fileType => 'html';
+  String get fileType => _html;
 
   @override
   // TODO: implement hasIndependentFile
@@ -94,7 +101,7 @@ class _FileStructureMd implements FileStructure {
 
   @override
   // TODO: implement fileType
-  String get fileType => 'md';
+  String get fileType => _md;
 
   @override
   // TODO: implement hasIndependentFile
