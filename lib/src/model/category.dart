@@ -5,6 +5,7 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
+import 'package:dartdoc/src/generator/file_structure.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model/model_object_builder.dart';
@@ -163,4 +164,8 @@ class Category extends Nameable
   @override
   // TODO: implement referenceParents
   Iterable<CommentReferable> get referenceParents => const [];
+
+  @override
+  // TODO: implement fileStructure
+  FileStructure get fileStructure => FileStructure(config.format, null);
 }

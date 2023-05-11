@@ -15,6 +15,8 @@ import 'package:analyzer/src/dart/element/member.dart'
     show ExecutableMember, Member, ParameterMember;
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
+import 'package:dartdoc/src/failure.dart';
+import 'package:dartdoc/src/generator/file_structure.dart';
 import 'package:dartdoc/src/model/annotation.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/feature.dart';
@@ -426,6 +428,9 @@ abstract class ModelElement extends Canonicalization
               .contains(m.element))
       .map((m) => Annotation(m, library, packageGraph))
       .toList(growable: false);
+
+  @override
+  late final fileStructure = FileStructure(config.format, this);
 
   @override
   late final bool isPublic = () {

@@ -2,15 +2,11 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'package:dartdoc/src/failure.dart';
 import 'package:dartdoc/src/model/model_element.dart';
 
 const _html = 'html';
 const _md = 'md';
-
-enum FileStructureMode {
-  htmlOriginal,
-  mdOriginal,
-}
 
 /// This class defines an interface to allow [ModelElement]s and [Generator]s
 /// to get information about the desired on-disk representation of a single
@@ -20,12 +16,14 @@ enum FileStructureMode {
 /// to lay them out on disk, and how to link different pages in the structure
 /// together.
 abstract class FileStructure {
-  factory FileStructure(FileStructureMode mode, ModelElement modelElement) {
-    switch (mode) {
-      case FileStructureMode.htmlOriginal:
+  factory FileStructure(String configFormat, ModelElement modelElement) {
+    switch(configFormat) {
+      case 'html':
         return _FileStructureHtml(modelElement);
-      case FileStructureMode.mdOriginal:
+      case 'md':
         return _FileStructureMd(modelElement);
+      default:
+        throw DartdocFailure('Internal error: unrecognized config.format: $configFormat');
     }
   }
 
@@ -73,8 +71,7 @@ class _FileStructureHtml implements FileStructure {
   String get fileType => _html;
 
   @override
-  // TODO: implement hasIndependentFile
-  bool get hasIndependentFile => throw UnimplementedError();
+  bool get hasIndependentFile => true;
 
   @override
   // TODO: implement href
@@ -104,8 +101,7 @@ class _FileStructureMd implements FileStructure {
   String get fileType => _md;
 
   @override
-  // TODO: implement hasIndependentFile
-  bool get hasIndependentFile => throw UnimplementedError();
+  bool get hasIndependentFile => true;
 
   @override
   // TODO: implement href
