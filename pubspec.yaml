@@ -5,7 +5,7 @@ description: A non-interactive HTML documentation generator for Dart source code
 repository: https://github.com/dart-lang/dartdoc
 
 environment:
-  sdk: '>=2.18.0 <4.0.0'
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   analyzer: ^5.7.1
