@@ -10,7 +10,7 @@ import 'package:dartdoc/src/model_utils.dart' as model_utils;
 ///
 /// Do not cache return values of any methods or members excepting [libraries]
 /// and [name] before finishing initialization of a [LibraryContainer].
-abstract /*mixin*/ class LibraryContainer
+abstract mixin class LibraryContainer
     implements Nameable, Comparable<LibraryContainer> {
   final List<Library> libraries = [];
 
