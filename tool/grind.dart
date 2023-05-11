@@ -72,6 +72,7 @@ Future<FlutterRepo> get cleanFlutterRepo async {
   if (repoCompleter != null) {
     return repoCompleter.future;
   }
+  _cleanFlutterRepo = repoCompleter;
 
   // No await is allowed between check of _cleanFlutterRepo and its assignment,
   // to prevent reentering this function.
@@ -889,6 +890,14 @@ Future<Iterable<Map<String, Object?>>> _buildFlutterDocs(
     ['pub', 'get'],
     workingDirectory: p.join(flutterPath, 'dev', 'tools'),
   );
+  try {
+    await flutterRepo.launcher.runStreamed(
+      flutterRepo.cacheDart,
+      ['pub', 'global', 'deactivate', 'snippets'],
+    );
+  } on SubProcessException {
+    // Ignore failure to deactivate so this works on completely clean bots.
+  }
   await flutterRepo.launcher.runStreamed(
     flutterRepo.cacheDart,
     ['pub', 'global', 'activate', 'snippets'],
@@ -1276,8 +1285,8 @@ Future<void> testDartdocFlutterPlugin() async {
 @Depends(buildSdkDocs)
 void validateSdkDocs() {
   const expectedLibCounts = 0;
-  const expectedSubLibCount = {18, 19, 20};
-  const expectedTotalCount = {18, 19, 20};
+  const expectedSubLibCount = {19, 20, 21};
+  const expectedTotalCount = {19, 20, 21};
   var indexHtml = joinFile(_sdkDocsDir, ['index.html']);
   if (!indexHtml.existsSync()) {
     fail("No 'index.html' found for the SDK docs");

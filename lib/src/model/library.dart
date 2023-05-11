@@ -135,7 +135,12 @@ class _LibrarySentinel implements Library {
       throw UnimplementedError('No members on Library.sentinel are accessible');
 }
 
-class Library extends ModelElement with Categorization, TopLevelContainer {
+class Library extends ModelElement
+    with
+        Categorization,
+        TopLevelContainer,
+        CanonicalFor,
+        HideConstantImplementations {
   @override
   final LibraryElement element;
 
@@ -215,7 +220,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   /// documented with this library, but these ModelElements and names correspond
   /// to the defining library where each originally came from with respect
   /// to inheritance and reexporting.  Most useful for error reporting.
-  late final Iterable<String> _allOriginalModelElementNames =
+  late final Iterable<String> allOriginalModelElementNames =
       allModelElements.map((e) {
     if (e is GetterSetterCombo) {
       Accessor? getter;
@@ -304,46 +309,6 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   late final String dirName = (isAnonymous ? nameFromPath : name)
       .replaceAll(':', '-')
       .replaceAll('/', '_');
-
-  Set<String>? _canonicalFor;
-
-  Set<String> get canonicalFor {
-    if (_canonicalFor == null) {
-      // TODO(jcollins-g): restructure to avoid using side effects.
-      buildDocumentationAddition(documentationComment);
-    }
-    return _canonicalFor!;
-  }
-
-  static final _canonicalRegExp = RegExp(r'{@canonicalFor\s([^}]+)}');
-
-  /// Hides [canonicalFor] from doc while leaving a note to ourselves to
-  /// help with ambiguous canonicalization determination.
-  ///
-  /// Example:
-  ///
-  ///     {@canonicalFor libname.ClassName}
-  @override
-  String buildDocumentationAddition(String rawDocs) {
-    rawDocs = super.buildDocumentationAddition(rawDocs);
-    var newCanonicalFor = <String>{};
-    var notFoundInAllModelElements = <String>{};
-    rawDocs = rawDocs.replaceAllMapped(_canonicalRegExp, (Match match) {
-      var elementName = match.group(1)!;
-      newCanonicalFor.add(elementName);
-      if (!_allOriginalModelElementNames.contains(elementName)) {
-        notFoundInAllModelElements.add(elementName);
-      }
-      return '';
-    });
-    for (var notFound in notFoundInAllModelElements) {
-      warn(PackageWarning.ignoredCanonicalFor, message: notFound);
-    }
-    // TODO(jcollins-g): warn if a macro/tool _does_ generate an unexpected
-    // canonicalFor?
-    _canonicalFor ??= newCanonicalFor;
-    return rawDocs;
-  }
 
   /// Libraries are not enclosed by anything.
   @override
@@ -564,4 +529,24 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
   @override
   Iterable<CommentReferable> get referenceParents => [package];
+
+  /// Check [canonicalFor] for correctness and warn if it refers to
+  /// non-existent elements (or those that this Library can not be canonical
+  /// for).
+  @override
+  String buildDocumentationAddition(String rawDocs) {
+    rawDocs = super.buildDocumentationAddition(rawDocs);
+    var notFoundInAllModelElements = <String>{};
+    for (var elementName in canonicalFor) {
+      if (!allOriginalModelElementNames.contains(elementName)) {
+        notFoundInAllModelElements.add(elementName);
+      }
+    }
+    for (var notFound in notFoundInAllModelElements) {
+      warn(PackageWarning.ignoredCanonicalFor, message: notFound);
+    }
+    // TODO(jcollins-g): warn if a macro/tool generates an unexpected
+    // canonicalFor?
+    return rawDocs;
+  }
 }

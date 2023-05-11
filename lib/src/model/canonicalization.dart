@@ -5,7 +5,7 @@
 import 'package:dartdoc/src/model/model.dart';
 
 /// Classes extending this class have canonicalization support in Dartdoc.
-abstract /*mixin*/ class Canonicalization implements Locatable, Documentable {
+abstract mixin class Canonicalization implements Locatable, Documentable {
   bool get isCanonical;
 
   Library? get canonicalLibrary;

@@ -209,7 +209,7 @@ import '${p.basename(_sourceUri.path)}';
       }
     } else if (type is TypeParameterType) {
       var bound = type.bound;
-      if (bound.isDynamic) {
+      if (bound is DynamicType) {
         // Don't add functions for a generic type, for example
         // `List<E>.first` has type `E`, which we don't have a specific
         // renderer for.
@@ -461,7 +461,7 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
       if (returnType is InterfaceType) {
         _writeProperty(renderer, property, returnType);
       } else if (returnType is TypeParameterType &&
-          !returnType.bound.isDynamic) {
+          returnType.bound is! DynamicType) {
         _writeProperty(renderer, property, returnType.bound as InterfaceType);
       }
     }

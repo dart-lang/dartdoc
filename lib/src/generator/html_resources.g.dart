@@ -1,6 +1,8 @@
 // WARNING: This file is auto-generated. Do not edit.
 
 const List<String> resourceNames = [
+  '.dart_tool/package_config.json',
+  '.packages',
   'docs.dart.js',
   'docs.dart.js.map',
   'favicon.png',

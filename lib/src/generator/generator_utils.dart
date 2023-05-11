@@ -5,7 +5,7 @@
 import 'dart:convert';
 
 import 'package:collection/collection.dart';
-import 'package:dartdoc/src/model/categorization.dart';
+import 'package:dartdoc/src/model/directives/categorization.dart';
 import 'package:dartdoc/src/model/enclosed_element.dart';
 import 'package:dartdoc/src/model/indexable.dart';
 import 'package:dartdoc/src/model/model_element.dart';
@@ -73,7 +73,7 @@ String generateSearchIndexJson(
 }
 
 // Compares two elements, first by fully qualified name, then by kind.
-int _compareElementRepresentations(Indexable a, Indexable b) {
+int _compareElementRepresentations<T extends Indexable>(T a, T b) {
   final value = compareNatural(a.fullyQualifiedName, b.fullyQualifiedName);
   if (value == 0) {
     return compareNatural(a.kind, b.kind);

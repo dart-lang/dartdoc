@@ -5,12 +5,14 @@
 import 'package:dartdoc/src/render/language_feature_renderer.dart';
 
 const Map<String, String> _featureDescriptions = {
-  'sealed': 'All direct subtypes must be defined in the same library.',
+  'sealed':
+      'The direct subtypes of this class will be checked for exhaustiveness in switches.',
   'abstract': 'This type can not be directly constructed.',
-  'base': 'This type can only be extended (not implemented or mixed in).',
-  'interface': 'This type can only be implemented (not extended or mixed in).',
-  'final': 'This type can neither be extended, implemented, nor mixed in.',
-  'mixin': 'This type can be used as a class and a mixin.',
+  'base':
+      'This class or mixin can only be extended (not implemented or mixed in).',
+  'interface': 'This class can only be implemented (not extended or mixed in).',
+  'final': 'This class can neither be extended, implemented, nor mixed in.',
+  'mixin': 'This class can be used as a class and a mixin.',
 };
 
 const Map<String, String> _featureUrls = {

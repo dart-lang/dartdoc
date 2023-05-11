@@ -7,7 +7,7 @@ import 'package:collection/collection.dart';
 import 'locatable.dart';
 
 /// Something that has a name.
-abstract /*mixin*/ class Nameable {
+abstract mixin class Nameable {
   String get name;
 
   String get fullyQualifiedName => name;
