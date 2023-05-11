@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:collection/collection.dart';
+import 'package:dartdoc/src/generator/file_structure.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as model_utils;
 
@@ -11,10 +12,8 @@ import 'package:dartdoc/src/model_utils.dart' as model_utils;
 /// Do not cache return values of any methods or members excepting [libraries]
 /// and [name] before finishing initialization of a [LibraryContainer].
 abstract mixin class LibraryContainer
-    implements Nameable, Comparable<LibraryContainer> {
+    implements Nameable, Comparable<LibraryContainer>, Documentable {
   final List<Library> libraries = [];
-
-  PackageGraph get packageGraph;
 
   Iterable<Library> get publicLibraries =>
       model_utils.filterNonPublic(libraries);
@@ -64,4 +63,7 @@ abstract mixin class LibraryContainer
     }
     return Comparable.compare(_group, other._group);
   }
+
+  @override
+  late final FileStructure fileStructure = FileStructure.fromDocumentable(this);
 }

@@ -93,7 +93,7 @@ class Extension extends Container implements EnclosedElement {
   ];
 
   @override
-  String get filePath => '${library.dirName}/$fileName';
+  String get filePath => '${library.dirName}/${fileStructure.fileName}';
 
   Map<String, CommentReferable>? _referenceChildren;
   @override

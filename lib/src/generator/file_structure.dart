@@ -2,11 +2,22 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'package:dartdoc/src/comment_references/parser.dart';
 import 'package:dartdoc/src/failure.dart';
+import 'package:dartdoc/src/model/category.dart';
+import 'package:dartdoc/src/model/class.dart';
+import 'package:dartdoc/src/model/documentable.dart';
+import 'package:dartdoc/src/model/getter_setter_combo.dart';
+import 'package:dartdoc/src/model/library.dart';
+import 'package:dartdoc/src/model/library_container.dart';
 import 'package:dartdoc/src/model/model_element.dart';
+import 'package:dartdoc/src/model/operator.dart';
+import 'package:dartdoc/src/model/package.dart';
+import 'package:meta/meta.dart';
 
-const _html = 'html';
-const _md = 'md';
+import '../model/mixin.dart';
+
+const _validFormats = {'html', 'md'};
 
 /// This class defines an interface to allow [ModelElement]s and [Generator]s
 /// to get information about the desired on-disk representation of a single
@@ -16,24 +27,70 @@ const _md = 'md';
 /// to lay them out on disk, and how to link different pages in the structure
 /// together.
 abstract class FileStructure {
-  factory FileStructure(String configFormat, ModelElement modelElement) {
-    switch(configFormat) {
-      case 'html':
-        return _FileStructureHtml(modelElement);
-      case 'md':
-        return _FileStructureMd(modelElement);
+  factory FileStructure.fromDocumentable(Documentable documentable) {
+    if (!_validFormats.contains(documentable.config.format)) {
+      throw DartdocFailure('Internal error: unrecognized config.format: ${documentable.config.format}');
+    }
+    switch (documentable) {
+      case LibraryContainer():
+        // [LibraryContainer]s are not ModelElements, but have documentation. 
+        return FileStructure._fromLibraryContainer(documentable);
+      case ModelElement():
+        // This should be the common case.
+        return FileStructure._fromModelElement(documentable);
       default:
-        throw DartdocFailure('Internal error: unrecognized config.format: $configFormat');
+        throw UnimplementedError('Tried to build a FileStructure for an unknown subtype of Documentable:  ${documentable.runtimeType}');
     }
   }
 
-  /// Link to the [ModelElement] the information for this [FileStructure]
-  /// applies to.
-  // TODO(jcollins): consider not carrying a reference to a ModelElement and
-  // calculating necessary bits at construction time.  Might be challenging
-  // if we want to calculate [hasIndependentFile] based on documentation
-  // length or other variables not always available.
-  ModelElement get modelElement;
+  factory FileStructure._fromLibraryContainer(LibraryContainer libraryContainer) {
+    String? kindAddition;
+    String? pathSafeName = libraryContainer.name;
+    switch(libraryContainer) {
+      case Category():
+        kindAddition = 'topic';
+        break;
+      case Package():
+        pathSafeName = 'index';
+        break;
+      default:
+        throw UnimplementedError('Unrecognized LibraryContainer subtype:  ${libraryContainer.runtimeType}');
+    }
+
+    return FileStructureImpl(libraryContainer.config.format, pathSafeName, kindAddition);
+  }
+
+  factory FileStructure._fromModelElement(ModelElement modelElement) {
+    String? kindAddition;
+    String? pathSafeName = modelElement.name;
+    switch(modelElement) {
+      case Library():
+        kindAddition = 'library';
+        pathSafeName = modelElement.dirName;
+        break;
+      case Mixin():
+        kindAddition = 'mixin';
+        break;
+      case Class():
+        kindAddition = 'class';
+        break;
+      case Operator():
+        var referenceName = modelElement.referenceName;
+        if (operatorNames.containsKey(referenceName)) {
+          pathSafeName = 'operator_${operatorNames[referenceName]}';
+        }
+        break;
+      case GetterSetterCombo():
+        if (modelElement.isConst) {
+          kindAddition = 'constant';
+        }
+        break;
+      default:
+        break;
+    }
+
+    return FileStructureImpl(modelElement.config.format, pathSafeName, kindAddition); 
+  }
 
   /// True if an independent file should be created for this `ModelElement`.
   bool get hasIndependentFile;
@@ -60,45 +117,25 @@ abstract class FileStructure {
   String get fileType;
 }
 
-class _FileStructureHtml implements FileStructure {
-  _FileStructureHtml(this.modelElement);
+@visibleForTesting
+class FileStructureImpl implements FileStructure {
+  @override
+  final String fileType;
+  String pathSafeName;
+  final String? kindAddition;
+
+  FileStructureImpl(this.fileType, this.pathSafeName, this.kindAddition);
 
   @override
-  // TODO: implement fileName
-  String get fileName => throw UnimplementedError();
-
-  @override
-  String get fileType => _html;
-
-  @override
-  bool get hasIndependentFile => true;
-
-  @override
-  // TODO: implement href
-  String get href => throw UnimplementedError();
-
-  @override
-  // TODO: implement htmlId
-  String get htmlId => throw UnimplementedError();
-
-  @override
-  final ModelElement modelElement;
-
-  @override
-  // TODO: implement dirName
-  String get dirName => throw UnimplementedError();
-}
-
-class _FileStructureMd implements FileStructure {
-  _FileStructureMd(this.modelElement);
-
-  @override
-  // TODO: implement fileName
-  String get fileName => throw UnimplementedError();
-
-  @override
-  // TODO: implement fileType
-  String get fileType => _md;
+  /// Initial implementation is bug-for-bug compatible with pre-extraction
+  /// dartdoc.  This means that some types will have kindAdditions, and
+  /// some will not.  See [FileStructure._fromModelElement].
+  String get fileName {
+    if (kindAddition != null) {
+      return '$pathSafeName-$kindAddition.$fileType';
+    }
+    return '$pathSafeName.$fileType';
+  }
 
   @override
   bool get hasIndependentFile => true;
@@ -110,9 +147,6 @@ class _FileStructureMd implements FileStructure {
   @override
   // TODO: implement htmlId
   String get htmlId => throw UnimplementedError();
-
-  @override
-  final ModelElement modelElement;
 
   @override
   // TODO: implement dirName

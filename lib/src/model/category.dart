@@ -5,7 +5,6 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
-import 'package:dartdoc/src/generator/file_structure.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model/model_object_builder.dart';
@@ -93,9 +92,7 @@ class Category extends Nameable
   @override
   String get fullyQualifiedName => name;
 
-  String get _fileType => package.fileType;
-
-  String get filePath => 'topics/$name-topic.$_fileType';
+  String get filePath => 'topics/${fileStructure.fileName}';
 
   @override
   String? get href => isCanonical ? '${package.baseHref}$filePath' : null;
@@ -158,14 +155,8 @@ class Category extends Nameable
       packageGraph.rendererFactory.categoryRenderer;
 
   @override
-  // TODO: implement referenceChildren
   Map<String, CommentReferable> get referenceChildren => const {};
 
   @override
-  // TODO: implement referenceParents
   Iterable<CommentReferable> get referenceParents => const [];
-
-  @override
-  // TODO: implement fileStructure
-  FileStructure get fileStructure => FileStructure(config.format, null);
 }

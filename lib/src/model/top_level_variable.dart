@@ -43,7 +43,7 @@ class TopLevelVariable extends ModelElement
   ModelElement get enclosingElement => library;
 
   @override
-  String get filePath => '${library.dirName}/$fileName';
+  String get filePath => '${library.dirName}/${fileStructure.fileName}';
 
   @override
   String? get href {
@@ -74,9 +74,6 @@ class TopLevelVariable extends ModelElement
 
   @override
   Set<Feature> get features => {...super.features, ...comboFeatures};
-
-  @override
-  String get fileName => '${isConst ? '$name-constant' : name}.$fileType';
 
   @override
   Iterable<CommentReferable> get referenceParents => [definingLibrary];

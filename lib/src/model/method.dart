@@ -62,7 +62,7 @@ class Method extends ModelElement
 
   @override
   String get filePath =>
-      '${enclosingElement.library.dirName}/${enclosingElement.name}/$fileName';
+      '${enclosingElement.library.dirName}/${enclosingElement.name}/${fileStructure.fileName}';
 
   String get fullkind {
     // A method cannot be abstract and static at the same time.

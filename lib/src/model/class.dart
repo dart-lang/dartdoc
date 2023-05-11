@@ -45,9 +45,6 @@ class Class extends InheritingContainer
   }
 
   @override
-  String get fileName => '$name-class.$fileType';
-
-  @override
   bool get isAbstract => element.isAbstract;
 
   @override

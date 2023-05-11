@@ -4,7 +4,6 @@
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
-import 'package:dartdoc/src/generator/file_structure.dart';
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -418,8 +417,4 @@ class Package extends LibraryContainer
 
   @override
   String get referenceName => 'package:$name';
-
-  @override
-  // TODO: implement fileStructure
-  FileStructure get fileStructure => FileStructure(config.format, null);
 }

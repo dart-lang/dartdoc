@@ -46,9 +46,6 @@ class Mixin extends InheritingContainer with TypeImplementing {
       const [];
 
   @override
-  String get fileName => '$name-mixin.$fileType';
-
-  @override
   bool get hasModifiers => super.hasModifiers || hasPublicSuperclassConstraints;
 
   bool get hasPublicSuperclassConstraints =>

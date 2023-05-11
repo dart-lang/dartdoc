@@ -71,7 +71,7 @@ class Field extends ModelElement
 
   @override
   String get filePath =>
-      '${enclosingElement.library.dirName}/${enclosingElement.name}/$fileName';
+      '${enclosingElement.library.dirName}/${enclosingElement.name}/${fileStructure.fileName}';
 
   @override
   String? get href {
@@ -142,9 +142,6 @@ class Field extends ModelElement
 
   @Deprecated('Use `element`')
   FieldElement? get field => element;
-
-  @override
-  String get fileName => '${isConst ? '$name-constant' : name}.$fileType';
 
   SourceCodeRenderer get _sourceCodeRenderer =>
       packageGraph.rendererFactory.sourceCodeRenderer;

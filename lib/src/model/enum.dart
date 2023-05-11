@@ -113,7 +113,7 @@ class EnumField extends Field {
     assert(!(canonicalLibrary == null || canonicalEnclosingContainer == null));
     assert(canonicalLibrary == library);
     assert(canonicalEnclosingContainer == enclosingElement);
-    return '${package.baseHref}${enclosingElement.library.dirName}/${enclosingElement.fileName}';
+    return '${package.baseHref}${enclosingElement.library.dirName}/${enclosingElement.fileStructure.fileName}';
   }
 
   @override

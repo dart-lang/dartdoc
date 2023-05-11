@@ -36,7 +36,7 @@ abstract class Typedef extends ModelElement
       _renderer.renderLinkedGenericParameters(this);
 
   @override
-  String get filePath => '${library.dirName}/$fileName';
+  String get filePath => '${library.dirName}/${fileStructure.fileName}';
 
   /// Helper for mustache templates, which can't do casting themselves
   /// without this.

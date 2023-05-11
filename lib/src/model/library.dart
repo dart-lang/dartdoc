@@ -331,10 +331,7 @@ class Library extends ModelElement
       allClasses.where((c) => c.isErrorOrException).toList(growable: false);
 
   @override
-  String get fileName => '$dirName-library.$fileType';
-
-  @override
-  String get filePath => '${library.dirName}/$fileName';
+  String get filePath => '${library.dirName}/${fileStructure.fileName}';
 
   @override
   late final List<ModelFunction> functions =
