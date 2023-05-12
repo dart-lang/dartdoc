@@ -10,5 +10,9 @@ mixin HasNoPage on ModelElement {
   String get filePath =>
       throw UnimplementedError('This element has no generated page');
 
-  // TODO(srawlins): Add sidebar information here, when sidebars become dynamic.
+  @override
+  String? get aboveSidebarPath => null;
+
+  @override
+  String? get belowSidebarPath => null;
 }

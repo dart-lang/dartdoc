@@ -1,7 +1,11 @@
 {{>head}}
 
-  <div id="dartdoc-main-content" class="main-content">
-    {{ !-- TODO(srawlins): Add annotations. }}
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="{{ aboveSidebarPath }}"
+      data-below-sidebar="{{ belowSidebarPath }}">
+      {{ !-- TODO(srawlins): Add annotations. }}
     {{#self}}
       <div>{{>source_link}}<h1><span class="kind-library">{{{name}}}</span> {{kind}} {{>feature_set}} {{>categorization}}</h1></div>
     {{/self}}
@@ -128,7 +132,6 @@
 
   <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
     <h5>{{self.name}} {{self.kind}}</h5>
-    {{{sidebarForLibrary}}}
   </div><!--/sidebar-offcanvas-right-->
 
 {{>footer}}

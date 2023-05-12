@@ -336,6 +336,17 @@ class Library extends ModelElement
   @override
   String get filePath => '${library.dirName}/$fileName';
 
+  String get sidebarPath =>
+      '${library.dirName}/$dirName-library-sidebar.$fileType';
+
+  /// The library template manually includes 'packages' in the left/above
+  /// sidebar.
+  @override
+  String? get aboveSidebarPath => null;
+
+  @override
+  String get belowSidebarPath => sidebarPath;
+
   @override
   late final List<ModelFunction> functions =
       _exportedAndLocalElements.whereType<FunctionElement>().map((e) {

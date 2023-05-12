@@ -268,6 +268,15 @@ abstract class Container extends ModelElement
   @override
   String get filePath => '${library.dirName}/$fileName';
 
+  /// The full path of this element's sidebar file.
+  String get sidebarPath;
+
+  @override
+  String get aboveSidebarPath => library.sidebarPath;
+
+  @override
+  String get belowSidebarPath => sidebarPath;
+
   /// The CSS class to use in an inheritance list.
   String get relationshipsClass;
 }

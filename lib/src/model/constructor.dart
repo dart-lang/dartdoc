@@ -39,6 +39,12 @@ class Constructor extends ModelElement
   String get filePath =>
       '${enclosingElement.library.dirName}/${enclosingElement.name}/$fileName';
 
+  @override
+  String get aboveSidebarPath => enclosingElement.sidebarPath;
+
+  @override
+  String? get belowSidebarPath => null;
+
   String get fullKind {
     if (isConst) return 'const $kind';
     if (isFactory) return 'factory $kind';

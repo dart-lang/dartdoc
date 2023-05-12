@@ -21,6 +21,7 @@ void main() async {
   late PackageMetaProvider packageMetaProvider;
   late DartdocGeneratorOptionContext context;
   late List<String> eLines;
+  late List<String> eRightSidebarLines;
 
   Future<PubPackageBuilder> createPackageBuilder({
     List<String> additionalOptions = const [],
@@ -111,6 +112,11 @@ dartdoc:
           .getFile(p.join(packagePath, 'doc', 'lib', 'E.html'))
           .readAsStringSync()
           .split('\n');
+      eRightSidebarLines = resourceProvider
+          .getFile(
+              p.join(packagePath, 'doc', 'lib', 'E-extension-sidebar.html'))
+          .readAsStringSync()
+          .split('\n');
     });
 
     test('extension page contains extension name with generics', () async {
@@ -187,29 +193,28 @@ dartdoc:
 
     test('enum sidebar contains methods', () async {
       expect(
-          eLines,
-          containsAllInOrder([
-            matches('<div id="dartdoc-sidebar-right"'),
-            matches('<a href="../lib/E.html#instance-methods">Methods</a>'),
-            matches('<a href="../lib/E/m1.html">m1</a>'),
-          ]));
+        eRightSidebarLines,
+        containsAllInOrder([
+          matches('<a href="../lib/E.html#instance-methods">Methods</a>'),
+          matches('<a href="../lib/E/m1.html">m1</a>'),
+        ]),
+      );
     });
 
     test('enum sidebar contains operators', () async {
       expect(
-          eLines,
-          containsAllInOrder([
-            matches('<div id="dartdoc-sidebar-right"'),
-            matches('<a href="../lib/E.html#operators">Operators</a>'),
-            matches('<a href="../lib/E/operator_greater.html">operator ></a>'),
-          ]));
+        eRightSidebarLines,
+        containsAllInOrder([
+          matches('<a href="../lib/E.html#operators">Operators</a>'),
+          matches('<a href="../lib/E/operator_greater.html">operator ></a>'),
+        ]),
+      );
     });
 
     test('enum sidebar contains static properties', () async {
       expect(
-        eLines,
+        eRightSidebarLines,
         containsAllInOrder([
-          matches('<div id="dartdoc-sidebar-right"'),
           matches(
               '<a href="../lib/E.html#static-properties">Static properties</a>'),
           matches('<a href="../lib/E/gs1.html">gs1</a>'),
@@ -220,13 +225,12 @@ dartdoc:
 
     test('enum sidebar contains static methods', () async {
       expect(
-          eLines,
-          containsAllInOrder([
-            matches('<div id="dartdoc-sidebar-right"'),
-            matches(
-                '<a href="../lib/E.html#static-methods">Static methods</a>'),
-            matches('<a href="../lib/E/s1.html">s1</a>'),
-          ]));
+        eRightSidebarLines,
+        containsAllInOrder([
+          matches('<a href="../lib/E.html#static-methods">Static methods</a>'),
+          matches('<a href="../lib/E/s1.html">s1</a>'),
+        ]),
+      );
     });
 
     test('extension page contains source link', () async {
