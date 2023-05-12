@@ -38,55 +38,35 @@ abstract class FileStructure {
 
   factory FileStructure._fromLibraryContainer(
       LibraryContainer libraryContainer) {
-    String? kindAddition;
-    String? pathSafeName = libraryContainer.name;
+    final format = libraryContainer.config.format;
     switch (libraryContainer) {
       case Category():
-        kindAddition = 'topic';
-        break;
+        return FileStructureImpl(format, libraryContainer.name, 'topic');
       case Package():
-        pathSafeName = 'index';
-        break;
+        return FileStructureImpl(format, 'index', null);
       default:
         throw UnimplementedError(
             'Unrecognized LibraryContainer subtype:  ${libraryContainer.runtimeType}');
     }
-
-    return FileStructureImpl(
-        libraryContainer.config.format, pathSafeName, kindAddition);
   }
 
   factory FileStructure._fromModelElement(ModelElement modelElement) {
-    String? kindAddition;
-    String? pathSafeName = modelElement.name;
+    final format = modelElement.config.format;
     switch (modelElement) {
       case Library():
-        kindAddition = 'library';
-        pathSafeName = modelElement.dirName;
-        break;
+        return FileStructureImpl(format, modelElement.dirName, 'library');
       case Mixin():
-        kindAddition = 'mixin';
-        break;
+        return FileStructureImpl(format, modelElement.name, 'mixin');
       case Class():
-        kindAddition = 'class';
-        break;
+        return FileStructureImpl(format, modelElement.name, 'class');
       case Operator():
-        var referenceName = modelElement.referenceName;
-        if (operatorNames.containsKey(referenceName)) {
-          pathSafeName = 'operator_${operatorNames[referenceName]}';
-        }
-        break;
+        return FileStructureImpl(format, 'operator_${operatorNames[modelElement.referenceName]}', null);
       case GetterSetterCombo():
-        if (modelElement.isConst) {
-          kindAddition = 'constant';
-        }
-        break;
+        return FileStructureImpl(format, modelElement.name, modelElement.isConst ? 'constant' : null);
       default:
-        break;
+        return FileStructureImpl(
+          modelElement.config.format, modelElement.name, null);
     }
-
-    return FileStructureImpl(
-        modelElement.config.format, pathSafeName, kindAddition);
   }
 
   /// True if an independent file should be created for this `ModelElement`.
@@ -118,13 +98,23 @@ abstract class FileStructure {
 class FileStructureImpl implements FileStructure {
   @override
   final String fileType;
+
+  /// This is a name for the underlying [Documentable] that is free of
+  /// characters that can not appear in a path (URI, Unix, or Windows).
   String pathSafeName;
+
+  /// This is a string to disambiguate the filename of the underlying
+  /// [Documentable] from other files with the same [pathSafeName] in the
+  /// same directory and is composed with [pathSafeName] to generate [fileName].
+  /// It is usually based on [ModelElement.kind], e.g. `'class'`.  If null, no
+  /// disambiguating string will be added.
+  // TODO(jcollins-g): Legacy layout doesn't always include this; move toward
+  // always having a disambiguating string.
   final String? kindAddition;
 
   FileStructureImpl(this.fileType, this.pathSafeName, this.kindAddition);
 
   @override
-
   /// Initial implementation is bug-for-bug compatible with pre-extraction
   /// dartdoc.  This means that some types will have kindAdditions, and
   /// some will not.  See [FileStructure._fromModelElement].
