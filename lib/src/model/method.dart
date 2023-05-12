@@ -64,6 +64,12 @@ class Method extends ModelElement
   String get filePath =>
       '${enclosingElement.library.dirName}/${enclosingElement.name}/${fileStructure.fileName}';
 
+  @override
+  String get aboveSidebarPath => enclosingElement.sidebarPath;
+
+  @override
+  String? get belowSidebarPath => null;
+
   String get fullkind {
     // A method cannot be abstract and static at the same time.
     if (element.isAbstract) return 'abstract $kind';

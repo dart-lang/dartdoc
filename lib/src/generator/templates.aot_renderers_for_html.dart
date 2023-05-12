@@ -283,7 +283,15 @@ String renderClass(_i1.ClassTemplateData context0) {
   buffer.writeln();
   buffer.write('''
 
-  <div id="dartdoc-main-content" class="main-content">''');
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="''');
+  buffer.writeEscaped(context0.aboveSidebarPath);
+  buffer.write('''"
+      data-below-sidebar="''');
+  buffer.writeEscaped(context0.belowSidebarPath);
+  buffer.write('''">''');
   var context1 = context0.self;
   buffer.writeln();
   buffer.write('''
@@ -401,22 +409,15 @@ String renderClass(_i1.ClassTemplateData context0) {
   buffer.write(_renderClass_partial_search_sidebar_16(context0));
   buffer.writeln();
   buffer.write('''
-    <h5>''');
+    <!--<h5>''');
   buffer.writeEscaped(context0.parent!.name);
   buffer.write(' ');
   buffer.writeEscaped(context0.parent!.kind);
-  buffer.write('''</h5>
-    ''');
-  buffer.write(context0.sidebarForLibrary);
-  buffer.writeln();
-  buffer.write('''
+  buffer.write('''</h5>-->
+    <div id="dartdoc-sidebar-left-content"></div>
   </div>
 
   <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
-    ''');
-  buffer.write(context0.sidebarForContainer);
-  buffer.writeln();
-  buffer.write('''
   </div><!--/.sidebar-offcanvas-->
 
 ''');
@@ -432,7 +433,15 @@ String renderConstructor(_i1.ConstructorTemplateData context0) {
   buffer.writeln();
   buffer.write('''
 
-  <div id="dartdoc-main-content" class="main-content">''');
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="''');
+  buffer.writeEscaped(context0.aboveSidebarPath);
+  buffer.write('''"
+      data-below-sidebar="''');
+  buffer.writeEscaped(context0.belowSidebarPath);
+  buffer.write('''">''');
   var context1 = context0.self;
   buffer.writeln();
   buffer.write('''
@@ -489,10 +498,6 @@ String renderConstructor(_i1.ConstructorTemplateData context0) {
   buffer.write(' ');
   buffer.writeEscaped(context0.parent!.kind);
   buffer.write('''</h5>
-    ''');
-  buffer.write(context0.sidebarForContainer);
-  buffer.writeln();
-  buffer.write('''
   </div><!--/.sidebar-offcanvas-left-->
 
   <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
@@ -511,7 +516,15 @@ String renderEnum(_i1.EnumTemplateData context0) {
   buffer.writeln();
   buffer.write('''
 
-  <div id="dartdoc-main-content" class="main-content">''');
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="''');
+  buffer.writeEscaped(context0.aboveSidebarPath);
+  buffer.write('''"
+      data-below-sidebar="''');
+  buffer.writeEscaped(context0.belowSidebarPath);
+  buffer.write('''">''');
   var context1 = context0.self;
   buffer.writeln();
   buffer.write('''
@@ -626,17 +639,9 @@ String renderEnum(_i1.EnumTemplateData context0) {
   buffer.write(' ');
   buffer.writeEscaped(context0.parent!.kind);
   buffer.write('''</h5>
-    ''');
-  buffer.write(context0.sidebarForLibrary);
-  buffer.writeln();
-  buffer.write('''
   </div>
 
   <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
-    ''');
-  buffer.write(context0.sidebarForContainer);
-  buffer.writeln();
-  buffer.write('''
   </div><!-- /.sidebar-offcanvas -->
 
 ''');
@@ -699,8 +704,15 @@ String renderExtension<T extends _i2.Extension>(
   buffer.write(_renderExtension_partial_head_0(context0));
   buffer.writeln();
   buffer.write('''
-
-<div id="dartdoc-main-content" class="main-content">''');
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="''');
+  buffer.writeEscaped(context0.aboveSidebarPath);
+  buffer.write('''"
+    data-below-sidebar="''');
+  buffer.writeEscaped(context0.belowSidebarPath);
+  buffer.write('''">''');
   var context1 = context0.self;
   buffer.writeln();
   buffer.write('''
@@ -785,17 +797,9 @@ String renderExtension<T extends _i2.Extension>(
   buffer.write(' ');
   buffer.writeEscaped(context0.parent!.kind);
   buffer.write('''</h5>
-    ''');
-  buffer.write(context0.sidebarForLibrary);
-  buffer.writeln();
-  buffer.write('''
 </div>
 
 <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
-    ''');
-  buffer.write(context0.sidebarForContainer);
-  buffer.writeln();
-  buffer.write('''
 </div><!--/.sidebar-offcanvas-->
 
 ''');
@@ -812,7 +816,15 @@ String renderFunction(_i1.FunctionTemplateData context0) {
   buffer.writeln();
   buffer.write('''
 
-  <div id="dartdoc-main-content" class="main-content">''');
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="''');
+  buffer.writeEscaped(context0.aboveSidebarPath);
+  buffer.write('''"
+      data-below-sidebar="''');
+  buffer.writeEscaped(context0.belowSidebarPath);
+  buffer.write('''">''');
   var context1 = context0.self;
   buffer.writeln();
   buffer.write('''
@@ -858,10 +870,6 @@ String renderFunction(_i1.FunctionTemplateData context0) {
   buffer.write(' ');
   buffer.writeEscaped(context0.parent!.kind);
   buffer.write('''</h5>
-    ''');
-  buffer.write(context0.sidebarForLibrary);
-  buffer.writeln();
-  buffer.write('''
   </div><!--/.sidebar-offcanvas-left-->
 
   <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
@@ -966,8 +974,16 @@ String renderLibrary(_i1.LibraryTemplateData context0) {
   buffer.writeln();
   buffer.write('''
 
-  <div id="dartdoc-main-content" class="main-content">
-    ''');
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="''');
+  buffer.writeEscaped(context0.aboveSidebarPath);
+  buffer.write('''"
+      data-below-sidebar="''');
+  buffer.writeEscaped(context0.belowSidebarPath);
+  buffer.write('''">
+      ''');
   var context1 = context0.self;
   buffer.writeln();
   buffer.write('''
@@ -1193,10 +1209,6 @@ String renderLibrary(_i1.LibraryTemplateData context0) {
   buffer.write(' ');
   buffer.writeEscaped(context0.self.kind);
   buffer.write('''</h5>
-    ''');
-  buffer.write(context0.sidebarForLibrary);
-  buffer.writeln();
-  buffer.write('''
   </div><!--/sidebar-offcanvas-right-->
 
 ''');
@@ -1212,7 +1224,15 @@ String renderMethod(_i1.MethodTemplateData context0) {
   buffer.writeln();
   buffer.write('''
 
-  <div id="dartdoc-main-content" class="main-content">''');
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="''');
+  buffer.writeEscaped(context0.aboveSidebarPath);
+  buffer.write('''"
+      data-below-sidebar="''');
+  buffer.writeEscaped(context0.belowSidebarPath);
+  buffer.write('''">''');
   var context1 = context0.self;
   buffer.writeln();
   buffer.write('''
@@ -1256,10 +1276,6 @@ String renderMethod(_i1.MethodTemplateData context0) {
   buffer.write(' ');
   buffer.writeEscaped(context0.parent!.kind);
   buffer.write('''</h5>
-    ''');
-  buffer.write(context0.sidebarForContainer);
-  buffer.writeln();
-  buffer.write('''
   </div><!--/.sidebar-offcanvas-->
 
   <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
@@ -1278,7 +1294,15 @@ String renderMixin(_i1.MixinTemplateData context0) {
   buffer.writeln();
   buffer.write('''
 
-  <div id="dartdoc-main-content" class="main-content">''');
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="''');
+  buffer.writeEscaped(context0.aboveSidebarPath);
+  buffer.write('''"
+      data-below-sidebar="''');
+  buffer.writeEscaped(context0.belowSidebarPath);
+  buffer.write('''">''');
   var context1 = context0.self;
   buffer.writeln();
   buffer.write('''
@@ -1397,17 +1421,9 @@ String renderMixin(_i1.MixinTemplateData context0) {
   buffer.write(' ');
   buffer.writeEscaped(context0.parent!.kind);
   buffer.write('''</h5>
-    ''');
-  buffer.write(context0.sidebarForLibrary);
-  buffer.writeln();
-  buffer.write('''
   </div>
 
   <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
-    ''');
-  buffer.write(context0.sidebarForContainer);
-  buffer.writeln();
-  buffer.write('''
   </div><!--/.sidebar-offcanvas-->
 
 ''');
@@ -1423,7 +1439,15 @@ String renderProperty(_i1.PropertyTemplateData context0) {
   buffer.writeln();
   buffer.write('''
 
-  <div id="dartdoc-main-content" class="main-content">''');
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="''');
+  buffer.writeEscaped(context0.aboveSidebarPath);
+  buffer.write('''"
+      data-below-sidebar="''');
+  buffer.writeEscaped(context0.belowSidebarPath);
+  buffer.write('''">''');
   var context1 = context0.self;
   buffer.writeln();
   buffer.write('''
@@ -1484,10 +1508,6 @@ String renderProperty(_i1.PropertyTemplateData context0) {
   buffer.write(' ');
   buffer.writeEscaped(context0.parent!.kind);
   buffer.write('''</h5>
-    ''');
-  buffer.write(context0.sidebarForContainer);
-  buffer.writeln();
-  buffer.write('''
   </div><!--/.sidebar-offcanvas-->
 
   <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
@@ -1928,7 +1948,15 @@ String renderTopLevelProperty(_i1.TopLevelPropertyTemplateData context0) {
   buffer.writeln();
   buffer.write('''
 
-  <div id="dartdoc-main-content" class="main-content">''');
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="''');
+  buffer.writeEscaped(context0.aboveSidebarPath);
+  buffer.write('''"
+      data-below-sidebar="''');
+  buffer.writeEscaped(context0.belowSidebarPath);
+  buffer.write('''">''');
   var context1 = context0.self;
   buffer.writeln();
   buffer.write('''
@@ -1988,10 +2016,6 @@ String renderTopLevelProperty(_i1.TopLevelPropertyTemplateData context0) {
   buffer.write(' ');
   buffer.writeEscaped(context0.parent!.kind);
   buffer.write('''</h5>
-    ''');
-  buffer.write(context0.sidebarForLibrary);
-  buffer.writeln();
-  buffer.write('''
   </div><!--/.sidebar-offcanvas-left-->
 
   <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
@@ -2010,7 +2034,15 @@ String renderTypedef(_i1.TypedefTemplateData context0) {
   buffer.writeln();
   buffer.write('''
 
-  <div id="dartdoc-main-content" class="main-content">''');
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="''');
+  buffer.writeEscaped(context0.aboveSidebarPath);
+  buffer.write('''"
+      data-below-sidebar="''');
+  buffer.writeEscaped(context0.belowSidebarPath);
+  buffer.write('''">''');
   var context1 = context0.self;
   buffer.writeln();
   buffer.write('''
@@ -2056,10 +2088,6 @@ String renderTypedef(_i1.TypedefTemplateData context0) {
   buffer.write(' ');
   buffer.writeEscaped(context0.parent!.kind);
   buffer.write('''</h5>
-    ''');
-  buffer.write(context0.sidebarForLibrary);
-  buffer.writeln();
-  buffer.write('''
   </div><!--/.sidebar-offcanvas-left-->
 
   <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
@@ -3733,7 +3761,9 @@ String __deduplicated_lib_templates_html__type_html_partial_features_1(
 String _deduplicated_lib_templates_html__search_sidebar_html(
     _i1.TemplateDataBase context0) {
   final buffer = StringBuffer();
-  buffer.write('''<header id="header-search-sidebar" class="hidden-l">
+  buffer.write(
+      '''<!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
   <form class="search-sidebar" role="search">
     <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
@@ -3744,7 +3774,7 @@ String _deduplicated_lib_templates_html__search_sidebar_html(
   for (var context2 in context1) {
     buffer.writeln();
     buffer.write('''
-  <li><a href="''');
+    <li><a href="''');
     buffer.write(context2.href);
     buffer.write('''">''');
     buffer.writeEscaped(context2.name);
@@ -3754,7 +3784,7 @@ String _deduplicated_lib_templates_html__search_sidebar_html(
   for (var context4 in context3) {
     buffer.writeln();
     buffer.write('''
-  <li><a href="''');
+    <li><a href="''');
     buffer.write(context4.href);
     buffer.write('''">''');
     buffer.writeEscaped(context4.name);
@@ -3768,14 +3798,14 @@ String _deduplicated_lib_templates_html__search_sidebar_html(
   if (context0.hasHomepage != true) {
     buffer.writeln();
     buffer.write('''
-  <li class="self-crumb">''');
+    <li class="self-crumb">''');
     buffer.write(context0.layoutTitle);
     buffer.write('''</li>''');
   }
   if (context0.hasHomepage == true) {
     buffer.writeln();
     buffer.write('''
-  <li><a href="''');
+    <li><a href="''');
     buffer.write(context0.homepage);
     buffer.write('''">''');
     buffer.write(context0.layoutTitle);

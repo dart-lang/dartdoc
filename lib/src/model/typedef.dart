@@ -38,6 +38,12 @@ abstract class Typedef extends ModelElement
   @override
   String get filePath => '${library.dirName}/${fileStructure.fileName}';
 
+  @override
+  String get aboveSidebarPath => enclosingElement.sidebarPath;
+
+  @override
+  String? get belowSidebarPath => null;
+
   /// Helper for mustache templates, which can't do casting themselves
   /// without this.
   FunctionTypedef get asCallable => this as FunctionTypedef;

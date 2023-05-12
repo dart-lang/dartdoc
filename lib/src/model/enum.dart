@@ -35,6 +35,10 @@ class Enum extends InheritingContainer
   ];
 
   @override
+  String get sidebarPath =>
+      '${library.dirName}/$name-enum-sidebar.${fileStructure.fileType}';
+
+  @override
   String get kind => 'enum';
 
   @override

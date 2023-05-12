@@ -130,6 +130,23 @@ class Accessor extends ModelElement implements EnclosedElement {
   String get filePath => enclosingCombo.filePath;
 
   @override
+  String get aboveSidebarPath {
+    final enclosingElement = this.enclosingElement;
+    if (enclosingElement is Container) {
+      return enclosingElement.sidebarPath;
+    } else if (enclosingElement is Library) {
+      return enclosingElement.sidebarPath;
+    } else {
+      throw StateError(
+          'Enclosing element of $this should be Container or Library, but was '
+          '${enclosingElement.runtimeType}');
+    }
+  }
+
+  @override
+  String? get belowSidebarPath => null;
+
+  @override
   bool get isCanonical => enclosingCombo.isCanonical;
 
   @override

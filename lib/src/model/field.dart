@@ -143,6 +143,16 @@ class Field extends ModelElement
   @Deprecated('Use `element`')
   FieldElement? get field => element;
 
+  @override
+  String get fileName =>
+      '${isConst ? '$name-constant' : name}.${fileStructure.fileType}';
+
+  @override
+  String get aboveSidebarPath => enclosingElement.sidebarPath;
+
+  @override
+  String? get belowSidebarPath => null;
+
   SourceCodeRenderer get _sourceCodeRenderer =>
       packageGraph.rendererFactory.sourceCodeRenderer;
 

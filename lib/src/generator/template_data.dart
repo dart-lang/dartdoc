@@ -99,6 +99,10 @@ abstract class TemplateData<T extends Documentable> extends TemplateDataBase {
   @override
   T get self;
 
+  String? get aboveSidebarPath;
+
+  String? get belowSidebarPath;
+
   String _layoutTitle(String name, String kind, {required bool isDeprecated}) =>
       _packageGraph.rendererFactory.templateRenderer
           .composeLayoutTitle(name, kind, isDeprecated);
@@ -130,6 +134,12 @@ class PackageTemplateData extends TemplateData<Package> {
   String get title => '${package.name} - Dart API docs';
   @override
   Package get self => package;
+
+  @override
+  String? get aboveSidebarPath => null;
+  @override
+  String? get belowSidebarPath => null;
+
   @override
   String get layoutTitle =>
       _layoutTitle(package.name, package.kind, isDeprecated: false);
@@ -190,6 +200,11 @@ class CategoryTemplateData extends TemplateData<Category>
 
   @override
   Category get self => category;
+
+  @override
+  String? get aboveSidebarPath => null;
+  @override
+  String? get belowSidebarPath => null;
 }
 
 class LibraryTemplateData extends TemplateData<Library>
@@ -197,12 +212,9 @@ class LibraryTemplateData extends TemplateData<Library>
     implements TemplateDataWithLibrary<Library> {
   @override
   final Library library;
-  final LibrarySidebar _sidebarForLibrary;
 
-  LibraryTemplateData(super.htmlOptions, super.packageGraph, this.library,
-      this._sidebarForLibrary);
+  LibraryTemplateData(super.htmlOptions, super.packageGraph, this.library);
 
-  String get sidebarForLibrary => _sidebarForLibrary(library, this);
   @override
   String get title => '${library.name} library - Dart API';
   @override
@@ -217,12 +229,21 @@ class LibraryTemplateData extends TemplateData<Library>
 
   @override
   Library get self => library;
+
+  @override
+  String? get aboveSidebarPath => self.aboveSidebarPath;
+  @override
+  String? get belowSidebarPath => self.belowSidebarPath;
 }
 
 /// Template data for Mixin declarations.
 class MixinTemplateData extends InheritingContainerTemplateData<Mixin> {
-  MixinTemplateData(super.htmlOptions, super.packageGraph, super.library,
-      super.mixin, super.sidebarForLibrary, super.sidebarForContainer);
+  MixinTemplateData(
+    super.htmlOptions,
+    super.packageGraph,
+    super.library,
+    super.mixin,
+  );
 
   Mixin get mixin => clazz;
 
@@ -232,8 +253,12 @@ class MixinTemplateData extends InheritingContainerTemplateData<Mixin> {
 
 /// Template data for Dart classes.
 class ClassTemplateData extends InheritingContainerTemplateData<Class> {
-  ClassTemplateData(super.htmlOptions, super.packageGraph, super.library,
-      super.clazz, super.sidebarForLibrary, super.sidebarForContainer);
+  ClassTemplateData(
+    super.htmlOptions,
+    super.packageGraph,
+    super.library,
+    super.clazz,
+  );
 
   @override
   // Mustachio generation requires this unnecessary override.
@@ -250,25 +275,24 @@ abstract class InheritingContainerTemplateData<T extends InheritingContainer>
   final T clazz;
   @override
   final Library library;
-  final LibrarySidebar _sidebarForLibrary;
-  final ContainerSidebar _sidebarForContainer;
 
   InheritingContainerTemplateData(
-      super.htmlOptions,
-      super.packageGraph,
-      this.library,
-      this.clazz,
-      this._sidebarForLibrary,
-      this._sidebarForContainer);
-
-  String get sidebarForLibrary => _sidebarForLibrary(library, this);
-  String get sidebarForContainer => _sidebarForContainer(container, this);
+    super.htmlOptions,
+    super.packageGraph,
+    this.library,
+    this.clazz,
+  );
 
   @override
   Container get container => clazz;
 
   @override
   T get self => clazz;
+
+  @override
+  String? get aboveSidebarPath => self.aboveSidebarPath;
+  @override
+  String? get belowSidebarPath => self.belowSidebarPath;
 
   @override
   String get title =>
@@ -293,20 +317,24 @@ class ExtensionTemplateData<T extends Extension> extends TemplateData<T>
   final T extension;
   @override
   final Library library;
-  final ContainerSidebar _sidebarForContainer;
-  final LibrarySidebar _sidebarForLibrary;
 
-  ExtensionTemplateData(super.htmlOptions, super.packageGraph, this.library,
-      this.extension, this._sidebarForLibrary, this._sidebarForContainer);
-
-  String get sidebarForContainer => _sidebarForContainer(container, this);
-  String get sidebarForLibrary => _sidebarForLibrary(library, this);
+  ExtensionTemplateData(
+    super.htmlOptions,
+    super.packageGraph,
+    this.library,
+    this.extension,
+  );
 
   @override
   Container get container => extension;
 
   @override
   T get self => extension;
+
+  @override
+  String? get aboveSidebarPath => self.aboveSidebarPath;
+  @override
+  String? get belowSidebarPath => self.belowSidebarPath;
 
   @override
   String get title =>
@@ -332,17 +360,25 @@ class ConstructorTemplateData extends TemplateData<Constructor>
   final Library library;
   final Constructable constructable;
   final Constructor constructor;
-  final ContainerSidebar _sidebarForContainer;
 
-  ConstructorTemplateData(super.htmlOptions, super.packageGraph, this.library,
-      this.constructable, this.constructor, this._sidebarForContainer);
-
-  String get sidebarForContainer => _sidebarForContainer(container, this);
+  ConstructorTemplateData(
+    super.htmlOptions,
+    super.packageGraph,
+    this.library,
+    this.constructable,
+    this.constructor,
+  );
 
   @override
   Container get container => constructable;
   @override
   Constructor get self => constructor;
+
+  @override
+  String? get aboveSidebarPath => self.aboveSidebarPath;
+  @override
+  String? get belowSidebarPath => self.belowSidebarPath;
+
   @override
   String get layoutTitle => _layoutTitle(constructor.name, constructor.fullKind,
       isDeprecated: constructor.isDeprecated);
@@ -361,8 +397,12 @@ class ConstructorTemplateData extends TemplateData<Constructor>
 }
 
 class EnumTemplateData extends InheritingContainerTemplateData<Enum> {
-  EnumTemplateData(super.htmlOptions, super.packageGraph, super.library,
-      super.eNum, super.sidebarForLibrary, super.sidebarForContainer);
+  EnumTemplateData(
+    super.htmlOptions,
+    super.packageGraph,
+    super.library,
+    super.eNum,
+  );
 
   Enum get eNum => clazz;
   @override
@@ -375,15 +415,22 @@ class FunctionTemplateData extends TemplateData<ModelFunction>
   final ModelFunction function;
   @override
   final Library library;
-  final LibrarySidebar _sidebarForLibrary;
 
-  FunctionTemplateData(super.htmlOptions, super.packageGraph, this.library,
-      this.function, this._sidebarForLibrary);
-
-  String get sidebarForLibrary => _sidebarForLibrary(library, this);
+  FunctionTemplateData(
+    super.htmlOptions,
+    super.packageGraph,
+    this.library,
+    this.function,
+  );
 
   @override
   ModelFunction get self => function;
+
+  @override
+  String? get aboveSidebarPath => self.aboveSidebarPath;
+  @override
+  String? get belowSidebarPath => self.belowSidebarPath;
+
   @override
   String get title =>
       '${function.name} function - ${library.name} library - Dart API';
@@ -408,15 +455,23 @@ class MethodTemplateData extends TemplateData<Method>
   final Method method;
   @override
   final Container container;
-  final ContainerSidebar _sidebarForContainer;
 
-  MethodTemplateData(super.htmlOptions, super.packageGraph, this.library,
-      this.container, this.method, this._sidebarForContainer);
-
-  String get sidebarForContainer => _sidebarForContainer(container, this);
+  MethodTemplateData(
+    super.htmlOptions,
+    super.packageGraph,
+    this.library,
+    this.container,
+    this.method,
+  );
 
   @override
   Method get self => method;
+
+  @override
+  String? get aboveSidebarPath => self.aboveSidebarPath;
+  @override
+  String? get belowSidebarPath => self.belowSidebarPath;
+
   @override
   String get title =>
       '${method.name} method - ${container.name} ${container.kind} - '
@@ -445,15 +500,22 @@ class PropertyTemplateData extends TemplateData<Field>
   @override
   final Container container;
   final Field property;
-  final ContainerSidebar _sidebarForContainer;
 
-  PropertyTemplateData(super.htmlOptions, super.packageGraph, this.library,
-      this.container, this.property, this._sidebarForContainer);
-
-  String get sidebarForContainer => _sidebarForContainer(container, this);
+  PropertyTemplateData(
+    super.htmlOptions,
+    super.packageGraph,
+    this.library,
+    this.container,
+    this.property,
+  );
 
   @override
   Field get self => property;
+
+  @override
+  String? get aboveSidebarPath => self.aboveSidebarPath;
+  @override
+  String? get belowSidebarPath => self.belowSidebarPath;
 
   @override
   String get title => '${property.name} ${property.kind} - '
@@ -479,15 +541,21 @@ class TypedefTemplateData extends TemplateData<Typedef>
   @override
   final Library library;
   final Typedef typeDef;
-  final LibrarySidebar _sidebarForLibrary;
 
-  TypedefTemplateData(super.htmlOptions, super.packageGraph, this.library,
-      this.typeDef, this._sidebarForLibrary);
-
-  String get sidebarForLibrary => _sidebarForLibrary(library, this);
+  TypedefTemplateData(
+    super.htmlOptions,
+    super.packageGraph,
+    this.library,
+    this.typeDef,
+  );
 
   @override
   Typedef get self => typeDef;
+
+  @override
+  String? get aboveSidebarPath => self.aboveSidebarPath;
+  @override
+  String? get belowSidebarPath => self.belowSidebarPath;
 
   @override
   String get title =>
@@ -509,15 +577,21 @@ class TopLevelPropertyTemplateData extends TemplateData<TopLevelVariable>
   @override
   final Library library;
   final TopLevelVariable property;
-  final LibrarySidebar _sidebarForLibrary;
 
-  TopLevelPropertyTemplateData(super.htmlOptions, super.packageGraph,
-      this.library, this.property, this._sidebarForLibrary);
-
-  String get sidebarForLibrary => _sidebarForLibrary(library, this);
+  TopLevelPropertyTemplateData(
+    super.htmlOptions,
+    super.packageGraph,
+    this.library,
+    this.property,
+  );
 
   @override
   TopLevelVariable get self => property;
+
+  @override
+  String? get aboveSidebarPath => self.aboveSidebarPath;
+  @override
+  String? get belowSidebarPath => self.belowSidebarPath;
 
   @override
   String get title =>

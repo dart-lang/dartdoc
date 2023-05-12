@@ -24,6 +24,10 @@ class Class extends InheritingContainer
   ];
 
   @override
+  String get sidebarPath =>
+      '${library.dirName}/$name-class-sidebar.${fileStructure.fileType}';
+
+  @override
   late final List<InheritingContainer> inheritanceChain = [
     this,
 
