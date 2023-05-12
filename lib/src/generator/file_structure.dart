@@ -4,18 +4,9 @@
 
 import 'package:dartdoc/src/comment_references/parser.dart';
 import 'package:dartdoc/src/failure.dart';
-import 'package:dartdoc/src/model/category.dart';
-import 'package:dartdoc/src/model/class.dart';
-import 'package:dartdoc/src/model/documentable.dart';
-import 'package:dartdoc/src/model/getter_setter_combo.dart';
-import 'package:dartdoc/src/model/library.dart';
-import 'package:dartdoc/src/model/library_container.dart';
-import 'package:dartdoc/src/model/model_element.dart';
-import 'package:dartdoc/src/model/operator.dart';
-import 'package:dartdoc/src/model/package.dart';
 import 'package:meta/meta.dart';
 
-import '../model/mixin.dart';
+import '../model/model.dart';
 
 const _validFormats = {'html', 'md'};
 
