@@ -43,9 +43,9 @@ mixin BMixin on AClass {}
 dartdoc:
   categories:
     "MyCategory":
-      markdown: MyCategory.md
+      markdown: mycategory.md
 '''),
-      d.file('MyCategory.md', '''
+      d.file('mycategory.md', '''
 Hello there, I am an *amazing* markdown file.
 '''),
     ]);
