@@ -6,6 +6,7 @@ import 'package:test/test.dart';
 import 'package:test_reflective_loader/test_reflective_loader.dart';
 
 import '../dartdoc_test_base.dart';
+import '../src/test_descriptor_utils.dart' as d;
 import '../src/utils.dart';
 
 void main() {
@@ -22,9 +23,54 @@ class FileStructureTest extends DartdocTestBase {
   void test_fileNamesForModelElements() async {
     var library = await bootPackageWithLibrary('''
 var globalVar = 123;
-''');
+const globalConst = 123;
+
+class AClass {
+  const myConst = 75;
+  var myVariable = 76;
+
+  void aMethod();
+
+  @override
+  operator+ (AClass b) => AClass();
+}
+
+mixin BMixin on AClass {}
+''',
+        libraryPreamble: '''
+/// {@category MyCategory}
+''',
+        extraFiles: () => [
+              d.file('dartdoc_options.yaml', '''
+dartdoc:
+  categories:
+    "MyCategory":
+      markdown: MyCategory.md
+'''),
+              d.file('MyCategory.md', '''
+Hello there, I am an *amazing* markdown file.
+'''),
+            ]);
     var globalVar = library.properties.named('globalVar');
-    var structure = globalVar.fileStructure;
-    expect(structure.fileName, equals('globalVar.html'));
+    var globalConst = library.constants.named('globalConst');
+    var category =
+        library.package.categories.firstWhere((c) => c.name == 'MyCategory');
+    var AClass = library.classes.named('AClass');
+    var BMixin = library.mixins.named('BMixin');
+    var myConst = AClass.constantFields.named('myConst');
+    var myVariable = AClass.instanceFields.named('myVariable');
+    var aMethod = AClass.instanceMethods.named('aMethod');
+    var operatorPlus = AClass.instanceOperators.named('operator +');
+
+    expect(globalVar.fileStructure.fileName, equals('globalVar.html'));
+    expect(globalConst.fileStructure.fileName,
+        equals('globalConst-constant.html'));
+    expect(category.fileStructure.fileName, equals('MyCategory-topic.html'));
+    expect(AClass.fileStructure.fileName, equals('AClass-class.html'));
+    expect(BMixin.fileStructure.fileName, equals('BMixin-mixin.html'));
+    expect(myConst.fileStructure.fileName, equals('myConst-constant.html'));
+    expect(myVariable.fileStructure.fileName, equals('myVariable.html'));
+    expect(aMethod.fileStructure.fileName, equals('aMethod.html'));
+    expect(operatorPlus.fileStructure.fileName, equals('operator_plus.html'));
   }
 }

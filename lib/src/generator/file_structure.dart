@@ -29,24 +29,27 @@ const _validFormats = {'html', 'md'};
 abstract class FileStructure {
   factory FileStructure.fromDocumentable(Documentable documentable) {
     if (!_validFormats.contains(documentable.config.format)) {
-      throw DartdocFailure('Internal error: unrecognized config.format: ${documentable.config.format}');
+      throw DartdocFailure(
+          'Internal error: unrecognized config.format: ${documentable.config.format}');
     }
     switch (documentable) {
       case LibraryContainer():
-        // [LibraryContainer]s are not ModelElements, but have documentation. 
+        // [LibraryContainer]s are not ModelElements, but have documentation.
         return FileStructure._fromLibraryContainer(documentable);
       case ModelElement():
         // This should be the common case.
         return FileStructure._fromModelElement(documentable);
       default:
-        throw UnimplementedError('Tried to build a FileStructure for an unknown subtype of Documentable:  ${documentable.runtimeType}');
+        throw UnimplementedError(
+            'Tried to build a FileStructure for an unknown subtype of Documentable:  ${documentable.runtimeType}');
     }
   }
 
-  factory FileStructure._fromLibraryContainer(LibraryContainer libraryContainer) {
+  factory FileStructure._fromLibraryContainer(
+      LibraryContainer libraryContainer) {
     String? kindAddition;
     String? pathSafeName = libraryContainer.name;
-    switch(libraryContainer) {
+    switch (libraryContainer) {
       case Category():
         kindAddition = 'topic';
         break;
@@ -54,16 +57,18 @@ abstract class FileStructure {
         pathSafeName = 'index';
         break;
       default:
-        throw UnimplementedError('Unrecognized LibraryContainer subtype:  ${libraryContainer.runtimeType}');
+        throw UnimplementedError(
+            'Unrecognized LibraryContainer subtype:  ${libraryContainer.runtimeType}');
     }
 
-    return FileStructureImpl(libraryContainer.config.format, pathSafeName, kindAddition);
+    return FileStructureImpl(
+        libraryContainer.config.format, pathSafeName, kindAddition);
   }
 
   factory FileStructure._fromModelElement(ModelElement modelElement) {
     String? kindAddition;
     String? pathSafeName = modelElement.name;
-    switch(modelElement) {
+    switch (modelElement) {
       case Library():
         kindAddition = 'library';
         pathSafeName = modelElement.dirName;
@@ -89,7 +94,8 @@ abstract class FileStructure {
         break;
     }
 
-    return FileStructureImpl(modelElement.config.format, pathSafeName, kindAddition); 
+    return FileStructureImpl(
+        modelElement.config.format, pathSafeName, kindAddition);
   }
 
   /// True if an independent file should be created for this `ModelElement`.
@@ -127,6 +133,7 @@ class FileStructureImpl implements FileStructure {
   FileStructureImpl(this.fileType, this.pathSafeName, this.kindAddition);
 
   @override
+
   /// Initial implementation is bug-for-bug compatible with pre-extraction
   /// dartdoc.  This means that some types will have kindAdditions, and
   /// some will not.  See [FileStructure._fromModelElement].
