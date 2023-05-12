@@ -331,13 +331,10 @@ class Library extends ModelElement
       allClasses.where((c) => c.isErrorOrException).toList(growable: false);
 
   @override
-  String get fileName => '$dirName-library.$fileType';
-
-  @override
-  String get filePath => '${library.dirName}/$fileName';
+  String get filePath => '${library.dirName}/${fileStructure.fileName}';
 
   String get sidebarPath =>
-      '${library.dirName}/$dirName-library-sidebar.$fileType';
+      '${library.dirName}/$dirName-library-sidebar.${fileStructure.fileType}';
 
   /// The library template manually includes 'packages' in the left/above
   /// sidebar.

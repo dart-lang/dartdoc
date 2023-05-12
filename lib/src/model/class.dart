@@ -24,7 +24,8 @@ class Class extends InheritingContainer
   ];
 
   @override
-  String get sidebarPath => '${library.dirName}/$name-class-sidebar.$fileType';
+  String get sidebarPath =>
+      '${library.dirName}/$name-class-sidebar.${fileStructure.fileType}';
 
   @override
   late final List<InheritingContainer> inheritanceChain = [
@@ -46,9 +47,6 @@ class Class extends InheritingContainer
       : super(library, packageGraph) {
     packageGraph.specialClasses.addSpecial(this);
   }
-
-  @override
-  String get fileName => '$name-class.$fileType';
 
   @override
   bool get isAbstract => element.isAbstract;

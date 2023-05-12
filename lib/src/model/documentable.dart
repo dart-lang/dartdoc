@@ -4,6 +4,7 @@
 
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
+import 'package:dartdoc/src/generator/file_structure.dart';
 import 'package:dartdoc/src/io_utils.dart';
 
 import 'model.dart';
@@ -24,6 +25,8 @@ abstract class Documentable extends Nameable {
   bool get isDocumented;
 
   DartdocOptionContext get config;
+
+  FileStructure get fileStructure;
 
   String? get href;
 

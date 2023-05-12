@@ -72,11 +72,11 @@ Future<FlutterRepo> get cleanFlutterRepo async {
   if (repoCompleter != null) {
     return repoCompleter.future;
   }
-  _cleanFlutterRepo = repoCompleter;
 
   // No await is allowed between check of _cleanFlutterRepo and its assignment,
   // to prevent reentering this function.
   repoCompleter = Completer();
+  _cleanFlutterRepo = repoCompleter;
 
   // Figure out where the repository is supposed to be and lock updates for
   // it.

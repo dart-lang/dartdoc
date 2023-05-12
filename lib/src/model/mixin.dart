@@ -24,7 +24,8 @@ class Mixin extends InheritingContainer with TypeImplementing {
   ];
 
   @override
-  String get sidebarPath => '${library.dirName}/$name-mixin-sidebar.$fileType';
+  String get sidebarPath =>
+      '${library.dirName}/$name-mixin-sidebar.${fileStructure.fileType}';
 
   @override
   late final List<InheritingContainer> inheritanceChain = [
@@ -47,9 +48,6 @@ class Mixin extends InheritingContainer with TypeImplementing {
   @visibleForOverriding
   Iterable<MapEntry<String, CommentReferable>> get extraReferenceChildren =>
       const [];
-
-  @override
-  String get fileName => '$name-mixin.$fileType';
 
   @override
   bool get hasModifiers => super.hasModifiers || hasPublicSuperclassConstraints;

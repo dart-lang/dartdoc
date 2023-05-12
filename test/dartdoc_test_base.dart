@@ -70,23 +70,40 @@ analyzer:
         packagePath, name, Uri.file('$packagePath/'));
   }
 
+  Future<PackageGraph> _bootPackageFromFiles(
+      Iterable<d.Descriptor> files) async {
+    var packagePathBasename =
+        resourceProvider.pathContext.basename(packagePath);
+    var packagePathDirname = resourceProvider.pathContext.dirname(packagePath);
+    await d
+        .dir(packagePathBasename, files)
+        .createInMemory(resourceProvider, packagePathDirname);
+    return await bootBasicPackage(
+      packagePath,
+      packageMetaProvider,
+      packageConfigProvider,
+    );
+  }
+
+  /// Creates a single library named [libraryName], with optional preamble
+  /// [libraryPreamble].   Optionally, pass a [FileGenerator] to create
+  /// extra files in the package such as `dartdoc_options.yaml`.
   Future<Library> bootPackageWithLibrary(String libraryContent,
-      {String libraryPreamble = ''}) async {
-    await d.dir('lib', [
-      d.file('lib.dart', '''
+      {String libraryPreamble = '',
+      Iterable<d.Descriptor> extraFiles = const []}) async {
+    return (await _bootPackageFromFiles([
+      d.dir('lib', [
+        d.file('lib.dart', '''
 $libraryPreamble
 library $libraryName;
 
 $libraryContent
 '''),
-    ]).createInMemory(resourceProvider, packagePath);
-
-    var packageGraph = await bootBasicPackage(
-      packagePath,
-      packageMetaProvider,
-      packageConfigProvider,
-    );
-    return packageGraph.libraries.named(libraryName);
+      ]),
+      ...extraFiles
+    ]))
+        .libraries
+        .named(libraryName);
   }
 
   /// Similar to [bootPackageWithLibrary], but allows for more complex
@@ -107,43 +124,33 @@ $libraryContent
       List<String> show = const [],
       List<String> hide = const []}) async {
     final subdir = reexportPrivate ? 'src' : 'subdir';
-    await d.dir('lib', [
-      d.dir(subdir, [
-        d.file('lib.dart', '''
+    if (show.isNotEmpty && hide.isNotEmpty) {
+      throw DartdocTestBaseFailure('Can not specify show and hide');
+    }
+    final showHideString = '${show.isNotEmpty ? 'show ${show.join(', ')}' : ''}'
+        '${hide.isNotEmpty ? 'hide ${hide.join(', ')}' : ''}';
+
+    return (await _bootPackageFromFiles([
+      d.dir('lib', [
+        d.dir(subdir, [
+          d.file('lib.dart', '''
 library ${libraryName}_src;
 
 $reexportedContent
 '''),
-      ])
-    ]).createInMemory(resourceProvider, packagePath);
-
-    if (show.isNotEmpty && hide.isNotEmpty) {
-      throw DartdocTestBaseFailure('Can not specify show and hide');
-    }
-
-    final showHideString = '${show.isNotEmpty ? 'show ${show.join(', ')}' : ''}'
-        '${hide.isNotEmpty ? 'hide ${hide.join(', ')}' : ''}';
-    await d.dir('lib', [
-      d.file('lib.dart', '''
+        ]),
+        d.file('lib.dart', '''
 library ${libraryName}_lib;
 
 export '$subdir/lib.dart' $showHideString;
 '''),
-    ]).createInMemory(resourceProvider, packagePath);
-
-    await d.dir('lib', [
-      d.file('importing_lib.dart', '''
+        d.file('importing_lib.dart', '''
 library $libraryName;
-
 $libraryContent
 '''),
-    ]).createInMemory(resourceProvider, packagePath);
-
-    var packageGraph = await bootBasicPackage(
-      packagePath,
-      packageMetaProvider,
-      packageConfigProvider,
-    );
-    return packageGraph.libraries.named(libraryName);
+      ])
+    ]))
+        .libraries
+        .named(libraryName);
   }
 }

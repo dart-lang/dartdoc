@@ -52,7 +52,7 @@ class ModelFunctionTyped extends ModelElement
   Library get enclosingElement => library;
 
   @override
-  String get filePath => '${library.dirName}/$fileName';
+  String get filePath => '${library.dirName}/${fileStructure.fileName}';
 
   @override
   String get aboveSidebarPath => enclosingElement.sidebarPath;

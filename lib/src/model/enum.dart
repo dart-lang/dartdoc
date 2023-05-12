@@ -35,7 +35,8 @@ class Enum extends InheritingContainer
   ];
 
   @override
-  String get sidebarPath => '${library.dirName}/$name-enum-sidebar.$fileType';
+  String get sidebarPath =>
+      '${library.dirName}/$name-enum-sidebar.${fileStructure.fileType}';
 
   @override
   String get kind => 'enum';
@@ -116,7 +117,9 @@ class EnumField extends Field {
     assert(!(canonicalLibrary == null || canonicalEnclosingContainer == null));
     assert(canonicalLibrary == library);
     assert(canonicalEnclosingContainer == enclosingElement);
-    return '${package.baseHref}${enclosingElement.library.dirName}/${enclosingElement.fileName}';
+    // TODO(jcollins-g): EnumField should not depend on enclosingElement, but
+    // we sort of have to while we are half-converted to [FileStructure].
+    return '${package.baseHref}${enclosingElement.library.dirName}/${enclosingElement.fileStructure.fileName}';
   }
 
   @override

@@ -11,6 +11,7 @@ import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/source/line_info.dart';
 import 'package:async/async.dart';
 import 'package:collection/src/iterable_extensions.dart';
+import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/matching_link_result.dart';
 import 'package:dartdoc/src/model/feature.dart';
@@ -51,6 +52,30 @@ class TestLibraryContainer extends LibraryContainer with Nameable {
   TestLibraryContainer(
       this.name, this.containerOrder, LibraryContainer? enclosingContainer)
       : enclosingName = enclosingContainer?.name ?? '';
+
+  @override
+  DartdocOptionContext get config => throw UnimplementedError();
+
+  @override
+  String? get documentation => throw UnimplementedError();
+
+  @override
+  String get documentationAsHtml => throw UnimplementedError();
+
+  @override
+  bool get hasDocumentation => throw UnimplementedError();
+
+  @override
+  String? get href => throw UnimplementedError();
+
+  @override
+  bool get isDocumented => throw UnimplementedError();
+
+  @override
+  String get kind => throw UnimplementedError();
+
+  @override
+  String get oneLineDoc => throw UnimplementedError();
 }
 
 class TestLibraryContainerSdk extends TestLibraryContainer {

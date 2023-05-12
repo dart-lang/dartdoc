@@ -5,7 +5,6 @@
 // ignore: implementation_imports
 import 'package:analyzer/src/dart/element/member.dart'
     show ExecutableMember, Member;
-import 'package:dartdoc/src/comment_references/parser.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 class Operator extends Method {
@@ -15,15 +14,6 @@ class Operator extends Method {
       super.library, super.packageGraph,
       {Member? originalMember})
       : super.inherited(originalMember: originalMember as ExecutableMember?);
-
-  @override
-  String get fileName {
-    var actualName = super.name;
-    if (operatorNames.containsKey(actualName)) {
-      actualName = 'operator_${operatorNames[actualName]}';
-    }
-    return '$actualName.$fileType';
-  }
 
   @override
   String get fullyQualifiedName =>
