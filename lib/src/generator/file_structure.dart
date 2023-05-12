@@ -60,12 +60,14 @@ abstract class FileStructure {
       case Class():
         return FileStructureImpl(format, modelElement.name, 'class');
       case Operator():
-        return FileStructureImpl(format, 'operator_${operatorNames[modelElement.referenceName]}', null);
+        return FileStructureImpl(format,
+            'operator_${operatorNames[modelElement.referenceName]}', null);
       case GetterSetterCombo():
-        return FileStructureImpl(format, modelElement.name, modelElement.isConst ? 'constant' : null);
+        return FileStructureImpl(format, modelElement.name,
+            modelElement.isConst ? 'constant' : null);
       default:
         return FileStructureImpl(
-          modelElement.config.format, modelElement.name, null);
+            modelElement.config.format, modelElement.name, null);
     }
   }
 
@@ -115,6 +117,7 @@ class FileStructureImpl implements FileStructure {
   FileStructureImpl(this.fileType, this.pathSafeName, this.kindAddition);
 
   @override
+
   /// Initial implementation is bug-for-bug compatible with pre-extraction
   /// dartdoc.  This means that some types will have kindAdditions, and
   /// some will not.  See [FileStructure._fromModelElement].

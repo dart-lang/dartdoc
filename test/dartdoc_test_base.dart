@@ -11,8 +11,6 @@ import 'package:meta/meta.dart';
 import 'src/test_descriptor_utils.dart' as d;
 import 'src/utils.dart';
 
-typedef FileGenerator = Iterable<d.Descriptor> Function();
-
 /// Exception thrown for invalid use of [DartdocTestBase]'s api.
 class DartdocTestBaseFailure implements Exception {
   final String message;
@@ -72,12 +70,13 @@ analyzer:
         packagePath, name, Uri.file('$packagePath/'));
   }
 
-  Future<PackageGraph> _bootPackageFromFiles(FileGenerator files) async {
+  Future<PackageGraph> _bootPackageFromFiles(
+      Iterable<d.Descriptor> files) async {
     var packagePathBasename =
         resourceProvider.pathContext.basename(packagePath);
     var packagePathDirname = resourceProvider.pathContext.dirname(packagePath);
     await d
-        .dir(packagePathBasename, files())
+        .dir(packagePathBasename, files)
         .createInMemory(resourceProvider, packagePathDirname);
     return await bootBasicPackage(
       packagePath,
@@ -90,17 +89,19 @@ analyzer:
   /// [libraryPreamble].   Optionally, pass a [FileGenerator] to create
   /// extra files in the package such as `dartdoc_options.yaml`.
   Future<Library> bootPackageWithLibrary(String libraryContent,
-      {String libraryPreamble = '', FileGenerator? extraFiles}) async {
-    return (await _bootPackageFromFiles(() => [
-              d.dir('lib', [
-                d.file('lib.dart', '''
+      {String libraryPreamble = '',
+      Iterable<d.Descriptor> extraFiles = const []}) async {
+    return (await _bootPackageFromFiles([
+      d.dir('lib', [
+        d.file('lib.dart', '''
 $libraryPreamble
 library $libraryName;
 
 $libraryContent
 '''),
-              ]),
-            ]))
+      ]),
+      ...extraFiles
+    ]))
         .libraries
         .named(libraryName);
   }
@@ -129,26 +130,26 @@ $libraryContent
     final showHideString = '${show.isNotEmpty ? 'show ${show.join(', ')}' : ''}'
         '${hide.isNotEmpty ? 'hide ${hide.join(', ')}' : ''}';
 
-    return (await _bootPackageFromFiles(() => [
-              d.dir('lib', [
-                d.dir(subdir, [
-                  d.file('lib.dart', '''
+    return (await _bootPackageFromFiles([
+      d.dir('lib', [
+        d.dir(subdir, [
+          d.file('lib.dart', '''
 library ${libraryName}_src;
 
 $reexportedContent
 '''),
-                ]),
-                d.file('lib.dart', '''
+        ]),
+        d.file('lib.dart', '''
 library ${libraryName}_lib;
 
 export '$subdir/lib.dart' $showHideString;
 '''),
-                d.file('importing_lib.dart', '''
+        d.file('importing_lib.dart', '''
 library $libraryName;
 $libraryContent
 '''),
-              ])
-            ]))
+      ])
+    ]))
         .libraries
         .named(libraryName);
   }

@@ -36,21 +36,19 @@ class AClass {
 }
 
 mixin BMixin on AClass {}
-''',
-        libraryPreamble: '''
+''', libraryPreamble: '''
 /// {@category MyCategory}
-''',
-        extraFiles: () => [
-              d.file('dartdoc_options.yaml', '''
+''', extraFiles: [
+      d.file('dartdoc_options.yaml', '''
 dartdoc:
   categories:
     "MyCategory":
       markdown: MyCategory.md
 '''),
-              d.file('MyCategory.md', '''
+      d.file('MyCategory.md', '''
 Hello there, I am an *amazing* markdown file.
 '''),
-            ]);
+    ]);
     var globalVar = library.properties.named('globalVar');
     var globalConst = library.constants.named('globalConst');
     var category =
