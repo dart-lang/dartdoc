@@ -76,6 +76,7 @@ Future<FlutterRepo> get cleanFlutterRepo async {
   // No await is allowed between check of _cleanFlutterRepo and its assignment,
   // to prevent reentering this function.
   repoCompleter = Completer();
+  _cleanFlutterRepo = repoCompleter;
 
   // Figure out where the repository is supposed to be and lock updates for
   // it.
@@ -142,7 +143,7 @@ final String _pluginPackageDocsPath =
 String get dartdocOriginalBranch {
   var branch = Platform.environment['DARTDOC_ORIGINAL'];
   if (branch == null) {
-    return 'master';
+    return 'main';
   } else {
     log('using branch/tag: $branch for comparison from \$DARTDOC_ORIGINAL');
     return branch;
@@ -443,7 +444,7 @@ Future<String> createSdkDartdoc() async {
   await launcher.runStreamed('git', [
     'clone',
     '--branch',
-    'master',
+    'main',
     '--depth',
     '1',
     'https://dart.googlesource.com/sdk.git',
@@ -889,6 +890,14 @@ Future<Iterable<Map<String, Object?>>> _buildFlutterDocs(
     ['pub', 'get'],
     workingDirectory: p.join(flutterPath, 'dev', 'tools'),
   );
+  try {
+    await flutterRepo.launcher.runStreamed(
+      flutterRepo.cacheDart,
+      ['pub', 'global', 'deactivate', 'snippets'],
+    );
+  } on SubProcessException {
+    // Ignore failure to deactivate so this works on completely clean bots.
+  }
   await flutterRepo.launcher.runStreamed(
     flutterRepo.cacheDart,
     ['pub', 'global', 'activate', 'snippets'],
@@ -1276,26 +1285,26 @@ Future<void> testDartdocFlutterPlugin() async {
 @Depends(buildSdkDocs)
 void validateSdkDocs() {
   const expectedLibCounts = 0;
-  const expectedSubLibCount = {18, 19};
-  const expectedTotalCount = {18, 19};
+  const expectedSubLibCount = {19, 20, 21};
+  const expectedTotalCount = {19, 20, 21};
   var indexHtml = joinFile(_sdkDocsDir, ['index.html']);
   if (!indexHtml.existsSync()) {
-    fail('no index.html found for SDK docs');
+    fail("No 'index.html' found for the SDK docs");
   }
-  log('found index.html');
+  log("Found 'index.html'");
   var indexContents = indexHtml.readAsStringSync();
   var foundLibs = _findCount(indexContents, '  <li><a href="dart-');
   if (expectedLibCounts != foundLibs) {
-    fail('expected $expectedLibCounts "dart:" index.html entries, found '
-        '$foundLibs');
+    fail("Expected $expectedLibCounts 'dart:' entries in 'index.html', but "
+        'found $foundLibs');
   }
-  log('$foundLibs index.html dart: entries found');
+  log("Found $foundLibs 'dart:' entries in 'index.html'");
 
   var foundSubLibs =
       _findCount(indexContents, '<li class="section-subitem"><a href="dart-');
   if (!expectedSubLibCount.contains(foundSubLibs)) {
-    fail('expected $expectedSubLibCount "dart:" index.html entries in '
-        'categories, found $foundSubLibs');
+    fail("Expected $expectedSubLibCount 'dart:' entries in 'index.html' to be "
+        'in categories, but found $foundSubLibs');
   }
   log('$foundSubLibs index.html dart: entries in categories found');
 
@@ -1303,10 +1312,11 @@ void validateSdkDocs() {
   var libsLength =
       _sdkDocsDir.listSync().where((fs) => fs.path.contains('dart-')).length;
   if (!expectedTotalCount.contains(libsLength)) {
-    fail('docs not generated for all the SDK libraries, '
-        'expected $expectedTotalCount directories, generated $libsLength directories');
+    fail('Docs not generated for all the SDK libraries; expected '
+        '$expectedTotalCount directories, but $libsLength directories were '
+        'generated');
   }
-  log('$libsLength dart: libraries found');
+  log("Found $libsLength 'dart:' libraries");
 
   var futureConstFile =
       joinFile(_sdkDocsDir, [p.join('dart-async', 'Future', 'Future.html')]);

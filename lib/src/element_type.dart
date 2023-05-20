@@ -25,8 +25,9 @@ mixin ElementTypeBuilderImpl implements ElementTypeBuilder {
 
 /// Base class representing a type in Dartdoc.  It wraps a [DartType], and
 /// may link to a [ModelElement].
-abstract class ElementType extends Privacy
-    with CommentReferable, Nameable, ModelBuilder {
+abstract class ElementType
+    with CommentReferable, Nameable, ModelBuilder
+    implements Privacy {
   final DartType type;
   @override
   final PackageGraph packageGraph;
@@ -102,7 +103,7 @@ class UndefinedElementType extends ElementType {
   @override
   String get name {
     if (type is VoidType) return 'void';
-    if (type.isDynamic) return 'dynamic';
+    if (type is DynamicType) return 'dynamic';
     assert(const {'Never'}.contains(typeElement!.name),
         'Unrecognized type for UndefinedElementType: ${type.toString()}');
     return typeElement!.name!;

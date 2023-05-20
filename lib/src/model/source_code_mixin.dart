@@ -6,7 +6,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/source/line_info.dart';
 import 'package:dartdoc/src/model/model.dart';
 
-abstract class SourceCodeMixin implements Documentable {
+mixin SourceCode implements Documentable {
   ModelNode? get modelNode;
 
   CharacterLocation? get characterLocation;

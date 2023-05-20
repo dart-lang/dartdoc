@@ -43,11 +43,8 @@ mixin ContainerMember on ModelElement implements EnclosedElement {
           as Container?;
     }
     // TODO(jcollins-g): move Extension specific code to [Extendable]
-    if (enclosingElement.isDocumented) {
-      return packageGraph.findCanonicalModelElementFor(enclosingElement.element)
-          as Container?;
-    }
-    return null;
+    return packageGraph.findCanonicalModelElementFor(enclosingElement.element)
+        as Container?;
   }
 
   @override

@@ -9,6 +9,16 @@ import 'dart:io';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:path/path.dart' as p;
 
+class SubProcessException implements Exception {
+  final List<String> arguments;
+  final String executable;
+  final int exitCode;
+  final String message;
+
+  SubProcessException(
+      this.executable, this.arguments, this.message, this.exitCode);
+}
+
 /// Keeps track of coverage data automatically for any processes run by this
 /// [CoverageSubprocessLauncher].  Requires that these be dart processes.
 class CoverageSubprocessLauncher extends SubprocessLauncher {
@@ -261,7 +271,7 @@ class SubprocessLauncher {
 
     var exitCode = await process.exitCode;
     if (exitCode != 0) {
-      throw ProcessException(
+      throw SubProcessException(
           executable,
           arguments,
           'SubprocessLauncher got non-zero exitCode: $exitCode\n\n'

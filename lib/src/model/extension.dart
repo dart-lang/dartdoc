@@ -23,7 +23,7 @@ class Extension extends Container implements EnclosedElement {
 
   /// Detect if this extension applies to every object.
   bool get alwaysApplies =>
-      extendedType.instantiatedType.isDynamic ||
+      extendedType.instantiatedType is DynamicType ||
       extendedType.instantiatedType is VoidType ||
       extendedType.instantiatedType.isDartCoreObject;
 
@@ -32,7 +32,7 @@ class Extension extends Container implements EnclosedElement {
 
   /// Whether this extension could apply to [type].
   bool _couldApplyTo(DefinedElementType type) {
-    if (extendedType.instantiatedType.isDynamic ||
+    if (extendedType.instantiatedType is DynamicType ||
         extendedType.instantiatedType is VoidType) {
       return true;
     }
@@ -93,7 +93,11 @@ class Extension extends Container implements EnclosedElement {
   ];
 
   @override
-  String get filePath => '${library.dirName}/$fileName';
+  String get filePath => '${library.dirName}/${fileStructure.fileName}';
+
+  @override
+  String get sidebarPath =>
+      '${library.dirName}/$name-extension-sidebar.${fileStructure.fileType}';
 
   Map<String, CommentReferable>? _referenceChildren;
   @override

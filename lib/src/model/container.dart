@@ -28,7 +28,7 @@ import 'package:meta/meta.dart';
 /// * **has** : boolean getters indicating whether the underlying collections
 ///   are empty.  These are available mostly for the templating system.
 abstract class Container extends ModelElement
-    with Categorization, TypeParameters {
+    with Categorization, TypeParameters, HideConstantImplementations {
   Container(super.library, super.packageGraph);
 
   // TODO(jcollins-g): Implement a ContainerScope that flattens supertypes?
@@ -266,7 +266,16 @@ abstract class Container extends ModelElement
   Iterable<CommentReferable> get referenceParents => [definingLibrary, library];
 
   @override
-  String get filePath => '${library.dirName}/$fileName';
+  String get filePath => '${library.dirName}/${fileStructure.fileName}';
+
+  /// The full path of this element's sidebar file.
+  String get sidebarPath;
+
+  @override
+  String get aboveSidebarPath => library.sidebarPath;
+
+  @override
+  String get belowSidebarPath => sidebarPath;
 
   /// The CSS class to use in an inheritance list.
   String get relationshipsClass;

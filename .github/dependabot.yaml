@@ -15,3 +15,5 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    labels:
+      - "autosubmit"

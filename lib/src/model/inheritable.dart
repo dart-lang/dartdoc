@@ -48,10 +48,6 @@ mixin Inheritable on ContainerMember {
     if (canonicalEnclosingContainer == null) {
       return null;
     }
-    // TODO(jcollins-g): factor out extension logic into [Extendable]
-    if (canonicalEnclosingContainer is Extension) {
-      return this;
-    }
     return canonicalEnclosingContainer.allCanonicalModelElements
         .firstWhereOrNull((m) =>
             m.name == name &&

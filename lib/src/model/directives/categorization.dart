@@ -9,11 +9,11 @@ final RegExp _categoryRegExp = RegExp(
     r'[ ]*{@(api|category|subCategory|image|samples) (.+?)}[ ]*\n?',
     multiLine: true);
 
-/// Mixin implementing dartdoc categorization for ModelElements.
-abstract class Categorization implements ModelElement {
+/// Mixin parsing the `@category` directive for ModelElements.
+mixin Categorization on DocumentationComment implements Indexable {
   @override
   String buildDocumentationAddition(String rawDocs) =>
-      _stripAndSetDartdocCategories(rawDocs);
+      _stripAndSetDartdocCategories(super.buildDocumentationAddition(rawDocs));
 
   /// Parse `{@category ...}` and related information in API comments, stripping
   /// out that information from the given comments and returning the stripped
@@ -61,7 +61,6 @@ abstract class Categorization implements ModelElement {
     return _subCategoryNames;
   }
 
-  @override
   bool get hasCategoryNames => categoryNames?.isNotEmpty ?? false;
   List<String>? _categoryNames;
 
@@ -99,7 +98,6 @@ abstract class Categorization implements ModelElement {
     ...?categoryNames?.map((n) => package.nameToCategory[n]).whereNotNull()
   ]..sort();
 
-  @override
   Iterable<Category> get displayedCategories {
     if (config.showUndocumentedCategories) return categories;
     return categories.where((c) => c.isDocumented);

@@ -1,7 +1,7 @@
 # Dart documentation generator
 
 [![Build Status](https://github.com/dart-lang/dartdoc/workflows/Test/badge.svg)](https://github.com/dart-lang/dartdoc/actions?query=workflow%3ATest)
-[![Coverage Status](https://coveralls.io/repos/github/dart-lang/dartdoc/badge.svg?branch=master)](https://coveralls.io/github/dart-lang/dartdoc?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/dart-lang/dartdoc/badge.svg?branch=main)](https://coveralls.io/github/dart-lang/dartdoc?branch=main)
 [![OpenSSF
 Scorecard](https://api.securityscorecards.dev/projects/github.com/dart-lang/dartdoc/badge)](https://deps.dev/project/github/dart-lang%2Fdartdoc)
 
@@ -412,6 +412,41 @@ markdown link isn't linked).
 It's best to only inject HTML that is self-contained and doesn't depend upon
 other elements on the page, since those may change in future versions of Dartdoc.
 
+### Skipping constant rendering with one-line docs
+
+For some classes or libraries full of well-documented constants, showing the
+implementation on the enclosing `class` or `library` page can be distracting
+or even misleading.  To prevent the rendering of constant implementations,
+place the `{@hideConstantImplementations}` in the documentation comment for
+the enclosing context where the constant is defined.   For members of a class,
+place the directive in the class documentation where the constants are defined.
+For top level constants, place the directive in the library where the constants
+are defined.
+
+For example:
+
+```dart
+/// This is truly an amazing library.
+/// {@hideConstantImplementations}
+library my_library;
+
+/// This top level constant will not show its implementation.
+const a = 7;
+
+/// {@hideConstantImplementations}
+class A {
+  /// This constant will not show its implementation.
+  static const aConst = 12;
+}
+
+class B {
+  /// Despite the library directive, because this is a class
+  /// member and there is no hideConstantImplementations
+  /// directive on the class, we will show this implementation.
+  static const bConst = 27; 
+}
+```
+
 ### Auto including dependencies
 
 If `--auto-include-dependencies` flag is provided, dartdoc tries to automatically add
@@ -505,9 +540,9 @@ Please see the [dartdoc license][].
 Generated docs include:
 
  * Highlight.js -
-   [LICENSE](https://github.com/isagalaev/highlight.js/blob/master/LICENSE)
+   [LICENSE](https://github.com/isagalaev/highlight.js/blob/main/LICENSE)
    * With `github.css` (c) Vasily Polovnyov <vast@whiteants.net>
 
 [GitHub Issue Tracker]: https://github.com/dart-lang/dartdoc/issues
-[contributor docs]: https://github.com/dart-lang/dartdoc/blob/master/CONTRIBUTING.md
-[dartdoc license]: https://github.com/dart-lang/dartdoc/blob/master/LICENSE
+[contributor docs]: https://github.com/dart-lang/dartdoc/blob/main/CONTRIBUTING.md
+[dartdoc license]: https://github.com/dart-lang/dartdoc/blob/main/LICENSE

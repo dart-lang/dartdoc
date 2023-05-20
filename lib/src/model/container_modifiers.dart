@@ -2,7 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:collection/collection.dart' show IterableExtension;
+import 'package:dartdoc/src/model/language_feature.dart';
+import 'package:dartdoc/src/render/language_feature_renderer.dart';
 
 /// Represents a single modifier applicable to containers.
 class ContainerModifier implements Comparable<ContainerModifier> {
@@ -15,6 +16,7 @@ class ContainerModifier implements Comparable<ContainerModifier> {
 
   /// The display order of this modifier.
   final int order;
+
   const ContainerModifier._(
     this.name, {
     required this.order,
@@ -41,10 +43,11 @@ class ContainerModifier implements Comparable<ContainerModifier> {
   static const ContainerModifier mixin = ContainerModifier._('mixin', order: 4);
 }
 
-extension ContainerModifiers on Iterable<ContainerModifier> {
-  /// Returns a string suitable for prefixing the class name in Dartdoc
-  /// title bars based on given modifiers.
-  String modifiersAsFullKindPrefix() => sorted((a, b) => a.compareTo(b))
-      .where((m) => !m.hideIfPresent.any(contains))
-      .join(' ');
+extension BuildLanguageFeatureSet on Iterable<ContainerModifier> {
+  /// Transforms [ContainerModifiers] into a series of [LanguageFeature] objects
+  /// suitable for rendering as chips.   Assumes iterable is sorted.
+  Iterable<LanguageFeature> asLanguageFeatureSet(
+          LanguageFeatureRenderer languageFeatureRenderer) =>
+      where((m) => !m.hideIfPresent.any(contains))
+          .map((m) => LanguageFeature(m.name, languageFeatureRenderer));
 }

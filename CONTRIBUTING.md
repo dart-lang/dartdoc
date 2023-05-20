@@ -21,7 +21,7 @@ yet in the issue tracker, start by opening an issue. Thanks!
 ## Making Changes
 
 1. `grind` is needed to run dartdoc integration tests, see installed via `pub global activate grinder`.
-2. When a change is user-facing, please add a new entry to the [changelog](https://github.com/dart-lang/dartdoc/blob/master/CHANGELOG.md)
+2. When a change is user-facing, please add a new entry to the [changelog](https://github.com/dart-lang/dartdoc/blob/main/CHANGELOG.md)
 3. Please include a test for your change.  `dartdoc` has both `package:test`-style unittests as well as integration tests.  To run the unittests, use `grind test`.
 4. For major changes, run `grind compare-sdk-warnings` and `grind compare-flutter-warnings`, and include the summary results in your pull request.
 5. Be sure to format your Dart code using `dart format`, otherwise our CI will complain.
@@ -52,7 +52,7 @@ There are more added all the time -- run `grind --help` to see them all.
 
 ## License
 
-Please see the [dartdoc license](https://github.com/dart-lang/dartdoc/blob/master/LICENSE).
+Please see the [dartdoc license](https://github.com/dart-lang/dartdoc/blob/main/LICENSE).
 
 [user docs]: https://github.com/dart-lang/dartdoc#dartdoc
 [issue tracker]: https://github.com/dart-lang/dartdoc/issues

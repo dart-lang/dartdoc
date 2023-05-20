@@ -12,7 +12,7 @@ import 'package:path/path.dart' as p;
 
 final _uriTemplateRegExp = RegExp(r'(%[frl]%)');
 
-abstract class SourceLinkerOptionContext implements DartdocOptionContextBase {
+mixin SourceLinkerOptionContext implements DartdocOptionContextBase {
   List<String> get linkToSourceExcludes =>
       optionSet['linkToSource']['excludes'].valueAt(context);
 

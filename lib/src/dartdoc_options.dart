@@ -134,82 +134,66 @@ class ToolConfiguration {
     for (var entry in yamlMap.entries) {
       var name = entry.key.toString();
       var toolMap = entry.value;
-      String? description;
-      List<String>? compileArgs;
-      List<String>? command;
-      List<String>? setupCommand;
-      if (toolMap is Map) {
-        description = toolMap['description'].toString();
-        List<String>? findCommand([String prefix = '']) {
-          List<String>? command;
-          // If the command key is given, then it applies to all platforms.
-          var commandFromKey = toolMap.containsKey('${prefix}command')
-              ? '${prefix}command'
-              : '$prefix${Platform.operatingSystem}';
-          if (toolMap.containsKey(commandFromKey)) {
-            var commandFrom = toolMap[commandFromKey] as YamlNode;
-            if (commandFrom.value is String) {
-              command = [commandFrom.toString()];
-              if (command[0].isEmpty) {
-                throw DartdocOptionError(
-                    'Tool commands must not be empty. Tool $name command entry '
-                    '"$commandFromKey" must contain at least one path.');
-              }
-            } else if (commandFrom is YamlList) {
-              command =
-                  commandFrom.map<String>((node) => node.toString()).toList();
-              if (command.isEmpty) {
-                throw DartdocOptionError(
-                    'Tool commands must not be empty. Tool $name command entry '
-                    '"$commandFromKey" must contain at least one path.');
-              }
-            } else {
-              throw DartdocOptionError(
-                  'Tool commands must be a path to an executable, or a list of '
-                  'strings that starts with a path to an executable. '
-                  'The tool $name has a $commandFromKey entry that is a '
-                  '${commandFrom.runtimeType}');
-            }
-          }
-          return command;
-        }
-
-        command = findCommand();
-        setupCommand = findCommand('setup_');
-
-        List<String>? findArgs() {
-          List<String>? args;
-          if (toolMap.containsKey(compileArgsTagName)) {
-            var compileArgs = toolMap[compileArgsTagName];
-            if (compileArgs is String) {
-              args = [toolMap[compileArgsTagName].toString()];
-            } else if (compileArgs is YamlList) {
-              args = compileArgs
-                  .map<String>((node) => node.toString())
-                  .toList(growable: false);
-            } else {
-              throw DartdocOptionError(
-                  'Tool compile arguments must be a list of strings. The tool '
-                  '$name has a $compileArgsTagName entry that is a '
-                  '${compileArgs.runtimeType}');
-            }
-          }
-          return args;
-        }
-
-        compileArgs = findArgs();
-      } else {
+      if (toolMap is! Map) {
         throw DartdocOptionError(
             'Tools must be defined as a map of tool names to definitions. Tool '
             '$name is not a map.');
       }
+
+      var description = toolMap['description'].toString();
+
+      List<String>? findCommand([String prefix = '']) {
+        // If the command key is given, then it applies to all platforms.
+        var commandFromKey = toolMap.containsKey('${prefix}command')
+            ? '${prefix}command'
+            : '$prefix${Platform.operatingSystem}';
+        if (!toolMap.containsKey(commandFromKey)) {
+          return null;
+        }
+        var commandFrom = toolMap[commandFromKey] as YamlNode;
+        List<String> command;
+        if (commandFrom.value is String) {
+          command = [commandFrom.toString()];
+        } else if (commandFrom is YamlList) {
+          command = commandFrom.map((node) => node.toString()).toList();
+        } else {
+          throw DartdocOptionError(
+              'Tool commands must be a path to an executable, or a list of '
+              'strings that starts with a path to an executable. The tool '
+              "'$name' has a '$commandFromKey' entry that is a "
+              '${commandFrom.runtimeType}');
+        }
+        if (command.isEmpty || command[0].isEmpty) {
+          throw DartdocOptionError(
+              'Tool commands must not be empty. Tool $name command entry '
+              '"$commandFromKey" must contain at least one path.');
+        }
+        return command;
+      }
+
+      var command = findCommand();
       if (command == null) {
         throw DartdocOptionError(
             'At least one of "command" or "${Platform.operatingSystem}" must '
             'be defined for the tool $name.');
       }
+      var setupCommand = findCommand('setup_');
 
-      bool validateExecutable(String executable) {
+      var rawCompileArgs = toolMap[compileArgsTagName];
+      var compileArgs = switch (rawCompileArgs) {
+        null => const <String>[],
+        String() => [toolMap[compileArgsTagName].toString()],
+        YamlList() =>
+          rawCompileArgs.map((node) => node.toString()).toList(growable: false),
+        _ => throw DartdocOptionError(
+            'Tool compile arguments must be a list of strings. The tool '
+            "'$name' has a '$compileArgsTagName' entry that is a "
+            '${rawCompileArgs.runtimeType}',
+          ),
+      };
+
+      /// Validates [executable] and returns whether it is a Dart script.
+      bool isDartScript(String executable) {
         var executableFile = resourceProvider.getFile(executable);
         if (resourceProvider.isNotFound(executableFile)) {
           throw DartdocOptionError('Command executables must exist. '
@@ -230,24 +214,24 @@ class ToolConfiguration {
       var executableRelativePath = command.removeAt(0);
       var executable = pathContext.canonicalize(
           pathContext.join(canonicalYamlPath, executableRelativePath));
-      validateExecutable(executable);
+      var isDartSetupScript = isDartScript(executable);
       if (setupCommand != null) {
         var setupExecutableRelativePath = setupCommand.removeAt(0);
         var setupExecutable = pathContext.canonicalize(
             pathContext.join(canonicalYamlPath, setupExecutableRelativePath));
-        var isDartSetupCommand = validateExecutable(executable);
         // Setup commands aren't snapshotted, since they're only run once.
-        setupCommand = (isDartSetupCommand
-                ? [Platform.resolvedExecutable, setupExecutable]
-                : [setupExecutable]) +
-            setupCommand;
+        setupCommand = [
+          if (isDartSetupScript) Platform.resolvedExecutable,
+          setupExecutable,
+          ...setupCommand,
+        ];
       }
       newToolDefinitions[name] = ToolDefinition.fromCommand(
-          [executable] + command,
+          [executable, ...command],
           setupCommand ?? const [],
           description,
           resourceProvider,
-          compileArgs: compileArgs ?? const []);
+          compileArgs: compileArgs);
     }
     return ToolConfiguration._(newToolDefinitions, resourceProvider);
   }
@@ -267,12 +251,19 @@ class _YamlFileData {
 /// An enum to specify the multiple different kinds of data an option might
 /// represent.
 enum OptionKind {
-  other, // Make no assumptions about the option data; it may be of any type
-  // or semantic.
-  file, // Option data references a filename or filenames with strings.
-  dir, // Option data references a directory name or names with strings.
-  glob, // Option data references globs with strings that may cover many
-  // filenames and/or directories.
+  /// Make no assumptions about the option data; it may be of any type or
+  /// semantic.
+  other,
+
+  /// Option data references a filename or filenames with strings.
+  file,
+
+  /// Option data references a directory name or names with strings.
+  dir,
+
+  /// Option data references globs with strings that may cover many filenames
+  /// and/or directories.
+  glob,
 }
 
 /// Some DartdocOption subclasses need to keep track of where they
@@ -289,7 +280,7 @@ class _OptionValueWithContext<T> {
   /// If non-null, the basename of the configuration file the value came from.
   String? definingFile;
 
-  /// A [pathLib.Context] variable initialized with canonicalDirectoryPath.
+  /// A [pathLib.Context] variable initialized with 'canonicalDirectoryPath'.
   p.Context pathContext;
 
   /// Build a _OptionValueWithContext.
@@ -507,7 +498,6 @@ abstract class DartdocOption<T extends Object?> {
   dynamic valueAt(Folder dir);
 
   /// Calls [valueAt] with the working directory at the start of the program.
-  // TODO(jcollins-g): use of dynamic.  https://github.com/dart-lang/dartdoc/issues/2814
   Object? valueAtCurrent() => valueAt(_directoryCurrent);
 
   late final Folder _directoryCurrent =
@@ -539,7 +529,7 @@ abstract class DartdocOption<T extends Object?> {
   }
 
   /// Get the immediate child of this node named [name] and its value at [dir].
-  U getValueAs<U extends Object?>(String name, Folder dir) =>
+  U getValueAs<U>(String name, Folder dir) =>
       _children[name]?.valueAt(dir) as U;
 
   /// Apply the function [visit] to [this] and all children.
@@ -556,19 +546,16 @@ abstract class DartdocOption<T extends Object?> {
 class DartdocOptionFileSynth<T> extends DartdocOption<T>
     with DartdocSyntheticOption<T>, _DartdocFileOption<T> {
   @override
-  final bool parentDirOverridesChild;
-  @override
   final T Function(DartdocSyntheticOption<T>, Folder) _compute;
 
   DartdocOptionFileSynth(
       String name, this._compute, ResourceProvider resourceProvider,
-      {bool mustExist = false,
-      String help = '',
-      OptionKind optionIs = OptionKind.other,
-      this.parentDirOverridesChild = false,
-      ConvertYamlToType<T>? convertYamlToType})
-      : super(name, null, help, optionIs, mustExist, convertYamlToType,
-            resourceProvider);
+      {String help = ''})
+      : super(
+            name, null, help, OptionKind.other, false, null, resourceProvider);
+
+  @override
+  bool get parentDirOverridesChild => false;
 
   @override
   T? valueAt(Folder dir) {
@@ -580,7 +567,7 @@ class DartdocOptionFileSynth<T> extends DartdocOption<T>
   }
 
   @override
-  void _onMissing(
+  Never _onMissing(
       _OptionValueWithContext<T> valueWithContext, String missingPath) {
     if (valueWithContext.definingFile != null) {
       _onMissingFromFiles(valueWithContext, missingPath);
@@ -597,11 +584,7 @@ class DartdocOptionArgSynth<T> extends DartdocOption<T>
   @override
   final String? abbr;
   @override
-  final bool hide;
-  @override
   final bool negatable;
-  @override
-  final bool splitCommas;
 
   @override
   final T Function(DartdocSyntheticOption<T>, Folder) _compute;
@@ -611,15 +594,19 @@ class DartdocOptionArgSynth<T> extends DartdocOption<T>
       {this.abbr,
       bool mustExist = false,
       String help = '',
-      this.hide = false,
       OptionKind optionIs = OptionKind.other,
-      this.negatable = false,
-      this.splitCommas = false})
-      : assert(T is! Iterable || splitCommas == true),
+      this.negatable = false})
+      : assert(T is! Iterable),
         super(name, null, help, optionIs, mustExist, null, resourceProvider);
 
   @override
-  void _onMissing(
+  bool get hide => false;
+
+  @override
+  bool get splitCommas => false;
+
+  @override
+  Never _onMissing(
       _OptionValueWithContext<T> valueWithContext, String missingPath) {
     _onMissingFromArgs(valueWithContext, missingPath);
   }
@@ -651,7 +638,7 @@ class DartdocOptionSyntheticOnly<T> extends DartdocOption<T>
       : super(name, null, help, optionIs, mustExist, null, resourceProvider);
 }
 
-abstract class DartdocSyntheticOption<T> implements DartdocOption<T> {
+mixin DartdocSyntheticOption<T> implements DartdocOption<T> {
   T Function(DartdocSyntheticOption<T>, Folder) get _compute;
 
   @override
@@ -663,11 +650,11 @@ abstract class DartdocSyntheticOption<T> implements DartdocOption<T> {
   }
 
   @override
-  void _onMissing(
+  Never _onMissing(
           _OptionValueWithContext<T> valueWithContext, String missingPath) =>
       _onMissingFromSynthetic(valueWithContext, missingPath);
 
-  void _onMissingFromSynthetic(
+  Never _onMissingFromSynthetic(
       _OptionValueWithContext<T> valueWithContext, String missingPath) {
     var description = 'Synthetic configuration option $name from <internal>';
     throw DartdocFileMissing(
@@ -784,31 +771,31 @@ class DartdocOptionArgOnly<T> extends DartdocOption<T>
 class DartdocOptionArgFile<T> extends DartdocOption<T>
     with _DartdocArgOption<T>, _DartdocFileOption<T> {
   @override
-  final String? abbr;
-  @override
-  final bool hide;
-  @override
   final bool negatable;
-  @override
-  final bool parentDirOverridesChild;
   @override
   final bool splitCommas;
 
   DartdocOptionArgFile(
       String name, T defaultsTo, ResourceProvider resourceProvider,
-      {this.abbr,
-      bool mustExist = false,
+      {bool mustExist = false,
       String help = '',
-      this.hide = false,
       OptionKind optionIs = OptionKind.other,
       this.negatable = false,
-      this.parentDirOverridesChild = false,
       this.splitCommas = false})
       : super(name, defaultsTo, help, optionIs, mustExist, null,
             resourceProvider);
 
   @override
-  void _onMissing(
+  String? get abbr => null;
+
+  @override
+  bool get hide => false;
+
+  @override
+  bool get parentDirOverridesChild => false;
+
+  @override
+  Never _onMissing(
       _OptionValueWithContext<T> valueWithContext, String missingPath) {
     if (valueWithContext.definingFile != null) {
       _onMissingFromFiles(valueWithContext, missingPath);
@@ -841,7 +828,7 @@ class DartdocOptionFileOnly<T> extends DartdocOption<T>
 }
 
 /// Implements checking for options contained in dartdoc.yaml.
-abstract class _DartdocFileOption<T> implements DartdocOption<T> {
+mixin _DartdocFileOption<T> implements DartdocOption<T> {
   /// If true, the parent directory's value overrides the child's.
   ///
   /// Otherwise, the child's value overrides values in parents.
@@ -858,11 +845,11 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
   String get fieldName => keys.join('.');
 
   @override
-  void _onMissing(
+  Never _onMissing(
           _OptionValueWithContext<T> valueWithContext, String missingPath) =>
       _onMissingFromFiles(valueWithContext, missingPath);
 
-  void _onMissingFromFiles(
+  Never _onMissingFromFiles(
       _OptionValueWithContext<T> valueWithContext, String missingPath) {
     var dartdocYaml = resourceProvider.pathContext.join(
         valueWithContext.canonicalDirectoryPath, valueWithContext.definingFile);
@@ -870,10 +857,9 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
         '${valueWithContext.value}, resolves to missing path: "$missingPath"');
   }
 
-  @override
-
   /// Searches for a value in configuration files relative to [dir], and if not
   /// found, returns [defaultsTo].
+  @override
   T? valueAt(Folder dir) => _valueAtFromFiles(dir) ?? defaultsTo;
 
   /// The backing store for [_valueAtFromFiles].
@@ -1018,7 +1004,7 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
 }
 
 /// Mixin class implementing command-line arguments for [DartdocOption].
-abstract class _DartdocArgOption<T> implements DartdocOption<T> {
+mixin _DartdocArgOption<T> implements DartdocOption<T> {
   /// For [ArgParser], set to true if the argument can be negated with `--no` on
   /// the command line.
   bool get negatable;
@@ -1064,11 +1050,11 @@ abstract class _DartdocArgOption<T> implements DartdocOption<T> {
   }
 
   @override
-  void _onMissing(
+  Never _onMissing(
           _OptionValueWithContext<T> valueWithContext, String missingPath) =>
       _onMissingFromArgs(valueWithContext, missingPath);
 
-  void _onMissingFromArgs(
+  Never _onMissingFromArgs(
       _OptionValueWithContext<T> valueWithContext, String missingPath) {
     throw DartdocFileMissing(
         'Argument --$argName, set to ${valueWithContext.value}, resolves to '

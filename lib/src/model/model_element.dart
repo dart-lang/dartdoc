@@ -15,6 +15,7 @@ import 'package:analyzer/src/dart/element/member.dart'
     show ExecutableMember, Member, ParameterMember;
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
+import 'package:dartdoc/src/generator/file_structure.dart';
 import 'package:dartdoc/src/model/annotation.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/feature.dart';
@@ -114,16 +115,15 @@ mixin ModelElementBuilderImpl implements ModelElementBuilder {
 abstract class ModelElement extends Canonicalization
     with
         CommentReferable,
-        Privacy,
         Warnable,
         Locatable,
         Nameable,
-        SourceCodeMixin,
+        SourceCode,
         Indexable,
         FeatureSet,
         DocumentationComment,
         ModelBuilder
-    implements Comparable<ModelElement>, Documentable {
+    implements Comparable<ModelElement>, Documentable, Privacy {
   // TODO(jcollins-g): This really wants a "member that has a type" class.
   final Member? _originalMember;
   final Library _library;
@@ -640,11 +640,27 @@ abstract class ModelElement extends Canonicalization
     return '($sourceUri)';
   }
 
-  String get fileName => '$name.$fileType';
+  /// The name of the output file in which this element will be primarily
+  /// documented.
+  @Deprecated('replace with fileStructure.fileName')
+  String get fileName => fileStructure.fileName;
 
-  String get fileType => package.fileType;
+  @Deprecated('replace with fileStructure.fileType')
+  String get fileType => fileStructure.fileType;
 
+  /// The full path of the output file in which this element will be primarily
+  /// documented.
   String get filePath;
+
+  /// The full path of the sidebar for elements "above" this element.
+  ///
+  /// A `null` value indicates no content is displayed in the "above" sidebar.
+  String? get aboveSidebarPath;
+
+  /// The full path of the sidebar for elements "below" this element.
+  ///
+  /// A `null` value indicates no content is displayed in the "below" sidebar.
+  String? get belowSidebarPath;
 
   /// Returns the fully qualified name.
   ///
@@ -903,4 +919,7 @@ abstract class ModelElement extends Canonicalization
   }
 
   String get linkedObjectType => _packageGraph.dartCoreObject;
+
+  @override
+  late final FileStructure fileStructure = FileStructure.fromDocumentable(this);
 }

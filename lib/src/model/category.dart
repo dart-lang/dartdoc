@@ -92,9 +92,7 @@ class Category extends Nameable
   @override
   String get fullyQualifiedName => name;
 
-  String get _fileType => package.fileType;
-
-  String get filePath => 'topics/$name-topic.$_fileType';
+  String get filePath => 'topics/${fileStructure.fileName}';
 
   @override
   String? get href => isCanonical ? '${package.baseHref}$filePath' : null;
@@ -157,10 +155,8 @@ class Category extends Nameable
       packageGraph.rendererFactory.categoryRenderer;
 
   @override
-  // TODO: implement referenceChildren
   Map<String, CommentReferable> get referenceChildren => const {};
 
   @override
-  // TODO: implement referenceParents
   Iterable<CommentReferable> get referenceParents => const [];
 }

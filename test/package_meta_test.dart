@@ -131,7 +131,7 @@ void main() {
       expect(
           resourceProvider
               .readAsMalformedAllowedStringSync(p.getReadmeContents()!),
-          startsWith('Welcome'));
+          contains('Welcome to the'));
     });
 
     test('does not have a license', () {

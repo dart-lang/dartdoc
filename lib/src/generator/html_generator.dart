@@ -12,8 +12,8 @@ import 'package:dartdoc/src/generator/html_resources.g.dart' as resources;
 import 'package:dartdoc/src/generator/resource_loader.dart';
 import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/src/generator/templates.dart';
-import 'package:dartdoc/src/model/package.dart';
-import 'package:dartdoc/src/model/package_graph.dart';
+import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/runtime_stats.dart';
 import 'package:meta/meta.dart';
 
 /// Creates a [Generator] with an [HtmlGeneratorBackend] backend.
@@ -36,6 +36,52 @@ Future<Generator> initHtmlGenerator(
 class HtmlGeneratorBackend extends GeneratorBackendBase {
   HtmlGeneratorBackend(
       super.options, super.templates, super.writer, super.resourceProvider);
+
+  @override
+  void generateClass(PackageGraph packageGraph, Library library, Class clazz) {
+    super.generateClass(packageGraph, library, clazz);
+    var data = ClassTemplateData(options, packageGraph, library, clazz);
+    var sidebarContent = templates.renderSidebarForContainer(data);
+    write(writer, clazz.sidebarPath, data, sidebarContent);
+    runtimeStats.incrementAccumulator('writtenSidebarFileCount');
+  }
+
+  @override
+  void generateEnum(PackageGraph packageGraph, Library library, Enum eNum) {
+    super.generateEnum(packageGraph, library, eNum);
+    var data = EnumTemplateData(options, packageGraph, library, eNum);
+    var sidebarContent = templates.renderSidebarForContainer(data);
+    write(writer, eNum.sidebarPath, data, sidebarContent);
+    runtimeStats.incrementAccumulator('writtenSidebarFileCount');
+  }
+
+  @override
+  void generateExtension(
+      PackageGraph packageGraph, Library library, Extension extension) {
+    super.generateExtension(packageGraph, library, extension);
+    var data = ExtensionTemplateData(options, packageGraph, library, extension);
+    var sidebarContent = templates.renderSidebarForContainer(data);
+    write(writer, extension.sidebarPath, data, sidebarContent);
+    runtimeStats.incrementAccumulator('writtenSidebarFileCount');
+  }
+
+  @override
+  void generateLibrary(PackageGraph packageGraph, Library library) {
+    super.generateLibrary(packageGraph, library);
+    var data = LibraryTemplateData(options, packageGraph, library);
+    var sidebarContent = templates.renderSidebarForLibrary(data);
+    write(writer, library.sidebarPath, data, sidebarContent);
+    runtimeStats.incrementAccumulator('writtenSidebarFileCount');
+  }
+
+  @override
+  void generateMixin(PackageGraph packageGraph, Library library, Mixin mixin) {
+    super.generateMixin(packageGraph, library, mixin);
+    var data = MixinTemplateData(options, packageGraph, library, mixin);
+    var sidebarContent = templates.renderSidebarForContainer(data);
+    write(writer, mixin.sidebarPath, data, sidebarContent);
+    runtimeStats.incrementAccumulator('writtenSidebarFileCount');
+  }
 
   @override
   void generatePackage(PackageGraph packageGraph, Package package) {

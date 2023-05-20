@@ -40,10 +40,16 @@ class TopLevelVariable extends ModelElement
   }
 
   @override
-  ModelElement get enclosingElement => library;
+  Library get enclosingElement => library;
 
   @override
-  String get filePath => '${library.dirName}/$fileName';
+  String get filePath => '${library.dirName}/${fileStructure.fileName}';
+
+  @override
+  String get aboveSidebarPath => enclosingElement.sidebarPath;
+
+  @override
+  String? get belowSidebarPath => null;
 
   @override
   String? get href {
@@ -76,8 +82,9 @@ class TopLevelVariable extends ModelElement
   Set<Feature> get features => {...super.features, ...comboFeatures};
 
   @override
-  String get fileName => '${isConst ? '$name-constant' : name}.$fileType';
+  Iterable<CommentReferable> get referenceParents => [definingLibrary];
 
   @override
-  Iterable<CommentReferable> get referenceParents => [definingLibrary];
+  bool get hasHideConstantImplementation =>
+      definingLibrary.hasHideConstantImplementations;
 }

@@ -15,8 +15,8 @@ Look for `BuildDartdocAPIDocs`.
 ## Flutter
 
 The Flutter team builds [API documentation for the Flutter SDK](https://api.flutter.dev)
-automatically.  A [shell script](https://github.com/flutter/flutter/blob/master/dev/bots/docs.sh)
-wraps a [small dart program](https://github.com/flutter/flutter/blob/master/dev/tools/dartdoc.dart)
+automatically.  A [shell script](https://github.com/flutter/flutter/blob/main/dev/bots/docs.sh)
+wraps a [small dart program](https://github.com/flutter/flutter/blob/main/dev/tools/dartdoc.dart)
 that manages the process.
 
 ## pub

@@ -19,6 +19,3 @@ abstract mixin class L {}
 abstract base mixin class M {}
 mixin N {}
 base mixin O {}
-interface mixin P {}
-final mixin Q {}
-sealed mixin R {}
