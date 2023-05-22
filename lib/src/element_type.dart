@@ -5,6 +5,8 @@
 /// The models used to represent Dart code.
 library dartdoc.element_type;
 
+import 'dart:html';
+
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
@@ -104,7 +106,7 @@ class UndefinedElementType extends ElementType {
   String get name {
     if (type is VoidType) return 'void';
     if (type is DynamicType) return 'dynamic';
-    assert(const {'Never'}.contains(typeElement!.name),
+    assert(const {'Never'}.contains(typeElement?.name),
         'Unrecognized type for UndefinedElementType: ${type.toString()}');
     return typeElement!.name!;
   }
