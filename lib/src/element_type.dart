@@ -104,7 +104,10 @@ class UndefinedElementType extends ElementType {
   String get name {
     if (type is VoidType) return 'void';
     if (type is DynamicType) return 'dynamic';
-    assert(const {'Never'}.contains(typeElement!.name),
+    // We can not simply throw here because not all SDK libraries resolve
+    // all types.
+    if (type is InvalidType) return 'dynamic';
+    assert(const {'Never'}.contains(typeElement?.name),
         'Unrecognized type for UndefinedElementType: ${type.toString()}');
     return typeElement!.name!;
   }
