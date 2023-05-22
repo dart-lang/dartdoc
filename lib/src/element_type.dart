@@ -5,8 +5,6 @@
 /// The models used to represent Dart code.
 library dartdoc.element_type;
 
-import 'dart:html';
-
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
