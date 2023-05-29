@@ -34,7 +34,7 @@ dev_dependencies:
   coverage: ^1.6.3
   dart_style: ^2.3.1
   grinder: ^0.9.4
-  http: ^0.13.6
+  http: ">=0.13.6 <2.0.0"
   js: ^0.6.7
   lints: ^2.1.0
   matcher: ^0.12.15
