@@ -22,6 +22,8 @@ abstract class Documentable extends Nameable {
 
   PackageGraph get packageGraph;
 
+  Package get package;
+
   bool get isDocumented;
 
   DartdocOptionContext get config;

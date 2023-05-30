@@ -19,17 +19,23 @@ const _validFormats = {'html', 'md'};
 /// together.
 abstract class FileStructure {
   factory FileStructure.fromDocumentable(Documentable documentable) {
-    if (!_validFormats.contains(documentable.config.format)) {
-      throw DartdocFailure(
-          'Internal error: unrecognized config.format: ${documentable.config.format}');
+    /// This assumes all remote packages are HTML.
+    /// Add configurability for remote formats in dartdoc_options if changing
+    /// that becomes desireable.
+    var format = documentable.config.format;
+    if (documentable.package.documentedWhere == DocumentLocation.remote) {
+      format = 'html';
+    }
+    if (!_validFormats.contains(format)) {
+      throw DartdocFailure('Internal error: unrecognized format: $format');
     }
     switch (documentable) {
       case LibraryContainer():
         // [LibraryContainer]s are not ModelElements, but have documentation.
-        return FileStructure._fromLibraryContainer(documentable);
+        return FileStructure._fromLibraryContainer(documentable, format);
       case ModelElement():
         // This should be the common case.
-        return FileStructure._fromModelElement(documentable);
+        return FileStructure._fromModelElement(documentable, format);
       default:
         throw UnimplementedError(
             'Tried to build a FileStructure for an unknown subtype of Documentable:  ${documentable.runtimeType}');
@@ -37,8 +43,7 @@ abstract class FileStructure {
   }
 
   factory FileStructure._fromLibraryContainer(
-      LibraryContainer libraryContainer) {
-    final format = libraryContainer.config.format;
+      LibraryContainer libraryContainer, String format) {
     switch (libraryContainer) {
       case Category():
         return FileStructureImpl(format, libraryContainer.name, 'topic');
@@ -50,8 +55,8 @@ abstract class FileStructure {
     }
   }
 
-  factory FileStructure._fromModelElement(ModelElement modelElement) {
-    final format = modelElement.config.format;
+  factory FileStructure._fromModelElement(
+      ModelElement modelElement, String format) {
     switch (modelElement) {
       case Library():
         return FileStructureImpl(format, modelElement.dirName, 'library');
@@ -66,8 +71,7 @@ abstract class FileStructure {
         return FileStructureImpl(format, modelElement.name,
             modelElement.isConst ? 'constant' : null);
       default:
-        return FileStructureImpl(
-            modelElement.config.format, modelElement.name, null);
+        return FileStructureImpl(format, modelElement.name, null);
     }
   }
 

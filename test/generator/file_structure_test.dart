@@ -71,4 +71,18 @@ Hello there, I am an *amazing* markdown file.
     expect(aMethod.fileStructure.fileName, equals('aMethod.html'));
     expect(operatorPlus.fileStructure.fileName, equals('operator_plus.html'));
   }
+
+  void test_fileNamesForMarkdownElements() async {
+    var library = await bootPackageWithLibrary('''
+class AClass {
+}
+''', additionalArguments: ['--format=md']);
+    var AClass = library.classes.named('AClass');
+    // The inherited toString implementation is not canonical, so be sure
+    // to get the canonical reference.
+    var AClassToString =
+        AClass.inheritedMethods.named('toString').canonicalModelElement!;
+    expect(AClass.fileStructure.fileName, equals('AClass-class.md'));
+    expect(AClassToString.fileStructure.fileName, equals('toString.html'));
+  }
 }
