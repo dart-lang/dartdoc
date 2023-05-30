@@ -18,7 +18,8 @@ String generateCategoryJson(Iterable<Categorization> categories, bool pretty) {
         'name': categorization.name,
         'qualifiedName': categorization.fullyQualifiedName,
         'href': categorization.href,
-        'type': categorization.kind,
+        // TODO(srawlins): Rename to 'kind'.
+        'type': categorization.kind.toString(),
         if (categorization.hasCategoryNames)
           'categories': categorization.categoryNames,
         if (categorization.hasSubCategoryNames)
