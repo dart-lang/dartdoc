@@ -20,8 +20,8 @@ const _validFormats = {'html', 'md'};
 abstract class FileStructure {
   factory FileStructure.fromDocumentable(Documentable documentable) {
     /// This assumes all remote packages are HTML.
-    /// Add configurability for remote formats in dartdoc_options if that
-    /// becomes desireable.
+    /// Add configurability for remote formats in dartdoc_options if changing
+    /// that becomes desireable.
     var format = documentable.config.format;
     if (documentable.package.documentedWhere == DocumentLocation.remote) {
       format = 'html';
