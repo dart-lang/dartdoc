@@ -76,7 +76,7 @@ class Mixin extends InheritingContainer with TypeImplementing {
   bool get isSealed => false;
 
   @override
-  String get kind => 'mixin';
+  Kind get kind => Kind.mixin;
 
   Iterable<ParameterizedElementType> get publicSuperclassConstraints =>
       model_utils.filterNonPublic(superclassConstraints);

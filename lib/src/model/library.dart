@@ -364,7 +364,7 @@ class Library extends ModelElement
   bool get isAnonymous => element.name.isEmpty;
 
   @override
-  String get kind => 'library';
+  Kind get kind => Kind.library;
 
   @override
   Library get library => this;

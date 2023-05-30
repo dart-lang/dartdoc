@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'package:dartdoc/src/model/indexable.dart';
 import 'package:dartdoc/src/search.dart';
 import 'package:test/test.dart';
 import 'package:test_reflective_loader/test_reflective_loader.dart';
@@ -15,39 +16,63 @@ void main() {
 @reflectiveTest
 class SearchTest {
   List<Map<String, Object?>> get searchIndex => _toJson([
-        {'qualifiedName': 'foo', 'type': 'library', 'packageName': 'foo'},
-        {'qualifiedName': 'foo.Foo', 'type': 'class', 'packageName': 'foo'},
-        {'qualifiedName': 'foo.Bar', 'type': 'class', 'packageName': 'foo'},
-        {'qualifiedName': 'foo.Bart', 'type': 'class', 'packageName': 'foo'},
+        {
+          'qualifiedName': 'foo',
+          'kind': Kind.library.index,
+          'packageName': 'foo',
+        },
+        {
+          'qualifiedName': 'foo.Foo',
+          'kind': Kind.class_.index,
+          'packageName': 'foo',
+        },
+        {
+          'qualifiedName': 'foo.Bar',
+          'kind': Kind.class_.index,
+          'packageName': 'foo',
+        },
+        {
+          'qualifiedName': 'foo.Bart',
+          'kind': Kind.class_.index,
+          'packageName': 'foo',
+        },
         {
           'qualifiedName': 'foo.HelloFoo',
-          'type': 'class',
+          'kind': Kind.class_.index,
           'packageName': 'foo',
         },
         {
           'qualifiedName': 'bar.Bar.foo',
-          'type': 'method',
+          'kind': Kind.method.index,
           'packageName': 'foo',
         },
         {
           'qualifiedName': 'foo.Foo.method',
-          'type': 'method',
+          'kind': Kind.method.index,
           'packageName': 'foo',
         },
         {
           'qualifiedName': 'foo.Bar.method',
-          'type': 'method',
+          'kind': Kind.method.index,
           'overriddenDepth': 1,
           'packageName': 'foo',
         },
         {
           'qualifiedName': 'foo.Baz.method',
-          'type': 'method',
+          'kind': Kind.method.index,
           'overriddenDepth': 2,
           'packageName': 'foo',
         },
-        {'qualifiedName': 'FOO', 'type': 'library', 'packageName': 'foo2'},
-        {'qualifiedName': 'foo.FOO', 'type': 'class', 'packageName': 'foo2'},
+        {
+          'qualifiedName': 'FOO',
+          'kind': Kind.library.index,
+          'packageName': 'foo2',
+        },
+        {
+          'qualifiedName': 'foo.FOO',
+          'kind': Kind.class_.index,
+          'packageName': 'foo2',
+        },
       ]);
 
   List<String> matchNames(

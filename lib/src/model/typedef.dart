@@ -62,7 +62,7 @@ abstract class Typedef extends ModelElement
   bool get isInherited => false;
 
   @override
-  String get kind => 'typedef';
+  Kind get kind => Kind.typedef;
 
   @override
   List<TypeParameter> get typeParameters => element.typeParameters

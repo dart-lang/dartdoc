@@ -76,7 +76,7 @@ class TopLevelVariable extends ModelElement
   bool get isLate => isFinal && element.isLate;
 
   @override
-  String get kind => isConst ? 'top-level constant' : 'top-level property';
+  Kind get kind => isConst ? Kind.topLevelConstant : Kind.topLevelProperty;
 
   @override
   Set<Feature> get features => {...super.features, ...comboFeatures};

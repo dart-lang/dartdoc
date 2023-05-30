@@ -53,7 +53,7 @@ String renderCategory(_i1.CategoryTemplateData context0) {
   <h1><span class="kind-category">''');
   buffer.writeEscaped(context1.name);
   buffer.write('''</span> ''');
-  buffer.writeEscaped(context1.kind);
+  buffer.writeEscaped(context1.kind.toString());
   buffer.write('''</h1>
   ''');
   buffer.write(_renderCategory_partial_documentation_1(context1));
@@ -250,7 +250,7 @@ String renderCategory(_i1.CategoryTemplateData context0) {
   <h5><span class="package-name">''');
   buffer.writeEscaped(context0.parent!.name);
   buffer.write('''</span> <span class="package-kind">''');
-  buffer.writeEscaped(context0.parent!.kind);
+  buffer.writeEscaped(context0.parent!.kind.toString());
   buffer.write('''</span></h5>
   ''');
   buffer.write(_renderCategory_partial_packages_10(context0));
@@ -262,7 +262,7 @@ String renderCategory(_i1.CategoryTemplateData context0) {
   <h5>''');
   buffer.writeEscaped(context0.self.name);
   buffer.write(' ');
-  buffer.writeEscaped(context0.self.kind);
+  buffer.writeEscaped(context0.self.kind.toString());
   buffer.write('''</h5>
   ''');
   buffer.write(_renderCategory_partial_sidebar_for_category_11(context0));
@@ -300,7 +300,7 @@ String renderClass(_i1.ClassTemplateData context0) {
   buffer.write('''<h1><span class="kind-class">''');
   buffer.write(context1.nameWithGenerics);
   buffer.write('''</span> ''');
-  buffer.writeEscaped(context1.kind);
+  buffer.writeEscaped(context1.kind.toString());
   buffer.write(' ');
   buffer.write(_renderClass_partial_feature_set_2(context1));
   buffer.write(' ');
@@ -412,7 +412,7 @@ String renderClass(_i1.ClassTemplateData context0) {
     <!--<h5>''');
   buffer.writeEscaped(context0.parent!.name);
   buffer.write(' ');
-  buffer.writeEscaped(context0.parent!.kind);
+  buffer.writeEscaped(context0.parent!.kind.toString());
   buffer.write('''</h5>-->
     <div id="dartdoc-sidebar-left-content"></div>
   </div>
@@ -450,7 +450,7 @@ String renderConstructor(_i1.ConstructorTemplateData context0) {
   buffer.write('''<h1><span class="kind-constructor">''');
   buffer.write(context1.nameWithGenerics);
   buffer.write('''</span> ''');
-  buffer.writeEscaped(context1.kind);
+  buffer.writeEscaped(context1.kind.toString());
   buffer.write(' ');
   buffer.write(_renderConstructor_partial_feature_set_2(context1));
   buffer.write('''</h1></div>''');
@@ -496,7 +496,7 @@ String renderConstructor(_i1.ConstructorTemplateData context0) {
     <h5>''');
   buffer.writeEscaped(context0.parent!.name);
   buffer.write(' ');
-  buffer.writeEscaped(context0.parent!.kind);
+  buffer.writeEscaped(context0.parent!.kind.toString());
   buffer.write('''</h5>
   </div><!--/.sidebar-offcanvas-left-->
 
@@ -537,7 +537,7 @@ String renderEnum(_i1.EnumTemplateData context0) {
   buffer.write(context1.nameWithGenerics);
   buffer.write('''</span>
           ''');
-  buffer.writeEscaped(context1.kind);
+  buffer.writeEscaped(context1.kind.toString());
   buffer.write(' ');
   buffer.write(_renderEnum_partial_feature_set_2(context1));
   buffer.write(' ');
@@ -637,7 +637,7 @@ String renderEnum(_i1.EnumTemplateData context0) {
     <h5>''');
   buffer.writeEscaped(context0.parent!.name);
   buffer.write(' ');
-  buffer.writeEscaped(context0.parent!.kind);
+  buffer.writeEscaped(context0.parent!.kind.toString());
   buffer.write('''</h5>
   </div>
 
@@ -680,7 +680,7 @@ String renderError(_i1.PackageTemplateData context0) {
     <h5><span class="package-name">''');
   buffer.writeEscaped(context0.self.name);
   buffer.write('''</span> <span class="package-kind">''');
-  buffer.writeEscaped(context0.self.kind);
+  buffer.writeEscaped(context0.self.kind.toString());
   buffer.write('''</span></h5>
     ''');
   buffer.write(_renderError_partial_packages_2(context0));
@@ -721,7 +721,7 @@ String renderExtension<T extends _i2.Extension>(
   buffer.write('''<h1><span class="kind-class">''');
   buffer.write(context1.nameWithGenerics);
   buffer.write('''</span> ''');
-  buffer.writeEscaped(context1.kind);
+  buffer.writeEscaped(context1.kind.toString());
   buffer.write(' ');
   buffer.write(_renderExtension_partial_feature_set_2(context1));
   buffer.write(' ');
@@ -795,7 +795,7 @@ String renderExtension<T extends _i2.Extension>(
     <h5>''');
   buffer.writeEscaped(context0.parent!.name);
   buffer.write(' ');
-  buffer.writeEscaped(context0.parent!.kind);
+  buffer.writeEscaped(context0.parent!.kind.toString());
   buffer.write('''</h5>
 </div>
 
@@ -833,7 +833,7 @@ String renderFunction(_i1.FunctionTemplateData context0) {
   buffer.write('''<h1><span class="kind-function">''');
   buffer.write(context1.nameWithGenerics);
   buffer.write('''</span> ''');
-  buffer.writeEscaped(context1.kind);
+  buffer.writeEscaped(context1.kind.toString());
   buffer.write(' ');
   buffer.write(_renderFunction_partial_feature_set_2(context1));
   buffer.write(' ');
@@ -868,7 +868,7 @@ String renderFunction(_i1.FunctionTemplateData context0) {
     <h5>''');
   buffer.writeEscaped(context0.parent!.name);
   buffer.write(' ');
-  buffer.writeEscaped(context0.parent!.kind);
+  buffer.writeEscaped(context0.parent!.kind.toString());
   buffer.write('''</h5>
   </div><!--/.sidebar-offcanvas-left-->
 
@@ -950,7 +950,7 @@ String renderIndex(_i1.PackageTemplateData context0) {
     <h5 class="hidden-xs"><span class="package-name">''');
   buffer.writeEscaped(context0.self.name);
   buffer.write('''</span> <span class="package-kind">''');
-  buffer.writeEscaped(context0.self.kind);
+  buffer.writeEscaped(context0.self.kind.toString());
   buffer.write('''</span></h5>
     ''');
   buffer.write(_renderIndex_partial_packages_4(context0));
@@ -992,7 +992,7 @@ String renderLibrary(_i1.LibraryTemplateData context0) {
   buffer.write('''<h1><span class="kind-library">''');
   buffer.write(context1.name);
   buffer.write('''</span> ''');
-  buffer.writeEscaped(context1.kind);
+  buffer.writeEscaped(context1.kind.toString());
   buffer.write(' ');
   buffer.write(_renderLibrary_partial_feature_set_2(context1));
   buffer.write(' ');
@@ -1195,7 +1195,7 @@ String renderLibrary(_i1.LibraryTemplateData context0) {
     <h5><span class="package-name">''');
   buffer.writeEscaped(context0.parent!.name);
   buffer.write('''</span> <span class="package-kind">''');
-  buffer.writeEscaped(context0.parent!.kind);
+  buffer.writeEscaped(context0.parent!.kind.toString());
   buffer.write('''</span></h5>
     ''');
   buffer.write(_renderLibrary_partial_packages_12(context0));
@@ -1207,7 +1207,7 @@ String renderLibrary(_i1.LibraryTemplateData context0) {
     <h5>''');
   buffer.writeEscaped(context0.self.name);
   buffer.write(' ');
-  buffer.writeEscaped(context0.self.kind);
+  buffer.writeEscaped(context0.self.kind.toString());
   buffer.write('''</h5>
   </div><!--/sidebar-offcanvas-right-->
 
@@ -1274,7 +1274,7 @@ String renderMethod(_i1.MethodTemplateData context0) {
     <h5>''');
   buffer.writeEscaped(context0.parent!.name);
   buffer.write(' ');
-  buffer.writeEscaped(context0.parent!.kind);
+  buffer.writeEscaped(context0.parent!.kind.toString());
   buffer.write('''</h5>
   </div><!--/.sidebar-offcanvas-->
 
@@ -1311,7 +1311,7 @@ String renderMixin(_i1.MixinTemplateData context0) {
   buffer.write('''<h1><span class="kind-mixin">''');
   buffer.write(context1.nameWithGenerics);
   buffer.write('''</span> ''');
-  buffer.writeEscaped(context1.kind);
+  buffer.writeEscaped(context1.kind.toString());
   buffer.write(' ');
   buffer.write(_renderMixin_partial_feature_set_2(context1));
   buffer.write(' ');
@@ -1419,7 +1419,7 @@ String renderMixin(_i1.MixinTemplateData context0) {
     <h5>''');
   buffer.writeEscaped(context0.parent!.name);
   buffer.write(' ');
-  buffer.writeEscaped(context0.parent!.kind);
+  buffer.writeEscaped(context0.parent!.kind.toString());
   buffer.write('''</h5>
   </div>
 
@@ -1456,7 +1456,7 @@ String renderProperty(_i1.PropertyTemplateData context0) {
   buffer.write('''<h1><span class="kind-property">''');
   buffer.writeEscaped(context1.name);
   buffer.write('''</span> ''');
-  buffer.writeEscaped(context1.kind);
+  buffer.writeEscaped(context1.kind.toString());
   buffer.write(' ');
   buffer.write(_renderProperty_partial_feature_set_2(context1));
   buffer.write('''</h1></div>''');
@@ -1506,7 +1506,7 @@ String renderProperty(_i1.PropertyTemplateData context0) {
     <h5>''');
   buffer.writeEscaped(context0.parent!.name);
   buffer.write(' ');
-  buffer.writeEscaped(context0.parent!.kind);
+  buffer.writeEscaped(context0.parent!.kind.toString());
   buffer.write('''</h5>
   </div><!--/.sidebar-offcanvas-->
 
@@ -1537,7 +1537,7 @@ String renderSearchPage(_i1.PackageTemplateData context0) {
   <h5 class="hidden-xs"><span class="package-name">''');
   buffer.writeEscaped(context0.self.name);
   buffer.write('''</span> <span class="package-kind">''');
-  buffer.writeEscaped(context0.self.kind);
+  buffer.writeEscaped(context0.self.kind.toString());
   buffer.write('''</span></h5>
   ''');
   buffer.write(_renderSearchPage_partial_packages_2(context0));
@@ -1965,7 +1965,7 @@ String renderTopLevelProperty(_i1.TopLevelPropertyTemplateData context0) {
   buffer.write('''<h1><span class="kind-top-level-property">''');
   buffer.write(context1.name);
   buffer.write('''</span> ''');
-  buffer.writeEscaped(context1.kind);
+  buffer.writeEscaped(context1.kind.toString());
   buffer.write(' ');
   buffer.write(_renderTopLevelProperty_partial_feature_set_2(context1));
   buffer.write(' ');
@@ -2014,7 +2014,7 @@ String renderTopLevelProperty(_i1.TopLevelPropertyTemplateData context0) {
     <h5>''');
   buffer.writeEscaped(context0.parent!.name);
   buffer.write(' ');
-  buffer.writeEscaped(context0.parent!.kind);
+  buffer.writeEscaped(context0.parent!.kind.toString());
   buffer.write('''</h5>
   </div><!--/.sidebar-offcanvas-left-->
 
@@ -2051,7 +2051,7 @@ String renderTypedef(_i1.TypedefTemplateData context0) {
   buffer.write('''<h1><span class="kind-typedef">''');
   buffer.write(context1.nameWithGenerics);
   buffer.write('''</span> ''');
-  buffer.writeEscaped(context1.kind);
+  buffer.writeEscaped(context1.kind.toString());
   buffer.write(' ');
   buffer.write(_renderTypedef_partial_feature_set_2(context1));
   buffer.write(' ');
@@ -2086,7 +2086,7 @@ String renderTypedef(_i1.TypedefTemplateData context0) {
     <h5>''');
   buffer.writeEscaped(context0.parent!.name);
   buffer.write(' ');
-  buffer.writeEscaped(context0.parent!.kind);
+  buffer.writeEscaped(context0.parent!.kind.toString());
   buffer.write('''</h5>
   </div><!--/.sidebar-offcanvas-left-->
 

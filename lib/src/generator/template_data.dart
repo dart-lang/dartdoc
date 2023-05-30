@@ -142,7 +142,7 @@ class PackageTemplateData extends TemplateData<Package> {
 
   @override
   String get layoutTitle =>
-      _layoutTitle(package.name, package.kind, isDeprecated: false);
+      _layoutTitle(package.name, package.kind.toString(), isDeprecated: false);
   @override
   String get metaDescription =>
       '${package.name} API docs, for the Dart programming language.';
@@ -189,7 +189,8 @@ class CategoryTemplateData extends TemplateData<Category>
 
   @override
   String get layoutTitle =>
-      _layoutTitle(category.name, category.kind, isDeprecated: false);
+      _layoutTitle(category.name, category.kind.toString(),
+          isDeprecated: false);
 
   @override
   String get metaDescription =>
@@ -224,8 +225,8 @@ class LibraryTemplateData extends TemplateData<Library>
   List<Documentable> get navLinks => [_packageGraph.defaultPackage];
 
   @override
-  String get layoutTitle =>
-      _layoutTitle(library.name, 'library', isDeprecated: library.isDeprecated);
+  String get layoutTitle => _layoutTitle(library.name, Kind.library.toString(),
+      isDeprecated: library.isDeprecated);
 
   @override
   Library get self => library;
@@ -346,7 +347,8 @@ class ExtensionTemplateData<T extends Extension> extends TemplateData<T>
 
   @override
   String get layoutTitle =>
-      _layoutTitle(extension.name, extension.kind, isDeprecated: false);
+      _layoutTitle(extension.name, extension.kind.toString(),
+          isDeprecated: false);
   @override
   List<Documentable> get navLinks => [_packageGraph.defaultPackage, library];
 }
@@ -435,8 +437,9 @@ class FunctionTemplateData extends TemplateData<ModelFunction>
   String get title =>
       '${function.name} function - ${library.name} library - Dart API';
   @override
-  String get layoutTitle => _layoutTitle(function.nameWithGenerics, 'function',
-      isDeprecated: function.isDeprecated);
+  String get layoutTitle =>
+      _layoutTitle(function.nameWithGenerics, Kind.function.toString(),
+          isDeprecated: function.isDeprecated);
   @override
   String get metaDescription =>
       'API docs for the ${function.name} function from the '
@@ -561,8 +564,9 @@ class TypedefTemplateData extends TemplateData<Typedef>
   String get title =>
       '${typeDef.name} typedef - ${library.name} library - Dart API';
   @override
-  String get layoutTitle => _layoutTitle(typeDef.nameWithGenerics, 'typedef',
-      isDeprecated: typeDef.isDeprecated);
+  String get layoutTitle =>
+      _layoutTitle(typeDef.nameWithGenerics, Kind.typedef.toString(),
+          isDeprecated: typeDef.isDeprecated);
   @override
   String get metaDescription =>
       'API docs for the ${typeDef.name} typedef from the '

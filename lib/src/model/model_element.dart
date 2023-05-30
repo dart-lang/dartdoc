@@ -778,7 +778,7 @@ abstract class ModelElement extends Canonicalization
 
   /// A human-friendly name for the kind of element this is.
   @override
-  String get kind;
+  Kind get kind;
 
   @override
   Library get library => _library;

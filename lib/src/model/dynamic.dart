@@ -30,7 +30,7 @@ class Dynamic extends ModelElement with HasNoPage {
   String? get href => null;
 
   @override
-  String get kind => 'dynamic';
+  Kind get kind => Kind.dynamic;
 
   @override
   String get linkedName => 'dynamic';

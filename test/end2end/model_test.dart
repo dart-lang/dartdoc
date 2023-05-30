@@ -75,7 +75,7 @@ class TestLibraryContainer extends LibraryContainer with Nameable {
   bool get isDocumented => throw UnimplementedError();
 
   @override
-  String get kind => throw UnimplementedError();
+  Kind get kind => throw UnimplementedError();
 
   @override
   String get oneLineDoc => throw UnimplementedError();

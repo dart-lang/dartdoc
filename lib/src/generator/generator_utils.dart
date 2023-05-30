@@ -34,15 +34,6 @@ String generateCategoryJson(Iterable<Categorization> categories, bool pretty) {
   return encoder.convert(indexItems.toList(growable: false));
 }
 
-String removeHtmlTags(String? input) {
-  if (input == null) {
-    return '';
-  }
-  var htmlTag = RegExp(r'<[^>]*>', multiLine: true, caseSensitive: true);
-  var parsedString = input.replaceAll(htmlTag, '');
-  return parsedString;
-}
-
 String generateSearchIndexJson(Iterable<Indexable> indexedElements, bool pretty,
     List<String> packageOrder) {
   final indexItems = [
@@ -53,16 +44,16 @@ String generateSearchIndexJson(Iterable<Indexable> indexedElements, bool pretty,
         'name': indexable.name,
         'qualifiedName': indexable.fullyQualifiedName,
         'href': indexable.href,
-        'type': indexable.kind,
+        'kind': indexable.kind.index,
         'overriddenDepth': indexable.overriddenDepth,
         if (indexable is ModelElement) 'packageName': indexable.package.name,
         if (indexable is ModelElement)
-          'desc': removeHtmlTags(indexable.oneLineDoc),
+          'desc': _removeHtmlTags(indexable.oneLineDoc),
         if (indexable is EnclosedElement)
           'enclosedBy': {
             'name': indexable.enclosingElement.name,
-            'type': indexable.enclosingElement.kind,
-            'href': indexable.enclosingElement.href
+            'kind': indexable.enclosingElement.kind.index,
+            'href': indexable.enclosingElement.href,
           },
       }
   ];
@@ -76,11 +67,17 @@ String generateSearchIndexJson(Iterable<Indexable> indexedElements, bool pretty,
 /// The key used in the `index.json` file used to specify the package order.
 const packageOrderKey = '__PACKAGE_ORDER__';
 
+String _removeHtmlTags(String? input) =>
+    input?.replaceAll(_htmlTagPattern, '') ?? '';
+
+final _htmlTagPattern =
+    RegExp(r'<[^>]*>', multiLine: true, caseSensitive: true);
+
 // Compares two elements, first by fully qualified name, then by kind.
 int _compareElementRepresentations<T extends Indexable>(T a, T b) {
   final value = compareNatural(a.fullyQualifiedName, b.fullyQualifiedName);
   if (value == 0) {
-    return compareNatural(a.kind, b.kind);
+    return compareNatural(a.kind.toString(), b.kind.toString());
   }
   return value;
 }

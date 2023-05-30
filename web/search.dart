@@ -392,8 +392,8 @@ Element _createSuggestion(String query, IndexItem match) {
 
   final suggestionTitle = document.createElement('span')
     ..classes.add('tt-suggestion-title')
-    ..innerHtml =
-        _highlight('${match.name} ${match.type.toLowerCase()}', query);
+    ..innerHtml = _highlight(
+        '${match.name} ${match.kind.toString().toLowerCase()}', query);
   suggestion.append(suggestionTitle);
 
   final enclosingElement = match.enclosedBy;
@@ -427,7 +427,7 @@ Element _createSuggestion(String query, IndexItem match) {
   if (enclosingElement != null) {
     _mapToContainer(
       _createContainer(
-        '${enclosingElement.name} ${enclosingElement.type}',
+        '${enclosingElement.name} ${enclosingElement.kind}',
         enclosingElement.href,
       ),
       suggestion,

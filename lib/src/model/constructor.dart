@@ -48,7 +48,7 @@ class Constructor extends ModelElement
   String get fullKind {
     if (isConst) return 'const $kind';
     if (isFactory) return 'factory $kind';
-    return kind;
+    return kind.toString();
   }
 
   @override
@@ -68,7 +68,7 @@ class Constructor extends ModelElement
   bool get isFactory => element.isFactory;
 
   @override
-  String get kind => 'constructor';
+  Kind get kind => Kind.constructor;
 
   late final Callable modelType =
       modelBuilder.typeFrom(element.type, library) as Callable;

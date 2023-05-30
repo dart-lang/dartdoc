@@ -32,7 +32,7 @@ abstract class Documentable extends Nameable {
 
   String? get href;
 
-  String get kind;
+  Kind get kind;
 }
 
 /// For a given package, indicate with this enum whether it should be documented
