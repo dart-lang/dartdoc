@@ -43,6 +43,8 @@ class DartdocGeneratorBackendOptions implements TemplateOptions {
 
   final String? resourcesDir;
 
+  final List<String> packageOrder;
+
   DartdocGeneratorBackendOptions.fromContext(
       DartdocGeneratorOptionContext context)
       : relCanonicalPrefix = context.relCanonicalPrefix,
@@ -53,7 +55,8 @@ class DartdocGeneratorBackendOptions implements TemplateOptions {
         customHeaderContent = context.header,
         customFooterContent = context.footer,
         customInnerFooterText = context.footerText,
-        resourcesDir = context.resourcesDir;
+        resourcesDir = context.resourcesDir,
+        packageOrder = context.packageOrder;
 }
 
 /// An interface for classes which are responsible for outputing the generated
@@ -167,7 +170,7 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
   @override
   void generateSearchIndex(List<Indexable> indexedElements) {
     var json = generator_util.generateSearchIndexJson(
-        indexedElements, options.prettyIndexJson);
+        indexedElements, options.prettyIndexJson, options.packageOrder);
     if (!options.useBaseHref) {
       json = json.replaceAll(htmlBasePlaceholder, '');
     }

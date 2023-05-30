@@ -43,12 +43,13 @@ String removeHtmlTags(String? input) {
   return parsedString;
 }
 
-String generateSearchIndexJson(
-    Iterable<Indexable> indexedElements, bool pretty) {
+String generateSearchIndexJson(Iterable<Indexable> indexedElements, bool pretty,
+    List<String> packageOrder) {
   final indexItems = [
+    {packageOrderKey: packageOrder},
     for (final indexable
         in indexedElements.sorted(_compareElementRepresentations))
-      <String, Object?>{
+      {
         'name': indexable.name,
         'qualifiedName': indexable.fullyQualifiedName,
         'href': indexable.href,
@@ -71,6 +72,9 @@ String generateSearchIndexJson(
 
   return encoder.convert(indexItems);
 }
+
+/// The key used in the `index.json` file used to specify the package order.
+const packageOrderKey = '__PACKAGE_ORDER__';
 
 // Compares two elements, first by fully qualified name, then by kind.
 int _compareElementRepresentations<T extends Indexable>(T a, T b) {
