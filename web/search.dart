@@ -4,6 +4,7 @@
 
 import 'dart:convert';
 import 'dart:html';
+import 'package:dartdoc/src/search.dart';
 
 import 'web_interop.dart';
 
@@ -43,15 +44,14 @@ void init() {
     }
 
     var text = await response.text;
-    var jsonIndex = (jsonDecode(text) as List).cast<Map<String, dynamic>>();
-    final index = jsonIndex.map(_IndexItem.fromMap).toList();
+    final index = Index.fromJson(text);
 
     // Navigate to the first result from the 'search' query parameter
     // if specified and found.
     final url = Uri.parse(window.location.toString());
-    final search = url.queryParameters['search'];
-    if (search != null) {
-      final matches = _findMatches(index, search);
+    final searchQuery = url.queryParameters['search'];
+    if (searchQuery != null) {
+      final matches = index.find(searchQuery);
       if (matches.isNotEmpty) {
         final href = matches.first.href;
         if (href != null) {
@@ -74,76 +74,6 @@ void init() {
   });
 }
 
-const _weights = {
-  'topic': 2,
-  'library': 2,
-  'class': 2,
-  'enum': 2,
-  'mixin': 3,
-  'extension': 3,
-  'typedef': 3,
-  'function': 4,
-  'method': 4,
-  'accessor': 4,
-  'operator': 4,
-  'constant': 4,
-  'property': 4,
-  'constructor': 4,
-};
-
-/// Returns the sorted suggestions for [query] from [index] data.
-List<_IndexItem> _findMatches(List<_IndexItem> index, String query) {
-  if (query.isEmpty) {
-    return [];
-  }
-
-  var allMatches = <_SearchMatch>[];
-
-  for (var element in index) {
-    void score(int value) {
-      value -= (element.overriddenDepth ?? 0) * 10;
-      var weightFactor = _weights[element.type] ?? 4;
-      allMatches.add(_SearchMatch(element, value / weightFactor));
-    }
-
-    var name = element.name;
-    var qualifiedName = element.qualifiedName;
-    var lowerName = name.toLowerCase();
-    var lowerQualifiedName = qualifiedName.toLowerCase();
-    var lowerQuery = query.toLowerCase();
-
-    if (name == query || qualifiedName == query || name == 'dart:$query') {
-      score(2000);
-    } else if (lowerName == 'dart:$lowerQuery') {
-      score(1800);
-    } else if (lowerName == lowerQuery || lowerQualifiedName == lowerQuery) {
-      score(1700);
-    } else if (query.length > 1) {
-      if (name.startsWith(query) || qualifiedName.startsWith(query)) {
-        score(750);
-      } else if (lowerName.startsWith(lowerQuery) ||
-          lowerQualifiedName.startsWith(lowerQuery)) {
-        score(650);
-      } else if (name.contains(query) || qualifiedName.contains(query)) {
-        score(500);
-      } else if (lowerName.contains(lowerQuery) ||
-          lowerQualifiedName.contains(query)) {
-        score(400);
-      }
-    }
-  }
-
-  allMatches.sort((_SearchMatch a, _SearchMatch b) {
-    var x = (b.score - a.score).round();
-    if (x == 0) {
-      return a.element.name.length - b.element.name.length;
-    }
-    return x;
-  });
-
-  return allMatches.map((match) => match.element).toList();
-}
-
 int _suggestionLimit = 10;
 int _suggestionLength = 0;
 const _htmlEscape = HtmlEscape();
@@ -157,7 +87,7 @@ const _htmlEscape = HtmlEscape();
 final _containerMap = <String, Element>{};
 
 class _Search {
-  final List<_IndexItem> index;
+  final Index index;
   final Uri uri;
 
   late final listBox = document.createElement('div')
@@ -180,7 +110,7 @@ class _Search {
   String? storedValue;
   String actualValue = '';
   final List<Element> suggestionElements = <Element>[];
-  List<_IndexItem> suggestionsInfo = <_IndexItem>[];
+  List<IndexItem> suggestionsInfo = <IndexItem>[];
   int selectedElement = -1;
 
   _Search(this.index) : uri = Uri.parse(window.location.href);
@@ -188,7 +118,7 @@ class _Search {
   void initialize(InputElement inputElement) {
     inputElement.disabled = false;
     inputElement.setAttribute('placeholder', 'Search API Docs');
-    // Handle grabbing focus when the users types / outside of the input
+    // Handle grabbing focus when the user types '/' outside of the input.
     document.addEventListener('keydown', (Event event) {
       if (event is! KeyboardEvent) {
         return;
@@ -289,7 +219,7 @@ class _Search {
   ///
   /// [query] is only required here so that it can be displayed with emphasis
   /// (as a prefix, for example).
-  void updateSuggestions(String query, List<_IndexItem> suggestions,
+  void updateSuggestions(String query, List<IndexItem> suggestions,
       {bool isSearchPage = false}) {
     suggestionsInfo = [];
     suggestionElements.clear();
@@ -330,7 +260,7 @@ class _Search {
       return;
     }
 
-    var suggestions = _findMatches(index, searchText);
+    var suggestions = index.find(searchText);
     _suggestionLength = suggestions.length;
     if (suggestions.length > _suggestionLimit) {
       suggestions = suggestions.sublist(0, _suggestionLimit);
@@ -455,7 +385,7 @@ class _Search {
   void removeSelectedElement() => selectedElement = -1;
 }
 
-Element _createSuggestion(String query, _IndexItem match) {
+Element _createSuggestion(String query, IndexItem match) {
   final suggestion = document.createElement('div')
     ..setAttribute('data-href', match.href ?? '')
     ..classes.add('tt-suggestion');
@@ -523,7 +453,7 @@ void _mapToContainer(Element containerElement, Element suggestion) {
   }
 }
 
-/// Creates an `<a>` [Element] for enclosing library/class.
+/// Creates an `<a>` [Element] for the enclosing library/class.
 Element _createContainer(String encloser, String href) =>
     document.createElement('div')
       ..classes.add('tt-container')
@@ -548,73 +478,6 @@ String _decodeHtml(String html) {
   return ((document.createElement('textarea') as TextAreaElement)
         ..innerHtml = html)
       .value!;
-}
-
-class _SearchMatch {
-  final _IndexItem element;
-  final double score;
-
-  _SearchMatch(this.element, this.score);
-}
-
-class _IndexItem {
-  final String name;
-  final String qualifiedName;
-  final String type;
-  final String? href;
-  final int? overriddenDepth;
-  final String? desc;
-  final _EnclosedBy? enclosedBy;
-
-  _IndexItem._({
-    required this.name,
-    required this.qualifiedName,
-    required this.type,
-    this.desc,
-    this.href,
-    this.overriddenDepth,
-    this.enclosedBy,
-  });
-
-  // "name":"dartdoc",
-  // "qualifiedName":"dartdoc",
-  // "href":"dartdoc/dartdoc-library.html",
-  // "type":"library",
-  // "overriddenDepth":0,
-  // "packageName":"dartdoc"
-  // ["enclosedBy":{"name":"Accessor","type":"class"}]
-
-  factory _IndexItem.fromMap(Map<String, dynamic> data) {
-    // Note that this map also contains 'packageName', but we're not currently
-    // using that info.
-
-    _EnclosedBy? enclosedBy;
-    if (data['enclosedBy'] != null) {
-      final map = data['enclosedBy'] as Map<String, dynamic>;
-      enclosedBy = _EnclosedBy._(
-          name: map['name'], type: map['type'], href: map['href']);
-    }
-
-    return _IndexItem._(
-      name: data['name'],
-      qualifiedName: data['qualifiedName'],
-      href: data['href'],
-      type: data['type'],
-      overriddenDepth: data['overriddenDepth'],
-      desc: data['desc'],
-      enclosedBy: enclosedBy,
-    );
-  }
-}
-
-class _EnclosedBy {
-  final String name;
-  final String type;
-  final String href;
-
-  // Built from JSON structure:
-  // ["enclosedBy":{"name":"Accessor","type":"class","href":"link"}]
-  _EnclosedBy._({required this.name, required this.type, required this.href});
 }
 
 extension on int {
