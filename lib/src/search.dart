@@ -113,8 +113,8 @@ class IndexItem {
   final String name;
   final String qualifiedName;
 
-  // TODO(srawlins): Store the integer of in the package order instead of this
-  // String. The Strings bloat the `index.json` file and keeping duplicate
+  // TODO(srawlins): Store the index of the package in package order instead of
+  // this String. The Strings bloat the `index.json` file and keeping duplicate
   // parsed Strings in memory is expensive.
   final String packageName;
   final String type;
@@ -139,12 +139,12 @@ class IndexItem {
   // ```dart
   // {
   //   "name":"dartdoc",
-  //   "qualifiedName":"dartdoc",
-  //   "href":"dartdoc/dartdoc-library.html",
-  //   "type":"library",
+  //   "qualifiedName":"dartdoc.Dartdoc",
+  //   "href":"dartdoc/Dartdoc-class.html",
+  //   "type":"class",
   //   "overriddenDepth":0,
   //   "packageName":"dartdoc"
-  //   ["enclosedBy":{"name":"Accessor","type":"class"}]
+  //   ["enclosedBy":{"name":"dartdoc","type":"library"}]
   // }
   // ```
   factory IndexItem.fromMap(Map<String, dynamic> data) {
@@ -172,6 +172,17 @@ class IndexItem {
     );
   }
 
+  /// The "scope" of a search item which may affect ranking.
+  ///
+  /// This is not the lexical scope of identifiers in Dart code, but similar in a
+  /// very loose sense. We define 4 "scopes":
+  ///
+  /// * 0: root- and package-level items
+  /// * 1: library members
+  /// * 2: container members
+  /// * 3: unknown (shouldn't be used but present for completeness)
+  // TODO(srawlins): Test and confirm that top-level functions, variables, and
+  // constants are ranked appropriately.
   int get _scope =>
       const {
         'topic': 0,
