@@ -6,6 +6,7 @@ import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/memory_file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/documentable.dart';
+import 'package:dartdoc/src/model/indexable.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/special_elements.dart';
@@ -92,7 +93,7 @@ int x;
 
         var package = packageGraph.defaultPackage;
         expect(package.name, equals('my_package'));
-        expect(package.kind, equals('package'));
+        expect(package.kind, equals(Kind.package));
       });
 
       test('has public libraries', () async {
@@ -369,7 +370,7 @@ dartdoc:
 
         var sdkPackage = packageGraph.defaultPackage;
         expect(sdkPackage.name, equals('Dart'));
-        expect(sdkPackage.kind, equals('SDK'));
+        expect(sdkPackage.kind, equals(Kind.sdk));
       });
 
       test('has a homepage', () async {
