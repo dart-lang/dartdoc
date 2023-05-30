@@ -49,6 +49,9 @@ class TestLibraryContainer extends LibraryContainer with Nameable {
   @override
   PackageGraph get packageGraph => throw UnimplementedError();
 
+  @override
+  Package get package => throw UnimplementedError();
+
   TestLibraryContainer(
       this.name, this.containerOrder, LibraryContainer? enclosingContainer)
       : enclosingName = enclosingContainer?.name ?? '';

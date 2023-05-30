@@ -70,8 +70,8 @@ analyzer:
         packagePath, name, Uri.file('$packagePath/'));
   }
 
-  Future<PackageGraph> _bootPackageFromFiles(
-      Iterable<d.Descriptor> files) async {
+  Future<PackageGraph> _bootPackageFromFiles(Iterable<d.Descriptor> files,
+      {List<String> additionalArguments = const []}) async {
     var packagePathBasename =
         resourceProvider.pathContext.basename(packagePath);
     var packagePathDirname = resourceProvider.pathContext.dirname(packagePath);
@@ -82,6 +82,7 @@ analyzer:
       packagePath,
       packageMetaProvider,
       packageConfigProvider,
+      additionalArguments: additionalArguments,
     );
   }
 
@@ -90,7 +91,8 @@ analyzer:
   /// extra files in the package such as `dartdoc_options.yaml`.
   Future<Library> bootPackageWithLibrary(String libraryContent,
       {String libraryPreamble = '',
-      Iterable<d.Descriptor> extraFiles = const []}) async {
+      Iterable<d.Descriptor> extraFiles = const [],
+      List<String> additionalArguments = const []}) async {
     return (await _bootPackageFromFiles([
       d.dir('lib', [
         d.file('lib.dart', '''
@@ -101,7 +103,7 @@ $libraryContent
 '''),
       ]),
       ...extraFiles
-    ]))
+    ], additionalArguments: additionalArguments))
         .libraries
         .named(libraryName);
   }

@@ -296,8 +296,6 @@ const Map<PackageWarning, PackageWarningDefinition> packageWarningDefinitions =
 mixin Warnable implements Canonicalization, CommentReferable {
   Element? get element;
 
-  Package get package;
-
   void warn(
     PackageWarning kind, {
     String? message,
