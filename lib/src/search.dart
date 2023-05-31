@@ -24,12 +24,12 @@ class Index {
   Index(this.packageOrder, this.index);
 
   factory Index.fromJson(String text) {
-    var jsonIndex = (jsonDecode(text) as List).cast<Map<String, Object>>();
+    var jsonIndex = (jsonDecode(text) as List).cast<Map<String, dynamic>>();
     var indexList = <IndexItem>[];
     var packageOrder = <String>[];
     for (var entry in jsonIndex) {
       if (entry.containsKey(packageOrderKey)) {
-        packageOrder.addAll(entry[packageOrderKey] as List<String>);
+        packageOrder.addAll((entry[packageOrderKey] as List).cast<String>());
       } else {
         indexList.add(IndexItem.fromMap(entry));
       }
@@ -142,19 +142,19 @@ class IndexItem {
   //   "name":"dartdoc",
   //   "qualifiedName":"dartdoc.Dartdoc",
   //   "href":"dartdoc/Dartdoc-class.html",
-  //   "kind":"class",
+  //   "kind":1,
   //   "overriddenDepth":0,
   //   "packageName":"dartdoc"
-  //   ["enclosedBy":{"name":"dartdoc","kind":"library"}]
+  //   ["enclosedBy":{"name":"dartdoc","kind":2}]
   // }
   // ```
-  factory IndexItem.fromMap(Map<String, Object?> data) {
+  factory IndexItem.fromMap(Map<String, dynamic> data) {
     // Note that this map also contains 'packageName', but we're not currently
     // using that info.
 
     EnclosedBy? enclosedBy;
     if (data['enclosedBy'] != null) {
-      final map = data['enclosedBy'] as Map<String, Object>;
+      final map = data['enclosedBy'] as Map<String, dynamic>;
       enclosedBy = EnclosedBy._(
           name: map['name'] as String,
           kind: Kind.values[map['kind'] as int],
@@ -162,13 +162,13 @@ class IndexItem {
     }
 
     return IndexItem._(
-      name: data['name'] as String,
-      qualifiedName: data['qualifiedName'] as String,
-      packageName: data['packageName'] as String,
-      href: data['href'] as String,
+      name: data['name'],
+      qualifiedName: data['qualifiedName'],
+      packageName: data['packageName'],
+      href: data['href'],
       kind: Kind.values[data['kind'] as int],
       overriddenDepth: (data['overriddenDepth'] as int?) ?? 0,
-      desc: data['desc'] as String,
+      desc: data['desc'],
       enclosedBy: enclosedBy,
     );
   }
