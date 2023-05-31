@@ -108,9 +108,10 @@ class Field extends ModelElement
   bool get isStatic => element.isStatic;
 
   @override
-  String get kind => isConst ? 'constant' : 'property';
+  Kind get kind => isConst ? Kind.constant : Kind.property;
 
-  String get fullkind => element.isAbstract ? 'abstract $kind' : kind;
+  String get fullkind =>
+      element.isAbstract ? 'abstract $kind' : kind.toString();
 
   @override
   Set<Feature> get features {

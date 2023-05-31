@@ -76,7 +76,7 @@ class Parameter extends ModelElement with HasNoPage {
   bool get isRequiredNamed => element.isRequiredNamed;
 
   @override
-  String get kind => 'parameter';
+  Kind get kind => Kind.parameter;
 
   @override
   late final Map<String, CommentReferable> referenceChildren = {

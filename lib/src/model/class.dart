@@ -77,7 +77,7 @@ class Class extends InheritingContainer
   bool get isSealed => element.isSealed;
 
   @override
-  String get kind => 'class';
+  Kind get kind => Kind.class_;
 
   @override
   String get relationshipsClass => 'clazz-relationships';

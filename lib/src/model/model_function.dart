@@ -71,7 +71,7 @@ class ModelFunctionTyped extends ModelElement
   }
 
   @override
-  String get kind => 'function';
+  Kind get kind => Kind.function;
 
   // Food for mustache. TODO(jcollins-g): what about enclosing elements?
   bool get isInherited => false;

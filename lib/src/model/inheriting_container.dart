@@ -275,7 +275,7 @@ abstract class InheritingContainer extends Container
   @override
   Library get enclosingElement => library;
 
-  String get fullkind => kind;
+  String get fullkind => kind.toString();
 
   @override
   bool get hasModifiers =>

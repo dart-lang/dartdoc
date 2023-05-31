@@ -49,7 +49,7 @@ String renderCategory(_i1.CategoryTemplateData context0) {
 # ''');
   buffer.writeEscaped(context1.name);
   buffer.write(' ');
-  buffer.writeEscaped(context1.kind);
+  buffer.writeEscaped(context1.kind.toString());
   buffer.write('\n\n');
   buffer.write(_renderCategory_partial_documentation_1(context1));
   buffer.writeln();
@@ -199,7 +199,7 @@ String renderClass(_i1.ClassTemplateData context0) {
 # ''');
   buffer.write(context1.nameWithGenerics);
   buffer.write(' ');
-  buffer.writeEscaped(context1.kind);
+  buffer.writeEscaped(context1.kind.toString());
   buffer.write('\n\n');
   buffer.write(_renderClass_partial_source_link_1(context1));
   buffer.writeln();
@@ -291,7 +291,7 @@ String renderConstructor(_i1.ConstructorTemplateData context0) {
 # ''');
   buffer.write(context1.nameWithGenerics);
   buffer.write(' ');
-  buffer.writeEscaped(context1.kind);
+  buffer.writeEscaped(context1.kind.toString());
   buffer.write('\n\n');
   buffer.write(_renderConstructor_partial_source_link_1(context1));
   buffer.writeln();
@@ -341,7 +341,7 @@ String renderEnum(_i1.EnumTemplateData context0) {
 # ''');
   buffer.write(context1.nameWithGenerics);
   buffer.write(' ');
-  buffer.writeEscaped(context1.kind);
+  buffer.writeEscaped(context1.kind.toString());
   buffer.write('\n\n');
   buffer.write(_renderEnum_partial_source_link_1(context1));
   buffer.writeln();
@@ -430,7 +430,7 @@ String renderExtension<T extends _i2.Extension>(
 # ''');
   buffer.write(context1.nameWithGenerics);
   buffer.write(' ');
-  buffer.writeEscaped(context1.kind);
+  buffer.writeEscaped(context1.kind.toString());
   buffer.writeln();
   buffer.write('''
 on ''');
@@ -488,7 +488,7 @@ String renderFunction(_i1.FunctionTemplateData context0) {
 # ''');
   buffer.write(context1.nameWithGenerics);
   buffer.write(' ');
-  buffer.writeEscaped(context1.kind);
+  buffer.writeEscaped(context1.kind.toString());
   buffer.write('\n\n');
   buffer.write(_renderFunction_partial_source_link_1(context1));
   buffer.writeln();
@@ -579,7 +579,7 @@ String renderLibrary(_i1.LibraryTemplateData context0) {
 # ''');
   buffer.write(context1.name);
   buffer.write(' ');
-  buffer.writeEscaped(context1.kind);
+  buffer.writeEscaped(context1.kind.toString());
   buffer.write('\n\n');
   buffer.write(_renderLibrary_partial_source_link_1(context1));
   buffer.writeln();
@@ -742,7 +742,7 @@ String renderMethod(_i1.MethodTemplateData context0) {
 # ''');
   buffer.write(context1.nameWithGenerics);
   buffer.write(' ');
-  buffer.writeEscaped(context1.kind);
+  buffer.writeEscaped(context1.kind.toString());
   buffer.write('\n\n');
   buffer.write(_renderMethod_partial_source_link_1(context1));
   buffer.writeln();
@@ -775,7 +775,7 @@ String renderMixin(_i1.MixinTemplateData context0) {
 # ''');
   buffer.write(context1.nameWithGenerics);
   buffer.write(' ');
-  buffer.writeEscaped(context1.kind);
+  buffer.writeEscaped(context1.kind.toString());
   buffer.write('\n\n');
   buffer.write(_renderMixin_partial_source_link_1(context1));
   buffer.writeln();
@@ -862,7 +862,7 @@ String renderProperty(_i1.PropertyTemplateData context0) {
 # ''');
   buffer.writeEscaped(context1.name);
   buffer.write(' ');
-  buffer.writeEscaped(context1.kind);
+  buffer.writeEscaped(context1.kind.toString());
   buffer.write('\n\n');
   buffer.write(_renderProperty_partial_source_link_1(context1));
   buffer.writeln();
@@ -980,7 +980,7 @@ String renderTopLevelProperty(_i1.TopLevelPropertyTemplateData context0) {
 # ''');
   buffer.write(context1.name);
   buffer.write(' ');
-  buffer.writeEscaped(context1.kind);
+  buffer.writeEscaped(context1.kind.toString());
   buffer.write('\n\n');
   buffer.write(_renderTopLevelProperty_partial_source_link_1(context1));
   buffer.writeln();
@@ -1030,7 +1030,7 @@ String renderTypedef(_i1.TypedefTemplateData context0) {
 # ''');
   buffer.write(context1.nameWithGenerics);
   buffer.write(' ');
-  buffer.writeEscaped(context1.kind);
+  buffer.writeEscaped(context1.kind.toString());
   buffer.write('\n\n');
   buffer.write(_renderTypedef_partial_source_link_1(context1));
   buffer.writeln();

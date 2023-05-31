@@ -42,7 +42,7 @@ class Prefix extends ModelElement with HasNoPage implements EnclosedElement {
   String? get href => canonicalModelElement?.href;
 
   @override
-  String get kind => 'prefix';
+  Kind get kind => Kind.prefix;
 
   @override
   Map<String, CommentReferable> get referenceChildren => {};

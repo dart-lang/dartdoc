@@ -5,6 +5,7 @@
 import 'dart:convert';
 
 import 'package:dartdoc/src/generator/generator_utils.dart';
+import 'package:dartdoc/src/model/indexable.dart';
 import 'package:meta/meta.dart';
 
 enum _MatchPosition {
@@ -23,12 +24,12 @@ class Index {
   Index(this.packageOrder, this.index);
 
   factory Index.fromJson(String text) {
-    var jsonIndex = (jsonDecode(text) as List).cast<Map<String, Object>>();
+    var jsonIndex = (jsonDecode(text) as List).cast<Map<String, dynamic>>();
     var indexList = <IndexItem>[];
     var packageOrder = <String>[];
     for (var entry in jsonIndex) {
       if (entry.containsKey(packageOrderKey)) {
-        packageOrder.addAll(entry[packageOrderKey] as List<String>);
+        packageOrder.addAll((entry[packageOrderKey] as List).cast<String>());
       } else {
         indexList.add(IndexItem.fromMap(entry));
       }
@@ -117,7 +118,7 @@ class IndexItem {
   // this String. The Strings bloat the `index.json` file and keeping duplicate
   // parsed Strings in memory is expensive.
   final String packageName;
-  final String type;
+  final Kind kind;
   final String? href;
   final int overriddenDepth;
   final String? desc;
@@ -127,7 +128,7 @@ class IndexItem {
     required this.name,
     required this.qualifiedName,
     required this.packageName,
-    required this.type,
+    required this.kind,
     required this.desc,
     required this.href,
     required this.overriddenDepth,
@@ -141,10 +142,10 @@ class IndexItem {
   //   "name":"dartdoc",
   //   "qualifiedName":"dartdoc.Dartdoc",
   //   "href":"dartdoc/Dartdoc-class.html",
-  //   "type":"class",
+  //   "kind":1,
   //   "overriddenDepth":0,
   //   "packageName":"dartdoc"
-  //   ["enclosedBy":{"name":"dartdoc","type":"library"}]
+  //   ["enclosedBy":{"name":"dartdoc","kind":2}]
   // }
   // ```
   factory IndexItem.fromMap(Map<String, dynamic> data) {
@@ -153,10 +154,10 @@ class IndexItem {
 
     EnclosedBy? enclosedBy;
     if (data['enclosedBy'] != null) {
-      final map = data['enclosedBy'] as Map<String, Object>;
+      final map = data['enclosedBy'] as Map<String, dynamic>;
       enclosedBy = EnclosedBy._(
           name: map['name'] as String,
-          type: map['type'] as String,
+          kind: Kind.values[map['kind'] as int],
           href: map['href'] as String);
     }
 
@@ -165,7 +166,7 @@ class IndexItem {
       qualifiedName: data['qualifiedName'],
       packageName: data['packageName'],
       href: data['href'],
-      type: data['type'],
+      kind: Kind.values[data['kind'] as int],
       overriddenDepth: (data['overriddenDepth'] as int?) ?? 0,
       desc: data['desc'],
       enclosedBy: enclosedBy,
@@ -174,41 +175,47 @@ class IndexItem {
 
   /// The "scope" of a search item which may affect ranking.
   ///
-  /// This is not the lexical scope of identifiers in Dart code, but similar in a
-  /// very loose sense. We define 4 "scopes":
-  ///
-  /// * 0: root- and package-level items
-  /// * 1: library members
-  /// * 2: container members
-  /// * 3: unknown (shouldn't be used but present for completeness)
-  // TODO(srawlins): Test and confirm that top-level functions, variables, and
-  // constants are ranked appropriately.
-  int get _scope =>
-      const {
-        'topic': 0,
-        'library': 0,
-        'class': 1,
-        'enum': 1,
-        'mixin': 1,
-        'extension': 1,
-        'typedef': 1,
-        'function': 2,
-        'method': 2,
-        'accessor': 2,
-        'operator': 2,
-        'constant': 2,
-        'property': 2,
-        'constructor': 2,
-      }[type] ??
-      3;
+  /// This is not the lexical scope of identifiers in Dart code, but similar in
+  /// a very loose sense.
+  int get _scope => switch (kind) {
+        // Root- and package-level items.
+        Kind.library => 0,
+        Kind.package => 0,
+        Kind.topic => 0,
+
+        // Library members.
+        Kind.class_ => 1,
+        Kind.enum_ => 1,
+        Kind.extension => 1,
+        Kind.mixin => 1,
+        Kind.topLevelConstant => 1,
+        Kind.topLevelProperty => 1,
+        Kind.typedef => 1,
+
+        // Container members.
+        Kind.accessor => 2,
+        Kind.constant => 2,
+        Kind.constructor => 2,
+        Kind.function => 2,
+        Kind.method => 2,
+        Kind.property => 2,
+
+        // Others.
+        Kind.dynamic => 3,
+        Kind.never => 3,
+        Kind.parameter => 3,
+        Kind.prefix => 3,
+        Kind.sdk => 3,
+        Kind.typeParameter => 3,
+      };
 }
 
 class EnclosedBy {
   final String name;
-  final String type;
+  final Kind kind;
   final String href;
 
   // Built from JSON structure:
-  // ["enclosedBy":{"name":"Accessor","type":"class","href":"link"}]
-  EnclosedBy._({required this.name, required this.type, required this.href});
+  // ["enclosedBy":{"name":"Accessor","kind":"class","href":"link"}]
+  EnclosedBy._({required this.name, required this.kind, required this.href});
 }

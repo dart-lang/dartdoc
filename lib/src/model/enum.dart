@@ -39,7 +39,7 @@ class Enum extends InheritingContainer
       '${library.dirName}/$name-enum-sidebar.${fileStructure.fileType}';
 
   @override
-  String get kind => 'enum';
+  Kind get kind => Kind.enum_;
 
   @override
   String get relationshipsClass => 'eNum-relationships';

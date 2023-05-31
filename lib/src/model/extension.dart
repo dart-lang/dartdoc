@@ -53,7 +53,7 @@ class Extension extends Container implements EnclosedElement {
   Library get enclosingElement => library;
 
   @override
-  String get kind => 'extension';
+  Kind get kind => Kind.extension;
 
   @override
   late List<Method> declaredMethods = element.methods

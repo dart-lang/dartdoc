@@ -75,7 +75,7 @@ class TestLibraryContainer extends LibraryContainer with Nameable {
   bool get isDocumented => throw UnimplementedError();
 
   @override
-  String get kind => throw UnimplementedError();
+  Kind get kind => throw UnimplementedError();
 
   @override
   String get oneLineDoc => throw UnimplementedError();
@@ -2038,13 +2038,13 @@ void main() {
 
     test('get constants', () {
       expect(Apple.publicConstantFields, hasLength(1));
-      expect(Apple.publicConstantFields.first.kind, equals('constant'));
+      expect(Apple.publicConstantFields.first.kind, equals(Kind.constant));
     });
 
     test('get instance fields', () {
       expect(Apple.publicInstanceFields.where((f) => !f.isInherited),
           hasLength(3));
-      expect(Apple.publicInstanceFields.first.kind, equals('property'));
+      expect(Apple.publicInstanceFields.first.kind, equals(Kind.property));
     });
 
     test('get inherited properties, including properties of Object', () {
@@ -4228,7 +4228,7 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('has the correct kind', () {
-      expect(greenConstant.kind, equals('top-level constant'));
+      expect(greenConstant.kind, equals(Kind.topLevelConstant));
     });
 
     test('has enclosing element', () {

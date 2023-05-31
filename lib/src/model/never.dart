@@ -26,7 +26,7 @@ class NeverType extends ModelElement with HasNoPage {
   String? get href => null;
 
   @override
-  String get kind => 'Never';
+  Kind get kind => Kind.never;
 
   @override
   String get linkedName => 'Never';

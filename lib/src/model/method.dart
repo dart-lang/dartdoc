@@ -74,7 +74,7 @@ class Method extends ModelElement
     // A method cannot be abstract and static at the same time.
     if (element.isAbstract) return 'abstract $kind';
     if (element.isStatic) return 'static $kind';
-    return kind;
+    return kind.toString();
   }
 
   @override
@@ -99,7 +99,7 @@ class Method extends ModelElement
   bool get isStatic => element.isStatic;
 
   @override
-  String get kind => 'method';
+  Kind get kind => Kind.method;
 
   @override
   ExecutableMember? get originalMember =>

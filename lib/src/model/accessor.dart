@@ -159,7 +159,7 @@ class Accessor extends ModelElement implements EnclosedElement {
   bool get isSetter => element.isSetter;
 
   @override
-  String get kind => 'accessor';
+  Kind get kind => Kind.accessor;
 
   late final String _namePart = super.namePart.split('=').first;
 

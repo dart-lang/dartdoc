@@ -26,7 +26,7 @@ class TypeParameter extends ModelElement with HasNoPage {
   String? get href => null;
 
   @override
-  String get kind => 'type parameter';
+  Kind get kind => Kind.typeParameter;
 
   ElementType? get boundType {
     var bound = element.bound;
