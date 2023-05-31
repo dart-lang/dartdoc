@@ -1,6 +1,7 @@
 ## 6.2.2-dev
 * Add a hideImplementations directive to disable showing constant
   implementations alongside one-line docs on class pages (#3398)
+* Update highlight.js to 11.8.0 for Dart 3 syntax highlight support. (#3416)
 
 ## 6.2.2
 * Add chips to class pages for class modifiers (#3401)
