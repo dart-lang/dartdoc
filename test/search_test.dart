@@ -16,71 +16,38 @@ void main() {
 @reflectiveTest
 class SearchTest {
   List<Map<String, Object?>> get searchIndex => _toJson([
-        {
-          'qualifiedName': 'foo',
-          'kind': Kind.library.index,
-          'packageName': 'foo',
-        },
-        {
-          'qualifiedName': 'foo.Foo',
-          'kind': Kind.class_.index,
-          'packageName': 'foo',
-        },
-        {
-          'qualifiedName': 'foo.Bar',
-          'kind': Kind.class_.index,
-          'packageName': 'foo',
-        },
-        {
-          'qualifiedName': 'foo.Bart',
-          'kind': Kind.class_.index,
-          'packageName': 'foo',
-        },
-        {
-          'qualifiedName': 'foo.HelloFoo',
-          'kind': Kind.class_.index,
-          'packageName': 'foo',
-        },
-        {
-          'qualifiedName': 'bar.Bar.foo',
-          'kind': Kind.method.index,
-          'packageName': 'foo',
-        },
-        {
-          'qualifiedName': 'foo.Foo.method',
-          'kind': Kind.method.index,
-          'packageName': 'foo',
-        },
+        {'qualifiedName': 'foo', 'kind': Kind.library.index},
+        {'qualifiedName': 'foo.Foo', 'kind': Kind.class_.index},
+        {'qualifiedName': 'foo.Bar', 'kind': Kind.class_.index},
+        {'qualifiedName': 'foo.Bart', 'kind': Kind.class_.index},
+        {'qualifiedName': 'foo.HelloFoo', 'kind': Kind.class_.index},
+        {'qualifiedName': 'bar.Bar.foo', 'kind': Kind.method.index},
+        {'qualifiedName': 'foo.Foo.method', 'kind': Kind.method.index},
         {
           'qualifiedName': 'foo.Bar.method',
           'kind': Kind.method.index,
           'overriddenDepth': 1,
-          'packageName': 'foo',
         },
         {
           'qualifiedName': 'foo.Baz.method',
           'kind': Kind.method.index,
           'overriddenDepth': 2,
-          'packageName': 'foo',
         },
         {
           'qualifiedName': 'FOO',
           'kind': Kind.library.index,
-          'packageName': 'foo2',
+          'packageRank': 0,
         },
         {
           'qualifiedName': 'foo.FOO',
           'kind': Kind.class_.index,
-          'packageName': 'foo2',
+          'packageRank': 0,
         },
       ]);
 
-  List<String> matchNames(
-    String query, {
-    List<String> packageOrder = const [],
-  }) {
+  List<String> matchNames(String query) {
     final indexList = searchIndex.map(IndexItem.fromMap).toList();
-    final index = Index(packageOrder, indexList);
+    final index = Index(indexList);
     return index.find(query).map((e) => e.qualifiedName).toList();
   }
 
@@ -138,7 +105,7 @@ class SearchTest {
 
   void test_prefersHigherPackages() {
     expect(
-      matchNames('foo', packageOrder: ['foo2', 'foo']),
+      matchNames('foo'),
       containsAllInOrder(['FOO', 'foo.FOO', 'foo', 'foo.Foo']),
     );
   }
@@ -163,7 +130,7 @@ class SearchTest {
     for (var item in list) {
       item['name'] ??= (item['qualifiedName']! as String).split('.').last;
       item['href'] ??= 'UNUSED';
-      item['packageName'] ??= 'UNUSED';
+      item['packageRank'] ??= 1;
       item['desc'] ??= 'UNUSED.';
       item['overriddenDepth'] ??= 0;
     }

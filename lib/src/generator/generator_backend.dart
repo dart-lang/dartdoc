@@ -170,7 +170,10 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
   @override
   void generateSearchIndex(List<Indexable> indexedElements) {
     var json = generator_util.generateSearchIndexJson(
-        indexedElements, options.prettyIndexJson, options.packageOrder);
+      indexedElements,
+      packageOrder: options.packageOrder,
+      pretty: options.prettyIndexJson,
+    );
     if (!options.useBaseHref) {
       json = json.replaceAll(htmlBasePlaceholder, '');
     }
