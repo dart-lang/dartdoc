@@ -23,7 +23,7 @@ void main() {
 @reflectiveTest
 class SearchIndexTest extends DartdocTestBase {
   @override
-  String get libraryName => 'indexJson';
+  String get libraryName => 'index_json';
 
   /// We need the "unreachable" SDK libraries in order to include the non-"core"
   /// ones like 'dart:io'.
@@ -72,7 +72,7 @@ class SearchIndexTest extends DartdocTestBase {
 /// A class.
 class C {}
 ''');
-    var classItem = jsonIndex.named('indexJson.C');
+    var classItem = jsonIndex.named('index_json.C');
 
     expect(classItem['kind'], equals(Kind.class_.index));
     expect(classItem['overriddenDepth'], equals(0));
@@ -80,10 +80,10 @@ class C {}
     expect(
       classItem['enclosedBy'],
       equals({
-        'name': 'indexJson',
+        'name': 'index_json',
         'kind': Kind.library.index,
         'href':
-            '%%__HTMLBASE_dartdoc_internal__%%indexJson/indexJson-library.html',
+            '%%__HTMLBASE_dartdoc_internal__%%index_json/index_json-library.html',
       }),
     );
   }
@@ -93,7 +93,7 @@ class C {}
 /// A library.
 library;
 ''');
-    var libraryItem = jsonIndex.named('indexJson');
+    var libraryItem = jsonIndex.named('index_json');
 
     expect(libraryItem['kind'], equals(Kind.library.index));
     expect(libraryItem['overriddenDepth'], equals(0));
@@ -108,7 +108,7 @@ class C {
   void m() {}
 }
 ''');
-    var methodItem = jsonIndex.named('indexJson.C.m');
+    var methodItem = jsonIndex.named('index_json.C.m');
 
     expect(methodItem['kind'], equals(Kind.method.index));
     expect(methodItem['overriddenDepth'], equals(0));
@@ -118,7 +118,7 @@ class C {
       equals({
         'name': 'C',
         'kind': Kind.class_.index,
-        'href': '%%__HTMLBASE_dartdoc_internal__%%indexJson/C-class.html',
+        'href': '%%__HTMLBASE_dartdoc_internal__%%index_json/C-class.html',
       }),
     );
   }
@@ -134,7 +134,7 @@ class D extends C {
   void m() {}
 }
 ''');
-    var methodItem = jsonIndex.named('indexJson.D.m');
+    var methodItem = jsonIndex.named('index_json.D.m');
 
     expect(methodItem['kind'], equals(Kind.method.index));
     expect(methodItem['overriddenDepth'], equals(1));
@@ -144,7 +144,7 @@ class D extends C {
       equals({
         'name': 'D',
         'kind': Kind.class_.index,
-        'href': '%%__HTMLBASE_dartdoc_internal__%%indexJson/D-class.html',
+        'href': '%%__HTMLBASE_dartdoc_internal__%%index_json/D-class.html',
       }),
     );
   }
