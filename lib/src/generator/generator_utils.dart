@@ -35,10 +35,13 @@ String generateCategoryJson(Iterable<Categorization> categories, bool pretty) {
   return encoder.convert(indexItems.toList(growable: false));
 }
 
-String generateSearchIndexJson(Iterable<Indexable> indexedElements, bool pretty,
-    List<String> packageOrder) {
+/// Generates the text of the search index file (`index.json`) containing
+/// [indexedItems] and [packageOrder].
+///
+/// Passing `pretty: true` will use a [JsonEncoder] with a single-space indent.
+String generateSearchIndexJson(Iterable<Indexable> indexedElements,
+    {required List<String> packageOrder, required bool pretty}) {
   final indexItems = [
-    {packageOrderKey: packageOrder},
     for (final indexable
         in indexedElements.sorted(_compareElementRepresentations))
       {
@@ -46,8 +49,10 @@ String generateSearchIndexJson(Iterable<Indexable> indexedElements, bool pretty,
         'qualifiedName': indexable.fullyQualifiedName,
         'href': indexable.href,
         'kind': indexable.kind.index,
+        // TODO(srawlins): Only include this for [Inheritable] items.
         'overriddenDepth': indexable.overriddenDepth,
-        if (indexable is ModelElement) 'packageName': indexable.package.name,
+        if (indexable is ModelElement)
+          'packageRank': _packageRank(packageOrder, indexable),
         if (indexable is ModelElement)
           'desc': _removeHtmlTags(indexable.oneLineDoc),
         if (indexable is EnclosedElement)
@@ -65,8 +70,44 @@ String generateSearchIndexJson(Iterable<Indexable> indexedElements, bool pretty,
   return encoder.convert(indexItems);
 }
 
-/// The key used in the `index.json` file used to specify the package order.
-const packageOrderKey = '__PACKAGE_ORDER__';
+/// The "package rank" of [element], given a [packageOrder].
+///
+/// Briefly, this is 10 times the element's package's position in the
+/// [packageOrder], or 10 times the length of [packageOrder] if the element's
+/// package is not listed in [packageOrder].
+int _packageRank(List<String> packageOrder, ModelElement element) {
+  if (packageOrder.isEmpty) return 0;
+  var packageName = element.package.name;
+  var index = packageOrder.indexOf(packageName);
+  if (index == -1) return packageOrder.length * 10;
+  if (packageName == 'Dart' &&
+      !_dartCoreLibraries.contains(element.library.name)) {
+    // Non-"core" Dart SDK libraries should be ranked slightly lower than "core"
+    // Dart SDK libraries. The "core" Dart SDK libraries are the ones labeled as
+    // such at <https://api.dart.dev>, which can be used in both VM and Web
+    // environments.
+    // Note we choose integers throughout this function (as opposed to adding
+    // 0.5 here) in order to facilitate a proper [Comparable] comparison.
+    return index * 10 + 5;
+  }
+  return index * 10;
+}
+
+/// The set of "core" Dart libraries, used to rank contained items above items
+/// declared elsewhere in the Dart SDK.
+const _dartCoreLibraries = {
+  'dart:async',
+  'dart:collection',
+  'dart:convert',
+  'dart:core',
+  'dart:developer',
+  'dart:math',
+  'dart:typed_data',
+
+  // Plus the two core Flutter engine libraries.
+  'dart:ui',
+  'dart:web_ui',
+};
 
 String _removeHtmlTags(String? input) =>
     input?.replaceAll(_htmlTagPattern, '') ?? '';

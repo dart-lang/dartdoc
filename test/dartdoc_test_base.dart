@@ -40,6 +40,8 @@ abstract class DartdocTestBase {
 
   List<String> get experiments => [];
 
+  bool get skipUnreachableSdkLibraries => true;
+
   @mustCallSuper
   Future<void> setUp() async {
     packageMetaProvider = testPackageMetaProvider;
@@ -83,12 +85,13 @@ analyzer:
       packageMetaProvider,
       packageConfigProvider,
       additionalArguments: additionalArguments,
+      skipUnreachableSdkLibraries: skipUnreachableSdkLibraries,
     );
   }
 
   /// Creates a single library named [libraryName], with optional preamble
-  /// [libraryPreamble].   Optionally, pass a [FileGenerator] to create
-  /// extra files in the package such as `dartdoc_options.yaml`.
+  /// [libraryPreamble].  Optionally, pass [extraFiles] such as
+  /// `dartdoc_options.yaml`.
   Future<Library> bootPackageWithLibrary(String libraryContent,
       {String libraryPreamble = '',
       Iterable<d.Descriptor> extraFiles = const [],

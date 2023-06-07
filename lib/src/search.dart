@@ -4,7 +4,6 @@
 
 import 'dart:convert';
 
-import 'package:dartdoc/src/generator/generator_utils.dart';
 import 'package:dartdoc/src/model/indexable.dart';
 import 'package:meta/meta.dart';
 
@@ -17,30 +16,14 @@ enum _MatchPosition {
 }
 
 class Index {
-  final List<String> packageOrder;
   final List<IndexItem> index;
 
   @visibleForTesting
-  Index(this.packageOrder, this.index);
+  Index(this.index);
 
   factory Index.fromJson(String text) {
     var jsonIndex = (jsonDecode(text) as List).cast<Map<String, dynamic>>();
-    var indexList = <IndexItem>[];
-    var packageOrder = <String>[];
-    for (var entry in jsonIndex) {
-      if (entry.containsKey(packageOrderKey)) {
-        packageOrder.addAll((entry[packageOrderKey] as List).cast<String>());
-      } else {
-        indexList.add(IndexItem.fromMap(entry));
-      }
-    }
-    return Index(packageOrder, indexList);
-  }
-
-  int packageOrderPosition(String packageName) {
-    if (packageOrder.isEmpty) return 0;
-    var index = packageOrder.indexOf(packageName);
-    return index == -1 ? packageOrder.length : index;
+    return Index(jsonIndex.map(IndexItem.fromMap).toList());
   }
 
   List<IndexItem> find(String rawQuery) {
@@ -84,8 +67,7 @@ class Index {
       }
 
       // Prefer packages higher in the package order.
-      comparison = packageOrderPosition(a.item.packageName) -
-          packageOrderPosition(b.item.packageName);
+      comparison = a.item.packageRank - b.item.packageRank;
       if (comparison != 0) {
         return comparison;
       }
@@ -113,11 +95,7 @@ class Index {
 class IndexItem {
   final String name;
   final String qualifiedName;
-
-  // TODO(srawlins): Store the index of the package in package order instead of
-  // this String. The Strings bloat the `index.json` file and keeping duplicate
-  // parsed Strings in memory is expensive.
-  final String packageName;
+  final int packageRank;
   final Kind kind;
   final String? href;
   final int overriddenDepth;
@@ -127,7 +105,7 @@ class IndexItem {
   IndexItem._({
     required this.name,
     required this.qualifiedName,
-    required this.packageName,
+    required this.packageRank,
     required this.kind,
     required this.desc,
     required this.href,
@@ -144,14 +122,11 @@ class IndexItem {
   //   "href":"dartdoc/Dartdoc-class.html",
   //   "kind":1,
   //   "overriddenDepth":0,
-  //   "packageName":"dartdoc"
+  //   "packageRank":0
   //   ["enclosedBy":{"name":"dartdoc","kind":2}]
   // }
   // ```
   factory IndexItem.fromMap(Map<String, dynamic> data) {
-    // Note that this map also contains 'packageName', but we're not currently
-    // using that info.
-
     EnclosedBy? enclosedBy;
     if (data['enclosedBy'] != null) {
       final map = data['enclosedBy'] as Map<String, dynamic>;
@@ -164,7 +139,7 @@ class IndexItem {
     return IndexItem._(
       name: data['name'],
       qualifiedName: data['qualifiedName'],
-      packageName: data['packageName'],
+      packageRank: data['packageRank'] as int,
       href: data['href'],
       kind: Kind.values[data['kind'] as int],
       overriddenDepth: (data['overriddenDepth'] as int?) ?? 0,
