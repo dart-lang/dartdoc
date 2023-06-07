@@ -26,7 +26,6 @@ import 'package:dartdoc/src/render/renderer_factory.dart';
 import 'package:dartdoc/src/special_elements.dart';
 import 'package:dartdoc/src/tool_definition.dart';
 import 'package:dartdoc/src/tool_runner.dart';
-import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:meta/meta.dart';
 
@@ -219,12 +218,11 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
 
   /// All [ModelElement]s constructed for this package; a superset of
   /// [_allModelElements].
-  final Map<Tuple3<Element, Library, Container?>, ModelElement?>
-      allConstructedModelElements = {};
+  final Map<(Element element, Library? library, Container? enclosingElement),
+      ModelElement?> allConstructedModelElements = {};
 
   /// Anything that might be inheritable, place here for later lookup.
-  final Map<Tuple2<Element, Library>, Set<ModelElement>>
-      allInheritableElements = {};
+  final Map<(Element, Library), Set<ModelElement>> allInheritableElements = {};
 
   /// A mapping of the list of classes which implement each class.
   final Map<InheritingContainer, List<InheritingContainer>> _implementors =
@@ -287,18 +285,19 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   late final PackageWarningCounter packageWarningCounter =
       PackageWarningCounter(this);
 
-  final Set<Tuple3<Element?, PackageWarning, String?>> _warnAlreadySeen = {};
+  final Set<(Element? element, PackageWarning packageWarning, String? message)>
+      _warnAlreadySeen = {};
 
   void warnOnElement(Warnable? warnable, PackageWarning kind,
       {String? message,
       Iterable<Locatable> referredFrom = const [],
       Iterable<String> extendedDebug = const []}) {
-    var newEntry = Tuple3(warnable?.element, kind, message);
+    var newEntry = (warnable?.element, kind, message);
     if (_warnAlreadySeen.contains(newEntry)) {
       return;
     }
-    // Warnings can cause other warnings.  Queue them up via the stack but
-    // don't allow warnings we're already working on to get in there.
+    // Warnings can cause other warnings.  Queue them up via the stack but don't
+    // allow warnings we're already working on to get in there.
     _warnAlreadySeen.add(newEntry);
     _warnOnElement(warnable, kind,
         message: message ?? '',
@@ -417,12 +416,12 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   Map<LibraryElement, Set<Library>> _libraryElementReexportedBy = {};
 
   /// Prevent cycles from breaking our stack.
-  Set<Tuple2<Library, LibraryElement?>> _reexportsTagged = {};
+  Set<(Library, LibraryElement?)> _reexportsTagged = {};
 
   void _tagReexportsFor(
       final Library topLevelLibrary, final LibraryElement? libraryElement,
       [LibraryExportElement? lastExportedElement]) {
-    var key = Tuple2<Library, LibraryElement?>(topLevelLibrary, libraryElement);
+    var key = (topLevelLibrary, libraryElement);
     if (_reexportsTagged.contains(key)) {
       return;
     }
@@ -625,35 +624,36 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
 
   final Map<Element?, Library?> _canonicalLibraryFor = {};
 
-  /// Tries to find a top level library that references this element.
-  Library? findCanonicalLibraryFor(Element? e) {
-    assert(allLibrariesAdded);
-    var searchElement = e;
-    if (e is PropertyAccessorElement) {
-      searchElement = e.variable;
-    }
-    if (e is GenericFunctionTypeElement) {
-      searchElement = e.enclosingElement;
-    }
+  @Deprecated('Not public API; will be removed')
+  Library? findCanonicalLibraryFor(Element e) => _findCanonicalLibraryFor(e);
 
+  /// Tries to find a top level library that references this element.
+  Library? _findCanonicalLibraryFor(Element e) {
+    assert(allLibrariesAdded);
     if (_canonicalLibraryFor.containsKey(e)) {
       return _canonicalLibraryFor[e];
     }
     _canonicalLibraryFor[e] = null;
+
+    var searchElement = switch (e) {
+      PropertyAccessorElement() => e.variable,
+      GenericFunctionTypeElement() => e.enclosingElement,
+      _ => e,
+    };
+    if (searchElement == null) return null;
     for (var library in publicLibraries) {
-      if (library.modelElementsMap.containsKey(searchElement)) {
-        for (var modelElement in library.modelElementsMap[searchElement!]!) {
-          if (modelElement.isCanonical) {
-            return _canonicalLibraryFor[e] = library;
-          }
+      var modelElements = library.modelElementsMap[searchElement];
+      if (modelElements != null) {
+        if (modelElements.any((element) => element.isCanonical)) {
+          return _canonicalLibraryFor[e] = library;
         }
       }
     }
     return _canonicalLibraryFor[e];
   }
 
-  /// Tries to find a canonical ModelElement for this [e].  If we know
-  /// this element is related to a particular class, pass a [preferredClass] to
+  /// Tries to find a canonical [ModelElement] for this [e].  If we know this
+  /// element is related to a particular class, pass a [preferredClass] to
   /// disambiguate.
   ///
   /// This doesn't know anything about [PackageGraph.inheritThrough] and
@@ -662,107 +662,35 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   ModelElement? findCanonicalModelElementFor(Element? e,
       {Container? preferredClass}) {
     assert(allLibrariesAdded);
-    var lib = findCanonicalLibraryFor(e);
+    if (e == null) return null;
     if (preferredClass != null) {
       var canonicalClass =
           findCanonicalModelElementFor(preferredClass.element) as Container?;
       if (canonicalClass != null) preferredClass = canonicalClass;
     }
+    var lib = _findCanonicalLibraryFor(e);
     if (lib == null && preferredClass != null) {
-      lib = findCanonicalLibraryFor(preferredClass.element);
+      lib = _findCanonicalLibraryFor(preferredClass.element);
     }
     // For elements defined in extensions, they are canonical.
-    var enclosingElement = e?.enclosingElement;
+    var enclosingElement = e.enclosingElement;
     if (enclosingElement is ExtensionElement) {
       lib ??= modelBuilder.fromElement(enclosingElement.library) as Library?;
-      // (TODO:keertip) Find a better way to exclude members of extensions
-      //  when libraries are specified using the "--include" flag
+      // TODO(keertip): Find a better way to exclude members of extensions
+      // when libraries are specified using the "--include" flag.
       if (lib?.isDocumented == true) {
-        return modelBuilder.from(e!, lib!);
+        return modelBuilder.from(e, lib!);
       }
     }
+    // TODO(jcollins-g): The data structures should be changed to eliminate
+    // guesswork with member elements.
+    var declaration = e.declaration;
     ModelElement? modelElement;
-    // TODO(jcollins-g): Special cases are pretty large here.  Refactor to split
-    // out into helpers.
-    // TODO(jcollins-g): The data structures should be changed to eliminate guesswork
-    // with member elements.
-    var declaration = e?.declaration;
     if (declaration != null &&
         (e is ClassMemberElement || e is PropertyAccessorElement)) {
       e = declaration;
-      var candidates = <ModelElement>{};
-      var iKey = Tuple2<Element, Library?>(e, lib);
-      var key = Tuple3<Element, Library?, Class?>(e, lib, null);
-      var keyWithClass = Tuple3<Element, Library?, InheritingContainer?>(
-          e, lib, preferredClass as InheritingContainer?);
-      var constructedWithKey = allConstructedModelElements[key];
-      if (constructedWithKey != null) {
-        candidates.add(constructedWithKey);
-      }
-      var constructedWithKeyWithClass =
-          allConstructedModelElements[keyWithClass];
-      if (constructedWithKeyWithClass != null) {
-        candidates.add(constructedWithKeyWithClass);
-      }
-      if (candidates.isEmpty && allInheritableElements.containsKey(iKey)) {
-        candidates.addAll(
-            allInheritableElements[iKey as Tuple2<Element, Library>]!
-                .where((me) => me.isCanonical));
-      }
-
-      var canonicalClass = findCanonicalModelElementFor(e.enclosingElement);
-      if (canonicalClass is InheritingContainer) {
-        candidates.addAll(canonicalClass.allCanonicalModelElements.where((m) {
-          return m.element == e;
-        }));
-      }
-
-      var matches = {...candidates.where((me) => me.isCanonical)};
-
-      // It's possible to find accessors but no combos.  Be sure that if we
-      // have Accessors, we find their combos too.
-      if (matches.any((me) => me is Accessor)) {
-        var combos = matches
-            .whereType<Accessor>()
-            .map((a) => a.enclosingCombo)
-            .toList(growable: false);
-        matches.addAll(combos);
-        assert(combos.every((c) => c.isCanonical));
-      }
-
-      // This is for situations where multiple classes may actually be canonical
-      // for an inherited element whose defining Class is not canonical.
-      if (matches.length > 1 && preferredClass != null) {
-        // Search for matches inside our superchain.
-        var superChain = [
-          for (final elementType in preferredClass.superChain)
-            elementType.modelElement as InheritingContainer,
-          preferredClass,
-        ];
-
-        matches.removeWhere((me) => !superChain.contains(me.enclosingElement));
-        // Assumed all matches are EnclosedElement because we've been told about a
-        // preferredClass.
-        var enclosingElements = {
-          ...matches.map((me) => me.enclosingElement as Class?)
-        };
-        for (var c in superChain.reversed) {
-          if (enclosingElements.contains(c)) {
-            matches.removeWhere((me) => me.enclosingElement != c);
-          }
-          if (matches.length <= 1) break;
-        }
-      }
-
-      // Prefer a GetterSetterCombo to Accessors.
-      if (matches.any((me) => me is GetterSetterCombo)) {
-        matches.removeWhere((me) => me is Accessor);
-      }
-
-      assert(matches.length <= 1);
-      if (matches.isNotEmpty) {
-        modelElement = matches.first;
-      }
+      modelElement = _findCanonicalModelElementForAmbiguous(e, lib,
+          preferredClass: preferredClass as InheritingContainer?);
     } else {
       if (lib != null) {
         if (e is PropertyInducingElement) {
@@ -773,7 +701,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
           modelElement = modelBuilder.fromPropertyInducingElement(e, lib,
               getter: getter as Accessor?, setter: setter as Accessor?);
         } else {
-          modelElement = modelBuilder.from(e!, lib);
+          modelElement = modelBuilder.from(e, lib);
         }
       }
       assert(modelElement is! Inheritable);
@@ -786,6 +714,76 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       modelElement = modelElement.enclosingCombo;
     }
     return modelElement;
+  }
+
+  ModelElement? _findCanonicalModelElementForAmbiguous(Element e, Library? lib,
+      {InheritingContainer? preferredClass}) {
+    var candidates = <ModelElement?>{};
+    var constructedWithKey = allConstructedModelElements[(e, lib, null)];
+    if (constructedWithKey != null) {
+      candidates.add(constructedWithKey);
+    }
+    var constructedWithKeyWithClass =
+        allConstructedModelElements[(e, lib, preferredClass)];
+    if (constructedWithKeyWithClass != null) {
+      candidates.add(constructedWithKeyWithClass);
+    }
+    if (candidates.isEmpty) {
+      candidates = {
+        ...?allInheritableElements[(e, lib)]?.where((me) => me.isCanonical),
+      };
+    }
+
+    var canonicalClass = findCanonicalModelElementFor(e.enclosingElement);
+    if (canonicalClass is InheritingContainer) {
+      candidates.addAll(canonicalClass.allCanonicalModelElements
+          .where((m) => m.element == e));
+    }
+
+    var matches = {...candidates.whereNotNull().where((me) => me.isCanonical)};
+
+    // It's possible to find [Accessor]s but no combos.  Be sure that if we
+    // have accessors, we find their combos too.
+    if (matches.any((me) => me is Accessor)) {
+      var combos = matches
+          .whereType<Accessor>()
+          .map((a) => a.enclosingCombo)
+          .toList(growable: false);
+      matches.addAll(combos);
+      assert(combos.every((c) => c.isCanonical));
+    }
+
+    // This is for situations where multiple classes may actually be canonical
+    // for an inherited element whose defining Class is not canonical.
+    if (matches.length > 1 && preferredClass != null) {
+      // Search for matches inside our superchain.
+      var superChain = [
+        ...preferredClass.superChain.map((e) => e.modelElement),
+        preferredClass,
+      ];
+
+      matches.removeWhere((me) => !superChain.contains(me.enclosingElement));
+      // Assumed all matches are EnclosedElement because we've been told about a
+      // preferredClass.
+      var enclosingElements = {...matches.map((me) => me.enclosingElement)};
+      for (var c in superChain.reversed) {
+        if (enclosingElements.contains(c)) {
+          matches.removeWhere((me) => me.enclosingElement != c);
+        }
+        if (matches.length <= 1) break;
+      }
+    }
+
+    // Prefer a GetterSetterCombo to Accessors.
+    if (matches.any((me) => me is GetterSetterCombo)) {
+      matches.removeWhere((me) => me is Accessor);
+    }
+
+    assert(matches.length <= 1);
+    if (matches.isNotEmpty) {
+      return matches.first;
+    }
+    return null;
   }
 
   /// This is used when we might need a Library object that isn't actually
