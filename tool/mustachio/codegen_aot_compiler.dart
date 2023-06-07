@@ -442,15 +442,16 @@ class _BlockCompiler {
 
   Future<void> _compile(List<MustachioNode> syntaxTree) async {
     for (var node in syntaxTree) {
-      if (node is Text) {
-        _writeText(node.content);
-      } else if (node is Variable) {
-        var variableLookup = _lookUpGetter(node);
-        _writeGetter(variableLookup, escape: node.escape);
-      } else if (node is Section) {
-        await _compileSection(node);
-      } else if (node is Partial) {
-        await _compilePartial(node);
+      switch (node) {
+        case Text():
+          _writeText(node.content);
+        case Variable():
+          var variableLookup = _lookUpGetter(node);
+          _writeGetter(variableLookup, escape: node.escape);
+        case Section():
+          await _compileSection(node);
+        case Partial():
+          await _compilePartial(node);
       }
     }
   }
