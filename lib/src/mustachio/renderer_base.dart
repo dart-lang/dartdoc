@@ -100,30 +100,29 @@ class Template {
 
     // Walk the Mustache syntax tree, looking for Partial nodes.
     while (nodeQueue.isNotEmpty) {
-      var node = nodeQueue.removeFirst();
-      if (node is Text) {
-        // Nothing to do.
-      } else if (node is Variable) {
-        // Nothing to do.
-      } else if (node is Section) {
-        nodeQueue.addAll(node.children);
-      } else if (node is Partial) {
-        var key = node.key;
-        if (!partials.containsKey(key)) {
-          partials[key] = await partialResolver(key);
-        }
-        var partialFile = partials[key]!;
-        if (!partialTemplates.containsKey(partialFile)) {
-          try {
-            var partialTemplate = await Template.parse(partialFile,
-                partialResolver: partialResolver,
-                partialTemplates: {...partialTemplates});
-            partialTemplates[partialFile] = partialTemplate;
-          } on FileSystemException catch (e) {
-            throw MustachioResolutionError(node.span.message(
-                'FileSystemException (${e.message}) when reading partial:'));
+      switch (nodeQueue.removeFirst()) {
+        case Text():
+          break;
+        case Variable():
+          break;
+        case Section(:var children):
+          nodeQueue.addAll(children);
+        case Partial(:var span, :var key):
+          if (!partials.containsKey(key)) {
+            partials[key] = await partialResolver(key);
           }
-        }
+          var partialFile = partials[key]!;
+          if (!partialTemplates.containsKey(partialFile)) {
+            try {
+              var partialTemplate = await Template.parse(partialFile,
+                  partialResolver: partialResolver,
+                  partialTemplates: {...partialTemplates});
+              partialTemplates[partialFile] = partialTemplate;
+            } on FileSystemException catch (e) {
+              throw MustachioResolutionError(span.message(
+                  'FileSystemException (${e.message}) when reading partial:'));
+            }
+          }
       }
     }
 
@@ -218,19 +217,20 @@ abstract class RendererBase<T extends Object?> {
   /// Renders a block of Mustache template, the [ast], into [sink].
   void renderBlock(List<MustachioNode> ast) {
     for (var node in ast) {
-      if (node is Text) {
-        write(node.content);
-      } else if (node is Variable) {
-        var content = getFields(node);
-        if (node.escape) {
-          write(htmlEscape.convert(content));
-        } else {
-          write(content);
-        }
-      } else if (node is Section) {
-        section(node);
-      } else if (node is Partial) {
-        partial(node);
+      switch (node) {
+        case Text():
+          write(node.content);
+        case Variable():
+          var content = getFields(node);
+          if (node.escape) {
+            write(htmlEscape.convert(content));
+          } else {
+            write(content);
+          }
+        case Section():
+          section(node);
+        case Partial():
+          partial(node);
       }
     }
   }

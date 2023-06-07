@@ -420,8 +420,7 @@ class MustachioParser {
 }
 
 /// An interface for various types of node in a Mustache template.
-@sealed
-abstract class MustachioNode {
+sealed class MustachioNode {
   SourceSpan get span;
 }
 
@@ -434,7 +433,7 @@ mixin HasMultiNamedKey {
 
 /// A Text node, representing literal text.
 @immutable
-class Text implements MustachioNode {
+final class Text implements MustachioNode {
   final String content;
 
   @override
@@ -448,7 +447,7 @@ class Text implements MustachioNode {
 
 /// A Variable node, representing a variable to be resolved.
 @immutable
-class Variable with HasMultiNamedKey implements MustachioNode {
+final class Variable with HasMultiNamedKey implements MustachioNode {
   @override
   final List<String> key;
 
@@ -470,7 +469,7 @@ class Variable with HasMultiNamedKey implements MustachioNode {
 /// A Section node, representing either a Conditional Section, a Repeated
 /// Section, or a Value Section, possibly inverted.
 @immutable
-class Section with HasMultiNamedKey implements MustachioNode {
+final class Section with HasMultiNamedKey implements MustachioNode {
   @override
   final List<String> key;
 
@@ -493,7 +492,7 @@ class Section with HasMultiNamedKey implements MustachioNode {
 
 /// A Partial node, representing a partial to be resolved.
 @immutable
-class Partial implements MustachioNode {
+final class Partial implements MustachioNode {
   final String key;
 
   @override
