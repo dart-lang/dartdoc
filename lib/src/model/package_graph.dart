@@ -29,12 +29,6 @@ import 'package:dartdoc/src/tool_runner.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:meta/meta.dart';
 
-typedef ConstructedModelElementKey = ({
-  Element element,
-  Library library,
-  Container? enclosingElement,
-});
-
 class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   PackageGraph.uninitialized(
     this.config,
@@ -224,8 +218,8 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
 
   /// All [ModelElement]s constructed for this package; a superset of
   /// [_allModelElements].
-  final Map<ConstructedModelElementKey, ModelElement?>
-      allConstructedModelElements = {};
+  final Map<(Element element, Library? library, Container? enclosingElement),
+      ModelElement?> allConstructedModelElements = {};
 
   /// Anything that might be inheritable, place here for later lookup.
   final Map<(Element, Library), Set<ModelElement>> allInheritableElements = {};
@@ -696,7 +690,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
         (e is ClassMemberElement || e is PropertyAccessorElement)) {
       e = declaration;
       modelElement = _findCanonicalModelElementForAmbiguous(e, lib,
-          preferredClass: preferredClass);
+          preferredClass: preferredClass as InheritingContainer?);
     } else {
       if (lib != null) {
         if (e is PropertyInducingElement) {
@@ -723,27 +717,14 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   }
 
   ModelElement? _findCanonicalModelElementForAmbiguous(Element e, Library? lib,
-      {Container? preferredClass}) {
+      {InheritingContainer? preferredClass}) {
     var candidates = <ModelElement?>{};
-    // Remove when bug is fixed:
-    // https://github.com/dart-lang/linter/issues/4438.
-    // ignore: collection_methods_unrelated_type
-    var constructedWithKey = allConstructedModelElements[(
-      element: e,
-      library: lib,
-      enclosingElement: null
-    )];
+    var constructedWithKey = allConstructedModelElements[(e, lib, null)];
     if (constructedWithKey != null) {
       candidates.add(constructedWithKey);
     }
-    // Remove when bug is fixed:
-    // https://github.com/dart-lang/linter/issues/4438.
-    // ignore: collection_methods_unrelated_type
-    var constructedWithKeyWithClass = allConstructedModelElements[(
-      element: e,
-      library: lib,
-      enclosingElement: preferredClass as InheritingContainer?
-    )];
+    var constructedWithKeyWithClass =
+        allConstructedModelElements[(e, lib, preferredClass)];
     if (constructedWithKeyWithClass != null) {
       candidates.add(constructedWithKeyWithClass);
     }
@@ -777,17 +758,14 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     if (matches.length > 1 && preferredClass != null) {
       // Search for matches inside our superchain.
       var superChain = [
-        for (final elementType in preferredClass.superChain)
-          elementType.modelElement as InheritingContainer,
+        ...preferredClass.superChain.map((e) => e.modelElement),
         preferredClass,
       ];
 
       matches.removeWhere((me) => !superChain.contains(me.enclosingElement));
       // Assumed all matches are EnclosedElement because we've been told about a
       // preferredClass.
-      var enclosingElements = {
-        ...matches.map((me) => me.enclosingElement as Class?)
-      };
+      var enclosingElements = {...matches.map((me) => me.enclosingElement)};
       for (var c in superChain.reversed) {
         if (enclosingElements.contains(c)) {
           matches.removeWhere((me) => me.enclosingElement != c);

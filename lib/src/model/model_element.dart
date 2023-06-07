@@ -172,11 +172,8 @@ abstract class ModelElement extends Canonicalization
     }
 
     // Return the cached ModelElement if it exists.
-    var cachedModelElement = packageGraph.allConstructedModelElements[(
-      element: e,
-      library: library,
-      enclosingElement: enclosingContainer
-    )];
+    var cachedModelElement = packageGraph
+        .allConstructedModelElements[(e, library, enclosingContainer)];
     if (cachedModelElement != null) {
       return cachedModelElement;
     }
@@ -265,11 +262,8 @@ abstract class ModelElement extends Canonicalization
     }
 
     // Return the cached ModelElement if it exists.
-    var cachedModelElement = packageGraph.allConstructedModelElements[(
-      element: e,
-      library: library,
-      enclosingElement: enclosingContainer
-    )];
+    var cachedModelElement = packageGraph
+        .allConstructedModelElements[(e, library, enclosingContainer)];
     if (cachedModelElement != null) {
       return cachedModelElement;
     }
@@ -298,11 +292,7 @@ abstract class ModelElement extends Canonicalization
     // TODO(jcollins-g): Reenable Parameter caching when dart-lang/sdk#30146
     //                   is fixed?
     if (library != Library.sentinel && newModelElement is! Parameter) {
-      var key = (
-        element: e,
-        library: library,
-        enclosingElement: enclosingContainer,
-      );
+      var key = (e, library, enclosingContainer);
       library.packageGraph.allConstructedModelElements[key] = newModelElement;
       if (newModelElement is Inheritable) {
         library.packageGraph.allInheritableElements
