@@ -11,7 +11,6 @@ import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model_element.dart';
 import 'package:dartdoc/src/model/package_graph.dart';
 import 'package:dartdoc/src/runtime_stats.dart';
-import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:path/path.dart' as p;
@@ -66,8 +65,7 @@ class Validator {
     // Prevent extremely large stacks by storing the paths we are using
     // here instead -- occasionally, very large jobs have overflowed
     // the stack without this.
-    // (newPathToCheck, newFullPath)
-    final toVisit = <Tuple2<String, String>>{};
+    final toVisit = <(String newPathToCheck, String newFullPath)>{};
     final pathDirectory = baseHref == null
         ? p.dirname(pathToCheck)
         : '${p.dirname(pathToCheck)}/$baseHref';
@@ -80,13 +78,14 @@ class Validator {
         linkPath = p.normalize(linkPath);
         final newFullPath = p.join(_origin, linkPath);
         if (!_visited.contains(newFullPath)) {
-          toVisit.add(Tuple2(linkPath, newFullPath));
+          toVisit.add((linkPath, newFullPath));
           _visited.add(newFullPath);
         }
       }
     }
     for (final visitPaths in toVisit) {
-      _collectLinks(visitPaths.item1, pathToCheck, visitPaths.item2);
+      var (linkPath, fullPath) = visitPaths;
+      _collectLinks(linkPath, pathToCheck, fullPath);
     }
     _onCheckProgress.add(pathToCheck);
   }
