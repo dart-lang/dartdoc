@@ -26,7 +26,8 @@ const String COLOR_ORANGE = 'orange';
 
 const String COMPLEX_COLOR = 'red' + '-' + 'green' + '-' + 'blue';
 
-/// top level var <nodoc>
+/// top level var
+/// @nodoc
 const DO_NOT_DOCUMENT = 'not documented';
 
 /// This is the same name as a top-level const from the fake lib.
@@ -139,7 +140,7 @@ class Apple {
   /// The read-write field `m`.
   int m = 0;
 
-  /// <nodoc> no docs
+  /// @nodoc no docs
   int? notDocumented;
 
   ///Constructor
@@ -180,7 +181,7 @@ class Apple {
   void methodWithTypedefParam(processMessage p) {}
 
   /**
-   * <nodoc> method not documented
+   * @nodoc method not documented
    */
   void notAPublicMethod() {}
 
@@ -481,15 +482,8 @@ class ShapeType extends _RetainedEnum {
 /// that has some operators
 class SpecializedDuration extends Duration {}
 
-/**
- * class <nodoc>
- */
-class unDocumented {
-  String? s;
-}
-
 /// @nodoc
-class unDocumented2 {
+class unDocumented {
   String? s;
 }
 
