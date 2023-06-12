@@ -493,7 +493,7 @@ class DartDocResolvedLibrary {
   ///
   /// Uses a precomputed map of `element.source.fullName` to [CompilationUnit]
   /// to avoid linear traversal in
-  /// [ResolvedLibraryElementImpl.getElementDeclaration].
+  /// `ResolvedLibraryElementImpl.getElementDeclaration`.
   AstNode? getAstNode(Element element) {
     var fullName = element.source?.fullName;
     if (fullName != null && !element.isSynthetic && element.nameOffset != -1) {

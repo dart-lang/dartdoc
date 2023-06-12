@@ -19,17 +19,12 @@ mixin ExtensionTarget on ModelElement {
   /// This is defined as those extensions where an instantiation of the type
   /// defined by [element] can exist where this extension applies, not including
   /// any extension that applies to every type.
-  @Deprecated('Use potentiallyApplicableExtensionsSorted')
-  late final List<Extension> potentiallyApplicableExtensions = packageGraph
-      .documentedExtensions
-      .where((e) => !e.alwaysApplies)
-      .where((e) => e.couldApplyTo(this))
-      .toList(growable: false)
-    ..sort(byName);
+  late final List<Extension> potentiallyApplicableExtensionsSorted =
+      packageGraph.documentedExtensions
+          .where((e) => !e.alwaysApplies)
+          .where((e) => e.couldApplyTo(this))
+          .toList(growable: false)
+        ..sort(byName);
 
   ElementType get modelType;
-
-  List<Extension> get potentiallyApplicableExtensionsSorted =>
-      // ignore: deprecated_member_use_from_same_package
-      potentiallyApplicableExtensions;
 }

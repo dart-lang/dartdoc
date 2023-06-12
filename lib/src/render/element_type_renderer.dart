@@ -17,10 +17,6 @@ abstract class ElementTypeRenderer<T extends ElementType> {
       elementType.nullabilitySuffix.isEmpty
           ? inner
           : '($inner${elementType.nullabilitySuffix})';
-
-  @Deprecated('Append nullability suffix to StringBuilder')
-  String wrapNullability(T elementType, String inner) =>
-      '$inner${elementType.nullabilitySuffix}';
 }
 
 // HTML implementations.

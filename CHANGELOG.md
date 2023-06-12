@@ -1,3 +1,8 @@
+## 7.0.0-dev
+
+* Remove all `@deprecated` elements.
+* Remove deprecated `<nodoc>` syntax.
+
 ## 6.3.0
 * Add a hideImplementations directive to disable showing constant
   implementations alongside one-line docs on class pages (#3398)

@@ -24,7 +24,7 @@ class PackageMetaFailure extends DartdocFailure {
 }
 
 /// For each list in this list, at least one of the given paths must exist
-/// for this to be detected as an SDK.  Update [_writeMockSdkBinFiles] in
+/// for this to be detected as an SDK.  Update `_writeMockSdkBinFiles` in
 /// `test/src/utils.dart` if removing any entries here.
 const List<List<String>> _sdkDirFilePathsPosix = [
   ['bin/dart.bat', 'bin/dart.exe', 'bin/dart'],
@@ -143,21 +143,9 @@ abstract class PackageMeta {
 
   String get version;
 
-  @Deprecated('This getter will be removed.')
-  String get description;
-
   String get homepage;
 
-  @Deprecated('This getter will be removed.')
-  String get repository;
-
   File? getReadmeContents();
-
-  @Deprecated('This method will be removed.')
-  File? getLicenseContents();
-
-  @Deprecated('This method will be removed.')
-  File? getChangelogContents();
 
   /// Returns true if we are a valid package, valid enough to generate docs.
   bool get isValid => getInvalidReasons().isEmpty;
@@ -304,8 +292,6 @@ abstract class PubPackageMeta extends PackageMeta {
 
 class _FilePackageMeta extends PubPackageMeta {
   File? _readme;
-  File? _license;
-  File? _changelog;
 
   late final Map<dynamic, dynamic> _pubspec = () {
     var pubspec = dir.getChildAssumingFile('pubspec.yaml');
@@ -355,13 +341,7 @@ class _FilePackageMeta extends PubPackageMeta {
       _pubspec.getOptionalString('version') ?? '0.0.0-unknown';
 
   @override
-  String get description => _pubspec.getOptionalString('description') ?? '';
-
-  @override
   String get homepage => _pubspec.getOptionalString('homepage') ?? '';
-
-  @override
-  String get repository => _pubspec.getOptionalString('repository') ?? '';
 
   @override
   bool get requiresFlutter =>
@@ -375,14 +355,6 @@ class _FilePackageMeta extends PubPackageMeta {
   @override
   File? getReadmeContents() =>
       _readme ??= _locate(dir, ['readme.md', 'readme.txt', 'readme']);
-
-  @override
-  File? getLicenseContents() =>
-      _license ??= _locate(dir, ['license.md', 'license.txt', 'license']);
-
-  @override
-  File? getChangelogContents() => _changelog ??=
-      _locate(dir, ['changelog.md', 'changelog.txt', 'changelog']);
 
   /// Returns a list of reasons this package is invalid, or an
   /// empty list if no reasons found.
@@ -436,15 +408,7 @@ class _SdkMeta extends PubPackageMeta {
   }
 
   @override
-  String get description =>
-      'The Dart SDK is a set of tools and libraries for the '
-      'Dart programming language.';
-
-  @override
   String get homepage => 'https://github.com/dart-lang/sdk';
-
-  @override
-  String get repository => 'https://github.com/dart-lang/sdk';
 
   @override
   bool get requiresFlutter => false;
@@ -462,13 +426,6 @@ class _SdkMeta extends PubPackageMeta {
 
   @override
   List<String> getInvalidReasons() => const [];
-
-  @override
-  File? getLicenseContents() => null;
-
-  // TODO: The changelog doesn't seem to be available in the sdk.
-  @override
-  File? getChangelogContents() => null;
 }
 
 @visibleForTesting

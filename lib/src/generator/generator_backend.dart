@@ -14,9 +14,6 @@ import 'package:dartdoc/src/version.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:path/path.dart' as p show Context;
 
-@Deprecated('Refer to GeneratorBackendBase directly')
-typedef DartdocGeneratorBackend = GeneratorBackendBase;
-
 /// Configuration options for Dartdoc's default backend.
 class DartdocGeneratorBackendOptions implements TemplateOptions {
   @override

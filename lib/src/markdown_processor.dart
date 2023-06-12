@@ -234,11 +234,6 @@ const maxPriorContext = 20;
 /// generic.
 const maxPostContext = 30;
 
-@Deprecated('Public access to this variable is deprecated')
-final allBeforeFirstNewline = _allBeforeFirstNewline;
-@Deprecated('Public access to this variable is deprecated')
-final allAfterLastNewline = _allAfterLastNewline;
-
 final RegExp _allBeforeFirstNewline = RegExp(r'^.*\n', multiLine: true);
 final RegExp _allAfterLastNewline = RegExp(r'\n.*$', multiLine: true);
 
@@ -308,28 +303,10 @@ class MarkdownDocument extends md.Document {
     );
   }
 
-  @Deprecated("MarkdownDocument's unnamed constructor is deprecated. Use "
-      '[MarkdownDocument.withElementLinkResolver]')
-  MarkdownDocument({
-    Iterable<md.BlockSyntax>? blockSyntaxes,
-    Iterable<md.InlineSyntax>? inlineSyntaxes,
-    md.ExtensionSet? extensionSet,
-    md.Resolver? linkResolver,
-    md.Resolver? imageLinkResolver,
-  }) : this._(
-          blockSyntaxes: blockSyntaxes,
-          inlineSyntaxes: inlineSyntaxes,
-          extensionSet: extensionSet,
-          linkResolver: linkResolver,
-          imageLinkResolver: imageLinkResolver,
-        );
-
   MarkdownDocument._({
     super.blockSyntaxes,
     super.inlineSyntaxes,
-    super.extensionSet,
     super.linkResolver,
-    super.imageLinkResolver,
   });
 
   /// Parses markdown text, collecting the first [md.Node] or all of them

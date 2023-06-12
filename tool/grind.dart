@@ -309,7 +309,7 @@ class WarningsCollection {
     warningKeyCounts.update(key, (e) => e + 1, ifAbsent: () => 1);
   }
 
-  /// Output formatter for comparing warnings.  [this] is the original.
+  /// Output formatter for comparing warnings. `this` is the original.
   String getPrintableWarningDelta(String title, WarningsCollection current) {
     var printBuffer = StringBuffer();
     var quantityChangedOuts = <String>{};
@@ -1211,7 +1211,8 @@ Future<void> testDartdoc() async {
       ['<title>dartdoc - Dart API docs</title>']);
   var object = RegExp('<li>Object</li>', multiLine: true);
   expectFileContains(
-      p.join(_dartdocDocsPath, 'dartdoc', 'ModelElement-class.html'), [object]);
+      p.join(_dartdocDocsPath, 'dartdoc', 'PubPackageMeta-class.html'),
+      [object]);
 }
 
 @Task('Generate docs for dartdoc with remote linking')
@@ -1225,7 +1226,7 @@ Future<void> testDartdocRemote() async {
   expectFileContains(p.join(_dartdocDocsPath, 'index.html'),
       ['<title>dartdoc - Dart API docs</title>']);
   expectFileContains(
-      p.join(_dartdocDocsPath, 'dartdoc', 'ModelElement-class.html'), [object]);
+      p.join(_dartdocDocsPath, 'dartdoc', 'PackageMeta-class.html'), [object]);
 }
 
 @Task('serve docs for a package that requires flutter with remote linking')

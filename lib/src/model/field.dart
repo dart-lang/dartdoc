@@ -104,7 +104,6 @@ class Field extends ModelElement
   @override
   bool get isInherited => _isInherited;
 
-  @override
   bool get isStatic => element.isStatic;
 
   @override
@@ -140,9 +139,6 @@ class Field extends ModelElement
     }
     return allFeatures;
   }
-
-  @Deprecated('Use `element`')
-  FieldElement? get field => element;
 
   @override
   String get fileName =>

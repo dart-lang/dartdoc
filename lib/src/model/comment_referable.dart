@@ -19,9 +19,6 @@ import 'package:dartdoc/src/model/model_object_builder.dart';
 import 'package:dartdoc/src/model/nameable.dart';
 import 'package:meta/meta.dart';
 
-@Deprecated('Public access to this class is deprecated')
-typedef ReferenceChildrenLookup = _ReferenceChildrenLookup;
-
 class _ReferenceChildrenLookup {
   final String lookup;
   final List<String> remaining;
@@ -130,7 +127,7 @@ mixin CommentReferable implements Nameable, ModelBuilderInterface {
         allowTree: allowTree, filter: filter);
   }
 
-  /// Given a [result] found in an implementation of [lookupViaScope] or
+  /// Given a [result] found in an implementation of [_lookupViaScope] or
   /// [_ReferenceChildrenLookup], recurse through children, skipping over
   /// results that do not match the filter.
   CommentReferable? _recurseChildrenAndFilter(
@@ -157,11 +154,6 @@ mixin CommentReferable implements Nameable, ModelBuilderInterface {
     return returnValue;
   }
 
-  @Deprecated('Public access to this method is deprecated')
-  // ignore: library_private_types_in_public_api
-  Iterable<_ReferenceChildrenLookup> childLookups(List<String> reference) =>
-      _childLookups(reference);
-
   /// A list of lookups that should be attempted on children based on
   /// [reference].
   ///
@@ -174,7 +166,7 @@ mixin CommentReferable implements Nameable, ModelBuilderInterface {
               reference.sublist(index + 1)))
           .toList(growable: false);
 
-  /// Map of [referenceName] to the elements that are a member of [this], but
+  /// Map of [referenceName] to the elements that are a member of `this`, but
   /// not this model element itself.  Can be cached.
   ///
   /// There is no need to duplicate references here that can be found via
@@ -202,10 +194,9 @@ mixin CommentReferable implements Nameable, ModelBuilderInterface {
   // TODO(jcollins-g): Eliminate need for this in markdown_processor.
   Library? get library => null;
 
-  @internal
-
   /// For testing / comparison only, get the comment referable from where this
-  /// [ElementType] was defined.  Override where an [Element] is available.
+  /// `ElementType` was defined.  Override where an [Element] is available.
+  @internal
   CommentReferable get definingCommentReferable => this;
 }
 

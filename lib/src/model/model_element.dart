@@ -710,10 +710,6 @@ abstract class ModelElement extends Canonicalization
 
   String get htmlId => name;
 
-  @Deprecated('Will soon only be defined on ModelFunction')
-  bool get isAsynchronous =>
-      isExecutable && (element as ExecutableElement).isAsynchronous;
-
   bool get isConst => false;
 
   bool get isDeprecated {
@@ -746,29 +742,9 @@ abstract class ModelElement extends Canonicalization
   /// Whether this element is an enum value.
   bool get isEnumValue => false;
 
-  @Deprecated('Will soon only be defined on ModelFunction')
-  bool get isExecutable => element is ExecutableElement;
-
   bool get isFinal => false;
 
   bool get isLate => false;
-
-  @Deprecated('Will be removed in the next release')
-  bool get isLocalElement => element is LocalElement;
-
-  @Deprecated('Will be removed in the next release')
-  bool get isPropertyAccessor => element is PropertyAccessorElement;
-
-  @Deprecated('Will be removed in the next release')
-  bool get isPropertyInducer => element is PropertyInducingElement;
-
-  @Deprecated('Will be removed in the next release')
-  bool get isStatic {
-    if (isPropertyInducer) {
-      return (element as PropertyInducingElement).isStatic;
-    }
-    return false;
-  }
 
   /// A human-friendly name for the kind of element this is.
   @override
@@ -816,10 +792,6 @@ abstract class ModelElement extends Canonicalization
 
   String? get linkedParamsNoMetadata =>
       _parameterRenderer.renderLinkedParams(parameters, showMetadata: false);
-
-  @Deprecated('Unused, will be removed')
-  String get linkedParamsNoMetadataOrNames => _parameterRenderer
-      .renderLinkedParams(parameters, showMetadata: false, showNames: false);
 
   @override
   String get name => element.name!;
