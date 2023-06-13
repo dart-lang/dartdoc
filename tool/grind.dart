@@ -1112,7 +1112,7 @@ Future<void> tryPublish() async {
 }
 
 @Task('Run all the tests.')
-@Depends(clean)
+@Depends(clean, analyzeTestPackages)
 Future<void> test() async {
   await testDart(testFiles);
   await testFutures.tasksComplete;
