@@ -624,9 +624,6 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
 
   final Map<Element?, Library?> _canonicalLibraryFor = {};
 
-  @Deprecated('Not public API; will be removed')
-  Library? findCanonicalLibraryFor(Element e) => _findCanonicalLibraryFor(e);
-
   /// Tries to find a top level library that references this element.
   Library? _findCanonicalLibraryFor(Element e) {
     assert(allLibrariesAdded);

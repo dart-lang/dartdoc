@@ -268,9 +268,6 @@ class Library extends ModelElement
   SdkLibrary? get _sdkLib =>
       packageGraph.sdkLibrarySources[element.librarySource];
 
-  @Deprecated('Will be removed soon')
-  SdkLibrary? get sdkLib => _sdkLib;
-
   @override
   bool get isPublic {
     if (!super.isPublic) return false;

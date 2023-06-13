@@ -6,7 +6,7 @@ library dartdoc.bin;
 
 import 'dart:async';
 
-import 'package:dartdoc/dartdoc.dart';
+import    'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/options.dart';
 
 /// Analyzes Dart files and generates a representation of included libraries,

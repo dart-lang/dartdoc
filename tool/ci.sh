@@ -8,10 +8,6 @@
 set -ex
 
 DART_VERSION=`dart --version 2>&1 | awk '{print $4}'`
-# Do not run coverage on non-dev builds or non-Linux platforms.
-if ! echo "${DART_VERSION}" | grep -q dev || ! uname | grep -q Linux ; then
-  unset COVERAGE_TOKEN
-fi
 
 if [ "$DARTDOC_BOT" = "sdk-docs" ]; then
   # Build the SDK docs
@@ -31,7 +27,6 @@ elif [ "$DARTDOC_BOT" = "packages" ]; then
   PACKAGE_NAME=flutter_plugin_tools PACKAGE_VERSION=">=0.0.14+1" dart run grinder build-pub-package 2>&1 | grep "warning: package:flutter_plugin_tools has no documentable libraries"
 elif [ "$DARTDOC_BOT" = "sdk-analyzer" ]; then
   echo "Running all tests against the SDK analyzer"
-  unset COVERAGE_TOKEN
   dart run grinder test-with-analyzer-sdk
 else
   echo "Running main dartdoc bot"
