@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:meta/meta.dart';
-
 import '../charcode.dart';
 
 const _operatorKeyword = 'operator';
@@ -481,9 +479,8 @@ class _SuffixParseResult {
       _SuffixParseResult._(_SuffixResultType.notSuffix, null);
 }
 
-@sealed
 // TODO(jcollins-g): add SourceSpans?
-abstract class CommentReferenceNode {
+sealed class CommentReferenceNode {
   String get text;
 }
 
