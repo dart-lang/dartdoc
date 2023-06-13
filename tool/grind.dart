@@ -1056,7 +1056,6 @@ final _generatedFilesList = <String>[
 ].map((s) => p.joinAll(p.posix.split(s)));
 
 @Task('Verify generated files are up to date')
-@Depends(clean)
 Future<void> checkBuild() async {
   var originalFileContents = <String, String>{};
   var differentFiles = <String>[];
