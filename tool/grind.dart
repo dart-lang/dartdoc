@@ -214,33 +214,21 @@ void analyzeTestPackages() async {
 void checkFormat() async {
   if (Platform.version.contains('dev')) {
     var filesToFix = <String>[];
-    // Filter out test packages as they always have strange formatting.
-    // Passing parameters to dart format for directories to search results in
-    // filenames being stripped of the dirname so we have to filter here.
-    void addFileToFix(String line) {
-      if (!line.startsWith('Changed ')) return;
-      var fileName = line.substring(8);
-      var pathComponents = p.split(fileName);
-      if (pathComponents.isNotEmpty && pathComponents.first == 'testing') {
-        return;
-      }
-      filesToFix.add(fileName);
-    }
 
     log('Validating dart format with version ${Platform.version}');
     await SubprocessLauncher('dart format').runStreamed(
-        Platform.resolvedExecutable,
-        [
-          'format',
-          '-o',
-          'none',
-          'bin',
-          'lib',
-          'test',
-          'tool',
-          'web',
-        ],
-        perLine: addFileToFix);
+      Platform.resolvedExecutable,
+      [
+        'format',
+        '-o',
+        'none',
+        'bin',
+        'lib',
+        'test',
+        'tool',
+        'web',
+      ],
+    );
     if (filesToFix.isNotEmpty) {
       fail(
           'dart format found files needing reformatting. Use this command to reformat:\n'
@@ -257,16 +245,16 @@ void checkFormat() async {
   checkFormat,
   checkBuild,
   tryPublish,
-  smokeTest,
+  test,
 )
 void presubmit() {}
 
-@Task('Run long tests, self-test dartdoc, and run the publish test')
-@Depends(presubmit, longTest, testDartdoc)
+@Task('Run tests, self-test dartdoc, and run the publish test')
+@Depends(presubmit, test, testDartdoc)
 void buildbot() {}
 
 @Task('Run buildbot tests, but without publish test')
-@Depends(analyze, checkFormat, checkBuild, smokeTest, longTest, testDartdoc)
+@Depends(analyze, checkFormat, checkBuild, test, testDartdoc)
 void buildbotNoPublish() {}
 
 @Task('Generate docs for the Dart SDK')
@@ -895,7 +883,7 @@ Future<Iterable<Map<String, Object?>>> _buildFlutterDocs(
       flutterRepo.cacheDart,
       ['pub', 'global', 'deactivate', 'snippets'],
     );
-  } on SubProcessException {
+  } on SubprocessException {
     // Ignore failure to deactivate so this works on completely clean bots.
   }
   await flutterRepo.launcher.runStreamed(
@@ -1068,7 +1056,6 @@ final _generatedFilesList = <String>[
 ].map((s) => p.joinAll(p.posix.split(s)));
 
 @Task('Verify generated files are up to date')
-@Depends(clean)
 Future<void> checkBuild() async {
   var originalFileContents = <String, String>{};
   var differentFiles = <String>[];
@@ -1123,24 +1110,10 @@ Future<void> tryPublish() async {
       .runStreamed(Platform.resolvedExecutable, ['pub', 'publish', '-n']);
 }
 
-@Task('Run a smoke test, only')
-@Depends(clean)
-Future<void> smokeTest() async {
-  await testDart(smokeTestFiles);
-  await testFutures.tasksComplete;
-}
-
-@Task('Run non-smoke tests, only')
-@Depends(clean)
-Future<void> longTest() async {
-  await testDart(testFiles);
-  await testFutures.tasksComplete;
-}
-
 @Task('Run all the tests.')
-@Depends(clean)
+@Depends(analyzeTestPackages)
 Future<void> test() async {
-  await testDart(smokeTestFiles.followedBy(testFiles));
+  await testDart(testFiles);
   await testFutures.tasksComplete;
 }
 
@@ -1169,32 +1142,19 @@ Iterable<Directory> get buildCacheDirectories => Directory('.dart_tool')
     .whereType<Directory>()
     .where((e) => ['build', 'build_resolvers'].contains(p.basename(e.path)));
 
-List<File> get smokeTestFiles => Directory('test')
-    .listSync(recursive: true)
-    .whereType<File>()
-    .where((e) => p.basename(e.path) == 'model_test.dart')
-    .toList(growable: false);
-
 List<File> get testFiles => Directory('test')
     .listSync(recursive: true)
     .whereType<File>()
     .where((e) => e.path.endsWith('test.dart'))
-    .where((e) => p.basename(e.path) != 'model_test.dart')
     .toList(growable: false);
 
 Future<void> testDart(Iterable<File> tests) async {
-  var parameters = <String>['--enable-asserts'];
-
   for (var dartFile in tests) {
     await testFutures.add(() =>
-        CoverageSubprocessLauncher('dart-${p.basename(dartFile.path)}')
-            .runStreamed(Platform.resolvedExecutable,
-                <String>[...parameters, dartFile.path]));
+        SubprocessLauncher('dart-${p.basename(dartFile.path)}').runStreamed(
+            Platform.resolvedExecutable,
+            <String>['--enable-asserts', dartFile.path]));
   }
-
-  return CoverageSubprocessLauncher.generateCoverageToFile(
-      PhysicalResourceProvider.INSTANCE.getFile(p.canonicalize('lcov.info')),
-      PhysicalResourceProvider.INSTANCE);
 }
 
 @Task('Generate docs for dartdoc without link-to-remote')

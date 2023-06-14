@@ -1,7 +1,6 @@
 # Dart documentation generator
 
 [![Build Status](https://github.com/dart-lang/dartdoc/workflows/Test/badge.svg)](https://github.com/dart-lang/dartdoc/actions?query=workflow%3ATest)
-[![Coverage Status](https://coveralls.io/repos/github/dart-lang/dartdoc/badge.svg?branch=main)](https://coveralls.io/github/dart-lang/dartdoc?branch=main)
 [![OpenSSF
 Scorecard](https://api.securityscorecards.dev/projects/github.com/dart-lang/dartdoc/badge)](https://deps.dev/project/github/dart-lang%2Fdartdoc)
 

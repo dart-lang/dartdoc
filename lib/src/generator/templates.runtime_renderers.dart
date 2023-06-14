@@ -8574,19 +8574,6 @@ class _Renderer_Library extends RendererBase<Library> {
                         parent: r, getters: _invisibleGetters['Scope']!);
                   },
                 ),
-                'sdkLib': Property(
-                  getValue: (CT_ c) => c.sdkLib,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'SdkLibrary'),
-                  isNullValue: (CT_ c) => c.sdkLib == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.sdkLib, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['SdkLibrary']!);
-                  },
-                ),
                 'sidebarPath': Property(
                   getValue: (CT_ c) => c.sidebarPath,
                   renderVariable:
@@ -12565,7 +12552,7 @@ class _Renderer_Package extends RendererBase<Package> {
   }
 }
 
-String renderIndex(PackageTemplateData context, Template template) {
+String renderSearchPage(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -12853,7 +12840,7 @@ String renderError(PackageTemplateData context, Template template) {
   return buffer.toString();
 }
 
-String renderSearchPage(PackageTemplateData context, Template template) {
+String renderIndex(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -17136,19 +17123,6 @@ const _invisibleGetters = {
     'variable'
   },
   'Scope': {'hashCode', 'runtimeType'},
-  'SdkLibrary': {
-    'category',
-    'hashCode',
-    'isDart2JsLibrary',
-    'isDocumented',
-    'isImplementation',
-    'isInternal',
-    'isShared',
-    'isVmLibrary',
-    'path',
-    'runtimeType',
-    'shortName'
-  },
   'Set': {
     'first',
     'hashCode',
