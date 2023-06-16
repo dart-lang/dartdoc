@@ -106,7 +106,7 @@ class SearchTest {
   void test_prefersHigherPackages() {
     expect(
       matchNames('foo'),
-      containsAllInOrder(['FOO', 'foo.FOO', 'foo', 'foo.Foo']),
+      containsAllInOrder(['foo.FOO', 'FOO', 'foo.Foo', 'foo']),
     );
   }
 
@@ -119,10 +119,10 @@ class SearchTest {
     );
   }
 
-  void test_prefersOuterScopes() {
+  void test_prefersLibraryScoped() {
     expect(
       matchNames('foo'),
-      containsAllInOrder(['foo', 'foo.Foo', 'bar.Bar.foo']),
+      containsAllInOrder(['foo.Foo', 'bar.Bar.foo', 'foo']),
     );
   }
 
