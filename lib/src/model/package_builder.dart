@@ -260,10 +260,9 @@ class PubPackageBuilder implements PackageBuilder {
 
       current = _packageMetasForFiles(files.difference(_knownParts));
       // To get canonicalization correct for non-locally documented packages
-      // (so we can generate the right hyperlinks), it's vital that we
-      // add all libraries in dependent packages.  So if the analyzer
-      // discovers some files in a package we haven't seen yet, add files
-      // for that package.
+      // (so we can generate the right hyperlinks), it's vital that we add all
+      // libraries in dependent packages.  So if the analyzer discovers some
+      // files in a package we haven't seen yet, add files for that package.
       for (var meta in current.difference(lastPass)) {
         if (meta.isSdk) {
           if (!_skipUnreachableSdkLibraries) {
@@ -337,9 +336,10 @@ class PubPackageBuilder implements PackageBuilder {
 
   /// Lists the contents of [dir].
   ///
-  /// If [recursive] is `true`, lists subdirectory contents (defaults to `false`).
+  /// If [recursive] is `true`, lists subdirectory contents (defaults to
+  /// `false`).
   ///
-  /// Excludes files and directories beginning with `.`
+  /// Excludes files and directories beginning with `.`.
   ///
   /// The returned paths are guaranteed to begin with [dir].
   Iterable<String> _listDir(String dir,
@@ -419,13 +419,11 @@ class PubPackageBuilder implements PackageBuilder {
   }
 
   Future<void> getLibraries(PackageGraph uninitializedPackageGraph) async {
-    DartSdk findSpecialsSdk;
     var embedderSdk = this.embedderSdk;
-    if (embedderSdk != null && embedderSdk.urlMappings.isNotEmpty) {
-      findSpecialsSdk = embedderSdk;
-    } else {
-      findSpecialsSdk = sdk;
-    }
+    var findSpecialsSdk = switch (embedderSdk) {
+      EmbedderSdk(:var urlMappings) when urlMappings.isNotEmpty => embedderSdk,
+      _ => sdk,
+    };
     var files = await _getFiles();
     var specialFiles = specialLibraryFiles(findSpecialsSdk);
 
@@ -499,16 +497,7 @@ class DartDocResolvedLibrary {
     if (fullName != null && !element.isSynthetic && element.nameOffset != -1) {
       var unit = _units[fullName];
       if (unit != null) {
-        var locator = NodeLocator2(element.nameOffset);
-        var node = locator.searchWithin(unit);
-        if (node is SimpleIdentifier) {
-          // TODO(scheglov) Remove this branch after the breaking change for
-          // the analyzer, when we start returning the declaring node, not
-          // the name, which will be just a `Token`.
-          return node.parent;
-        } else {
-          return node;
-        }
+        return NodeLocator2(element.nameOffset).searchWithin(unit);
       }
     }
     return null;
