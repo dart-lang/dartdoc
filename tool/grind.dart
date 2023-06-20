@@ -438,6 +438,8 @@ Future<String> createSdkDartdoc() async {
     'https://dart.googlesource.com/sdk.git',
     sdkClone.path
   ]);
+  await launcher.runStreamed('git', ['log', '-n', '1'],
+      workingDirectory: sdkClone.path);
   var dartdocPubspec = File(p.join(dartdocSdk.path, 'pubspec.yaml'));
   var pubspecLines = await dartdocPubspec.readAsLines();
   var pubspecLinesFiltered = <String>[];
