@@ -465,6 +465,8 @@ dependency_overrides:
     path: '${sdkClone.path}/pkg/_fe_analyzer_shared'
   meta:
     path: '${sdkClone.path}/pkg/meta'
+  dart_internal:
+    path: '${sdkClone.path}/pkg/dart_internal'
 ''', mode: FileMode.append);
   print('WROTE ${dartdocPubspec.readAsStringSync()}');
   await launcher.runStreamed(Platform.resolvedExecutable, ['pub', 'get'],
