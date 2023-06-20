@@ -16,7 +16,6 @@ void main() async {
   await build('lib/src/generator/templates.dart');
   await build(
     'test/mustachio/foo.dart',
-    //root: p.join(Directory.current.path, 'test/mustachio'),
     rendererClassesArePublic: true,
   );
 }
@@ -52,9 +51,6 @@ Future<void> build(
       .where((e) => e.element!.enclosingElement!.name == 'Renderer')) {
     rendererSpecs.add(_buildRendererSpec(renderer));
   }
-  if (rendererSpecs.isEmpty) {
-    print('empty specs, library at ${library.source.uri}');
-  }
 
   var runtimeRenderersContents = buildRuntimeRenderers(
     rendererSpecs,
@@ -73,10 +69,11 @@ Future<void> build(
     if (someSpec.standardTemplatePaths[format] != null) {
       aotRenderersContents = await compileTemplatesToRenderers(
         rendererSpecs,
-        root,
         typeProvider,
         typeSystem,
         format,
+        root: root,
+        sourcePath: sourcePath,
       );
     } else {
       aotRenderersContents = '';

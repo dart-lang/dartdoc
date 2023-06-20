@@ -22,12 +22,14 @@ import 'package:path/path.dart' as p;
 /// a renderer for each template.
 Future<String> compileTemplatesToRenderers(
   Set<RendererSpec> specs,
-  String root,
   TypeProvider typeProvider,
   TypeSystem typeSystem,
-  TemplateFormat format,
-) async {
-  var buildData = _BuildData(typeProvider, typeSystem, format, root);
+  TemplateFormat format, {
+  required String root,
+  required String sourcePath,
+}) async {
+  var buildData =
+      _BuildData(typeProvider, typeSystem, format, sourcePath, root);
   var rendererFunctions = <Method>[];
   var partialRendererFunctions = <_AotCompiler, Method>{};
   for (var spec in specs) {
@@ -195,7 +197,7 @@ Future<Method> _redirectingMethod(
             .add(TypeReference((b) => b..symbol = typeParameter.name));
       } else {
         var boundElement = DartTypeExtension(bound).element!;
-        var boundUri = await compiler._elementUri(boundElement);
+        var boundUri = compiler._elementUri(boundElement);
         typeParameters.add(TypeReference((b) => b
           ..symbol = typeParameter.name
           ..bound = refer(boundElement.name!, boundUri)));
@@ -206,7 +208,7 @@ Future<Method> _redirectingMethod(
   var parameters = <Parameter>[];
   for (var context in compiler._usedContextStack) {
     var contextElement = context.type.element;
-    var contextElementUri = await compiler._elementUri(contextElement);
+    var contextElementUri = compiler._elementUri(contextElement);
     parameters.add(Parameter((b) => b
       ..type = TypeReference((b) => b
         ..symbol = contextElement.displayName
@@ -344,7 +346,7 @@ class _AotCompiler {
               .add(TypeReference((b) => b..symbol = typeParameter.name));
         } else {
           var boundElement = DartTypeExtension(bound).element!;
-          var boundUri = await _elementUri(boundElement);
+          var boundUri = _elementUri(boundElement);
           typeParameters.add(TypeReference((b) => b
             ..symbol = typeParameter.name
             ..bound = refer(boundElement.name!, boundUri)));
@@ -355,7 +357,7 @@ class _AotCompiler {
     var parameters = <Parameter>[];
     for (var context in _usedContexts) {
       var contextElement = context.type.element;
-      var contextElementUri = await _elementUri(contextElement);
+      var contextElementUri = _elementUri(contextElement);
       parameters.add(Parameter((b) => b
         ..type = TypeReference((b) => b
           ..symbol = contextElement.displayName
@@ -380,9 +382,14 @@ return buffer.toString();
   }
 
   /// Returns the URI of [element] for use in generated import directives.
-  Future<String> _elementUri(Element element) async {
+  String _elementUri(Element element) {
     var libraryElement = element.library!;
-    return libraryElement.source.uri.toString();
+    var libraryUri = libraryElement.source.uri;
+    if (libraryUri.scheme == 'file' && p.isAbsolute(_buildData._sourcePath)) {
+      return p.relative(libraryUri.path,
+          from: p.dirname(_buildData._sourcePath));
+    }
+    return libraryUri.toString();
   }
 }
 
@@ -698,9 +705,12 @@ class _BuildData {
 
   final TemplateFormat _format;
 
+  final String _sourcePath;
+
   final String _root;
 
-  _BuildData(this._typeProvider, this._typeSystem, this._format, this._root);
+  _BuildData(this._typeProvider, this._typeSystem, this._format,
+      this._sourcePath, this._root);
 }
 
 /// Represents a variable lookup via property access chain [name] which returns
