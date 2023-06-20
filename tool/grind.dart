@@ -440,6 +440,10 @@ Future<String> createSdkDartdoc() async {
   ]);
   await launcher.runStreamed('git', ['log', '-n', '1'],
       workingDirectory: sdkClone.path);
+  await launcher.runStreamed('cat', ['pkg/_fe_analyzer_shared/pubspec.yaml'],
+      workingDirectory: sdkClone.path);
+  await launcher.runStreamed('cat', ['pkg/dart_internal/pubspec.yaml'],
+      workingDirectory: sdkClone.path);
   var dartdocPubspec = File(p.join(dartdocSdk.path, 'pubspec.yaml'));
   var pubspecLines = await dartdocPubspec.readAsLines();
   var pubspecLinesFiltered = <String>[];
