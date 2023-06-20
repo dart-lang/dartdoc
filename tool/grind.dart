@@ -460,6 +460,7 @@ dependency_overrides:
   meta:
     path: '${sdkClone.path}/pkg/meta'
 ''', mode: FileMode.append);
+  print('WROTE ${dartdocPubspec.readAsStringSync()}');
   await launcher.runStreamed(Platform.resolvedExecutable, ['pub', 'get'],
       workingDirectory: dartdocSdk.path);
   return dartdocSdk.path;
