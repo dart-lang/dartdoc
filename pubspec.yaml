@@ -26,10 +26,6 @@ dependencies:
 
 dev_dependencies:
   async: ^2.11.0
-  build: ^2.4.0
-  build_runner: ^2.4.2
-  build_test: ^2.1.7
-  build_version: ^2.1.1
   code_builder: ^4.4.0
   dart_style: ^2.3.1
   grinder: ^0.9.4

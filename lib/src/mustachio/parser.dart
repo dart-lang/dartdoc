@@ -24,9 +24,9 @@ class MustachioParser {
   /// The index of the character currently being parsed.
   int _index = 0;
 
-  MustachioParser(this.template, Uri url)
+  MustachioParser(this.template, String path)
       : _templateLength = template.length,
-        _sourceFile = SourceFile.fromString(template, url: url);
+        _sourceFile = SourceFile.fromString(template, url: path);
 
   /// Parses [template] into a sequence of [MustachioNode]s.
   ///

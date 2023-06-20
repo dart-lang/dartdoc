@@ -2,20 +2,26 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/element/element.dart';
-import 'package:build/build.dart';
-import 'package:build_test/build_test.dart';
+import 'package:analyzer/file_system/physical_file_system.dart';
+import 'package:analyzer/src/dart/analysis/analysis_context_collection.dart'
+    show AnalysisContextCollectionImpl;
 import 'package:collection/collection.dart';
+import 'package:path/path.dart' as p;
+import 'package:test_descriptor/test_descriptor.dart' as d;
 
 import '../../tool/mustachio/builder.dart';
+import '../src/test_descriptor_utils.dart';
+
+export '../../tool/mustachio/builder.dart';
 
 /// The build package Asset for a copy of the Renderer annotation for tests.
 ///
 /// In testing builders, the builder cannot access both in-line assets specified
 /// in tests, _and_ assets on disk in the package.
 // Update this when [Renderer] and [Context] are updated.
-const annotationsAsset = {
-  'mustachio|lib/annotations.dart': '''
+const annotationsContent = '''
 class Renderer {
   final Symbol name;
 
@@ -32,51 +38,73 @@ class Renderer {
     this.context,
     String standardTemplateBasename, {
     this.visibleTypes = const {},
-  })  : standardHtmlTemplate =
-            'package:foo/templates/html/\$standardTemplateBasename.html',
-        standardMdTemplate =
-            'package:foo/templates/md/\$standardTemplateBasename.md';
+  })  : standardHtmlTemplate = 'lib/templates/html/\${standardTemplateBasename}.html',
+        standardMdTemplate = 'lib/templates/md/\${standardTemplateBasename}.md';
 }
 
 class Context<T> {
   const Context();
 }
-'''
-};
+''';
 
 /// Front matter for a library which declares a Renderer for `Foo`.
 const libraryFrontMatter = '''
 @Renderer(#renderFoo, Context<Foo>(), 'foo', visibleTypes: {Bar, Baz})
 library foo;
-import 'package:mustachio/annotations.dart';
+import 'annotations.dart';
 ''';
 
 /// Tests the Mustachio builder using in-memory Assets.
 Future<void> testMustachioBuilder(
-  InMemoryAssetWriter writer,
   String sourceLibraryContent, {
   String libraryFrontMatter = libraryFrontMatter,
-  Map<String, String> additionalAssets = const {},
+  Iterable<DirectoryDescriptor> Function()? additionalAssets,
 }) async {
   sourceLibraryContent = '''
 $libraryFrontMatter
 $sourceLibraryContent
 ''';
-  await testBuilder(
-    mustachioBuilder(BuilderOptions({})),
-    {
-      ...annotationsAsset,
-      'foo|lib/foo.dart': sourceLibraryContent,
-      'foo|lib/templates/html/foo.html': 's1 is {{ s1 }}',
-      'foo|lib/templates/md/foo.md': 's1 is {{ s1 }}',
-      'foo|lib/templates/html/bar.html': 'EMPTY',
-      'foo|lib/templates/md/bar.md': 'EMPTY',
-      'foo|lib/templates/html/baz.html': 'EMPTY',
-      'foo|lib/templates/md/baz.md': 'EMPTY',
-      ...additionalAssets,
-    },
-    writer: writer,
+  additionalAssets ??= () => [];
+  await d.dir('foo_package', [
+    d.dir('lib', [
+      d.file('annotations.dart', annotationsContent),
+      d.file('foo.dart', sourceLibraryContent),
+      d.dir('templates', [
+        d.dir('html', [
+          d.file('foo.html', 's1 is {{ s1 }}'),
+          d.file('bar.html', 'EMPTY'),
+          d.file('baz.html', 'EMPTY'),
+        ]),
+        d.dir('md', [
+          d.file('foo.md', 's1 is {{ s1 }}'),
+          d.file('bar.md', 'EMPTY'),
+          d.file('baz.md', 'EMPTY'),
+        ]),
+      ]),
+    ]),
+  ]).create();
+  await d.dir('foo_package', [...additionalAssets()]).create();
+  await build('lib/foo.dart', root: p.join(d.sandbox, 'foo_package'));
+}
+
+Future<LibraryElement> resolveGeneratedLibrary(String libraryPath) async {
+  var contextCollection = AnalysisContextCollectionImpl(
+    includedPaths: [d.sandbox],
+    // TODO(jcollins-g): should we pass excluded directories here instead of
+    // handling it ourselves?
+    resourceProvider: PhysicalResourceProvider.INSTANCE,
+    sdkPath: sdkPath,
   );
+  var analysisContext = contextCollection.contextFor(d.sandbox);
+  final libraryResult =
+      await analysisContext.currentSession.getResolvedLibrary(libraryPath);
+  if (libraryResult is! ResolvedLibraryResult) {
+    throw StateError(
+        'Expected library result to be ResolvedLibraryResult, but is '
+        '${libraryResult.runtimeType}');
+  }
+
+  return libraryResult.element;
 }
 
 extension LibraryExtensions on LibraryElement {

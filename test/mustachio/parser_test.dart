@@ -5,7 +5,7 @@
 import 'package:dartdoc/src/mustachio/parser.dart';
 import 'package:test/test.dart';
 
-final _filePath = Uri.parse('file:///foo.dart');
+final _filePath = 'file:///foo.dart';
 
 void main() {
   test('parses an empty template', () {

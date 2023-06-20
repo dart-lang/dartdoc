@@ -17,7 +17,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:convert' as _i2;
 
-import 'foo.dart' as _i1;
+import 'file:///Users/srawlins/code/dart-dartdoc/test/mustachio/foo.dart'
+    as _i1;
 
 String renderFoo(_i1.Foo context0) {
   final buffer = StringBuffer();

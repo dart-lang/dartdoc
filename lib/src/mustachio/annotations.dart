@@ -54,9 +54,8 @@ class Renderer {
     String standardTemplateBasename, {
     this.visibleTypes = const {},
   })  : standardHtmlTemplate =
-            'package:dartdoc/templates/html/$standardTemplateBasename.html',
-        standardMdTemplate =
-            'package:dartdoc/templates/md/$standardTemplateBasename.md';
+            'lib/templates/html/$standardTemplateBasename.html',
+        standardMdTemplate = 'lib/templates/md/$standardTemplateBasename.md';
 
   @visibleForTesting
   const Renderer.forTest(
@@ -64,8 +63,10 @@ class Renderer {
     this.context,
     String standardTemplateBasename, {
     this.visibleTypes = const {},
-  })  : standardHtmlTemplate = 'templates/$standardTemplateBasename.html',
-        standardMdTemplate = 'templates/$standardTemplateBasename.md';
+  })  : standardHtmlTemplate =
+            'test/mustachio/templates/$standardTemplateBasename.html',
+        standardMdTemplate =
+            'test/mustachio/templates/$standardTemplateBasename.md';
 }
 
 /// A container for a type, [T], which is the type of a context object,
@@ -94,7 +95,7 @@ class RendererSpec {
 
   final String standardMdTemplate;
 
-  final Map<TemplateFormat, Uri?> standardTemplateUris;
+  final Map<TemplateFormat, String?> standardTemplatePaths;
 
   RendererSpec(
     this.name,
@@ -102,21 +103,20 @@ class RendererSpec {
     this.visibleTypes,
     this.standardHtmlTemplate,
     this.standardMdTemplate,
-  ) : standardTemplateUris = {
-          TemplateFormat.html: _parseUriFromAnnotation(standardHtmlTemplate),
-          TemplateFormat.md: _parseUriFromAnnotation(standardMdTemplate),
+  ) : standardTemplatePaths = {
+          TemplateFormat.html: standardHtmlTemplate,
+          TemplateFormat.md: standardMdTemplate,
         };
-
-  /// Parses a URI from a String which comes from a const annotation object.
-  ///
-  /// The String value may be the literal value, 'null'.
-  static Uri? _parseUriFromAnnotation(String unparsed) =>
-      unparsed == 'null' ? null : Uri.parse(unparsed);
 
   InterfaceElement get contextElement => contextType.element;
 }
 
 enum TemplateFormat {
   html,
-  md,
+  md;
+
+  String aotLibraryPath(String base) => switch (this) {
+        TemplateFormat.html => '$base.aot_renderers_for_html.dart',
+        TemplateFormat.md => '$base.aot_renderers_for_md.dart',
+      };
 }

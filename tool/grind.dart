@@ -1014,10 +1014,9 @@ String _getPackageVersion() {
 @Depends(clean, buildWeb)
 Future<void> build() async {
   var launcher = SubprocessLauncher('build');
-  await launcher.runStreamed(Platform.resolvedExecutable,
-      ['run', 'build_runner', 'build', '--delete-conflicting-outputs']);
+  await launcher.runStreamed(
+      Platform.resolvedExecutable, ['tool', 'mustachio', 'builder.dart']);
 
-  // TODO(jcollins-g): port to build system?
   var version = _getPackageVersion();
   var dartdocOptions = File('dartdoc_options.yaml');
   await dartdocOptions.writeAsString('''dartdoc:
@@ -1119,8 +1118,7 @@ Future<void> test() async {
 
 @Task('Clean up test directories and delete build cache')
 Future<void> clean() async {
-  var toDelete = [...nonRootPubData, ...buildCacheDirectories];
-  for (var e in toDelete) {
+  for (var e in nonRootPubData) {
     e.deleteSync(recursive: true);
   }
 }
@@ -1136,11 +1134,6 @@ Iterable<FileSystemEntity> get nonRootPubData {
       .where((e) => <String>['.dart_tool', '.packages', 'pubspec.lock']
           .contains(p.basename(e.path)));
 }
-
-Iterable<Directory> get buildCacheDirectories => Directory('.dart_tool')
-    .listSync(recursive: false)
-    .whereType<Directory>()
-    .where((e) => ['build', 'build_resolvers'].contains(p.basename(e.path)));
 
 List<File> get testFiles => Directory('test')
     .listSync(recursive: true)
