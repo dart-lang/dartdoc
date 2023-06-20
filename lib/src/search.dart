@@ -153,27 +153,27 @@ class IndexItem {
   /// This is not the lexical scope of identifiers in Dart code, but similar in
   /// a very loose sense.
   int get _scope => switch (kind) {
-        // Root- and package-level items.
-        Kind.library => 0,
-        Kind.package => 0,
-        Kind.topic => 0,
-
         // Library members.
-        Kind.class_ => 1,
-        Kind.enum_ => 1,
-        Kind.extension => 1,
-        Kind.mixin => 1,
-        Kind.topLevelConstant => 1,
-        Kind.topLevelProperty => 1,
-        Kind.typedef => 1,
+        Kind.class_ => 0,
+        Kind.enum_ => 0,
+        Kind.extension => 0,
+        Kind.mixin => 0,
+        Kind.topLevelConstant => 0,
+        Kind.topLevelProperty => 0,
+        Kind.typedef => 0,
 
         // Container members.
-        Kind.accessor => 2,
-        Kind.constant => 2,
-        Kind.constructor => 2,
-        Kind.function => 2,
-        Kind.method => 2,
-        Kind.property => 2,
+        Kind.accessor => 1,
+        Kind.constant => 1,
+        Kind.constructor => 1,
+        Kind.function => 1,
+        Kind.method => 1,
+        Kind.property => 1,
+
+        // Root- and package-level items.
+        Kind.library => 2,
+        Kind.package => 2,
+        Kind.topic => 2,
 
         // Others.
         Kind.dynamic => 3,
