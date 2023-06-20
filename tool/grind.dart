@@ -1015,7 +1015,7 @@ String _getPackageVersion() {
 Future<void> build() async {
   var launcher = SubprocessLauncher('build');
   await launcher.runStreamed(
-      Platform.resolvedExecutable, ['tool', 'mustachio', 'builder.dart']);
+      Platform.resolvedExecutable, ['tool/mustachio/builder.dart']);
 
   var version = _getPackageVersion();
   var dartdocOptions = File('dartdoc_options.yaml');
