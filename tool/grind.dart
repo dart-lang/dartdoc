@@ -1013,8 +1013,12 @@ String _getPackageVersion() {
 @Task('Rebuild generated files')
 @Depends(clean, buildWeb)
 Future<void> build() async {
-  var launcher = SubprocessLauncher('build');
-  await launcher.runStreamed(Platform.resolvedExecutable,
+  if (Platform.isWindows) {
+    // Built files only need to be built on Linux and MacOS, as there are path
+    // issues with Windows.
+    return;
+  }
+  await SubprocessLauncher('build').runStreamed(Platform.resolvedExecutable,
       [p.join('tool', 'mustachio', 'builder.dart')]);
 
   var version = _getPackageVersion();
