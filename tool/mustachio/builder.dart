@@ -13,9 +13,9 @@ import 'codegen_aot_compiler.dart';
 import 'codegen_runtime_renderer.dart';
 
 void main() async {
-  await build('lib/src/generator/templates.dart');
+  await build(p.join('lib', 'src', 'generator', 'templates.dart'));
   await build(
-    'test/mustachio/foo.dart',
+    p.join('test', 'mustachio', 'foo.dart'),
     rendererClassesArePublic: true,
   );
 }
