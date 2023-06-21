@@ -26,7 +26,6 @@ dependencies:
 
 dev_dependencies:
   async: ^2.11.0
-  code_builder: ^4.4.0
   dart_style: ^2.3.1
   grinder: ^0.9.4
   http: ">=0.13.6 <2.0.0"

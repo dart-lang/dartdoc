@@ -8,7 +8,6 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/dart/element/type_provider.dart';
 import 'package:analyzer/dart/element/type_system.dart';
-import 'package:code_builder/code_builder.dart';
 import 'package:collection/collection.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:dartdoc/src/mustachio/annotations.dart';
@@ -30,8 +29,9 @@ Future<String> compileTemplatesToRenderers(
 }) async {
   var buildData =
       _BuildData(typeProvider, typeSystem, format, sourcePath, root);
-  var rendererFunctions = <Method>[];
-  var partialRendererFunctions = <_AotCompiler, Method>{};
+  var rendererFunctions = <String>[];
+  var partialRendererFunctions = <_AotCompiler, String>{};
+  var referenceUris = <String>{};
   for (var spec in specs) {
     var templatePath = spec.standardTemplatePaths[format]!;
     var compiler = await _AotCompiler._readAndParse(
@@ -40,29 +40,24 @@ Future<String> compileTemplatesToRenderers(
       templatePath,
       buildData,
     );
-    rendererFunctions.add(await compiler._compileToRenderer());
+    rendererFunctions.add(await compiler._compileToRenderer(referenceUris));
     partialRendererFunctions.addAll(compiler._compiledPartials);
   }
-  partialRendererFunctions =
-      await _deduplicateRenderers(partialRendererFunctions, typeSystem);
+  partialRendererFunctions = await _deduplicateRenderers(
+      partialRendererFunctions, typeSystem, referenceUris);
+  var buffer = StringBuffer();
+  for (var uri in referenceUris.sorted()) {
+    buffer.writeln("import '$uri';");
+  }
 
-  var library = Library((b) {
-    b.body.addAll(rendererFunctions);
-    b.body.addAll(partialRendererFunctions.values);
-    b.body.add(Extension((b) => b
-      ..on = refer('StringBuffer')
-      ..methods.add(Method((b) => b
-        ..returns = refer('void')
-        ..name = 'writeEscaped'
-        ..requiredParameters.add(Parameter((b) => b
-          ..type = refer('String?')
-          ..name = 'value'))
-        ..body = refer('write').call([
-          refer('htmlEscape', 'dart:convert')
-              .property('convert')
-              .call([refer("value ?? ''")])
-        ]).statement))));
-  });
+  for (var function in [
+    ...rendererFunctions,
+    ...partialRendererFunctions.values,
+  ]) {
+    buffer.write(function);
+    buffer.writeln();
+    buffer.writeln();
+  }
   return DartFormatter().format('''
 // GENERATED CODE. DO NOT EDIT.
 //
@@ -78,9 +73,16 @@ Future<String> compileTemplatesToRenderers(
 // non-bool, non-Iterable field is non-null.
 // ignore_for_file: unused_local_variable
 // ignore_for_file: non_constant_identifier_names, unnecessary_string_escapes
-// ignore_for_file: use_super_parameters
 
-${library.accept(DartEmitter.scoped(orderDirectives: true))}
+import 'dart:convert';
+
+$buffer
+
+extension on StringBuffer {
+  void writeEscaped(String? value) {
+    write(htmlEscape.convert(value ?? ''));
+  }
+}
 ''');
 }
 
@@ -95,12 +97,13 @@ ${library.accept(DartEmitter.scoped(orderDirectives: true))}
 ///
 /// Attempts to deduplicate the compilers (which build the renderers) by
 /// replacing context types in each stack with their collective LUB.
-Future<Map<_AotCompiler, Method>> _deduplicateRenderers(
-  Map<_AotCompiler, Method> partialRendererFunctions,
+Future<Map<_AotCompiler, String>> _deduplicateRenderers(
+  Map<_AotCompiler, String> partialRendererFunctions,
   TypeSystem typeSystem,
+  Set<String> referenceUris,
 ) async {
-  // Map each template (represented by its [AssetId]) to the list of compilers
-  // which compile it to a renderer function.
+  // Map each template (represented by its path) to the list of compilers which
+  // compile it to a renderer function.
   var compilersPerPartial = <String, List<_AotCompiler>>{};
   for (var compiler in partialRendererFunctions.keys) {
     compilersPerPartial
@@ -146,9 +149,9 @@ Future<Map<_AotCompiler, Method>> _deduplicateRenderers(
         ...contextStackTypes.map((t) => _VariableLookup(t, 'UNUSED'))
       ],
     );
-    Method compiledLubRenderer;
+    String compiledLubRenderer;
     try {
-      compiledLubRenderer = await lubCompiler._compileToRenderer();
+      compiledLubRenderer = await lubCompiler._compileToRenderer(referenceUris);
       // ignore: avoid_catching_errors
     } on MustachioResolutionError {
       // Oops, switching to the LUB type prevents the renderer from compiling;
@@ -186,44 +189,40 @@ Future<Map<_AotCompiler, Method>> _deduplicateRenderers(
 
 /// Returns a method body for the render function for [compiler], which simply
 /// redirects to the render function for [lubCompiler].
-Future<Method> _redirectingMethod(
+Future<String> _redirectingMethod(
     _AotCompiler compiler, _AotCompiler lubCompiler) async {
-  var typeParameters = <TypeReference>[];
-  for (var context in compiler._usedContextStack) {
-    for (var typeParameter in context.type.element.typeParameters) {
-      var bound = typeParameter.bound;
-      if (bound == null) {
-        typeParameters
-            .add(TypeReference((b) => b..symbol = typeParameter.name));
-      } else {
-        var boundElement = DartTypeExtension(bound).element!;
-        var boundUri = compiler._elementUri(boundElement);
-        typeParameters.add(TypeReference((b) => b
-          ..symbol = typeParameter.name
-          ..bound = refer(boundElement.name!, boundUri)));
-      }
-    }
-  }
+  var buffer = StringBuffer()..write('String ${compiler._rendererName}');
 
-  var parameters = <Parameter>[];
+  buffer.writeTypeParameters(
+      compiler._usedContextStack.expand((c) => c.type.element.typeParameters));
+  buffer.write('(');
+
   for (var context in compiler._usedContextStack) {
     var contextElement = context.type.element;
-    var contextElementUri = compiler._elementUri(contextElement);
-    parameters.add(Parameter((b) => b
-      ..type = TypeReference((b) => b
-        ..symbol = contextElement.displayName
-        ..url = contextElementUri
-        ..types
-            .addAll(contextElement.typeParameters.map((tp) => refer(tp.name))))
-      ..name = context.name));
+    buffer.write(contextElement.displayName);
+    if (contextElement.typeParameters.isNotEmpty) {
+      buffer.write('<');
+    }
+    for (var tp in contextElement.typeParameters) {
+      buffer.write(tp.name);
+      if (tp != contextElement.typeParameters.last) {
+        buffer.write(', ');
+      }
+    }
+    if (contextElement.typeParameters.isNotEmpty) {
+      buffer.write('>');
+    }
+    buffer.write(' ${context.name}');
   }
-  var arguments = parameters.map((p) => refer(p.name));
-  return Method((b) => b
-    ..returns = refer('String')
-    ..name = compiler._rendererName
-    ..types.addAll(typeParameters)
-    ..requiredParameters.addAll(parameters)
-    ..body = refer(lubCompiler._rendererName).call(arguments).code);
+  buffer.writeln(') => ${lubCompiler._rendererName}(');
+  for (var context in compiler._usedContextStack) {
+    buffer.write(context.name);
+    if (context != compiler._usedContextStack.last) {
+      buffer.write(', ');
+    }
+  }
+  buffer.write(');');
+  return buffer.toString();
 }
 
 /// A class which compiles a single template file into a renderer Dart function,
@@ -250,7 +249,7 @@ class _AotCompiler {
   /// This field is only complete after [_compileToRenderer] has run.
   final Set<_AotCompiler> _partialCompilers = {};
 
-  final Map<_AotCompiler, Method> _compiledPartials = {};
+  final Map<_AotCompiler, String> _compiledPartials = {};
 
   /// The current stack of context objects (as variable lookups).
   final List<_VariableLookup> _contextStack;
@@ -315,7 +314,7 @@ class _AotCompiler {
     return [...result.reversed];
   }
 
-  Future<Method> _compileToRenderer() async {
+  Future<String> _compileToRenderer(Set<String> referenceUris) async {
     if (_contextStack.isEmpty) {
       var contextVariable = _VariableLookup(_contextType, 'context0');
       _contextStack.push(contextVariable);
@@ -327,6 +326,9 @@ class _AotCompiler {
     var rendererBody = blockCompiler._buffer.toString();
     _usedContexts.addAll(_contextStack
         .where((c) => blockCompiler._usedContextTypes.contains(c)));
+    referenceUris.addAll(blockCompiler._referenceUris);
+
+    var buffer = StringBuffer()..write('String $_rendererName');
 
     // Get the type parameters of _each_ of the context types in the stack,
     // including their bounds, concatenate them, and wrap them in angle
@@ -337,57 +339,50 @@ class _AotCompiler {
     // Rename type parameters to some predictable collision-free naming scheme;
     // the body of the function should not reference the type parameters, so
     // this should be perfectly possible.
-    var typeParameters = <TypeReference>[];
-    for (var context in _usedContexts) {
-      for (var typeParameter in context.type.element.typeParameters) {
-        var bound = typeParameter.bound;
-        if (bound == null) {
-          typeParameters
-              .add(TypeReference((b) => b..symbol = typeParameter.name));
-        } else {
-          var boundElement = DartTypeExtension(bound).element!;
-          var boundUri = _elementUri(boundElement);
-          typeParameters.add(TypeReference((b) => b
-            ..symbol = typeParameter.name
-            ..bound = refer(boundElement.name!, boundUri)));
-        }
-      }
-    }
 
-    var parameters = <Parameter>[];
+    var referenceElements = buffer.writeTypeParameters(
+      _usedContexts.expand((c) => c.type.element.typeParameters),
+    );
+    for (var element in referenceElements) {
+      referenceUris.add(_elementUri(element));
+    }
+    buffer.write('(');
+
     for (var context in _usedContexts) {
       var contextElement = context.type.element;
-      var contextElementUri = _elementUri(contextElement);
-      parameters.add(Parameter((b) => b
-        ..type = TypeReference((b) => b
-          ..symbol = contextElement.displayName
-          ..url = contextElementUri
-          ..types.addAll(
-              contextElement.typeParameters.map((tp) => refer(tp.name))))
-        ..name = context.name));
+      referenceUris.add(_elementUri(contextElement));
+      buffer.write(contextElement.displayName);
+      if (contextElement.typeParameters.isNotEmpty) {
+        buffer.write('<');
+      }
+      for (var tp in contextElement.typeParameters) {
+        buffer.write(tp.name);
+        if (tp != contextElement.typeParameters.last) {
+          buffer.write(', ');
+        }
+      }
+      if (contextElement.typeParameters.isNotEmpty) {
+        buffer.write('>');
+      }
+      buffer.write(' ${context.name}');
     }
 
-    var renderFunction = Method((b) => b
-      ..returns = refer('String')
-      ..name = _rendererName
-      ..types.addAll(typeParameters)
-      ..requiredParameters.addAll(parameters)
-      ..body = Code('''
-final buffer = StringBuffer();
-$rendererBody
-return buffer.toString();
-'''));
-
-    return renderFunction;
+    buffer.write(''') {
+  final buffer = StringBuffer();
+  $rendererBody
+  return buffer.toString();
+}
+''');
+    return buffer.toString();
   }
 
   /// Returns the URI of [element] for use in generated import directives.
   String _elementUri(Element element) {
     var libraryElement = element.library!;
     var libraryUri = libraryElement.source.uri;
-    if (libraryUri.scheme == 'file' && p.isAbsolute(_buildData._sourcePath)) {
+    if (libraryUri.scheme == 'file') {
       return p.relative(libraryUri.path,
-          from: p.dirname(_buildData._sourcePath));
+          from: p.absolute(p.dirname(_buildData._sourcePath)));
     }
     return libraryUri.toString();
   }
@@ -401,6 +396,9 @@ class _BlockCompiler {
   final List<_VariableLookup> _contextStack;
 
   final Set<_VariableLookup> _usedContextTypes = {};
+
+  /// The set of URIs of elements that need to be imported.
+  final Set<String> _referenceUris = {};
 
   final _buffer = StringBuffer();
 
@@ -443,13 +441,13 @@ class _BlockCompiler {
         case Section():
           await _compileSection(node);
         case Partial():
-          await _compilePartial(node);
+          await _compilePartial(node, _referenceUris);
       }
     }
   }
 
   /// Compiles [node] into a renderer's Dart source.
-  Future<void> _compilePartial(Partial node) async {
+  Future<void> _compilePartial(Partial node, Set<String> referenceUris) async {
     var extension = format == TemplateFormat.html ? 'html' : 'md';
     var path = node.key.split('/');
     var fileName = path.removeLast();
@@ -470,7 +468,7 @@ class _BlockCompiler {
       _templateCompiler._partialCompilers.add(partialCompiler);
       _templateCompiler._partialCounter++;
       _templateCompiler._compiledPartials[partialCompiler] =
-          await partialCompiler._compileToRenderer();
+          await partialCompiler._compileToRenderer(referenceUris);
       _templateCompiler._compiledPartials
           .addAll(partialCompiler._compiledPartials);
     }
@@ -732,4 +730,33 @@ extension<T> on List<T> {
   void push(T value) => insert(0, value);
 
   T pop() => removeAt(0);
+}
+
+extension on StringBuffer {
+  Set<Element> writeTypeParameters(
+      Iterable<TypeParameterElement> typeParameters) {
+    var referencedElements = <Element>{};
+    var hasTypeParameters = false;
+    for (var typeParameter in typeParameters) {
+      if (!hasTypeParameters) {
+        write('<');
+      } else {
+        write(', ');
+      }
+      hasTypeParameters = true;
+
+      var bound = typeParameter.bound;
+      if (bound == null) {
+        write(typeParameter.name);
+      } else {
+        var boundElement = DartTypeExtension(bound).element!;
+        referencedElements.add(boundElement);
+        write('${typeParameter.name} extends ${boundElement.name!}');
+      }
+    }
+    if (hasTypeParameters) {
+      write('>');
+    }
+    return referencedElements;
+  }
 }

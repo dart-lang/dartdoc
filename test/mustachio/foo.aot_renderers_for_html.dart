@@ -12,14 +12,12 @@
 // non-bool, non-Iterable field is non-null.
 // ignore_for_file: unused_local_variable
 // ignore_for_file: non_constant_identifier_names, unnecessary_string_escapes
-// ignore_for_file: use_super_parameters
 
-// ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:convert' as _i2;
+import 'dart:convert';
 
-import 'foo.dart' as _i1;
+import 'foo.dart';
 
-String renderFoo(_i1.Foo context0) {
+String renderFoo(Foo context0) {
   final buffer = StringBuffer();
   buffer.write('''<div>
     ''');
@@ -81,7 +79,7 @@ String renderBaz() {
   return buffer.toString();
 }
 
-String _renderFoo_partial_foo_header_0(_i1.Foo context0) {
+String _renderFoo_partial_foo_header_0(Foo context0) {
   final buffer = StringBuffer();
   buffer.write('''<div class="partial">
     l1: ''');
@@ -95,6 +93,6 @@ String _renderFoo_partial_foo_header_0(_i1.Foo context0) {
 
 extension on StringBuffer {
   void writeEscaped(String? value) {
-    write(_i2.htmlEscape.convert(value ?? ''));
+    write(htmlEscape.convert(value ?? ''));
   }
 }
