@@ -2,30 +2,18 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+@TestOn('vm && !windows')
 @Timeout.factor(2)
-import 'dart:convert';
+library;
+
+import 'dart:io';
 import 'package:analyzer/dart/element/element.dart';
-import 'package:build/build.dart';
-import 'package:build_test/build_test.dart';
 import 'package:test/test.dart';
+import 'package:test_descriptor/test_descriptor.dart' as d;
 
 import 'builder_test_base.dart';
 
 void main() {
-  late InMemoryAssetWriter writer;
-
-  Future<LibraryElement> resolveGeneratedLibrary() async {
-    var rendererAsset = AssetId('foo', 'lib/foo.runtime_renderers.dart');
-    var writtenStrings = writer.assets
-        .map((id, content) => MapEntry(id.toString(), utf8.decode(content)));
-    return await resolveSources(writtenStrings,
-        (Resolver resolver) => resolver.libraryFor(rendererAsset));
-  }
-
-  setUp(() {
-    writer = InMemoryAssetWriter();
-  });
-
   group('builds a renderer class', () {
     late final LibraryElement renderersLibrary;
     late final String generatedContent;
@@ -33,8 +21,7 @@ void main() {
     // Builders are fairly expensive (about 4 seconds per `testBuilder` call),
     // so this [setUpAll] saves significant time over [setUp].
     setUpAll(() async {
-      writer = InMemoryAssetWriter();
-      await testMustachioBuilder(writer, '''
+      await testMustachioBuilder('''
 abstract class FooBase2<T> {
   T get generic;
 }
@@ -52,9 +39,8 @@ abstract class Foo extends FooBase with Mix<int> {
 class Bar {}
 class Baz {}
 ''');
-      renderersLibrary = await resolveGeneratedLibrary();
-      var rendererAsset = AssetId('foo', 'lib/foo.runtime_renderers.dart');
-      generatedContent = utf8.decode(writer.assets[rendererAsset]!);
+      renderersLibrary = await resolveGeneratedLibrary(runtimeRenderersPath);
+      generatedContent = await File(runtimeRenderersPath).readAsString();
     });
 
     test('for a class which implicitly extends Object', () {
@@ -160,7 +146,7 @@ class Baz {}
   });
 
   test('builds renderers from multiple annotations', () async {
-    await testMustachioBuilder(writer, '''
+    await testMustachioBuilder('''
 class Foo {
   String s1 = 'hello';
 }
@@ -170,9 +156,9 @@ class Baz {}
 @Renderer(#renderFoo, Context<Foo>(), 'foo')
 @Renderer(#renderBar, Context<Bar>(), 'bar')
 library foo;
-import 'package:mustachio/annotations.dart';
+import 'annotations.dart';
 ''');
-    var renderersLibrary = await resolveGeneratedLibrary();
+    var renderersLibrary = await resolveGeneratedLibrary(runtimeRenderersPath);
 
     expect(renderersLibrary.getTopLevelFunction('renderFoo'), isNotNull);
     expect(renderersLibrary.getTopLevelFunction('renderBar'), isNotNull);
@@ -186,8 +172,7 @@ import 'package:mustachio/annotations.dart';
     // Builders are fairly expensive (about 4 seconds per `testBuilder` call),
     // so this [setUpAll] saves significant time over [setUp].
     setUpAll(() async {
-      writer = InMemoryAssetWriter();
-      await testMustachioBuilder(writer, '''
+      await testMustachioBuilder('''
 class FooBase<T> {}
 class Foo<T> extends FooBase<T> {
   String s1 = 'hello';
@@ -199,10 +184,9 @@ class Baz {}
 @Renderer(#renderFoo, Context<Foo>(), 'foo')
 @Renderer(#renderBar, Context<Bar>(), 'bar')
 library foo;
-import 'package:mustachio/annotations.dart';
+import 'annotations.dart';
 ''');
-      var rendererAsset = AssetId('foo', 'lib/foo.runtime_renderers.dart');
-      generatedContent = utf8.decode(writer.assets[rendererAsset]!);
+      generatedContent = await File(runtimeRenderersPath).readAsString();
     });
 
     test('with a corresponding public API function', () async {
@@ -238,14 +222,14 @@ import 'package:mustachio/annotations.dart';
   });
 
   test('builds a renderer for a generic, bounded type', () async {
-    await testMustachioBuilder(writer, '''
+    await testMustachioBuilder('''
 class Foo<T extends num> {
   String s1 = 'hello';
 }
 class Bar {}
 class Baz {}
 ''');
-    var renderersLibrary = await resolveGeneratedLibrary();
+    var renderersLibrary = await resolveGeneratedLibrary(runtimeRenderersPath);
 
     var fooRenderFunction = renderersLibrary.getTopLevelFunction('renderFoo')!;
     expect(fooRenderFunction.typeParameters, hasLength(1));
@@ -262,8 +246,7 @@ class Baz {}
     late final LibraryElement renderersLibrary;
 
     setUpAll(() async {
-      writer = InMemoryAssetWriter();
-      await testMustachioBuilder(writer, '''
+      await testMustachioBuilder('''
 abstract class Foo<T> {
   static Static get static1 => Bar();
   Private get _private1 => Bar();
@@ -278,7 +261,7 @@ class Private {}
 class Setter {}
 class Method {}
 ''');
-      renderersLibrary = await resolveGeneratedLibrary();
+      renderersLibrary = await resolveGeneratedLibrary(runtimeRenderersPath);
     });
 
     test('found in a static getter', () {
@@ -307,3 +290,6 @@ class Method {}
     });
   });
 }
+
+String get runtimeRenderersPath =>
+    '${d.sandbox}/foo_package/lib/foo.runtime_renderers.dart';

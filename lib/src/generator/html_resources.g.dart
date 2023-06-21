@@ -1,5 +1,6 @@
-// WARNING: This file is auto-generated. Do not edit.
-
+// TODO(srawlins): Generate this code with a simple script. See
+// https://github.com/dart-lang/dartdoc/blob/6df872abbdfbbc4fdcfc795c1836e0613c7f6c8b/tool/builder.dart
+// for the previous 'package:build' implementation.
 const List<String> resourceNames = [
   'docs.dart.js',
   'docs.dart.js.map',

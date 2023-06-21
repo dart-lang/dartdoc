@@ -94,7 +94,7 @@ class Template {
     // 2) In the case of a reference from a top-level template, user code has
     //    called [Template.parse], and the user is responsible for handling the
     //    exception.
-    var ast = MustachioParser(file.readAsStringSync(), file.toUri()).parse();
+    var ast = MustachioParser(file.readAsStringSync(), file.path).parse();
     var nodeQueue = Queue.of(ast);
     var partials = <String, File>{};
 

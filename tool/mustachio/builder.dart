@@ -1,158 +1,128 @@
-// Copyright (c) 2021, the Dart project authors.  Please see the AUTHORS file
-// for details. All rights reserved. Use of this source code is governed by a
-// BSD-style license that can be found in the LICENSE file.
+import 'dart:io';
 
+import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
-import 'package:analyzer/src/dart/element/member.dart';
-import 'package:build/build.dart';
+import 'package:analyzer/file_system/physical_file_system.dart';
+import 'package:analyzer/src/dart/analysis/analysis_context_collection.dart'
+    show AnalysisContextCollectionImpl;
 import 'package:dartdoc/src/mustachio/annotations.dart';
+import 'package:path/path.dart' as p;
 
 import 'codegen_aot_compiler.dart';
 import 'codegen_runtime_renderer.dart';
 
-const rendererClassesArePublicOption = 'rendererClassesArePublic';
+void main() async {
+  await build(p.join('lib', 'src', 'generator', 'templates.dart'));
+  await build(
+    p.join('test', 'mustachio', 'foo.dart'),
+    rendererClassesArePublic: true,
+  );
+}
 
-/// A [Builder] which builds runtime Mustachio renderers.
-class MustachioBuilder implements Builder {
-  final bool _rendererClassesArePublic;
+Future<void> build(
+  String sourcePath, {
+  String? root,
+  Iterable<TemplateFormat> templateFormats = TemplateFormat.values,
+  bool rendererClassesArePublic = false,
+}) async {
+  root ??= Directory.current.path;
+  var contextCollection = AnalysisContextCollectionImpl(
+    includedPaths: [root],
+    // TODO(jcollins-g): should we pass excluded directories here instead of
+    // handling it ourselves?
+    resourceProvider: PhysicalResourceProvider.INSTANCE,
+    sdkPath: sdkPath,
+  );
+  var analysisContext = contextCollection.contextFor(root);
+  final libraryResult = await analysisContext.currentSession
+      .getResolvedLibrary(p.join(root, sourcePath));
+  if (libraryResult is! ResolvedLibraryResult) {
+    throw StateError(
+        'Expected library result to be ResolvedLibraryResult, but is '
+        '${libraryResult.runtimeType}');
+  }
 
-  MustachioBuilder({bool rendererClassesArePublic = false})
-      : _rendererClassesArePublic = rendererClassesArePublic;
+  var library = libraryResult.element;
+  var typeProvider = library.typeProvider;
+  var typeSystem = library.typeSystem;
+  var rendererSpecs = <RendererSpec>{};
+  for (var renderer in library.metadata
+      .where((e) => e.element!.enclosingElement!.name == 'Renderer')) {
+    rendererSpecs.add(_buildRendererSpec(renderer));
+  }
 
-  @override
-  final buildExtensions = const {
-    '.dart': [
-      '.aot_renderers_for_html.dart',
-      '.aot_renderers_for_md.dart',
-      '.runtime_renderers.dart',
-    ]
+  var runtimeRenderersContents = buildRuntimeRenderers(
+    rendererSpecs,
+    Uri.parse(sourcePath),
+    typeProvider,
+    typeSystem,
+    rendererClassesArePublic: rendererClassesArePublic,
+  );
+  await File(p.join(
+          root, '${p.withoutExtension(sourcePath)}.runtime_renderers.dart'))
+      .writeAsString(runtimeRenderersContents);
+
+  for (var format in templateFormats) {
+    String aotRenderersContents;
+    var someSpec = rendererSpecs.first;
+    if (someSpec.standardTemplatePaths[format] != null) {
+      aotRenderersContents = await compileTemplatesToRenderers(
+        rendererSpecs,
+        typeProvider,
+        typeSystem,
+        format,
+        root: root,
+        sourcePath: sourcePath,
+      );
+    } else {
+      aotRenderersContents = '';
+    }
+
+    var basePath = p.withoutExtension(sourcePath);
+    await File(p.join(root, format.aotLibraryPath(basePath)))
+        .writeAsString(aotRenderersContents);
+  }
+}
+
+RendererSpec _buildRendererSpec(ElementAnnotation annotation) {
+  var constantValue = annotation.computeConstantValue()!;
+  var nameField = constantValue.getField('name')!;
+  if (nameField.isNull) {
+    throw StateError('@Renderer name must not be null');
+  }
+  var contextField = constantValue.getField('context')!;
+  if (contextField.isNull) {
+    throw StateError('@Renderer context must not be null');
+  }
+  var contextFieldType = contextField.type as InterfaceType;
+  assert(contextFieldType.typeArguments.length == 1);
+  var contextType = contextFieldType.typeArguments.single;
+
+  var visibleTypesField = constantValue.getField('visibleTypes')!;
+  if (visibleTypesField.isNull) {
+    throw StateError('@Renderer visibleTypes must not be null');
+  }
+  var visibleTypes = {
+    ...visibleTypesField.toSetValue()!.map((object) => object.toTypeValue()!)
   };
 
-  @override
-  Future<void> build(BuildStep buildStep) async {
-    // Each `buildStep` has a single input.
-    var inputId = buildStep.inputId;
+  var standardHtmlTemplateField =
+      constantValue.getField('standardHtmlTemplate')!;
+  var standardMdTemplateField = constantValue.getField('standardMdTemplate')!;
 
-    final entryLib = await buildStep.inputLibrary;
-
-    final rendererGatherer = _RendererGatherer(entryLib);
-
-    // Create a new target `AssetId` based on the old one.
-    var runtimeRenderersLibrary =
-        inputId.changeExtension('.runtime_renderers.dart');
-
-    var aotLibraries = {
-      TemplateFormat.html:
-          inputId.changeExtension('.aot_renderers_for_html.dart'),
-      TemplateFormat.md: inputId.changeExtension('.aot_renderers_for_md.dart'),
-    };
-
-    if (rendererGatherer._rendererSpecs.isEmpty) {
-      await buildStep.writeAsString(runtimeRenderersLibrary, '');
-      await buildStep.writeAsString(aotLibraries[TemplateFormat.html]!, '');
-      await buildStep.writeAsString(aotLibraries[TemplateFormat.md]!, '');
-
-      return;
-    }
-
-    var runtimeRenderersContents = buildRuntimeRenderers(
-      rendererGatherer._rendererSpecs,
-      entryLib.source.uri,
-      entryLib.typeProvider,
-      entryLib.typeSystem,
-      rendererClassesArePublic: _rendererClassesArePublic,
-    );
-    await buildStep.writeAsString(
-        runtimeRenderersLibrary, runtimeRenderersContents);
-
-    for (var format in TemplateFormat.values) {
-      String aotRenderersContents;
-      var someSpec = rendererGatherer._rendererSpecs.first;
-      if (someSpec.standardTemplateUris[format] != null) {
-        aotRenderersContents = await compileTemplatesToRenderers(
-          rendererGatherer._rendererSpecs,
-          entryLib.source.uri,
-          buildStep,
-          entryLib.typeProvider,
-          entryLib.typeSystem,
-          format,
-        );
-      } else {
-        aotRenderersContents = '';
-      }
-
-      await buildStep.writeAsString(
-          aotLibraries[format]!, aotRenderersContents);
-    }
-  }
+  return RendererSpec(
+    nameField.toSymbolValue()!,
+    contextType as InterfaceType,
+    visibleTypes,
+    standardHtmlTemplateField.toStringValue()!,
+    standardMdTemplateField.toStringValue()!,
+  );
 }
 
-class _RendererGatherer {
-  final Set<RendererSpec> _rendererSpecs;
-
-  _RendererGatherer._(this._rendererSpecs);
-
-  factory _RendererGatherer(LibraryElement entryLib) {
-    final rendererSpecs = <RendererSpec>{};
-
-    void addRendererSpecs(List<ElementAnnotation> annotations) {
-      for (var annotation in annotations) {
-        if (annotation.element is ConstructorElement) {
-          if (annotation.element!.enclosingElement!.name == 'Renderer') {
-            rendererSpecs.add(_buildRendererSpec(annotation));
-          }
-        } else if (annotation.element is ConstructorMember) {
-          if (annotation.element!.enclosingElement!.name == 'Renderer') {
-            rendererSpecs.add(_buildRendererSpec(annotation));
-          }
-        }
-      }
-    }
-
-    addRendererSpecs(entryLib.metadata);
-    for (final element in entryLib.topLevelElements) {
-      addRendererSpecs(element.metadata);
-    }
-    return _RendererGatherer._(rendererSpecs);
-  }
-
-  static RendererSpec _buildRendererSpec(ElementAnnotation annotation) {
-    var constantValue = annotation.computeConstantValue()!;
-    var nameField = constantValue.getField('name')!;
-    if (nameField.isNull) {
-      throw StateError('@Renderer name must not be null');
-    }
-    var contextField = constantValue.getField('context')!;
-    if (contextField.isNull) {
-      throw StateError('@Renderer context must not be null');
-    }
-    var contextFieldType = contextField.type as InterfaceType;
-    assert(contextFieldType.typeArguments.length == 1);
-    var contextType = contextFieldType.typeArguments.single;
-
-    var visibleTypesField = constantValue.getField('visibleTypes')!;
-    if (visibleTypesField.isNull) {
-      throw StateError('@Renderer visibleTypes must not be null');
-    }
-    var visibleTypes = {
-      ...visibleTypesField.toSetValue()!.map((object) => object.toTypeValue()!)
-    };
-
-    var standardHtmlTemplateField =
-        constantValue.getField('standardHtmlTemplate');
-    var standardMdTemplateField = constantValue.getField('standardMdTemplate');
-
-    return RendererSpec(
-      nameField.toSymbolValue()!,
-      contextType as InterfaceType,
-      visibleTypes,
-      standardHtmlTemplateField!.toStringValue()!,
-      standardMdTemplateField!.toStringValue()!,
-    );
-  }
-}
-
-Builder mustachioBuilder(BuilderOptions options) => MustachioBuilder(
-    rendererClassesArePublic:
-        options.config[rendererClassesArePublicOption] as bool? ?? false);
+String get sdkPath => PhysicalResourceProvider.INSTANCE
+    .getFile(PhysicalResourceProvider.INSTANCE.pathContext
+        .absolute(Platform.resolvedExecutable))
+    .parent
+    .parent
+    .path;

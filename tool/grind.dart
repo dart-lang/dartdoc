@@ -50,11 +50,6 @@ final List<String> languageExperiments =
 final String defaultPubCache = Platform.environment['PUB_CACHE'] ??
     p.context.resolveTildePath('~/.pub-cache');
 
-/// Run no more than the number of processors available in parallel.
-final TaskQueue testFutures = TaskQueue(
-    maxJobs: int.tryParse(Platform.environment['MAX_TEST_FUTURES'] ?? '') ??
-        Platform.numberOfProcessors);
-
 // Directory.systemTemp is not a constant.  So wrap it.
 Directory createTempSync(String prefix) =>
     Directory.systemTemp.createTempSync(prefix);
@@ -1013,11 +1008,14 @@ String _getPackageVersion() {
 @Task('Rebuild generated files')
 @Depends(clean, buildWeb)
 Future<void> build() async {
-  var launcher = SubprocessLauncher('build');
-  await launcher.runStreamed(Platform.resolvedExecutable,
-      ['run', 'build_runner', 'build', '--delete-conflicting-outputs']);
+  if (Platform.isWindows) {
+    // Built files only need to be built on Linux and MacOS, as there are path
+    // issues with Windows.
+    return;
+  }
+  await SubprocessLauncher('build').runStreamed(Platform.resolvedExecutable,
+      [p.join('tool', 'mustachio', 'builder.dart')]);
 
-  // TODO(jcollins-g): port to build system?
   var version = _getPackageVersion();
   var dartdocOptions = File('dartdoc_options.yaml');
   await dartdocOptions.writeAsString('''dartdoc:
@@ -1113,14 +1111,13 @@ Future<void> tryPublish() async {
 @Task('Run all the tests.')
 @Depends(analyzeTestPackages)
 Future<void> test() async {
-  await testDart(testFiles);
-  await testFutures.tasksComplete;
+  await SubprocessLauncher('dart run test').runStreamed(
+      Platform.resolvedExecutable, <String>['--enable-asserts', 'run', 'test']);
 }
 
 @Task('Clean up test directories and delete build cache')
 Future<void> clean() async {
-  var toDelete = [...nonRootPubData, ...buildCacheDirectories];
-  for (var e in toDelete) {
+  for (var e in nonRootPubData) {
     e.deleteSync(recursive: true);
   }
 }
@@ -1135,26 +1132,6 @@ Iterable<FileSystemEntity> get nonRootPubData {
       .where((e) => p.dirname(e.path) != '.')
       .where((e) => <String>['.dart_tool', '.packages', 'pubspec.lock']
           .contains(p.basename(e.path)));
-}
-
-Iterable<Directory> get buildCacheDirectories => Directory('.dart_tool')
-    .listSync(recursive: false)
-    .whereType<Directory>()
-    .where((e) => ['build', 'build_resolvers'].contains(p.basename(e.path)));
-
-List<File> get testFiles => Directory('test')
-    .listSync(recursive: true)
-    .whereType<File>()
-    .where((e) => e.path.endsWith('test.dart'))
-    .toList(growable: false);
-
-Future<void> testDart(Iterable<File> tests) async {
-  for (var dartFile in tests) {
-    await testFutures.add(() =>
-        SubprocessLauncher('dart-${p.basename(dartFile.path)}').runStreamed(
-            Platform.resolvedExecutable,
-            <String>['--enable-asserts', dartFile.path]));
-  }
 }
 
 @Task('Generate docs for dartdoc without link-to-remote')
