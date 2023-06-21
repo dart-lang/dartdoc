@@ -50,11 +50,6 @@ final List<String> languageExperiments =
 final String defaultPubCache = Platform.environment['PUB_CACHE'] ??
     p.context.resolveTildePath('~/.pub-cache');
 
-/// Run no more than the number of processors available in parallel.
-final TaskQueue testFutures = TaskQueue(
-    maxJobs: int.tryParse(Platform.environment['MAX_TEST_FUTURES'] ?? '') ??
-        Platform.numberOfProcessors);
-
 // Directory.systemTemp is not a constant.  So wrap it.
 Directory createTempSync(String prefix) =>
     Directory.systemTemp.createTempSync(prefix);
@@ -1116,8 +1111,8 @@ Future<void> tryPublish() async {
 @Task('Run all the tests.')
 @Depends(analyzeTestPackages)
 Future<void> test() async {
-  await testDart(testFiles);
-  await testFutures.tasksComplete;
+  await SubprocessLauncher('dart run test').runStreamed(
+      Platform.resolvedExecutable, <String>['--enable-asserts', 'run', 'test']);
 }
 
 @Task('Clean up test directories and delete build cache')
@@ -1137,21 +1132,6 @@ Iterable<FileSystemEntity> get nonRootPubData {
       .where((e) => p.dirname(e.path) != '.')
       .where((e) => <String>['.dart_tool', '.packages', 'pubspec.lock']
           .contains(p.basename(e.path)));
-}
-
-List<File> get testFiles => Directory('test')
-    .listSync(recursive: true)
-    .whereType<File>()
-    .where((e) => e.path.endsWith('test.dart'))
-    .toList(growable: false);
-
-Future<void> testDart(Iterable<File> tests) async {
-  for (var dartFile in tests) {
-    await testFutures.add(() =>
-        SubprocessLauncher('dart-${p.basename(dartFile.path)}').runStreamed(
-            Platform.resolvedExecutable,
-            <String>['--enable-asserts', dartFile.path]));
-  }
 }
 
 @Task('Generate docs for dartdoc without link-to-remote')
