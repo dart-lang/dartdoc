@@ -459,7 +459,10 @@ class _BlockCompiler {
     var partialCompiler = _templateCompiler._partialCompilers
         .firstWhereOrNull((p) => p._templatePath == partialPath);
     if (partialCompiler == null) {
-      var sanitizedKey = node.key.replaceAll('.', '_').replaceAll('/', '_');
+      var sanitizedKey = node.key
+          .replaceAll('.', '_')
+          .replaceAll('/', '_')
+          .replaceAll('\\', '_');
       var name = '${partialBaseName}_'
           '${sanitizedKey}_'
           '${_templateCompiler._partialCounter}';
