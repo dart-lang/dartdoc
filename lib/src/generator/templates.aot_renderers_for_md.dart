@@ -12,34 +12,32 @@
 // non-bool, non-Iterable field is non-null.
 // ignore_for_file: unused_local_variable
 // ignore_for_file: non_constant_identifier_names, unnecessary_string_escapes
-// ignore_for_file: use_super_parameters
 
-// ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:convert' as _i22;
+import 'dart:convert';
 
-import 'package:dartdoc/src/generator/template_data.dart' as _i1;
-import 'package:dartdoc/src/model/accessor.dart' as _i21;
-import 'package:dartdoc/src/model/category.dart' as _i3;
-import 'package:dartdoc/src/model/class.dart' as _i9;
-import 'package:dartdoc/src/model/constructor.dart' as _i11;
-import 'package:dartdoc/src/model/container.dart' as _i5;
-import 'package:dartdoc/src/model/enum.dart' as _i12;
-import 'package:dartdoc/src/model/extension.dart' as _i2;
-import 'package:dartdoc/src/model/field.dart' as _i10;
-import 'package:dartdoc/src/model/getter_setter_combo.dart' as _i18;
-import 'package:dartdoc/src/model/inheriting_container.dart' as _i19;
-import 'package:dartdoc/src/model/library.dart' as _i4;
-import 'package:dartdoc/src/model/method.dart' as _i14;
-import 'package:dartdoc/src/model/mixin.dart' as _i15;
-import 'package:dartdoc/src/model/model_element.dart' as _i17;
-import 'package:dartdoc/src/model/model_function.dart' as _i7;
-import 'package:dartdoc/src/model/operator.dart' as _i20;
-import 'package:dartdoc/src/model/package.dart' as _i13;
-import 'package:dartdoc/src/model/top_level_variable.dart' as _i6;
-import 'package:dartdoc/src/model/typedef.dart' as _i8;
-import 'package:dartdoc/src/warnings.dart' as _i16;
+import 'package:dartdoc/src/generator/template_data.dart';
+import 'package:dartdoc/src/model/accessor.dart';
+import 'package:dartdoc/src/model/category.dart';
+import 'package:dartdoc/src/model/class.dart';
+import 'package:dartdoc/src/model/constructor.dart';
+import 'package:dartdoc/src/model/container.dart';
+import 'package:dartdoc/src/model/enum.dart';
+import 'package:dartdoc/src/model/extension.dart';
+import 'package:dartdoc/src/model/field.dart';
+import 'package:dartdoc/src/model/getter_setter_combo.dart';
+import 'package:dartdoc/src/model/inheriting_container.dart';
+import 'package:dartdoc/src/model/library.dart';
+import 'package:dartdoc/src/model/method.dart';
+import 'package:dartdoc/src/model/mixin.dart';
+import 'package:dartdoc/src/model/model_element.dart';
+import 'package:dartdoc/src/model/model_function.dart';
+import 'package:dartdoc/src/model/operator.dart';
+import 'package:dartdoc/src/model/package.dart';
+import 'package:dartdoc/src/model/top_level_variable.dart';
+import 'package:dartdoc/src/model/typedef.dart';
+import 'package:dartdoc/src/warnings.dart';
 
-String renderCategory(_i1.CategoryTemplateData context0) {
+String renderCategory(CategoryTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write(_renderCategory_partial_head_0(context0));
   buffer.writeln();
@@ -189,7 +187,7 @@ String renderCategory(_i1.CategoryTemplateData context0) {
   return buffer.toString();
 }
 
-String renderClass(_i1.ClassTemplateData context0) {
+String renderClass(ClassTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write(_renderClass_partial_head_0(context0));
   buffer.writeln();
@@ -281,7 +279,7 @@ String renderClass(_i1.ClassTemplateData context0) {
   return buffer.toString();
 }
 
-String renderConstructor(_i1.ConstructorTemplateData context0) {
+String renderConstructor(ConstructorTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write(_renderConstructor_partial_head_0(context0));
   buffer.writeln();
@@ -331,7 +329,7 @@ String renderConstructor(_i1.ConstructorTemplateData context0) {
   return buffer.toString();
 }
 
-String renderEnum(_i1.EnumTemplateData context0) {
+String renderEnum(EnumTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write(_renderEnum_partial_head_0(context0));
   buffer.writeln();
@@ -419,8 +417,7 @@ You\'ve tried to visit a page that doesn\'t exist. Luckily this site has other
   return buffer.toString();
 }
 
-String renderExtension<T extends _i2.Extension>(
-    _i1.ExtensionTemplateData<T> context0) {
+String renderExtension<T extends Extension>(ExtensionTemplateData<T> context0) {
   final buffer = StringBuffer();
   buffer.write(_renderExtension_partial_head_0(context0));
   buffer.writeln();
@@ -478,7 +475,7 @@ on ''');
   return buffer.toString();
 }
 
-String renderFunction(_i1.FunctionTemplateData context0) {
+String renderFunction(FunctionTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write(_renderFunction_partial_head_0(context0));
   buffer.writeln();
@@ -513,7 +510,7 @@ String renderFunction(_i1.FunctionTemplateData context0) {
   return buffer.toString();
 }
 
-String renderIndex(_i1.PackageTemplateData context0) {
+String renderIndex(PackageTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write(_renderIndex_partial_head_0(context0));
   buffer.writeln();
@@ -568,7 +565,7 @@ String renderIndex(_i1.PackageTemplateData context0) {
   return buffer.toString();
 }
 
-String renderLibrary(_i1.LibraryTemplateData context0) {
+String renderLibrary(LibraryTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write(_renderLibrary_partial_head_0(context0));
   buffer.writeln();
@@ -732,7 +729,7 @@ String renderLibrary(_i1.LibraryTemplateData context0) {
   return buffer.toString();
 }
 
-String renderMethod(_i1.MethodTemplateData context0) {
+String renderMethod(MethodTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write(_renderMethod_partial_head_0(context0));
   buffer.writeln();
@@ -765,7 +762,7 @@ String renderMethod(_i1.MethodTemplateData context0) {
   return buffer.toString();
 }
 
-String renderMixin(_i1.MixinTemplateData context0) {
+String renderMixin(MixinTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write(_renderMixin_partial_head_0(context0));
   buffer.writeln();
@@ -852,7 +849,7 @@ String renderMixin(_i1.MixinTemplateData context0) {
   return buffer.toString();
 }
 
-String renderProperty(_i1.PropertyTemplateData context0) {
+String renderProperty(PropertyTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write(_renderProperty_partial_head_0(context0));
   buffer.writeln();
@@ -903,7 +900,7 @@ String renderProperty(_i1.PropertyTemplateData context0) {
   return buffer.toString();
 }
 
-String renderSearchPage(_i1.PackageTemplateData context0) {
+String renderSearchPage(PackageTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write(_renderSearchPage_partial_head_0(context0));
   buffer.writeln();
@@ -970,7 +967,7 @@ String renderSidebarForLibrary() {
   return buffer.toString();
 }
 
-String renderTopLevelProperty(_i1.TopLevelPropertyTemplateData context0) {
+String renderTopLevelProperty(TopLevelPropertyTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write(_renderTopLevelProperty_partial_head_0(context0));
   buffer.writeln();
@@ -1020,7 +1017,7 @@ String renderTopLevelProperty(_i1.TopLevelPropertyTemplateData context0) {
   return buffer.toString();
 }
 
-String renderTypedef(_i1.TypedefTemplateData context0) {
+String renderTypedef(TypedefTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write(_renderTypedef_partial_head_0(context0));
   buffer.writeln();
@@ -1052,21 +1049,28 @@ String renderTypedef(_i1.TypedefTemplateData context0) {
   return buffer.toString();
 }
 
-String _renderCategory_partial_head_0(_i1.CategoryTemplateData context0) =>
+String _renderCategory_partial_head_0(CategoryTemplateData context0) =>
     _deduplicated_lib_templates_md__head_md(context0);
-String _renderCategory_partial_documentation_1(_i3.Category context1) =>
+
+String _renderCategory_partial_documentation_1(Category context1) =>
     _deduplicated_lib_templates_md__documentation_md(context1);
-String _renderCategory_partial_library_2(_i4.Library context2) =>
+
+String _renderCategory_partial_library_2(Library context2) =>
     _deduplicated_lib_templates_md__library_md(context2);
-String _renderCategory_partial_container_3(_i5.Container context2) =>
+
+String _renderCategory_partial_container_3(Container context2) =>
     _deduplicated_lib_templates_md__container_md(context2);
-String _renderCategory_partial_extension_4(_i2.Extension context2) =>
+
+String _renderCategory_partial_extension_4(Extension context2) =>
     _deduplicated_lib_templates_md__extension_md(context2);
-String _renderCategory_partial_constant_5(_i6.TopLevelVariable context2) =>
+
+String _renderCategory_partial_constant_5(TopLevelVariable context2) =>
     _deduplicated_lib_templates_md__constant_md(context2);
-String _renderCategory_partial_property_6(_i6.TopLevelVariable context2) =>
+
+String _renderCategory_partial_property_6(TopLevelVariable context2) =>
     _deduplicated_lib_templates_md__property_md(context2);
-String _renderCategory_partial_callable_7(_i7.ModelFunctionTyped context2) {
+
+String _renderCategory_partial_callable_7(ModelFunctionTyped context2) {
   final buffer = StringBuffer();
   buffer.write('''##### ''');
   buffer.write(context2.linkedName);
@@ -1090,28 +1094,38 @@ String _renderCategory_partial_callable_7(_i7.ModelFunctionTyped context2) {
 }
 
 String __renderCategory_partial_callable_7_partial_categorization_0(
-        _i7.ModelFunctionTyped context2) =>
+        ModelFunctionTyped context2) =>
     _deduplicated_lib_templates_md__categorization_md(context2);
+
 String __renderCategory_partial_callable_7_partial_features_1(
-        _i7.ModelFunctionTyped context2) =>
+        ModelFunctionTyped context2) =>
     _deduplicated_lib_templates_md__features_md(context2);
-String _renderCategory_partial_typedef_8(_i8.Typedef context2) =>
+
+String _renderCategory_partial_typedef_8(Typedef context2) =>
     _deduplicated_lib_templates_md__typedef_md(context2);
-String _renderCategory_partial_footer_9(_i1.CategoryTemplateData context0) =>
+
+String _renderCategory_partial_footer_9(CategoryTemplateData context0) =>
     _deduplicated_lib_templates_md__footer_md(context0);
-String _renderClass_partial_head_0(_i1.ClassTemplateData context0) =>
+
+String _renderClass_partial_head_0(ClassTemplateData context0) =>
     _deduplicated_lib_templates_md__head_md(context0);
-String _renderClass_partial_source_link_1(_i9.Class context1) =>
+
+String _renderClass_partial_source_link_1(Class context1) =>
     _deduplicated_lib_templates_md__source_link_md(context1);
-String _renderClass_partial_categorization_2(_i9.Class context1) =>
+
+String _renderClass_partial_categorization_2(Class context1) =>
     _deduplicated_lib_templates_md__categorization_md(context1);
-String _renderClass_partial_feature_set_3(_i9.Class context1) =>
+
+String _renderClass_partial_feature_set_3(Class context1) =>
     _deduplicated_lib_templates_md__feature_set_md(context1);
-String _renderClass_partial_documentation_4(_i9.Class context1) =>
+
+String _renderClass_partial_documentation_4(Class context1) =>
     _deduplicated_lib_templates_md__documentation_md(context1);
-String _renderClass_partial_super_chain_5(_i9.Class context1) =>
+
+String _renderClass_partial_super_chain_5(Class context1) =>
     _deduplicated_lib_templates_md__super_chain_md(context1);
-String _renderClass_partial_interfaces_6(_i9.Class context1) {
+
+String _renderClass_partial_interfaces_6(Class context1) {
   final buffer = StringBuffer();
   if (context1.hasPublicInterfaces == true) {
     buffer.writeln();
@@ -1130,7 +1144,7 @@ String _renderClass_partial_interfaces_6(_i9.Class context1) {
   return buffer.toString();
 }
 
-String _renderClass_partial_mixed_in_types_7(_i9.Class context1) {
+String _renderClass_partial_mixed_in_types_7(Class context1) {
   final buffer = StringBuffer();
   if (context1.hasPublicMixedInTypes == true) {
     buffer.writeln();
@@ -1149,49 +1163,67 @@ String _renderClass_partial_mixed_in_types_7(_i9.Class context1) {
   return buffer.toString();
 }
 
-String _renderClass_partial_annotations_8(_i9.Class context1) =>
+String _renderClass_partial_annotations_8(Class context1) =>
     _deduplicated_lib_templates_md__annotations_md(context1);
-String _renderClass_partial_constructors_9(_i9.Class context1) =>
+
+String _renderClass_partial_constructors_9(Class context1) =>
     _deduplicated_lib_templates_md__constructors_md(context1);
-String _renderClass_partial_property_10(_i10.Field context2) =>
+
+String _renderClass_partial_property_10(Field context2) =>
     _deduplicated_lib_templates_md__property_md(context2);
-String _renderClass_partial_instance_methods_11(_i9.Class context1) =>
+
+String _renderClass_partial_instance_methods_11(Class context1) =>
     _deduplicated_lib_templates_md__instance_methods_md(context1);
-String _renderClass_partial_instance_operators_12(_i9.Class context1) =>
+
+String _renderClass_partial_instance_operators_12(Class context1) =>
     _deduplicated_lib_templates_md__instance_operators_md(context1);
-String _renderClass_partial_static_properties_13(_i9.Class context1) =>
+
+String _renderClass_partial_static_properties_13(Class context1) =>
     _deduplicated_lib_templates_md__static_properties_md(context1);
-String _renderClass_partial_static_methods_14(_i9.Class context1) =>
+
+String _renderClass_partial_static_methods_14(Class context1) =>
     _deduplicated_lib_templates_md__static_methods_md(context1);
-String _renderClass_partial_static_constants_15(_i9.Class context1) =>
+
+String _renderClass_partial_static_constants_15(Class context1) =>
     _deduplicated_lib_templates_md__static_constants_md(context1);
-String _renderClass_partial_footer_16(_i1.ClassTemplateData context0) =>
+
+String _renderClass_partial_footer_16(ClassTemplateData context0) =>
     _deduplicated_lib_templates_md__footer_md(context0);
-String _renderConstructor_partial_head_0(
-        _i1.ConstructorTemplateData context0) =>
+
+String _renderConstructor_partial_head_0(ConstructorTemplateData context0) =>
     _deduplicated_lib_templates_md__head_md(context0);
-String _renderConstructor_partial_source_link_1(_i11.Constructor context1) =>
+
+String _renderConstructor_partial_source_link_1(Constructor context1) =>
     _deduplicated_lib_templates_md__source_link_md(context1);
-String _renderConstructor_partial_feature_set_2(_i11.Constructor context1) =>
+
+String _renderConstructor_partial_feature_set_2(Constructor context1) =>
     _deduplicated_lib_templates_md__feature_set_md(context1);
-String _renderConstructor_partial_documentation_3(_i11.Constructor context1) =>
+
+String _renderConstructor_partial_documentation_3(Constructor context1) =>
     _deduplicated_lib_templates_md__documentation_md(context1);
-String _renderConstructor_partial_source_code_4(_i11.Constructor context1) =>
+
+String _renderConstructor_partial_source_code_4(Constructor context1) =>
     _deduplicated_lib_templates_md__source_code_md(context1);
-String _renderConstructor_partial_footer_5(
-        _i1.ConstructorTemplateData context0) =>
+
+String _renderConstructor_partial_footer_5(ConstructorTemplateData context0) =>
     _deduplicated_lib_templates_md__footer_md(context0);
-String _renderEnum_partial_head_0(_i1.EnumTemplateData context0) =>
+
+String _renderEnum_partial_head_0(EnumTemplateData context0) =>
     _deduplicated_lib_templates_md__head_md(context0);
-String _renderEnum_partial_source_link_1(_i12.Enum context1) =>
+
+String _renderEnum_partial_source_link_1(Enum context1) =>
     _deduplicated_lib_templates_md__source_link_md(context1);
-String _renderEnum_partial_feature_set_2(_i12.Enum context1) =>
+
+String _renderEnum_partial_feature_set_2(Enum context1) =>
     _deduplicated_lib_templates_md__feature_set_md(context1);
-String _renderEnum_partial_documentation_3(_i12.Enum context1) =>
+
+String _renderEnum_partial_documentation_3(Enum context1) =>
     _deduplicated_lib_templates_md__documentation_md(context1);
-String _renderEnum_partial_super_chain_4(_i12.Enum context1) =>
+
+String _renderEnum_partial_super_chain_4(Enum context1) =>
     _deduplicated_lib_templates_md__super_chain_md(context1);
-String _renderEnum_partial_interfaces_5(_i12.Enum context1) {
+
+String _renderEnum_partial_interfaces_5(Enum context1) {
   final buffer = StringBuffer();
   if (context1.hasPublicInterfaces == true) {
     buffer.writeln();
@@ -1210,7 +1242,7 @@ String _renderEnum_partial_interfaces_5(_i12.Enum context1) {
   return buffer.toString();
 }
 
-String _renderEnum_partial_mixed_in_types_6(_i12.Enum context1) {
+String _renderEnum_partial_mixed_in_types_6(Enum context1) {
   final buffer = StringBuffer();
   if (context1.hasPublicMixedInTypes == true) {
     buffer.writeln();
@@ -1229,64 +1261,90 @@ String _renderEnum_partial_mixed_in_types_6(_i12.Enum context1) {
   return buffer.toString();
 }
 
-String _renderEnum_partial_annotations_7(_i12.Enum context1) =>
+String _renderEnum_partial_annotations_7(Enum context1) =>
     _deduplicated_lib_templates_md__annotations_md(context1);
-String _renderEnum_partial_constructors_8(_i12.Enum context1) =>
+
+String _renderEnum_partial_constructors_8(Enum context1) =>
     _deduplicated_lib_templates_md__constructors_md(context1);
-String _renderEnum_partial_constant_9(_i10.Field context2) =>
+
+String _renderEnum_partial_constant_9(Field context2) =>
     _deduplicated_lib_templates_md__constant_md(context2);
-String _renderEnum_partial_property_10(_i10.Field context2) =>
+
+String _renderEnum_partial_property_10(Field context2) =>
     _deduplicated_lib_templates_md__property_md(context2);
-String _renderEnum_partial_instance_methods_11(_i12.Enum context1) =>
+
+String _renderEnum_partial_instance_methods_11(Enum context1) =>
     _deduplicated_lib_templates_md__instance_methods_md(context1);
-String _renderEnum_partial_instance_operators_12(_i12.Enum context1) =>
+
+String _renderEnum_partial_instance_operators_12(Enum context1) =>
     _deduplicated_lib_templates_md__instance_operators_md(context1);
-String _renderEnum_partial_static_properties_13(_i12.Enum context1) =>
+
+String _renderEnum_partial_static_properties_13(Enum context1) =>
     _deduplicated_lib_templates_md__static_properties_md(context1);
-String _renderEnum_partial_static_methods_14(_i12.Enum context1) =>
+
+String _renderEnum_partial_static_methods_14(Enum context1) =>
     _deduplicated_lib_templates_md__static_methods_md(context1);
-String _renderEnum_partial_static_constants_15(_i12.Enum context1) =>
+
+String _renderEnum_partial_static_constants_15(Enum context1) =>
     _deduplicated_lib_templates_md__static_constants_md(context1);
-String _renderEnum_partial_footer_16(_i1.EnumTemplateData context0) =>
+
+String _renderEnum_partial_footer_16(EnumTemplateData context0) =>
     _deduplicated_lib_templates_md__footer_md(context0);
-String _renderExtension_partial_head_0<T extends _i2.Extension>(
-        _i1.ExtensionTemplateData<T> context0) =>
+
+String _renderExtension_partial_head_0<T extends Extension>(
+        ExtensionTemplateData<T> context0) =>
     _deduplicated_lib_templates_md__head_md(context0);
-String _renderExtension_partial_source_link_1(_i2.Extension context1) =>
+
+String _renderExtension_partial_source_link_1(Extension context1) =>
     _deduplicated_lib_templates_md__source_link_md(context1);
-String _renderExtension_partial_categorization_2(_i2.Extension context1) =>
+
+String _renderExtension_partial_categorization_2(Extension context1) =>
     _deduplicated_lib_templates_md__categorization_md(context1);
-String _renderExtension_partial_feature_set_3(_i2.Extension context1) =>
+
+String _renderExtension_partial_feature_set_3(Extension context1) =>
     _deduplicated_lib_templates_md__feature_set_md(context1);
-String _renderExtension_partial_documentation_4(_i2.Extension context1) =>
+
+String _renderExtension_partial_documentation_4(Extension context1) =>
     _deduplicated_lib_templates_md__documentation_md(context1);
-String _renderExtension_partial_annotations_5(_i2.Extension context1) =>
+
+String _renderExtension_partial_annotations_5(Extension context1) =>
     _deduplicated_lib_templates_md__annotations_md(context1);
-String _renderExtension_partial_property_6(_i10.Field context2) =>
+
+String _renderExtension_partial_property_6(Field context2) =>
     _deduplicated_lib_templates_md__property_md(context2);
-String _renderExtension_partial_instance_methods_7(_i2.Extension context1) =>
+
+String _renderExtension_partial_instance_methods_7(Extension context1) =>
     _deduplicated_lib_templates_md__instance_methods_md(context1);
-String _renderExtension_partial_instance_operators_8(_i2.Extension context1) =>
+
+String _renderExtension_partial_instance_operators_8(Extension context1) =>
     _deduplicated_lib_templates_md__instance_operators_md(context1);
-String _renderExtension_partial_static_properties_9(_i2.Extension context1) =>
+
+String _renderExtension_partial_static_properties_9(Extension context1) =>
     _deduplicated_lib_templates_md__static_properties_md(context1);
-String _renderExtension_partial_static_methods_10(_i2.Extension context1) =>
+
+String _renderExtension_partial_static_methods_10(Extension context1) =>
     _deduplicated_lib_templates_md__static_methods_md(context1);
-String _renderExtension_partial_static_constants_11(_i2.Extension context1) =>
+
+String _renderExtension_partial_static_constants_11(Extension context1) =>
     _deduplicated_lib_templates_md__static_constants_md(context1);
-String _renderExtension_partial_footer_12<T extends _i2.Extension>(
-        _i1.ExtensionTemplateData<T> context0) =>
+
+String _renderExtension_partial_footer_12<T extends Extension>(
+        ExtensionTemplateData<T> context0) =>
     _deduplicated_lib_templates_md__footer_md(context0);
-String _renderFunction_partial_head_0(_i1.FunctionTemplateData context0) =>
+
+String _renderFunction_partial_head_0(FunctionTemplateData context0) =>
     _deduplicated_lib_templates_md__head_md(context0);
-String _renderFunction_partial_source_link_1(_i7.ModelFunction context1) =>
+
+String _renderFunction_partial_source_link_1(ModelFunction context1) =>
     _deduplicated_lib_templates_md__source_link_md(context1);
-String _renderFunction_partial_categorization_2(_i7.ModelFunction context1) =>
+
+String _renderFunction_partial_categorization_2(ModelFunction context1) =>
     _deduplicated_lib_templates_md__categorization_md(context1);
-String _renderFunction_partial_feature_set_3(_i7.ModelFunction context1) =>
+
+String _renderFunction_partial_feature_set_3(ModelFunction context1) =>
     _deduplicated_lib_templates_md__feature_set_md(context1);
-String _renderFunction_partial_callable_multiline_4(
-    _i7.ModelFunction context1) {
+
+String _renderFunction_partial_callable_multiline_4(ModelFunction context1) {
   final buffer = StringBuffer();
   if (context1.hasAnnotations == true) {
     var context2 = context1.annotations;
@@ -1315,43 +1373,61 @@ String _renderFunction_partial_callable_multiline_4(
 }
 
 String __renderFunction_partial_callable_multiline_4_partial_name_summary_0(
-        _i7.ModelFunction context1) =>
+        ModelFunction context1) =>
     _deduplicated_lib_templates_md__name_summary_md(context1);
-String _renderFunction_partial_features_5(_i7.ModelFunction context1) =>
+
+String _renderFunction_partial_features_5(ModelFunction context1) =>
     _deduplicated_lib_templates_md__features_md(context1);
-String _renderFunction_partial_documentation_6(_i7.ModelFunction context1) =>
+
+String _renderFunction_partial_documentation_6(ModelFunction context1) =>
     _deduplicated_lib_templates_md__documentation_md(context1);
-String _renderFunction_partial_source_code_7(_i7.ModelFunction context1) =>
+
+String _renderFunction_partial_source_code_7(ModelFunction context1) =>
     _deduplicated_lib_templates_md__source_code_md(context1);
-String _renderFunction_partial_footer_8(_i1.FunctionTemplateData context0) =>
+
+String _renderFunction_partial_footer_8(FunctionTemplateData context0) =>
     _deduplicated_lib_templates_md__footer_md(context0);
-String _renderIndex_partial_head_0(_i1.PackageTemplateData context0) =>
+
+String _renderIndex_partial_head_0(PackageTemplateData context0) =>
     _deduplicated_lib_templates_md__head_md(context0);
-String _renderIndex_partial_documentation_1(_i13.Package context1) =>
+
+String _renderIndex_partial_documentation_1(Package context1) =>
     _deduplicated_lib_templates_md__documentation_md(context1);
-String _renderIndex_partial_library_2(_i4.Library context3) =>
+
+String _renderIndex_partial_library_2(Library context3) =>
     _deduplicated_lib_templates_md__library_md(context3);
-String _renderIndex_partial_footer_3(_i1.PackageTemplateData context0) =>
+
+String _renderIndex_partial_footer_3(PackageTemplateData context0) =>
     _deduplicated_lib_templates_md__footer_md(context0);
-String _renderLibrary_partial_head_0(_i1.LibraryTemplateData context0) =>
+
+String _renderLibrary_partial_head_0(LibraryTemplateData context0) =>
     _deduplicated_lib_templates_md__head_md(context0);
-String _renderLibrary_partial_source_link_1(_i4.Library context1) =>
+
+String _renderLibrary_partial_source_link_1(Library context1) =>
     _deduplicated_lib_templates_md__source_link_md(context1);
-String _renderLibrary_partial_categorization_2(_i4.Library context1) =>
+
+String _renderLibrary_partial_categorization_2(Library context1) =>
     _deduplicated_lib_templates_md__categorization_md(context1);
-String _renderLibrary_partial_feature_set_3(_i4.Library context1) =>
+
+String _renderLibrary_partial_feature_set_3(Library context1) =>
     _deduplicated_lib_templates_md__feature_set_md(context1);
-String _renderLibrary_partial_documentation_4(_i4.Library context1) =>
+
+String _renderLibrary_partial_documentation_4(Library context1) =>
     _deduplicated_lib_templates_md__documentation_md(context1);
-String _renderLibrary_partial_container_5(_i5.Container context3) =>
+
+String _renderLibrary_partial_container_5(Container context3) =>
     _deduplicated_lib_templates_md__container_md(context3);
-String _renderLibrary_partial_extension_6(_i2.Extension context3) =>
+
+String _renderLibrary_partial_extension_6(Extension context3) =>
     _deduplicated_lib_templates_md__extension_md(context3);
-String _renderLibrary_partial_constant_7(_i6.TopLevelVariable context3) =>
+
+String _renderLibrary_partial_constant_7(TopLevelVariable context3) =>
     _deduplicated_lib_templates_md__constant_md(context3);
-String _renderLibrary_partial_property_8(_i6.TopLevelVariable context3) =>
+
+String _renderLibrary_partial_property_8(TopLevelVariable context3) =>
     _deduplicated_lib_templates_md__property_md(context3);
-String _renderLibrary_partial_callable_9(_i7.ModelFunctionTyped context3) {
+
+String _renderLibrary_partial_callable_9(ModelFunctionTyped context3) {
   final buffer = StringBuffer();
   buffer.write('''##### ''');
   buffer.write(context3.linkedName);
@@ -1374,22 +1450,29 @@ String _renderLibrary_partial_callable_9(_i7.ModelFunctionTyped context3) {
 }
 
 String __renderLibrary_partial_callable_9_partial_categorization_0(
-        _i7.ModelFunctionTyped context3) =>
+        ModelFunctionTyped context3) =>
     _deduplicated_lib_templates_md__categorization_md(context3);
+
 String __renderLibrary_partial_callable_9_partial_features_1(
-        _i7.ModelFunctionTyped context3) =>
+        ModelFunctionTyped context3) =>
     _deduplicated_lib_templates_md__features_md(context3);
-String _renderLibrary_partial_typedef_10(_i8.Typedef context3) =>
+
+String _renderLibrary_partial_typedef_10(Typedef context3) =>
     _deduplicated_lib_templates_md__typedef_md(context3);
-String _renderLibrary_partial_footer_11(_i1.LibraryTemplateData context0) =>
+
+String _renderLibrary_partial_footer_11(LibraryTemplateData context0) =>
     _deduplicated_lib_templates_md__footer_md(context0);
-String _renderMethod_partial_head_0(_i1.MethodTemplateData context0) =>
+
+String _renderMethod_partial_head_0(MethodTemplateData context0) =>
     _deduplicated_lib_templates_md__head_md(context0);
-String _renderMethod_partial_source_link_1(_i14.Method context1) =>
+
+String _renderMethod_partial_source_link_1(Method context1) =>
     _deduplicated_lib_templates_md__source_link_md(context1);
-String _renderMethod_partial_feature_set_2(_i14.Method context1) =>
+
+String _renderMethod_partial_feature_set_2(Method context1) =>
     _deduplicated_lib_templates_md__feature_set_md(context1);
-String _renderMethod_partial_callable_multiline_3(_i14.Method context1) {
+
+String _renderMethod_partial_callable_multiline_3(Method context1) {
   final buffer = StringBuffer();
   if (context1.hasAnnotations == true) {
     var context2 = context1.annotations;
@@ -1418,29 +1501,40 @@ String _renderMethod_partial_callable_multiline_3(_i14.Method context1) {
 }
 
 String __renderMethod_partial_callable_multiline_3_partial_name_summary_0(
-        _i14.Method context1) =>
+        Method context1) =>
     _deduplicated_lib_templates_md__name_summary_md(context1);
-String _renderMethod_partial_features_4(_i14.Method context1) =>
+
+String _renderMethod_partial_features_4(Method context1) =>
     _deduplicated_lib_templates_md__features_md(context1);
-String _renderMethod_partial_documentation_5(_i14.Method context1) =>
+
+String _renderMethod_partial_documentation_5(Method context1) =>
     _deduplicated_lib_templates_md__documentation_md(context1);
-String _renderMethod_partial_source_code_6(_i14.Method context1) =>
+
+String _renderMethod_partial_source_code_6(Method context1) =>
     _deduplicated_lib_templates_md__source_code_md(context1);
-String _renderMethod_partial_footer_7(_i1.MethodTemplateData context0) =>
+
+String _renderMethod_partial_footer_7(MethodTemplateData context0) =>
     _deduplicated_lib_templates_md__footer_md(context0);
-String _renderMixin_partial_head_0(_i1.MixinTemplateData context0) =>
+
+String _renderMixin_partial_head_0(MixinTemplateData context0) =>
     _deduplicated_lib_templates_md__head_md(context0);
-String _renderMixin_partial_source_link_1(_i15.Mixin context1) =>
+
+String _renderMixin_partial_source_link_1(Mixin context1) =>
     _deduplicated_lib_templates_md__source_link_md(context1);
-String _renderMixin_partial_categorization_2(_i15.Mixin context1) =>
+
+String _renderMixin_partial_categorization_2(Mixin context1) =>
     _deduplicated_lib_templates_md__categorization_md(context1);
-String _renderMixin_partial_feature_set_3(_i15.Mixin context1) =>
+
+String _renderMixin_partial_feature_set_3(Mixin context1) =>
     _deduplicated_lib_templates_md__feature_set_md(context1);
-String _renderMixin_partial_documentation_4(_i15.Mixin context1) =>
+
+String _renderMixin_partial_documentation_4(Mixin context1) =>
     _deduplicated_lib_templates_md__documentation_md(context1);
-String _renderMixin_partial_super_chain_5(_i15.Mixin context1) =>
+
+String _renderMixin_partial_super_chain_5(Mixin context1) =>
     _deduplicated_lib_templates_md__super_chain_md(context1);
-String _renderMixin_partial_interfaces_6(_i15.Mixin context1) {
+
+String _renderMixin_partial_interfaces_6(Mixin context1) {
   final buffer = StringBuffer();
   if (context1.hasPublicInterfaces == true) {
     buffer.writeln();
@@ -1459,97 +1553,135 @@ String _renderMixin_partial_interfaces_6(_i15.Mixin context1) {
   return buffer.toString();
 }
 
-String _renderMixin_partial_annotations_7(_i15.Mixin context1) =>
+String _renderMixin_partial_annotations_7(Mixin context1) =>
     _deduplicated_lib_templates_md__annotations_md(context1);
-String _renderMixin_partial_property_8(_i10.Field context2) =>
+
+String _renderMixin_partial_property_8(Field context2) =>
     _deduplicated_lib_templates_md__property_md(context2);
-String _renderMixin_partial_instance_methods_9(_i15.Mixin context1) =>
+
+String _renderMixin_partial_instance_methods_9(Mixin context1) =>
     _deduplicated_lib_templates_md__instance_methods_md(context1);
-String _renderMixin_partial_instance_operators_10(_i15.Mixin context1) =>
+
+String _renderMixin_partial_instance_operators_10(Mixin context1) =>
     _deduplicated_lib_templates_md__instance_operators_md(context1);
-String _renderMixin_partial_static_properties_11(_i15.Mixin context1) =>
+
+String _renderMixin_partial_static_properties_11(Mixin context1) =>
     _deduplicated_lib_templates_md__static_properties_md(context1);
-String _renderMixin_partial_static_methods_12(_i15.Mixin context1) =>
+
+String _renderMixin_partial_static_methods_12(Mixin context1) =>
     _deduplicated_lib_templates_md__static_methods_md(context1);
-String _renderMixin_partial_static_constants_13(_i15.Mixin context1) =>
+
+String _renderMixin_partial_static_constants_13(Mixin context1) =>
     _deduplicated_lib_templates_md__static_constants_md(context1);
-String _renderMixin_partial_footer_14(_i1.MixinTemplateData context0) =>
+
+String _renderMixin_partial_footer_14(MixinTemplateData context0) =>
     _deduplicated_lib_templates_md__footer_md(context0);
-String _renderProperty_partial_head_0(_i1.PropertyTemplateData context0) =>
+
+String _renderProperty_partial_head_0(PropertyTemplateData context0) =>
     _deduplicated_lib_templates_md__head_md(context0);
-String _renderProperty_partial_source_link_1(_i10.Field context1) =>
+
+String _renderProperty_partial_source_link_1(Field context1) =>
     _deduplicated_lib_templates_md__source_link_md(context1);
-String _renderProperty_partial_feature_set_2(_i10.Field context1) =>
+
+String _renderProperty_partial_feature_set_2(Field context1) =>
     _deduplicated_lib_templates_md__feature_set_md(context1);
-String _renderProperty_partial_annotations_3(_i10.Field context1) =>
+
+String _renderProperty_partial_annotations_3(Field context1) =>
     _deduplicated_lib_templates_md__annotations_md(context1);
-String _renderProperty_partial_name_summary_4(_i10.Field context1) =>
+
+String _renderProperty_partial_name_summary_4(Field context1) =>
     _deduplicated_lib_templates_md__name_summary_md(context1);
-String _renderProperty_partial_features_5(_i10.Field context1) =>
+
+String _renderProperty_partial_features_5(Field context1) =>
     _deduplicated_lib_templates_md__features_md(context1);
-String _renderProperty_partial_documentation_6(_i10.Field context1) =>
+
+String _renderProperty_partial_documentation_6(Field context1) =>
     _deduplicated_lib_templates_md__documentation_md(context1);
-String _renderProperty_partial_source_code_7(_i10.Field context1) =>
+
+String _renderProperty_partial_source_code_7(Field context1) =>
     _deduplicated_lib_templates_md__source_code_md(context1);
-String _renderProperty_partial_accessor_getter_8(_i10.Field context1) =>
+
+String _renderProperty_partial_accessor_getter_8(Field context1) =>
     _deduplicated_lib_templates_md__accessor_getter_md(context1);
-String _renderProperty_partial_accessor_setter_9(_i10.Field context1) =>
+
+String _renderProperty_partial_accessor_setter_9(Field context1) =>
     _deduplicated_lib_templates_md__accessor_setter_md(context1);
-String _renderProperty_partial_footer_10(_i1.PropertyTemplateData context0) =>
+
+String _renderProperty_partial_footer_10(PropertyTemplateData context0) =>
     _deduplicated_lib_templates_md__footer_md(context0);
-String _renderSearchPage_partial_head_0(_i1.PackageTemplateData context0) =>
+
+String _renderSearchPage_partial_head_0(PackageTemplateData context0) =>
     _deduplicated_lib_templates_md__head_md(context0);
-String _renderSearchPage_partial_documentation_1(_i13.Package context1) =>
+
+String _renderSearchPage_partial_documentation_1(Package context1) =>
     _deduplicated_lib_templates_md__documentation_md(context1);
-String _renderSearchPage_partial_library_2(_i4.Library context3) =>
+
+String _renderSearchPage_partial_library_2(Library context3) =>
     _deduplicated_lib_templates_md__library_md(context3);
-String _renderSearchPage_partial_footer_3(_i1.PackageTemplateData context0) =>
+
+String _renderSearchPage_partial_footer_3(PackageTemplateData context0) =>
     _deduplicated_lib_templates_md__footer_md(context0);
+
 String _renderTopLevelProperty_partial_head_0(
-        _i1.TopLevelPropertyTemplateData context0) =>
+        TopLevelPropertyTemplateData context0) =>
     _deduplicated_lib_templates_md__head_md(context0);
+
 String _renderTopLevelProperty_partial_source_link_1(
-        _i6.TopLevelVariable context1) =>
+        TopLevelVariable context1) =>
     _deduplicated_lib_templates_md__source_link_md(context1);
+
 String _renderTopLevelProperty_partial_categorization_2(
-        _i6.TopLevelVariable context1) =>
+        TopLevelVariable context1) =>
     _deduplicated_lib_templates_md__categorization_md(context1);
+
 String _renderTopLevelProperty_partial_feature_set_3(
-        _i6.TopLevelVariable context1) =>
+        TopLevelVariable context1) =>
     _deduplicated_lib_templates_md__feature_set_md(context1);
+
 String _renderTopLevelProperty_partial_annotations_4(
-        _i6.TopLevelVariable context1) =>
+        TopLevelVariable context1) =>
     _deduplicated_lib_templates_md__annotations_md(context1);
+
 String _renderTopLevelProperty_partial_name_summary_5(
-        _i6.TopLevelVariable context1) =>
+        TopLevelVariable context1) =>
     _deduplicated_lib_templates_md__name_summary_md(context1);
-String _renderTopLevelProperty_partial_features_6(
-        _i6.TopLevelVariable context1) =>
+
+String _renderTopLevelProperty_partial_features_6(TopLevelVariable context1) =>
     _deduplicated_lib_templates_md__features_md(context1);
+
 String _renderTopLevelProperty_partial_documentation_7(
-        _i6.TopLevelVariable context1) =>
+        TopLevelVariable context1) =>
     _deduplicated_lib_templates_md__documentation_md(context1);
+
 String _renderTopLevelProperty_partial_source_code_8(
-        _i6.TopLevelVariable context1) =>
+        TopLevelVariable context1) =>
     _deduplicated_lib_templates_md__source_code_md(context1);
+
 String _renderTopLevelProperty_partial_accessor_getter_9(
-        _i6.TopLevelVariable context1) =>
+        TopLevelVariable context1) =>
     _deduplicated_lib_templates_md__accessor_getter_md(context1);
+
 String _renderTopLevelProperty_partial_accessor_setter_10(
-        _i6.TopLevelVariable context1) =>
+        TopLevelVariable context1) =>
     _deduplicated_lib_templates_md__accessor_setter_md(context1);
+
 String _renderTopLevelProperty_partial_footer_11(
-        _i1.TopLevelPropertyTemplateData context0) =>
+        TopLevelPropertyTemplateData context0) =>
     _deduplicated_lib_templates_md__footer_md(context0);
-String _renderTypedef_partial_head_0(_i1.TypedefTemplateData context0) =>
+
+String _renderTypedef_partial_head_0(TypedefTemplateData context0) =>
     _deduplicated_lib_templates_md__head_md(context0);
-String _renderTypedef_partial_source_link_1(_i8.Typedef context1) =>
+
+String _renderTypedef_partial_source_link_1(Typedef context1) =>
     _deduplicated_lib_templates_md__source_link_md(context1);
-String _renderTypedef_partial_categorization_2(_i8.Typedef context1) =>
+
+String _renderTypedef_partial_categorization_2(Typedef context1) =>
     _deduplicated_lib_templates_md__categorization_md(context1);
-String _renderTypedef_partial_feature_set_3(_i8.Typedef context1) =>
+
+String _renderTypedef_partial_feature_set_3(Typedef context1) =>
     _deduplicated_lib_templates_md__feature_set_md(context1);
-String _renderTypedef_partial_typedef_multiline_4(_i8.Typedef context1) {
+
+String _renderTypedef_partial_typedef_multiline_4(Typedef context1) {
   final buffer = StringBuffer();
   if (context1.isCallable == true) {
     var context2 = context1.asCallable;
@@ -1582,7 +1714,7 @@ String _renderTypedef_partial_typedef_multiline_4(_i8.Typedef context1) {
 }
 
 String __renderTypedef_partial_typedef_multiline_4_partial_type_multiline_0(
-    _i8.Typedef context1) {
+    Typedef context1) {
   final buffer = StringBuffer();
   if (context1.hasAnnotations == true) {
     var context2 = context1.annotations;
@@ -1607,15 +1739,19 @@ String __renderTypedef_partial_typedef_multiline_4_partial_type_multiline_0(
 
 String
     ___renderTypedef_partial_typedef_multiline_4_partial_type_multiline_0_partial_name_summary_0(
-            _i8.Typedef context1) =>
+            Typedef context1) =>
         _deduplicated_lib_templates_md__name_summary_md(context1);
-String _renderTypedef_partial_documentation_5(_i8.Typedef context1) =>
+
+String _renderTypedef_partial_documentation_5(Typedef context1) =>
     _deduplicated_lib_templates_md__documentation_md(context1);
-String _renderTypedef_partial_source_code_6(_i8.Typedef context1) =>
+
+String _renderTypedef_partial_source_code_6(Typedef context1) =>
     _deduplicated_lib_templates_md__source_code_md(context1);
-String _renderTypedef_partial_footer_7(_i1.TypedefTemplateData context0) =>
+
+String _renderTypedef_partial_footer_7(TypedefTemplateData context0) =>
     _deduplicated_lib_templates_md__footer_md(context0);
-String _deduplicated_lib_templates_md__head_md(_i1.TemplateDataBase context0) {
+
+String _deduplicated_lib_templates_md__head_md(TemplateDataBase context0) {
   final buffer = StringBuffer();
   buffer.write(context0.customHeader);
   buffer.writeln();
@@ -1623,8 +1759,7 @@ String _deduplicated_lib_templates_md__head_md(_i1.TemplateDataBase context0) {
   return buffer.toString();
 }
 
-String _deduplicated_lib_templates_md__documentation_md(
-    _i16.Warnable context0) {
+String _deduplicated_lib_templates_md__documentation_md(Warnable context0) {
   final buffer = StringBuffer();
   if (context0.hasDocumentation == true) {
     buffer.writeln();
@@ -1635,7 +1770,7 @@ String _deduplicated_lib_templates_md__documentation_md(
   return buffer.toString();
 }
 
-String _deduplicated_lib_templates_md__library_md(_i4.Library context0) {
+String _deduplicated_lib_templates_md__library_md(Library context0) {
   final buffer = StringBuffer();
   buffer.write('''##### ''');
   buffer.write(context0.linkedName);
@@ -1649,7 +1784,7 @@ String _deduplicated_lib_templates_md__library_md(_i4.Library context0) {
   return buffer.toString();
 }
 
-String _deduplicated_lib_templates_md__container_md(_i5.Container context0) {
+String _deduplicated_lib_templates_md__container_md(Container context0) {
   final buffer = StringBuffer();
   buffer.write('''##### ''');
   buffer.write(context0.linkedName);
@@ -1666,7 +1801,7 @@ String _deduplicated_lib_templates_md__container_md(_i5.Container context0) {
 }
 
 String __deduplicated_lib_templates_md__container_md_partial_categorization_0(
-    _i5.Container context0) {
+    Container context0) {
   final buffer = StringBuffer();
   if (context0.hasCategoryNames == true) {
     buffer.writeln();
@@ -1684,7 +1819,7 @@ Categories:''');
 }
 
 String _deduplicated_lib_templates_md__categorization_md(
-    _i17.ModelElement context0) {
+    ModelElement context0) {
   final buffer = StringBuffer();
   if (context0.hasCategoryNames == true) {
     buffer.writeln();
@@ -1701,7 +1836,7 @@ Categories:''');
   return buffer.toString();
 }
 
-String _deduplicated_lib_templates_md__extension_md(_i2.Extension context0) {
+String _deduplicated_lib_templates_md__extension_md(Extension context0) {
   final buffer = StringBuffer();
   buffer.write('''##### ''');
   buffer.write(context0.linkedName);
@@ -1717,7 +1852,7 @@ String _deduplicated_lib_templates_md__extension_md(_i2.Extension context0) {
 }
 
 String __deduplicated_lib_templates_md__extension_md_partial_categorization_0(
-    _i2.Extension context0) {
+    Extension context0) {
   final buffer = StringBuffer();
   if (context0.hasCategoryNames == true) {
     buffer.writeln();
@@ -1734,8 +1869,7 @@ Categories:''');
   return buffer.toString();
 }
 
-String _deduplicated_lib_templates_md__constant_md(
-    _i18.GetterSetterCombo context0) {
+String _deduplicated_lib_templates_md__constant_md(GetterSetterCombo context0) {
   final buffer = StringBuffer();
   buffer.write('''##### ''');
   buffer.write(context0.linkedName);
@@ -1757,7 +1891,7 @@ String _deduplicated_lib_templates_md__constant_md(
 }
 
 String __deduplicated_lib_templates_md__constant_md_partial_categorization_0(
-    _i18.GetterSetterCombo context0) {
+    GetterSetterCombo context0) {
   final buffer = StringBuffer();
   if (context0.hasCategoryNames == true) {
     buffer.writeln();
@@ -1775,7 +1909,7 @@ Categories:''');
 }
 
 String __deduplicated_lib_templates_md__constant_md_partial_features_1(
-    _i18.GetterSetterCombo context0) {
+    GetterSetterCombo context0) {
   final buffer = StringBuffer();
   if (context0.hasFeatures == true) {
     buffer.write('''_''');
@@ -1787,7 +1921,7 @@ String __deduplicated_lib_templates_md__constant_md_partial_features_1(
   return buffer.toString();
 }
 
-String _deduplicated_lib_templates_md__features_md(_i17.ModelElement context0) {
+String _deduplicated_lib_templates_md__features_md(ModelElement context0) {
   final buffer = StringBuffer();
   if (context0.hasFeatures == true) {
     buffer.write('''_''');
@@ -1799,8 +1933,7 @@ String _deduplicated_lib_templates_md__features_md(_i17.ModelElement context0) {
   return buffer.toString();
 }
 
-String _deduplicated_lib_templates_md__property_md(
-    _i18.GetterSetterCombo context0) {
+String _deduplicated_lib_templates_md__property_md(GetterSetterCombo context0) {
   final buffer = StringBuffer();
   buffer.write('''##### ''');
   buffer.write(context0.linkedName);
@@ -1824,7 +1957,7 @@ String _deduplicated_lib_templates_md__property_md(
 }
 
 String __deduplicated_lib_templates_md__property_md_partial_categorization_0(
-    _i18.GetterSetterCombo context0) {
+    GetterSetterCombo context0) {
   final buffer = StringBuffer();
   if (context0.hasCategoryNames == true) {
     buffer.writeln();
@@ -1842,7 +1975,7 @@ Categories:''');
 }
 
 String __deduplicated_lib_templates_md__property_md_partial_features_1(
-    _i18.GetterSetterCombo context0) {
+    GetterSetterCombo context0) {
   final buffer = StringBuffer();
   if (context0.hasFeatures == true) {
     buffer.write('''_''');
@@ -1854,7 +1987,7 @@ String __deduplicated_lib_templates_md__property_md_partial_features_1(
   return buffer.toString();
 }
 
-String _deduplicated_lib_templates_md__typedef_md(_i8.Typedef context0) {
+String _deduplicated_lib_templates_md__typedef_md(Typedef context0) {
   final buffer = StringBuffer();
   if (context0.isCallable == true) {
     var context1 = context0.asCallable;
@@ -1887,7 +2020,7 @@ String _deduplicated_lib_templates_md__typedef_md(_i8.Typedef context0) {
 }
 
 String __deduplicated_lib_templates_md__typedef_md_partial_categorization_0(
-    _i8.FunctionTypedef context1) {
+    FunctionTypedef context1) {
   final buffer = StringBuffer();
   if (context1.hasCategoryNames == true) {
     buffer.writeln();
@@ -1905,7 +2038,7 @@ Categories:''');
 }
 
 String __deduplicated_lib_templates_md__typedef_md_partial_features_1(
-    _i8.FunctionTypedef context1) {
+    FunctionTypedef context1) {
   final buffer = StringBuffer();
   if (context1.hasFeatures == true) {
     buffer.write('''_''');
@@ -1918,7 +2051,7 @@ String __deduplicated_lib_templates_md__typedef_md_partial_features_1(
 }
 
 String __deduplicated_lib_templates_md__typedef_md_partial_type_2(
-    _i8.Typedef context0) {
+    Typedef context0) {
   final buffer = StringBuffer();
   buffer.write('''##### ''');
   buffer.write(context0.linkedName);
@@ -1943,7 +2076,7 @@ String __deduplicated_lib_templates_md__typedef_md_partial_type_2(
 
 String
     ___deduplicated_lib_templates_md__typedef_md_partial_type_2_partial_categorization_0(
-        _i8.Typedef context0) {
+        Typedef context0) {
   final buffer = StringBuffer();
   if (context0.hasCategoryNames == true) {
     buffer.writeln();
@@ -1962,7 +2095,7 @@ Categories:''');
 
 String
     ___deduplicated_lib_templates_md__typedef_md_partial_type_2_partial_features_1(
-        _i8.Typedef context0) {
+        Typedef context0) {
   final buffer = StringBuffer();
   if (context0.hasFeatures == true) {
     buffer.write('''_''');
@@ -1974,7 +2107,7 @@ String
   return buffer.toString();
 }
 
-String _deduplicated_lib_templates_md__type_md(_i8.Typedef context0) {
+String _deduplicated_lib_templates_md__type_md(Typedef context0) {
   final buffer = StringBuffer();
   buffer.write('''##### ''');
   buffer.write(context0.linkedName);
@@ -1997,7 +2130,7 @@ String _deduplicated_lib_templates_md__type_md(_i8.Typedef context0) {
 }
 
 String __deduplicated_lib_templates_md__type_md_partial_categorization_0(
-    _i8.Typedef context0) {
+    Typedef context0) {
   final buffer = StringBuffer();
   if (context0.hasCategoryNames == true) {
     buffer.writeln();
@@ -2015,7 +2148,7 @@ Categories:''');
 }
 
 String __deduplicated_lib_templates_md__type_md_partial_features_1(
-    _i8.Typedef context0) {
+    Typedef context0) {
   final buffer = StringBuffer();
   if (context0.hasFeatures == true) {
     buffer.write('''_''');
@@ -2027,8 +2160,7 @@ String __deduplicated_lib_templates_md__type_md_partial_features_1(
   return buffer.toString();
 }
 
-String _deduplicated_lib_templates_md__footer_md(
-    _i1.TemplateDataBase context0) {
+String _deduplicated_lib_templates_md__footer_md(TemplateDataBase context0) {
   final buffer = StringBuffer();
   buffer.writeln();
   buffer.write(context0.customInnerFooter);
@@ -2039,8 +2171,7 @@ String _deduplicated_lib_templates_md__footer_md(
   return buffer.toString();
 }
 
-String _deduplicated_lib_templates_md__source_link_md(
-    _i17.ModelElement context0) {
+String _deduplicated_lib_templates_md__source_link_md(ModelElement context0) {
   final buffer = StringBuffer();
   if (context0.hasSourceHref == true) {
     buffer.writeln();
@@ -2054,8 +2185,7 @@ String _deduplicated_lib_templates_md__source_link_md(
   return buffer.toString();
 }
 
-String _deduplicated_lib_templates_md__feature_set_md(
-    _i17.ModelElement context0) {
+String _deduplicated_lib_templates_md__feature_set_md(ModelElement context0) {
   final buffer = StringBuffer();
   if (context0.hasFeatureSet == true) {
     var context1 = context0.displayedLanguageFeatures;
@@ -2070,7 +2200,7 @@ String _deduplicated_lib_templates_md__feature_set_md(
 }
 
 String _deduplicated_lib_templates_md__super_chain_md(
-    _i19.InheritingContainer context0) {
+    InheritingContainer context0) {
   final buffer = StringBuffer();
   if (context0.hasPublicSuperChainReversed == true) {
     buffer.writeln();
@@ -2095,8 +2225,7 @@ String _deduplicated_lib_templates_md__super_chain_md(
   return buffer.toString();
 }
 
-String _deduplicated_lib_templates_md__annotations_md(
-    _i17.ModelElement context0) {
+String _deduplicated_lib_templates_md__annotations_md(ModelElement context0) {
   final buffer = StringBuffer();
   if (context0.hasAnnotations == true) {
     buffer.writeln();
@@ -2116,7 +2245,7 @@ String _deduplicated_lib_templates_md__annotations_md(
 }
 
 String _deduplicated_lib_templates_md__constructors_md(
-    _i19.InheritingContainer context0) {
+    InheritingContainer context0) {
   final buffer = StringBuffer();
   if (context0.hasPublicConstructors == true) {
     buffer.writeln();
@@ -2148,8 +2277,7 @@ String _deduplicated_lib_templates_md__constructors_md(
   return buffer.toString();
 }
 
-String _deduplicated_lib_templates_md__instance_methods_md(
-    _i5.Container context0) {
+String _deduplicated_lib_templates_md__instance_methods_md(Container context0) {
   final buffer = StringBuffer();
   if (context0.hasPublicInstanceMethods == true) {
     buffer.writeln();
@@ -2170,7 +2298,7 @@ String _deduplicated_lib_templates_md__instance_methods_md(
 }
 
 String __deduplicated_lib_templates_md__instance_methods_md_partial_callable_0(
-    _i14.Method context1) {
+    Method context1) {
   final buffer = StringBuffer();
   buffer.write('''##### ''');
   buffer.write(context1.linkedName);
@@ -2197,7 +2325,7 @@ String __deduplicated_lib_templates_md__instance_methods_md_partial_callable_0(
 
 String
     ___deduplicated_lib_templates_md__instance_methods_md_partial_callable_0_partial_categorization_0(
-        _i14.Method context1) {
+        Method context1) {
   final buffer = StringBuffer();
   if (context1.hasCategoryNames == true) {
     buffer.writeln();
@@ -2216,7 +2344,7 @@ Categories:''');
 
 String
     ___deduplicated_lib_templates_md__instance_methods_md_partial_callable_0_partial_features_1(
-        _i14.Method context1) {
+        Method context1) {
   final buffer = StringBuffer();
   if (context1.hasFeatures == true) {
     buffer.write('''_''');
@@ -2229,7 +2357,7 @@ String
 }
 
 String _deduplicated_lib_templates_md__instance_operators_md(
-    _i5.Container context0) {
+    Container context0) {
   final buffer = StringBuffer();
   if (context0.hasPublicInstanceOperators == true) {
     buffer.writeln();
@@ -2251,7 +2379,7 @@ String _deduplicated_lib_templates_md__instance_operators_md(
 
 String
     __deduplicated_lib_templates_md__instance_operators_md_partial_callable_0(
-        _i20.Operator context1) {
+        Operator context1) {
   final buffer = StringBuffer();
   buffer.write('''##### ''');
   buffer.write(context1.linkedName);
@@ -2278,7 +2406,7 @@ String
 
 String
     ___deduplicated_lib_templates_md__instance_operators_md_partial_callable_0_partial_categorization_0(
-        _i20.Operator context1) {
+        Operator context1) {
   final buffer = StringBuffer();
   if (context1.hasCategoryNames == true) {
     buffer.writeln();
@@ -2297,7 +2425,7 @@ Categories:''');
 
 String
     ___deduplicated_lib_templates_md__instance_operators_md_partial_callable_0_partial_features_1(
-        _i20.Operator context1) {
+        Operator context1) {
   final buffer = StringBuffer();
   if (context1.hasFeatures == true) {
     buffer.write('''_''');
@@ -2310,7 +2438,7 @@ String
 }
 
 String _deduplicated_lib_templates_md__static_properties_md(
-    _i5.Container context0) {
+    Container context0) {
   final buffer = StringBuffer();
   if (context0.hasPublicVariableStaticFields == true) {
     buffer.writeln();
@@ -2331,7 +2459,7 @@ String _deduplicated_lib_templates_md__static_properties_md(
 }
 
 String __deduplicated_lib_templates_md__static_properties_md_partial_property_0(
-    _i10.Field context1) {
+    Field context1) {
   final buffer = StringBuffer();
   buffer.write('''##### ''');
   buffer.write(context1.linkedName);
@@ -2357,7 +2485,7 @@ String __deduplicated_lib_templates_md__static_properties_md_partial_property_0(
 
 String
     ___deduplicated_lib_templates_md__static_properties_md_partial_property_0_partial_categorization_0(
-        _i10.Field context1) {
+        Field context1) {
   final buffer = StringBuffer();
   if (context1.hasCategoryNames == true) {
     buffer.writeln();
@@ -2376,7 +2504,7 @@ Categories:''');
 
 String
     ___deduplicated_lib_templates_md__static_properties_md_partial_property_0_partial_features_1(
-        _i10.Field context1) {
+        Field context1) {
   final buffer = StringBuffer();
   if (context1.hasFeatures == true) {
     buffer.write('''_''');
@@ -2388,8 +2516,7 @@ String
   return buffer.toString();
 }
 
-String _deduplicated_lib_templates_md__static_methods_md(
-    _i5.Container context0) {
+String _deduplicated_lib_templates_md__static_methods_md(Container context0) {
   final buffer = StringBuffer();
   if (context0.hasPublicStaticMethods == true) {
     buffer.writeln();
@@ -2410,7 +2537,7 @@ String _deduplicated_lib_templates_md__static_methods_md(
 }
 
 String __deduplicated_lib_templates_md__static_methods_md_partial_callable_0(
-    _i14.Method context1) {
+    Method context1) {
   final buffer = StringBuffer();
   buffer.write('''##### ''');
   buffer.write(context1.linkedName);
@@ -2437,7 +2564,7 @@ String __deduplicated_lib_templates_md__static_methods_md_partial_callable_0(
 
 String
     ___deduplicated_lib_templates_md__static_methods_md_partial_callable_0_partial_categorization_0(
-        _i14.Method context1) {
+        Method context1) {
   final buffer = StringBuffer();
   if (context1.hasCategoryNames == true) {
     buffer.writeln();
@@ -2456,7 +2583,7 @@ Categories:''');
 
 String
     ___deduplicated_lib_templates_md__static_methods_md_partial_callable_0_partial_features_1(
-        _i14.Method context1) {
+        Method context1) {
   final buffer = StringBuffer();
   if (context1.hasFeatures == true) {
     buffer.write('''_''');
@@ -2468,8 +2595,7 @@ String
   return buffer.toString();
 }
 
-String _deduplicated_lib_templates_md__static_constants_md(
-    _i5.Container context0) {
+String _deduplicated_lib_templates_md__static_constants_md(Container context0) {
   final buffer = StringBuffer();
   buffer.writeln();
   if (context0.hasPublicConstantFields == true) {
@@ -2491,7 +2617,7 @@ String _deduplicated_lib_templates_md__static_constants_md(
 }
 
 String __deduplicated_lib_templates_md__static_constants_md_partial_constant_0(
-    _i10.Field context1) {
+    Field context1) {
   final buffer = StringBuffer();
   buffer.write('''##### ''');
   buffer.write(context1.linkedName);
@@ -2515,7 +2641,7 @@ String __deduplicated_lib_templates_md__static_constants_md_partial_constant_0(
 
 String
     ___deduplicated_lib_templates_md__static_constants_md_partial_constant_0_partial_categorization_0(
-        _i10.Field context1) {
+        Field context1) {
   final buffer = StringBuffer();
   if (context1.hasCategoryNames == true) {
     buffer.writeln();
@@ -2534,7 +2660,7 @@ Categories:''');
 
 String
     ___deduplicated_lib_templates_md__static_constants_md_partial_constant_0_partial_features_1(
-        _i10.Field context1) {
+        Field context1) {
   final buffer = StringBuffer();
   if (context1.hasFeatures == true) {
     buffer.write('''_''');
@@ -2546,8 +2672,7 @@ String
   return buffer.toString();
 }
 
-String _deduplicated_lib_templates_md__source_code_md(
-    _i17.ModelElement context0) {
+String _deduplicated_lib_templates_md__source_code_md(ModelElement context0) {
   final buffer = StringBuffer();
   if (context0.hasSourceCode == true) {
     buffer.writeln();
@@ -2566,8 +2691,7 @@ String _deduplicated_lib_templates_md__source_code_md(
   return buffer.toString();
 }
 
-String _deduplicated_lib_templates_md__name_summary_md(
-    _i17.ModelElement context0) {
+String _deduplicated_lib_templates_md__name_summary_md(ModelElement context0) {
   final buffer = StringBuffer();
   if (context0.isConst == true) {
     buffer.write('''const ''');
@@ -2585,7 +2709,7 @@ String _deduplicated_lib_templates_md__name_summary_md(
 }
 
 String _deduplicated_lib_templates_md__accessor_getter_md(
-    _i18.GetterSetterCombo context0) {
+    GetterSetterCombo context0) {
   final buffer = StringBuffer();
   var context1 = context0.getter;
   if (context1 != null) {
@@ -2620,7 +2744,7 @@ String _deduplicated_lib_templates_md__accessor_getter_md(
 
 String
     __deduplicated_lib_templates_md__accessor_getter_md_partial_annotations_0(
-        _i21.Accessor context1) {
+        Accessor context1) {
   final buffer = StringBuffer();
   if (context1.hasAnnotations == true) {
     buffer.writeln();
@@ -2641,7 +2765,7 @@ String
 
 String
     __deduplicated_lib_templates_md__accessor_getter_md_partial_name_summary_1(
-        _i21.Accessor context1) {
+        Accessor context1) {
   final buffer = StringBuffer();
   if (context1.isConst == true) {
     buffer.write('''const ''');
@@ -2659,7 +2783,7 @@ String
 }
 
 String __deduplicated_lib_templates_md__accessor_getter_md_partial_features_2(
-    _i21.Accessor context1) {
+    Accessor context1) {
   final buffer = StringBuffer();
   if (context1.hasFeatures == true) {
     buffer.write('''_''');
@@ -2673,7 +2797,7 @@ String __deduplicated_lib_templates_md__accessor_getter_md_partial_features_2(
 
 String
     __deduplicated_lib_templates_md__accessor_getter_md_partial_documentation_3(
-        _i21.Accessor context1) {
+        Accessor context1) {
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
     buffer.writeln();
@@ -2686,7 +2810,7 @@ String
 
 String
     __deduplicated_lib_templates_md__accessor_getter_md_partial_source_code_4(
-        _i21.Accessor context1) {
+        Accessor context1) {
   final buffer = StringBuffer();
   if (context1.hasSourceCode == true) {
     buffer.writeln();
@@ -2706,7 +2830,7 @@ String
 }
 
 String _deduplicated_lib_templates_md__accessor_setter_md(
-    _i18.GetterSetterCombo context0) {
+    GetterSetterCombo context0) {
   final buffer = StringBuffer();
   var context1 = context0.setter;
   if (context1 != null) {
@@ -2741,7 +2865,7 @@ String _deduplicated_lib_templates_md__accessor_setter_md(
 
 String
     __deduplicated_lib_templates_md__accessor_setter_md_partial_annotations_0(
-        _i21.Accessor context1) {
+        Accessor context1) {
   final buffer = StringBuffer();
   if (context1.hasAnnotations == true) {
     buffer.writeln();
@@ -2762,7 +2886,7 @@ String
 
 String
     __deduplicated_lib_templates_md__accessor_setter_md_partial_name_summary_1(
-        _i21.Accessor context1) {
+        Accessor context1) {
   final buffer = StringBuffer();
   if (context1.isConst == true) {
     buffer.write('''const ''');
@@ -2780,7 +2904,7 @@ String
 }
 
 String __deduplicated_lib_templates_md__accessor_setter_md_partial_features_2(
-    _i21.Accessor context1) {
+    Accessor context1) {
   final buffer = StringBuffer();
   if (context1.hasFeatures == true) {
     buffer.write('''_''');
@@ -2794,7 +2918,7 @@ String __deduplicated_lib_templates_md__accessor_setter_md_partial_features_2(
 
 String
     __deduplicated_lib_templates_md__accessor_setter_md_partial_documentation_3(
-        _i21.Accessor context1) {
+        Accessor context1) {
   final buffer = StringBuffer();
   if (context1.hasDocumentation == true) {
     buffer.writeln();
@@ -2807,7 +2931,7 @@ String
 
 String
     __deduplicated_lib_templates_md__accessor_setter_md_partial_source_code_4(
-        _i21.Accessor context1) {
+        Accessor context1) {
   final buffer = StringBuffer();
   if (context1.hasSourceCode == true) {
     buffer.writeln();
@@ -2828,6 +2952,6 @@ String
 
 extension on StringBuffer {
   void writeEscaped(String? value) {
-    write(_i22.htmlEscape.convert(value ?? ''));
+    write(htmlEscape.convert(value ?? ''));
   }
 }

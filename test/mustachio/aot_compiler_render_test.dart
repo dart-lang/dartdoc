@@ -90,6 +90,8 @@ import 'annotations.dart';
     var generatedContent = await File(
             '${d.sandbox}/foo_package/lib/foo.aot_renderers_for_html.dart')
         .readAsString();
+    generatedContent = generatedContent.replaceFirst(
+        "import 'foo.dart';", "import 'package:foo/foo.dart';");
     renderScript.writeAsStringSync('''
 import 'dart:io';
 
@@ -179,7 +181,7 @@ void main() {
       () => [
         d.dir('lib/templates/html', [d.file('foo.html', 'Text {{s1}}')]),
       ],
-      '_i1.Foo()..s1 = "<p>hello</p>"',
+      'Foo()..s1 = "<p>hello</p>"',
     );
     expect(output, equals('Text &lt;p&gt;hello&lt;&#47;p&gt;'));
   });
@@ -189,7 +191,7 @@ void main() {
       () => [
         d.dir('lib/templates/html', [d.file('foo.html', 'Text {{{s1}}}')]),
       ],
-      '_i1.Foo()..s1 = "<p>hello</p>"',
+      'Foo()..s1 = "<p>hello</p>"',
     );
     expect(output, equals('Text <p>hello</p>'));
   });
@@ -199,7 +201,7 @@ void main() {
       () => [
         d.dir('lib/templates/html', [d.file('foo.html', 'Text {{b1}}')]),
       ],
-      '_i1.Foo()..b1 = true',
+      'Foo()..b1 = true',
     );
     expect(output, equals('Text true'));
   });
@@ -209,7 +211,7 @@ void main() {
       () => [
         d.dir('lib/templates/html', [d.file('foo.html', 'Text {{l1}}')]),
       ],
-      '_i1.Foo()..l1 = [1, 2, 3]',
+      'Foo()..l1 = [1, 2, 3]',
     );
     expect(output, equals('Text [1, 2, 3]'));
   });
@@ -220,7 +222,7 @@ void main() {
         d.dir('lib/templates/html',
             [d.file('foo.html', 'Text {{#b1}}Section{{/b1}}')]),
       ],
-      '_i1.Foo()..b1 = true',
+      'Foo()..b1 = true',
     );
     expect(output, equals('Text Section'));
   });
@@ -231,7 +233,7 @@ void main() {
         d.dir('lib/templates/html',
             [d.file('foo.html', 'Text {{#b1}}Section{{/b1}}')]),
       ],
-      '_i1.Foo()..b1 = false',
+      'Foo()..b1 = false',
     );
     expect(output, equals('Text '));
   });
@@ -242,7 +244,7 @@ void main() {
         d.dir('lib/templates/html',
             [d.file('foo.html', 'Text {{#b1}}Section{{/b1}}')]),
       ],
-      '_i1.Foo()..b1 = false',
+      'Foo()..b1 = false',
     );
     expect(output, equals('Text '));
   });
@@ -254,7 +256,7 @@ void main() {
         d.dir('lib/templates/html',
             [d.file('foo.html', 'Text {{^b1}}Section{{/b1}}')]),
       ],
-      '_i1.Foo()..b1 = true',
+      'Foo()..b1 = true',
     );
     expect(output, equals('Text '));
   });
@@ -265,7 +267,7 @@ void main() {
         d.dir('lib/templates/html',
             [d.file('foo.html', 'Text {{^b1}}Section{{/b1}}')]),
       ],
-      '_i1.Foo()..b1 = false',
+      'Foo()..b1 = false',
     );
     expect(output, equals('Text Section'));
   });
@@ -276,7 +278,7 @@ void main() {
         d.dir('lib/templates/html',
             [d.file('foo.html', 'Text {{#l1}}Num {{.}}, {{/l1}}')]),
       ],
-      '_i1.Foo()..l1 = [1, 2, 3]',
+      'Foo()..l1 = [1, 2, 3]',
     );
     expect(output, equals('Text Num 1, Num 2, Num 3, '));
   });
@@ -288,7 +290,7 @@ void main() {
         d.dir('lib/templates/html',
             [d.file('bar.html', 'Text {{#foo.l1}}Num {{.}}, {{/foo.l1}}')]),
       ],
-      '_i1.Bar()..foo = (_i1.Foo()..l1 = [1, 2, 3])',
+      'Bar()..foo = (Foo()..l1 = [1, 2, 3])',
     );
     expect(output, equals('Text Num 1, Num 2, Num 3, '));
   });
@@ -299,7 +301,7 @@ void main() {
         d.dir('lib/templates/html',
             [d.file('foo.html', 'Text {{#l1}}Num {{.}}, {{/l1}}')]),
       ],
-      '_i1.Foo()..l1 = []',
+      'Foo()..l1 = []',
     );
     expect(output, equals('Text '));
   });
@@ -310,7 +312,7 @@ void main() {
         d.dir('lib/templates/html',
             [d.file('foo.html', 'Text {{^l1}}Empty{{/l1}}')]),
       ],
-      '_i1.Foo()..l1 = []',
+      'Foo()..l1 = []',
     );
     expect(output, equals('Text Empty'));
   });
@@ -321,7 +323,7 @@ void main() {
         d.dir('lib/templates/html',
             [d.file('foo.html', 'Text {{^l1}}Empty{{/l1}}')]),
       ],
-      '_i1.Foo()..l1 = [1, 2, 3]',
+      'Foo()..l1 = [1, 2, 3]',
     );
     expect(output, equals('Text '));
   });
@@ -332,7 +334,7 @@ void main() {
         d.dir('lib/templates/html',
             [d.file('bar.html', 'Text {{#foo}}Foo: {{s1}}{{/foo}}')]),
       ],
-      '_i1.Bar()..foo = (_i1.Foo()..s1 = "hello")',
+      'Bar()..foo = (Foo()..s1 = "hello")',
     );
     expect(output, equals('Text Foo: hello'));
   });
@@ -344,7 +346,7 @@ void main() {
         d.dir('lib/templates/html',
             [d.file('bar.html', 'Text {{#foo}}One {{#s2}}Two{{/s2}}{{/foo}}')]),
       ],
-      '_i1.Bar()..foo = _i1.Foo()..s2 = "hello"',
+      'Bar()..foo = Foo()..s2 = "hello"',
     );
     expect(output, equals('Text One Two'));
   });
@@ -355,7 +357,7 @@ void main() {
         d.dir('lib/templates/html',
             [d.file('foo.html', 'Text {{#s1}}"{{.}}" ({{length}}){{/s1}}')]),
       ],
-      '_i1.Foo()..s1 = null',
+      'Foo()..s1 = null',
     );
     expect(output, equals('Text '));
   });
@@ -366,7 +368,7 @@ void main() {
         d.dir('lib/templates/html',
             [d.file('foo.html', 'Text {{^s1}}Section{{/s1}}')]),
       ],
-      '_i1.Foo()..s1 = "hello"',
+      'Foo()..s1 = "hello"',
     );
     expect(output, equals('Text '));
   });
@@ -377,7 +379,7 @@ void main() {
         d.dir('lib/templates/html',
             [d.file('foo.html', 'Text {{^s1}}Section{{/s1}}')]),
       ],
-      '_i1.Foo()..s1 = null',
+      'Foo()..s1 = null',
     );
     expect(output, equals('Text Section'));
   });
@@ -388,7 +390,7 @@ void main() {
         d.dir('lib/templates/html',
             [d.file('bar.html', 'Text {{#foo}}{{s1}}{{/foo}}')]),
       ],
-      '_i1.Bar()..foo = (_i1.Foo()..s1 = "hello")',
+      'Bar()..foo = (Foo()..s1 = "hello")',
     );
     expect(output, equals('Text hello'));
   });
@@ -400,7 +402,7 @@ void main() {
         d.dir('lib/templates/html',
             [d.file('bar.html', 'Text {{#foo}}{{s2}}{{/foo}}')]),
       ],
-      '_i1.Bar()..foo = (_i1.Foo()..s1 = "hello")..s2 = "goodbye"',
+      'Bar()..foo = (Foo()..s1 = "hello")..s2 = "goodbye"',
     );
     expect(output, equals('Text goodbye'));
   });
@@ -410,7 +412,7 @@ void main() {
       () => [
         d.dir('lib/templates/html', [d.file('bar.html', 'Text {{foo.s1}}')]),
       ],
-      '_i1.Bar()..foo = (_i1.Foo()..s1 = "hello")..s2 = "goodbye"',
+      'Bar()..foo = (Foo()..s1 = "hello")..s2 = "goodbye"',
     );
     expect(output, equals('Text hello'));
   });
@@ -420,7 +422,7 @@ void main() {
       () => [
         d.dir('lib/templates/html', [d.file('foo.html', 'Text {{p1.p2.s}}')]),
       ],
-      '_i1.Foo()..p1 = (_i1.Property1()..p2 = (_i1.Property2()..s = "hello"))',
+      'Foo()..p1 = (Property1()..p2 = (Property2()..s = "hello"))',
     );
     expect(output, equals('Text hello'));
   });
@@ -432,9 +434,9 @@ void main() {
         d.dir(
             'lib/templates/html', [d.file('foo.html', 'Text {{p1.p2.p3.s}}')]),
       ],
-      '_i1.Foo()'
-      '..p1 = (_i1.Property1()'
-      '..p2 = (_i1.Property2()..p3 = (_i1.Property3()..s = "hello")))',
+      'Foo()'
+      '..p1 = (Property1()'
+      '..p2 = (Property2()..p3 = (Property3()..s = "hello")))',
     );
     expect(output, equals('Text hello'));
   });
@@ -445,7 +447,7 @@ void main() {
         d.dir('lib/templates/html',
             [d.file('bar.html', 'Text {{#foo}}{{foo.s1}}{{/foo}}')]),
       ],
-      '_i1.Bar()..foo = (_i1.Foo()..s1 = "hello")..s2 = "goodbye"',
+      'Bar()..foo = (Foo()..s1 = "hello")..s2 = "goodbye"',
     );
     expect(output, equals('Text hello'));
   });
@@ -456,7 +458,7 @@ void main() {
         d.dir('lib/templates/html',
             [d.file('baz.html', 'Text {{#bar}}{{bar.foo.s1}}{{/bar}}')]),
       ],
-      '_i1.Baz()..bar = (_i1.Bar()..foo = (_i1.Foo()..s1 = "hello"))',
+      'Baz()..bar = (Bar()..foo = (Foo()..s1 = "hello"))',
     );
     expect(output, equals('Text hello'));
   });
@@ -469,7 +471,7 @@ void main() {
           d.file('baz.html', 'Text {{#bar}}{{bar.foo.baz.bar.foo.s1}}{{/bar}}')
         ]),
       ],
-      '_i1.Baz()..bar = (_i1.Bar()..foo = (_i1.Foo()..s1 = "hello"));'
+      'Baz()..bar = (Bar()..foo = (Foo()..s1 = "hello"));'
       'baz.bar!.foo!.baz = baz',
     );
     expect(output, equals('Text hello'));
@@ -483,7 +485,7 @@ void main() {
           d.file('_foo.mustache.html', 'Partial {{s1}}'),
         ]),
       ],
-      '_i1.Bar()..foo = (_i1.Foo()..s1 = "hello")',
+      'Bar()..foo = (Foo()..s1 = "hello")',
     );
     expect(output, equals('Text Partial hello'));
   });
@@ -498,7 +500,7 @@ void main() {
           d.file('_foo.mustache.html', 'Partial {{s1}}'),
         ]),
       ],
-      '_i1.Bar()..foo = (_i1.Foo()..s1 = "hello")',
+      'Bar()..foo = (Foo()..s1 = "hello")',
     );
     expect(output, equals('Text Partial hello'));
   });
@@ -515,7 +517,7 @@ void main() {
           d.file('_foo.mustache.html', 'Partial {{s2}}'),
         ]),
       ],
-      '_i1.Bar()..foo = (_i1.Foo()..s1 = "hello")..s2 = "goodbye"',
+      'Bar()..foo = (Foo()..s1 = "hello")..s2 = "goodbye"',
     );
     expect(output, equals('Text Partial goodbye'));
   });
@@ -530,7 +532,7 @@ void main() {
           d.file('_foo_l1.mustache.html', 'p2 {{.}}, '),
         ]),
       ],
-      '_i1.Bar()..foo = (_i1.Foo()..s1 = "hello"..l1 = [1, 2, 3])',
+      'Bar()..foo = (Foo()..s1 = "hello"..l1 = [1, 2, 3])',
     );
     expect(output, equals('Text, p1, p2 1, p2 2, p2 3, '));
   });
@@ -552,7 +554,7 @@ void main() {
         () => [
           d.dir('lib/templates/html', [d.file('foo.html', 'Text {{s2}}')]),
         ],
-        '_i1.Foo()',
+        'Foo()',
       ),
       throwsA(const TypeMatcher<MustachioResolutionError>()
           .having((e) => e.message, 'message', contains('''
@@ -571,7 +573,7 @@ line 1, column 8 of lib/templates/html/foo.html: Failed to resolve '[s2]' as a p
           d.dir('lib/templates/html',
               [d.file('foo.html', 'Text {{#s2}}Section{{/s2}}')]),
         ],
-        '_i1.Foo()',
+        'Foo()',
       ),
       throwsA(const TypeMatcher<MustachioResolutionError>()
           .having((e) => e.message, 'message', contains('''
@@ -590,7 +592,7 @@ line 1, column 9 of lib/templates/html/foo.html: Failed to resolve '[s2]' as a p
         () => [
           d.dir('lib/templates/html', [d.file('bar.html', 'Text {{foo.x}}')]),
         ],
-        '_i1.Bar()..foo = _i1.Foo()',
+        'Bar()..foo = Foo()',
       ),
       throwsA(const TypeMatcher<MustachioResolutionError>()
           .having((e) => e.message, 'message', contains('''
@@ -610,7 +612,7 @@ line 1, column 8 of lib/templates/html/bar.html: Failed to resolve 'x' on Bar wh
           d.dir('lib/templates/html',
               [d.file('bar.html', 'Text {{#foo.x}}Section{{/foo.x}}')]),
         ],
-        '_i1.Bar()..foo = _i1.Foo()',
+        'Bar()..foo = Foo()',
       ),
       throwsA(const TypeMatcher<MustachioResolutionError>()
           .having((e) => e.message, 'message', contains('''
@@ -634,7 +636,7 @@ line 1, column 13 of lib/templates/html/bar.html: Failed to resolve '[x]' as a p
             d.file('bar.html', 'Text {{#foo}}{{>missing.mustache}}{{/foo}}')
           ]),
         ],
-        '_i1.Bar()',
+        'Bar()',
       ),
       throwsA(const TypeMatcher<PathNotFoundException>()),
     );
