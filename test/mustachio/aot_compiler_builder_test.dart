@@ -66,8 +66,7 @@ import 'annotations.dart';
       ],
     );
     var generatedContent = await File(aotRenderersForHtmlPath).readAsString();
-    expect(
-        generatedContent, contains('String renderFoo<T>(_i1.Foo<T> context0)'));
+    expect(generatedContent, contains('String renderFoo<T>(Foo<T> context0)'));
   });
 
   test('builds a private render function for a partial', () async {
@@ -94,10 +93,8 @@ import 'annotations.dart';
       ],
     );
     var generatedContent = await File(aotRenderersForHtmlPath).readAsString();
-    expect(
-        generatedContent,
-        contains(
-            'String _renderFoo_partial_foo_header_0<T>(_i1.Foo<T> context0)'));
+    expect(generatedContent,
+        contains('String _renderFoo_partial_foo_header_0<T>(Foo<T> context0)'));
   });
 
   test('builds a renderer for a generic, bounded type', () async {
@@ -151,12 +148,12 @@ import 'annotations.dart';
     var generatedContent = await File(aotRenderersForHtmlPath).readAsString();
     expect(
       generatedContent,
-      contains('String _renderFoo_partial_base_0(_i1.Foo context0) =>\n'
+      contains('String _renderFoo_partial_base_0(Foo context0) =>\n'
           '    _deduplicated_lib_templates_html__base_html(context0);\n'),
     );
     expect(
       generatedContent,
-      contains('String _renderBar_partial_base_0(_i1.Bar context0) =>\n'
+      contains('String _renderBar_partial_base_0(Bar context0) =>\n'
           '    _deduplicated_lib_templates_html__base_html(context0);\n'),
     );
     expect(
@@ -198,11 +195,11 @@ import 'annotations.dart';
     var generatedContent = await File(aotRenderersForHtmlPath).readAsString();
     expect(
       generatedContent,
-      contains('String _renderFoo_partial_base_0(_i1.Foo context0) {'),
+      contains('String _renderFoo_partial_base_0(Foo context0) {'),
     );
     expect(
       generatedContent,
-      contains('String _renderBar_partial_base_0(_i1.Bar context0) {'),
+      contains('String _renderBar_partial_base_0(Bar context0) {'),
     );
   });
 }

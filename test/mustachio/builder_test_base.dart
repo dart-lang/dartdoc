@@ -84,7 +84,8 @@ $sourceLibraryContent
     ]),
   ]).create();
   await d.dir('foo_package', [...additionalAssets()]).create();
-  await build('lib/foo.dart', root: p.join(d.sandbox, 'foo_package'));
+  await build(p.join(d.sandbox, 'foo_package', 'lib/foo.dart'),
+      root: p.join(d.sandbox, 'foo_package'));
 }
 
 Future<LibraryElement> resolveGeneratedLibrary(String libraryPath) async {
