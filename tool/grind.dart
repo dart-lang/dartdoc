@@ -3,19 +3,16 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io' hide ProcessException;
 
 import 'package:analyzer/file_system/physical_file_system.dart';
-import 'package:collection/collection.dart';
-import 'package:crypto/crypto.dart' as crypto;
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:grinder/grinder.dart';
 import 'package:path/path.dart' as p;
-import 'package:yaml/yaml.dart' as yaml;
 
 import 'subprocess_launcher.dart';
+import 'task.dart' as task;
 
 void main(List<String> args) => grind(args);
 
@@ -114,9 +111,6 @@ Directory cleanFlutterDir = Directory(
     p.join(p.context.resolveTildePath('~/.dartdoc_grinder'), 'cleanFlutter'));
 
 final Directory _flutterDir = createTempSync('flutter');
-
-final Directory _languageTestPackageDir =
-    createTempSync('languageTestPackageDir');
 
 Directory get testPackage => Directory(p.joinAll(['testing', 'test_package']));
 
@@ -247,10 +241,6 @@ void presubmit() {}
 @Task('Run tests, self-test dartdoc, and run the publish test')
 @Depends(presubmit, test, testDartdoc)
 void buildbot() {}
-
-@Task('Run buildbot tests, but without publish test')
-@Depends(analyze, checkFormat, checkBuild, test, testDartdoc)
-void buildbotNoPublish() {}
 
 @Task('Generate docs for the Dart SDK')
 Future<void> buildSdkDocs() async {
@@ -562,23 +552,9 @@ Future<void> buildTestPackageDocs() async {
       _testPackageDocsDir.absolute.path, Directory.current.path);
 }
 
-@Task('Build test package docs (Markdown) with inherited docs and source code')
-@Depends(clean)
-Future<void> buildTestPackageDocsMd() async {
-  await _buildTestPackageDocs(
-      _testPackageDocsDir.absolute.path, Directory.current.path,
-      params: ['--format', 'md']);
-}
-
 @Task('Serve test package docs locally with dhttpd on port 8002')
 @Depends(buildTestPackageDocs)
 Future<void> serveTestPackageDocs() async {
-  await startTestPackageDocsServer();
-}
-
-@Task('Serve test package docs (in Markdown) locally with dhttpd on port 8002')
-@Depends(buildTestPackageDocsMd)
-Future<void> serveTestPackageDocsMd() async {
   await startTestPackageDocsServer();
 }
 
@@ -708,86 +684,6 @@ Future<void> serveFlutterDocs() async {
     '--path',
     p.join(_flutterDir.path, 'dev', 'docs', 'doc'),
   ]);
-}
-
-@Task('Serve language test directory docs on port 8004')
-@Depends(buildLanguageTestDocs)
-Future<void> serveLanguageTestDocs() async {
-  log('launching dhttpd on port 8004 for language tests');
-  var launcher = SubprocessLauncher('serve-language-test-docs');
-  await launcher.runStreamed(Platform.resolvedExecutable, ['pub', 'get']);
-  await launcher.runStreamed(Platform.resolvedExecutable, [
-    'pub',
-    'global',
-    'run',
-    'dhttpd',
-    '--port',
-    '8004',
-    '--path',
-    p.join(_languageTestPackageDir.path, 'doc', 'api'),
-  ]);
-}
-
-@Task('Build docs for a language test directory in the SDK')
-Future<void> buildLanguageTestDocs() async {
-  // The path to the base directory for language tests.
-  var languageTestPath = Platform.environment['LANGUAGE_TESTS'];
-  if (languageTestPath == null) {
-    fail(
-        'LANGUAGE_TESTS must be set to the SDK language test directory from which to copy tests');
-  }
-  var launcher = SubprocessLauncher('build-language-test-docs');
-  var pubspecFile = File(p.join(_languageTestPackageDir.path, 'pubspec.yaml'));
-  pubspecFile.writeAsStringSync('''name: _language_test_package
-version: 0.0.1
-environment:
-  sdk: '>=${Platform.version.split(' ').first}'
-''');
-
-  var analyzerOptionsFile =
-      File(p.join(_languageTestPackageDir.path, 'analysis_options.yaml'));
-  var analyzerOptions = languageExperiments.map((e) => '    - $e').join('\n');
-  analyzerOptionsFile.writeAsStringSync('''analyzer:
-   enable-experiment:
-$analyzerOptions
- ''');
-
-  var libDir = Directory(p.join(_languageTestPackageDir.path, 'lib'))
-    ..createSync();
-  var languageTestDir = Directory(p.context.resolveTildePath(languageTestPath));
-  if (!languageTestDir.existsSync()) {
-    fail('language test dir does not exist:  $languageTestDir');
-  }
-
-  for (var entry in languageTestDir.listSync(recursive: true)) {
-    if (entry is File &&
-        entry.existsSync() &&
-        !entry.path.endsWith('_error_test.dart') &&
-        !entry.path.endsWith('_error_lib.dart')) {
-      var destDir = Directory(p.join(
-          libDir.path,
-          p.dirname(entry.absolute.path
-              .replaceFirst(languageTestDir.absolute.path + p.separator, ''))));
-      if (!destDir.existsSync()) destDir.createSync(recursive: true);
-      copy(entry, destDir);
-    }
-  }
-
-  await launcher.runStreamed(Platform.resolvedExecutable, ['pub', 'get'],
-      workingDirectory: _languageTestPackageDir.absolute.path);
-  await launcher.runStreamed(
-      Platform.resolvedExecutable,
-      [
-        '--enable-asserts',
-        p.join(Directory.current.absolute.path, 'bin', 'dartdoc.dart'),
-        '--json',
-        '--link-to-remote',
-        '--show-progress',
-        '--enable-experiment',
-        languageExperiments.join(','),
-        ..._extraDartdocParameters,
-      ],
-      workingDirectory: _languageTestPackageDir.absolute.path);
 }
 
 @Task('Validate flutter docs')
@@ -982,29 +878,6 @@ Future<void> servePubPackage() async {
   await _serveDocsFrom(await buildPubPackage(), 9000, 'serve-pub-package');
 }
 
-@Task('Checks that CHANGELOG mentions current version')
-Future<void> checkChangelogHasVersion() async {
-  var changelog = File('CHANGELOG.md');
-  if (!changelog.existsSync()) {
-    fail('ERROR: No CHANGELOG.md found in ${Directory.current}');
-  }
-
-  var version = _getPackageVersion();
-
-  if (!changelog.readAsLinesSync().contains('## $version')) {
-    fail('ERROR: CHANGELOG.md does not mention version $version');
-  }
-}
-
-String _getPackageVersion() {
-  var pubspec = File('pubspec.yaml');
-  if (!pubspec.existsSync()) {
-    fail('Cannot find pubspec.yaml in ${Directory.current}');
-  }
-  var yamlDoc = yaml.loadYaml(pubspec.readAsStringSync()) as yaml.YamlMap;
-  return yamlDoc['version'] as String;
-}
-
 @Task('Rebuild generated files')
 @Depends(clean, buildWeb)
 Future<void> build() async {
@@ -1013,34 +886,13 @@ Future<void> build() async {
     // issues with Windows.
     return;
   }
-  await SubprocessLauncher('build').runStreamed(Platform.resolvedExecutable,
-      [p.join('tool', 'mustachio', 'builder.dart')]);
 
-  var version = _getPackageVersion();
-  var dartdocOptions = File('dartdoc_options.yaml');
-  await dartdocOptions.writeAsString('''dartdoc:
-  linkToSource:
-    root: '.'
-    uriTemplate: 'https://github.com/dart-lang/dartdoc/blob/v$version/%f%#L%l%'
-''');
+  await task.buildRenderers();
+  await task.buildDartdocOptions();
 }
 
 @Task('Build the web frontend')
-Future<void> buildWeb() async {
-  // Compile the web app.
-  var launcher = SubprocessLauncher('build');
-  await launcher.runStreamed(Platform.resolvedExecutable, [
-    'compile',
-    'js',
-    '--output=lib/resources/docs.dart.js',
-    'web/docs.dart',
-    '-O4',
-  ]);
-  delete(File('lib/resources/docs.dart.js.deps'));
-
-  final compileSig = await _calcDartFilesSig(Directory('web'));
-  File(p.join('web', 'sig.txt')).writeAsStringSync('$compileSig\n');
-}
+Future<void> buildWeb() async => await task.buildWeb();
 
 /// Paths in this list are relative to lib/.
 final _generatedFilesList = <String>[
@@ -1089,7 +941,7 @@ Future<void> checkBuild() async {
   }
 
   // Verify that the web frontend has been compiled.
-  final currentCodeSig = await _calcDartFilesSig(Directory('web'));
+  final currentCodeSig = await task.calcDartFilesSig(Directory('web'));
   final lastCompileSig =
       File(p.join('web', 'sig.txt')).readAsStringSync().trim();
   if (currentCodeSig != lastCompileSig) {
@@ -1101,7 +953,6 @@ Future<void> checkBuild() async {
 }
 
 @Task('Dry run of publish to pub.dev')
-@Depends(checkChangelogHasVersion)
 Future<void> tryPublish() async {
   var launcher = SubprocessLauncher('try-publish');
   await launcher
@@ -1272,31 +1123,4 @@ int _findCount(String str, String match) {
     index = str.indexOf(match, index + match.length);
   }
   return count;
-}
-
-Future<String> _calcDartFilesSig(Directory dir) async {
-  final digest = await _dartFileLines(dir)
-      .transform(utf8.encoder)
-      .transform(crypto.md5)
-      .single;
-
-  return digest.bytes
-      .map((byte) => byte.toRadixString(16).padLeft(2, '0').toUpperCase())
-      .join();
-}
-
-/// Yields all of the trimmed lines of all of the `.dart` files in [dir].
-Stream<String> _dartFileLines(Directory dir) async* {
-  final files = dir
-      .listSync(recursive: true)
-      .whereType<File>()
-      .where((file) => file.path.endsWith('.dart'))
-      .toList()
-    ..sort((a, b) => compareAsciiLowerCase(a.path, b.path));
-
-  for (var file in files) {
-    for (var line in file.readAsLinesSync()) {
-      yield line.trim();
-    }
-  }
 }
