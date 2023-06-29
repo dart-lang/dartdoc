@@ -597,7 +597,8 @@ class DartdocOptionArgSynth<T> extends DartdocOption<T>
       String help = '',
       OptionKind optionIs = OptionKind.other,
       this.negatable = false})
-      : assert(T is! Iterable),
+      : assert(const <Never>[] is! T,
+            '$T should not be bound to a type which allows iterables'),
         super(name, null, help, optionIs, mustExist, null, resourceProvider);
 
   @override
