@@ -106,8 +106,6 @@ Future<FlutterRepo> get cleanFlutterRepo async {
 
 final String _dartdocDocsPath = createTempSync('dartdoc').path;
 
-final Directory _sdkDocsDir = createTempSync('sdkdocs').absolute;
-
 Directory cleanFlutterDir = Directory(
     p.join(p.context.resolveTildePath('~/.dartdoc_grinder'), 'cleanFlutter'));
 
@@ -466,7 +464,7 @@ Future<void> serveSdkDocs() async {
     '--port',
     '8000',
     '--path',
-    _sdkDocsDir.path,
+    task.sdkDocsDir.path,
   ]);
 }
 
@@ -933,7 +931,7 @@ void validateSdkDocs() {
   const expectedLibCounts = 0;
   const expectedSubLibCount = {19, 20, 21};
   const expectedTotalCount = {19, 20, 21};
-  var indexHtml = joinFile(_sdkDocsDir, ['index.html']);
+  var indexHtml = joinFile(task.sdkDocsDir, ['index.html']);
   if (!indexHtml.existsSync()) {
     fail("No 'index.html' found for the SDK docs");
   }
@@ -955,8 +953,10 @@ void validateSdkDocs() {
   log('$foundSubLibs index.html dart: entries in categories found');
 
   // check for the existence of certain files/dirs
-  var libsLength =
-      _sdkDocsDir.listSync().where((fs) => fs.path.contains('dart-')).length;
+  var libsLength = task.sdkDocsDir
+      .listSync()
+      .where((fs) => fs.path.contains('dart-'))
+      .length;
   if (!expectedTotalCount.contains(libsLength)) {
     fail('Docs not generated for all the SDK libraries; expected '
         '$expectedTotalCount directories, but $libsLength directories were '
@@ -964,8 +964,8 @@ void validateSdkDocs() {
   }
   log("Found $libsLength 'dart:' libraries");
 
-  var futureConstFile =
-      joinFile(_sdkDocsDir, [p.join('dart-async', 'Future', 'Future.html')]);
+  var futureConstFile = joinFile(
+      task.sdkDocsDir, [p.join('dart-async', 'Future', 'Future.html')]);
   if (!futureConstFile.existsSync()) {
     fail('no Future.html found for dart:async Future constructor');
   }

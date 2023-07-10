@@ -131,8 +131,12 @@ Future<void> runDoc(ArgResults commandResults) async {
   });
 }
 
+/// A temporary directory into which the SDK can be documented.
+final Directory sdkDocsDir =
+    Directory.systemTemp.createTempSync('sdkdocs').absolute;
+
 Future<void> docSdk() async => _docSdk(
-      sdkDocsPath: Directory.systemTemp.createTempSync('sdkdocs').absolute.path,
+      sdkDocsPath: sdkDocsDir.path,
       dartdocPath: Directory.current.path,
     );
 
