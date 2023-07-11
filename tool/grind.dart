@@ -11,7 +11,8 @@ import 'package:dartdoc/src/package_meta.dart';
 import 'package:grinder/grinder.dart';
 import 'package:path/path.dart' as p;
 
-import 'subprocess_launcher.dart';
+import 'src/subprocess_launcher.dart';
+import 'src/warnings_collection.dart';
 import 'task.dart' as task;
 
 void main(List<String> args) => grind(args);
@@ -104,8 +105,6 @@ Future<FlutterRepo> get cleanFlutterRepo async {
 }
 
 final String _dartdocDocsPath = createTempSync('dartdoc').path;
-
-final Directory _sdkDocsDir = createTempSync('sdkdocs').absolute;
 
 Directory cleanFlutterDir = Directory(
     p.join(p.context.resolveTildePath('~/.dartdoc_grinder'), 'cleanFlutter'));
@@ -243,107 +242,7 @@ void presubmit() {}
 void buildbot() {}
 
 @Task('Generate docs for the Dart SDK')
-Future<void> buildSdkDocs() async {
-  log('building SDK docs');
-  await _buildSdkDocs(_sdkDocsDir.path, Future.value(Directory.current.path));
-}
-
-class WarningsCollection {
-  final String tempDir;
-  final Map<String, int> warningKeyCounts;
-  final String branch;
-  final String? pubCachePath;
-
-  WarningsCollection(this.tempDir, this.pubCachePath, this.branch)
-      : warningKeyCounts = {};
-
-  static const String kPubCachePathReplacement = '_xxxPubDirectoryxxx_';
-  static const String kTempDirReplacement = '_xxxTempDirectoryxxx_';
-
-  String _toKey(String text) {
-    var key = text.replaceAll(tempDir, kTempDirReplacement);
-    var pubCachePath = this.pubCachePath;
-    if (pubCachePath != null) {
-      key = key.replaceAll(pubCachePath, kPubCachePathReplacement);
-    }
-    return key;
-  }
-
-  String _fromKey(String text) {
-    var key = text.replaceAll(kTempDirReplacement, tempDir);
-    if (pubCachePath != null) {
-      key = key.replaceAll(kPubCachePathReplacement, pubCachePath!);
-    }
-    return key;
-  }
-
-  void add(String text) {
-    var key = _toKey(text);
-    warningKeyCounts.update(key, (e) => e + 1, ifAbsent: () => 1);
-  }
-
-  /// Output formatter for comparing warnings. `this` is the original.
-  String getPrintableWarningDelta(String title, WarningsCollection current) {
-    var printBuffer = StringBuffer();
-    var quantityChangedOuts = <String>{};
-    var onlyOriginal = <String>{};
-    var onlyCurrent = <String>{};
-    var identical = <String>{};
-    var allKeys = <String>{
-      ...warningKeyCounts.keys,
-      ...current.warningKeyCounts.keys
-    };
-
-    for (var key in allKeys) {
-      if (warningKeyCounts.containsKey(key) &&
-          !current.warningKeyCounts.containsKey(key)) {
-        onlyOriginal.add(key);
-      } else if (!warningKeyCounts.containsKey(key) &&
-          current.warningKeyCounts.containsKey(key)) {
-        onlyCurrent.add(key);
-      } else if (warningKeyCounts.containsKey(key) &&
-          current.warningKeyCounts.containsKey(key) &&
-          warningKeyCounts[key] != current.warningKeyCounts[key]) {
-        quantityChangedOuts.add(key);
-      } else {
-        identical.add(key);
-      }
-    }
-
-    if (onlyOriginal.isNotEmpty) {
-      printBuffer.writeln(
-          '*** $title : ${onlyOriginal.length} warnings from $branch, missing in ${current.branch}:');
-      for (var key in onlyOriginal) {
-        printBuffer.writeln(_fromKey(key));
-      }
-    }
-    if (onlyCurrent.isNotEmpty) {
-      printBuffer.writeln(
-          '*** $title : ${onlyCurrent.length} new warnings in ${current.branch}, missing in $branch');
-      for (var key in onlyCurrent) {
-        printBuffer.writeln(current._fromKey(key));
-      }
-    }
-    if (quantityChangedOuts.isNotEmpty) {
-      printBuffer.writeln('*** $title : Identical warning quantity changed');
-      for (var key in quantityChangedOuts) {
-        printBuffer.writeln(
-            '* Appeared ${warningKeyCounts[key]} times in $branch, ${current.warningKeyCounts[key]} in ${current.branch}:');
-        printBuffer.writeln(current._fromKey(key));
-      }
-    }
-    if (onlyOriginal.isEmpty &&
-        onlyCurrent.isEmpty &&
-        quantityChangedOuts.isEmpty) {
-      printBuffer.writeln(
-          '*** $title : No difference in warning output from $branch to ${current.branch}${allKeys.isEmpty ? "" : " (${allKeys.length} warnings found)"}');
-    } else if (identical.isNotEmpty) {
-      printBuffer.writeln(
-          '*** $title : Difference in warning output found for ${allKeys.length - identical.length} warnings (${allKeys.length} warnings found)"');
-    }
-    return printBuffer.toString();
-  }
-}
+Future<void> buildSdkDocs() async => await task.docSdk();
 
 /// Returns a map of warning texts to the number of times each has been seen.
 WarningsCollection jsonMessageIterableToWarnings(
@@ -361,27 +260,6 @@ WarningsCollection jsonMessageIterableToWarnings(
     }
   }
   return warningTexts;
-}
-
-@Task('Display delta in SDK warnings')
-Future<void> compareSdkWarnings() async {
-  var originalDartdocSdkDocs =
-      Directory.systemTemp.createTempSync('dartdoc-comparison-sdkdocs');
-  var originalDartdoc = createComparisonDartdoc();
-  var currentDartdocSdkBuild = _buildSdkDocs(
-      _sdkDocsDir.path, Future.value(Directory.current.path), 'current');
-  var originalDartdocSdkBuild =
-      _buildSdkDocs(originalDartdocSdkDocs.path, originalDartdoc, 'original');
-  var currentDartdocWarnings = jsonMessageIterableToWarnings(
-      await currentDartdocSdkBuild, _sdkDocsDir.path, null, 'HEAD');
-  var originalDartdocWarnings = jsonMessageIterableToWarnings(
-      await originalDartdocSdkBuild,
-      originalDartdocSdkDocs.absolute.path,
-      null,
-      dartdocOriginalBranch);
-
-  print(originalDartdocWarnings.getPrintableWarningDelta(
-      'SDK docs', currentDartdocWarnings));
 }
 
 /// Helper function to create a clean version of dartdoc (based on the current
@@ -466,29 +344,6 @@ Future<void> testWithAnalyzerSdk() async {
   } catch (e, st) {
     print('Warning: SDK analyzer job threw "$e":\n$st');
   }
-}
-
-Future<Iterable<Map<String, Object?>>> _buildSdkDocs(
-    String sdkDocsPath, Future<String> futureCwd,
-    [String label = '']) async {
-  if (label != '') label = '-$label';
-  var launcher = SubprocessLauncher('build-sdk-docs$label');
-  var cwd = await futureCwd;
-  await launcher.runStreamed(Platform.resolvedExecutable, ['pub', 'get'],
-      workingDirectory: cwd);
-  return await launcher.runStreamed(
-      Platform.resolvedExecutable,
-      [
-        '--enable-asserts',
-        p.join('bin', 'dartdoc.dart'),
-        '--output',
-        sdkDocsPath,
-        '--sdk-docs',
-        '--json',
-        '--show-progress',
-        ..._extraDartdocParameters,
-      ],
-      workingDirectory: cwd);
 }
 
 Future<Iterable<Map<String, Object?>>> _buildTestPackageDocs(
@@ -609,7 +464,7 @@ Future<void> serveSdkDocs() async {
     '--port',
     '8000',
     '--path',
-    _sdkDocsDir.path,
+    task.sdkDocsDir.path,
   ]);
 }
 
@@ -638,7 +493,7 @@ Future<void> compareFlutterWarnings() async {
       envOriginal['PUB_CACHE'],
       dartdocOriginalBranch);
 
-  print(originalDartdocWarnings.getPrintableWarningDelta(
+  print(originalDartdocWarnings.warningDeltaText(
       'Flutter repo', currentDartdocWarnings));
 
   if (Platform.environment['SERVE_FLUTTER'] == '1') {
@@ -1076,7 +931,7 @@ void validateSdkDocs() {
   const expectedLibCounts = 0;
   const expectedSubLibCount = {19, 20, 21};
   const expectedTotalCount = {19, 20, 21};
-  var indexHtml = joinFile(_sdkDocsDir, ['index.html']);
+  var indexHtml = joinFile(task.sdkDocsDir, ['index.html']);
   if (!indexHtml.existsSync()) {
     fail("No 'index.html' found for the SDK docs");
   }
@@ -1098,8 +953,10 @@ void validateSdkDocs() {
   log('$foundSubLibs index.html dart: entries in categories found');
 
   // check for the existence of certain files/dirs
-  var libsLength =
-      _sdkDocsDir.listSync().where((fs) => fs.path.contains('dart-')).length;
+  var libsLength = task.sdkDocsDir
+      .listSync()
+      .where((fs) => fs.path.contains('dart-'))
+      .length;
   if (!expectedTotalCount.contains(libsLength)) {
     fail('Docs not generated for all the SDK libraries; expected '
         '$expectedTotalCount directories, but $libsLength directories were '
@@ -1107,8 +964,8 @@ void validateSdkDocs() {
   }
   log("Found $libsLength 'dart:' libraries");
 
-  var futureConstFile =
-      joinFile(_sdkDocsDir, [p.join('dart-async', 'Future', 'Future.html')]);
+  var futureConstFile = joinFile(
+      task.sdkDocsDir, [p.join('dart-async', 'Future', 'Future.html')]);
   if (!futureConstFile.existsSync()) {
     fail('no Future.html found for dart:async Future constructor');
   }

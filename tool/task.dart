@@ -1,3 +1,7 @@
+// Copyright (c) 2023, the Dart project authors.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
 import 'dart:convert';
 import 'dart:io';
 
@@ -7,11 +11,13 @@ import 'package:crypto/crypto.dart' as crypto;
 import 'package:path/path.dart' as p;
 import 'package:yaml/yaml.dart' as yaml;
 
-import 'subprocess_launcher.dart';
+import 'src/subprocess_launcher.dart';
+import 'src/warnings_collection.dart';
 
 void main(List<String> args) async {
   var parser = ArgParser();
   parser.addCommand('build');
+  parser.addCommand('doc');
   var results = parser.parse(args);
   var commandResults = results.command;
   if (commandResults == null) {
@@ -20,8 +26,7 @@ void main(List<String> args) async {
 
   return switch (commandResults.name) {
     'build' => await runBuild(commandResults),
-    // TODO(srawlins): Implement tasks that document various code.
-    'doc' => throw UnimplementedError(),
+    'doc' => await runDoc(commandResults),
     // TODO(srawlins): Implement tasks that serve various docs, after generating
     // them.
     'serve' => throw UnimplementedError(),
@@ -110,4 +115,119 @@ Stream<String> _dartFileLines(Directory dir) {
     for (var file in files)
       for (var line in file.readAsLinesSync()) line.trim(),
   ]);
+}
+
+Future<void> runDoc(ArgResults commandResults) async {
+  if (commandResults.rest.length != 1) {
+    throw ArgumentError('"doc" command requires a single target.');
+  }
+  var target = commandResults.rest.single;
+  // ignore: unnecessary_statements, unnecessary_parenthesis
+  (switch (target) {
+    'sdk' => await docSdk(),
+    'dartdoc-options' => await buildDartdocOptions(),
+    'web' => await buildWeb(),
+    _ => throw UnimplementedError('Unknown build target: "$target"'),
+  });
+}
+
+/// A temporary directory into which the SDK can be documented.
+final Directory sdkDocsDir =
+    Directory.systemTemp.createTempSync('sdkdocs').absolute;
+
+Future<void> docSdk() async => _docSdk(
+      sdkDocsPath: sdkDocsDir.path,
+      dartdocPath: Directory.current.path,
+    );
+
+Future<void> compareSdkWarnings() async {
+  var originalDartdocSdkDocs =
+      Directory.systemTemp.createTempSync('dartdoc-comparison-sdkdocs');
+  var originalDartdoc = await _createComparisonDartdoc();
+  var sdkDocsPath =
+      Directory.systemTemp.createTempSync('sdkdocs').absolute.path;
+  var currentDartdocSdkBuild = _docSdk(
+    sdkDocsPath: sdkDocsPath,
+    dartdocPath: Directory.current.path,
+  );
+  var originalDartdocSdkBuild = _docSdk(
+    sdkDocsPath: originalDartdocSdkDocs.path,
+    dartdocPath: originalDartdoc,
+  );
+  var currentDartdocWarnings = _jsonMessageIterableToWarnings(
+    await currentDartdocSdkBuild,
+    tempPath: sdkDocsPath,
+    branch: 'HEAD',
+  );
+  var originalDartdocWarnings = _jsonMessageIterableToWarnings(
+    await originalDartdocSdkBuild,
+    tempPath: originalDartdocSdkDocs.absolute.path,
+    branch: _dartdocOriginalBranch,
+  );
+
+  print(originalDartdocWarnings.warningDeltaText(
+      'SDK docs', currentDartdocWarnings));
+}
+
+/// Returns a map of warning texts to the number of times each has been seen.
+WarningsCollection _jsonMessageIterableToWarnings(
+  Iterable<Map<Object, Object?>> messageIterable, {
+  required String tempPath,
+  required String branch,
+  String? pubDir,
+}) {
+  var warningTexts = WarningsCollection(tempPath, pubDir, branch);
+  for (final message in messageIterable) {
+    if (message.containsKey('level') &&
+        message['level'] == 'WARNING' &&
+        message.containsKey('data')) {
+      var data = message['data'] as Map;
+      warningTexts.add(data['text'] as String);
+    }
+  }
+  return warningTexts;
+}
+
+Future<Iterable<Map<String, Object?>>> _docSdk({
+  required String sdkDocsPath,
+  required String dartdocPath,
+}) async {
+  var launcher = SubprocessLauncher('build-sdk-docs');
+  await launcher.runStreamed(Platform.resolvedExecutable, ['pub', 'get'],
+      workingDirectory: dartdocPath);
+  return await launcher.runStreamed(
+      Platform.resolvedExecutable,
+      [
+        '--enable-asserts',
+        p.join('bin', 'dartdoc.dart'),
+        '--output',
+        sdkDocsPath,
+        '--sdk-docs',
+        '--json',
+        '--show-progress',
+      ],
+      workingDirectory: dartdocPath);
+}
+
+/// Creates a clean version of dartdoc (based on the current directory, assumed
+/// to be a git repository).
+///
+/// Uses [dartdocOriginalBranch] to checkout a branch or tag.
+Future<String> _createComparisonDartdoc() async {
+  var launcher = SubprocessLauncher('create-comparison-dartdoc');
+  var dartdocClean = Directory.systemTemp.createTempSync('dartdoc-comparison');
+  await launcher
+      .runStreamed('git', ['clone', Directory.current.path, dartdocClean.path]);
+  await launcher.runStreamed('git', ['checkout', _dartdocOriginalBranch],
+      workingDirectory: dartdocClean.path);
+  await launcher.runStreamed(Platform.resolvedExecutable, ['pub', 'get'],
+      workingDirectory: dartdocClean.path);
+  return dartdocClean.path;
+}
+
+/// Version of dartdoc we should use when making comparisons.
+String get _dartdocOriginalBranch {
+  var branch = Platform.environment['DARTDOC_ORIGINAL'] ?? 'main';
+  print('using branch/tag: $branch for comparison from \$DARTDOC_ORIGINAL');
+  return branch;
 }
