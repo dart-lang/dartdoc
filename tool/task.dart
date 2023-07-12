@@ -5,12 +5,16 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:args/args.dart';
 import 'package:collection/collection.dart';
 import 'package:crypto/crypto.dart' as crypto;
+import 'package:dartdoc/src/io_utils.dart';
+import 'package:dartdoc/src/package_meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:yaml/yaml.dart' as yaml;
 
+import 'src/flutter_repo.dart';
 import 'src/subprocess_launcher.dart';
 import 'src/warnings_collection.dart';
 
@@ -18,6 +22,7 @@ void main(List<String> args) async {
   var parser = ArgParser();
   parser.addCommand('build');
   parser.addCommand('doc');
+  parser.addCommand('try-publish');
   var results = parser.parse(args);
   var commandResults = results.command;
   if (commandResults == null) {
@@ -30,6 +35,7 @@ void main(List<String> args) async {
     // TODO(srawlins): Implement tasks that serve various docs, after generating
     // them.
     'serve' => throw UnimplementedError(),
+    'try-publish' => await runTryPublish(),
     _ => throw ArgumentError(),
   };
 }
@@ -125,9 +131,8 @@ Future<void> runDoc(ArgResults commandResults) async {
   // ignore: unnecessary_statements, unnecessary_parenthesis
   (switch (target) {
     'sdk' => await docSdk(),
-    'dartdoc-options' => await buildDartdocOptions(),
-    'web' => await buildWeb(),
-    _ => throw UnimplementedError('Unknown build target: "$target"'),
+    'package' => await _docPackage(commandResults),
+    _ => throw UnimplementedError('Unknown doc target: "$target"'),
   });
 }
 
@@ -139,6 +144,89 @@ Future<void> docSdk() async => _docSdk(
       sdkDocsPath: sdkDocsDir.path,
       dartdocPath: Directory.current.path,
     );
+
+Future<void> _docPackage(ArgResults commandResults) async {
+  var name = commandResults['name'] as String;
+  var version = commandResults['version'] as String?;
+  await docPackage(name: name, version: version);
+}
+
+Future<String> docPackage(
+    {required String name, required String? version}) async {
+  var env = createThrowawayPubCache();
+  var versionContext = version == null ? '' : '-$version';
+  var launcher = SubprocessLauncher('build-$name$versionContext', env);
+  await launcher.runStreamed(Platform.resolvedExecutable, [
+    'pub',
+    'cache',
+    'add',
+    if (version != null) ...['-v', version],
+    name,
+  ]);
+  var cache = Directory(p.join(env['PUB_CACHE']!, 'hosted', 'pub.dev'));
+  var pubPackageDirOrig =
+      cache.listSync().firstWhere((e) => e.path.contains(name));
+  var pubPackageDir = Directory.systemTemp.createTempSync(name);
+  Process.runSync('cp', [pubPackageDirOrig.path, pubPackageDir.path]);
+
+  if (pubPackageMetaProvider
+      .fromDir(PhysicalResourceProvider.INSTANCE.getFolder(pubPackageDir.path))!
+      .requiresFlutter) {
+    var flutterRepo =
+        await FlutterRepo.fromExistingFlutterRepo(await cleanFlutterRepo);
+    await launcher.runStreamed(flutterRepo.cacheDart, ['pub', 'get'],
+        environment: flutterRepo.env,
+        workingDirectory: pubPackageDir.absolute.path);
+    await launcher.runStreamed(
+        flutterRepo.cacheDart,
+        [
+          '--enable-asserts',
+          p.join(Directory.current.absolute.path, 'bin', 'dartdoc.dart'),
+          '--json',
+          '--link-to-remote',
+          '--show-progress',
+        ],
+        environment: flutterRepo.env,
+        workingDirectory: pubPackageDir.absolute.path);
+  } else {
+    await launcher.runStreamed(Platform.resolvedExecutable, ['pub', 'get'],
+        workingDirectory: pubPackageDir.absolute.path);
+    await launcher.runStreamed(
+        Platform.resolvedExecutable,
+        [
+          '--enable-asserts',
+          p.join(Directory.current.absolute.path, 'bin', 'dartdoc.dart'),
+          '--json',
+          '--link-to-remote',
+          '--show-progress',
+        ],
+        workingDirectory: pubPackageDir.absolute.path);
+  }
+  return p.join(pubPackageDir.absolute.path, 'doc', 'api');
+}
+
+/// Creates a throwaway pub cache and returns the environment variables
+/// necessary to use it.
+Map<String, String> createThrowawayPubCache() {
+  var pubCache = Directory.systemTemp.createTempSync('pubcache');
+  var pubCacheBin = Directory(p.join(pubCache.path, 'bin'));
+  var defaultCache = Directory(defaultPubCache);
+  if (defaultCache.existsSync()) {
+    Process.runSync('cp', [defaultPubCache, pubCache.path]);
+  } else {
+    pubCacheBin.createSync();
+  }
+  return Map.fromIterables([
+    'PUB_CACHE',
+    'PATH'
+  ], [
+    pubCache.path,
+    [pubCacheBin.path, Platform.environment['PATH']].join(':')
+  ]);
+}
+
+final String defaultPubCache = Platform.environment['PUB_CACHE'] ??
+    p.context.resolveTildePath('~/.pub-cache');
 
 Future<void> compareSdkWarnings() async {
   var originalDartdocSdkDocs =
@@ -230,4 +318,9 @@ String get _dartdocOriginalBranch {
   var branch = Platform.environment['DARTDOC_ORIGINAL'] ?? 'main';
   print('using branch/tag: $branch for comparison from \$DARTDOC_ORIGINAL');
   return branch;
+}
+
+Future<void> runTryPublish() async {
+  await SubprocessLauncher('try-publish')
+      .runStreamed(Platform.resolvedExecutable, ['pub', 'publish', '-n']);
 }
