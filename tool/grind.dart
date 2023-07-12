@@ -460,10 +460,6 @@ Future<void> serveFlutterDocs() async {
   ]);
 }
 
-@Task('Validate flutter docs')
-@Depends(buildFlutterDocs, testDartdocFlutterPlugin)
-void validateFlutterDocs() {}
-
 @Task('Build flutter docs')
 Future<void> buildFlutterDocs() async {
   log('building flutter docs into: $_flutterDir');
@@ -643,59 +639,6 @@ Future<void> testDartdoc() async {
   expectFileContains(
       p.join(_dartdocDocsPath, 'dartdoc', 'PubPackageMeta-class.html'),
       [object]);
-}
-
-@Task('serve docs for a package that requires flutter with remote linking')
-@Depends(buildDartdocFlutterPluginDocs)
-Future<void> serveDartdocFlutterPluginDocs() async {
-  await _serveDocsFrom(
-      _pluginPackageDocsPath, 8005, 'serve-dartdoc-flutter-plugin-docs');
-}
-
-Future<WarningsCollection> _buildDartdocFlutterPluginDocs() async {
-  var flutterRepo = await FlutterRepo.fromExistingFlutterRepo(
-      await cleanFlutterRepo, 'docs-flutter-plugin');
-
-  await flutterRepo.launcher.runStreamed(flutterRepo.cacheDart, ['pub', 'get'],
-      workingDirectory: testPackageFlutterPlugin.path);
-
-  return jsonMessageIterableToWarnings(
-    await flutterRepo.launcher.runStreamed(
-      flutterRepo.cacheDart,
-      [
-        '--enable-asserts',
-        p.join(Directory.current.path, 'bin', 'dartdoc.dart'),
-        '--json',
-        '--link-to-remote',
-        '--output',
-        _pluginPackageDocsPath
-      ],
-      workingDirectory: testPackageFlutterPlugin.path,
-    ),
-    _pluginPackageDocsPath,
-    task.defaultPubCache,
-    'HEAD',
-  );
-}
-
-@Task('Build docs for a package that requires flutter with remote linking')
-@Depends(clean)
-Future<void> buildDartdocFlutterPluginDocs() async {
-  await _buildDartdocFlutterPluginDocs();
-}
-
-@Task('Verify docs for a package that requires flutter with remote linking')
-Future<void> testDartdocFlutterPlugin() async {
-  var warnings = await _buildDartdocFlutterPluginDocs();
-  if (warnings.warningKeyCounts.isNotEmpty) {
-    fail('No warnings should exist in : ${warnings.warningKeyCounts}');
-  }
-  // Verify that links to Dart SDK and Flutter SDK go to the flutter site.
-  expectFileContains(
-      p.join(_pluginPackageDocsPath, 'testlib', 'MyAwesomeWidget-class.html'), [
-    '<a href="https://api.flutter.dev/flutter/widgets/Widget-class.html">Widget</a>',
-    '<a href="https://api.flutter.dev/flutter/dart-core/Object-class.html">Object</a>'
-  ]);
 }
 
 @Task('Validate the SDK doc build.')
