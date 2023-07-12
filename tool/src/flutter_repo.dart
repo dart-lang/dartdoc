@@ -8,6 +8,7 @@ import 'dart:io';
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:path/path.dart' as p;
 
+import 'io_utils.dart' as io_utils;
 import 'subprocess_launcher.dart';
 
 /// A class representing a Flutter SDK repository.
@@ -55,8 +56,7 @@ class FlutterRepo {
   static Future<FlutterRepo> copyFromExistingFlutterRepo(
       FlutterRepo originalRepo, String flutterPath, Map<String, String> env,
       [String? label]) async {
-    // Note: This is only designed to work on Unix-like systems.
-    Process.runSync('cp', [originalRepo.path, flutterPath]);
+    io_utils.copy(Directory(originalRepo.path), Directory(flutterPath));
     return FlutterRepo.fromPath(flutterPath, env, label);
   }
 

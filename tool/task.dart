@@ -15,6 +15,7 @@ import 'package:path/path.dart' as p;
 import 'package:yaml/yaml.dart' as yaml;
 
 import 'src/flutter_repo.dart';
+import 'src/io_utils.dart' as io_utils;
 import 'src/subprocess_launcher.dart';
 import 'src/warnings_collection.dart';
 
@@ -167,7 +168,7 @@ Future<String> docPackage(
   var pubPackageDirOrig =
       cache.listSync().firstWhere((e) => e.path.contains(name));
   var pubPackageDir = Directory.systemTemp.createTempSync(name);
-  Process.runSync('cp', [pubPackageDirOrig.path, pubPackageDir.path]);
+  io_utils.copy(pubPackageDirOrig, pubPackageDir);
 
   if (pubPackageMetaProvider
       .fromDir(PhysicalResourceProvider.INSTANCE.getFolder(pubPackageDir.path))!
@@ -212,7 +213,7 @@ Map<String, String> createThrowawayPubCache() {
   var pubCacheBin = Directory(p.join(pubCache.path, 'bin'));
   var defaultCache = Directory(defaultPubCache);
   if (defaultCache.existsSync()) {
-    Process.runSync('cp', [defaultPubCache, pubCache.path]);
+    io_utils.copy(defaultCache, pubCache);
   } else {
     pubCacheBin.createSync();
   }
