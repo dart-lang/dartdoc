@@ -18,7 +18,7 @@ if [ "$DARTDOC_BOT" = "sdk-docs" ]; then
   echo "SDK docs process finished"
 elif [ "$DARTDOC_BOT" = "flutter" ]; then
   echo "Running flutter dartdoc bot"
-  dart run grinder validate-flutter-docs
+  dart run grinder build-flutter-docs
 elif [ "$DARTDOC_BOT" = "packages" ]; then
   echo "Running packages dartdoc bot"
   PACKAGE_NAME=angular PACKAGE_VERSION=">=7.0.0" DARTDOC_PARAMS="--include=angular" dart run grinder build-pub-package
