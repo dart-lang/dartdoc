@@ -63,9 +63,6 @@ final Directory _testPackageDocsDir = createTempSync('test_package');
 final Directory _testPackageExperimentsDocsDir =
     createTempSync('test_package_experiments');
 
-final String _pluginPackageDocsPath =
-    createTempSync('test_package_flutter_plugin').path;
-
 /// Version of dartdoc we should use when making comparisons.
 String get dartdocOriginalBranch {
   var branch = Platform.environment['DARTDOC_ORIGINAL'];
