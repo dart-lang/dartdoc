@@ -23,6 +23,7 @@ void main(List<String> args) async {
   var parser = ArgParser();
   parser.addCommand('build');
   parser.addCommand('doc');
+  parser.addCommand('serve');
   parser.addCommand('try-publish');
   var results = parser.parse(args);
   var commandResults = results.command;
@@ -31,11 +32,13 @@ void main(List<String> args) async {
   }
 
   return switch (commandResults.name) {
+    'analyze' => await runAnalyze(commandResults),
     'build' => await runBuild(commandResults),
     'doc' => await runDoc(commandResults),
     // TODO(srawlins): Implement tasks that serve various docs, after generating
     // them.
-    'serve' => throw UnimplementedError(),
+    'serve' => await runServe(commandResults),
+    'test' => await runTest(),
     'try-publish' => await runTryPublish(),
     _ => throw ArgumentError(),
   };
@@ -50,6 +53,46 @@ String _getPackageVersion() {
   return yamlDoc['version'] as String;
 }
 
+Directory get testPackage => Directory(p.joinAll(['testing', 'test_package']));
+
+Directory get testPackageExperiments =>
+    Directory(p.joinAll(['testing', 'test_package_experiments']));
+
+Future<void> runAnalyze(ArgResults commandResults) async {
+  for (var target in commandResults.rest) {
+    // ignore: unnecessary_statements, unnecessary_parenthesis
+    (switch (target) {
+      'package' => await analyzePackage(),
+      'test-packages' => await analyzeTestPackages(),
+      _ => throw UnimplementedError('Unknown analyze target: "$target"'),
+    });
+  }
+}
+
+Future<void> analyzePackage() async =>
+    await SubprocessLauncher('analyze').runStreamedDartCommand(
+      ['analyze', '--fatal-infos', '.'],
+    );
+
+Future<void> analyzeTestPackages() async {
+  var testPackagePaths = [
+    testPackage.path,
+    if (Platform.version.contains('dev')) testPackageExperiments.path,
+  ];
+  for (var path in testPackagePaths) {
+    await SubprocessLauncher('pub-get').runStreamedDartCommand(
+      ['pub', 'get'],
+      workingDirectory: path,
+    );
+    await SubprocessLauncher('analyze-test-package').runStreamedDartCommand(
+      // TODO(srawlins): Analyze the whole directory by ignoring the pubspec
+      // reports.
+      ['analyze', 'lib'],
+      workingDirectory: path,
+    );
+  }
+}
+
 Future<void> runBuild(ArgResults commandResults) async {
   for (var target in commandResults.rest) {
     // ignore: unnecessary_statements, unnecessary_parenthesis
@@ -62,9 +105,8 @@ Future<void> runBuild(ArgResults commandResults) async {
   }
 }
 
-Future<void> buildRenderers() async =>
-    await SubprocessLauncher('build').runStreamed(Platform.resolvedExecutable,
-        [p.join('tool', 'mustachio', 'builder.dart')]);
+Future<void> buildRenderers() async => await SubprocessLauncher('build')
+    .runStreamedDartCommand([p.join('tool', 'mustachio', 'builder.dart')]);
 
 Future<void> buildDartdocOptions() async {
   var version = _getPackageVersion();
@@ -77,7 +119,7 @@ Future<void> buildDartdocOptions() async {
 }
 
 Future<void> buildWeb() async {
-  await SubprocessLauncher('build').runStreamed(Platform.resolvedExecutable, [
+  await SubprocessLauncher('build').runStreamedDartCommand([
     'compile',
     'js',
     '--output=lib/resources/docs.dart.js',
@@ -157,7 +199,7 @@ Future<String> docPackage(
   var env = createThrowawayPubCache();
   var versionContext = version == null ? '' : '-$version';
   var launcher = SubprocessLauncher('build-$name$versionContext', env);
-  await launcher.runStreamed(Platform.resolvedExecutable, [
+  await launcher.runStreamedDartCommand([
     'pub',
     'cache',
     'add',
@@ -190,18 +232,18 @@ Future<String> docPackage(
         environment: flutterRepo.env,
         workingDirectory: pubPackageDir.absolute.path);
   } else {
-    await launcher.runStreamed(Platform.resolvedExecutable, ['pub', 'get'],
+    await launcher.runStreamedDartCommand(['pub', 'get'],
         workingDirectory: pubPackageDir.absolute.path);
-    await launcher.runStreamed(
-        Platform.resolvedExecutable,
-        [
-          '--enable-asserts',
-          p.join(Directory.current.absolute.path, 'bin', 'dartdoc.dart'),
-          '--json',
-          '--link-to-remote',
-          '--show-progress',
-        ],
-        workingDirectory: pubPackageDir.absolute.path);
+    await launcher.runStreamedDartCommand(
+      [
+        '--enable-asserts',
+        p.join(Directory.current.absolute.path, 'bin', 'dartdoc.dart'),
+        '--json',
+        '--link-to-remote',
+        '--show-progress',
+      ],
+      workingDirectory: pubPackageDir.absolute.path,
+    );
   }
   return p.join(pubPackageDir.absolute.path, 'doc', 'api');
 }
@@ -219,10 +261,10 @@ Map<String, String> createThrowawayPubCache() {
   }
   return Map.fromIterables([
     'PUB_CACHE',
-    'PATH'
+    'PATH',
   ], [
     pubCache.path,
-    [pubCacheBin.path, Platform.environment['PATH']].join(':')
+    [pubCacheBin.path, Platform.environment['PATH']].join(':'),
   ]);
 }
 
@@ -282,26 +324,26 @@ Future<Iterable<Map<String, Object?>>> _docSdk({
   required String dartdocPath,
 }) async {
   var launcher = SubprocessLauncher('build-sdk-docs');
-  await launcher.runStreamed(Platform.resolvedExecutable, ['pub', 'get'],
-      workingDirectory: dartdocPath);
-  return await launcher.runStreamed(
-      Platform.resolvedExecutable,
-      [
-        '--enable-asserts',
-        p.join('bin', 'dartdoc.dart'),
-        '--output',
-        sdkDocsPath,
-        '--sdk-docs',
-        '--json',
-        '--show-progress',
-      ],
-      workingDirectory: dartdocPath);
+  await launcher
+      .runStreamedDartCommand(['pub', 'get'], workingDirectory: dartdocPath);
+  return await launcher.runStreamedDartCommand(
+    [
+      '--enable-asserts',
+      p.join('bin', 'dartdoc.dart'),
+      '--output',
+      sdkDocsPath,
+      '--sdk-docs',
+      '--json',
+      '--show-progress',
+    ],
+    workingDirectory: dartdocPath,
+  );
 }
 
 /// Creates a clean version of dartdoc (based on the current directory, assumed
 /// to be a git repository).
 ///
-/// Uses [dartdocOriginalBranch] to checkout a branch or tag.
+/// Uses [_dartdocOriginalBranch] to checkout a branch or tag.
 Future<String> _createComparisonDartdoc() async {
   var launcher = SubprocessLauncher('create-comparison-dartdoc');
   var dartdocClean = Directory.systemTemp.createTempSync('dartdoc-comparison');
@@ -319,6 +361,75 @@ String get _dartdocOriginalBranch {
   var branch = Platform.environment['DARTDOC_ORIGINAL'] ?? 'main';
   print('using branch/tag: $branch for comparison from \$DARTDOC_ORIGINAL');
   return branch;
+}
+
+Future<void> runServe(ArgResults commandResults) async {
+  if (commandResults.rest.length != 1) {
+    throw ArgumentError('"serve" command requires a single target.');
+  }
+  var target = commandResults.rest.single;
+  // ignore: unnecessary_statements, unnecessary_parenthesis
+  (switch (target) {
+    'sdk' => await serveSdkDocs(),
+    'package' => await _servePackageDocs(commandResults),
+    _ => throw UnimplementedError('Unknown serve target: "$target"'),
+  });
+}
+
+Future<void> serveSdkDocs() async {
+  await docSdk();
+  print('launching dhttpd on port 8000 for SDK');
+  await SubprocessLauncher('serve-sdk-docs').runStreamedDartCommand([
+    'pub',
+    'global',
+    'run',
+    'dhttpd',
+    '--port',
+    '8000',
+    '--path',
+    sdkDocsDir.path,
+  ]);
+}
+
+Future<void> _servePackageDocs(ArgResults commandResults) async {
+  var name = commandResults['name'] as String;
+  var version = commandResults['version'] as String?;
+  await servePackageDocs(name: name, version: version);
+}
+
+Future<void> servePackageDocs(
+    {required String name, required String? version}) async {
+  var packageDocsPath = await docPackage(name: name, version: version);
+  await _serveDocsFrom(packageDocsPath, 9000, 'serve-pub-package');
+}
+
+bool _serveReady = false;
+
+Future<void> _serveDocsFrom(String servePath, int port, String context) async {
+  print('launching dhttpd on port $port for $context');
+  var launcher = SubprocessLauncher(context);
+  if (!_serveReady) {
+    await launcher.runStreamedDartCommand(['pub', 'get']);
+    await launcher
+        .runStreamedDartCommand(['pub', 'global', 'activate', 'dhttpd']);
+    _serveReady = true;
+  }
+  await launcher.runStreamedDartCommand([
+    'pub',
+    'global',
+    'run',
+    'dhttpd',
+    '--port',
+    '$port',
+    '--path',
+    servePath
+  ]);
+}
+
+Future<void> runTest() async {
+  await analyzeTestPackages();
+  await SubprocessLauncher('dart run test')
+      .runStreamedDartCommand(['--enable-asserts', 'run', 'test']);
 }
 
 Future<void> runTryPublish() async {

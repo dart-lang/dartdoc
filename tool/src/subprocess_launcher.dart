@@ -143,5 +143,19 @@ class SubprocessLauncher {
     return jsonObjects;
   }
 
+  Future<Iterable<Map<String, Object?>>> runStreamedDartCommand(
+    List<String> arguments, {
+    String? workingDirectory,
+    Map<String, String>? environment,
+    bool includeParentEnvironment = true,
+  }) async =>
+      await runStreamed(
+        Platform.executable,
+        arguments,
+        workingDirectory: workingDirectory,
+        environment: environment,
+        includeParentEnvironment: includeParentEnvironment,
+      );
+
   static final _quotables = RegExp(r'[ "\r\n\$]');
 }

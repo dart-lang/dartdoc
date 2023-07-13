@@ -50,11 +50,6 @@ final String _dartdocDocsPath = createTempSync('dartdoc').path;
 
 final Directory _flutterDir = createTempSync('flutter');
 
-Directory get testPackage => Directory(p.joinAll(['testing', 'test_package']));
-
-Directory get testPackageExperiments =>
-    Directory(p.joinAll(['testing', 'test_package_experiments']));
-
 Directory get testPackageFlutterPlugin => Directory(
     p.joinAll(['testing', 'flutter_packages', 'test_package_flutter_plugin']));
 
@@ -84,35 +79,13 @@ final Directory flutterDirDevTools =
     Directory(p.join(_flutterDir.path, 'dev', 'tools'));
 
 @Task('Analyze dartdoc to ensure there are no errors and warnings')
-@Depends(analyzeTestPackages)
 void analyze() async {
-  await SubprocessLauncher('analyze').runStreamed(
-    Platform.resolvedExecutable,
-    ['analyze', '--fatal-infos', '.'],
-  );
+  await task.analyzeTestPackages();
+  await task.analyzePackage();
 }
 
 @Task('Analyze the test packages')
-void analyzeTestPackages() async {
-  var testPackagePaths = [testPackage.path];
-  if (Platform.version.contains('dev')) {
-    testPackagePaths.add(testPackageExperiments.path);
-  }
-  for (var testPackagePath in testPackagePaths) {
-    await SubprocessLauncher('pub-get').runStreamed(
-      Platform.resolvedExecutable,
-      ['pub', 'get'],
-      workingDirectory: testPackagePath,
-    );
-    await SubprocessLauncher('analyze-test-package').runStreamed(
-      Platform.resolvedExecutable,
-      // TODO(srawlins): Analyze the whole directory by ignoring the pubspec
-      // reports.
-      ['analyze', 'lib'],
-      workingDirectory: testPackagePath,
-    );
-  }
-}
+void analyzeTestPackages() async => task.analyzeTestPackages();
 
 @Task('Check for dart format cleanliness')
 void checkFormat() async {
@@ -148,10 +121,11 @@ void checkFormat() async {
   analyze,
   checkFormat,
   checkBuild,
-  tryPublish,
-  test,
 )
-void presubmit() {}
+void presubmit() async {
+  await task.runTryPublish();
+  await task.runTest();
+}
 
 @Task('Run tests, self-test dartdoc, and run the publish test')
 @Depends(presubmit, test, testDartdoc)
@@ -268,7 +242,7 @@ Future<Iterable<Map<String, Object?>>> _buildTestPackageDocs(
     String label = '',
     String? testPackagePath}) async {
   if (label != '') label = '-$label';
-  testPackagePath ??= testPackage.absolute.path;
+  testPackagePath ??= task.testPackage.absolute.path;
   var launcher = SubprocessLauncher('build-test-package-docs$label');
   var testPackagePubGet = launcher.runStreamed(
       Platform.resolvedExecutable, ['pub', 'get'],
@@ -301,7 +275,7 @@ Future<Iterable<Map<String, Object?>>> _buildTestPackageDocs(
 Future<void> buildTestExperimentsPackageDocs() async {
   await _buildTestPackageDocs(
       _testPackageExperimentsDocsDir.absolute.path, Directory.current.path,
-      testPackagePath: testPackageExperiments.absolute.path,
+      testPackagePath: task.testPackageExperiments.absolute.path,
       params: [
         '--enable-experiment',
         'non-nullable,generic-metadata',
@@ -311,10 +285,11 @@ Future<void> buildTestExperimentsPackageDocs() async {
 
 @Task('Serve experimental test package on port 8003.')
 @Depends(buildTestExperimentsPackageDocs)
-Future<void> serveTestExperimentsPackageDocs() async {
-  await _serveDocsFrom(_testPackageExperimentsDocsDir.absolute.path, 8003,
-      'test-package-docs-experiments');
-}
+Future<void> serveTestExperimentsPackageDocs() async =>
+    await task.servePackageDocs(
+      name: Platform.environment['PACKAGE_NAME']!,
+      version: Platform.environment['PACKAGE_VERSION'],
+    );
 
 @Task('Build test package docs (HTML) with inherited docs and source code')
 @Depends(clean)
@@ -344,45 +319,8 @@ Future<void> startTestPackageDocsServer() async {
   ]);
 }
 
-bool _serveReady = false;
-
-Future<void> _serveDocsFrom(String servePath, int port, String context) async {
-  log('launching dhttpd on port $port for $context');
-  var launcher = SubprocessLauncher(context);
-  if (!_serveReady) {
-    await launcher.runStreamed(Platform.resolvedExecutable, ['pub', 'get']);
-    await launcher.runStreamed(
-        Platform.resolvedExecutable, ['pub', 'global', 'activate', 'dhttpd']);
-    _serveReady = true;
-  }
-  await launcher.runStreamed(Platform.resolvedExecutable, [
-    'pub',
-    'global',
-    'run',
-    'dhttpd',
-    '--port',
-    '$port',
-    '--path',
-    servePath
-  ]);
-}
-
 @Task('Serve generated SDK docs locally with dhttpd on port 8000')
-@Depends(buildSdkDocs)
-Future<void> serveSdkDocs() async {
-  log('launching dhttpd on port 8000 for SDK');
-  var launcher = SubprocessLauncher('serve-sdk-docs');
-  await launcher.runStreamed(Platform.resolvedExecutable, [
-    'pub',
-    'global',
-    'run',
-    'dhttpd',
-    '--port',
-    '8000',
-    '--path',
-    task.sdkDocsDir.path,
-  ]);
-}
+Future<void> serveSdkDocs() async => await task.serveSdkDocs();
 
 @Task('Compare warnings in Dartdoc for Flutter')
 Future<void> compareFlutterWarnings() async {
@@ -506,26 +444,28 @@ Future<Iterable<Map<String, Object?>>> _buildFlutterDocs(
 @Task(
     'Build an arbitrary pub package based on PACKAGE_NAME and PACKAGE_VERSION '
     'environment variables')
-Future<String> buildPubPackage() async => task.docPackage(
+Future<String> buildPubPackage() async => await task.docPackage(
       name: Platform.environment['PACKAGE_NAME']!,
       version: Platform.environment['PACKAGE_VERSION'],
     );
 
 @Task(
-    'Serve an arbitrary pub package based on PACKAGE_NAME and PACKAGE_VERSION environment variables')
-Future<void> servePubPackage() async {
-  await _serveDocsFrom(await buildPubPackage(), 9000, 'serve-pub-package');
-}
+    'Serve an arbitrary pub package based on PACKAGE_NAME and PACKAGE_VERSION '
+    'environment variables')
+Future<void> servePubPackage() async => await task.servePackageDocs(
+      name: Platform.environment['PACKAGE_NAME']!,
+      version: Platform.environment['PACKAGE_VERSION'],
+    );
 
 @Task('Rebuild generated files')
-@Depends(clean, buildWeb)
+@Depends(clean)
 Future<void> build() async {
   if (Platform.isWindows) {
     // Built files only need to be built on Linux and MacOS, as there are path
     // issues with Windows.
     return;
   }
-
+  await task.buildWeb();
   await task.buildRenderers();
   await task.buildDartdocOptions();
 }
@@ -595,11 +535,7 @@ Future<void> checkBuild() async {
 Future<void> tryPublish() async => await task.runTryPublish();
 
 @Task('Run all the tests.')
-@Depends(analyzeTestPackages)
-Future<void> test() async {
-  await SubprocessLauncher('dart run test').runStreamed(
-      Platform.resolvedExecutable, <String>['--enable-asserts', 'run', 'test']);
-}
+Future<void> test() async => await task.runTest();
 
 @Task('Clean up test directories and delete build cache')
 Future<void> clean() async {
