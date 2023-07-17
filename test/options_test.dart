@@ -8,7 +8,7 @@ import 'package:dartdoc/src/dartdoc.dart';
 import 'package:dartdoc/src/failure.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
 import 'src/test_descriptor_utils.dart' as d;
@@ -38,7 +38,7 @@ void main() async {
       '--input',
       packagePath,
       '--output',
-      p.join(packagePath, 'doc'),
+      path.join(packagePath, 'doc'),
       '--sdk-dir',
       packageMetaProvider.defaultSdkDir.path,
       '--allow-tools',
@@ -88,7 +88,7 @@ dartdoc:
 
     final faviconContent = resourceProvider
         .getFile(
-            p.joinAll([packagePath, 'doc', 'static-assets', 'favicon.png']))
+            path.joinAll([packagePath, 'doc', 'static-assets', 'favicon.png']))
         .readAsStringSync();
     expect(faviconContent, contains('Just plain text'));
   });
@@ -110,7 +110,7 @@ dartdoc:
     await (await buildDartdoc()).generateDocs();
 
     final indexContent = resourceProvider
-        .getFile(p.joinAll([packagePath, 'doc', 'index.html']))
+        .getFile(path.joinAll([packagePath, 'doc', 'index.html']))
         .readAsStringSync();
     expect(indexContent, contains('<em>Header</em> things.'));
   });
@@ -132,7 +132,7 @@ dartdoc:
     await (await buildDartdoc()).generateDocs();
 
     final indexContent = resourceProvider
-        .getFile(p.joinAll([packagePath, 'doc', 'index.html']))
+        .getFile(path.joinAll([packagePath, 'doc', 'index.html']))
         .readAsStringSync();
     expect(indexContent, contains('<em>Footer</em> things.'));
   });
@@ -154,7 +154,7 @@ dartdoc:
     await (await buildDartdoc()).generateDocs();
 
     final indexContent = resourceProvider
-        .getFile(p.joinAll([packagePath, 'doc', 'index.html']))
+        .getFile(path.joinAll([packagePath, 'doc', 'index.html']))
         .readAsStringSync();
     expect(indexContent, contains('Just footer text'));
   });
@@ -176,7 +176,7 @@ dartdoc:
     await (await buildDartdoc()).generateDocs();
 
     final indexContent = resourceProvider
-        .getFile(p.joinAll([packagePath, 'doc', 'index.html']))
+        .getFile(path.joinAll([packagePath, 'doc', 'index.html']))
         .readAsStringSync();
     final footerRegex =
         RegExp(r'<footer>(.*\s*?\n?)+?</footer>', multiLine: true);
@@ -238,7 +238,8 @@ class Foo {}
     await (await buildDartdoc(additionalOptions: ['--format', 'md']))
         .generateDocsBase();
     final indexContent = resourceProvider
-        .getFile(p.joinAll([packagePath, 'doc', 'library_1', 'Foo-class.md']))
+        .getFile(
+            path.joinAll([packagePath, 'doc', 'library_1', 'Foo-class.md']))
         .readAsStringSync();
     expect(indexContent, contains('# Foo class'));
   });
@@ -552,13 +553,14 @@ class Foo {}
       ],
       resourceProvider: resourceProvider,
     );
-    var customTemplatesDir = p.join(packagePath, 'templates');
+    var customTemplatesDir = path.join(packagePath, 'templates');
     await utils.writeDartdocResources(resourceProvider);
     var dartdoc = await buildDartdoc(
         additionalOptions: ['--templates-dir', customTemplatesDir]);
     await dartdoc.generateDocsBase();
     final indexContent = resourceProvider
-        .getFile(p.joinAll([packagePath, 'doc', 'library_1', 'Foo-class.html']))
+        .getFile(
+            path.joinAll([packagePath, 'doc', 'library_1', 'Foo-class.html']))
         .readAsStringSync();
     expect(indexContent, contains('CLASS FILE'));
   });

@@ -5,7 +5,7 @@
 import 'dart:io';
 import 'dart:isolate' show Isolate;
 
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
 void main() {
@@ -15,12 +15,13 @@ void main() {
     var testCasePattern = RegExp(r'test\(.*,');
     var dartdocLibUri = await Isolate.resolvePackageUri(
         Uri.parse('package:dartdoc/dartdoc.dart'));
-    var dartdocPath = p.dirname(p.dirname(dartdocLibUri!.path));
+    var dartdocPath = path.dirname(path.dirname(dartdocLibUri!.path));
     // Correct Windows issue path coming out of [Isolate.resolvePackageUri].
-    if (p.separator == p.windows.separator && dartdocPath.startsWith('/')) {
-      dartdocPath = dartdocPath.substring(1).replaceAll('/', p.separator);
+    if (path.separator == path.windows.separator &&
+        dartdocPath.startsWith('/')) {
+      dartdocPath = dartdocPath.substring(1).replaceAll('/', path.separator);
     }
-    var runtimeRendererRenderTest = File(p.join(dartdocPath, 'test',
+    var runtimeRendererRenderTest = File(path.join(dartdocPath, 'test',
             'mustachio', 'runtime_renderer_render_test.dart'))
         .readAsLinesSync();
     var runtimeRendererTestCases = runtimeRendererRenderTest
@@ -36,7 +37,7 @@ void main() {
         .map((line) => testCasePattern.firstMatch(line)!.group(0))
         .toSet();
 
-    var aotCompilerRenderTest = File(p.join(
+    var aotCompilerRenderTest = File(path.join(
             dartdocPath, 'test', 'mustachio', 'aot_compiler_render_test.dart'))
         .readAsLinesSync();
     var aotCompilerTestCases = aotCompilerRenderTest

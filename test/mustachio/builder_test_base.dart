@@ -8,7 +8,7 @@ import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:analyzer/src/dart/analysis/analysis_context_collection.dart'
     show AnalysisContextCollectionImpl;
 import 'package:collection/collection.dart';
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as path;
 import 'package:test_descriptor/test_descriptor.dart' as d;
 
 import '../../tool/mustachio/builder.dart';
@@ -84,8 +84,8 @@ $sourceLibraryContent
     ]),
   ]).create();
   await d.dir('foo_package', [...additionalAssets()]).create();
-  await build(p.join(d.sandbox, 'foo_package', 'lib/foo.dart'),
-      root: p.join(d.sandbox, 'foo_package'));
+  await build(path.join(d.sandbox, 'foo_package', 'lib/foo.dart'),
+      root: path.join(d.sandbox, 'foo_package'));
 }
 
 Future<LibraryElement> resolveGeneratedLibrary(String libraryPath) async {

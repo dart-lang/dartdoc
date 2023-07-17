@@ -7,7 +7,7 @@ import 'package:dartdoc/options.dart';
 import 'package:dartdoc/src/dartdoc.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
 import '../src/test_descriptor_utils.dart' as d;
@@ -30,7 +30,7 @@ void main() async {
       '--input',
       packagePath,
       '--output',
-      p.join(packagePath, 'doc'),
+      path.join(packagePath, 'doc'),
       '--sdk-dir',
       packageMetaProvider.defaultSdkDir.path,
       '--no-link-to-remote',
@@ -109,12 +109,12 @@ dartdoc:
       await writeDartdocResources(resourceProvider);
       await (await buildDartdoc()).generateDocs();
       eLines = resourceProvider
-          .getFile(p.join(packagePath, 'doc', 'lib', 'E.html'))
+          .getFile(path.join(packagePath, 'doc', 'lib', 'E.html'))
           .readAsStringSync()
           .split('\n');
       eRightSidebarLines = resourceProvider
           .getFile(
-              p.join(packagePath, 'doc', 'lib', 'E-extension-sidebar.html'))
+              path.join(packagePath, 'doc', 'lib', 'E-extension-sidebar.html'))
           .readAsStringSync()
           .split('\n');
     });
