@@ -24,7 +24,7 @@ import 'package:dartdoc/src/model/package_graph.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/warnings.dart';
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as path;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
@@ -71,7 +71,7 @@ Future<DartdocGeneratorOptionContext> generatorContextFromArgv(
 }
 
 void runPubGet(String dirPath) {
-  var binPath = p.join(p.dirname(Platform.resolvedExecutable), 'dart');
+  var binPath = path.join(path.dirname(Platform.resolvedExecutable), 'dart');
   if (Platform.isWindows) {
     binPath += '.exe';
   }
@@ -386,8 +386,9 @@ extension IterableStringExtensions on Iterable<String> {
 
 /// Extension methods just for tests.
 extension on ResourceProvider {
-  Future<void> writeDartdocResource(String path, String content) async {
-    var fileUri = await resolveResourceUri(Uri.parse('package:dartdoc/$path'));
+  Future<void> writeDartdocResource(String resourcePath, String content) async {
+    var fileUri =
+        await resolveResourceUri(Uri.parse('package:dartdoc/$resourcePath'));
     getFile(fileUri.toFilePath()).writeAsStringSync(content);
   }
 }

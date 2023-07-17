@@ -9,7 +9,7 @@ import 'dart:io';
 import 'dart:mirrors';
 
 import 'package:dartdoc/src/package_meta.dart';
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 import 'package:test_process/test_process.dart';
 
@@ -18,10 +18,10 @@ import '../src/utils.dart';
 
 Uri get _currentFileUri =>
     (reflect(main) as ClosureMirror).function.location!.sourceUri;
-String get _testPackageFlutterPluginPath => p.fromUri(_currentFileUri
+String get _testPackageFlutterPluginPath => path.fromUri(_currentFileUri
     .resolve('../../testing/flutter_packages/test_package_flutter_plugin'));
 
-var _dartdocPath = p.canonicalize(p.join('bin', 'dartdoc.dart'));
+var _dartdocPath = path.canonicalize(path.join('bin', 'dartdoc.dart'));
 
 /// Runs dartdoc via [TestProcess.start].
 Future<TestProcess> runDartdoc(
@@ -68,7 +68,7 @@ void main() {
       await expectLater(
           process.stderr, emitsThrough('Found 1 warning and 0 errors.'));
       await process.shouldExit(0);
-      var docs = Directory(p.join(packagePath, 'doc', 'api'));
+      var docs = Directory(path.join(packagePath, 'doc', 'api'));
       expect(docs.existsSync(), isFalse);
     }, timeout: Timeout.factor(2));
 
@@ -81,7 +81,7 @@ void main() {
       await expectLater(
           process.stderr, emitsThrough('Found 1 warning and 0 errors.'));
       await process.shouldExit(0);
-      var indexHtml = Directory(p.join(packagePath, 'doc', 'api'));
+      var indexHtml = Directory(path.join(packagePath, 'doc', 'api'));
       expect(indexHtml.listSync(), isNotEmpty);
     }, timeout: Timeout.factor(2));
 
@@ -103,7 +103,7 @@ void main() {
         ['--input', 'non-existant'],
         workingDirectory: packagePath,
       );
-      var fullPath = p.canonicalize(p.join(packagePath, 'non-existant'));
+      var fullPath = path.canonicalize(path.join(packagePath, 'non-existant'));
       await expectLater(
         process.stderr,
         emitsThrough(
@@ -156,7 +156,7 @@ void main() {
   test('with tool errors cause non-zero exit when warnings are off', () async {
     // TODO(srawlins): Remove test_package_tool_error and generate afresh.
     var packagePath = await d.createPackage('test_package');
-    var tempDir = p.join(
+    var tempDir = path.join(
         Directory.systemTemp
             .createTempSync('dartdoc_integration_test.')
             .absolute
@@ -176,7 +176,7 @@ void main() {
   test('with missing FLUTTER_ROOT exception reports an error', () async {
     // TODO(srawlins): Remove test_package_flutter_plugin and generate afresh.
     var dartTool =
-        Directory(p.join(_testPackageFlutterPluginPath, '.dart_tool'));
+        Directory(path.join(_testPackageFlutterPluginPath, '.dart_tool'));
     if (dartTool.existsSync()) dartTool.deleteSync(recursive: true);
     var process = await runDartdoc(
       [],

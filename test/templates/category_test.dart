@@ -7,7 +7,7 @@ import 'package:dartdoc/options.dart';
 import 'package:dartdoc/src/dartdoc.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
 import '../src/test_descriptor_utils.dart' as d;
@@ -32,7 +32,7 @@ void main() async {
       '--input',
       packagePath,
       '--output',
-      p.join(packagePath, 'doc'),
+      path.join(packagePath, 'doc'),
       '--sdk-dir',
       packageMetaProvider.defaultSdkDir.path,
       '--no-link-to-remote',
@@ -125,7 +125,7 @@ typedef T2 = T1;
     await utils.writeDartdocResources(resourceProvider);
     await (await buildDartdoc()).generateDocs();
     topicOneLines = resourceProvider
-        .getFile(p.join(packagePath, 'doc', 'topics', 'One-topic.html'))
+        .getFile(path.join(packagePath, 'doc', 'topics', 'One-topic.html'))
         .readAsStringSync()
         .split('\n');
   });
