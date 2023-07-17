@@ -12,7 +12,7 @@ import 'dart:io';
 
 import 'package:dartdoc/src/mustachio/renderer_base.dart';
 import 'package:package_config/package_config.dart';
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
 
@@ -22,7 +22,7 @@ import 'foo.aot_renderers_for_html.dart' as generated;
 import 'foo.dart';
 
 void main() {
-  final sdk = p.dirname(p.dirname(Platform.resolvedExecutable));
+  final sdk = path.dirname(path.dirname(Platform.resolvedExecutable));
   final fooCode = '''
 class FooBase<T extends Object> {
   T? baz;
@@ -69,7 +69,7 @@ class Property3 {
 
   setUp(() {
     tempDir = Directory.systemTemp.createTempSync('dartdoc');
-    renderScript = File(p.join(tempDir.path, 'render.dart'));
+    renderScript = File(path.join(tempDir.path, 'render.dart'));
   });
 
   Future<void> write(
@@ -103,16 +103,16 @@ $mainCode
       Package(
         'foo',
         Uri.directory(tempDir.path),
-        packageUriRoot: Uri.directory(p.join(tempDir.path, 'lib')),
+        packageUriRoot: Uri.directory(path.join(tempDir.path, 'lib')),
         languageVersion: LanguageVersion(2, 12),
       )
     ]);
-    var dartToolDir = Directory(p.join(tempDir.path, '.dart_tool'))
+    var dartToolDir = Directory(path.join(tempDir.path, '.dart_tool'))
       ..createSync();
-    File(p.join(dartToolDir.path, 'package_config.json'))
+    File(path.join(dartToolDir.path, 'package_config.json'))
         .writeAsStringSync(json.encode(PackageConfig.toJson(packageConfig)));
-    var fooLibDir = Directory(p.join(tempDir.path, 'lib'))..createSync();
-    File(p.join(fooLibDir.path, 'foo.dart')).writeAsStringSync(fooCode);
+    var fooLibDir = Directory(path.join(tempDir.path, 'lib'))..createSync();
+    File(path.join(fooLibDir.path, 'foo.dart')).writeAsStringSync(fooCode);
   }
 
   Future<String> renderFoo(

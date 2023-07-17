@@ -8,7 +8,7 @@ import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/package_meta.dart';
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 import 'package:yaml/yaml.dart';
 
@@ -40,7 +40,7 @@ class ConvertedOption {
 
 void main() {
   var resourceProvider = pubPackageMetaProvider.resourceProvider;
-  var path = pubPackageMetaProvider.resourceProvider.pathContext;
+  var context = pubPackageMetaProvider.resourceProvider.pathContext;
 
   late final DartdocOptionRoot dartdocOptionSetFiles;
   late final DartdocOptionRoot dartdocOptionSetArgs;
@@ -175,30 +175,32 @@ void main() {
     ));
 
     tempDir = resourceProvider.createSystemTemp('options_test');
-    firstDir = resourceProvider.getFolder(path.join(tempDir.path, 'firstDir'))
+    firstDir = resourceProvider
+        .getFolder(context.join(tempDir.path, 'firstDir'))
       ..create();
     firstExisting = resourceProvider
-        .getFile(path.join(firstDir.path, 'existing.dart'))
+        .getFile(context.join(firstDir.path, 'existing.dart'))
       ..writeAsStringSync('');
-    secondDir = resourceProvider.getFolder(path.join(tempDir.path, 'secondDir'))
+    secondDir = resourceProvider
+        .getFolder(context.join(tempDir.path, 'secondDir'))
       ..create();
     resourceProvider
-        .getFile(path.join(secondDir.path, 'existing.dart'))
+        .getFile(context.join(secondDir.path, 'existing.dart'))
         .writeAsStringSync('');
 
     secondDirFirstSub = resourceProvider
-        .getFolder(path.join(secondDir.path, 'firstSub'))
+        .getFolder(context.join(secondDir.path, 'firstSub'))
       ..create();
     secondDirSecondSub = resourceProvider
-        .getFolder(path.join(secondDir.path, 'secondSub'))
+        .getFolder(context.join(secondDir.path, 'secondSub'))
       ..create();
 
     dartdocOptionsOne = resourceProvider
-        .getFile(path.join(firstDir.path, 'dartdoc_options.yaml'));
+        .getFile(context.join(firstDir.path, 'dartdoc_options.yaml'));
     dartdocOptionsTwo = resourceProvider
-        .getFile(path.join(secondDir.path, 'dartdoc_options.yaml'));
+        .getFile(context.join(secondDir.path, 'dartdoc_options.yaml'));
     var dartdocOptionsTwoFirstSub = resourceProvider
-        .getFile(path.join(secondDirFirstSub.path, 'dartdoc_options.yaml'));
+        .getFile(context.join(secondDirFirstSub.path, 'dartdoc_options.yaml'));
 
     dartdocOptionsOne.writeAsStringSync('''
 dartdoc:
@@ -249,10 +251,11 @@ dartdoc:
     late File dartdocOptionsInvalid;
 
     setUp(() {
-      invalid = resourceProvider.getFolder(path.join(tempDir.path, 'invalid'))
+      invalid = resourceProvider
+          .getFolder(context.join(tempDir.path, 'invalid'))
         ..create();
       dartdocOptionsInvalid = resourceProvider
-          .getFile(path.join(invalid.path, 'dartdoc_options.yaml'));
+          .getFile(context.join(invalid.path, 'dartdoc_options.yaml'));
       dartdocOptionsInvalid.writeAsStringSync('''
 dartdoc:
   categoryOrder: 'options_one'
@@ -297,7 +300,7 @@ dartdoc:
       dartdocOptionSetSynthetic.parseArguments([]);
       expect(
           dartdocOptionSetSynthetic['vegetableLoaderChecked'].valueAt(firstDir),
-          orderedEquals([p.canonicalize(firstExisting.path)]));
+          orderedEquals([path.canonicalize(firstExisting.path)]));
 
       String? errorMessage;
       try {
@@ -305,8 +308,8 @@ dartdoc:
       } on DartdocFileMissing catch (e) {
         errorMessage = e.message;
       }
-      var missingPath = path.canonicalize(
-          path.join(path.absolute(tempDir.path), 'existing.dart'));
+      var missingPath = context.canonicalize(
+          context.join(context.absolute(tempDir.path), 'existing.dart'));
       expect(
           errorMessage,
           equals('Synthetic configuration option vegetableLoaderChecked from '
@@ -327,7 +330,7 @@ dartdoc:
       // Since this is an ArgSynth, it ignores the yaml option and resolves to the CWD
       expect(
           dartdocOptionSetSynthetic['nonCriticalFileOption'].valueAt(firstDir),
-          equals(path.canonicalize('stuff.zip')));
+          equals(context.canonicalize('stuff.zip')));
     });
 
     test('ArgSynth defaults to synthetic', () {
@@ -335,7 +338,7 @@ dartdoc:
       // This option is composed of FileOptions which make use of firstDir.
       expect(
           dartdocOptionSetSynthetic['nonCriticalFileOption'].valueAt(firstDir),
-          equals(p.canonicalize(p.join(firstDir.path, 'existing.dart'))));
+          equals(path.canonicalize(path.join(firstDir.path, 'existing.dart'))));
     });
   });
 
@@ -351,8 +354,8 @@ dartdoc:
       } on DartdocFileMissing catch (e) {
         errorMessage = e.message;
       }
-      var missingPath = path.join(
-          path.canonicalize(path.current), 'override-not-existing.dart');
+      var missingPath = context.join(
+          context.canonicalize(context.current), 'override-not-existing.dart');
       expect(
           errorMessage,
           equals('Argument --file-option, set to override-not-existing.dart, '
@@ -361,9 +364,9 @@ dartdoc:
 
     test('validate argument can override missing file', () {
       dartdocOptionSetAll.parseArguments(
-          ['--file-option', p.canonicalize(firstExisting.path)]);
+          ['--file-option', path.canonicalize(firstExisting.path)]);
       expect(dartdocOptionSetAll['fileOption'].valueAt(secondDir),
-          equals(p.canonicalize(firstExisting.path)));
+          equals(path.canonicalize(firstExisting.path)));
     });
 
     test('File errors still get passed through', () {
@@ -374,11 +377,14 @@ dartdoc:
       } on DartdocFileMissing catch (e) {
         errorMessage = e.message;
       }
+      var notExistingPath =
+          path.join(path.canonicalize(secondDir.path), 'not existing');
       expect(
-          errorMessage,
-          equals(
-              'Field dartdoc.fileOption from ${p.canonicalize(dartdocOptionsTwo.path)}, set to not existing, resolves to missing path: '
-              '"${p.join(p.canonicalize(secondDir.path), "not existing")}"'));
+        errorMessage,
+        equals('Field dartdoc.fileOption from '
+            '${path.canonicalize(dartdocOptionsTwo.path)}, set to not '
+            'existing, resolves to missing path: "$notExistingPath"'),
+      );
     });
 
     test('validate override behavior basic', () {
@@ -415,40 +421,44 @@ dartdoc:
     });
 
     group('glob options', () {
-      String canonicalize(String inputPath) => path.canonicalize(inputPath);
+      String canonicalize(String inputPath) => context.canonicalize(inputPath);
 
       test('work via the command line', () {
         dartdocOptionSetAll
-            .parseArguments(['--glob-option', p.join('foo', '**')]);
+            .parseArguments(['--glob-option', path.join('foo', '**')]);
         expect(
-            dartdocOptionSetAll['globOption'].valueAtCurrent(),
-            equals([
-              path.joinAll([canonicalize(path.current), 'foo', '**'])
-            ]));
+          dartdocOptionSetAll['globOption'].valueAtCurrent(),
+          equals([
+            context.joinAll([canonicalize(context.current), 'foo', '**'])
+          ]),
+        );
       });
 
       test('work via files', () {
         dartdocOptionSetAll.parseArguments([]);
         expect(
-            dartdocOptionSetAll['globOption'].valueAt(secondDir),
-            equals([
-              canonicalize(path.join(secondDir.path, 'q*.html')),
-              canonicalize(path.join(secondDir.path, 'e*.dart')),
-            ]));
+          dartdocOptionSetAll['globOption'].valueAt(secondDir),
+          equals([
+            canonicalize(context.join(secondDir.path, 'q*.html')),
+            canonicalize(context.join(secondDir.path, 'e*.dart')),
+          ]),
+        );
         // No child override, should be the same as parent
         expect(
-            dartdocOptionSetAll['globOption'].valueAt(secondDirSecondSub),
-            equals([
-              canonicalize(path.join(secondDir.path, 'q*.html')),
-              canonicalize(path.join(secondDir.path, 'e*.dart')),
-            ]));
+          dartdocOptionSetAll['globOption'].valueAt(secondDirSecondSub),
+          equals([
+            canonicalize(context.join(secondDir.path, 'q*.html')),
+            canonicalize(context.join(secondDir.path, 'e*.dart')),
+          ]),
+        );
         // Child directory overrides
         expect(
-            dartdocOptionSetAll['globOption'].valueAt(secondDirFirstSub),
-            equals([
-              path.joinAll(
-                  [canonicalize(secondDirFirstSub.path), '**', '*.dart'])
-            ]));
+          dartdocOptionSetAll['globOption'].valueAt(secondDirFirstSub),
+          equals([
+            context
+                .joinAll([canonicalize(secondDirFirstSub.path), '**', '*.dart'])
+          ]),
+        );
       });
     });
   });
@@ -485,7 +495,7 @@ dartdoc:
         errorMessage = e.message;
       }
       var missingPath =
-          path.join(path.canonicalize(path.current), 'not_found.txt');
+          context.join(context.canonicalize(context.current), 'not_found.txt');
       expect(
           errorMessage,
           equals('Argument --single-file, set to not_found.txt, resolves to '
@@ -496,7 +506,7 @@ dartdoc:
       String? errorMessage;
       dartdocOptionSetArgs.parseArguments([
         '--files-flag',
-        path.absolute(firstExisting.path),
+        context.absolute(firstExisting.path),
         '--files-flag',
         'other_not_found.txt'
       ]);
@@ -505,12 +515,12 @@ dartdoc:
       } on DartdocFileMissing catch (e) {
         errorMessage = e.message;
       }
-      var missingPath =
-          path.join(path.canonicalize(path.current), 'other_not_found.txt');
+      var missingPath = context.join(
+          context.canonicalize(context.current), 'other_not_found.txt');
       expect(
           errorMessage,
           equals('Argument --files-flag, set to '
-              '[${path.absolute(firstExisting.path)}, '
+              '[${context.absolute(firstExisting.path)}, '
               'other_not_found.txt], resolves to missing path: '
               '"$missingPath"'));
     });
@@ -522,8 +532,8 @@ dartdoc:
           .parseArguments(['--unimportant-file', 'this-will-never-exist']);
       expect(
           dartdocOptionSetArgs['unimportantFile'].valueAt(tempDir),
-          equals(path.join(
-              path.canonicalize(path.current), 'this-will-never-exist')));
+          equals(context.join(
+              context.canonicalize(context.current), 'this-will-never-exist')));
     });
 
     test('DartdocOptionArgOnly has correct flag names', () {
@@ -637,7 +647,7 @@ dartdoc:
 
       expect(converted.param1, equals('value1'));
       expect(converted.param2, equals('value2'));
-      expect(converted.myContextPath, equals(p.canonicalize(firstDir.path)));
+      expect(converted.myContextPath, equals(path.canonicalize(firstDir.path)));
       expect(
           dartdocOptionSetFiles['convertThisMap'].valueAt(secondDir), isNull);
     });
@@ -649,21 +659,23 @@ dartdoc:
       } on DartdocFileMissing catch (e) {
         errorMessage = e.message;
       }
+      var doesNotExistPath = path.joinAll([
+        path.canonicalize(secondDir.path),
+        'thing',
+        'that',
+        'does',
+        'not',
+        'exist'
+      ]);
       expect(
           errorMessage,
-          equals(
-              'Field dartdoc.fileOptionList from ${p.canonicalize(dartdocOptionsTwo.path)}, set to [existing.dart, thing/that/does/not/exist], resolves to missing path: '
-              '"${p.joinAll([
-                p.canonicalize(secondDir.path),
-                'thing',
-                'that',
-                'does',
-                'not',
-                'exist'
-              ])}"'));
+          equals('Field dartdoc.fileOptionList from '
+              '${path.canonicalize(dartdocOptionsTwo.path)}, set to '
+              '[existing.dart, thing/that/does/not/exist], resolves to missing '
+              'path: "$doesNotExistPath"'));
       // It doesn't matter that this fails.
       expect(dartdocOptionSetFiles['nonCriticalFileOption'].valueAt(firstDir),
-          equals(p.joinAll([p.canonicalize(firstDir.path), 'whatever'])));
+          equals(path.joinAll([path.canonicalize(firstDir.path), 'whatever'])));
     });
 
     test(
@@ -675,27 +687,26 @@ dartdoc:
       } on DartdocFileMissing catch (e) {
         errorMessage = e.message;
       }
+      var notExistingPath =
+          path.joinAll([path.canonicalize(secondDir.path), 'not existing']);
       expect(
           errorMessage,
-          equals(
-              'Field dartdoc.fileOption from ${p.canonicalize(dartdocOptionsTwo.path)}, set to not existing, resolves to missing path: '
-              '"${p.joinAll([
-                p.canonicalize(secondDir.path),
-                "not existing"
-              ])}"'));
+          equals('Field dartdoc.fileOption from '
+              '${path.canonicalize(dartdocOptionsTwo.path)}, set to not '
+              'existing, resolves to missing path: "$notExistingPath"'));
     });
 
     test('DartdocOptionSetFile works for directory options', () {
       expect(
           dartdocOptionSetFiles['nonCriticalDirOption']
               .valueAt(secondDirFirstSub),
-          equals(
-              p.join(p.canonicalize(secondDirFirstSub.path), 'not_existing')));
+          equals(path.join(
+              path.canonicalize(secondDirFirstSub.path), 'not_existing')));
     });
 
     test('DartdocOptionSetFile checks errors for directory options', () {
       expect(dartdocOptionSetFiles['dirOption'].valueAt(secondDir),
-          equals(p.canonicalize(p.join(secondDir.path, 'firstSub'))));
+          equals(path.canonicalize(path.join(secondDir.path, 'firstSub'))));
       String? errorMessage;
       try {
         dartdocOptionSetFiles['dirOption'].valueAt(firstDir);
@@ -704,9 +715,10 @@ dartdoc:
       }
       expect(
           errorMessage,
-          equals(
-              'Field dartdoc.dirOption from ${p.canonicalize(dartdocOptionsOne.path)}, set to notHere, resolves to missing path: '
-              '"${p.canonicalize(p.join(firstDir.path, "notHere"))}"'));
+          equals('Field dartdoc.dirOption from '
+              '${path.canonicalize(dartdocOptionsOne.path)}, set to notHere, '
+              'resolves to missing path: '
+              '"${path.canonicalize(path.join(firstDir.path, "notHere"))}"'));
     });
 
     test('DartdocOptionSetFile loads defaults', () {

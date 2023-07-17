@@ -5,7 +5,7 @@
 import 'package:analyzer/file_system/memory_file_system.dart';
 import 'package:dartdoc/src/dartdoc.dart';
 import 'package:dartdoc/src/model/model.dart';
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
 import '../src/test_descriptor_utils.dart' as d;
@@ -49,7 +49,7 @@ class B {
         '--input',
         packagePath,
         '--output',
-        p.join(packagePath, 'doc'),
+        path.join(packagePath, 'doc'),
         '--sdk-dir',
         packageMetaProvider.defaultSdkDir.path,
         '--no-link-to-remote',
@@ -67,7 +67,7 @@ class B {
       );
       await (await Dartdoc.fromContext(context, packageBuilder)).generateDocs();
       f1Lines = resourceProvider
-          .getFile(p.join(packagePath, 'doc', 'lib', 'B', 'f1.html'))
+          .getFile(path.join(packagePath, 'doc', 'lib', 'B', 'f1.html'))
           .readAsStringSync()
           .split('\n');
     });
