@@ -40,6 +40,7 @@ void main(List<String> args) async {
     'serve' => await runServe(commandResults),
     'test' => await runTest(),
     'try-publish' => await runTryPublish(),
+    'validate' => await runValidate(commandResults),
     _ => throw ArgumentError(),
   };
 }
@@ -103,6 +104,17 @@ Future<void> runBuild(ArgResults commandResults) async {
       _ => throw UnimplementedError('Unknown build target: "$target"'),
     });
   }
+}
+
+Future<void> buildAll() async {
+  if (Platform.isWindows) {
+    // Built files only need to be built on Linux and MacOS, as there are path
+    // issues with Windows.
+    return;
+  }
+  await buildWeb();
+  await buildRenderers();
+  await buildDartdocOptions();
 }
 
 Future<void> buildRenderers() async => await SubprocessLauncher('build')
@@ -435,4 +447,184 @@ Future<void> runTest() async {
 Future<void> runTryPublish() async {
   await SubprocessLauncher('try-publish')
       .runStreamed(Platform.resolvedExecutable, ['pub', 'publish', '-n']);
+}
+
+Future<void> runValidate(ArgResults commandResults) async {
+  for (var target in commandResults.rest) {
+    // ignore: unnecessary_statements, unnecessary_parenthesis
+    (switch (target) {
+      'build' => await validateBuild(),
+      'dartdoc-docs' => await validateDartdocDocs(),
+      'format' => await validateFormat(),
+      'sdk-docs' => await validateSdkDocs(),
+      _ => throw UnimplementedError('Unknown validation target: "$target"'),
+    });
+  }
+}
+
+Future<void> validateBuild() async {
+  var originalFileContents = <String, String>{};
+  var differentFiles = <String>[];
+
+  // Load original file contents into memory before running the builder; it
+  // modifies them in place.
+  for (var relPath in _generatedFilesList) {
+    var origPath = p.joinAll(['lib', relPath]);
+    var oldVersion = File(origPath);
+    if (oldVersion.existsSync()) {
+      originalFileContents[relPath] = oldVersion.readAsStringSync();
+    }
+  }
+
+  await buildAll();
+
+  for (var relPath in _generatedFilesList) {
+    var newVersion = File(p.join('lib', relPath));
+    if (!newVersion.existsSync()) {
+      print('${newVersion.path} does not exist\n');
+      differentFiles.add(relPath);
+    } else if (originalFileContents[relPath] !=
+        await newVersion.readAsString()) {
+      print(
+          '${newVersion.path} has changed to: \n${newVersion.readAsStringSync()})');
+      differentFiles.add(relPath);
+    }
+  }
+
+  if (differentFiles.isNotEmpty) {
+    throw StateError('The following generated files needed to be rebuilt:\n'
+        '  ${differentFiles.map((f) => p.join('lib', f)).join("\n  ")}\n'
+        'Rebuild them with "grind build" and check the results in.');
+  }
+
+  // Verify that the web frontend has been compiled.
+  final currentCodeSig = await calcDartFilesSig(Directory('web'));
+  final lastCompileSig =
+      File(p.join('web', 'sig.txt')).readAsStringSync().trim();
+  if (currentCodeSig != lastCompileSig) {
+    print('current files: $currentCodeSig');
+    print('cached sig   : $lastCompileSig');
+    throw StateError(
+        'The web frontend (web/docs.dart) needs to be recompiled; rebuild it '
+        'with "grind build-web" or "grind build".');
+  }
+}
+
+/// Paths in this list are relative to lib/.
+final _generatedFilesList = [
+  '../dartdoc_options.yaml',
+  'src/generator/html_resources.g.dart',
+  'src/generator/templates.aot_renderers_for_html.dart',
+  'src/generator/templates.aot_renderers_for_md.dart',
+  'src/generator/templates.runtime_renderers.dart',
+  'src/version.dart',
+  '../test/mustachio/foo.dart',
+].map((s) => p.joinAll(p.posix.split(s)));
+
+Future<void> validateDartdocDocs() async {
+  var launcher = SubprocessLauncher('test-dartdoc');
+  await launcher.runStreamedDartCommand([
+    '--enable-asserts',
+    'bin/dartdoc.dart',
+    '--output',
+    _dartdocDocsPath,
+    '--no-link-to-remote',
+  ]);
+  _expectFileContains(p.join(_dartdocDocsPath, 'index.html'),
+      '<title>dartdoc - Dart API docs</title>');
+  var objectText = RegExp('<li>Object</li>', multiLine: true);
+  _expectFileContains(
+    p.join(_dartdocDocsPath, 'dartdoc', 'PubPackageMeta-class.html'),
+    objectText,
+  );
+}
+
+/// Kind of an inefficient grepper for now.
+void _expectFileContains(String path, Pattern text) {
+  var source = File(path);
+  if (!source.existsSync()) {
+    throw StateError('file not found: $path');
+  }
+  if (!File(path).readAsStringSync().contains(text)) {
+    throw StateError('"$text" not found in $path');
+  }
+}
+
+final String _dartdocDocsPath =
+    Directory.systemTemp.createTempSync('dartdoc').path;
+
+Future<void> validateFormat() async {
+  var processResult = Process.runSync(Platform.resolvedExecutable, [
+    'format',
+    '-o',
+    'none',
+    'bin',
+    'lib',
+    'test',
+    'tool',
+    'web',
+  ]);
+  if (processResult.exitCode != 0) {
+    throw StateError('''
+Not all files are formatted:
+
+    ${processResult.stderr}
+''');
+  }
+}
+
+Future<void> validateSdkDocs() async {
+  await docSdk();
+  const expectedLibCount = 0;
+  const expectedSubLibCounts = {19, 20, 21};
+  const expectedTotalCounts = {19, 20, 21};
+  var indexHtml = File(p.join(sdkDocsDir.path, 'index.html'));
+  if (!indexHtml.existsSync()) {
+    throw StateError("No 'index.html' found for the SDK docs");
+  }
+  print("Found 'index.html'");
+  var indexContents = indexHtml.readAsStringSync();
+  var foundLibCount = _findCount(indexContents, '  <li><a href="dart-');
+  if (expectedLibCount != foundLibCount) {
+    throw StateError(
+        "Expected $expectedLibCount 'dart:' entries in 'index.html', but "
+        'found $foundLibCount');
+  }
+  print("Found $foundLibCount 'dart:' entries in 'index.html'");
+
+  var foundSubLibCount =
+      _findCount(indexContents, '<li class="section-subitem"><a href="dart-');
+  if (!expectedSubLibCounts.contains(foundSubLibCount)) {
+    throw StateError("Expected $expectedSubLibCounts 'dart:' entries in "
+        "'index.html' to be in categories, but found $foundSubLibCount");
+  }
+  print('$foundSubLibCount index.html dart: entries in categories found');
+
+  // check for the existence of certain files/dirs
+  var libsCount =
+      sdkDocsDir.listSync().where((fs) => fs.path.contains('dart-')).length;
+  if (!expectedTotalCounts.contains(libsCount)) {
+    throw StateError('Docs not generated for all the SDK libraries; expected '
+        '$expectedTotalCounts directories, but $libsCount directories were '
+        'generated');
+  }
+  print("Found $libsCount 'dart:' libraries");
+
+  var futureConstructorFile =
+      File(p.join(sdkDocsDir.path, 'dart-async', 'Future', 'Future.html'));
+  if (!futureConstructorFile.existsSync()) {
+    throw StateError('No Future.html found for dart:async Future constructor');
+  }
+  print('Found Future.async constructor');
+}
+
+/// Returns the number of (perhaps overlapping) occurrences of [str] in [match].
+int _findCount(String str, String match) {
+  var count = 0;
+  var index = str.indexOf(match);
+  while (index != -1) {
+    count++;
+    index = str.indexOf(match, index + match.length);
+  }
+  return count;
 }
