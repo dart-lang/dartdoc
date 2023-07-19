@@ -20,11 +20,15 @@ import 'src/subprocess_launcher.dart';
 import 'src/warnings_collection.dart';
 
 void main(List<String> args) async {
-  var parser = ArgParser();
-  parser.addCommand('build');
-  parser.addCommand('doc');
-  parser.addCommand('serve');
-  parser.addCommand('try-publish');
+  var parser = ArgParser()
+    ..addCommand('analyze')
+    ..addCommand('build')
+    ..addCommand('compare')
+    ..addCommand('doc')
+    ..addCommand('serve')
+    ..addCommand('test')
+    ..addCommand('try-publish')
+    ..addCommand('validate');
   var results = parser.parse(args);
   var commandResults = results.command;
   if (commandResults == null) {
@@ -34,6 +38,7 @@ void main(List<String> args) async {
   return switch (commandResults.name) {
     'analyze' => await runAnalyze(commandResults),
     'build' => await runBuild(commandResults),
+    'compare' => await runCompare(commandResults),
     'doc' => await runDoc(commandResults),
     // TODO(srawlins): Implement tasks that serve various docs, after generating
     // them.
@@ -138,29 +143,18 @@ Future<void> buildWeb() async {
     'web/docs.dart',
     '-O4',
   ]);
-  delete(File('lib/resources/docs.dart.js.deps'));
+  _delete(File('lib/resources/docs.dart.js.deps'));
 
-  var compileSig = await calcDartFilesSig(Directory('web'));
+  var compileSig = await _calcDartFilesSig(Directory('web'));
   File(p.join('web', 'sig.txt')).writeAsStringSync('$compileSig\n');
 }
 
 /// Delete the given file entity reference.
-void delete(FileSystemEntity entity) {
+void _delete(FileSystemEntity entity) {
   if (entity.existsSync()) {
     print('deleting ${entity.path}');
     entity.deleteSync(recursive: true);
   }
-}
-
-Future<String> calcDartFilesSig(Directory dir) async {
-  final digest = await _dartFileLines(dir)
-      .transform(utf8.encoder)
-      .transform(crypto.md5)
-      .single;
-
-  return digest.bytes
-      .map((byte) => byte.toRadixString(16).padLeft(2, '0').toUpperCase())
-      .join();
 }
 
 /// Yields all of the trimmed lines of all of the `.dart` files in [dir].
@@ -178,6 +172,80 @@ Stream<String> _dartFileLines(Directory dir) {
   ]);
 }
 
+Future<void> runCompare(ArgResults commandResults) async {
+  if (commandResults.rest.length != 1) {
+    throw ArgumentError('"compare" command requires a single target.');
+  }
+  var target = commandResults.rest.single;
+  // ignore: unnecessary_statements, unnecessary_parenthesis
+  (switch (target) {
+    'flutter-warnings' => await compareFlutterWarnings(),
+    'sdk-warnings' => await compareSdkWarnings(),
+    _ => throw UnimplementedError('Unknown compare target: "$target"'),
+  });
+}
+
+Future<void> compareFlutterWarnings() async {
+  var originalDartdocFlutter =
+      Directory.systemTemp.createTempSync('dartdoc-comparison-flutter');
+  var originalDartdoc = await _createComparisonDartdoc();
+  var envCurrent = createThrowawayPubCache();
+  var envOriginal = createThrowawayPubCache();
+  var currentDartdocFlutterBuild = _docFlutter(
+    flutterPath: flutterDir.path,
+    cwd: Directory.current.path,
+    env: envCurrent,
+    label: 'docs-current',
+  );
+  var originalDartdocFlutterBuild = _docFlutter(
+    flutterPath: originalDartdocFlutter.path,
+    cwd: originalDartdoc,
+    env: envOriginal,
+    label: 'docs-original',
+  );
+  var currentDartdocWarnings = _collectWarnings(
+    messages: await currentDartdocFlutterBuild,
+    tempPath: flutterDir.absolute.path,
+    branch: 'HEAD',
+    pubDir: envCurrent['PUB_CACHE'],
+  );
+  var originalDartdocWarnings = _collectWarnings(
+    messages: await originalDartdocFlutterBuild,
+    tempPath: originalDartdocFlutter.absolute.path,
+    branch: _dartdocOriginalBranch,
+    pubDir: envOriginal['PUB_CACHE'],
+  );
+
+  print(originalDartdocWarnings.warningDeltaText(
+      'Flutter repo', currentDartdocWarnings));
+
+  if (Platform.environment['SERVE_FLUTTER'] == '1') {
+    var launcher = SubprocessLauncher('serve-flutter-docs');
+    await launcher.runStreamed(Platform.resolvedExecutable, ['pub', 'get']);
+    var original = launcher.runStreamed(Platform.resolvedExecutable, [
+      'pub',
+      'global',
+      'run',
+      'dhttpd',
+      '--port',
+      '9000',
+      '--path',
+      p.join(originalDartdocFlutter.absolute.path, 'dev', 'docs', 'doc'),
+    ]);
+    var current = launcher.runStreamed(Platform.resolvedExecutable, [
+      'pub',
+      'global',
+      'run',
+      'dhttpd',
+      '--port',
+      '9001',
+      '--path',
+      p.join(flutterDir.absolute.path, 'dev', 'docs', 'doc'),
+    ]);
+    await Future.wait([original, current]);
+  }
+}
+
 Future<void> runDoc(ArgResults commandResults) async {
   if (commandResults.rest.length != 1) {
     throw ArgumentError('"doc" command requires a single target.');
@@ -185,20 +253,69 @@ Future<void> runDoc(ArgResults commandResults) async {
   var target = commandResults.rest.single;
   // ignore: unnecessary_statements, unnecessary_parenthesis
   (switch (target) {
-    'sdk' => await docSdk(),
+    'flutter' => await docFlutter(),
     'package' => await _docPackage(commandResults),
+    'sdk' => await docSdk(),
     _ => throw UnimplementedError('Unknown doc target: "$target"'),
   });
 }
 
-/// A temporary directory into which the SDK can be documented.
-final Directory sdkDocsDir =
-    Directory.systemTemp.createTempSync('sdkdocs').absolute;
+Future<void> docFlutter() async {
+  print('building flutter docs into: $flutterDir');
+  var env = createThrowawayPubCache();
+  await _docFlutter(
+    flutterPath: flutterDir.path,
+    cwd: Directory.current.path,
+    env: env,
+    label: 'docs',
+  );
+  var indexContents =
+      File(p.join(flutterDir.path, 'dev', 'docs', 'doc', 'index.html'))
+          .readAsLinesSync();
+  print([...indexContents.take(25), '...\n'].join('\n'));
+}
 
-Future<void> docSdk() async => _docSdk(
-      sdkDocsPath: sdkDocsDir.path,
-      dartdocPath: Directory.current.path,
+Future<Iterable<Map<String, Object?>>> _docFlutter({
+  required String flutterPath,
+  required String cwd,
+  required Map<String, String> env,
+  String? label,
+}) async {
+  var flutterRepo = await FlutterRepo.copyFromExistingFlutterRepo(
+      await cleanFlutterRepo, flutterPath, env, label);
+  await flutterRepo.launcher.runStreamed(
+    flutterRepo.cacheDart,
+    ['pub', 'get'],
+    workingDirectory: p.join(flutterPath, 'dev', 'tools'),
+  );
+  try {
+    await flutterRepo.launcher.runStreamed(
+      flutterRepo.cacheDart,
+      ['pub', 'global', 'deactivate', 'snippets'],
     );
+  } on SubprocessException {
+    // Ignore failure to deactivate so this works on completely clean bots.
+  }
+  await flutterRepo.launcher.runStreamed(
+    flutterRepo.cacheDart,
+    ['pub', 'global', 'activate', 'snippets'],
+  );
+  // TODO(jcollins-g): flutter's dart SDK pub tries to precompile the universe
+  // when using -spath.  Why?
+  await flutterRepo.launcher.runStreamed(
+    flutterRepo.cacheDart,
+    ['pub', 'global', 'activate', '-spath', '.', '-x', 'dartdoc'],
+    workingDirectory: cwd,
+  );
+  return await flutterRepo.launcher.runStreamed(
+    flutterRepo.cacheDart,
+    [p.join('dev', 'tools', 'dartdoc.dart'), '-c', '--json'],
+    workingDirectory: flutterPath,
+  );
+}
+
+final Directory flutterDir =
+    Directory.systemTemp.createTempSync('flutter').absolute;
 
 Future<void> _docPackage(ArgResults commandResults) async {
   var name = commandResults['name'] as String;
@@ -260,12 +377,17 @@ Future<String> docPackage(
   return p.join(pubPackageDir.absolute.path, 'doc', 'api');
 }
 
+Future<void> docSdk() async => _docSdk(
+      sdkDocsPath: _sdkDocsDir.path,
+      dartdocPath: Directory.current.path,
+    );
+
 /// Creates a throwaway pub cache and returns the environment variables
 /// necessary to use it.
 Map<String, String> createThrowawayPubCache() {
   var pubCache = Directory.systemTemp.createTempSync('pubcache');
   var pubCacheBin = Directory(p.join(pubCache.path, 'bin'));
-  var defaultCache = Directory(defaultPubCache);
+  var defaultCache = Directory(_defaultPubCache);
   if (defaultCache.existsSync()) {
     io_utils.copy(defaultCache, pubCache);
   } else {
@@ -280,7 +402,7 @@ Map<String, String> createThrowawayPubCache() {
   ]);
 }
 
-final String defaultPubCache = Platform.environment['PUB_CACHE'] ??
+final String _defaultPubCache = Platform.environment['PUB_CACHE'] ??
     p.context.resolveTildePath('~/.pub-cache');
 
 Future<void> compareSdkWarnings() async {
@@ -297,13 +419,13 @@ Future<void> compareSdkWarnings() async {
     sdkDocsPath: originalDartdocSdkDocs.path,
     dartdocPath: originalDartdoc,
   );
-  var currentDartdocWarnings = _jsonMessageIterableToWarnings(
-    await currentDartdocSdkBuild,
+  var currentDartdocWarnings = _collectWarnings(
+    messages: await currentDartdocSdkBuild,
     tempPath: sdkDocsPath,
     branch: 'HEAD',
   );
-  var originalDartdocWarnings = _jsonMessageIterableToWarnings(
-    await originalDartdocSdkBuild,
+  var originalDartdocWarnings = _collectWarnings(
+    messages: await originalDartdocSdkBuild,
     tempPath: originalDartdocSdkDocs.absolute.path,
     branch: _dartdocOriginalBranch,
   );
@@ -312,7 +434,7 @@ Future<void> compareSdkWarnings() async {
       'SDK docs', currentDartdocWarnings));
 }
 
-/// Returns a map of warning texts to the number of times each has been seen.
+/*/// Returns a map of warning texts to the number of times each has been seen.
 WarningsCollection _jsonMessageIterableToWarnings(
   Iterable<Map<Object, Object?>> messageIterable, {
   required String tempPath,
@@ -329,7 +451,7 @@ WarningsCollection _jsonMessageIterableToWarnings(
     }
   }
   return warningTexts;
-}
+}*/
 
 Future<Iterable<Map<String, Object?>>> _docSdk({
   required String sdkDocsPath,
@@ -382,24 +504,27 @@ Future<void> runServe(ArgResults commandResults) async {
   var target = commandResults.rest.single;
   // ignore: unnecessary_statements, unnecessary_parenthesis
   (switch (target) {
-    'sdk' => await serveSdkDocs(),
+    'flutter' => await serveFlutterDocs(),
     'package' => await _servePackageDocs(commandResults),
+    'sdk' => await serveSdkDocs(),
     _ => throw UnimplementedError('Unknown serve target: "$target"'),
   });
 }
 
-Future<void> serveSdkDocs() async {
-  await docSdk();
-  print('launching dhttpd on port 8000 for SDK');
-  await SubprocessLauncher('serve-sdk-docs').runStreamedDartCommand([
+Future<void> serveFlutterDocs() async {
+  await docFlutter();
+  print('launching dhttpd on port 8001 for Flutter');
+  var launcher = SubprocessLauncher('serve-flutter-docs');
+  await launcher.runStreamedDartCommand(['pub', 'get']);
+  await launcher.runStreamedDartCommand([
     'pub',
     'global',
     'run',
     'dhttpd',
     '--port',
-    '8000',
+    '8001',
     '--path',
-    sdkDocsDir.path,
+    p.join(flutterDir.path, 'dev', 'docs', 'doc'),
   ]);
 }
 
@@ -413,6 +538,21 @@ Future<void> servePackageDocs(
     {required String name, required String? version}) async {
   var packageDocsPath = await docPackage(name: name, version: version);
   await _serveDocsFrom(packageDocsPath, 9000, 'serve-pub-package');
+}
+
+Future<void> serveSdkDocs() async {
+  await docSdk();
+  print('launching dhttpd on port 8000 for SDK');
+  await SubprocessLauncher('serve-sdk-docs').runStreamedDartCommand([
+    'pub',
+    'global',
+    'run',
+    'dhttpd',
+    '--port',
+    '8000',
+    '--path',
+    _sdkDocsDir.path,
+  ]);
 }
 
 bool _serveReady = false;
@@ -498,7 +638,7 @@ Future<void> validateBuild() async {
   }
 
   // Verify that the web frontend has been compiled.
-  final currentCodeSig = await calcDartFilesSig(Directory('web'));
+  final currentCodeSig = await _calcDartFilesSig(Directory('web'));
   final lastCompileSig =
       File(p.join('web', 'sig.txt')).readAsStringSync().trim();
   if (currentCodeSig != lastCompileSig) {
@@ -578,7 +718,7 @@ Future<void> validateSdkDocs() async {
   const expectedLibCount = 0;
   const expectedSubLibCounts = {19, 20, 21};
   const expectedTotalCounts = {19, 20, 21};
-  var indexHtml = File(p.join(sdkDocsDir.path, 'index.html'));
+  var indexHtml = File(p.join(_sdkDocsDir.path, 'index.html'));
   if (!indexHtml.existsSync()) {
     throw StateError("No 'index.html' found for the SDK docs");
   }
@@ -602,7 +742,7 @@ Future<void> validateSdkDocs() async {
 
   // check for the existence of certain files/dirs
   var libsCount =
-      sdkDocsDir.listSync().where((fs) => fs.path.contains('dart-')).length;
+      _sdkDocsDir.listSync().where((fs) => fs.path.contains('dart-')).length;
   if (!expectedTotalCounts.contains(libsCount)) {
     throw StateError('Docs not generated for all the SDK libraries; expected '
         '$expectedTotalCounts directories, but $libsCount directories were '
@@ -611,12 +751,16 @@ Future<void> validateSdkDocs() async {
   print("Found $libsCount 'dart:' libraries");
 
   var futureConstructorFile =
-      File(p.join(sdkDocsDir.path, 'dart-async', 'Future', 'Future.html'));
+      File(p.join(_sdkDocsDir.path, 'dart-async', 'Future', 'Future.html'));
   if (!futureConstructorFile.existsSync()) {
     throw StateError('No Future.html found for dart:async Future constructor');
   }
   print('Found Future.async constructor');
 }
+
+/// A temporary directory into which the SDK can be documented.
+final Directory _sdkDocsDir =
+    Directory.systemTemp.createTempSync('sdkdocs').absolute;
 
 /// Returns the number of (perhaps overlapping) occurrences of [str] in [match].
 int _findCount(String str, String match) {
@@ -627,4 +771,34 @@ int _findCount(String str, String match) {
     index = str.indexOf(match, index + match.length);
   }
   return count;
+}
+
+Future<String> _calcDartFilesSig(Directory dir) async {
+  final digest = await _dartFileLines(dir)
+      .transform(utf8.encoder)
+      .transform(crypto.md5)
+      .single;
+
+  return digest.bytes
+      .map((byte) => byte.toRadixString(16).padLeft(2, '0').toUpperCase())
+      .join();
+}
+
+/// Returns a map of warning texts to the number of times each has been seen.
+WarningsCollection _collectWarnings({
+  required Iterable<Map<Object, Object?>> messages,
+  required String tempPath,
+  required String branch,
+  String? pubDir,
+}) {
+  var warningTexts = WarningsCollection(tempPath, pubDir, branch);
+  for (final message in messages) {
+    if (message.containsKey('level') &&
+        message['level'] == 'WARNING' &&
+        message.containsKey('data')) {
+      var data = message['data'] as Map;
+      warningTexts.add(data['text'] as String);
+    }
+  }
+  return warningTexts;
 }
