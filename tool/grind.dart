@@ -15,29 +15,6 @@ import 'task.dart' as task;
 
 void main(List<String> args) => grind(args);
 
-/// Thrown on failure to find something in a file.
-class GrindTestFailure implements Exception {
-  final String message;
-
-  GrindTestFailure(this.message);
-
-  @override
-  String toString() => message;
-}
-
-/// Kind of an inefficient grepper for now.
-void expectFileContains(String path, List<Pattern> items) {
-  var source = File(path);
-  if (!source.existsSync()) {
-    throw GrindTestFailure('file not found: $path');
-  }
-  for (var item in items) {
-    if (!File(path).readAsStringSync().contains(item)) {
-      throw GrindTestFailure('"$item" not found in $path');
-    }
-  }
-}
-
 /// Enable the following experiments for language tests.
 final List<String> languageExperiments =
     (Platform.environment['LANGUAGE_EXPERIMENTS'] ?? '').split(RegExp(r'\s+'));
@@ -45,8 +22,6 @@ final List<String> languageExperiments =
 // Directory.systemTemp is not a constant.  So wrap it.
 Directory createTempSync(String prefix) =>
     Directory.systemTemp.createTempSync(prefix);
-
-final String _dartdocDocsPath = createTempSync('dartdoc').path;
 
 final Directory _flutterDir = createTempSync('flutter');
 
@@ -88,33 +63,7 @@ void analyze() async {
 void analyzeTestPackages() async => task.analyzeTestPackages();
 
 @Task('Check for dart format cleanliness')
-void checkFormat() async {
-  if (Platform.version.contains('dev')) {
-    var filesToFix = <String>[];
-
-    log('Validating dart format with version ${Platform.version}');
-    await SubprocessLauncher('dart format').runStreamed(
-      Platform.resolvedExecutable,
-      [
-        'format',
-        '-o',
-        'none',
-        'bin',
-        'lib',
-        'test',
-        'tool',
-        'web',
-      ],
-    );
-    if (filesToFix.isNotEmpty) {
-      fail(
-          'dart format found files needing reformatting. Use this command to reformat:\n'
-          'dart format ${filesToFix.map((f) => "'$f'").join(' ')}');
-    }
-  } else {
-    log('Skipping dart format check, requires latest dev version of SDK');
-  }
-}
+void checkFormat() async => await task.validateFormat();
 
 @Task('Run quick presubmit checks.')
 @Depends(
@@ -459,77 +408,13 @@ Future<void> servePubPackage() async => await task.servePackageDocs(
 
 @Task('Rebuild generated files')
 @Depends(clean)
-Future<void> build() async {
-  if (Platform.isWindows) {
-    // Built files only need to be built on Linux and MacOS, as there are path
-    // issues with Windows.
-    return;
-  }
-  await task.buildWeb();
-  await task.buildRenderers();
-  await task.buildDartdocOptions();
-}
+Future<void> build() async => task.buildAll();
 
 @Task('Build the web frontend')
 Future<void> buildWeb() async => await task.buildWeb();
 
-/// Paths in this list are relative to lib/.
-final _generatedFilesList = <String>[
-  '../dartdoc_options.yaml',
-  'src/generator/html_resources.g.dart',
-  'src/generator/templates.aot_renderers_for_html.dart',
-  'src/generator/templates.aot_renderers_for_md.dart',
-  'src/generator/templates.runtime_renderers.dart',
-  'src/version.dart',
-  '../test/mustachio/foo.dart',
-].map((s) => p.joinAll(p.posix.split(s)));
-
 @Task('Verify generated files are up to date')
-Future<void> checkBuild() async {
-  var originalFileContents = <String, String>{};
-  var differentFiles = <String>[];
-
-  // Load original file contents into memory before running the builder; it
-  // modifies them in place.
-  for (var relPath in _generatedFilesList) {
-    var origPath = p.joinAll(['lib', relPath]);
-    var oldVersion = File(origPath);
-    if (oldVersion.existsSync()) {
-      originalFileContents[relPath] = oldVersion.readAsStringSync();
-    }
-  }
-
-  await build();
-
-  for (var relPath in _generatedFilesList) {
-    var newVersion = File(p.join('lib', relPath));
-    if (!newVersion.existsSync()) {
-      log('${newVersion.path} does not exist\n');
-      differentFiles.add(relPath);
-    } else if (originalFileContents[relPath] !=
-        await newVersion.readAsString()) {
-      log('${newVersion.path} has changed to: \n${newVersion.readAsStringSync()})');
-      differentFiles.add(relPath);
-    }
-  }
-
-  if (differentFiles.isNotEmpty) {
-    fail('The following generated files needed to be rebuilt:\n'
-        '  ${differentFiles.map((f) => p.join('lib', f)).join("\n  ")}\n'
-        'Rebuild them with "grind build" and check the results in.');
-  }
-
-  // Verify that the web frontend has been compiled.
-  final currentCodeSig = await task.calcDartFilesSig(Directory('web'));
-  final lastCompileSig =
-      File(p.join('web', 'sig.txt')).readAsStringSync().trim();
-  if (currentCodeSig != lastCompileSig) {
-    log('current files: $currentCodeSig');
-    log('cached sig   : $lastCompileSig');
-    fail('The web frontend (web/docs.dart) needs to be recompiled; rebuild it '
-        'with "grind build-web" or "grind build".');
-  }
-}
+Future<void> checkBuild() async {}
 
 @Task('Dry run of publish to pub.dev')
 Future<void> tryPublish() async => await task.runTryPublish();
@@ -557,76 +442,7 @@ Iterable<FileSystemEntity> get _nonRootPubData {
 }
 
 @Task('Generate docs for dartdoc without link-to-remote')
-Future<void> testDartdoc() async {
-  var launcher = SubprocessLauncher('test-dartdoc');
-  await launcher.runStreamed(Platform.resolvedExecutable, [
-    '--enable-asserts',
-    'bin/dartdoc.dart',
-    '--output',
-    _dartdocDocsPath,
-    '--no-link-to-remote',
-  ]);
-  expectFileContains(p.join(_dartdocDocsPath, 'index.html'),
-      ['<title>dartdoc - Dart API docs</title>']);
-  var object = RegExp('<li>Object</li>', multiLine: true);
-  expectFileContains(
-      p.join(_dartdocDocsPath, 'dartdoc', 'PubPackageMeta-class.html'),
-      [object]);
-}
+Future<void> testDartdoc() async => await task.validateDartdocDocs();
 
 @Task('Validate the SDK doc build.')
-@Depends(buildSdkDocs)
-void validateSdkDocs() {
-  const expectedLibCounts = 0;
-  const expectedSubLibCount = {19, 20, 21};
-  const expectedTotalCount = {19, 20, 21};
-  var indexHtml = joinFile(task.sdkDocsDir, ['index.html']);
-  if (!indexHtml.existsSync()) {
-    fail("No 'index.html' found for the SDK docs");
-  }
-  log("Found 'index.html'");
-  var indexContents = indexHtml.readAsStringSync();
-  var foundLibs = _findCount(indexContents, '  <li><a href="dart-');
-  if (expectedLibCounts != foundLibs) {
-    fail("Expected $expectedLibCounts 'dart:' entries in 'index.html', but "
-        'found $foundLibs');
-  }
-  log("Found $foundLibs 'dart:' entries in 'index.html'");
-
-  var foundSubLibs =
-      _findCount(indexContents, '<li class="section-subitem"><a href="dart-');
-  if (!expectedSubLibCount.contains(foundSubLibs)) {
-    fail("Expected $expectedSubLibCount 'dart:' entries in 'index.html' to be "
-        'in categories, but found $foundSubLibs');
-  }
-  log('$foundSubLibs index.html dart: entries in categories found');
-
-  // check for the existence of certain files/dirs
-  var libsLength = task.sdkDocsDir
-      .listSync()
-      .where((fs) => fs.path.contains('dart-'))
-      .length;
-  if (!expectedTotalCount.contains(libsLength)) {
-    fail('Docs not generated for all the SDK libraries; expected '
-        '$expectedTotalCount directories, but $libsLength directories were '
-        'generated');
-  }
-  log("Found $libsLength 'dart:' libraries");
-
-  var futureConstFile = joinFile(
-      task.sdkDocsDir, [p.join('dart-async', 'Future', 'Future.html')]);
-  if (!futureConstFile.existsSync()) {
-    fail('no Future.html found for dart:async Future constructor');
-  }
-  log('found Future.async ctor');
-}
-
-int _findCount(String str, String match) {
-  var count = 0;
-  var index = str.indexOf(match);
-  while (index != -1) {
-    count++;
-    index = str.indexOf(match, index + match.length);
-  }
-  return count;
-}
+void validateSdkDocs() async => await task.validateSdkDocs();
