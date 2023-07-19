@@ -24,7 +24,7 @@ RecordTypedef<U> foo<U>(U aThing, int x) {
 RecordTypedef<double> fromParameterizedRecordType = (3.5, 10, "A string");
 
 /// Implicit dynamic type parameter.
-RecordTypedef dynamicParameterizedRecordType = ([1,2,3], 5, "Another string");
+RecordTypedef dynamicParameterizedRecordType = ([1, 2, 3], 5, "Another string");
 
 /// Not using the typedef, but it could.
 var nonTypeDefRecordType = (["hello", "there"], 12, "From a record");
@@ -32,5 +32,6 @@ var nonTypeDefRecordType = (["hello", "there"], 12, "From a record");
 abstract class A<T> {
   (int, double) aMethod();
   RecordTypedef<T> aParameterizedTypedefRecordReturner();
-  void aMethodParametersWithRecords((String, List) aRecord, {required (int, String) b});
+  void aMethodParametersWithRecords((String, List) aRecord,
+      {required (int, String) b});
 }
