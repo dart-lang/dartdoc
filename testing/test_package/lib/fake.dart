@@ -1285,7 +1285,8 @@ class FactoryConstructorThings {
 
 DTypeParam?
     aTopLevelTypeParameterFunction<DTypeParam extends TypeParameterThings>(
-        DTypeParam typedParam) => typedParam;
+            DTypeParam typedParam) =>
+        typedParam;
 
 abstract class TypeParameterThings<ATypeParam,
     BTypeParam extends FactoryConstructorThings> {

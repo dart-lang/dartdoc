@@ -4,6 +4,4 @@
 
 library sealed_classes.dart;
 
-sealed class A {
-
-}
+sealed class A {}
