@@ -79,6 +79,6 @@ jobs:
           DARTDOC_BOT: ${{ matrix.job }}
       - name: ${{ matrix.job }}
         if: runner.os == 'Windows' && matrix.job == 'main'
-        run: dart run grinder buildbot
+        run: dart run tool\task.dart buildbot
         env:
           DARTDOC_BOT: ${{ matrix.job }}
