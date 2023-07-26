@@ -10,7 +10,7 @@ import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/tool_definition.dart';
 import 'package:dartdoc/src/tool_runner.dart';
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 import 'package:yaml/yaml.dart';
 
@@ -19,7 +19,7 @@ final Directory _toolExecutableDir = Directory('testing/tool_executables');
 
 void main() {
   ToolConfiguration toolMap;
-  Directory? tempDir;
+  late Directory tempDir;
   late File setupFile;
 
   late ToolRunner runner;
@@ -29,7 +29,7 @@ void main() {
   setUpAll(() async {
     ProcessResult? result;
     tempDir = Directory.systemTemp.createTempSync('tool_runner_test_');
-    var snapshotFile = p.join(tempDir!.path, 'drill.snapshot');
+    var snapshotFile = path.join(tempDir.path, 'drill.snapshot');
     try {
       result = Process.runSync(
           Platform.resolvedExecutable,
@@ -49,10 +49,10 @@ void main() {
       stderr.writeln(result.stderr);
     }
     expect(result?.exitCode, equals(0));
-    setupFile = File(p.join(tempDir!.path, 'setup.stamp'));
+    setupFile = File(path.join(tempDir.path, 'setup.stamp'));
     var nonDartName = Platform.isWindows ? 'non_dart.bat' : 'non_dart.sh';
     var nonDartExecutable =
-        p.join(_toolExecutableDir.absolute.path, nonDartName);
+        path.join(_toolExecutableDir.absolute.path, nonDartName);
     // Have to replace backslashes on Windows with double-backslashes, to
     // escape them for YAML parser.
     var yamlMap = '''
@@ -93,7 +93,7 @@ echo:
   });
 
   tearDownAll(() {
-    tempDir?.deleteSync(recursive: true);
+    tempDir.deleteSync(recursive: true);
     SnapshotCache.instanceFor(pubPackageMetaProvider.resourceProvider)
         .dispose();
   });

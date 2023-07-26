@@ -23,7 +23,7 @@ import 'package:dartdoc/src/validator.dart';
 import 'package:dartdoc/src/version.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:meta/meta.dart';
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as path;
 
 const String programName = 'dartdoc';
 // Update when pubspec version changes by running `pub run build_runner build`
@@ -72,7 +72,7 @@ class DartdocFileWriter implements FileWriter {
   }) {
     _validateMaxWriteStats(filePath, content.length);
     // Replace '/' separators with proper separators for the platform.
-    var outFile = p.joinAll(filePath.split('/'));
+    var outFile = path.joinAll(filePath.split('/'));
 
     if (!allowOverwrite) {
       _warnAboutOverwrite(outFile, null);
@@ -91,7 +91,7 @@ class DartdocFileWriter implements FileWriter {
     _validateMaxWriteStats(filePath, bytes.length);
 
     // Replace '/' separators with proper separators for the platform.
-    var outFile = p.joinAll(filePath.split('/'));
+    var outFile = path.joinAll(filePath.split('/'));
 
     _warnAboutOverwrite(outFile, element);
     _fileElementMap[outFile] = element;

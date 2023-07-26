@@ -5,7 +5,7 @@
 import 'package:analyzer/file_system/memory_file_system.dart';
 import 'package:dartdoc/src/dartdoc.dart';
 import 'package:dartdoc/src/model/model.dart';
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
 import '../src/test_descriptor_utils.dart' as d;
@@ -106,7 +106,7 @@ enum EnumWithDefaultConstructor {
         '--input',
         packagePath,
         '--output',
-        p.join(packagePath, 'doc'),
+        path.join(packagePath, 'doc'),
         '--sdk-dir',
         packageMetaProvider.defaultSdkDir.path,
         '--no-link-to-remote',
@@ -124,20 +124,20 @@ enum EnumWithDefaultConstructor {
       );
       await (await Dartdoc.fromContext(context, packageBuilder)).generateDocs();
       eLines = resourceProvider
-          .getFile(p.join(packagePath, 'doc', 'lib', 'E.html'))
+          .getFile(path.join(packagePath, 'doc', 'lib', 'E.html'))
           .readAsStringSync()
           .split('\n');
       eRightSidebarLines = resourceProvider
-          .getFile(p.join(packagePath, 'doc', 'lib', 'E-enum-sidebar.html'))
+          .getFile(path.join(packagePath, 'doc', 'lib', 'E-enum-sidebar.html'))
           .readAsStringSync()
           .split('\n');
       enumWithDefaultConstructorLines = resourceProvider
-          .getFile(p.join(
+          .getFile(path.join(
               packagePath, 'doc', 'lib', 'EnumWithDefaultConstructor.html'))
           .readAsStringSync()
           .split('\n');
       enumWithDefaultConstructorRightSidebarLines = resourceProvider
-          .getFile(p.join(packagePath, 'doc', 'lib',
+          .getFile(path.join(packagePath, 'doc', 'lib',
               'EnumWithDefaultConstructor-enum-sidebar.html'))
           .readAsStringSync()
           .split('\n');
