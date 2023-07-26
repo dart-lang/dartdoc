@@ -12,7 +12,7 @@ import 'package:analyzer/dart/element/type_system.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:dartdoc/src/mustachio/annotations.dart';
 import 'package:dartdoc/src/type_utils.dart';
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as path;
 
 import 'utilities.dart';
 
@@ -97,7 +97,7 @@ import 'package:dartdoc/src/model/model_object_builder.dart';
 import 'package:dartdoc/src/mustachio/parser.dart';
 import 'package:dartdoc/src/mustachio/renderer_base.dart';
 import 'package:dartdoc/src/warnings.dart';
-import '${p.basename(_sourceUri.path)}';
+import '${path.basename(_sourceUri.path)}';
 ''');
 
     specs.forEach(_addTypesForRendererSpec);
