@@ -10,7 +10,7 @@ import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/tool_definition.dart';
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as path;
 
 typedef ToolErrorCallback = void Function(String message);
 typedef FakeResultCallback = String Function(String tool,
@@ -240,5 +240,5 @@ class ToolRunner {
 
   ResourceProvider get resourceProvider => toolConfiguration.resourceProvider;
 
-  p.Context get pathContext => resourceProvider.pathContext;
+  path.Context get pathContext => resourceProvider.pathContext;
 }

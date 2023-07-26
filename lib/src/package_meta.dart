@@ -14,7 +14,7 @@ import 'package:analyzer/src/generated/sdk.dart' show DartSdk;
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/failure.dart';
 import 'package:meta/meta.dart';
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as path;
 import 'package:yaml/yaml.dart';
 
 final Map<String, PackageMeta?> _packageMetaCache = {};
@@ -121,7 +121,7 @@ abstract class PackageMeta {
   @override
   int get hashCode => pathContext.hash(pathContext.absolute(dir.path));
 
-  p.Context get pathContext => resourceProvider.pathContext;
+  path.Context get pathContext => resourceProvider.pathContext;
 
   /// Returns true if this represents a 'Dart' SDK.
   ///
@@ -169,10 +169,10 @@ abstract class PubPackageMeta extends PackageMeta {
 
   static final List<List<String>> _sdkDirFilePaths = Platform.isWindows
       ? [
-          for (var paths in _sdkDirFilePathsPosix)
+          for (var filePaths in _sdkDirFilePathsPosix)
             [
-              for (var path in paths)
-                p.joinAll(p.Context(style: p.Style.posix).split(path)),
+              for (var filePath in filePaths)
+                path.joinAll(path.posix.split(filePath)),
             ],
         ]
       : _sdkDirFilePathsPosix;
@@ -375,7 +375,7 @@ File? _locate(Folder dir, List<String> fileNames) {
 
   for (var name in fileNames) {
     for (var f in files) {
-      var baseName = p.basename(f.path).toLowerCase();
+      var baseName = path.basename(f.path).toLowerCase();
       if (baseName == name) return f;
       if (baseName.startsWith(name)) return f;
     }
