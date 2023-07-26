@@ -23,6 +23,8 @@ void main(List<String> args) async {
   var parser = ArgParser()
     ..addCommand('analyze')
     ..addCommand('build')
+    ..addCommand('buildbot')
+    ..addCommand('clean')
     ..addCommand('compare')
     ..addCommand('doc')
     ..addCommand('serve')
@@ -38,10 +40,10 @@ void main(List<String> args) async {
   return switch (commandResults.name) {
     'analyze' => await runAnalyze(commandResults),
     'build' => await runBuild(commandResults),
+    'buildbot' => await runBuildbot(),
+    'clean' => await runClean(),
     'compare' => await runCompare(commandResults),
     'doc' => await runDoc(commandResults),
-    // TODO(srawlins): Implement tasks that serve various docs, after generating
-    // them.
     'serve' => await runServe(commandResults),
     'test' => await runTest(),
     'try-publish' => await runTryPublish(),
@@ -172,6 +174,31 @@ Stream<String> _dartFileLines(Directory dir) {
   ]);
 }
 
+Future<void> runBuildbot() async {
+  await analyzeTestPackages();
+  await analyzePackage();
+  await validateFormat();
+  await validateBuild();
+  await runTryPublish();
+  await runTest();
+  await validateDartdocDocs();
+}
+
+Future<void> runClean() async {
+  // This involves deleting things, so be careful.
+  if (!File(p.join('tool', 'grind.dart')).existsSync()) {
+    throw FileSystemException('Wrong CWD, run from root of dartdoc package');
+  }
+  const pubDataFileNames = {'.dart_tool', '.packages', 'pubspec.lock'};
+  var nonRootPubData = Directory('.')
+      .listSync(recursive: true)
+      .where((e) => p.dirname(e.path) != '.')
+      .where((e) => pubDataFileNames.contains(p.basename(e.path)));
+  for (var e in nonRootPubData) {
+    e.deleteSync(recursive: true);
+  }
+}
+
 Future<void> runCompare(ArgResults commandResults) async {
   if (commandResults.rest.length != 1) {
     throw ArgumentError('"compare" command requires a single target.');
@@ -256,6 +283,7 @@ Future<void> runDoc(ArgResults commandResults) async {
     'flutter' => await docFlutter(),
     'package' => await _docPackage(commandResults),
     'sdk' => await docSdk(),
+    'testing-package' => await docTestingPackage(),
     _ => throw UnimplementedError('Unknown doc target: "$target"'),
   });
 }
@@ -405,6 +433,31 @@ Map<String, String> createThrowawayPubCache() {
 final String _defaultPubCache = Platform.environment['PUB_CACHE'] ??
     p.context.resolveTildePath('~/.pub-cache');
 
+Future<void> docTestingPackage() async {
+  var testPackagePath = testPackage.absolute.path;
+  var launcher = SubprocessLauncher('doc-test-package');
+  await launcher.runStreamedDartCommand(['pub', 'get'],
+      workingDirectory: testPackagePath);
+  await launcher.runStreamedDartCommand(
+    [
+      '--enable-asserts',
+      p.join(Directory.current.absolute.path, 'bin', 'dartdoc.dart'),
+      '--output',
+      _testingPackageDocsDir.absolute.path,
+      '--example-path-prefix',
+      'examples',
+      '--include-source',
+      '--json',
+      '--link-to-remote',
+      '--pretty-index-json',
+    ],
+    workingDirectory: testPackagePath,
+  );
+}
+
+final Directory _testingPackageDocsDir =
+    Directory.systemTemp.createTempSync('testing_package');
+
 Future<void> compareSdkWarnings() async {
   var originalDartdocSdkDocs =
       Directory.systemTemp.createTempSync('dartdoc-comparison-sdkdocs');
@@ -507,6 +560,7 @@ Future<void> runServe(ArgResults commandResults) async {
     'flutter' => await serveFlutterDocs(),
     'package' => await _servePackageDocs(commandResults),
     'sdk' => await serveSdkDocs(),
+    'testing-package' => await serveTestingPackageDocs(),
     _ => throw UnimplementedError('Unknown serve target: "$target"'),
   });
 }
@@ -575,6 +629,21 @@ Future<void> _serveDocsFrom(String servePath, int port, String context) async {
     '$port',
     '--path',
     servePath
+  ]);
+}
+
+Future<void> serveTestingPackageDocs() async {
+  print('launching dhttpd on port 8002 for SDK');
+  var launcher = SubprocessLauncher('serve-test-package-docs');
+  await launcher.runStreamed(Platform.resolvedExecutable, [
+    'pub',
+    'global',
+    'run',
+    'dhttpd',
+    '--port',
+    '8002',
+    '--path',
+    _testingPackageDocsDir.absolute.path,
   ]);
 }
 
@@ -665,7 +734,7 @@ Future<void> validateDartdocDocs() async {
   var launcher = SubprocessLauncher('test-dartdoc');
   await launcher.runStreamedDartCommand([
     '--enable-asserts',
-    'bin/dartdoc.dart',
+    p.join('bin', 'dartdoc.dart'),
     '--output',
     _dartdocDocsPath,
     '--no-link-to-remote',

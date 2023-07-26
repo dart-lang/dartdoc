@@ -14,11 +14,11 @@ if [ "$DARTDOC_BOT" = "sdk-docs" ]; then
   # silence stdout but echo stderr
   echo ""
   echo "Building and validating SDK docs..."
-  dart run grinder validate-sdk-docs
+  dart run tool/task.dart validate sdk-docs
   echo "SDK docs process finished"
 elif [ "$DARTDOC_BOT" = "flutter" ]; then
   echo "Running flutter dartdoc bot"
-  dart run grinder build-flutter-docs
+  dart run tool/task.dart doc flutter
 elif [ "$DARTDOC_BOT" = "packages" ]; then
   echo "Running packages dartdoc bot"
   PACKAGE_NAME=angular PACKAGE_VERSION=">=7.0.0" DARTDOC_PARAMS="--include=angular" dart run grinder build-pub-package
@@ -30,5 +30,5 @@ elif [ "$DARTDOC_BOT" = "sdk-analyzer" ]; then
   dart run grinder test-with-analyzer-sdk
 else
   echo "Running main dartdoc bot"
-  dart run grinder buildbot
+  dart run tool/task.dart buildbot
 fi
