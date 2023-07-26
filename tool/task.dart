@@ -11,7 +11,7 @@ import 'package:collection/collection.dart';
 import 'package:crypto/crypto.dart' as crypto;
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/package_meta.dart';
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as path;
 import 'package:yaml/yaml.dart' as yaml;
 
 import 'src/flutter_repo.dart';
@@ -61,10 +61,11 @@ String _getPackageVersion() {
   return yamlDoc['version'] as String;
 }
 
-Directory get testPackage => Directory(p.joinAll(['testing', 'test_package']));
+Directory get testPackage =>
+    Directory(path.joinAll(['testing', 'test_package']));
 
 Directory get testPackageExperiments =>
-    Directory(p.joinAll(['testing', 'test_package_experiments']));
+    Directory(path.joinAll(['testing', 'test_package_experiments']));
 
 Future<void> runAnalyze(ArgResults commandResults) async {
   for (var target in commandResults.rest) {
@@ -87,16 +88,16 @@ Future<void> analyzeTestPackages() async {
     testPackage.path,
     if (Platform.version.contains('dev')) testPackageExperiments.path,
   ];
-  for (var path in testPackagePaths) {
+  for (var testPackagePath in testPackagePaths) {
     await SubprocessLauncher('pub-get').runStreamedDartCommand(
       ['pub', 'get'],
-      workingDirectory: path,
+      workingDirectory: testPackagePath,
     );
     await SubprocessLauncher('analyze-test-package').runStreamedDartCommand(
       // TODO(srawlins): Analyze the whole directory by ignoring the pubspec
       // reports.
       ['analyze', 'lib'],
-      workingDirectory: path,
+      workingDirectory: testPackagePath,
     );
   }
 }
@@ -125,7 +126,7 @@ Future<void> buildAll() async {
 }
 
 Future<void> buildRenderers() async => await SubprocessLauncher('build')
-    .runStreamedDartCommand([p.join('tool', 'mustachio', 'builder.dart')]);
+    .runStreamedDartCommand([path.join('tool', 'mustachio', 'builder.dart')]);
 
 Future<void> buildDartdocOptions() async {
   var version = _getPackageVersion();
@@ -148,7 +149,7 @@ Future<void> buildWeb() async {
   _delete(File('lib/resources/docs.dart.js.deps'));
 
   var compileSig = await _calcDartFilesSig(Directory('web'));
-  File(p.join('web', 'sig.txt')).writeAsStringSync('$compileSig\n');
+  File(path.join('web', 'sig.txt')).writeAsStringSync('$compileSig\n');
 }
 
 /// Delete the given file entity reference.
@@ -186,14 +187,14 @@ Future<void> runBuildbot() async {
 
 Future<void> runClean() async {
   // This involves deleting things, so be careful.
-  if (!File(p.join('tool', 'grind.dart')).existsSync()) {
+  if (!File(path.join('tool', 'grind.dart')).existsSync()) {
     throw FileSystemException('Wrong CWD, run from root of dartdoc package');
   }
   const pubDataFileNames = {'.dart_tool', '.packages', 'pubspec.lock'};
   var nonRootPubData = Directory('.')
       .listSync(recursive: true)
-      .where((e) => p.dirname(e.path) != '.')
-      .where((e) => pubDataFileNames.contains(p.basename(e.path)));
+      .where((e) => path.dirname(e.path) != '.')
+      .where((e) => pubDataFileNames.contains(path.basename(e.path)));
   for (var e in nonRootPubData) {
     e.deleteSync(recursive: true);
   }
@@ -257,7 +258,7 @@ Future<void> compareFlutterWarnings() async {
       '--port',
       '9000',
       '--path',
-      p.join(originalDartdocFlutter.absolute.path, 'dev', 'docs', 'doc'),
+      path.join(originalDartdocFlutter.absolute.path, 'dev', 'docs', 'doc'),
     ]);
     var current = launcher.runStreamed(Platform.resolvedExecutable, [
       'pub',
@@ -267,7 +268,7 @@ Future<void> compareFlutterWarnings() async {
       '--port',
       '9001',
       '--path',
-      p.join(flutterDir.absolute.path, 'dev', 'docs', 'doc'),
+      path.join(flutterDir.absolute.path, 'dev', 'docs', 'doc'),
     ]);
     await Future.wait([original, current]);
   }
@@ -298,7 +299,7 @@ Future<void> docFlutter() async {
     label: 'docs',
   );
   var indexContents =
-      File(p.join(flutterDir.path, 'dev', 'docs', 'doc', 'index.html'))
+      File(path.join(flutterDir.path, 'dev', 'docs', 'doc', 'index.html'))
           .readAsLinesSync();
   print([...indexContents.take(25), '...\n'].join('\n'));
 }
@@ -314,7 +315,7 @@ Future<Iterable<Map<String, Object?>>> _docFlutter({
   await flutterRepo.launcher.runStreamed(
     flutterRepo.cacheDart,
     ['pub', 'get'],
-    workingDirectory: p.join(flutterPath, 'dev', 'tools'),
+    workingDirectory: path.join(flutterPath, 'dev', 'tools'),
   );
   try {
     await flutterRepo.launcher.runStreamed(
@@ -337,7 +338,7 @@ Future<Iterable<Map<String, Object?>>> _docFlutter({
   );
   return await flutterRepo.launcher.runStreamed(
     flutterRepo.cacheDart,
-    [p.join('dev', 'tools', 'dartdoc.dart'), '-c', '--json'],
+    [path.join('dev', 'tools', 'dartdoc.dart'), '-c', '--json'],
     workingDirectory: flutterPath,
   );
 }
@@ -363,7 +364,7 @@ Future<String> docPackage(
     if (version != null) ...['-v', version],
     name,
   ]);
-  var cache = Directory(p.join(env['PUB_CACHE']!, 'hosted', 'pub.dev'));
+  var cache = Directory(path.join(env['PUB_CACHE']!, 'hosted', 'pub.dev'));
   var pubPackageDirOrig =
       cache.listSync().firstWhere((e) => e.path.contains(name));
   var pubPackageDir = Directory.systemTemp.createTempSync(name);
@@ -381,7 +382,7 @@ Future<String> docPackage(
         flutterRepo.cacheDart,
         [
           '--enable-asserts',
-          p.join(Directory.current.absolute.path, 'bin', 'dartdoc.dart'),
+          path.join(Directory.current.absolute.path, 'bin', 'dartdoc.dart'),
           '--json',
           '--link-to-remote',
           '--show-progress',
@@ -394,7 +395,7 @@ Future<String> docPackage(
     await launcher.runStreamedDartCommand(
       [
         '--enable-asserts',
-        p.join(Directory.current.absolute.path, 'bin', 'dartdoc.dart'),
+        path.join(Directory.current.absolute.path, 'bin', 'dartdoc.dart'),
         '--json',
         '--link-to-remote',
         '--show-progress',
@@ -402,7 +403,7 @@ Future<String> docPackage(
       workingDirectory: pubPackageDir.absolute.path,
     );
   }
-  return p.join(pubPackageDir.absolute.path, 'doc', 'api');
+  return path.join(pubPackageDir.absolute.path, 'doc', 'api');
 }
 
 Future<void> docSdk() async => _docSdk(
@@ -414,7 +415,7 @@ Future<void> docSdk() async => _docSdk(
 /// necessary to use it.
 Map<String, String> createThrowawayPubCache() {
   var pubCache = Directory.systemTemp.createTempSync('pubcache');
-  var pubCacheBin = Directory(p.join(pubCache.path, 'bin'));
+  var pubCacheBin = Directory(path.join(pubCache.path, 'bin'));
   var defaultCache = Directory(_defaultPubCache);
   if (defaultCache.existsSync()) {
     io_utils.copy(defaultCache, pubCache);
@@ -431,7 +432,7 @@ Map<String, String> createThrowawayPubCache() {
 }
 
 final String _defaultPubCache = Platform.environment['PUB_CACHE'] ??
-    p.context.resolveTildePath('~/.pub-cache');
+    path.context.resolveTildePath('~/.pub-cache');
 
 Future<void> docTestingPackage() async {
   var testPackagePath = testPackage.absolute.path;
@@ -441,7 +442,7 @@ Future<void> docTestingPackage() async {
   await launcher.runStreamedDartCommand(
     [
       '--enable-asserts',
-      p.join(Directory.current.absolute.path, 'bin', 'dartdoc.dart'),
+      path.join(Directory.current.absolute.path, 'bin', 'dartdoc.dart'),
       '--output',
       _testingPackageDocsDir.absolute.path,
       '--example-path-prefix',
@@ -516,7 +517,7 @@ Future<Iterable<Map<String, Object?>>> _docSdk({
   return await launcher.runStreamedDartCommand(
     [
       '--enable-asserts',
-      p.join('bin', 'dartdoc.dart'),
+      path.join('bin', 'dartdoc.dart'),
       '--output',
       sdkDocsPath,
       '--sdk-docs',
@@ -578,7 +579,7 @@ Future<void> serveFlutterDocs() async {
     '--port',
     '8001',
     '--path',
-    p.join(flutterDir.path, 'dev', 'docs', 'doc'),
+    path.join(flutterDir.path, 'dev', 'docs', 'doc'),
   ]);
 }
 
@@ -678,7 +679,7 @@ Future<void> validateBuild() async {
   // Load original file contents into memory before running the builder; it
   // modifies them in place.
   for (var relPath in _generatedFilesList) {
-    var origPath = p.joinAll(['lib', relPath]);
+    var origPath = path.joinAll(['lib', relPath]);
     var oldVersion = File(origPath);
     if (oldVersion.existsSync()) {
       originalFileContents[relPath] = oldVersion.readAsStringSync();
@@ -688,28 +689,29 @@ Future<void> validateBuild() async {
   await buildAll();
 
   for (var relPath in _generatedFilesList) {
-    var newVersion = File(p.join('lib', relPath));
+    var newVersion = File(path.join('lib', relPath));
     if (!newVersion.existsSync()) {
       print('${newVersion.path} does not exist\n');
       differentFiles.add(relPath);
-    } else if (originalFileContents[relPath] !=
-        await newVersion.readAsString()) {
-      print(
-          '${newVersion.path} has changed to: \n${newVersion.readAsStringSync()})');
-      differentFiles.add(relPath);
+    } else {
+      var newVersionText = await newVersion.readAsString();
+      if (originalFileContents[relPath] != newVersionText) {
+        print('${newVersion.path} has changed to: \n$newVersionText)');
+        differentFiles.add(relPath);
+      }
     }
   }
 
   if (differentFiles.isNotEmpty) {
     throw StateError('The following generated files needed to be rebuilt:\n'
-        '  ${differentFiles.map((f) => p.join('lib', f)).join("\n  ")}\n'
+        '  ${differentFiles.map((f) => path.join('lib', f)).join("\n  ")}\n'
         'Rebuild them with "grind build" and check the results in.');
   }
 
   // Verify that the web frontend has been compiled.
   final currentCodeSig = await _calcDartFilesSig(Directory('web'));
   final lastCompileSig =
-      File(p.join('web', 'sig.txt')).readAsStringSync().trim();
+      File(path.join('web', 'sig.txt')).readAsStringSync().trim();
   if (currentCodeSig != lastCompileSig) {
     print('current files: $currentCodeSig');
     print('cached sig   : $lastCompileSig');
@@ -728,34 +730,34 @@ final _generatedFilesList = [
   'src/generator/templates.runtime_renderers.dart',
   'src/version.dart',
   '../test/mustachio/foo.dart',
-].map((s) => p.joinAll(p.posix.split(s)));
+].map((s) => path.joinAll(path.posix.split(s)));
 
 Future<void> validateDartdocDocs() async {
   var launcher = SubprocessLauncher('test-dartdoc');
   await launcher.runStreamedDartCommand([
     '--enable-asserts',
-    p.join('bin', 'dartdoc.dart'),
+    path.join('bin', 'dartdoc.dart'),
     '--output',
     _dartdocDocsPath,
     '--no-link-to-remote',
   ]);
-  _expectFileContains(p.join(_dartdocDocsPath, 'index.html'),
+  _expectFileContains(path.join(_dartdocDocsPath, 'index.html'),
       '<title>dartdoc - Dart API docs</title>');
   var objectText = RegExp('<li>Object</li>', multiLine: true);
   _expectFileContains(
-    p.join(_dartdocDocsPath, 'dartdoc', 'PubPackageMeta-class.html'),
+    path.join(_dartdocDocsPath, 'dartdoc', 'PubPackageMeta-class.html'),
     objectText,
   );
 }
 
 /// Kind of an inefficient grepper for now.
-void _expectFileContains(String path, Pattern text) {
-  var source = File(path);
+void _expectFileContains(String filePath, Pattern text) {
+  var source = File(filePath);
   if (!source.existsSync()) {
-    throw StateError('file not found: $path');
+    throw StateError('file not found: $filePath');
   }
-  if (!File(path).readAsStringSync().contains(text)) {
-    throw StateError('"$text" not found in $path');
+  if (!File(filePath).readAsStringSync().contains(text)) {
+    throw StateError('"$text" not found in $filePath');
   }
 }
 
@@ -787,7 +789,7 @@ Future<void> validateSdkDocs() async {
   const expectedLibCount = 0;
   const expectedSubLibCounts = {19, 20, 21};
   const expectedTotalCounts = {19, 20, 21};
-  var indexHtml = File(p.join(_sdkDocsDir.path, 'index.html'));
+  var indexHtml = File(path.join(_sdkDocsDir.path, 'index.html'));
   if (!indexHtml.existsSync()) {
     throw StateError("No 'index.html' found for the SDK docs");
   }
@@ -820,7 +822,7 @@ Future<void> validateSdkDocs() async {
   print("Found $libsCount 'dart:' libraries");
 
   var futureConstructorFile =
-      File(p.join(_sdkDocsDir.path, 'dart-async', 'Future', 'Future.html'));
+      File(path.join(_sdkDocsDir.path, 'dart-async', 'Future', 'Future.html'));
   if (!futureConstructorFile.existsSync()) {
     throw StateError('No Future.html found for dart:async Future constructor');
   }

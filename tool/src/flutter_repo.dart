@@ -6,44 +6,44 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:dartdoc/src/io_utils.dart';
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as path;
 
 import 'io_utils.dart' as io_utils;
 import 'subprocess_launcher.dart';
 
 /// A class representing a Flutter SDK repository.
 class FlutterRepo {
-  final String path;
+  final String repoPath;
   final Map<String, String> env;
-  final String flutterCmd = p.join('bin', 'flutter');
+  final String flutterCmd = path.join('bin', 'flutter');
 
   final String cacheDart;
   final SubprocessLauncher launcher;
 
-  FlutterRepo._(this.path, this.env, this.cacheDart, this.launcher);
+  FlutterRepo._(this.repoPath, this.env, this.cacheDart, this.launcher);
 
   Future<void> init() async {
-    Directory(path).createSync(recursive: true);
+    Directory(repoPath).createSync(recursive: true);
     await launcher.runStreamed(
         'git', ['clone', 'https://github.com/flutter/flutter.git', '.'],
-        workingDirectory: path);
+        workingDirectory: repoPath);
     await launcher.runStreamed(
       flutterCmd,
       ['--version'],
-      workingDirectory: path,
+      workingDirectory: repoPath,
     );
     await launcher.runStreamed(
       flutterCmd,
       ['update-packages'],
-      workingDirectory: path,
+      workingDirectory: repoPath,
     );
   }
 
   factory FlutterRepo.fromPath(String flutterPath, Map<String, String> env,
       [String? label]) {
     var cacheDart =
-        p.join(flutterPath, 'bin', 'cache', 'dart-sdk', 'bin', 'dart');
-    var flutterBinPath = p.join(p.canonicalize(flutterPath), 'bin');
+        path.join(flutterPath, 'bin', 'cache', 'dart-sdk', 'bin', 'dart');
+    var flutterBinPath = path.join(path.canonicalize(flutterPath), 'bin');
     var existingPathVariable = env['PATH'] ?? Platform.environment['PATH'];
     env['PATH'] = '$flutterBinPath:$existingPathVariable';
     env['FLUTTER_ROOT'] = flutterPath;
@@ -56,7 +56,7 @@ class FlutterRepo {
   static Future<FlutterRepo> copyFromExistingFlutterRepo(
       FlutterRepo originalRepo, String flutterPath, Map<String, String> env,
       [String? label]) async {
-    io_utils.copy(Directory(originalRepo.path), Directory(flutterPath));
+    io_utils.copy(Directory(originalRepo.repoPath), Directory(flutterPath));
     return FlutterRepo.fromPath(flutterPath, env, label);
   }
 
@@ -64,12 +64,12 @@ class FlutterRepo {
   /// only.
   static Future<FlutterRepo> fromExistingFlutterRepo(FlutterRepo originalRepo,
       [String? label]) async {
-    return FlutterRepo.fromPath(originalRepo.path, {}, label);
+    return FlutterRepo.fromPath(originalRepo.repoPath, {}, label);
   }
 }
 
-Directory cleanFlutterDir = Directory(
-    p.join(p.context.resolveTildePath('~/.dartdoc_grinder'), 'cleanFlutter'));
+Directory cleanFlutterDir = Directory(path.join(
+    path.context.resolveTildePath('~/.dartdoc_grinder'), 'cleanFlutter'));
 
 /// Global so that the lock is retained for the life of the process.
 Future<void>? _lockFuture;
@@ -93,11 +93,11 @@ Future<FlutterRepo> get cleanFlutterRepo async {
   // Figure out where the repository is supposed to be and lock updates for it.
   await cleanFlutterDir.parent.create(recursive: true);
   assert(_lockFuture == null);
-  _lockFuture = File(p.join(cleanFlutterDir.parent.path, 'lock'))
+  _lockFuture = File(path.join(cleanFlutterDir.parent.path, 'lock'))
       .openSync(mode: FileMode.write)
       .lock();
   await _lockFuture;
-  var lastSynced = File(p.join(cleanFlutterDir.parent.path, 'lastSynced'));
+  var lastSynced = File(path.join(cleanFlutterDir.parent.path, 'lastSynced'));
   var newRepo = FlutterRepo.fromPath(cleanFlutterDir.path, {}, 'clean');
 
   // We have a repository, but is it up to date?
