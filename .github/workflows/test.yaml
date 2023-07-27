@@ -23,7 +23,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         sdk: [dev, stable]
-        job: [main, flutter, sdk-analyzer, packages, sdk-docs]
+        job: [main, flutter, packages, sdk-docs]
         include:
           - os: macos-latest
             sdk: dev

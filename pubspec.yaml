@@ -1,5 +1,4 @@
 name: dartdoc
-# Run `dart run grinder build` after updating.
 version: 7.0.0-dev
 description: A non-interactive HTML documentation generator for Dart source code.
 repository: https://github.com/dart-lang/dartdoc
@@ -27,7 +26,6 @@ dependencies:
 dev_dependencies:
   async: ^2.11.0
   dart_style: ^2.3.1
-  grinder: ^0.9.4
   http: ">=0.13.6 <2.0.0"
   js: ^0.6.7
   lints: ^2.1.0
