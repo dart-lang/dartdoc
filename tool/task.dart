@@ -26,11 +26,14 @@ void main(List<String> args) async {
     ..addCommand('buildbot')
     ..addCommand('clean')
     ..addCommand('compare')
-    ..addCommand('doc')
     ..addCommand('serve')
     ..addCommand('test')
     ..addCommand('try-publish')
     ..addCommand('validate');
+  parser.addCommand('doc')
+    ..addOption('name')
+    ..addOption('version');
+
   var results = parser.parse(args);
   var commandResults = results.command;
   if (commandResults == null) {
