@@ -40,17 +40,17 @@ void main(List<String> args) async {
     return;
   }
 
-  return switch (commandResults.name) {
-    'analyze' => await runAnalyze(commandResults),
-    'build' => await runBuild(commandResults),
-    'buildbot' => await runBuildbot(),
-    'clean' => await runClean(),
-    'compare' => await runCompare(commandResults),
-    'doc' => await runDoc(commandResults),
-    'serve' => await runServe(commandResults),
-    'test' => await runTest(),
-    'try-publish' => await runTryPublish(),
-    'validate' => await runValidate(commandResults),
+  return await switch (commandResults.name) {
+    'analyze' => runAnalyze(commandResults),
+    'build' => runBuild(commandResults),
+    'buildbot' => runBuildbot(),
+    'clean' => runClean(),
+    'compare' => runCompare(commandResults),
+    'doc' => runDoc(commandResults),
+    'serve' => runServe(commandResults),
+    'test' => runTest(),
+    'try-publish' => runTryPublish(),
+    'validate' => runValidate(commandResults),
     _ => throw ArgumentError(),
   };
 }
@@ -72,12 +72,11 @@ Directory get testPackageExperiments =>
 
 Future<void> runAnalyze(ArgResults commandResults) async {
   for (var target in commandResults.rest) {
-    // ignore: unnecessary_statements, unnecessary_parenthesis
-    (switch (target) {
-      'package' => await analyzePackage(),
-      'test-packages' => await analyzeTestPackages(),
+    await switch (target) {
+      'package' => analyzePackage(),
+      'test-packages' => analyzeTestPackages(),
       _ => throw UnimplementedError('Unknown analyze target: "$target"'),
-    });
+    };
   }
 }
 
@@ -106,14 +105,16 @@ Future<void> analyzeTestPackages() async {
 }
 
 Future<void> runBuild(ArgResults commandResults) async {
+  if (commandResults.rest.isEmpty) {
+    await buildAll();
+  }
   for (var target in commandResults.rest) {
-    // ignore: unnecessary_statements, unnecessary_parenthesis
-    (switch (target) {
-      'renderers' => await buildRenderers(),
-      'dartdoc-options' => await buildDartdocOptions(),
-      'web' => await buildWeb(),
+    await switch (target) {
+      'renderers' => buildRenderers(),
+      'dartdoc-options' => buildDartdocOptions(),
+      'web' => buildWeb(),
       _ => throw UnimplementedError('Unknown build target: "$target"'),
-    });
+    };
   }
 }
 
@@ -208,12 +209,11 @@ Future<void> runCompare(ArgResults commandResults) async {
     throw ArgumentError('"compare" command requires a single target.');
   }
   var target = commandResults.rest.single;
-  // ignore: unnecessary_statements, unnecessary_parenthesis
-  (switch (target) {
-    'flutter-warnings' => await compareFlutterWarnings(),
-    'sdk-warnings' => await compareSdkWarnings(),
+  await switch (target) {
+    'flutter-warnings' => compareFlutterWarnings(),
+    'sdk-warnings' => compareSdkWarnings(),
     _ => throw UnimplementedError('Unknown compare target: "$target"'),
-  });
+  };
 }
 
 Future<void> compareFlutterWarnings() async {
@@ -282,14 +282,13 @@ Future<void> runDoc(ArgResults commandResults) async {
     throw ArgumentError('"doc" command requires a single target.');
   }
   var target = commandResults.rest.single;
-  // ignore: unnecessary_statements, unnecessary_parenthesis
-  (switch (target) {
-    'flutter' => await docFlutter(),
-    'package' => await _docPackage(commandResults),
-    'sdk' => await docSdk(),
-    'testing-package' => await docTestingPackage(),
+  await switch (target) {
+    'flutter' => docFlutter(),
+    'package' => _docPackage(commandResults),
+    'sdk' => docSdk(),
+    'testing-package' => docTestingPackage(),
     _ => throw UnimplementedError('Unknown doc target: "$target"'),
-  });
+  };
 }
 
 Future<void> docFlutter() async {
@@ -491,25 +490,6 @@ Future<void> compareSdkWarnings() async {
       'SDK docs', currentDartdocWarnings));
 }
 
-/*/// Returns a map of warning texts to the number of times each has been seen.
-WarningsCollection _jsonMessageIterableToWarnings(
-  Iterable<Map<Object, Object?>> messageIterable, {
-  required String tempPath,
-  required String branch,
-  String? pubDir,
-}) {
-  var warningTexts = WarningsCollection(tempPath, pubDir, branch);
-  for (final message in messageIterable) {
-    if (message.containsKey('level') &&
-        message['level'] == 'WARNING' &&
-        message.containsKey('data')) {
-      var data = message['data'] as Map;
-      warningTexts.add(data['text'] as String);
-    }
-  }
-  return warningTexts;
-}*/
-
 Future<Iterable<Map<String, Object?>>> _docSdk({
   required String sdkDocsPath,
   required String dartdocPath,
@@ -559,14 +539,13 @@ Future<void> runServe(ArgResults commandResults) async {
     throw ArgumentError('"serve" command requires a single target.');
   }
   var target = commandResults.rest.single;
-  // ignore: unnecessary_statements, unnecessary_parenthesis
-  (switch (target) {
-    'flutter' => await serveFlutterDocs(),
-    'package' => await _servePackageDocs(commandResults),
-    'sdk' => await serveSdkDocs(),
-    'testing-package' => await serveTestingPackageDocs(),
+  await switch (target) {
+    'flutter' => serveFlutterDocs(),
+    'package' => _servePackageDocs(commandResults),
+    'sdk' => serveSdkDocs(),
+    'testing-package' => serveTestingPackageDocs(),
     _ => throw UnimplementedError('Unknown serve target: "$target"'),
-  });
+  };
 }
 
 Future<void> serveFlutterDocs() async {
@@ -664,14 +643,13 @@ Future<void> runTryPublish() async {
 
 Future<void> runValidate(ArgResults commandResults) async {
   for (var target in commandResults.rest) {
-    // ignore: unnecessary_statements, unnecessary_parenthesis
-    (switch (target) {
-      'build' => await validateBuild(),
-      'dartdoc-docs' => await validateDartdocDocs(),
-      'format' => await validateFormat(),
-      'sdk-docs' => await validateSdkDocs(),
+    await switch (target) {
+      'build' => validateBuild(),
+      'dartdoc-docs' => validateDartdocDocs(),
+      'format' => validateFormat(),
+      'sdk-docs' => validateSdkDocs(),
       _ => throw UnimplementedError('Unknown validation target: "$target"'),
-    });
+    };
   }
 }
 
