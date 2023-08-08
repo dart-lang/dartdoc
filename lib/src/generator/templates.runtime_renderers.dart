@@ -16380,6 +16380,8 @@ const _invisibleGetters = {
     'runtimeType'
   },
   'ClassElement': {
+    'augmentation',
+    'augmentationTarget',
     'augmented',
     'hasNonFinalField',
     'hashCode',
@@ -16390,6 +16392,7 @@ const _invisibleGetters = {
     'isDartCoreObject',
     'isExhaustive',
     'isFinal',
+    'isInline',
     'isInterface',
     'isMixinApplication',
     'isMixinClass',
@@ -16412,6 +16415,7 @@ const _invisibleGetters = {
     'classes',
     'enclosingElement',
     'enums',
+    'extensionTypes',
     'extensions',
     'functions',
     'hashCode',
@@ -16430,6 +16434,7 @@ const _invisibleGetters = {
   },
   'ConstructorElement': {
     'augmentation',
+    'augmentationTarget',
     'declaration',
     'displayName',
     'enclosingElement',
@@ -16624,7 +16629,13 @@ const _invisibleGetters = {
     'isVisibleOutsideTemplate',
     'runtimeType'
   },
-  'EnumElement': {'augmented', 'hashCode', 'runtimeType'},
+  'EnumElement': {
+    'augmentation',
+    'augmentationTarget',
+    'augmented',
+    'hashCode',
+    'runtimeType'
+  },
   'ExecutableMember': {
     'children',
     'context',
@@ -16660,6 +16671,7 @@ const _invisibleGetters = {
     'id',
     'isAbstract',
     'isAsynchronous',
+    'isAugmentation',
     'isExternal',
     'isGenerator',
     'isLegacy',
@@ -16699,12 +16711,11 @@ const _invisibleGetters = {
     'unParenthesized'
   },
   'ExtensionElement': {
-    'accessors',
-    'enclosingElement',
+    'augmentation',
+    'augmentationTarget',
+    'augmented',
     'extendedType',
-    'fields',
     'hashCode',
-    'methods',
     'runtimeType'
   },
   'Feature': {
@@ -16718,7 +16729,6 @@ const _invisibleGetters = {
     'sortGroup'
   },
   'FieldElement': {
-    'augmentation',
     'declaration',
     'hashCode',
     'isAbstract',
@@ -16747,6 +16757,8 @@ const _invisibleGetters = {
     'runtimeType'
   },
   'FunctionElement': {
+    'augmentation',
+    'augmentationTarget',
     'hashCode',
     'isDartCoreIdentical',
     'isEntryPoint',
@@ -16830,7 +16842,13 @@ const _invisibleGetters = {
   'InheritanceManager3': {'hashCode', 'runtimeType'},
   'InterfaceElement': {
     'allSupertypes',
+    'augmentationTarget',
+    'augmented',
+    'constructors',
     'hashCode',
+    'interfaces',
+    'mixins',
+    'name',
     'runtimeType',
     'supertype',
     'thisType',
@@ -16935,8 +16953,16 @@ const _invisibleGetters = {
     'sinceSdkVersion',
     'substitution'
   },
-  'MethodElement': {'augmentation', 'declaration', 'hashCode', 'runtimeType'},
+  'MethodElement': {
+    'augmentation',
+    'augmentationTarget',
+    'declaration',
+    'hashCode',
+    'runtimeType'
+  },
   'MixinElement': {
+    'augmentation',
+    'augmentationTarget',
     'augmented',
     'hashCode',
     'isBase',
@@ -17105,6 +17131,7 @@ const _invisibleGetters = {
   'ParameterizedType': {'hashCode', 'runtimeType', 'typeArguments'},
   'PropertyAccessorElement': {
     'augmentation',
+    'augmentationTarget',
     'correspondingGetter',
     'correspondingSetter',
     'declaration',

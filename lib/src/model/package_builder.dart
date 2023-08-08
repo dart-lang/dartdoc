@@ -147,7 +147,7 @@ class PubPackageBuilder implements PackageBuilder {
       required DartSdk sdk,
     }) =>
         analysisOptions
-          ..hint = false
+          ..warning = false
           ..lint = false,
   );
 
