@@ -16,19 +16,12 @@ const Map<String, String> _featureDescriptions = {
 };
 
 const Map<String, String> _featureUrls = {
-  // TODO(jcollins-g): link to dart.dev for all links once documentation is
-  // available.
-  'sealed':
-      'https://github.com/dart-lang/language/blob/main/accepted/future-releases/sealed-types/feature-specification.md#sealed-types',
-  'abstract': 'https://dart.dev/language/classes#abstract-classes',
-  'base':
-      'https://github.com/dart-lang/language/blob/main/accepted/future-releases/class-modifiers/feature-specification.md#class-modifiers',
-  'interface':
-      'https://github.com/dart-lang/language/blob/main/accepted/future-releases/class-modifiers/feature-specification.md#class-modifiers',
-  'final':
-      'https://github.com/dart-lang/language/blob/main/accepted/future-releases/class-modifiers/feature-specification.md#class-modifiers',
-  'mixin':
-      'https://github.com/dart-lang/language/blob/main/accepted/future-releases/class-modifiers/feature-specification.md#class-modifiers',
+  'sealed': 'https://dart.dev/language/class-modifiers#sealed',
+  'abstract': 'https://dart.dev/language/class-modifiers#abstract',
+  'base': 'https://dart.dev/language/class-modifiers#base',
+  'interface': 'https://dart.dev/language/class-modifiers#interface',
+  'final': 'https://dart.dev/language/class-modifiers#final',
+  'mixin': 'https://dart.dev/language/mixins',
 };
 
 /// An abstraction for a language feature; used to render tags ('chips') to
