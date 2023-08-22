@@ -1,6 +1,6 @@
-## 7.0.0-dev
+## 7.0.0-wip
 
-* Require `analyzer: ^6.0.0`.
+* Require `analyzer: ^6.2.0`.
 * Remove all `@deprecated` elements.
 * Remove deprecated `<nodoc>` syntax.
 
