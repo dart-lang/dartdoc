@@ -16618,6 +16618,7 @@ const _invisibleGetters = {
     'isOverride',
     'isProtected',
     'isProxy',
+    'isRedeclare',
     'isReopen',
     'isRequired',
     'isSealed',
