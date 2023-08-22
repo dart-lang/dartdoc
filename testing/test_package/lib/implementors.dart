@@ -3,7 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 // A library useful to check implementer chain edge cases.
-library implementors;
+library;
 
 import 'src/intermediate_implements.dart';
 

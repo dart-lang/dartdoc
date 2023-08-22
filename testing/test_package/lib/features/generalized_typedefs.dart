@@ -4,7 +4,7 @@
 
 /// This library validates that dartdoc will not crash on generalized
 /// typedef syntax, and produce correct results.
-library generalized_typedefs;
+library;
 
 // from basic_syntax_test (Dart SDK)
 

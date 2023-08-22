@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-library dartdoc.utils;
-
 final RegExp leadingWhiteSpace = RegExp(r'^([ \t]*)[^ ]');
 
 Iterable<String> stripCommonWhitespace(String str) sync* {

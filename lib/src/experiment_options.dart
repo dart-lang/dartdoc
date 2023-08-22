@@ -6,7 +6,7 @@
 /// Implementation of Dart language experiment option handling for dartdoc.
 /// See https://github.com/dart-lang/sdk/blob/main/docs/process/experimental-flags.md.
 ///
-library dartdoc.experiment_options;
+library;
 
 import 'package:analyzer/file_system/file_system.dart';
 // ignore: implementation_imports

@@ -12,7 +12,7 @@
 /// The classes here manage both the dartdoc_options.yaml loading and command
 /// line arguments.
 ///
-library dartdoc.dartdoc_options;
+library;
 
 import 'dart:io' show Platform, stdout;
 

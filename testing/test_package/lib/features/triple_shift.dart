@@ -3,7 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 /// Tests for verifying triple_shift operator, borrowed from the SDK.
-library triple_shift;
+library;
 
 class C {
   static int ctr = 0;

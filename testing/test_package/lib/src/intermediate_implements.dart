@@ -3,7 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 // A src-private library for intermediate classes to implement.
-library intermediate_implements;
+library;
 
 import 'package:test_package/implementors.dart';
 

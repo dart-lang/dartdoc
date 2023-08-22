@@ -1,5 +1,5 @@
 /// This is a demonstration of interlinking with Flutter-using pub packages.
-library testlib;
+library;
 
 import 'package:flutter/material.dart';
 

@@ -3,7 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 /// Make it possible to load resources from the dartdoc code repository.
-library dartdoc.resource_loader;
+library;
 
 import 'dart:convert' show utf8;
 import 'dart:isolate' show Isolate;

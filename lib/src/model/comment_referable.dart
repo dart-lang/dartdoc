@@ -5,7 +5,7 @@
 ///
 /// Code for managing comment reference lookups in dartdoc.
 ///
-library dartdoc.src.model.comment_reference;
+library;
 
 import 'dart:core';
 

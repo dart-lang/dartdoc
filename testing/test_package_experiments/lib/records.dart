@@ -3,7 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 /// Exercise some Record type features within Dartdoc.
-library records;
+library;
 
 var anInt = 12;
 

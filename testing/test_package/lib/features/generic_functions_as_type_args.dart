@@ -3,7 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 /// Tests for verifying generic functions as type arguments.
-library generic_function_type_args;
+library;
 
 late List<T Function<T>(T)> idFunctions;
 late S Function<S extends T Function<T>(T)>(S) ff;

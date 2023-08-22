@@ -7,7 +7,7 @@
 /// that require different PackageGraph configurations.  Since those
 /// take a long time to initialize, isolate them here to keep model_test
 /// fast.
-library dartdoc.model_special_cases_test;
+library;
 
 import 'package:async/async.dart';
 import 'package:dartdoc/src/matching_link_result.dart';

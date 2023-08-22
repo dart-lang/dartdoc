@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-library dartdoc.package_meta;
-
 import 'dart:io' show Platform;
 
 import 'package:analyzer/dart/element/element.dart';

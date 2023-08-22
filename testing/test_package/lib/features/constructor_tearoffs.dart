@@ -7,7 +7,7 @@
 /// References to tearoffs should work at a top level too:
 ///   [A.new], [B.new], [At.new], [Bt.new], [C], [C.new], [D.new],
 ///
-library constructor_tearoffs;
+library;
 
 abstract class A {
   final int number;

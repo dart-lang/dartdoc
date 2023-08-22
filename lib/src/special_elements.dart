@@ -7,7 +7,7 @@
 /// [ModelElement]s.
 ///
 /// Finding these must not depend on canonicalization.
-library dartdoc.special_elements;
+library;
 
 import 'package:analyzer/dart/element/element.dart';
 // ignore: implementation_imports

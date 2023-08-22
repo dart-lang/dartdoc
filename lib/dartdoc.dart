@@ -3,7 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 /// A documentation generator for Dart.
-library dartdoc;
+library;
 
 export 'package:dartdoc/src/dartdoc.dart';
 export 'package:dartdoc/src/dartdoc_options.dart';

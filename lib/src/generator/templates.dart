@@ -34,7 +34,7 @@
 @Renderer(#renderTopLevelProperty, Context<TopLevelPropertyTemplateData>(),
     'top_level_property')
 @Renderer(#renderTypedef, Context<TypedefTemplateData>(), 'typedef')
-library dartdoc.templates;
+library;
 
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/options.dart';

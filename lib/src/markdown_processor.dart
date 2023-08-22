@@ -3,7 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 /// Utility code to convert Markdown comments to HTML.
-library dartdoc.markdown_processor;
+library;
 
 import 'dart:convert';
 import 'dart:math';

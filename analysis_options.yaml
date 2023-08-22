@@ -24,7 +24,9 @@ linter:
     - avoid_slow_async_io
     - avoid_unused_constructor_parameters
     - collection_methods_unrelated_type
+    - dangling_library_doc_comments
     - directives_ordering
+    - library_annotations
     - no_adjacent_strings_in_list
     - omit_local_variable_types
     - only_throw_errors
@@ -37,6 +39,7 @@ linter:
     - type_annotate_public_apis
     - unawaited_futures
     - unnecessary_lambdas
+    - unnecessary_library_directive
     - unnecessary_parenthesis
     - unnecessary_statements
     - use_super_parameters
