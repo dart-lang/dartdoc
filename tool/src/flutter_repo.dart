@@ -15,12 +15,15 @@ import 'subprocess_launcher.dart';
 class FlutterRepo {
   final String repoPath;
   final Map<String, String> env;
-  final String flutterCmd = path.join('bin', 'flutter');
 
   final String cacheDart;
   final SubprocessLauncher launcher;
 
   FlutterRepo._(this.repoPath, this.env, this.cacheDart, this.launcher);
+
+  String get dartCmd => path.joinAll([repoPath, 'bin', 'dart']);
+
+  String get flutterCmd => path.joinAll([repoPath, 'bin', 'flutter']);
 
   Future<void> init() async {
     Directory(repoPath).createSync(recursive: true);

@@ -314,33 +314,42 @@ Future<Iterable<Map<String, Object?>>> _docFlutter({
 }) async {
   var flutterRepo = await FlutterRepo.copyFromExistingFlutterRepo(
       await cleanFlutterRepo, flutterPath, env, label);
-  await flutterRepo.launcher.runStreamed(
-    flutterRepo.cacheDart,
-    ['pub', 'get'],
-    workingDirectory: path.join(flutterPath, 'dev', 'tools'),
-  );
   try {
     await flutterRepo.launcher.runStreamed(
-      flutterRepo.cacheDart,
+      flutterRepo.dartCmd,
       ['pub', 'global', 'deactivate', 'snippets'],
     );
   } on SubprocessException {
     // Ignore failure to deactivate so this works on completely clean bots.
   }
   await flutterRepo.launcher.runStreamed(
-    flutterRepo.cacheDart,
-    ['pub', 'global', 'activate', 'snippets'],
+    flutterRepo.dartCmd,
+    ['pub', 'global', 'activate', 'snippets', '0.4.0'],
   );
   // TODO(jcollins-g): flutter's dart SDK pub tries to precompile the universe
   // when using -spath.  Why?
   await flutterRepo.launcher.runStreamed(
-    flutterRepo.cacheDart,
+    flutterRepo.flutterCmd,
     ['pub', 'global', 'activate', '-spath', '.', '-x', 'dartdoc'],
     workingDirectory: cwd,
   );
+  await flutterRepo.launcher.runStreamed(
+    flutterRepo.flutterCmd,
+    ['pub', 'get'],
+    workingDirectory: path.join(flutterPath, 'dev', 'tools'),
+  );
   return await flutterRepo.launcher.runStreamed(
-    flutterRepo.cacheDart,
-    [path.join('dev', 'tools', 'dartdoc.dart'), '-c', '--json'],
+    flutterRepo.dartCmd,
+    [
+      '--disable-dart-dev',
+      '--enable-asserts',
+      path.join(
+        'dev',
+        'tools',
+        'create_api_docs.dart',
+      ),
+      '--json',
+    ],
     workingDirectory: flutterPath,
   );
 }
