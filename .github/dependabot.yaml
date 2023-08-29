@@ -1,6 +1,5 @@
 # Dependabot configuration file.
 version: 2
-enable-beta-ecosystems: true
 
 updates:
   # Enable weekly pubspec.yaml dependencies checks.
@@ -9,6 +8,8 @@ updates:
     schedule:
       interval: "weekly"
       day: "sunday"
+    labels:
+      - "type-infra"
 
   # Maintain dependencies for GitHub Actions.
   - package-ecosystem: "github-actions"
@@ -17,3 +18,4 @@ updates:
       interval: "weekly"
     labels:
       - "autosubmit"
+      - "type-infra"
