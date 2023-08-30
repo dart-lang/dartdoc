@@ -1015,20 +1015,6 @@ class _Renderer_Category extends RendererBase<Category> {
                         parent: r);
                   },
                 ),
-                'categoryDefinition': Property(
-                  getValue: (CT_ c) => c.categoryDefinition,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'CategoryDefinition'),
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.categoryDefinition, ast, r.template, sink,
-                        parent: r,
-                        getters: _invisibleGetters['CategoryDefinition']!);
-                  },
-                ),
                 'categoryIndex': Property(
                   getValue: (CT_ c) => c.categoryIndex,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -12821,13 +12807,13 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
   }
 }
 
-String renderSearchPage(PackageTemplateData context, Template template) {
+String renderError(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
 }
 
-String renderError(PackageTemplateData context, Template template) {
+String renderSearchPage(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -16353,13 +16339,6 @@ class _Renderer_Warnable extends RendererBase<Warnable> {
 }
 
 const _invisibleGetters = {
-  'CategoryDefinition': {
-    'displayName',
-    'documentationMarkdown',
-    'hashCode',
-    'name',
-    'runtimeType'
-  },
   'CharacterLocation': {
     'columnNumber',
     'hashCode',
