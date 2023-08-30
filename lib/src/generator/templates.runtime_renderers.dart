@@ -10488,19 +10488,6 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                         parent: r);
                   },
                 ),
-                'exportedInLibraries': Property(
-                  getValue: (CT_ c) => c.exportedInLibraries,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Set<Library>'),
-                  isNullValue: (CT_ c) => c.exportedInLibraries == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.exportedInLibraries, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['Set']!);
-                  },
-                ),
                 'features': Property(
                   getValue: (CT_ c) => c.features,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -12552,7 +12539,7 @@ class _Renderer_Package extends RendererBase<Package> {
   }
 }
 
-String renderSearchPage(PackageTemplateData context, Template template) {
+String renderIndex(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -12834,13 +12821,13 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
   }
 }
 
-String renderError(PackageTemplateData context, Template template) {
+String renderSearchPage(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
 }
 
-String renderIndex(PackageTemplateData context, Template template) {
+String renderError(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -17005,7 +16992,7 @@ const _invisibleGetters = {
     'invisibleAnnotations',
     'libraries',
     'libraryCount',
-    'libraryElementReexportedBy',
+    'libraryExports',
     'localPackages',
     'localPublicLibraries',
     'name',
@@ -17144,17 +17131,6 @@ const _invisibleGetters = {
     'variable'
   },
   'Scope': {'hashCode', 'runtimeType'},
-  'Set': {
-    'first',
-    'hashCode',
-    'isEmpty',
-    'isNotEmpty',
-    'iterator',
-    'last',
-    'length',
-    'runtimeType',
-    'single'
-  },
   'TemplateOptions': {
     'customFooterContent',
     'customHeaderContent',

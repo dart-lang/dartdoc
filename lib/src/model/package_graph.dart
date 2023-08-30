@@ -413,7 +413,8 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   Iterable<Package> get documentedPackages =>
       packages.where((p) => p.documentedWhere != DocumentLocation.missing);
 
-  Map<LibraryElement, Set<Library>> _libraryElementReexportedBy = {};
+  /// A mapping of all the [Library]s that export a given [LibraryElement].
+  Map<LibraryElement, Set<Library>> _libraryExports = {};
 
   /// Prevent cycles from breaking our stack.
   Set<(Library, LibraryElement?)> _reexportsTagged = {};
@@ -439,9 +440,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
           referredFrom: <Locatable>[topLevelLibrary]);
       return;
     }
-    _libraryElementReexportedBy
-        .putIfAbsent(libraryElement, () => {})
-        .add(topLevelLibrary);
+    _libraryExports.putIfAbsent(libraryElement, () => {}).add(topLevelLibrary);
     for (var exportedElement in libraryElement.libraryExports) {
       _tagReexportsFor(
           topLevelLibrary, exportedElement.exportedLibrary, exportedElement);
@@ -450,17 +449,17 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
 
   int _lastSizeOfAllLibraries = 0;
 
-  Map<LibraryElement, Set<Library>> get libraryElementReexportedBy {
+  Map<LibraryElement, Set<Library>> get libraryExports {
     // Table must be reset if we're still in the middle of adding libraries.
     if (allLibraries.keys.length != _lastSizeOfAllLibraries) {
       _lastSizeOfAllLibraries = allLibraries.keys.length;
-      _libraryElementReexportedBy = <LibraryElement, Set<Library>>{};
+      _libraryExports = {};
       _reexportsTagged = {};
       for (var library in publicLibraries) {
         _tagReexportsFor(library, library.element);
       }
     }
-    return _libraryElementReexportedBy;
+    return _libraryExports;
   }
 
   /// A lookup index for hrefs to allow warnings to indicate where a broken
