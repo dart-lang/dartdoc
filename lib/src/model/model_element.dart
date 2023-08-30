@@ -401,8 +401,8 @@ abstract class ModelElement extends Canonicalization
   // Stub for mustache.
   Iterable<Category?> get displayedCategories => const [];
 
-  Set<Library>? get exportedInLibraries {
-    return library.packageGraph.libraryElementReexportedBy[element.library!];
+  Set<Library>? get _exportedInLibraries {
+    return library.packageGraph.libraryExports[element.library!];
   }
 
   @override
@@ -530,7 +530,7 @@ abstract class ModelElement extends Canonicalization
   }();
 
   Library? _searchForCanonicalLibrary() {
-    var thisAndExported = definingLibrary.exportedInLibraries;
+    var thisAndExported = definingLibrary._exportedInLibraries;
 
     if (thisAndExported == null) {
       return null;
