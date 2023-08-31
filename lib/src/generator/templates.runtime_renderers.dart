@@ -5397,6 +5397,18 @@ class _Renderer_ExtensionType extends RendererBase<ExtensionType> {
           () => {
                 ..._Renderer_InheritingContainer.propertyMap<CT_>(),
                 ..._Renderer_Constructable.propertyMap<CT_>(),
+                'allFields': Property(
+                  getValue: (CT_ c) => c.allFields,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'List<Field>'),
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    return c.allFields.map((e) =>
+                        _render_Field(e, ast, r.template, sink, parent: r));
+                  },
+                ),
                 'allModelElements': Property(
                   getValue: (CT_ c) => c.allModelElements,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -5513,6 +5525,30 @@ class _Renderer_ExtensionType extends RendererBase<ExtensionType> {
                     return c.inheritanceChain.map((e) =>
                         _render_InheritingContainer(e, ast, r.template, sink,
                             parent: r));
+                  },
+                ),
+                'inheritedMethods': Property(
+                  getValue: (CT_ c) => c.inheritedMethods,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'Iterable<Method>'),
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    return c.inheritedMethods.map((e) =>
+                        _render_Method(e, ast, r.template, sink, parent: r));
+                  },
+                ),
+                'inheritedOperators': Property(
+                  getValue: (CT_ c) => c.inheritedOperators,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'List<Operator>'),
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    return c.inheritedOperators.map((e) =>
+                        _render_Operator(e, ast, r.template, sink, parent: r));
                   },
                 ),
                 'isAbstract': Property(
@@ -14831,6 +14867,32 @@ class _Renderer_TopLevelContainer extends RendererBase<TopLevelContainer> {
                       List<MustachioNode> ast, StringSink sink) {
                     return c.publicExceptionsSorted.map((e) =>
                         _render_Class(e, ast, r.template, sink, parent: r));
+                  },
+                ),
+                'publicExtensionTypes': Property(
+                  getValue: (CT_ c) => c.publicExtensionTypes,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'Iterable<ExtensionType>'),
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    return c.publicExtensionTypes.map((e) =>
+                        _render_ExtensionType(e, ast, r.template, sink,
+                            parent: r));
+                  },
+                ),
+                'publicExtensionTypesSorted': Property(
+                  getValue: (CT_ c) => c.publicExtensionTypesSorted,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'Iterable<ExtensionType>'),
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    return c.publicExtensionTypesSorted.map((e) =>
+                        _render_ExtensionType(e, ast, r.template, sink,
+                            parent: r));
                   },
                 ),
                 'publicExtensions': Property(
