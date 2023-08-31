@@ -44,6 +44,9 @@ class Category extends Nameable
   final List<Extension> extensions = [];
 
   @override
+  final List<ExtensionType> extensionTypes = [];
+
+  @override
   final List<Enum> enums = [];
 
   @override

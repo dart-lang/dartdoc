@@ -749,7 +749,7 @@ extension on StringBuffer {
       if (bound == null) {
         write(typeParameter.name);
       } else {
-        var boundElement = DartTypeExtension(bound).element!;
+        var boundElement = bound.documentableElement!;
         referencedElements.add(boundElement);
         write('${typeParameter.name} extends ${boundElement.name!}');
       }

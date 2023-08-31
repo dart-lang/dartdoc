@@ -202,6 +202,7 @@ class Library extends ModelElement
         ...compilationUnit.classes,
         ...compilationUnit.enums,
         ...compilationUnit.extensions,
+        ...compilationUnit.extensionTypes,
         ...compilationUnit.functions,
         ...compilationUnit.mixins,
         ...compilationUnit.topLevelVariables,
@@ -263,6 +264,12 @@ class Library extends ModelElement
   late final Iterable<Extension> extensions = _exportedAndLocalElements
       .whereType<ExtensionElement>()
       .map((e) => modelBuilder.from(e, this) as Extension)
+      .toList(growable: false);
+
+  @override
+  late final Iterable<ExtensionType> extensionTypes = _exportedAndLocalElements
+      .whereType<ExtensionTypeElement>()
+      .map((e) => modelBuilder.from(e, this) as ExtensionType)
       .toList(growable: false);
 
   SdkLibrary? get _sdkLib =>
@@ -487,6 +494,7 @@ class Library extends ModelElement
       ...library.properties,
       ...library.typedefs,
       ...library.extensions.expand((e) => [e, ...e.allModelElements]),
+      ...library.extensionTypes.expand((e) => [e, ...e.allModelElements]),
       ...library.allClasses.expand((c) => [c, ...c.allModelElements]),
       ...library.enums.expand((e) => [e, ...e.allModelElements]),
       ...library.mixins.expand((m) => [m, ...m.allModelElements]),

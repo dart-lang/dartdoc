@@ -37,7 +37,7 @@ import 'package:path/path.dart' as p show Context;
 // TODO(jcollins-g): Implement resolution per ECMA-408 4th edition, page 39 #22.
 /// Resolves this very rare case incorrectly by picking the closest element in
 /// the inheritance and interface chains from the analyzer.
-ModelElement resolveMultiplyInheritedElement(
+ModelElement _resolveMultiplyInheritedElement(
     MultiplyInheritedExecutableElement e,
     Library library,
     PackageGraph packageGraph,
@@ -268,7 +268,7 @@ abstract class ModelElement extends Canonicalization
       return cachedModelElement;
     }
 
-    var newModelElement = ModelElement._fromParameters(
+    var newModelElement = ModelElement._constructFromElementDeclaration(
       e,
       library,
       packageGraph,
@@ -301,95 +301,78 @@ abstract class ModelElement extends Canonicalization
     }
   }
 
-  static ModelElement _fromParameters(
+  static ModelElement _constructFromElementDeclaration(
     Element e,
     Library library,
     PackageGraph packageGraph, {
     Container? enclosingContainer,
     Member? originalMember,
   }) {
-    if (e is MultiplyInheritedExecutableElement) {
-      return resolveMultiplyInheritedElement(
-          e, library, packageGraph, enclosingContainer as Class);
-    }
-    if (e is LibraryElement) {
-      return packageGraph.findButDoNotCreateLibraryFor(e)!;
-    }
-    if (e is PrefixElement) {
-      return Prefix(e, library, packageGraph);
-    }
-    if (e is EnumElement) {
-      return Enum(e, library, packageGraph);
-    }
-    if (e is MixinElement) {
-      return Mixin(e, library, packageGraph);
-    }
-    if (e is ClassElement) {
-      return Class(e, library, packageGraph);
-    }
-    if (e is ExtensionElement) {
-      return Extension(e, library, packageGraph);
-    }
-    if (e is FunctionElement) {
-      return ModelFunction(e, library, packageGraph);
-    } else if (e is GenericFunctionTypeElement) {
-      assert(e.enclosingElement is TypeAliasElement);
-      assert(e.enclosingElement!.name != '');
-      return ModelFunctionTypedef(e, library, packageGraph);
-    }
-    if (e is TypeAliasElement) {
-      if (e.aliasedType is FunctionType) {
-        return FunctionTypedef(e, library, packageGraph);
-      }
-      if (DartTypeExtension(e.aliasedType).element is InterfaceElement) {
-        return ClassTypedef(e, library, packageGraph);
-      }
-      return GeneralizedTypedef(e, library, packageGraph);
-    }
-    if (e is ConstructorElement) {
-      return Constructor(e, library, packageGraph);
-    }
-    if (e is MethodElement && e.isOperator) {
+    return switch (e) {
+      MultiplyInheritedExecutableElement() => _resolveMultiplyInheritedElement(
+          e, library, packageGraph, enclosingContainer as Class),
+      LibraryElement() => packageGraph.findButDoNotCreateLibraryFor(e)!,
+      PrefixElement() => Prefix(e, library, packageGraph),
+      EnumElement() => Enum(e, library, packageGraph),
+      MixinElement() => Mixin(e, library, packageGraph),
+      ClassElement() => Class(e, library, packageGraph),
+      ExtensionElement() => Extension(e, library, packageGraph),
+      ExtensionTypeElement() => ExtensionType(e, library, packageGraph),
+      FunctionElement() => ModelFunction(e, library, packageGraph),
+      ConstructorElement() => Constructor(e, library, packageGraph),
+      GenericFunctionTypeElement() =>
+        ModelFunctionTypedef(e, library, packageGraph),
+      TypeAliasElement(aliasedType: FunctionType()) =>
+        FunctionTypedef(e, library, packageGraph),
+      TypeAliasElement()
+          when e.aliasedType.documentableElement is InterfaceElement =>
+        ClassTypedef(e, library, packageGraph),
+      TypeAliasElement() => GeneralizedTypedef(e, library, packageGraph),
+      MethodElement(isOperator: true) => enclosingContainer == null
+          ? Operator(e, library, packageGraph)
+          : Operator.inherited(e, enclosingContainer, library, packageGraph,
+              originalMember: originalMember),
+      MethodElement(isOperator: false) => enclosingContainer == null
+          ? Method(e, library, packageGraph)
+          : Method.inherited(e, enclosingContainer, library, packageGraph,
+              originalMember: originalMember as ExecutableMember?),
+      ParameterElement() => Parameter(e, library, packageGraph,
+          originalMember: originalMember as ParameterMember?),
+      PropertyAccessorElement() => _constructFromPropertyAccessor(
+          e,
+          library,
+          packageGraph,
+          enclosingContainer: enclosingContainer,
+          originalMember: originalMember,
+        ),
+      TypeParameterElement() => TypeParameter(e, library, packageGraph),
+      _ => throw UnimplementedError('Unknown type ${e.runtimeType}'),
+    };
+  }
+
+  /// Constructs a [ModelElement] from a [PropertyAccessorElement].
+  static ModelElement _constructFromPropertyAccessor(
+    PropertyAccessorElement e,
+    Library library,
+    PackageGraph packageGraph, {
+    Container? enclosingContainer,
+    Member? originalMember,
+  }) {
+    // Accessors can be part of a [Container], or a part of a [Library].
+    if (e.enclosingElement is ExtensionElement ||
+        e.enclosingElement is InterfaceElement ||
+        e is MultiplyInheritedExecutableElement) {
       if (enclosingContainer == null) {
-        return Operator(e, library, packageGraph);
-      } else {
-        return Operator.inherited(e, enclosingContainer, library, packageGraph,
-            originalMember: originalMember);
+        return ContainerAccessor(e, library, packageGraph);
       }
+
+      assert(e.enclosingElement is! ExtensionElement);
+      return ContainerAccessor.inherited(
+          e, library, packageGraph, enclosingContainer,
+          originalMember: originalMember as ExecutableMember?);
     }
-    if (e is MethodElement && !e.isOperator) {
-      if (enclosingContainer == null) {
-        return Method(e, library, packageGraph);
-      } else {
-        return Method.inherited(e, enclosingContainer, library, packageGraph,
-            originalMember: originalMember as ExecutableMember?);
-      }
-    }
-    if (e is PropertyAccessorElement) {
-      // Accessors can be part of a [Container], or a part of a [Library].
-      if (e.enclosingElement is ExtensionElement ||
-          e.enclosingElement is InterfaceElement ||
-          e is MultiplyInheritedExecutableElement) {
-        if (enclosingContainer == null) {
-          return ContainerAccessor(e, library, packageGraph);
-        } else {
-          assert(e.enclosingElement is! ExtensionElement);
-          return ContainerAccessor.inherited(
-              e, library, packageGraph, enclosingContainer,
-              originalMember: originalMember as ExecutableMember?);
-        }
-      } else {
-        return Accessor(e, library, packageGraph);
-      }
-    }
-    if (e is TypeParameterElement) {
-      return TypeParameter(e, library, packageGraph);
-    }
-    if (e is ParameterElement) {
-      return Parameter(e, library, packageGraph,
-          originalMember: originalMember as ParameterMember?);
-    }
-    throw UnimplementedError('Unknown type ${e.runtimeType}');
+
+    return Accessor(e, library, packageGraph);
   }
 
   ModelElement? get enclosingElement;

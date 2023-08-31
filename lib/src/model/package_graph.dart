@@ -919,6 +919,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
               ...l.publicProperties,
               ...l.publicTypedefs,
               ...l.publicExtensions,
+              ...l.publicExtensionTypes,
               ...l.publicClasses,
               ...l.publicEnums,
               ...l.publicMixins

@@ -10,7 +10,7 @@ import 'src/utils.dart';
 
 void main() {
   defineReflectiveSuite(() {
-    if (classModifiersAllowed) {
+    if (extensionTypesAllowed) {
       defineReflectiveTests(ExtensionTypesTest);
     }
   });
@@ -19,7 +19,7 @@ void main() {
 @reflectiveTest
 class ExtensionTypesTest extends DartdocTestBase {
   @override
-  List<String> get experiments => ['extension-types'];
+  List<String> get experiments => ['inline-class'];
 
   @override
   String get libraryName => 'extension_types';
@@ -27,27 +27,45 @@ class ExtensionTypesTest extends DartdocTestBase {
   @override
   String get sdkConstraint => '>=3.2.0 <4.0.0';
 
-  void test_extensionTypeExists() async {
-    await bootPackageWithLibrary('''
-extension type ET(int it) {
-  void m() {}
-}
-''');
-
-    // No crash.
-  }
+  // TODO(srawlins): Test superinterfaces, references to members which exist via
+  // `implements`, references to primary constructor.
 
   void test_extensionTypeHasReference() async {
-    await bootPackageWithLibrary('''
+    var library = await bootPackageWithLibrary('''
 /// Doc referring to [C].
-extension type ET(int it) {
+extension type ET<T extends num>(int it) implements num {
   void m() {}
 }
 
 class C {}
 ''');
 
-    // No crash.
+    expect(
+      library.extensionTypes.named('ET').documentationAsHtml,
+      '<p>Doc referring to '
+      '<a href="${placeholder}extension_types/C-class.html">C</a>.</p>',
+    );
+  }
+
+  void test_extensionTypeMemberHasReference() async {
+    var library = await bootPackageWithLibrary('''
+extension type ET(int it) {
+  /// Doc referring to [C].
+  void m() {}
+}
+
+class C {}
+''');
+
+    expect(
+      library.extensionTypes
+          .named('ET')
+          .instanceMethods
+          .named('m')
+          .documentationAsHtml,
+      '<p>Doc referring to '
+      '<a href="${placeholder}extension_types/C-class.html">C</a>.</p>',
+    );
   }
 
   void test_referenceToExtensionType() async {
@@ -60,8 +78,11 @@ extension type ET(int it) {
 class C {}
 ''');
 
-    // TODO(srawlins): Resolve `[ET]`.
-    expect(library.classes.named('C').documentation, 'Doc referring to [ET].');
+    expect(
+      library.classes.named('C').documentationAsHtml,
+      '<p>Doc referring to '
+      '<a href="${placeholder}extension_types/ET.html">ET</a>.</p>',
+    );
   }
 
   void test_referenceToExtensionTypeMember() async {
@@ -74,8 +95,10 @@ extension type ET(int it) {
 class C {}
 ''');
 
-    // TODO(srawlins): Resolve `[ET.m]`.
     expect(
-        library.classes.named('C').documentation, 'Doc referring to [ET.m].');
+      library.classes.named('C').documentationAsHtml,
+      '<p>Doc referring to '
+      '<a href="${placeholder}extension_types/ET/m.html">ET.m</a>.</p>',
+    );
   }
 }
