@@ -23,7 +23,7 @@ String buildRuntimeRenderers(Set<RendererSpec> specs, Uri sourceUri,
   var visibleElements = specs
       .map((spec) => spec.visibleTypes)
       .reduce((value, element) => value.union(element))
-      .map((type) => DartTypeExtension(type).element!)
+      .map((type) => type.documentableElement!)
       .toSet();
   var raw = RuntimeRenderersBuilder(
           sourceUri, typeProvider, typeSystem, visibleElements,
@@ -532,7 +532,7 @@ renderVariable:
         // TODO(srawlins): Find a solution for this. We can track all of the
         // concrete types substituted for `E` for example.
         if (innerType is! TypeParameterType) {
-          var innerTypeElement = DartTypeExtension(innerType).element;
+          var innerTypeElement = innerType.documentableElement;
           var renderFunctionName = _typeToRenderFunctionName[innerTypeElement];
           String renderCall;
           if (renderFunctionName == null) {

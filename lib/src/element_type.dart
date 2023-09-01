@@ -41,7 +41,7 @@ abstract class ElementType
 
   factory ElementType._from(
       DartType f, Library library, PackageGraph packageGraph) {
-    var fElement = DartTypeExtension(f).element;
+    var fElement = f.documentableElement;
     if (fElement == null ||
         fElement.kind == ElementKind.DYNAMIC ||
         fElement.kind == ElementKind.NEVER) {
@@ -50,9 +50,6 @@ abstract class ElementType
     var modelElement = packageGraph.modelBuilder.fromElement(fElement);
     return DefinedElementType._from(f, modelElement, library, packageGraph);
   }
-
-  /// The element of [type].
-  TypeDefiningElement? get typeElement => DartTypeExtension(type).element;
 
   bool get canHaveParameters => false;
 
@@ -107,9 +104,9 @@ class UndefinedElementType extends ElementType {
     // We can not simply throw here because not all SDK libraries resolve
     // all types.
     if (type is InvalidType) return 'dynamic';
-    assert(const {'Never'}.contains(typeElement?.name),
-        'Unrecognized type for UndefinedElementType: ${type.toString()}');
-    return typeElement!.name!;
+    assert(const {'Never'}.contains(type.documentableElement?.name),
+        'Unrecognized type for UndefinedElementType: $type');
+    return type.documentableElement!.name!;
   }
 
   @override
@@ -304,7 +301,7 @@ abstract class DefinedElementType extends ElementType {
   Element get element => modelElement.element;
 
   @override
-  String get name => typeElement!.name!;
+  String get name => type.documentableElement!.name!;
 
   @override
   String get fullyQualifiedName => modelElement.fullyQualifiedName;

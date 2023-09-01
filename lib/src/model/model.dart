@@ -20,6 +20,7 @@ export 'enclosed_element.dart';
 export 'enum.dart';
 export 'extendable.dart';
 export 'extension.dart';
+export 'extension_type.dart';
 export 'field.dart';
 export 'getter_setter_combo.dart';
 export 'has_no_page.dart';

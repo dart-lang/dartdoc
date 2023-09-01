@@ -311,6 +311,10 @@ class Package extends LibraryContainer
       for (var extension in library.extensions) {
         addToCategories(extension, (c) => c.extensions.add(extension));
       }
+      for (var extensionType in library.extensionTypes) {
+        addToCategories(
+            extensionType, (c) => c.extensionTypes.add(extensionType));
+      }
       for (var class_ in library.allClasses) {
         addToCategories(class_, (c) => c.addClass(class_));
       }
