@@ -29,50 +29,41 @@ abstract class FileStructure {
     if (!_validFormats.contains(format)) {
       throw DartdocFailure('Internal error: unrecognized format: $format');
     }
-    switch (documentable) {
-      case LibraryContainer():
+    return switch (documentable) {
+      LibraryContainer() =>
         // [LibraryContainer]s are not ModelElements, but have documentation.
-        return FileStructure._fromLibraryContainer(documentable, format);
-      case ModelElement():
+        FileStructure._fromLibraryContainer(documentable, format),
+      ModelElement() =>
         // This should be the common case.
-        return FileStructure._fromModelElement(documentable, format);
-      default:
-        throw UnimplementedError(
-            'Tried to build a FileStructure for an unknown subtype of Documentable:  ${documentable.runtimeType}');
-    }
+        FileStructure._fromModelElement(documentable, format),
+      _ => throw UnimplementedError(
+          'Tried to build a FileStructure for an unknown subtype of Documentable:  ${documentable.runtimeType}')
+    };
   }
 
   factory FileStructure._fromLibraryContainer(
-      LibraryContainer libraryContainer, String format) {
-    switch (libraryContainer) {
-      case Category():
-        return FileStructureImpl(format, libraryContainer.name, 'topic');
-      case Package():
-        return FileStructureImpl(format, 'index', null);
-      default:
-        throw UnimplementedError(
-            'Unrecognized LibraryContainer subtype:  ${libraryContainer.runtimeType}');
-    }
-  }
+    LibraryContainer libraryContainer,
+    String format,
+  ) =>
+      switch (libraryContainer) {
+        Category() => FileStructureImpl(format, libraryContainer.name, 'topic'),
+        Package() => FileStructureImpl(format, 'index', null),
+        _ => throw UnimplementedError(
+            'Unrecognized LibraryContainer subtype:  ${libraryContainer.runtimeType}')
+      };
 
   factory FileStructure._fromModelElement(
       ModelElement modelElement, String format) {
-    switch (modelElement) {
-      case Library():
-        return FileStructureImpl(format, modelElement.dirName, 'library');
-      case Mixin():
-        return FileStructureImpl(format, modelElement.name, 'mixin');
-      case Class():
-        return FileStructureImpl(format, modelElement.name, 'class');
-      case Operator():
-        return FileStructureImpl(format,
-            'operator_${operatorNames[modelElement.referenceName]}', null);
-      case GetterSetterCombo():
-        return FileStructureImpl(format, modelElement.name,
-            modelElement.isConst ? 'constant' : null);
-      default:
-        return FileStructureImpl(format, modelElement.name, null);
-    }
+    return switch (modelElement) {
+      Library() => FileStructureImpl(format, modelElement.dirName, 'library'),
+      Mixin() => FileStructureImpl(format, modelElement.name, 'mixin'),
+      Class() => FileStructureImpl(format, modelElement.name, 'class'),
+      Operator() => FileStructureImpl(format,
+            'operator_${operatorNames[modelElement.referenceName]}', null),
+      GetterSetterCombo() => FileStructureImpl(format, modelElement.name,
+            modelElement.isConst ? 'constant' : null),
+      _ => FileStructureImpl(format, modelElement.name, null)
+    };
   }
 
   /// True if an independent file should be created for this `ModelElement`.

@@ -29,16 +29,12 @@ mixin Categorization on DocumentationComment implements Indexable {
         case 'category':
         case 'api':
           categorySet.add(match[2]!.trim());
-          break;
         case 'subCategory':
           subCategorySet.add(match[2]!.trim());
-          break;
         case 'image':
           _image = match[2]!.trim();
-          break;
         case 'samples':
           _samples = match[2]!.trim();
-          break;
       }
       return '';
     });

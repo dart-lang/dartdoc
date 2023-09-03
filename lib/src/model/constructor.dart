@@ -105,15 +105,13 @@ class Constructor extends ModelElement
   @override
   late final Map<String, CommentReferable> referenceChildren = () {
     // Find the element that [parameter] is _really_ referring to.
-    Element? dereferenceParameter(ParameterElement? parameter) {
-      if (parameter is FieldFormalParameterElement) {
-        return parameter.field;
-      } else if (parameter is SuperFormalParameterElement) {
-        return dereferenceParameter(parameter.superConstructorParameter);
-      } else {
-        return parameter;
-      }
-    }
+    Element? dereferenceParameter(ParameterElement? parameter) =>
+        switch (parameter) {
+          FieldFormalParameterElement() => parameter.field,
+          SuperFormalParameterElement() =>
+            dereferenceParameter(parameter.superConstructorParameter),
+          _ => parameter
+        };
 
     var parameterElements = parameters.map((parameter) {
       var element = dereferenceParameter(parameter.element);

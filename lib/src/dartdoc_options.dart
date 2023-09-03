@@ -89,9 +89,8 @@ class CategoryConfiguration {
   static CategoryConfiguration fromYamlMap(YamlMap yamlMap,
       String canonicalYamlPath, ResourceProvider resourceProvider) {
     var newCategoryDefinitions = <String, CategoryDefinition>{};
-    for (var entry in yamlMap.entries) {
-      var name = entry.key.toString();
-      var categoryMap = entry.value;
+    for (var MapEntry(:key, value: categoryMap) in yamlMap.entries) {
+      var name = key.toString();
       if (categoryMap is Map) {
         var displayName = categoryMap['displayName']?.toString();
         var documentationMarkdown = categoryMap['markdown']?.toString();
@@ -132,9 +131,8 @@ class ToolConfiguration {
       String canonicalYamlPath, ResourceProvider resourceProvider) {
     var newToolDefinitions = <String, ToolDefinition>{};
     var pathContext = resourceProvider.pathContext;
-    for (var entry in yamlMap.entries) {
-      var name = entry.key.toString();
-      var toolMap = entry.value;
+    for (var MapEntry(:key, value: toolMap) in yamlMap.entries) {
+      var name = key.toString();
       if (toolMap is! Map) {
         throw DartdocOptionError(
             'Tools must be defined as a map of tool names to definitions. Tool '
@@ -297,20 +295,18 @@ class _OptionValueWithContext<T> {
   /// Throws [UnsupportedError] if [T] isn't a [String] or [List<String>].
   T get resolvedValue {
     final value = this.value;
-    if (value is List<String>) {
-      return value
+    return switch (value) {
+      List<String>() => value
           .map((v) => pathContext.canonicalizeWithTilde(v))
           .cast<String>()
-          .toList(growable: false) as T;
-    } else if (value is String) {
-      return pathContext.canonicalizeWithTilde(value) as T;
-    } else if (value is Map<String, String>) {
-      return value.map<String, String>((String key, String value) {
-        return MapEntry(key, pathContext.canonicalizeWithTilde(value));
-      }) as T;
-    } else {
-      throw UnsupportedError('Type $T is not supported for resolvedValue');
-    }
+          .toList(growable: false) as T,
+      String() => pathContext.canonicalizeWithTilde(value) as T,
+      Map<String, String>() =>
+        value.map<String, String>((String key, String value) {
+          return MapEntry(key, pathContext.canonicalizeWithTilde(value));
+        }) as T,
+      _ => throw UnsupportedError('Type $T is not supported for resolvedValue')
+    };
   }
 }
 
@@ -416,18 +412,21 @@ abstract class DartdocOption<T extends Object?> {
     assert(isDir || isFile);
     List<String> resolvedPaths;
     var value = valueWithContext.value;
-    if (value is String) {
-      resolvedPaths = [valueWithContext.resolvedValue as String];
-    } else if (value is List<String>) {
-      resolvedPaths = valueWithContext.resolvedValue as List<String>;
-    } else if (value is Map<String, String>) {
-      resolvedPaths = [...(valueWithContext.resolvedValue as Map).values];
-    } else {
-      assert(
-          false,
-          'Trying to ensure existence of unsupported type '
-          '${valueWithContext.value.runtimeType}');
-      return;
+    switch (value) {
+      case String():
+        resolvedPaths = [valueWithContext.resolvedValue as String];
+      case List<String>():
+        resolvedPaths = valueWithContext.resolvedValue as List<String>;
+      case Map<String, String>():
+        resolvedPaths = (valueWithContext.resolvedValue as Map<String, String>)
+            .values
+            .toList(growable: false);
+      default:
+        assert(
+            false,
+            'Trying to ensure existence of unsupported type '
+            '${valueWithContext.value.runtimeType}');
+        return;
     }
     for (var path in resolvedPaths) {
       var f = isDir
@@ -936,8 +935,8 @@ mixin _DartdocFileOption<T> implements DartdocOption<T> {
         convertYamlToType = (YamlMap yamlMap, String canonicalYamlPath,
             ResourceProvider resourceProvider) {
           var returnData = <String, String>{};
-          for (var entry in yamlMap.entries) {
-            returnData[entry.key.toString()] = entry.value.toString();
+          for (var MapEntry(:key, :value) in yamlMap.entries) {
+            returnData[key.toString()] = value.toString();
           }
           return returnData as T;
         };

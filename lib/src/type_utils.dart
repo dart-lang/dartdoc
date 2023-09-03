@@ -13,16 +13,11 @@ extension DartTypeExtension on DartType {
   /// is no documentation for `dynamic` which we can link to.
   TypeDefiningElement? get documentableElement {
     final self = this;
-    if (self is InterfaceType) {
-      return self.element;
-    } else if (self is NeverType) {
-      return self.element as TypeDefiningElement;
-    } else if (self is TypeParameterType) {
-      return self.element;
-    } else {
-      // Remaining cases like `DynamicType`, `FunctionType`, `RecordType`, and
-      // `VoidType`.
-      return null;
-    }
+    return switch (self) {
+      InterfaceType() => self.element,
+      NeverType() => self.element as TypeDefiningElement,
+      TypeParameterType() => self.element,
+      _ => null
+    };
   }
 }

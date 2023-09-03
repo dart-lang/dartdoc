@@ -112,17 +112,13 @@ class SourceLinker {
       return '';
     }
     return uriTemplate.replaceAllMapped(_uriTemplateRegExp, (match) {
-      switch (match[1]) {
-        case '%f%':
-          return path.url
-              .joinAll(path.split(path.relative(sourceFileName, from: root)));
-        case '%r%':
-          return revision!;
-        case '%l%':
-          return lineNumber.toString();
-        default:
-          return '';
-      }
+      return switch (match[1]) {
+        '%f%' => path.url
+            .joinAll(path.split(path.relative(sourceFileName, from: root))),
+        '%r%' => revision!,
+        '%l%' => lineNumber.toString(),
+        _ => ''
+      };
     });
   }
 }
