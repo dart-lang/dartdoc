@@ -338,7 +338,7 @@ class E extends D {
       '''));
   }
 
-  void testParameterIsSubtypeOfSuperConstructorParameter() async {
+  void test_parameterIsSubtypeOfSuperConstructorParameter() async {
     var library = await bootPackageWithLibrary('''
 class C {
   C.positionalNum(num g);
