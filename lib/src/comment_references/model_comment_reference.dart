@@ -128,14 +128,11 @@ class _ModelCommentReferenceImpl implements ModelCommentReference {
 extension on CommentReferableExpression {
   Element? get element {
     var self = this;
-    if (self is PrefixedIdentifier) {
-      return self.staticElement;
-    } else if (self is PropertyAccess) {
-      return self.propertyName.staticElement;
-    } else if (self is SimpleIdentifier) {
-      return self.staticElement;
-    } else {
-      return null;
-    }
+    return switch (self) {
+      PrefixedIdentifier() => self.staticElement,
+      PropertyAccess() => self.propertyName.staticElement,
+      SimpleIdentifier() => self.staticElement,
+      _ => null
+    };
   }
 }

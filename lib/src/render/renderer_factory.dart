@@ -22,16 +22,11 @@ abstract class RendererFactory {
   /// Retrieves the appropriate [RendererFactory] according to the
   /// specified [format]. Currently supports `html` or `md` otherwise
   /// throws an [ArgumentError].
-  factory RendererFactory.forFormat(String format) {
-    switch (format) {
-      case 'html':
-        return const HtmlRenderFactory();
-      case 'md':
-        return const MdRenderFactory();
-      default:
-        throw ArgumentError('Unsupported renderer format: $format');
-    }
-  }
+  factory RendererFactory.forFormat(String format) => switch (format) {
+        'html' => const HtmlRenderFactory(),
+        'md' => MdRenderFactory(),
+        _ => throw ArgumentError('Unsupported renderer format: $format'),
+      };
 
   LayoutRenderer get templateRenderer;
 

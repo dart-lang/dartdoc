@@ -522,9 +522,9 @@ class Library extends ModelElement
     // If a user is hiding parts of a prefix import, the user should not
     // refer to hidden members via the prefix, because that can be
     // ambiguous.  dart-lang/dartdoc#2683.
-    for (var prefixEntry in prefixToLibrary.entries) {
-      referenceChildrenBuilder.putIfAbsent(
-          prefixEntry.key, () => prefixEntry.value.first);
+    for (var MapEntry(key: prefix, value: libraries)
+        in prefixToLibrary.entries) {
+      referenceChildrenBuilder.putIfAbsent(prefix, () => libraries.first);
     }
     return referenceChildrenBuilder;
   }();

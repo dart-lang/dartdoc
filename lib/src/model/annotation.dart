@@ -34,16 +34,15 @@ class Annotation extends Feature with ModelBuilder {
 
   late final ElementType modelType = () {
     var annotatedWith = annotation.element;
-    if (annotatedWith is ConstructorElement) {
-      return modelBuilder.typeFrom(annotatedWith.returnType, library);
-    } else if (annotatedWith is PropertyAccessorElement) {
-      return (modelBuilder.fromElement(annotatedWith.variable)
-              as GetterSetterCombo)
-          .modelType;
-    } else {
-      throw StateError(
-          'non-callable element used as annotation?: ${annotation.element}');
-    }
+    return switch (annotatedWith) {
+      ConstructorElement() =>
+        modelBuilder.typeFrom(annotatedWith.returnType, library),
+      PropertyAccessorElement() =>
+        (modelBuilder.fromElement(annotatedWith.variable) as GetterSetterCombo)
+            .modelType,
+      _ => throw StateError(
+          'non-callable element used as annotation?: ${annotation.element}')
+    };
   }();
 
   // TODO(srawlins): Attempt to revive constructor arguments in an annotation,

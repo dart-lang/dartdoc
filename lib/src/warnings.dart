@@ -413,13 +413,10 @@ class PackageWarningOptions {
       switch (definition.defaultWarningMode) {
         case PackageWarningMode.warn:
           warn(definition.kind);
-          break;
         case PackageWarningMode.error:
           error(definition.kind);
-          break;
         case PackageWarningMode.ignore:
           ignore(definition.kind);
-          break;
       }
     }
   }

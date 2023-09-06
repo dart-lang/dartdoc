@@ -24,14 +24,12 @@ class ConvertedOption {
     String? p1;
     String? p2;
 
-    for (var entry in yamlMap.entries) {
-      switch (entry.key.toString()) {
+    for (var MapEntry(:key, :value) in yamlMap.entries) {
+      switch (key.toString()) {
         case 'param1':
-          p1 = entry.value.toString();
-          break;
+          p1 = value.toString();
         case 'param2':
-          p2 = entry.value.toString();
-          break;
+          p2 = value.toString();
       }
     }
     return ConvertedOption._(p1, p2, canonicalYamlPath);

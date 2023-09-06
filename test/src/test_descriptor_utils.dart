@@ -100,14 +100,12 @@ extension DescriptorExtensions on d.Descriptor {
   Future<String> createInMemory(MemoryResourceProvider resourceProvider,
       [String? parent]) {
     var self = this;
-    if (self is d.DirectoryDescriptor) {
-      return self.createInMemory(resourceProvider, parent);
-    } else if (self is d.FileDescriptor) {
-      return self.createInMemory(resourceProvider, parent!);
-    } else {
-      throw StateError(
-          '$runtimeType is not a DirectoryDescriptor, nor a FileDescriptor!');
-    }
+    return switch (self) {
+      d.DirectoryDescriptor() => self.createInMemory(resourceProvider, parent),
+      d.FileDescriptor() => self.createInMemory(resourceProvider, parent!),
+      _ => throw StateError(
+          '$runtimeType is not a DirectoryDescriptor, nor a FileDescriptor!')
+    };
   }
 }
 

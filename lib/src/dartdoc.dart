@@ -174,17 +174,11 @@ class Dartdoc {
       maxFileCount: context.maxFileCount,
       maxTotalSize: context.maxTotalSize,
     );
-    Generator generator;
-    switch (context.format) {
-      case 'html':
-        generator = await initHtmlGenerator(context, writer: writer);
-        break;
-      case 'md':
-        generator = await initMarkdownGenerator(context, writer: writer);
-        break;
-      default:
-        throw DartdocFailure('Unsupported output format: ${context.format}');
-    }
+    var generator = await switch (context.format) {
+      'html' => initHtmlGenerator(context, writer: writer),
+      'md' => initMarkdownGenerator(context, writer: writer),
+      _ => throw DartdocFailure('Unsupported output format: ${context.format}')
+    };
     return Dartdoc._(
       context,
       outputDir,

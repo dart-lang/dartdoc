@@ -132,15 +132,13 @@ class Accessor extends ModelElement implements EnclosedElement {
   @override
   String get aboveSidebarPath {
     final enclosingElement = this.enclosingElement;
-    if (enclosingElement is Container) {
-      return enclosingElement.sidebarPath;
-    } else if (enclosingElement is Library) {
-      return enclosingElement.sidebarPath;
-    } else {
-      throw StateError(
+    return switch (enclosingElement) {
+      Container() => enclosingElement.sidebarPath,
+      Library() => enclosingElement.sidebarPath,
+      _ => throw StateError(
           'Enclosing element of $this should be Container or Library, but was '
-          '${enclosingElement.runtimeType}');
-    }
+          '${enclosingElement.runtimeType}')
+    };
   }
 
   @override

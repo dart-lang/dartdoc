@@ -341,43 +341,39 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     // the user, yet we still want IntelliJ to link properly.
     final warnableName = warnable.safeWarnableName;
 
-    String warningMessage;
-    switch (kind) {
-      case PackageWarning.ambiguousReexport:
-        warningMessage = kind.messageFor([warnableName, message]);
-        break;
-      case PackageWarning.noCanonicalFound:
-      case PackageWarning.noDefiningLibraryFound:
-        warningMessage = kind.messageFor([warnableName]);
-        break;
-      case PackageWarning.noLibraryLevelDocs:
-      case PackageWarning.noDocumentableLibrariesInPackage:
-        warningMessage = kind.messageFor([warnable!.fullyQualifiedName]);
-        break;
-      case PackageWarning.ambiguousDocReference:
-      case PackageWarning.ignoredCanonicalFor:
-      case PackageWarning.packageOrderGivesMissingPackageName:
-      case PackageWarning.reexportedPrivateApiAcrossPackages:
-      case PackageWarning.notImplemented:
-      case PackageWarning.unresolvedDocReference:
-      case PackageWarning.unknownDirective:
-      case PackageWarning.unknownMacro:
-      case PackageWarning.unknownHtmlFragment:
-      case PackageWarning.brokenLink:
-      case PackageWarning.duplicateFile:
-      case PackageWarning.orphanedFile:
-      case PackageWarning.unknownFile:
-      case PackageWarning.missingFromSearchIndex:
-      case PackageWarning.typeAsHtml:
-      case PackageWarning.invalidParameter:
-      case PackageWarning.toolError:
-      case PackageWarning.deprecated:
-      case PackageWarning.unresolvedExport:
-      case PackageWarning.missingConstantConstructor:
-      case PackageWarning.missingExampleFile:
-      case PackageWarning.missingCodeBlockLanguage:
-        warningMessage = kind.messageFor([message]);
-    }
+    var warningMessage = switch (kind) {
+      PackageWarning.ambiguousReexport =>
+        kind.messageFor([warnableName, message]),
+      PackageWarning.noCanonicalFound ||
+      PackageWarning.noDefiningLibraryFound =>
+        kind.messageFor([warnableName]),
+      PackageWarning.noLibraryLevelDocs ||
+      PackageWarning.noDocumentableLibrariesInPackage =>
+        kind.messageFor([warnable!.fullyQualifiedName]),
+      PackageWarning.ambiguousDocReference ||
+      PackageWarning.ignoredCanonicalFor ||
+      PackageWarning.packageOrderGivesMissingPackageName ||
+      PackageWarning.reexportedPrivateApiAcrossPackages ||
+      PackageWarning.notImplemented ||
+      PackageWarning.unresolvedDocReference ||
+      PackageWarning.unknownDirective ||
+      PackageWarning.unknownMacro ||
+      PackageWarning.unknownHtmlFragment ||
+      PackageWarning.brokenLink ||
+      PackageWarning.duplicateFile ||
+      PackageWarning.orphanedFile ||
+      PackageWarning.unknownFile ||
+      PackageWarning.missingFromSearchIndex ||
+      PackageWarning.typeAsHtml ||
+      PackageWarning.invalidParameter ||
+      PackageWarning.toolError ||
+      PackageWarning.deprecated ||
+      PackageWarning.unresolvedExport ||
+      PackageWarning.missingConstantConstructor ||
+      PackageWarning.missingExampleFile ||
+      PackageWarning.missingCodeBlockLanguage =>
+        kind.messageFor([message])
+    };
 
     var fullMessage = [
       warningMessage,
