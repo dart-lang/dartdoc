@@ -38,23 +38,22 @@ class Parameter extends ModelElement with HasNoPage {
   @override
   String get htmlId {
     final enclosingElement = element.enclosingElement;
-    if (enclosingElement != null) {
-      var enclosingName = enclosingElement.name;
-      if (enclosingElement is GenericFunctionTypeElement) {
-        // TODO(jcollins-g): Drop when GenericFunctionTypeElement populates
-        // name. Also, allowing null here is allowed as a workaround for
-        // dart-lang/sdk#32005.
-        for (Element e = enclosingElement;
-            e.enclosingElement != null;
-            e = e.enclosingElement!) {
-          enclosingName = e.name;
-          if (enclosingName != null && enclosingName.isNotEmpty) break;
-        }
-      }
-      return '$enclosingName-param-$name';
-    } else {
+    if (enclosingElement == null) {
       return 'param-$name';
     }
+    var enclosingName = enclosingElement.name;
+    if (enclosingElement is GenericFunctionTypeElement) {
+      // TODO(jcollins-g): Drop when GenericFunctionTypeElement populates
+      // name. Also, allowing null here is allowed as a workaround for
+      // dart-lang/sdk#32005.
+      for (Element e = enclosingElement;
+          e.enclosingElement != null;
+          e = e.enclosingElement!) {
+        enclosingName = e.name;
+        if (enclosingName != null && enclosingName.isNotEmpty) break;
+      }
+    }
+    return '$enclosingName-param-$name';
   }
 
   @override
