@@ -451,7 +451,7 @@ class B {
 If `--auto-include-dependencies` flag is provided, dartdoc tries to automatically add
 all the used libraries, even from other packages, to the list of the documented libraries.
 
-### Using link-to-source
+### Using linkToSource
 
 The source linking feature in dartdoc is a little tricky to use, since pub packages do not actually
 include enough information to link back to source code and that's the context in which documentation
@@ -464,14 +464,14 @@ but generated docs will generate locations that may start drifting with further 
 
 Example dartdoc_options.yaml:
 ```yaml
-link-to-source:
+linkToSource:
   root: '.'
   uriTemplate: 'https://github.com/dart-lang/dartdoc/blob/v0.28.0/%f%#L%l%'
 ```
 
 Example staging command line:
 ```bash
-dart pub global run dartdoc --link-to-source-root '.' --link-to-source-revision 6fac6f770d271312c88e8ae881861702a9a605be --link-to-source-uri-template 'https://github.com/dart-lang/dartdoc/blob/%r%/%f#L%l%'
+dart pub global run dartdoc --link-to-source-root '.' --link-to-source-revision 6fac6f770d271312c88e8ae881861702a9a605be --link-to-source-uri-template 'https://github.com/dart-lang/dartdoc/blob/%r%/%f%#L%l%'
 ```
 
 This gets more complicated with `--auto-include-dependencies` as these command line flags
