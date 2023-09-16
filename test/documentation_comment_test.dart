@@ -353,26 +353,6 @@ End text.'''));
             '"name".'));
   }
 
-  void test_animationDirectiveUsesDeprecatedSyntax() async {
-    await libraryModel.processComment('''
-/// Text.
-///
-/// {@animation barHerderAnimation 100 200 http://host/path/to/video.mp4}
-///
-/// End text.
-''');
-
-    expect(
-        packageGraph.packageWarningCounter.hasWarning(
-            libraryModel,
-            PackageWarning.deprecated,
-            'Deprecated form of @animation directive, "{@animation '
-            'barHerderAnimation 100 200 http://host/path/to/video.mp4}"\n'
-            'Animation directives are now of the form "{@animation WIDTH '
-            'HEIGHT URL [id=ID]}" (id is an optional parameter)'),
-        isTrue);
-  }
-
   void test_processesTemplateDirective() async {
     var doc = await libraryModel.processComment('''
 /// Text.
