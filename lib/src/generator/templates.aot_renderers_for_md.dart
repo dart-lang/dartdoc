@@ -1911,9 +1911,9 @@ Categories:''');
 String __deduplicated_lib_templates_md__constant_md_partial_features_1(
     GetterSetterCombo context0) {
   final buffer = StringBuffer();
-  if (context0.hasFeatures == true) {
+  if (context0.hasAttributes == true) {
     buffer.write('''_''');
-    buffer.write(context0.featuresAsString);
+    buffer.write(context0.attributesAsString);
     buffer.write('''_''');
   }
   buffer.writeln();
@@ -1923,9 +1923,9 @@ String __deduplicated_lib_templates_md__constant_md_partial_features_1(
 
 String _deduplicated_lib_templates_md__features_md(ModelElement context0) {
   final buffer = StringBuffer();
-  if (context0.hasFeatures == true) {
+  if (context0.hasAttributes == true) {
     buffer.write('''_''');
-    buffer.write(context0.featuresAsString);
+    buffer.write(context0.attributesAsString);
     buffer.write('''_''');
   }
   buffer.writeln();
@@ -1977,9 +1977,9 @@ Categories:''');
 String __deduplicated_lib_templates_md__property_md_partial_features_1(
     GetterSetterCombo context0) {
   final buffer = StringBuffer();
-  if (context0.hasFeatures == true) {
+  if (context0.hasAttributes == true) {
     buffer.write('''_''');
-    buffer.write(context0.featuresAsString);
+    buffer.write(context0.attributesAsString);
     buffer.write('''_''');
   }
   buffer.writeln();
@@ -2040,9 +2040,9 @@ Categories:''');
 String __deduplicated_lib_templates_md__typedef_md_partial_features_1(
     FunctionTypedef context1) {
   final buffer = StringBuffer();
-  if (context1.hasFeatures == true) {
+  if (context1.hasAttributes == true) {
     buffer.write('''_''');
-    buffer.write(context1.featuresAsString);
+    buffer.write(context1.attributesAsString);
     buffer.write('''_''');
   }
   buffer.writeln();
@@ -2097,9 +2097,9 @@ String
     ___deduplicated_lib_templates_md__typedef_md_partial_type_2_partial_features_1(
         Typedef context0) {
   final buffer = StringBuffer();
-  if (context0.hasFeatures == true) {
+  if (context0.hasAttributes == true) {
     buffer.write('''_''');
-    buffer.write(context0.featuresAsString);
+    buffer.write(context0.attributesAsString);
     buffer.write('''_''');
   }
   buffer.writeln();
@@ -2150,9 +2150,9 @@ Categories:''');
 String __deduplicated_lib_templates_md__type_md_partial_features_1(
     Typedef context0) {
   final buffer = StringBuffer();
-  if (context0.hasFeatures == true) {
+  if (context0.hasAttributes == true) {
     buffer.write('''_''');
-    buffer.write(context0.featuresAsString);
+    buffer.write(context0.attributesAsString);
     buffer.write('''_''');
   }
   buffer.writeln();
@@ -2346,9 +2346,9 @@ String
     ___deduplicated_lib_templates_md__instance_methods_md_partial_callable_0_partial_features_1(
         Method context1) {
   final buffer = StringBuffer();
-  if (context1.hasFeatures == true) {
+  if (context1.hasAttributes == true) {
     buffer.write('''_''');
-    buffer.write(context1.featuresAsString);
+    buffer.write(context1.attributesAsString);
     buffer.write('''_''');
   }
   buffer.writeln();
@@ -2427,9 +2427,9 @@ String
     ___deduplicated_lib_templates_md__instance_operators_md_partial_callable_0_partial_features_1(
         Operator context1) {
   final buffer = StringBuffer();
-  if (context1.hasFeatures == true) {
+  if (context1.hasAttributes == true) {
     buffer.write('''_''');
-    buffer.write(context1.featuresAsString);
+    buffer.write(context1.attributesAsString);
     buffer.write('''_''');
   }
   buffer.writeln();
@@ -2506,9 +2506,9 @@ String
     ___deduplicated_lib_templates_md__static_properties_md_partial_property_0_partial_features_1(
         Field context1) {
   final buffer = StringBuffer();
-  if (context1.hasFeatures == true) {
+  if (context1.hasAttributes == true) {
     buffer.write('''_''');
-    buffer.write(context1.featuresAsString);
+    buffer.write(context1.attributesAsString);
     buffer.write('''_''');
   }
   buffer.writeln();
@@ -2585,9 +2585,9 @@ String
     ___deduplicated_lib_templates_md__static_methods_md_partial_callable_0_partial_features_1(
         Method context1) {
   final buffer = StringBuffer();
-  if (context1.hasFeatures == true) {
+  if (context1.hasAttributes == true) {
     buffer.write('''_''');
-    buffer.write(context1.featuresAsString);
+    buffer.write(context1.attributesAsString);
     buffer.write('''_''');
   }
   buffer.writeln();
@@ -2662,9 +2662,9 @@ String
     ___deduplicated_lib_templates_md__static_constants_md_partial_constant_0_partial_features_1(
         Field context1) {
   final buffer = StringBuffer();
-  if (context1.hasFeatures == true) {
+  if (context1.hasAttributes == true) {
     buffer.write('''_''');
-    buffer.write(context1.featuresAsString);
+    buffer.write(context1.attributesAsString);
     buffer.write('''_''');
   }
   buffer.writeln();
@@ -2785,9 +2785,9 @@ String
 String __deduplicated_lib_templates_md__accessor_getter_md_partial_features_2(
     Accessor context1) {
   final buffer = StringBuffer();
-  if (context1.hasFeatures == true) {
+  if (context1.hasAttributes == true) {
     buffer.write('''_''');
-    buffer.write(context1.featuresAsString);
+    buffer.write(context1.attributesAsString);
     buffer.write('''_''');
   }
   buffer.writeln();
@@ -2906,9 +2906,9 @@ String
 String __deduplicated_lib_templates_md__accessor_setter_md_partial_features_2(
     Accessor context1) {
   final buffer = StringBuffer();
-  if (context1.hasFeatures == true) {
+  if (context1.hasAttributes == true) {
     buffer.write('''_''');
-    buffer.write(context1.featuresAsString);
+    buffer.write(context1.attributesAsString);
     buffer.write('''_''');
   }
   buffer.writeln();

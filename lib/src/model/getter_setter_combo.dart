@@ -13,8 +13,8 @@ import 'package:analyzer/src/dart/element/element.dart'
     show ConstVariableElement;
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/annotation.dart';
+import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
-import 'package:dartdoc/src/model/feature.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/utils.dart';
 import 'package:dartdoc/src/warnings.dart';
@@ -44,12 +44,12 @@ mixin GetterSetterCombo on ModelElement {
   }
 
   @protected
-  Set<Feature> get comboFeatures => {
-        if (hasExplicitGetter && hasPublicGetter) ...getter!.features,
-        if (hasExplicitSetter && hasPublicSetter) ...setter!.features,
-        if (readOnly && !isFinal && !isConst) Feature.readOnly,
-        if (writeOnly) Feature.writeOnly,
-        if (readWrite && !isLate) Feature.readWrite,
+  Set<Attribute> get comboAttributes => {
+        if (hasExplicitGetter && hasPublicGetter) ...getter!.attributes,
+        if (hasExplicitSetter && hasPublicSetter) ...setter!.attributes,
+        if (readOnly && !isFinal && !isConst) Attribute.noSetter,
+        if (writeOnly) Attribute.noGetter,
+        if (readWrite && !isLate) Attribute.getterSetterPair,
       };
 
   @override

@@ -240,6 +240,7 @@ Future<void> writeDartdocResources(ResourceProvider resourceProvider) async {
   for (var template in [
     '_accessor_getter',
     '_accessor_setter',
+    '_attributes',
     '_callable',
     '_callable_multiline',
     '_categorization',
@@ -247,7 +248,6 @@ Future<void> writeDartdocResources(ResourceProvider resourceProvider) async {
     '_constant',
     '_documentation',
     '_extension',
-    '_features',
     '_feature_set',
     '_footer',
     '_head',

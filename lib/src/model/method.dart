@@ -7,8 +7,8 @@ import 'package:analyzer/source/line_info.dart';
 // ignore: implementation_imports
 import 'package:analyzer/src/dart/element/member.dart' show ExecutableMember;
 import 'package:dartdoc/src/element_type.dart';
+import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
-import 'package:dartdoc/src/model/feature.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 class Method extends ModelElement
@@ -90,9 +90,9 @@ class Method extends ModelElement
   bool get isOperator => false;
 
   @override
-  Set<Feature> get features => {
-        ...super.features,
-        if (isInherited) Feature.inherited,
+  Set<Attribute> get attributes => {
+        ...super.attributes,
+        if (isInherited) Attribute.inherited,
       };
 
   bool get isStatic => element.isStatic;

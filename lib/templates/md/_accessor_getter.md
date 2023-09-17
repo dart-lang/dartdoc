@@ -1,7 +1,7 @@
 {{#getter}}
 {{ >annotations }}
 {{{ modelType.returnType.linkedName }}} {{ >name_summary }}  {{ !two spaces intentional }}
-{{ >features }}
+{{ >attributes }}
 
 {{>documentation}}
 

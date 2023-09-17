@@ -3,11 +3,11 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:dartdoc/src/element_type.dart';
+import 'package:dartdoc/src/render/attribute_renderer.dart';
 import 'package:dartdoc/src/render/category_renderer.dart';
 import 'package:dartdoc/src/render/documentation_renderer.dart';
 import 'package:dartdoc/src/render/element_type_renderer.dart';
 import 'package:dartdoc/src/render/enum_field_renderer.dart';
-import 'package:dartdoc/src/render/feature_renderer.dart';
 import 'package:dartdoc/src/render/language_feature_renderer.dart';
 import 'package:dartdoc/src/render/model_element_renderer.dart';
 import 'package:dartdoc/src/render/parameter_renderer.dart';
@@ -34,7 +34,7 @@ abstract class RendererFactory {
 
   DocumentationRenderer get documentationRenderer;
 
-  FeatureRenderer get featureRenderer;
+  AttributeRenderer get attributeRenderer;
 
   LanguageFeatureRenderer get languageFeatureRenderer;
 
@@ -132,7 +132,7 @@ class HtmlRenderFactory extends RendererFactory {
   SourceCodeRenderer get sourceCodeRenderer => const SourceCodeRendererHtml();
 
   @override
-  FeatureRenderer get featureRenderer => const FeatureRendererHtml();
+  AttributeRenderer get attributeRenderer => const AttributeRendererHtml();
 
   @override
   ElementTypeRenderer<AliasedUndefinedElementType>
@@ -205,7 +205,7 @@ class MdRenderFactory extends RendererFactory {
   SourceCodeRenderer get sourceCodeRenderer => const SourceCodeRendererNoop();
 
   @override
-  FeatureRenderer get featureRenderer => const FeatureRendererMd();
+  AttributeRenderer get attributeRenderer => const AttributeRendererMd();
 
   @override
   ElementTypeRenderer<AliasedUndefinedElementType>

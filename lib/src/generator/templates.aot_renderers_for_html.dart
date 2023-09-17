@@ -3569,9 +3569,9 @@ String
 String __deduplicated_lib_templates_html__constant_html_partial_features_1(
     GetterSetterCombo context0) {
   final buffer = StringBuffer();
-  if (context0.hasFeatures == true) {
+  if (context0.hasAttributes == true) {
     buffer.write('''<div class="features">''');
-    buffer.write(context0.featuresAsString);
+    buffer.write(context0.attributesAsString);
     buffer.write('''</div>''');
   }
   buffer.writeln();
@@ -3581,9 +3581,9 @@ String __deduplicated_lib_templates_html__constant_html_partial_features_1(
 
 String _deduplicated_lib_templates_html__features_html(ModelElement context0) {
   final buffer = StringBuffer();
-  if (context0.hasFeatures == true) {
+  if (context0.hasAttributes == true) {
     buffer.write('''<div class="features">''');
-    buffer.write(context0.featuresAsString);
+    buffer.write(context0.attributesAsString);
     buffer.write('''</div>''');
   }
   buffer.writeln();
@@ -3653,9 +3653,9 @@ String
 String __deduplicated_lib_templates_html__property_html_partial_features_1(
     GetterSetterCombo context0) {
   final buffer = StringBuffer();
-  if (context0.hasFeatures == true) {
+  if (context0.hasAttributes == true) {
     buffer.write('''<div class="features">''');
-    buffer.write(context0.featuresAsString);
+    buffer.write(context0.attributesAsString);
     buffer.write('''</div>''');
   }
   buffer.writeln();
@@ -3739,9 +3739,9 @@ String __deduplicated_lib_templates_html__typedef_html_partial_categorization_0(
 String __deduplicated_lib_templates_html__typedef_html_partial_features_1(
     FunctionTypedef context1) {
   final buffer = StringBuffer();
-  if (context1.hasFeatures == true) {
+  if (context1.hasAttributes == true) {
     buffer.write('''<div class="features">''');
-    buffer.write(context1.featuresAsString);
+    buffer.write(context1.attributesAsString);
     buffer.write('''</div>''');
   }
   buffer.writeln();
@@ -3820,9 +3820,9 @@ String
     ___deduplicated_lib_templates_html__typedef_html_partial_type_2_partial_features_1(
         Typedef context0) {
   final buffer = StringBuffer();
-  if (context0.hasFeatures == true) {
+  if (context0.hasAttributes == true) {
     buffer.write('''<div class="features">''');
-    buffer.write(context0.featuresAsString);
+    buffer.write(context0.attributesAsString);
     buffer.write('''</div>''');
   }
   buffer.writeln();
@@ -3897,9 +3897,9 @@ String __deduplicated_lib_templates_html__type_html_partial_categorization_0(
 String __deduplicated_lib_templates_html__type_html_partial_features_1(
     Typedef context0) {
   final buffer = StringBuffer();
-  if (context0.hasFeatures == true) {
+  if (context0.hasAttributes == true) {
     buffer.write('''<div class="features">''');
-    buffer.write(context0.featuresAsString);
+    buffer.write(context0.attributesAsString);
     buffer.write('''</div>''');
   }
   buffer.writeln();
@@ -4332,9 +4332,9 @@ String
     ___deduplicated_lib_templates_html__instance_methods_html_partial_callable_0_partial_features_1(
         Method context1) {
   final buffer = StringBuffer();
-  if (context1.hasFeatures == true) {
+  if (context1.hasAttributes == true) {
     buffer.write('''<div class="features">''');
-    buffer.write(context1.featuresAsString);
+    buffer.write(context1.attributesAsString);
     buffer.write('''</div>''');
   }
   buffer.writeln();
@@ -4445,9 +4445,9 @@ String
     ___deduplicated_lib_templates_html__instance_operators_html_partial_callable_0_partial_features_1(
         Operator context1) {
   final buffer = StringBuffer();
-  if (context1.hasFeatures == true) {
+  if (context1.hasAttributes == true) {
     buffer.write('''<div class="features">''');
-    buffer.write(context1.featuresAsString);
+    buffer.write(context1.attributesAsString);
     buffer.write('''</div>''');
   }
   buffer.writeln();
@@ -4545,9 +4545,9 @@ String
     ___deduplicated_lib_templates_html__static_properties_html_partial_property_0_partial_features_1(
         Field context1) {
   final buffer = StringBuffer();
-  if (context1.hasFeatures == true) {
+  if (context1.hasAttributes == true) {
     buffer.write('''<div class="features">''');
-    buffer.write(context1.featuresAsString);
+    buffer.write(context1.attributesAsString);
     buffer.write('''</div>''');
   }
   buffer.writeln();
@@ -4652,9 +4652,9 @@ String
     ___deduplicated_lib_templates_html__static_methods_html_partial_callable_0_partial_features_1(
         Method context1) {
   final buffer = StringBuffer();
-  if (context1.hasFeatures == true) {
+  if (context1.hasAttributes == true) {
     buffer.write('''<div class="features">''');
-    buffer.write(context1.featuresAsString);
+    buffer.write(context1.attributesAsString);
     buffer.write('''</div>''');
   }
   buffer.writeln();
@@ -4774,9 +4774,9 @@ String
     ___deduplicated_lib_templates_html__static_constants_html_partial_constant_0_partial_features_1(
         Field context1) {
   final buffer = StringBuffer();
-  if (context1.hasFeatures == true) {
+  if (context1.hasAttributes == true) {
     buffer.write('''<div class="features">''');
-    buffer.write(context1.featuresAsString);
+    buffer.write(context1.attributesAsString);
     buffer.write('''</div>''');
   }
   buffer.writeln();
@@ -4940,9 +4940,9 @@ String
     __deduplicated_lib_templates_html__accessor_getter_html_partial_features_2(
         Accessor context1) {
   final buffer = StringBuffer();
-  if (context1.hasFeatures == true) {
+  if (context1.hasAttributes == true) {
     buffer.write('''<div class="features">''');
-    buffer.write(context1.featuresAsString);
+    buffer.write(context1.attributesAsString);
     buffer.write('''</div>''');
   }
   buffer.writeln();
@@ -5085,9 +5085,9 @@ String
     __deduplicated_lib_templates_html__accessor_setter_html_partial_features_2(
         Accessor context1) {
   final buffer = StringBuffer();
-  if (context1.hasFeatures == true) {
+  if (context1.hasAttributes == true) {
     buffer.write('''<div class="features">''');
-    buffer.write(context1.featuresAsString);
+    buffer.write(context1.attributesAsString);
     buffer.write('''</div>''');
   }
   buffer.writeln();

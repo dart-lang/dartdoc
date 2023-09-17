@@ -4,7 +4,7 @@
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:collection/collection.dart' show IterableExtension;
-import 'package:dartdoc/src/model/feature.dart';
+import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/special_elements.dart';
 
@@ -31,11 +31,11 @@ mixin Inheritable on ContainerMember {
   bool get isCovariant;
 
   @override
-  Set<Feature> get features => {
-        ...super.features,
-        if (isOverride) Feature.overrideFeature,
-        if (isInherited) Feature.inherited,
-        if (isCovariant) Feature.covariant,
+  Set<Attribute> get attributes => {
+        ...super.attributes,
+        if (isOverride) Attribute.override_,
+        if (isInherited) Attribute.inherited,
+        if (isCovariant) Attribute.covariant,
       };
 
   @override
