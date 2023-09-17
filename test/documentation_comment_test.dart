@@ -23,12 +23,6 @@ class DocumentationCommentTest extends DartdocTestBase {
   @override
   String get libraryName => 'my_library';
 
-  Matcher hasInvalidParameterWarning(String message) =>
-      _HasWarning(PackageWarning.invalidParameter, message);
-
-  Matcher hasMissingExampleWarning(String message) =>
-      _HasWarning(PackageWarning.missingExampleFile, message);
-
   late Folder projectRoot;
   late PackageGraph packageGraph;
   late ModelElement libraryModel;
@@ -468,7 +462,13 @@ Code snippet
 /// End text.
 ''');
 
-    expectNoWarnings();
+    expect(
+      libraryModel,
+      hasDeprecatedWarning(
+        "The '@example' directive is deprecated, and will soon no longer be "
+        'supported.',
+      ),
+    );
     expect(doc, equals('''
 Text.
 
@@ -490,7 +490,13 @@ End text.'''));
 /// {@example region=r abc}
 ''');
 
-    expectNoWarnings();
+    expect(
+      libraryModel,
+      hasDeprecatedWarning(
+        "The '@example' directive is deprecated, and will soon no longer be "
+        'supported.',
+      ),
+    );
     expect(doc, equals('''
 Text.
 
@@ -511,7 +517,13 @@ Code snippet
 /// End text.
 ''');
 
-    expectNoWarnings();
+    expect(
+      libraryModel,
+      hasDeprecatedWarning(
+        "The '@example' directive is deprecated, and will soon no longer be "
+        'supported.',
+      ),
+    );
     expect(doc, equals('''
 Text.
 
@@ -535,7 +547,13 @@ Code snippet
 /// {@example abc.html lang=html}
 ''');
 
-    expectNoWarnings();
+    expect(
+      libraryModel,
+      hasDeprecatedWarning(
+        "The '@example' directive is deprecated, and will soon no longer be "
+        'supported.',
+      ),
+    );
     expect(doc, equals('''
 Text.
 
@@ -558,7 +576,13 @@ Code snippet
 /// {@example abc lang=html}
 ''');
 
-    expectNoWarnings();
+    expect(
+      libraryModel,
+      hasDeprecatedWarning(
+        "The '@example' directive is deprecated, and will soon no longer be "
+        'supported.',
+      ),
+    );
     expect(doc, equals('''
 Text.
 
@@ -576,6 +600,13 @@ Code snippet
     var abcPath = resourceProvider.pathContext.canonicalize(
         resourceProvider.pathContext.join(projectRoot.path, 'abc.md'));
     var libPathInWarning = resourceProvider.pathContext.join('lib', 'a.dart');
+    expect(
+      libraryModel,
+      hasDeprecatedWarning(
+        "The '@example' directive is deprecated, and will soon no longer be "
+        'supported.',
+      ),
+    );
     expect(libraryModel,
         hasMissingExampleWarning('$abcPath; path listed at $libPathInWarning'));
     // When the example path is invalid, the directive should be left in-place.
@@ -648,7 +679,13 @@ Text.
 /// {@inject-html}<script></script>{@end-inject-html}
 ''');
 
-    expectNoWarnings();
+    expect(
+      libraryModel,
+      hasDeprecatedWarning(
+        "The '@inject-html' directive is deprecated, and will soon no longer "
+        'be supported.',
+      ),
+    );
     expect(doc, equals('''
 Text.
 
@@ -875,12 +912,17 @@ Text.
             'A fenced code block in Markdown should have a language specified'),
         isFalse);
   }
-  //}, onPlatform: {
-  //  'windows': Skip('These tests do not work on Windows (#2446)')
-  //});
 
-// TODO(srawlins): More unit tests: @example with `config.examplePathPrefix`,
-// @tool.
+  Matcher hasDeprecatedWarning(String message) =>
+      _HasWarning(PackageWarning.deprecated, message);
+
+  Matcher hasInvalidParameterWarning(String message) =>
+      _HasWarning(PackageWarning.invalidParameter, message);
+
+  Matcher hasMissingExampleWarning(String message) =>
+      _HasWarning(PackageWarning.missingExampleFile, message);
+
+// TODO(srawlins): More unit tests: @tool.
 }
 
 class _HasWarning extends Matcher {
@@ -910,9 +952,18 @@ class _HasWarning extends Matcher {
     if (actual is ModelElement) {
       var warnings = actual
           .packageGraph.packageWarningCounter.countedWarnings[actual.element];
+      if (warnings == null) {
+        return mismatchDescription.add('has no warnings');
+      }
+      if (warnings.length == 1) {
+        var kind = warnings.keys.first;
+        return mismatchDescription
+            .add('has one $kind warnings: ${warnings[kind]}');
+      }
+
       return mismatchDescription.add('has warnings: $warnings');
-    } else {
-      return mismatchDescription.add('is a ${actual.runtimeType}');
     }
+
+    return mismatchDescription.add('is a ${actual.runtimeType}');
   }
 }

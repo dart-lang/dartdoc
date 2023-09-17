@@ -317,6 +317,12 @@ mixin DocumentationComment on Documentable, Warnable, Locatable, SourceCode {
         // Already warned about an invalid parameter if this happens.
         return '';
       }
+      warn(
+        PackageWarning.deprecated,
+        message:
+            "The '@example' directive is deprecated, and will soon no longer "
+            'be supported.',
+      );
       var lang = args['lang'] ??
           pathContext.extension(args['src']!).replaceFirst('.', '');
 
@@ -638,6 +644,11 @@ mixin DocumentationComment on Documentable, Warnable, Locatable, SourceCode {
   String _stripHtmlAndAddToIndex(String rawDocs) {
     if (!config.injectHtml) return rawDocs;
     return rawDocs.replaceAllMapped(_htmlPattern, (match) {
+      warn(
+        PackageWarning.deprecated,
+        message: "The '@inject-html' directive is deprecated, and will soon no "
+            'longer be supported.',
+      );
       var fragment = match[1]!;
       var digest = crypto.sha1.convert(fragment.codeUnits).toString();
       packageGraph.addHtmlFragment(digest, fragment);
