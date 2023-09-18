@@ -528,13 +528,7 @@ mixin DocumentationComment on Documentable, Warnable, Locatable, SourceCode {
       }
       final positionalArgs = args.rest.sublist(0);
       String uniqueId;
-      var wasDeprecated = false;
-      if (positionalArgs.length == 4) {
-        // Supports the original form of the animation tag for backward
-        // compatibility.
-        uniqueId = positionalArgs.removeAt(0);
-        wasDeprecated = true;
-      } else if (positionalArgs.length == 3) {
+      if (positionalArgs.length == 3) {
         uniqueId = args['id'] ?? getUniqueId('animation_');
       } else {
         warn(PackageWarning.invalidParameter,
@@ -589,16 +583,6 @@ mixin DocumentationComment on Documentable, Warnable, Locatable, SourceCode {
         return '';
       }
       var overlayId = '${uniqueId}_play_button_';
-
-      // Only warn about deprecation if some other warning didn't occur.
-      if (wasDeprecated) {
-        warn(PackageWarning.deprecated,
-            message:
-                'Deprecated form of @animation directive, "${basicMatch[0]}"\n'
-                'Animation directives are now of the form "{@animation '
-                'WIDTH HEIGHT URL [id=ID]}" (id is an optional '
-                'parameter)');
-      }
 
       return modelElementRenderer.renderAnimation(
           uniqueId, width, height, movieUrl, overlayId);
