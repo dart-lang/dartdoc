@@ -679,13 +679,7 @@ Text.
 /// {@inject-html}<script></script>{@end-inject-html}
 ''');
 
-    expect(
-      libraryModel,
-      hasDeprecatedWarning(
-        "The '@inject-html' directive is deprecated, and will soon no longer "
-        'be supported.',
-      ),
-    );
+    expectNoWarnings();
     expect(doc, equals('''
 Text.
 
