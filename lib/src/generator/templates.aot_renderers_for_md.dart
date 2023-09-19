@@ -497,7 +497,7 @@ String renderFunction(FunctionTemplateData context0) {
   buffer.writeln();
   buffer.write(_renderFunction_partial_callable_multiline_4(context2));
   buffer.writeln();
-  buffer.write(_renderFunction_partial_features_5(context2));
+  buffer.write(_renderFunction_partial_attributes_5(context2));
   buffer.write('\n\n');
   buffer.write(_renderFunction_partial_documentation_6(context2));
   buffer.write('\n\n');
@@ -749,7 +749,7 @@ String renderMethod(MethodTemplateData context0) {
   buffer.writeln();
   buffer.write(_renderMethod_partial_callable_multiline_3(context2));
   buffer.writeln();
-  buffer.write(_renderMethod_partial_features_4(context2));
+  buffer.write(_renderMethod_partial_attributes_4(context2));
   buffer.write('\n\n');
   buffer.write(_renderMethod_partial_documentation_5(context2));
   buffer.write('\n\n');
@@ -875,7 +875,7 @@ String renderProperty(PropertyTemplateData context0) {
     buffer.write(_renderProperty_partial_name_summary_4(context2));
     buffer.write('  ');
     buffer.writeln();
-    buffer.write(_renderProperty_partial_features_5(context2));
+    buffer.write(_renderProperty_partial_attributes_5(context2));
     buffer.write('\n\n');
     buffer.write(_renderProperty_partial_documentation_6(context2));
     buffer.write('\n\n');
@@ -994,7 +994,7 @@ String renderTopLevelProperty(TopLevelPropertyTemplateData context0) {
     buffer.write(_renderTopLevelProperty_partial_name_summary_5(context1));
     buffer.write('  ');
     buffer.writeln();
-    buffer.write(_renderTopLevelProperty_partial_features_6(context1));
+    buffer.write(_renderTopLevelProperty_partial_attributes_6(context1));
     buffer.write('\n\n');
     buffer.write(_renderTopLevelProperty_partial_documentation_7(context1));
     buffer.write('\n\n');
@@ -1086,8 +1086,8 @@ String _renderCategory_partial_callable_7(ModelFunctionTyped context2) {
   buffer.write(context2.oneLineDoc);
   buffer.write('  ');
   buffer.writeln();
-  buffer
-      .write(__renderCategory_partial_callable_7_partial_features_1(context2));
+  buffer.write(
+      __renderCategory_partial_callable_7_partial_attributes_1(context2));
   buffer.writeln();
 
   return buffer.toString();
@@ -1097,9 +1097,9 @@ String __renderCategory_partial_callable_7_partial_categorization_0(
         ModelFunctionTyped context2) =>
     _deduplicated_lib_templates_md__categorization_md(context2);
 
-String __renderCategory_partial_callable_7_partial_features_1(
+String __renderCategory_partial_callable_7_partial_attributes_1(
         ModelFunctionTyped context2) =>
-    _deduplicated_lib_templates_md__features_md(context2);
+    _deduplicated_lib_templates_md__attributes_md(context2);
 
 String _renderCategory_partial_typedef_8(Typedef context2) =>
     _deduplicated_lib_templates_md__typedef_md(context2);
@@ -1376,8 +1376,8 @@ String __renderFunction_partial_callable_multiline_4_partial_name_summary_0(
         ModelFunction context1) =>
     _deduplicated_lib_templates_md__name_summary_md(context1);
 
-String _renderFunction_partial_features_5(ModelFunction context1) =>
-    _deduplicated_lib_templates_md__features_md(context1);
+String _renderFunction_partial_attributes_5(ModelFunction context1) =>
+    _deduplicated_lib_templates_md__attributes_md(context1);
 
 String _renderFunction_partial_documentation_6(ModelFunction context1) =>
     _deduplicated_lib_templates_md__documentation_md(context1);
@@ -1443,7 +1443,8 @@ String _renderLibrary_partial_callable_9(ModelFunctionTyped context3) {
   buffer.write(context3.oneLineDoc);
   buffer.write('  ');
   buffer.writeln();
-  buffer.write(__renderLibrary_partial_callable_9_partial_features_1(context3));
+  buffer
+      .write(__renderLibrary_partial_callable_9_partial_attributes_1(context3));
   buffer.writeln();
 
   return buffer.toString();
@@ -1453,9 +1454,9 @@ String __renderLibrary_partial_callable_9_partial_categorization_0(
         ModelFunctionTyped context3) =>
     _deduplicated_lib_templates_md__categorization_md(context3);
 
-String __renderLibrary_partial_callable_9_partial_features_1(
+String __renderLibrary_partial_callable_9_partial_attributes_1(
         ModelFunctionTyped context3) =>
-    _deduplicated_lib_templates_md__features_md(context3);
+    _deduplicated_lib_templates_md__attributes_md(context3);
 
 String _renderLibrary_partial_typedef_10(Typedef context3) =>
     _deduplicated_lib_templates_md__typedef_md(context3);
@@ -1504,8 +1505,8 @@ String __renderMethod_partial_callable_multiline_3_partial_name_summary_0(
         Method context1) =>
     _deduplicated_lib_templates_md__name_summary_md(context1);
 
-String _renderMethod_partial_features_4(Method context1) =>
-    _deduplicated_lib_templates_md__features_md(context1);
+String _renderMethod_partial_attributes_4(Method context1) =>
+    _deduplicated_lib_templates_md__attributes_md(context1);
 
 String _renderMethod_partial_documentation_5(Method context1) =>
     _deduplicated_lib_templates_md__documentation_md(context1);
@@ -1592,8 +1593,8 @@ String _renderProperty_partial_annotations_3(Field context1) =>
 String _renderProperty_partial_name_summary_4(Field context1) =>
     _deduplicated_lib_templates_md__name_summary_md(context1);
 
-String _renderProperty_partial_features_5(Field context1) =>
-    _deduplicated_lib_templates_md__features_md(context1);
+String _renderProperty_partial_attributes_5(Field context1) =>
+    _deduplicated_lib_templates_md__attributes_md(context1);
 
 String _renderProperty_partial_documentation_6(Field context1) =>
     _deduplicated_lib_templates_md__documentation_md(context1);
@@ -1646,8 +1647,9 @@ String _renderTopLevelProperty_partial_name_summary_5(
         TopLevelVariable context1) =>
     _deduplicated_lib_templates_md__name_summary_md(context1);
 
-String _renderTopLevelProperty_partial_features_6(TopLevelVariable context1) =>
-    _deduplicated_lib_templates_md__features_md(context1);
+String _renderTopLevelProperty_partial_attributes_6(
+        TopLevelVariable context1) =>
+    _deduplicated_lib_templates_md__attributes_md(context1);
 
 String _renderTopLevelProperty_partial_documentation_7(
         TopLevelVariable context1) =>
@@ -1883,8 +1885,9 @@ String _deduplicated_lib_templates_md__constant_md(GetterSetterCombo context0) {
   buffer.write(context0.oneLineDoc);
   buffer.write('  ');
   buffer.writeln();
-  buffer.write(__deduplicated_lib_templates_md__constant_md_partial_features_1(
-      context0));
+  buffer.write(
+      __deduplicated_lib_templates_md__constant_md_partial_attributes_1(
+          context0));
   buffer.writeln();
 
   return buffer.toString();
@@ -1908,7 +1911,7 @@ Categories:''');
   return buffer.toString();
 }
 
-String __deduplicated_lib_templates_md__constant_md_partial_features_1(
+String __deduplicated_lib_templates_md__constant_md_partial_attributes_1(
     GetterSetterCombo context0) {
   final buffer = StringBuffer();
   if (context0.hasAttributes == true) {
@@ -1921,7 +1924,7 @@ String __deduplicated_lib_templates_md__constant_md_partial_features_1(
   return buffer.toString();
 }
 
-String _deduplicated_lib_templates_md__features_md(ModelElement context0) {
+String _deduplicated_lib_templates_md__attributes_md(ModelElement context0) {
   final buffer = StringBuffer();
   if (context0.hasAttributes == true) {
     buffer.write('''_''');
@@ -1949,8 +1952,9 @@ String _deduplicated_lib_templates_md__property_md(GetterSetterCombo context0) {
   buffer.write(context0.oneLineDoc);
   buffer.write('  ');
   buffer.writeln();
-  buffer.write(__deduplicated_lib_templates_md__property_md_partial_features_1(
-      context0));
+  buffer.write(
+      __deduplicated_lib_templates_md__property_md_partial_attributes_1(
+          context0));
   buffer.writeln();
 
   return buffer.toString();
@@ -1974,7 +1978,7 @@ Categories:''');
   return buffer.toString();
 }
 
-String __deduplicated_lib_templates_md__property_md_partial_features_1(
+String __deduplicated_lib_templates_md__property_md_partial_attributes_1(
     GetterSetterCombo context0) {
   final buffer = StringBuffer();
   if (context0.hasAttributes == true) {
@@ -2006,8 +2010,9 @@ String _deduplicated_lib_templates_md__typedef_md(Typedef context0) {
     buffer.write(context1.oneLineDoc);
     buffer.write('  ');
     buffer.write('\n    ');
-    buffer.write(__deduplicated_lib_templates_md__typedef_md_partial_features_1(
-        context1));
+    buffer.write(
+        __deduplicated_lib_templates_md__typedef_md_partial_attributes_1(
+            context1));
   }
   if (context0.isCallable != true) {
     buffer.write('\n  ');
@@ -2037,7 +2042,7 @@ Categories:''');
   return buffer.toString();
 }
 
-String __deduplicated_lib_templates_md__typedef_md_partial_features_1(
+String __deduplicated_lib_templates_md__typedef_md_partial_attributes_1(
     FunctionTypedef context1) {
   final buffer = StringBuffer();
   if (context1.hasAttributes == true) {
@@ -2067,7 +2072,7 @@ String __deduplicated_lib_templates_md__typedef_md_partial_type_2(
   buffer.write('  ');
   buffer.writeln();
   buffer.write(
-      ___deduplicated_lib_templates_md__typedef_md_partial_type_2_partial_features_1(
+      ___deduplicated_lib_templates_md__typedef_md_partial_type_2_partial_attributes_1(
           context0));
   buffer.writeln();
 
@@ -2094,7 +2099,7 @@ Categories:''');
 }
 
 String
-    ___deduplicated_lib_templates_md__typedef_md_partial_type_2_partial_features_1(
+    ___deduplicated_lib_templates_md__typedef_md_partial_type_2_partial_attributes_1(
         Typedef context0) {
   final buffer = StringBuffer();
   if (context0.hasAttributes == true) {
@@ -2123,7 +2128,7 @@ String _deduplicated_lib_templates_md__type_md(Typedef context0) {
   buffer.write('  ');
   buffer.writeln();
   buffer.write(
-      __deduplicated_lib_templates_md__type_md_partial_features_1(context0));
+      __deduplicated_lib_templates_md__type_md_partial_attributes_1(context0));
   buffer.writeln();
 
   return buffer.toString();
@@ -2147,7 +2152,7 @@ Categories:''');
   return buffer.toString();
 }
 
-String __deduplicated_lib_templates_md__type_md_partial_features_1(
+String __deduplicated_lib_templates_md__type_md_partial_attributes_1(
     Typedef context0) {
   final buffer = StringBuffer();
   if (context0.hasAttributes == true) {
@@ -2316,7 +2321,7 @@ String __deduplicated_lib_templates_md__instance_methods_md_partial_callable_0(
   buffer.write('  ');
   buffer.writeln();
   buffer.write(
-      ___deduplicated_lib_templates_md__instance_methods_md_partial_callable_0_partial_features_1(
+      ___deduplicated_lib_templates_md__instance_methods_md_partial_callable_0_partial_attributes_1(
           context1));
   buffer.writeln();
 
@@ -2343,7 +2348,7 @@ Categories:''');
 }
 
 String
-    ___deduplicated_lib_templates_md__instance_methods_md_partial_callable_0_partial_features_1(
+    ___deduplicated_lib_templates_md__instance_methods_md_partial_callable_0_partial_attributes_1(
         Method context1) {
   final buffer = StringBuffer();
   if (context1.hasAttributes == true) {
@@ -2397,7 +2402,7 @@ String
   buffer.write('  ');
   buffer.writeln();
   buffer.write(
-      ___deduplicated_lib_templates_md__instance_operators_md_partial_callable_0_partial_features_1(
+      ___deduplicated_lib_templates_md__instance_operators_md_partial_callable_0_partial_attributes_1(
           context1));
   buffer.writeln();
 
@@ -2424,7 +2429,7 @@ Categories:''');
 }
 
 String
-    ___deduplicated_lib_templates_md__instance_operators_md_partial_callable_0_partial_features_1(
+    ___deduplicated_lib_templates_md__instance_operators_md_partial_callable_0_partial_attributes_1(
         Operator context1) {
   final buffer = StringBuffer();
   if (context1.hasAttributes == true) {
@@ -2476,7 +2481,7 @@ String __deduplicated_lib_templates_md__static_properties_md_partial_property_0(
   buffer.write('  ');
   buffer.writeln();
   buffer.write(
-      ___deduplicated_lib_templates_md__static_properties_md_partial_property_0_partial_features_1(
+      ___deduplicated_lib_templates_md__static_properties_md_partial_property_0_partial_attributes_1(
           context1));
   buffer.writeln();
 
@@ -2503,7 +2508,7 @@ Categories:''');
 }
 
 String
-    ___deduplicated_lib_templates_md__static_properties_md_partial_property_0_partial_features_1(
+    ___deduplicated_lib_templates_md__static_properties_md_partial_property_0_partial_attributes_1(
         Field context1) {
   final buffer = StringBuffer();
   if (context1.hasAttributes == true) {
@@ -2555,7 +2560,7 @@ String __deduplicated_lib_templates_md__static_methods_md_partial_callable_0(
   buffer.write('  ');
   buffer.writeln();
   buffer.write(
-      ___deduplicated_lib_templates_md__static_methods_md_partial_callable_0_partial_features_1(
+      ___deduplicated_lib_templates_md__static_methods_md_partial_callable_0_partial_attributes_1(
           context1));
   buffer.writeln();
 
@@ -2582,7 +2587,7 @@ Categories:''');
 }
 
 String
-    ___deduplicated_lib_templates_md__static_methods_md_partial_callable_0_partial_features_1(
+    ___deduplicated_lib_templates_md__static_methods_md_partial_callable_0_partial_attributes_1(
         Method context1) {
   final buffer = StringBuffer();
   if (context1.hasAttributes == true) {
@@ -2632,7 +2637,7 @@ String __deduplicated_lib_templates_md__static_constants_md_partial_constant_0(
   buffer.write('  ');
   buffer.writeln();
   buffer.write(
-      ___deduplicated_lib_templates_md__static_constants_md_partial_constant_0_partial_features_1(
+      ___deduplicated_lib_templates_md__static_constants_md_partial_constant_0_partial_attributes_1(
           context1));
   buffer.writeln();
 
@@ -2659,7 +2664,7 @@ Categories:''');
 }
 
 String
-    ___deduplicated_lib_templates_md__static_constants_md_partial_constant_0_partial_features_1(
+    ___deduplicated_lib_templates_md__static_constants_md_partial_constant_0_partial_attributes_1(
         Field context1) {
   final buffer = StringBuffer();
   if (context1.hasAttributes == true) {
@@ -2726,7 +2731,7 @@ String _deduplicated_lib_templates_md__accessor_getter_md(
     buffer.write('  ');
     buffer.writeln();
     buffer.write(
-        __deduplicated_lib_templates_md__accessor_getter_md_partial_features_2(
+        __deduplicated_lib_templates_md__accessor_getter_md_partial_attributes_2(
             context1));
     buffer.write('\n\n');
     buffer.write(
@@ -2782,7 +2787,7 @@ String
   return buffer.toString();
 }
 
-String __deduplicated_lib_templates_md__accessor_getter_md_partial_features_2(
+String __deduplicated_lib_templates_md__accessor_getter_md_partial_attributes_2(
     Accessor context1) {
   final buffer = StringBuffer();
   if (context1.hasAttributes == true) {
@@ -2847,7 +2852,7 @@ String _deduplicated_lib_templates_md__accessor_setter_md(
     buffer.write(''')  ''');
     buffer.writeln();
     buffer.write(
-        __deduplicated_lib_templates_md__accessor_setter_md_partial_features_2(
+        __deduplicated_lib_templates_md__accessor_setter_md_partial_attributes_2(
             context1));
     buffer.write('\n\n');
     buffer.write(
@@ -2903,7 +2908,7 @@ String
   return buffer.toString();
 }
 
-String __deduplicated_lib_templates_md__accessor_setter_md_partial_features_2(
+String __deduplicated_lib_templates_md__accessor_setter_md_partial_attributes_2(
     Accessor context1) {
   final buffer = StringBuffer();
   if (context1.hasAttributes == true) {
