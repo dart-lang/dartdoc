@@ -272,7 +272,7 @@ enum EnumWithDefaultConstructor {
             matches('<h2>Properties</h2>'),
             matches('<a href="../lib/E/ig1.html">ig1</a>'),
             matches('An instance getter.'),
-            matches('<span class="feature">read-only</span>'),
+            matches('<span class="feature">no setter</span>'),
           ]));
     });
 
@@ -283,7 +283,7 @@ enum EnumWithDefaultConstructor {
             matches('<h2>Properties</h2>'),
             matches('<a href="../lib/E/is1.html">is1</a>'),
             matches('An instance setter.'),
-            matches('<span class="feature">write-only</span>'),
+            matches('<span class="feature">no getter</span>'),
           ]));
     });
 
