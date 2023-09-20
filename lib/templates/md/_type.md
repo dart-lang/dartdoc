@@ -2,4 +2,4 @@
 {{>categorization}}
 
 {{{ oneLineDoc }}}  {{!two spaces intentional}}
-{{>features}}
+{{ >attributes }}

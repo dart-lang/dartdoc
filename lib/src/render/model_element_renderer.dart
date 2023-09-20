@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:dartdoc/src/model/feature.dart';
+import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/model_element.dart';
 
 abstract class ModelElementRenderer {
@@ -15,10 +15,10 @@ abstract class ModelElementRenderer {
   String renderAnimation(
       String uniqueId, int width, int height, Uri movieUrl, String overlayId);
 
-  String renderFeatures(ModelElement modelElement) {
-    var allFeatures = modelElement.features.toList(growable: false)
-      ..sort(byFeatureOrdering);
-    return allFeatures
+  String renderAttributes(ModelElement modelElement) {
+    var allAttributes = modelElement.attributes.toList(growable: false)
+      ..sort(byAttributeOrdering);
+    return allAttributes
         .map((f) =>
             '<span class="${f.cssClassName}">${f.linkedNameWithParameters}</span>')
         .join();

@@ -9,7 +9,7 @@
 
 {{#method}}
 {{>callable_multiline}}
-{{>features}}
+{{ >attributes }}
 
 {{>documentation}}
 

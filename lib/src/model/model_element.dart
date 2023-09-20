@@ -17,8 +17,8 @@ import 'package:collection/collection.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/generator/file_structure.dart';
 import 'package:dartdoc/src/model/annotation.dart';
+import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
-import 'package:dartdoc/src/model/feature.dart';
 import 'package:dartdoc/src/model/feature_set.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model/model_object_builder.dart';
@@ -437,22 +437,22 @@ abstract class ModelElement extends Canonicalization
       .where((s) => s.isNotEmpty)
       .toSet();
 
-  bool get hasFeatures => features.isNotEmpty;
+  bool get hasAttributes => attributes.isNotEmpty;
 
-  /// The set of attributes or "features" of this element.
+  /// This element's attributes.
   ///
   /// This includes tags applied by Dartdoc for various attributes that should
-  /// be called out. See [Feature] for a list.
-  Set<Feature> get features {
+  /// be called out. See [Attribute] for a list.
+  Set<Attribute> get attributes {
     return {
       // 'const' and 'static' are not needed here because 'const' and 'static'
       // elements get their own sections in the doc.
-      if (isFinal) Feature.finalFeature,
-      if (isLate) Feature.lateFeature,
+      if (isFinal) Attribute.final_,
+      if (isLate) Attribute.late_,
     };
   }
 
-  String get featuresAsString => modelElementRenderer.renderFeatures(this);
+  String get attributesAsString => modelElementRenderer.renderAttributes(this);
 
   // True if this is a function, or if it is an type alias to a function.
   bool get isCallable =>

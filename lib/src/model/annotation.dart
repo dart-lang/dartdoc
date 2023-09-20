@@ -4,7 +4,7 @@
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/element_type.dart';
-import 'package:dartdoc/src/model/feature.dart';
+import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/getter_setter_combo.dart';
 import 'package:dartdoc/src/model/library.dart';
 import 'package:dartdoc/src/model/model_object_builder.dart';
@@ -12,7 +12,7 @@ import 'package:dartdoc/src/model/package_graph.dart';
 
 /// Represents a Dart annotation, attached to an element in the source code with
 /// `@`.
-class Annotation extends Feature with ModelBuilder {
+class Annotation extends Attribute with ModelBuilder {
   final ElementAnnotation annotation;
   final Library library;
 
@@ -24,7 +24,7 @@ class Annotation extends Feature with ModelBuilder {
 
   @override
   late final String linkedNameWithParameters =
-      packageGraph.rendererFactory.featureRenderer.renderAnnotation(this);
+      packageGraph.rendererFactory.attributeRenderer.renderAnnotation(this);
 
   @override
   String get linkedName => annotation.element is PropertyAccessorElement

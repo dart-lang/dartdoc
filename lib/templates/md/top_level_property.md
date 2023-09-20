@@ -10,7 +10,7 @@
 {{#hasNoGetterSetter}}
 {{ >annotations }}
 {{{ modelType.linkedName }}} {{ >name_summary }}  {{ !two spaces intentional }}
-{{ >features }}
+{{ >attributes }}
 
 {{>documentation}}
 
