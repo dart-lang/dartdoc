@@ -233,7 +233,8 @@ abstract class PubPackageMeta extends PackageMeta {
     folder = original;
     if (!original.exists) {
       throw PackageMetaFailure(
-          'fatal error: unable to locate the input directory at ${original.path}.');
+          'fatal error: unable to locate the input directory at '
+          "'${original.path}'.");
     }
 
     if (!_packageMetaCache.containsKey(folder.path)) {

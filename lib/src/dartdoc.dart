@@ -283,14 +283,9 @@ class Dartdoc {
         runtimeStats.endPerfTask();
         await postProcessCallback?.call(config);
       },
-      (e, chain) {
-        if (e is DartdocFailure) {
-          stderr.writeln('\n$_dartdocFailedMessage: $e.');
-          exitCode = 1;
-        } else {
-          stderr.writeln('\n$_dartdocFailedMessage: $e\n$chain');
-          exitCode = 255;
-        }
+      (e, stackTrace) {
+        stderr.writeln('\n$_dartdocFailedMessage: $e\n$stackTrace');
+        exitCode = e is DartdocFailure ? 1 : 255;
       },
       zoneSpecification: ZoneSpecification(
         print: (_, __, ___, String line) => logPrint(line),
