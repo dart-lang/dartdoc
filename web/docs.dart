@@ -24,6 +24,7 @@ void initializeSidebars() {
   }
   final dataUsingBaseHref = body.dataset['using-base-href'];
   if (dataUsingBaseHref == null) {
+    // This should never happen.
     return;
   }
   var baseHref = '';
@@ -39,7 +40,7 @@ void initializeSidebars() {
     return;
   }
   final aboveSidebarPath = mainContent.dataset['above-sidebar'];
-  final leftSidebar = document.querySelector('#dartdoc-sidebar-left-content');
+  final leftSidebar = document.querySelector('#dartdoc-sidebar-left');
   if (aboveSidebarPath != null &&
       aboveSidebarPath.isNotEmpty &&
       leftSidebar != null) {
