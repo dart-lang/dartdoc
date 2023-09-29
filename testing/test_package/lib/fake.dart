@@ -897,8 +897,6 @@ class ExtraSpecialList<E> extends SpecialList {}
 /// {@category Unreal}
 /// {@category More Excellence}
 /// {@subCategory Things and Such}
-/// {@image https://flutter.io/images/catalog-widget-placeholder.png}
-/// {@samples https://flutter.io}
 ///
 class BaseForDocComments {
   /// Takes a [value] and returns a String.
