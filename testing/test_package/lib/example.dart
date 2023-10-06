@@ -635,6 +635,7 @@ class ExtensionReferencer {}
 class ToolPrintingMacroWhichInjectsHtml {
   /// Text.
   /// {@template html-macro}
+  // ignore: doc_directive_missing_closing_tag
   /// {@inject-html}<div class="title">Title</div>{@end-inject-html}
   /// {@endtemplate}
   int a = 1;
