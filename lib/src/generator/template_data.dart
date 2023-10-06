@@ -99,9 +99,9 @@ abstract class TemplateData<T extends Documentable> extends TemplateDataBase {
   @override
   T get self;
 
-  String? get aboveSidebarPath;
+  String? get aboveSidebarPath => self.aboveSidebarPath;
 
-  String? get belowSidebarPath;
+  String? get belowSidebarPath => self.belowSidebarPath;
 
   String _layoutTitle(String name, String kind, {required bool isDeprecated}) =>
       _packageGraph.rendererFactory.templateRenderer
@@ -134,11 +134,6 @@ class PackageTemplateData extends TemplateData<Package> {
   String get title => '${package.name} - Dart API docs';
   @override
   Package get self => package;
-
-  @override
-  String? get aboveSidebarPath => null;
-  @override
-  String? get belowSidebarPath => null;
 
   @override
   String get layoutTitle =>
@@ -201,11 +196,6 @@ class CategoryTemplateData extends TemplateData<Category>
 
   @override
   Category get self => category;
-
-  @override
-  String? get aboveSidebarPath => null;
-  @override
-  String? get belowSidebarPath => null;
 }
 
 class LibraryTemplateData extends TemplateData<Library>
@@ -230,11 +220,6 @@ class LibraryTemplateData extends TemplateData<Library>
 
   @override
   Library get self => library;
-
-  @override
-  String? get aboveSidebarPath => self.aboveSidebarPath;
-  @override
-  String? get belowSidebarPath => self.belowSidebarPath;
 }
 
 /// Template data for Mixin declarations.
@@ -291,11 +276,6 @@ abstract class InheritingContainerTemplateData<T extends InheritingContainer>
   T get self => clazz;
 
   @override
-  String? get aboveSidebarPath => self.aboveSidebarPath;
-  @override
-  String? get belowSidebarPath => self.belowSidebarPath;
-
-  @override
   String get title =>
       '${clazz.name} ${clazz.kind} - ${library.name} library - Dart API';
   @override
@@ -333,11 +313,6 @@ class ExtensionTemplateData<T extends Extension> extends TemplateData<T>
   T get self => extension;
 
   @override
-  String? get aboveSidebarPath => self.aboveSidebarPath;
-  @override
-  String? get belowSidebarPath => self.belowSidebarPath;
-
-  @override
   String get title =>
       '${extension.name} ${extension.kind} - ${library.name} library - Dart API';
   @override
@@ -349,6 +324,45 @@ class ExtensionTemplateData<T extends Extension> extends TemplateData<T>
   String get layoutTitle =>
       _layoutTitle(extension.name, extension.kind.toString(),
           isDeprecated: false);
+  @override
+  List<Documentable> get navLinks => [_packageGraph.defaultPackage, library];
+}
+
+final class ExtensionTypeTemplateData<T extends ExtensionType>
+    extends TemplateData<T>
+    with OneDirectoryDown
+    implements TemplateDataWithLibrary<T>, TemplateDataWithContainer<T> {
+  final T extensionType;
+  @override
+  final Library library;
+
+  ExtensionTypeTemplateData(
+    super.htmlOptions,
+    super.packageGraph,
+    this.library,
+    this.extensionType,
+  );
+
+  @override
+  Container get container => extensionType;
+
+  @override
+  T get self => extensionType;
+
+  @override
+  String get title =>
+      '${extensionType.name} ${extensionType.kind} - ${library.name} library -'
+      ' Dart API';
+  @override
+  String get metaDescription =>
+      'API docs for the ${extensionType.name} ${extensionType.kind} from the '
+      '${library.name} library, for the Dart programming language.';
+
+  @override
+  String get layoutTitle =>
+      _layoutTitle(extensionType.name, extensionType.kind.toString(),
+          isDeprecated: false);
+
   @override
   List<Documentable> get navLinks => [_packageGraph.defaultPackage, library];
 }
@@ -375,11 +389,6 @@ class ConstructorTemplateData extends TemplateData<Constructor>
   Container get container => constructable;
   @override
   Constructor get self => constructor;
-
-  @override
-  String? get aboveSidebarPath => self.aboveSidebarPath;
-  @override
-  String? get belowSidebarPath => self.belowSidebarPath;
 
   @override
   String get layoutTitle => _layoutTitle(constructor.name, constructor.fullKind,
@@ -429,11 +438,6 @@ class FunctionTemplateData extends TemplateData<ModelFunction>
   ModelFunction get self => function;
 
   @override
-  String? get aboveSidebarPath => self.aboveSidebarPath;
-  @override
-  String? get belowSidebarPath => self.belowSidebarPath;
-
-  @override
   String get title =>
       '${function.name} function - ${library.name} library - Dart API';
   @override
@@ -469,11 +473,6 @@ class MethodTemplateData extends TemplateData<Method>
 
   @override
   Method get self => method;
-
-  @override
-  String? get aboveSidebarPath => self.aboveSidebarPath;
-  @override
-  String? get belowSidebarPath => self.belowSidebarPath;
 
   @override
   String get title =>
@@ -516,11 +515,6 @@ class PropertyTemplateData extends TemplateData<Field>
   Field get self => property;
 
   @override
-  String? get aboveSidebarPath => self.aboveSidebarPath;
-  @override
-  String? get belowSidebarPath => self.belowSidebarPath;
-
-  @override
   String get title => '${property.name} ${property.kind} - '
       '${container.name} ${container.kind} - '
       '${library.name} library - Dart API';
@@ -556,11 +550,6 @@ class TypedefTemplateData extends TemplateData<Typedef>
   Typedef get self => typeDef;
 
   @override
-  String? get aboveSidebarPath => self.aboveSidebarPath;
-  @override
-  String? get belowSidebarPath => self.belowSidebarPath;
-
-  @override
   String get title =>
       '${typeDef.name} typedef - ${library.name} library - Dart API';
   @override
@@ -591,11 +580,6 @@ class TopLevelPropertyTemplateData extends TemplateData<TopLevelVariable>
 
   @override
   TopLevelVariable get self => property;
-
-  @override
-  String? get aboveSidebarPath => self.aboveSidebarPath;
-  @override
-  String? get belowSidebarPath => self.belowSidebarPath;
 
   @override
   String get title =>

@@ -23,6 +23,7 @@ import 'package:dartdoc/src/model/constructor.dart';
 import 'package:dartdoc/src/model/container.dart';
 import 'package:dartdoc/src/model/enum.dart';
 import 'package:dartdoc/src/model/extension.dart';
+import 'package:dartdoc/src/model/extension_type.dart';
 import 'package:dartdoc/src/model/field.dart';
 import 'package:dartdoc/src/model/getter_setter_combo.dart';
 import 'package:dartdoc/src/model/inheriting_container.dart';
@@ -475,6 +476,69 @@ on ''');
   return buffer.toString();
 }
 
+String renderExtensionType<T extends ExtensionType>(
+    ExtensionTypeTemplateData<T> context0) {
+  final buffer = StringBuffer();
+  buffer.write(_renderExtensionType_partial_head_0(context0));
+  buffer.writeln();
+  var context1 = context0.self;
+  buffer.writeln();
+  buffer.write('''
+# ''');
+  buffer.write(context1.nameWithGenerics);
+  buffer.write(' ');
+  buffer.writeEscaped(context1.kind.toString());
+  buffer.writeln();
+  buffer.write('''
+on ''');
+  var context2 = context1.extendedType;
+  buffer.write(context2.linkedName);
+  buffer.write('\n\n');
+  buffer.write(_renderExtensionType_partial_source_link_1(context1));
+  buffer.write('\n\n');
+  buffer.write(_renderExtensionType_partial_categorization_2(context1));
+  buffer.writeln();
+  buffer.write(_renderExtensionType_partial_feature_set_3(context1));
+  buffer.writeln();
+  var context3 = context0.extensionType;
+  buffer.writeln();
+  buffer.write(_renderExtensionType_partial_documentation_4(context3));
+  buffer.write('\n\n');
+  buffer.write(_renderExtensionType_partial_annotations_5(context3));
+  buffer.writeln();
+  if (context3.hasPublicInstanceFields == true) {
+    buffer.writeln();
+    buffer.write('''
+## Properties
+''');
+    var context4 = context3.publicInstanceFieldsSorted;
+    for (var context5 in context4) {
+      buffer.writeln();
+      buffer.write(_renderExtensionType_partial_property_6(context5));
+      buffer.writeln();
+    }
+  }
+  buffer.write('\n\n');
+  buffer.write(_renderExtensionType_partial_instance_methods_7(context3));
+  buffer.write('\n\n');
+  buffer.write(_renderExtensionType_partial_instance_operators_8(context3));
+  buffer.write('\n\n');
+  buffer.write(_renderExtensionType_partial_static_properties_9(context3));
+  buffer.write('\n\n');
+  buffer.write(_renderExtensionType_partial_static_methods_10(context3));
+  buffer.write('\n\n');
+  buffer.write(_renderExtensionType_partial_static_constants_11(context3));
+  buffer.writeln();
+  buffer.write('''
+{{ /extension }}''');
+  buffer.write('\n\n');
+  buffer.write(_renderExtensionType_partial_footer_12(context0));
+  buffer.writeln();
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
 String renderFunction(FunctionTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write(_renderFunction_partial_head_0(context0));
@@ -634,96 +698,115 @@ String renderLibrary(LibraryTemplateData context0) {
   }
   buffer.writeln();
   var context15 = context0.library;
-  if (context15.hasPublicConstants == true) {
+  if (context15.hasPublicExtensions == true) {
     buffer.writeln();
     buffer.write('''
-## Constants
+## Extension Types
 ''');
     var context16 = context15.library;
-    var context17 = context16.publicConstantsSorted;
+    var context17 = context16.publicExtensionTypesSorted;
     for (var context18 in context17) {
       buffer.writeln();
-      buffer.write(_renderLibrary_partial_constant_7(context18));
+      buffer.write(_renderLibrary_partial_extension_type_7(context18));
       buffer.writeln();
     }
-  }
-  buffer.writeln();
-  var context19 = context0.library;
-  if (context19.hasPublicProperties == true) {
     buffer.writeln();
     buffer.write('''
+{{ /library.hasPublicExtensionTypes }}''');
+    buffer.writeln();
+    var context19 = context15.library;
+    if (context19.hasPublicConstants == true) {
+      buffer.writeln();
+      buffer.write('''
+## Constants
+''');
+      var context20 = context19.library;
+      var context21 = context20.publicConstantsSorted;
+      for (var context22 in context21) {
+        buffer.writeln();
+        buffer.write(_renderLibrary_partial_constant_8(context22));
+        buffer.writeln();
+      }
+    }
+    buffer.writeln();
+    var context23 = context15.library;
+    if (context23.hasPublicProperties == true) {
+      buffer.writeln();
+      buffer.write('''
 ## Properties
 ''');
-    var context20 = context19.library;
-    var context21 = context20.publicPropertiesSorted;
-    for (var context22 in context21) {
-      buffer.writeln();
-      buffer.write(_renderLibrary_partial_property_8(context22));
-      buffer.writeln();
+      var context24 = context23.library;
+      var context25 = context24.publicPropertiesSorted;
+      for (var context26 in context25) {
+        buffer.writeln();
+        buffer.write(_renderLibrary_partial_property_9(context26));
+        buffer.writeln();
+      }
     }
-  }
-  buffer.writeln();
-  var context23 = context0.library;
-  if (context23.hasPublicFunctions == true) {
     buffer.writeln();
-    buffer.write('''
+    var context27 = context15.library;
+    if (context27.hasPublicFunctions == true) {
+      buffer.writeln();
+      buffer.write('''
 ## Functions
 ''');
-    var context24 = context23.library;
-    var context25 = context24.publicFunctionsSorted;
-    for (var context26 in context25) {
-      buffer.writeln();
-      buffer.write(_renderLibrary_partial_callable_9(context26));
-      buffer.writeln();
+      var context28 = context27.library;
+      var context29 = context28.publicFunctionsSorted;
+      for (var context30 in context29) {
+        buffer.writeln();
+        buffer.write(_renderLibrary_partial_callable_10(context30));
+        buffer.writeln();
+      }
     }
-  }
-  buffer.writeln();
-  var context27 = context0.library;
-  if (context27.hasPublicEnums == true) {
     buffer.writeln();
-    buffer.write('''
+    var context31 = context15.library;
+    if (context31.hasPublicEnums == true) {
+      buffer.writeln();
+      buffer.write('''
 ## Enums
 ''');
-    var context28 = context27.library;
-    var context29 = context28.publicEnumsSorted;
-    for (var context30 in context29) {
-      buffer.writeln();
-      buffer.write(_renderLibrary_partial_container_5(context30));
-      buffer.writeln();
+      var context32 = context31.library;
+      var context33 = context32.publicEnumsSorted;
+      for (var context34 in context33) {
+        buffer.writeln();
+        buffer.write(_renderLibrary_partial_container_5(context34));
+        buffer.writeln();
+      }
     }
-  }
-  buffer.writeln();
-  var context31 = context0.library;
-  if (context31.hasPublicTypedefs == true) {
     buffer.writeln();
-    buffer.write('''
+    var context35 = context15.library;
+    if (context35.hasPublicTypedefs == true) {
+      buffer.writeln();
+      buffer.write('''
 ## Typedefs
 ''');
-    var context32 = context31.library;
-    var context33 = context32.publicTypedefsSorted;
-    for (var context34 in context33) {
-      buffer.writeln();
-      buffer.write(_renderLibrary_partial_typedef_10(context34));
-      buffer.writeln();
+      var context36 = context35.library;
+      var context37 = context36.publicTypedefsSorted;
+      for (var context38 in context37) {
+        buffer.writeln();
+        buffer.write(_renderLibrary_partial_typedef_11(context38));
+        buffer.writeln();
+      }
     }
-  }
-  buffer.writeln();
-  var context35 = context0.library;
-  if (context35.hasPublicExceptions == true) {
     buffer.writeln();
-    buffer.write('''
+    var context39 = context15.library;
+    if (context39.hasPublicExceptions == true) {
+      buffer.writeln();
+      buffer.write('''
 ## Exceptions / Errors
 ''');
-    var context36 = context35.library;
-    var context37 = context36.publicExceptionsSorted;
-    for (var context38 in context37) {
-      buffer.writeln();
-      buffer.write(_renderLibrary_partial_container_5(context38));
-      buffer.writeln();
+      var context40 = context39.library;
+      var context41 = context40.publicExceptionsSorted;
+      for (var context42 in context41) {
+        buffer.writeln();
+        buffer.write(_renderLibrary_partial_container_5(context42));
+        buffer.writeln();
+      }
     }
+    buffer.write('\n\n');
+    buffer.write(_renderLibrary_partial_footer_12(context0));
+    buffer.writeln();
   }
-  buffer.write('\n\n');
-  buffer.write(_renderLibrary_partial_footer_11(context0));
   buffer.writeln();
 
   return buffer.toString();
@@ -1332,6 +1415,51 @@ String _renderExtension_partial_footer_12<T extends Extension>(
         ExtensionTemplateData<T> context0) =>
     _deduplicated_lib_templates_md__footer_md(context0);
 
+String _renderExtensionType_partial_head_0<T extends ExtensionType>(
+        ExtensionTypeTemplateData<T> context0) =>
+    _deduplicated_lib_templates_md__head_md(context0);
+
+String _renderExtensionType_partial_source_link_1(ExtensionType context1) =>
+    _deduplicated_lib_templates_md__source_link_md(context1);
+
+String _renderExtensionType_partial_categorization_2(ExtensionType context1) =>
+    _deduplicated_lib_templates_md__categorization_md(context1);
+
+String _renderExtensionType_partial_feature_set_3(ExtensionType context1) =>
+    _deduplicated_lib_templates_md__feature_set_md(context1);
+
+String _renderExtensionType_partial_documentation_4(ExtensionType context1) =>
+    _deduplicated_lib_templates_md__documentation_md(context1);
+
+String _renderExtensionType_partial_annotations_5(ExtensionType context1) =>
+    _deduplicated_lib_templates_md__annotations_md(context1);
+
+String _renderExtensionType_partial_property_6(Field context2) =>
+    _deduplicated_lib_templates_md__property_md(context2);
+
+String _renderExtensionType_partial_instance_methods_7(
+        ExtensionType context1) =>
+    _deduplicated_lib_templates_md__instance_methods_md(context1);
+
+String _renderExtensionType_partial_instance_operators_8(
+        ExtensionType context1) =>
+    _deduplicated_lib_templates_md__instance_operators_md(context1);
+
+String _renderExtensionType_partial_static_properties_9(
+        ExtensionType context1) =>
+    _deduplicated_lib_templates_md__static_properties_md(context1);
+
+String _renderExtensionType_partial_static_methods_10(ExtensionType context1) =>
+    _deduplicated_lib_templates_md__static_methods_md(context1);
+
+String _renderExtensionType_partial_static_constants_11(
+        ExtensionType context1) =>
+    _deduplicated_lib_templates_md__static_constants_md(context1);
+
+String _renderExtensionType_partial_footer_12<T extends ExtensionType>(
+        ExtensionTypeTemplateData<T> context0) =>
+    _deduplicated_lib_templates_md__footer_md(context0);
+
 String _renderFunction_partial_head_0(FunctionTemplateData context0) =>
     _deduplicated_lib_templates_md__head_md(context0);
 
@@ -1421,47 +1549,66 @@ String _renderLibrary_partial_container_5(Container context3) =>
 String _renderLibrary_partial_extension_6(Extension context3) =>
     _deduplicated_lib_templates_md__extension_md(context3);
 
-String _renderLibrary_partial_constant_7(TopLevelVariable context3) =>
-    _deduplicated_lib_templates_md__constant_md(context3);
-
-String _renderLibrary_partial_property_8(TopLevelVariable context3) =>
-    _deduplicated_lib_templates_md__property_md(context3);
-
-String _renderLibrary_partial_callable_9(ModelFunctionTyped context3) {
+String _renderLibrary_partial_extension_type_7(ExtensionType context3) {
   final buffer = StringBuffer();
   buffer.write('''##### ''');
   buffer.write(context3.linkedName);
-  buffer.write(context3.linkedGenericParameters);
-  buffer.write('''(''');
-  buffer.write(context3.linkedParamsNoMetadata);
-  buffer.write(''') ''');
-  buffer.write(context3.modelType.returnType.linkedName);
   buffer.writeln();
   buffer.write(
-      __renderLibrary_partial_callable_9_partial_categorization_0(context3));
+      __renderLibrary_partial_extension_type_7_partial_categorization_0(
+          context3));
   buffer.write('\n\n');
   buffer.write(context3.oneLineDoc);
-  buffer.write('  ');
-  buffer.writeln();
-  buffer
-      .write(__renderLibrary_partial_callable_9_partial_attributes_1(context3));
   buffer.writeln();
 
   return buffer.toString();
 }
 
-String __renderLibrary_partial_callable_9_partial_categorization_0(
-        ModelFunctionTyped context3) =>
+String __renderLibrary_partial_extension_type_7_partial_categorization_0(
+        ExtensionType context3) =>
     _deduplicated_lib_templates_md__categorization_md(context3);
 
-String __renderLibrary_partial_callable_9_partial_attributes_1(
-        ModelFunctionTyped context3) =>
-    _deduplicated_lib_templates_md__attributes_md(context3);
+String _renderLibrary_partial_constant_8(TopLevelVariable context4) =>
+    _deduplicated_lib_templates_md__constant_md(context4);
 
-String _renderLibrary_partial_typedef_10(Typedef context3) =>
-    _deduplicated_lib_templates_md__typedef_md(context3);
+String _renderLibrary_partial_property_9(TopLevelVariable context4) =>
+    _deduplicated_lib_templates_md__property_md(context4);
 
-String _renderLibrary_partial_footer_11(LibraryTemplateData context0) =>
+String _renderLibrary_partial_callable_10(ModelFunctionTyped context4) {
+  final buffer = StringBuffer();
+  buffer.write('''##### ''');
+  buffer.write(context4.linkedName);
+  buffer.write(context4.linkedGenericParameters);
+  buffer.write('''(''');
+  buffer.write(context4.linkedParamsNoMetadata);
+  buffer.write(''') ''');
+  buffer.write(context4.modelType.returnType.linkedName);
+  buffer.writeln();
+  buffer.write(
+      __renderLibrary_partial_callable_10_partial_categorization_0(context4));
+  buffer.write('\n\n');
+  buffer.write(context4.oneLineDoc);
+  buffer.write('  ');
+  buffer.writeln();
+  buffer.write(
+      __renderLibrary_partial_callable_10_partial_attributes_1(context4));
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
+String __renderLibrary_partial_callable_10_partial_categorization_0(
+        ModelFunctionTyped context4) =>
+    _deduplicated_lib_templates_md__categorization_md(context4);
+
+String __renderLibrary_partial_callable_10_partial_attributes_1(
+        ModelFunctionTyped context4) =>
+    _deduplicated_lib_templates_md__attributes_md(context4);
+
+String _renderLibrary_partial_typedef_11(Typedef context4) =>
+    _deduplicated_lib_templates_md__typedef_md(context4);
+
+String _renderLibrary_partial_footer_12(LibraryTemplateData context0) =>
     _deduplicated_lib_templates_md__footer_md(context0);
 
 String _renderMethod_partial_head_0(MethodTemplateData context0) =>

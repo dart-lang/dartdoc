@@ -80,14 +80,14 @@ class ExtensionType extends InheritingContainer with Constructable {
 
   @override
   String get sidebarPath =>
-      '${library.dirName}/$name-extensiontype-sidebar.${fileStructure.fileType}';
+      '${library.dirName}/$name-extension-type-sidebar.${fileStructure.fileType}';
 
   Map<String, CommentReferable>? _referenceChildren;
   @override
   Map<String, CommentReferable> get referenceChildren {
     return _referenceChildren ??= {
       ...extendedType.referenceChildren,
-      // Override extendedType entries with local items.
+      // Override `extendedType` entries with local items.
       ...super.referenceChildren,
     };
   }

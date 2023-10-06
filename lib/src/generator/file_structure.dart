@@ -58,10 +58,12 @@ abstract class FileStructure {
       Library() => FileStructureImpl(format, modelElement.dirName, 'library'),
       Mixin() => FileStructureImpl(format, modelElement.name, 'mixin'),
       Class() => FileStructureImpl(format, modelElement.name, 'class'),
+      ExtensionType() =>
+        FileStructureImpl(format, modelElement.name, 'extension-type'),
       Operator() => FileStructureImpl(format,
-            'operator_${operatorNames[modelElement.referenceName]}', null),
-      GetterSetterCombo() => FileStructureImpl(format, modelElement.name,
-            modelElement.isConst ? 'constant' : null),
+          'operator_${operatorNames[modelElement.referenceName]}', null),
+      GetterSetterCombo() => FileStructureImpl(
+          format, modelElement.name, modelElement.isConst ? 'constant' : null),
       _ => FileStructureImpl(format, modelElement.name, null)
     };
   }

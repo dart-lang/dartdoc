@@ -66,6 +66,17 @@ class HtmlGeneratorBackend extends GeneratorBackendBase {
   }
 
   @override
+  void generateExtensionType(
+      PackageGraph packageGraph, Library library, ExtensionType extensionType) {
+    super.generateExtensionType(packageGraph, library, extensionType);
+    var data = ExtensionTypeTemplateData(
+        options, packageGraph, library, extensionType);
+    var sidebarContent = templates.renderSidebarForContainer(data);
+    write(writer, extensionType.sidebarPath, data, sidebarContent);
+    runtimeStats.incrementAccumulator('writtenSidebarFileCount');
+  }
+
+  @override
   void generateLibrary(PackageGraph packageGraph, Library library) {
     super.generateLibrary(packageGraph, library);
     var data = LibraryTemplateData(options, packageGraph, library);

@@ -81,7 +81,7 @@ class C {}
     expect(
       library.classes.named('C').documentationAsHtml,
       '<p>Doc referring to '
-      '<a href="${placeholder}extension_types/ET.html">ET</a>.</p>',
+      '<a href="${placeholder}extension_types/ET-extension-type.html">ET</a>.</p>',
     );
   }
 

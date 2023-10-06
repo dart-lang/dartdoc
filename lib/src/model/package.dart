@@ -36,7 +36,7 @@ class Package extends LibraryContainer
         Warnable,
         CommentReferable,
         ModelBuilder
-    implements Privacy, Documentable {
+    implements Privacy {
   @override
   final String name;
 
@@ -103,6 +103,12 @@ class Package extends LibraryContainer
 
   @override
   Kind get kind => isSdk ? Kind.sdk : Kind.package;
+
+  @override
+  String? get aboveSidebarPath => null;
+
+  @override
+  String? get belowSidebarPath => null;
 
   @override
   List<Locatable> get documentationFrom => [this];

@@ -40,6 +40,15 @@
 {{/library.publicExtensionsSorted}}
 {{/library.hasPublicExtensions}}
 
+{{ #library.hasPublicExtensions }}
+## Extension Types
+
+{{ #library.publicExtensionTypesSorted }}
+{{ >extension_type }}
+
+{{ /library.publicExtensionTypesSorted }}
+{{ /library.hasPublicExtensionTypes }}
+
 {{#library.hasPublicConstants}}
 ## Constants
 
