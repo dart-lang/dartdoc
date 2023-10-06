@@ -20,7 +20,7 @@ import 'package:dartdoc/src/utils.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:meta/meta.dart';
 
-/// Mixin for top-level variables and fields (aka properties)
+/// Mixin for top-level variables and fields (aka properties).
 mixin GetterSetterCombo on ModelElement {
   Accessor? get getter;
 
@@ -178,7 +178,7 @@ mixin GetterSetterCombo on ModelElement {
       _getterSetterDocumentationComment.isNotEmpty ||
       element.documentationComment != null;
 
-  /// Derive a documentation comment for the combo by copying documentation
+  /// Derives a documentation comment for the combo by copying documentation
   /// from the [getter] and/or [setter].
   late final String _getterSetterDocumentationComment = () {
     // Check for synthetic before public, always, or stack overflow.
@@ -188,13 +188,8 @@ mixin GetterSetterCombo on ModelElement {
       if (!getter.isSynthetic && getter.isPublic) {
         assert(getter.documentationFrom.length == 1);
         var fromGetter = getter.documentationFrom.first;
-        // We have to check against `dropTextFrom` here since
-        // `documentationFrom` doesn't yield the real elements for
-        // [GetterSetterCombo]s.
-        if (!config.dropTextFrom.contains(fromGetter.element.library!.name)) {
-          if (fromGetter.hasDocumentationComment) {
-            getterComment = fromGetter.documentationComment;
-          }
+        if (fromGetter.hasDocumentationComment) {
+          getterComment = fromGetter.documentationComment;
         }
       }
     }
@@ -204,19 +199,17 @@ mixin GetterSetterCombo on ModelElement {
     }
 
     final setter = this.setter!;
-    if (!setter.isSynthetic && setter.isPublic) {
-      assert(setter.documentationFrom.length == 1);
-      var fromSetter = setter.documentationFrom.first;
-      if (!config.dropTextFrom.contains(fromSetter.element.library!.name)) {
-        if (fromSetter.hasDocumentationComment) {
-          return getterComment.isEmpty
-              ? fromSetter.documentationComment
-              : '$getterComment\n\n${fromSetter.documentationComment}';
-        }
-      }
-    }
+    if (setter.isSynthetic || !setter.isPublic) return getterComment;
 
-    return getterComment;
+    assert(setter.documentationFrom.length == 1);
+    var fromSetter = setter.documentationFrom.first;
+    if (fromSetter.hasDocumentationComment) {
+      return getterComment.isEmpty
+          ? fromSetter.documentationComment
+          : '$getterComment\n\n${fromSetter.documentationComment}';
+    } else {
+      return getterComment;
+    }
   }();
 
   ElementType get modelType {
@@ -261,10 +254,13 @@ mixin GetterSetterCombo on ModelElement {
         'GetterSetterCombo must be one of readOnly, writeOnly, or readWrite');
   }
 
+  // TODO(srawlins): This should be private.
   bool get readOnly => hasPublicGetter && !hasPublicSetter;
 
+  // TODO(srawlins): This should be private.
   bool get readWrite => hasPublicGetter && hasPublicSetter;
 
+  // TODO(srawlins): This should be private.
   bool get writeOnly => hasPublicSetter && !hasPublicGetter;
 
   /// True if the @hideConstantImplementations directive is present
