@@ -26,11 +26,13 @@ void main(List<String> args) async {
     ..addCommand('buildbot')
     ..addCommand('clean')
     ..addCommand('compare')
-    ..addCommand('serve')
     ..addCommand('test')
     ..addCommand('try-publish')
     ..addCommand('validate');
   parser.addCommand('doc')
+    ..addOption('name')
+    ..addOption('version');
+  parser.addCommand('serve')
     ..addOption('name')
     ..addOption('version');
 
@@ -693,9 +695,11 @@ Future<void> validateBuild() async {
   }
 
   if (differentFiles.isNotEmpty) {
-    throw StateError('The following generated files needed to be rebuilt:\n'
-        '  ${differentFiles.map((f) => path.join('lib', f)).join("\n  ")}\n'
-        'Rebuild them with "grind build" and check the results in.');
+    throw StateError('''
+The following generated files needed to be rebuilt:
+  ${differentFiles.map((f) => path.join('lib', f)).join("\n  ")}
+Rebuild them with "dart tool/task.dart build" and check the results in.
+''');
   }
 
   // Verify that the web frontend has been compiled.
@@ -707,7 +711,7 @@ Future<void> validateBuild() async {
     print('cached sig   : $lastCompileSig');
     throw StateError(
         'The web frontend (web/docs.dart) needs to be recompiled; rebuild it '
-        'with "grind build-web" or "grind build".');
+        'with "dart tool/task.dart build web".');
   }
 }
 
