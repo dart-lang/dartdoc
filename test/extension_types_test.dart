@@ -25,7 +25,7 @@ class ExtensionTypesTest extends DartdocTestBase {
   String get libraryName => 'extension_types';
 
   @override
-  String get sdkConstraint => '>=3.2.0 <4.0.0';
+  String get sdkConstraint => '>=3.3.0 <4.0.0';
 
   // TODO(srawlins): Test superinterfaces, references to members which exist via
   // `implements`, references to primary constructor.
