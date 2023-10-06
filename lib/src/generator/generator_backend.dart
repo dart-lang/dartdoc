@@ -141,9 +141,19 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
 
   /// Binds template data and emits the content to the [writer].
   void write(
-      FileWriter writer, String filename, TemplateData data, String content) {
+    FileWriter writer,
+    String filename,
+    TemplateData data,
+    String content, {
+    bool isSidebar = false,
+  }) {
     if (!options.useBaseHref) {
-      content = content.replaceAll(htmlBasePlaceholder, data.htmlBase);
+      content = content.replaceAll(
+        htmlBasePlaceholder,
+        // URLs in sidebars are tweaked in the front-end; other URLs use
+        // `htmlBase`.
+        isSidebar ? '' : data.htmlBase,
+      );
     }
     var element = data.self;
     writer.write(filename, content,

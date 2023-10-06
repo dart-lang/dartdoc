@@ -41,11 +41,12 @@ void initializeSidebars() {
   }
   final aboveSidebarPath = mainContent.dataset['above-sidebar'];
   final leftSidebar = document.querySelector('#dartdoc-sidebar-left');
+  final sanitizer = _SidebarNodeTreeSanitizer(baseHref);
   if (aboveSidebarPath != null &&
       aboveSidebarPath.isNotEmpty &&
       leftSidebar != null) {
     HttpRequest.getString('$baseHref$aboveSidebarPath').then((content) {
-      leftSidebar.innerHtml = content;
+      leftSidebar.setInnerHtml(content, treeSanitizer: sanitizer);
     });
   }
   final belowSidebarPath = mainContent.dataset['below-sidebar'];
@@ -54,7 +55,30 @@ void initializeSidebars() {
       belowSidebarPath.isNotEmpty &&
       rightSidebar != null) {
     HttpRequest.getString('$baseHref$belowSidebarPath').then((content) {
-      rightSidebar.innerHtml = content;
+      rightSidebar.setInnerHtml(content, treeSanitizer: sanitizer);
     });
+  }
+}
+
+/// A permissive sanitizer that allows external links (e.g. to api.dart.dev) and
+/// adjusts the links in a newly loaded sidebar, if "base href" is not being
+/// used.
+class _SidebarNodeTreeSanitizer implements NodeTreeSanitizer {
+  final String baseHref;
+
+  _SidebarNodeTreeSanitizer(this.baseHref);
+
+  @override
+  void sanitizeTree(Node node) {
+    if (node is Element && node.nodeName == 'A') {
+      final hrefString = node.attributes['href'];
+      if (hrefString != null) {
+        final href = Uri.parse(hrefString);
+        if (!href.isAbsolute) {
+          node.setAttribute('href', '$baseHref$hrefString');
+        }
+      }
+    }
+    node.childNodes.forEach(sanitizeTree);
   }
 }
