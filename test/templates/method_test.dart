@@ -80,7 +80,7 @@ class B {
       );
     });
 
-    test('enum page contains annotations', () async {
+    test('method page contains annotations', () async {
       m1Lines.expectMainContentContainsAllInOrder(
         [
           matches('<ol class="annotation-list">'),

@@ -141,7 +141,7 @@ dartdoc:
       );
     });
 
-    test('enum page contains static methods', () async {
+    test('extension page contains static methods', () async {
       expect(
           eLines,
           containsAllInOrder([
@@ -151,7 +151,7 @@ dartdoc:
           ]));
     });
 
-    test('enum page contains static fields', () async {
+    test('extension page contains static fields', () async {
       expect(
           eLines,
           containsAllInOrder([
@@ -161,7 +161,7 @@ dartdoc:
           ]));
     });
 
-    test('enum page contains static getter/setter pairs', () async {
+    test('extension page contains static getter/setter pairs', () async {
       expect(
           eLines,
           containsAllInOrder([
@@ -171,7 +171,7 @@ dartdoc:
           ]));
     });
 
-    test('enum page contains (static) constants', () async {
+    test('extension page contains (static) constants', () async {
       expect(
           eLines,
           containsAllInOrder([
@@ -181,7 +181,7 @@ dartdoc:
           ]));
     });
 
-    test('enum page contains instance operators', () async {
+    test('extension page contains instance operators', () async {
       expect(
           eLines,
           containsAllInOrder([
@@ -191,48 +191,6 @@ dartdoc:
           ]));
     });
 
-    test('enum sidebar contains methods', () async {
-      expect(
-        eRightSidebarLines,
-        containsAllInOrder([
-          matches('<a href="../lib/E.html#instance-methods">Methods</a>'),
-          matches('<a href="../lib/E/m1.html">m1</a>'),
-        ]),
-      );
-    });
-
-    test('enum sidebar contains operators', () async {
-      expect(
-        eRightSidebarLines,
-        containsAllInOrder([
-          matches('<a href="../lib/E.html#operators">Operators</a>'),
-          matches('<a href="../lib/E/operator_greater.html">operator ></a>'),
-        ]),
-      );
-    });
-
-    test('enum sidebar contains static properties', () async {
-      expect(
-        eRightSidebarLines,
-        containsAllInOrder([
-          matches(
-              '<a href="../lib/E.html#static-properties">Static properties</a>'),
-          matches('<a href="../lib/E/gs1.html">gs1</a>'),
-          matches('<a href="../lib/E/sf1.html">sf1</a>'),
-        ]),
-      );
-    });
-
-    test('enum sidebar contains static methods', () async {
-      expect(
-        eRightSidebarLines,
-        containsAllInOrder([
-          matches('<a href="../lib/E.html#static-methods">Static methods</a>'),
-          matches('<a href="../lib/E/s1.html">s1</a>'),
-        ]),
-      );
-    });
-
     test('extension page contains source link', () async {
       expect(
         eLines,
@@ -240,6 +198,48 @@ dartdoc:
           matches('<a title="View source code" class="source-link" '
               'href="https://github.com/dart-lang/TEST_PKG/lib/lib.dart#L5">'
               '<span class="material-symbols-outlined">description</span></a>'),
+        ]),
+      );
+    });
+
+    test('extension sidebar contains methods', () async {
+      expect(
+        eRightSidebarLines,
+        containsAllInOrder([
+          matches('<a href="lib/E.html#instance-methods">Methods</a>'),
+          matches('<a href="lib/E/m1.html">m1</a>'),
+        ]),
+      );
+    });
+
+    test('extension sidebar contains operators', () async {
+      expect(
+        eRightSidebarLines,
+        containsAllInOrder([
+          matches('<a href="lib/E.html#operators">Operators</a>'),
+          matches('<a href="lib/E/operator_greater.html">operator ></a>'),
+        ]),
+      );
+    });
+
+    test('extension sidebar contains static properties', () async {
+      expect(
+        eRightSidebarLines,
+        containsAllInOrder([
+          matches(
+              '<a href="lib/E.html#static-properties">Static properties</a>'),
+          matches('<a href="lib/E/gs1.html">gs1</a>'),
+          matches('<a href="lib/E/sf1.html">sf1</a>'),
+        ]),
+      );
+    });
+
+    test('extension sidebar contains static methods', () async {
+      expect(
+        eRightSidebarLines,
+        containsAllInOrder([
+          matches('<a href="lib/E.html#static-methods">Static methods</a>'),
+          matches('<a href="lib/E/s1.html">s1</a>'),
         ]),
       );
     });
