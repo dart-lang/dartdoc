@@ -22,14 +22,20 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        sdk: [dev, stable]
+        # TODO(srawlins): Include dev when using analyzer that understands
+        # language version 3.3.
+        sdk: [stable]
         job: [main, flutter, packages, sdk-docs]
         include:
           - os: macos-latest
-            sdk: dev
+            # TODO(srawlins): Change back to dev when using analyzer that
+            # understands language version 3.3.
+            sdk: stable
             job: main
           - os: windows-latest
-            sdk: dev
+            # TODO(srawlins): Change back to dev when using analyzer that
+            # understands language version 3.3.
+            sdk: stable
             job: main
         exclude:
             # Do not try to run flutter against the "stable" sdk,
