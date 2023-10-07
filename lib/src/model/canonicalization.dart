@@ -8,8 +8,6 @@ import 'package:dartdoc/src/model/model.dart';
 abstract mixin class Canonicalization implements Locatable, Documentable {
   bool get isCanonical;
 
-  Library? get canonicalLibrary;
-
   /// Pieces of the location, split to remove 'package:' and slashes.
   Set<String> get locationPieces;
 
@@ -18,49 +16,48 @@ abstract mixin class Canonicalization implements Locatable, Documentable {
       ..sort();
   }
 
-  ScoredCandidate _scoreElementWithLibrary(Library lib) {
-    var scoredCandidate = ScoredCandidate(lib);
-    Iterable<String> resplit(Set<String> items) sync* {
-      for (var item in items) {
-        for (var subItem in item.split('_')) {
-          yield subItem;
-        }
-      }
-    }
+  ScoredCandidate _scoreElementWithLibrary(Library library) {
+    var scoredCandidate = ScoredCandidate(library);
 
-    // Large boost for @canonicalFor, essentially overriding all other concerns.
-    if (lib.canonicalFor.contains(fullyQualifiedName)) {
-      scoredCandidate._alterScore(5.0, 'marked @canonicalFor');
+    // Large boost for `@canonicalFor`, essentially overriding all other
+    // concerns.
+    if (library.canonicalFor.contains(fullyQualifiedName)) {
+      scoredCandidate._alterScore(5.0, _Reason.canonicalFor);
     }
     // Penalty for deprecated libraries.
-    if (lib.isDeprecated) scoredCandidate._alterScore(-1.0, 'is deprecated');
+    if (library.isDeprecated) {
+      scoredCandidate._alterScore(-1.0, _Reason.deprecated);
+    }
     // Give a big boost if the library has the package name embedded in it.
-    if (lib.package.namePieces.intersection(lib.namePieces).isEmpty) {
-      scoredCandidate._alterScore(1.0, 'embeds package name');
+    if (library.package.namePieces.intersection(library.namePieces).isEmpty) {
+      scoredCandidate._alterScore(1.0, _Reason.packageName);
     }
     // Give a tiny boost for libraries with long names, assuming they're
     // more specific (and therefore more likely to be the owner of this symbol).
-    scoredCandidate._alterScore(.01 * lib.namePieces.length, 'name is long');
-    // If we don't know the location of this element, return our best guess.
-    // TODO(jcollins-g): is that even possible?
+    scoredCandidate._alterScore(
+        .01 * library.namePieces.length, _Reason.longName);
+    // If we don't know the location of this element (which shouldn't be
+    // possible), return our best guess.
     assert(locationPieces.isNotEmpty);
     if (locationPieces.isEmpty) return scoredCandidate;
-    // The more pieces we have of the location in our library name, the more we should boost our score.
+    // The more pieces we have of the location in our library name, the more we
+    // should boost our score.
     scoredCandidate._alterScore(
-        lib.namePieces.intersection(locationPieces).length.toDouble() /
-            locationPieces.length.toDouble(),
-        'element location shares parts with name');
-    // If pieces of location at least start with elements of our library name, boost the score a little bit.
+      library.namePieces.intersection(locationPieces).length.toDouble() /
+          locationPieces.length.toDouble(),
+      _Reason.sharedNamePart,
+    );
+    // If pieces of location at least start with elements of our library name,
+    // boost the score a little bit.
     var scoreBoost = 0.0;
-    for (var piece in resplit(locationPieces)) {
-      for (var namePiece in lib.namePieces) {
+    for (var piece in locationPieces.expand((item) => item.split('_'))) {
+      for (var namePiece in library.namePieces) {
         if (piece.startsWith(namePiece)) {
           scoreBoost += 0.001;
         }
       }
     }
-    scoredCandidate._alterScore(
-        scoreBoost, 'element location parts start with parts of name');
+    scoredCandidate._alterScore(scoreBoost, _Reason.locationPartStart);
     return scoredCandidate;
   }
 }
@@ -68,7 +65,7 @@ abstract mixin class Canonicalization implements Locatable, Documentable {
 /// This class represents the score for a particular element; how likely
 /// it is that this is the canonical element.
 class ScoredCandidate implements Comparable<ScoredCandidate> {
-  final List<String> _reasons = [];
+  final List<(_Reason, double)> _reasons = [];
 
   final Library library;
 
@@ -78,21 +75,37 @@ class ScoredCandidate implements Comparable<ScoredCandidate> {
 
   ScoredCandidate(this.library);
 
-  void _alterScore(double scoreDelta, String reason) {
+  void _alterScore(double scoreDelta, _Reason reason) {
     score += scoreDelta;
     if (scoreDelta != 0) {
-      _reasons.add(
-          "$reason (${scoreDelta >= 0 ? '+' : ''}${scoreDelta.toStringAsPrecision(4)})");
+      _reasons.add((reason, scoreDelta));
     }
   }
 
   @override
-  int compareTo(ScoredCandidate other) {
-    //assert(element == other.element);
-    return score.compareTo(other.score);
-  }
+  int compareTo(ScoredCandidate other) => score.compareTo(other.score);
 
   @override
-  String toString() =>
-      "${library.name}: ${score.toStringAsPrecision(4)} - ${_reasons.join(', ')}";
+  String toString() {
+    var reasonText = _reasons.map((r) {
+      var (reason, scoreDelta) = r;
+      var scoreDeltaPrefix = scoreDelta >= 0 ? '+' : '';
+      return '$reason ($scoreDeltaPrefix${scoreDelta.toStringAsPrecision(4)})';
+    });
+    return '${library.name}: ${score.toStringAsPrecision(4)} - $reasonText';
+  }
+}
+
+/// A reason that a candidate's score is changed.
+enum _Reason {
+  canonicalFor('marked @canonicalFor'),
+  deprecated('is deprecated'),
+  packageName('embeds package name'),
+  longName('name is long'),
+  sharedNamePart('element location shares parts with name'),
+  locationPartStart('element location parts start with parts of name');
+
+  final String text;
+
+  const _Reason(this.text);
 }

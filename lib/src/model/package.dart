@@ -81,9 +81,6 @@ class Package extends LibraryContainer
   @override
   bool get isCanonical => true;
 
-  @override
-  Library? get canonicalLibrary => null;
-
   /// Number of times we have invoked a tool for this package.
   int toolInvocationIndex = 0;
 

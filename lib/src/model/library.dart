@@ -282,8 +282,10 @@ class Library extends ModelElement
     if (sdkLib != null && (sdkLib.isInternal || !sdkLib.isDocumented)) {
       return false;
     }
-    if (config.isLibraryExcluded(name) ||
-        config.isLibraryExcluded(element.librarySource.uri.toString())) {
+    if (
+        // TODO(srawlins): Stop supporting a 'name' here.
+        config.isLibraryExcluded(name) ||
+            config.isLibraryExcluded(element.librarySource.uri.toString())) {
       return false;
     }
     return true;
