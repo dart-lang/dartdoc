@@ -33,22 +33,26 @@ List<DartdocOption<Object?>> createSourceLinkerOptions(
       ..addAll([
         DartdocOptionArgFile<List<String>>('excludes', [], resourceProvider,
             optionIs: OptionKind.dir,
-            help:
-                'A list of directories to exclude from linking to a source code repository.'),
-        // TODO(jcollins-g): Use [DartdocOptionArgSynth], possibly in combination with a repository type and the root directory, and get revision number automatically
+            help: 'A list of directories to exclude from linking to a source '
+                'code repository.'),
+        // TODO(jcollins-g): Use [DartdocOptionArgSynth], possibly in
+        // combination with a repository type and the root directory, and get
+        // revision number automatically.
         DartdocOptionArgOnly<String?>('revision', null, resourceProvider,
             help: 'Revision number to insert into the URI.'),
         DartdocOptionArgFile<String?>('root', null, resourceProvider,
             optionIs: OptionKind.dir,
             help:
-                'Path to a local directory that is the root of the repository we link to.  All source code files under this directory will be linked.'),
+                'Path to a local directory that is the root of the repository '
+                'we link to.  All source code files under this directory will '
+                'be linked.'),
         DartdocOptionArgFile<String?>('uriTemplate', null, resourceProvider,
-            help:
-                '''Substitute into this template to generate a uri for an element's source code.
-             Dartdoc dynamically substitutes the following fields into the template:
-               %f%:  Relative path of file to the repository root
-               %r%:  Revision number
-               %l%:  Line number'''),
+            help: '''
+Substitute into this template to generate a uri for an element's source code.
+    Dartdoc dynamically substitutes the following fields into the template:
+      %f%:  Relative path of file to the repository root
+      %r%:  Revision number
+      %l%:  Line number'''),
       ])
   ];
 }
@@ -73,7 +77,8 @@ class SourceLinker {
     if (revision != null || root != null || uriTemplate != null) {
       if (root == null || uriTemplate == null) {
         throw DartdocOptionError(
-            'linkToSource root and uriTemplate must both be specified to generate repository links');
+            'linkToSource root and uriTemplate must both be specified to '
+            'generate repository links');
       }
       var uriTemplateValue = uriTemplate;
       if (uriTemplateValue != null &&

@@ -745,10 +745,10 @@ mixin DocumentationComment on Documentable, Warnable, Locatable, SourceCode {
 
   bool _documentationLocalIsSet = false;
 
-  /// Returns the documentation for this literal element unless
-  /// `config.dropTextFrom` indicates it should not be returned.  Macro
-  /// definitions are stripped, but macros themselves are not injected.  This is
-  /// a two stage process to avoid ordering problems.
+  /// Returns the documentation for this element.
+  ///
+  /// Macro definitions are stripped, but macros themselves are not injected.
+  /// This is a two stage process to avoid ordering problems.
   late final String _documentationLocal;
 
   String get documentationLocal {
@@ -841,12 +841,7 @@ mixin DocumentationComment on Documentable, Warnable, Locatable, SourceCode {
         'reentrant calls to _buildDocumentation* not allowed');
     // Do not use the sync method if we need to evaluate tools or templates.
     assert(!isCanonical || !needsPrecache);
-    String rawDocs;
-    if (config.dropTextFrom.contains(element.library!.name)) {
-      rawDocs = '';
-    } else {
-      rawDocs = _processCommentWithoutTools(documentationComment);
-    }
+    var rawDocs = _processCommentWithoutTools(documentationComment);
     return _rawDocs = buildDocumentationAddition(rawDocs);
   }
 
@@ -854,13 +849,8 @@ mixin DocumentationComment on Documentable, Warnable, Locatable, SourceCode {
   Future<String> _buildDocumentationBase() async {
     assert(_rawDocs == null,
         'reentrant calls to _buildDocumentation* not allowed');
-    String rawDocs;
     // Do not use the sync method if we need to evaluate tools or templates.
-    if (config.dropTextFrom.contains(element.library!.name)) {
-      rawDocs = '';
-    } else {
-      rawDocs = await processComment(documentationComment);
-    }
+    var rawDocs = await processComment(documentationComment);
     return _rawDocs = buildDocumentationAddition(rawDocs);
   }
 

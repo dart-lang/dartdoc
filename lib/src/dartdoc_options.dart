@@ -1252,9 +1252,7 @@ class DartdocOptionContext extends DartdocOptionContextBase
   CategoryConfiguration get categories =>
       optionSet['categories'].valueAt(context);
 
-  late final Set<String> dropTextFrom =
-      Set.of(optionSet['dropTextFrom'].valueAt(context));
-
+  // TODO(srawlins): Remove when we remove support for `{@example}`.
   String? get examplePathPrefix =>
       optionSet['examplePathPrefix'].valueAt(context);
 
@@ -1267,8 +1265,6 @@ class DartdocOptionContext extends DartdocOptionContextBase
       {...optionSet['excludePackages'].valueAt(context)};
 
   String? get flutterRoot => optionSet['flutterRoot'].valueAt(context);
-
-  bool get hideSdkText => optionSet['hideSdkText'].valueAt(context);
 
   late final Set<String> include =
       Set.of(optionSet['include'].valueAt(context));
@@ -1375,85 +1371,59 @@ List<DartdocOption> createDartdocOptions(
         convertYamlToType: CategoryConfiguration.fromYamlMap,
         help: 'A list of all categories, their display names, and markdown '
             'documentation in the order they are to be displayed.'),
-    DartdocOptionSyntheticOnly<List<String>>('dropTextFrom',
-        (DartdocSyntheticOption<List<String>> option, Folder dir) {
-      if (option.parent['hideSdkText'].valueAt(dir)) {
-        return [
-          'dart.async',
-          'dart.collection',
-          'dart.convert',
-          'dart.core',
-          'dart.developer',
-          'dart.html',
-          'dart.indexed_db',
-          'dart.io',
-          'dart.isolate',
-          'dart.js',
-          'dart.js_util',
-          'dart.math',
-          'dart.mirrors',
-          'dart.svg',
-          'dart.typed_data',
-          'dart.web_audio'
-        ];
-      }
-      return const [];
-    }, resourceProvider,
-        help: 'Remove text from libraries with the following names.'),
+    // TODO(srawlins): Remove when we remove support for `{@example}`.
     DartdocOptionArgFile<String?>('examplePathPrefix', null, resourceProvider,
         optionIs: OptionKind.dir,
-        help: 'Prefix for @example paths.\n(defaults to the project root)',
+        help: '(deprecated) Prefix for @example paths; defaults to the project '
+            'root.',
         mustExist: true),
     DartdocOptionArgFile<List<String>>('exclude', [], resourceProvider,
-        help: 'Library names to ignore.', splitCommas: true),
+        help: 'Names of libraries to exclude from documentation.',
+        splitCommas: true),
     DartdocOptionArgOnly<List<String>>('excludePackages', [], resourceProvider,
-        help: 'Package names to ignore.', splitCommas: true),
+        help: 'Names of packages to exclude from documentation.',
+        splitCommas: true),
     DartdocOptionSyntheticOnly<String?>('flutterRoot',
         (DartdocSyntheticOption<String?> option, Folder dir) {
       var flutterRootEnv =
           packageMetaProvider.environmentProvider['FLUTTER_ROOT'];
-      if (flutterRootEnv == null) return null;
-      return resourceProvider.pathContext.resolveTildePath(flutterRootEnv);
+      return flutterRootEnv == null
+          ? null
+          : resourceProvider.pathContext.resolveTildePath(flutterRootEnv);
     }, resourceProvider,
         optionIs: OptionKind.dir,
-        help: 'Root of the Flutter SDK, specified from environment.',
+        help: 'Root of the Flutter SDK, specified from the environment.',
         mustExist: true),
-    DartdocOptionArgOnly<bool>('hideSdkText', false, resourceProvider,
-        hide: true,
-        help: 'Drop all text for SDK components.  Helpful for integration '
-            'tests for dartdoc, probably not useful for anything else.',
-        negatable: true),
     DartdocOptionArgFile<List<String>>('include', [], resourceProvider,
-        help: 'Library names to generate docs for.', splitCommas: true),
+        help: 'Names of libraries to document.', splitCommas: true),
     DartdocOptionArgFile<List<String>>('includeExternal', [], resourceProvider,
         optionIs: OptionKind.file,
-        help:
-            'Additional (external) dart files to include; use "dir/fileName", '
-            'as in lib/material.dart.',
+        help: 'Additional (external) dart files to include; use '
+            '"<directory name>/<file name>", as in "lib/material.dart".',
         mustExist: true,
         splitCommas: true),
     DartdocOptionArgOnly<bool>('includeSource', true, resourceProvider,
         help: 'Show source code blocks.', negatable: true),
     DartdocOptionArgOnly<bool>('injectHtml', false, resourceProvider,
-        help: 'Allow the use of the {@inject-html} directive to inject raw '
+        help: 'Allow the use of the `{@inject-html}` directive to inject raw '
             'HTML into dartdoc output.'),
     DartdocOptionArgOnly<bool>('sanitizeHtml', false, resourceProvider,
         hide: true,
-        help: 'Sanitize HTML generated from markdown, {@tool} and '
-            '{@inject-html} directives.'),
+        help: 'Sanitize HTML generated from markdown text, `{@tool}` and '
+            '`{@inject-html}` directives.'),
     DartdocOptionArgOnly<String>(
         'input', resourceProvider.pathContext.current, resourceProvider,
         optionIs: OptionKind.dir,
-        help: 'Path to source directory',
+        help: 'Path to source directory.',
         mustExist: true),
-    DartdocOptionSyntheticOnly<String>('inputDir',
-        (DartdocSyntheticOption<String> option, Folder dir) {
-      if (option.parent['sdkDocs'].valueAt(dir)) {
-        return option.parent['sdkDir'].valueAt(dir);
-      }
-      return option.parent['input'].valueAt(dir);
-    }, resourceProvider,
-        help: 'Path to source directory (with override if --sdk-docs)',
+    DartdocOptionSyntheticOnly<String>(
+        'inputDir',
+        (DartdocSyntheticOption<String> option, Folder dir) =>
+            option.parent['sdkDocs'].valueAt(dir) == true
+                ? option.parent['sdkDir'].valueAt(dir)
+                : option.parent['input'].valueAt(dir),
+        resourceProvider,
+        help: 'Path to source directory (with override if --sdk-docs).',
         optionIs: OptionKind.dir,
         mustExist: true),
     DartdocOptionSet('linkTo', resourceProvider)
@@ -1482,8 +1452,6 @@ List<DartdocOption> createDartdocOptions(
           // Prefer SDK check first, then pub cache check.
           var inSdk = packageMeta
               .sdkType(option.parent.parent['flutterRoot'].valueAt(dir));
-          // Analyzer may be confused because package_meta still needs
-          // migrating.  It can definitely return null.
           if (inSdk != null) {
             Map<String, String> sdks = option.parent['sdks'].valueAt(dir);
             var inSdkVal = sdks[inSdk];
@@ -1501,14 +1469,16 @@ List<DartdocOption> createDartdocOptions(
             help: 'Allow links to be generated for packages outside this one.',
             negatable: true),
       ]),
+    // TODO(srawlins): Deprecate; with the advent of the unnamed library, this
+    // should be applied in each file, on the `library;` directive.
     DartdocOptionFileOnly<List<String>>('nodoc', [], resourceProvider,
         optionIs: OptionKind.glob,
-        help: 'Dart symbols declared in these '
-            'files will be treated as though they have the @nodoc flag added to '
-            'their documentation comment.'),
+        help: 'Dart symbols declared in these files will be treated as though '
+            'they have the @nodoc directive added to their documentation '
+            'comment.'),
     DartdocOptionArgOnly<String>('output',
         resourceProvider.pathContext.join('doc', 'api'), resourceProvider,
-        optionIs: OptionKind.dir, help: 'Path to output directory.'),
+        optionIs: OptionKind.dir, help: 'Path to the output directory.'),
     DartdocOptionSyntheticOnly<PackageMeta>(
       'packageMeta',
       (DartdocSyntheticOption<PackageMeta> option, Folder dir) {
@@ -1525,7 +1495,8 @@ List<DartdocOption> createDartdocOptions(
         splitCommas: true,
         help:
             'A list of package names to place first when grouping libraries in '
-            'packages. Unmentioned packages are sorted after these.'),
+            'packages. Unmentioned packages are placed after these.'),
+    // TODO(srawlins): Deprecate this option.
     DartdocOptionArgOnly<String?>('resourcesDir', null, resourceProvider,
         help: "An absolute path to dartdoc's resources directory.", hide: true),
     DartdocOptionArgOnly<bool>('sdkDocs', false, resourceProvider,
