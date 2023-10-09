@@ -42,7 +42,7 @@ class HtmlGeneratorBackend extends GeneratorBackendBase {
     super.generateClass(packageGraph, library, clazz);
     var data = ClassTemplateData(options, packageGraph, library, clazz);
     var sidebarContent = templates.renderSidebarForContainer(data);
-    write(writer, clazz.sidebarPath, data, sidebarContent);
+    write(writer, clazz.sidebarPath, data, sidebarContent, isSidebar: true);
     runtimeStats.incrementAccumulator('writtenSidebarFileCount');
   }
 
@@ -51,7 +51,7 @@ class HtmlGeneratorBackend extends GeneratorBackendBase {
     super.generateEnum(packageGraph, library, eNum);
     var data = EnumTemplateData(options, packageGraph, library, eNum);
     var sidebarContent = templates.renderSidebarForContainer(data);
-    write(writer, eNum.sidebarPath, data, sidebarContent);
+    write(writer, eNum.sidebarPath, data, sidebarContent, isSidebar: true);
     runtimeStats.incrementAccumulator('writtenSidebarFileCount');
   }
 
@@ -61,7 +61,7 @@ class HtmlGeneratorBackend extends GeneratorBackendBase {
     super.generateExtension(packageGraph, library, extension);
     var data = ExtensionTemplateData(options, packageGraph, library, extension);
     var sidebarContent = templates.renderSidebarForContainer(data);
-    write(writer, extension.sidebarPath, data, sidebarContent);
+    write(writer, extension.sidebarPath, data, sidebarContent, isSidebar: true);
     runtimeStats.incrementAccumulator('writtenSidebarFileCount');
   }
 
@@ -70,7 +70,7 @@ class HtmlGeneratorBackend extends GeneratorBackendBase {
     super.generateLibrary(packageGraph, library);
     var data = LibraryTemplateData(options, packageGraph, library);
     var sidebarContent = templates.renderSidebarForLibrary(data);
-    write(writer, library.sidebarPath, data, sidebarContent);
+    write(writer, library.sidebarPath, data, sidebarContent, isSidebar: true);
     runtimeStats.incrementAccumulator('writtenSidebarFileCount');
   }
 
@@ -79,7 +79,7 @@ class HtmlGeneratorBackend extends GeneratorBackendBase {
     super.generateMixin(packageGraph, library, mixin);
     var data = MixinTemplateData(options, packageGraph, library, mixin);
     var sidebarContent = templates.renderSidebarForContainer(data);
-    write(writer, mixin.sidebarPath, data, sidebarContent);
+    write(writer, mixin.sidebarPath, data, sidebarContent, isSidebar: true);
     runtimeStats.incrementAccumulator('writtenSidebarFileCount');
   }
 

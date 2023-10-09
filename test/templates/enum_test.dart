@@ -351,11 +351,10 @@ enum EnumWithDefaultConstructor {
       expect(
         enumWithDefaultConstructorRightSidebarLines,
         containsAllInOrder([
-          matches(
-              '<a href="../lib/EnumWithDefaultConstructor.html#constructors">'
+          matches('<a href="lib/EnumWithDefaultConstructor.html#constructors">'
               'Constructors</a>'),
           matches(
-              '<a href="../lib/EnumWithDefaultConstructor/EnumWithDefaultConstructor.html">'
+              '<a href="lib/EnumWithDefaultConstructor/EnumWithDefaultConstructor.html">'
               'EnumWithDefaultConstructor</a>'),
         ]),
       );
@@ -365,8 +364,8 @@ enum EnumWithDefaultConstructor {
       expect(
         eRightSidebarLines,
         containsAllInOrder([
-          matches('<a href="../lib/E.html#constructors">Constructors</a>'),
-          matches('<a href="../lib/E/E.named.html">named</a>'),
+          matches('<a href="lib/E.html#constructors">Constructors</a>'),
+          matches('<a href="lib/E/E.named.html">named</a>'),
         ]),
       );
     });
@@ -375,8 +374,8 @@ enum EnumWithDefaultConstructor {
       expect(
         eRightSidebarLines,
         containsAllInOrder([
-          matches('<a href="../lib/E.html#values">Values</a>'),
-          matches('<li><a href="../lib/E.html#one">one</a></li>'),
+          matches('<a href="lib/E.html#values">Values</a>'),
+          matches('<li><a href="lib/E.html#one">one</a></li>'),
         ]),
       );
     });
@@ -385,9 +384,9 @@ enum EnumWithDefaultConstructor {
       expect(
         eRightSidebarLines,
         containsAllInOrder([
-          matches('<a href="../lib/E.html#instance-properties">Properties</a>'),
-          matches('<a href="../lib/E/f1.html">f1</a>'),
-          matches('<a href="../lib/E/index.html">index</a>'),
+          matches('<a href="lib/E.html#instance-properties">Properties</a>'),
+          matches('<a href="lib/E/f1.html">f1</a>'),
+          matches('<a href="lib/E/index.html">index</a>'),
         ]),
       );
     });
@@ -396,8 +395,8 @@ enum EnumWithDefaultConstructor {
       expect(
         eRightSidebarLines,
         containsAllInOrder([
-          matches('<a href="../lib/E.html#instance-methods">Methods</a>'),
-          matches('<a href="../lib/E/m1.html">m1</a>'),
+          matches('<a href="lib/E.html#instance-methods">Methods</a>'),
+          matches('<a href="lib/E/m1.html">m1</a>'),
         ]),
       );
     });
@@ -406,8 +405,8 @@ enum EnumWithDefaultConstructor {
       expect(
         eRightSidebarLines,
         containsAllInOrder([
-          matches('<a href="../lib/E.html#operators">Operators</a>'),
-          matches('<a href="../lib/E/operator_greater.html">operator ></a>'),
+          matches('<a href="lib/E.html#operators">Operators</a>'),
+          matches('<a href="lib/E/operator_greater.html">operator ></a>'),
         ]),
       );
     });
@@ -417,9 +416,9 @@ enum EnumWithDefaultConstructor {
         eRightSidebarLines,
         containsAllInOrder([
           matches(
-              '<a href="../lib/E.html#static-properties">Static properties</a>'),
-          matches('<a href="../lib/E/gs1.html">gs1</a>'),
-          matches('<a href="../lib/E/sf1.html">sf1</a>'),
+              '<a href="lib/E.html#static-properties">Static properties</a>'),
+          matches('<a href="lib/E/gs1.html">gs1</a>'),
+          matches('<a href="lib/E/sf1.html">sf1</a>'),
         ]),
       );
     });
@@ -428,8 +427,8 @@ enum EnumWithDefaultConstructor {
       expect(
         eRightSidebarLines,
         containsAllInOrder([
-          matches('<a href="../lib/E.html#static-methods">Static methods</a>'),
-          matches('<a href="../lib/E/s1.html">s1</a>'),
+          matches('<a href="lib/E.html#static-methods">Static methods</a>'),
+          matches('<a href="lib/E/s1.html">s1</a>'),
         ]),
       );
     });
@@ -438,9 +437,9 @@ enum EnumWithDefaultConstructor {
       expect(
         eRightSidebarLines,
         containsAllInOrder([
-          matches('<a href="../lib/E.html#constants">Constants</a>'),
-          matches('<a href="../lib/E/c1-constant.html">c1</a>'),
-          matches('<a href="../lib/E/values-constant.html">values</a>'),
+          matches('<a href="lib/E.html#constants">Constants</a>'),
+          matches('<a href="lib/E/c1-constant.html">c1</a>'),
+          matches('<a href="lib/E/values-constant.html">values</a>'),
         ]),
       );
     });

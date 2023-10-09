@@ -72,7 +72,7 @@ class B {
           .split('\n');
     });
 
-    test('method page contains method name', () async {
+    test('field page contains method name', () async {
       f1Lines.expectMainContentContainsAllInOrder(
         [
           matches('<h1><span class="kind-property">f1</span> property'),
@@ -80,7 +80,7 @@ class B {
       );
     });
 
-    test('enum page contains annotations', () async {
+    test('field page contains annotations', () async {
       f1Lines.expectMainContentContainsAllInOrder(
         [
           matches('<ol class="annotation-list">'),
