@@ -35,15 +35,13 @@ class SubprocessLauncher {
 
   SubprocessLauncher(this.context, [this.defaultEnvironment = const {}]);
 
-  /// A wrapper around start/await process.exitCode that will display the
-  /// output of the executable continuously and fail on non-zero exit codes.
+  /// A wrapper around start/await `process.exitCode` that displays the output
+  /// of [executable] with [arguments] continuously and throws on non-zero exit
+  /// codes.
   ///
   /// It will also parse any valid JSON objects (one per line) it encounters
-  /// on stdout/stderr, and return them.  Returns null if no JSON objects
+  /// on stdout/stderr, and return them. Returns null if no JSON objects
   /// were encountered, or if DRY_RUN is set to 1 in the execution environment.
-  ///
-  /// Makes running programs in grinder similar to `set -ex` for bash, even on
-  /// Windows (though some of the bashisms will no longer make sense).
   // TODO(jcollins-g): refactor to return a stream of stderr/stdout lines and
   // their associated JSON objects.
   Future<Iterable<Map<String, Object?>>> runStreamed(
@@ -52,6 +50,7 @@ class SubprocessLauncher {
     String? workingDirectory,
     Map<String, String>? environment,
     bool includeParentEnvironment = true,
+    bool withStats = false,
   }) async {
     environment = {...defaultEnvironment, ...?environment};
     var jsonObjects = <Map<String, Object?>>[];
@@ -111,22 +110,14 @@ class SubprocessLauncher {
 
     if (Platform.environment.containsKey('DRY_RUN')) return {};
 
-    var realExecutable = executable;
-    var realArguments = <String>[];
-    if (Platform.isLinux) {
-      // Use GNU coreutils to force line buffering.  This makes sure that
-      // subprocesses that die due to fatal signals do not chop off the
-      // last few lines of their output.
-      //
-      // Dart does not actually do this (seems to flush manually) unless
-      // the VM crashes.
-      realExecutable = 'stdbuf';
-      realArguments.addAll(['-o', 'L', '-e', 'L']);
-      realArguments.add(executable);
+    if (withStats) {
+      (executable, arguments) = _wrapWithTime(executable, arguments);
     }
-    realArguments.addAll(arguments);
+    if (Platform.isLinux) {
+      (executable, arguments) = _wrapWithStdbuf(executable, arguments);
+    }
 
-    var process = await Process.start(realExecutable, realArguments,
+    var process = await Process.start(executable, arguments,
         workingDirectory: workingDirectory,
         environment: environment,
         includeParentEnvironment: includeParentEnvironment);
@@ -143,11 +134,33 @@ class SubprocessLauncher {
     return jsonObjects;
   }
 
+  /// Wraps [command] and [args] with a call to `stdbuf`.
+  (String, List<String>) _wrapWithStdbuf(String command, List<String> args) =>
+      // Use GNU coreutils to force line buffering.  This makes sure that
+      // subprocesses that die due to fatal signals do not chop off the last few
+      // lines of their output.
+      //
+      // Dart does not actually do this (seems to flush manually) unless the VM
+      // crashes.
+      (
+        'stdbuf',
+        [
+          ...['-o', 'L', '-e', 'L'],
+          command,
+          ...args,
+        ],
+      );
+
+  /// Wraps [command] and [args] with a command to `time`.
+  (String, List<String>) _wrapWithTime(String command, List<String> args) =>
+      ('/usr/bin/time', ['-l', command, ...args]);
+
   Future<Iterable<Map<String, Object?>>> runStreamedDartCommand(
     List<String> arguments, {
     String? workingDirectory,
     Map<String, String>? environment,
     bool includeParentEnvironment = true,
+    bool withStats = false,
   }) async =>
       await runStreamed(
         Platform.executable,
@@ -155,6 +168,7 @@ class SubprocessLauncher {
         workingDirectory: workingDirectory,
         environment: environment,
         includeParentEnvironment: includeParentEnvironment,
+        withStats: withStats,
       );
 
   static final _quotables = RegExp(r'[ "\r\n\$]');
