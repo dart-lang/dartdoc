@@ -16675,7 +16675,8 @@ const _invisibleGetters = {
     'periodOffset',
     'redirectedConstructor',
     'returnType',
-    'runtimeType'
+    'runtimeType',
+    'superConstructor'
   },
   'ContainerModifier': {
     'displayName',
@@ -16796,6 +16797,7 @@ const _invisibleGetters = {
     'hasOptionalTypeArgs',
     'hasOverride',
     'hasProtected',
+    'hasRedeclare',
     'hasReopen',
     'hasRequired',
     'hasSealed',
@@ -16885,6 +16887,7 @@ const _invisibleGetters = {
     'hasOptionalTypeArgs',
     'hasOverride',
     'hasProtected',
+    'hasRedeclare',
     'hasReopen',
     'hasRequired',
     'hasSealed',
@@ -16949,11 +16952,14 @@ const _invisibleGetters = {
     'augmentationTarget',
     'augmented',
     'hashCode',
+    'primaryConstructor',
     'representation',
     'runtimeType',
     'typeErasure'
   },
   'FieldElement': {
+    'augmentation',
+    'augmentationTarget',
     'declaration',
     'hashCode',
     'isAbstract',
@@ -17150,6 +17156,7 @@ const _invisibleGetters = {
     'hasOptionalTypeArgs',
     'hasOverride',
     'hasProtected',
+    'hasRedeclare',
     'hasReopen',
     'hasRequired',
     'hasSealed',
@@ -17312,6 +17319,7 @@ const _invisibleGetters = {
     'hasOptionalTypeArgs',
     'hasOverride',
     'hasProtected',
+    'hasRedeclare',
     'hasReopen',
     'hasRequired',
     'hasSealed',
@@ -17379,6 +17387,8 @@ const _invisibleGetters = {
     'useBaseHref'
   },
   'TopLevelVariableElement': {
+    'augmentation',
+    'augmentationTarget',
     'declaration',
     'hashCode',
     'isExternal',
