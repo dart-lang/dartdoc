@@ -10,9 +10,6 @@ import 'package:analyzer/dart/element/type_system.dart';
 import 'package:analyzer/dart/element/visitor.dart';
 import 'package:analyzer/source/line_info.dart';
 // ignore: implementation_imports
-import 'package:analyzer/src/dart/element/inheritance_manager3.dart'
-    show InheritanceManager3;
-// ignore: implementation_imports
 import 'package:analyzer/src/generated/sdk.dart' show SdkLibrary;
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -361,9 +358,6 @@ class Library extends ModelElement
     }
     return '${package.baseHref}$filePath';
   }
-
-  // TODO(srawlins): Make a static field, likely on [Class].
-  late final InheritanceManager3 inheritanceManager = InheritanceManager3();
 
   bool get isAnonymous => element.name.isEmpty;
 

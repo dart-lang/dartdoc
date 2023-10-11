@@ -8580,20 +8580,6 @@ class _Renderer_Library extends RendererBase<Library> {
                     _render_String(c.href!, ast, r.template, sink, parent: r);
                   },
                 ),
-                'inheritanceManager': Property(
-                  getValue: (CT_ c) => c.inheritanceManager,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'InheritanceManager3'),
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.inheritanceManager, ast, r.template, sink,
-                        parent: r,
-                        getters: _invisibleGetters['InheritanceManager3']!);
-                  },
-                ),
                 'isAnonymous': Property(
                   getValue: (CT_ c) => c.isAnonymous,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -17130,7 +17116,6 @@ const _invisibleGetters = {
     'overriddenDepth',
     'overriddenElement'
   },
-  'InheritanceManager3': {'hashCode', 'runtimeType'},
   'InterfaceElement': {
     'allSupertypes',
     'augmentationTarget',
