@@ -31,7 +31,8 @@ void main(List<String> args) async {
     ..addCommand('validate');
   parser.addCommand('doc')
     ..addOption('name')
-    ..addOption('version');
+    ..addOption('version')
+    ..addFlag('stats');
   parser.addCommand('serve')
     ..addOption('name')
     ..addOption('version');
@@ -284,16 +285,17 @@ Future<void> runDoc(ArgResults commandResults) async {
     throw ArgumentError('"doc" command requires a single target.');
   }
   var target = commandResults.rest.single;
+  var stats = commandResults['stats'];
   await switch (target) {
-    'flutter' => docFlutter(),
-    'package' => _docPackage(commandResults),
+    'flutter' => docFlutter(withStats: stats),
+    'package' => _docPackage(commandResults, withStats: stats),
     'sdk' => docSdk(),
     'testing-package' => docTestingPackage(),
     _ => throw UnimplementedError('Unknown doc target: "$target"'),
   };
 }
 
-Future<void> docFlutter() async {
+Future<void> docFlutter({bool withStats = false}) async {
   print('building flutter docs into: $flutterDir');
   var env = createThrowawayPubCache();
   await _docFlutter(
@@ -301,6 +303,7 @@ Future<void> docFlutter() async {
     cwd: Directory.current.path,
     env: env,
     label: 'docs',
+    withStats: withStats,
   );
   var indexContents =
       File(path.join(flutterDir.path, 'dev', 'docs', 'doc', 'index.html'))
@@ -313,6 +316,7 @@ Future<Iterable<Map<String, Object?>>> _docFlutter({
   required String cwd,
   required Map<String, String> env,
   String? label,
+  bool withStats = false,
 }) async {
   var flutterRepo = await FlutterRepo.copyFromExistingFlutterRepo(
       await cleanFlutterRepo, flutterPath, env, label);
@@ -353,20 +357,27 @@ Future<Iterable<Map<String, Object?>>> _docFlutter({
       '--json',
     ],
     workingDirectory: flutterPath,
+    withStats: withStats,
   );
 }
 
 final Directory flutterDir =
     Directory.systemTemp.createTempSync('flutter').absolute;
 
-Future<void> _docPackage(ArgResults commandResults) async {
+Future<void> _docPackage(
+  ArgResults commandResults, {
+  bool withStats = false,
+}) async {
   var name = commandResults['name'] as String;
   var version = commandResults['version'] as String?;
-  await docPackage(name: name, version: version);
+  await docPackage(name: name, version: version, withStats: withStats);
 }
 
-Future<String> docPackage(
-    {required String name, required String? version}) async {
+Future<String> docPackage({
+  required String name,
+  required String? version,
+  bool withStats = false,
+}) async {
   var env = createThrowawayPubCache();
   var versionContext = version == null ? '' : '-$version';
   var launcher = SubprocessLauncher('build-$name$versionContext', env);
@@ -392,16 +403,18 @@ Future<String> docPackage(
         environment: flutterRepo.env,
         workingDirectory: pubPackageDir.absolute.path);
     await launcher.runStreamed(
-        flutterRepo.cacheDart,
-        [
-          '--enable-asserts',
-          path.join(Directory.current.absolute.path, 'bin', 'dartdoc.dart'),
-          '--json',
-          '--link-to-remote',
-          '--show-progress',
-        ],
-        environment: flutterRepo.env,
-        workingDirectory: pubPackageDir.absolute.path);
+      flutterRepo.cacheDart,
+      [
+        '--enable-asserts',
+        path.join(Directory.current.absolute.path, 'bin', 'dartdoc.dart'),
+        '--json',
+        '--link-to-remote',
+        '--show-progress',
+      ],
+      environment: flutterRepo.env,
+      workingDirectory: pubPackageDir.absolute.path,
+      withStats: withStats,
+    );
   } else {
     await launcher.runStreamedDartCommand(['pub', 'get'],
         workingDirectory: pubPackageDir.absolute.path);
@@ -414,6 +427,7 @@ Future<String> docPackage(
         '--show-progress',
       ],
       workingDirectory: pubPackageDir.absolute.path,
+      withStats: withStats,
     );
   }
   return path.join(pubPackageDir.absolute.path, 'doc', 'api');
