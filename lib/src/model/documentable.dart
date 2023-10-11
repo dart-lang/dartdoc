@@ -11,7 +11,7 @@ import 'model.dart';
 
 /// Bridges the gap between model elements and packages,
 /// both of which have documentation.
-mixin Documentable on Nameable {
+abstract class Documentable extends Nameable {
   String? get documentation;
 
   String get documentationAsHtml;
