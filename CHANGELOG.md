@@ -1,8 +1,21 @@
-## 7.0.0-wip
+## 7.0.0
 
 * Require `analyzer: ^6.2.0`.
 * Remove all `@deprecated` elements.
+* Fix sidebar links in leaf pages. (#3510)
+* Do not hide stack trace of DartdocFailures. (#3505)
+* Rank libraries _lower_ than classes and class modifiers.
 * Remove deprecated `<nodoc>` syntax.
+* Deprecate the `{@example}` directive.
+* Remove support for the four-argument `{@animation}` directive format.
+* Remove old options, `dropTextFrom` and `hideSdkText`.
+* Rename Feature to Attribute, to avoid confusion with language features. The
+  corresponding template partials are also renamed. (#3499)
+* Some support for extension types is enabled.
+* Move all grinder tasks to package:args commands.
+* Remove `Canonicalization.canonicalLibrary` and `Category.canonicalLibrary` and
+  `Package.canonicalLibrary`.
+* Make `Category.categoryDefinition` and `Library.exportedInLibraries` private.
 
 ## 6.3.0
 * Add a hideImplementations directive to disable showing constant
