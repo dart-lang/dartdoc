@@ -886,28 +886,6 @@ class _Renderer_Canonicalization extends RendererBase<Canonicalization> {
           CT_,
           () => {
                 ..._Renderer_Object.propertyMap<CT_>(),
-                'canonicalLibrary': Property(
-                  getValue: (CT_ c) => c.canonicalLibrary,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_Library.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as Library,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => c.canonicalLibrary == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_Library(c.canonicalLibrary!, ast, r.template, sink,
-                        parent: r);
-                  },
-                ),
                 'isCanonical': Property(
                   getValue: (CT_ c) => c.isCanonical,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -1116,28 +1094,6 @@ class _Renderer_Category extends RendererBase<Category> {
                 ..._Renderer_TopLevelContainer.propertyMap<CT_>(),
                 ..._Renderer_Indexable.propertyMap<CT_>(),
                 ..._Renderer_ModelBuilder.propertyMap<CT_>(),
-                'canonicalLibrary': Property(
-                  getValue: (CT_ c) => c.canonicalLibrary,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_Library.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as Library,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_Library(c.canonicalLibrary, ast, r.template, sink,
-                        parent: r);
-                  },
-                ),
                 'categoryIndex': Property(
                   getValue: (CT_ c) => c.categoryIndex,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -12103,28 +12059,6 @@ class _Renderer_Package extends RendererBase<Package> {
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_String(c.baseHref, ast, r.template, sink,
-                        parent: r);
-                  },
-                ),
-                'canonicalLibrary': Property(
-                  getValue: (CT_ c) => c.canonicalLibrary,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_Library.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as Library,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => c.canonicalLibrary == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_Library(c.canonicalLibrary!, ast, r.template, sink,
                         parent: r);
                   },
                 ),

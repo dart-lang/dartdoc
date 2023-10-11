@@ -481,35 +481,34 @@ abstract class ModelElement extends Canonicalization
   Library get definingLibrary =>
       modelBuilder.fromElement(element.library!) as Library;
 
-  @override
   late final Library? canonicalLibrary = () {
+    if (!utils.hasPublicName(element)) {
+      // Privately named elements can never have a canonical library.
+      return null;
+    }
+
     // This is not accurate if we are constructing the Package.
     assert(packageGraph.allLibrariesAdded);
-    Library? canonicalLibraryPossibility;
 
-    // Privately named elements can never have a canonical library, so
-    // just shortcut them out.
-    if (!utils.hasPublicName(element)) {
-      canonicalLibraryPossibility = null;
-    } else if (!packageGraph.localPublicLibraries.contains(definingLibrary)) {
-      canonicalLibraryPossibility = _searchForCanonicalLibrary();
-    } else {
-      canonicalLibraryPossibility = definingLibrary;
-    }
-    // Only pretend when not linking to remote packages.
-    if (this is Inheritable && !config.linkToRemote) {
-      if ((this as Inheritable).isInherited &&
-          canonicalLibraryPossibility == null &&
+    var definingLibraryIsLocalPublic =
+        packageGraph.localPublicLibraries.contains(definingLibrary);
+    var possibleCanonicalLibrary = definingLibraryIsLocalPublic
+        ? definingLibrary
+        : _searchForCanonicalLibrary();
+
+    if (possibleCanonicalLibrary != null) return possibleCanonicalLibrary;
+
+    if (this case Inheritable(isInherited: true)) {
+      if (!config.linkToRemote &&
           packageGraph.publicLibraries.contains(library)) {
-        // In the event we've inherited a field from an object that isn't
-        // directly reexported, we may need to pretend we are canonical for
-        // this.
-        canonicalLibraryPossibility = library;
+        // If this is an element inherited from a container that isn't directly
+        // reexported, and we're not linking to remote, we can pretend that
+        // [library] is canonical.
+        return library;
       }
     }
-    assert(canonicalLibraryPossibility == null ||
-        packageGraph.publicLibraries.contains(canonicalLibraryPossibility));
-    return canonicalLibraryPossibility;
+
+    return null;
   }();
 
   Library? _searchForCanonicalLibrary() {

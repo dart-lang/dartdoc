@@ -1321,8 +1321,7 @@ class DartdocOptionContext extends DartdocOptionContextBase
 
   bool get validateLinks => optionSet['validateLinks'].valueAt(context);
 
-  bool isLibraryExcluded(String name) =>
-      exclude.any((pattern) => name == pattern);
+  bool isLibraryExcluded(String nameOrPath) => exclude.contains(nameOrPath);
 
   bool isPackageExcluded(String name) => _excludePackages.contains(name);
 

@@ -95,10 +95,6 @@ class Category extends Nameable
   PackageGraph get packageGraph => package.packageGraph;
 
   @override
-  Library get canonicalLibrary =>
-      throw UnimplementedError('Categories can not have associated libraries.');
-
-  @override
   List<Locatable> get documentationFrom => [this];
 
   @override
