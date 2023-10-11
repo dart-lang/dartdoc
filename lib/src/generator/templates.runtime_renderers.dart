@@ -4003,7 +4003,6 @@ class _Renderer_Documentable extends RendererBase<Documentable> {
       _propertyMapCache.putIfAbsent(
           CT_,
           () => {
-                ..._Renderer_Nameable.propertyMap<CT_>(),
                 'config': Property(
                   getValue: (CT_ c) => c.config,
                   renderVariable: (CT_ c, Property<CT_> self,

@@ -296,9 +296,9 @@ const Map<PackageWarning, PackageWarningDefinition> packageWarningDefinitions =
       defaultWarningMode: PackageWarningMode.ignore),
 };
 
-/// Something that package warnings can be called on.  Optionally associated
+/// Something that package warnings can be reported on.  Optionally associated
 /// with an analyzer [element].
-mixin Warnable implements Canonicalization, CommentReferable {
+mixin Warnable implements CommentReferable, Documentable, Locatable {
   Element? get element;
 
   void warn(

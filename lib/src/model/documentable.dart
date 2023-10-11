@@ -11,7 +11,7 @@ import 'model.dart';
 
 /// Bridges the gap between model elements and packages,
 /// both of which have documentation.
-abstract class Documentable extends Nameable {
+mixin Documentable on Nameable {
   String? get documentation;
 
   String get documentationAsHtml;
@@ -77,5 +77,5 @@ mixin MarkdownFileDocumentation implements Documentable, Canonicalization {
   String get location => '(${documentationFile?.path})';
 
   @override
-  Set<String> get locationPieces => <String>{location};
+  Set<String> get locationPieces => {location};
 }

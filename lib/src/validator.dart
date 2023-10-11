@@ -8,6 +8,7 @@ import 'dart:convert';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/logging.dart';
+import 'package:dartdoc/src/model/canonicalization.dart';
 import 'package:dartdoc/src/model/model_element.dart';
 import 'package:dartdoc/src/model/package_graph.dart';
 import 'package:dartdoc/src/runtime_stats.dart';
@@ -214,9 +215,9 @@ class Validator {
   }) {
     // Ordinarily this would go in [Package.warn], but we don't actually know
     // what [ModelElement] to warn on yet.
-    Warnable? warnOnElement;
-    final referredFromElements = <Warnable>{};
-    Set<Warnable>? warnOnElements;
+    ModelElement? warnOnElement;
+    final referredFromElements = <Canonicalization>{};
+    Set<ModelElement>? warnOnElements;
 
     // Make all paths relative to origin.
     if (path.isWithin(origin, warnOn)) {

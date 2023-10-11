@@ -88,7 +88,6 @@ class Package extends LibraryContainer
   // object that contains them.
   Map<String?, Set<String>> usedAnimationIdsByHref = {};
 
-  /// Pieces of the location, split to remove 'package:' and slashes.
   @override
   Set<String> get locationPieces => const {};
 

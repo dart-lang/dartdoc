@@ -114,7 +114,6 @@ class EnumField extends Field {
     if (!identical(canonicalModelElement, this)) {
       return canonicalModelElement?.href;
     }
-    assert(!(canonicalLibrary == null || canonicalEnclosingContainer == null));
     assert(canonicalLibrary == library);
     assert(canonicalEnclosingContainer == enclosingElement);
     // TODO(jcollins-g): EnumField should not depend on enclosingElement, but
