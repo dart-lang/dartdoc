@@ -4,6 +4,9 @@
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
+// ignore: implementation_imports
+import 'package:analyzer/src/dart/element/inheritance_manager3.dart'
+    show InheritanceManager3;
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
@@ -146,10 +149,9 @@ abstract class InheritingContainer extends Container
       return const <ExecutableElement>[];
     }
 
-    final inheritance = definingLibrary.inheritanceManager;
     final concreteInheritenceMap =
-        inheritance.getInheritedConcreteMap2(element);
-    final inheritenceMap = inheritance.getInheritedMap2(element);
+        _inheritanceManager.getInheritedConcreteMap2(element);
+    final inheritenceMap = _inheritanceManager.getInheritedMap2(element);
 
     List<InterfaceElement>? inheritanceChainElements;
 
@@ -188,6 +190,8 @@ abstract class InheritingContainer extends Container
 
     return combinedMap.values.toList(growable: false);
   }();
+
+  static final InheritanceManager3 _inheritanceManager = InheritanceManager3();
 
   /// All fields defined on this container, _including inherited fields_.
   late final List<Field> allFields = () {
