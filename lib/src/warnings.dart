@@ -181,13 +181,6 @@ enum PackageWarning implements Comparable<PackageWarning> {
         'The category-order flag on the command line was given the name of a '
         'nonexistent package',
   ),
-  reexportedPrivateApiAcrossPackages(
-    'reexported-private-api-across-packages',
-    'private API of {0} is reexported by libraries in other packages: ',
-    shortHelp:
-        'One or more libraries reexports private API members from outside its '
-        'own package',
-  ),
   unresolvedDocReference(
     'unresolved-doc-reference',
     'unresolved doc reference [{0}]',
