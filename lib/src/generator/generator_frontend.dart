@@ -59,7 +59,11 @@ class GeneratorFrontEnd implements Generator {
         packageGraph, packageGraph.defaultPackage);
 
     var indexAccumulator = <Indexable>[];
+    var multiplePackages = packageGraph.localPackages.length > 1;
     for (var package in packageGraph.localPackages) {
+      if (multiplePackages) {
+        logInfo('Generating docs for package ${package.name}...');
+      }
       for (var category in filterNonDocumented(package.categories)) {
         logInfo('Generating docs for category ${category.name} from '
             '${category.package.fullyQualifiedName}...');
@@ -68,8 +72,10 @@ class GeneratorFrontEnd implements Generator {
       }
 
       for (var lib in filterNonDocumented(package.libraries)) {
-        logInfo('Generating docs for library ${lib.name} from '
-            '${lib.element.source.uri}...');
+        if (!multiplePackages) {
+          logInfo('Generating docs for library ${lib.name} from '
+              '${lib.element.source.uri}...');
+        }
         if (!lib.isAnonymous && !lib.hasDocumentation) {
           packageGraph.warnOnElement(lib, PackageWarning.noLibraryLevelDocs);
         }
