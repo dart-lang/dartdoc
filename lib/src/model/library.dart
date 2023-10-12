@@ -294,7 +294,7 @@ class Library extends ModelElement
 
   /// Map of each import prefix ('import "foo" as prefix;') to the set of
   /// libraries which are imported via that prefix.
-  late final Map<String, Set<Library>> prefixToLibrary = () {
+  Map<String, Set<Library>> get prefixToLibrary {
     var prefixToLibrary = <String, Set<Library>>{};
     // It is possible to have overlapping prefixes.
     for (var i in element.libraryImports) {
@@ -307,7 +307,7 @@ class Library extends ModelElement
       }
     }
     return prefixToLibrary;
-  }();
+  }
 
   late final String dirName = (isAnonymous ? nameFromPath : name)
       .replaceAll(':', '-')
@@ -348,10 +348,10 @@ class Library extends ModelElement
   String get belowSidebarPath => sidebarPath;
 
   @override
-  late final List<ModelFunction> functions =
-      _exportedAndLocalElements.whereType<FunctionElement>().map((e) {
-    return modelBuilder.from(e, this) as ModelFunction;
-  }).toList(growable: false);
+  late final List<ModelFunction> functions = _exportedAndLocalElements
+      .whereType<FunctionElement>()
+      .map((e) => modelBuilder.from(e, this) as ModelFunction)
+      .toList(growable: false);
 
   @override
   String? get href {
@@ -370,7 +370,7 @@ class Library extends ModelElement
   Library get library => this;
 
   @override
-  late final String name = () {
+  String get name {
     var source = element.source;
     if (source.uri.isScheme('dart')) {
       // There are inconsistencies in library naming + URIs for the Dart
@@ -391,7 +391,7 @@ class Library extends ModelElement
       return baseName.substring(0, baseName.length - dartExtensionLength);
     }
     return baseName;
-  }();
+  }
 
   /// Generate a name for this library based on its location.
   ///
@@ -429,7 +429,7 @@ class Library extends ModelElement
       .map((e) => modelBuilder.from(e, this) as Class)
       .toList(growable: false);
 
-  late final List<TopLevelVariable> _variables = () {
+  List<TopLevelVariable> get _variables {
     var elements =
         _exportedAndLocalElements.whereType<TopLevelVariableElement>().toSet();
     elements.addAll(_exportedAndLocalElements
@@ -452,7 +452,7 @@ class Library extends ModelElement
       variables.add(me as TopLevelVariable);
     }
     return variables;
-  }();
+  }
 
   /// Reverses URIs if needed to get a package URI.
   ///
@@ -482,6 +482,8 @@ class Library extends ModelElement
 
   /// A mapping of all [Element]s in this library to the [ModelElement]s which
   /// represent them in dartdoc.
+  // Note: Keep this a late final field; converting to a getter (without further
+  // investigation) causes dartdoc to hang.
   late final HashMap<Element, Set<ModelElement>> modelElementsMap = () {
     var modelElements = HashMap<Element, Set<ModelElement>>();
     for (var modelElement in <ModelElement>[
@@ -508,7 +510,7 @@ class Library extends ModelElement
       ];
 
   @override
-  late final Map<String, CommentReferable> referenceChildren = () {
+  Map<String, CommentReferable> get referenceChildren {
     var referenceChildrenBuilder = <String, CommentReferable>{};
     var definedNamesModelElements = element.exportNamespace.definedNames.values
         .map(modelBuilder.fromElement);
@@ -523,7 +525,7 @@ class Library extends ModelElement
       referenceChildrenBuilder.putIfAbsent(prefix, () => libraries.first);
     }
     return referenceChildrenBuilder;
-  }();
+  }
 
   @override
   Iterable<CommentReferable> get referenceParents => [package];
