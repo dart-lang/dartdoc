@@ -1,4 +1,4 @@
-## 7.0.0
+## 7.0.1-wip
 
 * Require `analyzer: ^6.2.0`.
 * Remove all `@deprecated` elements.
