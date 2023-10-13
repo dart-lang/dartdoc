@@ -386,9 +386,8 @@ Future<String> docPackage({
   ]);
   var cache = Directory(path.join(env['PUB_CACHE']!, 'hosted', 'pub.dev'));
   // The pub package should be predictably in a location like this.
-  var pubPackageDirOrig = cache
-      .listSync()
-      .firstWhere((e) => e.path.contains('/$name-${version ?? ''}'));
+  var pubPackageDirOrig =
+      cache.listSync().firstWhere((e) => e.path.contains('/$name-'));
   var pubPackageDir = Directory.systemTemp.createTempSync(name);
   io_utils.copy(pubPackageDirOrig, pubPackageDir);
 
