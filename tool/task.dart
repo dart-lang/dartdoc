@@ -305,10 +305,6 @@ Future<void> docFlutter({bool withStats = false}) async {
     label: 'docs',
     withStats: withStats,
   );
-  var indexContents =
-      File(path.join(flutterDir.path, 'dev', 'docs', 'doc', 'index.html'))
-          .readAsLinesSync();
-  print([...indexContents.take(25), '...\n'].join('\n'));
 }
 
 Future<Iterable<Map<String, Object?>>> _docFlutter({
@@ -389,8 +385,10 @@ Future<String> docPackage({
     name,
   ]);
   var cache = Directory(path.join(env['PUB_CACHE']!, 'hosted', 'pub.dev'));
-  var pubPackageDirOrig =
-      cache.listSync().firstWhere((e) => e.path.contains(name));
+  // The pub package should be predictably in a location like this.
+  var pubPackageDirOrig = cache
+      .listSync()
+      .firstWhere((e) => e.path.contains('/$name-${version ?? ''}'));
   var pubPackageDir = Directory.systemTemp.createTempSync(name);
   io_utils.copy(pubPackageDirOrig, pubPackageDir);
 
