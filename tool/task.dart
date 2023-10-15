@@ -194,7 +194,7 @@ Future<void> runBuildbot() async {
 
 Future<void> runClean() async {
   // This involves deleting things, so be careful.
-  if (!File(path.join('tool', 'grind.dart')).existsSync()) {
+  if (!File(path.join('tool', 'task.dart')).existsSync()) {
     throw FileSystemException('Wrong CWD, run from root of dartdoc package');
   }
   const pubDataFileNames = {'.dart_tool', '.packages', 'pubspec.lock'};

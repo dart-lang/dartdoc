@@ -5,9 +5,9 @@
 lib/src/version.dart linguist-generated=false
 lib/src/html/resources.g.dart linguist-generated=false
 
-# Don't force devs to manually resolve conflicts in generated files. At the end
-# of a rebase or a merge, the dev may still need to regenerate these files with
-# `dart run build_runner build` or `dart run grinder build-web`.
+# Don't force devs to manually resolve conflicts in generated files.
+# At the end of a rebase or a merge, the dev may still need to regenerate
+# these files with `dart run tool/task.dart build`.
 lib/resources/docs.dart.js merge=theirs
 lib/resources/docs.dart.js.map merge=theirs
 lib/src/generator/templates.aot_renderers_for_html.dart merge=theirs
