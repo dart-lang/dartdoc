@@ -27,6 +27,7 @@ linter:
     - directives_ordering
     - invalid_case_patterns
     - no_adjacent_strings_in_list
+    - no_literal_bool_comparisons
     - omit_local_variable_types
     - only_throw_errors
     - package_api_docs

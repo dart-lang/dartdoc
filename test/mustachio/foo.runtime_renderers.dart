@@ -191,12 +191,11 @@ class Renderer_Foo extends RendererBase<Foo> {
           () => {
                 ...Renderer_FooBase.propertyMap<Baz, CT_>(),
                 'b1': Property(
-                  getValue: (CT_ c) => c.b1,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.b1 == true,
-                ),
+                    getValue: (CT_ c) => c.b1,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.b1),
                 'baz': Property(
                   getValue: (CT_ c) => c.baz,
                   renderVariable:

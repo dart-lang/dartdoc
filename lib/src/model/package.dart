@@ -221,7 +221,7 @@ class Package extends LibraryContainer
               tag = version.preRelease.whereType<String>().first;
               // Who knows about non-SDK packages, but SDKs must conform to the
               // known format.
-              assert(packageMeta.isSdk == false || int.tryParse(tag) == null,
+              assert(!packageMeta.isSdk || int.tryParse(tag) == null,
                   'Got an integer as string instead of the expected "dev" tag');
             }
             return tag;

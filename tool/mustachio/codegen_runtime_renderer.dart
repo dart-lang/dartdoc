@@ -517,8 +517,14 @@ renderVariable:
     }
 
     if (getterType.isDartCoreBool) {
-      _buffer.writeln(
-          'getBool: ($_contextTypeVariable c) => c.$getterName == true,');
+      _buffer.write(
+        'getBool: ($_contextTypeVariable c) => c.$getterName',
+      );
+      if (getterType.nullabilitySuffix != NullabilitySuffix.none) {
+        _buffer.writeln(' == true,');
+      } else {
+        _buffer.writeln('');
+      }
     } else if (_typeSystem.isAssignableTo(
         getterType, _typeProvider.iterableDynamicType)) {
       var iterableElement = _typeProvider.iterableElement;

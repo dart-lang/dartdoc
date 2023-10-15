@@ -28,10 +28,10 @@ s1: ''');
   buffer.writeln();
   buffer.write('''
 b1? ''');
-  if (context0.b1 == true) {
+  if (context0.b1) {
     buffer.write('''yes''');
   }
-  if (context0.b1 != true) {
+  if (!context0.b1) {
     buffer.write('''no''');
   }
   buffer.writeln();

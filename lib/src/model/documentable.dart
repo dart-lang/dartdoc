@@ -63,7 +63,7 @@ mixin MarkdownFileDocumentation implements Documentable, Canonicalization {
   }
 
   @override
-  bool get hasDocumentation => documentation.isNotEmpty == true;
+  bool get hasDocumentation => documentation.isNotEmpty;
 
   @override
   bool get isDocumented;

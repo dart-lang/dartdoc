@@ -223,12 +223,11 @@ class _Renderer_Accessor extends RendererBase<Accessor> {
                   },
                 ),
                 'hasDocumentationComment': Property(
-                  getValue: (CT_ c) => c.hasDocumentationComment,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasDocumentationComment == true,
-                ),
+                    getValue: (CT_ c) => c.hasDocumentationComment,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasDocumentationComment),
                 'href': Property(
                   getValue: (CT_ c) => c.href,
                   renderVariable:
@@ -251,33 +250,29 @@ class _Renderer_Accessor extends RendererBase<Accessor> {
                   },
                 ),
                 'isCanonical': Property(
-                  getValue: (CT_ c) => c.isCanonical,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isCanonical == true,
-                ),
+                    getValue: (CT_ c) => c.isCanonical,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isCanonical),
                 'isGetter': Property(
-                  getValue: (CT_ c) => c.isGetter,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isGetter == true,
-                ),
+                    getValue: (CT_ c) => c.isGetter,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isGetter),
                 'isSetter': Property(
-                  getValue: (CT_ c) => c.isSetter,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isSetter == true,
-                ),
+                    getValue: (CT_ c) => c.isSetter,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isSetter),
                 'isSynthetic': Property(
-                  getValue: (CT_ c) => c.isSynthetic,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isSynthetic == true,
-                ),
+                    getValue: (CT_ c) => c.isSynthetic,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isSynthetic),
                 'kind': Property(
                   getValue: (CT_ c) => c.kind,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -477,12 +472,11 @@ class _Renderer_Annotation extends RendererBase<Annotation> {
                   },
                 ),
                 'isPublic': Property(
-                  getValue: (CT_ c) => c.isPublic,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isPublic == true,
-                ),
+                    getValue: (CT_ c) => c.isPublic,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isPublic),
                 'library': Property(
                   getValue: (CT_ c) => c.library,
                   renderVariable:
@@ -887,12 +881,11 @@ class _Renderer_Canonicalization extends RendererBase<Canonicalization> {
           () => {
                 ..._Renderer_Object.propertyMap<CT_>(),
                 'isCanonical': Property(
-                  getValue: (CT_ c) => c.isCanonical,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isCanonical == true,
-                ),
+                    getValue: (CT_ c) => c.isCanonical,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isCanonical),
                 'locationPieces': Property(
                   getValue: (CT_ c) => c.locationPieces,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -965,40 +958,35 @@ class _Renderer_Categorization extends RendererBase<Categorization> {
                   },
                 ),
                 'hasCategorization': Property(
-                  getValue: (CT_ c) => c.hasCategorization,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasCategorization == true,
-                ),
+                    getValue: (CT_ c) => c.hasCategorization,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasCategorization),
                 'hasCategoryNames': Property(
-                  getValue: (CT_ c) => c.hasCategoryNames,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasCategoryNames == true,
-                ),
+                    getValue: (CT_ c) => c.hasCategoryNames,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasCategoryNames),
                 'hasImage': Property(
-                  getValue: (CT_ c) => c.hasImage,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasImage == true,
-                ),
+                    getValue: (CT_ c) => c.hasImage,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasImage),
                 'hasSamples': Property(
-                  getValue: (CT_ c) => c.hasSamples,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasSamples == true,
-                ),
+                    getValue: (CT_ c) => c.hasSamples,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasSamples),
                 'hasSubCategoryNames': Property(
-                  getValue: (CT_ c) => c.hasSubCategoryNames,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasSubCategoryNames == true,
-                ),
+                    getValue: (CT_ c) => c.hasSubCategoryNames,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasSubCategoryNames),
                 'image': Property(
                   getValue: (CT_ c) => c.image,
                   renderVariable:
@@ -1380,19 +1368,17 @@ class _Renderer_Category extends RendererBase<Category> {
                   },
                 ),
                 'isCanonical': Property(
-                  getValue: (CT_ c) => c.isCanonical,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isCanonical == true,
-                ),
+                    getValue: (CT_ c) => c.isCanonical,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isCanonical),
                 'isDocumented': Property(
-                  getValue: (CT_ c) => c.isDocumented,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isDocumented == true,
-                ),
+                    getValue: (CT_ c) => c.isDocumented,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isDocumented),
                 'kind': Property(
                   getValue: (CT_ c) => c.kind,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -1846,54 +1832,47 @@ class _Renderer_Class extends RendererBase<Class> {
                   },
                 ),
                 'isAbstract': Property(
-                  getValue: (CT_ c) => c.isAbstract,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isAbstract == true,
-                ),
+                    getValue: (CT_ c) => c.isAbstract,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isAbstract),
                 'isBase': Property(
-                  getValue: (CT_ c) => c.isBase,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isBase == true,
-                ),
+                    getValue: (CT_ c) => c.isBase,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isBase),
                 'isErrorOrException': Property(
-                  getValue: (CT_ c) => c.isErrorOrException,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isErrorOrException == true,
-                ),
+                    getValue: (CT_ c) => c.isErrorOrException,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isErrorOrException),
                 'isFinal': Property(
-                  getValue: (CT_ c) => c.isFinal,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isFinal == true,
-                ),
+                    getValue: (CT_ c) => c.isFinal,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isFinal),
                 'isInterface': Property(
-                  getValue: (CT_ c) => c.isInterface,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isInterface == true,
-                ),
+                    getValue: (CT_ c) => c.isInterface,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isInterface),
                 'isMixinClass': Property(
-                  getValue: (CT_ c) => c.isMixinClass,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isMixinClass == true,
-                ),
+                    getValue: (CT_ c) => c.isMixinClass,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isMixinClass),
                 'isSealed': Property(
-                  getValue: (CT_ c) => c.isSealed,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isSealed == true,
-                ),
+                    getValue: (CT_ c) => c.isSealed,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isSealed),
                 'kind': Property(
                   getValue: (CT_ c) => c.kind,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -2187,12 +2166,11 @@ class _Renderer_Constructable extends RendererBase<Constructable> {
                   },
                 ),
                 'hasPublicConstructors': Property(
-                  getValue: (CT_ c) => c.hasPublicConstructors,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasPublicConstructors == true,
-                ),
+                    getValue: (CT_ c) => c.hasPublicConstructors,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasPublicConstructors),
                 'publicConstructorsSorted': Property(
                   getValue: (CT_ c) => c.publicConstructorsSorted,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -2399,33 +2377,29 @@ class _Renderer_Constructor extends RendererBase<Constructor> {
                   },
                 ),
                 'isConst': Property(
-                  getValue: (CT_ c) => c.isConst,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isConst == true,
-                ),
+                    getValue: (CT_ c) => c.isConst,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isConst),
                 'isDefaultConstructor': Property(
-                  getValue: (CT_ c) => c.isDefaultConstructor,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isDefaultConstructor == true,
-                ),
+                    getValue: (CT_ c) => c.isDefaultConstructor,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isDefaultConstructor),
                 'isFactory': Property(
-                  getValue: (CT_ c) => c.isFactory,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isFactory == true,
-                ),
+                    getValue: (CT_ c) => c.isFactory,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isFactory),
                 'isUnnamedConstructor': Property(
-                  getValue: (CT_ c) => c.isUnnamedConstructor,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isUnnamedConstructor == true,
-                ),
+                    getValue: (CT_ c) => c.isUnnamedConstructor,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isUnnamedConstructor),
                 'kind': Property(
                   getValue: (CT_ c) => c.kind,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -3068,82 +3042,71 @@ class _Renderer_Container extends RendererBase<Container> {
                   },
                 ),
                 'hasInstanceFields': Property(
-                  getValue: (CT_ c) => c.hasInstanceFields,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasInstanceFields == true,
-                ),
+                    getValue: (CT_ c) => c.hasInstanceFields,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasInstanceFields),
                 'hasParameters': Property(
-                  getValue: (CT_ c) => c.hasParameters,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasParameters == true,
-                ),
+                    getValue: (CT_ c) => c.hasParameters,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasParameters),
                 'hasPublicConstantFields': Property(
-                  getValue: (CT_ c) => c.hasPublicConstantFields,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasPublicConstantFields == true,
-                ),
+                    getValue: (CT_ c) => c.hasPublicConstantFields,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasPublicConstantFields),
                 'hasPublicConstructors': Property(
-                  getValue: (CT_ c) => c.hasPublicConstructors,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasPublicConstructors == true,
-                ),
+                    getValue: (CT_ c) => c.hasPublicConstructors,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasPublicConstructors),
                 'hasPublicEnumValues': Property(
-                  getValue: (CT_ c) => c.hasPublicEnumValues,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasPublicEnumValues == true,
-                ),
+                    getValue: (CT_ c) => c.hasPublicEnumValues,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasPublicEnumValues),
                 'hasPublicInstanceFields': Property(
-                  getValue: (CT_ c) => c.hasPublicInstanceFields,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasPublicInstanceFields == true,
-                ),
+                    getValue: (CT_ c) => c.hasPublicInstanceFields,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasPublicInstanceFields),
                 'hasPublicInstanceMethods': Property(
-                  getValue: (CT_ c) => c.hasPublicInstanceMethods,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasPublicInstanceMethods == true,
-                ),
+                    getValue: (CT_ c) => c.hasPublicInstanceMethods,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasPublicInstanceMethods),
                 'hasPublicInstanceOperators': Property(
-                  getValue: (CT_ c) => c.hasPublicInstanceOperators,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasPublicInstanceOperators == true,
-                ),
+                    getValue: (CT_ c) => c.hasPublicInstanceOperators,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasPublicInstanceOperators),
                 'hasPublicStaticFields': Property(
-                  getValue: (CT_ c) => c.hasPublicStaticFields,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasPublicStaticFields == true,
-                ),
+                    getValue: (CT_ c) => c.hasPublicStaticFields,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasPublicStaticFields),
                 'hasPublicStaticMethods': Property(
-                  getValue: (CT_ c) => c.hasPublicStaticMethods,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasPublicStaticMethods == true,
-                ),
+                    getValue: (CT_ c) => c.hasPublicStaticMethods,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasPublicStaticMethods),
                 'hasPublicVariableStaticFields': Property(
-                  getValue: (CT_ c) => c.hasPublicVariableStaticFields,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasPublicVariableStaticFields == true,
-                ),
+                    getValue: (CT_ c) => c.hasPublicVariableStaticFields,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasPublicVariableStaticFields),
                 'instanceAccessors': Property(
                   getValue: (CT_ c) => c.instanceAccessors,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -3193,47 +3156,41 @@ class _Renderer_Container extends RendererBase<Container> {
                   },
                 ),
                 'isClass': Property(
-                  getValue: (CT_ c) => c.isClass,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isClass == true,
-                ),
+                    getValue: (CT_ c) => c.isClass,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isClass),
                 'isClassOrEnum': Property(
-                  getValue: (CT_ c) => c.isClassOrEnum,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isClassOrEnum == true,
-                ),
+                    getValue: (CT_ c) => c.isClassOrEnum,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isClassOrEnum),
                 'isClassOrEnumOrExtension': Property(
-                  getValue: (CT_ c) => c.isClassOrEnumOrExtension,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isClassOrEnumOrExtension == true,
-                ),
+                    getValue: (CT_ c) => c.isClassOrEnumOrExtension,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isClassOrEnumOrExtension),
                 'isEnum': Property(
-                  getValue: (CT_ c) => c.isEnum,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isEnum == true,
-                ),
+                    getValue: (CT_ c) => c.isEnum,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isEnum),
                 'isExtension': Property(
-                  getValue: (CT_ c) => c.isExtension,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isExtension == true,
-                ),
+                    getValue: (CT_ c) => c.isExtension,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isExtension),
                 'isMixin': Property(
-                  getValue: (CT_ c) => c.isMixin,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isMixin == true,
-                ),
+                    getValue: (CT_ c) => c.isMixin,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isMixin),
                 'publicConstantFields': Property(
                   getValue: (CT_ c) => c.publicConstantFields,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -3284,27 +3241,23 @@ class _Renderer_Container extends RendererBase<Container> {
                   },
                 ),
                 'publicInheritedInstanceFields': Property(
-                  getValue: (CT_ c) => c.publicInheritedInstanceFields,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.publicInheritedInstanceFields == true,
-                ),
+                    getValue: (CT_ c) => c.publicInheritedInstanceFields,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.publicInheritedInstanceFields),
                 'publicInheritedInstanceMethods': Property(
-                  getValue: (CT_ c) => c.publicInheritedInstanceMethods,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.publicInheritedInstanceMethods == true,
-                ),
+                    getValue: (CT_ c) => c.publicInheritedInstanceMethods,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.publicInheritedInstanceMethods),
                 'publicInheritedInstanceOperators': Property(
-                  getValue: (CT_ c) => c.publicInheritedInstanceOperators,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) =>
-                      c.publicInheritedInstanceOperators == true,
-                ),
+                    getValue: (CT_ c) => c.publicInheritedInstanceOperators,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.publicInheritedInstanceOperators),
                 'publicInstanceFields': Property(
                   getValue: (CT_ c) => c.publicInstanceFields,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -3614,19 +3567,17 @@ class _Renderer_ContainerAccessor extends RendererBase<ContainerAccessor> {
                   },
                 ),
                 'isCovariant': Property(
-                  getValue: (CT_ c) => c.isCovariant,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isCovariant == true,
-                ),
+                    getValue: (CT_ c) => c.isCovariant,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isCovariant),
                 'isInherited': Property(
-                  getValue: (CT_ c) => c.isInherited,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isInherited == true,
-                ),
+                    getValue: (CT_ c) => c.isInherited,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isInherited),
                 'overriddenElement': Property(
                   getValue: (CT_ c) => c.overriddenElement,
                   renderVariable:
@@ -3755,12 +3706,11 @@ class _Renderer_ContainerMember extends RendererBase<ContainerMember> {
                   },
                 ),
                 'isExtended': Property(
-                  getValue: (CT_ c) => c.isExtended,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isExtended == true,
-                ),
+                    getValue: (CT_ c) => c.isExtended,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isExtended),
                 'referenceGrandparentOverrides': Property(
                   getValue: (CT_ c) => c.referenceGrandparentOverrides,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -3863,19 +3813,17 @@ class _Renderer_DefinedElementType extends RendererBase<DefinedElementType> {
                   },
                 ),
                 'isParameterType': Property(
-                  getValue: (CT_ c) => c.isParameterType,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isParameterType == true,
-                ),
+                    getValue: (CT_ c) => c.isParameterType,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isParameterType),
                 'isPublic': Property(
-                  getValue: (CT_ c) => c.isPublic,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isPublic == true,
-                ),
+                    getValue: (CT_ c) => c.isPublic,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isPublic),
                 'modelElement': Property(
                   getValue: (CT_ c) => c.modelElement,
                   renderVariable:
@@ -4077,12 +4025,11 @@ class _Renderer_Documentable extends RendererBase<Documentable> {
                   },
                 ),
                 'hasDocumentation': Property(
-                  getValue: (CT_ c) => c.hasDocumentation,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasDocumentation == true,
-                ),
+                    getValue: (CT_ c) => c.hasDocumentation,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasDocumentation),
                 'href': Property(
                   getValue: (CT_ c) => c.href,
                   renderVariable:
@@ -4105,12 +4052,11 @@ class _Renderer_Documentable extends RendererBase<Documentable> {
                   },
                 ),
                 'isDocumented': Property(
-                  getValue: (CT_ c) => c.isDocumented,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isDocumented == true,
-                ),
+                    getValue: (CT_ c) => c.isDocumented,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isDocumented),
                 'kind': Property(
                   getValue: (CT_ c) => c.kind,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -4336,19 +4282,17 @@ class _Renderer_DocumentationComment
                   },
                 ),
                 'hasDocumentationComment': Property(
-                  getValue: (CT_ c) => c.hasDocumentationComment,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasDocumentationComment == true,
-                ),
+                    getValue: (CT_ c) => c.hasDocumentationComment,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasDocumentationComment),
                 'hasNodoc': Property(
-                  getValue: (CT_ c) => c.hasNodoc,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasNodoc == true,
-                ),
+                    getValue: (CT_ c) => c.hasNodoc,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasNodoc),
                 'modelElementRenderer': Property(
                   getValue: (CT_ c) => c.modelElementRenderer,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -4364,12 +4308,11 @@ class _Renderer_DocumentationComment
                   },
                 ),
                 'needsPrecache': Property(
-                  getValue: (CT_ c) => c.needsPrecache,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.needsPrecache == true,
-                ),
+                    getValue: (CT_ c) => c.needsPrecache,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.needsPrecache),
                 'pathContext': Property(
                   getValue: (CT_ c) => c.pathContext,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -4438,12 +4381,11 @@ class _Renderer_ElementType extends RendererBase<ElementType> {
                 ..._Renderer_Nameable.propertyMap<CT_>(),
                 ..._Renderer_ModelBuilder.propertyMap<CT_>(),
                 'canHaveParameters': Property(
-                  getValue: (CT_ c) => c.canHaveParameters,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.canHaveParameters == true,
-                ),
+                    getValue: (CT_ c) => c.canHaveParameters,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.canHaveParameters),
                 'instantiatedType': Property(
                   getValue: (CT_ c) => c.instantiatedType,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -4457,12 +4399,11 @@ class _Renderer_ElementType extends RendererBase<ElementType> {
                   },
                 ),
                 'isTypedef': Property(
-                  getValue: (CT_ c) => c.isTypedef,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isTypedef == true,
-                ),
+                    getValue: (CT_ c) => c.isTypedef,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isTypedef),
                 'library': Property(
                   getValue: (CT_ c) => c.library,
                   renderVariable:
@@ -4661,12 +4602,11 @@ class _Renderer_Enum extends RendererBase<Enum> {
                   },
                 ),
                 'hasPublicEnumValues': Property(
-                  getValue: (CT_ c) => c.hasPublicEnumValues,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasPublicEnumValues == true,
-                ),
+                    getValue: (CT_ c) => c.hasPublicEnumValues,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasPublicEnumValues),
                 'inheritanceChain': Property(
                   getValue: (CT_ c) => c.inheritanceChain,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -4681,40 +4621,35 @@ class _Renderer_Enum extends RendererBase<Enum> {
                   },
                 ),
                 'isAbstract': Property(
-                  getValue: (CT_ c) => c.isAbstract,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isAbstract == true,
-                ),
+                    getValue: (CT_ c) => c.isAbstract,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isAbstract),
                 'isBase': Property(
-                  getValue: (CT_ c) => c.isBase,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isBase == true,
-                ),
+                    getValue: (CT_ c) => c.isBase,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isBase),
                 'isInterface': Property(
-                  getValue: (CT_ c) => c.isInterface,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isInterface == true,
-                ),
+                    getValue: (CT_ c) => c.isInterface,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isInterface),
                 'isMixinClass': Property(
-                  getValue: (CT_ c) => c.isMixinClass,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isMixinClass == true,
-                ),
+                    getValue: (CT_ c) => c.isMixinClass,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isMixinClass),
                 'isSealed': Property(
-                  getValue: (CT_ c) => c.isSealed,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isSealed == true,
-                ),
+                    getValue: (CT_ c) => c.isSealed,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isSealed),
                 'kind': Property(
                   getValue: (CT_ c) => c.kind,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -4907,12 +4842,11 @@ class _Renderer_Extension extends RendererBase<Extension> {
                   },
                 ),
                 'alwaysApplies': Property(
-                  getValue: (CT_ c) => c.alwaysApplies,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.alwaysApplies == true,
-                ),
+                    getValue: (CT_ c) => c.alwaysApplies,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.alwaysApplies),
                 'declaredFields': Property(
                   getValue: (CT_ c) => c.declaredFields,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -5144,20 +5078,17 @@ class _Renderer_ExtensionTarget extends RendererBase<ExtensionTarget> {
           CT_,
           () => {
                 'hasModifiers': Property(
-                  getValue: (CT_ c) => c.hasModifiers,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasModifiers == true,
-                ),
+                    getValue: (CT_ c) => c.hasModifiers,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasModifiers),
                 'hasPotentiallyApplicableExtensions': Property(
-                  getValue: (CT_ c) => c.hasPotentiallyApplicableExtensions,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) =>
-                      c.hasPotentiallyApplicableExtensions == true,
-                ),
+                    getValue: (CT_ c) => c.hasPotentiallyApplicableExtensions,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasPotentiallyApplicableExtensions),
                 'modelType': Property(
                   getValue: (CT_ c) => c.modelType,
                   renderVariable:
@@ -5631,40 +5562,35 @@ class _Renderer_ExtensionType extends RendererBase<ExtensionType> {
                   },
                 ),
                 'isAbstract': Property(
-                  getValue: (CT_ c) => c.isAbstract,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isAbstract == true,
-                ),
+                    getValue: (CT_ c) => c.isAbstract,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isAbstract),
                 'isBase': Property(
-                  getValue: (CT_ c) => c.isBase,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isBase == true,
-                ),
+                    getValue: (CT_ c) => c.isBase,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isBase),
                 'isInterface': Property(
-                  getValue: (CT_ c) => c.isInterface,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isInterface == true,
-                ),
+                    getValue: (CT_ c) => c.isInterface,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isInterface),
                 'isMixinClass': Property(
-                  getValue: (CT_ c) => c.isMixinClass,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isMixinClass == true,
-                ),
+                    getValue: (CT_ c) => c.isMixinClass,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isMixinClass),
                 'isSealed': Property(
-                  getValue: (CT_ c) => c.isSealed,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isSealed == true,
-                ),
+                    getValue: (CT_ c) => c.isSealed,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isSealed),
                 'kind': Property(
                   getValue: (CT_ c) => c.kind,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -5770,12 +5696,11 @@ class _Renderer_FeatureSet extends RendererBase<FeatureSet> {
                   },
                 ),
                 'hasFeatureSet': Property(
-                  getValue: (CT_ c) => c.hasFeatureSet,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasFeatureSet == true,
-                ),
+                    getValue: (CT_ c) => c.hasFeatureSet,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasFeatureSet),
                 'library': Property(
                   getValue: (CT_ c) => c.library,
                   renderVariable:
@@ -6047,12 +5972,11 @@ class _Renderer_Field extends RendererBase<Field> {
                   },
                 ),
                 'hasHideConstantImplementation': Property(
-                  getValue: (CT_ c) => c.hasHideConstantImplementation,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasHideConstantImplementation == true,
-                ),
+                    getValue: (CT_ c) => c.hasHideConstantImplementation,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasHideConstantImplementation),
                 'href': Property(
                   getValue: (CT_ c) => c.href,
                   renderVariable:
@@ -6075,47 +5999,41 @@ class _Renderer_Field extends RendererBase<Field> {
                   },
                 ),
                 'isConst': Property(
-                  getValue: (CT_ c) => c.isConst,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isConst == true,
-                ),
+                    getValue: (CT_ c) => c.isConst,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isConst),
                 'isCovariant': Property(
-                  getValue: (CT_ c) => c.isCovariant,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isCovariant == true,
-                ),
+                    getValue: (CT_ c) => c.isCovariant,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isCovariant),
                 'isFinal': Property(
-                  getValue: (CT_ c) => c.isFinal,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isFinal == true,
-                ),
+                    getValue: (CT_ c) => c.isFinal,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isFinal),
                 'isInherited': Property(
-                  getValue: (CT_ c) => c.isInherited,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isInherited == true,
-                ),
+                    getValue: (CT_ c) => c.isInherited,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isInherited),
                 'isLate': Property(
-                  getValue: (CT_ c) => c.isLate,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isLate == true,
-                ),
+                    getValue: (CT_ c) => c.isLate,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isLate),
                 'isStatic': Property(
-                  getValue: (CT_ c) => c.isStatic,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isStatic == true,
-                ),
+                    getValue: (CT_ c) => c.isStatic,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isStatic),
                 'kind': Property(
                   getValue: (CT_ c) => c.kind,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -6734,131 +6652,113 @@ class _Renderer_GetterSetterCombo extends RendererBase<GetterSetterCombo> {
                   },
                 ),
                 'getterSetterBothAvailable': Property(
-                  getValue: (CT_ c) => c.getterSetterBothAvailable,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.getterSetterBothAvailable == true,
-                ),
+                    getValue: (CT_ c) => c.getterSetterBothAvailable,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.getterSetterBothAvailable),
                 'hasAccessorsWithDocs': Property(
-                  getValue: (CT_ c) => c.hasAccessorsWithDocs,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasAccessorsWithDocs == true,
-                ),
+                    getValue: (CT_ c) => c.hasAccessorsWithDocs,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasAccessorsWithDocs),
                 'hasConstantValueForDisplay': Property(
-                  getValue: (CT_ c) => c.hasConstantValueForDisplay,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasConstantValueForDisplay == true,
-                ),
+                    getValue: (CT_ c) => c.hasConstantValueForDisplay,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasConstantValueForDisplay),
                 'hasDocumentationComment': Property(
-                  getValue: (CT_ c) => c.hasDocumentationComment,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasDocumentationComment == true,
-                ),
+                    getValue: (CT_ c) => c.hasDocumentationComment,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasDocumentationComment),
                 'hasExplicitGetter': Property(
-                  getValue: (CT_ c) => c.hasExplicitGetter,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasExplicitGetter == true,
-                ),
+                    getValue: (CT_ c) => c.hasExplicitGetter,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasExplicitGetter),
                 'hasExplicitSetter': Property(
-                  getValue: (CT_ c) => c.hasExplicitSetter,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasExplicitSetter == true,
-                ),
+                    getValue: (CT_ c) => c.hasExplicitSetter,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasExplicitSetter),
                 'hasGetter': Property(
-                  getValue: (CT_ c) => c.hasGetter,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasGetter == true,
-                ),
+                    getValue: (CT_ c) => c.hasGetter,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasGetter),
                 'hasGetterOrSetter': Property(
-                  getValue: (CT_ c) => c.hasGetterOrSetter,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasGetterOrSetter == true,
-                ),
+                    getValue: (CT_ c) => c.hasGetterOrSetter,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasGetterOrSetter),
                 'hasHideConstantImplementation': Property(
-                  getValue: (CT_ c) => c.hasHideConstantImplementation,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasHideConstantImplementation == true,
-                ),
+                    getValue: (CT_ c) => c.hasHideConstantImplementation,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasHideConstantImplementation),
                 'hasNoGetterSetter': Property(
-                  getValue: (CT_ c) => c.hasNoGetterSetter,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasNoGetterSetter == true,
-                ),
+                    getValue: (CT_ c) => c.hasNoGetterSetter,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasNoGetterSetter),
                 'hasParameters': Property(
-                  getValue: (CT_ c) => c.hasParameters,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasParameters == true,
-                ),
+                    getValue: (CT_ c) => c.hasParameters,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasParameters),
                 'hasPublicGetter': Property(
-                  getValue: (CT_ c) => c.hasPublicGetter,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasPublicGetter == true,
-                ),
+                    getValue: (CT_ c) => c.hasPublicGetter,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasPublicGetter),
                 'hasPublicGetterNoSetter': Property(
-                  getValue: (CT_ c) => c.hasPublicGetterNoSetter,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasPublicGetterNoSetter == true,
-                ),
+                    getValue: (CT_ c) => c.hasPublicGetterNoSetter,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasPublicGetterNoSetter),
                 'hasPublicSetter': Property(
-                  getValue: (CT_ c) => c.hasPublicSetter,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasPublicSetter == true,
-                ),
+                    getValue: (CT_ c) => c.hasPublicSetter,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasPublicSetter),
                 'hasSetter': Property(
-                  getValue: (CT_ c) => c.hasSetter,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasSetter == true,
-                ),
+                    getValue: (CT_ c) => c.hasSetter,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasSetter),
                 'isCallable': Property(
-                  getValue: (CT_ c) => c.isCallable,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isCallable == true,
-                ),
+                    getValue: (CT_ c) => c.isCallable,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isCallable),
                 'isInherited': Property(
-                  getValue: (CT_ c) => c.isInherited,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isInherited == true,
-                ),
+                    getValue: (CT_ c) => c.isInherited,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isInherited),
                 'isPublic': Property(
-                  getValue: (CT_ c) => c.isPublic,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isPublic == true,
-                ),
+                    getValue: (CT_ c) => c.isPublic,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isPublic),
                 'linkedParamsNoMetadata': Property(
                   getValue: (CT_ c) => c.linkedParamsNoMetadata,
                   renderVariable:
@@ -6939,19 +6839,17 @@ class _Renderer_GetterSetterCombo extends RendererBase<GetterSetterCombo> {
                   },
                 ),
                 'readOnly': Property(
-                  getValue: (CT_ c) => c.readOnly,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.readOnly == true,
-                ),
+                    getValue: (CT_ c) => c.readOnly,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.readOnly),
                 'readWrite': Property(
-                  getValue: (CT_ c) => c.readWrite,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.readWrite == true,
-                ),
+                    getValue: (CT_ c) => c.readWrite,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.readWrite),
                 'referenceChildren': Property(
                   getValue: (CT_ c) => c.referenceChildren,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -6988,12 +6886,11 @@ class _Renderer_GetterSetterCombo extends RendererBase<GetterSetterCombo> {
                   },
                 ),
                 'writeOnly': Property(
-                  getValue: (CT_ c) => c.writeOnly,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.writeOnly == true,
-                ),
+                    getValue: (CT_ c) => c.writeOnly,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.writeOnly),
               }) as Map<String, Property<CT_>>;
 
   _Renderer_GetterSetterCombo(GetterSetterCombo context,
@@ -7101,20 +6998,18 @@ class _Renderer_HasNoPage extends RendererBase<HasNoPage> {
 class _Renderer_HideConstantImplementations
     extends RendererBase<HideConstantImplementations> {
   static final Map<Type, Object> _propertyMapCache = {};
-  static Map<String, Property<CT_>>
-      propertyMap<CT_ extends HideConstantImplementations>() =>
-          _propertyMapCache.putIfAbsent(
-              CT_,
-              () => {
-                    'hasHideConstantImplementations': Property(
-                      getValue: (CT_ c) => c.hasHideConstantImplementations,
-                      renderVariable: (CT_ c, Property<CT_> self,
-                              List<String> remainingNames) =>
-                          self.renderSimpleVariable(c, remainingNames, 'bool'),
-                      getBool: (CT_ c) =>
-                          c.hasHideConstantImplementations == true,
-                    ),
-                  }) as Map<String, Property<CT_>>;
+  static Map<String, Property<CT_>> propertyMap<
+          CT_ extends HideConstantImplementations>() =>
+      _propertyMapCache.putIfAbsent(
+          CT_,
+          () => {
+                'hasHideConstantImplementations': Property(
+                    getValue: (CT_ c) => c.hasHideConstantImplementations,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasHideConstantImplementations),
+              }) as Map<String, Property<CT_>>;
 
   _Renderer_HideConstantImplementations(HideConstantImplementations context,
       RendererBase<Object>? parent, Template template, StringSink sink)
@@ -7275,26 +7170,23 @@ class _Renderer_Inheritable extends RendererBase<Inheritable> {
                   },
                 ),
                 'isCovariant': Property(
-                  getValue: (CT_ c) => c.isCovariant,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isCovariant == true,
-                ),
+                    getValue: (CT_ c) => c.isCovariant,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isCovariant),
                 'isInherited': Property(
-                  getValue: (CT_ c) => c.isInherited,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isInherited == true,
-                ),
+                    getValue: (CT_ c) => c.isInherited,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isInherited),
                 'isOverride': Property(
-                  getValue: (CT_ c) => c.isOverride,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isOverride == true,
-                ),
+                    getValue: (CT_ c) => c.isOverride,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isOverride),
                 'overriddenDepth': Property(
                   getValue: (CT_ c) => c.overriddenDepth,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -7532,26 +7424,23 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                   },
                 ),
                 'hasModifiers': Property(
-                  getValue: (CT_ c) => c.hasModifiers,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasModifiers == true,
-                ),
+                    getValue: (CT_ c) => c.hasModifiers,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasModifiers),
                 'hasPublicInheritedMethods': Property(
-                  getValue: (CT_ c) => c.hasPublicInheritedMethods,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasPublicInheritedMethods == true,
-                ),
+                    getValue: (CT_ c) => c.hasPublicInheritedMethods,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasPublicInheritedMethods),
                 'hasPublicSuperChainReversed': Property(
-                  getValue: (CT_ c) => c.hasPublicSuperChainReversed,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasPublicSuperChainReversed == true,
-                ),
+                    getValue: (CT_ c) => c.hasPublicSuperChainReversed,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasPublicSuperChainReversed),
                 'inheritanceChain': Property(
                   getValue: (CT_ c) => c.inheritanceChain,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -7638,54 +7527,47 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                   },
                 ),
                 'isAbstract': Property(
-                  getValue: (CT_ c) => c.isAbstract,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isAbstract == true,
-                ),
+                    getValue: (CT_ c) => c.isAbstract,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isAbstract),
                 'isBase': Property(
-                  getValue: (CT_ c) => c.isBase,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isBase == true,
-                ),
+                    getValue: (CT_ c) => c.isBase,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isBase),
                 'isCanonical': Property(
-                  getValue: (CT_ c) => c.isCanonical,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isCanonical == true,
-                ),
+                    getValue: (CT_ c) => c.isCanonical,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isCanonical),
                 'isFinal': Property(
-                  getValue: (CT_ c) => c.isFinal,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isFinal == true,
-                ),
+                    getValue: (CT_ c) => c.isFinal,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isFinal),
                 'isInterface': Property(
-                  getValue: (CT_ c) => c.isInterface,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isInterface == true,
-                ),
+                    getValue: (CT_ c) => c.isInterface,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isInterface),
                 'isMixinClass': Property(
-                  getValue: (CT_ c) => c.isMixinClass,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isMixinClass == true,
-                ),
+                    getValue: (CT_ c) => c.isMixinClass,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isMixinClass),
                 'isSealed': Property(
-                  getValue: (CT_ c) => c.isSealed,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isSealed == true,
-                ),
+                    getValue: (CT_ c) => c.isSealed,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isSealed),
                 'modelType': Property(
                   getValue: (CT_ c) => c.modelType,
                   renderVariable:
@@ -7723,27 +7605,23 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                   },
                 ),
                 'publicInheritedInstanceFields': Property(
-                  getValue: (CT_ c) => c.publicInheritedInstanceFields,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.publicInheritedInstanceFields == true,
-                ),
+                    getValue: (CT_ c) => c.publicInheritedInstanceFields,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.publicInheritedInstanceFields),
                 'publicInheritedInstanceMethods': Property(
-                  getValue: (CT_ c) => c.publicInheritedInstanceMethods,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.publicInheritedInstanceMethods == true,
-                ),
+                    getValue: (CT_ c) => c.publicInheritedInstanceMethods,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.publicInheritedInstanceMethods),
                 'publicInheritedInstanceOperators': Property(
-                  getValue: (CT_ c) => c.publicInheritedInstanceOperators,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) =>
-                      c.publicInheritedInstanceOperators == true,
-                ),
+                    getValue: (CT_ c) => c.publicInheritedInstanceOperators,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.publicInheritedInstanceOperators),
                 'publicInheritedMethods': Property(
                   getValue: (CT_ c) => c.publicInheritedMethods,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -8537,26 +8415,23 @@ class _Renderer_Library extends RendererBase<Library> {
                   },
                 ),
                 'isAnonymous': Property(
-                  getValue: (CT_ c) => c.isAnonymous,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isAnonymous == true,
-                ),
+                    getValue: (CT_ c) => c.isAnonymous,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isAnonymous),
                 'isInSdk': Property(
-                  getValue: (CT_ c) => c.isInSdk,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isInSdk == true,
-                ),
+                    getValue: (CT_ c) => c.isInSdk,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isInSdk),
                 'isPublic': Property(
-                  getValue: (CT_ c) => c.isPublic,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isPublic == true,
-                ),
+                    getValue: (CT_ c) => c.isPublic,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isPublic),
                 'kind': Property(
                   getValue: (CT_ c) => c.kind,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -8901,19 +8776,17 @@ class _Renderer_LibraryContainer extends RendererBase<LibraryContainer> {
                   },
                 ),
                 'hasPublicLibraries': Property(
-                  getValue: (CT_ c) => c.hasPublicLibraries,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasPublicLibraries == true,
-                ),
+                    getValue: (CT_ c) => c.hasPublicLibraries,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasPublicLibraries),
                 'isSdk': Property(
-                  getValue: (CT_ c) => c.isSdk,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isSdk == true,
-                ),
+                    getValue: (CT_ c) => c.isSdk,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isSdk),
                 'libraries': Property(
                   getValue: (CT_ c) => c.libraries,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -9210,12 +9083,11 @@ class _Renderer_Locatable extends RendererBase<Locatable> {
                   },
                 ),
                 'documentationIsLocal': Property(
-                  getValue: (CT_ c) => c.documentationIsLocal,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.documentationIsLocal == true,
-                ),
+                    getValue: (CT_ c) => c.documentationIsLocal,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.documentationIsLocal),
                 'fullyQualifiedName': Property(
                   getValue: (CT_ c) => c.fullyQualifiedName,
                   renderVariable:
@@ -9376,19 +9248,17 @@ class _Renderer_MarkdownFileDocumentation
                   },
                 ),
                 'hasDocumentation': Property(
-                  getValue: (CT_ c) => c.hasDocumentation,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasDocumentation == true,
-                ),
+                    getValue: (CT_ c) => c.hasDocumentation,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasDocumentation),
                 'isDocumented': Property(
-                  getValue: (CT_ c) => c.isDocumented,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isDocumented == true,
-                ),
+                    getValue: (CT_ c) => c.isDocumented,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isDocumented),
                 'location': Property(
                   getValue: (CT_ c) => c.location,
                   renderVariable:
@@ -9651,33 +9521,29 @@ class _Renderer_Method extends RendererBase<Method> {
                   },
                 ),
                 'isCovariant': Property(
-                  getValue: (CT_ c) => c.isCovariant,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isCovariant == true,
-                ),
+                    getValue: (CT_ c) => c.isCovariant,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isCovariant),
                 'isInherited': Property(
-                  getValue: (CT_ c) => c.isInherited,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isInherited == true,
-                ),
+                    getValue: (CT_ c) => c.isInherited,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isInherited),
                 'isOperator': Property(
-                  getValue: (CT_ c) => c.isOperator,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isOperator == true,
-                ),
+                    getValue: (CT_ c) => c.isOperator,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isOperator),
                 'isStatic': Property(
-                  getValue: (CT_ c) => c.isStatic,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isStatic == true,
-                ),
+                    getValue: (CT_ c) => c.isStatic,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isStatic),
                 'kind': Property(
                   getValue: (CT_ c) => c.kind,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -10055,19 +9921,17 @@ class _Renderer_MixedInTypes extends RendererBase<MixedInTypes> {
           CT_,
           () => {
                 'hasModifiers': Property(
-                  getValue: (CT_ c) => c.hasModifiers,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasModifiers == true,
-                ),
+                    getValue: (CT_ c) => c.hasModifiers,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasModifiers),
                 'hasPublicMixedInTypes': Property(
-                  getValue: (CT_ c) => c.hasPublicMixedInTypes,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasPublicMixedInTypes == true,
-                ),
+                    getValue: (CT_ c) => c.hasPublicMixedInTypes,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasPublicMixedInTypes),
                 'mixedInTypes': Property(
                   getValue: (CT_ c) => c.mixedInTypes,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -10139,19 +10003,17 @@ class _Renderer_Mixin extends RendererBase<Mixin> {
                   },
                 ),
                 'hasModifiers': Property(
-                  getValue: (CT_ c) => c.hasModifiers,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasModifiers == true,
-                ),
+                    getValue: (CT_ c) => c.hasModifiers,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasModifiers),
                 'hasPublicSuperclassConstraints': Property(
-                  getValue: (CT_ c) => c.hasPublicSuperclassConstraints,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasPublicSuperclassConstraints == true,
-                ),
+                    getValue: (CT_ c) => c.hasPublicSuperclassConstraints,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasPublicSuperclassConstraints),
                 'inheritanceChain': Property(
                   getValue: (CT_ c) => c.inheritanceChain,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -10166,47 +10028,41 @@ class _Renderer_Mixin extends RendererBase<Mixin> {
                   },
                 ),
                 'isAbstract': Property(
-                  getValue: (CT_ c) => c.isAbstract,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isAbstract == true,
-                ),
+                    getValue: (CT_ c) => c.isAbstract,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isAbstract),
                 'isBase': Property(
-                  getValue: (CT_ c) => c.isBase,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isBase == true,
-                ),
+                    getValue: (CT_ c) => c.isBase,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isBase),
                 'isFinal': Property(
-                  getValue: (CT_ c) => c.isFinal,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isFinal == true,
-                ),
+                    getValue: (CT_ c) => c.isFinal,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isFinal),
                 'isInterface': Property(
-                  getValue: (CT_ c) => c.isInterface,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isInterface == true,
-                ),
+                    getValue: (CT_ c) => c.isInterface,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isInterface),
                 'isMixinClass': Property(
-                  getValue: (CT_ c) => c.isMixinClass,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isMixinClass == true,
-                ),
+                    getValue: (CT_ c) => c.isMixinClass,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isMixinClass),
                 'isSealed': Property(
-                  getValue: (CT_ c) => c.isSealed,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isSealed == true,
-                ),
+                    getValue: (CT_ c) => c.isSealed,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isSealed),
                 'kind': Property(
                   getValue: (CT_ c) => c.kind,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -10856,47 +10712,41 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                   },
                 ),
                 'hasAnnotations': Property(
-                  getValue: (CT_ c) => c.hasAnnotations,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasAnnotations == true,
-                ),
+                    getValue: (CT_ c) => c.hasAnnotations,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasAnnotations),
                 'hasAttributes': Property(
-                  getValue: (CT_ c) => c.hasAttributes,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasAttributes == true,
-                ),
+                    getValue: (CT_ c) => c.hasAttributes,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasAttributes),
                 'hasCategoryNames': Property(
-                  getValue: (CT_ c) => c.hasCategoryNames,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasCategoryNames == true,
-                ),
+                    getValue: (CT_ c) => c.hasCategoryNames,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasCategoryNames),
                 'hasDocumentation': Property(
-                  getValue: (CT_ c) => c.hasDocumentation,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasDocumentation == true,
-                ),
+                    getValue: (CT_ c) => c.hasDocumentation,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasDocumentation),
                 'hasParameters': Property(
-                  getValue: (CT_ c) => c.hasParameters,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasParameters == true,
-                ),
+                    getValue: (CT_ c) => c.hasParameters,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasParameters),
                 'hasSourceHref': Property(
-                  getValue: (CT_ c) => c.hasSourceHref,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasSourceHref == true,
-                ),
+                    getValue: (CT_ c) => c.hasSourceHref,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasSourceHref),
                 'href': Property(
                   getValue: (CT_ c) => c.href,
                   renderVariable:
@@ -10940,75 +10790,65 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                   },
                 ),
                 'isCallable': Property(
-                  getValue: (CT_ c) => c.isCallable,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isCallable == true,
-                ),
+                    getValue: (CT_ c) => c.isCallable,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isCallable),
                 'isCanonical': Property(
-                  getValue: (CT_ c) => c.isCanonical,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isCanonical == true,
-                ),
+                    getValue: (CT_ c) => c.isCanonical,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isCanonical),
                 'isConst': Property(
-                  getValue: (CT_ c) => c.isConst,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isConst == true,
-                ),
+                    getValue: (CT_ c) => c.isConst,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isConst),
                 'isDeprecated': Property(
-                  getValue: (CT_ c) => c.isDeprecated,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isDeprecated == true,
-                ),
+                    getValue: (CT_ c) => c.isDeprecated,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isDeprecated),
                 'isDocumented': Property(
-                  getValue: (CT_ c) => c.isDocumented,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isDocumented == true,
-                ),
+                    getValue: (CT_ c) => c.isDocumented,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isDocumented),
                 'isEnumValue': Property(
-                  getValue: (CT_ c) => c.isEnumValue,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isEnumValue == true,
-                ),
+                    getValue: (CT_ c) => c.isEnumValue,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isEnumValue),
                 'isFinal': Property(
-                  getValue: (CT_ c) => c.isFinal,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isFinal == true,
-                ),
+                    getValue: (CT_ c) => c.isFinal,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isFinal),
                 'isLate': Property(
-                  getValue: (CT_ c) => c.isLate,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isLate == true,
-                ),
+                    getValue: (CT_ c) => c.isLate,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isLate),
                 'isPublic': Property(
-                  getValue: (CT_ c) => c.isPublic,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isPublic == true,
-                ),
+                    getValue: (CT_ c) => c.isPublic,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isPublic),
                 'isPublicAndPackageDocumented': Property(
-                  getValue: (CT_ c) => c.isPublicAndPackageDocumented,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isPublicAndPackageDocumented == true,
-                ),
+                    getValue: (CT_ c) => c.isPublicAndPackageDocumented,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isPublicAndPackageDocumented),
                 'kind': Property(
                   getValue: (CT_ c) => c.kind,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -11426,19 +11266,17 @@ class _Renderer_ModelFunction extends RendererBase<ModelFunction> {
                   },
                 ),
                 'isAsynchronous': Property(
-                  getValue: (CT_ c) => c.isAsynchronous,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isAsynchronous == true,
-                ),
+                    getValue: (CT_ c) => c.isAsynchronous,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isAsynchronous),
                 'isStatic': Property(
-                  getValue: (CT_ c) => c.isStatic,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isStatic == true,
-                ),
+                    getValue: (CT_ c) => c.isStatic,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isStatic),
                 'name': Property(
                   getValue: (CT_ c) => c.name,
                   renderVariable:
@@ -11616,12 +11454,11 @@ class _Renderer_ModelFunctionTyped extends RendererBase<ModelFunctionTyped> {
                   },
                 ),
                 'isInherited': Property(
-                  getValue: (CT_ c) => c.isInherited,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isInherited == true,
-                ),
+                    getValue: (CT_ c) => c.isInherited,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isInherited),
                 'kind': Property(
                   getValue: (CT_ c) => c.kind,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -11929,12 +11766,11 @@ class _Renderer_Operator extends RendererBase<Operator> {
                   },
                 ),
                 'isOperator': Property(
-                  getValue: (CT_ c) => c.isOperator,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isOperator == true,
-                ),
+                    getValue: (CT_ c) => c.isOperator,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isOperator),
                 'name': Property(
                   getValue: (CT_ c) => c.name,
                   renderVariable:
@@ -12316,33 +12152,29 @@ class _Renderer_Package extends RendererBase<Package> {
                   },
                 ),
                 'hasCategories': Property(
-                  getValue: (CT_ c) => c.hasCategories,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasCategories == true,
-                ),
+                    getValue: (CT_ c) => c.hasCategories,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasCategories),
                 'hasDocumentation': Property(
-                  getValue: (CT_ c) => c.hasDocumentation,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasDocumentation == true,
-                ),
+                    getValue: (CT_ c) => c.hasDocumentation,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasDocumentation),
                 'hasDocumentedCategories': Property(
-                  getValue: (CT_ c) => c.hasDocumentedCategories,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasDocumentedCategories == true,
-                ),
+                    getValue: (CT_ c) => c.hasDocumentedCategories,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasDocumentedCategories),
                 'hasHomepage': Property(
-                  getValue: (CT_ c) => c.hasHomepage,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasHomepage == true,
-                ),
+                    getValue: (CT_ c) => c.hasHomepage,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasHomepage),
                 'homepage': Property(
                   getValue: (CT_ c) => c.homepage,
                   renderVariable:
@@ -12387,47 +12219,41 @@ class _Renderer_Package extends RendererBase<Package> {
                   },
                 ),
                 'isCanonical': Property(
-                  getValue: (CT_ c) => c.isCanonical,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isCanonical == true,
-                ),
+                    getValue: (CT_ c) => c.isCanonical,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isCanonical),
                 'isDocumented': Property(
-                  getValue: (CT_ c) => c.isDocumented,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isDocumented == true,
-                ),
+                    getValue: (CT_ c) => c.isDocumented,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isDocumented),
                 'isFirstPackage': Property(
-                  getValue: (CT_ c) => c.isFirstPackage,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isFirstPackage == true,
-                ),
+                    getValue: (CT_ c) => c.isFirstPackage,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isFirstPackage),
                 'isLocal': Property(
-                  getValue: (CT_ c) => c.isLocal,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isLocal == true,
-                ),
+                    getValue: (CT_ c) => c.isLocal,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isLocal),
                 'isPublic': Property(
-                  getValue: (CT_ c) => c.isPublic,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isPublic == true,
-                ),
+                    getValue: (CT_ c) => c.isPublic,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isPublic),
                 'isSdk': Property(
-                  getValue: (CT_ c) => c.isSdk,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isSdk == true,
-                ),
+                    getValue: (CT_ c) => c.isSdk,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isSdk),
                 'kind': Property(
                   getValue: (CT_ c) => c.kind,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -12812,12 +12638,11 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
                   },
                 ),
                 'hasHomepage': Property(
-                  getValue: (CT_ c) => c.hasHomepage,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasHomepage == true,
-                ),
+                    getValue: (CT_ c) => c.hasHomepage,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasHomepage),
                 'homepage': Property(
                   getValue: (CT_ c) => c.homepage,
                   renderVariable:
@@ -12863,12 +12688,11 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
                   },
                 ),
                 'includeVersion': Property(
-                  getValue: (CT_ c) => c.includeVersion,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.includeVersion == true,
-                ),
+                    getValue: (CT_ c) => c.includeVersion,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.includeVersion),
                 'layoutTitle': Property(
                   getValue: (CT_ c) => c.layoutTitle,
                   renderVariable:
@@ -13093,12 +12917,11 @@ class _Renderer_Parameter extends RendererBase<Parameter> {
                   },
                 ),
                 'hasDefaultValue': Property(
-                  getValue: (CT_ c) => c.hasDefaultValue,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasDefaultValue == true,
-                ),
+                    getValue: (CT_ c) => c.hasDefaultValue,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasDefaultValue),
                 'hashCode': Property(
                   getValue: (CT_ c) => c.hashCode,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -13154,40 +12977,35 @@ class _Renderer_Parameter extends RendererBase<Parameter> {
                   },
                 ),
                 'isCovariant': Property(
-                  getValue: (CT_ c) => c.isCovariant,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isCovariant == true,
-                ),
+                    getValue: (CT_ c) => c.isCovariant,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isCovariant),
                 'isNamed': Property(
-                  getValue: (CT_ c) => c.isNamed,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isNamed == true,
-                ),
+                    getValue: (CT_ c) => c.isNamed,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isNamed),
                 'isOptionalPositional': Property(
-                  getValue: (CT_ c) => c.isOptionalPositional,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isOptionalPositional == true,
-                ),
+                    getValue: (CT_ c) => c.isOptionalPositional,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isOptionalPositional),
                 'isRequiredNamed': Property(
-                  getValue: (CT_ c) => c.isRequiredNamed,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isRequiredNamed == true,
-                ),
+                    getValue: (CT_ c) => c.isRequiredNamed,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isRequiredNamed),
                 'isRequiredPositional': Property(
-                  getValue: (CT_ c) => c.isRequiredPositional,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isRequiredPositional == true,
-                ),
+                    getValue: (CT_ c) => c.isRequiredPositional,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isRequiredPositional),
                 'kind': Property(
                   getValue: (CT_ c) => c.kind,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -13699,12 +13517,11 @@ class _Renderer_SourceCode extends RendererBase<SourceCode> {
                   },
                 ),
                 'hasSourceCode': Property(
-                  getValue: (CT_ c) => c.hasSourceCode,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasSourceCode == true,
-                ),
+                    getValue: (CT_ c) => c.hasSourceCode,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasSourceCode),
                 'library': Property(
                   getValue: (CT_ c) => c.library,
                   renderVariable:
@@ -13816,19 +13633,17 @@ class _Renderer_String extends RendererBase<String> {
                   },
                 ),
                 'isEmpty': Property(
-                  getValue: (CT_ c) => c.isEmpty,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isEmpty == true,
-                ),
+                    getValue: (CT_ c) => c.isEmpty,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isEmpty),
                 'isNotEmpty': Property(
-                  getValue: (CT_ c) => c.isNotEmpty,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isNotEmpty == true,
-                ),
+                    getValue: (CT_ c) => c.isNotEmpty,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isNotEmpty),
                 'length': Property(
                   getValue: (CT_ c) => c.length,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -14079,19 +13894,17 @@ class _Renderer_TemplateDataBase extends RendererBase<TemplateDataBase> {
                   },
                 ),
                 'hasFooterVersion': Property(
-                  getValue: (CT_ c) => c.hasFooterVersion,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasFooterVersion == true,
-                ),
+                    getValue: (CT_ c) => c.hasFooterVersion,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasFooterVersion),
                 'hasHomepage': Property(
-                  getValue: (CT_ c) => c.hasHomepage,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasHomepage == true,
-                ),
+                    getValue: (CT_ c) => c.hasHomepage,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasHomepage),
                 'homepage': Property(
                   getValue: (CT_ c) => c.homepage,
                   renderVariable:
@@ -14151,12 +13964,11 @@ class _Renderer_TemplateDataBase extends RendererBase<TemplateDataBase> {
                   },
                 ),
                 'includeVersion': Property(
-                  getValue: (CT_ c) => c.includeVersion,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.includeVersion == true,
-                ),
+                    getValue: (CT_ c) => c.includeVersion,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.includeVersion),
                 'layoutTitle': Property(
                   getValue: (CT_ c) => c.layoutTitle,
                   renderVariable:
@@ -14326,12 +14138,11 @@ class _Renderer_TemplateDataBase extends RendererBase<TemplateDataBase> {
                   },
                 ),
                 'useBaseHref': Property(
-                  getValue: (CT_ c) => c.useBaseHref,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.useBaseHref == true,
-                ),
+                    getValue: (CT_ c) => c.useBaseHref,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.useBaseHref),
                 'version': Property(
                   getValue: (CT_ c) => c.version,
                   renderVariable:
@@ -14594,68 +14405,59 @@ class _Renderer_TopLevelContainer extends RendererBase<TopLevelContainer> {
                   },
                 ),
                 'hasPublicClasses': Property(
-                  getValue: (CT_ c) => c.hasPublicClasses,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasPublicClasses == true,
-                ),
+                    getValue: (CT_ c) => c.hasPublicClasses,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasPublicClasses),
                 'hasPublicConstants': Property(
-                  getValue: (CT_ c) => c.hasPublicConstants,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasPublicConstants == true,
-                ),
+                    getValue: (CT_ c) => c.hasPublicConstants,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasPublicConstants),
                 'hasPublicEnums': Property(
-                  getValue: (CT_ c) => c.hasPublicEnums,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasPublicEnums == true,
-                ),
+                    getValue: (CT_ c) => c.hasPublicEnums,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasPublicEnums),
                 'hasPublicExceptions': Property(
-                  getValue: (CT_ c) => c.hasPublicExceptions,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasPublicExceptions == true,
-                ),
+                    getValue: (CT_ c) => c.hasPublicExceptions,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasPublicExceptions),
                 'hasPublicExtensions': Property(
-                  getValue: (CT_ c) => c.hasPublicExtensions,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasPublicExtensions == true,
-                ),
+                    getValue: (CT_ c) => c.hasPublicExtensions,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasPublicExtensions),
                 'hasPublicFunctions': Property(
-                  getValue: (CT_ c) => c.hasPublicFunctions,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasPublicFunctions == true,
-                ),
+                    getValue: (CT_ c) => c.hasPublicFunctions,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasPublicFunctions),
                 'hasPublicMixins': Property(
-                  getValue: (CT_ c) => c.hasPublicMixins,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasPublicMixins == true,
-                ),
+                    getValue: (CT_ c) => c.hasPublicMixins,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasPublicMixins),
                 'hasPublicProperties': Property(
-                  getValue: (CT_ c) => c.hasPublicProperties,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasPublicProperties == true,
-                ),
+                    getValue: (CT_ c) => c.hasPublicProperties,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasPublicProperties),
                 'hasPublicTypedefs': Property(
-                  getValue: (CT_ c) => c.hasPublicTypedefs,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasPublicTypedefs == true,
-                ),
+                    getValue: (CT_ c) => c.hasPublicTypedefs,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasPublicTypedefs),
                 'mixins': Property(
                   getValue: (CT_ c) => c.mixins,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -15352,12 +15154,11 @@ class _Renderer_TopLevelVariable extends RendererBase<TopLevelVariable> {
                   },
                 ),
                 'hasHideConstantImplementation': Property(
-                  getValue: (CT_ c) => c.hasHideConstantImplementation,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasHideConstantImplementation == true,
-                ),
+                    getValue: (CT_ c) => c.hasHideConstantImplementation,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasHideConstantImplementation),
                 'href': Property(
                   getValue: (CT_ c) => c.href,
                   renderVariable:
@@ -15380,33 +15181,29 @@ class _Renderer_TopLevelVariable extends RendererBase<TopLevelVariable> {
                   },
                 ),
                 'isConst': Property(
-                  getValue: (CT_ c) => c.isConst,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isConst == true,
-                ),
+                    getValue: (CT_ c) => c.isConst,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isConst),
                 'isFinal': Property(
-                  getValue: (CT_ c) => c.isFinal,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isFinal == true,
-                ),
+                    getValue: (CT_ c) => c.isFinal,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isFinal),
                 'isInherited': Property(
-                  getValue: (CT_ c) => c.isInherited,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isInherited == true,
-                ),
+                    getValue: (CT_ c) => c.isInherited,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isInherited),
                 'isLate': Property(
-                  getValue: (CT_ c) => c.isLate,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isLate == true,
-                ),
+                    getValue: (CT_ c) => c.isLate,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isLate),
                 'kind': Property(
                   getValue: (CT_ c) => c.kind,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -15538,26 +15335,23 @@ class _Renderer_TypeImplementing extends RendererBase<TypeImplementing> {
                   },
                 ),
                 'hasModifiers': Property(
-                  getValue: (CT_ c) => c.hasModifiers,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasModifiers == true,
-                ),
+                    getValue: (CT_ c) => c.hasModifiers,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasModifiers),
                 'hasPublicImplementors': Property(
-                  getValue: (CT_ c) => c.hasPublicImplementors,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasPublicImplementors == true,
-                ),
+                    getValue: (CT_ c) => c.hasPublicImplementors,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasPublicImplementors),
                 'hasPublicInterfaces': Property(
-                  getValue: (CT_ c) => c.hasPublicInterfaces,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasPublicInterfaces == true,
-                ),
+                    getValue: (CT_ c) => c.hasPublicInterfaces,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasPublicInterfaces),
                 'interfaces': Property(
                   getValue: (CT_ c) => c.interfaces,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -15701,12 +15495,11 @@ class _Renderer_TypeParameter extends RendererBase<TypeParameter> {
                   },
                 ),
                 'hasParameters': Property(
-                  getValue: (CT_ c) => c.hasParameters,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasParameters == true,
-                ),
+                    getValue: (CT_ c) => c.hasParameters,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasParameters),
                 'href': Property(
                   getValue: (CT_ c) => c.href,
                   renderVariable:
@@ -15877,12 +15670,11 @@ class _Renderer_TypeParameters extends RendererBase<TypeParameters> {
                   },
                 ),
                 'hasGenericParameters': Property(
-                  getValue: (CT_ c) => c.hasGenericParameters,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasGenericParameters == true,
-                ),
+                    getValue: (CT_ c) => c.hasGenericParameters,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.hasGenericParameters),
                 'linkedGenericParameters': Property(
                   getValue: (CT_ c) => c.linkedGenericParameters,
                   renderVariable:
@@ -16176,12 +15968,11 @@ class _Renderer_Typedef extends RendererBase<Typedef> {
                   },
                 ),
                 'isInherited': Property(
-                  getValue: (CT_ c) => c.isInherited,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isInherited == true,
-                ),
+                    getValue: (CT_ c) => c.isInherited,
+                    renderVariable: (CT_ c, Property<CT_> self,
+                            List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+                    getBool: (CT_ c) => c.isInherited),
                 'kind': Property(
                   getValue: (CT_ c) => c.kind,
                   renderVariable: (CT_ c, Property<CT_> self,

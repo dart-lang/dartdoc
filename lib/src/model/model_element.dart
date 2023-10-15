@@ -673,7 +673,7 @@ abstract class ModelElement extends Canonicalization
   bool get hasAnnotations => annotations.isNotEmpty;
 
   @override
-  bool get hasDocumentation => documentation.isNotEmpty == true;
+  bool get hasDocumentation => documentation.isNotEmpty;
 
   bool get hasParameters => parameters.isNotEmpty;
 

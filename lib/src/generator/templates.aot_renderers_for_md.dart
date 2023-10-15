@@ -51,7 +51,7 @@ String renderCategory(CategoryTemplateData context0) {
   buffer.write('\n\n');
   buffer.write(_renderCategory_partial_documentation_1(context1));
   buffer.writeln();
-  if (context1.hasPublicLibraries == true) {
+  if (context1.hasPublicLibraries) {
     buffer.writeln();
     buffer.write('''
 ## Libraries
@@ -64,7 +64,7 @@ String renderCategory(CategoryTemplateData context0) {
     }
   }
   buffer.writeln();
-  if (context1.hasPublicClasses == true) {
+  if (context1.hasPublicClasses) {
     buffer.writeln();
     buffer.write('''
 ## Classes
@@ -77,7 +77,7 @@ String renderCategory(CategoryTemplateData context0) {
     }
   }
   buffer.writeln();
-  if (context1.hasPublicMixins == true) {
+  if (context1.hasPublicMixins) {
     buffer.writeln();
     buffer.write('''
 ## Mixins
@@ -90,7 +90,7 @@ String renderCategory(CategoryTemplateData context0) {
     }
   }
   buffer.writeln();
-  if (context1.hasPublicExtensions == true) {
+  if (context1.hasPublicExtensions) {
     buffer.writeln();
     buffer.write('''
 ## Extensions
@@ -103,7 +103,7 @@ String renderCategory(CategoryTemplateData context0) {
     }
   }
   buffer.writeln();
-  if (context1.hasPublicConstants == true) {
+  if (context1.hasPublicConstants) {
     buffer.writeln();
     buffer.write('''
 ## Constants
@@ -116,7 +116,7 @@ String renderCategory(CategoryTemplateData context0) {
     }
   }
   buffer.writeln();
-  if (context1.hasPublicProperties == true) {
+  if (context1.hasPublicProperties) {
     buffer.writeln();
     buffer.write('''
 ## Properties
@@ -129,7 +129,7 @@ String renderCategory(CategoryTemplateData context0) {
     }
   }
   buffer.writeln();
-  if (context1.hasPublicFunctions == true) {
+  if (context1.hasPublicFunctions) {
     buffer.writeln();
     buffer.write('''
 ## Functions
@@ -142,7 +142,7 @@ String renderCategory(CategoryTemplateData context0) {
     }
   }
   buffer.writeln();
-  if (context1.hasPublicEnums == true) {
+  if (context1.hasPublicEnums) {
     buffer.writeln();
     buffer.write('''
 ## Enums
@@ -155,7 +155,7 @@ String renderCategory(CategoryTemplateData context0) {
     }
   }
   buffer.writeln();
-  if (context1.hasPublicTypedefs == true) {
+  if (context1.hasPublicTypedefs) {
     buffer.writeln();
     buffer.write('''
 ## Typedefs
@@ -168,7 +168,7 @@ String renderCategory(CategoryTemplateData context0) {
     }
   }
   buffer.writeln();
-  if (context1.hasPublicExceptions == true) {
+  if (context1.hasPublicExceptions) {
     buffer.writeln();
     buffer.write('''
 ## Exceptions / Errors
@@ -209,7 +209,7 @@ String renderClass(ClassTemplateData context0) {
   buffer.writeln();
   buffer.write(_renderClass_partial_documentation_4(context2));
   buffer.writeln();
-  if (context2.hasModifiers == true) {
+  if (context2.hasModifiers) {
     buffer.writeln();
     buffer.write(_renderClass_partial_super_chain_5(context2));
     buffer.writeln();
@@ -217,7 +217,7 @@ String renderClass(ClassTemplateData context0) {
     buffer.writeln();
     buffer.write(_renderClass_partial_mixed_in_types_7(context2));
     buffer.writeln();
-    if (context2.hasPublicImplementors == true) {
+    if (context2.hasPublicImplementors) {
       buffer.writeln();
       buffer.write('''
 **Implementers**
@@ -231,7 +231,7 @@ String renderClass(ClassTemplateData context0) {
       }
     }
     buffer.writeln();
-    if (context2.hasPotentiallyApplicableExtensions == true) {
+    if (context2.hasPotentiallyApplicableExtensions) {
       buffer.writeln();
       buffer.write('''
 **Available Extensions**
@@ -250,7 +250,7 @@ String renderClass(ClassTemplateData context0) {
   buffer.write('\n\n');
   buffer.write(_renderClass_partial_constructors_9(context2));
   buffer.writeln();
-  if (context2.hasPublicInstanceFields == true) {
+  if (context2.hasPublicInstanceFields) {
     buffer.writeln();
     buffer.write('''
 ## Properties
@@ -296,7 +296,7 @@ String renderConstructor(ConstructorTemplateData context0) {
   buffer.write(_renderConstructor_partial_feature_set_2(context1));
   buffer.writeln();
   var context2 = context0.constructor;
-  if (context2.hasAnnotations == true) {
+  if (context2.hasAnnotations) {
     var context3 = context2.annotations;
     for (var context4 in context3) {
       buffer.writeln();
@@ -306,13 +306,13 @@ String renderConstructor(ConstructorTemplateData context0) {
     }
   }
   buffer.writeln();
-  if (context2.isConst == true) {
+  if (context2.isConst) {
     buffer.write('''const''');
   }
   buffer.writeln();
   buffer.write(context2.nameWithGenerics);
   buffer.write('''(''');
-  if (context2.hasParameters == true) {
+  if (context2.hasParameters) {
     buffer.write(context2.linkedParamsLines);
   }
   buffer.write(''')
@@ -349,7 +349,7 @@ String renderEnum(EnumTemplateData context0) {
   buffer.writeln();
   buffer.write(_renderEnum_partial_documentation_3(context2));
   buffer.writeln();
-  if (context2.hasModifiers == true) {
+  if (context2.hasModifiers) {
     buffer.writeln();
     buffer.write(_renderEnum_partial_super_chain_4(context2));
     buffer.writeln();
@@ -362,7 +362,7 @@ String renderEnum(EnumTemplateData context0) {
   buffer.write('\n\n');
   buffer.write(_renderEnum_partial_constructors_8(context2));
   buffer.writeln();
-  if (context2.hasPublicEnumValues == true) {
+  if (context2.hasPublicEnumValues) {
     buffer.writeln();
     buffer.write('''
 ## Values
@@ -375,7 +375,7 @@ String renderEnum(EnumTemplateData context0) {
     }
   }
   buffer.writeln();
-  if (context2.hasPublicInstanceFields == true) {
+  if (context2.hasPublicInstanceFields) {
     buffer.writeln();
     buffer.write('''
 ## Properties
@@ -446,7 +446,7 @@ on ''');
   buffer.write('\n\n');
   buffer.write(_renderExtension_partial_annotations_5(context3));
   buffer.writeln();
-  if (context3.hasPublicInstanceFields == true) {
+  if (context3.hasPublicInstanceFields) {
     buffer.writeln();
     buffer.write('''
 ## Properties
@@ -525,12 +525,12 @@ String renderIndex(PackageTemplateData context0) {
   buffer.writeln();
   var context2 = context0.localPackages;
   for (var context3 in context2) {
-    if (context3.isFirstPackage == true) {
+    if (context3.isFirstPackage) {
       buffer.writeln();
       buffer.write('''
 ## Libraries''');
     }
-    if (context3.isFirstPackage != true) {
+    if (!context3.isFirstPackage) {
       buffer.writeln();
       buffer.write('''
 ## ''');
@@ -589,7 +589,7 @@ String renderLibrary(LibraryTemplateData context0) {
   buffer.write(_renderLibrary_partial_documentation_4(context2));
   buffer.writeln();
   var context3 = context0.library;
-  if (context3.hasPublicClasses == true) {
+  if (context3.hasPublicClasses) {
     buffer.writeln();
     buffer.write('''
 ## Classes
@@ -604,7 +604,7 @@ String renderLibrary(LibraryTemplateData context0) {
   }
   buffer.writeln();
   var context7 = context0.library;
-  if (context7.hasPublicMixins == true) {
+  if (context7.hasPublicMixins) {
     buffer.writeln();
     buffer.write('''
 ## Mixins
@@ -619,7 +619,7 @@ String renderLibrary(LibraryTemplateData context0) {
   }
   buffer.writeln();
   var context11 = context0.library;
-  if (context11.hasPublicExtensions == true) {
+  if (context11.hasPublicExtensions) {
     buffer.writeln();
     buffer.write('''
 ## Extensions
@@ -634,7 +634,7 @@ String renderLibrary(LibraryTemplateData context0) {
   }
   buffer.writeln();
   var context15 = context0.library;
-  if (context15.hasPublicConstants == true) {
+  if (context15.hasPublicConstants) {
     buffer.writeln();
     buffer.write('''
 ## Constants
@@ -649,7 +649,7 @@ String renderLibrary(LibraryTemplateData context0) {
   }
   buffer.writeln();
   var context19 = context0.library;
-  if (context19.hasPublicProperties == true) {
+  if (context19.hasPublicProperties) {
     buffer.writeln();
     buffer.write('''
 ## Properties
@@ -664,7 +664,7 @@ String renderLibrary(LibraryTemplateData context0) {
   }
   buffer.writeln();
   var context23 = context0.library;
-  if (context23.hasPublicFunctions == true) {
+  if (context23.hasPublicFunctions) {
     buffer.writeln();
     buffer.write('''
 ## Functions
@@ -679,7 +679,7 @@ String renderLibrary(LibraryTemplateData context0) {
   }
   buffer.writeln();
   var context27 = context0.library;
-  if (context27.hasPublicEnums == true) {
+  if (context27.hasPublicEnums) {
     buffer.writeln();
     buffer.write('''
 ## Enums
@@ -694,7 +694,7 @@ String renderLibrary(LibraryTemplateData context0) {
   }
   buffer.writeln();
   var context31 = context0.library;
-  if (context31.hasPublicTypedefs == true) {
+  if (context31.hasPublicTypedefs) {
     buffer.writeln();
     buffer.write('''
 ## Typedefs
@@ -709,7 +709,7 @@ String renderLibrary(LibraryTemplateData context0) {
   }
   buffer.writeln();
   var context35 = context0.library;
-  if (context35.hasPublicExceptions == true) {
+  if (context35.hasPublicExceptions) {
     buffer.writeln();
     buffer.write('''
 ## Exceptions / Errors
@@ -784,8 +784,8 @@ String renderMixin(MixinTemplateData context0) {
   buffer.writeln();
   buffer.write(_renderMixin_partial_documentation_4(context2));
   buffer.writeln();
-  if (context2.hasModifiers == true) {
-    if (context2.hasPublicSuperclassConstraints == true) {
+  if (context2.hasModifiers) {
+    if (context2.hasPublicSuperclassConstraints) {
       buffer.writeln();
       buffer.write('''
 **Superclass Constraints**
@@ -803,7 +803,7 @@ String renderMixin(MixinTemplateData context0) {
     buffer.writeln();
     buffer.write(_renderMixin_partial_interfaces_6(context2));
     buffer.writeln();
-    if (context2.hasPublicImplementors == true) {
+    if (context2.hasPublicImplementors) {
       buffer.writeln();
       buffer.write('''
 **Mixin Applications**
@@ -820,7 +820,7 @@ String renderMixin(MixinTemplateData context0) {
     buffer.write(_renderMixin_partial_annotations_7(context2));
   }
   buffer.writeln();
-  if (context2.hasPublicInstanceFields == true) {
+  if (context2.hasPublicInstanceFields) {
     buffer.writeln();
     buffer.write('''
 ## Properties
@@ -866,7 +866,7 @@ String renderProperty(PropertyTemplateData context0) {
   buffer.write(_renderProperty_partial_feature_set_2(context1));
   buffer.writeln();
   var context2 = context0.self;
-  if (context2.hasNoGetterSetter == true) {
+  if (context2.hasNoGetterSetter) {
     buffer.writeln();
     buffer.write(_renderProperty_partial_annotations_3(context2));
     buffer.writeln();
@@ -882,13 +882,13 @@ String renderProperty(PropertyTemplateData context0) {
     buffer.write(_renderProperty_partial_source_code_7(context2));
   }
   buffer.writeln();
-  if (context2.hasGetterOrSetter == true) {
-    if (context2.hasGetter == true) {
+  if (context2.hasGetterOrSetter) {
+    if (context2.hasGetter) {
       buffer.writeln();
       buffer.write(_renderProperty_partial_accessor_getter_8(context2));
     }
     buffer.writeln();
-    if (context2.hasSetter == true) {
+    if (context2.hasSetter) {
       buffer.writeln();
       buffer.write(_renderProperty_partial_accessor_setter_9(context2));
     }
@@ -915,12 +915,12 @@ String renderSearchPage(PackageTemplateData context0) {
   buffer.writeln();
   var context2 = context0.localPackages;
   for (var context3 in context2) {
-    if (context3.isFirstPackage == true) {
+    if (context3.isFirstPackage) {
       buffer.writeln();
       buffer.write('''
 ## Libraries''');
     }
-    if (context3.isFirstPackage != true) {
+    if (!context3.isFirstPackage) {
       buffer.writeln();
       buffer.write('''
 ## ''');
@@ -985,7 +985,7 @@ String renderTopLevelProperty(TopLevelPropertyTemplateData context0) {
   buffer.writeln();
   buffer.write(_renderTopLevelProperty_partial_feature_set_3(context1));
   buffer.writeln();
-  if (context1.hasNoGetterSetter == true) {
+  if (context1.hasNoGetterSetter) {
     buffer.writeln();
     buffer.write(_renderTopLevelProperty_partial_annotations_4(context1));
     buffer.writeln();
@@ -1001,12 +1001,12 @@ String renderTopLevelProperty(TopLevelPropertyTemplateData context0) {
     buffer.write(_renderTopLevelProperty_partial_source_code_8(context1));
   }
   buffer.writeln();
-  if (context1.hasExplicitGetter == true) {
+  if (context1.hasExplicitGetter) {
     buffer.writeln();
     buffer.write(_renderTopLevelProperty_partial_accessor_getter_9(context1));
   }
   buffer.writeln();
-  if (context1.hasExplicitSetter == true) {
+  if (context1.hasExplicitSetter) {
     buffer.writeln();
     buffer.write(_renderTopLevelProperty_partial_accessor_setter_10(context1));
   }
@@ -1127,7 +1127,7 @@ String _renderClass_partial_super_chain_5(Class context1) =>
 
 String _renderClass_partial_interfaces_6(Class context1) {
   final buffer = StringBuffer();
-  if (context1.hasPublicInterfaces == true) {
+  if (context1.hasPublicInterfaces) {
     buffer.writeln();
     buffer.write('''
 **Implemented types**
@@ -1146,7 +1146,7 @@ String _renderClass_partial_interfaces_6(Class context1) {
 
 String _renderClass_partial_mixed_in_types_7(Class context1) {
   final buffer = StringBuffer();
-  if (context1.hasPublicMixedInTypes == true) {
+  if (context1.hasPublicMixedInTypes) {
     buffer.writeln();
     buffer.write('''
 **Mixed in types**
@@ -1225,7 +1225,7 @@ String _renderEnum_partial_super_chain_4(Enum context1) =>
 
 String _renderEnum_partial_interfaces_5(Enum context1) {
   final buffer = StringBuffer();
-  if (context1.hasPublicInterfaces == true) {
+  if (context1.hasPublicInterfaces) {
     buffer.writeln();
     buffer.write('''
 **Implemented types**
@@ -1244,7 +1244,7 @@ String _renderEnum_partial_interfaces_5(Enum context1) {
 
 String _renderEnum_partial_mixed_in_types_6(Enum context1) {
   final buffer = StringBuffer();
-  if (context1.hasPublicMixedInTypes == true) {
+  if (context1.hasPublicMixedInTypes) {
     buffer.writeln();
     buffer.write('''
 **Mixed in types**
@@ -1346,7 +1346,7 @@ String _renderFunction_partial_feature_set_3(ModelFunction context1) =>
 
 String _renderFunction_partial_callable_multiline_4(ModelFunction context1) {
   final buffer = StringBuffer();
-  if (context1.hasAnnotations == true) {
+  if (context1.hasAnnotations) {
     var context2 = context1.annotations;
     for (var context3 in context2) {
       buffer.writeln();
@@ -1363,7 +1363,7 @@ String _renderFunction_partial_callable_multiline_4(ModelFunction context1) {
           context1));
   buffer.write(context1.genericParameters);
   buffer.write('''(''');
-  if (context1.hasParameters == true) {
+  if (context1.hasParameters) {
     buffer.write(context1.linkedParamsLines);
   }
   buffer.write(''')
@@ -1475,7 +1475,7 @@ String _renderMethod_partial_feature_set_2(Method context1) =>
 
 String _renderMethod_partial_callable_multiline_3(Method context1) {
   final buffer = StringBuffer();
-  if (context1.hasAnnotations == true) {
+  if (context1.hasAnnotations) {
     var context2 = context1.annotations;
     for (var context3 in context2) {
       buffer.writeln();
@@ -1492,7 +1492,7 @@ String _renderMethod_partial_callable_multiline_3(Method context1) {
           context1));
   buffer.write(context1.genericParameters);
   buffer.write('''(''');
-  if (context1.hasParameters == true) {
+  if (context1.hasParameters) {
     buffer.write(context1.linkedParamsLines);
   }
   buffer.write(''')
@@ -1537,7 +1537,7 @@ String _renderMixin_partial_super_chain_5(Mixin context1) =>
 
 String _renderMixin_partial_interfaces_6(Mixin context1) {
   final buffer = StringBuffer();
-  if (context1.hasPublicInterfaces == true) {
+  if (context1.hasPublicInterfaces) {
     buffer.writeln();
     buffer.write('''
 **Implemented types**
@@ -1685,9 +1685,9 @@ String _renderTypedef_partial_feature_set_3(Typedef context1) =>
 
 String _renderTypedef_partial_typedef_multiline_4(Typedef context1) {
   final buffer = StringBuffer();
-  if (context1.isCallable == true) {
+  if (context1.isCallable) {
     var context2 = context1.asCallable;
-    if (context2.hasAnnotations == true) {
+    if (context2.hasAnnotations) {
       var context3 = context2.annotations;
       for (var context4 in context3) {
         buffer.writeln();
@@ -1704,7 +1704,7 @@ String _renderTypedef_partial_typedef_multiline_4(Typedef context1) {
     buffer.write(''' = ''');
     buffer.write(context2.modelType.linkedName);
   }
-  if (context1.isCallable != true) {
+  if (!context1.isCallable) {
     buffer.write('\n  ');
     buffer.write(
         __renderTypedef_partial_typedef_multiline_4_partial_type_multiline_0(
@@ -1718,7 +1718,7 @@ String _renderTypedef_partial_typedef_multiline_4(Typedef context1) {
 String __renderTypedef_partial_typedef_multiline_4_partial_type_multiline_0(
     Typedef context1) {
   final buffer = StringBuffer();
-  if (context1.hasAnnotations == true) {
+  if (context1.hasAnnotations) {
     var context2 = context1.annotations;
     for (var context3 in context2) {
       buffer.writeln();
@@ -1763,7 +1763,7 @@ String _deduplicated_lib_templates_md__head_md(TemplateDataBase context0) {
 
 String _deduplicated_lib_templates_md__documentation_md(Warnable context0) {
   final buffer = StringBuffer();
-  if (context0.hasDocumentation == true) {
+  if (context0.hasDocumentation) {
     buffer.writeln();
     buffer.write(context0.documentationAsHtml);
   }
@@ -1776,7 +1776,7 @@ String _deduplicated_lib_templates_md__library_md(Library context0) {
   final buffer = StringBuffer();
   buffer.write('''##### ''');
   buffer.write(context0.linkedName);
-  if (context0.isDocumented == true) {
+  if (context0.isDocumented) {
     buffer.writeln();
     buffer.write(context0.oneLineDoc);
     buffer.writeln();
@@ -1805,7 +1805,7 @@ String _deduplicated_lib_templates_md__container_md(Container context0) {
 String __deduplicated_lib_templates_md__container_md_partial_categorization_0(
     Container context0) {
   final buffer = StringBuffer();
-  if (context0.hasCategoryNames == true) {
+  if (context0.hasCategoryNames) {
     buffer.writeln();
     buffer.write('''
 Categories:''');
@@ -1823,7 +1823,7 @@ Categories:''');
 String _deduplicated_lib_templates_md__categorization_md(
     ModelElement context0) {
   final buffer = StringBuffer();
-  if (context0.hasCategoryNames == true) {
+  if (context0.hasCategoryNames) {
     buffer.writeln();
     buffer.write('''
 Categories:''');
@@ -1856,7 +1856,7 @@ String _deduplicated_lib_templates_md__extension_md(Extension context0) {
 String __deduplicated_lib_templates_md__extension_md_partial_categorization_0(
     Extension context0) {
   final buffer = StringBuffer();
-  if (context0.hasCategoryNames == true) {
+  if (context0.hasCategoryNames) {
     buffer.writeln();
     buffer.write('''
 Categories:''');
@@ -1896,7 +1896,7 @@ String _deduplicated_lib_templates_md__constant_md(GetterSetterCombo context0) {
 String __deduplicated_lib_templates_md__constant_md_partial_categorization_0(
     GetterSetterCombo context0) {
   final buffer = StringBuffer();
-  if (context0.hasCategoryNames == true) {
+  if (context0.hasCategoryNames) {
     buffer.writeln();
     buffer.write('''
 Categories:''');
@@ -1914,7 +1914,7 @@ Categories:''');
 String __deduplicated_lib_templates_md__constant_md_partial_attributes_1(
     GetterSetterCombo context0) {
   final buffer = StringBuffer();
-  if (context0.hasAttributes == true) {
+  if (context0.hasAttributes) {
     buffer.write('''_''');
     buffer.write(context0.attributesAsString);
     buffer.write('''_''');
@@ -1926,7 +1926,7 @@ String __deduplicated_lib_templates_md__constant_md_partial_attributes_1(
 
 String _deduplicated_lib_templates_md__attributes_md(ModelElement context0) {
   final buffer = StringBuffer();
-  if (context0.hasAttributes == true) {
+  if (context0.hasAttributes) {
     buffer.write('''_''');
     buffer.write(context0.attributesAsString);
     buffer.write('''_''');
@@ -1963,7 +1963,7 @@ String _deduplicated_lib_templates_md__property_md(GetterSetterCombo context0) {
 String __deduplicated_lib_templates_md__property_md_partial_categorization_0(
     GetterSetterCombo context0) {
   final buffer = StringBuffer();
-  if (context0.hasCategoryNames == true) {
+  if (context0.hasCategoryNames) {
     buffer.writeln();
     buffer.write('''
 Categories:''');
@@ -1981,7 +1981,7 @@ Categories:''');
 String __deduplicated_lib_templates_md__property_md_partial_attributes_1(
     GetterSetterCombo context0) {
   final buffer = StringBuffer();
-  if (context0.hasAttributes == true) {
+  if (context0.hasAttributes) {
     buffer.write('''_''');
     buffer.write(context0.attributesAsString);
     buffer.write('''_''');
@@ -1993,7 +1993,7 @@ String __deduplicated_lib_templates_md__property_md_partial_attributes_1(
 
 String _deduplicated_lib_templates_md__typedef_md(Typedef context0) {
   final buffer = StringBuffer();
-  if (context0.isCallable == true) {
+  if (context0.isCallable) {
     var context1 = context0.asCallable;
     buffer.writeln();
     buffer.write('''
@@ -2014,7 +2014,7 @@ String _deduplicated_lib_templates_md__typedef_md(Typedef context0) {
         __deduplicated_lib_templates_md__typedef_md_partial_attributes_1(
             context1));
   }
-  if (context0.isCallable != true) {
+  if (!context0.isCallable) {
     buffer.write('\n  ');
     buffer.write(
         __deduplicated_lib_templates_md__typedef_md_partial_type_2(context0));
@@ -2027,7 +2027,7 @@ String _deduplicated_lib_templates_md__typedef_md(Typedef context0) {
 String __deduplicated_lib_templates_md__typedef_md_partial_categorization_0(
     FunctionTypedef context1) {
   final buffer = StringBuffer();
-  if (context1.hasCategoryNames == true) {
+  if (context1.hasCategoryNames) {
     buffer.writeln();
     buffer.write('''
 Categories:''');
@@ -2045,7 +2045,7 @@ Categories:''');
 String __deduplicated_lib_templates_md__typedef_md_partial_attributes_1(
     FunctionTypedef context1) {
   final buffer = StringBuffer();
-  if (context1.hasAttributes == true) {
+  if (context1.hasAttributes) {
     buffer.write('''_''');
     buffer.write(context1.attributesAsString);
     buffer.write('''_''');
@@ -2083,7 +2083,7 @@ String
     ___deduplicated_lib_templates_md__typedef_md_partial_type_2_partial_categorization_0(
         Typedef context0) {
   final buffer = StringBuffer();
-  if (context0.hasCategoryNames == true) {
+  if (context0.hasCategoryNames) {
     buffer.writeln();
     buffer.write('''
 Categories:''');
@@ -2102,7 +2102,7 @@ String
     ___deduplicated_lib_templates_md__typedef_md_partial_type_2_partial_attributes_1(
         Typedef context0) {
   final buffer = StringBuffer();
-  if (context0.hasAttributes == true) {
+  if (context0.hasAttributes) {
     buffer.write('''_''');
     buffer.write(context0.attributesAsString);
     buffer.write('''_''');
@@ -2137,7 +2137,7 @@ String _deduplicated_lib_templates_md__type_md(Typedef context0) {
 String __deduplicated_lib_templates_md__type_md_partial_categorization_0(
     Typedef context0) {
   final buffer = StringBuffer();
-  if (context0.hasCategoryNames == true) {
+  if (context0.hasCategoryNames) {
     buffer.writeln();
     buffer.write('''
 Categories:''');
@@ -2155,7 +2155,7 @@ Categories:''');
 String __deduplicated_lib_templates_md__type_md_partial_attributes_1(
     Typedef context0) {
   final buffer = StringBuffer();
-  if (context0.hasAttributes == true) {
+  if (context0.hasAttributes) {
     buffer.write('''_''');
     buffer.write(context0.attributesAsString);
     buffer.write('''_''');
@@ -2178,7 +2178,7 @@ String _deduplicated_lib_templates_md__footer_md(TemplateDataBase context0) {
 
 String _deduplicated_lib_templates_md__source_link_md(ModelElement context0) {
   final buffer = StringBuffer();
-  if (context0.hasSourceHref == true) {
+  if (context0.hasSourceHref) {
     buffer.writeln();
     buffer.write('''
 [view source](''');
@@ -2192,7 +2192,7 @@ String _deduplicated_lib_templates_md__source_link_md(ModelElement context0) {
 
 String _deduplicated_lib_templates_md__feature_set_md(ModelElement context0) {
   final buffer = StringBuffer();
-  if (context0.hasFeatureSet == true) {
+  if (context0.hasFeatureSet) {
     var context1 = context0.displayedLanguageFeatures;
     for (var context2 in context1) {
       buffer.write('\n    ');
@@ -2207,7 +2207,7 @@ String _deduplicated_lib_templates_md__feature_set_md(ModelElement context0) {
 String _deduplicated_lib_templates_md__super_chain_md(
     InheritingContainer context0) {
   final buffer = StringBuffer();
-  if (context0.hasPublicSuperChainReversed == true) {
+  if (context0.hasPublicSuperChainReversed) {
     buffer.writeln();
     buffer.write('''
 **Inheritance**
@@ -2232,7 +2232,7 @@ String _deduplicated_lib_templates_md__super_chain_md(
 
 String _deduplicated_lib_templates_md__annotations_md(ModelElement context0) {
   final buffer = StringBuffer();
-  if (context0.hasAnnotations == true) {
+  if (context0.hasAnnotations) {
     buffer.writeln();
     buffer.write('''
 **Annotations**
@@ -2252,7 +2252,7 @@ String _deduplicated_lib_templates_md__annotations_md(ModelElement context0) {
 String _deduplicated_lib_templates_md__constructors_md(
     InheritingContainer context0) {
   final buffer = StringBuffer();
-  if (context0.hasPublicConstructors == true) {
+  if (context0.hasPublicConstructors) {
     buffer.writeln();
     buffer.write('''
 ## Constructors
@@ -2268,11 +2268,11 @@ String _deduplicated_lib_templates_md__constructors_md(
 ''');
       buffer.write(context2.oneLineDoc);
       buffer.write('  ');
-      if (context2.isConst == true) {
+      if (context2.isConst) {
         buffer.write('''_const_''');
       }
       buffer.write(' ');
-      if (context2.isFactory == true) {
+      if (context2.isFactory) {
         buffer.write('''_factory_''');
       }
       buffer.writeln();
@@ -2284,7 +2284,7 @@ String _deduplicated_lib_templates_md__constructors_md(
 
 String _deduplicated_lib_templates_md__instance_methods_md(Container context0) {
   final buffer = StringBuffer();
-  if (context0.hasPublicInstanceMethods == true) {
+  if (context0.hasPublicInstanceMethods) {
     buffer.writeln();
     buffer.write('''
 ## Methods
@@ -2332,7 +2332,7 @@ String
     ___deduplicated_lib_templates_md__instance_methods_md_partial_callable_0_partial_categorization_0(
         Method context1) {
   final buffer = StringBuffer();
-  if (context1.hasCategoryNames == true) {
+  if (context1.hasCategoryNames) {
     buffer.writeln();
     buffer.write('''
 Categories:''');
@@ -2351,7 +2351,7 @@ String
     ___deduplicated_lib_templates_md__instance_methods_md_partial_callable_0_partial_attributes_1(
         Method context1) {
   final buffer = StringBuffer();
-  if (context1.hasAttributes == true) {
+  if (context1.hasAttributes) {
     buffer.write('''_''');
     buffer.write(context1.attributesAsString);
     buffer.write('''_''');
@@ -2364,7 +2364,7 @@ String
 String _deduplicated_lib_templates_md__instance_operators_md(
     Container context0) {
   final buffer = StringBuffer();
-  if (context0.hasPublicInstanceOperators == true) {
+  if (context0.hasPublicInstanceOperators) {
     buffer.writeln();
     buffer.write('''
 ## Operators
@@ -2413,7 +2413,7 @@ String
     ___deduplicated_lib_templates_md__instance_operators_md_partial_callable_0_partial_categorization_0(
         Operator context1) {
   final buffer = StringBuffer();
-  if (context1.hasCategoryNames == true) {
+  if (context1.hasCategoryNames) {
     buffer.writeln();
     buffer.write('''
 Categories:''');
@@ -2432,7 +2432,7 @@ String
     ___deduplicated_lib_templates_md__instance_operators_md_partial_callable_0_partial_attributes_1(
         Operator context1) {
   final buffer = StringBuffer();
-  if (context1.hasAttributes == true) {
+  if (context1.hasAttributes) {
     buffer.write('''_''');
     buffer.write(context1.attributesAsString);
     buffer.write('''_''');
@@ -2445,7 +2445,7 @@ String
 String _deduplicated_lib_templates_md__static_properties_md(
     Container context0) {
   final buffer = StringBuffer();
-  if (context0.hasPublicVariableStaticFields == true) {
+  if (context0.hasPublicVariableStaticFields) {
     buffer.writeln();
     buffer.write('''
 ## Static Properties
@@ -2492,7 +2492,7 @@ String
     ___deduplicated_lib_templates_md__static_properties_md_partial_property_0_partial_categorization_0(
         Field context1) {
   final buffer = StringBuffer();
-  if (context1.hasCategoryNames == true) {
+  if (context1.hasCategoryNames) {
     buffer.writeln();
     buffer.write('''
 Categories:''');
@@ -2511,7 +2511,7 @@ String
     ___deduplicated_lib_templates_md__static_properties_md_partial_property_0_partial_attributes_1(
         Field context1) {
   final buffer = StringBuffer();
-  if (context1.hasAttributes == true) {
+  if (context1.hasAttributes) {
     buffer.write('''_''');
     buffer.write(context1.attributesAsString);
     buffer.write('''_''');
@@ -2523,7 +2523,7 @@ String
 
 String _deduplicated_lib_templates_md__static_methods_md(Container context0) {
   final buffer = StringBuffer();
-  if (context0.hasPublicStaticMethods == true) {
+  if (context0.hasPublicStaticMethods) {
     buffer.writeln();
     buffer.write('''
 ## Static Methods
@@ -2571,7 +2571,7 @@ String
     ___deduplicated_lib_templates_md__static_methods_md_partial_callable_0_partial_categorization_0(
         Method context1) {
   final buffer = StringBuffer();
-  if (context1.hasCategoryNames == true) {
+  if (context1.hasCategoryNames) {
     buffer.writeln();
     buffer.write('''
 Categories:''');
@@ -2590,7 +2590,7 @@ String
     ___deduplicated_lib_templates_md__static_methods_md_partial_callable_0_partial_attributes_1(
         Method context1) {
   final buffer = StringBuffer();
-  if (context1.hasAttributes == true) {
+  if (context1.hasAttributes) {
     buffer.write('''_''');
     buffer.write(context1.attributesAsString);
     buffer.write('''_''');
@@ -2603,7 +2603,7 @@ String
 String _deduplicated_lib_templates_md__static_constants_md(Container context0) {
   final buffer = StringBuffer();
   buffer.writeln();
-  if (context0.hasPublicConstantFields == true) {
+  if (context0.hasPublicConstantFields) {
     buffer.writeln();
     buffer.write('''
 ## Constants
@@ -2648,7 +2648,7 @@ String
     ___deduplicated_lib_templates_md__static_constants_md_partial_constant_0_partial_categorization_0(
         Field context1) {
   final buffer = StringBuffer();
-  if (context1.hasCategoryNames == true) {
+  if (context1.hasCategoryNames) {
     buffer.writeln();
     buffer.write('''
 Categories:''');
@@ -2667,7 +2667,7 @@ String
     ___deduplicated_lib_templates_md__static_constants_md_partial_constant_0_partial_attributes_1(
         Field context1) {
   final buffer = StringBuffer();
-  if (context1.hasAttributes == true) {
+  if (context1.hasAttributes) {
     buffer.write('''_''');
     buffer.write(context1.attributesAsString);
     buffer.write('''_''');
@@ -2679,7 +2679,7 @@ String
 
 String _deduplicated_lib_templates_md__source_code_md(ModelElement context0) {
   final buffer = StringBuffer();
-  if (context0.hasSourceCode == true) {
+  if (context0.hasSourceCode) {
     buffer.writeln();
     buffer.write('''
 ## Implementation
@@ -2698,14 +2698,14 @@ String _deduplicated_lib_templates_md__source_code_md(ModelElement context0) {
 
 String _deduplicated_lib_templates_md__name_summary_md(ModelElement context0) {
   final buffer = StringBuffer();
-  if (context0.isConst == true) {
+  if (context0.isConst) {
     buffer.write('''const ''');
   }
-  if (context0.isDeprecated == true) {
+  if (context0.isDeprecated) {
     buffer.write('''~~''');
   }
   buffer.writeEscaped(context0.name);
-  if (context0.isDeprecated == true) {
+  if (context0.isDeprecated) {
     buffer.write('''~~''');
   }
   buffer.writeln();
@@ -2751,7 +2751,7 @@ String
     __deduplicated_lib_templates_md__accessor_getter_md_partial_annotations_0(
         Accessor context1) {
   final buffer = StringBuffer();
-  if (context1.hasAnnotations == true) {
+  if (context1.hasAnnotations) {
     buffer.writeln();
     buffer.write('''
 **Annotations**
@@ -2772,14 +2772,14 @@ String
     __deduplicated_lib_templates_md__accessor_getter_md_partial_name_summary_1(
         Accessor context1) {
   final buffer = StringBuffer();
-  if (context1.isConst == true) {
+  if (context1.isConst) {
     buffer.write('''const ''');
   }
-  if (context1.isDeprecated == true) {
+  if (context1.isDeprecated) {
     buffer.write('''~~''');
   }
   buffer.writeEscaped(context1.name);
-  if (context1.isDeprecated == true) {
+  if (context1.isDeprecated) {
     buffer.write('''~~''');
   }
   buffer.writeln();
@@ -2790,7 +2790,7 @@ String
 String __deduplicated_lib_templates_md__accessor_getter_md_partial_attributes_2(
     Accessor context1) {
   final buffer = StringBuffer();
-  if (context1.hasAttributes == true) {
+  if (context1.hasAttributes) {
     buffer.write('''_''');
     buffer.write(context1.attributesAsString);
     buffer.write('''_''');
@@ -2804,7 +2804,7 @@ String
     __deduplicated_lib_templates_md__accessor_getter_md_partial_documentation_3(
         Accessor context1) {
   final buffer = StringBuffer();
-  if (context1.hasDocumentation == true) {
+  if (context1.hasDocumentation) {
     buffer.writeln();
     buffer.write(context1.documentationAsHtml);
   }
@@ -2817,7 +2817,7 @@ String
     __deduplicated_lib_templates_md__accessor_getter_md_partial_source_code_4(
         Accessor context1) {
   final buffer = StringBuffer();
-  if (context1.hasSourceCode == true) {
+  if (context1.hasSourceCode) {
     buffer.writeln();
     buffer.write('''
 ## Implementation
@@ -2872,7 +2872,7 @@ String
     __deduplicated_lib_templates_md__accessor_setter_md_partial_annotations_0(
         Accessor context1) {
   final buffer = StringBuffer();
-  if (context1.hasAnnotations == true) {
+  if (context1.hasAnnotations) {
     buffer.writeln();
     buffer.write('''
 **Annotations**
@@ -2893,14 +2893,14 @@ String
     __deduplicated_lib_templates_md__accessor_setter_md_partial_name_summary_1(
         Accessor context1) {
   final buffer = StringBuffer();
-  if (context1.isConst == true) {
+  if (context1.isConst) {
     buffer.write('''const ''');
   }
-  if (context1.isDeprecated == true) {
+  if (context1.isDeprecated) {
     buffer.write('''~~''');
   }
   buffer.writeEscaped(context1.name);
-  if (context1.isDeprecated == true) {
+  if (context1.isDeprecated) {
     buffer.write('''~~''');
   }
   buffer.writeln();
@@ -2911,7 +2911,7 @@ String
 String __deduplicated_lib_templates_md__accessor_setter_md_partial_attributes_2(
     Accessor context1) {
   final buffer = StringBuffer();
-  if (context1.hasAttributes == true) {
+  if (context1.hasAttributes) {
     buffer.write('''_''');
     buffer.write(context1.attributesAsString);
     buffer.write('''_''');
@@ -2925,7 +2925,7 @@ String
     __deduplicated_lib_templates_md__accessor_setter_md_partial_documentation_3(
         Accessor context1) {
   final buffer = StringBuffer();
-  if (context1.hasDocumentation == true) {
+  if (context1.hasDocumentation) {
     buffer.writeln();
     buffer.write(context1.documentationAsHtml);
   }
@@ -2938,7 +2938,7 @@ String
     __deduplicated_lib_templates_md__accessor_setter_md_partial_source_code_4(
         Accessor context1) {
   final buffer = StringBuffer();
-  if (context1.hasSourceCode == true) {
+  if (context1.hasSourceCode) {
     buffer.writeln();
     buffer.write('''
 ## Implementation
