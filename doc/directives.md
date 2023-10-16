@@ -14,6 +14,9 @@ The supported directives are listed below:
 An element whose doc comment should not appear in the generated documenation can
 include the `@nodoc` directive.
 
+Note that the `@nodoc` directive does not have curly braces, like most of the
+other directives.
+
 ## `{@category}` and `{@subCategory}` - Categories
 
 Elements such as libraries and classes can be grouped into categories and
@@ -23,7 +26,7 @@ own documentation page, listing all of the categorized elements.
 
 ## `{@template}` and `{@macro}` - Templates and macros
 
-TODO(srawlins): Document
+TODO(srawlins): Document.
 
 ## `{@example}` - Examples (deprecated)
 
@@ -32,7 +35,7 @@ directive. The file path, the region, and the example language can all be
 specified with the following syntax:
 
 ```none
-{@example PATH [region=NAME] [lang=NAME]}
+/// {@example PATH [region=NAME] [lang=NAME]}
 ```
 
 All example file names must have the extension, `.md`, and this extension must
@@ -52,9 +55,9 @@ HTML can be rendered unmodified by including it between `{@inject-html}` and
 `{@end-inject-html}` directive tags. The tags take no arguments:
 
 ```none
-{@inject-html}
-INJECTED HTML
-{@end-inject-html}
+/// {@inject-html}
+/// <p>Injected HTML.</p>
+/// {@end-inject-html}
 ```
 
 The `{@inject-html}` directive is only available when the `--inject-html` flag
@@ -67,7 +70,7 @@ HTML5 videos can be embedded with the `{@animation}` directive. This directive
 accepts width and height arguments, and an optional ID argument:
 
 ```none
-{@animation 320 240 URL [id=ID]}
+/// {@animation 320 240 URL [id=ID]}
 ```
 
 This directive renders the HTML which embeds an HTML5 video.
@@ -85,7 +88,7 @@ A YouTube video can be embedded with the `{@youtube}` directive. This directive
 accepts width and height arguments, using the following syntax:
 
 ```none
-{@youtube 320 240 https://www.youtube.com/watch?v=oHg5SJYRHA0}
+/// {@youtube 320 240 https://www.youtube.com/watch?v=oHg5SJYRHA0}
 ```
 
 This directive embeds the YouTube video with id "oHg5SJYRHA0" into the
@@ -110,7 +113,7 @@ When that heuristic needs to be overridden, a user can use this directive.
 Example:
 
 ```none
-{@canonicalFor some_library.SomeClass}
+/// {@canonicalFor some_library.SomeClass}
 ```
 
 When this directive is used on a library's doc comment, that library is marked
