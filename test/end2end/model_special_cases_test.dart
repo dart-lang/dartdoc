@@ -112,40 +112,16 @@ void main() {
     });
 
     test('reference regression', () {
-      expect(referenceLookup(constructorTearoffs, 'A.A'),
-          equals(MatchingLinkResult(Anew)));
-      expect(referenceLookup(constructorTearoffs, 'new A()'),
-          equals(MatchingLinkResult(Anew)));
       expect(referenceLookup(constructorTearoffs, 'A()'),
           equals(MatchingLinkResult(Anew)));
-      expect(referenceLookup(constructorTearoffs, 'B.B'),
-          equals(MatchingLinkResult(Bnew)));
-      expect(referenceLookup(constructorTearoffs, 'new B()'),
-          equals(MatchingLinkResult(Bnew)));
       expect(referenceLookup(constructorTearoffs, 'B()'),
           equals(MatchingLinkResult(Bnew)));
-      expect(referenceLookup(constructorTearoffs, 'C.C'),
-          equals(MatchingLinkResult(Cnew)));
-      expect(referenceLookup(constructorTearoffs, 'new C()'),
-          equals(MatchingLinkResult(Cnew)));
       expect(referenceLookup(constructorTearoffs, 'C()'),
           equals(MatchingLinkResult(Cnew)));
-      expect(referenceLookup(constructorTearoffs, 'D.D'),
-          equals(MatchingLinkResult(Dnew)));
-      expect(referenceLookup(constructorTearoffs, 'new D()'),
-          equals(MatchingLinkResult(Dnew)));
       expect(referenceLookup(constructorTearoffs, 'D()'),
           equals(MatchingLinkResult(Dnew)));
-      expect(referenceLookup(constructorTearoffs, 'E.E'),
-          equals(MatchingLinkResult(Enew)));
-      expect(referenceLookup(constructorTearoffs, 'new E()'),
-          equals(MatchingLinkResult(Enew)));
       expect(referenceLookup(constructorTearoffs, 'E()'),
           equals(MatchingLinkResult(Enew)));
-      expect(referenceLookup(constructorTearoffs, 'F.F'),
-          equals(MatchingLinkResult(Fnew)));
-      expect(referenceLookup(constructorTearoffs, 'new F()'),
-          equals(MatchingLinkResult(Fnew)));
       expect(referenceLookup(constructorTearoffs, 'F()'),
           equals(MatchingLinkResult(Fnew)));
     });

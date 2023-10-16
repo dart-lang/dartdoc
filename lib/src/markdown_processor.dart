@@ -160,10 +160,6 @@ bool _rejectUnnamedAndShadowingConstructors(CommentReferable? referable) {
 bool _requireCallable(CommentReferable? referable) =>
     referable is ModelElement && referable.isCallable;
 
-/// Returns false unless the passed [referable] represents a constructor.
-bool _requireConstructor(CommentReferable? referable) =>
-    referable is Constructor;
-
 MatchingLinkResult _getMatchingLinkElement(
     String referenceText, Warnable element) {
   var commentReference = ModelCommentReference.synthetic(referenceText);
@@ -174,38 +170,21 @@ MatchingLinkResult _getMatchingLinkElement(
   // An "allow tree" filter to be used by [CommentReferable.referenceBy].
   bool Function(CommentReferable?) allowTree;
 
-  // Constructor references are pretty ambiguous by nature since they can be
-  // declared with the same name as the class they are constructing, and even
-  // if they don't use field-formal parameters, sometimes have parameters
-  // named the same as members.
-  // Maybe clean this up with inspiration from constructor tear-off syntax?
-  if (commentReference.allowUnnamedConstructor) {
-    allowTree = (_) => true;
-    // Neither reject, nor require, a unnamed constructor in the event the
-    // comment reference structure implies one.  (We can not require it in case
-    // a library name is the same as a member class name and the class is the
-    // intended lookup).  For example, '[FooClass.FooClass]' structurally
-    // "looks like" an unnamed constructor, so we should allow it here.
-    filter = commentReference.hasCallableHint ? _requireCallable : (_) => true;
-  } else if (commentReference.hasConstructorHint &&
-      commentReference.hasCallableHint) {
-    allowTree = (_) => true;
-    // This takes precedence over the callable hint if both are present --
-    // pick a constructor if and only constructor if we see `new`.
-    filter = _requireConstructor;
-  } else if (commentReference.hasCallableHint) {
+  if (commentReference.hasCallableHint) {
     allowTree = (_) => true;
     // Trailing parens indicate we are looking for a callable.
     filter = _requireCallable;
   } else {
-    if (!commentReference.allowUnnamedConstructorParameter) {
-      allowTree = _rejectUnnamedAndShadowingConstructors;
-    } else {
-      allowTree = (_) => true;
-    }
-    // Without hints, reject unnamed constructors and their parameters to force
-    // resolution to the class.
-    filter = _rejectUnnamedAndShadowingConstructors;
+    allowTree = (_) => true;
+    // Neither reject, nor require, an unnamed constructor in the event the
+    // comment reference structure implies one. (We cannot require it in case a
+    // library name is the same as a member class name and the class is the
+    // intended lookup).
+    filter = commentReference.hasCallableHint
+        ? _requireCallable
+        // Without hints, reject unnamed constructors and their parameters to
+        // force resolution to the class.
+        : filter = _rejectUnnamedAndShadowingConstructors;
   }
   var lookupResult = element.referenceBy(commentReference.referenceBy,
       allowTree: allowTree, filter: filter);

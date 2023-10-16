@@ -9,12 +9,7 @@ import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/comment_references/parser.dart';
 
 abstract class ModelCommentReference {
-  /// Does the structure of the reference itself imply a possible unnamed
-  /// constructor?
-  bool get allowUnnamedConstructor;
-  bool get allowUnnamedConstructorParameter;
   String get codeRef;
-  bool get hasConstructorHint;
   bool get hasCallableHint;
   List<String> get referenceBy;
   Element? get staticElement;
@@ -33,62 +28,14 @@ abstract class ModelCommentReference {
 /// information needed for Dartdoc.  Drops link to the [CommentReference]
 /// and [ResourceProvider] after construction.
 class _ModelCommentReferenceImpl implements ModelCommentReference {
-  void _initAllowCache() {
-    final referencePieces =
-        parsed.whereType<IdentifierNode>().toList(growable: false);
-    _allowUnnamedConstructor = false;
-    _allowUnnamedConstructorParameter = false;
-    if (referencePieces.length >= 2) {
-      for (var i = 0; i <= referencePieces.length - 2; i++) {
-        if (referencePieces[i].text == referencePieces[i + 1].text) {
-          if (i + 2 == referencePieces.length) {
-            // This looks like an old-style reference to an unnamed
-            // constructor, e.g. [lib_name.C.C].
-            _allowUnnamedConstructor = true;
-          } else {
-            // This could be a reference to a parameter or type parameter of
-            // an unnamed/new-declared constructor.
-            _allowUnnamedConstructorParameter = true;
-          }
-        }
-      }
-      // e.g. [C.new], which may be the unnamed constructor.
-      if (referencePieces.isNotEmpty && referencePieces.last.text == 'new') {
-        _allowUnnamedConstructor = true;
-      }
-    }
-  }
-
-  bool? _allowUnnamedConstructor;
-  @override
-  bool get allowUnnamedConstructor {
-    if (_allowUnnamedConstructor == null) {
-      _initAllowCache();
-    }
-    return _allowUnnamedConstructor!;
-  }
-
-  bool? _allowUnnamedConstructorParameter;
-  @override
-  bool get allowUnnamedConstructorParameter {
-    if (_allowUnnamedConstructorParameter == null) {
-      _initAllowCache();
-    }
-    return _allowUnnamedConstructorParameter!;
-  }
-
   @override
   final String codeRef;
 
   @override
   bool get hasCallableHint =>
       parsed.isNotEmpty &&
-      (parsed.first is ConstructorHintStartNode ||
+      ((parsed.length > 1 && parsed.last.text == 'new') ||
           parsed.last is CallableHintEndNode);
-
-  @override
-  bool get hasConstructorHint =>
-      parsed.isNotEmpty && parsed.first is ConstructorHintStartNode;
 
   @override
   List<String> get referenceBy => parsed
