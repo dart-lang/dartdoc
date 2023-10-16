@@ -40,7 +40,7 @@ void initializeSidebars() {
     return;
   }
   final aboveSidebarPath = mainContent.dataset['above-sidebar'];
-  final leftSidebar = document.querySelector('#dartdoc-sidebar-left');
+  final leftSidebar = document.querySelector('#dartdoc-sidebar-left-content');
   final sanitizer = _SidebarNodeTreeSanitizer(baseHref);
   if (aboveSidebarPath != null &&
       aboveSidebarPath.isNotEmpty &&
