@@ -67,7 +67,7 @@ jobs:
         if: runner.os == 'Windows'
         run: git config --global core.autocrlf input
       - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608
-      - uses: dart-lang/setup-dart@8a4b97ea2017cc079571daec46542f76189836b1
+      - uses: dart-lang/setup-dart@b64355ae6ca0b5d484f0106a033dd1388965d06d
         with:
           sdk: ${{ matrix.sdk }}
       - name: Install dependencies
