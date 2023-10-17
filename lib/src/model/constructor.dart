@@ -74,7 +74,7 @@ class Constructor extends ModelElement
       modelBuilder.typeFrom(element.type, library) as Callable;
 
   @override
-  late final String name = () {
+  String get name {
     // TODO(jcollins-g): After the old lookup code is retired, rationalize
     // [name] around the conventions used in referenceChildren and replace
     // code there and elsewhere with simple references to the name.
@@ -83,16 +83,16 @@ class Constructor extends ModelElement
       return enclosingElement.name;
     }
     return '${enclosingElement.name}.$constructorName';
-  }();
+  }
 
   @override
-  late final String nameWithGenerics = () {
+  String get nameWithGenerics {
     var constructorName = element.name;
     if (constructorName.isEmpty) {
       return '${enclosingElement.name}$genericParameters';
     }
     return '${enclosingElement.name}$genericParameters.$constructorName';
-  }();
+  }
 
   String? get shortName {
     if (name.contains('.')) {
