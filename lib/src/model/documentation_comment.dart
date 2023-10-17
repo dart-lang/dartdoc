@@ -184,12 +184,8 @@ mixin DocumentationComment
       if (nameEndIndex == -1) return;
       var name = docs.substring(nameStartIndex + 2, nameEndIndex);
       if (!_allDirectiveNames.contains(name)) {
-        if (_allDirectiveNames.contains(name.toLowerCase())) {
-          warn(PackageWarning.unknownDirective,
-              message: "'$name' (use lowercase)");
-        } else {
-          warn(PackageWarning.unknownDirective, message: "'$name'");
-        }
+        // Ignore unknown directive name; the analyzer now reports this
+        // natively.
       }
       // TODO(srawlins): Replace all `replaceAllMapped` usage within this file,
       // running regex after regex over [docs], with simple calls here. This has

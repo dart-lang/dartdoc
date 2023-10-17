@@ -185,10 +185,6 @@ const Map<PackageWarning, PackageWarningDefinition> packageWarningDefinitions =
         "`import 'package:dartdoc/lib/foo.dart';`.",
     defaultWarningMode: PackageWarningMode.error,
   ),
-  PackageWarning.notImplemented: PackageWarningDefinition(
-      PackageWarning.notImplemented,
-      'not-implemented',
-      'The code makes use of a feature that is not yet implemented in dartdoc'),
   PackageWarning.noDocumentableLibrariesInPackage: PackageWarningDefinition(
     PackageWarning.noDocumentableLibrariesInPackage,
     'no-documentable-libraries',
@@ -223,10 +219,6 @@ const Map<PackageWarning, PackageWarningDefinition> packageWarningDefinitions =
   ),
   PackageWarning.brokenLink: PackageWarningDefinition(PackageWarning.brokenLink,
       'broken-link', 'Dartdoc generated a link to a non-existent file'),
-  PackageWarning.unknownDirective: PackageWarningDefinition(
-      PackageWarning.unknownDirective,
-      'unknown-directive',
-      'A comment contains an unknown directive'),
   PackageWarning.unknownMacro: PackageWarningDefinition(
       PackageWarning.unknownMacro,
       'unknown-macro',
@@ -346,7 +338,6 @@ enum PackageWarning {
   noCanonicalFound('no canonical library found for {0}, not linking'),
   noDefiningLibraryFound('could not find the defining library for {0}; the '
       'library may be imported or exported with a non-standard URI'),
-  notImplemented('{0}'),
   noDocumentableLibrariesInPackage('{0} has no documentable libraries'),
   noLibraryLevelDocs('{0} has no library level documentation comments'),
   packageOrderGivesMissingPackageName(
@@ -355,7 +346,6 @@ enum PackageWarning {
       'private API of {0} is reexported by libraries in other packages: '),
   unresolvedDocReference('unresolved doc reference [{0}]',
       referredFromPrefix: 'in documentation inherited from'),
-  unknownDirective('undefined directive: {0}'),
   unknownMacro('undefined macro [{0}]'),
   unknownHtmlFragment('undefined HTML fragment identifier [{0}]'),
   brokenLink('dartdoc generated a broken link to: {0}',
