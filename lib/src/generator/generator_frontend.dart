@@ -45,6 +45,7 @@ class GeneratorFrontEnd implements Generator {
       'writtenConstructorFileCount',
       'writtenEnumFileCount',
       'writtenExtensionFileCount',
+      'writtenExtensionTypeFileCount',
       'writtenFunctionFileCount',
       'writtenLibraryFileCount',
       'writtenMethodFileCount',
@@ -185,6 +186,55 @@ class GeneratorFrontEnd implements Generator {
             indexAccumulator.add(method);
             _generatorBackend.generateMethod(
                 packageGraph, lib, extension, method);
+          }
+        }
+
+        for (var extensionType in filterNonDocumented(lib.extensionTypes)) {
+          indexAccumulator.add(extensionType);
+          _generatorBackend.generateExtensionType(
+              packageGraph, lib, extensionType);
+
+          for (var constant
+              in filterNonDocumented(extensionType.constantFields)) {
+            indexAccumulator.add(constant);
+            _generatorBackend.generateConstant(
+                packageGraph, lib, extensionType, constant);
+          }
+
+          for (var method
+              in filterNonDocumented(extensionType.publicInstanceMethods)) {
+            indexAccumulator.add(method);
+            _generatorBackend.generateMethod(
+                packageGraph, lib, extensionType, method);
+          }
+
+          for (var operator
+              in filterNonDocumented(extensionType.instanceOperators)) {
+            indexAccumulator.add(operator);
+            _generatorBackend.generateMethod(
+                packageGraph, lib, extensionType, operator);
+          }
+
+          for (var property
+              in filterNonDocumented(extensionType.instanceFields)) {
+            indexAccumulator.add(property);
+            _generatorBackend.generateProperty(
+                packageGraph, lib, extensionType, property);
+          }
+
+          for (var staticField
+              in filterNonDocumented(extensionType.variableStaticFields)) {
+            indexAccumulator.add(staticField);
+            _generatorBackend.generateProperty(
+                packageGraph, lib, extensionType, staticField);
+          }
+
+          for (var method in filterNonDocumented(extensionType.staticMethods)) {
+            if (!method.isCanonical) continue;
+
+            indexAccumulator.add(method);
+            _generatorBackend.generateMethod(
+                packageGraph, lib, extensionType, method);
           }
         }
 

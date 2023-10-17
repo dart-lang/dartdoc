@@ -603,16 +603,6 @@ abstract class ModelElement extends Canonicalization
   /// documented.
   String get filePath;
 
-  /// The full path of the sidebar for elements "above" this element.
-  ///
-  /// A `null` value indicates no content is displayed in the "above" sidebar.
-  String? get aboveSidebarPath;
-
-  /// The full path of the sidebar for elements "below" this element.
-  ///
-  /// A `null` value indicates no content is displayed in the "below" sidebar.
-  String? get belowSidebarPath;
-
   /// Returns the fully qualified name.
   ///
   /// For example: 'libraryName.className.methodName'

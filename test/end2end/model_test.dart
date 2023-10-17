@@ -79,6 +79,12 @@ class TestLibraryContainer extends LibraryContainer with Nameable {
 
   @override
   String get oneLineDoc => throw UnimplementedError();
+
+  @override
+  String? get aboveSidebarPath => null;
+
+  @override
+  String? get belowSidebarPath => null;
 }
 
 class TestLibraryContainerSdk extends TestLibraryContainer {

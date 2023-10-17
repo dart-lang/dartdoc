@@ -36,6 +36,8 @@ mixin TopLevelContainer implements Nameable {
 
   bool get hasPublicExtensions => publicExtensions.isNotEmpty;
 
+  bool get hasPublicExtensionTypes => publicExtensionTypes.isNotEmpty;
+
   bool get hasPublicConstants => publicConstants.isNotEmpty;
 
   bool get hasPublicEnums => publicEnums.isNotEmpty;

@@ -18,6 +18,8 @@
 @Renderer(#renderEnum, Context<EnumTemplateData>(), 'enum')
 @Renderer(#renderError, Context<PackageTemplateData>(), '404error')
 @Renderer(#renderExtension, Context<ExtensionTemplateData>(), 'extension')
+@Renderer(#renderExtensionType, Context<ExtensionTypeTemplateData>(),
+    'extension_type')
 @Renderer(#renderFunction, Context<FunctionTemplateData>(), 'function')
 @Renderer(#renderIndex, Context<PackageTemplateData>(), 'index')
 @Renderer(#renderLibrary, Context<LibraryTemplateData>(), 'library')
@@ -71,6 +73,7 @@ const _visibleTypes = {
   ElementType,
   Enum,
   Extension,
+  ExtensionType,
   FeatureSet,
   FunctionTypeElementType,
   InheritingContainer,
@@ -94,6 +97,7 @@ abstract class Templates {
   String renderEnum(EnumTemplateData context);
   String renderError(PackageTemplateData context);
   String renderExtension(ExtensionTemplateData context);
+  String renderExtensionType(ExtensionTypeTemplateData context);
   String renderFunction(FunctionTemplateData context);
   String renderIndex(PackageTemplateData context);
   String renderLibrary(LibraryTemplateData context);
@@ -161,6 +165,10 @@ class HtmlAotTemplates implements Templates {
   @override
   String renderExtension(ExtensionTemplateData context) =>
       aot_renderers_for_html.renderExtension(context);
+
+  @override
+  String renderExtensionType(ExtensionTypeTemplateData context) =>
+      aot_renderers_for_html.renderExtensionType(context);
 
   @override
   String renderFunction(FunctionTemplateData context) =>
@@ -237,6 +245,10 @@ class MarkdownAotTemplates implements Templates {
       aot_renderers_for_md.renderExtension(context);
 
   @override
+  String renderExtensionType(ExtensionTypeTemplateData context) =>
+      aot_renderers_for_md.renderExtensionType(context);
+
+  @override
   String renderFunction(FunctionTemplateData context) =>
       aot_renderers_for_md.renderFunction(context);
 
@@ -308,6 +320,10 @@ class RuntimeTemplates implements Templates {
   @override
   String renderExtension(ExtensionTemplateData context) =>
       runtime_renderers.renderExtension(context, _extensionTemplate);
+
+  @override
+  String renderExtensionType(ExtensionTypeTemplateData context) =>
+      runtime_renderers.renderExtensionType(context, _extensionTemplate);
 
   @override
   String renderFunction(FunctionTemplateData context) =>
