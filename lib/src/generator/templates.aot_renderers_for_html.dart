@@ -407,11 +407,11 @@ String renderClass(ClassTemplateData context0) {
   buffer.write(_renderClass_partial_search_sidebar_16(context0));
   buffer.writeln();
   buffer.write('''
-    <!--<h5>''');
+    <h5>''');
   buffer.writeEscaped(context0.parent!.name);
   buffer.write(' ');
   buffer.writeEscaped(context0.parent!.kind.toString());
-  buffer.write('''</h5>-->
+  buffer.write('''</h5>
     <div id="dartdoc-sidebar-left-content"></div>
   </div>
 
@@ -496,6 +496,7 @@ String renderConstructor(ConstructorTemplateData context0) {
   buffer.write(' ');
   buffer.writeEscaped(context0.parent!.kind.toString());
   buffer.write('''</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
   </div><!--/.sidebar-offcanvas-left-->
 
   <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
@@ -637,6 +638,7 @@ String renderEnum(EnumTemplateData context0) {
   buffer.write(' ');
   buffer.writeEscaped(context0.parent!.kind.toString());
   buffer.write('''</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
   </div>
 
   <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
@@ -794,6 +796,7 @@ String renderExtension<T extends Extension>(ExtensionTemplateData<T> context0) {
   buffer.write(' ');
   buffer.writeEscaped(context0.parent!.kind.toString());
   buffer.write('''</h5>
+  <div id="dartdoc-sidebar-left-content"></div>
 </div>
 
 <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
@@ -867,6 +870,7 @@ String renderFunction(FunctionTemplateData context0) {
   buffer.write(' ');
   buffer.writeEscaped(context0.parent!.kind.toString());
   buffer.write('''</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
   </div><!--/.sidebar-offcanvas-left-->
 
   <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
@@ -1273,6 +1277,7 @@ String renderMethod(MethodTemplateData context0) {
   buffer.write(' ');
   buffer.writeEscaped(context0.parent!.kind.toString());
   buffer.write('''</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
   </div><!--/.sidebar-offcanvas-->
 
   <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
@@ -1418,6 +1423,7 @@ String renderMixin(MixinTemplateData context0) {
   buffer.write(' ');
   buffer.writeEscaped(context0.parent!.kind.toString());
   buffer.write('''</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
   </div>
 
   <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
@@ -1505,6 +1511,7 @@ String renderProperty(PropertyTemplateData context0) {
   buffer.write(' ');
   buffer.writeEscaped(context0.parent!.kind.toString());
   buffer.write('''</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
   </div><!--/.sidebar-offcanvas-->
 
   <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
@@ -2013,6 +2020,7 @@ String renderTopLevelProperty(TopLevelPropertyTemplateData context0) {
   buffer.write(' ');
   buffer.writeEscaped(context0.parent!.kind.toString());
   buffer.write('''</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
   </div><!--/.sidebar-offcanvas-left-->
 
   <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
@@ -2085,6 +2093,7 @@ String renderTypedef(TypedefTemplateData context0) {
   buffer.write(' ');
   buffer.writeEscaped(context0.parent!.kind.toString());
   buffer.write('''</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
   </div><!--/.sidebar-offcanvas-left-->
 
   <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">

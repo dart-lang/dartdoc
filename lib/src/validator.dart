@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:analyzer/file_system/file_system.dart';
+import 'package:collection/collection.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/canonicalization.dart';
@@ -213,11 +214,7 @@ class Validator {
     String origin, {
     String? referredFrom,
   }) {
-    // Ordinarily this would go in [Package.warn], but we don't actually know
-    // what [ModelElement] to warn on yet.
-    ModelElement? warnOnElement;
     final referredFromElements = <Canonicalization>{};
-    Set<ModelElement>? warnOnElements;
 
     // Make all paths relative to origin.
     if (path.isWithin(origin, warnOn)) {
@@ -233,19 +230,12 @@ class Validator {
         referredFromElements.addAll(hrefReferredFrom);
       }
     }
-    warnOnElements = _hrefs[warnOn];
+    var warnOnElements = _hrefs[warnOn];
 
     if (referredFromElements.any((e) => e.isCanonical)) {
       referredFromElements.removeWhere((e) => !e.isCanonical);
     }
-    if (warnOnElements != null) {
-      for (final e in warnOnElements) {
-        if (e.isCanonical) {
-          warnOnElement = e;
-          break;
-        }
-      }
-    }
+    var warnOnElement = warnOnElements?.firstWhereOrNull((e) => e.isCanonical);
 
     if (referredFromElements.isEmpty && referredFrom == 'index.html') {
       referredFromElements.add(_packageGraph.defaultPackage);

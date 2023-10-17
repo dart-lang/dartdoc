@@ -3,6 +3,8 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:collection';
+import 'dart:io';
+import 'dart:math' as math;
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
@@ -101,7 +103,7 @@ String _warningsListHelpText(PackageWarningMode mode) {
 class PackageWarningDefinition implements Comparable<PackageWarningDefinition> {
   final String warningName;
   final String shortHelp;
-  final List<String> longHelp;
+  final String longHelp;
   final PackageWarning kind;
   final PackageWarningMode defaultWarningMode;
 
@@ -109,7 +111,7 @@ class PackageWarningDefinition implements Comparable<PackageWarningDefinition> {
     this.kind,
     this.warningName,
     this.shortHelp, {
-    this.longHelp = const [],
+    this.longHelp = '',
     this.defaultWarningMode = PackageWarningMode.warn,
   });
 
@@ -134,20 +136,19 @@ const Map<PackageWarning, PackageWarningDefinition> packageWarningDefinitions =
       'ambiguous-doc-reference',
       'A comment reference could refer to two or more different objects'),
   PackageWarning.ambiguousReexport: PackageWarningDefinition(
-      PackageWarning.ambiguousReexport,
-      'ambiguous-reexport',
-      'A symbol is exported from private to public in more than one library '
-          'and dartdoc can not determine which one is canonical',
-      longHelp: [
-        "Use {@canonicalFor $_namePlaceholder} in the desired library's",
-        "documentation to resolve the ambiguity and/or override dartdoc's",
-        'decision, or structure your package so the reexport is less',
-        'ambiguous.  The symbol will still be referenced in all candidates --',
-        'this only controls the location where it will be written and which',
-        'library will be displayed in navigation for the relevant pages. The',
-        'flag --ambiguous-reexport-scorer-min-confidence allows you to set the',
-        'threshold at which this warning will appear.'
-      ]),
+    PackageWarning.ambiguousReexport,
+    'ambiguous-reexport',
+    'A symbol is exported from private to public in more than one library '
+        'and dartdoc can not determine which one is canonical',
+    longHelp: "Use {@canonicalFor $_namePlaceholder} in the desired library's "
+        "documentation to resolve the ambiguity and/or override dartdoc's "
+        'decision, or structure your package so the reexport is less '
+        'ambiguous. The symbol will still be referenced in all candidates -- '
+        'this only controls the location where it will be written and which '
+        'library will be displayed in navigation for the relevant pages. The '
+        'flag `--ambiguous-reexport-scorer-min-confidence` allows you to set '
+        'the threshold at which this warning will appear.',
+  ),
   PackageWarning.ignoredCanonicalFor: PackageWarningDefinition(
       PackageWarning.ignoredCanonicalFor,
       'ignored-canonical-for',
@@ -160,29 +161,30 @@ const Map<PackageWarning, PackageWarningDefinition> packageWarningDefinitions =
           'library documented with this package documents it so dartdoc can '
           'not link to it'),
   PackageWarning.noDefiningLibraryFound: PackageWarningDefinition(
-      PackageWarning.noDefiningLibraryFound,
-      'no-defining-library-found',
-      'The defining library for an element could not be found; the library may '
-          'be imported or exported with a non-standard URI',
-      longHelp: [
-        'For non-canonicalized import or export paths, dartdoc can sometimes lose ',
-        'track of the defining library for an element.  If this happens, canonicalization',
-        'will assume that reexported elements are defined somewhere it deems "reasonable", ',
-        'defaulting first to the enclosing context\'s definingLibrary if available, ',
-        'or the library is is visible in.  This can lead to confusing documentation ',
-        'structure that implies duplicate code where none exists.',
-        '',
-        'To correct this, canonicalize all paths in the import or export chain',
-        'making this symbol visible.',
-        '',
-        "For example: 'change  `import 'package:dartdoc/src/model/../model/extension_target.dart';`",
-        "to  `import 'package:dartdoc/src/model/extension_target.dart';`",
-        "or `import 'src/../src/foo.dart';`",
-        "to `import 'src/foo.dart';",
-        "or `import 'package:dartdoc//lib//foo.dart';",
-        "to `import 'package:dartdoc/lib/foo.dart';",
-      ],
-      defaultWarningMode: PackageWarningMode.error),
+    PackageWarning.noDefiningLibraryFound,
+    'no-defining-library-found',
+    'The defining library for an element could not be found; the library may '
+        'be imported or exported with a non-standard URI',
+    longHelp:
+        'For non-canonicalized import or export paths, dartdoc can sometimes '
+        'lose track of the defining library for an element.  If this happens, '
+        'canonicalization will assume that reexported elements are defined '
+        'somewhere it deems "reasonable," defaulting first to the enclosing '
+        "context's `definingLibrary` if available, or the library in which it "
+        'is visible. This can lead to confusing documentation structure that '
+        'implies duplicate code where none exists.'
+        '\n\n'
+        'To correct this, canonicalize all paths in the import or export chain '
+        'making this symbol visible.'
+        '\n\n'
+        'For example: change '
+        "`import 'package:dartdoc/src/model/../model/extension_target.dart';` "
+        "to `import 'package:dartdoc/src/model/extension_target.dart';` "
+        "or `import 'src/../src/foo.dart';` to `import 'src/foo.dart'; "
+        "or `import 'package:dartdoc//lib//foo.dart';` to "
+        "`import 'package:dartdoc/lib/foo.dart';`.",
+    defaultWarningMode: PackageWarningMode.error,
+  ),
   PackageWarning.notImplemented: PackageWarningDefinition(
       PackageWarning.notImplemented,
       'not-implemented',
@@ -191,29 +193,34 @@ const Map<PackageWarning, PackageWarningDefinition> packageWarningDefinitions =
     PackageWarning.noDocumentableLibrariesInPackage,
     'no-documentable-libraries',
     'The package is to be documented but has no Dart libraries to document',
-    longHelp: [
-      'Dartdoc could not find any public libraries to document in',
-      '$_namePlaceholder, but documentation was requested.  This might be',
-      'expected for an asset only package, in which case, disable this',
-      'warning in your dartdoc_options.yaml file.',
-    ],
+    longHelp: 'Dartdoc could not find any public libraries to document in '
+        "'$_namePlaceholder', but documentation was requested. This might be "
+        'expected for an asset-only package, in which case, disable this '
+        'warning in your dartdoc_options.yaml file.',
   ),
   PackageWarning.noLibraryLevelDocs: PackageWarningDefinition(
       PackageWarning.noLibraryLevelDocs,
       'no-library-level-docs',
       'There are no library level docs for this library'),
   PackageWarning.packageOrderGivesMissingPackageName: PackageWarningDefinition(
-      PackageWarning.packageOrderGivesMissingPackageName,
-      'category-order-gives-missing-package-name',
-      'The category-order flag on the command line was given the name of a nonexistent package'),
+    PackageWarning.packageOrderGivesMissingPackageName,
+    'category-order-gives-missing-package-name',
+    'The category-order flag on the command line was given the name of a '
+        'nonexistent package',
+  ),
   PackageWarning.reexportedPrivateApiAcrossPackages: PackageWarningDefinition(
-      PackageWarning.reexportedPrivateApiAcrossPackages,
-      'reexported-private-api-across-packages',
-      'One or more libraries reexports private API members from outside its own package'),
+    PackageWarning.reexportedPrivateApiAcrossPackages,
+    'reexported-private-api-across-packages',
+    'One or more libraries reexports private API members from outside its own '
+        'package',
+  ),
   PackageWarning.unresolvedDocReference: PackageWarningDefinition(
-      PackageWarning.unresolvedDocReference,
-      'unresolved-doc-reference',
-      'A comment reference could not be found in parameters, enclosing class, enclosing library, or at the top level of any documented library with the package'),
+    PackageWarning.unresolvedDocReference,
+    'unresolved-doc-reference',
+    'A comment reference could not be found in parameters, enclosing class, '
+        'enclosing library, or at the top level of any documented library '
+        'with the package',
+  ),
   PackageWarning.brokenLink: PackageWarningDefinition(PackageWarning.brokenLink,
       'broken-link', 'Dartdoc generated a link to a non-existent file'),
   PackageWarning.unknownDirective: PackageWarningDefinition(
@@ -229,18 +236,22 @@ const Map<PackageWarning, PackageWarningDefinition> packageWarningDefinitions =
       'orphaned-file',
       'Dartdoc generated files that are unreachable from the index'),
   PackageWarning.unknownFile: PackageWarningDefinition(
-      PackageWarning.unknownFile,
-      'unknown-file',
-      'A leftover file exists in the tree that dartdoc did not write in this pass'),
+    PackageWarning.unknownFile,
+    'unknown-file',
+    'A leftover file exists in the tree that dartdoc did not write in this '
+        'pass',
+  ),
   PackageWarning.missingFromSearchIndex: PackageWarningDefinition(
       PackageWarning.missingFromSearchIndex,
       'missing-from-search-index',
       'A file generated by dartdoc is not present in the generated index.json'),
   PackageWarning.typeAsHtml: PackageWarningDefinition(
-      PackageWarning.typeAsHtml,
-      'type-as-html',
-      'Use of <> in a comment for type parameters is being treated as HTML by markdown',
-      defaultWarningMode: PackageWarningMode.ignore),
+    PackageWarning.typeAsHtml,
+    'type-as-html',
+    'Use of <> in a comment for type parameters is being treated as HTML by '
+        'Markdown',
+    defaultWarningMode: PackageWarningMode.ignore,
+  ),
   PackageWarning.invalidParameter: PackageWarningDefinition(
       PackageWarning.invalidParameter,
       'invalid-parameter',
@@ -257,43 +268,44 @@ const Map<PackageWarning, PackageWarningDefinition> packageWarningDefinitions =
       'An export refers to a URI that cannot be resolved.',
       defaultWarningMode: PackageWarningMode.error),
   PackageWarning.duplicateFile: PackageWarningDefinition(
-      PackageWarning.duplicateFile,
-      'duplicate-file',
-      'Dartdoc is trying to write to a duplicate filename based on the names '
-          'of Dart symbols.',
-      longHelp: [
-        'Dartdoc generates a path and filename to write to for each symbol.',
-        '$_namePlaceholder conflicts with another symbol in the generated',
-        'path, and therefore can not be written out.  Changing the name,',
-        'library name, or class name (if appropriate) of one of the',
-        'conflicting items can resolve the conflict.   Alternatively, use the',
-        "@nodoc tag in one symbol's documentation comments to hide it."
-      ],
-      defaultWarningMode: PackageWarningMode.error),
+    PackageWarning.duplicateFile,
+    'duplicate-file',
+    'Dartdoc is trying to write to a duplicate filename based on the names '
+        'of Dart symbols.',
+    longHelp:
+        'Dartdoc generates a path and filename to write to for each symbol. '
+        "'$_namePlaceholder' conflicts with another symbol in the generated "
+        'path, and therefore can not be written out.  Changing the name, '
+        'library name, or class name (if appropriate) of one of the '
+        'conflicting items can resolve the conflict. Alternatively, use the '
+        "`@nodoc` directive in one symbol's documentation comment to hide it.",
+    defaultWarningMode: PackageWarningMode.error,
+  ),
   PackageWarning.missingConstantConstructor: PackageWarningDefinition(
-      PackageWarning.missingConstantConstructor,
-      'missing-constant-constructor',
-      'Dartdoc can not show the value of a constant because its constructor could not be resolved.',
-      longHelp: [
-        'To resolve a constant into its literal value, Dartdoc relies on the',
-        "analyzer to resolve the constructor.  The analyzer didn't provide",
-        'the constructor for $_namePlaceholder, which is usually due to an',
-        'error in the code.  Use the analyzer to find missing imports.',
-      ],
-      // Defaults to ignore as this doesn't impact the docs severely but is
-      // useful for debugging package structure.
-      defaultWarningMode: PackageWarningMode.ignore),
+    PackageWarning.missingConstantConstructor,
+    'missing-constant-constructor',
+    'Dartdoc can not show the value of a constant because its constructor '
+        'could not be resolved.',
+    longHelp:
+        'To resolve a constant into its literal value, Dartdoc relies on the '
+        "analyzer to resolve the constructor. The analyzer didn't provide the "
+        "constructor for '$_namePlaceholder', which is usually due to an error "
+        'in the code. Use the analyzer to resolve the issue.',
+    // Defaults to ignore as this doesn't impact the docs severely but is
+    // useful for debugging package structure.
+    defaultWarningMode: PackageWarningMode.ignore,
+  ),
   PackageWarning.missingCodeBlockLanguage: PackageWarningDefinition(
-      PackageWarning.missingCodeBlockLanguage,
-      'missing-code-block-language',
-      'A fenced code block is missing a specified language.',
-      longHelp: [
-        'To enable proper syntax highlighting of Markdown code blocks,',
-        'Dartdoc requires code blocks to specify the language used after',
-        'the initial declaration.  As an example, to specify Dart you would',
-        'specify ```dart or ~~~dart.'
-      ],
-      defaultWarningMode: PackageWarningMode.ignore),
+    PackageWarning.missingCodeBlockLanguage,
+    'missing-code-block-language',
+    'A fenced code block is missing a specified language.',
+    longHelp:
+        'To enable proper syntax highlighting of Markdown code blocks, Dartdoc '
+        'requires code blocks to specify the language used after the initial '
+        'declaration. As an example, to specify Dart you would open the '
+        'Markdown code block with ```dart or ~~~dart.',
+    defaultWarningMode: PackageWarningMode.ignore,
+  ),
 };
 
 /// Something that package warnings can be reported on.  Optionally associated
@@ -551,12 +563,14 @@ class PackageWarningCounter {
       if (displayedWarningCount == 1 &&
           verboseWarnings &&
           packageWarningDefinition.longHelp.isNotEmpty) {
-        // First time we've seen this warning.  Give a little extra info.
-        final separator = '\n            ';
-        var verboseOut =
-            '$separator${packageWarningDefinition.longHelp.join(separator)}'
-                .replaceAll(_namePlaceholder, name);
-        entry = '$entry$verboseOut';
+        // First time we've seen this warning. Give a little extra info.
+        var longHelpLines = packageWarningDefinition.longHelp
+            .split('\n')
+            .map((line) => line.replaceAll(_namePlaceholder, name))
+            .map((line) =>
+                _wrapText(line, prefix: '        ', width: _messageWidth));
+        var verboseOut = longHelpLines.join('\n');
+        entry = '$entry\n$verboseOut';
       }
       assert(entry == entry.trimRight());
       _items.add(_JsonWarning(type, kind, fullMessage, entry));
@@ -604,14 +618,18 @@ class PackageWarningCounter {
     } else if (warningMode == PackageWarningMode.error) {
       _errorCount += 1;
     }
-    if (element != null) {
-      _countedWarnings
-          .putIfAbsent(element.element, () => {})
-          .putIfAbsent(kind, () => {})
-          .add(message);
-      _writeWarning(kind, warningMode, config.verboseWarnings,
-          element.fullyQualifiedName, fullMessage);
-    }
+    var elementName = element == null ? '<global>' : element.fullyQualifiedName;
+    _countedWarnings
+        .putIfAbsent(element?.element, () => {})
+        .putIfAbsent(kind, () => {})
+        .add(message);
+    _writeWarning(
+      kind,
+      warningMode,
+      config.verboseWarnings,
+      elementName,
+      fullMessage,
+    );
   }
 
   @override
@@ -622,6 +640,51 @@ class PackageWarningCounter {
     return '$errors, $warnings';
   }
 }
+
+/// Wraps [text] to the given [width], if provided.
+///
+/// This function is taken from the 'dartdev' package, which has tests.
+String _wrapText(String text, {required int width, String prefix = ''}) {
+  // For convenience, the caller specifies the line width, but effectively, we
+  // subtract out the width of the prefix.
+  width = width - prefix.length;
+  var buffer = StringBuffer(prefix);
+  var lineMaxEndIndex = width;
+  var lineStartIndex = 0;
+
+  while (true) {
+    if (lineMaxEndIndex >= text.length) {
+      buffer.write(text.substring(lineStartIndex, text.length));
+      break;
+    } else {
+      var lastSpaceIndex = text.lastIndexOf(' ', lineMaxEndIndex);
+      if (lastSpaceIndex == -1 || lastSpaceIndex <= lineStartIndex) {
+        // No space between [lineStartIndex] and [lineMaxEndIndex]. Get the
+        // _next_ space.
+        lastSpaceIndex = text.indexOf(' ', lineMaxEndIndex);
+        if (lastSpaceIndex == -1) {
+          // No space at all after [lineStartIndex].
+          lastSpaceIndex = text.length;
+          buffer.write(text.substring(lineStartIndex, lastSpaceIndex));
+          break;
+        }
+      }
+      buffer.write(text.substring(lineStartIndex, lastSpaceIndex));
+      buffer.writeln();
+      buffer.write(prefix);
+      lineStartIndex = lastSpaceIndex + 1;
+    }
+    lineMaxEndIndex = lineStartIndex + width;
+  }
+  return buffer.toString();
+}
+
+/// The width that messages in the terminal should be limited to.
+///
+/// If `stdout` has a terminal, use that terminal's width capped to 120
+/// characters wide. Otherwise, use a width of 80.
+final _messageWidth =
+    stdout.hasTerminal ? math.min(stdout.terminalColumns, 120) : 80;
 
 class _JsonWarning extends Jsonable {
   final String type;

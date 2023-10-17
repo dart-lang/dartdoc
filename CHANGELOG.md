@@ -1,3 +1,7 @@
+## 7.0.1-wip
+
+* Add back missing search bar to left sidenav on narrow screens.
+
 ## 7.0.0
 
 * Require `analyzer: ^6.2.0`.

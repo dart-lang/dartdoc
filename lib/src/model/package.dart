@@ -115,13 +115,13 @@ class Package extends LibraryContainer
 
   /// The documentation from the README contents.
   @override
-  late final String? documentation = () {
+  String? get documentation {
     final docFile = packageMeta.getReadmeContents();
     return docFile != null
         ? packageGraph.resourceProvider
             .readAsMalformedAllowedStringSync(docFile)
         : null;
-  }();
+  }
 
   @override
   bool get hasDocumentation => documentation?.isNotEmpty == true;
@@ -142,7 +142,7 @@ class Package extends LibraryContainer
   /// Return true if this is the default package, this is part of an embedder
   /// SDK, or if [DartdocOptionContext.autoIncludeDependencies] is true -- but
   /// only if the package was not excluded on the command line.
-  late final bool isLocal = () {
+  bool get isLocal {
     // Do not document as local if we excluded this package by name.
     if (_isExcluded) return false;
     // Document as local if this is the default package.
@@ -156,7 +156,7 @@ class Package extends LibraryContainer
     final packagePath = packageGraph.packageMeta.dir.path;
     return libraries.any(
         (l) => _pathContext.isWithin(packagePath, l.element.source.fullName));
-  }();
+  }
 
   /// True if the global config excludes this package by name.
   bool get _isExcluded => packageGraph.config.isPackageExcluded(name);
@@ -169,7 +169,7 @@ class Package extends LibraryContainer
 
   /// Returns the location of documentation for this package, for linkToRemote
   /// and canonicalization decision making.
-  late final DocumentLocation documentedWhere = () {
+  DocumentLocation get documentedWhere {
     if (isLocal && isPublic) {
       return DocumentLocation.local;
     }
@@ -180,7 +180,7 @@ class Package extends LibraryContainer
       return DocumentLocation.remote;
     }
     return DocumentLocation.missing;
-  }();
+  }
 
   @override
   String get enclosingName => packageGraph.defaultPackageName;
@@ -399,16 +399,15 @@ class Package extends LibraryContainer
   List<String> get containerOrder => config.packageOrder;
 
   @override
-  late final Map<String, CommentReferable> referenceChildren =
-      <String, CommentReferable>{
+  late final Map<String, CommentReferable> referenceChildren = {
     for (var library in publicLibrariesSorted) library.referenceName: library,
   }
-        // Do not override any preexisting data, and insert based on the
-        // public library sort order.
-        // TODO(jcollins-g): warn when results require package-global
-        // lookups like this.
-        ..addEntriesIfAbsent(
-            publicLibrariesSorted.expand((l) => l.referenceChildren.entries));
+    // Do not override any preexisting data, and insert based on the
+    // public library sort order.
+    // TODO(jcollins-g): warn when results require package-global
+    // lookups like this.
+    ..addEntriesIfAbsent(
+        publicLibrariesSorted.expand((l) => l.referenceChildren.entries));
 
   @override
   Iterable<CommentReferable> get referenceParents => [packageGraph];

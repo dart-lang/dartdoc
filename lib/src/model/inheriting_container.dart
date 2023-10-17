@@ -79,14 +79,14 @@ mixin Constructable on InheritingContainer {
 abstract class InheritingContainer extends Container
     with ExtensionTarget
     implements EnclosedElement {
-  late final DefinedElementType? supertype = () {
+  DefinedElementType? get supertype {
     final elementSupertype = element.supertype;
     return elementSupertype == null ||
             elementSupertype.element.supertype == null
         ? null
         : modelBuilder.typeFrom(elementSupertype, library)
             as DefinedElementType;
-  }();
+  }
 
   /// Class modifiers from the Dart feature specification.
   ///
@@ -112,7 +112,7 @@ abstract class InheritingContainer extends Container
     ...typeParameters,
   ];
 
-  late final Iterable<Method> inheritedMethods = () {
+  Iterable<Method> get inheritedMethods {
     var methodNames = declaredMethods.map((m) => m.element.name).toSet();
     var inheritedMethodElements = _inheritedElements
         .whereType<MethodElement>()
@@ -126,8 +126,9 @@ abstract class InheritingContainer extends Container
       for (var e in inheritedMethodElements)
         modelBuilder.from(e, library, enclosingContainer: this) as Method,
     ];
-  }();
-  late final List<Operator> inheritedOperators = () {
+  }
+
+  List<Operator> get inheritedOperators {
     var operatorNames = declaredOperators.map((o) => o.element.name).toSet();
     var inheritedOperatorElements = _inheritedElements
         .whereType<MethodElement>()
@@ -138,13 +139,16 @@ abstract class InheritingContainer extends Container
       for (var e in inheritedOperatorElements)
         modelBuilder.from(e, library, enclosingContainer: this) as Operator,
     ];
-  }();
+  }
+
   @override
   late final DefinedElementType modelType =
       modelBuilder.typeFrom(element.thisType, library) as DefinedElementType;
+
   late final List<DefinedElementType> publicSuperChain =
       model_utils.filterNonPublic(superChain).toList(growable: false);
-  late final List<ExecutableElement> _inheritedElements = () {
+
+  List<ExecutableElement> get _inheritedElements {
     if (element is ClassElement && (element as ClassElement).isDartCoreObject) {
       return const <ExecutableElement>[];
     }
@@ -189,12 +193,12 @@ abstract class InheritingContainer extends Container
     }
 
     return combinedMap.values.toList(growable: false);
-  }();
+  }
 
   static final InheritanceManager3 _inheritanceManager = InheritanceManager3();
 
   /// All fields defined on this container, _including inherited fields_.
-  late final List<Field> allFields = () {
+  List<Field> get allFields {
     var inheritedAccessorElements = {
       ..._inheritedElements.whereType<PropertyAccessorElement>()
     };
@@ -244,7 +248,7 @@ abstract class InheritingContainer extends Container
     });
 
     return fields;
-  }();
+  }
 
   @override
   late final Iterable<Method> declaredMethods =
