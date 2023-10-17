@@ -384,10 +384,6 @@ abstract class ModelElement extends Canonicalization
   // Stub for mustache.
   Iterable<Category?> get displayedCategories => const [];
 
-  Set<Library>? get _exportedInLibraries {
-    return library.packageGraph.libraryExports[element.library!];
-  }
-
   @override
   late final ModelNode? modelNode = packageGraph.getModelNodeFor(element);
 
@@ -487,7 +483,7 @@ abstract class ModelElement extends Canonicalization
       return null;
     }
 
-    // This is not accurate if we are constructing the Package.
+    // This is not accurate if we are still constructing the Package.
     assert(packageGraph.allLibrariesAdded);
 
     var definingLibraryIsLocalPublic =
@@ -512,8 +508,7 @@ abstract class ModelElement extends Canonicalization
   }();
 
   Library? _searchForCanonicalLibrary() {
-    var thisAndExported = definingLibrary._exportedInLibraries;
-
+    var thisAndExported = packageGraph.libraryExports[definingLibrary.element];
     if (thisAndExported == null) {
       return null;
     }
@@ -533,10 +528,10 @@ abstract class ModelElement extends Canonicalization
         .where((l) {
       var lookup =
           l.element.exportNamespace.definedNames[topLevelElement.name!];
-      if (lookup is PropertyAccessorElement) {
-        lookup = lookup.variable;
-      }
-      return topLevelElement == lookup;
+      return switch (lookup) {
+        PropertyAccessorElement() => topLevelElement == lookup.variable,
+        _ => topLevelElement == lookup,
+      };
     }).toList(growable: true);
 
     // Avoid claiming canonicalization for elements outside of this element's
@@ -559,29 +554,9 @@ abstract class ModelElement extends Canonicalization
       return candidateLibraries.single;
     }
 
-    // Start with our top-level element.
-    var warnable = ModelElement._fromElement(topLevelElement, packageGraph);
-    // Heuristic scoring to determine which library a human likely
-    // considers this element to be primarily 'from', and therefore,
-    // canonical.  Still warn if the heuristic isn't that confident.
-    var scoredCandidates =
-        warnable.scoreCanonicalCandidates(candidateLibraries);
-    final librariesByScore = scoredCandidates.map((s) => s.library).toList();
-    var secondHighestScore =
-        scoredCandidates[scoredCandidates.length - 2].score;
-    var highestScore = scoredCandidates.last.score;
-    var confidence = highestScore - secondHighestScore;
-    final canonicalLibrary = librariesByScore.last;
-
-    if (confidence < config.ambiguousReexportScorerMinConfidence) {
-      var libraryNames = librariesByScore.map((l) => l.name);
-      var message = '$libraryNames -> ${canonicalLibrary.name} '
-          '(confidence ${confidence.toStringAsPrecision(4)})';
-      warnable.warn(PackageWarning.ambiguousReexport,
-          message: message, extendedDebug: scoredCandidates.map((s) => '$s'));
-    }
-
-    return canonicalLibrary;
+    var topLevelModelElement =
+        ModelElement._fromElement(topLevelElement, packageGraph);
+    return topLevelModelElement.calculateCanonicalCandidate(candidateLibraries);
   }
 
   @override
@@ -684,7 +659,6 @@ abstract class ModelElement extends Canonicalization
     if (!identical(canonicalModelElement, this)) {
       return canonicalModelElement?.href;
     }
-    assert(canonicalLibrary != null);
     assert(canonicalLibrary == library);
     var packageBaseHref = package.baseHref;
     return '$packageBaseHref$filePath';

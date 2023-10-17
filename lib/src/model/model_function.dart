@@ -63,7 +63,6 @@ class ModelFunctionTyped extends ModelElement
     if (!identical(canonicalModelElement, this)) {
       return canonicalModelElement?.href;
     }
-    assert(canonicalLibrary != null);
     assert(canonicalLibrary == library);
     return '${package.baseHref}$filePath';
   }

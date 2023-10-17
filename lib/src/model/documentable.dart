@@ -77,5 +77,5 @@ mixin MarkdownFileDocumentation implements Documentable, Canonicalization {
   String get location => '(${documentationFile?.path})';
 
   @override
-  Set<String> get locationPieces => <String>{location};
+  Set<String> get locationPieces => {location};
 }

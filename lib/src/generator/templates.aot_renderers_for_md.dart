@@ -17,6 +17,7 @@ import 'dart:convert';
 
 import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/src/model/accessor.dart';
+import 'package:dartdoc/src/model/canonicalization.dart';
 import 'package:dartdoc/src/model/category.dart';
 import 'package:dartdoc/src/model/class.dart';
 import 'package:dartdoc/src/model/constructor.dart';
@@ -35,7 +36,6 @@ import 'package:dartdoc/src/model/operator.dart';
 import 'package:dartdoc/src/model/package.dart';
 import 'package:dartdoc/src/model/top_level_variable.dart';
 import 'package:dartdoc/src/model/typedef.dart';
-import 'package:dartdoc/src/warnings.dart';
 
 String renderCategory(CategoryTemplateData context0) {
   final buffer = StringBuffer();
@@ -1761,7 +1761,8 @@ String _deduplicated_lib_templates_md__head_md(TemplateDataBase context0) {
   return buffer.toString();
 }
 
-String _deduplicated_lib_templates_md__documentation_md(Warnable context0) {
+String _deduplicated_lib_templates_md__documentation_md(
+    Canonicalization context0) {
   final buffer = StringBuffer();
   if (context0.hasDocumentation == true) {
     buffer.writeln();
