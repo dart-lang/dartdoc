@@ -160,31 +160,6 @@ const Map<PackageWarning, PackageWarningDefinition> packageWarningDefinitions =
       'A symbol is part of the public interface for this package, but no '
           'library documented with this package documents it so dartdoc can '
           'not link to it'),
-  PackageWarning.noDefiningLibraryFound: PackageWarningDefinition(
-    PackageWarning.noDefiningLibraryFound,
-    'no-defining-library-found',
-    'The defining library for an element could not be found; the library may '
-        'be imported or exported with a non-standard URI',
-    longHelp:
-        'For non-canonicalized import or export paths, dartdoc can sometimes '
-        'lose track of the defining library for an element.  If this happens, '
-        'canonicalization will assume that reexported elements are defined '
-        'somewhere it deems "reasonable," defaulting first to the enclosing '
-        "context's `definingLibrary` if available, or the library in which it "
-        'is visible. This can lead to confusing documentation structure that '
-        'implies duplicate code where none exists.'
-        '\n\n'
-        'To correct this, canonicalize all paths in the import or export chain '
-        'making this symbol visible.'
-        '\n\n'
-        'For example: change '
-        "`import 'package:dartdoc/src/model/../model/extension_target.dart';` "
-        "to `import 'package:dartdoc/src/model/extension_target.dart';` "
-        "or `import 'src/../src/foo.dart';` to `import 'src/foo.dart'; "
-        "or `import 'package:dartdoc//lib//foo.dart';` to "
-        "`import 'package:dartdoc/lib/foo.dart';`.",
-    defaultWarningMode: PackageWarningMode.error,
-  ),
   PackageWarning.notImplemented: PackageWarningDefinition(
       PackageWarning.notImplemented,
       'not-implemented',
@@ -344,8 +319,6 @@ enum PackageWarning {
   // TODO(jcollins-g): pipeline references through `linkedName` for error
   // messages and warn for non-public canonicalization errors.
   noCanonicalFound('no canonical library found for {0}, not linking'),
-  noDefiningLibraryFound('could not find the defining library for {0}; the '
-      'library may be imported or exported with a non-standard URI'),
   notImplemented('{0}'),
   noDocumentableLibrariesInPackage('{0} has no documentable libraries'),
   noLibraryLevelDocs('{0} has no library level documentation comments'),
