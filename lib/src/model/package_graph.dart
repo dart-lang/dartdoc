@@ -344,9 +344,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     var warningMessage = switch (kind) {
       PackageWarning.ambiguousReexport =>
         kind.messageFor([warnableName, message]),
-      PackageWarning.noCanonicalFound ||
-      PackageWarning.noDefiningLibraryFound =>
-        kind.messageFor([warnableName]),
+      PackageWarning.noCanonicalFound => kind.messageFor([warnableName]),
       PackageWarning.noLibraryLevelDocs ||
       PackageWarning.noDocumentableLibrariesInPackage =>
         kind.messageFor([warnable!.fullyQualifiedName]),
