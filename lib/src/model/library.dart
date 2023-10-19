@@ -4,8 +4,6 @@
 
 import 'dart:collection';
 
-import 'package:analyzer/dart/ast/ast.dart';
-import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/scope.dart';
 import 'package:analyzer/dart/element/type_system.dart';
@@ -16,58 +14,6 @@ import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart' show PackageMeta;
 import 'package:dartdoc/src/warnings.dart';
-
-/// Populate's [packageGraph]'s mapping of all [ModelNode]s.
-///
-/// This is done as [Library] model objects are created, while we are holding
-/// onto [resolvedLibrary] objects.
-// TODO(srawlins): I suspect we populate this mapping with way too many objects,
-// too eagerly. They are only needed when writing the source code of an element
-// to HTML, and maybe for resolving doc comments. We should find a way to
-// get this data only when needed. But it's not immediately obvious to me how,
-// because the data is on AST nodes, not the element model.
-
-class _ModelNodeGatherer extends SimpleAstVisitor<void> {
-  final DartDocResolvedLibrary resolvedLibrary;
-  final PackageGraph packageGraph;
-
-  _ModelNodeGatherer(this.resolvedLibrary, this.packageGraph);
-
-  @override
-  void visitCompilationUnit(CompilationUnit node) {
-    for (var declaration in node.declarations) {
-      packageGraph.populateModelNodeFor(declaration);
-      switch (declaration) {
-        case ClassDeclaration():
-          for (var member in declaration.members) {
-            packageGraph.populateModelNodeFor(member);
-          }
-        case EnumDeclaration():
-          if (declaration.declaredElement?.isPublic ?? false) {
-            for (var member in declaration.members) {
-              packageGraph.populateModelNodeFor(member);
-            }
-          }
-        case MixinDeclaration():
-          for (var member in declaration.members) {
-            packageGraph.populateModelNodeFor(member);
-          }
-        case ExtensionDeclaration():
-          if (declaration.declaredElement?.isPublic ?? false) {
-            for (var member in declaration.members) {
-              packageGraph.populateModelNodeFor(member);
-            }
-          }
-        case ExtensionTypeDeclaration():
-          if (declaration.declaredElement?.isPublic ?? false) {
-            for (var member in declaration.members) {
-              packageGraph.populateModelNodeFor(member);
-            }
-          }
-      }
-    }
-  }
-}
 
 class _LibrarySentinel implements Library {
   @override
@@ -108,12 +54,9 @@ class Library extends ModelElement
 
   factory Library.fromLibraryResult(DartDocResolvedLibrary resolvedLibrary,
       PackageGraph packageGraph, Package package) {
-    var element = resolvedLibrary.element;
+    packageGraph.gatherModelNodes(resolvedLibrary);
 
-    var visitor = _ModelNodeGatherer(resolvedLibrary, packageGraph);
-    for (var unit in resolvedLibrary.units) {
-      unit.accept(visitor);
-    }
+    var element = resolvedLibrary.element;
 
     var exportedAndLocalElements = {
       // Initialize the list of elements defined in this library and

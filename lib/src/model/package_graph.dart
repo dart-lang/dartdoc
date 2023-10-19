@@ -171,7 +171,52 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   // than once for them.
   final Map<Element, ModelNode> _modelNodes = {};
 
-  void populateModelNodeFor(Declaration declaration) {
+  /// Populate's [_modelNodes] with elements in [resolvedLibrary].
+  ///
+  /// This is done as [Library] model objects are created, while we are holding
+  /// onto [resolvedLibrary] objects.
+  // TODO(srawlins): I suspect we populate this mapping with way too many
+  // objects, too eagerly. They are only needed when writing the source code of
+  // an element to HTML, and maybe for resolving doc comments. We should find a
+  // way to get this data only when needed. But it's not immediately obvious to
+  // me how, because the data is on AST nodes, not the element model.
+  void gatherModelNodes(DartDocResolvedLibrary resolvedLibrary) {
+    for (var unit in resolvedLibrary.units) {
+      for (var declaration in unit.declarations) {
+        _populateModelNodeFor(declaration);
+        switch (declaration) {
+          case ClassDeclaration():
+            for (var member in declaration.members) {
+              _populateModelNodeFor(member);
+            }
+          case EnumDeclaration():
+            if (declaration.declaredElement?.isPublic ?? false) {
+              for (var member in declaration.members) {
+                _populateModelNodeFor(member);
+              }
+            }
+          case MixinDeclaration():
+            for (var member in declaration.members) {
+              _populateModelNodeFor(member);
+            }
+          case ExtensionDeclaration():
+            if (declaration.declaredElement?.isPublic ?? false) {
+              for (var member in declaration.members) {
+                _populateModelNodeFor(member);
+              }
+            }
+          case ExtensionTypeDeclaration():
+            if (declaration.declaredElement?.isPublic ?? false) {
+              for (var member in declaration.members) {
+                _populateModelNodeFor(member);
+              }
+            }
+        }
+      }
+    }
+  }
+
+  void _populateModelNodeFor(Declaration declaration) {
     if (declaration is FieldDeclaration) {
       var fields = declaration.fields.variables;
       for (var field in fields) {
