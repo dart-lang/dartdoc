@@ -7,7 +7,6 @@ import 'dart:collection';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/scope.dart';
 import 'package:analyzer/dart/element/type_system.dart';
-import 'package:analyzer/dart/element/visitor.dart';
 import 'package:analyzer/source/line_info.dart';
 // ignore: implementation_imports
 import 'package:analyzer/src/generated/sdk.dart' show SdkLibrary;
@@ -15,116 +14,6 @@ import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart' show PackageMeta;
 import 'package:dartdoc/src/warnings.dart';
-
-/// Finds all hashable children of a given element that are defined in the
-/// [LibraryElement] given at initialization.
-// TODO(srawlins): Do we not need to visit the parameters in
-// [ConstructorElement], [FunctionElement], [MethodElement],
-// [PropertyAccessorElement], [TypeAliasElement]?
-class _HashableChildLibraryElementVisitor
-    extends RecursiveElementVisitor<void> {
-  final DartDocResolvedLibrary resolvedLibrary;
-  final PackageGraph packageGraph;
-
-  _HashableChildLibraryElementVisitor(this.resolvedLibrary, this.packageGraph);
-
-  @override
-  void visitClassElement(ClassElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-    super.visitClassElement(element);
-  }
-
-  @override
-  void visitConstructorElement(ConstructorElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-  }
-
-  @override
-  void visitEnumElement(EnumElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-    super.visitEnumElement(element);
-  }
-
-  @override
-  void visitExtensionElement(ExtensionElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-    super.visitExtensionElement(element);
-  }
-
-  @override
-  void visitFieldElement(FieldElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-  }
-
-  @override
-  void visitFieldFormalParameterElement(FieldFormalParameterElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-  }
-
-  @override
-  void visitFunctionElement(FunctionElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-  }
-
-  @override
-  void visitLibraryElement(LibraryElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-    super.visitLibraryElement(element);
-  }
-
-  @override
-  void visitMixinElement(MixinElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-    super.visitMixinElement(element);
-  }
-
-  @override
-  void visitMultiplyDefinedElement(MultiplyDefinedElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-    super.visitMultiplyDefinedElement(element);
-  }
-
-  @override
-  void visitMethodElement(MethodElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-  }
-
-  @override
-  void visitParameterElement(ParameterElement element) {
-    // [ParameterElement]s without names do not provide sufficiently distinct
-    // hashes / comparison, so just skip them all. (dart-lang/sdk#30146)
-  }
-
-  @override
-  void visitPrefixElement(PrefixElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-  }
-
-  @override
-  void visitPropertyAccessorElement(PropertyAccessorElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-  }
-
-  @override
-  void visitSuperFormalParameterElement(SuperFormalParameterElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-  }
-
-  @override
-  void visitTopLevelVariableElement(TopLevelVariableElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-  }
-
-  @override
-  void visitTypeAliasElement(TypeAliasElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-  }
-
-  @override
-  void visitTypeParameterElement(TypeParameterElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-  }
-}
 
 class _LibrarySentinel implements Library {
   @override
@@ -165,10 +54,9 @@ class Library extends ModelElement
 
   factory Library.fromLibraryResult(DartDocResolvedLibrary resolvedLibrary,
       PackageGraph packageGraph, Package package) {
-    var element = resolvedLibrary.element;
+    packageGraph.gatherModelNodes(resolvedLibrary);
 
-    _HashableChildLibraryElementVisitor(resolvedLibrary, packageGraph)
-        .visitLibraryElement(element);
+    var element = resolvedLibrary.element;
 
     var exportedAndLocalElements = {
       // Initialize the list of elements defined in this library and

@@ -56,10 +56,15 @@ class Accessor extends ModelElement implements EnclosedElement {
   late final GetterSetterCombo definingCombo =
       modelBuilder.fromElement(element.variable) as GetterSetterCombo;
 
-  late final String _sourceCode = isSynthetic
-      ? _sourceCodeRenderer.renderSourceCode(
-          packageGraph.getModelNodeFor(definingCombo.element)!.sourceCode)
-      : super.sourceCode;
+  String get _sourceCode {
+    if (!isSynthetic) {
+      return super.sourceCode;
+    }
+    var modelNode = packageGraph.getModelNodeFor(definingCombo.element);
+    return modelNode == null
+        ? ''
+        : _sourceCodeRenderer.renderSourceCode(modelNode.sourceCode);
+  }
 
   @override
   String get sourceCode => _sourceCode;

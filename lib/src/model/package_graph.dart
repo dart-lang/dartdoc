@@ -4,6 +4,7 @@
 
 import 'dart:collection';
 
+import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
 // ignore: implementation_imports
@@ -170,15 +171,76 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   // than once for them.
   final Map<Element, ModelNode> _modelNodes = {};
 
-  void populateModelNodeFor(
-      Element element, DartDocResolvedLibrary resolvedLibrary) {
-    _modelNodes.putIfAbsent(
-        element,
-        () => ModelNode(
-            resolvedLibrary.getAstNode(element), element, resourceProvider));
+  /// Populate's [_modelNodes] with elements in [resolvedLibrary].
+  ///
+  /// This is done as [Library] model objects are created, while we are holding
+  /// onto [resolvedLibrary] objects.
+  // TODO(srawlins): I suspect we populate this mapping with way too many
+  // objects, too eagerly. They are only needed when writing the source code of
+  // an element to HTML, and maybe for resolving doc comments. We should find a
+  // way to get this data only when needed. But it's not immediately obvious to
+  // me how, because the data is on AST nodes, not the element model.
+  void gatherModelNodes(DartDocResolvedLibrary resolvedLibrary) {
+    for (var unit in resolvedLibrary.units) {
+      for (var declaration in unit.declarations) {
+        _populateModelNodeFor(declaration);
+        switch (declaration) {
+          case ClassDeclaration():
+            for (var member in declaration.members) {
+              _populateModelNodeFor(member);
+            }
+          case EnumDeclaration():
+            if (declaration.declaredElement?.isPublic ?? false) {
+              for (var member in declaration.members) {
+                _populateModelNodeFor(member);
+              }
+            }
+          case MixinDeclaration():
+            for (var member in declaration.members) {
+              _populateModelNodeFor(member);
+            }
+          case ExtensionDeclaration():
+            if (declaration.declaredElement?.isPublic ?? false) {
+              for (var member in declaration.members) {
+                _populateModelNodeFor(member);
+              }
+            }
+          case ExtensionTypeDeclaration():
+            if (declaration.declaredElement?.isPublic ?? false) {
+              for (var member in declaration.members) {
+                _populateModelNodeFor(member);
+              }
+            }
+        }
+      }
+    }
   }
 
-  ModelNode? getModelNodeFor(Element? element) => _modelNodes[element!];
+  void _populateModelNodeFor(Declaration declaration) {
+    if (declaration is FieldDeclaration) {
+      var fields = declaration.fields.variables;
+      for (var field in fields) {
+        var element = field.declaredElement!;
+        _modelNodes.putIfAbsent(
+            element, () => ModelNode(field, element, resourceProvider));
+      }
+      return;
+    }
+    if (declaration is TopLevelVariableDeclaration) {
+      var fields = declaration.variables.variables;
+      for (var field in fields) {
+        var element = field.declaredElement!;
+        _modelNodes.putIfAbsent(
+            element, () => ModelNode(field, element, resourceProvider));
+      }
+      return;
+    }
+    var element = declaration.declaredElement!;
+    _modelNodes.putIfAbsent(
+        element, () => ModelNode(declaration, element, resourceProvider));
+  }
+
+  ModelNode? getModelNodeFor(Element element) => _modelNodes[element];
 
   late SpecialClasses specialClasses;
 

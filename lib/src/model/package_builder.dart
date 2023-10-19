@@ -16,8 +16,6 @@ import 'package:analyzer/src/context/builder.dart' show EmbedderYamlLocator;
 import 'package:analyzer/src/dart/analysis/analysis_context_collection.dart'
     show AnalysisContextCollectionImpl;
 // ignore: implementation_imports
-import 'package:analyzer/src/dart/ast/utilities.dart' show NodeLocator2;
-// ignore: implementation_imports
 import 'package:analyzer/src/dart/sdk/sdk.dart'
     show EmbedderSdk, FolderBasedDartSdk;
 // ignore: implementation_imports
@@ -479,27 +477,9 @@ class PubPackageBuilder implements PackageBuilder {
 /// the library.
 class DartDocResolvedLibrary {
   final LibraryElement element;
-  final Map<String, CompilationUnit> _units;
+  final List<CompilationUnit> units;
 
   DartDocResolvedLibrary(ResolvedLibraryResult result)
       : element = result.element,
-        _units = {
-          for (var unit in result.units) unit.path: unit.unit,
-        };
-
-  /// Returns the [AstNode] for a given [Element].
-  ///
-  /// Uses a precomputed map of `element.source.fullName` to [CompilationUnit]
-  /// to avoid linear traversal in
-  /// `ResolvedLibraryElementImpl.getElementDeclaration`.
-  AstNode? getAstNode(Element element) {
-    var fullName = element.source?.fullName;
-    if (fullName != null && !element.isSynthetic && element.nameOffset != -1) {
-      var unit = _units[fullName];
-      if (unit != null) {
-        return NodeLocator2(element.nameOffset).searchWithin(unit);
-      }
-    }
-    return null;
-  }
+        units = result.units.map((unit) => unit.unit).toList();
 }
