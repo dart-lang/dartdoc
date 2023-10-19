@@ -1,10 +1,22 @@
-## 7.0.1-wip
+## 7.0.1
 
 * Add back missing search bar to left sidenav on narrow screens.
+* Remove unused warning: noDefiningLibraryFound
+* Canonicalization.scoreCanonicalCandidates is now calculateCanonicalCandidate,
+  and returns one Library. (#3520)
+* Print errors without associated elements; in particular this is errors
+  generated during the final validation stage. (#3532)
+* Reduce logging when documenting multiple packages. (#3522)
+* ScoredCandidate is made private. (#3520)
+* Canonicalization now implements Warnable; Warnable no longer implements
+  Canonicalization; Warnable now implements Documentable and Locatable;
+  Documentable is now a mixin; DocumentationComment now subtypes
+  Canonicalization.
+* Library.inheritanceManager is now static. (#3516)
 
 ## 7.0.0
 
-* Require `analyzer: ^6.2.0`.
+* Require `analyzer: ^6.3.0`.
 * Remove all `@deprecated` elements.
 * Fix sidebar links in leaf pages. (#3510)
 * Do not hide stack trace of DartdocFailures. (#3505)
