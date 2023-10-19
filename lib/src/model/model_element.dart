@@ -385,7 +385,7 @@ abstract class ModelElement extends Canonicalization
   Iterable<Category?> get displayedCategories => const [];
 
   @override
-  late final ModelNode? modelNode = packageGraph.getModelNodeFor(element);
+  ModelNode? get modelNode => packageGraph.getModelNodeFor(element);
 
   /// This element's [Annotation]s.
   ///

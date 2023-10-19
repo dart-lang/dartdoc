@@ -4,6 +4,7 @@
 
 import 'dart:collection';
 
+import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
 // ignore: implementation_imports
@@ -170,15 +171,31 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   // than once for them.
   final Map<Element, ModelNode> _modelNodes = {};
 
-  void populateModelNodeFor(
-      Element element, DartDocResolvedLibrary resolvedLibrary) {
+  void populateModelNodeFor(Declaration declaration) {
+    if (declaration is FieldDeclaration) {
+      var fields = declaration.fields.variables;
+      for (var field in fields) {
+        var element = field.declaredElement!;
+        _modelNodes.putIfAbsent(
+            element, () => ModelNode(field, element, resourceProvider));
+      }
+      return;
+    }
+    if (declaration is TopLevelVariableDeclaration) {
+      var fields = declaration.variables.variables;
+      for (var field in fields) {
+        var element = field.declaredElement!;
+        _modelNodes.putIfAbsent(
+            element, () => ModelNode(field, element, resourceProvider));
+      }
+      return;
+    }
+    var element = declaration.declaredElement!;
     _modelNodes.putIfAbsent(
-        element,
-        () => ModelNode(
-            resolvedLibrary.getAstNode(element), element, resourceProvider));
+        element, () => ModelNode(declaration, element, resourceProvider));
   }
 
-  ModelNode? getModelNodeFor(Element? element) => _modelNodes[element!];
+  ModelNode? getModelNodeFor(Element element) => _modelNodes[element];
 
   late SpecialClasses specialClasses;
 

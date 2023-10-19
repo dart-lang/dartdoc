@@ -4,10 +4,11 @@
 
 import 'dart:collection';
 
+import 'package:analyzer/dart/ast/ast.dart';
+import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/scope.dart';
 import 'package:analyzer/dart/element/type_system.dart';
-import 'package:analyzer/dart/element/visitor.dart';
 import 'package:analyzer/source/line_info.dart';
 // ignore: implementation_imports
 import 'package:analyzer/src/generated/sdk.dart' show SdkLibrary;
@@ -16,113 +17,55 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart' show PackageMeta;
 import 'package:dartdoc/src/warnings.dart';
 
-/// Finds all hashable children of a given element that are defined in the
-/// [LibraryElement] given at initialization.
-// TODO(srawlins): Do we not need to visit the parameters in
-// [ConstructorElement], [FunctionElement], [MethodElement],
-// [PropertyAccessorElement], [TypeAliasElement]?
-class _HashableChildLibraryElementVisitor
-    extends RecursiveElementVisitor<void> {
+/// Populate's [packageGraph]'s mapping of all [ModelNode]s.
+///
+/// This is done as [Library] model objects are created, while we are holding
+/// onto [resolvedLibrary] objects.
+// TODO(srawlins): I suspect we populate this mapping with way too many objects,
+// too eagerly. They are only needed when writing the source code of an element
+// to HTML, and maybe for resolving doc comments. We should find a way to
+// get this data only when needed. But it's not immediately obvious to me how,
+// because the data is on AST nodes, not the element model.
+
+class _ModelNodeGatherer extends SimpleAstVisitor<void> {
   final DartDocResolvedLibrary resolvedLibrary;
   final PackageGraph packageGraph;
 
-  _HashableChildLibraryElementVisitor(this.resolvedLibrary, this.packageGraph);
+  _ModelNodeGatherer(this.resolvedLibrary, this.packageGraph);
 
   @override
-  void visitClassElement(ClassElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-    super.visitClassElement(element);
-  }
-
-  @override
-  void visitConstructorElement(ConstructorElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-  }
-
-  @override
-  void visitEnumElement(EnumElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-    super.visitEnumElement(element);
-  }
-
-  @override
-  void visitExtensionElement(ExtensionElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-    super.visitExtensionElement(element);
-  }
-
-  @override
-  void visitFieldElement(FieldElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-  }
-
-  @override
-  void visitFieldFormalParameterElement(FieldFormalParameterElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-  }
-
-  @override
-  void visitFunctionElement(FunctionElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-  }
-
-  @override
-  void visitLibraryElement(LibraryElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-    super.visitLibraryElement(element);
-  }
-
-  @override
-  void visitMixinElement(MixinElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-    super.visitMixinElement(element);
-  }
-
-  @override
-  void visitMultiplyDefinedElement(MultiplyDefinedElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-    super.visitMultiplyDefinedElement(element);
-  }
-
-  @override
-  void visitMethodElement(MethodElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-  }
-
-  @override
-  void visitParameterElement(ParameterElement element) {
-    // [ParameterElement]s without names do not provide sufficiently distinct
-    // hashes / comparison, so just skip them all. (dart-lang/sdk#30146)
-  }
-
-  @override
-  void visitPrefixElement(PrefixElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-  }
-
-  @override
-  void visitPropertyAccessorElement(PropertyAccessorElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-  }
-
-  @override
-  void visitSuperFormalParameterElement(SuperFormalParameterElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-  }
-
-  @override
-  void visitTopLevelVariableElement(TopLevelVariableElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-  }
-
-  @override
-  void visitTypeAliasElement(TypeAliasElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-  }
-
-  @override
-  void visitTypeParameterElement(TypeParameterElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
+  void visitCompilationUnit(CompilationUnit node) {
+    for (var declaration in node.declarations) {
+      packageGraph.populateModelNodeFor(declaration);
+      switch (declaration) {
+        case ClassDeclaration():
+          for (var member in declaration.members) {
+            packageGraph.populateModelNodeFor(member);
+          }
+        case EnumDeclaration():
+          if (declaration.declaredElement?.isPublic ?? false) {
+            for (var member in declaration.members) {
+              packageGraph.populateModelNodeFor(member);
+            }
+          }
+        case MixinDeclaration():
+          for (var member in declaration.members) {
+            packageGraph.populateModelNodeFor(member);
+          }
+        case ExtensionDeclaration():
+          if (declaration.declaredElement?.isPublic ?? false) {
+            for (var member in declaration.members) {
+              packageGraph.populateModelNodeFor(member);
+            }
+          }
+        case ExtensionTypeDeclaration():
+          if (declaration.declaredElement?.isPublic ?? false) {
+            for (var member in declaration.members) {
+              packageGraph.populateModelNodeFor(member);
+            }
+          }
+      }
+    }
   }
 }
 
@@ -167,8 +110,10 @@ class Library extends ModelElement
       PackageGraph packageGraph, Package package) {
     var element = resolvedLibrary.element;
 
-    _HashableChildLibraryElementVisitor(resolvedLibrary, packageGraph)
-        .visitLibraryElement(element);
+    var visitor = _ModelNodeGatherer(resolvedLibrary, packageGraph);
+    for (var unit in resolvedLibrary.units) {
+      unit.accept(visitor);
+    }
 
     var exportedAndLocalElements = {
       // Initialize the list of elements defined in this library and
