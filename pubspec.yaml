@@ -1,5 +1,5 @@
 name: dartdoc
-version: 7.0.1-wip
+version: 7.0.1
 description: A non-interactive HTML documentation generator for Dart source code.
 repository: https://github.com/dart-lang/dartdoc
 
