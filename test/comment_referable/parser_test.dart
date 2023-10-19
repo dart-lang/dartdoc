@@ -9,13 +9,10 @@ void main() {
   void expectParseEquivalent(String codeRef, List<String> parts,
       {bool constructorHint = false, bool callableHint = false}) {
     var result = CommentReferenceParser(codeRef).parse();
-    var hasConstructorHint =
-        result.isNotEmpty && result.first is ConstructorHintStartNode;
     var hasCallableHint =
         result.isNotEmpty && result.last is CallableHintEndNode;
     var stringParts = result.whereType<IdentifierNode>().map((i) => i.text);
     expect(stringParts, equals(parts));
-    expect(hasConstructorHint, equals(constructorHint));
     expect(hasCallableHint, equals(callableHint));
   }
 
@@ -52,15 +49,12 @@ void main() {
     test('Check that basic references parse', () {
       expectParseEquivalent('Funvas.u', ['Funvas', 'u']);
       expectParseEquivalent('valid', ['valid']);
-      expectParseEquivalent('new valid', ['valid'], constructorHint: true);
       expectParseEquivalent('valid()', ['valid'], callableHint: true);
       expectParseEquivalent('const valid()', ['valid'], callableHint: true);
       expectParseEquivalent('final valid', ['valid']);
       expectParseEquivalent('this.is.valid', ['this', 'is', 'valid']);
       expectParseEquivalent('this.is.valid()', ['this', 'is', 'valid'],
           callableHint: true);
-      expectParseEquivalent('new this.is.valid', ['this', 'is', 'valid'],
-          constructorHint: true);
       expectParseEquivalent('const this.is.valid', ['this', 'is', 'valid']);
       expectParseEquivalent('final this.is.valid', ['this', 'is', 'valid']);
       expectParseEquivalent('var this.is.valid', ['this', 'is', 'valid']);
@@ -79,10 +73,8 @@ void main() {
       expectParsePassthrough('operatorThingy');
       expectParseEquivalent('operator+', ['+']);
       expectParseError('const()');
-      // TODO(jcollins-g): might need to revisit these two with constructor
-      // tearoffs?
       expectParsePassthrough('new');
-      expectParseError('new()');
+      expectParseEquivalent('new()', ['new'], callableHint: true);
     });
 
     test('Check that operator references parse', () {

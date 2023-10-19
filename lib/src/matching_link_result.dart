@@ -3,7 +3,6 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:dartdoc/src/model/comment_referable.dart';
-import 'package:dartdoc/src/model/model.dart';
 
 class MatchingLinkResult {
   final CommentReferable? commentReferable;
@@ -19,8 +18,6 @@ class MatchingLinkResult {
 
   @override
   String toString() {
-    // TODO(srawlins): Scrap the 'new' keyword?
-    final newKeyword = commentReferable is Constructor ? 'new ' : '';
-    return 'element: [$newKeyword${commentReferable?.fullyQualifiedName}]';
+    return 'element: [${commentReferable?.fullyQualifiedName}]';
   }
 }

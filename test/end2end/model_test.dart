@@ -1332,19 +1332,19 @@ void main() {
         expect(
             aFunctionUsingRenamedLib.documentationAsHtml,
             contains(
-                'Link to constructor (implied): <a href="${htmlBasePlaceholder}mylibpub/YetAnotherHelper/YetAnotherHelper.html">new renamedLib.YetAnotherHelper()</a>'));
-        expect(
-            aFunctionUsingRenamedLib.documentationAsHtml,
-            contains(
                 'Link to constructor (implied, no new): <a href="${htmlBasePlaceholder}mylibpub/YetAnotherHelper/YetAnotherHelper.html">renamedLib.YetAnotherHelper()</a>'));
         expect(
             aFunctionUsingRenamedLib.documentationAsHtml,
             contains(
                 'Link to class: <a href="${htmlBasePlaceholder}mylibpub/YetAnotherHelper-class.html">renamedLib.YetAnotherHelper</a>'));
         expect(
-            aFunctionUsingRenamedLib.documentationAsHtml,
-            contains(
-                'Link to constructor (direct): <a href="${htmlBasePlaceholder}mylibpub/YetAnotherHelper/YetAnotherHelper.html">renamedLib.YetAnotherHelper.YetAnotherHelper</a>'));
+          aFunctionUsingRenamedLib.documentationAsHtml,
+          contains(
+            'Link to constructor (direct): '
+            '<a href="${htmlBasePlaceholder}mylibpub/YetAnotherHelper/YetAnotherHelper.html">'
+            'renamedLib.YetAnotherHelper.new</a>',
+          ),
+        );
         expect(
             aFunctionUsingRenamedLib.documentationAsHtml,
             contains(
@@ -2666,9 +2666,10 @@ void main() {
 
         test('in class scope overridden by constructors when specified', () {
           expect(
-              referenceLookup(FactoryConstructorThings,
-                  'new FactoryConstructorThings.anotherName'),
-              equals(MatchingLinkResult(anotherName)));
+            referenceLookup(FactoryConstructorThings,
+                'FactoryConstructorThings.anotherName()'),
+            equals(MatchingLinkResult(anotherName)),
+          );
         });
 
         test(
@@ -2699,9 +2700,10 @@ void main() {
               equals(MatchingLinkResult(anotherConstructor)));
           // A conflicting constructor has to be explicit.
           expect(
-              referenceLookup(
-                  anotherName, 'new FactoryConstructorThings.anotherName'),
-              equals(MatchingLinkResult(anotherName)));
+            referenceLookup(
+                anotherName, 'FactoryConstructorThings.anotherName()'),
+            equals(MatchingLinkResult(anotherName)),
+          );
         });
 
         test('in method scope referring to parameters and variables', () {
@@ -2749,18 +2751,22 @@ void main() {
       });
 
       test(
-          'Verify that constructors do not override member fields unless explicitly specified',
-          () {
-        expect(referenceLookup(baseForDocComments, 'aConstructorShadowed'),
-            equals(MatchingLinkResult(aConstructorShadowedField)));
+          'Verify that constructors do not override member fields unless '
+          'explicitly specified', () {
         expect(
-            referenceLookup(
-                baseForDocComments, 'BaseForDocComments.aConstructorShadowed'),
-            equals(MatchingLinkResult(aConstructorShadowedField)));
+          referenceLookup(baseForDocComments, 'aConstructorShadowed'),
+          equals(MatchingLinkResult(aConstructorShadowedField)),
+        );
         expect(
-            referenceLookup(baseForDocComments,
-                'new BaseForDocComments.aConstructorShadowed'),
-            equals(MatchingLinkResult(aConstructorShadowed)));
+          referenceLookup(
+              baseForDocComments, 'BaseForDocComments.aConstructorShadowed'),
+          equals(MatchingLinkResult(aConstructorShadowedField)),
+        );
+        expect(
+          referenceLookup(
+              baseForDocComments, 'BaseForDocComments.aConstructorShadowed()'),
+          equals(MatchingLinkResult(aConstructorShadowed)),
+        );
       });
 
       test('Deprecated lookup styles still function', () {
@@ -2770,9 +2776,9 @@ void main() {
 
       test('Verify basic linking inside class', () {
         expect(
-            referenceLookup(
-                baseForDocComments, 'BaseForDocComments.BaseForDocComments'),
-            equals(MatchingLinkResult(defaultConstructor)));
+          referenceLookup(baseForDocComments, 'BaseForDocComments.new'),
+          equals(MatchingLinkResult(defaultConstructor)),
+        );
 
         // We don't want the parameter on the default constructor, here.
         expect(
@@ -3728,20 +3734,21 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('indentation is not lost inside indented code samples', () {
       expect(
-          aProperty.documentation,
-          equals(
-              'This property is quite fancy, and requires sample code to understand.\n'
-              '\n'
-              '```dart\n'
-              'AClassWithFancyProperties x = new AClassWithFancyProperties();\n'
-              '\n'
-              'if (x.aProperty.contains(\'Hello\')) {\n'
-              '  print("I am indented!");\n'
-              '  if (x.aProperty.contains(\'World\')) {\n'
-              '    print ("I am indented even more!!!");\n'
-              '  }\n'
-              '}\n'
-              '```'));
+        aProperty.documentation,
+        equals(
+            'This property is quite fancy, and requires sample code to understand.\n'
+            '\n'
+            '```dart\n'
+            'AClassWithFancyProperties x = AClassWithFancyProperties();\n'
+            '\n'
+            'if (x.aProperty.contains(\'Hello\')) {\n'
+            '  print("I am indented!");\n'
+            '  if (x.aProperty.contains(\'World\')) {\n'
+            '    print ("I am indented even more!!!");\n'
+            '  }\n'
+            '}\n'
+            '```'),
+      );
     });
 
     test('Docs from inherited implicit accessors are preserved', () {
@@ -4308,13 +4315,17 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('calculates comment references to classes vs. constructors correctly',
         () {
       expect(
-          referToADefaultConstructor.documentationAsHtml,
-          contains(
-              '<a href="${htmlBasePlaceholder}fake/ReferToADefaultConstructor-class.html">ReferToADefaultConstructor</a>'));
+        referToADefaultConstructor.documentationAsHtml,
+        contains(
+            '<a href="${htmlBasePlaceholder}fake/ReferToADefaultConstructor-class.html">'
+            'ReferToADefaultConstructor</a>'),
+      );
       expect(
-          referToADefaultConstructor.documentationAsHtml,
-          contains(
-              '<a href="${htmlBasePlaceholder}fake/ReferToADefaultConstructor/ReferToADefaultConstructor.html">ReferToADefaultConstructor.ReferToADefaultConstructor</a>'));
+        referToADefaultConstructor.documentationAsHtml,
+        contains(
+            '<a href="${htmlBasePlaceholder}fake/ReferToADefaultConstructor/ReferToADefaultConstructor.html">'
+            'ReferToADefaultConstructor.new</a>'),
+      );
     });
 
     test('displays generic parameters correctly', () {
