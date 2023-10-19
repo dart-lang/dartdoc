@@ -162,7 +162,7 @@ bool _requireCallable(CommentReferable? referable) =>
 
 MatchingLinkResult _getMatchingLinkElement(
     String referenceText, Warnable element) {
-  var commentReference = ModelCommentReference.synthetic(referenceText);
+  var commentReference = ModelCommentReference(referenceText);
 
   // A filter to be used by [CommentReferable.referenceBy].
   bool Function(CommentReferable?) filter;
