@@ -352,9 +352,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       PackageWarning.ignoredCanonicalFor ||
       PackageWarning.packageOrderGivesMissingPackageName ||
       PackageWarning.reexportedPrivateApiAcrossPackages ||
-      PackageWarning.notImplemented ||
       PackageWarning.unresolvedDocReference ||
-      PackageWarning.unknownDirective ||
       PackageWarning.unknownMacro ||
       PackageWarning.unknownHtmlFragment ||
       PackageWarning.brokenLink ||

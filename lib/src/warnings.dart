@@ -160,10 +160,6 @@ const Map<PackageWarning, PackageWarningDefinition> packageWarningDefinitions =
       'A symbol is part of the public interface for this package, but no '
           'library documented with this package documents it so dartdoc can '
           'not link to it'),
-  PackageWarning.notImplemented: PackageWarningDefinition(
-      PackageWarning.notImplemented,
-      'not-implemented',
-      'The code makes use of a feature that is not yet implemented in dartdoc'),
   PackageWarning.noDocumentableLibrariesInPackage: PackageWarningDefinition(
     PackageWarning.noDocumentableLibrariesInPackage,
     'no-documentable-libraries',
@@ -198,10 +194,6 @@ const Map<PackageWarning, PackageWarningDefinition> packageWarningDefinitions =
   ),
   PackageWarning.brokenLink: PackageWarningDefinition(PackageWarning.brokenLink,
       'broken-link', 'Dartdoc generated a link to a non-existent file'),
-  PackageWarning.unknownDirective: PackageWarningDefinition(
-      PackageWarning.unknownDirective,
-      'unknown-directive',
-      'A comment contains an unknown directive'),
   PackageWarning.unknownMacro: PackageWarningDefinition(
       PackageWarning.unknownMacro,
       'unknown-macro',
@@ -319,7 +311,6 @@ enum PackageWarning {
   // TODO(jcollins-g): pipeline references through `linkedName` for error
   // messages and warn for non-public canonicalization errors.
   noCanonicalFound('no canonical library found for {0}, not linking'),
-  notImplemented('{0}'),
   noDocumentableLibrariesInPackage('{0} has no documentable libraries'),
   noLibraryLevelDocs('{0} has no library level documentation comments'),
   packageOrderGivesMissingPackageName(
@@ -328,7 +319,6 @@ enum PackageWarning {
       'private API of {0} is reexported by libraries in other packages: '),
   unresolvedDocReference('unresolved doc reference [{0}]',
       referredFromPrefix: 'in documentation inherited from'),
-  unknownDirective('undefined directive: {0}'),
   unknownMacro('undefined macro [{0}]'),
   unknownHtmlFragment('undefined HTML fragment identifier [{0}]'),
   brokenLink('dartdoc generated a broken link to: {0}',
