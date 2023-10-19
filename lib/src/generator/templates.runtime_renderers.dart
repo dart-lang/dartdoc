@@ -17009,14 +17009,7 @@ const _invisibleGetters = {
     'superclassConstraints'
   },
   'ModelElementRenderer': {'hashCode', 'runtimeType'},
-  'ModelNode': {
-    'commentRefs',
-    'element',
-    'hashCode',
-    'resourceProvider',
-    'runtimeType',
-    'sourceCode'
-  },
+  'ModelNode': {'hashCode', 'runtimeType', 'sourceCode'},
   'ModelObjectBuilder': {'hashCode', 'runtimeType'},
   'PackageGraph': {
     'allCanonicalModelElements',

@@ -7,24 +7,21 @@ import 'dart:convert';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
-import 'package:dartdoc/src/comment_references/model_comment_reference.dart';
 import 'package:dartdoc/src/model_utils.dart' as model_utils;
 import 'package:meta/meta.dart';
 
 /// Stripped down information derived from [AstNode] containing only information
-/// needed for Dartdoc.  Drops link to the [AstNode] after construction.
+/// needed to resurrect the source code of [element].
 class ModelNode {
-  final List<ModelCommentReference> commentRefs;
-  final Element element;
-  final ResourceProvider resourceProvider;
+  final Element _element;
+  final ResourceProvider _resourceProvider;
   final int _sourceEnd;
   final int _sourceOffset;
 
   factory ModelNode(
       AstNode? sourceNode, Element element, ResourceProvider resourceProvider) {
-    var commentRefs = _commentRefsFor(sourceNode, resourceProvider);
     if (sourceNode == null) {
-      return ModelNode._(element, resourceProvider, commentRefs,
+      return ModelNode._(element, resourceProvider,
           sourceEnd: -1, sourceOffset: -1);
     } else {
       // Get a node higher up the syntax tree that includes the semicolon.
@@ -35,29 +32,15 @@ class ModelNode {
         assert(sourceNode is FieldDeclaration ||
             sourceNode is TopLevelVariableDeclaration);
       }
-      return ModelNode._(element, resourceProvider, commentRefs,
+      return ModelNode._(element, resourceProvider,
           sourceEnd: sourceNode.end, sourceOffset: sourceNode.offset);
     }
   }
 
-  ModelNode._(this.element, this.resourceProvider, this.commentRefs,
+  ModelNode._(this._element, this._resourceProvider,
       {required int sourceEnd, required int sourceOffset})
       : _sourceEnd = sourceEnd,
         _sourceOffset = sourceOffset;
-
-  static List<ModelCommentReference> _commentRefsFor(
-      AstNode? node, ResourceProvider resourceProvider) {
-    if (node is AnnotatedNode) {
-      var nodeDocumentationComment = node.documentationComment;
-      if (nodeDocumentationComment != null) {
-        return [
-          for (var m in nodeDocumentationComment.references)
-            ModelCommentReference(m, resourceProvider),
-        ];
-      }
-    }
-    return const [];
-  }
 
   bool get _isSynthetic => _sourceEnd < 0 || _sourceOffset < 0;
 
@@ -66,7 +49,7 @@ class ModelNode {
   late final String sourceCode = _isSynthetic
       ? ''
       : model_utils
-          .getFileContentsFor(element, resourceProvider)
+          .getFileContentsFor(_element, _resourceProvider)
           .substringFromLineStart(_sourceOffset, _sourceEnd)
           .stripIndent
           .stripDocComments
