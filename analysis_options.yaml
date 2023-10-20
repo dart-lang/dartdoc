@@ -23,7 +23,6 @@ linter:
     - avoid_dynamic_calls
     - avoid_slow_async_io
     - avoid_unused_constructor_parameters
-    - collection_methods_unrelated_type
     - directives_ordering
     - invalid_case_patterns
     - no_adjacent_strings_in_list
@@ -36,10 +35,8 @@ linter:
     - sort_child_properties_last
     - sort_pub_dependencies
     - type_annotate_public_apis
-    - type_literal_in_constant_pattern
     - unawaited_futures
     - unnecessary_lambdas
     - unnecessary_parenthesis
     - unnecessary_statements
-    - use_super_parameters
     - unnecessary_breaks
