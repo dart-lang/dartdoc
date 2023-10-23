@@ -22,7 +22,6 @@ import 'package:analyzer/src/dart/sdk/sdk.dart'
 import 'package:analyzer/src/generated/engine.dart' show AnalysisOptionsImpl;
 // ignore: implementation_imports
 import 'package:analyzer/src/generated/sdk.dart' show DartSdk;
-import 'package:collection/collection.dart' show IterableExtension;
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart' hide Package;
@@ -149,15 +148,13 @@ class PubPackageBuilder implements PackageBuilder {
           ..lint = false,
   );
 
-  /// Returns an Iterable with the SDK files we should parse.
-  Iterable<String> _getSdkFilesToDocument() sync* {
-    for (var sdkLib in sdk.sdkLibraries) {
-      var source = sdk.mapDartUri(sdkLib.shortName)!;
-      yield source.fullName;
-    }
-  }
+  /// The SDK files we should parse.
+  List<String> get _sdkFilesToDocument => [
+        for (var sdkLib in sdk.sdkLibraries)
+          sdk.mapDartUri(sdkLib.shortName)!.fullName,
+      ];
 
-  /// Parse a single library at [filePath] using the current analysis driver.
+  /// Parses a single library at [filePath] using the current analysis driver.
   /// If [filePath] is not a library, returns null.
   Future<DartDocResolvedLibrary?> processLibrary(String filePath) async {
     logDebug('Resolving $filePath...');
@@ -264,31 +261,34 @@ class PubPackageBuilder implements PackageBuilder {
       for (var meta in current.difference(lastPass)) {
         if (meta.isSdk) {
           if (!_skipUnreachableSdkLibraries) {
-            files.addAll(_getSdkFilesToDocument());
+            files.addAll(_sdkFilesToDocument);
           }
         } else {
-          files.addAll(await findFilesToDocumentInPackage(meta.dir.path,
-                  autoIncludeDependencies: false, filterExcludes: false)
+          files.addAll(await _findFilesToDocumentInPackage(meta.dir.path,
+                  includeDependencies: false, filterExcludes: false)
               .toList());
         }
       }
     } while (!lastPass.containsAll(current));
   }
 
-  /// Given a package name, explore the directory and pull out all top level
-  /// library files in the "lib" directory to document.
-  Stream<String> findFilesToDocumentInPackage(String basePackageDir,
-      {required bool autoIncludeDependencies,
-      bool filterExcludes = true}) async* {
+  /// Returns all top level library files in the 'lib/' directory of the given
+  /// package root directory.
+  ///
+  /// If [includeDependencies], then all top level library files in the 'lib/'
+  /// directory of every package in [basePackageDir]'s package config are also
+  /// included.
+  Stream<String> _findFilesToDocumentInPackage(String basePackageDir,
+      {required bool includeDependencies, bool filterExcludes = true}) async* {
     var packageDirs = {basePackageDir};
 
-    if (autoIncludeDependencies) {
-      var info = (await packageConfigProvider
+    if (includeDependencies) {
+      var packageConfig = (await packageConfigProvider
           .findPackageConfig(resourceProvider.getFolder(basePackageDir)))!;
-      for (var package in info.packages) {
+      for (var package in packageConfig.packages) {
         if (!filterExcludes || !config.exclude.contains(package.name)) {
-          packageDirs.add(_pathContext.dirname(
-              _pathContext.fromUri(info[package.name]!.packageUriRoot)));
+          packageDirs.add(_pathContext.dirname(_pathContext
+              .fromUri(packageConfig[package.name]!.packageUriRoot)));
         }
       }
     }
@@ -303,93 +303,81 @@ class PubPackageBuilder implements PackageBuilder {
       // To avoid analyzing package files twice, only files with paths not
       // containing '/packages/' will be added. The only exception is if the
       // file to analyze already has a '/packages/' in its path.
-      for (var lib
-          in _listDir(packageDir, recursive: true, listDir: _packageDirList)) {
-        if (lib.endsWith('.dart') &&
-            (packageDirContainsPackages ||
-                !lib.contains(packagesWithSeparators))) {
-          // Only include libraries within the lib dir that are not in
-          // 'lib/src'.
-          if (_pathContext.isWithin(packageLibDir, lib) &&
-              !_pathContext.isWithin(packageLibSrcDir, lib)) {
-            // Only add the file if it does not contain 'part of'.
-            // TODO(srawlins): I worry that the cure is worse than the disease:
-            // A very small percentage of files should be part files (citation
-            // missing), but we pay a price here of reading all files into
-            // memory, scanning them for a substring, and then dropping the
-            // contents.
-            var contents = resourceProvider.getFile(lib).readAsStringSync();
-
-            if (contents.startsWith('part of ') ||
-                contents.contains('\npart of ')) {
-              // NOOP: it's a part file.
-            } else {
-              yield lib;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  /// Lists the contents of [dir].
-  ///
-  /// If [recursive] is `true`, lists subdirectory contents (defaults to
-  /// `false`).
-  ///
-  /// Excludes files and directories beginning with `.`.
-  ///
-  /// The returned paths are guaranteed to begin with [dir].
-  Iterable<String> _listDir(String dir,
-      {bool recursive = false,
-      Iterable<Resource> Function(Folder dir)? listDir}) {
-    listDir ??= (Folder dir) => dir.getChildren();
-
-    return _doList(dir, const <String>{}, recursive, listDir);
-  }
-
-  Iterable<String> _doList(String dir, Set<String> listedDirectories,
-      bool recurse, Iterable<Resource> Function(Folder dir) listDir) sync* {
-    // Avoid recursive symlinks.
-    var resolvedPath =
-        resourceProvider.getFolder(dir).resolveSymbolicLinksSync().path;
-    if (!listedDirectories.contains(resolvedPath)) {
-      listedDirectories = {
-        ...listedDirectories,
-        resolvedPath,
-      };
-
-      for (var resource in listDir(resourceProvider.getFolder(dir))) {
-        // Skip hidden files and directories
-        if (_pathContext.basename(resource.path).startsWith('.')) {
+      for (var filePath in _listDir(packageDir, const {})) {
+        if (!filePath.endsWith('.dart')) continue;
+        if (!packageDirContainsPackages &&
+            filePath.contains(packagesWithSeparators)) {
+          // The package's directory path does not contain '/packages/' and this
+          // file's path _does_, so it should not be included.
           continue;
         }
 
-        yield resource.path;
-        if (resource is Folder && recurse) {
-          yield* _doList(resource.path, listedDirectories, recurse, listDir);
+        // Only include libraries within the lib dir that are not in 'lib/src'.
+        if (!_pathContext.isWithin(packageLibDir, filePath) ||
+            _pathContext.isWithin(packageLibSrcDir, filePath)) {
+          continue;
         }
+
+        yield filePath;
       }
     }
   }
 
-  /// Calculate includeExternals based on a list of files.  Assumes each
-  /// file might be part of a [DartdocOptionContext], and loads those
-  /// objects to find any [DartdocOptionContext.includeExternal] configurations
-  /// therein.
-  Iterable<String> _includeExternalsFrom(Iterable<String> files) sync* {
-    for (var file in files) {
-      var fileContext = DartdocOptionContext.fromContext(config,
-          config.resourceProvider.getFile(file), config.resourceProvider);
-      yield* fileContext.includeExternal;
+  /// Lists the files in [directory].
+  ///
+  /// Excludes files and directories beginning with `.`.
+  ///
+  /// The returned paths are guaranteed to begin with [directory].
+  Iterable<String> _listDir(
+      String directory, Set<String> listedDirectories) sync* {
+    // Avoid recursive symlinks.
+    var resolvedPath =
+        resourceProvider.getFolder(directory).resolveSymbolicLinksSync().path;
+    if (listedDirectories.contains(resolvedPath)) {
+      return;
+    }
+
+    listedDirectories = {
+      ...listedDirectories,
+      resolvedPath,
+    };
+
+    for (var resource
+        in _packageDirList(resourceProvider.getFolder(directory))) {
+      // Skip hidden files and directories.
+      if (_pathContext.basename(resource.path).startsWith('.')) {
+        continue;
+      }
+
+      if (resource is File) {
+        yield resource.path;
+        continue;
+      }
+      if (resource is Folder) {
+        yield* _listDir(resource.path, listedDirectories);
+      }
     }
   }
 
+  /// Calculates 'includeExternal' based on a list of files.
+  ///
+  /// Assumes each file might be part of a [DartdocOptionContext], and loads
+  /// those objects to find any [DartdocOptionContext.includeExternal]
+  /// configurations therein.
+  List<String> _includeExternalsFrom(Iterable<String> files) => [
+        for (var file in files)
+          ...DartdocOptionContext.fromContext(
+            config,
+            config.resourceProvider.getFile(file),
+            config.resourceProvider,
+          ).includeExternal,
+      ];
+
   Future<Set<String>> _getFiles() async {
     var files = config.topLevelPackageMeta.isSdk
-        ? _getSdkFilesToDocument()
-        : await findFilesToDocumentInPackage(config.inputDir,
-                autoIncludeDependencies: config.autoIncludeDependencies)
+        ? _sdkFilesToDocument
+        : await _findFilesToDocumentInPackage(config.inputDir,
+                includeDependencies: config.autoIncludeDependencies)
             .toList();
     files = [...files, ..._includeExternalsFrom(files)];
     return {
@@ -451,25 +439,22 @@ class PubPackageBuilder implements PackageBuilder {
 
   p.Context get _pathContext => resourceProvider.pathContext;
 
-  /// If [dir] contains both a `lib` directory and a `pubspec.yaml` file treat
-  /// it like a package and only return the `lib` dir.
+  /// Returns the children of [directory], or returns only the 'lib/'
+  /// directory in [directory] if [directory] is determined to be a package
+  /// root.
   ///
   /// This ensures that packages don't have non-`lib` content documented.
-  static Iterable<Resource> _packageDirList(Folder dir) sync* {
-    var resources = dir.getChildren();
-    var pathContext = dir.provider.pathContext;
+  static List<Resource> _packageDirList(Folder directory) {
+    var resources = directory.getChildren();
+    var pubspec = directory.getChild('pubspec.yaml');
+    var libDirectory = directory.getChild('lib');
 
-    var pubspec = resources.firstWhereOrNull(
-        (e) => e is File && pathContext.basename(e.path) == 'pubspec.yaml');
-
-    var libDir = resources.firstWhereOrNull(
-        (e) => e is Folder && pathContext.basename(e.path) == 'lib');
-
-    if (pubspec != null && libDir != null) {
-      yield libDir;
-    } else {
-      yield* resources;
-    }
+    return [
+      if (pubspec is File && libDirectory is Folder)
+        libDirectory
+      else
+        ...resources
+    ];
   }
 }
 
