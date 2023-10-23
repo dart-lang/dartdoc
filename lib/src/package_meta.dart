@@ -294,7 +294,7 @@ abstract class PubPackageMeta extends PackageMeta {
 class _FilePackageMeta extends PubPackageMeta {
   File? _readme;
 
-  late final Map<dynamic, dynamic> _pubspec;
+  final Map<dynamic, dynamic> _pubspec;
 
   _FilePackageMeta(super.dir, super.resourceProvider)
       : _pubspec = loadYaml(
