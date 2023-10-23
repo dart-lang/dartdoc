@@ -257,7 +257,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     return _implementors;
   }
 
-  late final Iterable<Extension> documentedExtensions =
+  Iterable<Extension> get documentedExtensions =>
       utils.filterNonDocumented(extensions).toList(growable: false);
 
   Iterable<Extension> get extensions {
@@ -603,8 +603,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   late final Iterable<Library> libraries =
       packages.expand((p) => p.libraries).toList(growable: false)..sort();
 
-  /// The number of libraries.
-  late final int libraryCount = libraries.length;
+  int get libraryCount => libraries.length;
 
   late final Set<Library> publicLibraries = () {
     assert(allLibrariesAdded);
@@ -630,11 +629,12 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
           ?.linkedName ??
       'Object';
 
-  /// Return the set of [Class]es objects should inherit through if they
-  /// show up in the inheritance chain.  Do not call before interceptorElement is
-  /// found.  Add classes here if they are similar to Interceptor in that they
-  /// are to be ignored even when they are the implementors of [Inheritable]s,
-  /// and the class these inherit from should instead claim implementation.
+  /// Return the set of [Class]es which objects should inherit through if they
+  /// show up in the inheritance chain.
+  ///
+  /// Add classes here if they are similar to Interceptor in that they are to be
+  /// ignored even when they are the implementors of [Inheritable]s, and the
+  /// class these inherit from should instead claim implementation.
   late final Set<Class> inheritThrough = () {
     var interceptorSpecialClass = specialClasses[SpecialClass.interceptor];
     if (interceptorSpecialClass == null) {
@@ -644,8 +644,8 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     return {interceptorSpecialClass};
   }();
 
-  /// The set of [Class] objects that are similar to pragma
-  /// in that we should never count them as documentable annotations.
+  /// The set of [Class] objects that are similar to 'pragma' in that we should
+  /// never count them as documentable annotations.
   late final Set<Class> invisibleAnnotations = () {
     var pragmaSpecialClass = specialClasses[SpecialClass.pragma];
     if (pragmaSpecialClass == null) {

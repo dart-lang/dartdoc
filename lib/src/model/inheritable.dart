@@ -43,16 +43,11 @@ mixin Inheritable on ContainerMember {
       canonicalEnclosingContainer?.canonicalLibrary;
 
   @override
-  late final ModelElement? canonicalModelElement = () {
-    final canonicalEnclosingContainer = this.canonicalEnclosingContainer;
-    if (canonicalEnclosingContainer == null) {
-      return null;
-    }
-    return canonicalEnclosingContainer.allCanonicalModelElements
-        .firstWhereOrNull((m) =>
-            m.name == name &&
-            m is PropertyAccessorElement == this is PropertyAccessorElement);
-  }();
+  late final ModelElement? canonicalModelElement = canonicalEnclosingContainer
+      ?.allCanonicalModelElements
+      .firstWhereOrNull((m) =>
+          m.name == name &&
+          m is PropertyAccessorElement == this is PropertyAccessorElement);
 
   @override
   Container? computeCanonicalEnclosingContainer() {
@@ -171,7 +166,7 @@ mixin Inheritable on ContainerMember {
   }();
 
   @override
-  late final int overriddenDepth = () {
+  int get overriddenDepth {
     var depth = 0;
     var e = this;
     while (e.overriddenElement != null) {
@@ -179,5 +174,5 @@ mixin Inheritable on ContainerMember {
       e = e.overriddenElement!;
     }
     return depth;
-  }();
+  }
 }

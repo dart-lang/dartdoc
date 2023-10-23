@@ -4,6 +4,7 @@
 
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:meta/meta.dart';
 
 final RegExp _categoryRegExp = RegExp(
     r'[ ]*{@(api|category|subCategory|image|samples) (.+?)}[ ]*\n?',
@@ -90,9 +91,10 @@ mixin Categorization on DocumentationComment implements Indexable {
     return _samples;
   }
 
-  late final Iterable<Category> categories = [
-    ...?categoryNames?.map((n) => package.nameToCategory[n]).whereNotNull()
-  ]..sort();
+  @visibleForTesting
+  List<Category> get categories => [
+        ...?categoryNames?.map((n) => package.nameToCategory[n]).whereNotNull()
+      ]..sort();
 
   Iterable<Category> get displayedCategories {
     if (config.showUndocumentedCategories) return categories;
