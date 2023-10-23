@@ -135,7 +135,7 @@ mixin Inheritable on ContainerMember {
     //
     // We use canonical elements here where possible to deal with reexports
     // as seen in Flutter.
-    if (enclosingElement is Extension) {
+    if (enclosingElement is Extension || enclosingElement is ExtensionType) {
       return false;
     }
 
