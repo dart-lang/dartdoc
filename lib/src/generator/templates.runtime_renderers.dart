@@ -3148,26 +3148,12 @@ class _Renderer_Container extends RendererBase<Container> {
                         _render_Operator(e, ast, r.template, sink, parent: r));
                   },
                 ),
-                'isClass': Property(
-                  getValue: (CT_ c) => c.isClass,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isClass == true,
-                ),
                 'isClassOrEnum': Property(
                   getValue: (CT_ c) => c.isClassOrEnum,
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.isClassOrEnum == true,
-                ),
-                'isClassOrEnumOrExtension': Property(
-                  getValue: (CT_ c) => c.isClassOrEnumOrExtension,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isClassOrEnumOrExtension == true,
                 ),
                 'isEnum': Property(
                   getValue: (CT_ c) => c.isEnum,
@@ -3182,6 +3168,13 @@ class _Renderer_Container extends RendererBase<Container> {
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.isExtension == true,
+                ),
+                'isInterfaceOrExtension': Property(
+                  getValue: (CT_ c) => c.isInterfaceOrExtension,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.isInterfaceOrExtension == true,
                 ),
                 'isMixin': Property(
                   getValue: (CT_ c) => c.isMixin,

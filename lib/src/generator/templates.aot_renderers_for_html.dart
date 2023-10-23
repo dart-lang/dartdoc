@@ -1740,7 +1740,7 @@ String renderSidebarForContainer<T extends Documentable>(
       }
     }
   }
-  buffer.writeln();
+  buffer.write('\n\n    ');
   if (context1.isClassOrEnum == true) {
     if (context1.hasPublicInstanceFields == true) {
       buffer.writeln();
@@ -1816,7 +1816,7 @@ String renderSidebarForContainer<T extends Documentable>(
       }
     }
   }
-  buffer.writeln();
+  buffer.write('\n\n    ');
   if (context1.isExtension == true) {
     if (context1.hasPublicInstanceFields == true) {
       buffer.writeln();
@@ -1866,8 +1866,8 @@ String renderSidebarForContainer<T extends Documentable>(
       }
     }
   }
-  buffer.writeln();
-  if (context1.isClassOrEnumOrExtension == true) {
+  buffer.write('\n\n    ');
+  if (context1.isInterfaceOrExtension == true) {
     if (context1.hasPublicVariableStaticFields == true) {
       buffer.writeln();
       buffer.write('''
@@ -1945,13 +1945,13 @@ String renderSidebarForLibrary<T extends Documentable>(
     }
   }
   buffer.writeln();
-  if (context1.hasPublicExtensions == true) {
+  if (context1.hasPublicEnums == true) {
     buffer.writeln();
     buffer.write('''
       <li class="section-title"><a href="''');
     buffer.write(context1.href);
-    buffer.write('''#extensions">Extensions</a></li>''');
-    var context4 = context1.publicExtensionsSorted;
+    buffer.write('''#enums">Enums</a></li>''');
+    var context4 = context1.publicEnumsSorted;
     for (var context5 in context4) {
       buffer.writeln();
       buffer.write('''
@@ -2025,34 +2025,18 @@ String renderSidebarForLibrary<T extends Documentable>(
     }
   }
   buffer.writeln();
-  if (context1.hasPublicEnums == true) {
-    buffer.writeln();
-    buffer.write('''
-      <li class="section-title"><a href="''');
-    buffer.write(context1.href);
-    buffer.write('''#enums">Enums</a></li>''');
-    var context14 = context1.publicEnumsSorted;
-    for (var context15 in context14) {
-      buffer.writeln();
-      buffer.write('''
-        <li>''');
-      buffer.write(context15.linkedName);
-      buffer.write('''</li>''');
-    }
-  }
-  buffer.writeln();
   if (context1.hasPublicTypedefs == true) {
     buffer.writeln();
     buffer.write('''
       <li class="section-title"><a href="''');
     buffer.write(context1.href);
     buffer.write('''#typedefs">Typedefs</a></li>''');
-    var context16 = context1.publicTypedefsSorted;
-    for (var context17 in context16) {
+    var context14 = context1.publicTypedefsSorted;
+    for (var context15 in context14) {
       buffer.writeln();
       buffer.write('''
         <li>''');
-      buffer.write(context17.linkedName);
+      buffer.write(context15.linkedName);
       buffer.write('''</li>''');
     }
   }
@@ -2063,12 +2047,44 @@ String renderSidebarForLibrary<T extends Documentable>(
       <li class="section-title"><a href="''');
     buffer.write(context1.href);
     buffer.write('''#exceptions">Exceptions</a></li>''');
-    var context18 = context1.publicExceptionsSorted;
+    var context16 = context1.publicExceptionsSorted;
+    for (var context17 in context16) {
+      buffer.writeln();
+      buffer.write('''
+        <li>''');
+      buffer.write(context17.linkedName);
+      buffer.write('''</li>''');
+    }
+  }
+  buffer.writeln();
+  if (context1.hasPublicExtensions == true) {
+    buffer.writeln();
+    buffer.write('''
+      <li class="section-title"><a href="''');
+    buffer.write(context1.href);
+    buffer.write('''#extensions">Extensions</a></li>''');
+    var context18 = context1.publicExtensionsSorted;
     for (var context19 in context18) {
       buffer.writeln();
       buffer.write('''
         <li>''');
       buffer.write(context19.linkedName);
+      buffer.write('''</li>''');
+    }
+  }
+  buffer.writeln();
+  if (context1.hasPublicExtensionTypes == true) {
+    buffer.writeln();
+    buffer.write('''
+      <li class="section-title"><a href="''');
+    buffer.write(context1.href);
+    buffer.write('''#extension-types">Extension Types</a></li>''');
+    var context20 = context1.publicExtensionTypesSorted;
+    for (var context21 in context20) {
+      buffer.writeln();
+      buffer.write('''
+        <li>''');
+      buffer.write(context21.linkedName);
       buffer.write('''</li>''');
     }
   }
@@ -2350,14 +2366,14 @@ String _renderCategory_partial_sidebar_for_category_11(
   }
   buffer.writeln();
   var context5 = context0.self;
-  if (context5.hasPublicMixins == true) {
+  if (context5.hasPublicClasses == true) {
     buffer.writeln();
     buffer.write('''
     <li class="section-title"><a href="''');
     buffer.write(context0.self.href);
-    buffer.write('''#mixins">Mixins</a></li>''');
+    buffer.write('''#classes">Classes</a></li>''');
     var context6 = context0.self;
-    var context7 = context6.publicMixinsSorted;
+    var context7 = context6.publicClassesSorted;
     for (var context8 in context7) {
       buffer.writeln();
       buffer.write('''
@@ -2368,14 +2384,14 @@ String _renderCategory_partial_sidebar_for_category_11(
   }
   buffer.writeln();
   var context9 = context0.self;
-  if (context9.hasPublicClasses == true) {
+  if (context9.hasPublicEnums == true) {
     buffer.writeln();
     buffer.write('''
     <li class="section-title"><a href="''');
     buffer.write(context0.self.href);
-    buffer.write('''#classes">Classes</a></li>''');
+    buffer.write('''#enums">Enums</a></li>''');
     var context10 = context0.self;
-    var context11 = context10.publicClassesSorted;
+    var context11 = context10.publicEnumsSorted;
     for (var context12 in context11) {
       buffer.writeln();
       buffer.write('''
@@ -2386,14 +2402,14 @@ String _renderCategory_partial_sidebar_for_category_11(
   }
   buffer.writeln();
   var context13 = context0.self;
-  if (context13.hasPublicConstants == true) {
+  if (context13.hasPublicMixins == true) {
     buffer.writeln();
     buffer.write('''
     <li class="section-title"><a href="''');
     buffer.write(context0.self.href);
-    buffer.write('''#constants">Constants</a></li>''');
+    buffer.write('''#mixins">Mixins</a></li>''');
     var context14 = context0.self;
-    var context15 = context14.publicConstantsSorted;
+    var context15 = context14.publicMixinsSorted;
     for (var context16 in context15) {
       buffer.writeln();
       buffer.write('''
@@ -2404,14 +2420,14 @@ String _renderCategory_partial_sidebar_for_category_11(
   }
   buffer.writeln();
   var context17 = context0.self;
-  if (context17.hasPublicProperties == true) {
+  if (context17.hasPublicConstants == true) {
     buffer.writeln();
     buffer.write('''
     <li class="section-title"><a href="''');
     buffer.write(context0.self.href);
-    buffer.write('''#properties">Properties</a></li>''');
+    buffer.write('''#constants">Constants</a></li>''');
     var context18 = context0.self;
-    var context19 = context18.publicPropertiesSorted;
+    var context19 = context18.publicConstantsSorted;
     for (var context20 in context19) {
       buffer.writeln();
       buffer.write('''
@@ -2422,14 +2438,14 @@ String _renderCategory_partial_sidebar_for_category_11(
   }
   buffer.writeln();
   var context21 = context0.self;
-  if (context21.hasPublicFunctions == true) {
+  if (context21.hasPublicProperties == true) {
     buffer.writeln();
     buffer.write('''
     <li class="section-title"><a href="''');
     buffer.write(context0.self.href);
-    buffer.write('''#functions">Functions</a></li>''');
+    buffer.write('''#properties">Properties</a></li>''');
     var context22 = context0.self;
-    var context23 = context22.publicFunctionsSorted;
+    var context23 = context22.publicPropertiesSorted;
     for (var context24 in context23) {
       buffer.writeln();
       buffer.write('''
@@ -2440,14 +2456,14 @@ String _renderCategory_partial_sidebar_for_category_11(
   }
   buffer.writeln();
   var context25 = context0.self;
-  if (context25.hasPublicEnums == true) {
+  if (context25.hasPublicFunctions == true) {
     buffer.writeln();
     buffer.write('''
     <li class="section-title"><a href="''');
     buffer.write(context0.self.href);
-    buffer.write('''#enums">Enums</a></li>''');
+    buffer.write('''#functions">Functions</a></li>''');
     var context26 = context0.self;
-    var context27 = context26.publicEnumsSorted;
+    var context27 = context26.publicFunctionsSorted;
     for (var context28 in context27) {
       buffer.writeln();
       buffer.write('''
@@ -2489,6 +2505,42 @@ String _renderCategory_partial_sidebar_for_category_11(
       buffer.write('''
   <li>''');
       buffer.write(context36.linkedName);
+      buffer.write('''</li>''');
+    }
+  }
+  buffer.writeln();
+  var context37 = context0.self;
+  if (context37.hasPublicExtensions == true) {
+    buffer.writeln();
+    buffer.write('''
+  <li class="section-title"><a href="''');
+    buffer.write(context0.self.href);
+    buffer.write('''#extensions">Extensions</a></li>''');
+    var context38 = context0.self;
+    var context39 = context38.publicExtensionsSorted;
+    for (var context40 in context39) {
+      buffer.writeln();
+      buffer.write('''
+  <li>''');
+      buffer.write(context40.linkedName);
+      buffer.write('''</li>''');
+    }
+  }
+  buffer.writeln();
+  var context41 = context0.self;
+  if (context41.hasPublicExtensionTypes == true) {
+    buffer.writeln();
+    buffer.write('''
+  <li class="section-title"><a href="''');
+    buffer.write(context0.self.href);
+    buffer.write('''#extension-types">Extension Types</a></li>''');
+    var context42 = context0.self;
+    var context43 = context42.publicExtensionTypesSorted;
+    for (var context44 in context43) {
+      buffer.writeln();
+      buffer.write('''
+  <li>''');
+      buffer.write(context44.linkedName);
       buffer.write('''</li>''');
     }
   }
