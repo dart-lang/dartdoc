@@ -164,7 +164,7 @@ class Accessor extends ModelElement implements EnclosedElement {
   @override
   Kind get kind => Kind.accessor;
 
-  late final String _namePart = super.namePart.split('=').first;
+  String get _namePart => super.namePart.split('=').first;
 
   @override
   String get namePart => _namePart;
@@ -223,7 +223,7 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
   Container get enclosingElement => _enclosingElement;
 
   @override
-  late final ContainerAccessor? overriddenElement = () {
+  ContainerAccessor? get overriddenElement {
     assert(packageGraph.allLibrariesAdded);
     final parent = element.enclosingElement;
     if (parent is! InterfaceElement) {
@@ -250,5 +250,6 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
       assert(!overridden.isInherited);
       return overridden;
     }
-  }();
+    return null;
+  }
 }

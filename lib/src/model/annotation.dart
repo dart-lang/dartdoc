@@ -32,29 +32,25 @@ class Annotation extends Attribute with ModelBuilder {
       // TODO(jcollins-g): consider linking to constructor instead of type?
       : modelType.linkedName;
 
-  late final ElementType modelType = () {
-    var annotatedWith = annotation.element;
-    return switch (annotatedWith) {
-      ConstructorElement() =>
-        modelBuilder.typeFrom(annotatedWith.returnType, library),
-      PropertyAccessorElement() =>
-        (modelBuilder.fromElement(annotatedWith.variable) as GetterSetterCombo)
-            .modelType,
-      _ => throw StateError(
-          'non-callable element used as annotation?: ${annotation.element}')
-    };
-  }();
+  late final ElementType modelType = switch (annotation.element) {
+    ConstructorElement(:var returnType) =>
+      modelBuilder.typeFrom(returnType, library),
+    PropertyAccessorElement(:var variable) =>
+      (modelBuilder.fromElement(variable) as GetterSetterCombo).modelType,
+    _ => throw StateError(
+        'non-callable element used as annotation?: ${annotation.element}')
+  };
 
   // TODO(srawlins): Attempt to revive constructor arguments in an annotation,
   // akin to source_gen's Reviver, in order to link to inner components. For
   // example, in `@Foo(const Bar(), baz: <Baz>[Baz.one, Baz.two])`, link to
   // `Foo`, `Bar`, `Baz`, `Baz.one`, and `Baz.two`.
   /// The textual representation of the argument(s) supplied to the annotation.
-  late final String parameterText = () {
+  String get parameterText {
     var source = annotation.toSource();
     var startIndex = source.indexOf('(');
     return source.substring(startIndex == -1 ? source.length : startIndex);
-  }();
+  }
 
   @override
   bool get isPublic =>
