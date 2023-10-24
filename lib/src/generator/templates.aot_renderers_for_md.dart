@@ -491,7 +491,7 @@ String renderExtensionType<T extends ExtensionType>(
   buffer.writeln();
   buffer.write('''
 on ''');
-  var context2 = context1.extendedType;
+  var context2 = context1.representationType;
   buffer.write(context2.linkedName);
   buffer.write('\n\n');
   buffer.write(_renderExtensionType_partial_source_link_1(context1));
@@ -505,6 +505,8 @@ on ''');
   buffer.write(_renderExtensionType_partial_documentation_4(context3));
   buffer.write('\n\n');
   buffer.write(_renderExtensionType_partial_annotations_5(context3));
+  buffer.write('\n\n');
+  buffer.write(_renderExtensionType_partial_constructors_6(context3));
   buffer.writeln();
   if (context3.hasPublicInstanceFields == true) {
     buffer.writeln();
@@ -514,25 +516,25 @@ on ''');
     var context4 = context3.publicInstanceFieldsSorted;
     for (var context5 in context4) {
       buffer.writeln();
-      buffer.write(_renderExtensionType_partial_property_6(context5));
+      buffer.write(_renderExtensionType_partial_property_7(context5));
       buffer.writeln();
     }
   }
   buffer.write('\n\n');
-  buffer.write(_renderExtensionType_partial_instance_methods_7(context3));
+  buffer.write(_renderExtensionType_partial_instance_methods_8(context3));
   buffer.write('\n\n');
-  buffer.write(_renderExtensionType_partial_instance_operators_8(context3));
+  buffer.write(_renderExtensionType_partial_instance_operators_9(context3));
   buffer.write('\n\n');
-  buffer.write(_renderExtensionType_partial_static_properties_9(context3));
+  buffer.write(_renderExtensionType_partial_static_properties_10(context3));
   buffer.write('\n\n');
-  buffer.write(_renderExtensionType_partial_static_methods_10(context3));
+  buffer.write(_renderExtensionType_partial_static_methods_11(context3));
   buffer.write('\n\n');
-  buffer.write(_renderExtensionType_partial_static_constants_11(context3));
+  buffer.write(_renderExtensionType_partial_static_constants_12(context3));
   buffer.writeln();
   buffer.write('''
 {{ /extension }}''');
   buffer.write('\n\n');
-  buffer.write(_renderExtensionType_partial_footer_12(context0));
+  buffer.write(_renderExtensionType_partial_footer_13(context0));
   buffer.writeln();
   buffer.writeln();
 
@@ -1434,29 +1436,32 @@ String _renderExtensionType_partial_documentation_4(ExtensionType context1) =>
 String _renderExtensionType_partial_annotations_5(ExtensionType context1) =>
     _deduplicated_lib_templates_md__annotations_md(context1);
 
-String _renderExtensionType_partial_property_6(Field context2) =>
+String _renderExtensionType_partial_constructors_6(ExtensionType context1) =>
+    _deduplicated_lib_templates_md__constructors_md(context1);
+
+String _renderExtensionType_partial_property_7(Field context2) =>
     _deduplicated_lib_templates_md__property_md(context2);
 
-String _renderExtensionType_partial_instance_methods_7(
+String _renderExtensionType_partial_instance_methods_8(
         ExtensionType context1) =>
     _deduplicated_lib_templates_md__instance_methods_md(context1);
 
-String _renderExtensionType_partial_instance_operators_8(
+String _renderExtensionType_partial_instance_operators_9(
         ExtensionType context1) =>
     _deduplicated_lib_templates_md__instance_operators_md(context1);
 
-String _renderExtensionType_partial_static_properties_9(
+String _renderExtensionType_partial_static_properties_10(
         ExtensionType context1) =>
     _deduplicated_lib_templates_md__static_properties_md(context1);
 
-String _renderExtensionType_partial_static_methods_10(ExtensionType context1) =>
+String _renderExtensionType_partial_static_methods_11(ExtensionType context1) =>
     _deduplicated_lib_templates_md__static_methods_md(context1);
 
-String _renderExtensionType_partial_static_constants_11(
+String _renderExtensionType_partial_static_constants_12(
         ExtensionType context1) =>
     _deduplicated_lib_templates_md__static_constants_md(context1);
 
-String _renderExtensionType_partial_footer_12<T extends ExtensionType>(
+String _renderExtensionType_partial_footer_13<T extends ExtensionType>(
         ExtensionTypeTemplateData<T> context0) =>
     _deduplicated_lib_templates_md__footer_md(context0);
 

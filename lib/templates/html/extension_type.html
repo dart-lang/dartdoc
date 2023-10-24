@@ -16,14 +16,16 @@
         <dt>on</dt>
         <dd>
           <ul class="comma-separated clazz-relationships">
-            {{ #extendedType }}
+            {{ #representationType }}
               <li>{{{ linkedName }}}</li>
-            {{ /extendedType }}
+          {{ /representationType }}
           </ul>
         </dd>
       </dl>
       {{ >container_annotations }}
     </section>
+
+    {{ >constructors }}
 
     {{ #hasPublicInstanceFields }}
     <section class="summary offset-anchor" id="instance-properties">

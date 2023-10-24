@@ -71,7 +71,10 @@ analyzer:
 ''',
         libFiles: [
           d.file('lib.dart', '''
-extension type MyIterable<E>(Iterable<E> e) {
+extension type FooET<E>(Foo<E> e) {
+  /// A named constructor.
+  MyIterable.named(Foo<E> e);
+
   /// An instance method.
   void m1() {}
 
@@ -94,14 +97,7 @@ extension type MyIterable<E>(Iterable<E> e) {
   static void set gs1(int value) {}
 }
 
-extension type MyListQueue<E>(ListQueue<E> e) implements Iterable<E>, Queue<E> {
-  void m2() {}
-}
-
-extension type MyListOfInt(List<int> e)
-    implements MyIterable<int>, Iterable<int> {
-  void m3() {}
-}
+class Foo<E> {}
 '''),
         ],
         dartdocOptions: '''
@@ -115,13 +111,13 @@ dartdoc:
       await writeDartdocResources(resourceProvider);
       await (await buildDartdoc()).generateDocs();
       eLines = resourceProvider
-          .getFile(path.join(
-              packagePath, 'doc', 'lib', 'MyIterable-extension-type.html'))
+          .getFile(
+              path.join(packagePath, 'doc', 'lib', 'FooET-extension-type.html'))
           .readAsStringSync()
           .split('\n');
       eRightSidebarLines = resourceProvider
-          .getFile(path.join(packagePath, 'doc', 'lib',
-              'MyIterable-extension-type-sidebar.html'))
+          .getFile(path.join(
+              packagePath, 'doc', 'lib', 'FooET-extension-type-sidebar.html'))
           .readAsStringSync()
           .split('\n');
     });
@@ -129,30 +125,35 @@ dartdoc:
     test('page contains extension name with generics', () async {
       eLines.expectMainContentContainsAllInOrder([
         matches(
-          '<span class="kind-class">MyIterable&lt;<wbr>'
+          '<span class="kind-class">FooET&lt;<wbr>'
           '<span class="type-parameter">E</span>&gt;</span>',
         )
       ]);
     });
 
-    test('page contains extended type',
-        // TODO(srawlins): Implement.
-        skip: true, () async {
-      expect(
-        eLines,
-        containsAllInOrder([
-          matches('<dt>on</dt>'),
-          matches('<a href="../lib/Iterable-class.html">Iterable</a>'
-              '<span class="signature">&lt;<wbr>'
-              '<span class="type-parameter">E</span>&gt;</span>'),
-        ]),
-      );
+    test('page contains extended type', () async {
+      eLines.expectMainContentContainsAllInOrder([
+        matches('<dt>on</dt>'),
+        matches('<a href="../lib/Foo-class.html">Foo</a>'
+            '<span class="signature">&lt;<wbr>'
+            '<span class="type-parameter">E</span>&gt;</span>'),
+      ]);
+    });
+
+    test('page contains constructors', () async {
+      eLines.expectMainContentContainsAllInOrder([
+        matches('<h2>Constructors</h2>'),
+        matches('<a href="../lib/FooET/FooET.html">FooET</a>'),
+        matches('<a href="../lib/FooET/FooET.named.html">'
+            'FooET.named</a>'),
+        matches('A named constructor.'),
+      ]);
     });
 
     test('page contains static methods', () async {
       eLines.expectMainContentContainsAllInOrder([
         matches('<h2>Static Methods</h2>'),
-        matches('<a href="../lib/MyIterable/s1.html">s1</a>'),
+        matches('<a href="../lib/FooET/s1.html">s1</a>'),
         matches('A static method.'),
       ]);
     });
@@ -160,7 +161,7 @@ dartdoc:
     test('page contains static fields', () async {
       eLines.expectMainContentContainsAllInOrder([
         matches('<h2>Static Properties</h2>'),
-        matches('<a href="../lib/MyIterable/sf1.html">sf1</a>'),
+        matches('<a href="../lib/FooET/sf1.html">sf1</a>'),
         matches('A static field.'),
       ]);
     });
@@ -168,7 +169,7 @@ dartdoc:
     test('page contains static getter/setter pairs', () async {
       eLines.expectMainContentContainsAllInOrder([
         matches('<h2>Static Properties</h2>'),
-        matches('<a href="../lib/MyIterable/gs1.html">gs1</a>'),
+        matches('<a href="../lib/FooET/gs1.html">gs1</a>'),
         matches('A static getter.'),
       ]);
     });
@@ -180,7 +181,7 @@ dartdoc:
       () async {
         eLines.expectMainContentContainsAllInOrder([
           matches('<h2>Constants</h2>'),
-          matches('<a href="../lib/MyIterable/c1-constant.html">c1</a>'),
+          matches('<a href="../lib/FooET/c1-constant.html">c1</a>'),
           matches('A constant.'),
         ]);
       },
@@ -189,8 +190,7 @@ dartdoc:
     test('page contains instance operators', () async {
       eLines.expectMainContentContainsAllInOrder([
         matches('<h2>Operators</h2>'),
-        matches(
-            '<a href="../lib/MyIterable/operator_greater.html">operator ></a>'),
+        matches('<a href="../lib/FooET/operator_greater.html">operator ></a>'),
         matches('An operator.'),
       ]);
     });
@@ -200,10 +200,10 @@ dartdoc:
         eRightSidebarLines,
         containsAllInOrder([
           matches(
-            '<a href="../lib/MyIterable-extension-type.html#instance-methods">'
+            '<a href="../lib/FooET-extension-type.html#instance-methods">'
             'Methods</a>',
           ),
-          matches('<a href="../lib/MyIterable/m1.html">m1</a>'),
+          matches('<a href="../lib/FooET/m1.html">m1</a>'),
         ]),
       );
     });
@@ -213,11 +213,11 @@ dartdoc:
         eRightSidebarLines,
         containsAllInOrder([
           matches(
-            '<a href="../lib/MyIterable-extension-type.html#operators">'
+            '<a href="../lib/FooET-extension-type.html#operators">'
             'Operators</a>',
           ),
           matches(
-            '<a href="../lib/MyIterable/operator_greater.html">operator ></a>',
+            '<a href="../lib/FooET/operator_greater.html">operator ></a>',
           ),
         ]),
       );
@@ -228,9 +228,9 @@ dartdoc:
         eRightSidebarLines,
         containsAllInOrder([
           matches(
-              '<a href="../lib/MyIterable-extension-type.html#static-properties">Static properties</a>'),
-          matches('<a href="../lib/MyIterable/gs1.html">gs1</a>'),
-          matches('<a href="../lib/MyIterable/sf1.html">sf1</a>'),
+              '<a href="../lib/FooET-extension-type.html#static-properties">Static properties</a>'),
+          matches('<a href="../lib/FooET/gs1.html">gs1</a>'),
+          matches('<a href="../lib/FooET/sf1.html">sf1</a>'),
         ]),
       );
     });
@@ -240,8 +240,8 @@ dartdoc:
         eRightSidebarLines,
         containsAllInOrder([
           matches(
-              '<a href="../lib/MyIterable-extension-type.html#static-methods">Static methods</a>'),
-          matches('<a href="../lib/MyIterable/s1.html">s1</a>'),
+              '<a href="../lib/FooET-extension-type.html#static-methods">Static methods</a>'),
+          matches('<a href="../lib/FooET/s1.html">s1</a>'),
         ]),
       );
     });

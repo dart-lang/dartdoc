@@ -459,13 +459,15 @@ abstract class ModelElement extends Canonicalization
   // The canonical ModelElement for this ModelElement,
   // or null if there isn't one.
   late final ModelElement? canonicalModelElement = () {
-    Container? preferredClass;
-    // TODO(srawlins): Add mixin.
-    if (enclosingElement is Class ||
-        enclosingElement is Enum ||
-        enclosingElement is Extension) {
-      preferredClass = enclosingElement as Container?;
-    }
+    final enclosingElement = this.enclosingElement;
+    var preferredClass = switch (enclosingElement) {
+      // TODO(srawlins): Add mixin.
+      Class() => enclosingElement,
+      Enum() => enclosingElement,
+      Extension() => enclosingElement,
+      ExtensionType() => enclosingElement,
+      _ => null,
+    };
     return packageGraph.findCanonicalModelElementFor(element,
         preferredClass: preferredClass);
   }();
