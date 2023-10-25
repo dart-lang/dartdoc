@@ -927,18 +927,6 @@ class _Renderer_Categorization extends RendererBase<Categorization> {
       _propertyMapCache.putIfAbsent(
           CT_,
           () => {
-                'categories': Property(
-                  getValue: (CT_ c) => c.categories,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<Category>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.categories.map((e) =>
-                        _render_Category(e, ast, r.template, sink, parent: r));
-                  },
-                ),
                 'categoryNames': Property(
                   getValue: (CT_ c) => c.categoryNames,
                   renderVariable: (CT_ c, Property<CT_> self,

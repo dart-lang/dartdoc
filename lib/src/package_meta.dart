@@ -294,13 +294,12 @@ abstract class PubPackageMeta extends PackageMeta {
 class _FilePackageMeta extends PubPackageMeta {
   File? _readme;
 
-  late final Map<dynamic, dynamic> _pubspec = () {
-    var pubspec = dir.getChildAssumingFile('pubspec.yaml');
-    assert(pubspec.exists);
-    return loadYaml(pubspec.readAsStringSync()) as YamlMap;
-  }();
+  final Map<dynamic, dynamic> _pubspec;
 
-  _FilePackageMeta(super.dir, super.resourceProvider);
+  _FilePackageMeta(super.dir, super.resourceProvider)
+      : _pubspec = loadYaml(
+                dir.getChildAssumingFile('pubspec.yaml').readAsStringSync())
+            as YamlMap;
 
   @override
   late final String? hostedAt = () {

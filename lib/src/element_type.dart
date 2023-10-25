@@ -212,7 +212,7 @@ class ParameterizedElementType extends DefinedElementType with Rendered {
 
 /// A [ElementType] whose underlying type was referred to by a type alias.
 mixin Aliased implements ElementType, ModelBuilderInterface {
-  late final Element typeAliasElement = type.alias!.element;
+  Element get typeAliasElement => type.alias!.element;
 
   @override
   String get name => typeAliasElement.name!;
@@ -235,10 +235,6 @@ class AliasedElementType extends ParameterizedElementType with Aliased {
 
   @override
   ParameterizedType get type;
-
-  /// Parameters, if available, for the underlying typedef.
-  late final List<Parameter> aliasedParameters =
-      modelElement.isCallable ? modelElement.parameters : [];
 
   @override
   ElementTypeRenderer<AliasedElementType> get _renderer =>
@@ -282,14 +278,6 @@ abstract class DefinedElementType extends ElementType {
     assert(f is ParameterizedType || f is TypeParameterType);
     assert(f is! FunctionType,
         'detected DefinedElementType for FunctionType: analyzer version too old?');
-    // TODO(jcollins-g): strip out all the cruft that's accumulated
-    // here for non-generic type aliases.
-    var isGenericTypeAlias = f.alias?.element != null && f is! InterfaceType;
-    if (isGenericTypeAlias) {
-      assert(false);
-      return GenericTypeAliasElementType(
-          f as TypeParameterType, library, packageGraph, modelElement);
-    }
     if (f is TypeParameterType) {
       return TypeParameterElementType(f, library, packageGraph, modelElement);
     }
@@ -426,12 +414,6 @@ class CallableElementType extends DefinedElementType with Rendered, Callable {
           .map((f) => modelBuilder.typeFrom(f, library))
           .toList(growable: false) ??
       const [];
-}
-
-/// A non-callable type backed by a [GenericTypeAliasElement].
-class GenericTypeAliasElementType extends TypeParameterElementType {
-  GenericTypeAliasElementType(
-      super.t, super.library, super.packageGraph, super.element);
 }
 
 extension on DartType {

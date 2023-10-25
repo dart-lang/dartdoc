@@ -37,7 +37,7 @@ class TypeParameter extends ModelElement with HasNoPage {
   bool get hasParameters => false;
 
   @override
-  late final String name = element.bound != null
+  String get name => element.bound != null
       ? '${element.name} extends ${boundType!.nameWithGenerics}'
       : element.name;
 
