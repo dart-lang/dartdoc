@@ -74,7 +74,7 @@ class GeneratorFrontEnd implements Generator {
 
       for (var lib in filterNonDocumented(package.libraries)) {
         if (!multiplePackages) {
-          logInfo('Generating docs for library ${lib.name} from '
+          logInfo('Generating docs for library ${lib.breadcrumbName} from '
               '${lib.element.source.uri}...');
         }
         if (!lib.isAnonymous && !lib.hasDocumentation) {

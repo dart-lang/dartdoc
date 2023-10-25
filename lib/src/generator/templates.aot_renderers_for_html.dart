@@ -1109,17 +1109,25 @@ String renderLibrary(LibraryTemplateData context0) {
   var context1 = context0.self;
   buffer.writeln();
   buffer.write('''
-      <div>''');
+      <div>
+        ''');
   buffer.write(_renderLibrary_partial_source_link_1(context1));
-  buffer.write('''<h1><span class="kind-library">''');
-  buffer.write(context1.name);
-  buffer.write('''</span> ''');
+  buffer.writeln();
+  buffer.write('''
+        <h1>
+          <span class="kind-library">''');
+  buffer.write(context1.displayName);
+  buffer.write('''</span>
+          ''');
   buffer.writeEscaped(context1.kind.toString());
   buffer.write(' ');
   buffer.write(_renderLibrary_partial_feature_set_2(context1));
   buffer.write(' ');
   buffer.write(_renderLibrary_partial_categorization_3(context1));
-  buffer.write('''</h1></div>''');
+  buffer.writeln();
+  buffer.write('''
+        </h1>
+      </div>''');
   buffer.writeln();
   var context2 = context0.library;
   buffer.write('\n    ');
@@ -3579,7 +3587,7 @@ String _deduplicated_lib_templates_html__head_html(TemplateDataBase context0) {
     <li><a href="''');
     buffer.write(context4.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context4.name);
+    buffer.writeEscaped(context4.breadcrumbName);
     buffer.write('''</a></li>''');
   }
   var context5 = context0.navLinksWithGenerics;
@@ -3589,7 +3597,7 @@ String _deduplicated_lib_templates_html__head_html(TemplateDataBase context0) {
     <li><a href="''');
     buffer.write(context6.href);
     buffer.write('''">''');
-    buffer.writeEscaped(context6.name);
+    buffer.writeEscaped(context6.breadcrumbName);
     if (context6.hasGenericParameters == true) {
       buffer.write('''<span class="signature">''');
       buffer.write(context6.genericParameters);

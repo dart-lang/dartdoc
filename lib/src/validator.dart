@@ -36,7 +36,7 @@ class Validator {
   /// Don't call this method more than once, and only after you've
   /// generated all docs for the Package.
   void validateLinks() {
-    logInfo('Validating...');
+    logInfo('Validating links...');
     runtimeStats.resetAccumulators({
       'readCountForLinkValidation',
       'readCountForIndexValidation',

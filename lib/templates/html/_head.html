@@ -40,12 +40,12 @@
 <header id="title">
   <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
   <ol class="breadcrumbs gt-separated dark hidden-xs">
-    {{#navLinks}}
-    <li><a href="{{{href}}}">{{name}}</a></li>
-    {{/navLinks}}
-    {{#navLinksWithGenerics}}
-    <li><a href="{{{href}}}">{{name}}{{#hasGenericParameters}}<span class="signature">{{{genericParameters}}}</span>{{/hasGenericParameters}}</a></li>
-    {{/navLinksWithGenerics}}
+    {{ #navLinks }}
+    <li><a href="{{{ href }}}">{{ breadcrumbName }}</a></li>
+    {{ /navLinks }}
+    {{ #navLinksWithGenerics }}
+    <li><a href="{{{ href }}}">{{ breadcrumbName }}{{ #hasGenericParameters }}<span class="signature">{{{ genericParameters }}}</span>{{ /hasGenericParameters }}</a></li>
+    {{ /navLinksWithGenerics }}
     {{^hasHomepage}}
     <li class="self-crumb">{{{ layoutTitle }}}</li>
     {{/hasHomepage}}
