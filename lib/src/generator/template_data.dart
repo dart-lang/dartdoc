@@ -215,8 +215,11 @@ class LibraryTemplateData extends TemplateData<Library>
   List<Documentable> get navLinks => [_packageGraph.defaultPackage];
 
   @override
-  String get layoutTitle => _layoutTitle(library.name, Kind.library.toString(),
-      isDeprecated: library.isDeprecated);
+  String get layoutTitle => _layoutTitle(
+        library.breadcrumbName,
+        Kind.library.toString(),
+        isDeprecated: library.isDeprecated,
+      );
 
   @override
   Library get self => library;

@@ -338,7 +338,7 @@ class Library extends ModelElement
     assert(!element.source.uri.isScheme('dart'));
     var relativePath = pathContext.relative(element.source.fullName,
         from: package.packagePath);
-    assert(relativePath.startsWith('lib/'));
+    assert(relativePath.startsWith('lib${pathContext.separator}'));
     const libDirectoryLength = 'lib/'.length;
     return relativePath.substring(libDirectoryLength);
   }
