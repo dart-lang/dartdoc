@@ -42,6 +42,10 @@ abstract mixin class Canonicalization
     return canonicalLibrary;
   }
 
+  // TODO(srawlins): This function is minimally tested; it's tricky to unit test
+  // because it takes a lot of elements into account, like URIs, differing
+  // package names, etc. Anyways, add more tests, in addition to the
+  // `StringName` tests in `model_test.dart`.
   static _ScoredCandidate _scoreElementWithLibrary(Library library,
       String elementQualifiedName, Set<String> elementLocationPieces) {
     var scoredCandidate = _ScoredCandidate(library);
@@ -58,7 +62,9 @@ abstract mixin class Canonicalization
     }
 
     // Give a big boost if the library has the package name embedded in it.
-    if (library.package.namePieces.intersection(library.namePieces).isNotEmpty) {
+    if (library.package.namePieces
+        .intersection(library.namePieces)
+        .isNotEmpty) {
       scoredCandidate._alterScore(1.0, _Reason.packageName);
     }
 
