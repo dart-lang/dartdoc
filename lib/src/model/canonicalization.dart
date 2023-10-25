@@ -58,7 +58,7 @@ abstract mixin class Canonicalization
     }
 
     // Give a big boost if the library has the package name embedded in it.
-    if (library.package.namePieces.intersection(library.namePieces).isEmpty) {
+    if (library.package.namePieces.intersection(library.namePieces).isNotEmpty) {
       scoredCandidate._alterScore(1.0, _Reason.packageName);
     }
 
