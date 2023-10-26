@@ -5508,6 +5508,13 @@ class _Renderer_ExtensionType extends RendererBase<ExtensionType> {
                         parent: r);
                   },
                 ),
+                'hasPublicInterfaces': Property(
+                  getValue: (CT_ c) => c.hasPublicInterfaces,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.hasPublicInterfaces == true,
+                ),
                 'inheritanceChain': Property(
                   getValue: (CT_ c) => c.inheritanceChain,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -5590,6 +5597,19 @@ class _Renderer_ExtensionType extends RendererBase<ExtensionType> {
                       List<MustachioNode> ast, StringSink sink) {
                     renderSimple(c.kind, ast, r.template, sink,
                         parent: r, getters: _invisibleGetters['Kind']!);
+                  },
+                ),
+                'publicInterfaces': Property(
+                  getValue: (CT_ c) => c.publicInterfaces,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'List<DefinedElementType>'),
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    return c.publicInterfaces.map((e) =>
+                        _render_DefinedElementType(e, ast, r.template, sink,
+                            parent: r));
                   },
                 ),
                 'referenceChildren': Property(

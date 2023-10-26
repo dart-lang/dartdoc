@@ -38,6 +38,25 @@ class ExtensionType extends InheritingContainer with Constructable {
   @override
   bool get isSealed => false;
 
+  bool get hasPublicInterfaces => publicInterfaces.isNotEmpty;
+
+  @override
+  List<DefinedElementType> get publicInterfaces {
+    var interfaces = <DefinedElementType>[];
+    for (var interface in element.interfaces) {
+      var elementType =
+          modelBuilder.typeFrom(interface, library) as DefinedElementType;
+
+      if (elementType.modelElement.canonicalModelElement != null) {
+        interfaces.add(elementType);
+        continue;
+      }
+
+      // TODO(srawlins): Work through intermediate, private, interfaces.
+    }
+    return interfaces;
+  }
+
   @override
   late final List<Field> declaredFields = element.fields.map((field) {
     Accessor? getter, setter;
