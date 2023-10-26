@@ -12,7 +12,7 @@ class ExtensionType extends InheritingContainer with Constructable {
   @override
   final ExtensionTypeElement element;
 
-  late final ElementType extendedType =
+  late final ElementType representationType =
       modelBuilder.typeFrom(element.typeErasure, library);
 
   ExtensionType(this.element, super.library, super.packageGraph);
@@ -56,7 +56,7 @@ class ExtensionType extends InheritingContainer with Constructable {
   @override
   late final List<ModelElement> allModelElements = [
     ...super.allModelElements,
-    ...typeParameters,
+    ...constructors,
   ];
 
   @override
@@ -86,8 +86,8 @@ class ExtensionType extends InheritingContainer with Constructable {
   @override
   Map<String, CommentReferable> get referenceChildren {
     return _referenceChildren ??= {
-      ...extendedType.referenceChildren,
-      // Override `extendedType` entries with local items.
+      ...representationType.referenceChildren,
+      // Override `representationType` entries with local items.
       ...super.referenceChildren,
     };
   }

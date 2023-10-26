@@ -852,7 +852,7 @@ String renderExtensionType<T extends ExtensionType>(
         <dt>on</dt>
         <dd>
           <ul class="comma-separated clazz-relationships">''');
-  var context3 = context2.extendedType;
+  var context3 = context2.representationType;
   buffer.writeln();
   buffer.write('''
               <li>''');
@@ -868,7 +868,10 @@ String renderExtensionType<T extends ExtensionType>(
   buffer.writeln();
   buffer.write('''
     </section>
-''');
+
+    ''');
+  buffer.write(_renderExtensionType_partial_constructors_6(context2));
+  buffer.writeln();
   if (context2.hasPublicInstanceFields == true) {
     buffer.writeln();
     buffer.write('''
@@ -879,7 +882,7 @@ String renderExtensionType<T extends ExtensionType>(
     var context4 = context2.publicInstanceFieldsSorted;
     for (var context5 in context4) {
       buffer.write('\n            ');
-      buffer.write(_renderExtensionType_partial_property_6(context5));
+      buffer.write(_renderExtensionType_partial_property_7(context5));
     }
     buffer.writeln();
     buffer.write('''
@@ -887,15 +890,15 @@ String renderExtensionType<T extends ExtensionType>(
     </section>''');
   }
   buffer.write('\n\n    ');
-  buffer.write(_renderExtensionType_partial_instance_methods_7(context2));
+  buffer.write(_renderExtensionType_partial_instance_methods_8(context2));
   buffer.write('\n    ');
-  buffer.write(_renderExtensionType_partial_instance_operators_8(context2));
+  buffer.write(_renderExtensionType_partial_instance_operators_9(context2));
   buffer.write('\n    ');
-  buffer.write(_renderExtensionType_partial_static_properties_9(context2));
+  buffer.write(_renderExtensionType_partial_static_properties_10(context2));
   buffer.write('\n    ');
-  buffer.write(_renderExtensionType_partial_static_methods_10(context2));
+  buffer.write(_renderExtensionType_partial_static_methods_11(context2));
   buffer.write('\n    ');
-  buffer.write(_renderExtensionType_partial_static_constants_11(context2));
+  buffer.write(_renderExtensionType_partial_static_constants_12(context2));
   buffer.writeln();
   buffer.write('''
 
@@ -903,7 +906,7 @@ String renderExtensionType<T extends ExtensionType>(
 
 <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
     ''');
-  buffer.write(_renderExtensionType_partial_search_sidebar_12(context0));
+  buffer.write(_renderExtensionType_partial_search_sidebar_13(context0));
   buffer.writeln();
   buffer.write('''
     <h5>''');
@@ -917,7 +920,7 @@ String renderExtensionType<T extends ExtensionType>(
 </div><!--/.sidebar-offcanvas-->
 
 ''');
-  buffer.write(_renderExtensionType_partial_footer_13(context0));
+  buffer.write(_renderExtensionType_partial_footer_14(context0));
   buffer.writeln();
   buffer.writeln();
 
@@ -2864,33 +2867,36 @@ String _renderExtensionType_partial_container_annotations_5(
         ExtensionType context1) =>
     _deduplicated_lib_templates_html__container_annotations_html(context1);
 
-String _renderExtensionType_partial_property_6(Field context2) =>
+String _renderExtensionType_partial_constructors_6(ExtensionType context1) =>
+    _deduplicated_lib_templates_html__constructors_html(context1);
+
+String _renderExtensionType_partial_property_7(Field context2) =>
     _deduplicated_lib_templates_html__property_html(context2);
 
-String _renderExtensionType_partial_instance_methods_7(
+String _renderExtensionType_partial_instance_methods_8(
         ExtensionType context1) =>
     _deduplicated_lib_templates_html__instance_methods_html(context1);
 
-String _renderExtensionType_partial_instance_operators_8(
+String _renderExtensionType_partial_instance_operators_9(
         ExtensionType context1) =>
     _deduplicated_lib_templates_html__instance_operators_html(context1);
 
-String _renderExtensionType_partial_static_properties_9(
+String _renderExtensionType_partial_static_properties_10(
         ExtensionType context1) =>
     _deduplicated_lib_templates_html__static_properties_html(context1);
 
-String _renderExtensionType_partial_static_methods_10(ExtensionType context1) =>
+String _renderExtensionType_partial_static_methods_11(ExtensionType context1) =>
     _deduplicated_lib_templates_html__static_methods_html(context1);
 
-String _renderExtensionType_partial_static_constants_11(
+String _renderExtensionType_partial_static_constants_12(
         ExtensionType context1) =>
     _deduplicated_lib_templates_html__static_constants_html(context1);
 
-String _renderExtensionType_partial_search_sidebar_12<T extends ExtensionType>(
+String _renderExtensionType_partial_search_sidebar_13<T extends ExtensionType>(
         ExtensionTypeTemplateData<T> context0) =>
     _deduplicated_lib_templates_html__search_sidebar_html(context0);
 
-String _renderExtensionType_partial_footer_13<T extends ExtensionType>(
+String _renderExtensionType_partial_footer_14<T extends ExtensionType>(
         ExtensionTypeTemplateData<T> context0) =>
     _deduplicated_lib_templates_html__footer_html(context0);
 

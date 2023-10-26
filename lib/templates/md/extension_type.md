@@ -2,7 +2,7 @@
 
 {{ #self }}
 # {{{ nameWithGenerics }}} {{ kind }}
-on {{ #extendedType }}{{{ linkedName }}}{{ /extendedType }}
+on {{ #representationType }}{{{ linkedName }}}{{ /representationType }}
 
 {{ >source_link }}
 
@@ -14,6 +14,8 @@ on {{ #extendedType }}{{{ linkedName }}}{{ /extendedType }}
 {{ >documentation }}
 
 {{ >annotations }}
+
+{{ >constructors }}
 
 {{ #hasPublicInstanceFields }}
 ## Properties
