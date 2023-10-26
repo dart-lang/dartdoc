@@ -106,16 +106,18 @@ mixin Inheritable on ContainerMember {
     var inheritance = [
       ...(enclosingElement as InheritingContainer).inheritanceChain,
     ];
-    var object = packageGraph.specialClasses[SpecialClass.object];
+    var object = packageGraph.specialClasses[SpecialClass.object]!;
     assert(definingEnclosingContainer == object ||
         inheritance.contains(definingEnclosingContainer));
 
-    // Unless the code explicitly extends dart-core's Object, we won't get
-    // an entry here.  So add it.
-    if (inheritance.last != object && object != null) {
-      inheritance.add(object);
+    if (enclosingElement is! ExtensionType) {
+      // Unless the code explicitly extends dart:core's Object, we won't get
+      // an entry here.  So add it.
+      if (inheritance.last != object) {
+        inheritance.add(object);
+      }
+      assert(inheritance.where((e) => e == object).length == 1);
     }
-    assert(inheritance.where((e) => e == object).length == 1);
     return inheritance;
   }
 

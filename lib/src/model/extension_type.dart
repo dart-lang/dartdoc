@@ -8,7 +8,8 @@ import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:meta/meta.dart';
 
-class ExtensionType extends InheritingContainer with Constructable {
+class ExtensionType extends InheritingContainer
+    with Constructable, TypeImplementing {
   @override
   final ExtensionTypeElement element;
 
@@ -38,25 +39,6 @@ class ExtensionType extends InheritingContainer with Constructable {
   @override
   bool get isSealed => false;
 
-  bool get hasPublicInterfaces => publicInterfaces.isNotEmpty;
-
-  @override
-  List<DefinedElementType> get publicInterfaces {
-    var interfaces = <DefinedElementType>[];
-    for (var interface in element.interfaces) {
-      var elementType =
-          modelBuilder.typeFrom(interface, library) as DefinedElementType;
-
-      if (elementType.modelElement.canonicalModelElement != null) {
-        interfaces.add(elementType);
-        continue;
-      }
-
-      // TODO(srawlins): Work through intermediate, private, interfaces.
-    }
-    return interfaces;
-  }
-
   @override
   late final List<Field> declaredFields = element.fields.map((field) {
     Accessor? getter, setter;
@@ -80,18 +62,6 @@ class ExtensionType extends InheritingContainer with Constructable {
 
   @override
   // TODO(srawlins): Implement.
-  List<Field> get allFields => [];
-
-  @override
-  // TODO(srawlins): Implement.
-  Iterable<Method> get inheritedMethods => [];
-
-  @override
-  // TODO(srawlins): Implement.
-  List<Operator> get inheritedOperators => [];
-
-  @override
-  // TODO(srawlins): Implement. It might just be empty...
   List<InheritingContainer> get inheritanceChain => [];
 
   @override
