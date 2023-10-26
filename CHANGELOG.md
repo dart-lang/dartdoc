@@ -1,3 +1,17 @@
+## 7.0.2
+
+* Remove support for the deprecated `new ` prefix in comment references.
+  (#3529)
+* Remove ModelComment.staticElement, ModelNode.commentRefs,
+  PackageWarningDefinition, packageWarningsByName, packageWarningDefinitions,
+  AliasedElementType.aliasedParameters, and GenericTypeAliasElementType.
+* Privatize ModelNode.element, ModelNode.resourceProvider,
+  `PackageWarning.template, PackageWarning.warnablePrefix, and
+  PackageWarning.referredFromPrefix.
+* The `missingExampleFile` and `unknownHtmlFragment` flags can now be
+  included or ignored with options.
+* Fix canonicalization scoring when library shares package name. (#3551)
+
 ## 7.0.1
 
 * Add back missing search bar to left sidenav on narrow screens.
