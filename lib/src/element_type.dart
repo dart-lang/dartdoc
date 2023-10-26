@@ -275,9 +275,6 @@ abstract class DefinedElementType extends ElementType {
       return AliasedElementType(
           f as ParameterizedType, library, packageGraph, modelElement);
     }
-    assert(f is ParameterizedType || f is TypeParameterType);
-    assert(f is! FunctionType,
-        'detected DefinedElementType for FunctionType: analyzer version too old?');
     if (f is TypeParameterType) {
       return TypeParameterElementType(f, library, packageGraph, modelElement);
     }

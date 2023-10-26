@@ -469,7 +469,7 @@ mixin MixedInTypes on InheritingContainer {
 /// Add the ability for an [InheritingContainer] to be implemented by other
 /// InheritingContainers and to reference what it itself implements.
 mixin TypeImplementing on InheritingContainer {
-  late final List<DefinedElementType> directInterfaces = [
+  late final List<DefinedElementType> _directInterfaces = [
     for (var interface in element.interfaces)
       modelBuilder.typeFrom(interface, library) as DefinedElementType
   ];
@@ -486,7 +486,7 @@ mixin TypeImplementing on InheritingContainer {
   bool get hasPublicInterfaces => publicInterfaces.isNotEmpty;
 
   /// Interfaces directly implemented by this container.
-  List<DefinedElementType> get interfaces => directInterfaces;
+  List<DefinedElementType> get interfaces => _directInterfaces;
 
   /// Returns all the "immediate" public implementors of this
   /// [TypeImplementing].  For a [Mixin], this is actually the mixin
@@ -523,11 +523,14 @@ mixin TypeImplementing on InheritingContainer {
   /// private interfaces, and so unlike other public* methods, is not
   /// a strict subset of [interfaces].
   @override
-  Iterable<DefinedElementType> get publicInterfaces sync* {
-    for (var i in directInterfaces) {
+  Iterable<DefinedElementType> get publicInterfaces {
+    var interfaces = <DefinedElementType>[];
+    for (var interface in _directInterfaces) {
+      var interfaceElement = interface.modelElement;
+
       /// Do not recurse if we can find an element here.
-      if (i.modelElement.canonicalModelElement != null) {
-        yield i;
+      if (interfaceElement.canonicalModelElement != null) {
+        interfaces.add(interface);
         continue;
       }
       // Public types used to be unconditionally exposed here.  However,
@@ -540,21 +543,21 @@ mixin TypeImplementing on InheritingContainer {
       // the superchain and publicInterfaces of this interface to pretend
       // as though the hidden class didn't exist and this class was declared
       // directly referencing the canonical classes further up the chain.
-      if (i.modelElement is InheritingContainer) {
-        var hiddenContainer = i.modelElement as InheritingContainer;
-        if (hiddenContainer.publicSuperChain.isNotEmpty) {
-          yield hiddenContainer.publicSuperChain.first;
+      if (interfaceElement is InheritingContainer) {
+        if (interfaceElement.publicSuperChain.isNotEmpty) {
+          interfaces.add(interfaceElement.publicSuperChain.first);
         }
-        yield* hiddenContainer.publicInterfaces;
+        interfaces.addAll(interfaceElement.publicInterfaces);
       } else {
         assert(
             false,
             'Can not handle intermediate non-public interfaces created by '
             'ModelElements that are not classes or mixins: $fullyQualifiedName '
-            'contains an interface $i, defined by ${i.modelElement}');
+            'contains an interface $interface, defined by $interfaceElement');
         continue;
       }
     }
+    return interfaces;
   }
 }
 

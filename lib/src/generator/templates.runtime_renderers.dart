@@ -15392,19 +15392,6 @@ class _Renderer_TypeImplementing extends RendererBase<TypeImplementing> {
       _propertyMapCache.putIfAbsent(
           CT_,
           () => {
-                'directInterfaces': Property(
-                  getValue: (CT_ c) => c.directInterfaces,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'List<DefinedElementType>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.directInterfaces.map((e) =>
-                        _render_DefinedElementType(e, ast, r.template, sink,
-                            parent: r));
-                  },
-                ),
                 'hasModifiers': Property(
                   getValue: (CT_ c) => c.hasModifiers,
                   renderVariable: (CT_ c, Property<CT_> self,
