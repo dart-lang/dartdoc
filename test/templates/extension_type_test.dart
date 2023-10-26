@@ -20,8 +20,10 @@ void main() async {
   late MemoryResourceProvider resourceProvider;
   late PackageMetaProvider packageMetaProvider;
   late DartdocGeneratorOptionContext context;
-  late List<String> eLines;
-  late List<String> eRightSidebarLines;
+  late List<String> oneLines;
+  late List<String> oneSidebarLines;
+  late List<String> twoLines;
+  late List<String> threeLines;
 
   Future<PubPackageBuilder> createPackageBuilder() async {
     context = await generatorContextFromArgv([
@@ -71,7 +73,15 @@ analyzer:
 ''',
         libFiles: [
           d.file('lib.dart', '''
-extension type FooET<E>(Foo<E> e) {
+class Base1<E> {}
+
+class Base2 {}
+
+class Foo<E> extends Base1<E>, Base2 {}
+
+class FooSub extends Foo<int> {}
+
+extension type One<E>(Foo<E> e) {
   /// A named constructor.
   MyIterable.named(Foo<E> e);
 
@@ -97,7 +107,9 @@ extension type FooET<E>(Foo<E> e) {
   static void set gs1(int value) {}
 }
 
-class Foo<E> {}
+extension type TwoWithBase<E>(Foo<E> it) implements Base1<E>, Base2 {}
+
+extension type ThreeWithOne<E>(FooSub it) implements One<int> {}
 '''),
         ],
         dartdocOptions: '''
@@ -110,29 +122,27 @@ dartdoc:
       );
       await writeDartdocResources(resourceProvider);
       await (await buildDartdoc()).generateDocs();
-      eLines = resourceProvider
-          .getFile(
-              path.join(packagePath, 'doc', 'lib', 'FooET-extension-type.html'))
-          .readAsStringSync()
-          .split('\n');
-      eRightSidebarLines = resourceProvider
-          .getFile(path.join(
-              packagePath, 'doc', 'lib', 'FooET-extension-type-sidebar.html'))
-          .readAsStringSync()
-          .split('\n');
+      oneLines = resourceProvider
+          .readLines([packagePath, 'doc', 'lib', 'One-extension-type.html']);
+      oneSidebarLines = resourceProvider.readLines(
+          [packagePath, 'doc', 'lib', 'One-extension-type-sidebar.html']);
+      twoLines = resourceProvider.readLines(
+          [packagePath, 'doc', 'lib', 'TwoWithBase-extension-type.html']);
+      threeLines = resourceProvider.readLines(
+          [packagePath, 'doc', 'lib', 'ThreeWithOne-extension-type.html']);
     });
 
     test('page contains extension name with generics', () async {
-      eLines.expectMainContentContainsAllInOrder([
+      oneLines.expectMainContentContainsAllInOrder([
         matches(
-          '<span class="kind-class">FooET&lt;<wbr>'
+          '<span class="kind-class">One&lt;<wbr>'
           '<span class="type-parameter">E</span>&gt;</span>',
         )
       ]);
     });
 
-    test('page contains extended type', () async {
-      eLines.expectMainContentContainsAllInOrder([
+    test('page contains representation type', () async {
+      oneLines.expectMainContentContainsAllInOrder([
         matches('<dt>on</dt>'),
         matches('<a href="../lib/Foo-class.html">Foo</a>'
             '<span class="signature">&lt;<wbr>'
@@ -140,36 +150,55 @@ dartdoc:
       ]);
     });
 
+    test('page contains class interfaces', () async {
+      twoLines.expectMainContentContainsAllInOrder([
+        matches('<dt>Implemented types</dt>'),
+        matches('<a href="../lib/Base1-class.html">Base1</a>'
+            '<span class="signature">&lt;<wbr>'
+            '<span class="type-parameter">E</span>&gt;</span>'),
+        matches('<a href="../lib/Base2-class.html">Base2</a>'),
+      ]);
+    });
+
+    test('page contains extension type interfaces', () async {
+      threeLines.expectMainContentContainsAllInOrder([
+        matches('<dt>Implemented types</dt>'),
+        matches('<a href="../lib/One-extension-type.html">One</a>'
+            '<span class="signature">&lt;<wbr>'
+            '<span class="type-parameter">int</span>&gt;</span>'),
+      ]);
+    });
+
     test('page contains constructors', () async {
-      eLines.expectMainContentContainsAllInOrder([
+      oneLines.expectMainContentContainsAllInOrder([
         matches('<h2>Constructors</h2>'),
-        matches('<a href="../lib/FooET/FooET.html">FooET</a>'),
-        matches('<a href="../lib/FooET/FooET.named.html">'
-            'FooET.named</a>'),
+        matches('<a href="../lib/One/One.html">One</a>'),
+        matches('<a href="../lib/One/One.named.html">'
+            'One.named</a>'),
         matches('A named constructor.'),
       ]);
     });
 
     test('page contains static methods', () async {
-      eLines.expectMainContentContainsAllInOrder([
+      oneLines.expectMainContentContainsAllInOrder([
         matches('<h2>Static Methods</h2>'),
-        matches('<a href="../lib/FooET/s1.html">s1</a>'),
+        matches('<a href="../lib/One/s1.html">s1</a>'),
         matches('A static method.'),
       ]);
     });
 
     test('page contains static fields', () async {
-      eLines.expectMainContentContainsAllInOrder([
+      oneLines.expectMainContentContainsAllInOrder([
         matches('<h2>Static Properties</h2>'),
-        matches('<a href="../lib/FooET/sf1.html">sf1</a>'),
+        matches('<a href="../lib/One/sf1.html">sf1</a>'),
         matches('A static field.'),
       ]);
     });
 
     test('page contains static getter/setter pairs', () async {
-      eLines.expectMainContentContainsAllInOrder([
+      oneLines.expectMainContentContainsAllInOrder([
         matches('<h2>Static Properties</h2>'),
-        matches('<a href="../lib/FooET/gs1.html">gs1</a>'),
+        matches('<a href="../lib/One/gs1.html">gs1</a>'),
         matches('A static getter.'),
       ]);
     });
@@ -179,45 +208,45 @@ dartdoc:
       // TODO(srawlins): Implement.
       skip: true,
       () async {
-        eLines.expectMainContentContainsAllInOrder([
+        oneLines.expectMainContentContainsAllInOrder([
           matches('<h2>Constants</h2>'),
-          matches('<a href="../lib/FooET/c1-constant.html">c1</a>'),
+          matches('<a href="../lib/One/c1-constant.html">c1</a>'),
           matches('A constant.'),
         ]);
       },
     );
 
     test('page contains instance operators', () async {
-      eLines.expectMainContentContainsAllInOrder([
+      oneLines.expectMainContentContainsAllInOrder([
         matches('<h2>Operators</h2>'),
-        matches('<a href="../lib/FooET/operator_greater.html">operator ></a>'),
+        matches('<a href="../lib/One/operator_greater.html">operator ></a>'),
         matches('An operator.'),
       ]);
     });
 
     test('sidebar contains methods', () async {
       expect(
-        eRightSidebarLines,
+        oneSidebarLines,
         containsAllInOrder([
           matches(
-            '<a href="../lib/FooET-extension-type.html#instance-methods">'
+            '<a href="../lib/One-extension-type.html#instance-methods">'
             'Methods</a>',
           ),
-          matches('<a href="../lib/FooET/m1.html">m1</a>'),
+          matches('<a href="../lib/One/m1.html">m1</a>'),
         ]),
       );
     });
 
     test('sidebar contains operators', () async {
       expect(
-        eRightSidebarLines,
+        oneSidebarLines,
         containsAllInOrder([
           matches(
-            '<a href="../lib/FooET-extension-type.html#operators">'
+            '<a href="../lib/One-extension-type.html#operators">'
             'Operators</a>',
           ),
           matches(
-            '<a href="../lib/FooET/operator_greater.html">operator ></a>',
+            '<a href="../lib/One/operator_greater.html">operator ></a>',
           ),
         ]),
       );
@@ -225,25 +254,30 @@ dartdoc:
 
     test('sidebar contains static properties', () async {
       expect(
-        eRightSidebarLines,
+        oneSidebarLines,
         containsAllInOrder([
           matches(
-              '<a href="../lib/FooET-extension-type.html#static-properties">Static properties</a>'),
-          matches('<a href="../lib/FooET/gs1.html">gs1</a>'),
-          matches('<a href="../lib/FooET/sf1.html">sf1</a>'),
+              '<a href="../lib/One-extension-type.html#static-properties">Static properties</a>'),
+          matches('<a href="../lib/One/gs1.html">gs1</a>'),
+          matches('<a href="../lib/One/sf1.html">sf1</a>'),
         ]),
       );
     });
 
     test('sidebar contains static methods', () async {
       expect(
-        eRightSidebarLines,
+        oneSidebarLines,
         containsAllInOrder([
           matches(
-              '<a href="../lib/FooET-extension-type.html#static-methods">Static methods</a>'),
-          matches('<a href="../lib/FooET/s1.html">s1</a>'),
+              '<a href="../lib/One-extension-type.html#static-methods">Static methods</a>'),
+          matches('<a href="../lib/One/s1.html">s1</a>'),
         ]),
       );
     });
   });
+}
+
+extension on MemoryResourceProvider {
+  List<String> readLines(List<String> pathParts) =>
+      getFile(path.joinAll(pathParts)).readAsStringSync().split('\n');
 }
