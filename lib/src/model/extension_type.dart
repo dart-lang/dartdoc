@@ -61,8 +61,10 @@ class ExtensionType extends InheritingContainer
   ];
 
   @override
-  // TODO(srawlins): Implement.
-  List<InheritingContainer> get inheritanceChain => [];
+  late final List<InheritingContainer> inheritanceChain = [
+    this,
+    ...interfaces.expandInheritanceChain,
+  ];
 
   @override
   String get filePath => '${library.dirName}/${fileStructure.fileName}';

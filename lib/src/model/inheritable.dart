@@ -8,15 +8,16 @@ import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/special_elements.dart';
 
-/// Mixin for subclasses of ModelElement representing Elements that can be
+/// Mixin for subclasses of [ModelElement] representing elements that can be
 /// inherited from one class to another.
 ///
 /// We can search the inheritance chain between this instance and
 /// [definingEnclosingContainer] in [Inheritable.canonicalEnclosingContainer],
 /// for the canonical [Class] closest to where this member was defined.  We
-/// can then know that when we find [Inheritable.modelElement] inside that [Class]'s
-/// namespace, that's the one we should treat as canonical and implementors
-/// of this class can use that knowledge to determine canonicalization.
+/// can then know that when we find [Inheritable.modelElement] inside that
+/// [Class]'s namespace, that's the one we should treat as canonical and
+/// implementors of this class can use that knowledge to determine
+/// canonicalization.
 ///
 /// We pick the class closest to the [definingEnclosingContainer] so that all
 /// children of that class inheriting the same member will point to the same
@@ -89,7 +90,10 @@ mixin Inheritable on ContainerMember {
       // classes.
       if (definingEnclosingContainer.isCanonical &&
           definingEnclosingContainer.isPublic) {
-        assert(definingEnclosingContainer == found);
+        assert(
+            definingEnclosingContainer == found,
+            'For $element, expected $definingEnclosingContainer to be Object '
+            'or $found, but was neither.');
       }
       if (found != null) {
         return found;
@@ -108,16 +112,14 @@ mixin Inheritable on ContainerMember {
     ];
     var object = packageGraph.specialClasses[SpecialClass.object]!;
 
-    if (enclosingElement is! ExtensionType) {
-      assert(definingEnclosingContainer == object ||
-          inheritance.contains(definingEnclosingContainer));
-      // Unless the code explicitly extends dart:core's Object, we won't get
-      // an entry here.  So add it.
-      if (inheritance.last != object) {
-        inheritance.add(object);
-      }
-      assert(inheritance.where((e) => e == object).length == 1);
+    assert(definingEnclosingContainer == object ||
+        inheritance.contains(definingEnclosingContainer));
+    // Unless the code explicitly extends dart:core's Object, we won't get
+    // an entry here.  So add it.
+    if (inheritance.last != object) {
+      inheritance.add(object);
     }
+    assert(inheritance.where((e) => e == object).length == 1);
     return inheritance;
   }
 
