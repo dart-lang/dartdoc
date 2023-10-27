@@ -16967,6 +16967,7 @@ const _invisibleGetters = {
     'hashCode',
     'implementors',
     'inheritThrough',
+    'inheritanceManager',
     'invisibleAnnotations',
     'libraries',
     'libraryCount',
