@@ -361,18 +361,19 @@ abstract class InheritingContainer extends Container
     while (parent != null) {
       typeChain.add(parent);
       final parentType = parent.type;
-      if (parentType is InterfaceType) {
-        // Avoid adding [Object] to the [superChain] ([_supertype] already has
-        // this check).
-        if (parentType.superclass?.superclass == null) {
-          break;
-        } else {
-          parent = modelBuilder.typeFrom(parentType.superclass!, library)
-              as DefinedElementType?;
-        }
-      } else {
-        parent = (parent.modelElement as Class).supertype;
+      if (parentType is! InterfaceType) {
+        throw StateError('ancestor of $this is $parent with model element '
+            '${parent.modelElement}');
       }
+
+      var superclass = parentType.superclass;
+      // Avoid adding [Object] to the [superChain] ([_supertype] already has
+      // this check).
+      if (superclass == null || superclass.superclass == null) {
+        break;
+      }
+      parent =
+          modelBuilder.typeFrom(superclass, library) as DefinedElementType?;
     }
     return typeChain;
   }

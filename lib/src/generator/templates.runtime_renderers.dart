@@ -3753,18 +3753,6 @@ class _Renderer_DefinedElementType extends RendererBase<DefinedElementType> {
           CT_,
           () => {
                 ..._Renderer_ElementType.propertyMap<CT_>(),
-                'element': Property(
-                  getValue: (CT_ c) => c.element,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'Element'),
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.element, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['Element']!);
-                  },
-                ),
                 'fullyQualifiedName': Property(
                   getValue: (CT_ c) => c.fullyQualifiedName,
                   renderVariable:
@@ -3798,13 +3786,6 @@ class _Renderer_DefinedElementType extends RendererBase<DefinedElementType> {
                     renderSimple(c.instantiatedType, ast, r.template, sink,
                         parent: r, getters: _invisibleGetters['DartType']!);
                   },
-                ),
-                'isParameterType': Property(
-                  getValue: (CT_ c) => c.isParameterType,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isParameterType == true,
                 ),
                 'isPublic': Property(
                   getValue: (CT_ c) => c.isPublic,

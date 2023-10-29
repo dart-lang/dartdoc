@@ -283,15 +283,11 @@ abstract class DefinedElementType extends ElementType {
         f as ParameterizedType, library, packageGraph, modelElement);
   }
 
-  Element get element => modelElement.element;
-
   @override
   String get name => type.documentableElement!.name!;
 
   @override
   String get fullyQualifiedName => modelElement.fullyQualifiedName;
-
-  bool get isParameterType => type is TypeParameterType;
 
   /// Whether the underlying, canonical element is public.
   ///
@@ -299,9 +295,9 @@ abstract class DefinedElementType extends ElementType {
   /// would ordinarily do.
   @override
   bool get isPublic {
-    var canonicalClass = modelElement.packageGraph
-            .findCanonicalModelElementFor(modelElement.element) ??
-        modelElement;
+    var canonicalClass =
+        packageGraph.findCanonicalModelElementFor(modelElement.element) ??
+            modelElement;
     return canonicalClass.isPublic;
   }
 
@@ -360,7 +356,7 @@ abstract class DefinedElementType extends ElementType {
   @internal
   @override
   CommentReferable get definingCommentReferable =>
-      modelBuilder.fromElement(element);
+      modelBuilder.fromElement(modelElement.element);
 }
 
 /// Any callable [ElementType] will mix-in this class, whether anonymous or not,
