@@ -285,8 +285,8 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
 
   /// All [ModelElement]s constructed for this package; a superset of
   /// [_allModelElements].
-  final Map<(Element element, Library? library, Container? enclosingElement),
-      ModelElement?> allConstructedModelElements = {};
+  final Map<(Element element, Library library, Container? enclosingElement),
+      ModelElement> allConstructedModelElements = {};
 
   /// Anything that might be inheritable, place here for later lookup.
   final Map<(Element, Library), Set<ModelElement>> allInheritableElements = {};
@@ -538,7 +538,6 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       if (modelElement is Dynamic) continue;
       // TODO: see [Accessor.enclosingCombo]
       if (modelElement is Accessor) continue;
-      if (modelElement == null) continue;
       final href = modelElement.href;
       if (href == null) continue;
 
@@ -680,7 +679,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     return buffer.toString();
   }
 
-  final Map<Element?, Library?> _canonicalLibraryFor = {};
+  final Map<Element, Library?> _canonicalLibraryFor = {};
 
   /// Tries to find a top level library that references this element.
   Library? _findCanonicalLibraryFor(Element e) {
@@ -733,8 +732,8 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       lib ??= modelBuilder.fromElement(enclosingElement.library) as Library?;
       // TODO(keertip): Find a better way to exclude members of extensions
       // when libraries are specified using the "--include" flag.
-      if (lib?.isDocumented == true) {
-        return modelBuilder.from(e, lib!);
+      if (lib != null && lib.isDocumented) {
+        return modelBuilder.from(e, lib);
       }
     }
     // TODO(jcollins-g): The data structures should be changed to eliminate
@@ -773,20 +772,22 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
 
   ModelElement? _findCanonicalModelElementForAmbiguous(Element e, Library? lib,
       {InheritingContainer? preferredClass}) {
-    var candidates = <ModelElement?>{};
-    var constructedWithKey = allConstructedModelElements[(e, lib, null)];
-    if (constructedWithKey != null) {
-      candidates.add(constructedWithKey);
-    }
-    var constructedWithKeyWithClass =
-        allConstructedModelElements[(e, lib, preferredClass)];
-    if (constructedWithKeyWithClass != null) {
-      candidates.add(constructedWithKeyWithClass);
-    }
-    if (candidates.isEmpty) {
-      candidates = {
-        ...?allInheritableElements[(e, lib)]?.where((me) => me.isCanonical),
-      };
+    var candidates = <ModelElement>{};
+    if (lib != null) {
+      var constructedWithKey = allConstructedModelElements[(e, lib, null)];
+      if (constructedWithKey != null) {
+        candidates.add(constructedWithKey);
+      }
+      var constructedWithKeyWithClass =
+          allConstructedModelElements[(e, lib, preferredClass)];
+      if (constructedWithKeyWithClass != null) {
+        candidates.add(constructedWithKeyWithClass);
+      }
+      if (candidates.isEmpty) {
+        candidates = {
+          ...?allInheritableElements[(e, lib)]?.where((me) => me.isCanonical),
+        };
+      }
     }
 
     var canonicalClass = findCanonicalModelElementFor(e.enclosingElement);
@@ -795,7 +796,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
           .where((m) => m.element == e));
     }
 
-    var matches = {...candidates.whereNotNull().where((me) => me.isCanonical)};
+    var matches = {...candidates.where((me) => me.isCanonical)};
 
     // It's possible to find [Accessor]s but no combos.  Be sure that if we
     // have accessors, we find their combos too.
