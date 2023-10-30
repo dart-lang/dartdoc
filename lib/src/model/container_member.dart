@@ -38,13 +38,13 @@ mixin ContainerMember on ModelElement implements EnclosedElement {
 
   Container? computeCanonicalEnclosingContainer() {
     final enclosingElement = this.enclosingElement;
-    if (enclosingElement is! Extension) {
-      return packageGraph.findCanonicalModelElementFor(element.enclosingElement)
-          as Container?;
-    }
-    // TODO(jcollins-g): move Extension specific code to [Extendable]
-    return packageGraph.findCanonicalModelElementFor(enclosingElement.element)
-        as Container?;
+    return switch (enclosingElement) {
+      Extension() =>
+        packageGraph.findCanonicalModelElementFor(enclosingElement.element),
+      ExtensionType() =>
+        packageGraph.findCanonicalModelElementFor(enclosingElement.element),
+      _ => packageGraph.findCanonicalModelElementFor(element.enclosingElement),
+    } as Container?;
   }
 
   @override

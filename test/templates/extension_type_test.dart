@@ -73,7 +73,13 @@ analyzer:
 ''',
         libFiles: [
           d.file('lib.dart', '''
-class Base1<E> {}
+class Base1<E> {
+  // An inherited method.
+  void m2() {}
+
+  // An inherited field.
+  int get field1 => 1;
+}
 
 class Base2 {}
 
@@ -81,7 +87,7 @@ class Foo<E> extends Base1<E>, Base2 {}
 
 class FooSub extends Foo<int> {}
 
-extension type One<E>(Foo<E> e) {
+extension type One<E>(Foo<E> it) {
   /// A named constructor.
   MyIterable.named(Foo<E> e);
 
@@ -109,7 +115,7 @@ extension type One<E>(Foo<E> e) {
 
 extension type TwoWithBase<E>(Foo<E> it) implements Base1<E>, Base2 {}
 
-extension type ThreeWithOne<E>(FooSub it) implements One<int> {}
+extension type ThreeWithOne<E>(FooSub it3) implements One<int> {}
 '''),
         ],
         dartdocOptions: '''
@@ -216,8 +222,66 @@ dartdoc:
       },
     );
 
-    test('page contains instance operators', () async {
+    test('page contains representation field', () async {
       oneLines.expectMainContentContainsAllInOrder([
+        matches('<h2>Properties</h2>'),
+        matches('<a href="../lib/One/it.html">it</a>'),
+        matches('An operator.'),
+      ]);
+    });
+
+    test('page contains inherited representation field', () async {
+      threeLines.expectMainContentContainsAllInOrder([
+        matches('<h2>Properties</h2>'),
+        matches('<a href="../lib/One/it.html">it</a>'),
+      ]);
+    });
+
+    test('page contains inherited getters', () async {
+      twoLines.expectMainContentContainsAllInOrder([
+        matches('<h2>Properties</h2>'),
+        matches('<a href="../lib/Base1/field1.html">field1</a>'),
+      ]);
+    });
+
+    test('page contains instance methods', () async {
+      oneLines.expectMainContentContainsAllInOrder([
+        matches('<h2>Methods</h2>'),
+        matches('<dt id="m1" class="callable">'),
+        matches('<a href="../lib/One/m1.html">m1</a>'),
+        matches('An instance method.'),
+      ]);
+    });
+
+    test('page contains methods inherited from a class super-interface',
+        () async {
+      twoLines.expectMainContentContainsAllInOrder([
+        matches('<h2>Methods</h2>'),
+        matches('<dt id="m2" class="callable inherited">'),
+        matches('<a href="../lib/Base1/m2.html">m2</a>'),
+      ]);
+    });
+
+    test(
+        'page contains methods inherited from an extension type '
+        'super-interface', () async {
+      threeLines.expectMainContentContainsAllInOrder([
+        matches('<h2>Methods</h2>'),
+        matches('<dt id="m1" class="callable inherited">'),
+        matches('<a href="../lib/One/m1.html">m1</a>'),
+      ]);
+    });
+
+    test('page contains operators', () async {
+      oneLines.expectMainContentContainsAllInOrder([
+        matches('<h2>Operators</h2>'),
+        matches('<a href="../lib/One/operator_greater.html">operator ></a>'),
+        matches('An operator.'),
+      ]);
+    });
+
+    test('page contains inherited operators', () async {
+      threeLines.expectMainContentContainsAllInOrder([
         matches('<h2>Operators</h2>'),
         matches('<a href="../lib/One/operator_greater.html">operator ></a>'),
         matches('An operator.'),

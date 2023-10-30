@@ -8,6 +8,9 @@ import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
 // ignore: implementation_imports
+import 'package:analyzer/src/dart/element/inheritance_manager3.dart'
+    show InheritanceManager3;
+// ignore: implementation_imports
 import 'package:analyzer/src/generated/sdk.dart' show DartSdk, SdkLibrary;
 // ignore: implementation_imports
 import 'package:analyzer/src/generated/source.dart' show Source;
@@ -42,6 +45,8 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     // This can happen for packages that only contain embedder SDKs.
     Package.fromPackageMeta(packageMeta, this);
   }
+
+  final InheritanceManager3 inheritanceManager = InheritanceManager3();
 
   void dispose() {
     // Clear out any cached tool snapshots and temporary directories.
