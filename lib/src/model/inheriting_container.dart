@@ -291,6 +291,7 @@ abstract class InheritingContainer extends Container
       hasPublicSuperChainReversed ||
       hasPotentiallyApplicableExtensions;
 
+  @visibleForTesting
   bool get hasPublicInheritedMethods => publicInheritedMethods.isNotEmpty;
 
   bool get hasPublicSuperChainReversed => publicSuperChainReversed.isNotEmpty;
@@ -303,6 +304,7 @@ abstract class InheritingContainer extends Container
   /// purposes in abstract classes.
   List<InheritingContainer> get inheritanceChain;
 
+  @visibleForTesting
   Iterable<Field> get inheritedFields => allFields.where((f) => f.isInherited);
 
   @override
@@ -332,6 +334,7 @@ abstract class InheritingContainer extends Container
 
   bool get isSealed;
 
+  @visibleForTesting
   Iterable<Field> get publicInheritedFields =>
       model_utils.filterNonPublic(inheritedFields);
 
@@ -347,6 +350,7 @@ abstract class InheritingContainer extends Container
   bool get publicInheritedInstanceOperators =>
       publicInstanceOperators.every((f) => f.isInherited);
 
+  @visibleForTesting
   Iterable<Method> get publicInheritedMethods =>
       model_utils.filterNonPublic(inheritedMethods);
 

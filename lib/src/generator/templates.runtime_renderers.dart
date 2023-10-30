@@ -7663,13 +7663,6 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.hasModifiers == true,
                 ),
-                'hasPublicInheritedMethods': Property(
-                  getValue: (CT_ c) => c.hasPublicInheritedMethods,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasPublicInheritedMethods == true,
-                ),
                 'hasPublicSuperChainReversed': Property(
                   getValue: (CT_ c) => c.hasPublicSuperChainReversed,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -7688,18 +7681,6 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                     return c.inheritanceChain.map((e) =>
                         _render_InheritingContainer(e, ast, r.template, sink,
                             parent: r));
-                  },
-                ),
-                'inheritedFields': Property(
-                  getValue: (CT_ c) => c.inheritedFields,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<Field>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.inheritedFields.map((e) =>
-                        _render_Field(e, ast, r.template, sink, parent: r));
                   },
                 ),
                 'inheritedMethods': Property(
@@ -7835,18 +7816,6 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                         parent: r);
                   },
                 ),
-                'publicInheritedFields': Property(
-                  getValue: (CT_ c) => c.publicInheritedFields,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<Field>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.publicInheritedFields.map((e) =>
-                        _render_Field(e, ast, r.template, sink, parent: r));
-                  },
-                ),
                 'publicInheritedInstanceFields': Property(
                   getValue: (CT_ c) => c.publicInheritedInstanceFields,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -7868,18 +7837,6 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) =>
                       c.publicInheritedInstanceOperators == true,
-                ),
-                'publicInheritedMethods': Property(
-                  getValue: (CT_ c) => c.publicInheritedMethods,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<Method>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.publicInheritedMethods.map((e) =>
-                        _render_Method(e, ast, r.template, sink, parent: r));
-                  },
                 ),
                 'publicInterfaces': Property(
                   getValue: (CT_ c) => c.publicInterfaces,

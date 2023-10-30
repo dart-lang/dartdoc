@@ -287,7 +287,7 @@ abstract class ModelElement extends Canonicalization
   /// Caches a newly-created [ModelElement] from [ModelElement._from] or
   /// [ModelElement._fromPropertyInducingElement].
   static void _cacheNewModelElement(
-      Element e, ModelElement? newModelElement, Library library,
+      Element e, ModelElement newModelElement, Library library,
       {Container? enclosingContainer}) {
     // TODO(jcollins-g): Reenable Parameter caching when dart-lang/sdk#30146
     //                   is fixed?
@@ -355,8 +355,8 @@ abstract class ModelElement extends Canonicalization
     PropertyAccessorElement e,
     Library library,
     PackageGraph packageGraph, {
-    Container? enclosingContainer,
-    Member? originalMember,
+    required Container? enclosingContainer,
+    required Member? originalMember,
   }) {
     // Accessors can be part of a [Container], or a part of a [Library].
     if (e.enclosingElement is ExtensionElement ||
