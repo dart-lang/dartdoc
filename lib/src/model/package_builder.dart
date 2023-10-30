@@ -66,6 +66,10 @@ class PubPackageBuilder implements PackageBuilder {
     }
 
     var rendererFactory = RendererFactory.forFormat(config.format);
+    runtimeStats.resetAccumulators([
+      'elementTypeInstantiation',
+      'modelElementCacheInsertion',
+    ]);
 
     runtimeStats.startPerfTask('_calculatePackageMap');
     await _calculatePackageMap();

@@ -27,6 +27,7 @@ import 'package:dartdoc/src/model_utils.dart' as utils;
 import 'package:dartdoc/src/render/model_element_renderer.dart';
 import 'package:dartdoc/src/render/parameter_renderer.dart';
 import 'package:dartdoc/src/render/source_code_renderer.dart';
+import 'package:dartdoc/src/runtime_stats.dart';
 import 'package:dartdoc/src/source_linker.dart';
 import 'package:dartdoc/src/special_elements.dart';
 import 'package:dartdoc/src/type_utils.dart';
@@ -292,6 +293,7 @@ abstract class ModelElement extends Canonicalization
     // TODO(jcollins-g): Reenable Parameter caching when dart-lang/sdk#30146
     //                   is fixed?
     if (library != Library.sentinel && newModelElement is! Parameter) {
+      runtimeStats.incrementAccumulator('modelElementCacheInsertion');
       var key = (e, library, enclosingContainer);
       library.packageGraph.allConstructedModelElements[key] = newModelElement;
       if (newModelElement is Inheritable) {
