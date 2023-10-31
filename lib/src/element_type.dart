@@ -57,8 +57,6 @@ abstract class ElementType
     return DefinedElementType._from(type, modelElement, library, packageGraph);
   }
 
-  bool get canHaveParameters => false;
-
   bool get isTypedef => false;
 
   String get linkedName;
