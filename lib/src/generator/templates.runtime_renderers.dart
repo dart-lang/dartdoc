@@ -4399,13 +4399,6 @@ class _Renderer_ElementType extends RendererBase<ElementType> {
                 ..._Renderer_CommentReferable.propertyMap<CT_>(),
                 ..._Renderer_Nameable.propertyMap<CT_>(),
                 ..._Renderer_ModelBuilder.propertyMap<CT_>(),
-                'canHaveParameters': Property(
-                  getValue: (CT_ c) => c.canHaveParameters,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.canHaveParameters == true,
-                ),
                 'instantiatedType': Property(
                   getValue: (CT_ c) => c.instantiatedType,
                   renderVariable: (CT_ c, Property<CT_> self,
