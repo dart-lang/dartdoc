@@ -104,9 +104,9 @@ abstract class TemplateData<T extends Documentable> extends TemplateDataBase {
   String? get belowSidebarPath => self.belowSidebarPath;
 
   String _layoutTitle(
-    String name,
-    String? kind, {
-    required bool isDeprecated,
+    String name, {
+    String? kind,
+    bool isDeprecated = false,
   }) =>
       _packageGraph.rendererFactory.templateRenderer
           .composeLayoutTitle(name, kind, isDeprecated);
@@ -140,8 +140,11 @@ class PackageTemplateData extends TemplateData<Package> {
   Package get self => package;
 
   @override
-  String get layoutTitle =>
-      _layoutTitle(package.name, package.kind.toString(), isDeprecated: false);
+  String get layoutTitle => _layoutTitle(
+        package.name,
+        kind: package.kind.toString(),
+      );
+
   @override
   String get metaDescription =>
       '${package.name} API docs, for the Dart programming language.';
@@ -187,9 +190,10 @@ class CategoryTemplateData extends TemplateData<Category>
   String get title => '${category.name} ${category.kind} - Dart API';
 
   @override
-  String get layoutTitle =>
-      _layoutTitle(category.name, category.kind.toString(),
-          isDeprecated: false);
+  String get layoutTitle => _layoutTitle(
+        category.name,
+        kind: category.kind.toString(),
+      );
 
   @override
   String get metaDescription =>
@@ -221,7 +225,6 @@ class LibraryTemplateData extends TemplateData<Library>
   @override
   String get layoutTitle => _layoutTitle(
         library.breadcrumbName,
-        null, // Do not display the word, 'library'
         isDeprecated: library.isDeprecated,
       );
 
@@ -291,9 +294,12 @@ abstract class InheritingContainerTemplateData<T extends InheritingContainer>
       '${library.name} library, for the Dart programming language.';
 
   @override
-  String get layoutTitle =>
-      _layoutTitle(clazz.nameWithLinkedGenerics, clazz.fullkind,
-          isDeprecated: clazz.isDeprecated);
+  String get layoutTitle => _layoutTitle(
+        clazz.nameWithLinkedGenerics,
+        kind: clazz.fullkind,
+        isDeprecated: clazz.isDeprecated,
+      );
+
   @override
   List<Documentable> get navLinks => [_packageGraph.defaultPackage, library];
 }
@@ -328,9 +334,12 @@ class ExtensionTemplateData<T extends Extension> extends TemplateData<T>
       '${library.name} library, for the Dart programming language.';
 
   @override
-  String get layoutTitle =>
-      _layoutTitle(extension.name, extension.kind.toString(),
-          isDeprecated: false);
+  String get layoutTitle => _layoutTitle(
+        extension.name, kind: extension.kind.toString(),
+        // TODO(srawlins): Why can't an extension be deprecated?
+        isDeprecated: false,
+      );
+
   @override
   List<Documentable> get navLinks => [_packageGraph.defaultPackage, library];
 }
@@ -366,9 +375,12 @@ final class ExtensionTypeTemplateData<T extends ExtensionType>
       '${library.name} library, for the Dart programming language.';
 
   @override
-  String get layoutTitle =>
-      _layoutTitle(extensionType.name, extensionType.kind.toString(),
-          isDeprecated: false);
+  String get layoutTitle => _layoutTitle(
+        extensionType.name,
+        kind: extensionType.kind.toString(),
+        // TODO(srawlins): Use real deprecation here.
+        isDeprecated: false,
+      );
 
   @override
   List<Documentable> get navLinks => [_packageGraph.defaultPackage, library];
@@ -398,8 +410,12 @@ class ConstructorTemplateData extends TemplateData<Constructor>
   Constructor get self => constructor;
 
   @override
-  String get layoutTitle => _layoutTitle(constructor.name, constructor.fullKind,
-      isDeprecated: constructor.isDeprecated);
+  String get layoutTitle => _layoutTitle(
+        constructor.name,
+        kind: constructor.fullKind,
+        isDeprecated: constructor.isDeprecated,
+      );
+
   @override
   List<Documentable> get navLinks => [_packageGraph.defaultPackage, library];
   @override
@@ -447,10 +463,14 @@ class FunctionTemplateData extends TemplateData<ModelFunction>
   @override
   String get title =>
       '${function.name} function - ${library.name} library - Dart API';
+
   @override
-  String get layoutTitle =>
-      _layoutTitle(function.nameWithGenerics, Kind.function.toString(),
-          isDeprecated: function.isDeprecated);
+  String get layoutTitle => _layoutTitle(
+        function.nameWithGenerics,
+        kind: Kind.function.toString(),
+        isDeprecated: function.isDeprecated,
+      );
+
   @override
   String get metaDescription =>
       'API docs for the ${function.name} function from the '
@@ -485,10 +505,14 @@ class MethodTemplateData extends TemplateData<Method>
   String get title =>
       '${method.name} method - ${container.name} ${container.kind} - '
       '${library.name} library - Dart API';
+
   @override
-  String get layoutTitle =>
-      _layoutTitle(method.nameWithGenerics, method.fullkind,
-          isDeprecated: method.isDeprecated);
+  String get layoutTitle => _layoutTitle(
+        method.nameWithGenerics,
+        kind: method.fullkind,
+        isDeprecated: method.isDeprecated,
+      );
+
   @override
   String get metaDescription =>
       'API docs for the ${method.name} method from the ${container.name} '
@@ -525,9 +549,14 @@ class PropertyTemplateData extends TemplateData<Field>
   String get title => '${property.name} ${property.kind} - '
       '${container.name} ${container.kind} - '
       '${library.name} library - Dart API';
+
   @override
-  String get layoutTitle => _layoutTitle(property.name, property.fullkind,
-      isDeprecated: property.isDeprecated);
+  String get layoutTitle => _layoutTitle(
+        property.name,
+        kind: property.fullkind,
+        isDeprecated: property.isDeprecated,
+      );
+
   @override
   String get metaDescription =>
       'API docs for the ${property.name} ${property.kind} from the '
@@ -559,10 +588,14 @@ class TypedefTemplateData extends TemplateData<Typedef>
   @override
   String get title =>
       '${typeDef.name} typedef - ${library.name} library - Dart API';
+
   @override
-  String get layoutTitle =>
-      _layoutTitle(typeDef.nameWithGenerics, Kind.typedef.toString(),
-          isDeprecated: typeDef.isDeprecated);
+  String get layoutTitle => _layoutTitle(
+        typeDef.nameWithGenerics,
+        kind: Kind.typedef.toString(),
+        isDeprecated: typeDef.isDeprecated,
+      );
+
   @override
   String get metaDescription =>
       'API docs for the ${typeDef.name} typedef from the '
@@ -591,9 +624,14 @@ class TopLevelPropertyTemplateData extends TemplateData<TopLevelVariable>
   @override
   String get title =>
       '${property.name} $_type - ${library.name} library - Dart API';
+
   @override
-  String get layoutTitle =>
-      _layoutTitle(property.name, _type, isDeprecated: property.isDeprecated);
+  String get layoutTitle => _layoutTitle(
+        property.name,
+        kind: _type,
+        isDeprecated: property.isDeprecated,
+      );
+
   @override
   String get metaDescription =>
       'API docs for the ${property.name} $_type from the '
