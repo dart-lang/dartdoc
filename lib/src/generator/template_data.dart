@@ -103,7 +103,11 @@ abstract class TemplateData<T extends Documentable> extends TemplateDataBase {
 
   String? get belowSidebarPath => self.belowSidebarPath;
 
-  String _layoutTitle(String name, String kind, {required bool isDeprecated}) =>
+  String _layoutTitle(
+    String name,
+    String? kind, {
+    required bool isDeprecated,
+  }) =>
       _packageGraph.rendererFactory.templateRenderer
           .composeLayoutTitle(name, kind, isDeprecated);
 }
@@ -217,7 +221,7 @@ class LibraryTemplateData extends TemplateData<Library>
   @override
   String get layoutTitle => _layoutTitle(
         library.breadcrumbName,
-        Kind.library.toString(),
+        null, // Do not display the word, 'library'
         isDeprecated: library.isDeprecated,
       );
 
