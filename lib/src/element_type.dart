@@ -64,6 +64,12 @@ abstract class ElementType
   /// Name with generics and nullability indication.
   String get nameWithGenerics;
 
+  @override
+  String get displayName => throw UnimplementedError();
+
+  @override
+  String get breadcrumbName => throw UnimplementedError();
+
   DartType get instantiatedType;
 
   Iterable<ElementType> get typeArguments;

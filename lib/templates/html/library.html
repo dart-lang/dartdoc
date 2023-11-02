@@ -6,9 +6,15 @@
       data-above-sidebar="{{ aboveSidebarPath }}"
       data-below-sidebar="{{ belowSidebarPath }}">
       {{ !-- TODO(srawlins): Add annotations. }}
-    {{#self}}
-      <div>{{>source_link}}<h1><span class="kind-library">{{{name}}}</span> {{kind}} {{>feature_set}} {{>categorization}}</h1></div>
-    {{/self}}
+    {{ #self }}
+      <div>
+        {{ >source_link }}
+        <h1>
+          <span class="kind-library">{{{ displayName }}}</span>
+          {{ kind }} {{ >feature_set }} {{ >categorization }}
+        </h1>
+      </div>
+    {{ /self }}
 
     {{#library}}
     {{>documentation}}

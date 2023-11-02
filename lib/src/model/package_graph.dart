@@ -59,6 +59,12 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   @override
   String get name => '';
 
+  @override
+  String get displayName => throw UnimplementedError();
+
+  @override
+  String get breadcrumbName => throw UnimplementedError();
+
   /// Adds [resolvedLibrary] to the package graph, adding it to [allLibraries],
   /// and to the [Package] which is created from the [PackageMeta] for the
   /// library.

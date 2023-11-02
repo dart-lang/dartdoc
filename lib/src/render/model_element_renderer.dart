@@ -31,7 +31,8 @@ class ModelElementRendererHtml extends ModelElementRenderer {
   @override
   String renderLinkedName(ModelElement modelElement) {
     var cssClass = modelElement.isDeprecated ? ' class="deprecated"' : '';
-    return '<a$cssClass href="${modelElement.href}">${modelElement.name}</a>';
+    return '<a$cssClass href="${modelElement.href}">'
+        '${modelElement.displayName}</a>';
   }
 
   @override
