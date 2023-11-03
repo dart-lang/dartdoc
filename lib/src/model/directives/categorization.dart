@@ -6,9 +6,8 @@ import 'package:collection/collection.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:meta/meta.dart';
 
-final RegExp _categoryRegExp = RegExp(
-    r'[ ]*{@(category|subCategory|image) (.+?)}[ ]*\n?',
-    multiLine: true);
+final RegExp _categoryRegExp =
+    RegExp(r'[ ]*{@(category|subCategory) (.+?)}[ ]*\n?', multiLine: true);
 
 /// Mixin parsing the `@category` directive for ModelElements.
 mixin Categorization on DocumentationComment implements Indexable {
@@ -31,15 +30,12 @@ mixin Categorization on DocumentationComment implements Indexable {
           categorySet.add(match[2]!.trim());
         case 'subCategory':
           subCategorySet.add(match[2]!.trim());
-        case 'image':
-          _image = match[2]!.trim();
       }
       return '';
     });
 
     _categoryNames = categorySet.toList(growable: false)..sort();
     _subCategoryNames = subCategorySet.toList(growable: false)..sort();
-    _image ??= '';
     return rawDocs;
   }
 
@@ -63,17 +59,6 @@ mixin Categorization on DocumentationComment implements Indexable {
     // TODO(jcollins-g): avoid side-effect dependency
     if (_categoryNames == null) documentationLocal;
     return _categoryNames;
-  }
-
-  bool get hasImage => image!.isNotEmpty;
-  String? _image;
-
-  /// Either a URI to a defined image,
-  /// or 'null' if one was not declared.
-  String? get image {
-    // TODO(jcollins-g): avoid side-effect dependency
-    if (_image == null) documentationLocal;
-    return _image;
   }
 
   @visibleForTesting
