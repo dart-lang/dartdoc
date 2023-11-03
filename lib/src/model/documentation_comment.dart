@@ -162,7 +162,6 @@ mixin DocumentationComment
     'category',
     'hideConstantImplementations',
     'image',
-    'samples',
     'subCategory',
 
     // Common Dart annotations which may decorate named parameters:
