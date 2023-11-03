@@ -7,7 +7,7 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:meta/meta.dart';
 
 final RegExp _categoryRegExp = RegExp(
-    r'[ ]*{@(api|category|subCategory|image|samples) (.+?)}[ ]*\n?',
+    r'[ ]*{@(category|subCategory|image|samples) (.+?)}[ ]*\n?',
     multiLine: true);
 
 /// Mixin parsing the `@category` directive for ModelElements.
@@ -28,7 +28,6 @@ mixin Categorization on DocumentationComment implements Indexable {
       _hasCategorization = true;
       switch (match[1]) {
         case 'category':
-        case 'api':
           categorySet.add(match[2]!.trim());
         case 'subCategory':
           subCategorySet.add(match[2]!.trim());
