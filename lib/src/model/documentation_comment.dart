@@ -158,7 +158,6 @@ mixin DocumentationComment
     'youtube',
 
     // Other directives, parsed by `model/directives/*.dart`:
-    'api',
     'canonicalFor',
     'category',
     'hideConstantImplementations',
