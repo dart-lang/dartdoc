@@ -973,13 +973,6 @@ class _Renderer_Categorization extends RendererBase<Categorization> {
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.hasImage == true,
                 ),
-                'hasSamples': Property(
-                  getValue: (CT_ c) => c.hasSamples,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasSamples == true,
-                ),
                 'hasSubCategoryNames': Property(
                   getValue: (CT_ c) => c.hasSubCategoryNames,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -1006,28 +999,6 @@ class _Renderer_Categorization extends RendererBase<Categorization> {
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_String(c.image!, ast, r.template, sink, parent: r);
-                  },
-                ),
-                'samples': Property(
-                  getValue: (CT_ c) => c.samples,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_String.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as String,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => c.samples == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.samples!, ast, r.template, sink,
-                        parent: r);
                   },
                 ),
                 'subCategoryNames': Property(

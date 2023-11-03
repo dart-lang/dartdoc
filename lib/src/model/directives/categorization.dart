@@ -7,7 +7,7 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:meta/meta.dart';
 
 final RegExp _categoryRegExp = RegExp(
-    r'[ ]*{@(category|subCategory|image|samples) (.+?)}[ ]*\n?',
+    r'[ ]*{@(category|subCategory|image) (.+?)}[ ]*\n?',
     multiLine: true);
 
 /// Mixin parsing the `@category` directive for ModelElements.
@@ -33,8 +33,6 @@ mixin Categorization on DocumentationComment implements Indexable {
           subCategorySet.add(match[2]!.trim());
         case 'image':
           _image = match[2]!.trim();
-        case 'samples':
-          _samples = match[2]!.trim();
       }
       return '';
     });
@@ -42,7 +40,6 @@ mixin Categorization on DocumentationComment implements Indexable {
     _categoryNames = categorySet.toList(growable: false)..sort();
     _subCategoryNames = subCategorySet.toList(growable: false)..sort();
     _image ??= '';
-    _samples ??= '';
     return rawDocs;
   }
 
@@ -79,17 +76,6 @@ mixin Categorization on DocumentationComment implements Indexable {
     return _image;
   }
 
-  bool get hasSamples => samples?.isNotEmpty ?? false;
-  String? _samples;
-
-  /// Either a URI to documentation with samples,
-  /// or 'null' if one was not declared.
-  String? get samples {
-    // TODO(jcollins-g): avoid side-effect dependency
-    if (_samples == null) documentationLocal;
-    return _samples;
-  }
-
   @visibleForTesting
   List<Category> get categories => [
         ...?categoryNames?.map((n) => package.nameToCategory[n]).whereNotNull()
@@ -102,7 +88,7 @@ mixin Categorization on DocumentationComment implements Indexable {
 
   bool? _hasCategorization;
 
-  /// True if categories, subcategories, a documentation icon, or samples were
+  /// True if categories, subcategories, or a documentation icon were
   /// declared.
   late final bool hasCategorization = () {
     if (_hasCategorization == null) documentationLocal;
