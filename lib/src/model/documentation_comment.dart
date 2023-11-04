@@ -14,7 +14,7 @@ import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p show Context;
 
 final _templatePattern = RegExp(
-    r'[ ]*\{@template\s+(\S.*?)\}([^]+?)\{@endtemplate\}[ ]*(\n?)');
+    r'[ ]*\{@template\s+([^\s}].*?)\}([^]+?)\{@endtemplate\}[ ]*(\n?)');
 final _htmlPattern = RegExp(
     r'[ ]*\{@inject-html\s*\}([^]+?)\{@end-inject-html\}[ ]*\n?');
 
