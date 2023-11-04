@@ -7,115 +7,82 @@
 /// [ModelElement]s.
 ///
 /// Finding these must not depend on canonicalization.
-library dartdoc.special_elements;
+library;
 
 import 'package:analyzer/dart/element/element.dart';
 // ignore: implementation_imports
 import 'package:analyzer/src/generated/sdk.dart' show DartSdk;
+import 'package:collection/collection.dart';
 import 'package:dartdoc/src/model/model.dart';
 
-/// Which of the [SpecialClasses] to get.
-enum SpecialClass {
-  /// From dart:core, Object
-  object,
-
-  /// From dart:_interceptors, Interceptor
-  interceptor,
-
-  /// From dart:core, pragma
-  pragma,
-
-  /// From dart:core, Enum
-  enumClass,
-}
-
 /// A declaration of a special [Class] and how to find it.
-class _SpecialClassDefinition {
+enum SpecialClass {
+  object('Object', 'dart.core', 'dart:core'),
+
+  interceptor('Interceptor', '_interceptors', 'dart:_interceptors'),
+
+  pragma('pragma', 'dart.core', 'dart:core'),
+
+  enum_('Enum', 'dart.core', 'dart:core');
+
   /// The package name in which these special [ModelElement]s can be found.
-  static const String packageName = 'Dart';
+  static const String _packageName = 'Dart';
 
-  /// Which specialElement this is.
-  final SpecialClass specialClass;
-
-  /// Name of the ModelElement.
-  final String name;
+  /// Name of the [ModelElement].
+  final String _name;
 
   /// The library name for the [LibraryElement] in which this [ModelElement]
   /// can be found.
-  final String libraryName;
+  final String _libraryName;
 
   /// The URI for the library in which this [ModelElement] is defined.
-  final String specialFileUri;
+  final String _uri;
 
-  /// If true, require this element to exist in the packageGraph when
-  /// calling the [SpecialClasses] constructor.
-  final bool required;
+  const SpecialClass(this._name, this._libraryName, this._uri);
 
-  const _SpecialClassDefinition(
-      this.specialClass, this.name, this.libraryName, this.specialFileUri,
-      {this.required = true});
+  /// Elements which must exist in the package graph when calling
+  /// [SpecialClasses.new].
+  static List<SpecialClass> get _requiredSpecialClasses =>
+      [SpecialClass.enum_, SpecialClass.object];
 
-  /// Get the filename for the Dart Library where this [ModelElement]
-  /// is declared, or `null` if its URI does not denote a library in
-  /// the specified SDK.
-  String? getSpecialFilename(DartSdk sdk) =>
-      sdk.mapDartUri(specialFileUri)?.fullName;
+  /// Returns the path of the Dart Library where this [ModelElement] is
+  /// declared, or `null` if its URI does not denote a library in the specified
+  /// SDK.
+  String? _path(DartSdk sdk) => sdk.mapDartUri(_uri)?.fullName;
 
   bool matchesClass(Class modelClass) {
-    return modelClass.name == name &&
-        modelClass.library.element.name == libraryName &&
-        modelClass.package.name == packageName;
+    return modelClass.name == _name &&
+        modelClass.library.element.name == _libraryName &&
+        modelClass.package.name == _packageName;
   }
 }
 
-/// All special classes we need to find here, indexed by class name.
-/// The index is a shortcut to reduce processing time for determining if
-/// a class might be "special".
-const Map<String, _SpecialClassDefinition> _specialClassDefinitions = {
-  'Object': _SpecialClassDefinition(
-      SpecialClass.object, 'Object', 'dart.core', 'dart:core'),
-  'Enum': _SpecialClassDefinition(
-      SpecialClass.enumClass, 'Enum', 'dart.core', 'dart:core'),
-  'Interceptor': _SpecialClassDefinition(SpecialClass.interceptor,
-      'Interceptor', '_interceptors', 'dart:_interceptors',
-      required: false),
-  'pragma': _SpecialClassDefinition(
-      SpecialClass.pragma, 'pragma', 'dart.core', 'dart:core',
-      required: false),
-};
-
-/// Given a SDK, resolve URIs for the libraries containing our special
+/// Given an SDK, resolve URIs for the libraries containing our special
 /// classes.
-Set<String> specialLibraryFiles(DartSdk sdk) => _specialClassDefinitions.values
-    .map((_SpecialClassDefinition d) => d.getSpecialFilename(sdk))
-    .whereType<String>()
-    .toSet();
+Set<String> specialLibraryFiles(DartSdk sdk) =>
+    SpecialClass.values.map((e) => e._path(sdk)).whereNotNull().toSet();
 
 /// Class for managing special [Class] objects inside Dartdoc.
 class SpecialClasses {
-  final Map<SpecialClass, Class> _specialClass = {};
+  final Map<SpecialClass, Class> _specialClasses = {};
 
-  SpecialClasses();
-
-  /// Add a class object that could be special.
-  void addSpecial(Class aClass) {
-    var definition = _specialClassDefinitions[aClass.name];
-    if (definition != null) {
-      if (definition.matchesClass(aClass)) {
-        assert(!_specialClass.containsKey(definition.specialClass) ||
-            _specialClass[definition.specialClass] == aClass);
-        _specialClass[definition.specialClass] = aClass;
-      }
-    }
+  /// Adds a class object that could be special.
+  void addSpecial(Class class_) {
+    var specialClass =
+        SpecialClass.values.firstWhereOrNull((e) => e.matchesClass(class_));
+    if (specialClass == null) return;
+    assert(!_specialClasses.containsKey(specialClass) ||
+        _specialClasses[specialClass] == class_);
+    _specialClasses[specialClass] = class_;
   }
 
   /// Throw an [AssertionError] if not all required specials are found.
   void assertSpecials() {
-    for (var classDefinition
-        in _specialClassDefinitions.values.where((d) => d.required)) {
-      assert(_specialClass.containsKey(classDefinition.specialClass));
+    for (var class_ in SpecialClass._requiredSpecialClasses) {
+      assert(_specialClasses.containsKey(class_));
     }
   }
 
-  Class? operator [](SpecialClass specialClass) => _specialClass[specialClass];
+  Class? operator [](SpecialClass specialClass) =>
+      _specialClasses[specialClass];
 }
