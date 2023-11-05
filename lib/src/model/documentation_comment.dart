@@ -14,22 +14,19 @@ import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p show Context;
 
 final _templatePattern = RegExp(
-    r'[ ]*{@template\s+(.+?)}([\s\S]+?){@endtemplate}[ ]*(\n?)',
-    multiLine: true);
+    r'[ ]*\{@template\s+([^\s}].*?)\}([^]+?)\{@endtemplate\}[ ]*(\n?)');
 final _htmlPattern = RegExp(
-    r'[ ]*{@inject-html\s*}([\s\S]+?){@end-inject-html}[ ]*\n?',
-    multiLine: true);
+    r'[ ]*\{@inject-html\s*\}([^]+?)\{@end-inject-html\}[ ]*\n?');
 
 /// Matches all tool directives (even some invalid ones). This is so
 /// we can give good error messages if the directive is malformed, instead of
 /// just silently emitting it as-is.
 final _basicToolPattern = RegExp(
-    r'[ ]*{@tool\s+([^}]+)}\n?([\s\S]+?)\n?{@end-tool}[ ]*\n?',
-    multiLine: true);
+    r'[ ]*{@tool\s+([^\s}][^}]*)}\n?([^]+?)\n?{@end-tool}[ ]*\n?');
 
-final _examplePattern = RegExp(r'{@example\s+([^}]+)}');
+final _examplePattern = RegExp(r'{@example\s+([^\s}][^}]*)}');
 
-final _macroRegExp = RegExp(r'{@macro\s+([^}]+)}');
+final _macroRegExp = RegExp(r'{@macro\s+([^\s}][^}]*)}');
 
 final _htmlInjectRegExp = RegExp(r'<dartdoc-html>([a-f0-9]+)</dartdoc-html>');
 
@@ -169,7 +166,7 @@ mixin DocumentationComment
     'required',
   };
 
-  static final _nameBreak = RegExp('[\\s}]');
+  static final _nameBreak = RegExp(r'[\s}]');
 
   // TODO(srawlins): Implement more checks; see
   // https://github.com/dart-lang/dartdoc/issues/1814.
@@ -391,7 +388,7 @@ mixin DocumentationComment
   /// Matches all youtube directives (even some invalid ones). This is so
   /// we can give good error messages if the directive is malformed, instead of
   /// just silently emitting it as-is.
-  static final _basicYouTubePattern = RegExp(r'''{@youtube\s+([^}]+)}''');
+  static final _basicYouTubePattern = RegExp(r'{@youtube\s+([^\s}][^}]*)}');
 
   /// Matches YouTube IDs from supported YouTube URLs.
   static final _validYouTubeUrlPattern =
@@ -476,7 +473,7 @@ mixin DocumentationComment
   /// Matches all animation directives (even some invalid ones). This is so we
   /// can give good error messages if the directive is malformed, instead of
   /// just silently emitting it as-is.
-  static final _basicAnimationPattern = RegExp(r'''{@animation\s+([^}]+)}''');
+  static final _basicAnimationPattern = RegExp(r'{@animation\s+([^\s}][^}]*)}');
 
   /// Matches valid JavaScript identifiers.
   static final _validIdPattern = RegExp(r'^[a-zA-Z_]\w*$');
@@ -675,8 +672,8 @@ mixin DocumentationComment
   /// Match group 4 is the unquoted arg, if any.
   static final RegExp _argPattern = RegExp(r'([a-zA-Z\-_0-9]+=)?' // option name
       r'(?:' // Start a new non-capture group for the two possibilities.
-      r'''(["'])((?:\\{2})*|(?:.*?[^\\](?:\\{2})*))\2|''' // with quotes.
-      r'([^ ]+))'); // without quotes.
+      r'''(["'])((?:[^\\\r\n]|\\.)*?)\2|''' // with quotes.
+      r'(\S+))'); // without quotes.
 
   /// Helper to process arguments given as a (possibly quoted) string.
   ///
