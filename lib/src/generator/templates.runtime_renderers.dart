@@ -17001,7 +17001,6 @@ const _invisibleGetters = {
     'isSdk',
     'isValid',
     'name',
-    'pathContext',
     'requiresFlutter',
     'resolvedDir',
     'resourceProvider',

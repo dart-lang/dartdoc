@@ -80,8 +80,14 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     var packageMeta =
         packageMetaProvider.fromElement(libraryElement, config.sdkDir);
     if (packageMeta == null) {
-      throw DartdocFailure(packageMetaProvider.getMessageForMissingPackageMeta(
-          libraryElement, config));
+      var libraryPath = libraryElement.librarySource.fullName;
+      var dartOrFlutter = config.flutterRoot == null ? 'dart' : 'flutter';
+      throw DartdocFailure(
+          "Unknown package for library: '$libraryPath'.  Consider "
+          '`$dartOrFlutter pub get` and/or '
+          '`$dartOrFlutter pub global deactivate dartdoc` followed by '
+          '`$dartOrFlutter pub global activate dartdoc` to fix. Also, be sure '
+          'that `$dartOrFlutter analyze` completes without errors.');
     }
     var package = Package.fromPackageMeta(packageMeta, this);
     var lib = Library.fromLibraryResult(resolvedLibrary, this, package);
