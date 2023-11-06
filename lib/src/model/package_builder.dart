@@ -43,7 +43,6 @@ abstract class PackageBuilder {
 /// A package builder that understands pub package format.
 class PubPackageBuilder implements PackageBuilder {
   final DartdocOptionContext config;
-  final Set<String> _knownFiles = {};
   final PackageMetaProvider packageMetaProvider;
   final PackageConfigProvider packageConfigProvider;
 
@@ -86,6 +85,7 @@ class PubPackageBuilder implements PackageBuilder {
     await getLibraries(newGraph);
     runtimeStats.endPerfTask();
 
+    logDebug('${DateTime.now()}: Initializing package graph...');
     runtimeStats.startPerfTask('initializePackageGraph');
     await newGraph.initializePackageGraph();
     runtimeStats.endPerfTask();
@@ -177,27 +177,6 @@ class PubPackageBuilder implements PackageBuilder {
         for (var filename in files) packageMetaProvider.fromFilename(filename)!,
       };
 
-  /// Adds [element]'s path and all of its part files' paths to [_knownFiles],
-  /// and recursively adds the paths of all imported and exported libraries.
-  void _addKnownFiles(LibraryElement? element) {
-    if (element != null) {
-      var path = element.source.fullName;
-      if (_knownFiles.add(path)) {
-        for (var import in element.libraryImports) {
-          _addKnownFiles(import.importedLibrary);
-        }
-        for (var export in element.libraryExports) {
-          _addKnownFiles(export.exportedLibrary);
-        }
-        for (var part in element.parts
-            .map((e) => e.uri)
-            .whereType<DirectiveUriWithUnit>()) {
-          _knownFiles.add(part.source.fullName);
-        }
-      }
-    }
-  }
-
   /// Whether to skip unreachable libraries when gathering all of the libraries
   /// for the package graph.
   ///
@@ -212,29 +191,47 @@ class PubPackageBuilder implements PackageBuilder {
   /// This set is used to prevent resolving set files more than once.
   final _knownParts = <String>{};
 
-  /// Parses libraries with the analyzer and invokes [addLibrary] with each
-  /// result.
+  /// Discovers and resolves libraries, invoking [addLibrary] with each result.
   ///
-  /// Uses [processedLibraries] to prevent calling the callback more than once
+  /// Uses [processedLibraries] to prevent calling [addLibrary] more than once
   /// with the same [LibraryElement]. Adds each [LibraryElement] found to
   /// [processedLibraries].
-  Future<void> _parseLibraries(
+  ///
+  /// [addingSpecials] indicates that only [SpecialClass]es are being resolved
+  /// in this round.
+  Future<void> _discoverLibraries(
     void Function(DartDocResolvedLibrary) addLibrary,
     Set<LibraryElement> processedLibraries,
     Set<String> files, {
-    bool Function(LibraryElement)? isLibraryIncluded,
+    bool addingSpecials = false,
   }) async {
     files = {...files};
-    isLibraryIncluded ??= (_) => true;
-    var lastPass = <PackageMeta>{};
-    var current = <PackageMeta>{};
+    // Discover Dart libraries in a loop. In each iteration of the loop, we take
+    // a set of files (starting with the ones passed into the function), resolve
+    // them, add them to the package graph via `addLibrary`, and then discover
+    // which additional files need to be processed in the next loop. This
+    // discovery depends on various options (TODO: which?), but the basic idea
+    // is to take a file we've just processed, and add all of the files which
+    // that file references via imports or exports, and add them to the set of
+    // files to be processed.
+    //
+    // This loop may execute a few times. We know to stop looping when we have
+    // added zero new files to process. This is tracked with `filesInLastPass`
+    // and `filesInCurrentPass`.
+    var filesInLastPass = <String>{};
+    var filesInCurrentPass = <String>{};
     var processedFiles = <String>{};
+    // When the loop discovers new files in a new package, it does extra work to
+    // find all documentable files in that package, for the universal reference
+    // scope. This variable tracks which packages we've seen so far.
+    var knownPackages = <PackageMeta>{};
     do {
-      lastPass = current;
-
-      // Be careful here; not to accidentally stack up multiple
+      filesInLastPass = filesInCurrentPass;
+      var newFiles = <String>{};
+      // Be careful here, not to accidentally stack up multiple
       // [DartDocResolvedLibrary]s, as those eat our heap.
       var libraryFiles = files.difference(_knownParts);
+
       for (var file in libraryFiles) {
         if (processedFiles.contains(file)) {
           continue;
@@ -246,35 +243,49 @@ class PubPackageBuilder implements PackageBuilder {
           _knownParts.add(file);
           continue;
         }
-        _addKnownFiles(resolvedLibrary.element);
-        if (!processedLibraries.contains(resolvedLibrary.element) &&
-            isLibraryIncluded(resolvedLibrary.element)) {
+        newFiles.addFilesReferencedBy(resolvedLibrary.element);
+        if (processedLibraries.contains(resolvedLibrary.element)) {
+          continue;
+        }
+        if (addingSpecials || _shouldIncludeLibrary(resolvedLibrary.element)) {
           addLibrary(resolvedLibrary);
           processedLibraries.add(resolvedLibrary.element);
         }
       }
-
-      files.addAll(_knownFiles);
-      files.addAll(_includeExternalsFrom(_knownFiles));
-
-      current = _packageMetasForFiles(files.difference(_knownParts));
-      // To get canonicalization correct for non-locally documented packages
-      // (so we can generate the right hyperlinks), it's vital that we add all
-      // libraries in dependent packages.  So if the analyzer discovers some
-      // files in a package we haven't seen yet, add files for that package.
-      for (var meta in current.difference(lastPass)) {
-        if (meta.isSdk) {
-          if (!_skipUnreachableSdkLibraries) {
-            files.addAll(_sdkFilesToDocument);
-          }
-        } else {
-          files.addAll(await _findFilesToDocumentInPackage(meta.dir.path,
-                  includeDependencies: false, filterExcludes: false)
-              .toList());
-        }
+      files.addAll(newFiles);
+      if (!addingSpecials) {
+        files.addAll(_includedExternalsFrom(newFiles));
       }
-    } while (!lastPass.containsAll(current));
+
+      var packages = _packageMetasForFiles(files.difference(_knownParts));
+      filesInCurrentPass = {...files.difference(_knownParts)};
+
+      if (!addingSpecials) {
+        // To get canonicalization correct for non-locally documented packages
+        // (so we can generate the right hyperlinks), it's vital that we add all
+        // libraries in dependent packages. So if the analyzer discovers some
+        // files in a package we haven't seen yet, add files for that package.
+        for (var meta in packages.difference(knownPackages)) {
+          if (meta.isSdk) {
+            if (!_skipUnreachableSdkLibraries) {
+              files.addAll(_sdkFilesToDocument);
+            }
+          } else {
+            files.addAll(await _findFilesToDocumentInPackage(
+              meta.dir.path,
+              includeDependencies: false,
+              filterExcludes: false,
+            ).toList());
+          }
+        }
+        knownPackages.addAll(packages);
+      }
+    } while (!filesInLastPass.containsAll(filesInCurrentPass));
   }
+
+  /// Whether [libraryElement] should be included in the libraries-to-document.
+  bool _shouldIncludeLibrary(LibraryElement libraryElement) =>
+      config.include.isEmpty || config.include.contains(libraryElement.name);
 
   /// Returns all top level library files in the 'lib/' directory of the given
   /// package root directory.
@@ -282,18 +293,22 @@ class PubPackageBuilder implements PackageBuilder {
   /// If [includeDependencies], then all top level library files in the 'lib/'
   /// directory of every package in [basePackageDir]'s package config are also
   /// included.
-  Stream<String> _findFilesToDocumentInPackage(String basePackageDir,
-      {required bool includeDependencies, bool filterExcludes = true}) async* {
+  Stream<String> _findFilesToDocumentInPackage(
+    String basePackageDir, {
+    required bool includeDependencies,
+    required bool filterExcludes,
+  }) async* {
     var packageDirs = {basePackageDir};
 
     if (includeDependencies) {
       var packageConfig = (await packageConfigProvider
           .findPackageConfig(resourceProvider.getFolder(basePackageDir)))!;
       for (var package in packageConfig.packages) {
-        if (!filterExcludes || !config.exclude.contains(package.name)) {
-          packageDirs.add(_pathContext.dirname(_pathContext
-              .fromUri(packageConfig[package.name]!.packageUriRoot)));
+        if (filterExcludes && config.exclude.contains(package.name)) {
+          continue;
         }
+        packageDirs.add(_pathContext.dirname(
+            _pathContext.fromUri(packageConfig[package.name]!.packageUriRoot)));
       }
     }
 
@@ -368,7 +383,7 @@ class PubPackageBuilder implements PackageBuilder {
   /// Assumes each file might be part of a [DartdocOptionContext], and loads
   /// those objects to find any [DartdocOptionContext.includeExternal]
   /// configurations therein.
-  List<String> _includeExternalsFrom(Iterable<String> files) => [
+  List<String> _includedExternalsFrom(Iterable<String> files) => [
         for (var file in files)
           ...DartdocOptionContext.fromContext(
             config,
@@ -380,10 +395,12 @@ class PubPackageBuilder implements PackageBuilder {
   Future<Set<String>> _getFiles() async {
     var files = config.topLevelPackageMeta.isSdk
         ? _sdkFilesToDocument
-        : await _findFilesToDocumentInPackage(config.inputDir,
-                includeDependencies: config.autoIncludeDependencies)
-            .toList();
-    files = [...files, ..._includeExternalsFrom(files)];
+        : await _findFilesToDocumentInPackage(
+            config.inputDir,
+            includeDependencies: config.autoIncludeDependencies,
+            filterExcludes: true,
+          ).toList();
+    files = [...files, ..._includedExternalsFrom(files)];
     return {
       ...files.map((s) => resourceProvider.pathContext
           .absolute(resourceProvider.getFile(s).path)),
@@ -417,15 +434,25 @@ class PubPackageBuilder implements PackageBuilder {
     var files = await _getFiles();
     var specialFiles = specialLibraryFiles(findSpecialsSdk);
 
+    logDebug('${DateTime.now()}: Discovering Dart libraries...');
     var foundLibraries = <LibraryElement>{};
-    await _parseLibraries(
+    await _discoverLibraries(
       uninitializedPackageGraph.addLibraryToGraph,
       foundLibraries,
       files,
-      isLibraryIncluded: (LibraryElement libraryElement) =>
-          config.include.isEmpty ||
-          config.include.contains(libraryElement.name),
     );
+    _checkForMissingIncludedFiles(foundLibraries);
+    await _discoverLibraries(
+      uninitializedPackageGraph.addSpecialLibraryToGraph,
+      foundLibraries,
+      specialFiles.difference(files),
+      addingSpecials: true,
+    );
+  }
+
+  /// Throws an exception if any configured-to-be-included files were not found
+  /// while gathering libraries.
+  void _checkForMissingIncludedFiles(Set<LibraryElement> foundLibraries) {
     if (config.include.isNotEmpty) {
       var knownLibraryNames = foundLibraries.map((l) => l.name);
       var notFound = config.include
@@ -436,9 +463,6 @@ class PubPackageBuilder implements PackageBuilder {
             'known libraries: [${knownLibraryNames.join(', ')}]');
       }
     }
-    // Include directive does not apply to special libraries.
-    await _parseLibraries(uninitializedPackageGraph.addSpecialLibraryToGraph,
-        foundLibraries, specialFiles.difference(files));
   }
 
   p.Context get _pathContext => resourceProvider.pathContext;
@@ -471,4 +495,27 @@ class DartDocResolvedLibrary {
   DartDocResolvedLibrary(ResolvedLibraryResult result)
       : element = result.element,
         units = result.units.map((unit) => unit.unit).toList();
+}
+
+extension on Set<String> {
+  /// Adds [element]'s path and all of its part files' paths to `this`, and
+  /// recursively adds the paths of all imported and exported libraries.
+  void addFilesReferencedBy(LibraryElement? element) {
+    if (element != null) {
+      var path = element.source.fullName;
+      if (add(path)) {
+        for (var import in element.libraryImports) {
+          addFilesReferencedBy(import.importedLibrary);
+        }
+        for (var export in element.libraryExports) {
+          addFilesReferencedBy(export.exportedLibrary);
+        }
+        for (var part in element.parts
+            .map((e) => e.uri)
+            .whereType<DirectiveUriWithUnit>()) {
+          add(part.source.fullName);
+        }
+      }
+    }
+  }
 }
