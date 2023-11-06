@@ -215,8 +215,8 @@ library my_library;
 
 A file `categories.json` will be generated at the top level of the documentation tree with
 information about categories collected from objects in the source tree.  The directives
-`@category`, `@subCategory`, `@image`, and `@samples` are understood and saved into this json.
-Future versions of dartdoc may make direct use of the image and samples tags.
+`@category`, `@subCategory`, and `@image` are understood and saved into this json.
+Future versions of dartdoc may make direct use of the image tags.
 
 As an example, if we document the class Icon in flutter using the following:
 

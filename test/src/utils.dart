@@ -153,7 +153,6 @@ PackageMetaProvider get testPackageMetaProvider {
     sdkRoot,
     {},
     defaultSdk: FolderBasedDartSdk(resourceProvider, sdkRoot),
-    messageForMissingPackageMeta: PubPackageMeta.messageForMissingPackageMeta,
   );
 }
 

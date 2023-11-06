@@ -25,7 +25,6 @@ String generateCategoryJson(Iterable<Categorization> categories, bool pretty) {
         if (categorization.hasSubCategoryNames)
           'subcategories': categorization.subCategoryNames,
         if (categorization.hasImage) 'image': categorization.image,
-        if (categorization.hasSamples) 'samples': categorization.samples,
       }
   ];
 

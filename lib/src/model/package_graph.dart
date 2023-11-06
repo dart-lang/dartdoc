@@ -80,8 +80,14 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     var packageMeta =
         packageMetaProvider.fromElement(libraryElement, config.sdkDir);
     if (packageMeta == null) {
-      throw DartdocFailure(packageMetaProvider.getMessageForMissingPackageMeta(
-          libraryElement, config));
+      var libraryPath = libraryElement.librarySource.fullName;
+      var dartOrFlutter = config.flutterRoot == null ? 'dart' : 'flutter';
+      throw DartdocFailure(
+          "Unknown package for library: '$libraryPath'.  Consider "
+          '`$dartOrFlutter pub get` and/or '
+          '`$dartOrFlutter pub global deactivate dartdoc` followed by '
+          '`$dartOrFlutter pub global activate dartdoc` to fix. Also, be sure '
+          'that `$dartOrFlutter analyze` completes without errors.');
     }
     var package = Package.fromPackageMeta(packageMeta, this);
     var lib = Library.fromLibraryResult(resolvedLibrary, this, package);
@@ -99,16 +105,23 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   void addSpecialLibraryToGraph(DartDocResolvedLibrary resolvedLibrary) {
     allLibrariesAdded = true;
     assert(!_localDocumentationBuilt);
-    findOrCreateLibraryFor(resolvedLibrary);
+    final libraryElement = resolvedLibrary.element.library;
+    allLibraries.putIfAbsent(
+      libraryElement.source.fullName,
+      () => Library.fromLibraryResult(
+        resolvedLibrary,
+        this,
+        Package.fromPackageMeta(
+            packageMetaProvider.fromElement(libraryElement, config.sdkDir)!,
+            packageGraph),
+      ),
+    );
   }
 
   /// Call after all libraries are added.
   Future<void> initializePackageGraph() async {
     assert(!_localDocumentationBuilt);
     allLibrariesAdded = true;
-    // From here on in, we might find special objects.  Initialize the
-    // specialClasses handler so when we find them, they get added.
-    specialClasses = SpecialClasses();
     // Go through docs of every ModelElement in package to pre-build the macros
     // index.
     await Future.wait(_precacheLocalDocs());
@@ -137,9 +150,10 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   }
 
   /// Generate a list of futures for any docs that actually require precaching.
-  Iterable<Future<void>> _precacheLocalDocs() sync* {
+  Iterable<Future<void>> _precacheLocalDocs() {
     // Prevent reentrancy.
     var precachedElements = <ModelElement>{};
+    var futures = <Future<void>>[];
 
     for (var element in _allModelElements) {
       // Only precache elements which are canonical, have a canonical element
@@ -153,14 +167,14 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
             .where((d) => d.hasDocumentationComment)) {
           if (d.needsPrecache && !precachedElements.contains(d)) {
             precachedElements.add(d as ModelElement);
-            yield d.precacheLocalDocs();
+            futures.add(d.precacheLocalDocs());
             logProgress(d.name);
             // [TopLevelVariable]s get their documentation from getters and
             // setters, so should be precached if either has a template.
             if (element is TopLevelVariable &&
                 !precachedElements.contains(element)) {
               precachedElements.add(element);
-              yield element.precacheLocalDocs();
+              futures.add(element.precacheLocalDocs());
               logProgress(d.name);
             }
           }
@@ -168,7 +182,8 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       }
     }
     // Now wait for any of the tasks still running to complete.
-    yield config.tools.runner.wait();
+    futures.add(config.tools.runner.wait());
+    return futures;
   }
 
   /// Initializes the category mappings in all [packages].
@@ -178,9 +193,12 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     }
   }
 
-  // Many ModelElements have the same ModelNode; don't build/cache this data more
-  // than once for them.
+  // Many ModelElements have the same ModelNode; don't build/cache this data
+  // more than once for them.
   final Map<Element, ModelNode> _modelNodes = {};
+
+  /// The collection of "special" classes for which we need some special access.
+  final specialClasses = SpecialClasses();
 
   /// Populate's [_modelNodes] with elements in [resolvedLibrary].
   ///
@@ -252,8 +270,6 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   }
 
   ModelNode? getModelNodeFor(Element element) => _modelNodes[element];
-
-  late SpecialClasses specialClasses;
 
   /// It is safe to cache values derived from the [_implementors] table if this
   /// is true.
@@ -639,8 +655,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
           ?.linkedName ??
       'Object';
 
-  /// Return the set of [Class]es which objects should inherit through if they
-  /// show up in the inheritance chain.
+  /// The set of [Class]es which should _not_ be presented as implementors.
   ///
   /// Add classes here if they are similar to Interceptor in that they are to be
   /// ignored even when they are the implementors of [Inheritable]s, and the
@@ -854,24 +869,6 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   Library? findButDoNotCreateLibraryFor(Element e) {
     // This is just a cache to avoid creating lots of libraries over and over.
     return allLibraries[e.library?.source.fullName];
-  }
-
-  /// This is used when we might need a [Library] that isn't actually a
-  /// documentation entry point (for elements that have no [Library] within the
-  /// set of canonical libraries).
-  Library findOrCreateLibraryFor(DartDocResolvedLibrary resolvedLibrary) {
-    final libraryElement = resolvedLibrary.element.library;
-    var foundLibrary = findButDoNotCreateLibraryFor(libraryElement);
-    if (foundLibrary != null) return foundLibrary;
-
-    foundLibrary = Library.fromLibraryResult(
-        resolvedLibrary,
-        this,
-        Package.fromPackageMeta(
-            packageMetaProvider.fromElement(libraryElement, config.sdkDir)!,
-            packageGraph));
-    allLibraries[libraryElement.source.fullName] = foundLibrary;
-    return foundLibrary;
   }
 
   late final Iterable<ModelElement> _allModelElements = () {
