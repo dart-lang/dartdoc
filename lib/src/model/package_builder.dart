@@ -222,7 +222,7 @@ class PubPackageBuilder implements PackageBuilder {
     var filesInCurrentPass = <String>{};
     var processedFiles = <String>{};
     // When the loop discovers new files in a new package, it does extra work to
-    // find all docmentable files in that package, for the universal reference
+    // find all documentable files in that package, for the universal reference
     // scope. This variable tracks which packages we've seen so far.
     var knownPackages = <PackageMeta>{};
     do {
