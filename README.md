@@ -221,8 +221,8 @@ As an example, if we document the class Icon in flutter using the following:
 
 ```dart
 /// {@category Basics}
-/// {@category "Assets and Icons"}
-/// {@subCategory "Information displays"}
+/// {@category Assets and Icons}
+/// {@subCategory Information displays}
 class Icon extends StatelessWidget {}
 ```
 
