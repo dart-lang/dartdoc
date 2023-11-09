@@ -260,9 +260,7 @@ class Dartdoc {
   ///
   /// Passing in a [postProcessCallback] to do additional processing after
   /// the documentation is generated.
-  void executeGuarded([
-    Future<void> Function(DartdocOptionContext)? postProcessCallback,
-  ]) {
+  void executeGuarded() {
     onCheckProgress.listen(logProgress);
     // This function should *never* `await runZonedGuarded` because the errors
     // thrown in [generateDocs] are uncaught. We want this because uncaught
@@ -270,14 +268,12 @@ class Dartdoc {
     //
     // If you await the zone, the code that comes after the await is not
     // executed if the zone dies due to an uncaught error. To avoid this,
-    // confusion, never `await runZonedGuarded` and never change the return
-    // value of [executeGuarded].
+    // confusion, never `await runZonedGuarded`.
     runZonedGuarded(
       () async {
         runtimeStats.startPerfTask('generateDocs');
         await generateDocs();
         runtimeStats.endPerfTask();
-        await postProcessCallback?.call(config);
       },
       (e, stackTrace) {
         stderr.writeln('\n$_dartdocFailedMessage: $e\n$stackTrace');
