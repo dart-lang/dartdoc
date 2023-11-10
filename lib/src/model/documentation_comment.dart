@@ -13,16 +13,16 @@ import 'package:dartdoc/src/warnings.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p show Context;
 
-final _templatePattern = RegExp(
-    r'[ ]*\{@template\s+([^\s}].*?)\}([^]+?)\{@endtemplate\}[ ]*(\n?)');
-final _htmlPattern = RegExp(
-    r'[ ]*\{@inject-html\s*\}([^]+?)\{@end-inject-html\}[ ]*\n?');
+final _templatePattern =
+    RegExp(r'[ ]*\{@template\s+([^\s}].*?)\}([^]+?)\{@endtemplate\}[ ]*(\n?)');
+final _htmlPattern =
+    RegExp(r'[ ]*\{@inject-html\s*\}([^]+?)\{@end-inject-html\}[ ]*\n?');
 
 /// Matches all tool directives (even some invalid ones). This is so
 /// we can give good error messages if the directive is malformed, instead of
 /// just silently emitting it as-is.
-final _basicToolPattern = RegExp(
-    r'[ ]*{@tool\s+([^\s}][^}]*)}\n?([^]+?)\n?{@end-tool}[ ]*\n?');
+final _basicToolPattern =
+    RegExp(r'[ ]*{@tool\s+([^\s}][^}]*)}\n?([^]+?)\n?{@end-tool}[ ]*\n?');
 
 final _examplePattern = RegExp(r'{@example\s+([^\s}][^}]*)}');
 
@@ -157,7 +157,6 @@ mixin DocumentationComment
     // Other directives, parsed by `model/directives/*.dart`:
     'canonicalFor',
     'category',
-    'hideConstantImplementations',
     'subCategory',
 
     // Common Dart annotations which may decorate named parameters:
