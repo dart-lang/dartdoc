@@ -254,14 +254,6 @@ class Package extends LibraryContainer
   @override
   Package get package => this;
 
-  // Workaround for mustache4dart issue where templates do not recognize
-  // inherited properties as being in-context.
-  @override
-  Iterable<Library> get publicLibraries {
-    assert(libraries.every((l) => l.packageMeta == packageMeta));
-    return super.publicLibraries;
-  }
-
   /// The default, unnamed category.
   ///
   /// This is initialized by [initializeCategories].

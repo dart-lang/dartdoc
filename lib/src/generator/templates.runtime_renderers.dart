@@ -12509,18 +12509,6 @@ class _Renderer_Package extends RendererBase<Package> {
                         parent: r);
                   },
                 ),
-                'publicLibraries': Property(
-                  getValue: (CT_ c) => c.publicLibraries,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<Library>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.publicLibraries.map((e) =>
-                        _render_Library(e, ast, r.template, sink, parent: r));
-                  },
-                ),
                 'referenceChildren': Property(
                   getValue: (CT_ c) => c.referenceChildren,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -16917,7 +16905,6 @@ const _invisibleGetters = {
   'ModelNode': {'hashCode', 'runtimeType', 'sourceCode'},
   'ModelObjectBuilder': {'hashCode', 'runtimeType'},
   'PackageGraph': {
-    'allCanonicalModelElements',
     'allConstructedModelElements',
     'allExtensionsAdded',
     'allHrefs',
@@ -16933,7 +16920,6 @@ const _invisibleGetters = {
     'defaultPackageName',
     'displayName',
     'documentedExtensions',
-    'documentedPackages',
     'extensions',
     'hasEmbedderSdk',
     'hasFooterVersion',
@@ -16941,7 +16927,6 @@ const _invisibleGetters = {
     'implementors',
     'inheritThrough',
     'inheritanceManager',
-    'invisibleAnnotations',
     'libraries',
     'libraryCount',
     'libraryExports',
@@ -16961,7 +16946,6 @@ const _invisibleGetters = {
     'rendererFactory',
     'resourceProvider',
     'runtimeType',
-    'sdk',
     'sdkLibrarySources',
     'specialClasses'
   },

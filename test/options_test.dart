@@ -217,7 +217,8 @@ An example in an unusual dir.
     );
     final packageGraph =
         await (await createPackageBuilder()).buildPackageGraph();
-    final classFoo = packageGraph.allCanonicalModelElements
+    final classFoo = packageGraph.allLocalModelElements
+        .where((e) => e.isCanonical)
         .whereType<Class>()
         .firstWhere((c) => c.name == 'Foo');
     expect(classFoo.documentationAsHtml,
@@ -366,7 +367,8 @@ class Foo {}
     );
     final packageGraph =
         await (await createPackageBuilder()).buildPackageGraph();
-    final classFoo = packageGraph.allCanonicalModelElements
+    final classFoo = packageGraph.allLocalModelElements
+        .where((e) => e.isCanonical)
         .whereType<Class>()
         .firstWhere((c) => c.name == 'Foo');
     expect(classFoo.displayedCategories, isNotEmpty);

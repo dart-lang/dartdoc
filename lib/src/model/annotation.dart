@@ -5,6 +5,7 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/attribute.dart';
+import 'package:dartdoc/src/model/class.dart';
 import 'package:dartdoc/src/model/getter_setter_combo.dart';
 import 'package:dartdoc/src/model/library.dart';
 import 'package:dartdoc/src/model/model_object_builder.dart';
@@ -56,8 +57,8 @@ class Annotation extends Attribute with ModelBuilder {
   bool get isPublic =>
       modelType.isPublic &&
       modelType is DefinedElementType &&
-      !packageGraph.invisibleAnnotations
-          .contains((modelType as DefinedElementType).modelElement);
+      packageGraph.isAnnotationVisible(
+          (modelType as DefinedElementType).modelElement as Class);
 
   @override
   bool operator ==(Object other) =>
