@@ -53,18 +53,15 @@ mixin Constructable on InheritingContainer {
   bool get hasPublicConstructors => publicConstructorsSorted.isNotEmpty;
 
   static Map<String, CommentReferable> _mapConstructorsByName(
-      Iterable<Constructor> constructors) {
-    var x = {
-      for (var constructor in constructors) ...{
-        constructor.referenceName: constructor,
-        '${constructor.enclosingElement.referenceName}.${constructor.referenceName}':
-            constructor,
-        if (constructor.isDefaultConstructor) 'new': constructor,
-      },
-    };
-    print('constructor names: $x');
-    return x;
-  }
+          Iterable<Constructor> constructors) =>
+      {
+        for (var constructor in constructors) ...{
+          constructor.referenceName: constructor,
+          '${constructor.enclosingElement.referenceName}.${constructor.referenceName}':
+              constructor,
+          if (constructor.isDefaultConstructor) 'new': constructor,
+        },
+      };
 }
 
 /// A [Container] that participates in inheritance in Dart.
