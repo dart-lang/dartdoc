@@ -78,7 +78,7 @@ class PubPackageBuilder implements PackageBuilder {
     var newGraph = PackageGraph.uninitialized(
       _config,
       _sdk,
-      _hasEmbedderSdkFiles,
+      _embedderSdkUris.isNotEmpty,
       rendererFactory,
       _packageMetaProvider,
     );
@@ -421,8 +421,6 @@ class PubPackageBuilder implements PackageBuilder {
               .getFile(_embedderSdk!.mapDartUri(dartUri)!.fullName)
               .path),
       ];
-
-  bool get _hasEmbedderSdkFiles => _embedderSdkUris.isNotEmpty;
 
   Iterable<String> get _embedderSdkUris {
     if (_config.topLevelPackageMeta.isSdk) return const [];
