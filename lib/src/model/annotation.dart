@@ -54,11 +54,19 @@ class Annotation extends Attribute with ModelBuilder {
   }
 
   @override
-  bool get isPublic =>
-      modelType.isPublic &&
-      modelType is DefinedElementType &&
-      packageGraph.isAnnotationVisible(
-          (modelType as DefinedElementType).modelElement as Class);
+  bool get isPublic {
+    final modelType = this.modelType;
+    if (!modelType.isPublic) {
+      return false;
+    }
+    if (modelType is! DefinedElementType) {
+      return false;
+    }
+
+    var modelElement = modelType.modelElement;
+    return modelElement is Class &&
+        packageGraph.isAnnotationVisible(modelElement);
+  }
 
   @override
   bool operator ==(Object other) =>
