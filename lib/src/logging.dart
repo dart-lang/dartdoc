@@ -43,18 +43,26 @@ void logPrint(String message) {
   _logger.log(printLevel, message);
 }
 
+/// Creates a new deterministic progress bar, and displays it (with zero
+/// progress).
 void progressBarStart(int totalTickCount) {
   _DartdocLogger.instance.progressBarStart(totalTickCount);
 }
 
+/// Increments the progress of the current progress bar.
 void progressBarTick() {
   _DartdocLogger.instance.progressBarTick();
 }
 
+/// Updates the total length of the current progress bar.
 void progressBarUpdateTickCount(int totalTickCount) {
   _DartdocLogger.instance.progressBarUpdateTickCount(totalTickCount);
 }
 
+/// Completes the current progress bar.
+///
+/// It is important to call this after progress is complete, in case rounding
+/// errors leave the displayed progress bar at something less than 100%.
 void progressBarComplete() {
   _DartdocLogger.instance.progressBarComplete();
 }
@@ -71,7 +79,11 @@ abstract class Jsonable {
 }
 
 class _DartdocLogger {
-  static late final _DartdocLogger instance;
+  /// By default, we use a quiet logger.
+  ///
+  /// This field can be re-set, with [startLogging].
+  static _DartdocLogger instance =
+      _DartdocLogger._(isJson: false, isQuiet: true, showProgress: false);
 
   final bool _showProgressBar;
 
