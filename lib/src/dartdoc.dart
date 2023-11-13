@@ -213,12 +213,8 @@ class Dartdoc {
 
     var warnings = packageGraph.packageWarningCounter.warningCount;
     var errors = packageGraph.packageWarningCounter.errorCount;
-    if (warnings == 0 && errors == 0) {
-      logInfo('no issues found');
-    } else {
-      logWarning("Found $warnings ${pluralize('warning', warnings)} "
-          "and $errors ${pluralize('error', errors)}.");
-    }
+    logWarning("Found $warnings ${pluralize('warning', warnings)} "
+        "and $errors ${pluralize('error', errors)}.");
 
     var seconds = stopwatch.elapsedMilliseconds / 1000.0;
     libs = packageGraph.localPublicLibraries.length;
@@ -288,7 +284,7 @@ class Dartdoc {
         exitCode = e is DartdocFailure ? 1 : 255;
       },
       zoneSpecification: ZoneSpecification(
-        print: (_, __, ___, String line) => logPrint(line),
+        print: (_, __, ___, String line) => logInfo(line),
       ),
     );
   }

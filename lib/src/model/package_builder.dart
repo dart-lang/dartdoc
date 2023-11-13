@@ -225,9 +225,15 @@ class PubPackageBuilder implements PackageBuilder {
     // find all documentable files in that package, for the universal reference
     // scope. This variable tracks which packages we've seen so far.
     var knownPackages = <PackageMeta>{};
+    if (!addingSpecials) {
+      progressBarStart(files.length);
+    }
     do {
       filesInLastPass = filesInCurrentPass;
       var newFiles = <String>{};
+      if (!addingSpecials) {
+        progressBarUpdateTickCount(files.length);
+      }
       // Be careful here, not to accidentally stack up multiple
       // [DartDocResolvedLibrary]s, as those eat our heap.
       var libraryFiles = files.difference(_knownParts);
@@ -237,7 +243,9 @@ class PubPackageBuilder implements PackageBuilder {
           continue;
         }
         processedFiles.add(file);
-        logProgress(file);
+        if (!addingSpecials) {
+          progressBarTick();
+        }
         var resolvedLibrary = await processLibrary(file);
         if (resolvedLibrary == null) {
           _knownParts.add(file);
@@ -281,6 +289,9 @@ class PubPackageBuilder implements PackageBuilder {
         knownPackages.addAll(packages);
       }
     } while (!filesInLastPass.containsAll(filesInCurrentPass));
+    if (!addingSpecials) {
+      progressBarComplete();
+    }
   }
 
   /// Whether [libraryElement] should be included in the libraries-to-document.
@@ -434,7 +445,7 @@ class PubPackageBuilder implements PackageBuilder {
     var files = await _getFiles();
     var specialFiles = specialLibraryFiles(findSpecialsSdk);
 
-    logDebug('${DateTime.now()}: Discovering Dart libraries...');
+    logInfo('Discovering libraries...');
     var foundLibraries = <LibraryElement>{};
     await _discoverLibraries(
       uninitializedPackageGraph.addLibraryToGraph,
