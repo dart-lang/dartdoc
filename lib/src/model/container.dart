@@ -231,34 +231,25 @@ abstract class Container extends ModelElement
   /// For subclasses to add items after the main pass but before the
   /// parameter-global.
   @visibleForOverriding
-  Iterable<MapEntry<String, CommentReferable>> get extraReferenceChildren;
+  Map<String, CommentReferable> get extraReferenceChildren;
 
   @override
   @mustCallSuper
-  late final Map<String, CommentReferable> referenceChildren = () {
-    var referenceChildren = <String, CommentReferable>{
-      for (var element in allModelElements
-          .whereNotType<Accessor>()
-          .whereNotType<Constructor>())
-        element.referenceName: element,
-    };
-
-    referenceChildren.addEntriesIfAbsent(extraReferenceChildren);
-    // Process unscoped parameters last to make sure they don't override
-    // other options.
-    for (var modelElement in allModelElements) {
+  late final Map<String, CommentReferable> referenceChildren =
+      <String, CommentReferable>{
+    for (var modelElement in allModelElements)
       // Don't complain about references to parameter names, but prefer
       // referring to anything else.
       // TODO(jcollins-g): Figure out something good to do in the ecosystem
       // here to wean people off the habit of unscoped parameter references.
-      if (modelElement.hasParameters) {
-        referenceChildren
-            .addEntriesIfAbsent(modelElement.parameters.generateEntries());
-      }
-    }
-    referenceChildren['this'] = this;
-    return referenceChildren;
-  }();
+      if (modelElement.hasParameters) ...modelElement.parameters.asMapByName,
+    ...extraReferenceChildren,
+    for (var element in allModelElements
+        .whereNotType<Accessor>()
+        .whereNotType<Constructor>())
+      element.referenceName: element,
+    'this': this,
+  };
 
   @override
   Iterable<CommentReferable> get referenceParents => [definingLibrary, library];

@@ -949,43 +949,42 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
 
   @override
   late final Map<String, CommentReferable> referenceChildren = () {
-    var children = <String, CommentReferable>{};
-    // We have to use a stable order or otherwise references depending
-    // on ambiguous resolution (see below) will change where they
-    // resolve based on internal implementation details.
+    // We have to use a stable order or otherwise references depending on
+    // ambiguous resolution (see below) will change where they resolve based on
+    // internal implementation details.
     var sortedPackages = packages.toList(growable: false)..sort(byName);
     var sortedDocumentedPackages = _documentedPackages.toList(growable: false)
       ..sort(byName);
-    // Packages are the top priority.
-    children.addEntries(sortedPackages.generateEntries());
+    return {
+      // TODO(jcollins-g): Warn about directly referencing top level items out
+      // of scope?  Doing this will be even more ambiguous and potentially
+      // confusing than doing so with libraries.
+      ...sortedDocumentedPackages
+          .expand((p) => p.publicLibrariesSorted)
+          .expand((l) => [
+                ...l.publicConstants,
+                ...l.publicFunctions,
+                ...l.publicProperties,
+                ...l.publicTypedefs,
+                ...l.publicExtensions,
+                ...l.publicExtensionTypes,
+                ...l.publicClasses,
+                ...l.publicEnums,
+                ...l.publicMixins
+              ])
+          .asMapByName,
 
-    // Libraries are next.
-    // TODO(jcollins-g): Warn about directly referencing libraries out of
-    // scope?  Doing this is always going to be ambiguous and potentially
-    // confusing.
-    children.addEntriesIfAbsent(sortedDocumentedPackages
-        .expand((p) => p.publicLibrariesSorted)
-        .generateEntries());
+      // Libraries are next.
+      // TODO(jcollins-g): Warn about directly referencing libraries out of
+      // scope?  Doing this is always going to be ambiguous and potentially
+      // confusing.
+      ...sortedDocumentedPackages
+          .expand((p) => p.publicLibrariesSorted)
+          .asMapByName,
 
-    // TODO(jcollins-g): Warn about directly referencing top level items
-    // out of scope?  Doing this will be even more ambiguous and
-    // potentially confusing than doing so with libraries.
-    children.addEntriesIfAbsent(sortedDocumentedPackages
-        .expand((p) => p.publicLibrariesSorted)
-        .expand((l) => [
-              ...l.publicConstants,
-              ...l.publicFunctions,
-              ...l.publicProperties,
-              ...l.publicTypedefs,
-              ...l.publicExtensions,
-              ...l.publicExtensionTypes,
-              ...l.publicClasses,
-              ...l.publicEnums,
-              ...l.publicMixins
-            ])
-        .generateEntries());
-
-    return children;
+      // Packages are the top priority.
+      ...sortedPackages.asMapByName,
+    };
   }();
 
   @override

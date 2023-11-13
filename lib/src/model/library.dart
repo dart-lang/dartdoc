@@ -427,8 +427,8 @@ class Library extends ModelElement
     var referenceChildrenBuilder = <String, CommentReferable>{};
     var definedNamesModelElements = element.exportNamespace.definedNames.values
         .map(modelBuilder.fromElement);
-    referenceChildrenBuilder.addEntries(
-        definedNamesModelElements.whereNotType<Accessor>().generateEntries());
+    referenceChildrenBuilder
+        .addAll(definedNamesModelElements.whereNotType<Accessor>().asMapByName);
     // TODO(jcollins-g): warn and get rid of this case where it shows up.
     // If a user is hiding parts of a prefix import, the user should not
     // refer to hidden members via the prefix, because that can be

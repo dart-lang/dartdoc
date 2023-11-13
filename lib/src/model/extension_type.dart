@@ -85,8 +85,7 @@ class ExtensionType extends InheritingContainer
 
   @override
   @visibleForOverriding
-  Iterable<MapEntry<String, CommentReferable>> get extraReferenceChildren =>
-      const [];
+  Map<String, CommentReferable> get extraReferenceChildren => const {};
 
   @override
   String get relationshipsClass => 'clazz-relationships';

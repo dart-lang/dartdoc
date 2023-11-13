@@ -301,20 +301,20 @@ Future<void> writeDartdocResources(ResourceProvider resourceProvider) async {
   }
 }
 
-/// For comparison purposes, return an equivalent [MatchingLinkResult]
-/// for the defining element returned.  May return [originalResult].
-/// We do this to eliminate canonicalization effects from comparison,
-/// as the original lookup code returns canonicalized results and the
-/// new lookup code is only guaranteed to return equivalent results.
+/// For comparison purposes, return an equivalent [MatchingLinkResult] for the
+/// defining element returned. May return [originalResult]. We do this to
+/// eliminate canonicalization effects from comparison, as the original lookup
+/// code returns canonicalized results and the new lookup code is only
+/// guaranteed to return equivalent results.
 MatchingLinkResult definingLinkResult(MatchingLinkResult originalResult) {
-  var definingReferable =
-      originalResult.commentReferable?.definingCommentReferable;
-
-  if (definingReferable != null &&
-      definingReferable != originalResult.commentReferable) {
-    return MatchingLinkResult(definingReferable);
+  var commentReferable = originalResult.commentReferable;
+  if (commentReferable == null) {
+    return originalResult;
   }
-  return originalResult;
+  var definingReferable = commentReferable.definingCommentReferable;
+  return definingReferable == originalResult.commentReferable
+      ? originalResult
+      : MatchingLinkResult(definingReferable);
 }
 
 MatchingLinkResult referenceLookup(Warnable element, String codeRef) =>
