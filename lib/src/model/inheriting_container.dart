@@ -36,14 +36,16 @@ mixin Constructable on InheritingContainer {
       for (var container in publicSuperChain
           .map((t) => t.modelElement)
           .whereType<Container>()) ...{
+        if (container is Constructable)
+          ..._mapConstructorsByName(container.constructors),
         for (var modelElement in [
           // TODO(jcollins-g): wean important users off of relying on static
           // method inheritance (dart-lang/dartdoc#2698).
           ...container.staticFields, ...container.staticMethods
         ])
           modelElement.referenceName: modelElement,
-        if (container is Constructable)
-          ..._mapConstructorsByName(container.constructors)
+        //if (container is Constructable)
+        //  ..._mapConstructorsByName(container.constructors)
       },
       ..._mapConstructorsByName(constructors),
     };
