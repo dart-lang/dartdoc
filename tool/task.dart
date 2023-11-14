@@ -419,7 +419,10 @@ Future<String> docPackage({
   await launcher.runStreamed(
     executable,
     // Add the `--json` flag for the support in `runStreamed` to tease out
-    // data and messages.
+    // data and messages. This flag allows the [runCompare] tasks to interpret
+    // data from stdout as structured data, in order to compare the dartdoc
+    // outputs of two commands. We add it here, but exclude it from the
+    // "Quickly re-run" text below, as that command is for human consumption.
     [...arguments, '--json'],
     workingDirectory: pubPackageDir.absolute.path,
     environment: environment,

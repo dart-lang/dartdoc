@@ -3,6 +3,11 @@ import 'dart:math' as math;
 
 import 'package:logging/logging.dart';
 
+/// The logging Level of a progress bar update.
+///
+/// The number, 502, is not interesting; it is just unique, and one greater
+/// than logging.dart's `_progressLevel`. That library performs different
+/// actions when it sees logging messages with this Level.
 const Level progressBarUpdate = Level('PROGRESS_BAR', 502);
 
 /// A facility for drawing a progress bar in the terminal.
