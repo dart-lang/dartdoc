@@ -36,17 +36,22 @@ import 'package:meta/meta.dart';
 class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   PackageGraph.uninitialized(
     this.config,
-    this.sdk,
+    DartSdk sdk,
     this.hasEmbedderSdk,
     this.rendererFactory,
     this.packageMetaProvider,
-  ) : packageMeta = config.topLevelPackageMeta {
+  )   : packageMeta = config.topLevelPackageMeta,
+        sdkLibrarySources = {
+          for (var lib in sdk.sdkLibraries) sdk.mapDartUri(lib.shortName): lib
+        } {
     // Make sure the default package exists, even if it has no libraries.
     // This can happen for packages that only contain embedder SDKs.
     Package.fromPackageMeta(packageMeta, this);
   }
 
   final InheritanceManager3 inheritanceManager = InheritanceManager3();
+
+  final Map<Source?, SdkLibrary> sdkLibrarySources;
 
   void dispose() {
     // Clear out any cached tool snapshots and temporary directories.
@@ -132,7 +137,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     // Emit warnings for any local package that has no libraries.
     // This must be done after the [allModelElements] traversal to be sure that
     // all packages are picked up.
-    for (var package in documentedPackages) {
+    for (var package in _documentedPackages) {
       for (var library in package.libraries) {
         _addToImplementors(library.allClasses);
         _addToImplementors(library.mixins);
@@ -362,12 +367,6 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
 
   ResourceProvider get resourceProvider => config.resourceProvider;
 
-  final DartSdk sdk;
-
-  late final Map<Source?, SdkLibrary> sdkLibrarySources = {
-    for (var lib in sdk.sdkLibraries) sdk.mapDartUri(lib.shortName): lib
-  };
-
   final Map<String, String> _macros = {};
   final Map<String, String> _htmlFragments = {};
   bool allLibrariesAdded = false;
@@ -497,7 +496,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       publicPackages.where((p) => p.isLocal).toList(growable: false);
 
   /// Documented packages are documented somewhere (local or remote).
-  Iterable<Package> get documentedPackages =>
+  Iterable<Package> get _documentedPackages =>
       packages.where((p) => p.documentedWhere != DocumentLocation.missing);
 
   /// A mapping of all the [Library]s that export a given [LibraryElement].
@@ -677,7 +676,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
 
   /// The set of [Class] objects that are similar to 'pragma' in that we should
   /// never count them as documentable annotations.
-  late final Set<Class> invisibleAnnotations = () {
+  late final Set<Class> _invisibleAnnotations = () {
     var pragmaSpecialClass = specialClasses[SpecialClass.pragma];
     if (pragmaSpecialClass == null) {
       return const <Class>{};
@@ -685,8 +684,8 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     return {pragmaSpecialClass};
   }();
 
-  bool isAnnotationVisible(Class clazz) =>
-      !invisibleAnnotations.contains(clazz);
+  bool isAnnotationVisible(Class class_) =>
+      !_invisibleAnnotations.contains(class_);
 
   @override
   String toString() {
@@ -910,9 +909,6 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     for (var library in _localLibraries) ...library.allModelElements
   ];
 
-  Iterable<ModelElement> get allCanonicalModelElements =>
-      allLocalModelElements.where((e) => e.isCanonical);
-
   /// Glob lookups can be expensive.  Cache per filename.
   final _configSetsNodocFor = HashMap<String, bool>();
 
@@ -971,7 +967,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     // on ambiguous resolution (see below) will change where they
     // resolve based on internal implementation details.
     var sortedPackages = packages.toList(growable: false)..sort(byName);
-    var sortedDocumentedPackages = documentedPackages.toList(growable: false)
+    var sortedDocumentedPackages = _documentedPackages.toList(growable: false)
       ..sort(byName);
     // Packages are the top priority.
     children.addEntries(sortedPackages.generateEntries());

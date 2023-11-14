@@ -218,8 +218,7 @@ class Library extends ModelElement
 
       nameFromPath = _restoredUri;
       if (nameFromPath.startsWith(schemaToHide)) {
-        nameFromPath =
-            nameFromPath.substring(schemaToHide.length, nameFromPath.length);
+        nameFromPath = nameFromPath.substring(schemaToHide.length);
       }
       if (nameFromPath.endsWith('.dart')) {
         const dartExtensionLength = '.dart'.length;
