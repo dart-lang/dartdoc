@@ -160,7 +160,14 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     var precachedElements = <ModelElement>{};
     var futures = <Future<void>>[];
 
-    for (var element in _allModelElements) {
+    logInfo('Linking elements...');
+    // This is awkward, but initializing this late final field is a sizeable
+    // chunk of work. Several seconds for a small package.
+    var allModelElements = _gatherModelElements();
+    logInfo('Precaching local docs for ${allModelElements.length} elements...');
+    progressBarStart(allModelElements.length);
+    for (var element in allModelElements) {
+      progressBarTick();
       // Only precache elements which are canonical, have a canonical element
       // somewhere, or have a canonical enclosing element. Not the same as
       // `allCanonicalModelElements` since we need to run for any [ModelElement]
@@ -173,19 +180,18 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
           if (d.needsPrecache && !precachedElements.contains(d)) {
             precachedElements.add(d as ModelElement);
             futures.add(d.precacheLocalDocs());
-            logProgress(d.name);
             // [TopLevelVariable]s get their documentation from getters and
             // setters, so should be precached if either has a template.
             if (element is TopLevelVariable &&
                 !precachedElements.contains(element)) {
               precachedElements.add(element);
               futures.add(element.precacheLocalDocs());
-              logProgress(d.name);
             }
           }
         }
       }
     }
+    progressBarComplete();
     // Now wait for any of the tasks still running to complete.
     futures.add(config.tools.runner.wait());
     return futures;
@@ -311,7 +317,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   final Map<String, Library> allLibraries = {};
 
   /// All [ModelElement]s constructed for this package; a superset of
-  /// [_allModelElements].
+  /// the elements gathered in [_gatherModelElements].
   final Map<(Element element, Library library, Container? enclosingElement),
       ModelElement> allConstructedModelElements = {};
 
@@ -870,16 +876,22 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     return allLibraries[e.library?.source.fullName];
   }
 
-  late final Iterable<ModelElement> _allModelElements = () {
+  /// Gathers all of the model elements found in all of the libraries of all
+  /// of the packages.
+  Iterable<ModelElement> _gatherModelElements() {
     assert(allLibrariesAdded);
     var allElements = <ModelElement>[];
     var completedPackages = <Package>{};
+    var libraryCount = packages.fold(
+        0, (previous, package) => previous + package.allLibraries.length);
+    progressBarStart(libraryCount);
     for (var package in packages) {
       if (completedPackages.contains(package)) {
         continue;
       }
       var completedLibraries = <Library>{};
       for (var library in package.allLibraries) {
+        progressBarTick();
         if (completedLibraries.contains(library)) {
           continue;
         }
@@ -888,9 +900,10 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       }
       completedPackages.add(package);
     }
+    progressBarComplete();
 
     return allElements;
-  }();
+  }
 
   late final Iterable<ModelElement> allLocalModelElements = [
     for (var library in _localLibraries) ...library.allModelElements
