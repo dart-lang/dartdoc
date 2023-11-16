@@ -157,6 +157,7 @@ mixin DocumentationComment
     // Other directives, parsed by `model/directives/*.dart`:
     'canonicalFor',
     'category',
+    'hideConstantImplementations',
     'subCategory',
 
     // Common Dart annotations which may decorate named parameters:
