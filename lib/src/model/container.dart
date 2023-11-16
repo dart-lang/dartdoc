@@ -28,7 +28,7 @@ import 'package:meta/meta.dart';
 /// * **has** : boolean getters indicating whether the underlying collections
 ///   are empty.  These are available mostly for the templating system.
 abstract class Container extends ModelElement
-    with Categorization, TypeParameters {
+    with Categorization, TypeParameters, HideConstantImplementations {
   Container(super.library, super.packageGraph);
 
   // TODO(jcollins-g): Implement a ContainerScope that flattens supertypes?
