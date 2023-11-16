@@ -22,7 +22,11 @@ class _LibrarySentinel implements Library {
 }
 
 class Library extends ModelElement
-    with Categorization, TopLevelContainer, CanonicalFor {
+    with
+        Categorization,
+        TopLevelContainer,
+        CanonicalFor,
+        HideConstantImplementations {
   @override
   final LibraryElement element;
 
