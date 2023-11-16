@@ -6121,13 +6121,6 @@ class _Renderer_Field extends RendererBase<Field> {
                         parent: r);
                   },
                 ),
-                'hasHideConstantImplementation': Property(
-                  getValue: (CT_ c) => c.hasHideConstantImplementation,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasHideConstantImplementation == true,
-                ),
                 'href': Property(
                   getValue: (CT_ c) => c.href,
                   renderVariable:
@@ -6819,13 +6812,6 @@ class _Renderer_GetterSetterCombo extends RendererBase<GetterSetterCombo> {
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.hasGetterOrSetter == true,
-                ),
-                'hasHideConstantImplementation': Property(
-                  getValue: (CT_ c) => c.hasHideConstantImplementation,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasHideConstantImplementation == true,
                 ),
                 'hasNoGetterSetter': Property(
                   getValue: (CT_ c) => c.hasNoGetterSetter,
@@ -15123,13 +15109,6 @@ class _Renderer_TopLevelVariable extends RendererBase<TopLevelVariable> {
                         parent: r);
                   },
                 ),
-                'hasHideConstantImplementation': Property(
-                  getValue: (CT_ c) => c.hasHideConstantImplementation,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasHideConstantImplementation == true,
-                ),
                 'href': Property(
                   getValue: (CT_ c) => c.href,
                   renderVariable:
@@ -16739,7 +16718,6 @@ const _invisibleGetters = {
     'hasExplicitSetter',
     'hasGetter',
     'hasGetterOrSetter',
-    'hasHideConstantImplementation',
     'hasNoGetterSetter',
     'hasParameters',
     'hasPublicGetter',
