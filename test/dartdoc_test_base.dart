@@ -3,10 +3,12 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/file_system/memory_file_system.dart';
+import 'package:dartdoc/src/dartdoc.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:meta/meta.dart';
+import 'package:path/path.dart' as path;
 
 import 'src/test_descriptor_utils.dart' as d;
 import 'src/utils.dart';
@@ -25,7 +27,7 @@ abstract class DartdocTestBase {
   late final PackageMetaProvider packageMetaProvider;
   late final MemoryResourceProvider resourceProvider;
   late final FakePackageConfigProvider packageConfigProvider;
-  late final String packagePath;
+  late String packagePath;
 
   String get libraryName;
 
@@ -47,10 +49,10 @@ abstract class DartdocTestBase {
     packageMetaProvider = testPackageMetaProvider;
     resourceProvider =
         packageMetaProvider.resourceProvider as MemoryResourceProvider;
-    await setUpPackage(libraryName);
+    await _setUpPackage();
   }
 
-  Future<void> setUpPackage(String name) async {
+  Future<void> _setUpPackage() async {
     var pubspec = d.buildPubspecText(sdkConstraint: sdkConstraint);
     String? analysisOptions;
     if (experiments.isNotEmpty) {
@@ -60,7 +62,7 @@ analyzer:
 ''';
     }
     packagePath = await d.createPackage(
-      name,
+      libraryName,
       pubspec: pubspec,
       analysisOptions: analysisOptions,
       resourceProvider: resourceProvider,
@@ -69,7 +71,7 @@ analyzer:
     packageConfigProvider =
         getTestPackageConfigProvider(packageMetaProvider.defaultSdkDir.path);
     packageConfigProvider.addPackageToConfigFor(
-        packagePath, name, Uri.file('$packagePath/'));
+        packagePath, libraryName, Uri.file('$packagePath/'));
   }
 
   Future<PackageGraph> _bootPackageFromFiles(Iterable<d.Descriptor> files,
@@ -157,5 +159,34 @@ $libraryContent
     ]))
         .libraries
         .named(libraryName);
+  }
+
+  Future<Dartdoc> buildDartdoc({
+    List<String> excludeLibraries = const [],
+    List<String> additionalArguments = const [],
+    bool skipUnreachableSdkLibraries = true,
+  }) async {
+    final dir = resourceProvider.getFolder(resourceProvider.pathContext
+        .absolute(resourceProvider.pathContext.normalize(packagePath)));
+    final context = await generatorContextFromArgv([
+      '--input',
+      dir.path,
+      '--output',
+      path.join(packagePath, 'doc'),
+      '--sdk-dir',
+      packageMetaProvider.defaultSdkDir.path,
+      '--exclude',
+      excludeLibraries.join(','),
+      '--allow-tools',
+      '--no-link-to-remote',
+      ...additionalArguments,
+    ], packageMetaProvider);
+    final packageBuilder = PubPackageBuilder(
+      context,
+      packageMetaProvider,
+      packageConfigProvider,
+      skipUnreachableSdkLibraries: skipUnreachableSdkLibraries,
+    );
+    return await Dartdoc.fromContext(context, packageBuilder);
   }
 }
