@@ -1,4 +1,4 @@
-## 7.0.3
+## 8.0.0
 
 * Apply @hideConstantImplementations by default. (#3576)
 * Remove unused parameter in zone thing (#3581)
