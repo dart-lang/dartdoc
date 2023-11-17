@@ -1,3 +1,30 @@
+## 7.0.3
+
+* Apply @hideConstantImplementations by default. (#3576)
+* Remove unused parameter in zone thing (#3581)
+* Add some progress bars for time-intensive tasks (#3579)
+* Privatize almost all elements in package_builder. (#3580)
+* Privatize several members on PackageGraph (#3578)
+* Correct looping bug in library discovery (#3574)
+* Remove @image directive. (#3568)
+* Privatize `packageName`, `name`, `libraryName`, and
+  `specialFileUri` in `SpecialClass`. (#3569)
+* Privatize `PackageMeta.pathContext`. (#3572)
+* Remove @samples directive. (#3567)
+* Remove @api directive. (#3566)
+* Improve display text for libraries. (#3552)
+* Remove `ElementType.canHaveParameters`. (#3563)
+* Privatize `ElementType`` subclass constructors (#3560)
+* InheritingContainer: `hasPublicInheritedMethods`, `inheritedFields`,
+  `publicInheritedFields`, `publicInheritedMethods` are only visible
+  for testing. (#3559)
+* Display inherited elements for extension types. (#3556)
+* Remove `DefinedElementType.element` and
+  `DefinedElementType.isParameterType`. (#3558)
+* Make `TypeImplementing.directInterfaces` private. (#3555)
+* Display extension type super interfaces. (#3554)
+* Display extension type constructors. (#3550)
+
 ## 7.0.2
 
 * Remove support for the deprecated `new ` prefix in comment references.
