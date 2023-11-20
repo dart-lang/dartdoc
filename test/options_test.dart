@@ -3,9 +3,12 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/file_system/memory_file_system.dart';
+import 'package:args/args.dart';
 import 'package:dartdoc/options.dart';
 import 'package:dartdoc/src/dartdoc.dart';
+import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/failure.dart';
+import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:path/path.dart' as path;
@@ -24,15 +27,21 @@ void main() async {
   late PackageMetaProvider packageMetaProvider;
   late DartdocGeneratorOptionContext context;
 
+  late StringBuffer outBuffer;
+  late StringBuffer errBuffer;
+
   setUp(() {
     packageMetaProvider = utils.testPackageMetaProvider;
     resourceProvider =
         packageMetaProvider.resourceProvider as MemoryResourceProvider;
+    outBuffer = StringBuffer();
+    errBuffer = StringBuffer();
   });
 
   Future<PubPackageBuilder> createPackageBuilder({
     List<String> additionalOptions = const [],
     bool skipUnreachableSdkLibraries = true,
+    bool useJson = false,
   }) async {
     context = await utils.generatorContextFromArgv([
       '--input',
@@ -43,6 +52,8 @@ void main() async {
       packageMetaProvider.defaultSdkDir.path,
       '--allow-tools',
       '--no-link-to-remote',
+      '--no-show-progress',
+      if (useJson) '--json',
       ...additionalOptions,
     ], packageMetaProvider);
 
@@ -50,6 +61,14 @@ void main() async {
         .getTestPackageConfigProvider(packageMetaProvider.defaultSdkDir.path);
     packageConfigProvider.addPackageToConfigFor(
         packagePath, packageName, Uri.file('$packagePath/'));
+
+    startLogging(
+      isJson: useJson,
+      isQuiet: true,
+      showProgress: true,
+      outSink: outBuffer,
+      errSink: errBuffer,
+    );
     return PubPackageBuilder(
       context,
       packageMetaProvider,
@@ -61,10 +80,12 @@ void main() async {
   Future<Dartdoc> buildDartdoc({
     List<String> additionalOptions = const [],
     bool skipUnreachableSdkLibraries = true,
+    bool useJson = false,
   }) async {
     final packageBuilder = await createPackageBuilder(
       additionalOptions: additionalOptions,
       skipUnreachableSdkLibraries: skipUnreachableSdkLibraries,
+      useJson: useJson,
     );
     return await Dartdoc.fromContext(
       context,
@@ -589,6 +610,118 @@ class Foo {}
             additionalOptions: ['--templates-dir', customTemplatesDir]),
         throwsA(const TypeMatcher<DartdocFailure>().having((f) => f.message,
             'message', startsWith('Missing required template file'))));
+  });
+
+  test('quiet option results in no progress or other logging', () async {
+    packagePath = await d.createPackage(
+      packageName,
+      libFiles: [
+        d.file('library_1.dart', '''
+library library_1;
+class Foo {}
+'''),
+      ],
+      resourceProvider: resourceProvider,
+    );
+    await utils.writeDartdocResources(resourceProvider);
+    final dartdoc = await buildDartdoc(additionalOptions: [
+      '--quiet',
+    ]);
+    await dartdoc.generateDocs();
+
+    // With the `--quiet` option, nothing should be printed to stdout, and only
+    // warnings should be printed to stderr.
+    expect(outBuffer, isEmpty);
+    expect(errBuffer.toString(), equals('''
+  warning: library_1 has no library level documentation comments
+    from library_1: (file:///temp/test_package/lib/library_1.dart:1:9)
+Found 1 warning and 0 errors.
+'''));
+  });
+
+  test(
+      'no-generate-docs option results in no progress or other logging, and no '
+      'generated docs', () async {
+    packagePath = await d.createPackage(
+      packageName,
+      libFiles: [
+        d.file('library_1.dart', '''
+library library_1;
+class Foo {}
+'''),
+      ],
+      resourceProvider: resourceProvider,
+    );
+    await utils.writeDartdocResources(resourceProvider);
+    final dartdoc = await buildDartdoc(additionalOptions: [
+      '--no-generate-docs',
+    ]);
+    await dartdoc.generateDocs();
+
+    // With the `--no-generate-docs` option, nothing should be printed to
+    // stdout, and only warnings should be printed to stderr.
+    expect(outBuffer, isEmpty);
+    expect(errBuffer.toString(), equals('''
+  warning: library_1 has no library level documentation comments
+    from library_1: (file:///temp/test_package/lib/library_1.dart:1:9)
+Found 1 warning and 0 errors.
+'''));
+
+    final outputDirectory = resourceProvider.getFolder(
+      path.join(packagePath, 'doc', 'api'),
+    );
+    expect(outputDirectory.exists, isFalse);
+  });
+
+  test('json option results in JSON output', () async {
+    packagePath = await d.createPackage(
+      packageName,
+      libFiles: [
+        d.file('library_1.dart', '''
+library library_1;
+class Foo {}
+'''),
+      ],
+      resourceProvider: resourceProvider,
+    );
+    await utils.writeDartdocResources(resourceProvider);
+    final dartdoc = await buildDartdoc(useJson: true);
+    await dartdoc.generateDocs();
+
+    expect(
+      outBuffer.toString().split('\n'),
+      contains('{"level":"WARNING","message":"Found 1 warning and 0 errors."}'),
+    );
+    expect(errBuffer, isEmpty);
+  });
+
+  test('non-existent option results in fatal error', () async {
+    expect(
+      () => utils.generatorContextFromArgv([
+        '--nonexistent',
+      ], packageMetaProvider),
+      throwsA(isA<ArgParserException>().having(
+        (e) => e.toString(),
+        'toString',
+        contains('Could not find an option named "nonexistent".'),
+      )),
+    );
+  });
+
+  test('non-existent input path results in fatal error', () async {
+    expect(
+      () => utils.generatorContextFromArgv([
+        '--input',
+        'non-existent',
+      ], packageMetaProvider),
+      throwsA(isA<DartdocFileMissing>().having(
+        (e) => e.message,
+        'message',
+        contains(
+          'Argument --input, set to non-existent, resolves to missing path:',
+        ),
+      )),
+    );
   });
 
   group('limit files created', () {

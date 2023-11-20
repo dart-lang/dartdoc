@@ -127,7 +127,11 @@ DartdocProgramOptionContext? parseOptions(
     exitCode = 64;
     return null;
   }
-  startLogging(config);
+  startLogging(
+    isJson: config.json,
+    isQuiet: config.quiet,
+    showProgress: config.showProgress,
+  );
   return config;
 }
 
