@@ -632,9 +632,9 @@ class Foo {}
     // With the `--quiet` option, nothing should be printed to stdout, and only
     // warnings should be printed to stderr.
     expect(outBuffer, isEmpty);
-    expect(errBuffer.toString(), equals('''
+    expect(errBuffer.toString(), matches(r'''
   warning: library_1 has no library level documentation comments
-    from library_1: (file:///temp/test_package/lib/library_1.dart:1:9)
+    from library_1: \(.*lib/library_1.dart:1:9\)
 Found 1 warning and 0 errors.
 '''));
   });
@@ -661,9 +661,9 @@ class Foo {}
     // With the `--no-generate-docs` option, nothing should be printed to
     // stdout, and only warnings should be printed to stderr.
     expect(outBuffer, isEmpty);
-    expect(errBuffer.toString(), equals('''
+    expect(errBuffer.toString(), equals(r'''
   warning: library_1 has no library level documentation comments
-    from library_1: (file:///temp/test_package/lib/library_1.dart:1:9)
+    from library_1: \(.*lib/library_1.dart:1:9\)
 Found 1 warning and 0 errors.
 '''));
 
