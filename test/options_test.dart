@@ -632,11 +632,11 @@ class Foo {}
     // With the `--quiet` option, nothing should be printed to stdout, and only
     // warnings should be printed to stderr.
     expect(outBuffer, isEmpty);
-    expect(errBuffer.toString(), matches(r'''
+    expect(errBuffer.toString(), matches(RegExp(r'''
   warning: library_1 has no library level documentation comments
     from library_1: \(.*lib/library_1.dart:1:9\)
 Found 1 warning and 0 errors.
-'''));
+''')));
   });
 
   test(
@@ -661,11 +661,11 @@ class Foo {}
     // With the `--no-generate-docs` option, nothing should be printed to
     // stdout, and only warnings should be printed to stderr.
     expect(outBuffer, isEmpty);
-    expect(errBuffer.toString(), equals(r'''
+    expect(errBuffer.toString(), matches(RegExp(r'''
   warning: library_1 has no library level documentation comments
     from library_1: \(.*lib/library_1.dart:1:9\)
 Found 1 warning and 0 errors.
-'''));
+''')));
 
     final outputDirectory = resourceProvider.getFolder(
       path.join(packagePath, 'doc', 'api'),
