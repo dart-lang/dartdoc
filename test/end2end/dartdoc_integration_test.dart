@@ -60,60 +60,6 @@ void main() {
       ]);
     });
 
-    test('with --no-generate-docs is quiet and does not generate docs',
-        () async {
-      var process = await runDartdoc(
-        ['--no-generate-docs'],
-        workingDirectory: packagePath,
-      );
-      await expectLater(
-          process.stderr, emitsThrough('Found 1 warning and 0 errors.'));
-      await process.shouldExit(0);
-      var docs = Directory(path.join(packagePath, 'doc', 'api'));
-      expect(docs.existsSync(), isFalse);
-    });
-
-    test('with --quiet is quiet and does generate docs', () async {
-      var process = await runDartdoc(
-        ['--quiet'],
-        workingDirectory: packagePath,
-      );
-      await expectLater(process.stderr, emitsThrough(matches('^  warning:')));
-      await expectLater(
-          process.stderr, emitsThrough('Found 1 warning and 0 errors.'));
-      await process.shouldExit(0);
-      var indexHtml = Directory(path.join(packagePath, 'doc', 'api'));
-      expect(indexHtml.listSync(), isNotEmpty);
-    });
-
-    test('with invalid options return non-zero and print a fatal-error',
-        () async {
-      var process = await runDartdoc(
-        ['--nonexisting'],
-        workingDirectory: packagePath,
-      );
-      await expectLater(
-          process.stderr,
-          emitsThrough(
-              ' fatal error: Could not find an option named "nonexisting".'));
-      await process.shouldExit(64);
-    });
-
-    test('missing a required file path prints a fatal error', () async {
-      var process = await runDartdoc(
-        ['--input', 'non-existant'],
-        workingDirectory: packagePath,
-      );
-      var fullPath = path.canonicalize(path.join(packagePath, 'non-existant'));
-      await expectLater(
-        process.stderr,
-        emitsThrough(
-            ' fatal error: Argument --input, set to non-existant, resolves to '
-            'missing path: "$fullPath"'),
-      );
-      await process.shouldExit(64);
-    });
-
     test('with --help prints command line args', () async {
       var process = await runDartdoc(
         ['--help'],
@@ -134,22 +80,6 @@ void main() {
       var dartdocMeta = pubPackageMetaProvider.fromFilename(_dartdocPath)!;
       await expectLater(process.stdout,
           emitsThrough('dartdoc version: ${dartdocMeta.version}'));
-      await process.shouldExit(0);
-    });
-
-    test('Validate JSON output', () async {
-      var process = await runDartdoc(
-        [
-          //dartdocPath,
-          '--no-include-source',
-          '--json',
-        ],
-        workingDirectory: packagePath,
-      );
-      await expectLater(
-          process.stdout,
-          emitsThrough(
-              '{"level":"WARNING","message":"Found 1 warning and 0 errors."}'));
       await process.shouldExit(0);
     });
   });

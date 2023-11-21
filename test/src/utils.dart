@@ -16,6 +16,7 @@ import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/failure.dart';
 import 'package:dartdoc/src/generator/generator.dart';
 import 'package:dartdoc/src/generator/resource_loader.dart';
+import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/markdown_processor.dart';
 import 'package:dartdoc/src/matching_link_result.dart';
 import 'package:dartdoc/src/model/model_element.dart';
@@ -59,12 +60,15 @@ Future<DartdocOptionContext> contextFromArgv(
 Future<DartdocGeneratorOptionContext> generatorContextFromArgv(
     List<String> argv, PackageMetaProvider packageMetaProvider) async {
   var optionSet = DartdocOptionRoot.fromOptionGenerators(
-      'dartdoc',
-      [
-        createDartdocOptions,
-        createGeneratorOptions,
-      ],
-      packageMetaProvider);
+    'dartdoc',
+    [
+      createDartdocProgramOptions,
+      createLoggingOptions,
+      createDartdocOptions,
+      createGeneratorOptions,
+    ],
+    packageMetaProvider,
+  );
   optionSet.parseArguments(argv);
   return DartdocGeneratorOptionContext.fromDefaultContextLocation(
       optionSet, packageMetaProvider.resourceProvider);
