@@ -50,10 +50,7 @@ void main() {
           [createDartdocProgramOptions, createLoggingOptions],
           pubPackageMetaProvider);
       optionSet.parseArguments([]);
-      startLogging(DartdocLoggingOptionContext(
-          optionSet,
-          _resourceProvider.getFolder(_pathContext.current),
-          _resourceProvider));
+      startLogging(isJson: false, isQuiet: true, showProgress: false);
 
       // Set up the pub metadata for our test packages.
       runPubGet(testPackageToolError.path);

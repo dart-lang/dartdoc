@@ -4,6 +4,7 @@
 
 import 'package:analyzer/file_system/memory_file_system.dart';
 import 'package:dartdoc/src/dartdoc.dart';
+import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
@@ -44,8 +45,13 @@ abstract class DartdocTestBase {
 
   bool get skipUnreachableSdkLibraries => true;
 
+  late StringBuffer outBuffer;
+  late StringBuffer errBuffer;
+
   @mustCallSuper
   Future<void> setUp() async {
+    outBuffer = StringBuffer();
+    errBuffer = StringBuffer();
     packageMetaProvider = testPackageMetaProvider;
     resourceProvider =
         packageMetaProvider.resourceProvider as MemoryResourceProvider;
@@ -165,6 +171,7 @@ $libraryContent
     List<String> excludeLibraries = const [],
     List<String> additionalArguments = const [],
     bool skipUnreachableSdkLibraries = true,
+    bool useJson = false,
   }) async {
     final dir = resourceProvider.getFolder(resourceProvider.pathContext
         .absolute(resourceProvider.pathContext.normalize(packagePath)));
@@ -186,6 +193,13 @@ $libraryContent
       packageMetaProvider,
       packageConfigProvider,
       skipUnreachableSdkLibraries: skipUnreachableSdkLibraries,
+    );
+    startLogging(
+      isJson: useJson,
+      isQuiet: true,
+      showProgress: true,
+      outSink: outBuffer,
+      errSink: errBuffer,
     );
     return await Dartdoc.fromContext(context, packageBuilder);
   }

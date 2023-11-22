@@ -85,6 +85,9 @@ class _DartdocLogger {
   static _DartdocLogger instance =
       _DartdocLogger._(isJson: false, isQuiet: true, showProgress: false);
 
+  final StringSink _outSink;
+  final StringSink _errSink;
+
   final bool _showProgressBar;
 
   ProgressBar? _progressBar;
@@ -93,7 +96,11 @@ class _DartdocLogger {
     required bool isJson,
     required bool isQuiet,
     required bool showProgress,
-  }) : _showProgressBar = showProgress && !isJson && !isQuiet {
+    StringSink? outSink,
+    StringSink? errSink,
+  })  : _outSink = outSink ?? io.stdout,
+        _errSink = errSink ?? io.stderr,
+        _showProgressBar = showProgress && !isJson && !isQuiet {
     // By default, get all log output at `progressLevel` or greater.
     // This allows us to capture progress events and print `...`.
     // Change this to `Level.FINE` for debug logging.
@@ -120,7 +127,7 @@ class _DartdocLogger {
 
     Logger.root.onRecord.listen((record) {
       if (record.level == progressBarUpdate) {
-        io.stdout.write(record.message);
+        _outSink.write(record.message);
         return;
       }
 
@@ -129,10 +136,10 @@ class _DartdocLogger {
             showProgress &&
             stopwatch.elapsed.inMilliseconds > 125) {
           if (writingProgress = false) {
-            io.stdout.write(' ');
+            _outSink.write(' ');
           }
           writingProgress = true;
-          io.stdout.write('$_backspace${spinner[spinnerIndex]}');
+          _outSink.write('$_backspace${spinner[spinnerIndex]}');
           spinnerIndex = (spinnerIndex + 1) % spinner.length;
           stopwatch.reset();
         }
@@ -141,22 +148,22 @@ class _DartdocLogger {
 
       stopwatch.reset();
       if (writingProgress) {
-        io.stdout.write('$_backspace $_backspace');
+        _outSink.write('$_backspace $_backspace');
       }
       var message = record.message;
       assert(message.isNotEmpty);
 
       if (record.level < Level.WARNING) {
         if (!isQuiet) {
-          print(message);
+          _outSink.writeln(message);
         }
       } else {
         if (writingProgress) {
           // Some console implementations, like IntelliJ, apparently need
           // the backspace to occur for stderr as well.
-          io.stderr.write('$_backspace $_backspace');
+          _errSink.write('$_backspace $_backspace');
         }
-        io.stderr.writeln(message);
+        _errSink.writeln(message);
       }
       writingProgress = false;
     });
@@ -204,15 +211,23 @@ class _DartdocLogger {
       output['message'] = record.message;
     }
 
-    print(json.encode(output));
+    _outSink.writeln(json.encode(output));
   }
 }
 
-void startLogging(LoggingContext config) {
+void startLogging({
+  required bool isJson,
+  required bool isQuiet,
+  required bool showProgress,
+  StringSink? outSink,
+  StringSink? errSink,
+}) {
   _DartdocLogger.instance = _DartdocLogger._(
-    isJson: config.json,
-    isQuiet: config.quiet,
-    showProgress: config.showProgress,
+    isJson: isJson,
+    isQuiet: isQuiet,
+    showProgress: showProgress,
+    outSink: outSink ?? io.stdout,
+    errSink: errSink ?? io.stderr,
   );
 }
 
