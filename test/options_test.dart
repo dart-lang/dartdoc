@@ -28,18 +28,6 @@ class OptionsTest extends DartdocTestBase {
 
   static const packageName = 'test_package';
 
-  /*@override
-  Future<void> setUp() async {
-    await super.setUp();
-    startLogging(
-      isJson: false,
-      isQuiet: true,
-      showProgress: true,
-      outSink: outBuffer,
-      errSink: errBuffer,
-    );
-  }*/
-
   Future<void> createPackage(
     String name, {
     String? dartdocOptions,
@@ -58,65 +46,7 @@ class OptionsTest extends DartdocTestBase {
         packagePath, packageName, Uri.file('$packagePath/'));
   }
 
-  /*
-
-  Future<PubPackageBuilder> createPackageBuilder({
-    List<String> additionalOptions = const [],
-    bool skipUnreachableSdkLibraries = true,
-    bool useJson = false,
-  }) async {
-    context = await utils.generatorContextFromArgv([
-      '--input',
-      packagePath,
-      '--output',
-      path.join(packagePath, 'doc'),
-      '--sdk-dir',
-      packageMetaProvider.defaultSdkDir.path,
-      '--allow-tools',
-      '--no-link-to-remote',
-      '--no-show-progress',
-      if (useJson) '--json',
-      ...additionalOptions,
-    ], packageMetaProvider);
-
-    var packageConfigProvider = utils
-        .getTestPackageConfigProvider(packageMetaProvider.defaultSdkDir.path);
-    packageConfigProvider.addPackageToConfigFor(
-        packagePath, packageName, Uri.file('$packagePath/'));
-
-    startLogging(
-      isJson: useJson,
-      isQuiet: true,
-      showProgress: true,
-      outSink: outBuffer,
-      errSink: errBuffer,
-    );
-    return PubPackageBuilder(
-      context,
-      packageMetaProvider,
-      packageConfigProvider,
-      skipUnreachableSdkLibraries: skipUnreachableSdkLibraries,
-    );
-  }
-
-  Future<Dartdoc> buildDartdoc({
-    List<String> additionalOptions = const [],
-    bool skipUnreachableSdkLibraries = true,
-    bool useJson = false,
-  }) async {
-    final packageBuilder = await createPackageBuilder(
-      additionalOptions: additionalOptions,
-      skipUnreachableSdkLibraries: skipUnreachableSdkLibraries,
-      useJson: useJson,
-    );
-    return await Dartdoc.fromContext(
-      context,
-      packageBuilder,
-    );
-  }
-  */
-
-  void test_faviconOptionCopiesFaviconFile() async {
+  void test_faviconOption_copiesFaviconFile() async {
     await createPackage(
       packageName,
       dartdocOptions: '''
@@ -141,7 +71,7 @@ dartdoc:
     expect(faviconContent, contains('Just plain text'));
   }
 
-  void test_headerOptionAddsContentToIndexFile() async {
+  void test_headerOption_addsContentToIndexFile() async {
     await createPackage(
       packageName,
       dartdocOptions: '''
@@ -161,7 +91,7 @@ dartdoc:
     expect(indexContent, contains('<em>Header</em> things.'));
   }
 
-  void test_footerOptionAddsContentToIndexFile() async {
+  void test_footerOption_addsContentToIndexFile() async {
     await createPackage(
       packageName,
       dartdocOptions: '''
@@ -181,7 +111,7 @@ dartdoc:
     expect(indexContent, contains('<em>Footer</em> things.'));
   }
 
-  void test_footerTextOptionAddsTextToIndexFile() async {
+  void test_footerTextOption_addsTextToIndexFile() async {
     await createPackage(
       packageName,
       dartdocOptions: '''
@@ -201,7 +131,7 @@ dartdoc:
     expect(indexContent, contains('Just footer text'));
   }
 
-  void test_excludeFooterVersionOptionDoesNotDisplayVersion() async {
+  void test_excludeFooterVersionOption_doesNotDisplayVersion() async {
     await createPackage(
       packageName,
       dartdocOptions: '''
@@ -229,7 +159,7 @@ dartdoc:
     expect(version.hasMatch(match.group(0)!), false, reason: indexContent);
   }
 
-  void test_examplePathPrefixOptionFindsExamplesInACustomPath() async {
+  void test_examplePathPrefixOption_findsExamplesInACustomPath() async {
     await createPackage(
       packageName,
       dartdocOptions: '''
@@ -267,7 +197,7 @@ An example in an unusual dir.
         contains('<code class="language-dart">An example in an unusual dir.'));
   }
 
-  void test_formatEqualMdOptionGeneratesMarkdownFiles() async {
+  void test_formatOption_md_generatesMarkdownFiles() async {
     await createPackage(
       packageName,
       libFiles: [
@@ -286,7 +216,7 @@ class Foo {}
     expect(indexContent, contains('# Foo class'));
   }
 
-  void test_formatEqualsBadOptionResultsInDartdocFailure() async {
+  void test_formatOption_bad_resultsInDartdocFailure() async {
     await createPackage(
       packageName,
       libFiles: [
@@ -302,7 +232,7 @@ class Foo {}
             'message', startsWith('Unsupported output format'))));
   }
 
-  void test_includeOptionCanBeSpecifiedInOptionsFile() async {
+  void test_includeOption_canBeSpecifiedInOptionsFile() async {
     await createPackage(
       packageName,
       dartdocOptions: '''
@@ -333,7 +263,7 @@ class Baz {}
         orderedEquals(['library_1', 'library_2']));
   }
 
-  void test_includeCommandLineOptionOverridesOptionsFileOption() async {
+  void test_includeCommandLineOption_overridesOptionsFileOption() async {
     await createPackage(
       packageName,
       dartdocOptions: '''
@@ -365,7 +295,7 @@ class Baz {}
         orderedEquals(['library_3']));
   }
 
-  void test_excludeCommandLineOptionOverridesOptionsFileOption() async {
+  void test_excludeCommandLineOption_overridesOptionsFileOption() async {
     await createPackage(
       packageName,
       dartdocOptions: '''
@@ -394,7 +324,7 @@ class Bar {}
   }
 
   void
-      test_showUndocumentedCategoriesOptionShowsUndocumentedCategories() async {
+      test_showUndocumentedCategoriesOption_showsUndocumentedCategories() async {
     await createPackage(
       packageName,
       dartdocOptions: '''
@@ -420,7 +350,7 @@ class Foo {}
     expect(classFoo.displayedCategories, isNotEmpty);
   }
 
-  void test_categoryOrderOrdersCategories() async {
+  void test_categoryOrderOption_ordersCategories() async {
     await createPackage(
       packageName,
       dartdocOptions: '''
@@ -465,7 +395,7 @@ class C3 {}
         equals(['Three', 'One', 'Two']));
   }
 
-  void test_categoriesNotIncludedInCategoryOrderAreOrderedAtTheEnd() async {
+  void test_categoriesNotIncludedInCategoryOrder_areOrderedAtTheEnd() async {
     await createPackage(
       packageName,
       dartdocOptions: '''
@@ -552,7 +482,7 @@ class C1 {}
   }
 
   void
-      test_templatesDirOptionReferencingANonExistentDirectoryResultsInDartdocFailure() async {
+      test_templatesDirOption_referencingANonExistentDirectory_resultsInDartdocFailure() async {
     await createPackage(
       packageName,
       libFiles: [
@@ -572,7 +502,7 @@ class Foo {}
         )));
   }
 
-  void test_templatesDirOptionSpecifiesTheTemplatesToUse() async {
+  void test_templatesDirOption_specifiesTheTemplatesToUse() async {
     await createPackage(
       packageName,
       libFiles: [
@@ -615,7 +545,7 @@ class Foo {}
   }
 
   void
-      test_templatesDirOptionReferencingAnEmptyDirectoryResultsInDartdocFailure() async {
+      test_templatesDirOptionReferencingAnEmptyDirectory_resultsInDartdocFailure() async {
     await createPackage(
       packageName,
       libFiles: [
@@ -691,7 +621,7 @@ Found 1 warning and 0 errors.
     expect(outputDirectory.exists, isFalse);
   }
 
-  void test_jsonOptionResultsInJsonOutput() async {
+  void test_jsonOption_resultsInJsonOutput() async {
     await createPackage(
       packageName,
       libFiles: [
@@ -712,7 +642,7 @@ class Foo {}
     expect(errBuffer, isEmpty);
   }
 
-  void test_nonExistentOption_resultsIFatalError() async {
+  void test_nonExistentOption_resultsInFatalError() async {
     expect(
       () => utils.generatorContextFromArgv([
         '--nonexistent',
