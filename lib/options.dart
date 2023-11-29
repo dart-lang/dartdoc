@@ -1,7 +1,7 @@
 import 'dart:io' show stderr, exitCode;
 
 import 'package:args/args.dart';
-import 'package:dartdoc/dartdoc.dart' show dartdocVersion, programName;
+import 'package:dartdoc/src/dartdoc.dart' show dartdocVersion, programName;
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/generator/generator.dart';
 import 'package:dartdoc/src/logging.dart';
