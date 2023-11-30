@@ -9,7 +9,6 @@ import 'package:analyzer/file_system/memory_file_system.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:analyzer/src/dart/sdk/sdk.dart';
 import 'package:analyzer/src/test_utilities/mock_sdk.dart';
-import 'package:dartdoc/options.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/failure.dart';
 import 'package:dartdoc/src/generator/generator.dart';

@@ -6,8 +6,8 @@ library dartdoc.bin;
 
 import 'dart:async';
 
-import 'package:dartdoc/options.dart';
 import 'package:dartdoc/src/dartdoc.dart';
+import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
