@@ -39,7 +39,7 @@
 library dartdoc.templates;
 
 import 'package:analyzer/file_system/file_system.dart';
-import 'package:dartdoc/options.dart';
+import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/failure.dart';
 import 'package:dartdoc/src/generator/resource_loader.dart';

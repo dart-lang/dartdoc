@@ -7,7 +7,6 @@ library dartdoc.dartdoc_test;
 import 'dart:async';
 
 import 'package:analyzer/file_system/file_system.dart';
-import 'package:dartdoc/options.dart';
 import 'package:dartdoc/src/dartdoc.dart' show Dartdoc, DartdocResults;
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/failure.dart';

@@ -7,7 +7,6 @@ import 'dart:convert';
 import 'dart:io' show Platform, exitCode, stderr;
 
 import 'package:analyzer/file_system/file_system.dart';
-import 'package:dartdoc/options.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/failure.dart';
 import 'package:dartdoc/src/generator/empty_generator.dart';

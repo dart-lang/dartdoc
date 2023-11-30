@@ -4,7 +4,7 @@
 
 library dartdoc.html_generator;
 
-import 'package:dartdoc/options.dart';
+import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/generator/generator.dart';
 import 'package:dartdoc/src/generator/generator_backend.dart';
 import 'package:dartdoc/src/generator/generator_frontend.dart';
