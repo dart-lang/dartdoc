@@ -1,3 +1,9 @@
+## 8.0.1
+
+* The deprecated public APIs will be removed in the next major release.
+* Deprecate options.dart. (#3591)
+* Deprecate public exports in lib/dartdoc.dart. (#3589)
+
 ## 8.0.0
 
 * Apply @hideConstantImplementations by default. (#3576)
