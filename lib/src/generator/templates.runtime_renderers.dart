@@ -2777,7 +2777,6 @@ class _Renderer_Container extends RendererBase<Container> {
                 ..._Renderer_ModelElement.propertyMap<CT_>(),
                 ..._Renderer_Categorization.propertyMap<CT_>(),
                 ..._Renderer_TypeParameters.propertyMap<CT_>(),
-                ..._Renderer_HideConstantImplementations.propertyMap<CT_>(),
                 'aboveSidebarPath': Property(
                   getValue: (CT_ c) => c.aboveSidebarPath,
                   renderVariable:
@@ -7115,38 +7114,6 @@ class _Renderer_HasNoPage extends RendererBase<HasNoPage> {
   }
 }
 
-class _Renderer_HideConstantImplementations
-    extends RendererBase<HideConstantImplementations> {
-  static final Map<Type, Object> _propertyMapCache = {};
-  static Map<String, Property<CT_>>
-      propertyMap<CT_ extends HideConstantImplementations>() =>
-          _propertyMapCache.putIfAbsent(
-              CT_,
-              () => {
-                    'hasHideConstantImplementations': Property(
-                      getValue: (CT_ c) => c.hasHideConstantImplementations,
-                      renderVariable: (CT_ c, Property<CT_> self,
-                              List<String> remainingNames) =>
-                          self.renderSimpleVariable(c, remainingNames, 'bool'),
-                      getBool: (CT_ c) =>
-                          c.hasHideConstantImplementations == true,
-                    ),
-                  }) as Map<String, Property<CT_>>;
-
-  _Renderer_HideConstantImplementations(HideConstantImplementations context,
-      RendererBase<Object>? parent, Template template, StringSink sink)
-      : super(context, parent, template, sink);
-
-  @override
-  Property<HideConstantImplementations>? getProperty(String key) {
-    if (propertyMap<HideConstantImplementations>().containsKey(key)) {
-      return propertyMap<HideConstantImplementations>()[key];
-    } else {
-      return null;
-    }
-  }
-}
-
 class _Renderer_Indexable extends RendererBase<Indexable> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends Indexable>() =>
@@ -8167,7 +8134,6 @@ class _Renderer_Library extends RendererBase<Library> {
                 ..._Renderer_Categorization.propertyMap<CT_>(),
                 ..._Renderer_TopLevelContainer.propertyMap<CT_>(),
                 ..._Renderer_CanonicalFor.propertyMap<CT_>(),
-                ..._Renderer_HideConstantImplementations.propertyMap<CT_>(),
                 'aboveSidebarPath': Property(
                   getValue: (CT_ c) => c.aboveSidebarPath,
                   renderVariable:
@@ -12607,7 +12573,7 @@ class _Renderer_Package extends RendererBase<Package> {
   }
 }
 
-String renderIndex(PackageTemplateData context, Template template) {
+String renderSearchPage(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -12845,7 +12811,7 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
   }
 }
 
-String renderSearchPage(PackageTemplateData context, Template template) {
+String renderIndex(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
