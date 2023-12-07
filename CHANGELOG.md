@@ -1,3 +1,8 @@
+## 8.0.2
+
+* Remove @hideConstantImplementations fully. (#3593)
+* Remove Class assert for ClassTypedef. (#3595)
+
 ## 8.0.1
 
 * The deprecated public APIs will be removed in the next major release.
