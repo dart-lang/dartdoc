@@ -94,7 +94,8 @@ class GeneralizedTypedef extends Typedef {
 class ClassTypedef extends Typedef {
   ClassTypedef(super.element, super.library, super.packageGraph) {
     assert(!isCallable);
-    assert(modelType.modelElement is Class);
+    // TODO(kallentu): Make sure typedef testing is covered for each interface
+    // element.
   }
 
   @override
