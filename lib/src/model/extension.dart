@@ -97,8 +97,7 @@ class Extension extends Container implements EnclosedElement {
   String get filePath => '${library.dirName}/${fileStructure.fileName}';
 
   @override
-  String get sidebarPath =>
-      '${library.dirName}/$name-extension-sidebar.${fileStructure.fileType}';
+  String get sidebarPath => '${library.dirName}/$name-extension-sidebar.html';
 
   Map<String, CommentReferable>? _referenceChildren;
   @override

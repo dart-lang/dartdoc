@@ -118,23 +118,17 @@ abstract class Templates {
   static Future<Templates> fromContext(DartdocGeneratorOptionContext context,
       {bool forceRuntimeTemplates = false}) async {
     var templatesDir = context.templatesDir;
-    var format = context.format;
-
     if (templatesDir != null) {
       return RuntimeTemplates._create(
-          context.resourceProvider.getFolder(templatesDir), format,
+          context.resourceProvider.getFolder(templatesDir),
           resourceProvider: context.resourceProvider);
     } else if (forceRuntimeTemplates) {
       var directory = await context.resourceProvider
-          .getResourceFolder('package:dartdoc/templates/$format');
-      return RuntimeTemplates._create(directory, format,
+          .getResourceFolder('package:dartdoc/templates/html');
+      return RuntimeTemplates._create(directory,
           resourceProvider: context.resourceProvider);
-    } else if (format == 'html') {
-      return HtmlAotTemplates();
-    } else if (format == 'md') {
-      return MarkdownAotTemplates();
     } else {
-      throw ArgumentError.value(format, 'format');
+      return HtmlAotTemplates();
     }
   }
 }
@@ -393,17 +387,17 @@ class RuntimeTemplates implements Templates {
   final Template _typedefTemplate;
 
   /// Creates a [Templates] from a custom set of template files, found in [dir].
-  static Future<Templates> _create(Folder dir, String format,
+  static Future<Templates> _create(Folder dir,
       {required ResourceProvider resourceProvider}) async {
     Future<Template> loadTemplate(String templatePath) {
-      var templateFile = dir.getChildAssumingFile('$templatePath.$format');
+      var templateFile = dir.getChildAssumingFile('$templatePath.html');
       if (!templateFile.exists) {
         throw DartdocFailure(
-            'Missing required template file: $templatePath.$format');
+            'Missing required template file: $templatePath.html');
       }
       return Template.parse(templateFile,
           partialResolver: (String partialName) async =>
-              dir.getChildAssumingFile('_$partialName.$format'));
+              dir.getChildAssumingFile('_$partialName.html'));
     }
 
     var indexTemplate = await loadTemplate('index');

@@ -198,9 +198,8 @@ class Package extends LibraryContainer
   // In theory, a remote package could be documented in any supported format.
   // In practice, devs depend on Dart, Flutter, and/or packages fetched
   // from pub.dev, and we know that all of those use html docs.
-  String get fileType => package.documentedWhere == DocumentLocation.remote
-      ? 'html'
-      : config.format;
+  // TODO(kallentu): Remove the usages of this getter to default to html.
+  String get fileType => 'html';
 
   @override
   String get fullyQualifiedName => 'package:$name';

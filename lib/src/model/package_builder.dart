@@ -64,7 +64,7 @@ class PubPackageBuilder implements PackageBuilder {
       }
     }
 
-    var rendererFactory = RendererFactory.forFormat(_config.format);
+    var rendererFactory = const HtmlRenderFactory();
     runtimeStats.resetAccumulators([
       'elementTypeInstantiation',
       'modelElementCacheInsertion',

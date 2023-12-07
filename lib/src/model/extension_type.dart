@@ -71,7 +71,7 @@ class ExtensionType extends InheritingContainer
 
   @override
   String get sidebarPath =>
-      '${library.dirName}/$name-extension-type-sidebar.${fileStructure.fileType}';
+      '${library.dirName}/$name-extension-type-sidebar.html';
 
   Map<String, CommentReferable>? _referenceChildren;
   @override

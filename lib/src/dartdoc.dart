@@ -12,7 +12,6 @@ import 'package:dartdoc/src/failure.dart';
 import 'package:dartdoc/src/generator/empty_generator.dart';
 import 'package:dartdoc/src/generator/generator.dart';
 import 'package:dartdoc/src/generator/html_generator.dart';
-import 'package:dartdoc/src/generator/markdown_generator.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
@@ -173,15 +172,10 @@ class Dartdoc {
       maxFileCount: context.maxFileCount,
       maxTotalSize: context.maxTotalSize,
     );
-    var generator = await switch (context.format) {
-      'html' => initHtmlGenerator(context, writer: writer),
-      'md' => initMarkdownGenerator(context, writer: writer),
-      _ => throw DartdocFailure('Unsupported output format: ${context.format}')
-    };
     return Dartdoc._(
       context,
       outputDir,
-      generator,
+      await initHtmlGenerator(context, writer: writer),
       packageBuilder,
     );
   }
