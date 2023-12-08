@@ -35,8 +35,7 @@ class Enum extends InheritingContainer
   ];
 
   @override
-  String get sidebarPath =>
-      '${library.dirName}/$name-enum-sidebar.${fileStructure.fileType}';
+  String get sidebarPath => '${library.dirName}/$name-enum-sidebar.html';
 
   @override
   Kind get kind => Kind.enum_;

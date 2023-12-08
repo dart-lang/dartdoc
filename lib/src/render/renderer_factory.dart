@@ -22,6 +22,7 @@ abstract class RendererFactory {
   /// Retrieves the appropriate [RendererFactory] according to the
   /// specified [format]. Currently supports `html` or `md` otherwise
   /// throws an [ArgumentError].
+  // TODO(kallentu): Remove.
   factory RendererFactory.forFormat(String format) => switch (format) {
         'html' => const HtmlRenderFactory(),
         'md' => MdRenderFactory(),

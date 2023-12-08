@@ -250,8 +250,7 @@ class Library extends ModelElement
   @override
   String get filePath => '${library.dirName}/${fileStructure.fileName}';
 
-  String get sidebarPath =>
-      '${library.dirName}/$dirName-library-sidebar.${fileStructure.fileType}';
+  String get sidebarPath => '${library.dirName}/$dirName-library-sidebar.html';
 
   /// The library template manually includes 'packages' in the left/above
   /// sidebar.

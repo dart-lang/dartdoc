@@ -1330,9 +1330,6 @@ class DartdocOptionContext extends DartdocOptionContextBase
 
   bool get showStats => optionSet['showStats'].valueAt(context);
 
-  /// Output format, e.g. 'html', 'md'
-  String get format => optionSet['format'].valueAt(context);
-
   // TODO(jdkoren): temporary while we confirm href base behavior doesn't break
   // important clients
   bool get useBaseHref => optionSet['useBaseHref'].valueAt(context);
@@ -1712,10 +1709,6 @@ List<DartdocOption> createDartdocOptions(
         hide: true),
     DartdocOptionArgOnly<bool>('showStats', false, resourceProvider,
         help: 'Show statistics useful for debugging.', hide: true),
-    DartdocOptionArgOnly<String>('format', 'html', resourceProvider,
-        help: 'The format of documentation to generate: `md` for markdown, '
-            '`html` for html.',
-        hide: false),
     DartdocOptionArgOnly<String>('maxFileCount', '0', resourceProvider,
         help:
             'The maximum number of files dartdoc is allowed to create (0 for no limit).',

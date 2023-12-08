@@ -16375,7 +16375,6 @@ const _invisibleGetters = {
     'exclude',
     'excludeFooterVersion',
     'flutterRoot',
-    'format',
     'hashCode',
     'include',
     'includeExternal',
@@ -16626,7 +16625,6 @@ const _invisibleGetters = {
   'FileStructure': {
     'dirName',
     'fileName',
-    'fileType',
     'hasIndependentFile',
     'hashCode',
     'href',

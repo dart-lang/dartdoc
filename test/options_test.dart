@@ -197,41 +197,6 @@ An example in an unusual dir.
         contains('<code class="language-dart">An example in an unusual dir.'));
   }
 
-  void test_formatOption_md_generatesMarkdownFiles() async {
-    await createPackage(
-      packageName,
-      libFiles: [
-        d.file('library_1.dart', '''
-library library_1;
-class Foo {}
-'''),
-      ],
-    );
-    await (await buildDartdoc(additionalArguments: ['--format', 'md']))
-        .generateDocsBase();
-    final indexContent = resourceProvider
-        .getFile(
-            path.joinAll([packagePath, 'doc', 'library_1', 'Foo-class.md']))
-        .readAsStringSync();
-    expect(indexContent, contains('# Foo class'));
-  }
-
-  void test_formatOption_bad_resultsInDartdocFailure() async {
-    await createPackage(
-      packageName,
-      libFiles: [
-        d.file('library_1.dart', '''
-library library_1;
-class Foo {}
-'''),
-      ],
-    );
-    expect(
-        () => buildDartdoc(additionalArguments: ['--format', 'bad']),
-        throwsA(const TypeMatcher<DartdocFailure>().having((f) => f.message,
-            'message', startsWith('Unsupported output format'))));
-  }
-
   void test_includeOption_canBeSpecifiedInOptionsFile() async {
     await createPackage(
       packageName,
