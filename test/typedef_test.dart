@@ -21,12 +21,37 @@ void main() {
 @reflectiveTest
 class TypedefTest extends DartdocTestBase {
   @override
+  List<String> get experiments => ['inline-class'];
+
+  @override
   String get libraryName => 'typedefs';
 
   @override
-  String get sdkConstraint => '>=3.0.0 <4.0.0';
+  String get sdkConstraint => '>=3.3.0 <4.0.0';
 
-  void test_basicFunctionTypedef() async {
+  void test_class_basic() async {
+    var library = await bootPackageWithLibrary('''
+class C {}
+typedef T = C;
+''');
+    final tTypedef = library.typedefs.named('T');
+    expect(tTypedef.nameWithGenerics, 'T');
+    expect(tTypedef.genericParameters, '');
+    expect(tTypedef.aliasedType, isA<InterfaceType>());
+  }
+
+  void test_extensionType_basic() async {
+    var library = await bootPackageWithLibrary('''
+extension type E(int i) {}
+typedef T = E;
+''');
+    final tTypedef = library.typedefs.named('T');
+    expect(tTypedef.nameWithGenerics, 'T');
+    expect(tTypedef.genericParameters, '');
+    expect(tTypedef.aliasedType, isA<InterfaceType>());
+  }
+
+  void test_function_basic() async {
     var library = await bootPackageWithLibrary('''
 /// Line _one_.
 ///
@@ -52,7 +77,7 @@ Line _two_.''');
 <p>Line <em>two</em>.</p>''');
   }
 
-  void test_genericFunctionTypedef() async {
+  void test_function_generic() async {
     var library = await bootPackageWithLibrary('''
 typedef Cb2<T> = T Function(T);
 ''');
@@ -69,7 +94,7 @@ typedef Cb2<T> = T Function(T);
     expect(cb2Typedef.aliasedType, isA<FunctionType>());
   }
 
-  void test_genericFunctionTypedefReferringToGenericTypedef() async {
+  void test_function_generic_referringToGenericTypedef() async {
     var library = await bootPackageWithLibrary('''
 typedef Cb2<T> = T Function(T);
 
@@ -92,7 +117,7 @@ typedef Cb3<T> = Cb2<List<T>>;
     // TODO(srawlins): Dramatically improve typedef testing.
   }
 
-  void test_typedefInDocCommentReference() async {
+  void test_inDocCommentReference() async {
     var library = await bootPackageWithLibrary('''
 typedef Cb2<T> = T Function(T);
 
@@ -111,7 +136,39 @@ typedef Cb3<T> = Cb2<List<T>>;
     );
   }
 
-  void test_basicRecordTypedef() async {
+  void test_inDocCommentReference2() async {
+    var library = await bootPackageWithLibrary('''
+typedef R2<T> = (T, String);
+
+/// Not unlike [R2].
+typedef R3<T> = R2<List<T>>;
+''');
+    final r3Typedef = library.typedefs.named('R3');
+
+    expect(r3Typedef.isDocumented, isTrue);
+
+    expect(r3Typedef.documentation, 'Not unlike [R2].');
+
+    expect(
+      r3Typedef.documentationAsHtml,
+      '<p>Not unlike '
+      '<a href="%%__HTMLBASE_dartdoc_internal__%%typedefs/R2.html">R2</a>.'
+      '</p>',
+    );
+  }
+
+  void test_mixin_basic() async {
+    var library = await bootPackageWithLibrary('''
+mixin M {}
+typedef T = M;
+''');
+    final tTypedef = library.typedefs.named('T');
+    expect(tTypedef.nameWithGenerics, 'T');
+    expect(tTypedef.genericParameters, '');
+    expect(tTypedef.aliasedType, isA<InterfaceType>());
+  }
+
+  void test_record_basic() async {
     var library = await bootPackageWithLibrary('''
 /// Line _one_.
 ///
@@ -137,7 +194,7 @@ Line _two_.''');
 <p>Line <em>two</em>.</p>''');
   }
 
-  void test_genericRecordTypedef() async {
+  void test_record_generic() async {
     var library = await bootPackageWithLibrary('''
 typedef R2<T> = (T, String);
 ''');
@@ -154,7 +211,7 @@ typedef R2<T> = (T, String);
     expect(r2Typedef.aliasedType, isA<RecordType>());
   }
 
-  void test_genericRecordTypedefReferringToGenericTypedef() async {
+  void test_record_generic_referringToGenericTypedef() async {
     var library = await bootPackageWithLibrary('''
 typedef R2<T> = (T, String);
 
@@ -174,28 +231,7 @@ typedef R3<T> = R2<List<T>>;
     expect(r3Typedef.aliasedType, isA<RecordType>());
   }
 
-  void test_typedefInDocCommentReference2() async {
-    var library = await bootPackageWithLibrary('''
-typedef R2<T> = (T, String);
-
-/// Not unlike [R2].
-typedef R3<T> = R2<List<T>>;
-''');
-    final r3Typedef = library.typedefs.named('R3');
-
-    expect(r3Typedef.isDocumented, isTrue);
-
-    expect(r3Typedef.documentation, 'Not unlike [R2].');
-
-    expect(
-      r3Typedef.documentationAsHtml,
-      '<p>Not unlike '
-      '<a href="%%__HTMLBASE_dartdoc_internal__%%typedefs/R2.html">R2</a>.'
-      '</p>',
-    );
-  }
-
-  void test_typedefRetainsAliasWhenUsed() async {
+  void test_retainsAliasWhenUsed() async {
     var library = await bootPackageWithLibrary('''
 typedef R<T> = (T, String);
 
