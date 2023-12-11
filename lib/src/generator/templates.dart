@@ -46,8 +46,6 @@ import 'package:dartdoc/src/generator/resource_loader.dart';
 import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/src/generator/templates.aot_renderers_for_html.dart'
     as aot_renderers_for_html;
-import 'package:dartdoc/src/generator/templates.aot_renderers_for_md.dart'
-    as aot_renderers_for_md;
 import 'package:dartdoc/src/generator/templates.runtime_renderers.dart'
     as runtime_renderers;
 import 'package:dartdoc/src/model/annotation.dart';
@@ -209,84 +207,6 @@ class HtmlAotTemplates implements Templates {
   @override
   String renderTypedef(TypedefTemplateData context) =>
       aot_renderers_for_html.renderTypedef(context);
-}
-
-/// The [Templates] implementation which uses the render functions generated
-/// from the default Dartdoc Markdown templates.
-class MarkdownAotTemplates implements Templates {
-  @override
-  String renderCategory(CategoryTemplateData context) =>
-      aot_renderers_for_md.renderCategory(context);
-
-  @override
-  String renderClass<T extends Class>(ClassTemplateData context) =>
-      aot_renderers_for_md.renderClass(context);
-
-  @override
-  String renderConstructor(ConstructorTemplateData context) =>
-      aot_renderers_for_md.renderConstructor(context);
-
-  @override
-  String renderEnum(EnumTemplateData context) =>
-      aot_renderers_for_md.renderEnum(context);
-
-  @override
-  String renderError(PackageTemplateData context) =>
-      aot_renderers_for_md.renderError();
-
-  @override
-  String renderExtension(ExtensionTemplateData context) =>
-      aot_renderers_for_md.renderExtension(context);
-
-  @override
-  String renderExtensionType(ExtensionTypeTemplateData context) =>
-      aot_renderers_for_md.renderExtensionType(context);
-
-  @override
-  String renderFunction(FunctionTemplateData context) =>
-      aot_renderers_for_md.renderFunction(context);
-
-  @override
-  String renderIndex(PackageTemplateData context) =>
-      aot_renderers_for_md.renderIndex(context);
-
-  @override
-  String renderLibrary(LibraryTemplateData context) =>
-      aot_renderers_for_md.renderLibrary(context);
-
-  @override
-  String renderMethod(MethodTemplateData context) =>
-      aot_renderers_for_md.renderMethod(context);
-
-  @override
-  String renderMixin(MixinTemplateData context) =>
-      aot_renderers_for_md.renderMixin(context);
-
-  @override
-  String renderProperty(PropertyTemplateData context) =>
-      aot_renderers_for_md.renderProperty(context);
-
-  @override
-  String renderSearchPage(PackageTemplateData context) =>
-      aot_renderers_for_md.renderSearchPage(context);
-
-  @override
-  String renderSidebarForContainer(
-          TemplateDataWithContainer<Documentable> context) =>
-      aot_renderers_for_md.renderSidebarForContainer();
-
-  @override
-  String renderSidebarForLibrary(
-          TemplateDataWithLibrary<Documentable> context) =>
-      aot_renderers_for_md.renderSidebarForLibrary();
-
-  @override
-  String renderTopLevelProperty(TopLevelPropertyTemplateData context) =>
-      aot_renderers_for_md.renderTopLevelProperty(context);
-
-  @override
-  String renderTypedef(TypedefTemplateData context) =>
-      aot_renderers_for_md.renderTypedef(context);
 }
 
 /// The collection of [Template] objects parsed at runtime.

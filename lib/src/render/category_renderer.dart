@@ -53,20 +53,3 @@ class CategoryRendererHtml implements CategoryRenderer {
     }
   }
 }
-
-/// A markdown renderer for a [Category].
-class CategoryRendererMd implements CategoryRenderer {
-  const CategoryRendererMd();
-
-  @override
-  String renderCategoryLabel(Category category) => renderLinkedName(category);
-
-  @override
-  String renderLinkedName(Category category) {
-    final name = category.name;
-    if (category.isDocumented) {
-      return '[$name](${category.href})';
-    }
-    return name;
-  }
-}
