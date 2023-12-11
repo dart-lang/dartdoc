@@ -191,15 +191,7 @@ class Package extends LibraryContainer
   @override
   String get enclosingName => packageGraph.defaultPackageName;
 
-  String get filePath => 'index.$fileType';
-
-  // TODO(jdkoren): Provide a way to determine file type of a remote package's
-  // docs. Perhaps make this configurable through dartdoc options.
-  // In theory, a remote package could be documented in any supported format.
-  // In practice, devs depend on Dart, Flutter, and/or packages fetched
-  // from pub.dev, and we know that all of those use html docs.
-  // TODO(kallentu): Remove the usages of this getter to default to html.
-  String get fileType => 'html';
+  String get filePath => 'index.html';
 
   @override
   String get fullyQualifiedName => 'package:$name';
