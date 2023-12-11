@@ -19,17 +19,3 @@ class HtmlLayoutRenderer implements LayoutRenderer {
     }
   }
 }
-
-class MdLayoutRenderer implements LayoutRenderer {
-  const MdLayoutRenderer();
-
-  @override
-  String composeLayoutTitle(String name, String? kind, bool isDeprecated) {
-    var kindText = kind == null ? '' : ' $kind';
-    if (isDeprecated) {
-      return '~~$name~~$kindText';
-    } else {
-      return '$name$kindText';
-    }
-  }
-}

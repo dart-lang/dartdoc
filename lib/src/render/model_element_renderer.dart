@@ -102,15 +102,3 @@ class ModelElementRendererHtml extends ModelElementRenderer {
 '''; // Must end at start of line, or following inline text will be indented.
   }
 }
-
-class ModelElementRendererMd extends ModelElementRendererHtml {
-  const ModelElementRendererMd();
-
-  @override
-  String renderLinkedName(ModelElement modelElement) {
-    if (modelElement.isDeprecated) {
-      return '[~~${modelElement.name}~~](${modelElement.href})';
-    }
-    return '[${modelElement.name}](${modelElement.href})';
-  }
-}

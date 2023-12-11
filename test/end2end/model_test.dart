@@ -785,20 +785,6 @@ void main() {
       expect(renderer.renderLinkedName(category),
           '<a href="${htmlBasePlaceholder}topics/Superb-topic.html">Superb</a>');
     });
-
-    test('CategoryRendererMd renders category label', () {
-      var category = packageGraph.publicPackages.first.categories.first;
-      var renderer = CategoryRendererMd();
-      expect(renderer.renderCategoryLabel(category),
-          '[Superb](${htmlBasePlaceholder}topics/Superb-topic.html)');
-    });
-
-    test('CategoryRendererMd renders linkedName', () {
-      var category = packageGraph.publicPackages.first.categories.first;
-      var renderer = CategoryRendererMd();
-      expect(renderer.renderLinkedName(category),
-          '[Superb](${htmlBasePlaceholder}topics/Superb-topic.html)');
-    });
   });
 
   group('LibraryContainer', () {

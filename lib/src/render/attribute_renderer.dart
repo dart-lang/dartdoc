@@ -28,12 +28,3 @@ class AttributeRendererHtml extends AttributeRenderer {
   String renderAnnotation(Annotation attribute) =>
       '@${attribute.linkedName}${_htmlEscape.convert(attribute.parameterText)}';
 }
-
-/// A Markdown renderer for an [Attribute].
-class AttributeRendererMd extends AttributeRenderer {
-  const AttributeRendererMd();
-
-  @override
-  String renderAnnotation(Annotation attribute) =>
-      '@${attribute.linkedName}${_htmlEscape.convert(attribute.parameterText)}';
-}
