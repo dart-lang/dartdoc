@@ -600,10 +600,6 @@ abstract class ModelElement extends Canonicalization
   @Deprecated('replace with fileStructure.fileName')
   String get fileName => fileStructure.fileName;
 
-  @Deprecated('Will be removed.')
-  // TODO(kallentu): Remove the usages of this getter to default to html.
-  String get fileType => 'html';
-
   /// The full path of the output file in which this element will be primarily
   /// documented.
   String get filePath;
