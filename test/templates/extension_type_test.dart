@@ -89,7 +89,7 @@ class FooSub extends Foo<int> {}
 
 extension type One<E>(Foo<E> it) {
   /// A named constructor.
-  MyIterable.named(Foo<E> e);
+  One.named(Foo<E> e);
 
   /// An instance method.
   void m1() {}
@@ -143,6 +143,28 @@ dartdoc:
         matches(
           '<span class="kind-class">One&lt;<wbr>'
           '<span class="type-parameter">E</span>&gt;</span>',
+        )
+      ]);
+    });
+
+    test('primary constructor page is rendered', () async {
+      var constructorPageLines = resourceProvider
+          .readLines([packagePath, 'doc', 'lib', 'One', 'One.html']);
+      constructorPageLines.expectMainContentContainsAllInOrder([
+        matches(
+          '<span class="kind-constructor">One&lt;<wbr>'
+          '<span class="type-parameter">E</span>&gt;</span> constructor',
+        )
+      ]);
+    });
+
+    test('named constructor page is rendered', () async {
+      var constructorPageLines = resourceProvider
+          .readLines([packagePath, 'doc', 'lib', 'One', 'One.named.html']);
+      constructorPageLines.expectMainContentContainsAllInOrder([
+        matches(
+          '<span class="kind-constructor">One&lt;<wbr>'
+          '<span class="type-parameter">E</span>&gt;.named</span> constructor',
         )
       ]);
     });
@@ -209,18 +231,13 @@ dartdoc:
       ]);
     });
 
-    test(
-      'page contains (static) constants',
-      // TODO(srawlins): Implement.
-      skip: true,
-      () async {
-        oneLines.expectMainContentContainsAllInOrder([
-          matches('<h2>Constants</h2>'),
-          matches('<a href="../lib/One/c1-constant.html">c1</a>'),
-          matches('A constant.'),
-        ]);
-      },
-    );
+    test('page contains (static) constants', () async {
+      oneLines.expectMainContentContainsAllInOrder([
+        matches('<h2>Constants</h2>'),
+        matches('<a href="../lib/One/c1-constant.html">c1</a>'),
+        matches('A constant.'),
+      ]);
+    });
 
     test('page contains representation field', () async {
       oneLines.expectMainContentContainsAllInOrder([
