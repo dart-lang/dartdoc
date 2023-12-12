@@ -194,6 +194,15 @@ class GeneratorFrontEnd implements Generator {
           _generatorBackend.generateExtensionType(
               packageGraph, lib, extensionType);
 
+          for (var constructor
+              in filterNonDocumented(extensionType.constructors)) {
+            if (!constructor.isCanonical) continue;
+
+            indexAccumulator.add(constructor);
+            _generatorBackend.generateConstructor(
+                packageGraph, lib, extensionType, constructor);
+          }
+
           for (var constant
               in filterNonDocumented(extensionType.constantFields)) {
             indexAccumulator.add(constant);
