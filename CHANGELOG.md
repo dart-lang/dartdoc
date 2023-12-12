@@ -1,3 +1,9 @@
+## 8.0.3
+
+* Remove `--format` flag that allows for generating Markdown-formatted docs.
+  (#3535)
+* Generate docs for extension type constructors.
+
 ## 8.0.2
 
 * Remove @hideConstantImplementations fully. (#3593)
