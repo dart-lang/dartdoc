@@ -93,30 +93,12 @@ class RendererSpec {
 
   final String standardHtmlTemplate;
 
-  final String standardMdTemplate;
-
-  final Map<TemplateFormat, String?> standardTemplatePaths;
-
   RendererSpec(
     this.name,
     this.contextType,
     this.visibleTypes,
     this.standardHtmlTemplate,
-    this.standardMdTemplate,
-  ) : standardTemplatePaths = {
-          TemplateFormat.html: standardHtmlTemplate,
-          TemplateFormat.md: standardMdTemplate,
-        };
+  );
 
   InterfaceElement get contextElement => contextType.element;
-}
-
-enum TemplateFormat {
-  html,
-  md;
-
-  String aotLibraryPath(String base) => switch (this) {
-        TemplateFormat.html => '$base.aot_renderers_for_html.dart',
-        TemplateFormat.md => '$base.aot_renderers_for_md.dart',
-      };
 }
