@@ -6,7 +6,6 @@
 // functions. These are generated into:
 //
 // * templates.aot_renderers_for_html.dart
-// * templates.aot_renderers_for_markdown.dart
 // * templates.runtime_renderers.dart
 //
 // See tool/mustachio/README.md for details.
