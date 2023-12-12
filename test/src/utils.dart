@@ -215,13 +215,13 @@ two:lib/
       "name": "one",
       "rootUri": "../../one",
       "packageUri": "lib/",
-      "languageVersion": "2.0"
+      "languageVersion": "3.0"
     },
     {
       "name": "two",
       "rootUri": "../",
       "packageUri": "lib/",
-      "languageVersion": "2.0"
+      "languageVersion": "3.0"
     }
   ],
   "generated": "2020-07-07T15:25:30.566271Z",
