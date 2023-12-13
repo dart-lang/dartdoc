@@ -22,18 +22,16 @@ import 'package:path/path.dart' as path;
 Future<String> compileTemplatesToRenderers(
   Set<RendererSpec> specs,
   TypeProvider typeProvider,
-  TypeSystem typeSystem,
-  TemplateFormat format, {
+  TypeSystem typeSystem, {
   required String root,
   required String sourcePath,
 }) async {
-  var buildData =
-      _BuildData(typeProvider, typeSystem, format, sourcePath, root);
+  var buildData = _BuildData(typeProvider, typeSystem, sourcePath, root);
   var rendererFunctions = <String>[];
   var partialRendererFunctions = <_AotCompiler, String>{};
   var referenceUris = <String>{};
   for (var spec in specs) {
-    var templatePath = spec.standardTemplatePaths[format]!;
+    var templatePath = spec.standardHtmlTemplate;
     var compiler = await _AotCompiler._readAndParse(
       spec.contextType,
       spec.name,
@@ -412,8 +410,6 @@ class _BlockCompiler {
 
   String get contextName => _contextStack.first.name;
 
-  TemplateFormat get format => _templateCompiler._buildData._format;
-
   TypeProvider get typeProvider => _templateCompiler._buildData._typeProvider;
 
   TypeSystem get typeSystem => _templateCompiler._buildData._typeSystem;
@@ -448,7 +444,7 @@ class _BlockCompiler {
 
   /// Compiles [node] into a renderer's Dart source.
   Future<void> _compilePartial(Partial node, Set<String> referenceUris) async {
-    var extension = format == TemplateFormat.html ? 'html' : 'md';
+    var extension = 'html';
     var filePath = node.key.split('/');
     var fileName = filePath.removeLast();
     filePath.add('_$fileName.$extension');
@@ -701,14 +697,12 @@ class _BuildData {
 
   final TypeSystem _typeSystem;
 
-  final TemplateFormat _format;
-
   final String _sourcePath;
 
   final String _root;
 
-  _BuildData(this._typeProvider, this._typeSystem, this._format,
-      this._sourcePath, this._root);
+  _BuildData(
+      this._typeProvider, this._typeSystem, this._sourcePath, this._root);
 }
 
 /// Represents a variable lookup via property access chain [name] which returns

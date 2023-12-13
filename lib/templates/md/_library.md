@@ -1,5 +1,0 @@
-##### {{{ linkedName }}}
-{{#isDocumented}}
-{{{ oneLineDoc }}}
-
-{{/isDocumented}}

@@ -1,4 +1,0 @@
-##### {{{linkedName}}}
-{{>categorization}}
-
-{{{ oneLineDoc }}}
