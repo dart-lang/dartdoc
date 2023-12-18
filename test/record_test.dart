@@ -40,7 +40,6 @@ void f(() r) {}
 ''');
     var fFunction = library.functions.named('f');
     var recordType = fFunction.modelType.returnType;
-    print(recordType.linkedName);
     expect(recordType.linkedName, matchesCompressed(r'''
         \(
           <span class="field">
