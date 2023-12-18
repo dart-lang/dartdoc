@@ -124,7 +124,10 @@ class RecordElementTypeRendererHtml
           .renderLinkedFields(elementType)
           .trim())
       ..write(')');
-    return wrapNullabilityParens(elementType, buffer.toString());
+    if (elementType.nullabilitySuffix.isNotEmpty) {
+      buffer.write(elementType.nullabilitySuffix);
+    }
+    return buffer.toString();
   }
 
   @override

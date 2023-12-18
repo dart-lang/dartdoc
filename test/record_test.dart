@@ -34,6 +34,25 @@ void f(() r) {}
     expect(recordType.nameWithGenerics, equals('Record'));
   }
 
+  void test_nullableReturn() async {
+    var library = await bootPackageWithLibrary('''
+(int)? f() {}
+''');
+    var fFunction = library.functions.named('f');
+    var recordType = fFunction.modelType.returnType;
+    print(recordType.linkedName);
+    expect(recordType.linkedName, matchesCompressed(r'''
+        \(
+          <span class="field">
+            <span class="type-annotation">
+              <a href=".*/dart-core/int-class.html">int</a>
+            </span>
+          </span>
+        \)?
+      '''));
+    expect(recordType.nameWithGenerics, equals('Record?'));
+  }
+
   void test_onePositionalField() async {
     var library = await bootPackageWithLibrary('''
 void f((int) r) {}
