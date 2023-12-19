@@ -1,6 +1,6 @@
 ## 8.0.4-wip
 
-* Remove explicit library names.
+* Remove explicit library names. (#3609)
 
 ## 8.0.3
 
