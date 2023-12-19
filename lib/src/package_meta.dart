@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-library dartdoc.package_meta;
-
 import 'dart:io' show Platform;
 
 import 'package:analyzer/dart/element/element.dart';
@@ -22,7 +20,7 @@ class PackageMetaFailure extends DartdocFailure {
   PackageMetaFailure(super.message);
 }
 
-/// Various relative paths that indicate that a root direoctory is an SDK (Dart
+/// Various relative paths that indicate that a root directory is an SDK (Dart
 /// or Flutter).
 ///
 /// For a given directory to be detected as an SDK, at least one of the given

@@ -1,3 +1,7 @@
+## 8.0.4-wip
+
+* Remove explicit library names.
+
 ## 8.0.3
 
 * Remove `--format` flag that allows for generating Markdown-formatted docs.

@@ -4,8 +4,6 @@
 
 // ignore_for_file: non_constant_identifier_names
 
-library dartdoc.model_test;
-
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/source/line_info.dart';
